@@ -48,3 +48,47 @@ without committing or deleting the operator's source. No application tests, buil
 
 The design commits `28d94b4d` and `da33c6dd` were already published through main `2c719b3f` before this
 final sweep. This wrap-up adds only wiki synthesis, the shared compile watermark and this close-out record.
+
+## Final-session close-out audit and handoff refinement
+
+At the operator's subsequent request, audited both completed research sessions' final logs and their
+committed evidence against the unified design. Root snapshot `2a710cab`; research source inspected at
+`6ab403ed` and self-draft recipe fix `c3e362a1`. Three independent read-only reviews covered CPU evidence,
+GPU/recipe/calibration findings, and measurement-policy/authority consistency. No new inference, build,
+server, runtime change or protected-policy amendment was performed.
+
+Updated [§8.16 and the affected earlier clauses](../../handoffs/active/autokernel-unified-surface-program.md#final-closeout-audit-20260908):
+
+- Actual measured instrument (`2516c9807`, build 10303, explicit champion-control state) is distinct from
+  intended delivery `ef81196d5`. The CPU draft's unresolved pin is not actually checked by preflight;
+  final admission must refuse unresolved identity rather than trust the boolean's existence.
+- CPU THP adoption and GPU bounded non-transfer require per-target/surface recipes and scoped beliefs.
+  Same-build runtime plans need level/dispersion estimands and direction-only/inconclusive/bounded-null
+  conclusions, without promoting joint effects to individually proven component claims.
+- Source inspection found explicit-unset semantics missing from recipe environment construction:
+  parent treatment can survive `with_env(KNOB=None)`. THP readback protects R23-58 from silent acceptance;
+  this does not invalidate that experiment. Added a proposed explicit-unset/effective-env identity contract
+  and regression fixture; no implementation fix made in this documentation-only session.
+- Ratified instrument-class, floor-unit/n≥24/interval and bounded-null requirements replace underspecified
+  design text. Replay/cache calibration validation once per immutable dependency identity, not every arm.
+  Preserve valid underpowered observations as inconclusive and historical dispositions unchanged.
+- Completeness, shared screening, independent units and actual fired-path controls now feed every
+  projection. Lifecycle sampling includes setup and gaps between arms; known-bad sampler labels cannot
+  become clean claims. SC75 is already filed and is reused rather than duplicated.
+- Corrected “unused half” reasoning, separated best-supported-recipe comparisons from causal contrasts,
+  and added operating-frontier/unknown-ceiling and baseline-unmeasured states to the dashboard plan.
+  Absolute before/after BIOS rates remain comparable with attribution caveats; floors need recalibration.
+- Preserved operator-owned OP-41 after finalisation → promotion → reboot, and R23-64/65's BIOS gate.
+  Added retention/ref-closure validation so a successful backup command is not confused with coverage.
+
+Read-back reviews accepted the source/authority treatment; corrections applied for per-control activation
+scope, distinct experimental units, calibration-cache reuse and missing-warrant versus low-power semantics.
+Several source-summary arithmetic/extrapolation cautions remain explicitly marked in §8.16 rather than
+copied into thresholds or used to amend the measurement constitution.
+
+Completed one new documentation checkbox (PLAN-DOC-3); PLAN-DOC-2 remains iterative planning. No new
+implementation dispatch rows: proposals refine the existing queue, and §5b's unowned items are not adopted.
+Validation passed before publication: `git diff --check`, local link targets and balanced fences,
+handoff index/citation check (zero problems), and README freshness. This is a per-task handoff update,
+not another operator-cadence wiki sweep or pruning pass. The shared checkout's unrelated divergent
+GLM work was left untouched; publication is through the isolated planning lane and remote main.

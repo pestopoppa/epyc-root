@@ -12,6 +12,9 @@
 > It is not an approved implementation specification or permission to launch research. Consolidation
 > ownership and the no-relaunch directive below remain in force. P1 records the fold at `ef81196d5`;
 > earlier pending-fold/running-run-30 descriptions are historical, not live-process observations.
+> **Final-close-out audit:** [§8.16](#final-closeout-audit-20260908) reconciles both completed sessions,
+> ratified measurement rules, measured-versus-delivery identity, per-surface recipes, and implementation
+> refinements. It supersedes conflicting earlier design assumptions, not the operator's sequencing gates.
 
 ## Operator directive (2026-09-07, verbatim intent)
 
@@ -542,7 +545,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 ### P2 — surface dimension (U2)  · exit: two bundle files, two floors, a CPU serving A/B record on disk
 - [ ] `Bundle.surface`; per-surface store filenames; `load_bundle()` per surface; shared cor invariant test
 - [ ] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) — the CPU session's canonical recipe codified
-- [ ] CPU A/A calibration: screen floor + serving floor, n=20 pairs, host-state hash recorded
+- [ ] CPU A/A calibration: screen floor + serving floor, unit and host-state hash recorded; gating-floor calibration n≥24 with interval (FLOOR-UNIT-1 supersedes the earlier n=20 proposal)
 - [ ] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model
       and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES (INF-70 RETEST-1,
       2026-09-08: arm sd 0.501% vs process-launch sd 2.793%; the 1200-fold THP sizing error). See R23-55.
@@ -672,6 +675,13 @@ source; proposed = engineering design for later discussion; provisional default 
 policy, not ratified and not a measured performance result. Existing operational policy remains
 authoritative until deliberately changed in a later session.
 
+**Binding close-out updates:** `MEASUREMENT.md` INSTRUMENT-CLASS-1, FLOOR-UNIT-1 and BOUNDED-NULL-1
+were operator-ratified after the first notebook draft; they are requirements, not provisional defaults.
+OP-41 (§3.4) reserves admission-broker implementation to the operator **after champion finalisation →
+production promotion → host reboot**. R23-64/65 wait for the operator's BIOS/reboot boundary. The architecture
+below is a dependency design, not permission to move those gates earlier. No implementation is authorized
+by this audit. Current evidence and corrections are consolidated in §8.16.
+
 | Topic | Accepted direction / preference |
 |---|---|
 | Compute | Declare CPU, GPU, or both; explore production workloads applicable to those interfaces. |
@@ -689,6 +699,7 @@ Documentation checklist (only these boxes describe this session's work):
 
 - [x] **PLAN-DOC-1** — capture audit, accepted choices, implementation proposals, tests and provisional defaults in the owning handoff. ✅ 2026-09-08
 - [ ] **PLAN-DOC-2** — iterate §8 with the operator before converting proposals into an implementation queue. Documentation-only; no compute or deployment authorized.
+- [x] **PLAN-DOC-3** — audit both final September 8 close-outs and refine the notebook with evidence-scoped implementation contracts and tests (§8.16). ✅ 2026-09-08
 
 ### 8.2 Dated audit findings and corrections
 
@@ -749,10 +760,14 @@ WHILE active
   contamination -> invalid comparison unit, reschedule; not scientific negative
   unavailable actor/resource -> other eligible work, or release claims and wait visibly
   stale parent -> superseded, preserve idea, rebase/retest; not refutation
-  valid null/regression -> scoped finding for planner
+  completed valid comparison -> typed scoped conclusion for planner
+    inconclusive / direction_only / estimated_effect / bounded_null / regression
+    purported null missing power record or fired-mechanism control -> untested, no negative warrant
+    valid measured contrast with inadequate resolution -> inconclusive; preserve data/uncertainty
   experimental keep -> integration lock, parent check, journal intent, commit, completion
   due validation batch -> assembled candidate + serving + required LOO; evidence matrix
-  advance validated record only after required rows pass at exact identities
+  advance validated record only after applicable production-serving rows pass at exact identities
+    bench/non-production BASELINE rows remain research/addenda, not production vetoes
 BACKGROUND
   native journal -> local memory/status -> async Vidya/index projection
   supervisor -> bounded recovery; broker-aware storage maintenance
@@ -786,7 +801,8 @@ Report requested, granted, physically held and actively used resources separatel
 
 Target records bind model/hash, architecture/tensor census, backend/kernel tree, context/concurrency,
 speculation/drafter, environment, metric/direction, correctness and regression requirements, route and
-calibration refs. Deduplicate roles only on complete workload-signature equality. A seed creates its own
+calibration refs. Key recipes by target/surface/operating mode, not one global recipe or backend alone.
+Deduplicate roles only on complete workload-signature equality. A seed creates its own
 candidate target without changing production or inheriting another calibration. If production cannot
 load it, use the first compatible experimental build as exploration baseline, never a fabricated
 production delta. Missing artifact blocks only that target; others continue.
@@ -804,11 +820,12 @@ another WAL/outbox. Current-loop records must not manufacture legacy `evaluation
 
 | Record group | Automatically captured fields |
 |---|---|
-| Identity | campaign/hypothesis/attempt/execution, measured parent/candidate source, build/object digest, build/runtime recipe, target/model, instrument/protocol. |
+| Identity | campaign/hypothesis/attempt/execution, actual measured source/build/object digests, intended delivery candidate, compiled defaults and effective runtime state, recipe-map entry, target/model, instrument/protocol. |
 | Scope | backend/architecture, quant/dispatch/op shapes, serving recipe, threads, physical cores/siblings/NUMA, placement, grant, neighbor envelope. |
-| Measurement | metric/direction/unit/value, baseline, raw artifacts/hashes, comparison order/block, independent experimental unit, attempted/completed/valid/scored counts, window timestamps. |
+| Measurement | instrument_class (bench/serving), metric/direction/physical unit/value, comparison_kind and changed factors, raw artifacts/hashes, estimator version, order/block and stopping plan, independent experimental unit/IDs, attempted/completed/valid/scored counts, window timestamps. |
 | Validity | correctness/effective path, loaded-library/residency, contamination/drift/refusal; invalid timing never becomes a null. |
 | Annotation | planner mechanism class and uncertainty, explicitly not measured fact. |
+| Conclusion | estimand (level/dispersion/etc.), conclusion type, permitted claim strength, interval/power and effect-size bounds, both-direction fired-mechanism control refs; lack of significance alone is not a bounded null. |
 | Relationships | reduced->target transfer, quiet->overlap, individual->assembled benefit, supersession/retraction, original evidence IDs. |
 
 Mint attempt ID before execution; retries have separate execution IDs. Related arms retain their
@@ -826,6 +843,10 @@ Local journal failure stops new irreversible transitions and drains; downstream 
 does not. Preserve legacy records as history; do not infer missing write-side provenance on read.
 
 ### 8.6 Proposed broker and resource foundation
+
+**Sequencing constraint:** the operator owns admission-control implementation and its post-promotion,
+post-reboot gate (§3.4). These interfaces are retained as design input only. Until that gate clears,
+existing cooperative locks and bounded-hold coordination remain; this plan creates no scheduler/daemon.
 
 ```text
 acquire(StageRequest) -> AllocationReceipt
@@ -861,6 +882,10 @@ Correctness transfer, reduction of local work, and end-to-end speedup transfer a
 Fewer threads across the host are not a smaller physical allocation: cache/CCD distribution, memory
 placement, per-thread shape, clock and dispatch can change. More production threads are not inherently
 better; final validation targets the best intended serving recipe, not all cores by definition.
+The final MEAS-4 correction establishes that t48 was a measured optimum in earlier recipes, spread over
+all 12 CCDs/four NUMA nodes—not an arbitrary half-instance or a contiguous unused half. That optimum need
+not survive changed dispatch costs or BIOS settings. R23-64 owns the gated re-sweep; topology-shaped
+partition discovery remains a separate experiment from simply lowering `-t`.
 
 | Family | Proposed cheapest informative route | Transfer limitation |
 |---|---|---|
@@ -899,6 +924,9 @@ Adaptive seed priority and production coverage are accepted; algorithm/numbers b
   Define a quantitative starvation bound; nonzero weight alone is not that proof.
 - Calibration and validation are explicit budgeted work, not unbounded priority. Invalid arms/outages
   cost operational budget but are not scientific nulls. No runnable backlog -> release and wait visibly.
+- Count informative bounded transfer negatives and precision improvements as research outcomes, with
+  their scope/power retained; do not reward only positive mean-throughput keeps. Forecast measurement
+  cost from completed independent units under the current recipe, not a retired recipe's spread.
 
 Separate provider retry, hypothesis review, patch repair, contamination retry, calibration, serving/LOO
 and campaign budgets. Learn cost from observed stage durations. Report exclusion, resource waiting,
@@ -920,12 +948,23 @@ Serving instrument proposals:
   and speculation. Report request latency, and TTFT via suitable streaming capture if adopted.
 - Counterbalance AB/BA and use identical declared estimator for A/A calibration and comparisons.
   Calibrate its actual distribution at the independent arm/block count, not individual-run deviation.
-- Floors bind model/recipe/metric/estimator/instrument/placement/coexistence/N; changes cannot inherit
-  an incompatible floor. Select N before execution under applicable protocol minimums/resolution;
-  no favorable optional stopping. Uncalibrated exploratory observations cannot become gated gains.
+- Floors bind model/resolved recipe/metric/estimator/instrument/placement/coexistence and independent
+  `unit ∈ {arm, session, process}`. A gating-floor calibration requires **n≥24 and an interval**, not
+  just a point; missing/cross-unit floors refuse. This minimum is for calibration, not every experiment.
+  Preserve historical dispositions; older floors acquire rederivation debt, not retroactive re-verdicts.
+- Register fixed N **or a complete sequential look/stopping plan** before execution using reusable
+  protocol templates; no outcome-chosen extension. The CPU two-look sign test is a worked example,
+  not a reason to ban registered early stopping. Direction-only evidence cannot mint a magnitude.
+- Replay stored samples through the declared estimator/version once per immutable calibration and
+  applicable policy identity; cache the validated result for routine arms. Require reproducibility
+  before gate use. A differing quantile convention/normalization is not rounding to accept
+  silently. Changes cannot inherit an incompatible floor; n≥24 alone does not guarantee useful precision.
 - Preserve attempted/completed/valid/scored counts; prompts within one arm and reuse of the same
   treatment arm do not manufacture independent samples. Pairing alone does not prove contamination cancels.
 - Preserve correctness/library/dispatch/residency evidence; search cannot edit its measurement policy.
+- Dispatch comparator by **estimand**, not only experiment type: same-binary env arms can test level
+  and/or dispersion without rebuilding. Emit separate conclusions; a nonsignificant level contrast does
+  not answer a tail-compression hypothesis. A null needs power/bounds and both-direction mechanism controls.
 
 Exact per-target objective/window, estimator, calibration design, non-regression/equivalence margins
 and legacy metric migration remain explicit discussion items, not accepted thresholds. Reinspect source
@@ -934,16 +973,20 @@ and run controls before implementing a repair; do not widen policy to fit observ
 ### 8.10 Proposed champion evidence matrix and validation cadence
 
 Distinguish accumulated source+recipe candidate, last globally validated candidate+recipe record, and
-current frozen-production comparator. Matrix rows bind candidate/build/model/backend/recipe/metric/
+current frozen-production comparator. Matrix rows bind actual measured build and proposed candidate,
+model/backend/operating mode/resolved recipe/metric/
 instrument, correctness, validity and effect. CPU pass cannot certify GPU; runtime keep changes identity
 even with unchanged source SHA. New candidate invalidates previous combined-candidate rows while retaining
 per-change historical findings.
 
-Proposed global validated advancement waits for required production rows at identical candidate
+Proposed global validated advancement waits for required **production-optimal serving** rows at identical candidate
 identities. This tightens §3.0's earlier any-surface/shared-cor advance: reconcile deliberately, not by
 implicit amendment. Preserve required re-baseline/LOO rules until then. Missing resources hold their
 validation rows while scoped research continues. Candidate models are advisory unless explicitly required.
-Direct assembled measurements are headlines; products of solo gains remain estimates.
+Absolute headlines require serving-class evidence with its registered recipe and protocol status visible;
+bench relative comparisons remain on their own surface, never cross-class ratios or conversion factors.
+Non-production BASELINE and bench cells that cannot exercise the registered recipe are addenda, not
+production promotion vetoes (MEASUREMENT.md §5). Products of solo gains remain estimates.
 
 Retain compound-then-gate. Proposed due triggers: configured gain trigger OR ten unvalidated keeps OR
 24 hours since oldest unvalidated keep. Added numbers are provisional liveness checks so serving is
@@ -954,7 +997,8 @@ dormant quant-specific improvements based on another target's null, or seed from
 
 ### 8.11 Proposed low-friction Vidya integration
 
-At future implementation start, register current-loop capture in
+Reuse the already-filed **VB-INF70-ARMS / SC75** source/task for CPU arm capture; do not recreate it.
+At future implementation start, register any distinct current-loop capture source in
 [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) and link its task in
 [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md). This documentation update
 creates no measurement producer and claims no new hook. Adapter verifies original artifact identities,
@@ -971,7 +1015,9 @@ retrieve(target_scope, mechanism?, intended_use, limit=40)
 
 Quality and applicability filter independently. Supported transfer requires recorded source/target
 comparisons; class labels are priors. Unknown historical scope cannot certify overlap/exact transfer.
-Preserve epoch magnitude redaction: relevant history is not numerically comparable history.
+Apply warrant/epoch rules by intended use; do not make era change a blanket prohibition on absolute
+serving-rate comparison. The operator explicitly permits pre/post-BIOS absolute comparison: show the
+rates, while simultaneous changes limit causal attribution and changed dispersion requires new floors.
 
 Async consumer tails journal at a durable cursor, ingests deterministic IDs, advances on acknowledgment,
 quarantines malformed events individually and publishes an atomic local index. Planner reads once per
@@ -1020,6 +1066,10 @@ Fold actor/evidence availability into health; HTTP reachability is separate. Pro
 missing-producer deadline 180 s do not define stage progress. Single synchronized writer stops/joins
 heartbeat before terminal publish and covers startup claim/profile and shutdown errors. Verify loaded
 version, not just source commit, when claiming deployment.
+Scientific cards also expose instrument class, actual measured artifact, resolved recipe, independent
+unit, n/interval, protocol/calibration status, and supported conclusion strength. Separate single-user
+rate, highest **measured** aggregate point and selected operating point; never label a sweep endpoint
+as an established ceiling. Preserve historical sum-of-slot-rate identity until a versioned metric migration.
 
 Reserve space before builds; protect active, validated and in-flight/referenced generations (absolute
 RUNPATH means copied builds need original paths). Reclaim only explicitly unreferenced disposable
@@ -1036,12 +1086,12 @@ checkboxes are created. PLAN-DOC-2 owns review. P1/P1b consolidation remains its
 |---|---|---|---|
 | AK-AUTO-01 | Reconcile code/fold state and dated findings | — | No stale live claims; final aggregate anchors future launch; preserve P1/P1b. |
 | AK-AUTO-02 | Native current-loop journal and safe recovery | 01 | Keep replay once; corrupt bundle cannot certify; expands R23-51. |
-| AK-AUTO-03 | Topology and policy/claim-provider path | 01 | Sibling affinity conflicts; real standalone activate/renew/release; foundational P4 moves earlier. |
+| AK-AUTO-03 | Topology and policy/claim-provider path | 01; OP-41 operator gate | Sibling affinity conflicts; standalone activate/renew/release; design dependency does not move broker implementation ahead of promotion/reboot. |
 | AK-AUTO-04 | Manifest/target enrollment | 01 | CPU/GPU/both/candidate resolve without lineup mutation; P2 expansion. |
-| AK-AUTO-05 | Broker all compute/build paths | 02,03,04 | No unlocked anchor/recovery/candidate build; queued-stage pause/expiry; P4 foundation. |
+| AK-AUTO-05 | Broker all compute/build paths | 02,03,04; OP-41 operator gate | Operator-owned implementation after finalisation/promotion/reboot; no unlocked build paths or queued-stage expiry gaps in eventual acceptance. |
 | AK-AUTO-06 | CPU adapter and serving repairs | 04,05 | Explicit metric/calibration/units and witnesses; recheck fixes; P2. |
 | AK-AUTO-07 | Runtime fast path and mechanism routes | 05,06 | No extra critic calls; scale-sensitive null not globally retired; P3. |
-| AK-AUTO-08 | Prospective Vidya and scoped local retrieval | 02,04 | Typed scope, idempotence/outage recovery, unchanged grader; linked Vidya task later. |
+| AK-AUTO-08 | Prospective Vidya and scoped local retrieval | 02,04 | Typed scope, idempotence/outage recovery, unchanged grader; reuse SC75 and register only distinct current-loop sources. |
 | AK-AUTO-09 | Certified coexistence/adaptive scheduling | 05,06,07,08 | Cache reuse, unknown overlap serialized, seeds advance and production not starved; P4. |
 | AK-AUTO-10 | Evidence matrix/batched serving/LOO | 02,06,08 | One surface cannot certify others; assembled evidence; P2/R23-48. |
 | AK-AUTO-11 | Supervisor/minimal authenticated controls | 02,04,05 | Persistent idempotent lifecycle, honest health, bounded recovery; proposed replacement for P5 endpoint. |
@@ -1059,7 +1109,7 @@ constitution or compute-authority policy as a side effect of this documentation 
 | Candidate concurrency | Two racing keeps -> one integrates, one superseded/retested; runtime change cannot reuse source-only evidence. |
 | Claims | Sibling-only affinity, cross-role conflicts, partial acquisition rollback, denied/disabled provider, renewal/expiry, queued build after pause, orphan recovery; no lock deletion. |
 | Coexistence | Serving allow not research proof; unvalidated shared DRAM serialized; stale topology invalidates; quiet controls detect bias even when occupancy looks clean. |
-| Statistics | Common denominator vs slot rates; AB/BA/calibration match; independent units; incompatible floor refused; invalid units cannot support gain/null/transfer/coexistence. |
+| Statistics | Instrument-class separation; unit and n≥24/interval floor admission; replay equality; registered sequential looks; level vs dispersion; complete screened units only; power plus both-direction controls for bounded nulls. |
 | Transfer | Same threads/different topology, same quant/different shape/dispatch, absent/supported/refuted transfer, scaling null not global rejection, composition-dependent invalidation. |
 | Beliefs | Legacy frame IDs/grader unchanged; scope retained, epochs not pooled, quarantine, replay equivalence, outage safe exploration and idempotent catch-up. |
 | Controls | Duplicates/concurrent CLI/UI, paused/draining restart, unauthorized writes, browser disconnect, no silent actor fallback, orchestrator-API outage. |
@@ -1070,6 +1120,8 @@ Proposed migration: isolated pinned runtime -> inventory final champion/bundles/
 legacy observations without retrofitted warrant -> preserve rollback stores -> authorized owner boundary
 -> initially serialized broker -> partition routes -> only certified overlaps -> adaptive scheduling/
 controls after bounded checks. This does not authorize a stop/relaunch now; cutover remains separate.
+The broker step is additionally held behind the operator's finalise → promote → reboot sequence;
+R23-64/65 and new post-BIOS calibration dependencies remain explicit rather than inferred completed.
 
 Proposed acceptance: bounded mixed run, then **48-hour** unattended soak with production CPU, production
 GPU and seeded local candidate. Source/build and prevalidated runtime routes; **ten valid comparisons
@@ -1103,3 +1155,234 @@ Accepted directions are in §8.1; the operator did not approve every number/deta
 Do not run proposed work packages or turn defaults into new approval friction. The broker enforces
 allocations; belief-backed mechanism awareness should make choices cheaper and less conservative while
 preserving the distinction between permission to explore and evidence sufficient for production claims.
+
+<a id="final-closeout-audit-20260908"></a>
+
+### 8.16 Final-close-out audit — refinements to implement later, not a new execution queue
+
+**Audit basis:** root `2a710cab`, both final September 8 progress records, the committed CPU close-out
+packet, GPU sweep and R23-58 receipts, and targeted source inspection. Research shared checkout inspected
+at `6ab403ed`; self-draft support separately inspected at `c3e362a1`. No benchmarks, servers, builds,
+reboots, policy amendments or deployment changes were performed. This section refines the implementation
+notebook; it does not adopt §5b's unowned residue or reopen either closed research session.
+
+#### A. Evidence that changes the plan
+
+| Final finding | What follows for unified AutoKernel |
+|---|---|
+| CPU process-THP recipe adoption, but GPU R23-58 ends T0/D0 bounded null after 48 launches; controls fired in both directions. | One source champion needs a target/surface recipe map. CPU adoption must not set GPU defaults; GPU non-transfer must not retract CPU evidence. R23-58's coarse simulated power was ~0.97 for a 3× dispersion effect and ~0.69 for 2×; this is not proof of no smaller effect. |
+| CPU final characterisation uses instrument `bin-r1`/build 10303, with champion-control state explicitly set; THP fold record identifies source `2516c9807`, not clean `ef81196d5`. | Store actual measurement identity separately from intended delivery. The instrument adds knob-page/dispatch controls and is explicitly NOT TO FOLD. Reports' champion label is not a binary identity witness. |
+| Pristine contains neither THP knob; CPU final contrast changes source and adopted recipe. | Preserve `recipe_to_recipe` scope; it is not a source-only or THP-only attribution. The asymmetric champion divergence remains R23-62, not explained away by adoption. |
+| Late MEAS-4 correction: t48 was previously measured, with spread placement over all CCDs/NUMA nodes. | “Unused cores” is not unused cache/memory capacity. Encode placement geometry and test partition recipes; do not infer an available contiguous half. R23-64/65 own the post-BIOS revisit. |
+| Same-build runtime and dispersion questions needed a separate runner; env, recipe hash and self-draft support were added during the campaign. | Reuse those fixes at verified revisions. Generalize experiment plans/estimands and run a recipe expressiveness matrix, rather than creating another ad hoc runner for each knob. |
+| Stored/recomputed floor values differ; n=10 tail floors are unstable; new n≥24/interval/unit rules are ratified. | Version and replay the estimator, retain raw sample membership, check calibration applicability. Never treat an estimator change or different build/window as proof of changed host variance. |
+| Partial MTP arm looked ~7% faster because its prompt/token mix was incomplete. | Completion and screening are scientific admission conditions, not UI formatting. An in-flight fast arm cannot enter means, spread, beliefs or scheduling scores. |
+| GPU curves differ by model, and v9 has no measured matching DFlash2 production baseline. | Optimize an operating frontier under an explicit objective; distinguish highest measured point from ceiling and capability gain from an unmeasured speed ratio. |
+
+Sources: [final CPU report](../../docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md),
+[THP fold record](../../docs/design/inf70-close-out-20260908/FOLD-RECORD-THP.md),
+[CPU final progress](../../progress/2026-09/2026-09-08-inf70-audit.md),
+[AutoKernel final progress](../../progress/2026-09/2026-09-08-ak-rebuild-20260828.md),
+[GPU sweep](../../docs/design/champion-max-performance-20260908.md), and R23-58/61/62/64/65 in
+[the rebuild handoff](autokernel-rebuild-program.md). Raw CPU `PREREG-FINAL.md` and GPU
+`VERDICT.json` are in research `data/inf70-retest1-2026-09-08/` and
+`data/ak-r2358-shim-serving-2026-09-08/`; original evidence commits are recorded in the final progress.
+
+#### B. Recipe identity and expressiveness — one resolution path, no hand transcription
+
+Proposed contracts refine AK-AUTO-04/06/07/10 and existing U3-EXPRESS/U3-SEED/U3-DEFAULTS-b:
+
+```text
+resolve_recipe(template, target, surface, operating_point, build, environment_policy)
+  -> ResolvedRecipe + CapabilityReport
+ResolvedRecipe:
+  template_id/version/hash; model and optional drafter identities
+  speculation_kind: none | self_draft | external_draft
+  resolved argv; measurement-relevant env; explicit_unsets
+  declared defaults; requested overrides; dependency/master-off semantics
+  controls[]: {set_at: process_launch | runtime_arm, scope_definition, state_witness}
+  effective_state_witnesses; normalized_execution_digest
+ChampionRecord:
+  intended_source; build_manifest
+  recipes[(target_id, backend, operating_mode)] -> normalized_execution_digest
+EvidenceBinding:
+  actual_measured_source/build/object_digests; runtime_state_snapshot
+  intended_delivery_id; equivalence_evidence_or_validation_required
+```
+
+Resolve/load once per immutable generation and reuse it for launcher, calibration, comparisons, report
+and dashboard. Keep template/module-source hashes as provenance, distinct from resolved execution identity.
+Normalize launch to process only when each sample is an independent process; preserve the policy's
+arm/session/process distinctions with explicit unit definitions and IDs. The comparison unit belongs to
+ExperimentPlan, while activation scope belongs to each control—a recipe can contain launch and runtime
+controls together. No new LLM call or per-run approval is needed for this resolution.
+
+**Source-confirmed holes to design out, not fixes made by this audit:**
+
+- `Recipe.with_env(KNOB=None)` at `c3e362a1` removes only the declared recipe override, while
+  `server_env()` starts from inherited environment. A parent `KNOB=1` can survive an intended unset;
+  the declared recipe hash does not expose that difference. Model **unset / set / permitted inherit**
+  separately; apply explicit unsets after constructing the inherited environment. Hash/record only the
+  allowlisted measurement-relevant resolved environment; never dump credentials into evidence.
+  R23-58's THP readback would catch this mismatch, so this finding does **not** invalidate that run;
+  generic recipes with no readback do not have that protection.
+- The rescued CPU draft declares `CHAMPION_PIN_RESOLVED=False`, but its `preflight()` does not test
+  the flag and its digest function checks old champion3 objects. A declarative flag/test of the flag
+  is not an enforced refusal. Final-candidate admission must execute the unresolved-pin check; a
+  diagnostic `--skip-digests` path must never emit verified final-candidate evidence. The existing draft
+  is a starting point, not a proven final-candidate launcher.
+- THP `prctl` and model-buffer `madvise` are separate controls. Record master-off dependency and verify
+  `THP_enabled` in the launched process; time-dependent AnonHugePages alone is not a general switch
+  witness. Diagnostic knob-page defaults differ from champion state: capture each arm's effective state,
+  not just the process environment or source defaults.
+
+Expressiveness fixtures should cover existing admitted targets first: CPU/GPU placement, none/self/external
+speculation, drafter-specific flags, per-arm and per-launch state, unset/master-off, cache/batch/context
+and concurrency. Unsupported combinations return structured capability reasons. Future multi-GPU/RPC,
+LoRA and sampler extensions remain scoped capability entries, not a demand to implement every backend
+before first use. Existing `c3e362a1` absence semantics map to explicit self-draft in the proposed schema;
+do not break existing JSON recipes silently. Recipe validation/plan creation must be useful without compute.
+
+Sources: research `loop/serving.py::{Recipe.with_env,Recipe.server_env,Recipe.recipe_hash}` at the inspected
+revisions; [CPU recipe draft](../../docs/design/inf70-close-out-20260908/qwen38_flash_next_recipe.py.draft),
+[pin caveat](../../docs/design/inf70-close-out-20260908/README.md), and research `PREREG-FINAL.md`.
+
+#### C. One typed comparison plan and admissible-unit pipeline
+
+Proposed `ExperimentPlan` carries `instrument_class`, `comparison_kind`, `estimand`, changed factors,
+metric/estimator identities, required unit/control/completeness predicates, pairing/order, fixed-N or
+registered sequential stopping rule, power model/margins, calibration reference and permitted conclusions.
+`comparison_kind` distinguishes controlled mechanism attribution, assembled candidate comparison and
+best-supported-recipe product comparison. `estimand` distinguishes level, dispersion and separately
+registered objectives; a variance effect cannot be inferred from a mean test or vice versa.
+
+Use reusable deterministic templates, populated from the resolved recipe and existing policy, then
+freeze/hash once before execution. One shared validator feeds comparison, journal publication, planner,
+dashboard and Vidya projection; it validates existing warrants and delegates grading to `ClaimTuple.grade()`.
+It is not another grading ladder or critic review. Missing formal serving-protocol registration
+(RATIFY-MEAS-2) stays visible: exploration/evidence collection can proceed within authority, but a template
+cannot invent an approved protocol ID or auto-ratify a gating claim. Apply-time human boundaries stay intact.
+
+```text
+native samples -> complete independent unit -> predefined screen disposition
+  -> immutable admissible-unit view -> exact estimator + registered stopping rule
+  -> typed conclusion + claim eligibility -> journal / planner / dashboard / belief projection
+```
+
+Completeness includes expected prompt IDs/counts, workload/token-mix identity, terminal marker and required
+witnesses. Preserve `flagged_but_retained(reason)` separately from CLEAN and rejected, following the declared
+policy. All consumers use the **same unit set**; a dropped arm cannot reappear in floor estimation or CI.
+Repeated prompts inside one process do not multiply independent launch N. Control assertions must witness
+the execution path in both directions—not merely a profiler's task-plan counter that execution ignores
+(SYNC-18's exact failure). Zero/insufficient observations return invalid rather than an empty PASS.
+
+Typed results keep `inconclusive`, `direction_only`, `estimated_effect`, `bounded_null` and `regression`
+distinct. A purported null missing its power record or fired-knob control is `untested` under
+BOUNDED-NULL-1; retain the raw measurements and missing-warrant reason. This is different from a valid
+measured contrast whose documented power/resolution is inadequate: that is `inconclusive`, with its
+effect/uncertainty preserved. Do not encode the
+CPU six-pair direction-only THP keep as a validated +5.23% magnitude, or the joint FIX-1+FIX-3 regression
+as two separately significant component effects. Save the original registered action separately from
+today's claim eligibility; policy upgrades do not silently rewrite historical decisions.
+
+Sources: [FIX1 result](../../docs/design/inf70-close-out-20260908/FIX1-RESULT.md),
+[final-arm completeness](../../docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md),
+[ratified rules](../../MEASUREMENT.md), and final CPU progress §§6/10.
+
+#### D. Calibration, precision economics and host changes
+
+A proposed `CalibrationReceipt` contains exact model/build/resolved recipe, metric and estimator version,
+quantile/normalization convention, independent-unit definition and IDs, raw sample digest, n, interval,
+window/host/neighbor envelope, sampler version and protocol. Deserialize → replay → compare **once per
+immutable calibration, estimator and applicable policy identity**, then cache validation for routine
+arms; invalidate the cache when those dependencies change. No raw-sample replay per arm.
+The 4.581/4.494 and 6.657/6.596 discrepancies are **unreconciled estimator/provenance observations**, not
+permission to choose a convenient value or assume rounding. A changed estimator creates a new identity.
+
+Maintain reference precision and observed per-treatment precision separately. The CPU shim's paired test
+and later six-launch characterisation support examining precision as a resource-saving lever, not a
+universal fixed noise multiplier. Estimates from a few launches remain uncertain. Forecast cost under the
+current recipe with that uncertainty; a cheap low-power “null” is not cheaper useful science. Select the
+cheapest instrument that exercises the mechanism **and** matches intended use; MTP's better precision in
+one CPU block does not license applying its floor to plain decode or another target.
+
+For BIOS/reboot, retain pre/post absolute serving rates when metric/workload semantics match; classify
+the difference as unattributed if several conditions changed. Do not hide improved capability behind an
+era label or attribute it solely to a kernel. Re-resolve topology/host settings and recalibrate gating
+floors because dispersion may change. No assumption that C8's prepared BIOS proposal equals the operator's
+actual changes. R23-61a's pre/post choice and gated R23-64/65 remain the existing route, not duplicate tasks.
+
+#### E. Selection, transfer memory and honest dashboard objectives
+
+Seed the mechanism/transfer fixture with CPU-THP adopted / GPU-THP bounded non-transfer. Store source and
+target scopes, actual mechanism controls, bounds, effect statistic, dependencies and registered disposition.
+Unknown transfer permits scoped exploration; negative evidence suppresses **the same tested claim** until
+relevant dependencies or the effect-size question change. It must neither retire all small possible
+effects nor propagate CPU defaults to GPU. Cheap bounded disproof is useful progress, not a failed campaign.
+
+For each target, retain the tested concurrency/placement frontier, objective and SLO, not only one scalar
+best. `single_user`, `aggregate_capacity` and a selected responsiveness/throughput operating point are
+different objectives. Choose under an explicit workload/resource envelope and policy; missing SLO does
+not authorize inventing one. Publish sweep bounds and operator stop reason. The dense np=8 result is the
+highest tested point with diminishing returns, **not a measured turnover/global ceiling**; the MoE np=16
+endpoint likewise leaves its ceiling unknown. Small-n spread is descriptive, not a certified floor.
+
+For kernel attribution hold a compatible recipe fixed. For product improvement compare each build at its
+own best **supported** recipe under the same workload/objective/resources, with the changed factors visible.
+Production lacking the experimental drafter is `unsupported_capability`, not a zero denominator;
+`baseline_not_measured` emits no ratio. A candidate model outside production still gets a baseline in a
+compatible experimental build. Cross-model architecture comparisons are not kernel gains. Preserve the
+historical aggregate metric's exact definition; migrating to common-window throughput needs a new metric
+identity and calibration, not a relabeled card.
+
+#### F. Lifecycle coverage, durable closure and cross-campaign reuse
+
+One campaign sampler should cover allocation/setup/eviction/load/placement/warmup, **between-arm gaps**,
+request phases and teardown, with timestamp coverage attached to each unit. Otherwise foreign work can
+change cache/placement before timed sampling begins. Recovery/re-admission uses the existing declared
+quiescence/reset conditions; this notebook invents no magic cooldown duration. Retain ownership and
+samples rather than guessing a culprit: the API stop was subsequently observed as a non-event in the
+sampled CPU window, superseding the earlier suspected attribution, not proving global noninterference.
+
+Reuse SC75's prospective CPU arm wiring. Its pre-September-7 erroneous sibling-isolation labels must not
+be upgraded into clean measurements; keep historical records discoverable but emit no eligible measurement
+claims from that known-bad set under the existing adapter policy. A corrected sampler version invalidates
+dependent **warrant**, not the fact that a run occurred. New GPU residency capture R23-60 is already landed;
+reuse its raw readbacks and inspect the loaded revision rather than restating it as missing.
+
+Before releasing a campaign, derive a retention manifest from all evidence/candidate/recipe references,
+including non-branch refs and absolute RUNPATH dependencies. Verify the backup actually covers the named
+ref/object/artifact closure, not merely that a bundle command succeeded. Commit compact receipts/checksums
+and explicit large-artifact provenance; never silently promote a hedge copy into the evidence record.
+Drafts remain drafts, no-fold refs remain exclusions, and a closed researcher does not transfer ownership
+of unadopted tasks. This is automated bookkeeping and validation, not an additional sign-off ceremony.
+
+#### G. Acceptance fixtures and integration into the existing plan
+
+| Fixture | Required behavior | Existing design/task mapping |
+|---|---|---|
+| Parent env sets treatment, control requests unset | Resolved control really unsets; digest distinguishes relevant state; THP readback still catches mismatch | AK-AUTO-04/07; U3-EXPRESS |
+| Unresolved champion pin with old digests matching | Actual admission refuses; diagnostic bypass cannot claim final validation | AK-AUTO-01/04/10; PROD-1 context only |
+| Instrument build in champion-control state | Preserve measured identity; no automatic clean-candidate timing/correctness inheritance | AK-AUTO-10; G2-CONC requirement |
+| CPU adoption plus GPU bounded null | Two recipe entries; independent dispositions and power bounds; no cross-surface default leak | AK-AUTO-08/10; U3-DEFAULTS-b |
+| Partial fast arm / dropped arm / zero evidence | Exclude consistently until complete/valid; never a gain or vacuous PASS | AK-AUTO-02/06 |
+| Direction-only / component non-claim / dispersion-only effect | Claim serializer and all projections preserve conclusion strength | AK-AUTO-06/08 |
+| Floor wrong unit, missing interval, n<24, or replay mismatch | Refuse new gate use with exact reason; queue scoped recalibration; keep historical record | AK-AUTO-06; R23-55/61/65 |
+| Hypothesis control only changes profiler counters | No executed-path warrant; record untested and diagnose before spending measurement budget | AK-AUTO-07; SYNC-18 fixture |
+| Production cannot load candidate recipe | Capability status, no invented speed ratio; optional own-best supported baseline | AK-AUTO-04/10; PROD-BASE-1 |
+| BIOS change / superseded sampler | Absolute rate remains visible; attribution and calibration/coexistence eligibility updated separately | AK-AUTO-03/08; R23-64/65 |
+| Operator stops sweep at highest measured point | Record endpoint/stop reason; do not claim saturation or resume without authority | AK-AUTO-11 |
+| Scratch cleanup or session retirement | Referenced evidence/refs/build dependencies survive; unresolved ownership remains explicit | AK-AUTO-02/11 |
+
+**No duplicate execution queue:** these are refinements to §8.13's proposals and PLAN-DOC-2, not newly
+authorized implementation tasks. Declined to create separate dispatch rows because this session's scope
+is iterative design and existing U3/R23/SC75 rows already route applicable work. Before implementation,
+re-resolve their actual state and ownership. OP-41 stays operator-owned and sequenced last as recorded.
+
+**Audit cautions retained rather than copied into formulas:** some summaries call the final +5.958% bench
+versus −2.18% serving contrast an “11-point” gap (arithmetic is 8.138 points, and cross-class subtraction is
+not a performance claim); the listed sd values 2.793/0.501 do not themselves imply a 13× ratio; and one GPU
+discussion compares unlike concurrency points as though they establish better per-user responsiveness.
+Do not import those shorthands as evidence or thresholds. The ratified rules remain unchanged; this audit
+does not edit protected policy or re-verdict historical experiments. Exact estimators and original
+receipts, not persuasive prose, must drive future automated decisions.
