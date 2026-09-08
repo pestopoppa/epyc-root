@@ -1,6 +1,6 @@
 # GLM-5.3-Flash Evaluation (glm5next)
 
-**Status**: READY — artifact on disk, unowned until this handoff; arch-support audit is the gate
+**Status**: AUDITED 2026-09-08 — champion lacks support; upstream architecture and native-MTP ports identified
 **Created**: 2026-08-31 (spun out of the OP-8 KILL ruling; inherits the GLM-MoE-DSA findings)
 **Priority**: MEDIUM — one of the two operator-named novel-under-test models (with qwen3.8-next-flash)
 **Categories**: inference_serving, local_inference, kernel_architecture
@@ -24,6 +24,14 @@
 
 ## Inherited findings (from the GLM-5.2 evaluation — verify each against glm5next before relying on it)
 
+**2026-09-08 audit supersession:** GLM5Next is hybrid KDA + MLA/DSA + mHC, not merely
+GLM-DSA with another key. Three open upstream PRs implement the architecture; #27917 adds
+native MTP to #27773. **Speculative decoding is required by the operator.** The legacy findings
+below are historical hypotheses, not established properties of the proposed port. In particular,
+do not transfer the old top-k workaround or the old claim of absent GLM-family MTP support.
+See [the source/GGUF/upstream audit](../../docs/reference/models/glm53-flash-support-audit-20260908.md)
+for pinned identities, metadata/quantization differences and the full validation contract.
+
 1. **DSA-DENSE-MASK**: on this fork the generic DSA path computes the indexer + top-k but final
    attention still runs over FULL KV with a mask (`build_attn` constructs `kq_mask_top_k` over full
    KV length; no sparse gather). Any glm5next support inherits this until the sparse-gather gate in
@@ -44,9 +52,16 @@
 
 ## Tasks
 
-- [ ] T0 — **Arch-support audit**: does any tree on this host load `glm5next` (production v9: no —
+- [x] T0 — **Arch-support audit**: does any tree on this host load `glm5next` (production v9: no —
   frozen pre-arch; experimental/champion: check; upstream llama.cpp: check for a landed PR)? Output:
-  the backport-or-wait decision, same shape as the qwen4exp bringup.
+  the backport-or-wait decision, same shape as the qwen4exp bringup. ✅ 2026-09-08
+  Evidence: [audit](../../docs/reference/models/glm53-flash-support-audit-20260908.md).
+  Recommend adapting pinned #27773 + #27917 into a champion-descended experimental candidate;
+  this is a source-audit recommendation, not a built or validated port.
+- [ ] T0-SPEC — Adapt the architecture and native-MTP stack with local GGUF compatibility;
+  validate target/draft hidden-state semantics, index sharing and convolution/KDA/cache rollback
+  at every rejection position before declaring speculative decoding supported. Trunk-only load
+  is an intermediate gate, not completion. See the audit's execution plan.
 - [ ] T1 — Load + short-context coherence smoke on the chosen tree (abort on repetition loops),
   CPU-only, canonical env; record `(arch, indexer defaults, kpool)` from the load log.
 - [ ] T2 — DSA-path disposition for glm5next: DENSE-MASK vs sparse (expect DENSE-MASK per finding 1);
