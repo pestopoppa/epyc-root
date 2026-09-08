@@ -2,8 +2,71 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-09-08 (the DFlash2 serving-gate protocol absorbs the rtx6kpro wave — verifier steps/s as the kernel metric with tok/s = steps/s × accepted/step, the n-max × p-min sweep, the sustained-C8 and A/A-losslessness cells, the DF2-RNG shared-verify-path lead, and RULE-RESCOPE: "spec-dec levers are a single-stream story" is re-scoped to the GPU-MoE regime it was measured in; earlier 2026-09-03 note: incremental: MoE-Spec measured on live CPU verification batches for the first time — architect_critic **+10.7%** at B=128 against frontdoor **−11.4%**, so the mechanism's SIGN is role-dependent rather than a property of the mechanism; the registry change stays proposed-not-applied behind the E8-reseed/OP-19 gate, a strict bit-exact guard is enforceable only via the gate-skip control, and the GPU champion's paired `tg128` "no regression" row is uninformative BY CONSTRUCTION because batch-1 decode never reaches `--moe-spec-min-batch 4`; also, #27442 part two is no longer blocked on G1; earlier: 2026-08-23 wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
+**Last compiled**: 2026-09-08 (pm): production v9 NEVER ran the DFlash2 lane — dflash_lineup_enabled false, the certification names Qwen3.6-27B not 3.8, and the frozen binary rejects the DFlash2 GGUF (expected 81 tensors, got 58) — so NO champion-vs-production ratio exists for Qwen3.8-27B + DFlash2 and the advantage is partly a CAPABILITY; the honest comparison is the incumbent at ITS own best, never forced through the challenger recipe; measured DFlash2 ceiling 79.25 tok/s np=1 / 179.12 aggregate np=8; earlier: 2026-09-08 (the DFlash2 serving-gate protocol absorbs the rtx6kpro wave — verifier steps/s as the kernel metric with tok/s = steps/s × accepted/step, the n-max × p-min sweep, the sustained-C8 and A/A-losslessness cells, the DF2-RNG shared-verify-path lead, and RULE-RESCOPE: "spec-dec levers are a single-stream story" is re-scoped to the GPU-MoE regime it was measured in; earlier 2026-09-03 note: incremental: MoE-Spec measured on live CPU verification batches for the first time — architect_critic **+10.7%** at B=128 against frontdoor **−11.4%**, so the mechanism's SIGN is role-dependent rather than a property of the mechanism; the registry change stays proposed-not-applied behind the E8-reseed/OP-19 gate, a strict bit-exact guard is enforceable only via the gate-skip control, and the GPU champion's paired `tg128` "no regression" row is uninformative BY CONSTRUCTION because batch-1 decode never reaches `--moe-spec-min-batch 4`; also, #27442 part two is no longer blocked on G1; earlier: 2026-08-23 wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
 **Sources**: 67+ documents
+
+## Compiled Update — 2026-09-08 (pm): production never ran the DFlash2 lane, so the champion's advantage here is partly a CAPABILITY and NO ratio exists — plus the measured DFlash2 serving ceiling
+
+**Confidence: verified** — from the ratification artifact and the v9 qualification summary, cross-checked
+against the frozen binary's own refusal to load the drafter.
+
+### There is no champion-vs-production ratio for Qwen3.8-27B + DFlash2, and there never was one
+
+`artifacts/operator/ratify_v9_final_freeze_20260811.json` → `production_certification` records:
+
+| field | value |
+|---|---|
+| `qwen36_27b_q8_dflash` | `lane_ineligible_acceptance_below_floor` |
+| `dflash_kernel_capability` | `certified` |
+| `dflash_lineup_enabled` | **`false`** |
+
+Production v9 was frozen with the DFlash drafter **compiled in but deliberately NOT enabled** for the 27B —
+acceptance was below floor at the time. This is the same lane compiled here on 2026-08-12 as *"the first case
+where a large measured speedup and an ineligible acceptance rate co-exist, so the lane ships disabled"*; what
+is new is the **downstream consequence for every comparison anyone will want to make**.
+
+The v9 qualification summary (`gates.gpu_candidate_functional_observation`, itself stamped
+`decision_grade: false`) carries GPU decode for **other roles only** — architect native MTP **53.359** tok/s,
+coder (request_cap 0, no draft activity) **30.268**, worker vision **96.671**. None of them is this lane.
+
+**Three independent reasons the denominator does not exist:**
+
+1. **Different model.** The certification key names **Qwen3.6**-27B. Qwen3.8-27B replaced Qwen3.6-27B-MTP-Q8_0
+   in production on 2026-08-20/21 — **nine days after** the 2026-08-11 freeze. The freeze's DFlash data
+   predates Qwen3.8-27B's existence in production and cannot describe it.
+2. **The frozen binary cannot load the drafter.** v9 rejects the DFlash2 GGUF outright —
+   `wrong number of tensors; expected 81, got 58`. Production's ceiling for Qwen3.8-27B is **MTP self-draft**,
+   not DFlash2. This is not a configuration difference; it is an architectural incompatibility.
+3. **The lane was disabled by decision**, not omission — `dflash_lineup_enabled: false`.
+
+> **The champion's advantage on this surface is partly a CAPABILITY, not a speed delta.** Anyone quoting a
+> champion-vs-production ratio for Qwen3.8-27B + DFlash2 is quoting a number that was never measured, because
+> production **cannot produce the denominator**.
+
+**The generalisable rule.** When a challenger runs a lane the incumbent does not have, the honest comparison is
+**incumbent at ITS own best** — its own concurrency sweep, its own supported speculative configuration — never
+the incumbent forced through the challenger's recipe. Forcing it reports a **capability gap as a speed gap**,
+which inflates the number and misdescribes what changed. Until such a measurement exists, the champion headline
+stands **alone, as an absolute number, with no ratio attached**.
+
+### The measured DFlash2 serving ceiling, for the record
+
+Champion `ef81196d5`, Qwen3.8-27B-Q8_0, MI210, DFlash2 (`draft_n_max=8`), canonical recipe, 3 launches per
+point, residency proven on all 12: **79.25 tok/s at np=1**, 109.41 at np=2, 167.76 at np=4, **179.12
+aggregate at np=8** (per-slot 79.25 / 54.70 / 41.94 / 22.39). **np=4 is the operating point** — 93.7% of peak
+aggregate at ~42 tok/s per user. Detail, recipe and residency evidence:
+[`docs/design/champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md).
+
+**Do not compare any of these to a `tg128` figure.** `llama-bench` cannot do speculative decoding at all, so
+`tg128` understates this path by ~2.5× (31.0 vs 79.25 tok/s at np=1) — it is a valid kernel-vs-kernel A/B
+surface and never an absolute rate. See [benchmark-methodology](benchmark-methodology.md).
+
+### Source References
+
+- [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md) — the ratification fields as read, the three reasons, and PROD-BASE-1
+- [champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) — the measured DFlash2 serving table with its exact recipe
+- [qwen38-27b-replace-qwen36.md](../handoffs/active/qwen38-27b-replace-qwen36.md) — the 2026-08-20/21 production swap that post-dates the freeze
+- [dflash2-block-drafter-experimental-build.md](../handoffs/active/dflash2-block-drafter-experimental-build.md) — DFlash2's experimental-runtime contract and open gates
 
 ## Compiled Update — 2026-09-08: the DFlash2 serving-gate protocol absorbs the rtx6kpro wave — steps/s is the kernel metric, and two standing rules are re-scoped
 

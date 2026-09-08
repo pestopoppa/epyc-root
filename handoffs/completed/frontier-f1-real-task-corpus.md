@@ -1,6 +1,15 @@
 # Frontier F1 — Define the Demand Side: a Real-Task Corpus as the Eval Distribution
 
-**Status**: COMPLETE — 10/10 boxes closed (2026-08-23). All waypoints ticked: W1 taxonomy (2026-06-12), W2 passive capture (2026-06-14), W2b historical backfill/source weighting (2026-07-03 refresh), W2c Letta no-dependency port (2026-07-29), W3 clean-window 50-question EvalTower ledger (2026-07-07 run `real_suite_v1_eval_20260707T013009Z`, 35/50), W4 decision wiring, F1-DGM-1/2/3 scoping (2026-07-17). Residual follow-up (AP-16 instruction-token bloat; how the ledger feeds promotion/regret views) is tracked in [tool-output-compression.md](tool-output-compression.md) — see completion banner below.
+> **ARCHIVED 2026-09-08 — COMPLETE.** Moved from `handoffs/active/` at the operator-invoked wrap-up of
+> 2026-09-08. **10/10 checkboxes closed, 0 open**, completion banner dated 2026-08-23, and the residual
+> follow-up (AP-16 instruction-token bloat; how the ledger feeds promotion/regret views) is owned by
+> [`tool-output-compression.md`](../active/tool-output-compression.md), not by this file. Its `EVL-23` row —
+> which had read `DONE 2026-08-23` since then — is deleted from
+> [`research-evaluation-index.md`](../active/research-evaluation-index.md); a terminal row does not stay in
+> the queue. **Historical ledger only; nothing here is open work.**
+
+
+**Status**: COMPLETE — 10/10 boxes closed (2026-08-23). All waypoints ticked: W1 taxonomy (2026-06-12), W2 passive capture (2026-06-14), W2b historical backfill/source weighting (2026-07-03 refresh), W2c Letta no-dependency port (2026-07-29), W3 clean-window 50-question EvalTower ledger (2026-07-07 run `real_suite_v1_eval_20260707T013009Z`, 35/50), W4 decision wiring, F1-DGM-1/2/3 scoping (2026-07-17). Residual follow-up (AP-16 instruction-token bloat; how the ledger feeds promotion/regret views) is tracked in [tool-output-compression.md](../active/tool-output-compression.md) — see completion banner below.
 **Current checkpoint — 2026-07-07T01:49Z**: the clean-window full `--n 50`
 rerun is packaged at `orchestration/reports/real_suite_v1_eval_20260707T013009Z/`.
 It scored `35/50` correct, `quality_0_3=2.10`, reliability `0.94`, median
@@ -19,13 +28,13 @@ predates the 2026-07-07 clean-window run and is contradicted by the W3 checkbox
 (✅ 2026-07-07, 35/50 at `orchestration/reports/real_suite_v1_eval_20260707T013009Z/`),
 so it is stale prose, not open work. The residual follow-up — AP-16
 instruction-token bloat and how this ledger feeds promotion/regret views — is already
-tracked in [tool-output-compression.md](tool-output-compression.md) (AP-16) and the
+tracked in [tool-output-compression.md](../active/tool-output-compression.md) (AP-16) and the
 EVL-23 index row; not duplicated here.
 
 **Created**: 2026-06-12
 **Priority**: MED — start passive capture anytime
-**Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F1 — read it before claiming any waypoint
-**Related**: [unified-trace-memory-service.md](unified-trace-memory-service.md) (capture substrate, BUILT); [fable5-findings-01-impl-plan.md](../completed/fable5-findings-01-impl-plan.md) Phase 2 (promotion evals); workload model in [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §D
+**Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F1 — read it before claiming any waypoint
+**Related**: [unified-trace-memory-service.md](../active/unified-trace-memory-service.md) (capture substrate, BUILT); [fable5-findings-01-impl-plan.md](fable5-findings-01-impl-plan.md) Phase 2 (promotion evals); workload model in [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) §D
 
 ## Why
 
@@ -128,7 +137,7 @@ On completion of each waypoint: tick here, one-line progress entry, update maste
 
 ## 2026-07-25 — intake Stage-2a dive: Letta trajectory DOWNGRADED (no artifact to adopt)
 
-_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](intake-derived-work-2026-07-25.md)._
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](../active/intake-derived-work-2026-07-25.md)._
 
 - [x] **W2c — do NOT take `letta-trajectory` as a dependency; port ~50 lines instead.** The original proposal was to replace the bespoke Claude/Codex JSONL parsing in `scripts/tasks/harvest_tasks.py`. Dive findings kill the dependency route: the package is **not on PyPI at all** (404; `release.yml` runs `npm publish` only and never builds a Python artifact), and the Python package is a **subprocess shim to a vendored Node 20 CLI** (`_MINIMUM_NODE_MAJOR = 20`, `_vendor/trajectory-cli.mjs`, `subprocess.run([node, ...])`) whose Node dependency is **undeclared** — `pip install` succeeds and fails at first call. Disqualifying under minimum-imports. ✅ 2026-07-29 — orchestrator `ce903d0f` adds the dependency-free `--hermes-state-db` reader: read-only SQLite URI, prompt-hash-only by default, user→assistant pairs only, and active/soft-delete filtering when the compatible column exists (11 focused tests pass).
   - **What is still worth taking**: the `hermes` adapter targets *our* Hermes (NousResearch/hermes-agent — verified against `hermes_state.py`: `DEFAULT_DB_PATH = get_hermes_home()/"state.db"`, `reasoning_content`, `active` soft-delete) and is a **~50-line SQLite read, reimplementable in Python without Node**. The schema shape is also worth reusing as a reference.

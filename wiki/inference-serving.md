@@ -2,8 +2,68 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
+**Last compiled**: 2026-09-08 (pm): the champion serving ceiling measured with residency proven on every launch — 79.25 tok/s single user, 179.12 aggregate at np=8, and np=4 is the operating point at 93.7% of peak aggregate for ~42 tok/s per user; aggregate throughput saturates well before the slot count, and between-launch dispersion widens 7.6x from np=1 to np=4; R23-60 landed residency sampling on the serving path, which previously proved none; earlier: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
 **Sources**: 82 documents
+
+## Compiled Update — 2026-09-08 (pm): the champion's measured serving ceiling — 79.25 tok/s single user, 179.12 aggregate — and why np=4 is the operating point
+
+**Confidence: verified** — 12 launches (3 per point), one window, idle exclusive host, **GPU residency
+`proven` on every launch** (sampled DURING each run, not inferred). Canonical artifact:
+[`docs/design/champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) —
+cite that, do not re-derive.
+
+Qwen3.8-27B-Q8_0 on MI210 (gfx90a), champion `ef81196d5`, DFlash2 drafter, canonical serving recipe
+`qwen3.8-27b-q8-gpu-dflash2-np4` with **only `np` varied**. Unit: **LAUNCH** — every spread figure is
+between-launch, a fresh `llama-server` per sample.
+
+| slots (`np`) | aggregate tok/s | per slot | p95 dev over 3 launches | peak VRAM |
+|---:|---:|---:|---:|---:|
+| **1** | **79.25** | 79.25 | **0.44%** | 33.09 GiB |
+| 2 | 109.41 | 54.70 | 1.60% | 34.46 GiB |
+| 4 | 167.76 | 41.94 | 3.33% | 37.67 GiB |
+| **8** | **179.12** | 22.39 | 1.82% | 43.05 GiB |
+
+### The concurrency curve turns over hard between 4 and 8 slots
+
+**+6.77% aggregate throughput for ~47% of the per-user rate.** np=4 delivers **93.7% of peak aggregate** while
+each user still sees ~42 tok/s; np=8 buys the last 6% by halving the individual experience. The canonical
+recipe is already np=4, so this **confirms the standing operating point** rather than changing it — which is
+the useful kind of result to have measured, because the choice was previously made without this curve.
+
+The general shape, worth carrying to any future serving-capacity question on this class of hardware: **on a
+speculative-decoding serving path, aggregate throughput saturates well before the slot count does.** Scaling
+slots past the knee converts per-user latency into a shrinking throughput increment. Choose the operating point
+from the *pair* (aggregate, per-slot), never from the aggregate maximum alone.
+
+### Dispersion grows with concurrency — a gated reading at the operating point needs more launches
+
+Between-launch `p95_dev` rises **0.44% → 1.60% → 3.33%** across np = 1 → 2 → 4: a **7.6× widening** by the
+operating point. Practical consequence: a single launch at np=1 is a nearly exact reading, and a single launch
+at np=4 is not. Anything gated at the serving operating point must state its `n` — see
+[benchmark-methodology](benchmark-methodology.md) for why a floor from n=10 on a tail statistic cannot gate.
+
+One caveat kept rather than smoothed: at np=8 the residency sampler reported `clock_stable: false` (sclk dipped
+to 1695 MHz against a flat 1700 elsewhere). A 0.3% clock excursion cannot explain a 6.8% throughput difference,
+so the operating-point conclusion is unaffected — but np=8 is the one row not taken at a flat clock.
+
+### Residency is now PROVEN on the serving path, not assumed (R23-60)
+
+Until 2026-09-08 the serving path **sampled no residency at all**, so every serving number the campaign had
+taken was un-proven as GPU-resident — a missing proof rather than a suspected defect, and one that **cannot be
+filled retroactively**: a residency tuple invented on read claims warrant the original run never captured.
+Fixed the same day (research `f00d78be`): `serving.py` now samples across each launch via
+`residency.Sampler`, records the window it covers, and **refuses a launch measured non-resident**. Both this
+sweep and the 48-launch R23-58 experiment carry `status: proven` on every launch.
+
+Standing rule this closes on the serving path: *"I invoked the HIP build" is not evidence of a HIP run, and
+`ldd` cannot prove one* — llama.cpp **dlopens** `libggml-hip.so`, so the executable shows zero HIP linkage
+either way. Proof is non-zero VRAM sampled **during** the run plus the KFD process count.
+
+### Source References
+
+- [champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) — the canonical table, exact recipe, build digests, per-point `recipe_hash` and residency evidence
+- [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md) — the headline as booked, and why no production ratio accompanies it
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-60 (serving-path residency proof) and R23-61 (floor sizing at the operating point)
 
 ## Compiled Update — 2026-09-08: Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — INF-63 is blocked, and the Qwen fleet census opens the offload question
 

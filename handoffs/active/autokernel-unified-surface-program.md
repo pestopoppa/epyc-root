@@ -250,12 +250,40 @@ overhead) — this is the first entry on the other side of that ledger.
 unit, direction only, no fold). The *recipe change* is INF-70's recommendation to their operator and is
 **not yet adopted**; the champion default remains OFF until it is.
 
+> **CORRECTION OF RECORD, 2026-09-08 — THE TRANSFER WAS TESTED AND IT DID NOT TRANSFER.** The paragraph
+> above was written while R23-58 was still a *candidate*. R23-58 has since **run to its registered stop
+> rule and returned a BOUNDED NULL** on the GPU serving path (T0/D0; 48 launches / 24 couples; `p95_dev`
+> ratio OFF/ON **0.713**, p = 0.3159; the ON arm slightly *wider*), with the mechanism proven to have fired
+> (ON-arm AnonHugePages 0.0% on every launch, `THP_enabled` correct 48/48). Verdict and evidence:
+> `autokernel-rebuild-program.md` → R23-58.
+>
+> **So the ledger entry changes sign, and the honest version is the more useful one.** What the unified
+> surface demonstrated is **not** "a CPU finding fixed the GPU floor" — it is that the unified surface let
+> a CPU finding be **cheaply and decisively falsified on the GPU surface in ~27 minutes**, which is itself
+> the argument for the design. A cross-surface *candidate* is only worth the coordination cost if the
+> transfer test is cheap; here it was, and it said no. Record the transfer as **TESTED, NEGATIVE, BOUNDED**
+> — never as "demonstrated". The CPU adoption stands on its own CPU evidence and is now **ADOPTED there**
+> (operator ruling); the GPU recipe does **not** take the knob.
+>
+> **Also now settled: the recipe is PER-SURFACE.** One champion, one commit, **two different launch
+> recipes**. That is a second worked instance of R23-59 / U3 — `champion.py`/`Bundle` carrying a single
+> recipe per champion is under-specified by construction.
+
 - [ ] **U3-SEED — specify the RUNTIME_CONFIG arm type against the THP instance**: session-unit paired
       launches, spread reported with the point estimate, a variance-reduction keep grammar, and the recipe
       hash in the epoch. Blocked on nothing; do it before authoring any RUNTIME_CONFIG hypothesis.
-- [ ] **U3-DEFAULTS — if R23-58 confirms the shim on the GPU serving path, put it in the loop's own recipe
-      defaults, not only in the gate harness.** Every `llama-server` the loop launches (serving gate,
-      serving compare, DF2 panels) pays the OFF variance today.
+- [x] **U3-DEFAULTS — RESOLVED 2026-09-08: NOT APPLICABLE. R23-58 did NOT confirm the shim on the GPU
+      serving path, so it does NOT go into the loop's recipe defaults.** ✅ 2026-09-08. The conditional this
+      task was written under evaluated **false**: bounded null, T0/D0, registered action "do not adopt".
+      **Do not add `GGML_NOHUGEPAGE_PROCESS` to any loop-launched `llama-server` on the GPU surface** — the
+      premise that the loop "pays the OFF variance today" is refuted for that surface (OFF p95_dev 6.657%
+      vs ON 9.334%; the ON arm was wider). Closing this as *resolved-negative* rather than deleting it, so a
+      later reader does not re-derive the same candidate and re-spend the 27 minutes.
+- [ ] **U3-DEFAULTS-b — carry a PER-SURFACE recipe on the champion record.** R23-58 makes the champion
+      `ef81196d5` + *CPU* recipe (shim ON) + *GPU* recipe (shim NOT set). `champion.py`/`Bundle` can express
+      one recipe per champion, which is now demonstrably under-specified. Extend the record to key the
+      recipe by surface, and make the gate refuse a measurement whose (surface, recipe_hash) pair does not
+      match. Ties to R23-59 and R23-55 (`unit`). Blocked on nothing.
 
 ### 3.4 Track U4 — resource broker and per-surface budgets
 

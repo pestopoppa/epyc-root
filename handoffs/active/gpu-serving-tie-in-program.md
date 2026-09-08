@@ -10,7 +10,7 @@
 [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) (resume) ·
 [heterogeneous-slot-fabric-residency.md](heterogeneous-slot-fabric-residency.md) (fabric) ·
 [architect-model-selection-bench.md](architect-model-selection-bench.md) (Phase-2 tool-use) ·
-[frontier-f1-real-task-corpus.md](frontier-f1-real-task-corpus.md) (routing grounding) ·
+[frontier-f1-real-task-corpus.md](../completed/frontier-f1-real-task-corpus.md) (routing grounding) ·
 [reviewer-control-plane-index.md](reviewer-control-plane-index.md) (co-critic plumbing) ·
 `docs/runbooks/vision-escalation-minicpmo-promotion.md` (the State-A/B lane choreography template — **note 2026-07-31: that runbook is DEPRECATED as a promotion plan (MiniCPM-o deleted) but remains valid as the choreography template cited here; it now carries a banner saying exactly that**)
 

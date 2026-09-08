@@ -2,8 +2,75 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× — RETIRED 2026-09-08 (INF-70 close-out); the champion is now `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch, plain 2.1857× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
+**Last compiled**: 2026-09-08 (pm, R23-58): the THP process shim is CPU-DECODE-ONLY — it returned a bounded null on the GPU serving path (p95_dev ratio 0.713, p=0.3159, ON arm slightly wider) with the mechanism proven to have fired, so ONE champion commit now carries TWO different launch recipes and a champion record keyed by a single recipe is under-specified by construction; earlier: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× — RETIRED 2026-09-08 (INF-70 close-out); the champion is now `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch, plain 2.1857× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
 **Sources**: 110+ documents
+
+## Compiled Update — 2026-09-08 (pm, R23-58): the THP shim is CPU-ONLY — a launch recipe is PER-SURFACE, so a commit hash plus one recipe still under-specifies a kernel
+
+**Confidence: verified** — 48 launches / 24 couples, pre-registered and frozen before the first launch, every
+launch residency-proven, positive control correct in both directions all 48 times.
+
+### The result
+
+`GGML_NOHUGEPAGE_PROCESS=1` — `prctl(PR_SET_THP_DISABLE)` taken before the large allocation — bought the CPU
+decode path an **8.3× reduction in between-launch sd** (5.081% → 0.609%, ~70× on variance) and was **adopted
+into the CPU canonical launch recipe** by operator ruling. The obvious next question was whether it transfers
+to the GPU serving path, where the launch-variance floor is the binding constraint on every keep.
+
+**It does not.** R23-58, on the GPU serving recipe:
+
+| statistic | result |
+|---|---|
+| level | **T0** — 5/10 ON faster (exact two-sided α = 0.0430). No magnitude may be quoted. |
+| dispersion | **D0** — `p95_dev` ratio OFF/ON **0.713**, p = 0.3159; sd(log) ratio 0.918, p = 0.5854 |
+| OFF arm | median 167.117 tok/s, p95_dev **6.657%**, n = 24 |
+| ON arm | median 169.396 tok/s, p95_dev **9.334%**, n = 24 |
+
+The ON arm was slightly **wider** — the point estimate does not even point the right way. Bounded, not
+unqualified: ~0.97 power against a 3× dispersion ratio, ~0.69 against 2×, so **a large effect is excluded and a
+small one is not.** The mechanism demonstrably fired (ON-arm AnonHugePages 0.0% on every launch), so this is a
+measurement about the GPU serving path, not about the knob's reachability.
+
+### The transferable finding: A LAUNCH RECIPE IS PER-SURFACE
+
+| surface | `GGML_NOHUGEPAGE_PROCESS=1` | authority |
+|---|---|---|
+| **CPU decode** | **ON — adopted** | operator ruling 2026-09-08 (CHAMP-2), 6/6 pairs, session unit, direction only |
+| **GPU serving** | **NOT SET — do not add** | R23-58, bounded null, registered action "do not adopt" |
+
+> **One champion. One commit. TWO different launch recipes.** The champion artifact is
+> `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` **on the CPU decode path**, and `ef81196d5` with the shim **not
+> set** on the GPU serving path.
+
+Why the qualifier is load-bearing and not pedantry: a reader who sees only *"the champion runs with the shim"*
+adds a knob to the GPU launch path that buys nothing — **the PROD-1 failure mode exactly**, where a recipe
+transcribed by hand into a handoff cost seven MTP arms to a flag that does not exist. Two knobs with
+near-identical names make it worse, and **both must be spelled out wherever this is cited**:
+
+| knob | mechanism | when | status |
+|---|---|---|---|
+| `GGML_NOHUGEPAGE_PROCESS` | `prctl(PR_SET_THP_DISABLE)`, whole process | at launch, before allocation | **adopted, CPU decode only** |
+| `GGML_NOHUGEPAGE` | `madvise`, per-mapping | already on | pre-existing, unchanged |
+
+**Consequence for the champion record.** This is the second worked instance of "the champion is not fully
+described by a commit" (R23-59) and it is strictly stronger than the first: it is not enough to attach *a*
+recipe to a champion — the recipe must be **keyed by surface**, and a gate must refuse a measurement whose
+(surface, `recipe_hash`) pair does not match. A `Bundle`/`champion.py` record carrying one recipe per champion
+is under-specified **by construction**, and the under-specification is silent: the binary verifies, the recipe
+does not.
+
+**Why a bounded null is a good outcome here rather than a wasted hour.** It cost ~27 minutes of exclusive host
+time to falsify a cross-surface candidate decisively. The unified CPU+GPU surface's value in this instance is
+not that a CPU finding fixed a GPU problem — it is that the CPU finding could be **cheaply and decisively
+killed on the GPU surface** before anything was built around it. Record cross-surface transfers as **tested,
+negative, bounded**; never as "demonstrated" on the strength of the source surface alone.
+
+### Source References
+
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-58 design, verdict, controls and evidence manifest
+- [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md) — CHAMP-2, the per-surface table and the two-knob distinction
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — the correction of record on the cross-surface-transfer ledger entry, and U3-DEFAULTS resolved negative
+- [champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) — the GPU serving recipe as measured, with the shim absent by design
 
 ## Compiled Update — 2026-09-08 (pm): the CPU champion's throughput varies ~12% between process launches while the pristine build does not
 
