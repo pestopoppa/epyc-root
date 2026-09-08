@@ -334,6 +334,46 @@ def test_full_wrap_transaction_end_to_end(fleet):
     assert "handoffs/active/open.md" in files_main
 
 
+def test_compile_wiki_preserves_content_hash_manifest(fleet):
+    """A tracked project-wiki-source-manifest survives the receipt merge intact."""
+    req = hw.parse_request(json.loads(request_file(fleet, request_id="wr-kind").read_text()))
+    ctx = wrap_context(fleet, req, [], token="kind-token")
+    kind = {
+        "kind": "project-wiki-source-manifest",
+        "schema_version": 1,
+        "mode": "full",
+        "by_type": {"handoff-active": 1},
+        "sources": [
+            {"path": "handoffs/active/open.md", "content_hash": "a" * 64,
+             "modified": "2026-08-27T00:00:00Z"},
+        ],
+    }
+    manifest_path = fleet["lane"] / "wiki" / "source_manifest.json"
+    manifest_path.write_text(json.dumps(kind, indent=2) + "\n", encoding="utf-8")
+    out = hw.step_7_compile_wiki(ctx)
+    parsed = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert parsed["kind"] == "project-wiki-source-manifest"
+    assert parsed["schema_version"] == 1
+    assert parsed["mode"] == "full"
+    assert parsed["sources"] == kind["sources"]
+    assert parsed["compiled_by"] == ["wr-kind"]
+    assert out["wiki"]["watermark"].startswith("wr-kind ")
+
+
+def test_compile_wiki_refuses_to_replace_corrupt_manifest(fleet):
+    req = hw.parse_request(json.loads(request_file(fleet, request_id="wr-bad").read_text()))
+    ctx = wrap_context(fleet, req, [], token="bad-token")
+    manifest_path = fleet["lane"] / "wiki" / "source_manifest.json"
+    manifest_path.write_text("{not json", encoding="utf-8")
+    with pytest.raises(hw.WrapError, match="corrupt"):
+        hw.step_7_compile_wiki(ctx)
+    with pytest.raises(hw.WrapError, match="not a dict"):
+        manifest_path.write_text("[1, 2, 3]", encoding="utf-8")
+        hw.step_7_compile_wiki(ctx)
+    # neither attempt replaced the tracked file
+    assert manifest_path.read_text(encoding="utf-8") == "[1, 2, 3]"
+
+
 def test_dry_run_mutates_nothing(fleet):
     req = hw.parse_request(json.loads(request_file(fleet, request_id="wr-dry",
                                                    checkpoint_ids=["wcp-completed"]).read_text()))
