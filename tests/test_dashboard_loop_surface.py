@@ -785,5 +785,23 @@ class RealProducerSample(_Fixture):
         self.assertGreaterEqual(payload["derived"]["negatives"], 1)
 
 
+class ActorHealthHeader(unittest.TestCase):
+    """R23-52b (operator 2026-09-08): 135 critic failures over 7 h read as 'running'.
+    The page must render the loop's actor_health, and must render NOTHING when the
+    body predates the field (older loops) rather than inventing a health claim."""
+
+    def test_page_reads_actor_health_and_has_a_home_for_it(self):
+        src = PAGE.read_text()
+        self.assertIn('id="actorhealth"', src)
+        self.assertIn("L.actor_health", src)
+        self.assertIn("ACTORS FAILING", src)
+
+    def test_header_is_silent_without_the_field_and_loud_with_it(self):
+        src = PAGE.read_text()
+        # the render must guard on the field's presence, never default to "ok"
+        self.assertRegex(src, r"if\(!a \|\| !num\(a\.recent_attempts\)\)")
+        self.assertIn("a.failing", src)
+
+
 if __name__ == "__main__":
     unittest.main()

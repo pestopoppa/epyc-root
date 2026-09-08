@@ -56,6 +56,10 @@
     background:rgba(13,17,23,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);flex-wrap:wrap}
   header h1{font-size:16px;margin:0;font-weight:650}
   header .sub{color:var(--muted);font-size:12px}
+  /* R23-52b: actor-health shout in the header. `header .sub` (0,1,1) beats a bare
+     `.warn` (0,1,0), so the scoped override is what actually paints it red. */
+  .warn{color:#c0392b;font-weight:600}
+  header .sub.warn{color:#c0392b;font-weight:600}
   nav{display:flex;gap:14px;margin-left:auto;align-items:center;font-size:13px}
   nav a.active{color:var(--text);font-weight:650;border-bottom:2px solid var(--accent);padding-bottom:2px}
   .badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);color:var(--muted)}
@@ -296,6 +300,7 @@
   <span class="sub">AutoKernel loop &middot; <span id="hdr-campaign" class="mono">—</span></span>
   <span id="fresh" class="badge absent"><span class="dot"></span><span id="freshtxt">…</span></span>
   <span id="hdr-state" class="state">—</span>
+  <span id="actorhealth" class="sub mono" title="planner/critic CLI health from the loop's own status body (R23-52b)"></span>
   <!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. Do not
        hand-add cross-dashboard links here; add a registry row. -->
   <nav id="epyc-nav"></nav>
@@ -1622,9 +1627,23 @@ function renderIdentity(d){
     ([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v == null ? "—" : v)}</dd>`).join("");
 }
 
+function renderActorHealth(L){
+  // R23-52b: 135 critic failures (claude CLI session limit, 7 h) read as "running" on
+  // this page. The loop now publishes actor_health; say it out loud, in the header.
+  const el = document.getElementById("actorhealth");
+  const a = L && L.actor_health;
+  if(!a || !num(a.recent_attempts)){ el.textContent = ""; el.className = "sub mono"; return; }
+  const bad = !!a.failing;
+  el.className = "sub mono" + (bad ? " warn" : "");
+  el.textContent = bad
+    ? `ACTORS FAILING · ${a.planner_transient}/${a.recent_attempts} recent planner/critic calls failed · ${a.last_failure || "no reason captured"}`
+    : `actors ok · ${a.planner_transient}/${a.recent_attempts} recent calls failed`;
+}
+
 function render(d){
   const L = d.loop;
   setFreshBadge(d.freshness_state, d.age_s);
+  renderActorHealth(L);
   document.getElementById("hdr-campaign").textContent = L ? (L.campaign_id || "—") : "—";
   const st = document.getElementById("hdr-state");
   st.textContent = L ? (L.state || "—") : d.freshness_state;

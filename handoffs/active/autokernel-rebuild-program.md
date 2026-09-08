@@ -1786,6 +1786,23 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         monitor had to infer the keep from the anchor-gen directory appearing. Fix: `status.write()` at each keep
         sub-stage (`building anchor gen N`, `guard`, `headline`, `reprofile`, `accumulate`) so the loop is never
         silent for longer than one build. Cheap; no measurement impact.
+      - [x] **R23-52b — 30 s STATUS HEARTBEAT + ACTOR HEALTH** ✅ 2026-09-08 (operator: "the ENTIRE point of the dashboard
+        is up-to-date visibility… without wasting ANY extra tokens on LLM sessions to monitor"). Root cause of the
+        STALE banners: status was written only at stage boundaries (30-47 min gaps during builds / 20-pair gates), and
+        the 135 `planner_transient` rows of run 30 (claude CLI **"You've hit your session limit"**, 16:31-23:35Z, GPU
+        idle-while-claimed 48%) were invisible — status said `running`. Fix (research `c488ad4a` → main `81b3c017`): a
+        daemon thread re-publishes the last step every 30 s (envelope 180 s: silence = process gone) and the body
+        carries `actor_health {recent_attempts, planner_transient, failing, last_failure}`; `loop.html` shows
+        `ACTORS FAILING · n/m · <reason>` in the header. Takes effect at the next launch (run 30 holds the old module).
+      - [ ] **R23-53 — Q4_K-GATED KEEPS ARE DEAD WEIGHT ON THE PRODUCTION TARGETS; retract or re-target.** Operator
+        2026-09-08: autokernel targets **Q8_0 Qwen3.8-27B and Qwen3.6-35B-A3B**. Audit of the champion: 52 tg128 keeps,
+        product-of-solos +252%; **22 are Q4_K-gated and cannot fire on Q8_0** (R23-29 already said "production-neutral");
+        the 30 non-Q4K tg128 keeps multiply to +89% vs a MEASURED headline of **+5.6%** (2026-09-08 champion-vs-production
+        record). Plan: (a) R23-48 LOO on PROMOTE classifies every keep; Q4_K-gated ones measure 0 on Q8_0 by construction
+        → `retracted_by_loo` unless a Q4_K production target is declared; (b) the second target **Qwen3.6-35B-A3B is not a
+        loop surface at all** (confirm-model = 27B only) — add it as a surface under INF-73 U2 before any keep is claimed
+        for it; (c) the headline card must state the product-of-solos ESTIMATE next to the measured number so this gap is
+        visible, not discovered by the operator.
       - [ ] **R23-48 — LEAVE-ONE-OUT ARM PER ACCUMULATED LEVER, run whenever the champion changes**
         (INF-70 finding relayed 2026-09-07 while run 29 was down). Verified: the loop A/Bs each NEW keep
         against the accumulated tip but never re-measures a PRIOR keep (`grep -rn "leave.one.out|re-?test|
