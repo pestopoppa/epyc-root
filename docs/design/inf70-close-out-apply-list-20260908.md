@@ -199,8 +199,22 @@ lost with it**. WRAP-10 is the task that lands them; MEAS-5's `build_locked.sh` 
 
 ## G. WIKI COMPILATION SWEEP — ASSESSED AND DRAFTED, NOT COMPILED
 
-- Assessment: `/mnt/raid0/llm/tmp/inf70/wrapup-20260908/wiki-assessment.md`
-- Draft: `/mnt/raid0/llm/tmp/inf70/wrapup-20260908/WIKI-DRAFT.md`
+- Draft (491 lines): **`docs/design/inf70-close-out-20260908/WIKI-DRAFT.md`** — in git.
+- Assessment: **`docs/design/inf70-close-out-20260908/wiki-assessment.md`** — in git.
+
+**Structure of the draft**, ready to paste in this order (2c first — it shifts every later line
+number, so re-grep between steps):
+
+| # | Page | Placement | Content |
+|---|---|---|---|
+| **2c** | `hardware-optimization.md` | new H3 after `:49` | the champion = commit + launch recipe; four lineages; FOLD-2 G1–G5; the 18-launch table; the bounded-magnitude headline form; the TWO CAVEATS blockquote |
+| **2b** | `hardware-optimization.md` | supersession banner under `:4564` | the ten retired figures + the three replacements with CIs; **never deletion** |
+| **2a** | `hardware-optimization.md` | extend-and-correct block under `:4612` + new H3 | the DRAM-bandwidth channel; region-lock's blind spot; the ~17% tax; **an explicit RECONCILE-WITH-MEAS-1 block** |
+| **1** | `benchmark-methodology.md` | new H2 appended after `:4476` | three H3s: the precision result (with its conditions clause), the floors-carry-their-unit rule, the vacuous-instrument pattern as the family's **fifth** instalment |
+
+Every part carries its own `### Source References (2026-09-08, …)` with ≥3 refs, satisfying
+`writer_evidence_policy`. No `intake-NNN` citations were used, so **`cite-check` is not required**
+for this draft.
 
 Scanner run read-only (**no `--touch`**, `git status --porcelain wiki/` empty before and after):
 **`total_new = 11`** — 8 `handoff-active`, 2 `progress`, 1 `docs`; drift 2 added / 9 changed / 1
@@ -224,6 +238,23 @@ Targets: **two pages, one new H2, no new page, no new taxonomy category** —
 `benchmark-methodology.md` (new H2 appended: precision, unit rule, vacuous-instrument pattern) and
 `hardware-optimization.md` (extend-and-partially-correct the SMT section; supersession banner; new
 champion H3).
+
+**★ BLAST RADIUS — verified by grep, and one site is cross-page.** `benchmark-methodology.md:4308`
+re-uses **`1.6934`** (and `1.5017`) inside the **12.8%-excess super-additivity derivation** — a
+derived figure of a retired ratio, on a different page from the ratio itself, and the one most likely
+to be missed. Other sites: `hardware-optimization.md:4564`/`:4567` (1.4834×), `:4569`/`:4590`
+(1.6934×), `:4569` (1.305× prefill), `:49` (1.4993×, +4.27%), `:5`/`:26`/`:49` (1.5149×),
+`:26`/`:49` (+4.50%). **`1.7151×`, `33.370 t/s / 29.967 ms` and the `≈36.9 t/s` projection are NOT
+present anywhere under `wiki/`** — 2b still names them so the retirement is complete where the
+replacement lands, but no wiki site needs editing for them. The draft also lists adjacent figures
+riding the same retired block, with explicit false-positive exclusions (the `36.9` hits in
+`agent-architecture.md` are an unrelated MAST citation-defect rate — **do not touch**).
+
+**✅ The assessment's blocking precondition is RESOLVED.** It correctly warned that none of the five
+findings existed in a tracked source, so `writer_evidence_policy` could not be met. They are now
+committed on this lane (`f44d85c2`, `cc251748`) in
+`progress/2026-09/2026-09-08-inf70-audit.md` and `handoffs/active/cpu-decode-roofline-program.md`.
+**The citations resolve only after this lane reaches `main`** — so promote (§A) before compiling.
 
 **★ The one thing not to paste mechanically:** the new DRAM-bandwidth finding does not merely extend
 the 2026-09-07 SMT section — **it bounds that section's prescribed remedy** (occupancy sampling), and
