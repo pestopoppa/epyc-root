@@ -710,9 +710,20 @@ predicted **+3.31%**; the sign is wrong.
       shim cannot be switched between arms in a live process, so a per-arm number for it is meaningless by
       construction.
 
-      **Status precision:** the *verdict* is settled; the *recipe change* is INF-70's recommendation to
-      their operator and is **NOT YET ADOPTED** — the champion default stays OFF until it is. Do not record
-      the shim as part of the champion recipe before that ruling. Tracked as INF-73 U3-SEED / U3-DEFAULTS.
+      **ADOPTED 2026-09-08 (operator ruling, relayed by INF-70: "we should totally adopt it").**
+      `GGML_NOHUGEPAGE_PROCESS=1` is now part of the **canonical launch recipe** for the champion, set at
+      launch, session unit. **The champion artifact is `ef81196d5` + shim ON** — a commit hash alone no
+      longer identifies it, and the first thing to force that was a recipe change rather than a code change
+      (the worked instance for R23-59 / INF-73 U3, adopted and in use rather than hypothetical). No fold, no
+      branch, no FOLD-2, binary bit-identical. Spell BOTH knobs out wherever this is cited: adopted
+      `GGML_NOHUGEPAGE_PROCESS` (prctl, at launch) vs pre-existing `GGML_NOHUGEPAGE` (madvise) — the names
+      are close enough to be transcribed wrong, which is exactly the PROD-1 failure mode.
+      **The stronger claim than the speedup:** the 9-launch spread table was measured shim-OFF, the
+      configuration now retired, so it is the *before* picture — the adopted change bought **precision as
+      well as throughput** (25.3x variance reduction), and precision is what makes every later measurement
+      cheaper on a shared host. INF-70's final characterisation is re-running with the shim ON, sized from
+      the ON sd (0.481%) rather than OFF's (2.510%), which is what makes a +/-1% headline affordable at all.
+      Tracked as INF-73 U3-SEED / U3-DEFAULTS; GPU-side transfer test is R23-58.
 - [ ] **CHAMP-3 — the final champion headline is MULTI-LAUNCH with a session-unit CI, never one session**
       (R23-57; INF-73 U2). The champion **characterisation was STOPPED mid-run** on operator instruction
       (*"stop measuring the champion. It's not final yet!"*) and is re-run on the **final** champion, after the
