@@ -670,7 +670,7 @@ of the −2.136%: **C→P (FIX-3's yield alone) −1.883%**; **P→F (column spl
 run was the better choice — the same barrier arithmetic that refuted `inf10-gemv-fusion`. SYNC-19's model
 predicted **+3.31%**; the sign is wrong.
 
-- [ ] **CHAMP-2 (THP) — IN PROGRESS: a DECISION-grade paired sign test is RUNNING; verdict pending.**
+- [x] **CHAMP-2 (THP) — RESOLVED 2026-09-08: KEEP, 6/6 pairs ON-faster, early stop at the FIRST look.** ✅ 2026-09-08
       Prior state: +3.458%, **NON-CLAIM** (p=0.143, CI [0.9962, 1.0632]); the hypothesis that VEC_Q8K/QSPLIT had
       already removed its traffic is **contradicted** — the estimate is positive and *larger* than the +1.0% it
       supposedly lost.
@@ -690,6 +690,25 @@ predicted **+3.31%**; the sign is wrong.
       Verdicts are **pre-fixed**; do not renegotiate them after the looks. Read a **CANNOT TELL** against
       **R23-57** (champion launch-to-launch instability, ~12% spread on an identical configuration) before
       concluding the effect is weak. Still: do not fold it and do not retire it as refuted.
+
+      **VERDICT (INF-70, 2026-09-08 ~14:55Z).** 6/6 ON-faster, early-stop boundary fired at the first look,
+      exact two-sided α = 0.0430, order-balanced 3/3, all 12 sessions passed both screens and the fail-closed
+      `THP_enabled` assertion, no pair dropped. Median **+5.23%** (range +0.32% to +5.93%) — **magnitude NOT
+      claimed**; the design sized for direction only.
+
+      **THE KEEP IS A LAUNCH-RECIPE CHANGE, NOT A KERNEL CHANGE — there was nothing to fold.** The shim's code
+      is already in `ef81196d5`; the keep is the env var `GGML_NOHUGEPAGE_PROCESS=1` (`prctl(PR_SET_THP_DISABLE)`
+      taken before the 92 GB allocation) **set at launch**. Default in `ef81196d5` today is **OFF (opt-in)**;
+      INF-70's recommendation is **ON**, taken to the operator as a recipe change. No branch, no rebuild, no
+      merge-tree, no FOLD-2, champion binary bit-identical, trivially reversible. **Do not conflate it with
+      `GGML_NOHUGEPAGE`** (the madvise, already on) — different mechanisms, opposite-sounding names. A code
+      default-flip is the alternative and was **not** measured (it would need its own build, `THP_enabled`
+      verification and a correctness gate).
+
+      **Unit: SESSION.** Evidence is 6 paired launches; the floor is between-launch (2.510% OFF / 0.481% ON).
+      The arm floor (0.171-0.501%) does not transfer — that substitution is the 4-vs-4,780 error (R23-55). The
+      shim cannot be switched between arms in a live process, so a per-arm number for it is meaningless by
+      construction.
 - [ ] **CHAMP-3 — the final champion headline is MULTI-LAUNCH with a session-unit CI, never one session**
       (R23-57; INF-73 U2). The champion **characterisation was STOPPED mid-run** on operator instruction
       (*"stop measuring the champion. It's not final yet!"*) and is re-run on the **final** champion, after the
