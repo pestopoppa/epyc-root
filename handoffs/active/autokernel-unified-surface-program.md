@@ -226,6 +226,37 @@ change (recipes are code, in git) and the recipe hash becomes part of the epoch.
 `switch` covers more than its name (INF-70's `GGML_TINY_SOLO_CLAMP` fall-through gated 10 ops) is a
 correctness-oracle failure, not a tolerance — the oracle must diff op coverage, not just outputs.
 
+**SEED CASE — the first RUNTIME_CONFIG arm already exists, measured, from outside the loop (2026-09-08).**
+CHAMP-2's THP shim (`GGML_NOHUGEPAGE_PROCESS=1`) *is* a RUNTIME_CONFIG arm by this section's own
+definition: no build, one binary, two launch configurations, paired, session-unit. INF-70 ran it to a
+verdict (6/6 ON-faster, α = 0.0430, direction only) before the arm type exists in the loop. Specify U3
+against this instance rather than in the abstract — it arrives with a validated measurement design, a
+knob whose scope is known, and a recipe that a keep would mutate. Two properties of it that the arm type
+must therefore support, neither of which a SOURCE arm needs:
+- **The unit is the SESSION and cannot be otherwise.** A launch-time knob cannot be switched between arms
+  inside a live process, so a per-arm number for it is meaningless by construction (R23-55).
+- **The effect was a compressed downside TAIL, not a shifted mean** (sd 2.510% OFF vs 0.481% ON, 25.3x).
+  A comparator that only tests means can return "no effect" on a real one. U3's compare step must report
+  spread alongside the point estimate, and the keep grammar must be able to accept "reduces variance".
+
+**Cross-surface transfer — the programme's thesis, demonstrated (2026-09-08).** This is the FIRST result
+either campaign has produced that pays on the *other* surface: a knob found on the CPU decode path is a
+candidate fix for the GPU **serving floor** (4.581% p95 n=10), which is the binding constraint on every
+GPU keep (R23-58). Everything before it was surface-local or a constraint. Record it as evidence for the
+unified surface, against the standing cost of the same design (serialisation throughput, coordination
+overhead) — this is the first entry on the other side of that ledger.
+
+**Status precision (do not over-record):** the *verdict* is settled (LIKELY IMPROVEMENT, keep, session
+unit, direction only, no fold). The *recipe change* is INF-70's recommendation to their operator and is
+**not yet adopted**; the champion default remains OFF until it is.
+
+- [ ] **U3-SEED — specify the RUNTIME_CONFIG arm type against the THP instance**: session-unit paired
+      launches, spread reported with the point estimate, a variance-reduction keep grammar, and the recipe
+      hash in the epoch. Blocked on nothing; do it before authoring any RUNTIME_CONFIG hypothesis.
+- [ ] **U3-DEFAULTS — if R23-58 confirms the shim on the GPU serving path, put it in the loop's own recipe
+      defaults, not only in the gate harness.** Every `llama-server` the loop launches (serving gate,
+      serving compare, DF2 panels) pays the OFF variance today.
+
 ### 3.4 Track U4 — resource broker and per-surface budgets
 
 - **Admission control, not screening (measured 2026-09-08, both directions):** during the fold window the

@@ -709,6 +709,10 @@ predicted **+3.31%**; the sign is wrong.
       The arm floor (0.171-0.501%) does not transfer — that substitution is the 4-vs-4,780 error (R23-55). The
       shim cannot be switched between arms in a live process, so a per-arm number for it is meaningless by
       construction.
+
+      **Status precision:** the *verdict* is settled; the *recipe change* is INF-70's recommendation to
+      their operator and is **NOT YET ADOPTED** — the champion default stays OFF until it is. Do not record
+      the shim as part of the champion recipe before that ruling. Tracked as INF-73 U3-SEED / U3-DEFAULTS.
 - [ ] **CHAMP-3 — the final champion headline is MULTI-LAUNCH with a session-unit CI, never one session**
       (R23-57; INF-73 U2). The champion **characterisation was STOPPED mid-run** on operator instruction
       (*"stop measuring the champion. It's not final yet!"*) and is re-run on the **final** champion, after the
