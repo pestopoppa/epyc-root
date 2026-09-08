@@ -1558,6 +1558,37 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       `scripts/vidya/adapters/README.md`; task here. Project, do not grade.
 - [ ] **SC74 — repair the blocking `intake-1300#record` citation in `docs/design/vidya-pilot-spec.md`.** The 2026-09-07 external-corroboration paragraph cites the entry at ENTRY level, so it inherits that entry's overturned deprecation claim (`intake-1300#record`) and `scripts/handoffs/index_state.py --check` reports it as the one blocking cite-check problem on main. The faithful narrowing is ambiguous between claim 0 (immutability is half-scoped) and claim 2 (the trust score gates nothing), so the author of the paragraph decides which claim the corroboration actually rests on — a passing session must not guess. Introduced by commit `51f9ef61`; surfaced by the 2026-09-07 research-intake wrap-up. Filed as SC69, renumbered to SC74 the same day because a concurrent session claimed SC69-SC73 in commit `6ebb8878`. Zero compute.
 
+## SC75 — VB-INF70-ARMS: the INF-70 serving-harness arm records (filed 2026-09-08)
+
+Source: **INF-70** (CPU decode roofline) closed 2026-09-08 and its evidence base is now in git —
+`data/inf70-retest1-2026-09-08/` in `epyc-inference-research` at commit `1780fa7b`, branch
+`inf70/evidence-2026-09-08`. Its serving-harness **arm records** are a measurement source this substrate
+does not read. Filed **immediately**, per the standing rule: wiring the write side is cheap and permanent,
+retrofitting the read side is impossible. Source row added to
+[`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
+
+- [ ] **SC75 (VB-INF70-ARMS) — wire the INF-70 serving-harness ARM records on the WRITE side, and make the
+      per-arm CONTENTION VERDICT the field the hook exists for.**
+      **The load-bearing point:** the write-side hook that matters is **the per-arm contention verdict**. It
+      is a property of the host *during* the arm and is **unrecoverable after the fact** — a verdict invented
+      on read claims warrant the original run never captured. Everything else in the tuple (model + GGUF
+      digest, kernel commit + binary version, launch recipe **including the `GGML_NOHUGEPAGE_PROCESS` state**,
+      pinning, n, between-launch sd, metric direction) can at least be argued from artifacts; the verdict
+      cannot.
+      **Pre-2026-09-07 arms are WORSE THAN ABSENT.** The sampler read cores **184-191 as disjoint** until
+      2026-09-07, so the labels already on those arms are **WRONG, not merely missing** — a false negative
+      that reads as a clean arm. They must emit **zero rows** and must never be reconstructed on read;
+      back-filling them would put incorrect contention labels behind a graded ladder.
+      **Locator = the arm/launch the producer ran**, never a per-sample file (SC6-HAZARD class).
+      **Do NOT write a new grading rule.** An adapter **projects** its native record into a `ClaimTuple` and
+      `claim_tuple.grade()` decides (`docs/design/vidya-pilot-spec.md` §4.7); the carrier is shared, each
+      source class has exactly one ladder, and `register_ladder()` refuses a second.
+      **Same class as autokernel R23-60** (`autokernel-rebuild-program.md`) — the serving path proves no GPU
+      residency because `serving.py` samples nothing. Both are **write-side hooks that cannot be
+      retrofitted**, and both should be recognised as one failure mode rather than two coincidences.
+      Trigger: the next serving-harness arm produced on either surface. Zero compute to file; the adapter is
+      ~40 lines of projection.
+
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 
 *Source: the Q.1 mutation audit of `tests/vidya/` run at the end of the Prove2Me wave — 62 mutations

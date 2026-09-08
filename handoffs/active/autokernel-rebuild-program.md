@@ -1857,6 +1857,47 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         **generalises the ak-rebuild FOLD-2 vacuous-pass guard**.
         The operator's *no kernel research until a FULLY consolidated champion* condition is **satisfied**;
         **loop relaunch remains a separate operator go** and is deliberately not scheduled here.
+      - [ ] **R23-62 — THE CHAMPION DIVERGENCE: 2.1857x TODAY AGAINST 1.7151x STANDING, AND ONLY THE
+        CHAMPION ARM MOVED. Transferred from INF-70 on an operator ruling, 2026-09-08 — owned here now.**
+        **The gap:** plain ratio **2.1857x** measured 2026-09-08 against the campaign's standing **1.7151x**.
+
+        **Why it is a real question and not a harness offset — the asymmetry:**
+
+        | arm | today (2026-09-08) | standing | delta |
+        |---|---:|---:|---:|
+        | pristine plain | **12.762** | 12.366 | **+3.2%** |
+        | champion plain | **27.893** | ~21.21 | **~+31%** |
+
+        A **pure harness offset moves BOTH arms**. **Pristine reproduces; the champion does not.** That
+        asymmetry is the whole reason this is open.
+
+        **Ruled out — each measured, not argued:**
+        - **contention** — restricting the launch table to **quiet-host-only** *widens* the spread slightly
+          (sd **5.081%**, n=7);
+        - **linear within-block drift** — slope **+0.03%/slot**, R^2 **0.004**, span **+0.28%** over 12 slots;
+        - **NUMA placement** — constant to the digit (0.0-0.1% deviation);
+        - **the 12:05Z orchestrator-API stop** — operator-ruled idle **and** empirically confirmed: the host
+          sampler runs flat at **47.89-48.26 busy cores** across it, with **no discontinuity**.
+
+        **Partially explained, not fully.** All **nine** launches in the spread table were **shim OFF** —
+        the now-retired high-variance configuration (sd **5.081%**, range **12.55%**). Adoption of the shim
+        **plausibly explains much of the instability and possibly part of the level shift**. It is
+        **explicitly NOT asserted to explain all of it**, and that qualifier travels with the number.
+
+        **Two conditions differ at once** between the standing figure and today's: **shim state AND
+        harness/window**. That is exactly why this **narrows without closing**.
+
+        **The closer — and it is cheap now that precision is affordable.** Measure the champion under
+        **today's** harness with the shim **OFF**, at **launch** granularity, and compare against today's
+        shim-ON figure. **One controlled step that isolates the shim from the harness.** Sizing at the
+        shim-OFF sd: **~12 launches for +/-3%, ~0.76 h**. If the shim explains the **level shift** as well
+        as the variance, this closes; if not, the residue is **harness/window**. **Queued after R23-58 and
+        the floor recalibration (R23-61).**
+
+        Evidence: `data/inf70-retest1-2026-09-08/CHAMPION-DIVERGENCE.md` and
+        `data/inf70-retest1-2026-09-08/CHAMPION-LAUNCH-TABLE.md` in `epyc-inference-research` at commit
+        `1780fa7b` (branch `inf70/evidence-2026-09-08`).
+        **Cross-ref R23-57, which stays OPEN on this basis.**
       - [ ] **R23-57 — CHAMPION LAUNCH-TO-LAUNCH INSTABILITY: ~12% spread on an IDENTICAL configuration, and
         it moves ONLY the champion arm. UNEXPLAINED — no headline may be quoted from one session.**
         Measured by INF-70, 2026-09-08, across four of today's sessions on the **same** champion configuration:
@@ -1895,7 +1936,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         **ON never was** — so the shim looks like it removes a downside *tail*, not that it shifts the mean.
         **All 9 launches in the champion-spread table were shim-OFF**, so the champion may have been
         characterised in its high-variance configuration all along. This is a **LEAD, NOT A CONCLUSION** (n=6,
-        the spread table is unpaired). Evidence: `/mnt/raid0/llm/tmp/inf70/agents/retest1/CHAMPION-LAUNCH-TABLE.md`
+        the spread table is unpaired). Evidence: `data/inf70-retest1-2026-09-08/CHAMPION-LAUNCH-TABLE.md` (`epyc-inference-research` `1780fa7b`)
         (9 launches, between-launch sd **5.081%** quiet-host-only n=7, range **12.55%**; `bin-h1` at defaults and
         `bin-r1` at champion knob state proven the SAME configuration — 24/24 byte-identical, identical
         `ggml/src/ggml-cpu` tree hash `040d43aa`). Restricting to a quiet host slightly **widens** the spread, so

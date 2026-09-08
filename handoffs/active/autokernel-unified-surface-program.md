@@ -344,6 +344,31 @@ the docker containers remain — a **candidate, unproven** source of that 800% p
         promoted to production → host reboot. Nothing in U4 is buildable before that, and this row exists to record
         the sequencing, not to authorise work.
 
+- **OP-40 IS NOW PART OF OP-41 — ONE item, owned by `ak-rebuild-20260828` (transferred 2026-09-08).**
+  INF-70 closed today and, on an **operator ruling**, transferred its **OP-40** (unfenced tooling inside the
+  measured region) to this session, where it **folds into OP-41**. They are **one item from here on**, so
+  co-tenancy is not tracked twice; INF-70's own record stays readable at
+  [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) -> **MEAS-6**.
+  - **Both directions, both sides correctly pinned, no rule broken by either.** Their CPU A/A degraded
+    **0.80% -> 7.223%** under **our** pinned GPU bench chain; **our** serving floor degraded
+    **3.536% -> 10.255%** under **their** lock-holding CPU session.
+  - **Attribution caveat — this must never be dropped when either number is quoted, and must not be
+    paraphrased away.** The split between *"the chain costs ~6.4 pp"* and *"the drain-era floor was
+    optimistic"* is **NOT separable** from those two points; the **CONJUNCTION is what is established**,
+    never either limb on its own. **Later evidence favours us**: their quiet floor came back at **0.509%**
+    on the adjacent subset — *tighter* than the 0.80% reference — so **their baseline was conservative
+    rather than self-flattering**.
+  - **The ~17% third-party tax: serialisation is necessary and demonstrably NOT sufficient.** With both
+    campaigns serialised on an **operator-mandated exclusive host**, an 8-core `python` plus `opencode`
+    (`Cpus_allowed_list=0-191`, belonging to **neither** campaign) still cost an arm at a **1-in-6** rate.
+    **Serialising the two campaigns against each other is necessary and demonstrably NOT sufficient.**
+  - **The channel is DRAM bandwidth, not cores** — prefill flat within **+/-2%** while decode fell **7%**.
+    **No CPU-occupancy screen on either side can see it.** That is precisely why the remedy is **admission
+    control rather than a better screen**, and it is the **strongest argument for the U4 broker owning
+    process LIFECYCLE on both surfaces**, not merely holding locks.
+  - [x] **OP-40 transferred from INF-70 (operator ruling) and folded into OP-41; this session owns the
+        single resulting item, and no duplicate row is carried** ✅ 2026-09-08
+
 ### 3.5 Track U5 — one monitoring session; authoring roles
 One roster session monitors both surfaces (status, keeps, gates, errors — what `ak-rebuild-20260828`
 does today). The CPU session's role becomes **diagnosis and hypothesis authoring into the inbox**
@@ -506,6 +531,37 @@ see §3.4.
 | UD-1 | CPU serving recipe = the gate for the CPU surface | the CPU session's canonical served recipe (Qwen3.8-Flash-Next), codified as `Recipe`; not a bench proxy |
 | UD-2 | promotion granularity | one production candidate carries BOTH surfaces; a surface without a demonstrated gate does not block the other's keeps landing on the champion, but does block promotion |
 | UD-3 | who authors CPU hypotheses after U3 | loop planner for RUNTIME_CONFIG/SOURCE on the CPU surface; CPU session keeps diagnosis; revisit after 10 CPU iterations |
+
+## 5b. INF-70's unowned residue — PARKED, explicitly NOT adopted (2026-09-08)
+
+**Why this list lives here and not in the rebuild program.** The rebuild program
+(`autokernel-rebuild-program.md`) carries only work **this campaign will execute** — its R23 rows are the
+loop's own queue. This handoff is where the **cross-campaign relationship with INF-70** is recorded (§3.4,
+OP-41, the OP-40 fold above), so the inventory of what INF-70 left behind belongs beside it. Putting it in
+the rebuild program would put unowned items inside an execution queue, which is exactly how silence gets
+read as ownership.
+
+**Status of everything below: recorded for DISCOVERABILITY, and NOT OWNED.** This session is **parking**
+these, not adopting them. There is **no owner**. Nothing here is scheduled, and no row in any index claims
+it. If someone needs one of these done, it needs an owner first.
+
+| item | what it is | pointer |
+|---|---|---|
+| **PROD-1** | canonical recipe as **importable constants** (not prose). It must now also carry the **THP knob with its unit** and its **distinctness from `GGML_NOHUGEPAGE`** — the two are not the same knob and a recipe that conflates them is wrong. Draft promoted to git | `data/inf70-prod1-recipe-draft-2026-09-08/` (`epyc-inference-research`, commit `1780fa7b`) |
+| **MEAS-2** | adopt `build_locked.sh` as the standing build idiom and promote it out of scratch — **19 of 21 build scripts are still unlocked** | `cpu-decode-roofline-program.md` -> MEAS-2 |
+| **MEAS-3** | retention row: the `sync16` scratch directory is a **cross-campaign dependency**, not spent scratch | `cpu-decode-roofline-program.md` -> MEAS-3 |
+| **MEAS-4** | the instrument **reserves 96 cores to run 48 threads**, and blocks a second agent while doing it | `cpu-decode-roofline-program.md` -> MEAS-4 |
+| **MEAS-5** | the **MTP (serving) block is ~2.8x more precise** than the plain block, i.e. **~8x fewer arms** for the same precision — an unclaimed instrument upgrade | `cpu-decode-roofline-program.md` -> MEAS-5 |
+| **SYNC-21** | prove or kill the profiler-overhead hypothesis for SYNC-16's null; also tests whether the per-node census systematically overprices cheap single-threaded nodes | `cpu-decode-roofline-program.md` -> SYNC-21 |
+| **METH-2** | the back-to-back A/A registration rule **and its own correction** (bracketing is worse than pooling when there is no trend) — a methodology rule with no home outside INF-70's file | `cpu-decode-roofline-program.md` -> METH-2 |
+| **NOFOLD-1** | `feature/tree-draft-v6` **MUST NOT FOLD**; the constraint existed nowhere in `handoffs/active/` until INF-70 recorded it | `cpu-decode-roofline-program.md` -> NOFOLD-1 |
+| **HYG-2b** | the commit-hygiene hook **still misparses compound shell commands** (and blocks its own idiom) | `cpu-decode-roofline-program.md` -> HYG-2b |
+| **G2-CONC** | blocking promotion gate — **must run on the PROMOTION CANDIDATE binary, never inherited from an ancestor** | `cpu-decode-roofline-program.md` -> G2-CONC |
+| **UP-1 / UP-2** | **four upstream ggml contributions**, patches **ready and UNSUBMITTED**. Promoted to git so they survive a scratch sweep; submission has no owner | `data/inf70-upstream-patches-2026-09-08/` (`epyc-inference-research`, commit `1780fa7b`) |
+
+Two items from INF-70 were **transferred and ARE owned here** and are deliberately absent from the table
+above: **OP-40** (folded into OP-41, §3.4) and the **champion divergence** (filed as **R23-62** in
+`autokernel-rebuild-program.md`).
 
 ## 6. Risks
 - **Cross-surface interaction**: shared ggml graph/scheduler code means a CPU keep can move a GPU number. LOO across all surfaces on PROMOTE is the control; until P2, re-measure the GPU headline after every fold.

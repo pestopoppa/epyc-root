@@ -17,7 +17,7 @@
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Run 21 (ranking ON) is the relaunch on champion a2728701 — watch to sci>=1; AK-INST-1 still unproven | INF-48, EVL-47, INF-64 |
 | INF-64 | autokernel restart-loop fix | [autokernel-restart-and-strip.md](autokernel-restart-and-strip.md) | AK-INST-2: grep the discovery plane for 40-hex constants compared with `==` and convert the instrument pins | — |
 | INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | CHAMP-2 closed (THP = recipe keep, no fold); CHAMP-3: final headline must be multi-launch with a session-unit CI | INF-06, INF-62, INF-64 |
-| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | R23-58 PRE-REGISTERED, ~60 min, no rebuild needed — run at host release with R23-61 floor recal; then R23-60 serving residency | INF-06, INF-64, INF-65 |
+| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | R23-58 running; then R23-61 floor recal; then R23-62 champion-divergence closer (shim OFF, today's harness) | INF-06, INF-64, INF-65 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Fusion arms DONE 2026-08-27 — est +10–15% REFUTED (both −0.57% tg128); next: re-rank levers (GGML_PERF profile) from the receipts | — |
@@ -67,7 +67,7 @@
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
 | INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap DONE; run stack_change_pipeline regen + stack-change checklist to verify live==config on next start | — |
 | INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | SWE closed on both protocols; re-collect the 24-cell grid at the measured n-max 8 optimum when GPU frees | INF-60 |
-| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | U3-SEED: specify RUNTIME_CONFIG against the measured THP instance (session unit, spread not just mean); U2 headline admissibility | INF-66, INF-65, INF-70 |
+| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | U3-SEED: RUNTIME_CONFIG vs the measured THP instance (session unit, spread not mean); U2 headline admissibility; OP-40 folded into OP-41 | INF-66, INF-65, INF-70 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.
