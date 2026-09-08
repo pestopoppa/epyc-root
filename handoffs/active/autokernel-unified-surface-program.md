@@ -208,6 +208,11 @@ on it. Owner `ak-rebuild-20260828` unless INF-70 takes it.
 BECAUSE outputs were bit-identical — an output-diffing oracle cannot see the class; op-coverage diffing is
 necessary, not nice-to-have.
 
+**Region lock blind spot (measured 2026-09-08):** `cpu_region_lock` models regions as logical-CPU
+ranges; a build pinned to 96-183 is OUTSIDE 0-95 yet occupies the siblings of 0-87, so the lock would
+grant a bench arm during the compile. The broker must reserve by PHYSICAL core (sibling-expanded, via
+`foreign_load.bench_logical_cpus`) — a build slot on 96-183 and a bench arm on 0-95 are the same resource.
+
 ### 3.5 Track U5 — one monitoring session; authoring roles
 One roster session monitors both surfaces (status, keeps, gates, errors — what `ak-rebuild-20260828`
 does today). The CPU session's role becomes **diagnosis and hypothesis authoring into the inbox**
@@ -241,6 +246,8 @@ sequencing: measurement first, authoring later).
       test-backend-ops incl. SSM_SCAN, tg128 vs gen-020 inside the floor; CPU: their bit-identity)
 - [ ] **R23-51a in the same window**: seed the true cor (`445e93a8`) with a MEASURED tip-vs-cor tg128 bench
 - [ ] **R23-49 pin + re-calibration in the same window**: `cpu_list` on the GPU serving recipe, serving floor re-calibrated
+      — **pin committed (research lane) 2026-09-08; recal pending in-window** (the 3.536% floor is VOID for this
+      recipe until `recal_serving_floor.py` runs)
 - [ ] CPU keeps present in the fold recorded as `accumulator-bundle.cpu.<recipe>.json` (schema v1) — **with their
       magnitude flagged `provisional` and the contention label `pre-hook`**: every INF-70 arm before 2026-09-07
       carries a WRONG contention label (sampler read `184-191` as disjoint), and +4.50% is at or below its
