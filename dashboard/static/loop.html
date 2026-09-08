@@ -341,15 +341,19 @@
   <!-- ACCUMULATOR (R23-44 two-tier champion). The loop banks CHEAP llama-bench
        keeps into a bundle against the last serving-demonstrated champion (the
        "champion of record", what the headline shows). The EXPENSIVE llama-server
-       serving gate only fires once the bundle's compounded bench gain clears
-       fire_threshold_pct = fire_multiple (2.5x) x serving_floor_pct. This card
-       shows how many keeps are in the current bundle, which ones, the compounded
-       %, and a progress bar toward that fire threshold — highlighted once it will
-       fire next iteration. Rides the loop-status contract's `accumulator` object;
-       null (and this card says so) on a run with no serving tier. -->
+       serving gate fires on EITHER trigger: the bundle's compounded bench gain
+       clearing fire_threshold_pct = fire_multiple (2.5x) x serving_floor_pct, OR
+       R23-54's mandatory every-4-keeps cadence (operator 2026-09-08 — the bench
+       proxy said +5.958% where serving said -2.18%, so the estimate no longer
+       decides the schedule alone). This card shows how many keeps are in the
+       current bundle, which ones, the compounded %, a progress bar toward the fire
+       threshold, the k/N cadence counter, and WHICH trigger fired — highlighted
+       once it will fire next iteration. Rides the loop-status contract's
+       `accumulator` object; null (and this card says so) on a run with no serving
+       tier. -->
   <section id="sec-accumulator">
     <h2>Accumulator &mdash; compound-then-gate
-      <span class="count">R23-44 &middot; cheap bench keeps batch toward the serving gate</span>
+      <span class="count">R23-44/R23-54 &middot; bench keeps batch; the gate also fires every 4</span>
     </h2>
     <div id="accumulator"></div>
   </section>
@@ -869,6 +873,21 @@ function renderAccumulator(d){
   const fires = a.fires_next === true;
   let frac = num(a.progress_fraction) ? a.progress_fraction : 0;
   frac = Math.max(0, Math.min(1, frac));
+  /* R23-54 (operator 2026-09-08): the gate ALSO fires every `gate_every_keeps` keeps
+     regardless of the compounded estimate — the 2026-09-08 firing measured the bench
+     proxy (+5.958%) disagreeing with serving (-2.18%), so the estimate no longer
+     decides the schedule alone. Show the cadence counter and NAME the trigger; a
+     producer too old to send these fields renders "—" rather than a fabricated 0/4. */
+  const every = num(a.gate_every_keeps) ? a.gate_every_keeps : null;
+  const since = num(a.keeps_since_serving_gate) ? a.keeps_since_serving_gate : null;
+  const cadence = (since != null && every != null) ? `${since}/${every}` : "—";
+  const trig = typeof a.next_trigger === "string" ? a.next_trigger : null;
+  const last = (a.last_serving_gate && typeof a.last_serving_gate === "object")
+    ? a.last_serving_gate : null;
+  const why = {threshold: "the compounded bench estimate cleared the threshold",
+               cadence: "the mandatory every-" + (every != null ? every : "N") +
+                        "-keeps cadence (R23-54) — independent of the bench estimate",
+               both: "both triggers: the estimate cleared the threshold AND the cadence is due"};
 
   const keepsHtml = keeps.length
     ? keeps.map(k => `<span class="acc-keep">${esc(k)}</span>`).join("")
@@ -879,8 +898,10 @@ function renderAccumulator(d){
   host.innerHTML =
     `<div class="acc ${fires ? "fires" : ""}">` +
       (fires
-        ? `<div class="acc-fire">Fires next iteration — the compounded gain has cleared the ` +
-          `threshold; the expensive llama-server serving gate runs next.</div>`
+        ? `<div class="acc-fire">Fires next iteration — trigger: ` +
+          `<strong>${esc(trig || "threshold")}</strong>` +
+          `${trig && why[trig] ? ` (${esc(why[trig])})` : ""}; the expensive llama-server ` +
+          `serving gate runs next.</div>`
         : "") +
       `<div class="acc-head">` +
         `<div class="acc-stat"><div class="k">champion of record</div>` +
@@ -895,7 +916,22 @@ function renderAccumulator(d){
         `<div class="acc-stat"><div class="k">compounded bench</div>` +
           `<div class="v ${comp > 0 ? "pos" : ""}">+${comp.toFixed(2)}%</div>` +
           `<div class="sub">of the bundle vs champion of record</div></div>` +
+        `<div class="acc-stat"><div class="k">keeps to mandatory gate</div>` +
+          `<div class="v">${esc(cadence)}</div>` +
+          `<div class="sub">R23-54: the gate fires on this cadence whatever the bench ` +
+            `estimate says</div></div>` +
       `</div>` +
+      (last
+        ? `<div class="acc-keeps"><div class="k">last serving gate</div>` +
+            `<span class="muted">trigger <strong>${esc(last.trigger || "—")}</strong> · ` +
+            `outcome ${esc(last.outcome || "—")}` +
+            `${num(last.serving_effect_pct)
+                ? ` · serving ${last.serving_effect_pct >= 0 ? "+" : ""}` +
+                  `${last.serving_effect_pct.toFixed(2)}%` : ""}` +
+            `${num(last.compounded_bench_pct)
+                ? ` · bench estimate was +${last.compounded_bench_pct.toFixed(2)}%` : ""}` +
+            `</span></div>`
+        : "") +
       `<div class="acc-keeps"><div class="k">bench keeps batched (${esc(keeps.length)})</div>` +
         keepsHtml + `</div>` +
       `<div class="acc-prog">` +

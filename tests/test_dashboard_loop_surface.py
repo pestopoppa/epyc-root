@@ -75,7 +75,9 @@ PANEL = "autokernel_loop"
 #: the documented field list, NOT imported from the producer — the hub reads
 #: this contract without the producer's repo on disk.
 def accumulator(*, n_keeps: int = 2, compounded: float = 5.20,
-                fires_next: bool = False) -> dict:
+                fires_next: bool = False, since_gate: int = 2,
+                next_trigger: str | None = None,
+                last_serving_gate: dict | None = None) -> dict:
     keeps = [f"akm-{i}" for i in range(n_keeps)]
     threshold = 8.84
     return {
@@ -88,7 +90,14 @@ def accumulator(*, n_keeps: int = 2, compounded: float = 5.20,
         "fire_multiple": 2.5,
         "fire_threshold_pct": threshold,
         "progress_fraction": min(1.0, compounded / threshold),
+        # R23-54 (operator 2026-09-08): the mandatory keep cadence. The gate fires every
+        # `gate_every_keeps` keeps regardless of the compounded estimate, and every firing
+        # names its trigger — "threshold" | "cadence" | "both".
+        "keeps_since_serving_gate": since_gate,
+        "gate_every_keeps": 4,
+        "next_trigger": next_trigger,
         "fires_next": fires_next,
+        "last_serving_gate": last_serving_gate,
     }
 
 
@@ -667,12 +676,62 @@ class Rendering(_Fixture):
     def test_the_accumulator_card_highlights_when_it_fires_next(self):
         """The mutation half: once the compounded gain clears the threshold the
         card must say so and switch the bar to the fires-next state."""
-        acc = accumulator(n_keeps=4, compounded=9.10, fires_next=True)
+        acc = accumulator(n_keeps=4, compounded=9.10, fires_next=True,
+                          next_trigger="threshold")
         self.write(body(accumulator=acc))
         card = self._render(S.loop_payload())["by_id"]["accumulator"]
         self.assertIn("Fires next iteration", card)
         self.assertIn("acc-fill hot", card)
         self.assertIn("acc fires", card)
+
+    def test_the_card_shows_the_cadence_counter_and_names_a_cadence_firing(self):
+        """R23-54 (operator 2026-09-08): the gate fires every 4 keeps REGARDLESS of the
+        compounded bench estimate, because that estimate said +5.958% on the same bundle
+        serving read at -2.18%. A reader must be able to see how close the mandatory gate
+        is (k/N) and, when it fires, WHICH trigger carried it — inferring "it must have
+        cleared the threshold" from a card that only shows the estimate is exactly the
+        mistake the ruling exists to prevent."""
+        acc = accumulator(n_keeps=4, compounded=2.10, fires_next=True, since_gate=4,
+                          next_trigger="cadence")
+        self.write(body(accumulator=acc))
+        out = self._render(S.loop_payload())
+        self.assertEqual(out["threw"], [])
+        card = out["by_id"]["accumulator"]
+        self.assertIn("4/4", card, "the k/N cadence counter is not on the card")
+        self.assertIn("keeps to mandatory gate", card)
+        self.assertIn("cadence", card, "the trigger reason is not named")
+        # and it fires while the compounded estimate is far BELOW the threshold
+        self.assertIn("+2.10%", card)
+        self.assertIn("acc-fill hot", card)
+
+    def test_a_producer_without_the_cadence_fields_does_not_fabricate_a_counter(self):
+        """An older loop that sends no cadence fields must render an em dash, never
+        "0/4" — a fabricated counter would claim the gate is three keeps away when the
+        producer never said so."""
+        acc = accumulator(n_keeps=2)
+        for k in ("keeps_since_serving_gate", "gate_every_keeps", "next_trigger",
+                  "last_serving_gate"):
+            acc.pop(k)
+        self.write(body(accumulator=acc))
+        card = self._render(S.loop_payload())["by_id"]["accumulator"]
+        self.assertIn("keeps to mandatory gate", card)
+        self.assertNotIn("0/4", card)
+        self.assertNotIn("last serving gate", card)
+
+    def test_the_card_reports_the_last_gate_trigger_and_its_divergence(self):
+        """The 2026-09-08 reading itself: fired, and disagreed with the bench estimate.
+        Both halves must be legible on the card."""
+        acc = accumulator(n_keeps=3, compounded=1.00, since_gate=1, last_serving_gate={
+            "trigger": "cadence", "outcome": "diverged", "keeps": 4,
+            "compounded_bench_pct": 5.958, "serving_effect_pct": -2.18,
+            "serving_decisive": False})
+        self.write(body(accumulator=acc))
+        card = self._render(S.loop_payload())["by_id"]["accumulator"]
+        self.assertIn("last serving gate", card)
+        self.assertIn("cadence", card)
+        self.assertIn("diverged", card)
+        self.assertIn("-2.18%", card)
+        self.assertIn("+5.96%", card)
 
     def test_a_run_with_no_serving_tier_renders_a_graceful_accumulator_empty(self):
         """`accumulator === null` must render nothing measured — not "0% to the
