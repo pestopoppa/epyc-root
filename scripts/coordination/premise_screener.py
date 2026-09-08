@@ -31,7 +31,7 @@ proof — a rule violated 3m33s after it was written, by its own author.
 THE CONTRACT (worker_runner.py is built against exactly this)
 =============================================================
     screen_premise(row: dict) -> {
-        "verdict":  "still-needed" | "stale" | "unknown",
+        "verdict":  "still-needed" | "stale" | "blocked" | "unknown",
         "evidence":  str,   # a quote from the artifact justifying the verdict
         "reason":    str,   # one sentence
         "provenance": {...} # model id, prompt hash, mechanical result, ...
@@ -41,9 +41,13 @@ The one-argument call always works. Everything else is a keyword with a default.
 
 FOUR PROPERTIES THIS FILE IS RESPONSIBLE FOR
 ============================================
-1. FORCED CHOICE. Three verdicts, no fourth. `_coerce_verdict` is the only place
+1. FORCED CHOICE. Four verdicts, no fifth. `_coerce_verdict` is the only place
    a verdict string is minted and it maps anything it does not recognise to
    "unknown". There is no code path that can return a value outside `VERDICTS`.
+   `blocked` is the AIR-12 rung (2026-09-07): the premise is ALIVE but cannot
+   proceed because it is blocked on a named dependency — the mechanical layer
+   can FLAG such a row (AIR-13's advisory `.index-graph.json` consult) but only
+   a rung of this ladder may VERDICT it.
 
 2. MANDATORY EVIDENCE. A verdict without a usable quote is not a verdict. A
    model that answers "stale" and quotes nothing (or quotes the word "stale") is
@@ -137,7 +141,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable, Optional
 
-SCREENER_VERSION = "1"
+SCREENER_VERSION = "2"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PACK_PATH = REPO_ROOT / "coordination" / "evals" / "examples" / "premise_screener.md"
@@ -158,11 +162,14 @@ except Exception as exc:  # pragma: no cover
 
 # --------------------------------------------------------------- the ladder
 
-#: The forced choice. There is no fourth value, and `_coerce_verdict` is the
-#: only function permitted to mint one of these.
-VERDICTS = ("still-needed", "stale", "unknown")
+#: The forced choice. There is no fifth value, and `_coerce_verdict` is the
+#: only function permitted to mint one of these. `blocked` (AIR-12, 2026-09-07):
+#: the premise is alive but the work is blocked on a named dependency — a
+#: verdict, never a guess, and never implied by the mechanical layer's advisory
+#: `.index-graph.json` flag (AIR-13), which is evidence FOR this ladder only.
+VERDICTS = ("still-needed", "stale", "unknown", "blocked")
 
-STILL_NEEDED, STALE, UNKNOWN = VERDICTS
+STILL_NEEDED, STALE, UNKNOWN, BLOCKED = VERDICTS
 
 #: Aliases the model plausibly emits for each rung. The pack and the handoff
 #: spell the third rung `UNKNOWN`; the runner contract spells it `unknown`.
@@ -175,6 +182,9 @@ _VERDICT_ALIASES = {
     "stillneeded": STILL_NEEDED,
     "needed": STILL_NEEDED,
     "stale": STALE,
+    "blocked": BLOCKED,
+    "blocked-on-dependency": BLOCKED,
+    "dependency-blocked": BLOCKED,
     "unknown": UNKNOWN,
 }
 
@@ -249,21 +259,40 @@ def row_context(row: dict) -> str:
 def _hint_path_line(hint: str) -> tuple[Optional[Path], Optional[int]]:
     """Parse `file.md:120` / `handoffs/active/file.md#L120` into (path, line).
 
+    Tolerates a C50b content anchor (`#L120,box=<slug>~<digest>`) on the ref:
+    the line number is what matters here, the anchor's box text is not part of
+    the file-name form.
+
     Advisory ONLY. The caller must never grade on this — it is used to
-    disambiguate multiple text matches, which is the one job a rotted anchor can
-    still do honestly.
+    disambiguate multiple text matches and (AIR-12, 2026-09-07) to resolve a
+    queue row's OWN anchor when its text search misses.
     """
     if not hint:
         return None, None
-    m = re.match(r"^(.*?\.md)(?:[:#]L?(\d+))?\s*$", hint.strip())
+    m = re.match(r"^(.*?\.md)(?:[:#]L?(\d+))?(?:,[^,\s]*)*\s*$", hint.strip())
     if not m:
         return None, None
     raw, lineno = m.group(1), m.group(2)
     candidate = Path(raw)
     if not candidate.is_absolute():
-        for base in (REPO_ROOT, REPO_ROOT / "handoffs" / "active"):
-            if (base / candidate).exists():
-                candidate = base / candidate
+        bases = [REPO_ROOT, REPO_ROOT / "handoffs" / "active"]
+        # Where the mechanical layer's own row search lives. Live it IS
+        # handoffs/active; a test (or a checkout with a relocated root) points
+        # it elsewhere, and the anchor must resolve where find_by_text scans.
+        handoffs_root = getattr(brc, "HANDOFFS", None)
+        if isinstance(handoffs_root, Path) and handoffs_root not in bases:
+            bases.append(handoffs_root)
+        # A `handoffs/active/...`-prefixed ref also gets its bare form tried
+        # against every base, so a relocated handoffs root still resolves.
+        forms = [candidate]
+        if candidate.parts[:2] == ("handoffs", "active"):
+            forms.append(Path(*candidate.parts[2:]))
+        for form in forms:
+            for base in bases:
+                if (base / form).exists():
+                    candidate = base / form
+                    break
+            if candidate.is_absolute() and candidate.exists():
                 break
     return candidate, (int(lineno) if lineno else None)
 
@@ -308,21 +337,44 @@ def mechanical_screen(row: dict) -> dict:
         return result
 
     result["hits"] = len(hits)
-    if not hits:
+    hint_path, hint_line = _hint_path_line(row_hint(row))
+
+    # AIR-12 probe-bundle repair (2026-09-07). A queue row carries its OWN
+    # anchor (`spec_ref` / `row_ref`, a C50b file:LINE). When the text search
+    # misses — one unlucky key, or a text that names no checkbox verbatim —
+    # that anchor is the settling artifact and was never probed: 5 of 9 lifetime
+    # verdicts were `unknown` with the artifact that would settle them unread.
+    # Absence is still not stale (the module docstring's three explanations all
+    # stand) — the anchor fallback only ADDS resolution; it never concludes.
+    # The row's own checkbox, when the anchor still resolves, may mechanically
+    # prove STALE exactly like a text hit may.
+    anchor_hit = None
+    if not hits and hint_path is not None and hint_line is not None:
+        try:
+            anchor = brc.box_at(hint_path, hint_line)
+        except Exception as exc:  # pragma: no cover - box_at self-guards
+            anchor = None
+            result["anchor_error"] = f"{type(exc).__name__}: {exc}"
+        if anchor is not None:
+            anchor_hit = (hint_path,) + anchor
+            result["anchor_resolved"] = True
+
+    if not hits and anchor_hit is None:
         # NOT stale. See the module docstring: absence has at least three
         # explanations and the standing rule forbids asserting one from a single
         # search key. State it and let the model weigh it.
         result["note"] = (
-            "the row's task text matches NO checkbox in handoffs/active/. That is "
-            "consistent with the row having been completed and deleted, but equally "
-            "with a row sourced from outside handoffs/active/ or with a search key "
-            "that missed. Not treated as proof of anything."
+            "the row's task text matches NO checkbox in handoffs/active/ (and its "
+            + ("own file:LINE anchor resolves to no checkbox — the anchor may have "
+               "rotted" if hint_path is not None else "row carries no resolvable anchor")
+            + "). That is consistent with the row having been completed and deleted, "
+            "but equally with a row sourced from outside handoffs/active/ or with a "
+            "search key that missed. Not treated as proof of anything."
         )
         return result
 
-    hint_path, hint_line = _hint_path_line(row_hint(row))
-    chosen = hits[0]
-    if len(hits) > 1 and hint_path is not None:
+    chosen = (anchor_hit or hits[0])
+    if not anchor_hit and len(hits) > 1 and hint_path is not None:
         for hit in hits:
             if hit[0].name == hint_path.name and (hint_line is None or hit[1] == hint_line):
                 chosen = hit
@@ -424,9 +476,24 @@ def _git_tracked(paths: Iterable[str], timeout_s: float = 10.0) -> set[str]:
     return {chunk for chunk in out.split("\0") if chunk}
 
 
-def probe_artifacts(text: str) -> list[dict]:
-    """Cheap, bounded filesystem+git probes for every path the row names."""
+def probe_artifacts(text: str, also: Iterable[str] = ()) -> list[dict]:
+    """Cheap, bounded filesystem+git probes for every path the row names.
+
+    `also` carries paths the row points at WITHOUT naming in its text — AIR-12
+    (2026-09-07): a queue row's own `spec_ref`/`row_ref` anchor is the settling
+    artifact when the text names nothing probeable, and 5 of 9 lifetime verdicts
+    were `unknown` with exactly that artifact unread. Same probe machinery; the
+    text-path dedupe does not apply across the two sources, so the anchor is
+    probed even when the text also names it — one probe is cheap, a missing
+    probe costs a verdict.
+    """
     candidates = _candidate_paths(text)
+    seen = set(candidates)
+    for token in also:
+        token = token.strip().strip(",;.")
+        if token and token not in seen and " " not in token:
+            candidates.append(token)
+            seen.add(token)
     if not candidates:
         return []
     tracked = _git_tracked(candidates)
@@ -575,13 +642,19 @@ your only question.
 
 You output exactly one JSON object and nothing else:
 
-  {"verdict": "still-needed"|"stale"|"unknown",
+  {"verdict": "still-needed"|"stale"|"blocked"|"unknown",
    "evidence": "<a verbatim quote from the evidence bundle or the row>",
    "reason": "<one sentence>"}
 
 RULES OF THE LADDER
   - "still-needed": at least one conjunct of the row's premise is still true.
   - "stale":        EVERY conjunct is already satisfied in the world.
+  - "blocked":      the premise is alive but the work cannot proceed because it
+                    is blocked on a NAMED dependency (an open prerequisite row,
+                    a child box, an index-graph `readiness: blocked` node).
+                    Name the blocker in `reason`. NEVER infer a block from
+                    wording alone — a dependency the bundle shows CLOSED is not
+                    a block, and a row whose premise is alive is not stale.
   - "unknown":      the premise's subject is not something the bundle can settle
                     (e.g. it is about a running process, an operator's intent, or
                     an artifact nobody probed). UNKNOWN is a correct, useful
@@ -605,6 +678,10 @@ before or after, no code fence.\
 def build_bundle(row: dict, mech: dict) -> dict:
     """The evidence bundle exactly as the model will see it."""
     text = row_text(row)
+    # The row's own anchor artifact, probed even when the text names nothing
+    # (AIR-12 probe-bundle repair — see probe_artifacts' `also`).
+    hint_path, _hint_line = _hint_path_line(row_hint(row))
+    also = [str(hint_path)] if hint_path is not None else []
     return {
         "task_id": row.get("task_id"),
         "task_text": text,
@@ -623,7 +700,7 @@ def build_bundle(row: dict, mech: dict) -> dict:
             "dispatchability_reasons": mech.get("classify_reasons"),
             "note": mech.get("note"),
         },
-        "artifact_probes": probe_artifacts(text),
+        "artifact_probes": probe_artifacts(text, also=also),
     }
 
 
@@ -1234,7 +1311,7 @@ def _load_row_from_queue(task_id: str) -> dict:
 def main(argv: Optional[list[str]] = None) -> int:
     ap = argparse.ArgumentParser(
         description="Screen a backlog row's PREMISE against the world "
-                    "(still-needed | stale | unknown).",
+                    "(still-needed | stale | blocked | unknown).",
         epilog="unknown is a verdict, not an error: it means do-not-dispatch "
                "plus a routed fix task.",
     )

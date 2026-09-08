@@ -22,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from canonical import content_hash  # noqa: E402
-from fold import Belief, FoldResult  # noqa: E402
+from fold import Belief, FoldResult, UNNAMED_SOURCE_KEY  # noqa: E402
 from lattice import Grade, satisfies_conjunctive  # noqa: E402
 
 __all__ = ["Outcome", "UsePolicy", "GateResult", "evaluate", "Standard",
@@ -118,7 +118,12 @@ def _disjoint_supports(belief: Belief) -> int:
     # independent support. `pro_sources` is locator-normalized and already collapses alias groups
     # their author marked non-independent, which is the only reason aliasing two records of one
     # source is safe to do at all.
-    sources = belief.pro_sources or [label for label, _ in belief.pro_paths]
+    #
+    # SC72: a belief with paths but NO source accounting (never folded, or folded before source
+    # keying existed) falls back to a single shared unnamed source, never to its labels -- the
+    # labels are edges, and counting them would manufacture the corroboration the comment above
+    # exists to refuse.
+    sources = belief.pro_sources or ([UNNAMED_SOURCE_KEY] if belief.pro_paths else [])
     return min(len(set(sources)), 5)
 
 

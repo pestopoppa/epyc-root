@@ -136,6 +136,9 @@ def project(native: Any) -> ClaimTuple:
         # Presence is decided by the projector (re-hash of the attested results file), so a moved
         # or mutated artifact grades DOWN through the shared ladder instead of being skipped.
         attestation_present=present,
+        # SC69: `present` IS the write-boundary verification — `_results_present` re-reads the
+        # file and recomputes the digest. Carried here so the ladder stays a pure function.
+        attestation_verified=True if present else None,
         source_kind=SOURCE_KIND,
         extra={
             "schema": row["schema"],

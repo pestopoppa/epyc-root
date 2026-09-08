@@ -51,13 +51,15 @@ OTHER = "for every list xs of int, sorted_permutation(sort(xs), xs) holds"
 
 
 def tup(**over):
-    """A FULL tuple — protocol, reps, date, hashed artifact present on disk — so the measurement
-    ladder reaches `Witnessed`/`Attested` on its own. Starting from the top is what lets each test
-    show the cap doing work rather than agreeing with an already-low grade."""
+    """A FULL tuple — protocol, reps, date, hashed artifact present on disk, digest verified at
+    the write boundary (SC69) — so the measurement ladder reaches `Witnessed`/`Attested` on its
+    own. Starting from the top is what lets each test show the cap doing work rather than
+    agreeing with an already-low grade. The verification result is CARRIED in the tuple (SC69):
+    the ladder is pure and never hashes, so the fixture records the write-boundary fact."""
     base = dict(measurement_id="sc56", metric="obligations_discharged", value=1,
                 date="2026-09-07", category="CANDIDATE", claim=CLAIM,
                 protocol_id="P-verifier-1", reps=3, attestation_path="MEASUREMENT.md",
-                attestation_sha256="a" * 64)
+                attestation_sha256="a" * 64, attestation_verified=True)
     base.update(over)
     return ct.ClaimTuple(**base)
 
@@ -105,7 +107,7 @@ def test_the_cap_preserves_the_traceability_axis_exactly():
 
 @pytest.mark.parametrize("over, expected_t", [
     (dict(), "Attested"),
-    (dict(attestation_sha256=""), "Anchored"),
+    (dict(attestation_sha256="", attestation_verified=None), "Anchored"),
     (dict(attestation_path="", attestation_locator=""), "Located"),
     (dict(protocol_id="", attestation_path="", attestation_locator=""), "T0"),
 ])
@@ -157,7 +159,8 @@ def test_the_ceiling_never_promotes_a_low_verifier_grade():
     """CATCHES a cap written as an assignment instead of a minimum — `Q = Verified` would PROMOTE
     a bound verifier tuple that cited no protocol, inventing warrant out of a cap."""
     weak = verifier(decided_proposition=SAME, binding_kind="identity",
-                    protocol_id="", attestation_path="", attestation_sha256="")
+                    protocol_id="", attestation_path="", attestation_sha256="",
+                    attestation_verified=None)
     assert ct.grade(weak)[0] == "Judged"
 
 
@@ -289,18 +292,21 @@ def test_a_decided_proposition_alone_never_caps_a_measurement_tuple():
 
 
 @pytest.mark.parametrize("over, expected", [
-    (dict(protocol_id="", reps=None, date="", attestation_path="", attestation_sha256=""),
-     ("Judged", "T0")),
+    (dict(protocol_id="", reps=None, date="", attestation_path="", attestation_sha256="",
+          attestation_verified=None), ("Judged", "T0")),
     (dict(protocol_id="", reps=None, attestation_path="", attestation_sha256="",
-          attestation_locator="run-7#trial-3"), ("Judged", "Located")),
-    (dict(attestation_path="", attestation_sha256=""), ("Verified", "Located")),
-    (dict(attestation_sha256=""), ("Witnessed", "Anchored")),
+          attestation_locator="run-7#trial-3", attestation_verified=None),
+     ("Judged", "Located")),
+    (dict(attestation_path="", attestation_sha256="", attestation_verified=None),
+     ("Verified", "Located")),
+    (dict(attestation_sha256="", attestation_verified=None), ("Witnessed", "Anchored")),
     (dict(attestation_path="nope/x.json"), ("Witnessed", "Anchored")),
     (dict(), ("Witnessed", "Attested")),
 ])
 def test_the_measurement_ladder_is_bit_for_bit_what_it_was(over, expected):
     """CATCHES the post-step leaking onto the class that carries the whole existing corpus. Every
-    rung of the ladder, re-asserted at the value it had before SC56 existed."""
+    rung of the ladder, re-asserted at the value it had before SC56 existed (with the SC69
+    carried-verification field making explicit what the pre-SC69 fixtures only implied)."""
     q, t, reasons = ct.grade(tup(**over))
     assert (q, t) == expected
     assert not any("SC56" in r or "verifier" in r for r in reasons)

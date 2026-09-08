@@ -433,6 +433,65 @@ def test_still_needed_passes_through(monkeypatch):
     assert wr.screen_premise_safe({"task_id": "T1"})["verdict"] == "still-needed"
 
 
+def test_blocked_verdict_is_recognised_and_passes_through(monkeypatch):
+    """AIR-12 (2026-09-07): the ladder grew a `blocked` rung. The dispatch path
+    must recognise it as a verdict (not downgrade it to unknown, which would
+    blur 'blocked on a dependency' into 'premise undetermined' — the routed fix
+    differs). What the path does with it is the park test below."""
+    import types
+    mod = types.ModuleType("scripts.coordination.premise_screener")
+    mod.screen_premise = lambda row: {"verdict": "blocked",
+                                      "evidence": "QQ-9 blocked on QQ-8 (open)",
+                                      "reason": "r"}
+    monkeypatch.setitem(sys.modules, "scripts.coordination.premise_screener", mod)
+    verdict = wr.screen_premise_safe({"task_id": "T1"})
+    assert verdict["verdict"] == "blocked"
+    assert "QQ-8" in verdict["evidence"]
+
+
+def test_blocked_verdict_parks_and_spawns_nothing(tmp_path, monkeypatch):
+    """A `blocked` row is not dispatched: its premise is not `still-needed`.
+    It parks with a premise-blocked reason and a routed fix task, exactly like
+    stale/unknown — and its claim is released so it is not parked AND locked."""
+    install_screener(monkeypatch, verdict="blocked")
+    make_pool(tmp_path)
+    write_stub(tmp_path)
+    bus = make_bus(tmp_path)
+    spawned = []
+    monkeypatch.setattr(wr, "spawn_worker", lambda *a, **k: spawned.append(a))
+    path = assignment(tmp_path, [{"task_id": "T1", "task_text": "blocked premise row",
+                                  "source_handoff": "h.md"}])
+    rc = wr.main(["--bus-root", str(bus), "run", "--lane", "lane0",
+                  "--assignment", str(path), "--spawn-mode", "direct"])
+    assert rc == 0
+    assert spawned == [], "a blocked row must not spawn a worker"
+    kinds = [(r["kind"], (r.get("payload") or {}).get("parked_reason")) for r in outbox(bus)]
+    assert ("requeue", "premise-blocked") in kinds
+    # AIR-14: the typed verdict rides the requeue payload as screen_result, so
+    # the daemon can transcribe it onto the queue row instead of losing it.
+    payload = row_payload(bus, "T1")
+    assert payload.get("screen_result") == {"premise": "blocked",
+                                            "evidence": "fixture evidence"}
+    assert not list((bus / "claims").glob("*.json"))
+
+
+def test_unevidenced_still_needed_is_refused_at_the_dispatch_path(monkeypatch):
+    """AIR-12: premise screening is NON-OPTIONAL at dispatch. A verdict without
+    an evidence quote is a screen that was SKIPPED — nothing was re-checked —
+    and the dispatch path must refuse it (unknown -> park) rather than treat it
+    as permission to dispatch. `premise_screener` enforces this inside itself;
+    this pins the same contract at the point of dispatch, so an absent or
+    malformed screener can never read as a green light."""
+    import types
+    mod = types.ModuleType("scripts.coordination.premise_screener")
+    mod.screen_premise = lambda row: {"verdict": "still-needed", "evidence": "",
+                                      "reason": "trust me"}
+    monkeypatch.setitem(sys.modules, "scripts.coordination.premise_screener", mod)
+    verdict = wr.screen_premise_safe({"task_id": "T1", "task_text": "x"})
+    assert verdict["verdict"] == "unknown"
+    assert "no evidence" in verdict["reason"]
+
+
 def test_unknown_verdict_parks_and_spawns_nothing(tmp_path, monkeypatch):
     make_pool(tmp_path)
     write_stub(tmp_path)

@@ -311,6 +311,16 @@ def project(native: Any) -> ClaimTuple:
     warnings = [str(w) for w in block.get("host_health_warnings") or []]
     status = str(block.get("host_health_status") or "unknown")
     run_name = native["run_name"]
+    # SC69: the reader sha256s the artifact bytes the moment it reads them, and the tuple's
+    # attested digest IS that recompute — carried in the tuple so the ladder stays pure. A file
+    # that moved between the read and the projection is tampering, not decay: refuse.
+    recomputed = _file_sha256(run_dir / RESULTS_FILE)
+    if recomputed != native["result_sha256"]:
+        raise ProjectionError(
+            "results file no longer matches the collected result_sha256 "
+            f"(recorded {str(native['result_sha256'])[:12]}…, recomputed {recomputed[:12]}…) — "
+            "the attested artifact moved since the read (SC69)")
+    attestation_verified = True
     disposition = (
         ""
         if decision_grade
@@ -348,6 +358,7 @@ def project(native: Any) -> ClaimTuple:
         attestation_path=_relative_attestation_path(native, RESULTS_FILE),
         attestation_sha256=str(native["result_sha256"]),
         attestation_locator=str(run_dir),
+        attestation_verified=attestation_verified,
         source_kind=SOURCE_KIND,
         extra={
             "schema": RESULT_SCHEMA,

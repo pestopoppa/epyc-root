@@ -345,7 +345,8 @@ def test_the_adapter_registers_a_projection_and_no_ladder():
 
 def test_grading_is_unchanged_for_other_sources(tmp_path, monkeypatch):
     """MUTATION-style companion to the test above: importing this adapter must not move any
-    other source's grade. A full measurement tuple still reaches Witnessed/Attested."""
+    other source's grade. A full measurement tuple whose digest WAS verified at the write
+    boundary still reaches Witnessed/Attested."""
     artifact = tmp_path / "run.json"
     artifact.write_text("{}")
     monkeypatch.setattr(ct, "REPO_ROOT", tmp_path)
@@ -353,7 +354,8 @@ def test_grading_is_unchanged_for_other_sources(tmp_path, monkeypatch):
         measurement_id="unrelated", metric="tps", value=1.0, date="2026-09-07",
         category="BASELINE", claim="unrelated measurement", protocol_id="bench-cpu",
         reps=3, attestation_path="run.json",
-        attestation_sha256=hashlib.sha256(b"{}").hexdigest())
+        attestation_sha256=hashlib.sha256(b"{}").hexdigest(),
+        attestation_verified=True)
     assert ct.grade(other)[:2] == ("Witnessed", "Attested")
 
 
@@ -379,6 +381,13 @@ def test_the_ladder_would_lift_this_source_if_a_protocol_existed(tmp_path, monke
     tup = tuples_for(corpus)["headcount_waste"]
     lifted = ct.ClaimTuple(**{**tup.__dict__, "protocol_id": "fanout-forensics-v1",
                               "attestation_path": corpus.name})
+    # The corpus file is real and the recorded digest is the file's own self-hash, so the
+    # write-boundary verification genuinely matches here (SC69).
+    import hashlib
+    lifted = ct.ClaimTuple(**{**lifted.__dict__,
+                              "attestation_verified": True if hashlib.sha256(
+                                  (tmp_path / corpus.name).read_bytes()
+                              ).hexdigest() == lifted.attestation_sha256 else None})
     assert ct.grade(lifted)[:2] == ("Witnessed", "Attested")
 
 

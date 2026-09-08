@@ -785,6 +785,33 @@ def test_intake_carries_task_text_onto_the_queue_row(tmp_path, capsys):
     assert rows[0]["task_text"] == "Close the FYI gap in the bus schema"
 
 
+def test_intake_carries_typed_screen_result_onto_the_queue_row(tmp_path, capsys):
+    """AIR-14 (2026-09-07): a proposal that arrives already premise-screened
+    carries its typed `screen_result` onto the born queue row — the verdict has
+    somewhere to live other than prose in failure_reason. A misshapen
+    screen_result is DROPPED with an advisory note, never admitted (the row's
+    schema is closed and the enum is load-bearing)."""
+    from scripts.coordination.session_bus_coordinator import intake_proposals
+    good = {"premise": "blocked", "blocked_by": "RTG-40",
+            "evidence": "index-graph: RTG-39 blocked on RTG-40"}
+    rows, adv = intake_proposals(tmp_path, {}, {"T-3": [{
+        "kind": "task-propose", "from": SENDER, "task_id": "T-3",
+        "payload": {"lane": "none", "gating": "none", "spec_ref": "h.md",
+                    "summary": "Blocked backlog row with a typed screen",
+                    "screen_result": good}}]}, epoch=0)
+    assert rows[0]["screen_result"] == good
+
+    bad = {"premise": "probably-fine", "evidence": "x"}
+    rows, adv = intake_proposals(tmp_path, {}, {"T-4": [{
+        "kind": "task-propose", "from": SENDER, "task_id": "T-4",
+        "payload": {"lane": "none", "gating": "none", "spec_ref": "h.md",
+                    "summary": "Row whose screen_result does not fit the schema",
+                    "screen_result": bad}}]}, epoch=0)
+    assert "screen_result" not in rows[0], "an off-ladder screen_result must not be admitted"
+    assert any("screen_result=INVALID" in str(a.get("detail")) for a in adv), (
+        "the drop must be visible in the intake advisory, not silent")
+
+
 # ================================================================ 8. AUD-4 corrections
 
 

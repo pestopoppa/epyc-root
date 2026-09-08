@@ -165,7 +165,7 @@ def test_projects_baseline_and_candidate_rows_through_the_shared_ladder():
     assert len(tuples) == 3
     assert [item.category for item in tuples] == ["BASELINE", "CANDIDATE", "CANDIDATE"]
     assert all(item.extra["promotion_authority"] is False for item in tuples)
-    assert all(ct.grade(item)[:2] == ("Witnessed", "Attested") for item in tuples)
+    assert all(ct.grade(item)[:2] == ("Witnessed", "Anchored") for item in tuples)
 
 
 @pytest.mark.parametrize("defect", [

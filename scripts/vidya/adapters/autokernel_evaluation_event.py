@@ -477,6 +477,10 @@ def project(native: Any) -> ClaimTuple:
         attestation_sha256=expected["event_sha256"],
         attestation_locator=expected["event_locator"],
         attestation_present=expected["attestation_present"],
+        # SC69: `event_sha256` is the digest the read side RE-DERIVES from the event content
+        # (`load_event_source`, refusing a mismatch before any row exists), so the attested
+        # digest was recomputed at this write boundary. Carried; the ladder never hashes.
+        attestation_verified=True,
         source_kind="autokernel-evaluation-event-measurement",
         extra={
             "event_id": event["event_id"],

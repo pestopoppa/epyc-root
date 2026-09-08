@@ -121,7 +121,7 @@ def test_four_cells_and_two_same_model_effects_project_diagnostic_only() -> None
         round(1.39 / 0.99, 6), round(1.00 / 1.01, 6)}
     assert all(row.extra["diagnostic_only"] is True for row in tuples)
     assert all(row.extra["ranking_authority"] is False for row in tuples)
-    assert all(ct.grade(row)[:2] == ("Witnessed", "Attested") for row in tuples)
+    assert all(ct.grade(row)[:2] == ("Witnessed", "Anchored") for row in tuples)
 
 
 @pytest.mark.parametrize("defect", [

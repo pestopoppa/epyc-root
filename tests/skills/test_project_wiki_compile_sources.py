@@ -2,8 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import json
+import os
 import sys
+import time
 from pathlib import Path
+
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -198,3 +203,166 @@ def test_changed_since_manifest_outputs_only_added_and_changed_sources(
         "removed_count": 1,
         "has_drift": True,
     }
+
+
+def _write_baseline(module, root: Path, filenames: list[tuple[Path, str]]) -> None:
+    """Write files and persist a full baseline manifest for them."""
+    for path, text in filenames:
+        _write(path, text)
+    module.write_manifest(
+        module.SOURCE_MANIFEST_PATH,
+        module.build_manifest(module.scan_sources(0.0, None), "full"),
+    )
+
+
+def _future_mtime(path: Path) -> None:
+    """Stamp a file with a far-future mtime, as a lane checkout does."""
+    future = time.time() + 90 * 86400
+    os.utime(path, (future, future))
+
+
+def test_incremental_selection_is_content_hash_not_mtime(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    beta = tmp_path / "handoffs" / "active" / "beta.md"
+    _write_baseline(module, tmp_path, [
+        (alpha, "# Alpha\n\nFirst.\n"),
+        (beta, "# Beta\n\nSecond.\n"),
+    ])
+
+    _write(beta, "# Beta\n\nChanged.\n")
+    _future_mtime(alpha)
+    _future_mtime(beta)
+
+    manifest = module.incremental_since_tracked_manifest(None)
+
+    assert [source["path"] for source in manifest["sources"]] == [
+        "handoffs/active/beta.md"
+    ]
+    assert manifest["total_new"] == 1
+    assert manifest["drift"]["changed_count"] == 1
+
+
+def test_incremental_ignores_mtime_only_changes(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    _write_baseline(module, tmp_path, [(alpha, "# Alpha\n\nFirst.\n")])
+
+    _future_mtime(alpha)
+
+    manifest = module.incremental_since_tracked_manifest(None)
+
+    assert manifest["sources"] == []
+    assert manifest["total_new"] == 0
+    assert manifest["drift"] == {
+        "added_count": 0,
+        "changed_count": 0,
+        "removed_count": 0,
+        "has_drift": False,
+    }
+
+
+def test_incremental_unchanged_sources_report_zero_with_removals_carried(
+    tmp_path: Path,
+) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    beta = tmp_path / "handoffs" / "active" / "beta.md"
+    _write_baseline(module, tmp_path, [
+        (alpha, "# Alpha\n\nFirst.\n"),
+        (beta, "# Beta\n\nSecond.\n"),
+    ])
+
+    beta.unlink()
+
+    manifest = module.incremental_since_tracked_manifest(None)
+
+    assert manifest["sources"] == []
+    assert manifest["total_new"] == 0
+    assert [source["path"] for source in manifest["removed_sources"]] == [
+        "handoffs/active/beta.md"
+    ]
+    assert manifest["drift"]["has_drift"] is True
+    assert manifest["baseline_manifest"] == "wiki/source_manifest.json"
+
+
+def test_incremental_added_source_is_reported(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    gamma = tmp_path / "progress" / "2026-06" / "gamma.md"
+    _write_baseline(module, tmp_path, [(alpha, "# Alpha\n\nFirst.\n")])
+
+    _write(gamma, "# Gamma\n\nNew.\n")
+
+    manifest = module.incremental_since_tracked_manifest(None)
+
+    assert [source["path"] for source in manifest["sources"]] == [
+        "progress/2026-06/gamma.md"
+    ]
+    assert manifest["total_new"] == 1
+
+
+def test_incremental_type_filter_limits_emission(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    gamma = tmp_path / "progress" / "2026-06" / "gamma.md"
+    _write_baseline(module, tmp_path, [
+        (alpha, "# Alpha\n\nFirst.\n"),
+        (gamma, "# Gamma\n\nSecond.\n"),
+    ])
+
+    _write(alpha, "# Alpha\n\nChanged.\n")
+    _write(gamma, "# Gamma\n\nChanged.\n")
+
+    manifest = module.incremental_since_tracked_manifest("handoff-active")
+
+    assert [source["path"] for source in manifest["sources"]] == [
+        "handoffs/active/alpha.md"
+    ]
+    assert manifest["drift"]["changed_count"] == 2
+
+
+def test_incremental_without_tracked_manifest_raises(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    _write(tmp_path / "handoffs" / "active" / "alpha.md", "# Alpha\n")
+
+    with pytest.raises(ValueError, match="manifest not found"):
+        module.incremental_since_tracked_manifest(None)
+
+
+def test_refresh_tracked_manifest_advances_watermark(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    _write_baseline(module, tmp_path, [(alpha, "# Alpha\n\nFirst.\n")])
+
+    _write(alpha, "# Alpha\n\nChanged.\n")
+    assert module.incremental_since_tracked_manifest(None)["total_new"] == 1
+
+    refreshed = module.refresh_tracked_manifest()
+
+    assert refreshed["mode"] == "touch"
+    assert refreshed["total_new"] == 1
+    assert refreshed["sources"][0]["path"] == "handoffs/active/alpha.md"
+    stored = json.loads(module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8"))
+    assert stored["source_set_hash"] == refreshed["source_set_hash"]
+    assert stored["kind"] == module.MANIFEST_KIND
+    last_compile = module.LAST_COMPILE_PATH.read_text(encoding="utf-8").strip()
+    assert last_compile.endswith("Z")
+    assert last_compile == stored["last_compile"]
+    assert module.incremental_since_tracked_manifest(None)["total_new"] == 0
+
+
+def test_refresh_tracked_manifest_refuses_without_baseline(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    _write(tmp_path / "handoffs" / "active" / "alpha.md", "# Alpha\n")
+
+    with pytest.raises(ValueError, match="--full --write-manifest"):
+        module.refresh_tracked_manifest()

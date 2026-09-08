@@ -454,6 +454,83 @@ def test_advisory_writes_only_transport_and_daemon_state() -> None:
         b.cleanup()
 
 
+def test_air14_screen_result_schema_contract() -> None:
+    """AIR-14 (2026-09-07): the queue row carries a nullable `screen_result`
+    (`premise`, `blocked_by`, `evidence`) so a screening verdict has somewhere
+    to live other than prose in `failure_reason`. Validated against the real
+    schema file, under whatever validator the interpreter resolves."""
+    from scripts.coordination.session_bus import validate_row
+    from scripts.coordination.session_bus import BusError
+
+    b = Bus()
+    try:
+        base = {"schema_version": QV, "ts": now_iso(), "task_id": "sr-1", "status": "READY",
+                "lane": "none", "gating": "none", "epoch": 0}
+        # Absent is the schema's word for 'never screened' — and null is legal.
+        validate_row(b.root, dict(base), "queue_row")
+        validate_row(b.root, {**base, "screen_result": None}, "queue_row")
+        # Every rung of the premise ladder is admissible.
+        for verdict in ("still-needed", "stale", "unknown", "blocked"):
+            row = {**base, "screen_result": {"premise": verdict,
+                                             "blocked_by": "QQ-8" if verdict == "blocked" else None,
+                                             "evidence": "index-graph: QQ-9 blocked on QQ-8"}}
+            validate_row(b.root, row, "queue_row")
+        # The ladder is closed: an off-ladder premise is refused, not laundered.
+        for bad in ({"premise": "probably-fine"}, {"premise": "blocked", "extra": "x"},
+                    {"blocked_by": "QQ-8"}, "stale", 3):
+            try:
+                validate_row(b.root, {**base, "screen_result": bad}, "queue_row")
+            except BusError:
+                continue
+            raise AssertionError(f"screen_result={bad!r} must be refused by the schema")
+    finally:
+        b.cleanup()
+
+
+def test_air14_requeue_transcribes_screen_result_onto_the_row() -> None:
+    """AIR-14: a worker-pool `requeue` (the premise-park path among others)
+    returns the row to READY and its typed `screen_result` is transcribed onto
+    the queue row — the verdict lands in the schema field, not in an outbox
+    nobody folds or in failure_reason prose on a status that means something
+    else (the exact AIR-11 uncountability)."""
+    from scripts.coordination.session_bus import validate_row
+
+    b = Bus("assign")
+    try:
+        b.add_queue(task_id="prk-1", status="ASSIGNED", lane="none", gating="none",
+                    owner="codex", epoch=0)
+        b.add_outbox("codex", kind="requeue", task_id="prk-1", to="coordinator-agent",
+                     payload={"status": "READY", "parked_reason": "premise-unknown",
+                              "screener_evidence": "no model reached",
+                              "screen_result": {"premise": "unknown",
+                                                "evidence": "no model reached"}})
+        b.tick()
+        assert b.status_of("prk-1") == "READY", (
+            f"requeue must return the row to READY (got {b.status_of('prk-1')})")
+        assert b.row("prk-1").get("screen_result") == {
+            "premise": "unknown", "evidence": "no model reached"}
+        # The transcribed row is schema-clean (real schema, real validator).
+        validate_row(b.root, b.row("prk-1"), "queue_row")
+    finally:
+        b.cleanup()
+
+
+def test_air14_screen_result_survives_row_rewrites() -> None:
+    """AIR-14: a recorded verdict is a claim about the world at a moment; it
+    must survive every rewrite of its row (identity-carried like screened_by),
+    or the census that counts verdicts loses them to the next status change."""
+    from scripts.coordination.session_bus_coordinator import _carry_row_identity
+
+    source = {"task_id": "T-1", "status": "ASSIGNED", "lane": "none", "gating": "none",
+              "spec_ref": "h.md#L4", "task_text": "do the thing",
+              "screened_by": "backlog_row_check:OK",
+              "screen_result": {"premise": "blocked", "blocked_by": "QQ-8",
+                                "evidence": "QQ-9 blocked on QQ-8 (open)"}}
+    carried = _carry_row_identity(source)
+    assert carried["screen_result"] == source["screen_result"]
+    assert carried["task_text"] == "do the thing", "existing identity carry unaffected"
+
+
 def main() -> int:
     test_transcription_chain()
     test_failure_outcome()
@@ -463,6 +540,9 @@ def main() -> int:
     test_lease_revocation()
     test_auto_yield()
     test_advisory_writes_only_transport_and_daemon_state()
+    test_air14_screen_result_schema_contract()
+    test_air14_requeue_transcribes_screen_result_onto_the_row()
+    test_air14_screen_result_survives_row_rewrites()
     failed = [w for ok, w in RESULTS if not ok]
     print(f"\n{len(RESULTS) - len(failed)}/{len(RESULTS)} passed")
     if failed:

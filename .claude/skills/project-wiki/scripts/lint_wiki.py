@@ -9,6 +9,7 @@ Exit code: 1 if any ERRORs found, 0 otherwise.
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 import time
@@ -256,6 +257,72 @@ def check_unactioned_intake(
     return issues
 
 
+_CLONE_REPOS_FARM_ENTRY_RE = re.compile(
+    r"^\s*([A-Za-z0-9][A-Za-z0-9_-]*):[^:\s]+:[^:\s]+$"
+)
+
+
+def _symlink_farm_members(repo_root: Path) -> set[str]:
+    """Return the sibling-repo names the repos/ symlink farm defines.
+
+    The farm itself (repos/<name> symlinks into /mnt/raid0/llm) is created
+    only in the shared clone by scripts/clone-repos.sh, but that script is
+    tracked, so a lane worktree can read it and prove a target is
+    cross-repo rather than dangling. An unreadable or unparseable script
+    yields no members and the linter fails closed (no skips).
+    """
+    members: set[str] = set()
+    path = repo_root / "scripts" / "clone-repos.sh"
+    if not path.exists():
+        return members
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return members
+    in_farm = False
+    for line in lines:
+        if "repos=(" in line:
+            in_farm = True
+            continue
+        if not in_farm:
+            continue
+        if ")" in line:
+            break
+        match = _CLONE_REPOS_FARM_ENTRY_RE.match(line)
+        if match:
+            members.add(match.group(1))
+    return members
+
+
+def _cross_repo_skip_message(repo_root: Path, target: Path) -> str | None:
+    """Explain why ``target`` is skipped, or None when it must be checked.
+
+    A target is provably cross-repo when its repo-relative path enters
+    ``repos/<member>/`` for a member of the symlink farm, and this worktree
+    does not actually carry that farm entry (a lane worktree, or a shared
+    clone before clone-repos.sh ran). When the farm entry is present the
+    target resolves normally and a real dangling link stays an ERROR.
+    """
+    normalized = Path(os.path.normpath(str(target)))
+    try:
+        parts = normalized.relative_to(repo_root).parts
+    except ValueError:
+        return None
+    if len(parts) < 2 or parts[0] != "repos":
+        return None
+    member = parts[1]
+    if member not in _symlink_farm_members(repo_root):
+        return None
+    farm_entry = repo_root / "repos" / member
+    if farm_entry.is_symlink() or farm_entry.exists():
+        return None
+    return (
+        "cross-repo target under repos/"
+        f"{member} cannot be verified from this worktree (the repos/ symlink "
+        "farm exists only in /workspace); skipped, not flagged dangling"
+    )
+
+
 def check_missing_crossrefs(active_dir: Path, completed_dir: Path) -> list[Issue]:
     """Pass 5: Check that markdown links in handoffs point to existing files."""
     issues: list[Issue] = []
@@ -277,6 +344,12 @@ def check_missing_crossrefs(active_dir: Path, completed_dir: Path) -> list[Issue
                 resolved = (active_dir / link).resolve()
                 found = resolved.exists()
             if not found:
+                skip = _cross_repo_skip_message(
+                    active_dir.parent.parent, active_dir / link
+                )
+                if skip:
+                    issues.append((INFO, md_file.name, f"{skip}: {link}"))
+                    continue
                 issues.append((ERROR, md_file.name,
                     f"Broken link: [{link}] target not found"))
 
@@ -351,6 +424,12 @@ def check_wiki_link_targets(wiki_dir: Path) -> list[Issue]:
 
     A link is a claim that a document says something. When it dangles, the claim
     is unsupported, so this is an ERROR, not a style warning.
+
+    One deliberate exception: targets that enter repos/<member>/ for a member
+    of the cross-repo symlink farm (scripts/clone-repos.sh). The farm exists
+    only in the shared clone, so a lane worktree cannot verify such targets —
+    they are reported as INFO there, and verified as hard errors in the shared
+    clone where the farm is present.
     """
     issues: list[Issue] = []
     if not wiki_dir.exists():
@@ -378,6 +457,12 @@ def check_wiki_link_targets(wiki_dir: Path) -> list[Issue]:
             seen.add(key)
             resolved = (md_file.parent / target).resolve()
             if not resolved.exists():
+                skip = _cross_repo_skip_message(
+                    wiki_dir.parent, md_file.parent / target
+                )
+                if skip:
+                    issues.append((INFO, f"wiki/{md_file.name}", f"{skip}: {target}"))
+                    continue
                 issues.append((
                     ERROR, f"wiki/{md_file.name}",
                     f"Dangling link target: {target} (resolves to {resolved})",

@@ -400,6 +400,13 @@ lease cases are deterministic; only Inference can declare compatibility or grant
 - [ ] Update `agents/commands/wrap-up.md` for request ID, immutable receipt cut, one designated
       writer, operation-token lease, ordered mutations, Coordinator promotion handoff, and completion
       receipt.
+- [ ] Fix the deterministic `test_full_wrap_transaction_end_to_end` failure (filed 2026-09-08
+      wrap-up). The heavy-wrap e2e fails at its progress-shard assertion (`progress/2026-08/
+      2026-08-23-auditor.md` missing after the run) on a PRISTINE HEAD checkout — proven twice
+      independently (a scratch `git archive` run and a stash-run of the same test), so it is not
+      environment or this session's manifest fix. The defect is upstream of `step_7_compile_wiki`:
+      the run completes all earlier steps yet never writes the auditor's daily shard that step 6
+      asserts.
 - [x] Update concurrent-wrap tests: two same-roster executors contend, only one mutates, crash ✅ 2026-08-13 (`8ff5162c`)
       residue remains held, wrong tokens cannot release, and all worktrees share the common-git-dir
       lease.

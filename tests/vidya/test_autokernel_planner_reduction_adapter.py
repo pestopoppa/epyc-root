@@ -173,7 +173,7 @@ def test_replays_prefilter_and_projects_four_rows_per_cell() -> None:
     assert all(row.date.startswith("2026-08-12T") for row in tuples)
     assert all(row.extra["observation_only"] is True for row in tuples)
     assert all(row.extra["ranking_authority"] is False for row in tuples)
-    assert all(ct.grade(row)[:2] == ("Witnessed", "Attested") for row in tuples)
+    assert all(ct.grade(row)[:2] == ("Witnessed", "Anchored") for row in tuples)
 
 
 def test_r1_refusal_and_r2_failed_panel_project_zero() -> None:

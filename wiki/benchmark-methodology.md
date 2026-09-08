@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-09-07 (three-valued gate verdicts, CJ-8/9/11/12: the same absence-read-as-pass defect found in three independent subsystems in one afternoon -- GPQA gold fabrication, an RL timeout charged as failure, a missing baseline accuracy silently passing a promotion gate; earlier: two screening-loop measurement defects, both generalizable: a noise floor estimated as p95 over subsets of ONE fixed sample cannot exceed that sample's own tail, so the decode floor was low by 0.846 pp at 9 pairs and ~18× at 20 — rebuilt by bootstrap from a three-condition A/A campaign to 2.422%/2.021%/1.188% at 5/9/20 pairs, with `pp512` still UNCALIBRATED; and a static v9 anchor against an accumulating candidate tree made every effect cumulative rather than marginal, committing a −2.864% regression as a "+1.846% keep" — an anchor must advance with the champion, and when per-commit attribution is lost the correct fallback is a block audit of the whole range; earlier: 2026-08-25 TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (2026-08-30: EV-14a ran its first real band attempt - EV-14c landed the pinned-reference baseline revisions (per-tier REVISIONS + compare-to-ghost refusal), the SC37 write side shipped (eval_tower_band.py, one self-hashed .band.json per suite, instrument-resolution-only ClaimTuple), and the 2026-08-28 CPU-only run completed repeat 1/3 clean on protocol before 17 infra-failed questions made build_band_artifact refuse the band fail-closed - corrected attribution split them into a PhysReason data defect (images never extracted), GPU-lane escalations, and transients, so EV-14a is HELD pending the GPU lanes, ~12 h ETA)
-**Sources**: 128+ documents
+**Last compiled**: 2026-09-08 (CJ-8/9/11/12 conversion status: the twelve converted sites are the worked set, ~94 surveyed call sites remain unconverted with the rows open by design, CJ-11 closed via a sibling function never a widened return, CJ-12 closed under the operator's OPTION-1 wrapper ruling with upstream bytes untouched; RC-11 ratified separate FA/FR reporting with `None`-not-`0.0` for unmeasured sides, and the RC-12 rubric-threshold remedy serialized `rubric_threshold_source` into every rubric row; earlier: 2026-09-07 (three-valued gate verdicts, CJ-8/9/11/12: the same absence-read-as-pass defect found in three independent subsystems in one afternoon -- GPQA gold fabrication, an RL timeout charged as failure, a missing baseline accuracy silently passing a promotion gate; earlier: two screening-loop measurement defects, both generalizable: a noise floor estimated as p95 over subsets of ONE fixed sample cannot exceed that sample's own tail, so the decode floor was low by 0.846 pp at 9 pairs and ~18× at 20 — rebuilt by bootstrap from a three-condition A/A campaign to 2.422%/2.021%/1.188% at 5/9/20 pairs, with `pp512` still UNCALIBRATED; and a static v9 anchor against an accumulating candidate tree made every effect cumulative rather than marginal, committing a −2.864% regression as a "+1.846% keep" — an anchor must advance with the champion, and when per-commit attribution is lost the correct fallback is a block audit of the whole range; earlier: 2026-08-25 TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (2026-08-30: EV-14a ran its first real band attempt - EV-14c landed the pinned-reference baseline revisions (per-tier REVISIONS + compare-to-ghost refusal), the SC37 write side shipped (eval_tower_band.py, one self-hashed .band.json per suite, instrument-resolution-only ClaimTuple), and the 2026-08-28 CPU-only run completed repeat 1/3 clean on protocol before 17 infra-failed questions made build_band_artifact refuse the band fail-closed - corrected attribution split them into a PhysReason data defect (images never extracted), GPU-lane escalations, and transients, so EV-14a is HELD pending the GPU lanes, ~12 h ETA))
+**Sources**: 131+ documents
 
 ## Compiled Update — 2026-09-07: cross-model rows are inadmissible without a locked harness — the citation gate, the two-sided aggregation-identity check, and four benchmark-reading rules
 
@@ -4472,3 +4472,110 @@ once at authoring time with nothing that recomputes it) recurring in a fourth, u
   CJ-12) — the settrace guard and the attestation validator that did not previously exist.
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the
   session record, including the wrap-up's own file-by-file re-verification.
+
+## Compiled Update — 2026-09-08: the three-valued conversion is a contract first and a migration second — plus the reviewer plane's FA/FR convention and rubric-threshold provenance
+
+**Confidence: verified** (row states and closure records in the CJ and RC handoffs; remediation
+commits `15d0858f` (epyc-orchestrator), `5a9442d3` (epyc-orchestrator), `af4c5c63` (epyc-root)).
+
+### CJ-8/CJ-9 conversion status: twelve sites is the worked set, not the completion
+
+The 2026-09-07 compile above records the twelve converted gate/scoring sites. What the conversion
+record adds is the status that must not be inferred from those twelve: **CJ-8 and CJ-9 were shipped
+contract-first and their rows remain OPEN by design.** "Ship the contract, not the migration" was
+the explicit working rule — `gate_verdict.py` (829 lines) and one worked conversion
+(`granite_embedder_conversion_preflight.py`) were the deliverable of the first pass; **roughly 94
+further call sites across the two child clones were surveyed and left unconverted**, several of
+them deliberately because converting them is a blast-radius decision on live promotion/safety
+gates (`v7_quality_gate_compare.py`'s exit-2 conversion is the named case — a thin candidate must
+not promote while the change is mid-flight in a shared clone). A reader of the twelve-site record
+should therefore read it as the contract's worked examples, not as completion: the gate plane's
+third value is now *available* everywhere and *enforced* at the twelve sites.
+
+### CJ-11 closed the way the deferral said it had to: a sibling, never a widened return
+
+CJ-11 was deferred out of CJ-8 for a structural reason — live callers wrap `score_response` as
+`bool(resp) and score_response(...)`, so any truthy third value would coerce to a PASS (the
+blocking→promoting flip the three-valued rule forbids). The closure (`1d2fe2a3` /
+`ca21b754`) kept that constraint: the canonical library in epyc-inference-research gained
+**`score_response_or_error` alongside, not in place of**, `score_response`. Layering was inverted
+on purpose — the new function wraps the old rather than the reverse, so the diff is **158
+insertions and 0 deletions** and "the original did not move" is checkable rather than claimable.
+2 of 3 callers migrated; `v7_quality_gate_runner` was **deliberately not migrated** — it is the
+sealed-capture instrument, so what enters its denominator is a measurement-parameter decision for
+the suite owner, not a migration default. The migration disclosed one silent inflation: MC scoring
+with blank gold returned `True` — a free pass on a row with no reference — and now returns
+`no_reference`.
+
+### CJ-12 closed under the operator's OPTION-1 ruling — upstream bytes stay separately attestable
+
+The operator ruled OPTION 1 (wrapper permitted, upstream judgment bytes untouched), with the
+binding constraint that `manifest.json` must record the upstream digest and the wrapper's identity
+as **two distinct facts**, so a reader can still tell which bytes are upstream's. The closure
+(`626bdb78`) modified **zero judge bytes**: the external `harness/judge_guard.py` classifies all 46
+handler sites by a read-only AST pass (5 narrow, 8 pure suppression, 33 escalating) and then
+resolves at runtime — via `sys.settrace` over judge frames only — which handler Python will
+actually run, raising `JudgeFailure` after the judge method returns. Every `upstream_judge_sha256`
+still verifies. The finding that outranked the task: **no validator existed at all** —
+`tools/transcribe.py` wrote the digests once against a disposable clone and nothing ever recomputed
+them, so the byte-identity attestation was unfalsifiable on this host until
+`python3 -m harness attest` landed (mutation-verified; 88 tests).
+
+### RC-11: false-accept and false-reject are reported separately — and an unmeasured side is `None`, never `0.0`
+
+The reporting convention (from intake-1307, whose asymmetry is the precedent): a single aggregate
+accuracy does not satisfy this plane's gate. Where one side is not computable — typically
+false-reject, because a rejected item has no ground truth — **say so explicitly and report the
+cause histogram instead; never omit the side silently.** intake-1307 is the citable demonstration
+that the omission is the *default* in the literature, not an oversight: it quantifies false-accept
+in three places (8% wrong-class proved; 0.877 and 0.932 accepted accuracy) and never converts
+false-reject to a rate at all, decomposing it by cause instead.
+
+The 2026-09-08 audit found all four local FA/FR-reporting surfaces already separate
+(`pii_fixture_eval.py` FA 0/21 + FR 0/30 with own denominators and cause histograms;
+`reviewer_calibration_report.py` per-side columns with Wilson CIs; `safety_gate.py` /
+`review_policy_trials.py` / `screening_tier_runner.py` separate with the absent side surviving as
+null), and closed the one residual gap in epyc-orchestrator `15d0858f`:
+`reviewer_calibration_from_decisions` previously returned only the computable axes while the
+corpus reader silently dropped observation-gold rows. Now **every axis key is always present and an
+unmeasured side is `None` — never absent, never `0.0`** (the fail-open pair both ways: absence
+reads as "no measurement" and a literal zero reads as "measured zero"), `n_gate_fail` /
+`n_gate_pass` ride along, and exclusions are counted by cause at both the corpus-read seam
+(`judgeable_row_cause`: no_candidate_answer / non_conclusive_gold_label /
+observation_gold_confidence / not_a_record) and the gate-None seam (`excluded_no_conclusive_gate`).
+124 targeted + 45 parity tests; ruff clean.
+
+### RC-12 remedy #3 (mechanism half): the rubric threshold now names its own provenance
+
+The RC-12 16-threshold audit (three selection-on-the-certification-sample VIOLATIONS — compiled on
+[formal-verification](formal-verification.md)) found `rubric_pass_threshold`'s default 0.60
+(`eval_tower.py:4334-4335`) had an unknown derivation while converting rubric aggregates into
+per-question `correct` that feeds the SafetyGate quality axis. The 2026-09-08 mechanism half
+(`5a9442d3`) makes the provenance travel with the number: **every rubric row now carries
+`rubric_threshold_source`** — `declared` (threshold + `rubric_threshold_rationale` named in
+`scoring_config`), `declared-no-rationale`, or `undeclared-default-0.60` — serialized into the
+detail row, plus a once-per-suite WARNING naming the remediation when the threshold is undeclared
+or lacks a rationale. The defaulted 0.60 — a choice nobody made — is no longer silent in any
+artifact. The hard-refusal half did NOT land and is recorded with its gate: rubric scoring is
+~0.7% of the quality objective and no suite currently declares the threshold, so refusal would
+abort every rubric row mid-campaign; it ships with the RC-6a/P-REV-1 operator window (the same
+gate as the reviewer-tolerance re-derivation, which needs RC-8 near-miss shadow data). Companion
+loudness fix: `Baseline.load` now warns when a persisted baseline names no `quality` source —
+SG-3 already forces strict same-tier reads at every decision site, so the legacy 1.16
+(`DEFAULT_BASELINE_QUALITY`) only reaches lenient/display reads, but a number nobody re-derived is
+no longer silent.
+
+### Source References (2026-09-08)
+
+- [`canonical-judge-suite-revamp.md`](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-8
+  through CJ-12 closure text: contract-first shipping, the ~94-surveyed-call-sites status, CJ-11's
+  sibling-function layering and deliberate non-migration, CJ-12's OPTION-1 ruling and the
+  no-validator-existed finding.
+- [`reviewer-calibration-accounting.md`](../handoffs/active/reviewer-calibration-accounting.md) —
+  RC-11 (the separate-reporting convention, the four-surface audit, the residual gap) and RC-12
+  (the 16-threshold audit, the rubric_threshold_source mechanism, the gated halves).
+- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the audit table and the
+  wave-2 execution record (`5a9442d3`, `af4c5c63`, `15d0858f`).
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the CJ-8/9
+  contract record ("roughly 94 more call sites ... left unconverted, several deliberately") and the
+  cross-repo naming ratification (`inconclusive` on the wire, `out-of-coverage` in code).

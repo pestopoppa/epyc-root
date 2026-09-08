@@ -308,16 +308,36 @@ class Ledger:
 
     # -- integrity -------------------------------------------------------
 
-    def verify(self) -> list[str]:
+    def verify(self, *, expected_count: int | None = None) -> list[str]:
         """Verify sequence continuity, chain linkage, and frame hashes.
 
         Returns a list of problems; empty means the chain verifies. This is tamper-EVIDENT only --
         a rewriter who recomputes the whole chain leaves no trace here. Tamper-proofing for prior
         history comes from externally held checkpoints (see checkpoint.py).
+
+        SC73: an empty or deleted ledger does NOT verify clean. Any prefix of a hash chain chains,
+        so a ledger truncated to zero is internally consistent while being exactly the corruption
+        a verifier exists to catch -- the strongest possible reading of "chain=OK" must not be
+        produced by having no chain. When `expected_count` is given (a published checkpoint
+        frontier), a ledger shorter than the declaration fails too; appending past it is legal.
         """
         problems: list[str] = []
+        records = self.read_all()
+        if not records:
+            where = "missing" if not self.path.exists() else "empty"
+            problems.append(
+                f"{where} ledger at {self.path}: no records to verify -- chain=OK on the "
+                "absence of the thing verified is the fail-open shape; refusing to report OK "
+                "(SC73)"
+            )
+        elif expected_count is not None and len(records) < expected_count:
+            problems.append(
+                f"ledger at {self.path}: {len(records)} records, declared count "
+                f"{expected_count} -- history is shorter than what was published; any prefix of "
+                "a hash chain chains, so only the declared count sees the truncation (SC73)"
+            )
         prev = GENESIS_PREV_HASH
-        for i, rec in enumerate(self.read_all()):
+        for i, rec in enumerate(records):
             if rec.seq != i:
                 problems.append(f"seq {rec.seq}: out of order (expected {i})")
             if rec.prev_hash != prev:

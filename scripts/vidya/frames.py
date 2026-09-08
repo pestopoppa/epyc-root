@@ -40,6 +40,11 @@ __all__ = [
 # /vN is required so that a schema change is visible in the data instead of inferred.
 FRAME_TYPE_RE = re.compile(r"^epyc\.vidya/frame/[a-z0-9_]+/v\d+$")
 
+# What the fold's `_digest_of` parses out of a subject digest mapping: sha256 over 64 hex digits,
+# case-insensitive and normalized on read. The envelope accepts exactly that set, so a digest the
+# fold would silently drop is refused here instead (SC72).
+_SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
+
 _REQUIRED_TOP = ("frame_type", "assertion", "provenance", "pubinfo")
 _ALLOWED_TOP = set(_REQUIRED_TOP) | {"subjects", "frame_id", "signatures"}
 
@@ -138,8 +143,28 @@ def validate_frame(frame: dict) -> None:
         for i, subj in enumerate(subjects):
             if not isinstance(subj, dict) or "name" not in subj or "digest" not in subj:
                 _fail(f"subjects[{i}] must be a mapping with 'name' and 'digest'")
-            if not isinstance(subj["digest"], dict) or not subj["digest"]:
+            if not isinstance(subj["name"], str) or not subj["name"].strip():
+                _fail(f"subjects[{i}].name must be a non-empty string -- a digest with no name "
+                      "is pinned but anonymous, and a move in an anonymous artifact is "
+                      "undetectable")
+            digest = subj["digest"]
+            if not isinstance(digest, dict) or not digest:
                 _fail(f"subjects[{i}].digest must be a non-empty {{algorithm: hex}} mapping")
+            # SC72: presence is not well-formedness. A digest-shaped string that is not a digest
+            # ({"sha256": "aa"}) used to pass the envelope and was silently dropped by the fold's
+            # parser -- the SC69 defect one layer down. The envelope accepts exactly what the
+            # fold's `_digest_of` parses: one entry, algorithm sha256, 64 hex digits.
+            if len(digest) != 1:
+                _fail(f"subjects[{i}].digest must name exactly one algorithm, got "
+                      f"{sorted(digest)}")
+            (alg, hexdigest), = digest.items()
+            if not isinstance(alg, str) or alg.strip().lower() != "sha256":
+                _fail(f"subjects[{i}].digest algorithm must be 'sha256' (got {alg!r}) -- the "
+                      "fold tracks sha256 digests only, and a digest the fold cannot parse is "
+                      "dropped silently")
+            if not isinstance(hexdigest, str) or not _SHA256_HEX_RE.match(
+                    hexdigest.strip().lower()):
+                _fail(f"subjects[{i}].digest sha256 must be 64 hex digits, got {hexdigest!r}")
 
     sigs = frame.get("signatures")
     if sigs is not None and not isinstance(sigs, list):

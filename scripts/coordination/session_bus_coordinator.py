@@ -1408,6 +1408,29 @@ def spec_ref_state(spec_ref: str, repo_root: Path | None = None) -> tuple[str, s
     return ("closed" if tick == "x" else "open"), detail
 
 
+#: The premise-verdict ladder of scripts/coordination/premise_screener.py,
+#: mirrored here because queue-row `screen_result` is schema-enforced and the
+#: schema enum is this tuple's only consumer-facing copy. AIR-14, 2026-09-07.
+SCREEN_RESULT_VERDICTS = ("still-needed", "stale", "unknown", "blocked")
+
+
+def _valid_screen_result(value: Any) -> bool:
+    """Schema-shaped `screen_result`, or not. Nullable whole-field at the schema
+    level; when present it must carry a verdict from the ladder and nothing but
+    the three AIR-14 fields. Returns False on None — absent is the schema's own
+    word for 'never screened'."""
+    if not isinstance(value, dict):
+        return False
+    if value.get("premise") not in SCREEN_RESULT_VERDICTS:
+        return False
+    if set(value) - {"premise", "blocked_by", "evidence"}:
+        return False
+    for key in ("blocked_by", "evidence"):
+        if key in value and value[key] is not None and not isinstance(value[key], str):
+            return False
+    return True
+
+
 def spec_ref_with_content_anchor(spec_ref: str | None,
                                  repo_root: Path | None = None) -> str | None:
     """Stamp the content anchor onto a `path#Lnnn` ref AT SEED TIME. Idempotent.
@@ -1456,7 +1479,12 @@ _IDENTITY_FIELDS = ("spec_ref", "task_text", "screened_by", "expected_occupancy"
                     "audit_origin", "checkpoint_id", "checkpoint_msg_id",
                     "checkpoint_outcome", "checkpoint_commit_sha", "checkpoint_pushed_ref",
                     "integration_state", "audit_verdict_id", "followup_task_ids",
-                    "rework_findings", "missing_evidence", "evidence_request_pending")
+                    "rework_findings", "missing_evidence", "evidence_request_pending",
+                    # AIR-14 (2026-09-07): a premise-screening verdict is a claim about
+                    # the WORLD at a moment, recorded with a timestamp; like screened_by
+                    # it must survive every rewrite of its row or it silently becomes
+                    # uncountable (the AIR-11 census lost 3 verdicts to exactly that).
+                    "screen_result")
 
 
 def _carry_row_identity(row: dict | None) -> dict:
@@ -2635,9 +2663,22 @@ def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: i
             target = _ACK_IMPLIES.get(target, target)
         if "status" in kinds:
             target = _STATUS_IMPLIES.get(target, target)
+        # AIR-14 (2026-09-07): a worker-pool `requeue` returns its row to READY —
+        # the parked-pre-premise case among them — and its typed `screen_result`
+        # is transcribed onto the row so the verdict lives in the schema field
+        # instead of dying in an outbox nobody folds (the AIR-11 census: verdicts
+        # rode as prose on statuses that mean something else, or nowhere at all).
+        screen_result: Optional[dict] = None
+        if "requeue" in kinds:
+            req = [m for m in msgs if m.get("kind") == "requeue"][-1]
+            payload = req.get("payload") or {}
+            if _valid_screen_result(payload.get("screen_result")):
+                screen_result = payload["screen_result"]
+            target = "READY"
         if target != status:
             out.append({**base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
                         "task_id": tid, "status": target, "epoch": epoch,
+                        **({"screen_result": screen_result} if screen_result is not None else {}),
                         "claim_ts": _utcnow_iso() if target == "CLAIMED" else row.get("claim_ts")})
     return [{k: v for k, v in r.items() if v is not None} for r in out]
 
@@ -2971,6 +3012,30 @@ def progress_log_currency(bus_root: Path, epoch: int, *, hours: float = _PROGRES
 _ADVISORY_MAX_BYTES = 128 * 1024 * 1024
 
 
+def advisory_shard_paths(bus_root: Path) -> list[Path]:
+    """Every `advisory*.jsonl` a reader must read — BOTH sides of the symlink.
+
+    Rotation seals shards beside the RESOLVED runtime file (see
+    `rotate_advisory`), so a reader that globs only `bus_root` sees the live
+    symlink and any historical in-tree shards but none of the sealed ones. A
+    reader of a sharded log reads all shards, so this enumerates the tree
+    directory and the runtime directory and dedups by resolved path — the
+    pre-fix in-tree shards are symlinks onto the runtime file, and counting the
+    same bytes twice is its own defect.
+    """
+    seen: dict[str, Path] = {}
+    live = bus_root / "advisory.jsonl"
+    resolved = Path(os.path.realpath(live)) if live.is_symlink() else live
+    for directory in (bus_root, resolved.parent):
+        try:
+            found = sorted(directory.glob("advisory*.jsonl"))
+        except OSError:  # noqa: BLE001 — a missing runtime dir must not stop delivery
+            continue
+        for path in found:
+            seen.setdefault(os.path.realpath(path), path)
+    return [seen[key] for key in sorted(seen)]
+
+
 def rotate_advisory(bus_root: Path, epoch: int,
                     max_bytes: int = _ADVISORY_MAX_BYTES) -> list[dict]:
     """Shard `advisory.jsonl` once it passes `max_bytes`. Returns advisory rows.
@@ -2993,8 +3058,28 @@ def rotate_advisory(bus_root: Path, epoch: int,
     same reason.
     """
     live = bus_root / "advisory.jsonl"
+    # ROTATE THE TARGET, NEVER THE LINK (P0-7, and the same idiom as
+    # `session_bus._write_atomic`, which resolves `os.path.realpath(path)` when
+    # the path is a symlink for exactly this reason).
+    #
+    # `advisory.jsonl` in the tree is a TRACKED symlink (mode 120000) into the
+    # off-tree runtime at /mnt/raid0/llm/bus-runtime/. `Path.rename` renames the
+    # LINK, not its target, and `Path.touch` on the now-vacant tracked path
+    # creates a NEW REGULAR FILE there — so every rotation quietly re-materialised
+    # a tracked, git-visible, ever-growing log in the repo, and left the "sealed"
+    # shard as a symlink still aliasing the live file. Measured 2026-09-08:
+    # `advisory_1.jsonl` and `advisory_3.jsonl` in the tree were symlinks to the
+    # SAME live target (sealed shards that were not sealed), `advisory_2.jsonl`
+    # was a 134 MB regular file in the repo, and the 35.6 MB regular file at the
+    # tracked path was snapshotted per turn by opencode into a 236 GB opencode.db.
+    #
+    # Resolving first keeps the indirection intact: the shard is derived from the
+    # RESOLVED file's directory (the runtime dir), so the rename stays on one
+    # filesystem, the sealed shard lands beside the runtime file, and the tracked
+    # symlink is never renamed, touched or replaced.
+    resolved = Path(os.path.realpath(live)) if live.is_symlink() else live
     try:
-        size = live.stat().st_size
+        size = resolved.stat().st_size
     except OSError:
         return []
     if size <= max_bytes:
@@ -3002,17 +3087,23 @@ def rotate_advisory(bus_root: Path, epoch: int,
     # Sealed shards are archived OUTSIDE the repo and summarised before this
     # function returns — see `_archive_advisory_shard`. Rotation being correct is
     # not the same as the history surviving it.
-    existing = sorted(bus_root.glob("advisory_*.jsonl"))
-    nxt = 1 + max((int(p.stem.rsplit("_", 1)[-1]) for p in existing
-                   if p.stem.rsplit("_", 1)[-1].isdigit()), default=0)
-    shard = bus_root / f"advisory_{nxt}.jsonl"
+    # The NUMBER comes from BOTH directories, not just the one we write into.
+    # Historical shards sealed before this fix are in the tree; new ones land in
+    # the runtime dir. Numbering off the runtime dir alone would restart at 1 and
+    # `_archive_advisory_shard` would then OVERWRITE the already-archived
+    # `advisory_1.jsonl` — losing the very history archival exists to keep.
+    shard_dir = resolved.parent
+    existing = [q for d in {bus_root, shard_dir} for q in d.glob("advisory_*.jsonl")]
+    nxt = 1 + max((int(q.stem.rsplit("_", 1)[-1]) for q in existing
+                   if q.stem.rsplit("_", 1)[-1].isdigit()), default=0)
+    shard = shard_dir / f"advisory_{nxt}.jsonl"
     try:
-        live.rename(shard)
-        live.touch()
+        resolved.rename(shard)
+        resolved.touch()
     except OSError as exc:  # noqa: BLE001 — never let housekeeping stop the tick
         return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                  "kind": "advisory-rotation-failed", "check": "advisory-rotation",
-                 "detail": f"could not rotate {live} ({size / 1048576:.0f} MiB): {exc}"}]
+                 "detail": f"could not rotate {resolved} ({size / 1048576:.0f} MiB): {exc}"}]
     row = {"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
            "kind": "advisory-rotated", "check": "advisory-rotation",
            "shard": shard.name, "bytes": size,
@@ -3208,7 +3299,7 @@ def load_relay_state(bus_root: Path, ids: Iterable[str]) -> dict:
         # and re-flag all of them — turning a housekeeping win into the C34 flood
         # it was meant to prevent. Same rule as the autopilot journal: rotated
         # means sharded, and a reader of a sharded log reads all shards.
-        for shard in sorted((bus_root).glob("advisory*.jsonl")):
+        for shard in advisory_shard_paths(bus_root):
             with shard.open(encoding="utf-8", errors="replace") as fh:
                 for line in fh:
                     if '"unreachable"' not in line:
@@ -3825,20 +3916,28 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
                    "status": "READY", "lane": pl.get("lane"), "gating": pl.get("gating"),
                    "epoch": epoch, "origin": f"proposed-by:{msg.get('from')}",
                    "spec_ref": spec_ref_with_content_anchor(pl.get("spec_ref"))}
+            note = ""
             for key in ("priority", "priority_class", "contention_class", "role_affinity",
                         "est_wall_clock_h", "replay_eligible",
                         # AUD-2: carry the dispatch identity + its receipts onto the
                         # row, so the daemon's own task-assign can be typed without
                         # re-reading the handoff at assign time (when the anchor has
                         # already moved).
-                        "task_text", "screened_by", "expected_occupancy"):
+                        "task_text", "screened_by", "expected_occupancy",
+                        # AIR-14: a proposal may arrive ALREADY premise-screened
+                        # (typed screen_result); carry it so the verdict has
+                        # somewhere to live other than prose. Validated — a
+                        # misshapen one is dropped with a note, never admitted.
+                        "screen_result"):
                 if pl.get(key) is not None:
-                    row[key] = pl[key]
+                    if key == "screen_result" and not _valid_screen_result(pl[key]):
+                        note += " screen_result=INVALID(dropped)"
+                    else:
+                        row[key] = pl[key]
             # A proposal's `summary` IS the row text when nothing better was given.
             if not row.get("task_text") and pl.get("summary"):
                 row["task_text"] = pl["summary"]
 
-            note = ""
             if not row.get("screened_by"):
                 result = _screen_proposal(row)
                 if result is not None:
@@ -3850,7 +3949,7 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
                             + ("Re-anchor this row by TEXT and re-propose it."
                                if result.needs_reanchor else
                                "The row resolved but is not dispatchable work."))
-                        note = f" screen={result.verdict}->{row['status']}"
+                        note += f" screen={result.verdict}->{row['status']}"
             if not isinstance(row.get("expected_occupancy"), dict):
                 occ = row_intake.estimate_occupancy(
                     row.get("task_text") or "", lane=row.get("lane"),

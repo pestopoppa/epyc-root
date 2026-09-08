@@ -112,6 +112,30 @@ def refusal_reason(belief_path: str | Path) -> str | None:
     # Attestation recompute over the pinned run record. The producer nests the
     # attestation fields inside ``extra`` (verified against the emitted row,
     # 2026-08-27); top-level is tolerated for forward/backward shape changes.
+    # The attestation half of the gate lives in `_attestation_refusal` so `project`
+    # runs the SAME recompute and can carry the result (SC69).
+    reason = _attestation_refusal(row)
+    if reason:
+        return reason
+
+    # Scope clause must ride in the claim.
+    claim = row.get("claim") or ""
+    if "provably updated" not in claim:
+        return "claim omits the provably-updated scope clause"
+    return None
+
+
+def _attestation_refusal(row: dict) -> str | None:
+    """Recompute the canonical-content hash of the pinned run record and compare.
+
+    The producer attests the CANONICAL CONTENT of the metrics dict (its own
+    `_content_hash` over the parsed record), not the file bytes — the file on
+    disk is json.dumps(..., indent=2), which would never re-derive. A record
+    edited in content still fails: the canonical hash moves with the dict.
+    Returns a refusal string when the artifact is missing or moved, None when the
+    digest matches. SC69: this recompute IS the write-boundary verification, and
+    `project` carries its result in the tuple.
+    """
     extra = row.get("extra") or {}
     locator = extra.get("attestation_locator") or row.get("attestation_locator") or ""
     pinned = extra.get("attestation_path") or row.get("attestation_path") or ""
@@ -121,10 +145,6 @@ def refusal_reason(belief_path: str | Path) -> str | None:
     record_path = Path(pinned)
     if not record_path.exists():
         return f"attestation target missing: {pinned}"
-    # The producer attests the CANONICAL CONTENT of the metrics dict (its own
-    # _content_hash over the parsed record), not the file bytes — the file on
-    # disk is json.dumps(..., indent=2), which would never re-derive. A record
-    # edited in content still fails: the canonical hash moves with the dict.
     try:
         record_content = json.loads(record_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -133,11 +153,6 @@ def refusal_reason(belief_path: str | Path) -> str | None:
     if actual != recorded:
         return (f"attestation mismatch: run record {locator} hashed "
                 f"{actual[:12]}…, row pins {recorded[:12]}… — the pinned record moved")
-
-    # Scope clause must ride in the claim.
-    claim = row.get("claim") or ""
-    if "provably updated" not in claim:
-        return "claim omits the provably-updated scope clause"
     return None
 
 
@@ -183,6 +198,14 @@ def project(native: Any) -> ClaimTuple:
     claim = native.get("claim") or ""
     if "provably updated" not in claim:
         raise ProjectionError("claim omits the provably-updated scope clause")
+    # SC69: the same attestation recompute as the refusal gate, so a caller that skips
+    # native_rows still cannot project a row whose pinned record is missing or moved — and when
+    # it matches, the verification result is CARRIED in the tuple (grade() stays pure; this is
+    # the adapter/write boundary, which is where the digest check belongs).
+    attestation_refusal = _attestation_refusal(native)
+    if attestation_refusal:
+        raise ProjectionError(f"attestation not verified: {attestation_refusal}")
+    attestation_verified = True
 
     extra = dict(native.get("extra") or {})
     extra["scope"] = SCOPE_CLAUSE
@@ -208,6 +231,7 @@ def project(native: Any) -> ClaimTuple:
         attestation_sha256=n_extra.get("attestation_sha256") or "",
         attestation_locator=n_extra.get("attestation_locator") or "",
         attestation_present=True,
+        attestation_verified=attestation_verified,
         source_kind=SOURCE_KIND,
         extra=extra,
     )
