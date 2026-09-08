@@ -28,12 +28,13 @@ emits no `ClaimTuple` at all, by design.
 """
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import json
 from pathlib import Path
 from typing import Any, Callable, Iterator
 
-from claim_tuple import ProjectionError, to_frames  # noqa: E402
+from claim_tuple import ClaimTuple, ProjectionError, to_frames  # noqa: E402
 
 from adapters import (  # noqa: E402
     autokernel_aux_receipt,
@@ -163,6 +164,28 @@ def rows_for_document(path: Path, document: dict, digest: str) -> list[dict]:
     return list(module.native_rows(document))
 
 
+def _carry_verification(tuples, native: dict, digest: str):
+    """SC69 — stamp the walk's recompute onto the tuples that claim it.
+
+    ``iter_documents`` computed `digest` by sha256-ing the artifact's bytes the moment it read
+    them, and receipt rows carry exactly that digest as their ``receipt_sha256``. A digest that
+    WAS re-derived from the artifact at this write boundary licenses `Attested`; the result is
+    carried in the tuple (``attestation_verified``), because the ladder is a pure function and
+    may never open the artifact itself. Rows whose digest is not the walk's recompute (journal
+    event families attest their own content, re-derived inside their adapters) are untouched.
+    """
+    if not digest or native.get("receipt_sha256") != digest:
+        return tuples
+    batch = tuples if isinstance(tuples, list) else [tuples]
+    stamped = [
+        dataclasses.replace(t, attestation_verified=True)
+        if (isinstance(t, ClaimTuple) and t.attestation_sha256 == digest)
+        else t
+        for t in batch
+    ]
+    return stamped if isinstance(tuples, list) else (stamped[0] if stamped else tuples)
+
+
 def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
                   dry_run: bool = False,
                   on_refusal: Callable[[Path, str], None] | None = None) -> dict:
@@ -215,6 +238,7 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
                 refusals.append({"path": str(path), "schema": dispatch,
                                  "reason": str(exc)})
                 continue
+            tuples = _carry_verification(tuples, native, digest)
             emitted = to_frames(tuples, as_of=as_of,
                                 adapter_id=getattr(module, "ADAPTER_ID", ADAPTER_ID),
                                 authority=getattr(module, "AUTHORITY", None))

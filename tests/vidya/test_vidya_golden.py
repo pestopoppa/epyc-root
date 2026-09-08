@@ -181,7 +181,13 @@ class TestCliEndToEnd:
         assert any("frame_hash" in p for p in payload["chain_problems"])
 
     def test_a_recomputed_rewrite_passes_the_chain_and_fails_the_checkpoint(self, workspace):
-        """The reason L1 exists: L0 cannot see a rewriter who redoes the chain."""
+        """The reason L1 exists: L0 cannot see a rewriter who redoes the chain.
+
+        SC73 sharpened the second half: L0 alone is blind to a recomputed chain, but a ledger
+        SHORTER than the last published checkpoint now fails chain verification too — the
+        declared count is what sees truncation-to-a-consistent-prefix. The checkpoint root
+        comparison still catches it independently, and a same-length rewrite (which neither
+        count nor chain can see) remains the L1 case this test is named for."""
         ledger = self._seed(workspace)
         res = _cli("--ledger", str(ledger), "checkpoint", "--emit", cwd=workspace)
         assert res.returncode == 0, res.stderr
@@ -198,9 +204,12 @@ class TestCliEndToEnd:
 
         res = _cli("--ledger", str(ledger), "--json", "verify", cwd=workspace)
         payload = json.loads(res.stdout)
-        assert payload["chain_ok"], "a recomputed chain is internally consistent -- L0 is blind"
+        assert not payload["chain_ok"], ("a recomputed chain is internally consistent, so L0 "
+                                         "alone is blind — but the declared checkpoint count "
+                                         "sees the truncation (SC73)")
         assert not payload["checkpoints_ok"], "the published checkpoint must catch it"
         assert res.returncode == 1
+        assert any("declared count" in p for p in payload["chain_problems"])
 
     def test_fold_requires_an_explicit_as_of(self, workspace):
         ledger = self._seed(workspace)
@@ -213,3 +222,47 @@ class TestCliEndToEnd:
         res = _cli("--ledger", str(workspace / ".vidya" / "ledger.jsonl"),
                    "append", str(bad), cwd=workspace)
         assert res.returncode != 0
+
+    def test_statement_binding_candidates_and_emit_end_to_end(self, workspace):
+        """SC61 through the CLI: an unbound verifier claim is proposed, a human approves it, the
+        binding frame lands in the ledger, and the fold applies it to the claim."""
+        ledger = workspace / ".vidya" / "ledger.jsonl"
+        import statement_binding as sb  # noqa: PLC0415
+
+        claim_frame = make_frame(
+            frame_type="epyc.vidya/frame/claim_proposed/v1",
+            assertion={"claim_id": "clm_verify_1", "display_text": "the sort routine returns "
+                       "a sorted permutation of its input", "source_id": "src_v",
+                       "decided_proposition": "for every list xs of int, "
+                       "sorted_permutation(sort(xs), xs) holds"},
+            provenance={"method": "probe/verifier", "about": "clm_verify_1"},
+            actor="probe", authority_scope="test", created_at=GOLDEN_AS_OF)
+        path = workspace / "verifier-claim.json"
+        path.write_text(json.dumps(claim_frame))
+        res = _cli("--ledger", str(ledger), "append", str(path), cwd=workspace)
+        assert res.returncode == 0, res.stderr
+
+        ws_path = workspace / ".vidya" / "bindings-worksheet.yaml"
+        res = _cli("--ledger", str(ledger), "binding-candidates", "--out", str(ws_path),
+                   "--at", GOLDEN_AS_OF, cwd=workspace)
+        assert res.returncode == 0, res.stderr
+        import yaml  # noqa: PLC0415
+
+        worksheet = yaml.safe_load(ws_path.read_text())
+        assert worksheet["schema"] == sb.WORKSHEET_SCHEMA
+        assert len(worksheet["rows"]) == 1
+        worksheet["rows"][0].update(decision="follows", reviewer="operator-1")
+        ws_path.write_text(yaml.safe_dump(worksheet, sort_keys=False, allow_unicode=True))
+
+        res = _cli("--ledger", str(ledger), "--json", "binding-emit", str(ws_path),
+                   "--actor", "operator-1", "--at", GOLDEN_AS_OF, cwd=workspace)
+        assert res.returncode == 0, res.stderr
+        payload = json.loads(res.stdout)
+        assert payload["bindings"][0]["claim_id"] == "clm_verify_1"
+
+        res = _cli("--ledger", str(ledger), "--json", "fold", "--as-of", GOLDEN_AS_OF,
+                   cwd=workspace)
+        assert res.returncode == 0, res.stderr
+        fold_payload = json.loads(res.stdout)
+        assert payload["bindings"][0]["frame_id"] in fold_payload["statement_bindings"].get(
+            "clm_verify_1", [])

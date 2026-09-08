@@ -925,7 +925,70 @@ def test_q4k_direct_pmc_rows_project_exact_directions_and_digests():
     assert all(tup.extra["native_measurement_sha256"] for tup in tuples)
     assert all(tup.extra["receipt_self_sha256"] == source["receipt_sha256"]
                for tup in tuples)
-    assert all(ct.grade(tup)[:2] == ("Witnessed", "Attested") for tup in tuples)
+    # SC69: this DIRECT projection never re-derived the attested digest from any artifact (the
+    # outer receipt_sha256 is a caller-supplied string), so the honest grade stops at
+    # Witnessed/Anchored — the top rung is reachable only through the corpus walk, which
+    # sha256s the receipt file it just read (see test_ingest_stamps_the_walk_recompute).
+    assert all(ct.grade(tup)[:2] == ("Witnessed", "Anchored") for tup in tuples)
+    assert all(any("never verified" in r for r in ct.grade(tup)[2]) for tup in tuples)
+
+
+def test_ingest_stamps_the_walk_recompute_onto_receipt_rows(tmp_path):
+    """SC69 end to end: the corpus walk sha256s the receipt FILE the moment it reads it, so the
+    digest the rows attest IS re-derived at the write boundary — and the resulting tuples carry
+    the verification and reach Attested. This is the route the real corpus takes; the direct
+    projection above cannot claim it."""
+    import json
+
+    from adapters import autokernel_corpus as corpus
+
+    class _Ledger:
+        def __init__(self):
+            self.frames = []
+
+        def append(self, frame):
+            self.frames.append(frame)
+
+    receipt = q4k_receipt()
+    path = tmp_path / "receipt.json"
+    path.write_text(json.dumps(receipt))
+    ledger = _Ledger()
+    report = corpus.ingest_corpus(ledger, root=tmp_path, as_of="2026-09-07T00:00:00Z")
+    assert report["rows_projected"] == 6, report
+    assert report["refused"] == 0
+    supports = [f for f in ledger.frames
+                if f["frame_type"].endswith("evidence_supports_claim/v1")]
+    assert len(supports) == 6
+    assert all(s["assertion"]["grade"] == {"Q": "Witnessed", "T": "Attested"}
+               for s in supports)
+
+
+def test_carry_verification_guards_on_the_walk_recompute_alone():
+    """MUTATION for the test above, at the pure-function level: the stamp fires only when the
+    row's digest IS the walk's own recompute over the artifact bytes, and only when the tuple
+    claims exactly that digest. Any other combination stays unverified."""
+    from dataclasses import replace
+
+    from adapters import autokernel_corpus as corpus
+
+    t = ct.ClaimTuple(
+        measurement_id="probe", metric="m", value=1, date="2026-09-07",
+        category="BASELINE", claim="c", attestation_sha256="a" * 64)
+
+    stamped = corpus._carry_verification(t, {"receipt_sha256": "a" * 64}, "a" * 64)
+    assert stamped.attestation_verified is True
+
+    assert corpus._carry_verification(
+        t, {"receipt_sha256": "a" * 64}, "b" * 64).attestation_verified is None
+    assert corpus._carry_verification(
+        t, {"receipt_sha256": "b" * 64}, "a" * 64).attestation_verified is None
+    assert corpus._carry_verification(
+        t, {"receipt_sha256": "a" * 64}, None).attestation_verified is None
+    other = replace(t, attestation_sha256="b" * 64)
+    assert corpus._carry_verification(
+        other, {"receipt_sha256": "a" * 64}, "a" * 64).attestation_verified is None
+    batch = corpus._carry_verification([t, other], {"receipt_sha256": "a" * 64}, "a" * 64)
+    assert [b.attestation_verified for b in batch] == [True, None]
 
 
 def test_historical_q4k_r7_empty_vector_is_not_backfilled():
@@ -1044,7 +1107,8 @@ def test_prospective_wgm_rows_project_directions_arm_and_shared_grade():
         "lower_better", "higher_better", "lower_better",
     ]
     assert all(tup.extra["wgm_arm"] == 8 for tup in tuples)
-    assert all(ct.grade(tup)[:2] == ("Witnessed", "Attested") for tup in tuples)
+    assert all(ct.grade(tup)[:2] == ("Witnessed", "Anchored") for tup in tuples)
+    assert all(any("never verified" in r for r in ct.grade(tup)[2]) for tup in tuples)
 
 
 def test_projection_uses_native_schema_as_protocol_and_shared_ladder():
@@ -1055,7 +1119,7 @@ def test_projection_uses_native_schema_as_protocol_and_shared_ladder():
     assert tup.protocol_id == "epyc.autokernel.rocprofv1_attribution.v1"
     assert tup.metric_direction == "lower_better"
     assert tup.extra["prompt_tokens"] == 2048
-    assert ct.grade(tup)[:2] == ("Witnessed", "Attested")
+    assert ct.grade(tup)[:2] == ("Witnessed", "Anchored")
 
 
 def test_profile_finalizer_rows_use_the_same_measurement_ladder():
@@ -1079,7 +1143,7 @@ def test_profile_finalizer_rows_use_the_same_measurement_ladder():
     assert projected.protocol_id == "epyc.autokernel.profile_beliefs.v1"
     assert projected.metric_direction == "lower_better"
     assert projected.extra["kernel_family"] == "mul_mat_vec_q"
-    assert ct.grade(projected)[:2] == ("Witnessed", "Attested")
+    assert ct.grade(projected)[:2] == ("Witnessed", "Anchored")
 
 
 def test_p2_5j_rows_project_without_acquiring_placement_authority():
@@ -1094,7 +1158,8 @@ def test_p2_5j_rows_project_without_acquiring_placement_authority():
     assert all(tup.protocol_id == aux._P2_SCHEMA for tup in tuples)
     assert all(tup.extra["placement_selection_authority"] is False for tup in tuples)
     assert all(tup.extra["kernel_speedup_authority"] is False for tup in tuples)
-    assert all(ct.grade(tup)[:2] == ("Witnessed", "Attested") for tup in tuples)
+    assert all(ct.grade(tup)[:2] == ("Witnessed", "Anchored") for tup in tuples)
+    assert all(any("never verified" in r for r in ct.grade(tup)[2]) for tup in tuples)
 
 
 def test_p2_5j_authority_or_measurement_tamper_is_refused():
@@ -1166,7 +1231,7 @@ def test_hip_rows_rederive_and_preserve_observation_only_identity():
                for row in projected)
     assert all(row.date == "2026-08-12" for row in projected)
     assert all(row.extra["authority"] == "observation_only" for row in projected)
-    assert all(ct.grade(row)[:2] == ("Witnessed", "Attested") for row in projected)
+    assert all(ct.grade(row)[:2] == ("Witnessed", "Anchored") for row in projected)
 
 
 def test_hip_row_or_claim_tamper_is_refused():
@@ -1187,7 +1252,7 @@ def test_hip_decision_rows_rederive_task_local_rank_without_release_authority():
     assert all(row.extra["hip_decision_receipt_identity_sha256"]
                == source["receipt_sha256"] for row in projected)
     assert all(row.protocol_id == aux._HIP_DECISION_SCHEMA for row in projected)
-    assert all(ct.grade(row)[:2] == ("Witnessed", "Attested") for row in projected)
+    assert all(ct.grade(row)[:2] == ("Witnessed", "Anchored") for row in projected)
 
 
 def test_hip_decision_sub_floor_or_release_authority_is_refused():

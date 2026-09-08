@@ -279,7 +279,7 @@ def test_successor_projects_three_detector_and_fifty_ranked_unit_rows() -> None:
     assert [row.metric_direction for row in projected[:3]] == [
         "higher_better", "higher_better", "lower_better"]
     assert [row.value for row in projected[:3]] == [1.0, 1.0, 0.0]
-    assert all(ct.grade(row)[:2] == ("Witnessed", "Attested") for row in projected)
+    assert all(ct.grade(row)[:2] == ("Witnessed", "Anchored") for row in projected)
     elapsed = projected[3]
     assert elapsed.reps == reward.KERNEL_REPETITIONS
     assert elapsed.extra["case_identity"]["source_sha256"] == "1".zfill(64)

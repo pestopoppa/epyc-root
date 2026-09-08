@@ -117,8 +117,21 @@ def test_absent_artifacts_grade_down_rather_than_being_skipped():
     assert any("proves nothing" in r for r in reasons)
 
 
-def test_full_manifest_with_present_artifacts_reaches_attested():
-    assert sm.grade(SEALED, artifacts_present=True)[:2] == ("Witnessed", "Attested")
+def test_present_but_unverified_artifacts_stop_short_of_attested():
+    """SC69: presence is not verification. The fixture's digest was never re-derived from any
+    file, so the honest grade is Witnessed/Anchored — Attested means the artifact was re-read
+    and matched, not that a 64-character string was typed."""
+    q, t, reasons = sm.grade(SEALED, artifacts_present=True)
+    assert (q, t) == ("Witnessed", "Anchored")
+    assert any("never verified" in r for r in reasons)
+
+
+def test_full_manifest_with_verified_present_artifacts_reaches_attested():
+    """MUTATION for the test above: a manifest whose attested digests WERE re-derived at the
+    frame boundary (frames_for_manifest recomputes the authority files and hashes.json) keeps
+    the top rung."""
+    assert sm.grade(SEALED, artifacts_present=True,
+                    artifacts_verified=True)[:2] == ("Witnessed", "Attested")
 
 
 def test_reps_sum_across_arms():

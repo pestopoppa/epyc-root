@@ -100,6 +100,9 @@ def cmd_fold(args) -> int:
         "ignored_frame_types": result.ignored_frame_types,
         "counted_judgments": len(result.counted_judgments),
         "superseded_judgments": len(result.superseded_judgments),
+        # SC61: the claim -> live statement-binding frame map, so an attested binding is
+        # observable in derived state, not just in the raw ledger.
+        "statement_bindings": dict(sorted(result.statement_bindings.items())),
     }
     if repair:
         payload["ledger_repairs"] = repair
@@ -211,13 +214,20 @@ def cmd_verify(args) -> int:
     # ledger file was corrupt when in fact it is internally consistent and simply not the history
     # that was published. That distinction IS the L1 rung -- a rewriter who recomputes the chain
     # leaves L0 pristine, and only the externally-held checkpoint catches them.
-    chain_problems = led.verify()
+    # SC73: an empty ledger must not report chain=OK. The latest published checkpoint IS the
+    # declared count -- chain verification alone cannot see truncation-to-nothing, because any
+    # prefix of a hash chain chains.
+    declared = None
+    ckdir = _checkpoint_dir(args)
+    if ckdir.exists():
+        declared = max((cp.parse_checkpoint(p.read_text())[0].tree_size
+                        for p in ckdir.glob("checkpoint-*.txt")), default=None)
+    chain_problems = led.verify(expected_count=declared)
     checkpoint_problems: list[str] = []
     records = led.read_all()
     hashes = [r.frame_hash for r in records]
 
     checkpoint_results = []
-    ckdir = _checkpoint_dir(args)
     if ckdir.exists():
         leaves = [h.encode("utf-8") for h in hashes]
         for path in sorted(ckdir.glob("checkpoint-*.txt")):
@@ -475,6 +485,59 @@ def cmd_alias_emit(args) -> int:
     return _emit({"groups": emitted, "dry_run": args.dry_run}, args.json, "\n".join(human))
 
 
+# ------------------------------------------------- statement binding (SC61)
+
+def cmd_binding_candidates(args) -> int:
+    """Propose unbound verifier claims for an `attested` statement-binding review (SC61)."""
+    import yaml  # noqa: PLC0415
+
+    from statement_binding import candidate_rows, worksheet_from_candidates  # noqa: PLC0415
+
+    led = _ledger(args)
+    rows = candidate_rows([r.frame for r in led.read_all()], limit=args.limit)
+    worksheet = worksheet_from_candidates(rows, generated_at=args.at)
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(yaml.safe_dump(worksheet, sort_keys=False, allow_unicode=True, width=100))
+    human = [
+        f"candidates: {len(rows)} unbound verifier claim(s) whose decided proposition is not "
+        "the claim itself (identity-eligible pairs are never proposed)",
+        f"worksheet: {out}  -- every row is 'pending' until a human decides",
+    ]
+    return _emit({"candidates": len(rows), "out": str(out)}, args.json, "\n".join(human))
+
+
+def cmd_binding_emit(args) -> int:
+    """Turn approved worksheet rows into `claim_statement_binding/v1` frames."""
+    import hashlib  # noqa: PLC0415
+
+    import yaml  # noqa: PLC0415
+
+    from statement_binding import bindings_from_worksheet, frame_from_binding  # noqa: PLC0415
+
+    worksheet_bytes = Path(args.worksheet).read_bytes()
+    worksheet = yaml.safe_load(worksheet_bytes.decode())
+    # Digest the FILE, not the parsed structure, for the same reason alias-emit does: the frame
+    # pins which reviewed document produced the decision, and the worksheet may carry text.
+    worksheet_digest = "sha256:" + hashlib.sha256(worksheet_bytes).hexdigest()
+    bindings = bindings_from_worksheet(worksheet)
+    led = _ledger(args)
+    emitted = []
+    for binding in bindings:
+        frame = frame_from_binding(binding, actor=args.actor, at=args.at,
+                                   worksheet_digest=worksheet_digest)
+        if args.dry_run:
+            emitted.append({"claim_id": binding["claim_id"], "frame_id": frame["frame_id"]})
+            continue
+        rec = led.append(frame)
+        emitted.append({"claim_id": binding["claim_id"], "frame_id": frame["frame_id"],
+                        "seq": rec.seq})
+    prefix = "(dry run) " if args.dry_run else ""
+    human = [f"{prefix}{len(emitted)} statement binding(s) from {args.worksheet}"]
+    human += [f"  {e['claim_id']} <- {e['frame_id']}" for e in emitted]
+    return _emit({"bindings": emitted, "dry_run": args.dry_run}, args.json, "\n".join(human))
+
+
 # ------------------------------------------------------------------ ingest
 
 AUTOKERNEL_CORPUS_ROOT = Path("/mnt/raid0/llm/autokernel")
@@ -665,6 +728,21 @@ def build_parser() -> argparse.ArgumentParser:
     ae.add_argument("--at", required=True)
     ae.add_argument("--dry-run", action="store_true")
     ae.set_defaults(func=cmd_alias_emit)
+
+    bc = sub.add_parser("binding-candidates",
+                        help="propose unbound verifier claims for an attested binding review")
+    bc.add_argument("--out", required=True, help="worksheet path to write")
+    bc.add_argument("--at", required=True, help="generation timestamp")
+    bc.add_argument("--limit", type=int, help="only the first N candidates")
+    bc.set_defaults(func=cmd_binding_candidates)
+
+    be = sub.add_parser("binding-emit",
+                        help="emit claim_statement_binding frames from an approved worksheet")
+    be.add_argument("worksheet")
+    be.add_argument("--actor", required=True)
+    be.add_argument("--at", required=True)
+    be.add_argument("--dry-run", action="store_true")
+    be.set_defaults(func=cmd_binding_emit)
 
     i = sub.add_parser("ingest", help="run a source adapter")
     i.add_argument("adapter", choices=["intake", "autokernel"])

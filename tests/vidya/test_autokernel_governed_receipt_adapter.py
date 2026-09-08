@@ -184,7 +184,7 @@ def test_replay_projects_one_attested_row_through_shared_ladder():
     assert projected.reps == 2
     assert projected.metric_direction == "higher_better"
     assert projected.extra["native_verdict"] == "REPRODUCED_KNOWN_WIN"
-    assert ct.grade(projected)[:2] == ("Witnessed", "Attested")
+    assert ct.grade(projected)[:2] == ("Witnessed", "Anchored")
 
 
 def test_live_projects_exactly_five_rows_with_unique_identity():
@@ -194,7 +194,7 @@ def test_live_projects_exactly_five_rows_with_unique_identity():
     projected = [governed.project(row) for row in rows]
     assert len(projected) == len({row.measurement_id for row in projected}) == 5
     assert all(row.protocol_id == governed.LIVE_PROTOCOL for row in projected)
-    assert all(ct.grade(row)[:2] == ("Witnessed", "Attested") for row in projected)
+    assert all(ct.grade(row)[:2] == ("Witnessed", "Anchored") for row in projected)
 
 
 @pytest.mark.parametrize("defect", [

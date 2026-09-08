@@ -568,6 +568,10 @@ def project(native: Any) -> ClaimTuple:
             f"{native.get('artifact_path', '')}"
         ),
         attestation_present=bool(native.get("attestation_present")),
+        # SC69: validate_artifact above re-derived the artifact's canonical-content self-hash
+        # (tamper -> void before projection), so the attested digest WAS re-read and matched at
+        # this write boundary. Carried, so the ladder stays a pure function of the tuple.
+        attestation_verified=True,
         source_kind=SOURCE_KIND,
         extra={
             "schema": artifact["schema"],

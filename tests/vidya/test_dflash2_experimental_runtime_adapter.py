@@ -99,7 +99,12 @@ class DFlash2ExperimentalRuntimeAdapterTests(unittest.TestCase):
         projected = A.project(rows[0])
         self.assertIsInstance(projected, ct.ClaimTuple)
         self.assertEqual(projected.metric_direction, "higher_better")
-        self.assertEqual(ct.grade(projected), ("Witnessed", "Attested", []))
+        # SC69: the fixture's attested digest was never re-derived from any artifact (the
+        # campaign manifest lives at a locator this reader cannot open), so the honest shared
+        # ladder verdict is Witnessed/Anchored — not the top rung on a typed string.
+        q, t, reasons = ct.grade(projected)
+        self.assertEqual((q, t), ("Witnessed", "Anchored"))
+        self.assertTrue(any("never verified" in r for r in reasons))
         self.assertIs(ct.registered()[A.PROJECTION_NAME], A.project)
 
     def test_pre_hook_df2_4_emits_zero_rows(self):

@@ -118,6 +118,27 @@ def artifact_exists(record: dict) -> bool:
 def to_tuple(record: dict) -> ClaimTuple:
     """Project a measurement record into the canonical tuple. Projection only — no grading."""
     art = record.get("attestation") or {}
+    present = artifact_exists(record)
+    sha = str(art.get("sha256") or "")
+    # SC69: verification is I/O and happens at the boundary that constructed this record, with
+    # the RESULT carried in. Two carriers, one meaning ("the digest was recomputed against the
+    # artifact at the write boundary and matched"):
+    #   * `art["verified"] is True` — set by an adapter-side reader that re-derived the digest
+    #     with the PRODUCER'S own semantics (autopilot journal rows attest a canonical-content
+    #     self-hash, never the shard bytes, so no generic recompute can confirm them);
+    #   * otherwise, when the attested artifact is a resolvable file, recompute a plain
+    #     byte-sha256 here — the generic case for records that attest file bytes.
+    # A digest claim nothing re-derived proves nothing: both carriers must be absent or
+    # mismatching, and the tuple then carries no verification and grades Witnessed/Anchored.
+    verified = True if (art.get("verified") is True and sha) else None
+    if verified is None and present and sha:
+        rel = PurePosixPath(str(art.get("path")))
+        if not rel.is_absolute() and ".." not in rel.parts:
+            try:
+                actual = hashlib.sha256((REPO_ROOT / rel).read_bytes()).hexdigest()
+            except OSError:
+                actual = None
+            verified = True if actual == sha else None
     return ClaimTuple(
         measurement_id=str(record["measurement_id"]),
         metric=str(record["metric"]),
@@ -131,12 +152,13 @@ def to_tuple(record: dict) -> ClaimTuple:
         reps_basis=str(record.get("reps_basis") or ""),
         unit=str(record.get("unit") or ""),
         attestation_path=str(art.get("path") or ""),
-        attestation_sha256=str(art.get("sha256") or ""),
+        attestation_sha256=sha,
         attestation_locator=str(art.get("locator") or ""),
         # Resolve presence in this module before crossing the shared-carrier boundary. Tests and
         # alternate roots deliberately rebind measurement_record.REPO_ROOT; letting ClaimTuple
         # resolve again against its own module root silently downgraded real shards to Anchored.
-        attestation_present=artifact_exists(record),
+        attestation_present=present,
+        attestation_verified=verified,
     )
 
 

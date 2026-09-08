@@ -28,6 +28,18 @@ def write_journal(tmp_path: Path, rows: list[dict]) -> Path:
     return tmp_path
 
 
+def _entry_digest(row: dict) -> str:
+    """The digest the trial writer records: sha256 over the entry's own content, excluding the
+    measurement block (experiment_journal.py). SC69: this fixture writes REAL digests so the
+    adapter's re-derivation has something to match."""
+    import hashlib
+
+    payload = {k: v for k, v in row.items() if k != "measurement"}
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, default=str, allow_nan=False).encode("utf-8")
+    ).hexdigest()
+
+
 def row(trial_id=1, **over):
     base = {
         "trial_id": trial_id, "timestamp": "2026-08-12T10:00:00+00:00", "species": "s",
@@ -40,6 +52,11 @@ def row(trial_id=1, **over):
         },
     }
     base.update(over)
+    # The digest lives inside `measurement`, which the payload excludes, so it can be computed
+    # after the fact — and must be REAL for the adapter's SC69 re-derivation to verify it.
+    att = (base.get("measurement") or {}).get("attestation")
+    if isinstance(base.get("measurement"), dict) and isinstance(att, dict):
+        att["sha256"] = _entry_digest(base)
     return base
 
 

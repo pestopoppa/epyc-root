@@ -293,6 +293,15 @@ def _evaluate(expr: dict, beliefs: dict[str, Belief], floor: Grade, ctx: dict) -
     if key in ("any", "all"):
         if not isinstance(value, list):
             raise ValueError(f"'{key}' takes a list of predicates")
+        # SC71: an empty required-set is a definitional error, not a degenerate truth value.
+        # `all: []` is vacuously true and would report an obligation SATISFIED by nothing, while
+        # `any: []` can never fire and declares a requirement that can never be met — both fill
+        # an absence the spec says must be recorded (§4.7, "absence is recorded, never filled").
+        if not value:
+            raise ValueError(
+                f"'{key}' over an empty set is vacuous: an obligation that requires nothing "
+                "reads identical to one whose requirements all passed. Name at least one "
+                "predicate, or drop the condition and let the absence be recorded (SC71)")
         results, reasons = [], []
         for sub in value:
             if not isinstance(sub, dict) or len(sub) != 1 or set(sub) & {"any", "all"}:

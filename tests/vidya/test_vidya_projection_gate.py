@@ -33,10 +33,13 @@ NOW = "2026-08-09T12:00:00Z"
 FLOOR = lat.parse_grade("Verified/Anchored")
 
 
-def _sup(claim, evidence, q, t, kind="evidence_supports_claim"):
+def _sup(claim, evidence, q, t, kind="evidence_supports_claim", source_id=None):
+    assertion = {"claim_id": claim, "evidence_id": evidence, "grade": {"Q": q, "T": t}}
+    if source_id is not None:
+        assertion["source_id"] = source_id
     return frames.make_frame(
         frame_type=f"epyc.vidya/frame/{kind}/v1",
-        assertion={"claim_id": claim, "evidence_id": evidence, "grade": {"Q": q, "T": t}},
+        assertion=assertion,
         provenance={"method": "test", "anchor": f"anchor:{evidence}"},
         actor="test", authority_scope="research-verification", created_at=NOW)
 
@@ -239,9 +242,19 @@ class TestGate:
         assert res.outcome == Outcome.ABSTAIN and "independent support" in res.reasons[0]
 
     def test_independence_requirement_met_by_two_paths(self):
+        # SC72: support paths that name no source collapse to ONE unnamed source -- two
+        # unidentified paths must not satisfy a two-source policy. The independence mechanics
+        # need two genuinely distinct sources, so this fixture names them.
+        r = fold([_sup("c", "e1", "Verified", "Anchored", source_id="s1"),
+                  _sup("c", "e2", "Verified", "Anchored", source_id="s2")], as_of=NOW)
+        assert evaluate("c", r, self._policy(min_disjoint_supports=2)).outcome == Outcome.ALLOW
+
+    def test_two_unnamed_paths_cannot_satisfy_a_two_source_policy(self):
+        """MUTATION for the test above: without named sources the same two paths are ONE
+        unidentified source, so a two-source policy must abstain rather than count labels."""
         r = fold([_sup("c", "e1", "Verified", "Anchored"),
                   _sup("c", "e2", "Verified", "Anchored")], as_of=NOW)
-        assert evaluate("c", r, self._policy(min_disjoint_supports=2)).outcome == Outcome.ALLOW
+        assert evaluate("c", r, self._policy(min_disjoint_supports=2)).outcome == Outcome.ABSTAIN
 
     def test_the_gate_never_serves_stale_as_current(self):
         """The pilot's one promise, stated as a test.

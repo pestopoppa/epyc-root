@@ -94,10 +94,29 @@ def test_hash_over_a_missing_file_does_not_reach_attested(tmp_path, monkeypatch)
     assert any("not on disk" in r for r in reasons)
 
 
+def _real_measurement_digest() -> str:
+    """The actual sha256 of the repo's MEASUREMENT.md — a digest a recompute can verify (SC69)."""
+    import hashlib
+
+    return hashlib.sha256(
+        (Path(__file__).resolve().parents[2] / "MEASUREMENT.md").read_bytes()
+    ).hexdigest()
+
+
 def test_full_tuple_with_present_hashed_artifact_reaches_attested():
     rec = base(protocol_id="P-CPU-BASE-1", reps=3,
-               attestation={"path": "MEASUREMENT.md", "sha256": "a" * 64})
+               attestation={"path": "MEASUREMENT.md", "sha256": _real_measurement_digest()})
     assert mr.grade(rec)[:2] == ("Witnessed", "Attested")
+
+
+def test_a_recorded_digest_nothing_re_derived_stops_short_of_attested():
+    """SC69: a 64-character digest that nothing recomputed against the artifact is a claim, not
+    a verification — Witnessed/Anchored, with the reason stated."""
+    rec = base(protocol_id="P-CPU-BASE-1", reps=3,
+               attestation={"path": "MEASUREMENT.md", "sha256": "a" * 64})
+    q, t, reasons = mr.grade(rec)
+    assert (q, t) == ("Witnessed", "Anchored")
+    assert any("never verified" in r for r in reasons)
 
 
 def test_attestation_path_cannot_escape_the_repo():
@@ -124,7 +143,8 @@ def test_every_downgrade_names_its_own_cause():
 def test_append_is_dry_runnable_and_stamps_grade(tmp_path, monkeypatch):
     monkeypatch.setattr(mr, "LEDGER_DIR", tmp_path)
     stored = mr.append(base(protocol_id="P-1", reps=5,
-                            attestation={"path": "MEASUREMENT.md", "sha256": "a" * 64}))
+                            attestation={"path": "MEASUREMENT.md",
+                                         "sha256": _real_measurement_digest()}))
     assert stored["grade"] == {"Q": "Witnessed", "T": "Attested"}
     assert len(stored["record_sha256"]) == 64
     lines = (tmp_path / "2026-08.jsonl").read_text().splitlines()
@@ -148,7 +168,8 @@ def test_dry_run_writes_nothing(tmp_path, monkeypatch):
 
 def test_frames_carry_the_grade_into_the_ledger():
     frames = mr.to_frames(base(protocol_id="P-1", reps=5,
-                               attestation={"path": "MEASUREMENT.md", "sha256": "a" * 64}),
+                               attestation={"path": "MEASUREMENT.md",
+                                            "sha256": _real_measurement_digest()}),
                           as_of="2026-08-12T00:00:00Z")
     sup = next(f for f in frames if f["frame_type"].endswith("evidence_supports_claim/v1"))
     assert sup["assertion"]["grade"] == {"Q": "Witnessed", "T": "Attested"}
