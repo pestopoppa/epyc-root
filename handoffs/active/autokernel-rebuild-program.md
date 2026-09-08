@@ -1808,6 +1808,46 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         *"cannot tell, probably slightly negative"* (−2.18%, n=10) — a gap the bench alone would never have shown.
         Make the loop spend the serving gate on **every N keeps regardless of the compounded estimate** (or drop
         `fire_multiple` to 1.0). **Operator to confirm the cadence.**
+      - [ ] **R23-55 — A FLOOR WITHOUT ITS UNIT IS A 1200-FOLD ERROR. Every floor file must record `unit`.**
+        Measured by INF-70 (2026-09-08, RETEST-1) and owed to INF-73 U2, which already requires each floor to
+        carry harness, n, contention model and host-state hash — **`unit` (arm | session | process) is the
+        missing field, and it is the one that changes the answer by three orders of magnitude**:
+
+        | scope | sd | what it costs |
+        |---|---|---|
+        | within-session (**arm**-scoped knob) | **0.501%** | — |
+        | between-session (**process launch**-scoped knob) | **2.793%** | ~**13x coarser** floor |
+
+        A **process-scoped** knob faces a floor ~13x coarser than an **arm-scoped** one. Concretely: INF-70's
+        0.171% *arm* floor says CHAMP-2 THP needs **4 sessions/side**; the correct **session-unit** answer is
+        **4,780** — a **1200-fold** underestimate that would have been spent as real host time.
+        Action here: `loop-memory/serving-floor.*.json` and the bench-floor records must **record `unit`
+        alongside harness, n, contention model and host state**, and a gate that compares an effect to a floor
+        of a different unit must **refuse**, not warn. Cross-ref: `autokernel-unified-surface-program.md` U2.
+      - [x] **R23-56 — RETEST-1 CLOSE-OUT: no CPU keeps; consolidation complete** ✅ 2026-09-08. INF-70's
+        final RETEST-1 report (~12:10Z) yields **zero keeps to fold**, so the consolidated champion stands at
+        **`ef81196d5`** (see `autokernel-champion-aggregate.md` → *CONSOLIDATION COMPLETE*). Bookkeeping:
+
+        | item | value |
+        |---|---|
+        | RETEST-1 A/A (today) | **1.051%** / **0.171%** (**arm**-unit floor) |
+        | arms lost to foreign tooling | **1** (python@800% + opencode, `Cpus_allowed` 0-191, **unattributed**) |
+        | `inf70/sync17-fix2` @ `2516c9807` | **CLAIM, regression -2.136%** -> **DO-NOT-FOLD** (both knobs default ON *is* the regression) |
+        | CHAMP-2 THP | **+3.458% NON-CLAIM** (p=0.143), **not** mechanism-refuted -> unresolved, operator call on INF-70's side |
+
+        Q2 third-party disturbance is now **priced**: a **1-in-6 hit rate ~= a 17% tax in arms**, paid on work
+        identified as garbage only *after* running it. **Serialisation between the two sessions held — it is
+        not the binding constraint**: *"Region-lock serialises those who call it; nothing constrains those who
+        don't."* -> feeds **OP-41** (admission-control broker), see `autokernel-unified-surface-program.md` 3.4.
+        Host-state change for the record: at **12:05Z** the operator stopped the orchestrator API (uvicorn
+        :8000 + 6 workers, **pid 3961116**, up since 2026-08-26) via `orchestrator_stack.py stop orchestrator`;
+        hub :8100, OCR :9001, sd_server :8190 and the docker containers remain. **Candidate (unproven)** source
+        of the 800% python that cost one Q2 arm.
+        Also inherited: INF-70's `gate.py` now routes all statistics through one `screened()` function (cannot
+        compute over screen-dropped arms, cannot PASS on zero cases), mutation-tested both directions — this
+        **generalises the ak-rebuild FOLD-2 vacuous-pass guard**.
+        The operator's *no kernel research until a FULLY consolidated champion* condition is **satisfied**;
+        **loop relaunch remains a separate operator go** and is deliberately not scheduled here.
       - [x] **R23-52 — status heartbeat during keep post-processing** ✅ 2026-09-07 IMPLEMENTED (research `70d98807`; 4 `publish()` calls: anchor build / headline / reprofile / accumulate; 422 tests; takes effect at the next launch — run 30 holds the old module). Observed run 30, 2026-09-07: after the first
         keep (`bff30cebe`, +2.583%) `loop-status.json` went **30+ min without a write** while `promote_anchor` did
         the clean anchor build (gen-021, 117 objects at 20:07Z, `cmake`/`gmake` children 9 min in), then verify,

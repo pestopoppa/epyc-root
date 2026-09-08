@@ -173,6 +173,17 @@ tg128 pairs, INF-70's is ~5% clean / 19.89% contended on a 24-prompt served harn
 serving gate fires per surface. The headline card shows per-surface gain over the shared cor, never a
 sum or product across surfaces.
 
+**A floor must carry its UNIT (measured 2026-09-08, INF-70 RETEST-1) — this is the field whose absence
+costs three orders of magnitude.** The conditions list above (harness, n, contention model, host-state hash)
+was incomplete: add **`unit` ∈ {arm, session, process}**, the scope at which the knob under test varies.
+Within-session (**arm**) sd is **0.501%**; between-session (**process launch**) sd is **2.793%** — a
+process-scoped knob faces a floor **~13× coarser** than an arm-scoped one. Worked consequence: INF-70's
+**0.171% arm** floor says CHAMP-2 THP needs **4 sessions/side**; the correct **session-unit** answer is
+**4,780** — a **1200-fold** error, and it would have been spent as real host hours. So: every floor record
+states its unit, and **a gate comparing an effect to a floor of a different unit REFUSES** rather than warns.
+Mirror task: `autokernel-rebuild-program.md` **R23-55** (write `unit` into `loop-memory/serving-floor.*.json`
+and the bench-floor records).
+
 **Re-baselining rule (INF-70 review, 2026-09-07).** The cor is SHARED, so when any surface's promotion
 advances it, every other surface's `compounded_bench_pct` is momentarily stated against a baseline its own
 harness never measured. That number is INVALID until that surface re-measures tip-vs-new-cor on its own
@@ -246,6 +257,19 @@ necessary, not nice-to-have.
 ranges; a build pinned to 96-183 is OUTSIDE 0-95 yet occupies the siblings of 0-87, so the lock would
 grant a bench arm during the compile. The broker must reserve by PHYSICAL core (sibling-expanded, via
 `foreign_load.bench_logical_cpus`) — a build slot on 96-183 and a bench arm on 0-95 are the same resource.
+
+**Third-party disturbance is PRICED, and serialisation is not the binding constraint (INF-70, 2026-09-08).**
+Across the RETEST-1 Q2 arms the disturbance hit rate was **1 in 6 ≈ a 17% tax in arms** — and it is the
+expensive kind, *paid on work identified as garbage only after running it*. Serialisation between the two
+sessions **held**: both sides honoured the region lock and it still did not protect the instrument, because
+> *"Region-lock serialises those who call it; nothing constrains those who don't."*
+
+That sentence is the whole case for **admission control over cooperative locking**: the broker must gate
+**entry to the host**, not participation in a protocol. Foreign, unattributed load (a python process at
+**800% CPU**, `Cpus_allowed` 0-191, plus `opencode`) cost one Q2 arm outright. Host-state change for the
+record: at **12:05Z** the operator stopped the orchestrator API (uvicorn :8000 + 6 workers, pid **3961116**,
+up since 2026-08-26) via `orchestrator_stack.py stop orchestrator`; hub :8100, OCR :9001, sd_server :8190 and
+the docker containers remain — a **candidate, unproven** source of that 800% python.
 
 - **Gate guards (2026-09-08):** a gate cannot PASS on zero cases or an unobserved graph; verify process
   death by `/proc/<pid>` existence, not `ps` exit codes.
@@ -353,6 +377,9 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] `Bundle.surface`; per-surface store filenames; `load_bundle()` per surface; shared cor invariant test
 - [ ] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) — the CPU session's canonical recipe codified
 - [ ] CPU A/A calibration: screen floor + serving floor, n=20 pairs, host-state hash recorded
+- [ ] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model
+      and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES (INF-70 RETEST-1,
+      2026-09-08: arm sd 0.501% vs process-launch sd 2.793%; the 1200-fold THP sizing error). See R23-55.
 - [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
 - [ ] **Re-baseline on cor advance**: `stale_baseline` set on every non-promoting surface at PROMOTE, cleared only by
       a tip-vs-new-cor measurement on that surface's own harness; test that a quote while flagged is refused
@@ -396,6 +423,12 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 
 **OP-41 headline evidence (2026-09-08):** two campaigns, both pinned, lock respected → **4.2× / 2.9×**
 mutual degradation via DRAM bandwidth; see §3.4. (Master-index row update owed to its owning session.)
+
+**OP-41 second evidence bullet (2026-09-08, RETEST-1 close-out):** cooperative serialisation **worked and was
+still insufficient** — third-party disturbance ran at a **1-in-6 hit rate ≈ 17% tax in arms**, paid only after
+the arm was run. *"Region-lock serialises those who call it; nothing constrains those who don't."* This is
+evidence for the **admission-control broker** (option A) over any further tightening of the lock protocol;
+see §3.4.
 | UD-1 | CPU serving recipe = the gate for the CPU surface | the CPU session's canonical served recipe (Qwen3.8-Flash-Next), codified as `Recipe`; not a bench proxy |
 | UD-2 | promotion granularity | one production candidate carries BOTH surfaces; a surface without a demonstrated gate does not block the other's keeps landing on the champion, but does block promotion |
 | UD-3 | who authors CPU hypotheses after U3 | loop planner for RUNTIME_CONFIG/SOURCE on the CPU surface; CPU session keeps diagnosis; revisit after 10 CPU iterations |

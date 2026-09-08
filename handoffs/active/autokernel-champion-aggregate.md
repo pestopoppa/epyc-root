@@ -15,6 +15,12 @@ fixed production anchor.
 | **CH-4 / CH-6 follow-ons** | See their entries; both are settled to a conclusion, follow-ons only. |
 | **not on this page** | `AK-INST-3` (prove a campaign reaches `sci >= 1`), `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](autokernel-restart-and-strip.md). |
 
+**CONSOLIDATION COMPLETE 2026-09-08 — the champion is `ef81196d5`** (GPU tip `bff30cebe` + CPU
+champion3 `9c4f73e29`, FOLD-2 G1-G5 PASS). INF-70 has **no CPU keeps to fold**; the operator's
+*no-kernel-research-until-a-fully-consolidated-champion* condition is satisfied. Loop relaunch is a
+**separate operator go**. Before any sweep picks up "an unfolded CPU branch", read the **DO-NOT-FOLD
+ledger** at the bottom of this page (`inf70/sync17-fix2 @ 2516c9807` is a measured **regression**).
+
 **RECONCILED 2026-08-31 — there is ONE champion now, by ratified invariant.** The two lineages
 this page used to distinguish were the incident (INC-20260831-champion-lineage-fork: the rebuilt
 loop was seeded 2026-08-30 from bare v9 as a NEW sibling branch while THE champion sat one branch
@@ -642,3 +648,35 @@ the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's
       worktree clean, pushed to fork `pestopoppa/llama.cpp`. Production branch untouched. Consolidated champion =
       GPU tip (6 unconfirmed keeps) + CPU champion3 `9c4f73e29`. PROD-1 still owes the CPU launch recipe before
       any promotion headline.
+
+### CONSOLIDATION COMPLETE — `ef81196d5`, 2026-09-08
+
+- [x] **FOLD-4 — consolidation is CLOSED; there are no CPU keeps pending** ✅ 2026-09-08. INF-70 reported
+      its final RETEST-1 results at ~12:10Z with **no keeps to fold**. The consolidated champion is
+      **`ef81196d5`** on `ak/champion/llama-cpp-0db32c06e3e5` = GPU tip `bff30cebe` + CPU champion3
+      `9c4f73e29`, FOLD-2 G1–G5 all PASS. The operator's standing condition — *no kernel research until a
+      FULLY consolidated champion* — is **satisfied**. Loop relaunch remains a **separate operator go**;
+      nothing on this page launches or schedules it.
+
+#### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
+
+| branch @ commit | disposition | why | condition if ever folded |
+|---|---|---|---|
+| `inf70/sync17-fix2` @ `2516c9807` | **DO NOT FOLD — CLAIM, and the claim is a REGRESSION** | **−2.136%** (ratio 0.9786, CI [0.9771, 0.9804], p=0.0286, n=4v4 in one hot session, 24/24 outputs byte-identical). Both knobs default **ON** on that branch, **and that default IS the regression**. | If ever folded, **both knobs must flip default OFF**. Its value is as an **instrument**, not a keep. |
+
+**Why this negative is admissible where SYNC-19's was not.** The `P` arm is a *directional positive
+control*: the knob demonstrably reaches dispatch, confirmed by per-arm server knob readback. Decomposition
+of the −2.136%: **C→P (FIX-3's yield alone) −1.883%**; **P→F (column split alone) −0.258%**. The tiny-solo
+run was the better choice — the same barrier arithmetic that refuted `inf10-gemv-fusion`. SYNC-19's model
+predicted **+3.31%**; the sign is wrong.
+
+- [ ] **CHAMP-2 (THP) — UNRESOLVED: not a keep, and not mechanism-refuted.** +3.458%, **NON-CLAIM**
+      (p=0.143, CI [0.9962, 1.0632]). The hypothesis that VEC_Q8K/QSPLIT had already removed its traffic is
+      **contradicted** — the estimate is positive and *larger* than the +1.0% it supposedly lost. Settling it
+      needs ~**11 sessions/side ≈ 2.4 h**; that is an **operator call on INF-70's side**, not a champion-owner
+      action. Do not fold it and do not retire it as refuted.
+
+**Method note inherited from INF-70 (applies to this page's gates).** INF-70's `gate.py` now routes all
+statistics through a single `screened()` function — it *cannot* compute over screen-dropped arms and *cannot*
+PASS on zero cases — mutation-tested in both directions. This **generalises the ak-rebuild FOLD-2
+vacuous-pass guard**: the guard is not a fold-window one-off, it is the shape every gate should have.
