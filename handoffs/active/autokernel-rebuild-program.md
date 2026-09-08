@@ -1222,16 +1222,18 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
 
 ### Open (R23 follow-ups)
 
-- [ ] **R23-7 — fix stale `PRODUCTION_QUANT_FAMILY` (`workload_contract.py:58` refuses
+- [x] ✅ 2026-09-02 **R23-7 — fix stale `PRODUCTION_QUANT_FAMILY` (`workload_contract.py:58` refuses
       production's own Q8_0 model).** Verified: `Q8_0` is absent from the frozenset, so
       `verify_workload()` refuses production's own Qwen3.8-27B-Q8_0 while passing the mismatched
       1.5B instrument. Land at the run-23 boundary, never mid-run. (Rung design §5.1.)
-      *Folded into R23-11 (2026-09-01 D1–D6 ruling); flips with it.*
-- [ ] **R23-8 — floor keying (surface, workload-class) per rung design §5.1/R21-8.**
+      *Folded into R23-11 (2026-09-01 D1–D6 ruling); flips with it.* **✅ 2026-09-02 — R23-11 IS `[x]`,
+      so this flips with it. Ticked at the 2026-09-08 wrap-up reconciliation; the resolution predates it.**
+- [x] ✅ 2026-09-02 **R23-8 — floor keying (surface, workload-class) per rung design §5.1/R21-8.**
       `bench.floor_rows()` keys by surface only; calibration artifacts record `"model"` but
       nothing reads it — confirmed structurally. Key by (surface, workload-class); mismatch →
       uncalibrated/refuse. Land at the run-23 boundary, never mid-run.
-      *Folded into R23-11 (2026-09-01 D1–D6 ruling); flips with it.*
+      *Folded into R23-11 (2026-09-01 D1–D6 ruling); flips with it.* **✅ 2026-09-02 — R23-11 IS `[x]`,
+      so this flips with it. Ticked at the 2026-09-08 wrap-up reconciliation; the resolution predates it.**
 - [ ] **R23-9 — DFlash2 standalone llama-bench smoke (2 min GPU) + 27B confirm-surface A/A
       calibration window (~5–6 h) — OPERATOR-GATED, next boundary.** Frozen v9 carries the dflash
       arch (verified in `0db32c06e`), so the 2 GB rung is loadable by both arms; the smoke decides
@@ -1415,7 +1417,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       for 2.38x decode is a good trade for real serving, not a regression to repair.
       Run 24 launched **pid 260751**, confirm gate ACTIVE (27B, 5 pairs, dec-b4 1.142% + dec-b8
       1.753%), screen parity waived-and-recorded, claim held on mi210_0.
-- [ ] **R23-26 — the champion-vs-production HEADLINE SURFACE is wrong for this aggregate.**
+- [x] ✅ 2026-09-04 **R23-26 — the champion-vs-production HEADLINE SURFACE is wrong for this aggregate.**
       Established by R23-22/R23-23: the headline is measured on dec-b4 (`pp512/tg0`), a
       prefill-only shape, while the champion's largest asset (DFlash2, 2.38x) is a DECODE feature
       that surface cannot observe. The published headline therefore systematically UNDERSTATES the
@@ -1423,6 +1425,10 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       serving. Propose: the headline for an aggregate carrying decode features must include a
       decode/speculative surface (tg128 and/or a DFlash2-enabled arm) reported ALONGSIDE prefill,
       never replacing it. Until then quote the headline as "prefill-only".
+      **✅ 2026-09-04 — SUBSUMED BY R23-43**, which is `[x]` and says so in terms: *"subsumes R23-18 (DFlash2
+      regression guard) and R23-26 (headline surface)"*. The serving recipe is now the keep gate and
+      llama-bench is demoted to a screen. **Independently re-confirmed 2026-09-08**: `tg128` understated the
+      real serving rate by ~2.5x (31.0 vs 79.25 tok/s) — exactly this item's thesis, measured.
 - [x] **R23-27 — run 24 STOPPED and reconfigured to hunt ON the confirm rung** ✅ 2026-09-03
       (operator: *"do the third"*). **Why**: run 24 ran 14 h and produced **116 measurements, ZERO
       keeps** — best effect +0.650% against a 0.668% floor, only 4 attempts above +0.468%: the 1.5B
@@ -1794,7 +1800,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         run. Trajectory: bundle reached +5.19% (4 keeps, the ~5% the operator remembered), peaked at +6.13%
         (5 keeps), reset to 0 by the run-30 launch — against an +8.84% threshold it was never allowed to
         reach. `load_bundle()` now restores it and refuses state the tree no longer contains.
-      - [ ] **R23-51a — seed the true champion of record at the next launch.** cor should be `445e93a8`
+      - [x] ✅ 2026-09-08 **R23-51a — seed the true champion of record at the next launch.** cor should be `445e93a8`
         (where R23-44 took effect), with the 5 keeps since it. The bundle's `compounded_bench_pct` must be a
         **MEASURED tip-vs-cor bench, never the product of solos** (+6.13% is a product and R23-48 is exactly
         the rule against quoting one) — so it needs one bench arm at launch. Blocked on GPU time.
@@ -1803,6 +1809,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           `445e93a8`**, keeps provisional. Durable bundle: cor `445e93a8`, tip `bff30cebe`, 6 keeps, compounded
           +5.958 (bench, measured); on the next launch `load_bundle` advances the tip to the new anchor and
           keeps the cor.
+        **Parent ✅ 2026-09-08: its only sub-item is `[x]`, and the "blocked on GPU time" condition is gone.**
       - [x] **R23-54 — serving gate is MANDATORY, not threshold-triggered** ✅ 2026-09-08. Its first firing (2026-09-08)
         showed an **11-point proxy-vs-truth gap**: the tg128 proxy said **+5.958%** while the serving gate said
         *"cannot tell, probably slightly negative"* (−2.18%, n=10) — a gap the bench alone would never have shown.
@@ -1943,7 +1950,9 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         contention is not the driver. Sizing at OFF variance: +/-3% = 12 launches (0.76 h), +/-1% = 100 (6.33 h),
         +/-0.5% = 397 (25 h).
 
-      - [ ] **R23-58 — MEASURE THE THP SHIM AGAINST THE SERVING FLOOR BEFORE SPENDING ANOTHER SERVING GATE.**
+      - [x] ✅ 2026-09-08 **R23-58 — MEASURE THE THP SHIM AGAINST THE SERVING FLOOR BEFORE SPENDING ANOTHER SERVING GATE.**
+        ✅ 2026-09-08 **COMPLETE — BOUNDED NULL (T0/D0). DO NOT ADOPT ON THE GPU SERVING PATH. R23-58 IS CLOSED.**
+        Verdict block below; the registered action was pre-fixed and is honoured as written.
         The serving gate launches a fresh `llama-server` per sample, so it is **session-unit** and pays exactly
         the variance above; its clean floor is **4.581% p95 at n=10** (`serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json`),
         and that floor is the binding constraint on every GPU keep — it is why the 6-keep bundle resolved only to
@@ -1986,7 +1995,56 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         from a linked library. That false blocker would have cost a 64-job rebuild contending with INF-70's live
         measurement. See the eleventh sign in the vacuous-verification record.
 
-      - [ ] **R23-60 — THE SERVING PATH PROVES NO GPU RESIDENCY.** `bench.py` samples residency; `serving.py`
+        **VERDICT 2026-09-08 (ran 16:35-17:02Z; 1607.4 s).** Ran to the registered stop rule. **48 launches /
+        24 couples, 24 valid of 24 launched, none replaced**, every launch residency `proven`, all 48
+        positive-control readbacks correct in **both** directions.
+
+        | element | result |
+        |---|---|
+        | claim (i) LEVEL | **T0** — 5/10 ON faster at the second look (exact two-sided alpha 0.0430). A coin flip. **No magnitude may be quoted.** |
+        | claim (ii) DISPERSION | **D0** — `p95_dev` ratio OFF/ON = **0.713**, p = 0.3159; sd(log) ratio 0.918, p = 0.5854 |
+        | OFF arm | median **167.117** tok/s, p95_dev **6.657%**, cv 3.671%, n = 24 |
+        | ON arm | median **169.396** tok/s, p95_dev **9.334%**, cv 3.905%, n = 24 |
+        | registered action | **NULL. Do not adopt. Close R23-58.** |
+
+        The dispersion point estimate does not merely miss significance — it points the **wrong way**: the ON arm
+        is slightly **WIDER**. The CPU surface's compressed downside tail does not appear here at all.
+
+        **BOUNDED, never unqualified.** At n=24/arm the primary permutation test had ~0.97 power against a 3x
+        dispersion ratio and ~0.69 against 2x. **A large effect is excluded; a small one is not.** Any citation
+        that drops the bound is a misquote.
+
+        **WHY THIS NULL IS ADMISSIBLE WHERE SYNC-18's WAS NOT — the controls are the valuable half.** The
+        mechanism demonstrably RAN: OFF arm AnonHugePages ~53% of RSS, ON arm **0.0% on every launch**, kernel
+        `THP_enabled` read back correct in both directions all 48 times. This is not a knob-never-fired null --
+        the trap that made INF-70's SYNC-18 untestable as built. **A null from a knob proven to have fired is
+        evidence; a null from a knob that never reached dispatch is not.**
+
+        **CONSEQUENCE — THE LAUNCH RECIPE IS PER-SURFACE. This qualifier is load-bearing and must travel with
+        every champion citation.** `GGML_NOHUGEPAGE_PROCESS=1` is **adopted on the CPU decode path** (CHAMP-2,
+        operator ruling) and **MUST NOT be added to the GPU serving recipe** -- R23-58 is the measurement that
+        separates them. A reader who sees only "the champion runs with the shim" will add a knob to the GPU
+        launch path that buys nothing: the PROD-1 failure mode exactly. Spell **both** knobs out wherever this is
+        cited -- adopted `GGML_NOHUGEPAGE_PROCESS` (prctl, at launch, **CPU only**) vs pre-existing
+        `GGML_NOHUGEPAGE` (madvise, already on).
+
+        **Evidence** (all frozen before the first launch): `/mnt/raid0/llm/tmp/r2358-shim-serving-20260908/` --
+        `PREREGISTRATION.md` sha256 `0a72a0256a0c897768ce396fa20e21f7b969b42e588d28ebb54db8cb04c59d01`,
+        `FROZEN-AT-LAUNCH.sha256` (registration + runner + checklist, stamped 2026-09-08T16:35:38Z),
+        `VERDICT.json` (schema `epyc.r2358.verdict.v1`), `VERDICT.md`, `launches.jsonl`, `thp_proof.txt`,
+        `arm-off.json`, `arm-on.json`, `run.log`. Build `/mnt/raid0/llm/tmp/build-fold-ef81196d5`, source
+        `ef81196d5bdd4190b46dff4ae7eecc333a46c8ce`, tree clean. Promoted out of scratch into the research repo
+        (`data/`) at commit `48a6f6f2`.
+
+        - [x] **R23-58a — the per-surface qualifier is recorded wherever the champion recipe is stated**
+          ✅ 2026-09-08 (`autokernel-champion-aggregate.md` CHAMP-2, this page, the wiki compile, and
+          `docs/design/champion-max-performance-20260908.md`).
+
+      - [x] **R23-60 — THE SERVING PATH PROVES NO GPU RESIDENCY.** ✅ 2026-09-08 **LANDED** — research
+        `f00d78be`, merged `657910f1`: `serving.py` samples residency across each launch, records the
+        window it covers, and **refuses a launch measured non-resident**. Schema
+        `epyc.autokernel.serving_residency.v1`. Proved out end-to-end the same day: all 48 R23-58
+        launches and all 12 max-performance-sweep launches carry `status: proven`. `bench.py` samples residency; `serving.py`
         samples nothing. **Every serving number this campaign has taken is therefore un-proven as GPU-resident**,
         including the 4.581% floor and the bundle gate that held the champion at `445e93a8`. The numbers are
         very likely fine — this is a missing proof, not a suspected defect — but it is exactly the kind of gap
@@ -2002,6 +2060,41 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         the point. The gate now announces the unverified provenance on every invocation (R23-59 work). Fix with
         `recal_serving_floor --apply` (now in-repo and routed through `serving.write_floor`). Needs the host;
         do it in the same window as R23-58, since that run recalibrates both arms anyway.
+
+        **STATUS 2026-09-08: STILL OPEN. Started, then STOPPED MID-RUN** when the operator redirected to the
+        maximum-performance numbers. It produced **no result and wrote nothing** — no floor file was written, no
+        loop-memory state changed. The recalibration itself is still owed.
+
+        **What R23-58's 24 clean OFF-arm launches established at zero extra cost — the standing floor is
+        probably OPTIMISTIC:**
+
+        | quantity | value |
+        |---|---|
+        | standing floor, recomputed | **4.494%** (the stored file says 4.581%), n = 10, median 161.08 tok/s |
+        | today, same configuration | **6.596%**, n = 24, median 167.12 tok/s — **1.47x wider** |
+        | bootstrap, 20,000 draws of n=10 from today's 24 | median **6.258%**, 5th pct **4.200%**, 95th pct **7.821%** |
+        | fraction of n=10 draws at or below the standing 4.494% | **9.0%** |
+
+        (`VERDICT.json`'s OFF-arm summary reports **6.657%** over the same 24 launches; the ~0.06 pp difference
+        tracks the same recompute-vs-stored discrepancy visible on the standing floor itself, 4.494% vs 4.581%.)
+
+        So the standing floor is **low but not implausible** — an unlucky-tight small sample, a genuinely changed
+        condition, or both. **Two conditions differ** (different build, different window): the **same confound as
+        R23-62**, so this narrows the cause without closing it. Do not report the 1.47x as a measured degradation.
+
+        **THE CONCLUSION THAT GENERALISES — a floor estimated from n=10 on an EXTREME ORDER STATISTIC is not fit
+        for gating.** `p95_dev` is a tail statistic; at n=10 its sampling distribution is wide enough (5th-95th
+        pct spanning 4.200%-7.821% here) that the point estimate carries no useful precision, and every gate
+        built on it inherits that. **Recalibrate at n >= 24, and record `n` and a CI alongside the value.** A
+        floor without its `n` is the same defect class as a floor without its `unit` (R23-55) — a field a
+        measurement must carry to be admissible.
+
+        - [ ] **R23-61a — RUN THE RECALIBRATION at n >= 24 and write `n` + a CI into the floor record.**
+          `recal_serving_floor --apply` under the recipe now in force (so the record carries a `recipe_hash` and
+          stops being `unverified`). Needs the host, ~30 min, **nothing is blocking it** — the GPU is idle and
+          R23-58 is closed. Extend `serving.write_floor` so the floor file carries `n` and a CI next to the
+          percentage; a floor that cannot state its `n` must not gate.
+
       - [ ] **R23-59 — THE CHAMPION IS NOT FULLY DESCRIBED BY A COMMIT: carry the launch/build recipe under the
         champion's identity.** CHAMP-2 is the first concrete instance — the artifact is `ef81196d5` **plus** a
         launch recipe, and a champion identified only by a commit hash is **under-specified in a silent way**,
@@ -2030,6 +2123,26 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         daemon thread re-publishes the last step every 30 s (envelope 180 s: silence = process gone) and the body
         carries `actor_health {recent_attempts, planner_transient, failing, last_failure}`; `loop.html` shows
         `ACTORS FAILING · n/m · <reason>` in the header. Takes effect at the next launch (run 30 holds the old module).
+      - [ ] **R23-63 — CHECKBOX RECONCILIATION SWEEP: roughly a third of this page's open backlog is
+        HYGIENE DEBT, not work.** Found at the 2026-09-08 wrap-up pruning screen. A screen of the open items
+        found **~22 of 68 already resolved in prose and never ticked** — several *naming their own resolver* —
+        which inflates the INF-66 open count and the dashboard's progress metric, and makes the real backlog
+        unreadable. **Five were verified and flipped in this wrap-up** (R23-7, R23-8 — both say verbatim
+        *"Folded into R23-11; flips with it"* and R23-11 is `[x]` ✅ 2026-09-02; R23-18, R23-26 — R23-43 is
+        `[x]` and says *"subsumes R23-18 … and R23-26"*; R23-51a — its only sub-item is `[x]` and its
+        "blocked on GPU time" condition is gone). **The remainder needs a judgement pass I deliberately did
+        not make**, because an unverified tick is worse than an untidy list:
+        - `R21-6`, `R21-7`, `P7.4` — **stale by EVENT, not by evidence**: R21-6 still asserts a "BOUNDARY
+          tonight, 2026-08-31 22:00Z"; R21-7 and P7.4 both assert a LOC budget as "BINDING, zero headroom"
+          that has since been raised twice. The event passed; whether the WORK landed is a separate question
+          and is what must be checked.
+        - `R23-9` — plausibly done under R23-16 / R23-19a / R23-20; needs the same check.
+        **Method (the part that generalises): reconcile against GIT and against the named resolver's
+        checkbox, never against prose.** Two items closed mechanically today precisely because they wrote
+        their own release condition (*"flips with R23-11"*; *"open until `b367d09f` is accepted and merged"* —
+        verified with `git merge-base --is-ancestor`). **An item that states its own release condition can be
+        closed by a clerk; one that does not needs its owner.** Prefer writing the condition into the item.
+        Cheap, not research, and worth doing before any compaction of this page.
       - [ ] **R23-53 — Q4_K-GATED KEEPS ARE DEAD WEIGHT ON THE PRODUCTION TARGETS; retract or re-target.** Operator
         2026-09-08: autokernel targets **Q8_0 Qwen3.8-27B and Qwen3.6-35B-A3B**. Audit of the champion: 52 tg128 keeps,
         product-of-solos +252%; **22 are Q4_K-gated and cannot fire on Q8_0** (R23-29 already said "production-neutral");
@@ -2227,11 +2340,13 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       confirm surface. NOT auto-run: it doubles the hold on run 24 for a second view of the same
       question. Decide after R23-19's dec-b4 number is in hand — if dec-b4 shows heavy
       attenuation, dec-b8 becomes informative rather than confirmatory.
-- [ ] **R23-18 — standing rule candidate: DFlash2 smoke joins the confirm gate** — any future
+- [x] ✅ 2026-09-04 **R23-18 — standing rule candidate: DFlash2 smoke joins the confirm gate** — any future
       keep touching fattn*/mmvq/mmq/speculative-verify files should trigger the capability smoke
       before the champion advances (cheap: ~5 min; the confirm rung already owns the 27B).
       Decide after R23-17's first measured result whether this goes in loop code or stays a
       boundary-step; if loop code, it rides the regrowth budget conversation.
+      **✅ 2026-09-04 — SUBSUMED BY R23-43** (`[x]`, BUILT + committed): *"subsumes R23-18 (DFlash2 regression
+      guard) and R23-26 (headline surface)"*. The serving gate now owns the DFlash2 surface.
 
 ---
 

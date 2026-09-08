@@ -724,6 +724,34 @@ predicted **+3.31%**; the sign is wrong.
       cheaper on a shared host. INF-70's final characterisation is re-running with the shim ON, sized from
       the ON sd (0.481%) rather than OFF's (2.510%), which is what makes a +/-1% headline affordable at all.
       Tracked as INF-73 U3-SEED / U3-DEFAULTS; GPU-side transfer test is R23-58.
+
+      #### ⚠ THE ADOPTION IS **CPU-ONLY**. R23-58 SETTLED THE GPU SIDE, AND THE ANSWER IS NO.
+
+      **Read this before quoting the champion recipe anywhere.** The GPU-side transfer test **ran on 2026-09-08
+      and returned a BOUNDED NULL** (T0/D0; 48 launches / 24 couples; `p95_dev` ratio OFF/ON 0.713, p = 0.3159;
+      5/10 ON faster). The ON arm was if anything slightly **WIDER**. Full verdict and evidence:
+      `autokernel-rebuild-program.md` → R23-58.
+
+      | surface | `GGML_NOHUGEPAGE_PROCESS=1` | authority |
+      |---|---|---|
+      | **CPU decode** (canonical launch recipe) | **ON — ADOPTED** | operator ruling 2026-09-08, CHAMP-2, 6/6 pairs, session unit, direction only |
+      | **GPU serving** (`qwen3.8-27b-q8-gpu-dflash2-np4`) | **NOT SET — DO NOT ADD** | R23-58, bounded null, registered action "do not adopt" |
+
+      > **The champion artifact is `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` ON THE CPU DECODE PATH.**
+      > On the GPU serving path the shim is measured null and is **not** part of the recipe.
+
+      **Why the qualifier is load-bearing rather than pedantic.** Without it a reader concludes "the champion runs
+      with the shim" and adds a knob to the GPU launch path that buys nothing — **the PROD-1 failure mode
+      exactly** (a recipe transcribed by hand cost seven MTP arms to a flag that does not exist). This is also the
+      second worked instance of R23-59 / INF-73 U3: the champion is not fully described by a commit, and now not
+      even by a commit plus one recipe — **the recipe is PER-SURFACE.** A `champion.py`/`Bundle` record that
+      carries one recipe per champion is under-specified by construction.
+
+      **The bounded null is a RESULT, not an absence.** At n=24/arm the test had ~0.97 power against a 3x
+      dispersion ratio and ~0.69 against 2x: **a large effect is excluded, a small one is not.** And the mechanism
+      demonstrably fired — OFF arm AnonHugePages ~53% of RSS, ON arm 0.0% on every launch, `THP_enabled` read back
+      correct in both directions all 48 times. That is what separates it from SYNC-18, which was untestable
+      because its knob never reached dispatch.
 - [x] **CHAMP-3 — DELIVERED 2026-09-08: the final champion headline is MULTI-LAUNCH with a session-unit CI.** ✅ 2026-09-08
       (R23-57; INF-73 U2). The champion **characterisation was STOPPED mid-run** on operator instruction
       (*"stop measuring the champion. It's not final yet!"*) and is re-run on the **final** champion, after the
@@ -792,3 +820,94 @@ vacuous-pass guard**: the guard is not a fold-window one-off, it is the shape ev
       **Joint open items, unruled:** INF-70's MEAS-1/OP-40 with our OP-41 (two campaigns, correct pinning
       both sides, each destroying the other's resolution ~3x, plus a ~17% third-party tax from tooling
       neither campaign controls), and the champion divergence above.
+
+---
+
+## CHAMPION MAXIMUM-PERFORMANCE HEADLINE — 2026-09-08 (the postable numbers)
+
+**Canonical, citable artifact: [`docs/design/champion-max-performance-20260908.md`](../../docs/design/champion-max-performance-20260908.md).**
+Quote from there; do not re-derive from this summary and do not re-type the recipe.
+
+Champion `ef81196d5` (everything folded), Qwen3.8-27B-Q8_0, MI210 gfx90a, DFlash2 drafter, canonical serving
+recipe `qwen3.8-27b-q8-gpu-dflash2-np4` with **only `np` varied**, 3 launches per point, **residency `proven` on
+all 12 launches**, peak VRAM 33.1–43.1 GiB, sclk pinned 1700 MHz. Unit: **LAUNCH**.
+
+| slots (`np`) | aggregate tok/s | per slot | p95 dev across 3 launches | runs |
+|---:|---:|---:|---:|---|
+| 1 | **79.25** | 79.25 | 0.44% | 79.2, 79.2, 79.6 |
+| 2 | 109.41 | 54.70 | 1.60% | 109.4, 108.9, 111.2 |
+| 4 | 167.76 | 41.94 | 3.33% | 167.8, 162.2, 169.7 |
+| 8 | **179.12** | 22.39 | 1.82% | 182.4, 178.2, 179.1 |
+
+> **79.25 tok/s single user · 179.12 tok/s aggregate at peak concurrency.**
+
+- **`np=4` is the operating point.** The curve turns over hard between 4 and 8 slots: **+6.8% aggregate for
+  roughly HALF the per-user rate.** np=4 delivers **93.7% of peak aggregate** while each user still sees
+  ~42 tok/s. The canonical recipe is already np=4 — this **confirms** the standing choice, it does not change it.
+- **Dispersion GROWS with concurrency** (0.44% at np=1 → 3.33% at np=4). A single reading at np=4 is far less
+  trustworthy than one at np=1; anything gated at np=4 must state its `n`. Directly relevant to R23-61.
+
+Raw: `/mnt/raid0/llm/tmp/maxperf-20260908/sweep.json` + `sweep.log`; promoted into the research repo (`data/`) at
+commit `48a6f6f2`.
+
+- [x] **HEAD-1 — file the maximum-performance sweep as a canonical citable artifact** ✅ 2026-09-08
+      (`docs/design/champion-max-performance-20260908.md`; referenced from this page).
+
+## ⚠ THERE IS NO CHAMPION-VS-PRODUCTION RATIO FOR THIS CONFIGURATION, AND THERE NEVER WAS ONE
+
+**Production v9 never ran this lane.** `artifacts/operator/ratify_v9_final_freeze_20260811.json` →
+`production_certification` records:
+
+| field | value |
+|---|---|
+| `qwen36_27b_q8_dflash` | `lane_ineligible_acceptance_below_floor` |
+| `dflash_kernel_capability` | `certified` |
+| `dflash_lineup_enabled` | **`false`** |
+
+So production was frozen with the DFlash drafter **compiled in but deliberately NOT enabled for the 27B** —
+acceptance was below floor at the time. The v9 qualification summary
+(`artifacts/operator/v9-qualification-20260810T235723Z-0db32c06e/summary.json` →
+`gates.gpu_candidate_functional_observation`) carries GPU decode for **other roles only**: architect native MTP
+**53.359** tok/s, coder (request_cap 0, no draft activity) **30.268**, worker vision **96.671** — and that block
+is itself stamped `decision_grade: false`.
+
+Three separate reasons the comparison does not exist:
+
+1. **Different model.** The key is `qwen36_27b_q8_dflash` — **Qwen3.6**-27B, not 3.8. Qwen3.8-27B replaced
+   Qwen3.6-27B-MTP-Q8_0 in production only on 2026-08-20/21, **nine days after** this freeze.
+2. **Different drafter, and the frozen binary cannot load ours.** Frozen v9 **rejects the DFlash2 GGUF outright**
+   — `wrong number of tensors; expected 81, got 58`. Production's ceiling for Qwen3.8-27B is **MTP self-draft**,
+   not DFlash2.
+3. **The lane was disabled on purpose.** `dflash_lineup_enabled: false` is a decision, not an omission.
+
+> **The champion's advantage on this surface is partly a CAPABILITY, not a speed delta.** Anyone quoting a
+> champion-vs-production ratio for Qwen3.8-27B + DFlash2 is quoting a number that was never measured, because
+> production cannot produce the denominator.
+
+- [ ] **PROD-BASE-1 — if a champion-vs-production headline is ever wanted, measure production AT ITS OWN BEST.**
+      Its own `np` sweep, whatever spec configuration it actually supports (MTP self-draft for Qwen3.8-27B),
+      under the same host discipline and with residency proven — **never** forcing production through the DFlash2
+      recipe, which measures a lane it does not have and would report a capability gap as a speed gap. Until that
+      exists, the champion headline stands **alone**, as an absolute number, with no ratio attached. Not blocked
+      on anything; not scheduled — it needs the host and an operator go.
+
+## METHODOLOGICAL CAUTION — a BENCH-surface number is not a SERVING number
+
+**Recorded as an error of mine, 2026-09-08.** I quoted the `tg128` llama-bench figures (production 29.4 /
+champion 31.0, **+5.63%**) as "single-stream GPU decode". That was wrong.
+
+**`llama-bench` cannot do speculative decoding at all.** `tg128` is therefore a **bench PROXY** for a serving
+path that has a drafter in it, and it understates the real single-stream serving rate by **~2.5×**
+(**79.25** measured on the recipe vs **31.0** on the bench surface). It also violated the standing rule that
+**headline numbers come from the production recipe**.
+
+| surface | valid use | invalid use |
+|---|---|---|
+| `tg128` / llama-bench | **A/B kernel comparison** — both arms share the surface, so the drafter's absence cancels | **any absolute headline**, any cross-surface ratio, anything the operator would post |
+| serving recipe (`serving.calibrate_floor` / the gate) | absolute headlines, operating-point choice, capacity claims | — |
+
+The +5.63% tg128 delta is **not retracted as an A/B** — it remains a valid kernel-vs-kernel comparison on its own
+surface. What is retracted is its use as a **rate**. Compiled into the wiki with the R23-58 bounded null.
+
+- [x] **METH-BENCH-1 — the bench-vs-serving distinction is recorded where headlines are formed** ✅ 2026-09-08
+      (this page, `docs/design/champion-max-performance-20260908.md`, and the wiki compile).

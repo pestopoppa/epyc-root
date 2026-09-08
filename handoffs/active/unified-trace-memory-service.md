@@ -7,7 +7,7 @@
 **Effort**: ~1–2 inference-free days end-to-end (minimal version: read-only query layer over existing logs)
 **Depends on**: nothing — read-only over already-persisted logs. Optional incremental ingest is additive.
 
-> **Fable 5 review (2026-06-12)**: this service is the designated substrate for two new programs: [frontier-f1-real-task-corpus.md](frontier-f1-real-task-corpus.md) task_record capture (W2) and coordination with the per-question eval ledger schema in [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) — align event schemas before implementing EXM-1.
+> **Fable 5 review (2026-06-12)**: this service is the designated substrate for two new programs: [frontier-f1-real-task-corpus.md](../completed/frontier-f1-real-task-corpus.md) task_record capture (W2) and coordination with the per-question eval ledger schema in [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) — align event schemas before implementing EXM-1.
 
 ## Objective
 

@@ -3363,8 +3363,6 @@ cannot retrigger the expensive gate unchanged.
     cannot build, infer, execute processes, or write production, and labels architecture fixtures
     `empirical_claim=false`. The independently repeated focused suite passed **1,692 tests**. This is
     regression evidence only and does not close the parent empirical campaign task.
-- [x] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
-
 - [ ] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
   fault-injection tests are prerequisites, not substitutes for a campaign rehearsal with durable
   empirical receipts.
@@ -4032,7 +4030,7 @@ tree's ggml.
   both independent trees from the preserved speech freeze. A focused exact-main adapter/plan/T3
   audit passed **783 tests with 132 subtests**.
 
-- [ ] Extend the release-plan compiler to the speech trees — note these two *are* independently
+- [x] ✅ 2026-09-08 Extend the release-plan compiler to the speech trees — note these two *are* independently
   freezable, unlike CPU and GPU (§1.5). **UNBLOCKED 2026-08-03**: Annex S is ratified, so
   `P-STT-1`/`P-TTS-1` are in force and `PHASES_BY_BACKEND` can now carry the speech phase
   vocabulary honestly. It was withheld only because the compiler cannot grade a cell under an
@@ -4040,6 +4038,11 @@ tree's ggml.
   on 2026-08-04 and lives at tag `autokernel-preserve-20260804` — restore from there rather than
   rewriting. Research branch `codex/ak9-speech-compiler-20260812` at `b367d09f` is a pushed proposal
   under primary review; this checkbox remains open until that implementation is accepted and merged.
+  **✅ 2026-09-08 — THE STATED CONDITION IS MET AND VERIFIED.** `b367d09f` is an ancestor of the research
+  repo's `origin/main` (`git merge-base --is-ancestor b367d09f origin/main` → 0), i.e. accepted and merged;
+  the sibling `[x]` above records the same work landing via research `99fe3014` (783 tests, 132 subtests).
+  Ticked at the 2026-09-08 wrap-up reconciliation against git, not against prose — the item wrote its own
+  release condition, which is why it could be closed mechanically.
 - [x] `Annex S` ratified — `measurement/protocols/speech.md`, 86 KB, five annexes in
   `MEASUREMENT.md`. `P-STT-1/2/3`, `P-STT-REL-1`, `P-TTS-1/2/3`, `P-TTS-REL-1` are in force; the
   four verdict grammars carry no `attest <ref>`, reconciled with Annex K's own reasoning.

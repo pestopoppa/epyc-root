@@ -7,6 +7,28 @@
 
 ---
 
+> **🟢 2026-09-08 — NOTHING IS RUNNING. THE CHAMPION IS CONSOLIDATED AT `ef81196d5`; THE HOST IS IDLE.**
+> **Every "IS LIVE / DO NOT TOUCH" banner below this line is HISTORICAL — no AutoKernel run is live, and
+> the pids they name are gone.** Read this banner first.
+>
+> - **Champion:** `ef81196d5` on `ak/champion/llama-cpp-0db32c06e3e5` = GPU tip `bff30cebe` + CPU champion3
+>   `9c4f73e29`. FOLD-2 G1–G5 all PASS; **fold queue EMPTY**, nothing staged, nothing pending on either
+>   surface. The operator's standing condition — *no kernel research until a FULLY consolidated champion* —
+>   is **satisfied**. **Loop relaunch is a SEPARATE operator go**; nothing schedules it.
+> - **The champion is not fully identified by its commit — the launch recipe is PER-SURFACE.**
+>   CPU decode: `ef81196d5` **+ `GGML_NOHUGEPAGE_PROCESS=1`** (adopted, operator ruling).
+>   GPU serving: `ef81196d5`, **shim NOT set** — R23-58 measured it a bounded null there (T0/D0, 48
+>   launches). Do not carry one surface's recipe onto the other.
+> - **Measured ceiling, 2026-09-08** (Qwen3.8-27B-Q8_0, MI210, DFlash2, residency proven on all 12
+>   launches): **79.25 tok/s single user · 179.12 tok/s aggregate at np=8**; **np=4 is the operating
+>   point** at 93.7% of peak aggregate and ~42 tok/s per user. Canonical artifact:
+>   [`docs/design/champion-max-performance-20260908.md`](../../docs/design/champion-max-performance-20260908.md).
+>   **No champion-vs-production ratio exists for this configuration** — production v9 never ran the DFlash2
+>   lane and its frozen binary rejects the drafter GGUF.
+> - **Production stays FROZEN and untouched at v9** (`0db32c06e3e5`, binary `10125`).
+> - Owner: [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) ·
+>   [autokernel-rebuild-program.md](autokernel-rebuild-program.md) (INF-66).
+
 > **🟢 2026-08-31 — AUTOKERNEL RUN 21 IS LIVE ON THE ONE CHAMPION — DO NOT TOUCH IT.** pid
 > `2767457`, worktree `champ2` attached to `ak/champion/llama-cpp-0db32c06e3e5` @ `a2728701` (the
 > 2026-08-31 reconciliation merge: manual `270b48ed` + loop `4925b208`, measured **+12.618% tg128
