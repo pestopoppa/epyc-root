@@ -37,6 +37,39 @@ measurement harness (D4–D5). The corrected reference numbers below are observa
 > `architect_general` already run the canonical recipe; their matrix rows are counterfactuals, not
 > live regressions.
 
+> **Amended 2026-09-08 (INF-70 audit, MEAS-1 / HARNESS-1) — sub-floor magnitudes relabelled.**
+> Per the append-only rule the text below is **retained verbatim**; this block corrects its *labels*,
+> not its numbers. The cold-targeted CPU harness on this box has a measured **A/A p95 floor of 3.21%**
+> (adjacent-window) and **19.89% contended**; the new hot-server harness floor is 0.80% p95. **Any
+> delta in this file smaller than ~5% is at or below the floor: its label is WRONG, not merely
+> missing, and must be read as UNRESOLVED.** Specifically:
+> 1. **Defect 3, quarters row** (`| QUARTER … +2.4% … +2.3% |`) — **UNRESOLVED (below the 3.21%
+>    cold-harness floor)**. The following sentence *"Same sign on quarters, smaller magnitude"* does
+>    **not** hold: no sign is established on quarters. The HALF row (`+13%` per-stream / `+8.5%`
+>    aggregate) is far above the floor and **stands unchanged**.
+> 2. **The `llama-bench` corroboration** (*"agrees independently: straddle + interleave at `-t 48` =
+>    `15.98` vs `-t 96` = `15.35` (+4%)"*) — **UNRESOLVED**; +4% cannot corroborate anything at this
+>    floor. Treat the sentence as withdrawn: the HALF row stands on its own, unsupported by this arm.
+> 3. **"Instrument validated"** (`8.80` vs the registry-documented `8.90`, *"a 1% match, so the meter
+>    is sound"*) — a 1% agreement is deep inside the floor and, per HARNESS-2, a **cold-harness
+>    absolute may never be compared against a differently-harnessed absolute** (hot reads **+4.36%**
+>    above cold on the same binary with byte-identical output). The instrument-validation *argument*
+>    therefore needs re-derivation — flagged for the owning session, not resolved here.
+> 4. **"a v8 kernel regression … ruled out (v7 and v8 both measure `9.76`, identical)"** — restate as
+>    **"no v7/v8 difference resolvable above the harness floor"**. Nothing below ~5% was ruled out.
+> 5. **The `ngram-mod` corrected gain "−4.2% to +1.3%"** and the **"accepted ~−1.6% ordinary-text
+>    cost"** — both **UNRESOLVED (below the floor)**; the numbers stay visible, the labels do not.
+>    The **−23–31%** `ngram-mod`-alone cost is far above the floor and **stands**. The retraction of
+>    the 2.80× and the standing operator decision to carry the composed recipe are **unaffected** —
+>    only the stated *price* of that decision is now unresolved.
+>
+> Also recorded, and NOT actioned here (they change scope and belong to the owning session): the
+> `-c`-provisioning null (`40.44` vs `40.49` tok/s, 0.12%) is UNRESOLVED, not "no cost", and it is the
+> whole premise of **T12**; the AutoPilot `median_request_tps` 35.7 anchor is a **hot production
+> absolute** and cannot be matched against these cold bench absolutes (this affects the
+> `P-BENCH-PLACEMENT-1` anchor gate and the T3/T10 re-run plans); and per **STAT-1** the **arm** is
+> the unit of replication, so `n=1` arms cannot size the `>=58 GiB/node` post-load placement gate.
+
 **Created**: 2026-07-30
 **Priority**: ACTIVE-HIGH — live throughput damage on **exactly two** production roles
 (`frontdoor` 8070, `ingest_long_context` 8085 — **not** `worker_general` and **not**

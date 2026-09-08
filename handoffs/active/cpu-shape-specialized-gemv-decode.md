@@ -15,10 +15,26 @@
 > `/mnt/raid0/llm/backups/inf70-refs/fusion-ALL-refs-20260908.bundle` (7,556 refs, verified).
 > **Fetch from the fork, not from `origin`** — that remote no longer exists.
 >
-> Whether either belongs in the consolidated champion is an open question for the operator, not a
-> given: both are old (`inf10-gemv-fusion` is build 10126 against a 10241 champion), so folding
-> either means a re-base and a re-measure at the current floor. The loss risk is closed; the
-> keep decision is not made.
+> ~~Whether either belongs in the consolidated champion is an open question for the operator, not a~~
+> ~~given: both are old (`inf10-gemv-fusion` is build 10126 against a 10241 champion), so folding~~
+> ~~either means a re-base and a re-measure at the current floor. The loss risk is closed; the~~
+> ~~keep decision is not made.~~
+>
+> **CORRECTED 2026-09-08 (INF-70 audit) — the keep decision is NOT open; both branches are already
+> answered from this file's own record.**
+> - **`inf10-gemv-fusion` — MEASURED AND REFUTED 2026-08-27** (the two boxes in *THE LIVE LEVER*
+>   below): gate+up −2.11%, qkv +0.25%, both −0.57%; correctness passed; 5×4 rotated, region-locked.
+>   Mechanism: removing ~50 of ~590 barriers/token does not move wall-clock. The +2.6% precedent was
+>   the DeltaNet NATIVE-fused cluster, not these arms.
+> - **`cpu-optimization/q8-8x8-avx512bw` — the Q8 axis is CLOSED as architecture-bound** (§Session 15,
+>   *CPU2 closes here for Q8 specifically*): the parallel RMS_NORM angle measured **−8.8%**, and the
+>   SIMD ukernel plan below is a **closed appendix**, not a live plan.
+>
+> **A measured refutation is not a keep, and re-measuring a refuted lever is new research.** Neither
+> branch is a fold candidate; either would have to be re-proposed as new research, under the operator
+> directive that lever research is STOPPED until a fully consolidated champion exists. What the rescue
+> bought is the *record* — the ability to inspect a refuted arm — not a pending keep. The loss risk is
+> closed.
 
 **Status**: **Phase 1 AVX-512BW 8x8 Q8_0 kernel LANDED + NUMA fix LANDED 2026-04-24 — production-viable without env vars.** Kernel correctly emits `vpmaddubsw`+`vpmaddwd` on Zen 5, +31.8% at 1 thread, +1-3% at 12-96 threads (Qwen3.6-27B Q8_0 caps at ~4.4 t/s). PPL preserved. NUMA first-touch of CPU_REPACK buffer was the dominant root cause of the initial 2.8× multi-thread regression — fixed by auto-mbind(MPOL_INTERLEAVE) inside the buffer allocator. **The 4.4 t/s ceiling is NOT memory-bandwidth — only 26% of theoretical 460 GB/s, vs Qwen2.5-Coder-32B dense at 41% on same hardware.** A DeltaNet parallelism refactor was probed and disproved (k_per_head ∈ {1,6,16} all give 4.43 t/s). Real bottleneck still unidentified — most likely barrier overhead × hybrid-architecture op count. Next investigation should be a `GGML_PERF=1` profile, not more kernel work. See §Session 15 below.
 **Created**: 2026-04-23 (via session discussion of CPU fusion viability)
@@ -55,7 +71,10 @@ lever is therefore cutting barrier COUNT, **not more SIMD**.
   (branch `inf10-gemv-fusion` @ `ea8ca0609`, build 10126, env-gated default OFF), correctness PASSED
   (PPL 5.5410 ± 0.53 identical 4/4 arms, 96-token greedy parity identical), but tg128 clean window
   (region-locked q0-q3, canonical env, 5×4 rotated): gateup **−2.11%**, qkv **+0.25%**, both **−0.57%**
-  (verified window both −1.33%). Mechanism note: removing ~50 of ~590 barriers/token does not move
+  (verified window both −1.33%). **Magnitude annotation 2026-09-08 (MEAS-1/HARNESS-1)**: every one of
+  those four numbers is **UNRESOLVED (below the 3.21% cold-harness A/A p95 floor)** — read −2.11% as
+  "no measurable change", never as a 2% regression. The *refutation* is unaffected and stands: the
+  arms were sized to detect the predicted +10–15%, and nothing of that size is present. Mechanism note: removing ~50 of ~590 barriers/token does not move
   wall-clock at tg128 (per-op barrier ≈1–2% of op time at Q8_0 op sizes; strided-view outputs offset
   the savings); the +2.6% precedent was the DeltaNet native-fused wqkv cluster, not these arms.
   Evidence: `epyc-inference-research/data/gemv-fusion-2026-08-25/` (summary + SHA256SUMS +

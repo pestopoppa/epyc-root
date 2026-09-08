@@ -463,7 +463,16 @@ operator-approved profile window.
 ## Cross-links / dependencies
 
 - Shares the operator-fusion machinery with the CPU **decode** barrier-fusion lever
-  ([cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md), OP-2 #1 CPU lever).
+  ([cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md), ~~OP-2 #1 CPU lever~~).
+  **Correction of fact 2026-09-08 (INF-70 audit): that decode sibling was MEASURED AND REFUTED
+  2026-08-27** — gate+up −2.11%, qkv +0.25%, both −0.57%, all four **UNRESOLVED below the 3.21%
+  cold-harness A/A p95 floor (MEAS-1/HARNESS-1)**, correctness passed; removing ~50 of ~590
+  barriers/token does not move decode wall-clock, and the +2.6% precedent was the DeltaNet
+  NATIVE-fused cluster, not those arms. It is no longer the "#1 CPU lever". **This does NOT close
+  PC-4**: prefill is the compute-bound `M>1` GEMM regime this file exists to separate from the decode
+  roofline, so the decode null does not transfer — but PC-4 may no longer cite the decode lever as
+  supporting evidence, and any PC-4 result under ~5% on the cold harness is UNRESOLVED, not a win.
+  *A measured refutation is not a keep, and re-measuring a refuted lever is new research.*
 - Overlaps **GLM DSA D2 (sparse final-attention, prompt-path)** and **D3 (Lightning-Indexer
   CPU kernel)** in [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) — both are
   prefill/long-context levers; coordinate profiling.
