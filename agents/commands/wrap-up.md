@@ -115,8 +115,8 @@ Most of this routine is now private to your lane. Four things are not, because t
 |---|---|---|
 | the master index's generated block | 3 | regenerated from every index; last writer wins |
 | `python3 scripts/handoffs/index_state.py` regen | 3 | rewrites `.index-state.json` + `.index-graph.json`, which nobody authors |
-| `wiki/source_manifest.json` | 5 | one manifest of the whole repo's sources |
-| `wiki/.last_compile` | 5 | one watermark; two writers lose one session's compile |
+| `wiki/source_manifest.json` | 5 | one tracked manifest + shared watermark of the whole repo's sources |
+| `wiki/.last_compile` | 5 | untracked timestamp companion of the manifest; two writers lose one session's compile |
 | the promotion merge to `main` | 7 | two merges racing the same branch tip |
 
 Take a lease around **those steps only** — not the whole wrap-up. Steps 1, 2, 4 and your own
@@ -413,10 +413,13 @@ Compile any loose knowledge into the project wiki so findings don't stay buried 
 
 **Hold the wrap-up lease for this whole step** (`wrapup_lease_acquire` …
 `wrapup_lease_release`):
-`wiki/source_manifest.json` and `wiki/.last_compile` are one manifest and one watermark for
-the entire repo. Two sessions compiling concurrently means the second `--touch` moves the
-watermark past sources the first never wrote pages for — the loss is silent and only shows up
-as knowledge that never got compiled.
+`wiki/source_manifest.json` is the tracked, shared watermark — one for the entire repo,
+regardless of which worktree the scanner runs from (selection is a content-hash diff
+against it, never filesystem mtimes). `wiki/.last_compile` is its untracked timestamp
+companion. Two sessions compiling concurrently means the second `--touch` regenerates the
+watermark past sources the first never wrote pages for — the loss is silent and only shows
+up as knowledge that never got compiled. The scanner refuses loudly (exit 1) when the
+tracked manifest is missing or unreadable rather than guessing.
 
 1. Run the source manifest scanner:
    ```
@@ -426,11 +429,14 @@ as knowledge that never got compiled.
 3. If there are new sources, follow the **Compile** operation in the `project-wiki` skill (SKILL.md Operation 3):
    - Read and cluster new sources by taxonomy category
    - Create or update `wiki/<category-key>.md` pages with synthesized findings and source citations
-   - After compilation, update the timestamp:
+   - After compilation, advance the shared watermark:
      ```
      /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --touch
      ```
-4. Keep compilation incremental — only process sources newer than `.last_compile`.
+     (`--touch` regenerates the tracked manifest from the current source set and advances
+     `.last_compile`; commit the regenerated manifest so the watermark is shared.)
+4. Keep compilation incremental — only process sources whose content hash differs from the
+   tracked `wiki/source_manifest.json`.
 
 ### 6. Agent Log
 
