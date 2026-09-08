@@ -1837,6 +1837,42 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Action here: `loop-memory/serving-floor.*.json` and the bench-floor records must **record `unit`
         alongside harness, n, contention model and host state**, and a gate that compares an effect to a floor
         of a different unit must **refuse**, not warn. Cross-ref: `autokernel-unified-surface-program.md` U2.
+      - [ ] **RATIFY-MEAS-1 — MEASUREMENT AMENDMENT PREPARED, AWAITING THE OPERATOR.** The three
+        rules this campaign established on 2026-09-08 are written as **ONE** ratification against the
+        human-amendment-only measurement paths: **INSTRUMENT-CLASS-1** (a bench-surface number is
+        never a serving number — `tg128` **31.0 tok/s** quoted where the production recipe measures
+        **79.25**, a 2.5x understatement of our own system; and the same day an 11-point
+        proxy-vs-truth gap, **+5.958%** bench against **−2.18%** serving at n=10), **FLOOR-UNIT-1**
+        (every floor record carries `unit ∈ {arm, session, process}` or is not a gate input, and a
+        gating floor is calibrated at **n >= 24** recording `n` and an interval — R23-55's rule plus
+        R23-61's n=10 tail-statistic finding), and **BOUNDED-NULL-1** ("no effect" unqualified is not
+        a permitted claim: a null states the effect sizes its power excludes and cites a positive
+        control fired in **both** directions, else it is `untested` — R23-58's 48/48 readbacks against
+        INF-70 SYNC-18's indistinguishable null). **No agent may apply this**: `MEASUREMENT.md` and
+        `agents/shared/MEASUREMENT_POLICY.md` are human-amendment-only, which is the whole point of
+        the boundary.
+
+        | step | exact command |
+        |---|---|
+        | review | `bash scripts/operator/ratify_measurement_bench_vs_serving_20260908.sh --show` |
+        | apply | `bash scripts/operator/ratify_measurement_bench_vs_serving_20260908.sh --apply` |
+
+        Patch `artifacts/operator/measurement-bench-vs-serving-20260908.patch` — additions only, zero
+        deletions, `git apply --check` verified against `origin/main` content of both files; `--apply`
+        refuses if the text is already present, if a target is dirty, or if a target has moved.
+        Evidence, all committed (no scratch paths): research `data/ak-r2358-shim-serving-2026-09-08/`
+        and `data/ak-champion-maxperf-2026-09-08/` (research main `7020bb94`),
+        `data/inf70-retest1-2026-09-08/` (`1780fa7b`), root
+        `docs/design/champion-max-performance-20260908.md`. Cross-ref:
+        `autokernel-champion-aggregate.md` → *METHODOLOGICAL CAUTION*.
+
+        - [ ] **RATIFY-MEAS-2 — THE SERVING INSTRUMENT HAS NO PROTOCOL ROW IN §2**, and every serving
+          number this campaign quoted therefore cites none — including the floor and the gate that
+          held the champion at `445e93a8`. Deliberately left OUT of RATIFY-MEAS-1 rather than smuggled
+          into it: a new protocol needs normative annex text in `measurement/protocols/`, which is the
+          same trust boundary and a decision of its own. Draft `P-SERVE-1` (recipe, residency proof
+          per R23-60, `unit`, floor calibration n, gate rule) as a separate ratification. Until then
+          the serving numbers are admissible only as observations by the §2 rule.
       - [x] **R23-56 — RETEST-1 CLOSE-OUT: no CPU keeps; consolidation complete** ✅ 2026-09-08. INF-70's
         final RETEST-1 report (~12:10Z) yields **zero keeps to fold**, so the consolidated champion stands at
         **`ef81196d5`** (see `autokernel-champion-aggregate.md` → *CONSOLIDATION COMPLETE*). Bookkeeping:

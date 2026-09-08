@@ -911,3 +911,10 @@ surface. What is retracted is its use as a **rate**. Compiled into the wiki with
 
 - [x] **METH-BENCH-1 — the bench-vs-serving distinction is recorded where headlines are formed** ✅ 2026-09-08
       (this page, `docs/design/champion-max-performance-20260908.md`, and the wiki compile).
+
+**This caution is being ratified into the constitution — prepared, awaiting the operator.** It is
+`INSTRUMENT-CLASS-1` inside a single three-rule ratification:
+`bash scripts/operator/ratify_measurement_bench_vs_serving_20260908.sh --show` to review, `--apply`
+to apply (patch `artifacts/operator/measurement-bench-vs-serving-20260908.patch`). Tracked at
+`autokernel-rebuild-program.md` → **RATIFY-MEAS-1**. Until it is applied this rule is campaign-local:
+`MEASUREMENT.md` is human-amendment-only and no agent may apply it.
