@@ -401,9 +401,17 @@ def test_rotate_advisory_never_materialises_a_file_at_a_tracked_symlink(
     live = bus_root / "advisory.jsonl"
     live.symlink_to(target)
 
+    # A historical shard sealed in the TREE before this fix: the next shard
+    # number must step past it, or archival would overwrite the archived copy.
+    _write_shard(bus_root / "advisory_3.jsonl", [json.dumps(_pick(
+        "task-old", "2026-08-25T00:00:00+00:00"))])
+
     out = sbc.rotate_advisory(bus_root, epoch=1, max_bytes=1)  # force rotation
 
     assert len(out) == 1 and out[0]["kind"] == "advisory-rotated"
+    assert out[0]["shard"] == "advisory_4.jsonl", (
+        "shard numbering must consider BOTH the tree and the runtime dir; "
+        "restarting at 1 would overwrite an already-archived shard")
 
     # 1. The tracked path is STILL a symlink, pointing at the same target.
     assert live.is_symlink(), (
@@ -426,7 +434,8 @@ def test_rotate_advisory_never_materialises_a_file_at_a_tracked_symlink(
     assert target.read_text(encoding="utf-8") == ""
 
     # 4. Nothing regular was created in the tree at all.
-    assert [p.name for p in bus_root.iterdir()] == ["advisory.jsonl"]
+    assert sorted(q.name for q in bus_root.iterdir()) == [
+        "advisory.jsonl", "advisory_3.jsonl"]  # only the pre-existing shard
 
     # 5. Archival still works off the sealed shard.
     assert out[0]["archived"] is True
@@ -438,8 +447,8 @@ def test_rotate_advisory_never_materialises_a_file_at_a_tracked_symlink(
     sbc._append_advisory(bus_root, [_pick("task-9", "2026-09-08T04:00:00+00:00")])
     assert live.is_symlink(), "the append must go THROUGH the link, not replace it"
     assert len(target.read_text(encoding="utf-8").splitlines()) == 1
-    enumerated = {p.name for p in sbc.advisory_shard_paths(bus_root)}
-    assert enumerated == {"advisory.jsonl", out[0]["shard"]}
+    enumerated = {q.name for q in sbc.advisory_shard_paths(bus_root)}
+    assert enumerated == {"advisory.jsonl", "advisory_3.jsonl", out[0]["shard"]}
 
 
 def test_rotate_advisory_plain_file_behaviour_is_unchanged(

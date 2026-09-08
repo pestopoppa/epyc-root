@@ -3046,10 +3046,15 @@ def rotate_advisory(bus_root: Path, epoch: int,
     # Sealed shards are archived OUTSIDE the repo and summarised before this
     # function returns — see `_archive_advisory_shard`. Rotation being correct is
     # not the same as the history surviving it.
+    # The NUMBER comes from BOTH directories, not just the one we write into.
+    # Historical shards sealed before this fix are in the tree; new ones land in
+    # the runtime dir. Numbering off the runtime dir alone would restart at 1 and
+    # `_archive_advisory_shard` would then OVERWRITE the already-archived
+    # `advisory_1.jsonl` — losing the very history archival exists to keep.
     shard_dir = resolved.parent
-    existing = sorted(shard_dir.glob("advisory_*.jsonl"))
-    nxt = 1 + max((int(p.stem.rsplit("_", 1)[-1]) for p in existing
-                   if p.stem.rsplit("_", 1)[-1].isdigit()), default=0)
+    existing = [q for d in {bus_root, shard_dir} for q in d.glob("advisory_*.jsonl")]
+    nxt = 1 + max((int(q.stem.rsplit("_", 1)[-1]) for q in existing
+                   if q.stem.rsplit("_", 1)[-1].isdigit()), default=0)
     shard = shard_dir / f"advisory_{nxt}.jsonl"
     try:
         resolved.rename(shard)
