@@ -16,7 +16,7 @@
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | AK-INST-1 still unproven; no run is live — loop relaunch on champion ef81196d5 is a separate operator go, nothing here schedules it | INF-48, EVL-47, INF-64 |
 | INF-64 | autokernel restart-loop fix | [autokernel-restart-and-strip.md](autokernel-restart-and-strip.md) | AK-INST-2: grep the discovery plane for 40-hex constants compared with `==` and convert the instrument pins | — |
-| INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | PROD-BASE-1: measure production at ITS own best (MTP self-draft, own np sweep) or the champion headline stays absolute, with no ratio | INF-06, INF-62, INF-64 |
+| INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | HEAD-4: promote the 35B sweep out of scratch into research data/; then MTP-27B-1 — the 27B is MTP-capable, PROD-BASE-1's denominator | INF-06, INF-62, INF-64 |
 | INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | R23-61a: recalibrate the serving floor at n>=24, recording n and a CI; then R23-62 champion-divergence closer (shim OFF, today's harness) | INF-06, INF-64, INF-65 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
@@ -67,7 +67,7 @@
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
 | INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap DONE; run stack_change_pipeline regen + stack-change checklist to verify live==config on next start | — |
 | INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | SWE closed on both protocols; re-collect the 24-cell grid at the measured n-max 8 optimum when GPU frees | INF-60 |
-| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | U3-SEED: RUNTIME_CONFIG arm vs the measured THP instance (session unit, spread not mean); then U3-DEFAULTS-b per-surface champion recipe | INF-66, INF-65, INF-70 |
+| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | U3-EXPRESS: deliberate expressiveness pass over the recipe schema — three gaps blocked measurements in one day; then U3-SEED | INF-66, INF-65, INF-70 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.

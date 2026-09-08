@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-09-08** — historical ledger only. Superseded; retired at the operator-invoked wrap-up of 2026-09-08 with its index row (`EVL-17`) deleted. Current work lives in `../active/`.
+
 # Fable 5 Architectural Review — window 2 (a prompt, not a task list)
 
 **Status**: READY (pending preflight — see Run configuration).
