@@ -98,6 +98,20 @@ git update-ref refs/heads/<branch> "$(git commit-tree $TREE -p HEAD -m "...")"
 The shared index is never touched, so the peer's staging survives intact — verify afterwards with
 `git diff --cached --name-only`, which should still show exactly their set.
 
+**And a pathspec-less `git commit` publishes whatever the shared index HOLDS — which may be STALE.**
+This is the mirror image of the hazard above, and it bites in the opposite direction: the pathspec form
+sweeps a peer's *worktree*, while the index form publishes an *old snapshot*. Measured 2026-09-08 in a lane
+worktree: the shared index held a copy of three files that pre-dated the working tree by **365 lines**, so a
+pathspec-less commit would have silently reverted them while reporting success. Two habits close it, and
+they are complementary — use both:
+
+1. **Commit through the private index above**, so the commit can only ever contain the paths you named.
+2. **After committing, `git reset -q -- <the same paths>`**, so a stale staged copy of your own files
+   cannot be resurrected by a later index-based commit — yours or anyone's.
+
+`git diff --cached --stat` before any pathspec-less commit is the one-command version of this check: if it
+shows files you did not just stage, do not commit the index.
+
 **`git stash` is unsafe in the shared clone while daemons are writing.** It captures untracked
 files too, and the runtime plane (`logs/`, `coordination/session-bus/`, `share/`) gains files
 between the stash and the pop — so the pop fails on "already exists, no checkout", restores the

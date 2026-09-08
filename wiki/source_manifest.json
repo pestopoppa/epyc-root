@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 87,
-    "handoff-active": 174,
+    "handoff-active": 171,
     "handoff-blocked": 2,
     "handoff-completed": 189,
     "progress": 365,
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-08T20:48:20Z",
+  "last_compile": "2026-09-08T22:42:25Z",
   "mode": "touch",
-  "scan_time": "2026-09-08T20:48:20Z",
+  "scan_time": "2026-09-08T22:42:25Z",
   "schema_version": 1,
-  "source_set_hash": "c0207badd001309eb4185dc618ce26c658aca3210a66d1a10a472efed1f2601c",
+  "source_set_hash": "2306eaf38e30a12bb451f013a817d1cbda3e4f854ad92003d37e925508a3d0b9",
   "sources": [
     {
       "content_hash": "78d85eb43bfb442f5800bcdfb61e75ae587647787f8c0974f9f687139d4b9dff",
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6aa7e2dd716f482f53c0dd7c3e4a678db0443bee908721f02030bd21ff9bd166",
-      "modified": "2026-09-08T19:29:51Z",
+      "content_hash": "49a80aac130c23f3c4009b8ee2a0ab9e15937db4946f0240a38bc97c0bef6d56",
+      "modified": "2026-09-08T22:12:25Z",
       "path": "handoffs/active/autokernel-rebuild-program.md",
-      "size": 208570,
+      "size": 220718,
       "title": "AutoKernel \u2014 teardown and rebuild program",
       "type": "handoff-active"
     },
@@ -255,10 +255,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fc8d4fe93af956b792218b05e4716d85ccdb1c0bc815477a84a52b0b2375940e",
-      "modified": "2026-09-08T18:38:24Z",
+      "content_hash": "e64cfb52176021d32466a6df25aaa7e69d111cf9a62b94781e3b5b9892c55c97",
+      "modified": "2026-09-08T22:11:08Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 442735,
+      "size": 449781,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
@@ -436,14 +436,6 @@
       "path": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
       "size": 56640,
       "title": "Evidence Plane \u2014 Per-Question Ledger + Sequential Verdicts (+ game layer)",
-      "type": "handoff-active"
-    },
-    {
-      "content_hash": "9ead55e29693d4b9725bea5d8bb88461684d0583e5c5314869a521c1f23fc532",
-      "modified": "2026-08-28T16:06:35Z",
-      "path": "handoffs/active/fable5-architecture-review-2.md",
-      "size": 18429,
-      "title": "Fable 5 Architectural Review \u2014 window 2 (a prompt, not a task list)",
       "type": "handoff-active"
     },
     {
@@ -831,10 +823,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9784f36d418de33a325733d0f6b50be432ca56c19c14f4b6ce828cbc6c94312f",
-      "modified": "2026-09-08T09:32:07Z",
+      "content_hash": "2564b58d73680d0170cd66673e3fb91a6138b30427daae50d0d11dd727ca0e6c",
+      "modified": "2026-09-08T22:42:02Z",
       "path": "handoffs/active/model-stack-update-pipeline-audit.md",
-      "size": 76879,
+      "size": 76891,
       "title": "Model Stack Update Pipeline Audit",
       "type": "handoff-active"
     },
@@ -1231,14 +1223,6 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "91444ff2c0836f1cc3b7e3b3a0a9e7b95dcf73a26066ba537b79b7457dc83c43",
-      "modified": "2026-08-28T16:06:35Z",
-      "path": "handoffs/active/stack-lineup-dossier-2026-07-23.md",
-      "size": 28856,
-      "title": "Stack-Lineup Dossier \u2014 Intended vs Configured vs Realized (2026-07-23)",
-      "type": "handoff-active"
-    },
-    {
       "content_hash": "870205f0c16acd3c6cfc6dc7f2be4a922eedae9e87a57b5c4537eca0b9612623",
       "modified": "2026-08-28T16:06:35Z",
       "path": "handoffs/active/stale-open-audit-2026-07-18.md",
@@ -1359,27 +1343,19 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7b8f8da6e698892e371a9b0ddd3bff88e2606efc2afec76f65c1e624924e4ee1",
-      "modified": "2026-08-28T16:06:35Z",
+      "content_hash": "e71900b19f21bc91a07c8aa3dfe6c94331365b43521234f99680f37fc05b3233",
+      "modified": "2026-09-08T22:42:02Z",
       "path": "handoffs/active/within-role-placement-state-machine.md",
-      "size": 57521,
+      "size": 60037,
       "title": "within-role-placement-state-machine",
       "type": "handoff-active"
     },
     {
-      "content_hash": "8f88024e78ca381ad4edd4acf213a1183463285800b3db9dd415136a2dac5faf",
-      "modified": "2026-08-28T16:06:35Z",
+      "content_hash": "f7fe7843349cbe4d68690b7b835f354469fb1b159fe8a8cfd4a231c9e710a858",
+      "modified": "2026-09-08T22:42:02Z",
       "path": "handoffs/active/wp12-fleet-layer-design.md",
-      "size": 40161,
+      "size": 40175,
       "title": "wp12-fleet-layer-design",
-      "type": "handoff-active"
-    },
-    {
-      "content_hash": "2ce1cae9842f19bb326320b98c8511f5a300dd23eac2bc7860f6e577e0d16d14",
-      "modified": "2026-08-28T16:06:35Z",
-      "path": "handoffs/active/wp9-wp10-lineup-event-prep.md",
-      "size": 27198,
-      "title": "WP-9 + WP-10 Lineup / Recert Event \u2014 Turnkey Operator Procedure (PREP ONLY)",
       "type": "handoff-active"
     },
     {
@@ -6935,10 +6911,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "9867f2a8a5e77fd5b4a71f13ec1d247f00ae0378b567a54c1918ad1fdfc77250",
-      "modified": "2026-09-08T20:43:14Z",
+      "content_hash": "c4aba844abfdedd17f089a054564d241d7e2bfd07d508d3f351f7d01b4729c84",
+      "modified": "2026-09-08T22:36:56Z",
       "path": "progress/2026-09/2026-09-08-ak-rebuild-20260828.md",
-      "size": 61648,
+      "size": 78100,
       "title": "2026-09-08 \u2014 ak-rebuild-20260828 (AutoKernel rebuild lane)",
       "type": "progress"
     },
@@ -7663,7 +7639,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 956,
+  "total_new": 953,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
