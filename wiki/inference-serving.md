@@ -2,8 +2,49 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-09-08 (pm): the champion serving ceiling measured with residency proven on every launch — 79.25 tok/s single user, 179.12 aggregate at np=8, and np=4 is the operating point at 93.7% of peak aggregate for ~42 tok/s per user; aggregate throughput saturates well before the slot count, and between-launch dispersion widens 7.6x from np=1 to np=4; R23-60 landed residency sampling on the serving path, which previously proved none; earlier: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
+**Last compiled**: 2026-09-08 (evening): a SECOND headline model on the same champion binary — Qwen3.6-35B-A3B-MTP-Q8_0 at **112.68 tok/s single user / 310.96 tok/s aggregate at 16 slots**, residency proven 24/24 — and the curve is **NOT saturated** there (+15.98% on the last step, 41.4 of 64 GiB VRAM), so 310.96 is the highest measured point and never a maximum; the two models take **different operating points for structural reasons** (dense 27B turns over at 4→8 → np=4; MoE 35B still climbing at 16); and the 35B's np=1 dispersion is 2.70% and did NOT tighten when n doubled; earlier: 2026-09-08 (pm): the champion serving ceiling measured with residency proven on every launch — 79.25 tok/s single user, 179.12 aggregate at np=8, and np=4 is the operating point at 93.7% of peak aggregate for ~42 tok/s per user; aggregate throughput saturates well before the slot count, and between-launch dispersion widens 7.6x from np=1 to np=4; R23-60 landed residency sampling on the serving path, which previously proved none; earlier: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
 **Sources**: 82 documents
+
+## Compiled Update — 2026-09-08 (evening): a second headline model — Qwen3.6-35B-A3B at 112.68 tok/s single user / 310.96 aggregate, unsaturated at 16 slots
+
+**Confidence: verified.** 24 launches on an idle host, 19:37:30–20:14:00Z, GPU residency **`proven` 24/24** (2,952 samples), sclk flat 1700 MHz at every point. Unit: **LAUNCH** — a fresh `llama-server` per sample, as `FLOOR-UNIT-1` requires.
+
+Champion `ef81196d5`, MI210 gfx90a, recipe `qwen3.6-35b-a3b-q8-gpu-mtp` (research `c3e362a1`), **MTP self-drafting with no separate drafter**, `draft_n_max=4`, only `np` varied.
+
+| slots (`np`) | aggregate tok/s | per slot | p95 dev | peak VRAM | launches |
+|---:|---:|---:|---:|---:|---:|
+| **1** | **112.676** | 112.676 | **2.696%** | 36.61 GiB | **6** |
+| 2 | 130.540 | 65.270 | 1.378% | 36.90 GiB | 3 |
+| 4 | 189.575 | 47.394 | 1.128% | 37.50 GiB | 3 |
+| 8 | 242.755 | 30.344 | 1.226% | 38.78 GiB | 3 |
+| 12 | 268.120 | 22.343 | 1.877% | 40.16 GiB | 3 |
+| **16** | **310.958** | 19.435 | 2.530% | 41.37 GiB | 3 |
+
+### 310.96 tok/s is the HIGHEST MEASURED POINT, not a ceiling
+
+Marginal aggregate gain per step: +15.85% (1→2), +45.22% (2→4), **+28.05%** (4→8), +10.45% (8→12), **+15.98%** (12→16). The last step is the **second largest of the six** — the decay is not even monotonic, which is not itself a claim at p95 deviations of 1.9–2.5%, but is nowhere near the flattening that would license calling `np=16` a peak. Memory is not the binding constraint either: **41.4 of the card's 64 GiB**, growing ~1.2 GiB per doubling above np=4. `np=24` and `np=32` were offered and the operator declined; the gap is a **recorded decision** (HEAD-3), not an oversight. **Never quote 310.96 as a maximum.**
+
+### The operating point is PER MODEL, and the difference is structural
+
+| | Qwen3.8-27B (dense, DFlash2) | Qwen3.6-35B-A3B (MoE, MTP) |
+|---|---|---|
+| curve | **turns over at 4→8** — +6.8% aggregate for ~half the per-user rate | **still climbing at 16** — +16.0% on the last step |
+| recommended `np` | **4** — 93.7% of peak, ~42 tok/s per user | **16 of what was measured** — 311 aggregate, ~19 tok/s per user |
+| single user | 79.245 tok/s (p95 dev 0.44%) | 112.676 tok/s (p95 dev 2.70%) |
+| best aggregate | 179.122 at np=8 | 310.958 at np=16 |
+
+A dense model saturates the memory system early, so extra slots stop buying throughput; an MoE at low batch is not bandwidth-saturated, so extra concurrent tokens route into expert reads that are already being paid for. **Do not carry one model's `np` recommendation to another architecture** — the shape of the curve, not a tuning preference, is what sets it. If per-user responsiveness is the requirement, the 35B's own `np=4` (47.4 tok/s per slot, 189.6 aggregate) beats the 27B's `np=1`.
+
+### The 35B's single-slot dispersion is a PROPERTY of the model
+
+2.350% p95 dev at n=3 → **2.696% at n=6**: doubling the sample made it slightly *wider*, not tighter. Against the 27B's **0.44%** at the same slot count on the same GPU in the same window — a **6.1× difference**. Every single-user headline for this model must carry that ~2.7% between-launch dispersion; implying 27B-grade ±0.5% precision here is a `FLOOR-UNIT-1` violation.
+
+### Source References (2026-09-08, evening — the 35B sweep)
+
+- [`champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) — the canonical citable artifact; §6 is the 35B sweep (per-point `recipe_hash`, residency, exact conditions), §7 the architecture explanation.
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
+- [`2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session log with the raw-artifact paths.
 
 ## Compiled Update — 2026-09-08 (pm): the champion's measured serving ceiling — 79.25 tok/s single user, 179.12 aggregate — and why np=4 is the operating point
 
