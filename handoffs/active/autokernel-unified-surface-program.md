@@ -24,6 +24,17 @@ both resources and their saturation is a KPI — idle-while-claimed is reported 
 is a co-equal search frontier (not a fold target), and while a GPU arm runs the CPU should be running CPU
 arms or builds subject to the contention bounds in §3.4. The manual CPU campaign is transitional.
 
+**Operator directive 2026-09-08 (verbatim; supersedes the cadence above until consolidation completes):**
+
+> "I want no more pure kernel inference research until we have a FULLY consolidated champion collecting
+> all GPU AND CPU performance progress."
+
+> "WE CANNOT AFFORD to lose performance progress on either the GPU or the CPU inference work. WE MUST
+> FOCUS on consolidating all kept performance levers and persisting them."
+
+NO research relaunch after the fold window; consolidation only; relaunch is a separate operator go.
+The CPU session (INF-70 / `workspace-1c`) received this directly and has parked all lever campaigns.
+
 ## Start here (executor)
 
 1. Read §2 (evidence) once — it is why every phase below is shaped the way it is.
@@ -89,6 +100,13 @@ a single owner can serialize builds, CPU arms and GPU arms coherently. INF-70's 
 | sibling-expanded live foreign-load sampler | `/mnt/raid0/llm/tmp/inf70/agents/sync19-20/foreign.py` (protected) | INF-70; `/proc/<pid>/stat` deltas, not `ps %CPU` |
 | fold plan + two default-ON blockers | FOLD-0..3, `docs/design/inf70-cpu-fold-into-champion-20260907.md` | specified |
 | promotion runbook | `docs/reference/kernel-freeze-runbook.md` (shipped v7/v8/v9) | single candidate build, never cherry-picks |
+| **rescued kernel work not yet in the champion** | [`docs/design/champion-consolidation-audit-20260908.md`](../../docs/design/champion-consolidation-audit-20260908.md) | audited 2026-09-08: 23 superseded/archive, 2 candidates + 1 decline (P1b), 2 REFUTED, 1 must-not-fold, 4 single-copy refs pushed |
+
+**Audit note (2026-09-08).** The reuse question "is this lever already in the champion?" cannot be answered by
+patch-id: v9 was rebuilt from fresh upstream, so `git cherry` calls semantically-present levers unmerged. The audit
+above used `git cherry` **plus** a content grep against the champion tip `bff30cebe`. The converse hazard is sharper —
+**folding a superseded decision back in is a failure class ancestry checks cannot see and cherry-equivalence waves
+through** (see the MUST-NOT-FOLD entry in P1b).
 
 ## 3. Design
 
@@ -190,6 +208,11 @@ on it. Owner `ak-rebuild-20260828` unless INF-70 takes it.
 BECAUSE outputs were bit-identical — an output-diffing oracle cannot see the class; op-coverage diffing is
 necessary, not nice-to-have.
 
+**Region lock blind spot (measured 2026-09-08):** `cpu_region_lock` models regions as logical-CPU
+ranges; a build pinned to 96-183 is OUTSIDE 0-95 yet occupies the siblings of 0-87, so the lock would
+grant a bench arm during the compile. The broker must reserve by PHYSICAL core (sibling-expanded, via
+`foreign_load.bench_logical_cpus`) — a build slot on 96-183 and a bench arm on 0-95 are the same resource.
+
 ### 3.5 Track U5 — one monitoring session; authoring roles
 One roster session monitors both surfaces (status, keeps, gates, errors — what `ak-rebuild-20260828`
 does today). The CPU session's role becomes **diagnosis and hypothesis authoring into the inbox**
@@ -223,6 +246,8 @@ sequencing: measurement first, authoring later).
       test-backend-ops incl. SSM_SCAN, tg128 vs gen-020 inside the floor; CPU: their bit-identity)
 - [ ] **R23-51a in the same window**: seed the true cor (`445e93a8`) with a MEASURED tip-vs-cor tg128 bench
 - [ ] **R23-49 pin + re-calibration in the same window**: `cpu_list` on the GPU serving recipe, serving floor re-calibrated
+      — **pin committed (research lane) 2026-09-08; recal pending in-window** (the 3.536% floor is VOID for this
+      recipe until `recal_serving_floor.py` runs)
 - [ ] CPU keeps present in the fold recorded as `accumulator-bundle.cpu.<recipe>.json` (schema v1) — **with their
       magnitude flagged `provisional` and the contention label `pre-hook`**: every INF-70 arm before 2026-09-07
       carries a WRONG contention label (sampler read `184-191` as disjoint), and +4.50% is at or below its
@@ -233,7 +258,47 @@ sequencing: measurement first, authoring later).
       computed the old way is inflated — the corrected statistic is an arm-level permutation test; any magnitude the
       bundle ingests must carry which statistic produced it; (iii) linear within-block drift is ruled out (slope
       +0.03%/slot, R² 0.004), so CPU-surface scatter is contention (OP-40), not drift.
-- [ ] Relaunch (operator-gated) with `python3 -u`; verify `accum restored …` line and anchor == tip
+- [ ] NO relaunch by default (operator 2026-09-08). Consolidation exit: one tip carrying both lineages; FOLD-2 passed;
+      durable bundle seeded with a MEASURED tip-vs-cor and the serving gate run on it; tip on the fork; phase-2
+      candidates below gated or declined. Then ASK before any run 31.
+
+### P1b — consolidation phase 2: rescued-ref candidates (each behind its own gate; measurement that serves consolidation is allowed)
+
+Source of truth for the classification of all 31 `fork/rescued-*` refs:
+[`docs/design/champion-consolidation-audit-20260908.md`](../../docs/design/champion-consolidation-audit-20260908.md).
+
+- [ ] **Chunked GDN — `rescued-ak-g15-chunked-gdn-20260823` @ `719a8529d`** (upstream PR #24561 unified-MMA port;
+      `ggml/src/ggml-cuda/gated_delta_net.cu` +527, `tests/test-backend-ops.cpp` +34). Surface: GPU PREFILL on GDN
+      models (qwen35 / qwen35moe / qwen3next); the champion still carries `//TODO: Add chunked kernel for even faster
+      pre-fill`. **Largest unrecovered GPU lever.** Gate: GPU prefill A/B on a GDN model **plus** `test-backend-ops`.
+- [ ] **Quantize reciprocal — `rescued-ak-discovery-7e8da8ea-attempt1` @ `9f85ba2fb`** (`ggml/src/ggml-cuda/quantize.cu`
+      +4/−1: reciprocal-multiply + `__shfl_sync` broadcast replacing per-lane `roundf(xi/d)`; the champion still does
+      `roundf(xi / d)`). Gate: tg128, 20 pairs vs anchor.
+- [ ] **Q5_0 `vecdotq.cuh` variants — `f9d74a2a3`, `d4b0a04e4`, `580e8d090`, `5d22a5463`: DECLINE.** Q5_0 is not a
+      production quant and the work is re-derivable. Revisit only if a Q5_0 target appears on the fleet.
+- [x] Single-copy refs pushed to the fork ✅ 2026-09-08 (`ak/orphan-keeps-quantize-20260829`,
+      `ak/pre-anchor-fix-full-history` `b04fad244`, `ak/run14-01893a36-cumulative` `01893a36c`,
+      `ak/admission/remove-funsafe-math-20260831` `3161d2dcf` — the last is already applied on the champion as
+      `b861c32fa` (CH-7, 2026-08-31); pushed for durability only, nothing to fold)
+
+**REFUTED — do not fold. A measured refutation is not a keep, and re-measuring a refuted lever is new research
+(stopped by the operator).** Both read as candidates on the audit's first pass because absence from the champion is
+exactly what a refuted lever looks like; corrected from the record by INF-70 2026-09-08:
+- `rescued-inf10-gemv-fusion` `ea8ca0609` — measured and refuted 2026-08-27: gate+up **−2.11%**, QKV **+0.25%**, both
+  **−0.57%** (verified window **−1.33%**) at tg128, region-locked q0-q3, canonical env, 5×4 rotated; correctness clean
+  (PPL 5.5410 identical 4/4 arms). Closed `[x]` in `cpu-shape-specialized-gemv-decode.md`; evidence
+  `epyc-inference-research/data/gemv-fusion-2026-08-25/` + `SHA256SUMS`. *"No further barrier-fusion work is justified
+  on this target."*
+- `rescued-cpu-opt-q8-8x8-avx512bw` `1f8868307` + `af6701d00` — the SIMD ukernel plan is an explicitly CLOSED appendix
+  (8×8 GEMM body E3-gated, owned by `batched-decode-measurement.md`); the one measured angle `0467a5c17` (RMS_NORM
+  intra-op parallel reduction) was **−8.8%** (4.41 → 4.02 t/s at 96t, Qwen3.6-27B Q8_0), kept env-gated
+  `GGML_RMS_NORM_PARALLEL=1` default OFF as scaffolding. The 22% in `ggml_barrier` is barrier-COUNT-bound; the Q8 axis
+  closed with *"the 4.4 t/s ceiling is genuinely architecture-bound."*
+
+**MUST NOT FOLD `de447119f`** (`rescued-feature-tree-draft-v6`, "route Q8_0 `ne11<=1` MTP-verify to MMQ, +17.4%") — the
+champion's `mmvq.cu` carries the LATER contradicting decision `akm-cdna2-q8-b4-mmvq-route` (Q8_0 `ne11<=4` through
+MMVQ, `ne11>=5` on MMQ — "the July crossover"), reversal documented in-source. Folding it would REGRESS the champion.
+Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN_STATE_BF16` in 9 files) are already in.
 
 ### P2 — surface dimension (U2)  · exit: two bundle files, two floors, a CPU serving A/B record on disk
 - [ ] `Bundle.surface`; per-surface store filenames; `load_bundle()` per surface; shared cor invariant test
