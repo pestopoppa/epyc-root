@@ -1,6 +1,6 @@
 # GLM-5.3-Flash Evaluation (glm5next)
 
-**Status**: AUDITED 2026-09-08 — champion lacks support; upstream architecture and native-MTP ports identified
+**Status**: IMPLEMENTING 2026-09-08 — text/MTP experimental port prepared; build/runtime validation pending
 **Created**: 2026-08-31 (spun out of the OP-8 KILL ruling; inherits the GLM-MoE-DSA findings)
 **Priority**: MEDIUM — one of the two operator-named novel-under-test models (with qwen3.8-next-flash)
 **Categories**: inference_serving, local_inference, kernel_architecture
@@ -51,6 +51,18 @@ for pinned identities, metadata/quantization differences and the full validation
    claim with `(prompt tokens, chosen indexer_top_k)` together.
 
 ## Tasks
+
+**2026-09-08 implementation checkpoint:** the operator approved the port with
+vision optional. Candidate `experimental/glm53-text-mtp-20260908` lives at
+`/mnt/raid0/llm/llama.cpp-experimental-glm53-20260908`, based on champion
+`ef81196d5bdd4190b46dff4ae7eecc333a46c8ce`. The six-shard tensor/schema audit and
+tiny-fixture Python checks pass (7 tests); no build or inference result yet.
+Source checkpoint `7d1e80a31` also includes portable fixture tests (5/5 with
+the local artifact enabled) and a target rollback/full-restore test executable's
+source. Neither native MTP correctness nor speed has been validated.
+The task-scoped compute-authority/observation-only host exception question is
+pending; offline integration and executable test preparation continue. Details:
+[session progress](../../progress/2026-09/2026-09-08-glm53-support-audit.md).
 
 - [x] T0 — **Arch-support audit**: does any tree on this host load `glm5next` (production v9: no —
   frozen pre-arch; experimental/champion: check; upstream llama.cpp: check for a landed PR)? Output:

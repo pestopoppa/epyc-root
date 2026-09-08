@@ -1671,6 +1671,17 @@ surviving mutations over the portion it *did* reach is the measured rate; the un
 no rate at all. A later session may extend the audit but may not report these five as "the defects".
 
 
+## VB-GLM53-MTP — prospective validation producer (2026-09-08)
+
+- [ ] **VB-GLM53-MTP — wire the GLM53 text/MTP validation producer at write time.**
+  Producer work: [INF-69](glm53-flash-evaluation.md), runtime validation under
+  `/mnt/raid0/llm/tmp/glm53-validation-20260908/runtime/`. Preserve the original launch's
+  model/binary/source/recipe identity, native draft/accept/reject counts, in-window contention,
+  observation-only host caveats, and forced-prefix rollback/replay results. Project quantitative
+  records through the existing ClaimTuple ladder; categorical correctness verdicts stay categorical.
+  Do not turn per-token or forced-prefix samples into independent run witnesses. Source table entry
+  filed before the first run; no measurements exist yet.
+
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 
 Verdict: **ITERATE (not promote).** Requirement 4 is now EXECUTED for the first time — the
