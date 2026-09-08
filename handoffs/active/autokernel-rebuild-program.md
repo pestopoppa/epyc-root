@@ -1742,6 +1742,25 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           effects against a 16.8% contended A/A floor, so contended they are unresolvable. **Operator call —
           a loop hold is a run-lifecycle action.** Folded into OP-41 as the bounded form of option (A).
           Default if unruled: INF-70 measures contended and labels the result non-claim.
+        - [x] serving recipe pinned 184-191 committed (research `bdfab023` → main `624adbdd`) ✅ 2026-09-08
+        - [x] serving floor re-calibration under the pin ✅ 2026-09-08: first run **CONTAMINATED**
+          (10.255%, INF-70 server running) → quarantined; clean re-run 10:16:16-10:21:45Z on a
+          verified-quiet host (0-95 at 0.4%, zero INF-70 processes) gives **4.581% p95** (n=10,
+          cv 3.136%, median 161.08 tok/s; runs 163.13/154.21/154.31/168.46/160.63/168.14/161.53/
+          154.24/163.16/159.23), written with its conditions to
+          `loop-memory/serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json`. Unpinned quiet-host floor
+          was 3.536% (n=8).
+        - [x] **serving gate under the new floor** ✅ 2026-09-08 (first firing of a gate that had NEVER run;
+          `--force` was a one-off operator permission for this window). cor `445e93a8` vs tip `bff30cebe`
+          (anchor-gen-021), recipe `qwen3.8-27b-q8-gpu-dflash2-np4` pinned 184-191, floor 4.581%:
+          **n=5** (10:22-10:27Z) 168.74 vs 159.99 tok/s = **−5.19%**, per-pair −4.72/−1.19/−3.16/+0.25/−11.77,
+          decisive → `diverged`. INF-70 flagged −11.8 as a **3.6σ outlier** (the other four average −2.2%, inside
+          the floor) and that a per-keep LOO at n=5 against a 4.58% floor cannot resolve ~1% keeps — so we **re-ran**
+          rather than running LOO. **n=10** (10:35-10:46Z) 164.63 vs 161.05 tok/s = **−2.18%, NOT decisive** →
+          disposition **UNCONFIRMED (not refuted)**: sign probably negative, magnitude unclaimable at any affordable
+          n. **Champion-of-record HOLDS at `445e93a8`**; the six keeps stay on the tip as provisional and
+          re-gateable. Record `loop-memory/serving/bundle-bff30cebee0d.json` (the n=10 record overwrote the n=5
+          record; the n=5 numbers are preserved here).
       - [x] **R23-50 — THREE KEPT KEEPS NEVER REACHED THE CHAMPION (2026-08-29), now protected** ✅ 2026-09-07.
         Operator asked whether relaunches lost keeps. Audited all 31 `kept` rows against the champion
         branch: **28 present, 3 absent** — `akm-q8-1-float2-halfwave` (+5.353%), `akm-q8-1-float4-eighthwave`
@@ -1779,6 +1798,182 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         (where R23-44 took effect), with the 5 keeps since it. The bundle's `compounded_bench_pct` must be a
         **MEASURED tip-vs-cor bench, never the product of solos** (+6.13% is a product and R23-48 is exactly
         the rule against quoting one) — so it needs one bench arm at launch. Blocked on GPU time.
+        - [x] **seeded MEASURED +5.958%** ✅ 2026-09-08 (tg128 tip-vs-cor over the 6 keeps since `445e93a8`,
+          20 pairs, decisive, `drifting=False`); **serving gate n=10 −2.18%, not decisive → cor HOLDS at
+          `445e93a8`**, keeps provisional. Durable bundle: cor `445e93a8`, tip `bff30cebe`, 6 keeps, compounded
+          +5.958 (bench, measured); on the next launch `load_bundle` advances the tip to the new anchor and
+          keeps the cor.
+      - [x] **R23-54 — serving gate is MANDATORY, not threshold-triggered** ✅ 2026-09-08. Its first firing (2026-09-08)
+        showed an **11-point proxy-vs-truth gap**: the tg128 proxy said **+5.958%** while the serving gate said
+        *"cannot tell, probably slightly negative"* (−2.18%, n=10) — a gap the bench alone would never have shown.
+        Make the loop spend the serving gate on **every N keeps regardless of the compounded estimate** (or drop
+        `fire_multiple` to 1.0). **Operator to confirm the cadence.**
+        **RULED (operator, 2026-09-08): N = 4** — the gate fires every 4 keeps regardless of the compounded bench
+        estimate, in addition to (not instead of) the existing `fire_multiple` threshold trigger; implemented in
+        research `56195d3e` (`accumulate.SERVING_GATE_EVERY_KEEPS = 4`, durable `Bundle.keeps_since_serving_gate`
+        reset on every gate run whatever the outcome, and a `trigger: threshold|cadence|both` recorded in the
+        serving-gate record, the status body and the dashboard card; 434 loop tests, was 423). The uncalibrated-floor
+        fail-closed guard is unchanged: with no floor the gate can only return DIVERGED, so neither trigger spends it.
+      - [ ] **R23-55 — A FLOOR WITHOUT ITS UNIT IS A 1200-FOLD ERROR. Every floor file must record `unit`.**
+        Measured by INF-70 (2026-09-08, RETEST-1) and owed to INF-73 U2, which already requires each floor to
+        carry harness, n, contention model and host-state hash — **`unit` (arm | session | process) is the
+        missing field, and it is the one that changes the answer by three orders of magnitude**:
+
+        | scope | sd | what it costs |
+        |---|---|---|
+        | within-session (**arm**-scoped knob) | **0.501%** | — |
+        | between-session (**process launch**-scoped knob) | **2.793%** | ~**13x coarser** floor |
+
+        A **process-scoped** knob faces a floor ~13x coarser than an **arm-scoped** one. Concretely: INF-70's
+        0.171% *arm* floor says CHAMP-2 THP needs **4 sessions/side**; the correct **session-unit** answer is
+        **4,780** — a **1200-fold** underestimate that would have been spent as real host time.
+        Action here: `loop-memory/serving-floor.*.json` and the bench-floor records must **record `unit`
+        alongside harness, n, contention model and host state**, and a gate that compares an effect to a floor
+        of a different unit must **refuse**, not warn. Cross-ref: `autokernel-unified-surface-program.md` U2.
+      - [x] **R23-56 — RETEST-1 CLOSE-OUT: no CPU keeps; consolidation complete** ✅ 2026-09-08. INF-70's
+        final RETEST-1 report (~12:10Z) yields **zero keeps to fold**, so the consolidated champion stands at
+        **`ef81196d5`** (see `autokernel-champion-aggregate.md` → *CONSOLIDATION COMPLETE*). Bookkeeping:
+
+        | item | value |
+        |---|---|
+        | RETEST-1 A/A (today) | **1.051%** / **0.171%** (**arm**-unit floor) |
+        | arms lost to foreign tooling | **1** (python@800% + opencode, `Cpus_allowed` 0-191, **unattributed**) |
+        | `inf70/sync17-fix2` @ `2516c9807` | **CLAIM, regression -2.136%** -> **DO-NOT-FOLD** (both knobs default ON *is* the regression) |
+        | CHAMP-2 THP | **+3.458% NON-CLAIM** (p=0.143), **not** mechanism-refuted -> unresolved, operator call on INF-70's side |
+
+        Q2 third-party disturbance is now **priced**: a **1-in-6 hit rate ~= a 17% tax in arms**, paid on work
+        identified as garbage only *after* running it. **Serialisation between the two sessions held — it is
+        not the binding constraint**: *"Region-lock serialises those who call it; nothing constrains those who
+        don't."* -> feeds **OP-41** (admission-control broker), see `autokernel-unified-surface-program.md` 3.4.
+        Host-state change for the record: at **12:05Z** the operator stopped the orchestrator API (uvicorn
+        :8000 + 6 workers, **pid 3961116**, up since 2026-08-26) via `orchestrator_stack.py stop orchestrator`;
+        hub :8100, OCR :9001, sd_server :8190 and the docker containers remain. Originally recorded here as a
+        **candidate (unproven)** source of the 800% python that cost one Q2 arm; **CORRECTED 2026-09-08**: the
+        stop is a **measured NON-CONFOUND**. INF-70's host sampler straddled it inside one session (`S14_ON`)
+        and read **flat** across 12:05Z — busy cores **47.89-48.26** against 48 benchmark threads, i.e. no step.
+        The Q2 disturbance stands; only its attribution to the API process is withdrawn.
+        Also inherited: INF-70's `gate.py` now routes all statistics through one `screened()` function (cannot
+        compute over screen-dropped arms, cannot PASS on zero cases), mutation-tested both directions — this
+        **generalises the ak-rebuild FOLD-2 vacuous-pass guard**.
+        The operator's *no kernel research until a FULLY consolidated champion* condition is **satisfied**;
+        **loop relaunch remains a separate operator go** and is deliberately not scheduled here.
+      - [ ] **R23-57 — CHAMPION LAUNCH-TO-LAUNCH INSTABILITY: ~12% spread on an IDENTICAL configuration, and
+        it moves ONLY the champion arm. UNEXPLAINED — no headline may be quoted from one session.**
+        Measured by INF-70, 2026-09-08, across four of today's sessions on the **same** champion configuration:
+
+        | session | champion plain (tok/s) |
+        |---|---|
+        | gate | 25.6 - 25.9 |
+        | THP-OFF arms | 24.4 - 25.3 |
+        | FIX-1 controls | 27.3 - 27.4 |
+        | characterisation (stopped mid-run) | 27.3 - 27.4 |
+
+        | control / derived | today | standing | delta |
+        |---|---|---|---|
+        | pristine | **12.637** | 12.366 | **+2.2%** |
+        | champion | **27.383** | ~21.21 | **+29.1%** |
+        | champion / pristine ratio | **2.167x** | **1.7151x** | — |
+
+        **Not a harness artefact.** A hot-vs-cold harness offset (measured **+4.36%**) would move **both** arms;
+        only the champion moved, and the pristine control reproduced to within +2.2%. The mechanism is unknown.
+        Two consequences, both binding:
+        - **Headline admissibility**: a final champion headline requires **>=N independent launches with a
+          session-unit CI**, never one tight session. N is set with the between-session sd (2.793%, R23-55),
+          not the arm sd. Mirror in `autokernel-unified-surface-program.md` **U2**.
+        - **Read CHAMP-2 against this**: a THP **"cannot tell"** may be *this* instability rather than a weak
+          effect. Do not convert a cannot-tell into a mechanism refutation while R23-57 is open.
+
+        **LEAD (INF-70, 2026-09-08, from the resolved CHAMP-2 THP test) — the instability may BE the THP
+        default.** The shim changes variance far more than it changes the mean:
+
+        | configuration | mean tok/s | between-launch sd | range |
+        |---|---:|---:|---:|
+        | OFF (champion default today) | 26.8604 | **2.510%** | 6.17% |
+        | ON (`GGML_NOHUGEPAGE_PROCESS=1`) | 27.8726 | **0.481%** | 1.36% |
+
+        Variance ratio **25.3x**. The large-effect pairs are exactly those where the **OFF** launch was slow —
+        **ON never was** — so the shim looks like it removes a downside *tail*, not that it shifts the mean.
+        **All 9 launches in the champion-spread table were shim-OFF**, so the champion may have been
+        characterised in its high-variance configuration all along. This is a **LEAD, NOT A CONCLUSION** (n=6,
+        the spread table is unpaired). Evidence: `/mnt/raid0/llm/tmp/inf70/agents/retest1/CHAMPION-LAUNCH-TABLE.md`
+        (9 launches, between-launch sd **5.081%** quiet-host-only n=7, range **12.55%**; `bin-h1` at defaults and
+        `bin-r1` at champion knob state proven the SAME configuration — 24/24 byte-identical, identical
+        `ggml/src/ggml-cpu` tree hash `040d43aa`). Restricting to a quiet host slightly **widens** the spread, so
+        contention is not the driver. Sizing at OFF variance: +/-3% = 12 launches (0.76 h), +/-1% = 100 (6.33 h),
+        +/-0.5% = 397 (25 h).
+
+      - [ ] **R23-58 — MEASURE THE THP SHIM AGAINST THE SERVING FLOOR BEFORE SPENDING ANOTHER SERVING GATE.**
+        The serving gate launches a fresh `llama-server` per sample, so it is **session-unit** and pays exactly
+        the variance above; its clean floor is **4.581% p95 at n=10** (`serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json`),
+        and that floor is the binding constraint on every GPU keep — it is why the 6-keep bundle resolved only to
+        "cannot tell" (R23-51/CHAMP-1). If `GGML_NOHUGEPAGE_PROCESS=1` compresses launch variance on the GPU
+        serving path the way it did on the CPU decode path, **a recipe change found on the CPU surface unblocks
+        GPU keeps that are currently unresolvable** — the first result in either campaign that pays on the other
+        surface. Method, with INF-70's two cautions: **pair adjacent launches** (session unit; keep every arm-unit
+        floor out of the arithmetic), and **compare tails, not only means** — the effect was a compressed downside
+        tail, so a means-only design can miss it entirely. Cost ~= one floor recalibration per arm. Run it BEFORE
+        the next serving gate, not after. Gated on the operator's relaunch go.
+
+        **PRE-REGISTERED AND READY 2026-09-08 (not run).** Design, runner and pre-flight live at
+        `/mnt/raid0/llm/tmp/r2358-shim-serving-20260908/` (`PREREGISTRATION.md` sha256 `0a72a0256a0c8977…`,
+        freeze before the first launch; `run_r2358.py` dry-by-default, `--run` required; `CHECKLIST.md`).
+        | element | value |
+        |---|---|
+        | design | **two interleaved, order-balanced A/A calibrations**, NOT a paired A/B |
+        | why not A/B | `serving.compare` varies the BUILD from one recipe, so a same-build env arm is inexpressible; and its median-contrast statistic is exactly what misses a compressed tail |
+        | interleaving | couple-by-couple (odd OFF,ON / even ON,OFF) so host drift cannot alias into the arm contrast |
+        | n | **24 couples = 48 launches**, up to 28 launched (4-couple replacement budget) |
+        | primary statistic | ratio of `p95_dev_pct` (the same formula `floor_pct` is defined by, via `serving._spread`), sd(log) alongside |
+        | inference | within-couple label permutation on median-normalised runs (exhaustive ≤18 couples, else 200,000 draws, seed 2358) — null exact for any statistic |
+        | power | ~0.97 vs a 3x dispersion ratio, ~0.69 vs 2x; 3x is the campaign-relevant threshold (it is what would have made the −2.176% bundle decisive) |
+        | wall-clock | **~60 min typical, <=77 min worst case** at 75-82 s per launch (derived two independent ways from loop-memory serving artifacts) |
+        | throughput claim | read from the SAME 48 launches at zero extra cost; a null here with a real dispersion effect is a **SUCCESS, not a mixed result** |
+        **Build: NO REBUILD NEEDED** — `/mnt/raid0/llm/tmp/build-fold-ef81196d5` (the FOLD-2 candidate build of the
+        champion; `CMakeCache.txt` -> source `fold-ef81196d5-src` at `ef81196d5`, clean tree, all four
+        `gfx90a-house-v1` flags matching) already carries the shim in `bin/libllama-common.so.0.0.10301`
+        (marker, both env strings, `prctl` in `nm -D`; `ldd bin/llama-server` resolves to it).
+        **Controls, all fail-closed:** Control 0 resolves the library through `ldd` under
+        `Recipe.server_env(build_dir)`, refuses a library resolving OUTSIDE the build dir, records its sha256
+        per launch, and **must reject a known pre-fold build** (`build-cor-445e93a8`) or the run does not start.
+        The knob readback is `serving.verify_env_readback` (declared, not re-implemented); AnonHugePages is the
+        independent second control, and a `thp_enabled=0` with `anon_huge_pct >= 1.0%` stops the run as a
+        controls conflict with no verdict issued.
+        **Two vacuous-pass hazards found and closed while preparing this** (both now impossible by construction):
+        an any-match glob over `libllama-common.so.0.0.*` would have passed on a stale sibling the loader never
+        maps — `champ2/build-hip/bin` holds FIVE vintages from five dates; and the first pre-flight concluded
+        "no build carries the shim" after scanning the `llama-server` EXECUTABLE, which never contains strings
+        from a linked library. That false blocker would have cost a 64-job rebuild contending with INF-70's live
+        measurement. See the eleventh sign in the vacuous-verification record.
+
+      - [ ] **R23-60 — THE SERVING PATH PROVES NO GPU RESIDENCY.** `bench.py` samples residency; `serving.py`
+        samples nothing. **Every serving number this campaign has taken is therefore un-proven as GPU-resident**,
+        including the 4.581% floor and the bundle gate that held the champion at `445e93a8`. The numbers are
+        very likely fine — this is a missing proof, not a suspected defect — but it is exactly the kind of gap
+        that cannot be filled retroactively: a residency tuple invented on read claims warrant the original run
+        never captured. Wrap each serving launch in `residency.Sampler` (the R23-58 runner already does this
+        itself; the fix is to move it into `serving.py` so every consumer gets it) and record VRAM sampled
+        DURING the run plus the KFD process count in the serving record. Standing rule: "I invoked the HIP build"
+        is not evidence of a HIP run, and `ldd` cannot prove one.
+      - [ ] **R23-61 — RECALIBRATE THE LIVE SERVING FLOOR SO IT STOPS BEING `unverified`.**
+        `loop-memory/serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json` (4.581%, n=10, 2026-09-08T10:21:45Z)
+        carries no `recipe_hash`, so nothing proves it was calibrated under the recipe now in force. Its
+        `conditions.cpu_list` does match the pinned recipe, so it is probably right; nothing proves it, which is
+        the point. The gate now announces the unverified provenance on every invocation (R23-59 work). Fix with
+        `recal_serving_floor --apply` (now in-repo and routed through `serving.write_floor`). Needs the host;
+        do it in the same window as R23-58, since that run recalibrates both arms anyway.
+      - [ ] **R23-59 — THE CHAMPION IS NOT FULLY DESCRIBED BY A COMMIT: carry the launch/build recipe under the
+        champion's identity.** CHAMP-2 is the first concrete instance — the artifact is `ef81196d5` **plus** a
+        launch recipe, and a champion identified only by a commit hash is **under-specified in a silent way**,
+        because the binary verifies and the recipe does not. This is the standing "build recipe as a champion arm"
+        gap (rebuild plan D3, currently inexpressible in `champion.py`/`Bundle`). INF-70's PROD-1 exists for the
+        same reason in prose form: a recipe transcribed by hand into a handoff cost seven MTP arms to a flag that
+        does not exist; their fix was **importable constants with validators, not documentation**. Do the same at
+        the bundle level: the champion record carries its recipe, the gate refuses a measurement whose recipe
+        hash does not match, and no recipe is ever re-typed. Ties to R23-55 (`unit`) — both are fields a
+        measurement must carry to be admissible.
+        Action: **investigate the source of between-launch variance on the champion** — page-cache / NUMA
+        placement, THP state, HIP graph capture, allocator. Cross-ref R23-55 (`unit` on every floor) and
+        INF-73 U2 / P2.
       - [x] **R23-52 — status heartbeat during keep post-processing** ✅ 2026-09-07 IMPLEMENTED (research `70d98807`; 4 `publish()` calls: anchor build / headline / reprofile / accumulate; 422 tests; takes effect at the next launch — run 30 holds the old module). Observed run 30, 2026-09-07: after the first
         keep (`bff30cebe`, +2.583%) `loop-status.json` went **30+ min without a write** while `promote_anchor` did
         the clean anchor build (gen-021, 117 objects at 20:07Z, `cmake`/`gmake` children 9 min in), then verify,

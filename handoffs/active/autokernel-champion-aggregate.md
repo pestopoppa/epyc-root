@@ -15,6 +15,12 @@ fixed production anchor.
 | **CH-4 / CH-6 follow-ons** | See their entries; both are settled to a conclusion, follow-ons only. |
 | **not on this page** | `AK-INST-3` (prove a campaign reaches `sci >= 1`), `AK-INST-2`, `AK-DEPLOY-2` live in [`autokernel-restart-and-strip.md`](autokernel-restart-and-strip.md). |
 
+**CONSOLIDATION COMPLETE 2026-09-08 — the champion is `ef81196d5`** (GPU tip `bff30cebe` + CPU
+champion3 `9c4f73e29`, FOLD-2 G1-G5 PASS). INF-70 has **no CPU keeps to fold**; the operator's
+*no-kernel-research-until-a-fully-consolidated-champion* condition is satisfied. Loop relaunch is a
+**separate operator go**. Before any sweep picks up "an unfolded CPU branch", read the **DO-NOT-FOLD
+ledger** at the bottom of this page (`inf70/sync17-fix2 @ 2516c9807` is a measured **regression**).
+
 **RECONCILED 2026-08-31 — there is ONE champion now, by ratified invariant.** The two lineages
 this page used to distinguish were the incident (INC-20260831-champion-lineage-fork: the rebuilt
 loop was seeded 2026-08-30 from bare v9 as a NEW sibling branch while THE champion sat one branch
@@ -618,14 +624,171 @@ the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's
       trigger.** Do not stop run 29 for the fold; do not hand FOLD-0 to `inf70-audit` yet — this was a
       preliminary investigation for clarity on blockers. Surface FOLD-0 to `inf70-audit` when the
       run-29 / reboot boundary approaches, so the fold-ready commit is prepared in time.
-- [ ] **FOLD-0 (`inf70-audit`, own branch)**: fold-ready commit on `6f032c48d` — `GGML_OP_MOE_TOPK_NORM`
+- [ ] **FOLD-0 (`inf70-audit`, own branch)** — *note 2026-09-08: the re-base onto the CPU champion
+      (`inf70/champion3` @ `9c4f73e29`) was done by INF-70 inside the fold candidate, so `ef81196d5` already
+      carries champion3; the remaining FOLD-0 items below are theirs to close in their own turn*: fold-ready commit on `6f032c48d` — `GGML_OP_MOE_TOPK_NORM`
       opt-in (or CUDA kernel + test-backend-ops case), INF-64 fused decode opt-in, `ggml-alloc.c` stray
       define; re-run greedy bit-identity + `test-backend-ops -b CPU`; record the PROD-2 reversal in the
       INF-70 ledger; **push** `inf70/champion` (private clone today).
-- [ ] **FOLD-1 (champion owner)**: at a run boundary — STOP run 29 (verified dead) → tag pre-fold →
-      fetch + `git merge --no-ff inf70/champion-fold` in champ2 → house-recipe HIP build + CPU-only build.
-- [ ] **FOLD-2 gates, SAME merged tree**: GPU (test-backend-ops ROCm0 incl. SSM_SCAN, tg128 vs gen-020,
-      serving compare, DF2-10, **one GPU MoE model** for the fused op) + CPU (canonical recipe vs v9 AND
-      vs `6f032c48d`, served ABA plain+MTP with merged DEFAULTS, coherence by reason).
-- [ ] **FOLD-3**: relaunch the loop on the merged champion (`--allow-unverified-anchor`); PROD-1 codifies
-      the CPU launch recipe before any promotion headline.
+- [x] **FOLD-1 (champion owner)** ✅ 2026-09-08: loop stopped at the boundary (verified dead), pre-fold GPU tip
+      tagged `ak/pre-fold-gpu-tip-20260908` (pushed), fold candidate `ef81196d5` built at
+      `/mnt/raid0/llm/tmp/build-fold-ef81196d5`; `verify_ggml_linkage.sh` PASS.
+- [x] **FOLD-2 gates, SAME merged tree** ✅ 2026-09-08 — all PASS with real tallies on `ef81196d5`:
+      G1 `test-backend-ops -o SSM_SCAN -b ROCm0` 7/7 OK (incl. K=4/K=3 rollback), G2 MUL_MAT 1140/1140 OK
+      (326 unsupported type combos), G3 GATED_DELTA_NET 39/39, G4 dispatch **observed** (`llama-bench -v` +
+      `GGML_SCHED_DEBUG=2`: 27,516 nodes, SSM_SCAN=0, SSM_CONV 576 + GATED_DELTA_NET 576 on ROCm0, CPU holds only
+      12 GET_ROWS), G5 tg128 vs gen-021 **+0.052%** (20 pairs, floor 0.638%, not decisive). Result file
+      `/mnt/raid0/llm/tmp/fold-window-20260908/fold2-result.json`. NOTE: the first G1-G4 run reported PASS with
+      **OK=0** (ANSI-coloured verdicts defeated the `\bOK\b` match; `llama-bench` swallowed scheduler logs
+      without `-v`) — structural guards added: a gate PASSES only with ≥1 case run AND an agreeing `N/N tests
+      passed` tally, and the graph check only with a plausible node count AND the expected recurrent ops present.
+- [x] **FOLD-3** ✅ 2026-09-08 — **fast-forward + push, NOT a relaunch** (operator directive: no relaunch):
+      `ak/champion/llama-cpp-0db32c06e3e5` `bff30cebe` → **`ef81196d5`** (`--ff-only`, tip == candidate) at
+      11:16:49Z, lineage verified (`bff30cebe`, `445e93a8`, `9c4f73e29`, production `0db32c06e` all ancestors),
+      worktree clean, pushed to fork `pestopoppa/llama.cpp`. Production branch untouched. Consolidated champion =
+      GPU tip (6 unconfirmed keeps) + CPU champion3 `9c4f73e29`. PROD-1 still owes the CPU launch recipe before
+      any promotion headline.
+
+### CONSOLIDATION COMPLETE — `ef81196d5`, 2026-09-08
+
+- [x] **FOLD-4 — consolidation is CLOSED; there are no CPU keeps pending** ✅ 2026-09-08. INF-70 reported
+      its final RETEST-1 results at ~12:10Z with **no keeps to fold**. The consolidated champion is
+      **`ef81196d5`** on `ak/champion/llama-cpp-0db32c06e3e5` = GPU tip `bff30cebe` + CPU champion3
+      `9c4f73e29`, FOLD-2 G1–G5 all PASS. The operator's standing condition — *no kernel research until a
+      FULLY consolidated champion* — is **satisfied**. Loop relaunch remains a **separate operator go**;
+      nothing on this page launches or schedules it.
+
+#### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
+
+| branch @ commit | disposition | why | condition if ever folded |
+|---|---|---|---|
+| `inf70/sync17-fix2` @ `2516c9807` | **DO NOT FOLD — CLAIM, and the claim is a REGRESSION** | **−2.136%** (ratio 0.9786, CI [0.9771, 0.9804], p=0.0286, n=4v4 in one hot session, 24/24 outputs byte-identical). Both knobs default **ON** on that branch, **and that default IS the regression**. | If ever folded, **both knobs must flip default OFF**. Its value is as an **instrument**, not a keep. |
+
+**Why this negative is admissible where SYNC-19's was not.** The `P` arm is a *directional positive
+control*: the knob demonstrably reaches dispatch, confirmed by per-arm server knob readback. Decomposition
+of the −2.136%: **C→P (FIX-3's yield alone) −1.883%**; **P→F (column split alone) −0.258%**. The tiny-solo
+run was the better choice — the same barrier arithmetic that refuted `inf10-gemv-fusion`. SYNC-19's model
+predicted **+3.31%**; the sign is wrong.
+
+- [x] **CHAMP-2 (THP) — RESOLVED 2026-09-08: KEEP, 6/6 pairs ON-faster, early stop at the FIRST look.** ✅ 2026-09-08
+      Prior state: +3.458%, **NON-CLAIM** (p=0.143, CI [0.9962, 1.0632]); the hypothesis that VEC_Q8K/QSPLIT had
+      already removed its traffic is **contradicted** — the estimate is positive and *larger* than the +1.0% it
+      supposedly lost.
+      **CORRECTION OF RECORD (2026-09-08).** The operator did **NOT** cancel this test — the CPU session (INF-70)
+      had it backwards. INF-70 **registered the test at 14:08:05Z** and it is running:
+
+      | element | value |
+      |---|---|
+      | design | alternating ON/OFF launches, **session** as the unit |
+      | looks | two only — **6/6 after 6 pairs**, or **≥9/10 after 10 pairs** |
+      | α (exact, two-sided) | **0.0430** |
+      | cap | **10 pairs ≈ 1.27 h**; hard cap **14** with replacements |
+      | ≥9/10 ON faster | **KEEP**, staged as a lane off `ef81196d5` |
+      | ≥9/10 OFF faster | **no keep** |
+      | otherwise | **CANNOT TELL** — no keep, no default flipped |
+
+      Verdicts are **pre-fixed**; do not renegotiate them after the looks. Read a **CANNOT TELL** against
+      **R23-57** (champion launch-to-launch instability, ~12% spread on an identical configuration) before
+      concluding the effect is weak. Still: do not fold it and do not retire it as refuted.
+
+      **VERDICT (INF-70, 2026-09-08 ~14:55Z).** 6/6 ON-faster, early-stop boundary fired at the first look,
+      exact two-sided α = 0.0430, order-balanced 3/3, all 12 sessions passed both screens and the fail-closed
+      `THP_enabled` assertion, no pair dropped. Median **+5.23%** (range +0.32% to +5.93%) — **magnitude NOT
+      claimed**; the design sized for direction only.
+
+      **THE KEEP IS A LAUNCH-RECIPE CHANGE, NOT A KERNEL CHANGE — there was nothing to fold.** The shim's code
+      is already in `ef81196d5`; the keep is the env var `GGML_NOHUGEPAGE_PROCESS=1` (`prctl(PR_SET_THP_DISABLE)`
+      taken before the 92 GB allocation) **set at launch**. Default in `ef81196d5` today is **OFF (opt-in)**;
+      INF-70's recommendation is **ON**, taken to the operator as a recipe change. No branch, no rebuild, no
+      merge-tree, no FOLD-2, champion binary bit-identical, trivially reversible. **Do not conflate it with
+      `GGML_NOHUGEPAGE`** (the madvise, already on) — different mechanisms, opposite-sounding names. A code
+      default-flip is the alternative and was **not** measured (it would need its own build, `THP_enabled`
+      verification and a correctness gate).
+
+      **Unit: SESSION.** Evidence is 6 paired launches; the floor is between-launch (2.510% OFF / 0.481% ON).
+      The arm floor (0.171-0.501%) does not transfer — that substitution is the 4-vs-4,780 error (R23-55). The
+      shim cannot be switched between arms in a live process, so a per-arm number for it is meaningless by
+      construction.
+
+      **ADOPTED 2026-09-08 (operator ruling, relayed by INF-70: "we should totally adopt it").**
+      `GGML_NOHUGEPAGE_PROCESS=1` is now part of the **canonical launch recipe** for the champion, set at
+      launch, session unit. **The champion artifact is `ef81196d5` + shim ON** — a commit hash alone no
+      longer identifies it, and the first thing to force that was a recipe change rather than a code change
+      (the worked instance for R23-59 / INF-73 U3, adopted and in use rather than hypothetical). No fold, no
+      branch, no FOLD-2, binary bit-identical. Spell BOTH knobs out wherever this is cited: adopted
+      `GGML_NOHUGEPAGE_PROCESS` (prctl, at launch) vs pre-existing `GGML_NOHUGEPAGE` (madvise) — the names
+      are close enough to be transcribed wrong, which is exactly the PROD-1 failure mode.
+      **The stronger claim than the speedup:** the 9-launch spread table was measured shim-OFF, the
+      configuration now retired, so it is the *before* picture — the adopted change bought **precision as
+      well as throughput** (25.3x variance reduction), and precision is what makes every later measurement
+      cheaper on a shared host. INF-70's final characterisation is re-running with the shim ON, sized from
+      the ON sd (0.481%) rather than OFF's (2.510%), which is what makes a +/-1% headline affordable at all.
+      Tracked as INF-73 U3-SEED / U3-DEFAULTS; GPU-side transfer test is R23-58.
+- [x] **CHAMP-3 — DELIVERED 2026-09-08: the final champion headline is MULTI-LAUNCH with a session-unit CI.** ✅ 2026-09-08
+      (R23-57; INF-73 U2). The champion **characterisation was STOPPED mid-run** on operator instruction
+      (*"stop measuring the champion. It's not final yet!"*) and is re-run on the **final** champion, after the
+      CHAMP-2 THP decision and any fold that follows it.
+
+**Method note inherited from INF-70 (applies to this page's gates).** INF-70's `gate.py` now routes all
+statistics through a single `screened()` function — it *cannot* compute over screen-dropped arms and *cannot*
+PASS on zero cases — mutation-tested in both directions. This **generalises the ak-rebuild FOLD-2
+vacuous-pass guard**: the guard is not a fold-window one-off, it is the shape every gate should have.
+
+
+      **FINAL NUMBERS (INF-70, 18 launches 15:05:39-16:12:47Z, none dropped, region held; unit = LAUNCH,
+      every precision figure between-launch).** Champion = `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1`.
+
+      | configuration | n | central t/s | between-launch sd | 95% CI |
+      |---|---:|---:|---:|---|
+      | champion plain | 6 | **27.893** | 0.609% | +/-0.487% |
+      | champion MTP | 6 | **43.281** | 0.356% | +/-0.285% |
+      | pristine plain | 3 | 12.762 | 0.360% | +/-0.408% |
+      | pristine MTP | 3 | 23.709 | 0.926% | +/-1.048% |
+
+      Ratios: plain **2.1857x** [2.1730, 2.1974], MTP **1.8255x** [1.8081, 1.8399], MTP/plain 1.5516x.
+      MTP acceptance 82.1%, identical champion and pristine. **Headline as SIGN claims with bounded
+      magnitudes** (95% CI lower ends over launches): the champion is faster than pristine by **at least
+      117% plain** and **at least 81% served-MTP**; served-MTP beats plain by **at least 54%**.
+
+      **The variance before/after — the more valuable half:**
+
+      | | launches | between-launch sd | range |
+      |---|---:|---:|---:|
+      | BEFORE, shim OFF (retired) | 9 | **5.081%** | 12.55% |
+      | AFTER, shim ON (adopted) | 6 | **0.609%** | 1.79% |
+
+      **8.3x on sd, ~70x on variance**, corroborated by the paired test's 25.3x. **+/-0.5% precision fell
+      from ~25 h to ~23 min.** The ON sd was VERIFIED (0.609% observed against a 0.481% projection) and the
+      observed value is what is quoted.
+
+      **TWO CAVEATS THAT MUST TRAVEL WITH THESE NUMBERS.**
+      1. **The ratio is recipe-to-recipe, NOT knob-controlled.** Pristine contains neither THP knob (no
+         marker, zero occurrences of either env string), so an equal shim state is impossible by
+         construction. What IS controlled: same harness, same window, adjacent interleaved launches.
+         **This applies to the GPU side too — no champion-vs-pristine ratio this campaign has ever quoted
+         was knob-controlled; the THP difference sat inside all of them, unlabelled.** Disposition: LABEL
+         the affected cross-lineage ratios, do not re-derive them (the label costs nothing; re-deriving
+         costs hours and changes no decision). **Narrower on the GPU side, and checked:** FOLD-2 G5
+         (candidate vs `anchor-gen-021`) **stands as measured** — only the candidate's lineage carries the
+         knob at all and it defaults OFF, so both arms ran with THP enabled.
+      2. **`CHAMPION-DIVERGENCE.md` stays OPEN.** Plain ratio 2.1857x against the standing 1.7151x. Two
+         conditions differ at once (shim state, harness/window), so this NARROWS the causes without closing
+         them: pristine reproduces across both (12.762 vs 12.366, +3.2%), the champion does not. Adoption
+         explains part of the movement and part of the instability; **it is not asserted to explain all of
+         it.** Keep R23-57 open on that basis.
+
+      **CPU-side ledger CLOSED 2026-09-08 — fold queue EMPTY, nothing staged, nothing pending.**
+
+      | item | disposition |
+      |---|---|
+      | champion artifact | `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch |
+      | CHAMP-2 THP shim | ADOPTED — recipe change, session unit, direction only, no fold |
+      | FIX-1 / FIX-3 | CLAIMED REGRESSION -2.136%; `inf70/sync17-fix2` @ `2516c9807` **DO-NOT-FOLD** |
+      | SYNC-18 | untestable as built (knob reaches only `ggml_get_n_tasks()`, which no longer gates execution) |
+      | SYNC-16 / SYNC-13 | not reached; no evidence either way |
+      | `inf10-gemv-fusion`, `q8-8x8-avx512bw` | measured refutations, record-only |
+      | `feature/tree-draft-v6` | **MUST-NOT-FOLD** — champion carries the later contradicting decision |
+
+      **Joint open items, unruled:** INF-70's MEAS-1/OP-40 with our OP-41 (two campaigns, correct pinning
+      both sides, each destroying the other's resolution ~3x, plus a ~17% third-party tax from tooling
+      neither campaign controls), and the champion divergence above.

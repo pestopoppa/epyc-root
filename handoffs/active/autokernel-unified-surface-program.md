@@ -5,6 +5,14 @@
 (R23 series) and [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (FOLD series)
 **Index row**: `inference-research-index.md` → this file. **Domain**: inference research.
 
+> **2026-09-08 planning update — documentation only.** The operator is iterating on a VERY detailed
+> autonomy plan, including IMPLEMENTATION details; this session is explicitly **not implementing it**.
+> [§8 — autonomy design notebook](#autonomy-design-20260908) captures accepted preferences, dated audit
+> findings, proposed interfaces/algorithms, migration, tests, and provisional numerical defaults.
+> It is not an approved implementation specification or permission to launch research. Consolidation
+> ownership and the no-relaunch directive below remain in force. P1 records the fold at `ef81196d5`;
+> earlier pending-fold/running-run-30 descriptions are historical, not live-process observations.
+
 ## Operator directive (2026-09-07, verbatim intent)
 
 > "Shouldn't both CPU and GPU kernel work be subsumed by the autokernel loop (which would then be
@@ -86,6 +94,8 @@ bench host threads on `184-191` cover the other 8; our `llama-server` was unpinn
 has nowhere to fence to. The only real options are SERIALIZE, SCHEDULE, or ACCEPT-AND-REGRESS**, and only
 a single owner can serialize builds, CPU arms and GPU arms coherently. INF-70's own builds
 (`build3.sh`, `-j40`, unpinned, unlocked) have the same defect.
+**Placement is not even sufficient**: both sides were correctly pinned on 2026-09-08 and still poisoned
+each other through DRAM bandwidth — see the admission-control bullet at the top of §3.4.
 
 ### 2.4 What already exists and must be reused, not rebuilt
 | capability | where | status |
@@ -171,6 +181,35 @@ tg128 pairs, INF-70's is ~5% clean / 19.89% contended on a 24-prompt served harn
 serving gate fires per surface. The headline card shows per-surface gain over the shared cor, never a
 sum or product across surfaces.
 
+**A floor must carry its UNIT (measured 2026-09-08, INF-70 RETEST-1) — this is the field whose absence
+costs three orders of magnitude.** The conditions list above (harness, n, contention model, host-state hash)
+was incomplete: add **`unit` ∈ {arm, session, process}**, the scope at which the knob under test varies.
+Within-session (**arm**) sd is **0.501%**; between-session (**process launch**) sd is **2.793%** — a
+process-scoped knob faces a floor **~13× coarser** than an arm-scoped one. Worked consequence: INF-70's
+**0.171% arm** floor says CHAMP-2 THP needs **4 sessions/side**; the correct **session-unit** answer is
+**4,780** — a **1200-fold** error, and it would have been spent as real host hours. So: every floor record
+states its unit, and **a gate comparing an effect to a floor of a different unit REFUSES** rather than warns.
+Mirror task: `autokernel-rebuild-program.md` **R23-55** (write `unit` into `loop-memory/serving-floor.*.json`
+and the bench-floor records).
+
+**And the champion arm itself is not stable across launches (measured 2026-09-08, INF-70) — so HEADLINE
+ADMISSIBILITY is a U2 property, not a reporting style.** An **identical** champion configuration measured
+**24.4 → 27.4 tok/s** plain across four of that day's sessions (~**12%** spread: gate 25.6-25.9, THP-OFF
+24.4-25.3, FIX-1 controls 27.3-27.4, characterisation 27.3-27.4) while the **pristine control reproduced**
+(12.637 vs 12.366 standing, **+2.2%**). Champion 27.383 vs standing ~21.21 is **+29.1%**, and the
+champion/pristine ratio reads **2.167×** today against **1.7151×** standing. A hot-vs-cold harness offset
+(**+4.36%**) would move *both* arms; only the champion moved, so the harness does not explain it. **The
+mechanism is UNEXPLAINED.** Two rules follow for this track:
+
+- **A headline is admissible only from ≥N independent launches with a session-unit CI.** One tight session
+  is not a headline whatever its internal spread, because the arm-unit floor is the wrong instrument for a
+  quantity that varies at process-launch scope. N is sized from the between-session sd (**2.793%**), never
+  the arm sd (0.501%).
+- **Investigate the source of the between-launch variance on the champion** — page-cache / NUMA placement,
+  THP state, HIP graph capture, allocator — before any final champion number is published. Until it is
+  explained, a **"cannot tell"** verdict (CHAMP-2 THP) is as consistent with this instability as with a weak
+  effect. Mirror task: `autokernel-rebuild-program.md` **R23-57**.
+
 **Re-baselining rule (INF-70 review, 2026-09-07).** The cor is SHARED, so when any surface's promotion
 advances it, every other surface's `compounded_bench_pct` is momentarily stated against a baseline its own
 harness never measured. That number is INVALID until that surface re-measures tip-vs-new-cor on its own
@@ -187,7 +226,70 @@ change (recipes are code, in git) and the recipe hash becomes part of the epoch.
 `switch` covers more than its name (INF-70's `GGML_TINY_SOLO_CLAMP` fall-through gated 10 ops) is a
 correctness-oracle failure, not a tolerance — the oracle must diff op coverage, not just outputs.
 
+**SEED CASE — the first RUNTIME_CONFIG arm already exists, measured, from outside the loop (2026-09-08).**
+CHAMP-2's THP shim (`GGML_NOHUGEPAGE_PROCESS=1`) *is* a RUNTIME_CONFIG arm by this section's own
+definition: no build, one binary, two launch configurations, paired, session-unit. INF-70 ran it to a
+verdict (6/6 ON-faster, α = 0.0430, direction only) before the arm type exists in the loop. Specify U3
+against this instance rather than in the abstract — it arrives with a validated measurement design, a
+knob whose scope is known, and a recipe that a keep would mutate. Two properties of it that the arm type
+must therefore support, neither of which a SOURCE arm needs:
+- **The unit is the SESSION and cannot be otherwise.** A launch-time knob cannot be switched between arms
+  inside a live process, so a per-arm number for it is meaningless by construction (R23-55).
+- **The effect was a compressed downside TAIL, not a shifted mean** (sd 2.510% OFF vs 0.481% ON, 25.3x).
+  A comparator that only tests means can return "no effect" on a real one. U3's compare step must report
+  spread alongside the point estimate, and the keep grammar must be able to accept "reduces variance".
+
+**Cross-surface transfer — the programme's thesis, demonstrated (2026-09-08).** This is the FIRST result
+either campaign has produced that pays on the *other* surface: a knob found on the CPU decode path is a
+candidate fix for the GPU **serving floor** (4.581% p95 n=10), which is the binding constraint on every
+GPU keep (R23-58). Everything before it was surface-local or a constraint. Record it as evidence for the
+unified surface, against the standing cost of the same design (serialisation throughput, coordination
+overhead) — this is the first entry on the other side of that ledger.
+
+**Status precision (do not over-record):** the *verdict* is settled (LIKELY IMPROVEMENT, keep, session
+unit, direction only, no fold). The *recipe change* is INF-70's recommendation to their operator and is
+**not yet adopted**; the champion default remains OFF until it is.
+
+- [ ] **U3-SEED — specify the RUNTIME_CONFIG arm type against the THP instance**: session-unit paired
+      launches, spread reported with the point estimate, a variance-reduction keep grammar, and the recipe
+      hash in the epoch. Blocked on nothing; do it before authoring any RUNTIME_CONFIG hypothesis.
+- [ ] **U3-DEFAULTS — if R23-58 confirms the shim on the GPU serving path, put it in the loop's own recipe
+      defaults, not only in the gate harness.** Every `llama-server` the loop launches (serving gate,
+      serving compare, DF2 panels) pays the OFF variance today.
+
 ### 3.4 Track U4 — resource broker and per-surface budgets
+
+- **Admission control, not screening (measured 2026-09-08, both directions):** during the fold window the
+  GPU and CPU surfaces each measured the other as a confound, **with both sides correctly pinned and
+  INF-70 holding the CPU region lock correctly**.
+
+  | direction | victim instrument | confound | quiet reference | contaminated | ratio |
+  |---|---|---|---|---|---|
+  | 1 (INF-70 MEAS-6) | their hot-harness A/A (`llama-bench`, one process at a time, tg128, 20 alternating pairs, host threads `taskset -c 184-191`) | my bundle-seed bench, straddled deliberately | pair p95 0.80% drain-era; quiet-host subset re-measured **0.509%, sd 0.279%** | **7.223%** (n=5, sd 3.268%); restated **2.151%** on their adjacent subset | **~4.2×** |
+  | 2 | my pinned serving-floor recalibration (10:05-10:08Z) | their RETEST-1 `llama-server` pid 1167737, `-t 48`, 242 threads, 4800% CPU across 0-95, launched 09:53:47Z by `session2.sh RA_AA`, holding q0-q3 as `retest1-campaign3` correctly | unpinned quiet-host floor **3.536%** (n=8, cv 1.572%) | **10.255%** p95 (cv 5.977%; 155.02/168.48/152.81/144.17/143.22 tok/s) | **~2.9×** |
+
+  Direction 1 put the detectable effect at n=8/side at **4.575%**, i.e. 1-3% CPU levers are unmeasurable
+  under concurrency, and their pre-registered gate halted before any lever arm ran. Direction 2 cost a
+  quarantined floor file and an aborted n=10 run.
+
+  **The channel is DRAM bandwidth, not cores.** INF-70's contention screen (foreign %CPU,
+  sibling-expanded) PASSED every contaminated arm: prefill flat (±2%) while decode fell 7%, NUMA
+  placement and AnonHugePages constant. **No CPU-occupancy screen on either side can see it.**
+
+  **Halt semantics are part of the broker, not a courtesy.** Both sides had a "halt" that did not stop
+  queued successors: my loop's drain let a lane start a `jobs=64` build at 09:31Z (killed at the build
+  stage); INF-70's `chain2.sh` (launched 09:41:41Z) ran a `-j 48` build 09:48:11-09:49:17Z on its own
+  after campaign 1 halted, and their agent re-ran a campaign at 09:53:41Z, reading "STOP and report" as
+  "diagnose and re-run". Structural, not carelessness.
+
+  **Rules this fixes into U4:** (a) the broker **admits ONE surface at a time** — time-slicing, with a
+  quiet-host A/A at each switch; (b) the broker owns process **LIFECYCLE**, not just locks: *nothing
+  queued may fire across a halt*; (c) CPU-occupancy screens stay **necessary for diagnosis but
+  insufficient for admission**. Cost of the alternative (INF-70, arms at 80% power): detecting +1.0%
+  needs 2 arms/side quiet, 10 concurrent, 168 during an excursion — serialising is worth **5×-84×**;
+  CHAMP-2's pooled +0.16% needs ~48 sessions/side ≈ **10 h exclusive**, not resolvable on this host
+  under any realistic booking.
+
 The loop becomes the single scheduler for: build slots (pinned, `jobs` bounded, **locked**), GPU arms (the
 `mi210_0` flock, as today), CPU arms (the orchestrator `cpu_region_lock`, role `bench`), and the
 foreign-load sampler (sibling-expanded, `/proc/<pid>/stat` deltas — reuse `foreign.py`, do not rebuild).
@@ -213,6 +315,35 @@ ranges; a build pinned to 96-183 is OUTSIDE 0-95 yet occupies the siblings of 0-
 grant a bench arm during the compile. The broker must reserve by PHYSICAL core (sibling-expanded, via
 `foreign_load.bench_logical_cpus`) — a build slot on 96-183 and a bench arm on 0-95 are the same resource.
 
+**Third-party disturbance is PRICED, and serialisation is not the binding constraint (INF-70, 2026-09-08).**
+Across the RETEST-1 Q2 arms the disturbance hit rate was **1 in 6 ≈ a 17% tax in arms** — and it is the
+expensive kind, *paid on work identified as garbage only after running it*. Serialisation between the two
+sessions **held**: both sides honoured the region lock and it still did not protect the instrument, because
+> *"Region-lock serialises those who call it; nothing constrains those who don't."*
+
+That sentence is the whole case for **admission control over cooperative locking**: the broker must gate
+**entry to the host**, not participation in a protocol. Foreign, unattributed load (a python process at
+**800% CPU**, `Cpus_allowed` 0-191, plus `opencode`) cost one Q2 arm outright. Host-state change for the
+record: at **12:05Z** the operator stopped the orchestrator API (uvicorn :8000 + 6 workers, pid **3961116**,
+up since 2026-08-26) via `orchestrator_stack.py stop orchestrator`; hub :8100, OCR :9001, sd_server :8190 and
+the docker containers remain — a **candidate, unproven** source of that 800% python.
+
+- **Gate guards (2026-09-08):** a gate cannot PASS on zero cases or an unobserved graph; verify process
+  death by `/proc/<pid>` existence, not `ps` exit codes.
+
+- **OP-41 RULED (operator, 2026-09-08) — the operator owns this design, and it lands LAST.** The admission-control
+  broker is **the operator's own design**, refined through this handoff (INF-73 §3.4); it will be **implemented by
+  the operator**, and only **AFTER**, in order: **(1)** the champion is finalised, **(2)** the champion is promoted to
+  production, **(3)** the host is rebooted. **No action now** — no broker code, no scheduler, no admission daemon,
+  and no session may start building one. Until then the standing behaviour is unchanged: cooperative region-lock
+  plus INF-70's bounded-hold requests, with the measured 4.2×/2.9× mutual degradation and the ~17% third-party arm
+  tax accepted and labelled, not engineered around.
+  - [ ] **U4-SEQ — hold admission control until the operator's three gates clear**, then hand this section's
+        evidence (both degradation directions, the 1-in-6 disturbance tax, *"region-lock serialises those who call
+        it; nothing constrains those who don't"*) to the operator as the design input. Gates: champion finalised →
+        promoted to production → host reboot. Nothing in U4 is buildable before that, and this row exists to record
+        the sequencing, not to authorise work.
+
 ### 3.5 Track U5 — one monitoring session; authoring roles
 One roster session monitors both surfaces (status, keeps, gates, errors — what `ak-rebuild-20260828`
 does today). The CPU session's role becomes **diagnosis and hypothesis authoring into the inbox**
@@ -229,11 +360,14 @@ sequencing: measurement first, authoring later).
 
 ### P1 — the fold at run 30's next boundary (U1)  · exit: ONE champion tip carrying both lineages, GPU floors unchanged
 - [x] **UD-0**: operator confirmed the fold DIRECTLY to `workspace-1c` ✅ 2026-09-07 — gate 1 (their windows clear) is theirs to signal; gate 2 (run 30 boundary) is ours
-- [ ] **FOLD-2 additions (UD-4)**: `test-backend-ops -b ROCm0 -o SSM_SCAN` with an explicit `K > 1` case; `verify_ggml_linkage.sh`
-      on the merged tree BEFORE the serving gate (`ggml/include/ggml.h` +18 → ABI hazard across the three ggml generations);
-      observe the 27B's SSM_SCAN dispatch decision (not inferred from tg128); tg128 A/B merged-tree vs anchor-gen-021 inside 0.638%
+- [x] **FOLD-2 additions (UD-4)** ✅ 2026-09-08: on candidate `ef81196d5` — `test-backend-ops -o SSM_SCAN -b ROCm0` **7/7 OK**
+      incl. the K=4 / K=3 rollback cases; `verify_ggml_linkage.sh` **PASS** before the serving gate; dispatch **observed**
+      (`llama-bench -v` + `GGML_SCHED_DEBUG=2`: 27,516 nodes, SSM_SCAN=0, SSM_CONV 576 + GATED_DELTA_NET 576 all on ROCm0,
+      CPU holds only 12 GET_ROWS); tg128 vs anchor-gen-021 **+0.052%** (20 pairs, floor 0.638%, not decisive, no drift).
+      **UD-4 closed on observation.** Result file `/mnt/raid0/llm/tmp/fold-window-20260908/fold2-result.json`
 - [x] Champion branch + orphan tag pushed to the GitHub fork ✅ 2026-09-08 (`ak-loop-tree` was swept from scratch mid-fold; `champ2` was one sweep from the same)
-- [ ] INF-70 stages levers on a lane branch off the champion tip, merge-tree disjointness proven, FOLD-0 re-based onto `inf70/champion3` (or their champion at the boundary) — they do this unprompted once gate 1 clears
+- [ ] INF-70 **RETEST-1 turn in progress** (A/A first, then RETEST-1 in priority order); **next fold = their keeps off `ef81196d5`** — they stage
+      levers on a lane branch off that tip, prove merge-tree disjointness, and fold the same way
 - [ ] FOLD-0 (`inf70-audit`): fold-ready commit with both blockers opt-in; bit-identity + `test-backend-ops -b CPU`.
       **FOLD-0 as written targets `6f032c48d`, two CPU champions old — re-base onto the CPU champion at the
       boundary (today `inf70/champion3` @ `9c4f73e29`, build 10241, `experimental-inf70-champion3` on the `fork`
@@ -241,13 +375,20 @@ sequencing: measurement first, authoring later).
       arm-pairs, α 0.8209 unchanged) or the fold ships a superseded kernel and discards the +4.50%**
 - [ ] Do not schedule the boundary under INF-70's live chains (SYNC-19/20 window 1 ~21:30Z + a second window,
       HARNESS-1 Phase B behind it) — rebasing under in-flight pre-registered arms invalidates them; clears in hours
-- [ ] FOLD-1..3 (champion owner) per `autokernel-champion-aggregate.md`: stop at boundary (verified dead) →
-      pre-fold tags → merge-tree disjointness → merge → gates on the SAME merged tree (GPU: ROCm0
-      test-backend-ops incl. SSM_SCAN, tg128 vs gen-020 inside the floor; CPU: their bit-identity)
-- [ ] **R23-51a in the same window**: seed the true cor (`445e93a8`) with a MEASURED tip-vs-cor tg128 bench
-- [ ] **R23-49 pin + re-calibration in the same window**: `cpu_list` on the GPU serving recipe, serving floor re-calibrated
-      — **pin committed (research lane) 2026-09-08; recal pending in-window** (the 3.536% floor is VOID for this
-      recipe until `recal_serving_floor.py` runs)
+- [x] FOLD-1..3 (champion owner) per `autokernel-champion-aggregate.md` ✅ 2026-09-08: fold executed, all FOLD-2 gates
+      PASSED (G1 7/7, G2 1140/1140, G3 39/39, G4 dispatch observed, G5 +0.052% inside the 0.638% floor), then
+      `ak/champion/llama-cpp-0db32c06e3e5` fast-forwarded `bff30cebe` → **`ef81196d5`** (`--ff-only`, tip == candidate) at
+      11:16:49Z, lineage verified (`bff30cebe`, `445e93a8`, `9c4f73e29`, production `0db32c06e` all ancestors), worktree
+      clean, pushed to fork `pestopoppa/llama.cpp`; pre-fold GPU tip tagged `ak/pre-fold-gpu-tip-20260908` (pushed).
+      **Production branch untouched.** NO relaunch (operator directive stands)
+- [x] **R23-51a in the same window** ✅ 2026-09-08: cor `445e93a8` seeded with a **MEASURED** tip-vs-cor tg128 bench,
+      **+5.958%** (20 pairs, decisive, not drifting). The serving gate then ran on it: n=5 −5.19% (decisive, `diverged`),
+      re-run n=10 **−2.18% NOT decisive** → disposition **UNCONFIRMED (not refuted)**; **cor HOLDS at `445e93a8`** and the six
+      keeps stay on the tip as provisional and re-gateable. An **11-point proxy-vs-truth gap** the bench alone could never show
+- [x] **R23-49 pin + re-calibration in the same window** ✅ 2026-09-08: `cpu_list` pinned `184-191` on the GPU serving recipe
+      and the serving floor re-calibrated under the pin — **4.581% p95** (n=10, cv 3.136%, median 161.08 tok/s) on a
+      verified-quiet host; the first attempt was CONTAMINATED (10.255%, INF-70's server live) and was quarantined. The pin
+      costs ~1 pp of floor width vs the 3.536% unpinned quiet floor
 - [ ] CPU keeps present in the fold recorded as `accumulator-bundle.cpu.<recipe>.json` (schema v1) — **with their
       magnitude flagged `provisional` and the contention label `pre-hook`**: every INF-70 arm before 2026-09-07
       carries a WRONG contention label (sampler read `184-191` as disjoint), and +4.50% is at or below its
@@ -258,9 +399,11 @@ sequencing: measurement first, authoring later).
       computed the old way is inflated — the corrected statistic is an arm-level permutation test; any magnitude the
       bundle ingests must carry which statistic produced it; (iii) linear within-block drift is ruled out (slope
       +0.03%/slot, R² 0.004), so CPU-surface scatter is contention (OP-40), not drift.
-- [ ] NO relaunch by default (operator 2026-09-08). Consolidation exit: one tip carrying both lineages; FOLD-2 passed;
-      durable bundle seeded with a MEASURED tip-vs-cor and the serving gate run on it; tip on the fork; phase-2
-      candidates below gated or declined. Then ASK before any run 31.
+- [ ] NO relaunch by default (operator 2026-09-08). **Consolidation exit ACHIEVED for the GPU side ✅ 2026-09-08**: one tip
+      carrying both lineages (**`ef81196d5`** = GPU tip + CPU champion3 `9c4f73e29`); **FOLD-2 passed**; the durable bundle
+      **seeded MEASURED** (+5.958% tip-vs-cor) **and the serving gate run on it → UNCONFIRMED** (−2.18%, n=10, not decisive;
+      cor holds `445e93a8`); **tip on the fork**. Consolidation is **complete for the GPU side pending INF-70's keeps**, which
+      fold onto `ef81196d5` next. Phase-2 candidates below still to be gated or declined. Then ASK before any run 31.
 
 ### P1b — consolidation phase 2: rescued-ref candidates (each behind its own gate; measurement that serves consolidation is allowed)
 
@@ -304,6 +447,13 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] `Bundle.surface`; per-surface store filenames; `load_bundle()` per surface; shared cor invariant test
 - [ ] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) — the CPU session's canonical recipe codified
 - [ ] CPU A/A calibration: screen floor + serving floor, n=20 pairs, host-state hash recorded
+- [ ] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model
+      and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES (INF-70 RETEST-1,
+      2026-09-08: arm sd 0.501% vs process-launch sd 2.793%; the 1200-fold THP sizing error). See R23-55.
+- [ ] **Headline admissibility: ≥N independent launches with a session-unit CI**, N sized from the
+      between-session sd (2.793%), not the arm sd; a single-session headline is refused (R23-57)
+- [ ] **Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP
+      state, HIP graph capture, allocator) — ~12% spread on an identical config, pristine control stable (R23-57)
 - [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
 - [ ] **Re-baseline on cor advance**: `stale_baseline` set on every non-promoting surface at PROMOTE, cleared only by
       a tip-vs-new-cor measurement on that surface's own harness; test that a quote while flagged is refused
@@ -343,7 +493,16 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 |---|---|---|
 | **UD-4 — SSM_SCAN `K` port rides with the fold: measure, don't split (2026-09-08)** | INF-70 found the CPU lineage changes `ggml_backend_cuda_device_supports_op` for `GGML_OP_SSM_SCAN` (`K > 1` → decline on CUDA → CPU fallback), an UPSTREAM port (`4595b1bca` = ggml `1692f9e50`, recurrent-state rollback), with all 5 CPU levers committed ON TOP of it (27 commits after). Splitting = cherry-picking 27 commits = exactly what the runbook forbids and how keeps get dropped. Their operator: *"make sure the gpu-focused autokernel session is aware… reserve a quiet GPU window to verify impact on GPU performance… just make sure we don't lose any performance keeps."* | **Recommendation: take the whole `champion3` as ONE candidate; in the window run test-backend-ops SSM_SCAN with an explicit `K > 1` case, `verify_ggml_linkage.sh`, and OBSERVE the 27B's SSM_SCAN dispatch on ROCm0 (it is a hybrid; SSM_SCAN runs every token); hold K out only on measured evidence.** |
 | **UD-0 — RESOLVED ✅ 2026-09-07 (~20:20Z)**: operator ruled DIRECTLY to `workspace-1c`: *"yes, fold onto the champion once the measurement windows clear."* Two gates remain, neither side controls both: (1) INF-70's windows clear (SYNC-19/20 w1 MTP block → w2 `AP` controls + 3 F1 arms → HARNESS-1 Phase B + hot session) — **they message us; do not schedule on an estimate**; (2) run 30's next boundary — ours. | The CPU session (`workspace-1c`) holds a DIRECT operator instruction from earlier this session — *"we're not folding into autokernel champion just yet. make sure we don't forget the canonical recipe."* — and correctly refuses to rebase on a relayed directive. **The operator must confirm the fold directly to that session**; a peer relay cannot override a direct instruction, and should not. | confirm directly; until then P1 proceeds only on the loop-side items (R23-51a seed, R23-49 recal) |
-| OP-41 (open) | serialize / schedule / regress on CPU co-tenancy | **serialize, structurally** — P4 builds it; until then accept INF-70's bounded-hold requests |
+| **OP-41 — RULED ✅ 2026-09-08** | serialize / schedule / regress on CPU co-tenancy | **Operator owns the admission-control design**, refined through this handoff (§3.4), and implements it himself **after** champion finalised → promotion to production → host reboot. **No action now**; until then accept INF-70's bounded-hold requests and label contended arms. |
+
+**OP-41 headline evidence (2026-09-08):** two campaigns, both pinned, lock respected → **4.2× / 2.9×**
+mutual degradation via DRAM bandwidth; see §3.4. (Master-index row update owed to its owning session.)
+
+**OP-41 second evidence bullet (2026-09-08, RETEST-1 close-out):** cooperative serialisation **worked and was
+still insufficient** — third-party disturbance ran at a **1-in-6 hit rate ≈ 17% tax in arms**, paid only after
+the arm was run. *"Region-lock serialises those who call it; nothing constrains those who don't."* This is
+evidence for the **admission-control broker** (option A) over any further tightening of the lock protocol;
+see §3.4.
 | UD-1 | CPU serving recipe = the gate for the CPU surface | the CPU session's canonical served recipe (Qwen3.8-Flash-Next), codified as `Recipe`; not a bench proxy |
 | UD-2 | promotion granularity | one production candidate carries BOTH surfaces; a surface without a demonstrated gate does not block the other's keeps landing on the champion, but does block promotion |
 | UD-3 | who authors CPU hypotheses after U3 | loop planner for RUNTIME_CONFIG/SOURCE on the CPU surface; CPU session keeps diagnosis; revisit after 10 CPU iterations |
@@ -364,3 +523,456 @@ CHAMP-2 (`cpu-decode-roofline-program.md`) · `cpu_region_lock.py` · `sync19-20
 `scripts/kernel_rnd/autokernel/loop/{accumulate,run,serving,bench,anchor,pipeline}.py` ·
 `controller/anchor_integrity.py` · `/mnt/raid0/llm/tmp/champ2` (champion tree) ·
 `/mnt/raid0/llm/autokernel/loop-memory/` (store) · `docs/design/inf70-cpu-fold-into-champion-20260907.md`.
+
+<a id="autonomy-design-20260908"></a>
+
+## 8. Autonomy design notebook — 2026-09-08, evolving and documentation-only
+
+### 8.1 Purpose, authority, and accepted decisions
+
+**Session purpose:** collect and refine the plan in this handoff across multiple operator iterations,
+including implementation details. Do not implement, deploy, launch experiments, modify production,
+or alter running campaigns as a consequence of this section. The operator explicitly clarified:
+"by details, I also mean IMPLEMENTATION details" and "We won't actually be implementing the plan
+in this session." Retaining concrete designs does not make those designs approved.
+
+The eventual outcome is one standalone AutoKernel service: the operator supplies its resource envelope
+and targets, then follows the dashboard. CPU/GPU research, compilation, measurement scheduling, routine
+recovery and evidence handling should no longer require two manually coordinated agent sessions.
+
+**Vocabulary:** accepted = explicitly selected/agreed by the operator; observed = dated finding with
+source; proposed = engineering design for later discussion; provisional default = suggested number or
+policy, not ratified and not a measured performance result. Existing operational policy remains
+authoritative until deliberately changed in a later session.
+
+| Topic | Accepted direction / preference |
+|---|---|
+| Compute | Declare CPU, GPU, or both; explore production workloads applicable to those interfaces. |
+| Prospective models | Seed a model outside the lineup; preserve production/candidate distinction. |
+| Scheduling | **Adaptive, seed prioritized**: initial exploration window, then adaptation with continuing production coverage. |
+| CPU experiment size | Smallest informative allocation for the mechanism; no full-host reservation by default for discovery. |
+| Transfer | Mechanism-specific applicability; a small-allocation result is not automatically a full-serving gain. |
+| Beliefs | Deeper integration for memory, applicability, transfer, invalidation and experiment selection. |
+| Friction | Automatic capture, cached routes, asynchronous projection; no extra routine approval/review layers. |
+| Runtime fast path | **Deterministic checks** for prevalidated recipe options, without the two critic rounds. New options and code retain review. |
+| Dashboard | **Minimal controls**: pause/drain/resume and model/hypothesis seeding; advanced configuration stays in CLI/manifest. |
+| This session | Documentation and iterative design only; no implementation authorization. |
+
+Documentation checklist (only these boxes describe this session's work):
+
+- [x] **PLAN-DOC-1** — capture audit, accepted choices, implementation proposals, tests and provisional defaults in the owning handoff. ✅ 2026-09-08
+- [ ] **PLAN-DOC-2** — iterate §8 with the operator before converting proposals into an implementation queue. Documentation-only; no compute or deployment authorized.
+
+### 8.2 Dated audit findings and corrections
+
+The audit covered August 25–September 8 reports and inspected the newer research lane
+`/mnt/raid0/llm/worktrees/mains/ak-rebuild-research` (`bdfab023`) and research `origin/main` (`624adbdd`)
+during that pass. The shared research checkout was behind those refs. Code-present, merged and loaded
+in a process are separate statements. Resolve symbols at the recorded revision and current code before
+implementation. This planning session ran no new benchmarks and re-certifies no historical percentages.
+
+| Finding | Evidence / correction | Design consequence |
+|---|---|---|
+| Builds contaminated CPU arms | [Sept 7 co-tenancy audit](../../progress/2026-09/2026-09-07-ak-rebuild-20260828.md): build `96–183` shares cores with bench `0–95`; some manual builds were also unpinned/unlocked. | Broker all build paths; do not attribute all contamination to one session. |
+| Seven workers did not mean seven concurrent builds | `loop/pipeline.py::SerializedTail.session` serializes build → oracle → A/B → commit; `run.py::gate_for` documents its `jobs=64`. | Preserve ancestry protection; process-local serialization does not protect external CPU experiments. |
+| Threads are not physical allocation | [CPU roofline handoff](cpu-decode-roofline-program.md), C5/B2/MEAS-4: `-t 48` in a 96-core reservation, OMP spread, interleaved memory. | Fewer threads spread over the host do not prove a NUMA-local quarter equivalent. |
+| Disjoint cores still share bandwidth/fabric | CPU roofline C0 concurrent node-local streams; this handoff §3.4 later DRAM contention. | Core locks alone cannot certify measurement coexistence; compare against quiet controls. |
+| Wrong screening workloads | [Sept 1 transfer study](../../progress/2026-09/2026-09-01-ak-rebuild-20260828.md), [Sept 3 retargeting](../../progress/2026-09/2026-09-03-ak-rebuild-20260828.md): quantization, dimensions and speculative verify changed dispatched kernels. | Preserve shapes/dispatch; same quant label or a smaller model is insufficient transfer evidence. |
+| NUMA/stale builds/dead controls masqueraded as kernel behavior | [Sept 2 audit](../../progress/2026-09/2026-09-02-inf70-audit.md), [Sept 5 audit](../../progress/2026-09/2026-09-05-inf70-audit.md). | Bind actual build/library, placement and effective path, not just source or requested env. |
+| Transfer depends on mechanism and composition | CPU roofline SYNC-17 and final plain→MTP correction: tiny parallel work may lose to serial; universal transfer divisor retracted; later keeps change prior benefits. | No timeless class multiplier; small-only nulls cannot retire scale-sensitive ideas. |
+| Persistence fix retained unsafe recovery in inspected code | `loop/accumulate.py::save/load_bundle`: direct write; missing/corrupt/lineage-invalid state sets cor=anchor; advanced tip retains old gain. | Replayable state; no implicit confirmation; invalidate affected values. Reinspect before fixing. |
+| Serving metric/statistics differed from labels | `loop/serving.py`: sums per-request rates; always A then B; calibration uses individual-run deviations. | Separate metric identities, counterbalance, calibrate the actual estimator; incompatible floors cannot transfer. |
+| Source fixes were not deployed-contract proof | [Sept 8 report](../../progress/2026-09/2026-09-08-ak-rebuild-20260828.md); ~09:47 UTC snapshot: running, age 879 s, budget 1800 s, no step/actor_health, health ok. | Snapshot does not prove a stalled process; new producer contract was not exposed then. Show loaded version and independent health axes. |
+| New heartbeat had lifecycle/progress gaps | Inspected `run.py`: heartbeat always writes running, stop event not set/joined, claim/profile failures outside failed handler. Hub `panels.py` shares silence/progress budget; `loop_status.py` watermark omits stage. | Single status writer, terminal ordering, separate heartbeat/stage/science clocks. |
+| Belief wiring largely covered older producers | Current loop reads local archive; legacy execution has capture. `ClaimTuple.to_frames` omits value/unit/extra; `UsePolicy` lacks workload matching. | Current-loop prospective capture + typed applicability; grade alone cannot establish transfer. |
+| Resource plumbing requires reconciliation | `instance_topology.py::parse_cpu_list` drops IDs >95; cross-role global locks already exist. Ratified daemon authority differs from inspected inference-only/disabled-GPU config. | Fix normalization and existing provider path; no self-grants or second build-lock authority. |
+| Serving contention allowance is not experimental equivalence | Existing contention provider allows bounded serving degradation. | Separate research coexistence use; do not turn serving allow into measurement-isolation proof. |
+
+**Later consolidation supersedes early state:** P1 records fold `ef81196d5`, a real serving gate,
+pin/recalibration and **UNCONFIRMED** bundle with cor held at `445e93a8`. Thus "gate never fired",
+"pin not activated", "fold pending" and "run 30 live" are historical. Do not undo that work or seed
+a new lineage. Remaining source findings require current-code reinspection, not an assumption that
+another session has not fixed them. Root handoff snapshot at capture: `e5d1846d`.
+
+### 8.3 Proposed architecture and loop
+
+One service owns campaign state; coordination policy owns grants; broker suballocates within them using
+existing physical providers. Actors own hypotheses/changes; adapters own execution/validity; journal owns
+durable transitions; Vidya owns evidence/relationships; dashboard projects state and submits typed commands.
+
+```text
+START
+  resolve manifest + registry snapshot + candidate seeds
+  recover journal, desired state, candidate and validated evidence
+  request authority and physical claims through existing policy
+WHILE active
+  apply controls at boundaries
+  scheduler chooses target using coverage, cost, seed priority and scoped evidence
+  if prevalidated runtime combination:
+    deterministic recipe/compatibility checks; no critic calls
+  else:
+    planner reads current profile + scoped history + cached beliefs + inbox
+    forms hypothesis and mechanism annotation
+    existing critic pass 1: objection -> exact reason to planner
+    author source/build/novel-recipe change
+    existing critic pass 2: objection -> exact reason to author
+  choose cheapest informative route; unknown transfer permits scoped exploration
+  broker admits build if needed, correctness, load/place/warm/profile, comparison
+  compile/correctness failure -> tool reason to author, separate bounded retry budget
+  contamination -> invalid comparison unit, reschedule; not scientific negative
+  unavailable actor/resource -> other eligible work, or release claims and wait visibly
+  stale parent -> superseded, preserve idea, rebase/retest; not refutation
+  valid null/regression -> scoped finding for planner
+  experimental keep -> integration lock, parent check, journal intent, commit, completion
+  due validation batch -> assembled candidate + serving + required LOO; evidence matrix
+  advance validated record only after required rows pass at exact identities
+BACKGROUND
+  native journal -> local memory/status -> async Vidya/index projection
+  supervisor -> bounded recovery; broker-aware storage maintenance
+```
+
+Retain existing independent hypothesis/patch review budgets. No additional reviewer or per-attempt
+protocol-writing step. Runtime fast-path approval is the accepted exception. Tool failures return to
+the author without another critic ceremony. Retiring an attempt does not retire its idea. Build and
+measurement are expensive brokered stages; correctness/validation follow where they need produced output.
+Brokered probes replace uncontrolled actor host compute, without requiring an operator for each probe.
+
+### 8.4 Proposed campaign and target interfaces
+
+Proposed supported commands, not installed by this update:
+
+```text
+autokernel start --manifest campaign.yaml
+autokernel status --campaign ID [--json]
+autokernel pause --campaign ID
+autokernel drain --campaign ID
+autokernel resume --campaign ID
+autokernel seed --campaign ID --file seed.yaml
+```
+
+Manifest declares campaign/consumer, requested CPU regions/affinity and GPUs, build job/memory/disk
+limits, duration/budget or continuous mode, production selectors and seeds, configured actors/explicit
+fallbacks, recipes/objectives/acceptance-policy refs, scheduling/validation and control-access settings.
+Resolve an immutable launch snapshot of registry/model/recipe/topology/policy/instrument/controller
+identities. Dry-run before admission; no silent active-campaign change when registry or checkout moves.
+Report requested, granted, physically held and actively used resources separately.
+
+Target records bind model/hash, architecture/tensor census, backend/kernel tree, context/concurrency,
+speculation/drafter, environment, metric/direction, correctness and regression requirements, route and
+calibration refs. Deduplicate roles only on complete workload-signature equality. A seed creates its own
+candidate target without changing production or inheriting another calibration. If production cannot
+load it, use the first compatible experimental build as exploration baseline, never a fabricated
+production delta. Missing artifact blocks only that target; others continue.
+
+**Proposed v1 scope:** llama.cpp CPU/GPU first, retaining per-kernel-tree identity for future speech;
+local artifacts and registered references first. Remote downloads, requantization and lineup edits
+are outside this proposed v1, subject to operator iteration. Do not silently dismiss a source/model as
+inapplicable. Candidate rows are advisory unless explicitly included in the required validation set.
+
+### 8.5 Proposed durable event model and migration compatibility
+
+Reuse `scripts/kernel_rnd/autokernel/journal.py`: fsynced append, validation, torn-tail recovery and
+durable cursors. Extend narrow current-loop kinds; do not restore the old deployment factory or create
+another WAL/outbox. Current-loop records must not manufacture legacy `evaluation_event.v5` receipts.
+
+| Record group | Automatically captured fields |
+|---|---|
+| Identity | campaign/hypothesis/attempt/execution, measured parent/candidate source, build/object digest, build/runtime recipe, target/model, instrument/protocol. |
+| Scope | backend/architecture, quant/dispatch/op shapes, serving recipe, threads, physical cores/siblings/NUMA, placement, grant, neighbor envelope. |
+| Measurement | metric/direction/unit/value, baseline, raw artifacts/hashes, comparison order/block, independent experimental unit, attempted/completed/valid/scored counts, window timestamps. |
+| Validity | correctness/effective path, loaded-library/residency, contamination/drift/refusal; invalid timing never becomes a null. |
+| Annotation | planner mechanism class and uncertainty, explicitly not measured fact. |
+| Relationships | reduced->target transfer, quiet->overlap, individual->assembled benefit, supersession/retraction, original evidence IDs. |
+
+Mint attempt ID before execution; retries have separate execution IDs. Related arms retain their
+shared support/independence grouping. Keep large data in references, not copied into each projection.
+Capture facts from launchers/instruments rather than asking an actor to author evidence paperwork.
+
+Journal is authoritative; SQLite history, Bundle JSON, Markdown memory, status and belief index are
+projections. Integration: record `keep_intent` (attempt/parent/tree) -> integration lock/current-parent
+check -> commit with attempt trailer -> `keep_committed` -> projections. Replay reconciles exactly once.
+An unexpected tree advance preserves code but clears affected measurements; it cannot silently confirm.
+
+Derived files use temp/write/fsync/rename/directory fsync. Missing/corrupt Bundle replays journal;
+insufficient evidence means last provable validated head or `validation_required`, never cor=anchor.
+Local journal failure stops new irreversible transitions and drains; downstream Vidya/dashboard failure
+does not. Preserve legacy records as history; do not infer missing write-side provenance on read.
+
+### 8.6 Proposed broker and resource foundation
+
+```text
+acquire(StageRequest) -> AllocationReceipt
+launch(AllocationReceipt, ExecutableRequest) -> OwnedProcess
+release(AllocationReceipt, outcome)
+drain(reason) / resume() / recover()
+```
+
+Requests bind stage, CPU affinity/GPU set, memory/build limits, workload signature, bounded duration and
+coexistence profile. Reuse lease/provider open/close fields. Reconcile inspected config with ratified
+D4 and verify the actual grant/activate/renew/release path; never impersonate inference or self-grant.
+
+Normalize CPUs using discovered sibling topology, not dropping 96+ or assuming historical NUMA labels.
+Proposed v1 keeps four existing region claims: a microtest can use fewer cores while reserving its
+containing region. No second fine-grained lock authority. Reuse cross-role global exclusion; build is
+attribution, not a private nonconflicting namespace.
+
+Broker ALL compute: candidate/anchor/validation/recovery builds, correctness/profiling, load/place/warm,
+calibration/bench/serving/ablation. Enforce limits on descendants and bound/account actor local work.
+Multi-resource acquisition uses deterministic order and releases partial claims on failure. External
+grants cover useful batches, not a bus transaction per hypothesis/compiler. Internal admission uses one
+broker lock. Preserve current tail serialization until immutable-base stages and integration locking
+can reject/rebase/retest superseded candidates safely.
+
+Check control/grant validity at every expensive stage, including queued work. No new bounded stage
+past expiry without acknowledged renewal. Follow existing grant drain semantics, invalidate incomplete
+evidence and manage only owned PID-start/process-group/cgroup identities. Never name-pattern kill or
+delete locks. Release claims during no-runnable-work outages and reacquire through policy on recovery.
+
+### 8.7 Proposed partition routes and coexistence profiles
+
+Correctness transfer, reduction of local work, and end-to-end speedup transfer are separate claims.
+Fewer threads across the host are not a smaller physical allocation: cache/CCD distribution, memory
+placement, per-thread shape, clock and dispatch can change. More production threads are not inherently
+better; final validation targets the best intended serving recipe, not all cores by definition.
+
+| Family | Proposed cheapest informative route | Transfer limitation |
+|---|---|---|
+| Local SIMD/arithmetic/redundant work/dispatch | Op test in one quarter preserving production shapes/quant/path; then target model on reduced allocation. | Benefit may disappear when serving becomes bandwidth-bound; never assume same percentage. |
+| Copies/traffic reduction | Small allocation retaining relevant memory level and representation. | Cache vs DRAM and preprocessing cost change the claim. |
+| Blocking/prefetch/layout/repack | Match working set, cache, placement and dispatch. | Same quant label is insufficient; cache route only under matching dependencies. |
+| Barriers/scheduling/partitioning/NUMA/scaling | Representative thread/topology geometry. | Small-only null cannot retire a scale-sensitive idea. |
+| Unknown/mixed | Safe exclusive exploration, uncertainty recorded. | Missing transfer/classification is not a blocker to all experimentation. |
+
+Prefer actual target on fewer cores over a tiny model that changes the kernel under study. Intermediate
+sizes are optional tests of a specific scaling uncertainty. Periodically sample rejected small-screen
+candidates to detect false negatives; rate/selection remain proposed design choices.
+
+**Transfer and coexistence are independent:** predictive partitions may still be contaminated by a
+compiler, and isolated tests may still mispredict serving. Research profiles bind workload+neighbor,
+allocation/pressure bounds, topology/runtime dependencies and quiet-versus-overlap evidence. Store them
+through the existing contention provider, separately from serving-throughput allowances.
+
+No profile means serialize incompatible work, not seek operator approval. Cache validated routes and
+profiles until relevant dependency/declared expiry/drift changes. Telemetry alone is not absence proof
+for fabric/DRAM interference: certify against quiet controls and monitor the envelope DURING arms,
+including placement/warmup/residency. Invalidate the predefined contaminated comparison unit and repeat;
+no selective favorable samples or widened floor. Indexing/hashing/cleanup/actor CPU are neighbors too.
+
+### 8.8 Proposed adaptive scheduling and independent budgets
+
+Adaptive seed priority and production coverage are accepted; algorithm/numbers below are provisional:
+
+- Weighted deficit scheduling by physical CPU fraction and GPU-device time, with separate resource
+  opportunity accounting. Charge held load/warmup/build/validation, not just timed inference.
+- New target weight 2 for three valid comparisons; normal weight 1; one boosted seed/backend, FIFO,
+  preventing repeated seeds from silently starving production.
+- Thereafter weights bounded 1–3, revisited every ten valid comparisons using target-scale confirmed
+  outcomes, not screen gains alone. Exact update formula remains open for iteration.
+- Nonzero share for each eligible production frontier, bounded ready queue to limit obsolete work.
+  Define a quantitative starvation bound; nonzero weight alone is not that proof.
+- Calibration and validation are explicit budgeted work, not unbounded priority. Invalid arms/outages
+  cost operational budget but are not scientific nulls. No runnable backlog -> release and wait visibly.
+
+Separate provider retry, hypothesis review, patch repair, contamination retry, calibration, serving/LOO
+and campaign budgets. Learn cost from observed stage durations. Report exclusion, resource waiting,
+actor waiting and no-eligible-work separately. Optimize valid research per budget; contaminated hardware
+saturation is not productivity. Scheduling score/formula and coverage guarantees still need refinement.
+
+### 8.9 Proposed runtime fast path and measurement repairs
+
+Versioned recipe option sets declare supported model/backend, argv/env mapping, compatibility and
+effective-path witness. In-contract combinations are deterministic, reuse binary, skip critic calls,
+and use ordinary correctness/measurement. New options/arbitrary env/build/source changes retain review.
+Flag acceptance is insufficient: detect absent compiled knobs, no-op controls, unexpected fall-through
+or op coverage. Runtime recipe hashes are part of experiment and champion identity.
+
+Serving instrument proposals:
+
+- Version common-window completed-token throughput separately from sum-of-slot decode rates.
+  Exclude declared startup/warmup from the metric but charge scheduling; retain production concurrency
+  and speculation. Report request latency, and TTFT via suitable streaming capture if adopted.
+- Counterbalance AB/BA and use identical declared estimator for A/A calibration and comparisons.
+  Calibrate its actual distribution at the independent arm/block count, not individual-run deviation.
+- Floors bind model/recipe/metric/estimator/instrument/placement/coexistence/N; changes cannot inherit
+  an incompatible floor. Select N before execution under applicable protocol minimums/resolution;
+  no favorable optional stopping. Uncalibrated exploratory observations cannot become gated gains.
+- Preserve attempted/completed/valid/scored counts; prompts within one arm and reuse of the same
+  treatment arm do not manufacture independent samples. Pairing alone does not prove contamination cancels.
+- Preserve correctness/library/dispatch/residency evidence; search cannot edit its measurement policy.
+
+Exact per-target objective/window, estimator, calibration design, non-regression/equivalence margins
+and legacy metric migration remain explicit discussion items, not accepted thresholds. Reinspect source
+and run controls before implementing a repair; do not widen policy to fit observed noise.
+
+### 8.10 Proposed champion evidence matrix and validation cadence
+
+Distinguish accumulated source+recipe candidate, last globally validated candidate+recipe record, and
+current frozen-production comparator. Matrix rows bind candidate/build/model/backend/recipe/metric/
+instrument, correctness, validity and effect. CPU pass cannot certify GPU; runtime keep changes identity
+even with unchanged source SHA. New candidate invalidates previous combined-candidate rows while retaining
+per-change historical findings.
+
+Proposed global validated advancement waits for required production rows at identical candidate
+identities. This tightens §3.0's earlier any-surface/shared-cor advance: reconcile deliberately, not by
+implicit amendment. Preserve required re-baseline/LOO rules until then. Missing resources hold their
+validation rows while scoped research continues. Candidate models are advisory unless explicitly required.
+Direct assembled measurements are headlines; products of solo gains remain estimates.
+
+Retain compound-then-gate. Proposed due triggers: configured gain trigger OR ten unvalidated keeps OR
+24 hours since oldest unvalidated keep. Added numbers are provisional liveness checks so serving is
+not avoided forever, not weaker acceptance. Budget required LOO at validated advancement over assembled
+candidate/required surfaces. Neutral/inconclusive removal evidence does not automatically justify deletion.
+Record drops with evidence; resulting new candidate needs applicable validation. Do not globally discard
+dormant quant-specific improvements based on another target's null, or seed from production mid-cycle.
+
+### 8.11 Proposed low-friction Vidya integration
+
+At future implementation start, register current-loop capture in
+[`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) and link its task in
+[`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md). This documentation update
+creates no measurement producer and claims no new hook. Adapter verifies original artifact identities,
+projects into `ClaimTuple`, and delegates to existing `grade()`; no new ladder. Invalid attempts stay
+operational records. Typed versioned applicability projection links value/unit/scope/dependencies to
+event/claim/evidence IDs without dumping arbitrary extra into legacy frames or changing their IDs.
+
+```text
+retrieve(target_scope, mechanism?, intended_use, limit=40)
+  -> exact | supported_transfer | hypothesis_only | incompatible
+     findings, scoped nulls, transfer links, conflicts/staleness,
+     missing-evidence suggestions, snapshot frontier and reasons
+```
+
+Quality and applicability filter independently. Supported transfer requires recorded source/target
+comparisons; class labels are priors. Unknown historical scope cannot certify overlap/exact transfer.
+Preserve epoch magnitude redaction: relevant history is not numerically comparable history.
+
+Async consumer tails journal at a durable cursor, ingests deterministic IDs, advances on acknowledgment,
+quarantines malformed events individually and publishes an atomic local index. Planner reads once per
+proposal batch plus unprojected local attempts to avoid immediate repeats. No network query per arm,
+compiler or scheduler tick, no corpus rescan per iteration, and no additional LLM call for classification.
+Use existing journal as outbox, not another delivery ledger.
+
+Vidya outage permits fresh local measurements and established safe exploration; new overlap requiring
+missing evidence falls back to serialization. A validation decision waits on its own evidence, not all
+research. Recovery catches up idempotently. Invalidate topology/neighbor->coexistence, recipe/instrument
+->calibration, model/shape->matching, relevant code/dispatch->transfer, candidate->combined validation.
+Age alone is not universal invalidation. Retain scoped history and supersession/retraction reasons.
+
+Provisional targets: query p95 ≤100 ms on 100k events; normal lag ≤30 s outside quiet windows; batch
+≤100 events or five seconds; added bookkeeping <1% of campaign wall time with denominator reported.
+Append at lifecycle boundaries, not tokens; never weaken fsync for a target. Hash immutable verified
+artifacts once and cache; broker/suspend heavy projection/hashing/cleanup around quiet windows. Accepted
+nonnumeric constraint: zero added routine operator interactions or critic calls for established sweeps.
+
+### 8.12 Proposed standalone lifecycle, dashboard and storage
+
+Small research-owned supervisor wraps existing engine, independent of tmux/monitoring agents/orchestrator
+API. Coordination grant service remains necessary for new authority. Avoid old controller custody machinery.
+Persist desired state separately from observed worker state. Proposed states: starting, recovering,
+running, waiting_resource, waiting_actor, paused, draining, drained, validation_required, failed, complete.
+
+- Pause closes new admissions, completes safe active work and releases compute when quiescent; service remains.
+- Drain closes admissions, completes or invalidates bounded work, stops workers and releases claims.
+- Resume reconciles identities and reacquires authority/claims; paused state survives restart.
+- Actor outages honor reset/retry hints, otherwise bounded exponential backoff; repeated identical
+  failure becomes visible cooldown, not spin. No silent model/provider changes outside explicit fallback list.
+- Recover owned children using PID-start/process-group/cgroup identity, not names/stale JSON. Respect
+  valid long-running measurement drain boundaries and make partial invalidation visible.
+
+CLI/UI share typed idempotent commands, requested -> applied/refused(reason); daemon is sole writer.
+UI says pending until acknowledgment. Duplicate clicks/reconnect/concurrent requests cannot duplicate
+seeds. Keep /loop in existing hub, registered health/freshness. Proposed gateway uses owner-only Unix
+socket plus token-paired browser session, token+trusted origin for writes, no credentials in URL, no
+arbitrary shell/executable request. Current GET/CORS is not authentication. Token lifecycle/storage and
+gateway detail remain design choices; minimal controls are accepted. Advanced configuration stays in CLI.
+
+Display loaded producer/schema/instance, heartbeat, stage/activity/deadline, last valid scientific result,
+actor last success/retry/reset, requested/granted/held/used resources, target/seed coverage, refusal/
+contamination/supersession, accumulation vs validation, evidence age/projection lag and exact prerequisites.
+Fold actor/evidence availability into health; HTTP reachability is separate. Proposed heartbeat 30 s and
+missing-producer deadline 180 s do not define stage progress. Single synchronized writer stops/joins
+heartbeat before terminal publish and covers startup claim/profile and shutdown errors. Verify loaded
+version, not just source commit, when claiming deployment.
+
+Reserve space before builds; protect active, validated and in-flight/referenced generations (absolute
+RUNPATH means copied builds need original paths). Reclaim only explicitly unreferenced disposable
+artifacts through recoverable operations, never age-only guesses. Keep source/recipes/journal/results
+durable; rotate logs and bound campaign-owned actor storage. Maintenance is brokered; disk pressure
+pauses storage-heavy admissions while reporting/control remain. Do not prune unrelated users' databases.
+
+### 8.13 Proposed work packages and existing-task mapping
+
+**NOT A DISPATCH QUEUE.** IDs retain implementation detail for iteration; no new implementation
+checkboxes are created. PLAN-DOC-2 owns review. P1/P1b consolidation remains its owners' operational work.
+
+| Proposal | Deliverable | Dependencies | Acceptance / existing mapping |
+|---|---|---|---|
+| AK-AUTO-01 | Reconcile code/fold state and dated findings | — | No stale live claims; final aggregate anchors future launch; preserve P1/P1b. |
+| AK-AUTO-02 | Native current-loop journal and safe recovery | 01 | Keep replay once; corrupt bundle cannot certify; expands R23-51. |
+| AK-AUTO-03 | Topology and policy/claim-provider path | 01 | Sibling affinity conflicts; real standalone activate/renew/release; foundational P4 moves earlier. |
+| AK-AUTO-04 | Manifest/target enrollment | 01 | CPU/GPU/both/candidate resolve without lineup mutation; P2 expansion. |
+| AK-AUTO-05 | Broker all compute/build paths | 02,03,04 | No unlocked anchor/recovery/candidate build; queued-stage pause/expiry; P4 foundation. |
+| AK-AUTO-06 | CPU adapter and serving repairs | 04,05 | Explicit metric/calibration/units and witnesses; recheck fixes; P2. |
+| AK-AUTO-07 | Runtime fast path and mechanism routes | 05,06 | No extra critic calls; scale-sensitive null not globally retired; P3. |
+| AK-AUTO-08 | Prospective Vidya and scoped local retrieval | 02,04 | Typed scope, idempotence/outage recovery, unchanged grader; linked Vidya task later. |
+| AK-AUTO-09 | Certified coexistence/adaptive scheduling | 05,06,07,08 | Cache reuse, unknown overlap serialized, seeds advance and production not starved; P4. |
+| AK-AUTO-10 | Evidence matrix/batched serving/LOO | 02,06,08 | One surface cannot certify others; assembled evidence; P2/R23-48. |
+| AK-AUTO-11 | Supervisor/minimal authenticated controls | 02,04,05 | Persistent idempotent lifecycle, honest health, bounded recovery; proposed replacement for P5 endpoint. |
+| AK-AUTO-12 | Migration/bounded live run/unattended acceptance | 07–11 | Tests below, no monitoring agent required for routine recovery. |
+
+Retain one INF-73 row; future implementation reuses existing task text/owners instead of duplicating
+P2–P5/R23/FOLD checkboxes. Update normative loop description only when adopted. Do not rewrite measurement
+constitution or compute-authority policy as a side effect of this documentation update.
+
+### 8.14 Proposed tests, migration and completion criteria
+
+| Area | Test scenarios |
+|---|---|
+| Recovery | Crashes around intent/commit/completion/checkpoint; corrupt/missing bundle, torn tail, replay/cursor, disk full, missing artifact, branch movement; exactly one keep and no false validation. |
+| Candidate concurrency | Two racing keeps -> one integrates, one superseded/retested; runtime change cannot reuse source-only evidence. |
+| Claims | Sibling-only affinity, cross-role conflicts, partial acquisition rollback, denied/disabled provider, renewal/expiry, queued build after pause, orphan recovery; no lock deletion. |
+| Coexistence | Serving allow not research proof; unvalidated shared DRAM serialized; stale topology invalidates; quiet controls detect bias even when occupancy looks clean. |
+| Statistics | Common denominator vs slot rates; AB/BA/calibration match; independent units; incompatible floor refused; invalid units cannot support gain/null/transfer/coexistence. |
+| Transfer | Same threads/different topology, same quant/different shape/dispatch, absent/supported/refuted transfer, scaling null not global rejection, composition-dependent invalidation. |
+| Beliefs | Legacy frame IDs/grader unchanged; scope retained, epochs not pooled, quarantine, replay equivalence, outage safe exploration and idempotent catch-up. |
+| Controls | Duplicates/concurrent CLI/UI, paused/draining restart, unauthorized writes, browser disconnect, no silent actor fallback, orchestrator-API outage. |
+| Health | Long healthy stage vs stalled child, quota/auth/malformed output, producer death with live hub, hub restart, terminal overwrite prevented, loaded-version proof. |
+| Storage/overhead | Referenced RUNPATH generation protected; maintenance obeys quiet windows; projection/retrieval and campaign overhead measured; no routine extra review/operator steps. |
+
+Proposed migration: isolated pinned runtime -> inventory final champion/bundles/recipes/evidence -> import
+legacy observations without retrofitted warrant -> preserve rollback stores -> authorized owner boundary
+-> initially serialized broker -> partition routes -> only certified overlaps -> adaptive scheduling/
+controls after bounded checks. This does not authorize a stop/relaunch now; cutover remains separate.
+
+Proposed acceptance: bounded mixed run, then **48-hour** unattended soak with production CPU, production
+GPU and seeded local candidate. Source/build and prevalidated runtime routes; **ten valid comparisons
+per active backend**, target-scale confirmation (valid null acceptable), useful overlap under one certified
+profile; actor/worker/dashboard/Vidya faults and pause/drain/resume. Duration/counts are provisional.
+
+Eventual completion: no routine manual relaunch/monitoring agent; no unlocked builds, accepted contaminated
+units, implicit confirmation, false full-scale transfer, or eligible-production starvation; seed progress;
+no extra critic calls for established sweeps; visible bounded overhead; durable reproducible candidate
+and truthful dashboard. Positive kernel gains are not required to prove the service works.
+
+### 8.15 Provisional defaults and next discussion
+
+Accepted directions are in §8.1; the operator did not approve every number/detail in the previous draft.
+
+| Proposed detail | Open refinement |
+|---|---|
+| Local artifacts / llama.cpp-first v1 | Remote enrollment and speech-adapter scope. |
+| Four claim regions, sub-quarter execution | Discovered topology and actual concurrency; region is not assumed to be NUMA node. |
+| Seed 2×/three comparisons; weights 1–3/ten-result update | Exact formula, normalization, starvation and repeated-null/futility policy. |
+| Sample small-screen rejects | Rate and selection avoiding expensive universal confirmation. |
+| Existing 2.5× trigger + ten-keep/24-hour triggers | Serving/LOO cadence, cost and reserved budget; no threshold weakening. |
+| Global validation before shared cor advance | Reconcile prior per-surface pseudocode and re-baseline/LOO semantics. |
+| Common-window throughput / counterbalanced comparison | Objective, estimator/calibration, margins and legacy migration. |
+| 30 s lag; 100 events/5 s; query 100 ms at 100k; overhead <1% | Feasibility, denominators, quiet-window behavior, invalidation dependencies. |
+| Heartbeat 30 s / missing 180 s | Independent stage/activity and retry deadlines. |
+| Socket + token-paired browser controls | Token lifecycle and gateway security without per-command ceremonies. |
+| 48-hour / ten comparisons per backend soak | Workload/cost and fault schedule; positive gains unnecessary. |
+
+**Next action here:** iterate these implementation details with the operator and update this notebook.
+Do not run proposed work packages or turn defaults into new approval friction. The broker enforces
+allocations; belief-backed mechanism awareness should make choices cheaper and less conservative while
+preserving the distinction between permission to explore and evidence sufficient for production claims.
