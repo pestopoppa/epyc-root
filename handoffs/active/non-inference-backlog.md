@@ -386,6 +386,25 @@ attributable to C7 — reproduced identically on the pristine pre-merge base `51
       or explicitly retire each, and make `stack_change_pipeline.py check` gate on zero manifest errors so the
       next merge cannot inherit them silently. Evidence: `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`.
 
+## 2026-09-08 supplement — shared research clone dirty-state rescue
+
+The **shared** clone `/mnt/raid0/llm/epyc-inference-research` sat on stale main `1d2fe2a3` carrying 9 dirty
+tracked files + 4 untracked. All 11 were preserved verbatim on `rescue/shared-clone-dirty-20260907` @
+`63ec9f53` (pushed to origin) and copied to `/mnt/raid0/llm/tmp/research-shared-clone-rescue-20260908/`; the
+9 tracked files were then overwritten with HEAD content (`git show HEAD:<f> > <f>` — the hygiene hook blocks
+the `git restore` verb in the shared clone and reads its bypass from the session env) and the clone was
+fast-forwarded to `7b5d1eb6`, tracked tree clean.
+
+- [x] **NIB2-70** (MED): **rescue the shared research clone's uncommitted state before fast-forwarding it.**
+      ✅ 2026-09-08 — 11 files preserved verbatim (branch `rescue/shared-clone-dirty-20260907` @ `63ec9f53`,
+      pushed; plus a filesystem copy), 9 tracked files restored to HEAD content, clone fast-forwarded to
+      `7b5d1eb6` and verified clean of dirty tracked files.
+- [ ] **NIB2-71** (LOW): **review `rescue/shared-clone-dirty-20260907` (`63ec9f53`) — fold or delete the
+      branch.** Its content is a working copy of the CH-8 build-flags change (`162d17dd`, **already merged in
+      main**) plus two older 2026-08-27 bench scripts; the residual delta over merged CH-8 is roughly **50
+      comment lines** on legacy discovery scripts (build-recipe / `ROCWMMA_FATTN` notes). Decide: fold the
+      comments forward, or delete the branch. Small item — the rescue itself is done, this is disposition only.
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):

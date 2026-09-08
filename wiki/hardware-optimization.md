@@ -2,8 +2,50 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
+**Last compiled**: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
 **Sources**: 110+ documents
+
+## Compiled Update — 2026-09-08 (pm): the CPU champion's throughput varies ~12% between process launches while the pristine build does not
+
+**Confidence: verified** for the measured numbers and the host-state record; **the cause of the
+champion-only variance is UNEXPLAINED** and is an open investigation, not a result.
+
+**The finding.** An identical champion configuration on the consolidated CPU tip (`ef81196d5`) measured
+**24.4 → 27.4 tok/s** plain across four sessions in a single day — a **~12% spread** with no configuration
+change between them (gate 25.6–25.9, THP-OFF arms 24.4–25.3, FIX-1 controls 27.3–27.4, characterisation
+27.3–27.4). Over the same day the **pristine** build reproduced its standing number to **+2.2%** (12.637
+vs 12.366). Consequently the champion-over-pristine ratio reads **2.167×** on the day against a standing
+**1.7151×**, and the champion alone reads **+29.1%** over its own standing ~21.21. A hot-vs-cold harness
+offset was independently measured at **+4.36%**; that would move both arms, and only one moved.
+
+**Why this belongs in hardware optimization and not only in methodology.** A spread that attaches to one
+*build* and not to another, at *process-launch* scope, points at per-launch machine state rather than at
+the harness: **page-cache residency and the NUMA placement it pins**, **transparent-hugepage state at
+allocation time**, **HIP graph capture**, and **allocator behaviour** are the named suspects — each of
+which the champion exercises differently from pristine. None is attributed; the investigation is filed.
+Until it closes, no final champion number may be quoted from a single session: a headline needs **several
+independent launches with a between-session CI**.
+
+**Related open decision.** Transparent hugepages on this champion remain **unresolved and under test** —
+a prior estimate of **+3.458%** was a NON-CLAIM (p=0.143, CI [0.9962, 1.0632]) and was explicitly *not*
+mechanism-refuted; the hypothesis that earlier vectorisation/split work had already removed the traffic
+THP would have addressed is **contradicted** by the sign and size of that estimate. A paired sign test
+with session as the unit is running to settle it. Read a "cannot tell" from that test against the
+launch-scoped variance above before treating it as a weak effect.
+
+**Host-state record (benchmark-relevant).** The orchestrator API (uvicorn `:8000` + 6 workers, resident
+since 2026-08-26) was stopped at **12:05Z** by operator decision; the dashboard hub `:8100`, OCR `:9001`,
+`sd_server :8190` and the docker containers remain up. The stop was **measured as a non-event** for the
+benchmark window: a host sampler straddling it inside one session read **47.89–48.26** busy cores against
+48 benchmark threads, flat across the boundary. It is therefore a **measured non-confound**, not the
+previously recorded "candidate (unproven)" source of foreign load.
+
+### Source References
+
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — R23-57 (the spread, the controls, the named suspects), R23-56 (host-state record and the confound correction).
+- [autokernel-champion-aggregate.md](../handoffs/active/autokernel-champion-aggregate.md) — CHAMP-2 (THP under test on the consolidated champion), CHAMP-3 (multi-launch headline requirement).
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — §3.2 U2: per-surface floors carry `unit`, and headline admissibility is a surface property.
+- [progress 2026-09-08 (ak-rebuild)](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — session record of the four sessions, the pristine control, and the 12:05Z host change.
 
 ## Compiled Update — 2026-09-08: measurement scope and close-out corrections
 

@@ -670,11 +670,30 @@ of the −2.136%: **C→P (FIX-3's yield alone) −1.883%**; **P→F (column spl
 run was the better choice — the same barrier arithmetic that refuted `inf10-gemv-fusion`. SYNC-19's model
 predicted **+3.31%**; the sign is wrong.
 
-- [ ] **CHAMP-2 (THP) — UNRESOLVED: not a keep, and not mechanism-refuted.** +3.458%, **NON-CLAIM**
-      (p=0.143, CI [0.9962, 1.0632]). The hypothesis that VEC_Q8K/QSPLIT had already removed its traffic is
-      **contradicted** — the estimate is positive and *larger* than the +1.0% it supposedly lost. Settling it
-      needs ~**11 sessions/side ≈ 2.4 h**; that is an **operator call on INF-70's side**, not a champion-owner
-      action. Do not fold it and do not retire it as refuted.
+- [ ] **CHAMP-2 (THP) — IN PROGRESS: a DECISION-grade paired sign test is RUNNING; verdict pending.**
+      Prior state: +3.458%, **NON-CLAIM** (p=0.143, CI [0.9962, 1.0632]); the hypothesis that VEC_Q8K/QSPLIT had
+      already removed its traffic is **contradicted** — the estimate is positive and *larger* than the +1.0% it
+      supposedly lost.
+      **CORRECTION OF RECORD (2026-09-08).** The operator did **NOT** cancel this test — the CPU session (INF-70)
+      had it backwards. INF-70 **registered the test at 14:08:05Z** and it is running:
+
+      | element | value |
+      |---|---|
+      | design | alternating ON/OFF launches, **session** as the unit |
+      | looks | two only — **6/6 after 6 pairs**, or **≥9/10 after 10 pairs** |
+      | α (exact, two-sided) | **0.0430** |
+      | cap | **10 pairs ≈ 1.27 h**; hard cap **14** with replacements |
+      | ≥9/10 ON faster | **KEEP**, staged as a lane off `ef81196d5` |
+      | ≥9/10 OFF faster | **no keep** |
+      | otherwise | **CANNOT TELL** — no keep, no default flipped |
+
+      Verdicts are **pre-fixed**; do not renegotiate them after the looks. Read a **CANNOT TELL** against
+      **R23-57** (champion launch-to-launch instability, ~12% spread on an identical configuration) before
+      concluding the effect is weak. Still: do not fold it and do not retire it as refuted.
+- [ ] **CHAMP-3 — the final champion headline is MULTI-LAUNCH with a session-unit CI, never one session**
+      (R23-57; INF-73 U2). The champion **characterisation was STOPPED mid-run** on operator instruction
+      (*"stop measuring the champion. It's not final yet!"*) and is re-run on the **final** champion, after the
+      CHAMP-2 THP decision and any fold that follows it.
 
 **Method note inherited from INF-70 (applies to this page's gates).** INF-70's `gate.py` now routes all
 statistics through a single `screened()` function — it *cannot* compute over screen-dropped arms and *cannot*

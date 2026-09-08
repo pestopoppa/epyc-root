@@ -1847,13 +1847,44 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         don't."* -> feeds **OP-41** (admission-control broker), see `autokernel-unified-surface-program.md` 3.4.
         Host-state change for the record: at **12:05Z** the operator stopped the orchestrator API (uvicorn
         :8000 + 6 workers, **pid 3961116**, up since 2026-08-26) via `orchestrator_stack.py stop orchestrator`;
-        hub :8100, OCR :9001, sd_server :8190 and the docker containers remain. **Candidate (unproven)** source
-        of the 800% python that cost one Q2 arm.
+        hub :8100, OCR :9001, sd_server :8190 and the docker containers remain. Originally recorded here as a
+        **candidate (unproven)** source of the 800% python that cost one Q2 arm; **CORRECTED 2026-09-08**: the
+        stop is a **measured NON-CONFOUND**. INF-70's host sampler straddled it inside one session (`S14_ON`)
+        and read **flat** across 12:05Z — busy cores **47.89-48.26** against 48 benchmark threads, i.e. no step.
+        The Q2 disturbance stands; only its attribution to the API process is withdrawn.
         Also inherited: INF-70's `gate.py` now routes all statistics through one `screened()` function (cannot
         compute over screen-dropped arms, cannot PASS on zero cases), mutation-tested both directions — this
         **generalises the ak-rebuild FOLD-2 vacuous-pass guard**.
         The operator's *no kernel research until a FULLY consolidated champion* condition is **satisfied**;
         **loop relaunch remains a separate operator go** and is deliberately not scheduled here.
+      - [ ] **R23-57 — CHAMPION LAUNCH-TO-LAUNCH INSTABILITY: ~12% spread on an IDENTICAL configuration, and
+        it moves ONLY the champion arm. UNEXPLAINED — no headline may be quoted from one session.**
+        Measured by INF-70, 2026-09-08, across four of today's sessions on the **same** champion configuration:
+
+        | session | champion plain (tok/s) |
+        |---|---|
+        | gate | 25.6 - 25.9 |
+        | THP-OFF arms | 24.4 - 25.3 |
+        | FIX-1 controls | 27.3 - 27.4 |
+        | characterisation (stopped mid-run) | 27.3 - 27.4 |
+
+        | control / derived | today | standing | delta |
+        |---|---|---|---|
+        | pristine | **12.637** | 12.366 | **+2.2%** |
+        | champion | **27.383** | ~21.21 | **+29.1%** |
+        | champion / pristine ratio | **2.167x** | **1.7151x** | — |
+
+        **Not a harness artefact.** A hot-vs-cold harness offset (measured **+4.36%**) would move **both** arms;
+        only the champion moved, and the pristine control reproduced to within +2.2%. The mechanism is unknown.
+        Two consequences, both binding:
+        - **Headline admissibility**: a final champion headline requires **>=N independent launches with a
+          session-unit CI**, never one tight session. N is set with the between-session sd (2.793%, R23-55),
+          not the arm sd. Mirror in `autokernel-unified-surface-program.md` **U2**.
+        - **Read CHAMP-2 against this**: a THP **"cannot tell"** may be *this* instability rather than a weak
+          effect. Do not convert a cannot-tell into a mechanism refutation while R23-57 is open.
+        Action: **investigate the source of between-launch variance on the champion** — page-cache / NUMA
+        placement, THP state, HIP graph capture, allocator. Cross-ref R23-55 (`unit` on every floor) and
+        INF-73 U2 / P2.
       - [x] **R23-52 — status heartbeat during keep post-processing** ✅ 2026-09-07 IMPLEMENTED (research `70d98807`; 4 `publish()` calls: anchor build / headline / reprofile / accumulate; 422 tests; takes effect at the next launch — run 30 holds the old module). Observed run 30, 2026-09-07: after the first
         keep (`bff30cebe`, +2.583%) `loop-status.json` went **30+ min without a write** while `promote_anchor` did
         the clean anchor build (gen-021, 117 objects at 20:07Z, `cmake`/`gmake` children 9 min in), then verify,
