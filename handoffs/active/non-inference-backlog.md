@@ -390,3 +390,7 @@ Canonical sources (always verify status in these files first):
   min, pid `/mnt/raid0/llm/tmp/opencode-reaper.pid`, log `/mnt/raid0/llm/tmp/opencode-reaper.log`). First reap: 680
   idle sessions, 232k events; 5.6k events / 12.7 GB (2 live sessions) kept; integrity ok. No cron/systemd in the
   container, so the daemon must be re-launched after a reboot — **operator: add to the post-reboot checklist**.
+- [ ] **NI-OC-a — adopt `observer_guard.sh` (three-state probe) in `scripts/system/opencode_event_reaper.sh`**: the reaper's
+  `pgrep -x opencode` presence probe is registered `unadopted` in `observer_registry.json`; its consumer (the VACUUM
+  decision) already fails CLOSED. Adoption replaces the name probe with the guard's channels so a drifted argv cannot
+  read as 'absent'. Owner: whoever next touches the reaper; not urgent (no kill path, fail-closed).
