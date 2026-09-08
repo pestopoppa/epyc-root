@@ -724,7 +724,7 @@ predicted **+3.31%**; the sign is wrong.
       cheaper on a shared host. INF-70's final characterisation is re-running with the shim ON, sized from
       the ON sd (0.481%) rather than OFF's (2.510%), which is what makes a +/-1% headline affordable at all.
       Tracked as INF-73 U3-SEED / U3-DEFAULTS; GPU-side transfer test is R23-58.
-- [ ] **CHAMP-3 — the final champion headline is MULTI-LAUNCH with a session-unit CI, never one session**
+- [x] **CHAMP-3 — DELIVERED 2026-09-08: the final champion headline is MULTI-LAUNCH with a session-unit CI.** ✅ 2026-09-08
       (R23-57; INF-73 U2). The champion **characterisation was STOPPED mid-run** on operator instruction
       (*"stop measuring the champion. It's not final yet!"*) and is re-run on the **final** champion, after the
       CHAMP-2 THP decision and any fold that follows it.
@@ -733,3 +733,62 @@ predicted **+3.31%**; the sign is wrong.
 statistics through a single `screened()` function — it *cannot* compute over screen-dropped arms and *cannot*
 PASS on zero cases — mutation-tested in both directions. This **generalises the ak-rebuild FOLD-2
 vacuous-pass guard**: the guard is not a fold-window one-off, it is the shape every gate should have.
+
+
+      **FINAL NUMBERS (INF-70, 18 launches 15:05:39-16:12:47Z, none dropped, region held; unit = LAUNCH,
+      every precision figure between-launch).** Champion = `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1`.
+
+      | configuration | n | central t/s | between-launch sd | 95% CI |
+      |---|---:|---:|---:|---|
+      | champion plain | 6 | **27.893** | 0.609% | +/-0.487% |
+      | champion MTP | 6 | **43.281** | 0.356% | +/-0.285% |
+      | pristine plain | 3 | 12.762 | 0.360% | +/-0.408% |
+      | pristine MTP | 3 | 23.709 | 0.926% | +/-1.048% |
+
+      Ratios: plain **2.1857x** [2.1730, 2.1974], MTP **1.8255x** [1.8081, 1.8399], MTP/plain 1.5516x.
+      MTP acceptance 82.1%, identical champion and pristine. **Headline as SIGN claims with bounded
+      magnitudes** (95% CI lower ends over launches): the champion is faster than pristine by **at least
+      117% plain** and **at least 81% served-MTP**; served-MTP beats plain by **at least 54%**.
+
+      **The variance before/after — the more valuable half:**
+
+      | | launches | between-launch sd | range |
+      |---|---:|---:|---:|
+      | BEFORE, shim OFF (retired) | 9 | **5.081%** | 12.55% |
+      | AFTER, shim ON (adopted) | 6 | **0.609%** | 1.79% |
+
+      **8.3x on sd, ~70x on variance**, corroborated by the paired test's 25.3x. **+/-0.5% precision fell
+      from ~25 h to ~23 min.** The ON sd was VERIFIED (0.609% observed against a 0.481% projection) and the
+      observed value is what is quoted.
+
+      **TWO CAVEATS THAT MUST TRAVEL WITH THESE NUMBERS.**
+      1. **The ratio is recipe-to-recipe, NOT knob-controlled.** Pristine contains neither THP knob (no
+         marker, zero occurrences of either env string), so an equal shim state is impossible by
+         construction. What IS controlled: same harness, same window, adjacent interleaved launches.
+         **This applies to the GPU side too — no champion-vs-pristine ratio this campaign has ever quoted
+         was knob-controlled; the THP difference sat inside all of them, unlabelled.** Disposition: LABEL
+         the affected cross-lineage ratios, do not re-derive them (the label costs nothing; re-deriving
+         costs hours and changes no decision). **Narrower on the GPU side, and checked:** FOLD-2 G5
+         (candidate vs `anchor-gen-021`) **stands as measured** — only the candidate's lineage carries the
+         knob at all and it defaults OFF, so both arms ran with THP enabled.
+      2. **`CHAMPION-DIVERGENCE.md` stays OPEN.** Plain ratio 2.1857x against the standing 1.7151x. Two
+         conditions differ at once (shim state, harness/window), so this NARROWS the causes without closing
+         them: pristine reproduces across both (12.762 vs 12.366, +3.2%), the champion does not. Adoption
+         explains part of the movement and part of the instability; **it is not asserted to explain all of
+         it.** Keep R23-57 open on that basis.
+
+      **CPU-side ledger CLOSED 2026-09-08 — fold queue EMPTY, nothing staged, nothing pending.**
+
+      | item | disposition |
+      |---|---|
+      | champion artifact | `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch |
+      | CHAMP-2 THP shim | ADOPTED — recipe change, session unit, direction only, no fold |
+      | FIX-1 / FIX-3 | CLAIMED REGRESSION -2.136%; `inf70/sync17-fix2` @ `2516c9807` **DO-NOT-FOLD** |
+      | SYNC-18 | untestable as built (knob reaches only `ggml_get_n_tasks()`, which no longer gates execution) |
+      | SYNC-16 / SYNC-13 | not reached; no evidence either way |
+      | `inf10-gemv-fusion`, `q8-8x8-avx512bw` | measured refutations, record-only |
+      | `feature/tree-draft-v6` | **MUST-NOT-FOLD** — champion carries the later contradicting decision |
+
+      **Joint open items, unruled:** INF-70's MEAS-1/OP-40 with our OP-41 (two campaigns, correct pinning
+      both sides, each destroying the other's resolution ~3x, plus a ~17% third-party tax from tooling
+      neither campaign controls), and the champion divergence above.
