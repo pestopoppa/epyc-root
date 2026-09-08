@@ -6,22 +6,22 @@
     "cannot forget it: the harness DISCOVERS its own subjects from the source tree by two",
     "structural rules and fails on anything it finds that is not listed here.",
     "",
-    "  Rule A (risk)     — a file under scripts/ or dashboard/ that identifies a process by",
+    "  Rule A (risk)     \u2014 a file under scripts/ or dashboard/ that identifies a process by",
     "                      name/argv (pgrep, pidof, ps -e, ps aux) must appear below.",
-    "  Rule B (adoption) — a file that sources observer_guard.sh must appear below with",
+    "  Rule B (adoption) \u2014 a file that sources observer_guard.sh must appear below with",
     "                      contract 'v1', which subjects it to the behavioural battery.",
     "",
     "contract values:",
-    "  v1        — adopted. Exposes `<script> observe` printing state=present|absent|",
+    "  v1        \u2014 adopted. Exposes `<script> observe` printing state=present|absent|",
     "              unobservable and exiting 0|1|3. The harness runs the full battery",
     "              against it, including that it SUPPRESSES corrective action while blind",
     "              and still ACTS when the target is genuinely absent.",
-    "  unadopted — a known instance of the defect class, not yet migrated. MUST name an",
+    "  unadopted \u2014 a known instance of the defect class, not yet migrated. MUST name an",
     "              owning handoff and a task marker; the harness verifies an UNCHECKED",
     "              '- [ ]' line carrying that marker really exists in that file. A deferral",
     "              that is checked off or deleted without the migration turns this suite",
     "              RED. Deferring is allowed; deferring silently is not.",
-    "  exempt    — reviewed and out of scope, with the reason recorded. Reviewed, not",
+    "  exempt    \u2014 reviewed and out of scope, with the reason recorded. Reviewed, not",
     "              forgotten: the row is the review.",
     "",
     "Origin: 2026-08-12. bus_supervisor.sh identified the coordinator-daemon with",
@@ -52,7 +52,7 @@
       "artifacts/operator/ is deliberately OUT of discovery scope: those are one-shot",
       "ratifiers a human runs and reads once, not long-running observers whose verdict",
       "nobody sees. Two of them do gate on an argv pattern and are recorded below as",
-      "'exempt' rows with the reason, so the finding is not lost — but a new ratifier",
+      "'exempt' rows with the reason, so the finding is not lost \u2014 but a new ratifier",
       "must not turn this suite red on an unrelated commit. A guard that forbids its own",
       "neighbours' idiom gets deleted by the first person it blocks."
     ],
@@ -62,13 +62,13 @@
     "_self_exclude_note": [
       "The contract library itself. It matches Rule A only because its header QUOTES the",
       "specimen's `pgrep -f` line while explaining why that shape is forbidden. Excluding it",
-      "by data, not by a special case in the test — and only this one file, so a second",
+      "by data, not by a special case in the test \u2014 and only this one file, so a second",
       "'explanatory' mention elsewhere still trips the rule."
     ],
     "_adoption_pattern_note": [
       "An actual `source` statement, not any MENTION of the file. Matching a bare",
       "mention flagged this contract's own census module for quoting the library's path",
-      "in its docstring — a guard tripping on prose about itself. Rule A stays a plain",
+      "in its docstring \u2014 a guard tripping on prose about itself. Rule A stays a plain",
       "mention match on purpose: writing `pgrep` in a scripts/ file is worth a moment's",
       "thought even in a comment, and the one file that discusses it at length is listed",
       "in self_exclude."
@@ -116,7 +116,7 @@
       "contract": "unadopted",
       "owning_handoff": "handoffs/active/session-bus-thin-dispatcher.md",
       "task_marker": "OBS-1",
-      "notes": "THE SPECIMEN. Being repaired in a parallel session (C49) as this row is written — the repair replaces the pattern with the heartbeat pid, which removes the instance. This row keeps the FILE enrolled so the class stays enforced afterwards: adopting observer_guard.sh + an `observe` entrypoint is what subjects it to the battery. Not edited from here; the file has a live owner."
+      "notes": "THE SPECIMEN. Being repaired in a parallel session (C49) as this row is written \u2014 the repair replaces the pattern with the heartbeat pid, which removes the instance. This row keeps the FILE enrolled so the class stays enforced afterwards: adopting observer_guard.sh + an `observe` entrypoint is what subjects it to the battery. Not edited from here; the file has a live owner."
     },
     {
       "id": "hub_supervisor",
@@ -124,25 +124,25 @@
       "contract": "unadopted",
       "owning_handoff": "handoffs/active/dashboard-architecture-restructure.md",
       "task_marker": "OBS-2",
-      "notes": "Identity is correctly port-based (it already migrated off `pgrep -f 'dashboard\\.server .*--port 8100'`) and hub_source_is_newer() is a model three-valued predicate returning a distinct 2 for every unknown. But health_ok() is two-valued: a curl timeout, a removed curl binary, a hub moved off :8100 and a genuinely dead hub are one value, and cmd_loop restarts on it. Separately, check_hub_stale_source is called only from cmd_once and never from cmd_loop — the C42 bug the bus supervisor already fixed — while the header claims the running supervisor now notices a stale hub. Not edited from here: the hub supervisor is a long-running script and editing a running .sh is its own incident class."
+      "notes": "Identity is correctly port-based (it already migrated off `pgrep -f 'dashboard\\.server .*--port 8100'`) and hub_source_is_newer() is a model three-valued predicate returning a distinct 2 for every unknown. But health_ok() is two-valued: a curl timeout, a removed curl binary, a hub moved off :8100 and a genuinely dead hub are one value, and cmd_loop restarts on it. Separately, check_hub_stale_source is called only from cmd_once and never from cmd_loop \u2014 the C42 bug the bus supervisor already fixed \u2014 while the header claims the running supervisor now notices a stale hub. Not edited from here: the hub supervisor is a long-running script and editing a running .sh is its own incident class."
     },
     {
       "id": "nightshift_inference_guard",
       "script": "scripts/nightshift/inference_guard.sh",
       "contract": "exempt",
-      "reason": "FIXED, not deferred — reviewed 2026-08-23. The fail-OPEN pipeline ('pgrep | xargs … || true' summed to 0GB on every failure mode) was replaced 2026-08-12 (commit 381dddfe6) and completed here: NIGHTSHIFT_GUARD_STATE is three-valued (measured <N>GB / honest 0 / failed); pgrep-missing and pgrep rc>=2 are `failed`; all-VmRSS-reads-failed is `failed`; and the second (MemAvailable) channel being unreadable is now `failed` too — one negative and one blind eye is not a clear, and the polarity rule ('for EXCLUSION, unknown must mean busy', inference_load_check.py) is stated in-file. run_wrapper.sh (row nightshift_run_wrapper) exits 4 unless state=measured. NOT battery-adoptable: it is a sourced measurement library, not a daemon watchdog — its target (RAM-resident inference) publishes no pid/heartbeat, the harness's heartbeat-pid + proc-scan shape cannot be attached honestly, and its corrective action lives entirely in its consumer."
+      "reason": "FIXED, not deferred \u2014 reviewed 2026-08-23. The fail-OPEN pipeline ('pgrep | xargs \u2026 || true' summed to 0GB on every failure mode) was replaced 2026-08-12 (commit 381dddfe6) and completed here: NIGHTSHIFT_GUARD_STATE is three-valued (measured <N>GB / honest 0 / failed); pgrep-missing and pgrep rc>=2 are `failed`; all-VmRSS-reads-failed is `failed`; and the second (MemAvailable) channel being unreadable is now `failed` too \u2014 one negative and one blind eye is not a clear, and the polarity rule ('for EXCLUSION, unknown must mean busy', inference_load_check.py) is stated in-file. run_wrapper.sh (row nightshift_run_wrapper) exits 4 unless state=measured. NOT battery-adoptable: it is a sourced measurement library, not a daemon watchdog \u2014 its target (RAM-resident inference) publishes no pid/heartbeat, the harness's heartbeat-pid + proc-scan shape cannot be attached honestly, and its corrective action lives entirely in its consumer."
     },
     {
       "id": "nightshift_run_wrapper",
       "script": "scripts/nightshift/run_wrapper.sh",
       "contract": "exempt",
-      "reason": "FIXED, not deferred — reviewed 2026-08-23. autopilot_running() was the specimen verbatim ('pgrep -f scripts/autopilot/autopilot.py start' — any flag between the path and 'start' read as 'AutoPilot not running' and lab shadow jobs launched into a live AutoPilot). It is now three-valued (running|stopped|unconfirmed): the authoritative channel is the singleton flock on orchestration/.autopilot.lock (held by construction — orchestrator state_ownership.py — argv-independent), corroborated by adjacency-robust dual pgrep patterns (autopilot.py <flags> start + autopilot_supervisor.py, mirroring inference_load_check.py and start_authority_daemon.py); unconfirmed SUPPRESSES the shadow launch (unknown means busy). The three 'missing cross-repo path -> skip -> return 0' branches now report AUX-DEPENDENCY-MISSING and exit 5 (partial run) instead of a clean 0. NOT battery-adoptable: it is a systemd-timer launcher, not a daemon watchdog — its only observation gates a side feed, its target publishes a flock rather than a pid heartbeat, and the harness's heartbeat-pid shape does not attach. Its guard refusal (exit 4) is regression-tested by scripts/nightshift/tests/test_inference_guard.sh."
+      "reason": "FIXED, not deferred \u2014 reviewed 2026-08-23. autopilot_running() was the specimen verbatim ('pgrep -f scripts/autopilot/autopilot.py start' \u2014 any flag between the path and 'start' read as 'AutoPilot not running' and lab shadow jobs launched into a live AutoPilot). It is now three-valued (running|stopped|unconfirmed): the authoritative channel is the singleton flock on orchestration/.autopilot.lock (held by construction \u2014 orchestrator state_ownership.py \u2014 argv-independent), corroborated by adjacency-robust dual pgrep patterns (autopilot.py <flags> start + autopilot_supervisor.py, mirroring inference_load_check.py and start_authority_daemon.py); unconfirmed SUPPRESSES the shadow launch (unknown means busy). The three 'missing cross-repo path -> skip -> return 0' branches now report AUX-DEPENDENCY-MISSING and exit 5 (partial run) instead of a clean 0. NOT battery-adoptable: it is a systemd-timer launcher, not a daemon watchdog \u2014 its only observation gates a side feed, its target publishes a flock rather than a pid heartbeat, and the harness's heartbeat-pid shape does not attach. Its guard refusal (exit 4) is regression-tested by scripts/nightshift/tests/test_inference_guard.sh."
     },
     {
       "id": "rustevo2_bench_preflight",
       "script": "scripts/benchmark/rustevo2_bench_preflight.py",
       "contract": "exempt",
-      "reason": "FIXED, not deferred — reviewed 2026-08-23. The preflight green-lit a bench against a live AutoPilot: an EMPTY pgrep result read as a positive 'no AutoPilot', and a missing pgrep binary raised FileNotFoundError out of run() before the (0,1)-returncode handling was reached. autopilot_state() is now three-valued (present|absent|unobservable), mirroring inference_load_check.py: FileNotFoundError is caught (missing binary = unobservable); an empty pattern result is NEVER trusted alone — a negative requires the singleton flock (orchestration/.autopilot.lock) to be provably free too; argv drift reads as present (the drifted daemon still holds the lock), closing the reference implementation's named residual; and unobservable FAILS the preflight in both strict and advisory modes ('for EXCLUSION, unknown must mean busy'). NOT battery-adoptable: it is a one-shot Python preflight, not a daemon watchdog — the harness drives `/bin/bash <script> observe` against a heartbeat file this script has no production relationship to."
+      "reason": "FIXED, not deferred \u2014 reviewed 2026-08-23. The preflight green-lit a bench against a live AutoPilot: an EMPTY pgrep result read as a positive 'no AutoPilot', and a missing pgrep binary raised FileNotFoundError out of run() before the (0,1)-returncode handling was reached. autopilot_state() is now three-valued (present|absent|unobservable), mirroring inference_load_check.py: FileNotFoundError is caught (missing binary = unobservable); an empty pattern result is NEVER trusted alone \u2014 a negative requires the singleton flock (orchestration/.autopilot.lock) to be provably free too; argv drift reads as present (the drifted daemon still holds the lock), closing the reference implementation's named residual; and unobservable FAILS the preflight in both strict and advisory modes ('for EXCLUSION, unknown must mean busy'). NOT battery-adoptable: it is a one-shot Python preflight, not a daemon watchdog \u2014 the harness drives `/bin/bash <script> observe` against a heartbeat file this script has no production relationship to."
     },
     {
       "id": "session_health_check",
@@ -150,13 +150,13 @@
       "contract": "unadopted",
       "owning_handoff": "handoffs/active/non-inference-backlog.md",
       "task_marker": "OBS-6",
-      "notes": "`pgrep -f \"claude\"` is a bare substring matching any argv containing 'claude', including its own caller. `pgrep -f \"monitor_storage\"` makes a renamed/relocated monitor read as permanently absent, so the check permanently recommends starting a second one. Several probes use `|| echo unknown` and then COMPARE 'unknown' against the expected value, reporting FAIL — an unreadable /sys node in a container is scored as a misconfiguration. Report-only, but it gates session start."
+      "notes": "`pgrep -f \"claude\"` is a bare substring matching any argv containing 'claude', including its own caller. `pgrep -f \"monitor_storage\"` makes a renamed/relocated monitor read as permanently absent, so the check permanently recommends starting a second one. Several probes use `|| echo unknown` and then COMPARE 'unknown' against the expected value, reporting FAIL \u2014 an unreadable /sys node in a container is scored as a misconfiguration. Report-only, but it gates session start."
     },
     {
       "id": "session_emergency_cleanup",
       "script": "scripts/session/emergency_cleanup.sh",
       "contract": "exempt",
-      "reason": "FIXED, not deferred — reviewed 2026-08-23. The committed `sudo pkill -f claude` (and its `pgrep -f claude`) is DELETED: on a shared host a 'claude' substring is a wildcard over every session's argv, including the script's own caller, and the PreToolUse pattern-kill hook inspects the typed command, not the script body, so the rule was assumed-enforced. The script now refuses to stop processes by pattern and prints the operator steps for killing only pids they verified themselves (ps -eo pid,etime,cmd | grep -i '[c]laude'; kill <verified-pid>); the unmount step reports a busy mount explicitly instead of aborting under set -e, and the delete prompt warns that a live bind mount makes rm go through to /mnt/raid0/llm/tmp/claude. Exempt as interactive operator tooling: a human-run, one-shot cleanup utility that takes no observation-based decision (it now refuses to guess) — out of the watchdog class the battery guards, and outside the daemon-supervisor lifecycle the contract enforces."
+      "reason": "FIXED, not deferred \u2014 reviewed 2026-08-23. The committed `sudo pkill -f claude` (and its `pgrep -f claude`) is DELETED: on a shared host a 'claude' substring is a wildcard over every session's argv, including the script's own caller, and the PreToolUse pattern-kill hook inspects the typed command, not the script body, so the rule was assumed-enforced. The script now refuses to stop processes by pattern and prints the operator steps for killing only pids they verified themselves (ps -eo pid,etime,cmd | grep -i '[c]laude'; kill <verified-pid>); the unmount step reports a busy mount explicitly instead of aborting under set -e, and the delete prompt warns that a live bind mount makes rm go through to /mnt/raid0/llm/tmp/claude. Exempt as interactive operator tooling: a human-run, one-shot cleanup utility that takes no observation-based decision (it now refuses to guess) \u2014 out of the watchdog class the battery guards, and outside the daemon-supervisor lifecycle the contract enforces."
     },
     {
       "id": "fleet_watch",
@@ -164,7 +164,7 @@
       "contract": "unadopted",
       "owning_handoff": "handoffs/active/session-bus-thin-dispatcher.md",
       "task_marker": "OBS-11",
-      "notes": "Enrolled BY HAND: neither discovery rule finds it (it identifies no process by argv, so Rule A misses it, and it does not source observer_guard.sh, so Rule B does too). REWRITTEN AT P3-3 (2026-08-16): the pane-text heuristics were DELETED — STUCK-INPUT, IDLE-CANDIDATE, DETECTOR-BLIND, PANE-UNREADABLE/DEAD and FLEET-UNREADABLE are gone, because 2,499 of 2,654 STUCK-INPUT reports (94%) were the agent CLI's own empty-composer placeholder text. It no longer decides anything about a session's liveness; per-recipient liveness belongs to the daemon (P0-2b) and pool-runner liveness to P3-4. What remains is hardware- and bus-grounded: COMPUTE-IDLE (rocm-smi + region claims, escalated only when compute-gated READY rows are waiting) and QUEUE-AGING (READY rows past a threshold with worker capacity free, classified by the gate refusing them — every refusal class has an owner and a routed fix). Its internal discipline is still three-valued: fw_classify_compute returns 'unknown' and never collapses it to idle, an unreadable queue is reported as QUEUE-UNREADABLE rather than as an empty one, and a domain that could not be read is excluded from the alarm clear sweep. Alarms go to alarm_channel.py (emit-once-on-state-change); pane capture survives ONLY as clearly-labelled human evidence attached to an already-decided alarm, OFF by default. What is missing for v1 is the uniform `observe` entrypoint and the behavioural battery. Takes no corrective action of any kind: it detects and logs, never sends keys, never writes the bus, never kills."
+      "notes": "Enrolled BY HAND: neither discovery rule finds it (it identifies no process by argv, so Rule A misses it, and it does not source observer_guard.sh, so Rule B does too). REWRITTEN AT P3-3 (2026-08-16): the pane-text heuristics were DELETED \u2014 STUCK-INPUT, IDLE-CANDIDATE, DETECTOR-BLIND, PANE-UNREADABLE/DEAD and FLEET-UNREADABLE are gone, because 2,499 of 2,654 STUCK-INPUT reports (94%) were the agent CLI's own empty-composer placeholder text. It no longer decides anything about a session's liveness; per-recipient liveness belongs to the daemon (P0-2b) and pool-runner liveness to P3-4. What remains is hardware- and bus-grounded: COMPUTE-IDLE (rocm-smi + region claims, escalated only when compute-gated READY rows are waiting) and QUEUE-AGING (READY rows past a threshold with worker capacity free, classified by the gate refusing them \u2014 every refusal class has an owner and a routed fix). Its internal discipline is still three-valued: fw_classify_compute returns 'unknown' and never collapses it to idle, an unreadable queue is reported as QUEUE-UNREADABLE rather than as an empty one, and a domain that could not be read is excluded from the alarm clear sweep. Alarms go to alarm_channel.py (emit-once-on-state-change); pane capture survives ONLY as clearly-labelled human evidence attached to an already-decided alarm, OFF by default. What is missing for v1 is the uniform `observe` entrypoint and the behavioural battery. Takes no corrective action of any kind: it detects and logs, never sends keys, never writes the bus, never kills."
     },
     {
       "id": "inference_load_check",
@@ -182,7 +182,7 @@
       "id": "hook_check_process_pattern_kill",
       "script": "scripts/hooks/check_process_pattern_kill.sh",
       "contract": "exempt",
-      "reason": "Matches Rule A only because it is the SCANNER FOR the idiom — its subject matter is the pattern, it observes no process and takes no corrective action against one."
+      "reason": "Matches Rule A only because it is the SCANNER FOR the idiom \u2014 its subject matter is the pattern, it observes no process and takes no corrective action against one."
     },
     {
       "id": "hook_process_pattern_kill_scan",
@@ -200,8 +200,16 @@
       "id": "ratify_20260827_session",
       "script": "scripts/operator/ratify_20260827_session.sh",
       "contract": "exempt",
-      "reason": "NOT AN OBSERVER — reviewed 2026-08-27. One-shot operator ratification script for a doctrine amendment; it observes no process and has no watchdog loop. The scanner matches it because the doctrine TEXT it inserts quotes `ps -eo ... | grep ... | head` as the illustrative example of the hazard being ratified (a probe truncated by head reports the absence of what it never looked at). The pattern appears only inside a python heredoc that writes markdown prose into agents/shared/OPERATING_CONSTRAINTS.md; the script itself never invokes ps, pgrep or pkill. Supersedes the narrower ratify_observation_instrument_hazards_20260827 entry.",
+      "reason": "NOT AN OBSERVER \u2014 reviewed 2026-08-27. One-shot operator ratification script for a doctrine amendment; it observes no process and has no watchdog loop. The scanner matches it because the doctrine TEXT it inserts quotes `ps -eo ... | grep ... | head` as the illustrative example of the hazard being ratified (a probe truncated by head reports the absence of what it never looked at). The pattern appears only inside a python heredoc that writes markdown prose into agents/shared/OPERATING_CONSTRAINTS.md; the script itself never invokes ps, pgrep or pkill. Supersedes the narrower ratify_observation_instrument_hazards_20260827 entry.",
       "reviewed": "2026-08-27"
+    },
+    {
+      "id": "opencode_event_reaper",
+      "script": "scripts/system/opencode_event_reaper.sh",
+      "contract": "unadopted",
+      "owning_handoff": "handoffs/active/non-inference-backlog.md",
+      "task_marker": "NI-OC-a",
+      "notes": "Added 2026-09-08 (commit 4eb19af5 landed it unregistered and blocked fleet commits \u2014 fixed same hour). The reaper never kills: `pgrep -x opencode` is a READ-ONLY presence probe whose only consumer is the decision to VACUUM the opencode DB. The decision now FAILS CLOSED: any probe result other than 'definitely absent' (exit 1) skips VACUUM, so a drifted/ambiguous pattern costs a deferred VACUUM, never a corrupted live TUI. NI-OC-a adopts observer_guard.sh three-state probing properly; until then this row records the instance rather than hiding it."
     }
   ]
 }
