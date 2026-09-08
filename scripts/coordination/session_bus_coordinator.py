@@ -2971,6 +2971,30 @@ def progress_log_currency(bus_root: Path, epoch: int, *, hours: float = _PROGRES
 _ADVISORY_MAX_BYTES = 128 * 1024 * 1024
 
 
+def advisory_shard_paths(bus_root: Path) -> list[Path]:
+    """Every `advisory*.jsonl` a reader must read — BOTH sides of the symlink.
+
+    Rotation seals shards beside the RESOLVED runtime file (see
+    `rotate_advisory`), so a reader that globs only `bus_root` sees the live
+    symlink and any historical in-tree shards but none of the sealed ones. A
+    reader of a sharded log reads all shards, so this enumerates the tree
+    directory and the runtime directory and dedups by resolved path — the
+    pre-fix in-tree shards are symlinks onto the runtime file, and counting the
+    same bytes twice is its own defect.
+    """
+    seen: dict[str, Path] = {}
+    live = bus_root / "advisory.jsonl"
+    resolved = Path(os.path.realpath(live)) if live.is_symlink() else live
+    for directory in (bus_root, resolved.parent):
+        try:
+            found = sorted(directory.glob("advisory*.jsonl"))
+        except OSError:  # noqa: BLE001 — a missing runtime dir must not stop delivery
+            continue
+        for path in found:
+            seen.setdefault(os.path.realpath(path), path)
+    return [seen[key] for key in sorted(seen)]
+
+
 def rotate_advisory(bus_root: Path, epoch: int,
                     max_bytes: int = _ADVISORY_MAX_BYTES) -> list[dict]:
     """Shard `advisory.jsonl` once it passes `max_bytes`. Returns advisory rows.
@@ -2993,8 +3017,28 @@ def rotate_advisory(bus_root: Path, epoch: int,
     same reason.
     """
     live = bus_root / "advisory.jsonl"
+    # ROTATE THE TARGET, NEVER THE LINK (P0-7, and the same idiom as
+    # `session_bus._write_atomic`, which resolves `os.path.realpath(path)` when
+    # the path is a symlink for exactly this reason).
+    #
+    # `advisory.jsonl` in the tree is a TRACKED symlink (mode 120000) into the
+    # off-tree runtime at /mnt/raid0/llm/bus-runtime/. `Path.rename` renames the
+    # LINK, not its target, and `Path.touch` on the now-vacant tracked path
+    # creates a NEW REGULAR FILE there — so every rotation quietly re-materialised
+    # a tracked, git-visible, ever-growing log in the repo, and left the "sealed"
+    # shard as a symlink still aliasing the live file. Measured 2026-09-08:
+    # `advisory_1.jsonl` and `advisory_3.jsonl` in the tree were symlinks to the
+    # SAME live target (sealed shards that were not sealed), `advisory_2.jsonl`
+    # was a 134 MB regular file in the repo, and the 35.6 MB regular file at the
+    # tracked path was snapshotted per turn by opencode into a 236 GB opencode.db.
+    #
+    # Resolving first keeps the indirection intact: the shard is derived from the
+    # RESOLVED file's directory (the runtime dir), so the rename stays on one
+    # filesystem, the sealed shard lands beside the runtime file, and the tracked
+    # symlink is never renamed, touched or replaced.
+    resolved = Path(os.path.realpath(live)) if live.is_symlink() else live
     try:
-        size = live.stat().st_size
+        size = resolved.stat().st_size
     except OSError:
         return []
     if size <= max_bytes:
@@ -3002,17 +3046,18 @@ def rotate_advisory(bus_root: Path, epoch: int,
     # Sealed shards are archived OUTSIDE the repo and summarised before this
     # function returns — see `_archive_advisory_shard`. Rotation being correct is
     # not the same as the history surviving it.
-    existing = sorted(bus_root.glob("advisory_*.jsonl"))
+    shard_dir = resolved.parent
+    existing = sorted(shard_dir.glob("advisory_*.jsonl"))
     nxt = 1 + max((int(p.stem.rsplit("_", 1)[-1]) for p in existing
                    if p.stem.rsplit("_", 1)[-1].isdigit()), default=0)
-    shard = bus_root / f"advisory_{nxt}.jsonl"
+    shard = shard_dir / f"advisory_{nxt}.jsonl"
     try:
-        live.rename(shard)
-        live.touch()
+        resolved.rename(shard)
+        resolved.touch()
     except OSError as exc:  # noqa: BLE001 — never let housekeeping stop the tick
         return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                  "kind": "advisory-rotation-failed", "check": "advisory-rotation",
-                 "detail": f"could not rotate {live} ({size / 1048576:.0f} MiB): {exc}"}]
+                 "detail": f"could not rotate {resolved} ({size / 1048576:.0f} MiB): {exc}"}]
     row = {"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
            "kind": "advisory-rotated", "check": "advisory-rotation",
            "shard": shard.name, "bytes": size,
@@ -3208,7 +3253,7 @@ def load_relay_state(bus_root: Path, ids: Iterable[str]) -> dict:
         # and re-flag all of them — turning a housekeeping win into the C34 flood
         # it was meant to prevent. Same rule as the autopilot journal: rotated
         # means sharded, and a reader of a sharded log reads all shards.
-        for shard in sorted((bus_root).glob("advisory*.jsonl")):
+        for shard in advisory_shard_paths(bus_root):
             with shard.open(encoding="utf-8", errors="replace") as fh:
                 for line in fh:
                     if '"unreachable"' not in line:

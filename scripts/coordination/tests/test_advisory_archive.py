@@ -47,6 +47,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -366,3 +367,96 @@ def test_rotate_advisory_archives_the_sealed_shard_end_to_end(
     assert archived_copy.exists()
     assert archived_copy.read_text(encoding="utf-8") == "\n".join(
         json.dumps(r) for r in rows) + "\n"
+
+
+# =========================================================================== #
+# rotate_advisory — the tracked path is a SYMLINK (P0-7/D5) and must survive
+#
+# `coordination/session-bus/advisory.jsonl` is tracked in git as a symlink
+# (mode 120000) into the off-tree runtime. `Path.rename` renames the LINK and
+# `Path.touch` then creates a NEW REGULAR FILE at the tracked path, so every
+# rotation re-materialised the log inside the repo and left the "sealed" shard
+# aliasing the live file. `session_bus._write_atomic` was fixed for exactly this
+# on 2026-08-16 by resolving `os.path.realpath` first; rotation was not.
+#
+# BOTH DIRECTIONS: the symlink case asserts the link survives and the shard
+# lands beside the runtime file; the plain-file case asserts the pre-existing
+# in-directory behaviour is unchanged.
+# =========================================================================== #
+def test_rotate_advisory_never_materialises_a_file_at_a_tracked_symlink(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    archive_root = tmp_path / "archive"
+    monkeypatch.setenv(sbc._ADVISORY_ARCHIVE_ENV, str(archive_root))
+
+    bus_root = tmp_path / "bus"
+    bus_root.mkdir()
+    runtime = tmp_path / "bus-runtime"
+    runtime.mkdir()
+
+    target = runtime / "advisory.jsonl"
+    rows = [_pick(f"task-{i % 3}", f"2026-09-08T03:{i:02d}:00+00:00") for i in range(10)]
+    old_bytes = "\n".join(json.dumps(r) for r in rows) + "\n"
+    _write_shard(target, [json.dumps(r) for r in rows])
+
+    live = bus_root / "advisory.jsonl"
+    live.symlink_to(target)
+
+    out = sbc.rotate_advisory(bus_root, epoch=1, max_bytes=1)  # force rotation
+
+    assert len(out) == 1 and out[0]["kind"] == "advisory-rotated"
+
+    # 1. The tracked path is STILL a symlink, pointing at the same target.
+    assert live.is_symlink(), (
+        "rotation replaced the tracked symlink with a regular file — this is the "
+        "defect: a git-visible, ever-growing log back inside the repo")
+    assert Path(os.path.realpath(live)) == target.resolve()
+
+    # 2. The sealed shard is a REGULAR file in the RUNTIME dir, with the old rows.
+    shard = runtime / out[0]["shard"]
+    assert shard.exists() and not shard.is_symlink(), (
+        "the sealed shard must be a real file, not a symlink still aliasing the "
+        "live target — that is how advisory_1/advisory_3 ended up unsealed")
+    assert shard.read_text(encoding="utf-8") == old_bytes
+    assert not (bus_root / out[0]["shard"]).exists(), (
+        "the shard must land beside the runtime file, never in the tree")
+
+    # 3. The live target is a fresh, empty regular file — writes keep landing
+    #    off-tree through the untouched link.
+    assert target.exists() and not target.is_symlink()
+    assert target.read_text(encoding="utf-8") == ""
+
+    # 4. Nothing regular was created in the tree at all.
+    assert [p.name for p in bus_root.iterdir()] == ["advisory.jsonl"]
+
+    # 5. Archival still works off the sealed shard.
+    assert out[0]["archived"] is True
+    assert (archive_root / out[0]["shard"]).read_text(encoding="utf-8") == old_bytes
+
+    # 6. A subsequent append through the link lands in the live target, and a
+    #    reader that enumerates shards sees BOTH the sealed shard and the live
+    #    file exactly once each.
+    sbc._append_advisory(bus_root, [_pick("task-9", "2026-09-08T04:00:00+00:00")])
+    assert live.is_symlink(), "the append must go THROUGH the link, not replace it"
+    assert len(target.read_text(encoding="utf-8").splitlines()) == 1
+    enumerated = {p.name for p in sbc.advisory_shard_paths(bus_root)}
+    assert enumerated == {"advisory.jsonl", out[0]["shard"]}
+
+
+def test_rotate_advisory_plain_file_behaviour_is_unchanged(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The non-symlink case: shard and refreshed live file stay in `bus_root`."""
+    monkeypatch.setenv(sbc._ADVISORY_ARCHIVE_ENV, str(tmp_path / "archive"))
+    bus_root = tmp_path / "bus"
+    bus_root.mkdir()
+    live = bus_root / "advisory.jsonl"
+    rows = [_pick("task-0", "2026-09-08T03:00:00+00:00")]
+    _write_shard(live, [json.dumps(r) for r in rows])
+
+    out = sbc.rotate_advisory(bus_root, epoch=1, max_bytes=1)
+
+    assert out[0]["shard"] == "advisory_1.jsonl"
+    shard = bus_root / "advisory_1.jsonl"
+    assert shard.is_file() and not shard.is_symlink()
+    assert shard.read_text(encoding="utf-8") == json.dumps(rows[0]) + "\n"
+    assert live.is_file() and not live.is_symlink()
+    assert live.read_text(encoding="utf-8") == ""
