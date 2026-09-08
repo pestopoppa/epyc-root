@@ -2,8 +2,34 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-27 (incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
+**Last compiled**: 2026-09-07 (a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
 **Sources**: 110+ documents
+
+## Compiled Update — 2026-09-07: a capability probe that asks the wrong runtime can only answer NO
+
+**Confidence: `verified`** — the probe's symbol names, source lines and the documented ROCm 6.2 surface are exact reads; the accuracy consequence (rel. err. 1.36) is as reported in the cited entry, not measured here. One defect family, **four independent instances in the same project**: three in the host-pointer contract, one in the probe itself.
+
+### The host-pointer capability contract
+
+Never GPU-dereference host memory without a **demonstrated nonzero mapped device pointer**. Three rules, each of which one of the instances broke:
+
+- **Probe identity with the same allocator the consumer uses.** An `mmap` + `hipHostRegister` probe does not establish that a `pin_memory` tensor is device-addressable, and vice versa. The probe must allocate the way the consumer allocates, or it answers a question nobody asked.
+- **Fail closed to a plain H2D copy.** The absence of a mapped pointer is a routine outcome, not an error path to be papered over; the safe branch is the ordinary copy, always available.
+- **Never convert a missing native extension into a silent no-op.** A build without the extension must take the slow path visibly, not skip the work.
+
+Three independent instances in one project: `pinned.py`, `offload_cache.py` (PR #316), and `CpuMoeExecutor` (issue #350). `intake-1343#04`.
+
+### The fourth instance: the probe asked CUDA about an AMD card
+
+The probe `dlopen`s `libcuda.so.1` / `libcuda.so` and `dlsym`s `cuStreamWriteValue64_v2` / `cuStreamWaitValue64_v2` (`cpu_moe_ext.cpp:579-604`) and **never reaches HIP** — so on this host it can only ever answer NO, and its negative says nothing whatsoever about the hardware. ROCm 6.2 documents all four of `hipStreamWriteValue32` / `hipStreamWriteValue64` / `hipStreamWaitValue32` / `hipStreamWaitValue64`; the capability was present the entire time. **A probe that resolves another vendor's driver symbols is not a hardware measurement.**
+
+The damage came from the fallback, not the probe. Three rules follow, and they are the transferable part:
+
+- **The fallback a probe selects must be validated in every execution mode the fast path was validated in.** Here it was not: the `cudaLaunchHostFunc` fallback is **not capture-safe**, so captured host nodes never re-read the freshly written pinned routing buffers — **rel. err. 1.36, with no warning**. A fallback validated only in eager mode is an unvalidated fallback.
+- **Attach the health guard to the branch that actually runs.** A guard on the fast path is inert precisely when the probe has sent execution down the slow one — which is the only situation in which it was needed.
+- **Report *why* a probe failed, in terms of the platform actually running.** "Capability unavailable" hides a wrong-runtime lookup indefinitely; "libcuda.so not found on a ROCm host" is self-diagnosing on the first read of the log.
+
+`intake-1345#01`.
 
 ## Compiled Update — 2026-08-16: the 64-VGPR boundary is not a curiosity, it is where batch-1 decode throughput partitions on CDNA2
 
@@ -4084,3 +4110,441 @@ Key findings:
 - [`cpu-fused-decoder-blocks.md`](../handoffs/active/cpu-fused-decoder-blocks.md) — INF-67 handoff,
   current phase and bit-exactness state.
 - [`2026-09-01-inf67.md`](../progress/2026-09/2026-09-01-inf67.md) — the INF-67 session shard: the measured numbers, the operator's four corrections verbatim, the go/no-go.
+
+## Compiled Update — 2026-09-02: the INF-70 implementation wave — placement, the parallel GET_ROWS unlock, the fused-decoder refutation, and the whole-token decomposition
+
+**Confidence: verified** (a ten-plus-subagent implementation wave, every arm region-locked with
+per-node eviction and in-window `numactl -p` placement proof, on the OP-32 uniform IQ4_XS artifact,
+build 10196 lineage; the merged branch numbers are on the merged tree).
+
+INF-70 reframed the qwen4exp (Qwen3.8-Flash-Next) CPU-decode problem as a roofline program and ran a
+parallel implementation wave. The corrected ledger and the durable findings:
+
+- **The roofline premise was numerically wrong and is now measured.** The prior "~425 GB/s DRAM
+  traffic" was a double count of a STREAM-convention copy figure (`bench_stream3.cpp` divides 4 GiB by
+  the copy time of a 2 GiB array — read+write already counted — then doubles again). Measured on this
+  box: 12 × Samsung 96 GB DDR5 RDIMMs rated 5600 MT/s running at **4800** (SMBIOS type 17); read-only
+  bandwidth under the decode recipe is **153 GB/s at 48 threads / 166 at 96** with free memory on every
+  node, and a **global ~170 GB/s aggregate cap** across four node-local readers (each node falls from
+  66 to ~40 GB/s) — an uncore ceiling no software placement lifts, ~37% of the 460.8 GB/s nominal.
+- **Page-cache-full NUMA nodes silently defeat `--interleave=all`.** With the nodes full of page cache
+  the kernel's zone fallback ignores the interleave policy: the 98 GB model landed 57.7 / 10.7 / 8.0 /
+  17.7 GB across nodes 0-3 and decode measured **7.65 t/s vs 10.14 with per-node eviction first —
+  −25%**. This is the mechanism behind the "unexplained" −32% between the 2026-08-28 and 2026-08-31
+  records. The fix is a pre-load allocate-and-touch eviction under `--membind` per node, plus an
+  in-window `numastat -p` proof as a required row; it is now enforced in `bench_canonical.sh` and
+  prepared (default-off) in the orchestrator CPU launch path. It can still skew under concurrent
+  page-cache growth, so the in-window proof is what makes a run valid, not the eviction alone.
+- **The whole token, decomposed by a post-barrier profiler.** Extending `GGML_CPU_PROF` to timestamp
+  each node *after* the graph barrier (not just thread-0 compute before it): a 97 ms token is **63 ms in
+  941 weight-path nodes averaging 40% of read bandwidth (the one big lm_head gemv reaches 94%; the 940
+  small dense/expert gemvs 40%), 33 ms in 3,468 nodes that move no weights, and 22 ms of barrier and
+  straggler wait** of which only ~10 ms is the 5,410 barrier primitives themselves (1.9 µs each at 48T).
+  The expert path is bytes-proportional at ~43-54% of bandwidth and saturates at 8 threads (B2).
+- **Parallel GET_ROWS is the session's real unlock: +14%, bit-identical, merged.** The four CPU
+  `get_rows` kernels already split by `ith/nth` over ROWS, and the hot decode nodes gather one row of
+  786,432 f32 (the PLE n-gram table) — so they ran single-threaded regardless of task count. Splitting
+  (row, column-chunk) pairs, block-aligned, takes the token **95.5 → 83.4 ms/token (10.4 → 12.0 t/s)**;
+  the gain exceeds GET_ROWS' own time because the parallel gather leaves each 3 MB row in all threads'
+  caches, so its consumers (CPY, GATED_DELTA_NET, MUL_MAT) also stop pulling from one CCD. Note the
+  planned `n_tasks` does not gate execution in this tree (the compute loop passes `nth = n_threads` to
+  every node), which is why a knob-gated "A/B" on it was on/on — the effect had to be isolated by a
+  fresh-build bisect.
+- **CONCAT dim-0 row partition: −1.1 to −1.4 ms decode, +23-28% prefill, bit-identical, merged.** The
+  GDN conv concat is `[4, 10240, 1]` and the stock kernel shards over `ne2 = 1`, so 40,960 copies ran
+  on thread 0 across 37 nodes/token. An existing default-off flag (`GGML_CPU_CONCAT_DIM0_ROWS`) fixes
+  it; it is now default-on.
+- **Bytes levers.** A fused `ffn_gate_up_exps` tensor (144 → 96 `mul_mat_id`/token, bit-identical,
+  −1.3 ms) and a router `ffn_gate_inp` F32→F16 (−1.5 ms, decode-neutral prefill) compose into
+  `IQ4_XS-uniform-gateup-r16`, the new Axis B/D comparison baseline; the `ffn_down_exps` Q5_1→IQ4_NL
+  override is a −21.7% prefill regression and is not taken. Stock `llama-quantize` silently ignores a
+  `--tensor-type` on `ffn_gate_inp` (rejected before the pattern list) — a one-line patch fixes it.
+- **The fused megakernel is refuted, not delivered.** With the batched `mul_mat`, a scratch arena
+  (churn measured at 3.52 GB/token, not the retired ~2.5 GB estimate), a debug strip and a safety
+  contract all in, and three genuine correctness bugs fixed, the fused decoder measures **1.10× SLOWER
+  than the graph at 1 thread** (214 vs 195 ms) after three census-driven iterations (4.70× → 1.51× →
+  1.10×). The residual is structural: 2,213 `mul_mat` calls vs the graph's 941 (one per expert per lora
+  where the graph fuses), at ordinary per-call speed. The logit gate still fails by four orders of
+  magnitude.
+- **Batched decode is not row-exact on this architecture.** MTP greedy output diverges from
+  single-token decode at the unverified bonus token; dense models are bitwise batch-invariant on this
+  build, every MoE model tried is not. `llama-perplexity` returns NaN for qwen4exp (the all-logits
+  path), so there is no PPL/KL quality gate for this model — a standing blocker for every quant
+  decision on it.
+- **EXL3 trellis weights, measured.** exllamav3's own `mul1` AVX-512 CPU kernel on the real downloaded
+  4.05 bpw expert tensors is compute-bound per core (~17 GB/s, the trellis extraction dominates the
+  dot) and memory-bound from ~10 threads (110-124 GB/s at 48T) — the same ceiling as everything else.
+  Bytes −9% (4.05) / −32% (3.05) on the expert stream give +2-7% end-to-end today, +15-18% at the
+  bandwidth ceiling; a full port is 3-5 sessions (an opaque-blob ggml type). Parked behind the
+  dispatch-floor work — the expert bytes are ~21% of the token.
+
+### Source References (2026-09-02)
+
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70, the
+  corrected ledger, the axis results, and the operator decision packages.
+- [`exl3-trellis-cpu-kernel.md`](../handoffs/completed/exl3-trellis-cpu-kernel.md) — INF-71, the EXL3
+  measurement and the parked port.
+- [`docs/design/exl3-mul1-ggml-type.md`](../docs/design/exl3-mul1-ggml-type.md) — the EXL3 `mul1`
+  format spec (X0).
+- [`2026-09-02-inf70-audit.md`](../progress/2026-09/2026-09-02-inf70-audit.md) — the audit and the
+  ten-subagent implementation wave, per-task.
+
+## Compiled Update — 2026-09-03: INF-70 wave 2 — the deployable server speed, GDN batched-forward root cause, and CPU concurrency
+
+**Confidence: verified** (claim-grade server measurement + three independent diagnostics converging on one
+kernel site; branches merged/verified where stated).
+
+- **Deployable single-stream serving speed of qwen3.8-next-flash (claim-grade, `llama-server`, 5 reps,
+  placement-proven):** **12.0 t/s on the uniform IQ4_XS artifact, 12.4 t/s on `IQ4_XS-uniform-gateup-r16`**
+  (80.8 ms/token), on the merged experimental kernel (build 10202 `9e75132e3` = graph path + parallel
+  GET_ROWS + CONCAT default), t48, graph path confirmed. Server tracks `llama-bench` within 0.9%. That is
+  32.7% of the recipe's 153 GB/s read bandwidth — ~70% of the token is still dispatch floor.
+- **The +14% decode from D8 is confirmed to be parallel GET_ROWS, not a build artifact.** D8x settled a
+  dispute with merge-verify from the code: the prof-carry commit is entirely `#ifdef GGML_CPU_PROF` (no-op
+  in the shipped build), and the `GGML_GET_ROWS_MIN_BYTES` env knob is inert at execution (it only sets the
+  planned `n_tasks`, which the compute loop ignores), so a knob-gated "off" arm still ran the parallel
+  kernel. Per-op: the parallel gather also speeds its cache-warmed consumers (CPY, GATED_DELTA_NET,
+  MUL_MAT). The merged branch is verified safe: all `test-backend-ops` suites green, greedy identical to the
+  anchor.
+- **One kernel site is the root cause of THREE separate defects.** `src/models/delta-net-base.cpp:435`
+  routes `n_seq_tokens == 1` to `build_delta_net_autoregressive` and any 2+-token batch to
+  `build_delta_net_chunking` (CS 64, padded); the two are not row-exact, so any batched forward writes a
+  different recurrent state forward. This is the common cause of (a) MTP greedy divergence — E2a CLOSED
+  negative: both driver-side bonus-token fixes fail at *verified* rows, `LLAMA_SPEC_EXACT=serial`
+  (single-token decodes) is byte-identical 3/3 but at plain-decode speed, so MTP is lossless only without
+  batching; (b) E2c's batched-forward non-exactness (iqk-independent — persists with `GGML_IQK=0`); and (c)
+  a **concurrent-prefill corruption**: `-np 4` with simultaneous request starts produces 0/4 coherent
+  deterministic garbage in the plain merged binary (no MTP), staggered starts give 4/4 coherent. The single
+  fix — make the chunked GDN kernel row-exact for small n — closes all three and makes MTP lossless.
+- **CPU concurrency, measured on our hardware (refutes the GPU README claim):** MTP stays a NET WIN at
+  concurrency — 1.50× at C=1, 1.13× at C=4 (staggered, coherent) — it does NOT flip to a loss as the
+  unsloth B200 note claimed; a dispatch-bound CPU has different dynamics than a saturated GPU. Concurrency
+  itself scales ~1.76× at C=4 when starts are staggered. Caveat: the degenerate simultaneous-start rounds
+  run *faster* per slot while producing garbage, so a concurrency benchmark that does not check output
+  coherence reports inflated throughput — coherence must be checked every round.
+- **EXL3 trellis weights measured** (INF-71): exllamav3's own `mul1` AVX-512 CPU kernel on the real 4.05 bpw
+  expert tensors is compute-bound per core (~17 GB/s) and memory-bound from ~10 threads (110–124 GB/s),
+  the same ceiling as everything else; the bytes lever caps at +15–18% end-to-end and is parked behind the
+  dispatch-floor work. Spec: `docs/design/exl3-mul1-ggml-type.md`.
+- **Operational finding:** the `evict_nodes.sh` NUMA-eviction helper under-evicts (allocates `TARGET − free`,
+  freeing nothing when a node is cache-full but short of the model's per-node share); the forcing form
+  (`evict_nodes_force.sh`) allocates `TARGET + 2` and verifies — this is why placement kept skewing "even
+  after in-lock eviction". And a subagent's `arm.sh` bare `wait` on a backgrounded server hung the bench
+  lock ~65 min; the fix is to wait on the specific server pid with a `trap`-kill, never bare `wait`.
+
+### Source References (2026-09-03)
+
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70: the
+  deployable-speed table, the GDN-ROWEXACT task, the concurrency findings, X-CONC, E2a closure.
+- [`2026-09-02-inf70-audit.md`](../progress/2026-09/2026-09-02-inf70-audit.md) — the two implementation waves.
+
+## Compiled Update — 2026-09-03 (INF-70 wave 3): the iqk IQ4_XS repack defect, contiguous expert slabs, and the NUMA eviction that was too weak to work
+
+### The kernel defect that invalidated a day of numbers
+
+`iqk_mul_mat.cpp`'s `is_dequant_better()` reroutes a quant type to a requantised Q8 repack GEMM once a ubatch is wide
+enough — for IQ4_XS at `nrc_y >= 32`. On this Zen host that converter is **wrong**, and the failure is gross rather
+than subtle: a node-level trace (batch-of-42 vs 42 single-token decodes) put the first gross error at
+`z-0 = mul_mat(blk.0.attn_gate, IQ4_XS [2560×6144], 42 rows)` with **every one of 6144 elements differing, max abs
+1.2e3, already at row 0**. Everything downstream is noise. The tree's own comment above that switch already recorded
+the family as producing "incorrect results for some large-Ny dense and MoE shapes on Zen 4" and excluded IQ2_XXS,
+IQ2_XS, IQ2_S, IQ3_XXS and IQ3_S — IQ4_XS had been left on the path.
+
+One threshold explained three separately-filed defects: single prompts above ~32 tokens degenerating; four
+simultaneous 12-token prompts corrupting (a 48-row ubatch) while staggered starts were fine; and `GGML_IQK=0` being
+clean throughout. It **predates the fusion lineage** — pre-fusion build 10128 degenerates identically.
+
+**Fix** (merged into `exp/cpu-fusion-qwen4exp-20260829` at `42332502c`): IQ4_XS returns to its direct iqk kernel at
+every Ny, plus a `GGML_IQK_DEQUANT` kill-switch and a `GGML_ROWEXACT_N` small-batch exact mode. Gates: n=1 decode
+byte-identical to the pre-fix control, `MUL_MAT` 1139/1139 and `MUL_MAT_ID` 815/815 on CPU, decode 12.69 t/s (no
+regression), **pp512 189.3 t/s against 135.6 for the only previously-correct configuration (`GGML_IQK=0`), +39.6%**.
+
+Two engineering notes worth carrying forward. The repack is a *real* win where it is correct — Q5_1 and Q6_K measure
+~0.04 nats at 233 rows, lossy-but-working, worth ~10% prefill — so the fix is a targeted exclusion, not a blanket
+disable. And at 42 rows the broken path was **slower as well as wrong** (it requantises a whole tensor to serve 42
+columns of reuse), so the correct-repack crossover sits somewhere between 42 and 512 rows.
+
+### The GDN kernel was never involved — and the reproducer that proved it
+
+The campaign spent days attributing batch-dependence to `build_delta_net_chunking` (CS=64) versus the autoregressive
+path. Code reading refuted the premise: `build_delta_net()` checks the fused-GDN cparams first, so n=1 **and** n>1
+both run the fused token-sequential op `ggml_compute_forward_gated_delta_net_one_chunk` — the chunked graph kernel is
+dead code on this build. A node-level reproducer (`llama-rowexact`, every graph node via `cb_eval`) then showed the
+GDN op bit-identical at n=3, and 4 sequences × 3 tokens packed into one ubatch reproducing each sequence's own
+forward **bit-for-bit (0 of 5450 nodes differ)**. Multi-sequence packing is exact; the row-count branch was the whole
+story. *Refute the stated mechanism before implementing against it.*
+
+### Contiguous expert slabs in the batch-1 `mul_mat_id` (B3-k): +3.07%
+
+Thread `ith` takes the contiguous range `[total·ith/nth, total·(ith+1)/nth)` of the flat (used-expert, row) space —
+~133 rows / 181 KB of IQ4_XS gate-up, ~533 rows / 256 KB of Q5_1 down, at most two adjacent slabs — instead of ten
+14–54-row (19–26 KB) stripes. Round-2 ABA with placement proven per arm: **12.59/12.61 vs 12.24/12.21 t/s = +3.07%
+(−2.43 ms/token), twelve times the baseline's round-to-round spread**, bit-identical logits. The gain is entirely the
+slab partition; the accompanying barrier removal is null on its own. Confirmed in the server path at +3.9%.
+
+### The NUMA eviction that reclaimed nothing (C7)
+
+`numactl --interleave=all` is a per-allocation *hint* the kernel abandons for any node with no free pages, and page
+cache counts as not-free. The helper written to fix this allocated `TARGET − free` GiB — which frees nothing when a
+node already sits near TARGET, and on this box allocated 1 GiB at exactly `free == TARGET`. That is why placement kept
+skewing "even after in-lock eviction" for days. The forcing form allocates `TARGET + 2` whenever `free < TARGET`,
+verifies per node, and retries once. Now merged and enabled in the launch path for the five CPU roles (never for
+`gpu_host_lane` roles, refused in code), mutation-tested so the old formula fails 14 of 20 cases.
+
+**An eviction helper that cannot fail loudly will fail silently.** Mutation-test the sizing rule, not just its
+outputs.
+
+### Source References (2026-09-03, wave 3)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — B3, B3-k, C7, LONG-PROMPT-GARBAGE, GDN-ROWEXACT, BATCH-ENVELOPE
+- `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/REPORT.md` — checkpoints 0–10
+- `/mnt/raid0/llm/tmp/inf70/agents/b3k/REPORT.md` — the slab A/B and its gates
+- `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md` — forcing eviction, mutation proof, launch-path enable
+- `/mnt/raid0/llm/tmp/inf70/{longprompt,reanchor2}/` — the repro and the production-length re-anchor
+- `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70 batch-envelope): batched decode on qwen4exp is non-row-exact in two named CPU kernels, not the GDN path, and lossless MTP is free in the shipping config
+
+**Confidence: verified** — each carrier isolated by a node-level `cb_eval` trace (batch-of-n vs n single decodes), made or forced exact and re-traced to 0 differing logits/state bytes; the deciding speed numbers are `llama-bench`/server, load-gated, on the merged experimental tree. One published intermediate recommendation was reversed by measurement and is corrected here.
+
+The campaign had attributed qwen4exp's batched-vs-single-token divergence to the Gated-DeltaNet chunked kernel. That is wrong twice over, and the corrected picture matters for every prefill-vs-decode comparison and for MTP speculative decoding on this architecture.
+
+- **The GDN/recurrent path is exact and must not be funded.** `build_delta_net()` checks the fused-GDN cparams first, so both `n=1` and `n>1` run the same token-sequential op — the chunked graph kernel (`delta-net-base.cpp:435`) is dead code on this build. A node-level reproducer packed 4 sequences × 3 tokens into one ubatch and reproduced each sequence's own forward **bit-for-bit (0 of 5,450 nodes differ)**. Multi-sequence packing is exact; the row-count branch was the whole story. *Refute a stated mechanism before implementing against it.*
+- **Carrier 1 — the F32 tinyBLAS `mul_mat` (the MoE router `ffn_gate_inp`).** A tiled batched GEMM at `ne11=n` is 1 ulp off the generic `vec_dot` path at `ne11=1`, amplified by the router's top-k selection. Made genuinely row-exact, a 3-row batch is bit-identical to 3 single decodes (0 of 248,320 logits, 0 state bytes). This converts 5 of 7 gate prompts to lossless and kills the two divergent flips that had survived every other fix.
+- **Carrier 2 — `ggml_flash_attn_ext` is not row-exact once real `n_kv > 256`, and this is by construction, not a bug.** `use_split_kv_path` (`ops.cpp:9424`) requires **one query row (`neq1 == 1`) AND `nek1 >= 512`**; `n_kv` is padded to a multiple of 256 (`llama-kv-cache.cpp:1270`), so `nek1` is 256 for real n_kv 1–256 and 512 for 257–512. The gate therefore flips at exactly real n_kv 257 — the observed bisect boundary. The "256 boundary" is the **KV-padding quantum meeting the split path's 512 gate, not an FA block size.** Single-row decode splits KV across threads into partials recombined by online-softmax rescale; any `neq1 > 1` batch takes one sequential pass — algebraically equal, numerically different, so a 1-row decode and an n-row verify batch cannot be bit-identical at depth. It is a deliberate token-generation optimization (upstream `9f682fb64`, #19209). Setting `GGML_FA_SPLIT_KV=0` recovers exactness (prefix 254: default diverges at `FLASH_ATTN_EXT [256,24,3]`; split-off → 0/248,320 logits, 0 state bytes).
+- **Corollary — a real measurement hazard.** The split path's chunk size depends on `nth`, so **single-row decode at n_kv > 256 is not thread-count invariant: changing `-t` changes the logits.** Any A/B that varies thread count at depth is comparing different numerics.
+- **Lossless MTP is free in the configuration we actually ship.** The split path is *unreachable* under MTP (a verify batch is ≥ 2 query rows, and the path needs `neq1 == 1`), so `GGML_FA_SPLIT_KV=0` costs nothing there: with the MTP head on the 24-prompt production mix it is **exact — 24/24 byte-identical outputs, 22.292 vs 22.048 t/s, identical draft acceptance.** Recommended serving config: **`--fa 1` + `GGML_FA_SPLIT_KV=0`** — the fastest *exact* option, ~22.3 t/s lossless, keeping FA's prefill advantage and small compute buffer. `-fa off` is strictly dominated (same-or-worse decode and **+359 MiB / +175% compute buffer**; prefill −5 to −9% at depth). The exactness/speed trade only ever existed in a single-row microbenchmark — a regime this stack does not serve in.
+- **Self-observation failure #6 in this campaign (retracted).** The standing claim "the flips are NOT the batched `mul_mat`" was **vacuous**: it rested on `GGML_ROWEXACT_N`, a knob that never affected any tinyBLAS `mul_mat` — `llamafile_sgemm` hard-refuses `n < 2` (`sgemm.cpp:3713`), so the guarded per-column path failed on its first column every call and fell straight through to the full-batch GEMM. Proven inert by a **byte-identical node trace with the knob ON vs OFF** (same first node, same max|d|, same 85,390,493 differing state bytes). Textbook `feedback_vacuous_verification_empty_input`: prove a knob's effect (or inertness) with a mutation/A-B trace before building a load-bearing conclusion on it.
+- **Upstream test coverage hole (worth reporting).** `test-backend-ops -o FLASH_ATTN_EXT -b CPU` passes 1302/1303 including the straddling shapes, because every case is compared **only against a reference within NMSE tolerance, never case-to-case** — there is no query-row-invariance assertion. The missing test is `fa(q_rows=1..n)[i] == fa(q_row=i)` at `kv >= 512`.
+
+### Source References (2026-09-04)
+
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — INF-70: the BATCH-ENVELOPE / BE-1 / BE-2 tasks, the carrier isolation, and the shipping-config recommendation.
+- [`2026-09-03-inf70-audit.md`](../progress/2026-09/2026-09-03-inf70-audit.md) — the batch-envelope solve, the BE-2 flash-attention mechanism and speed table, the vacuous-verification retraction, and the coverage-hole finding.
+
+## A byte roofline over-prices anything that fits in L3 (2026-09-05)
+
+**The same tensor costs different amounts in different graphs.** Measured on the EPYC 9655 (384 MiB L3,
+152.6 GB/s achievable DRAM), the model's q6_K `output.weight` `[2560, 248320]`, 521.472 MB:
+
+| context | ms/call | effective GB/s |
+|---|---|---|
+| `lm_head` in the trunk decode graph | 3.742 | 139 — 94% of the DRAM ceiling |
+| `lm_head` in the MTP draft graph | ~2.0 wall / 1.55 compute | **260 — 1.7× the DRAM ceiling** |
+
+260 GB/s is impossible from DRAM. The MTP draft graph is only ~144 nodes and ~105 MB of other weights, so
+the 521 MB head **substantially survives in L3 between draft steps**.
+
+**Rule: cost any "shrink this tensor" lever against the MEASURED effective rate of the graph that reads it,
+not against the DRAM ceiling.** A byte roofline assumes every byte comes from DRAM — true for a full forward
+pass that streams far more than L3, false for any *small graph* re-executed back-to-back over the same
+tensor (draft heads, verify batches, anything speculative). The error is always in the same direction: it
+makes shrinking levers look bigger than they are. This killed INF-70's B10 (reduced-vocabulary drafting): the
+byte model priced the draft head at 8.6% of the token, the measurement said 4–5%, and the lever's ceiling
+fell to +3.0–3.9%.
+
+**Second instance the same week.** The 28.8 GB IQ4_NL PLE n-gram table costs **1.44 KB/token** — one gather
+site (`ple.layers=[1]`), 16 rows × 90 B. Even charging a full 2 MB transparent huge page per row gives 32 MB,
+and DRAM is 64 B-line granular, so the real cost is ~2 KB. **It is a TLB/latency object, not a bandwidth
+object**, mispriced by three orders of magnitude.
+
+## Where CPU decode time actually goes: 23.4% is coordination (2026-09-05)
+
+Per-node census of plain decode, 4,409 node evaluations: **22.516 ms dead of 96.267 ms wall.** Decode runs at
+**~36% of the 152.6 GB/s ceiling**, so the deficit is not bandwidth.
+
+| op | wall ms | compute ms | dead ms | dead % | nodes |
+|---|---|---|---|---|---|
+| MUL_MAT | 41.911 | 34.723 | 7.188 | 17.2% | 797 |
+| MUL_MAT_ID | 20.962 | 17.116 | 3.846 | 18.3% | 144 |
+| GATED_DELTA_NET | 2.999 | 0.785 | 2.214 | **73.8%** | 36 |
+| CPY (recurrent state) | 3.648 | 1.440 | 2.208 | **60.5%** | 162 |
+| ADD | 1.718 | 0.225 | 1.494 | **86.9%** | 689 |
+| SCALE | 0.918 | 0.037 | 0.881 | **96.0%** | 375 |
+| GET_ROWS | 9.338 | 9.000 | 0.338 | **3.6%** | 175 |
+
+Two readings matter. The **small-op family** (ADD/SCALE/CONT/MEAN_D1/SET_ROWS/L2_NORM/RMS_NORM) is a
+**barrier tax** — ~4.34 ms dead across 1,631 nodes at 87–96% dead, computing almost nothing while paying a
+full thread-pool barrier each. And **`GET_ROWS` is the exception at 3.6% dead**: its 9.0 ms is *real compute
+stuck on one core* at 13.1 GB/s — a serialization defect, not dead time. **Read the dead fraction, not the
+wall time, before choosing a fix: the two failure modes need opposite remedies.**
+
+Amdahl bound: 22.5 ms of 96 ms. A clean sweep of every seam is ~10–15% realistically. A comparable DGX Spark
+GB10 deployment runs the same model ~2× faster per forward, of which only ~1.78× is memory bandwidth (273 vs
+153 GB/s); the remainder is that a GPU dispatches one kernel over thousands of threads and pays no per-node
+barrier. **Tuning does not close a structural gap.**
+
+### Source References (2026-09-05)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — Axis S, B10, B11
+- `/mnt/raid0/llm/tmp/inf70/agents/b10/REPORT.md` — the 260 GB/s L3 measurement and the B10 no-go
+- `/mnt/raid0/llm/tmp/inf70/agents/b11/REPORT.md` + `inv.json` — the per-token byte inventory and the PLE finding
+- `/mnt/raid0/llm/tmp/inf70/agents/prof/results-20260902T135356Z/pernode.tsv` — the per-node census
+- `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## Profile OCCUPANCY, not overhead — the instrument decides what you can find (2026-09-05)
+
+INF-70 spent most of a campaign ranking optimisation seams by **dead time** (`wall − compute`) and missed the
+largest defect in the graph, because **the instrument made it invisible by construction**.
+
+**The two failures, both structural:**
+
+1. **Per-node timings were recorded from thread 0.** In a node where only `ith = 0` has work, thread 0 *is*
+   the working thread — so 453 nodes with one thread busy and 47 idle looked like honest compute. The same
+   bias understated total coordination by roughly half: thread 0 computes 57.6 ms where the mean thread
+   computes 46.9, because it is the one thread with work on every single-task node. A campaign-wide "23.4%
+   dead" figure was really **40.6%**.
+2. **Dead% is an OVERHEAD metric and it deprioritised the winner.** `GET_ROWS` scored **3.6% dead** while
+   being the largest lever in the graph; `SCALE` scored **96% dead** while being worth ~0.5 ms. Ranking by
+   overhead systematically buries defects whose cost is *serial work*, which is the dominant defect class at
+   batch 1.
+
+**The right first question is occupancy: "what fraction of the machine is doing useful work during this
+node?"** One per-`(node, thread)` pass yields everything the campaign needed:
+
+| quantity | from | finds |
+|---|---|---|
+| `mean/max` across threads | per-thread compute | **idle threads** — `thr_mean/thr_max < 0.1` flags single-task nodes |
+| `max − mean` | per-thread compute | load imbalance |
+| `wall − max` | + thread-0 wall | true barrier residual |
+| max, argmax-eval, spike count | across evals | **host stalls** — 4 nodes hid 2.39 ms/token in their means |
+| bytes ÷ time per node | + tensor sizes | **effective rate**, which is how cache residency shows up |
+
+**Two supporting habits, each learned the same way:**
+
+- **Census the configuration you SERVE.** The MTP graph went uncensused for the whole campaign; when finally
+  measured it showed the barrier toll per token is **3.1× smaller** than in plain decode, because the trunk
+  graph amortises its barriers over 3.23 tokens. Every barrier-elision estimate had to be divided by ~3.
+- **Never report a per-node mean without dispersion.** A discrete host stall divided by the eval count looks
+  exactly like a systematic straggler — and did, for two nodes that were promoted to "the recoverable half of
+  the budget" before the spike counts arrived.
+
+**The payoff, measured:** the occupancy model predicted the wall-clock saving of its fix to within **1%,
+twice** (6.59 ms predicted vs 6.63 measured; 4.46 vs 4.54), on a machine where byte-based estimates had
+missed by factors five times in a week.
+
+### Source References (2026-09-05, occupancy profiling)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — Axis S, SYNC-1's census, SYNC-10's arms, METH-1
+- `/mnt/raid0/llm/tmp/inf70/agents/sync1/REPORT.md` — the per-`(node,thread)` census and barrier baseline
+- `/mnt/raid0/llm/tmp/inf70/agents/sync10/REPORT.md` — the row-split and sigmoid arms
+- `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## THP raises NUMA interleave granularity to 2 MiB — there is no "2 MB boundary" (2026-09-06)
+
+A widely repeated claim inside INF-70 — that memory bandwidth "steps at the 2 MB THP boundary" — is **false,
+and it was an interpretation laid over correct measurements.** Two agents observed small tensors running at
+28–39 GB/s against 109–147 GB/s for ≥2 MB tensors, and a third was told to localise the step.
+
+**There is no step.** A 37-point sweep with THP backing proven per arm (100.0% vs 0.0%) shows a **smooth
+monotone ramp**: 10 GB/s at 0.25 MB to 161 GB/s at 64 MB, no discontinuity anywhere. Across the 1.84–2.25 MB
+window where the "boundary" was assumed, the readings run **36.2 → 35.6 → 38.3 → 38.7 GB/s** — continuation.
+
+**The real mechanism is granularity, not a threshold.** THP is `always` on this host and llama.cpp runs
+`--no-mmap`, so the weight buffer is anonymous and — measured on the live 92 GB process — **99.8%
+THP-backed. That raises `numactl --interleave=all` granularity from 4 KiB to 2 MiB, so any tensor smaller
+than 2 MiB is served by a single memory controller.** The apparent "step" is just the point at which a tensor
+becomes large enough to span several 2 MiB pages and therefore several controllers — a continuous effect that
+*looks* like a threshold when sampled at two points.
+
+Three independent confirmations:
+- `move_pages(2)` gives `maxfrac` **1.00 at ≤2 MB decaying to 0.25 by 8 MB**, tracking the bandwidth ratio.
+- Fitted marginal bandwidth below 2.25 MB is **53 GB/s against one node's 57 GB/s share** (R²=0.98), versus
+  **362 GB/s on 4 KiB pages**.
+- Restoring 4 KiB interleave returns `maxfrac` to exactly **0.250** at every size.
+
+Ruled out by measurement: THP *promotion* cost, tensor shape, L3 residency, first-touch placement, TLB reach
+(which runs the other way), and per-thread binding.
+
+**Scope is larger than the observation that prompted it: 4 KiB wins at every size up to 64 MB**, with a 1.38×
+residual at 8–64 MB even when placement is already balanced. This is **whole-model placement**, not a
+small-tensor problem. But at 1.75 MB, placement recovers only ~14% of the gap to peak — so it is not a
+licence to expect small tensors at peak bandwidth either.
+
+**Lever**: restore 4 KiB interleave via `madvise(MADV_NOHUGEPAGE)` or a zero-code `PR_SET_THP_DISABLE` shim.
+**Bit-identity is structural** — `madvise`/`prctl` move pages, never contents.
+
+**The methodological point**: two correct magnitude measurements, taken at two tensor sizes, supported a
+threshold hypothesis that a dense sweep destroyed. **A step inferred from a bracket is a hypothesis about the
+shape of a curve you have not sampled.**
+
+### Source References (2026-09-06, THP granularity)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — D6-PLACE, SYNC-2 §8, SYNC-10's backlog note
+- `/mnt/raid0/llm/tmp/inf70/agents/d6place/REPORT.md` — the 37-point sweep, `move_pages` and fit evidence
+- `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## The champion kernel: 1.4834× from two levers, and what the other two taught us (2026-09-06)
+
+INF-70 closed with a bit-identical CPU decode kernel measured at **35.407 t/s / 28.24 ms per token** in the
+serving configuration against a pristine baseline of **23.870 t/s / 41.90 ms** — **1.4834×, 60/60 paired
+prompt wins**, over three same-window alternating rounds on a 24-prompt production harness. Plain decode:
+**1.6934×**. Prefill: 1.305×.
+
+**The value is concentrated, and the concentration is the lesson.** Leave-one-out, marginal contribution in
+the presence of the other three:
+
+| lever | marginal | ms/token | share of log-gain |
+|---|---:|---:|---:|
+| `MADV_NOHUGEPAGE` (restore 4 KiB interleave) | ×1.4315 | **11.89** | **86.4%** |
+| row/column-chunk split of elementwise kernels | ×1.0532 | 1.47 | 12.5% |
+| barrier elision on single-task nodes | ×1.0053 | 0.15 | 1.3% |
+| zero-element node skip | ×0.9992 | −0.02 | −0.2% |
+
+**Two findings that generalise beyond this model:**
+
+**1. A lever's measured value is a property of the KERNEL it is measured in, not of the lever.** The row-split
+measured **+3.05% served alone** and **+5.3% served in the champion**. The two barrier levers measured +3.86%
+and +0.87% alone and fall **below the 1.1% noise floor** in the champion — because their original baseline
+was running its sub-2 MiB tensors on **one memory controller of four**, and fixing placement removed the
+stall they were partly hiding. **Re-measure levers in combination; never scale a solo number into a stack.**
+
+**2. Combinations can be super-additive.** The product of the four solo gains predicted 1.5017 plain; the
+measured combination was **1.6934** — a **12.8% excess**. Levers that remove different classes of stall
+(bandwidth vs occupancy vs synchronisation) can unmask each other, so a stack's value is not derivable from
+its parts in either direction.
+
+**On proving bit-identity for a combination**: individually bit-identical levers are not jointly proven.
+This used 1,457 greedy tokens across 7 comparisons (pristine / champion / champion-with-every-escape-hatch,
+in plain and MTP) — **and corroborated it without hashes** by showing acceptance α and drafted-per-token
+identical to 4 dp across all 15 MTP arms of both binaries. Two independent witnesses beat one.
+
+**On reporting a noisy correctness gate**: `test-backend-ops` counts matched exactly, but one op family's
+failure membership churns run to run. The right move was a **third sweep of the pristine build as a seeded
+control** — pristine-vs-pristine differed by *more* lines than pristine-vs-champion, which places the
+candidate inside the instrument's own variance rather than asking the reader to trust an equal count.
+
+### Source References (2026-09-06, champion kernel)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — the champion block, CHAMP-1/CHAMP-2
+- `/mnt/raid0/llm/tmp/inf70/agents/champion1/REPORT.md` — the ABA, leave-one-out and identity evidence
+- `/mnt/raid0/llm/tmp/inf70/agents/d6place/REPORT.md` — the placement mechanism
+- `progress/2026-09/2026-09-05-inf70-audit.md`
+
+
+## Compiled Update — 2026-09-07 (wrap-up): SMT siblings make core-range fencing impossible; the build is the contention
+
+### SMT sibling topology makes CPU core-range "fencing" between concurrent workloads structurally impossible, and the real contention is builds, not the benchmark itself
+
+**Two sessions assigned disjoint-looking CPU core ranges (`0-95` vs. `184-191`) were not
+actually isolated, because every logical CPU in a 192-thread SMT topology has a sibling in the
+*other* session's range** — full enumeration showed none of cores 96-191 lacks a
+`thread_siblings_list` partner in 0-95 (96↔0 … 191↔95), so a "fenced" range still contends for
+shared per-core execution resources. The bigger finding, though, was that the CPU-list overlap
+was the smaller of three contention sources: the actual heavy contention was the *build* step,
+not the benchmark — `run.py` compiled at `jobs=64` on `cpu_list="96-183"`, covering 88 of the
+other session's 96 bench cores, with up to `--workers 7` allowing several concurrent `cc1plus`
+processes measured live at 100% each during a running benchmark. A third defect compounded it:
+the benchmark server process (`llama-server`) had no `taskset` in its `Popen` call at all, so
+with no explicit pin it could land directly on the other session's core range by scheduler
+choice alone. None of these three is visible from "check the assigned core ranges look
+disjoint" — the topology check (thread_siblings_list) catches the first, a live process sample
+(`cc1plus`@100%, matched against `cpus_allowed`) catches the second, and a source read of the
+server launch path catches the third. Fix applied: made the server's CPU list pinnable with
+`default=None` (unchanged behavior) so pinning is a deliberate, re-calibration-triggering
+opt-in rather than a silent side effect. Generalizes: "disjoint core ranges" is not evidence of
+isolation on any SMT host without checking siblings; and co-tenancy audits should look for
+*build/compile* contention as a first-class candidate, not just the benchmark process itself.
+Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"CPU co-tenancy with INF-70"),
+`handoffs/active/autokernel-rebuild-program.md` (R23-49), research commit `da3b0368` →
+main `7996467f`.

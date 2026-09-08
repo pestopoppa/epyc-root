@@ -1,0 +1,26 @@
+=== C0 evicted | t=48 | OMP stack ON | taskset -c 0-95 numactl --interleave=all ===
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=0.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: env OMP_NUM_THREADS=48 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false GGML_IQK=1 taskset -c 0-95 numactl --interleave=all /mnt/raid0/llm/tmp/inf70/bench_readbw 2 5 0
+threads=48 array=2.00 GiB x3 reps=5 hugepage=0 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=12 n1=12 n2=12 n3=12
+kernel          GB/s   counting convention
+read-sum       152.6   bytes read only, 1 array
+read-dot       147.5   bytes read only, 2 arrays
+gemv-2560      153.3   bytes read only, 2560-wide rows
+copy            92.3   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        133.8   read+write counted; non-temporal stores, no RFO
+triad          102.2   2 reads + 1 write counted (STREAM triad)
+
+=== C0 evicted | t=96 | OMP stack ON | taskset -c 0-95 numactl --interleave=all ===
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=0.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: env OMP_NUM_THREADS=96 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false GGML_IQK=1 taskset -c 0-95 numactl --interleave=all /mnt/raid0/llm/tmp/inf70/bench_readbw 2 5 0
+threads=96 array=2.00 GiB x3 reps=5 hugepage=0 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=24 n1=24 n2=24 n3=24
+kernel          GB/s   counting convention
+read-sum       165.6   bytes read only, 1 array
+read-dot       153.8   bytes read only, 2 arrays
+gemv-2560      167.0   bytes read only, 2560-wide rows
+copy            94.1   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        133.5   read+write counted; non-temporal stores, no RFO
+triad          104.5   2 reads + 1 write counted (STREAM triad)
+

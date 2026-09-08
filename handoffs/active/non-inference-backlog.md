@@ -375,6 +375,17 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
 
 ---
 
+## 2026-09-03 supplement — pre-existing orchestrator `main` failures surfaced by the C7 merge
+
+Found by the INF-70 `c7-finish` agent while merging the NUMA pre-evict enable (orchestrator `5f20e23c`); none
+attributable to C7 — reproduced identically on the pristine pre-merge base `510f5048`.
+
+- [ ] **NIB2-69** (MED): **orchestrator `origin/main` carries 39 launch-manifest/port-guard errors and 33
+      pre-existing unit failures** (49 manifest errors before the C7 priors regen reduced them to 39; the 33 unit
+      failures are identical on `510f5048`, plus 1 flaky on both bases). Triage by reason (not a bare count), fix
+      or explicitly retire each, and make `stack_change_pipeline.py check` gate on zero manifest errors so the
+      next merge cannot inherit them silently. Evidence: `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`.
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):
@@ -384,3 +395,19 @@ Canonical sources (always verify status in these files first):
 - [`pipeline-integration-index.md`](pipeline-integration-index.md) — vision, ODL, Lean, TTS series
 - [`user-facing-harness-index.md`](user-facing-harness-index.md) — user-facing harness work (formerly Hermes B-series)
 - [`master-handoff-index.md`](master-handoff-index.md) — cross-domain priorities
+
+- [ ] **NI-IO (rtx6kpro intake 2026-09-07)** — NVMe/md-RAID0 I/O scheduler check: `cat /sys/block/nvme*/queue/scheduler`
+      should be `none` (external: 91.8k vs 48.6k IOPS under BFQ); md `group_thread_cnt=8` for RAID5/6 only;
+      Docker overlay2 `syncfs` stall fix only if inference containers exist here. 2-minute check.
+
+- [x] **NI-OC — opencode event-feed growth bounded AT SOURCE** ✅ 2026-09-08. The change-feed regrew 11.4 → 35 GB in 13 h
+  (1.7 GB/h) from the operator's interactive TUI + @general subagents — pruning alone was a symptom fix. Now:
+  `scripts/system/prune_agent_event_store.py --idle-hours H` (reaper mode: only sessions idle > H h, never the live
+  TUI/subagents, VACUUM skipped while opencode runs) and `scripts/system/opencode_event_reaper.sh` (daemon, every 30
+  min, pid `/mnt/raid0/llm/tmp/opencode-reaper.pid`, log `/mnt/raid0/llm/tmp/opencode-reaper.log`). First reap: 680
+  idle sessions, 232k events; 5.6k events / 12.7 GB (2 live sessions) kept; integrity ok. No cron/systemd in the
+  container, so the daemon must be re-launched after a reboot — **operator: add to the post-reboot checklist**.
+- [ ] **NI-OC-a — adopt `observer_guard.sh` (three-state probe) in `scripts/system/opencode_event_reaper.sh`**: the reaper's
+  `pgrep -x opencode` presence probe is registered `unadopted` in `observer_registry.json`; its consumer (the VACUUM
+  decision) already fails CLOSED. Adoption replaces the name probe with the guard's channels so a drifted argv cannot
+  read as 'absent'. Owner: whoever next touches the reaper; not urgent (no kill path, fail-closed).

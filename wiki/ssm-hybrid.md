@@ -2,7 +2,7 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified (CPU/arch findings) · observation (2026-07-06 MI210 bf16-GDN-state numbers — single-run, no P-GPU-1 per MEASUREMENT.md)
-**Last compiled**: 2026-08-23 (wave-2 addendum: **the hybridization ratio is ρ = L/L_FA and production 10-of-40 is ρ = 4 — cite §2/Table 4, never the paper's own self-contradicting Appendix C.1; our production architecture is the LEAST massive-activation-exposed hybrid in that paper's entire dataset, with a ratio-matched Kimi Linear contrast that pins the cause on output gating rather than ratio — a DEPRIORITISATION record whose value is preventing work; and our GDN op-test length coverage and geometry coverage are DISJOINT sets, so neither implies the other**; earlier same-day evening wave-2 compile: MiniCPM-SALA — the paper is wrong about its own linear half (Simple GLA, not Lightning Attention) and a correctness-first port needs ZERO new ggml operators; the Gates 4/5 portability addendum (a device-agnostic oracle, a ggml primitive per mixer); GDN-2 at 1.0× state for +375.5M always-active params; #27018 `LLM_ARCH_MINIMAX_01` merged four days post-freeze and absent from our tree; the CoT-SFT amnesia hazard (arXiv 2606.11052) — a recall failure invisible to PPL+NIAH on our exact frontdoor architecture — and the strongest published argument AGAINST replacing our 10 full-attention layers with sparse ones (arXiv 2606.15378, seven of nine authors SALA co-authors); see bottom sections; earlier same-day: **K28 fused chunked GDN kernel closed as a measured no-go on the full-model ceiling — GDN is only ~12–15% of MI210 prefill device time, and the verdict survived the later discovery that a working CDNA2 kernel already existed upstream**; earlier 2026-08-12 note: **the headline reason to want Log-Linear GDN is inverted on the released checkpoint** — its state is ~15× *larger* than standard GDN, not 4–10× smaller; and all three activation gates fired, six months after the checkpoint went public, because three staleness reviews asserted "no checkpoint" without querying HuggingFace — see below; earlier 2026-08-08 note: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement)
+**Last compiled**: 2026-09-07 (incremental: **arXiv 2608.28444 is NOT evidence against our ρ = 4 topology** — it excludes hybrids with full-attention layers by construction (Section 4), lists them as future work (Section 5), concedes from-scratch training is out of scope (abstract), and its only Gated DeltaNet arms sit at MMLU chance after a 0.1B-token Alpaca conversion (Table 5); it points the SAME way as arXiv 2606.15378, its title invites exactly the citation it refutes, and three declines ride with it (reproduce SWA(64,4); a runtime `n_swa` override; treating the paper as evidence about the GDN hybrid topology) for the one reason that our instrument cannot apply a prefill mask; earlier: 2026-09-03: G1 closes the #27442 cross-backend question — 10/10 greedy cold-prefill trials across five prompt lengths and two prompt classes, first sampled token `248068` every time, so the empty-completion defect does NOT reproduce on our frozen v9 CPU path; the "live unknown" framing below is superseded, and the HIP GDN kernel remains a distinct untested implementation; earlier: 2026-08-23 wave-2 addendum: **the hybridization ratio is ρ = L/L_FA and production 10-of-40 is ρ = 4 — cite §2/Table 4, never the paper's own self-contradicting Appendix C.1; our production architecture is the LEAST massive-activation-exposed hybrid in that paper's entire dataset, with a ratio-matched Kimi Linear contrast that pins the cause on output gating rather than ratio — a DEPRIORITISATION record whose value is preventing work; and our GDN op-test length coverage and geometry coverage are DISJOINT sets, so neither implies the other**; earlier same-day evening wave-2 compile: MiniCPM-SALA — the paper is wrong about its own linear half (Simple GLA, not Lightning Attention) and a correctness-first port needs ZERO new ggml operators; the Gates 4/5 portability addendum (a device-agnostic oracle, a ggml primitive per mixer); GDN-2 at 1.0× state for +375.5M always-active params; #27018 `LLM_ARCH_MINIMAX_01` merged four days post-freeze and absent from our tree; the CoT-SFT amnesia hazard (arXiv 2606.11052) — a recall failure invisible to PPL+NIAH on our exact frontdoor architecture — and the strongest published argument AGAINST replacing our 10 full-attention layers with sparse ones (arXiv 2606.15378, seven of nine authors SALA co-authors); see bottom sections; earlier same-day: **K28 fused chunked GDN kernel closed as a measured no-go on the full-model ceiling — GDN is only ~12–15% of MI210 prefill device time, and the verdict survived the later discovery that a working CDNA2 kernel already existed upstream**; earlier 2026-08-12 note: **the headline reason to want Log-Linear GDN is inverted on the released checkpoint** — its state is ~15× *larger* than standard GDN, not 4–10× smaller; and all three activation gates fired, six months after the checkpoint went public, because three staleness reviews asserted "no checkpoint" without querying HuggingFace — see below; earlier 2026-08-08 note: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement)
 **Sources**: 20 documents
 
 ## Compiled Update — 2026-08-12: the state-size argument runs backwards, and the monitoring that should have caught it never ran
@@ -421,7 +421,7 @@ Recorded from the 2026-08-21 Stage-2b intake wave (dive-verified; no action atta
 
 **A ratio-convention trap for the m-a-p hybrid-band checkpoints:** their "N:1" means *one attention layer every N layers* (attention fraction 1/N), not a literal linear:full count — `hybrid-3-1` is 8 attention layers of 24. Our production 30-GDN + 10-attention (10-of-40) is therefore **"4:1" in their convention**, which is not one of their five trained arms; it sits between 3-1 and 6-1, inside their recommended band under either reading.
 
-(The readiness tracker's 2026-08-21 measurement tasks — the #27442 first-token boundary sweep, the HOLA frozen-backbone retrofit and its hybrid-transfer A/B — are open, compute-gated work, not knowledge, and are deliberately not compiled here. The one settled fact from that cluster: whether the #27442 hybrid-cache defect reaches non-Metal backends is a **live unknown** — nobody anywhere has tested any backend but Metal, and the upstream reporter's own log refutes their cache-corruption diagnosis (intake-1279#record).)
+(The readiness tracker's 2026-08-21 measurement tasks — the #27442 first-token boundary sweep, the HOLA frozen-backbone retrofit and its hybrid-transfer A/B — are open, compute-gated work, not knowledge, and are deliberately not compiled here. The one settled fact from that cluster: whether the #27442 hybrid-cache defect reaches non-Metal backends is a **live unknown** — nobody anywhere has tested any backend but Metal, and the upstream reporter's own log refutes their cache-corruption diagnosis (intake-1279#record). **Superseded 2026-09-03**: the #27442 sweep is no longer open, and it is no longer a live unknown for our CPU path — G1 executed 2026-08-27 and returned a scoped negative (10/10 greedy trials, five prompt lengths, both prompt classes). See the 2026-09-03 entry at the foot of this page; the HIP path remains untested.)
 
 ### Source References
 
@@ -539,3 +539,111 @@ Chunked-GDN numerical failures are reported in the 2048–8192-token band, **~8�
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) — the 2026-08-12 gate firing and state-size inversion, the 2026-08-22 Gates 4/5 addendum and runnability blockers
 - The page's own 2026-08-12 `### RETRACTED` section — the live sections above are reconciled to it, not to the original claim
 - [`lightning-attention-port.md`](../handoffs/active/lightning-attention-port.md) — the GLA-path context (Ring-mini / SALA) that the corrected Summary's "matmul-rich parallel form" claims must be read against
+
+## Compiled Update — 2026-09-03: G1 closes the #27442 cross-backend question — NOT reproducible on our frozen v9 CPU path
+
+**Confidence: verified** — greedy, fixed-seed, cold-prefill trials with a self-hashed manifest; 10 of 10
+trials agree.
+
+### Correction to the 2026-08-23 wave-2 entry
+
+That entry called the #27442 empty-completion / hybrid-cache exposure a **live unknown** — "nobody anywhere
+has tested any backend but Metal" — and deliberately left G1 uncompiled as open, compute-gated work. G1
+executed on 2026-08-27 and the unknown is now a scoped negative result for our path. The earlier framing is
+**superseded, not merely extended**.
+
+### The sweep and its result
+
+Frozen v9 (`llama-completion` 10125 @ `0db32c06e`), frontdoor Qwen3.6-35B-A3B-MTP-Q8_0, greedy (`temp 0`,
+fixed seed 27442), `cache_prompt=false` so every trial cold-prefills (v9 has no client-side
+`--no-cache-prompt`), single sequence, no speculation. Five prompt lengths — **15,401 / 16,501 / 17,601 /
+19,801 / 23,981 tokens** — crossed with two prompt classes: seeded pangram filler, and a meaningful document
+ending in a real instruction.
+
+**10/10 trials: the first sampled token was `248068` (`<think>`) on both classes at all five lengths.** A
+valid EOS was never the first token, and no trial degenerated to an empty completion — the meaningful-prompt
+arm visibly engaged the instruction rather than producing the upstream failure signature.
+
+**Verdict: the #27442 empty-completion / hybrid-cache defect does not reproduce on our frozen v9 CPU serving
+path** at these lengths, on either prompt class. This is also the only *greedy* trial that exists anywhere
+against this defect; the upstream report and every prior discussion of it were sampler-`temp 0.3`,
+uninstrumented, or Metal-only.
+
+### What it does not settle
+
+The HIP GDN kernel is a **distinct implementation** still carrying a chunked-prefill TODO, so this CPU
+result does not transfer to the MI210 serving path. B1 (repeat on HIP) is unblocked by this, but it remains
+a choice rather than a requirement, and stays open.
+
+**Transferable lesson:** an upstream defect report that cannot distinguish "never reproduced" from "never
+tried the right test" is not evidence of safety. A small, deliberately designed boundary sweep — matched
+prompt classes, several lengths bracketing the reported onset, greedy and fixed-seed, cold prefill — is
+enough compute to convert a cross-backend correctness "live unknown" into a scoped, falsifiable verdict,
+cheaply, before it silently gates every downstream hybrid/GDN decision.
+
+### Source References (2026-08-27 G1 boundary sweep)
+
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) —
+  the G1 task result, trial design and manifest pointer (2026-08-27).
+- [`frontier-f6-upstream-publication.md`](../handoffs/active/frontier-f6-upstream-publication.md) — the
+  #27442 part-one artifact analysis this sweep completes; part two was recorded there as blocked on G1.
+- `research/intake_index.yaml` `intake-1279#record` — the artifact-refuted upstream diagnosis (Metal-only,
+  `n_prompt_tokens_cache = 0` on every request) that motivated the sweep.
+- `data/g1-27442-20260827T1537Z/` — the self-hashed trial manifest; 10 claims ingested `Witnessed/Anchored`.
+
+---
+
+## Compiled Update — 2026-09-07: arXiv 2608.28444 is not evidence against ρ = 4 — it excludes our topology by construction
+
+**Confidence: verified** for what the paper does and does not cover — its scope, exclusions, future-work
+list and arms were read firsthand at Stage 2. **Third-party** for every number it reports; nothing here was
+measured by us and none of it may gate a stack change under `MEASUREMENT.md`. **No v9 change is proposed.**
+This is a **non-applicability record**: its whole value is preventing work.
+
+### The record
+
+**arXiv 2608.28444 is NOT evidence against our ρ = 4 topology.** Four independent reasons, each sufficient
+on its own:
+
+- It **excludes hybrids with full-attention layers by construction** (Section 4). Our production
+  architecture — 10 full-attention layers of 40 — is outside the paper's evaluated set, not a losing arm
+  inside it.
+- It **lists such hybrids as future work** (Section 5), which is the authors' own statement that the
+  comparison has not been run.
+- Its **abstract concedes that from-scratch training is out of scope**, so its arms are conversions, not
+  matched pretrained models.
+- Its **only Gated DeltaNet arms sit at MMLU chance** after a 0.1B-token Alpaca conversion (Table 5) — a
+  conversion budget that cannot support any claim about GDN hybrid quality, in either direction.
+
+Read for direction rather than for a verdict, it points the **same** way as
+[arXiv 2606.15378](https://arxiv.org/abs/2606.15378): **full attention carries long-range retrieval.** That
+is the position the 2026-08-23 (evening) section already records as the strongest published argument against
+replacing our 10 full-attention layers, and this paper does not disturb it.
+
+**The hazard is the title.** It invites exactly the citation this record refutes — someone reading only the
+title will cite it as "SWA beats linear, so the GDN hybrid topology is wrong." It says no such thing about a
+topology it declined to evaluate. Anyone about to cite 2608.28444 against ρ = 4 should stop here.
+`intake-1340#04`.
+
+### Three declines, one reason
+
+Our instrument **cannot apply a prefill mask** — frozen v9 evicts only inside the context-shift branch and
+has no runtime window override — so none of the following can be made to bear on the question, and all three
+are **declined**, not parked on compute:
+
+| Declined | Reason |
+|---|---|
+| Reproduce SWA(64,4) | our instrument cannot apply a prefill mask |
+| Implement a true runtime `n_swa` override | our instrument cannot apply a prefill mask |
+| Treat 2608.28444 as evidence for or against the GDN hybrid topology | our instrument cannot apply a prefill mask |
+
+The correct output of this paper is this record, not an investigation.
+
+### Source References (2026-09-07)
+
+- `research/intake_index.yaml` `intake-1340#04` — the instrument-mismatch finding this record rests on, and
+  the source of the four scope facts above.
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) —
+  owner of the ρ = 4 record; carries the same rider.
+- The 2026-08-23 (wave-2 addendum) section above — where ρ = L/L_FA and production ρ = 4 are established;
+  not restated here.

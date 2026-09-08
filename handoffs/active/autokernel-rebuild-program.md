@@ -1294,7 +1294,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       rc=1, non-gating as designed: `llama-bench` cannot load
       `Qwen3.8-27B-DFlash2-Q8_0.gguf` standalone (2.06 GB drafter HEAD, present and readable —
       it is a companion artifact, not a self-contained model). Run 24 screens on the 1.5B rung.
-- [ ] **R23-17 — DFlash2 capability verification on the post-keep champion (OWNED here —
+- [x] **R23-17 — DFlash2 capability verification on the post-keep champion: PASS** ✅ 2026-09-02 (OWNED here —
       operator reassignment 2026-09-02: "I want you to own this"; "We can't afford having any
       issues with the DFlash2 performance boost. It is central to this champion's feature set").**
       Exposure: run 23's keeps were validated ONLY on the 1.5B dec-b4 surface; `db18f393` edits
@@ -1308,7 +1308,22 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       completion (~13:00Z) run the smoke on anchor-gen-014 with the GPU seam quiet, then PASS →
       re-place PREAUTH + resume driver; FAIL → no launch, bisect which keep broke the path
       (candidates in commit order), report with rollback options.
-- [ ] **R23-19 — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline
+      **RESULT 2026-09-02 ~12:00Z on anchor-gen-014 (champion `732389d6`): PASS.** acceptance
+      **0.6501** (bar 0.58; DF2-5 reference 0.6205); DFlash2 **72.65 t/s** vs non-speculative
+      **30.51 t/s** = boost **2.38x** (bar 1.5x). Verdict at
+      `/mnt/raid0/llm/tmp/boundary-20260901/dflash2-smoke/verdict.json`.
+      **Reading**: the three keeps did NOT damage the DFlash2 path — speculative throughput is up
+      on DF2-5's 70.0 t/s and acceptance is slightly up. The boost RATIO fell (2.6x -> 2.38x) only
+      because the non-speculative arm improved MORE (26.6 -> 30.51 t/s, +14.7%): the kernel keeps
+      helped plain decode more than the speculative path, compressing the ratio while making BOTH
+      arms faster. A falling ratio here is not a regression.
+      **Caveat**: DF2-5 came from a different binary and harness; the load-bearing comparison is
+      the same-binary internal control (none vs dflash), which is sound. Run-24 gate SATISFIED.
+      **Instrument defect fixed mid-flight**: the build-capability check used
+      `llama-server --help | grep -q`, and under `set -o pipefail` grep -q closes the pipe ->
+      SIGPIPE(141) -> a SUCCESSFUL match read as a failed pipeline -> false REFUSE (rc=2).
+      Capture-then-match now.
+- [x] **R23-19 — MEASURED ✅ 2026-09-02 — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline
       has never been measured.** Proven 2026-09-02 from the headline evidence record
       `champion-vs-production.732389d6d9d0.json`: `peak_vram_bytes` 1.49 GB and samples 536→684
       t/s — that is the 1.5B DeepSeek-R1-Distill screen rung, not Qwen3.8-27B-Q8_0 (~29 GB,
@@ -1321,6 +1336,636 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       at the step6→step7 seam (~1 h device, 20 pairs, anchor-gen-014, alongside the DFlash2
       smoke), and until it exists quote the headline as "+27.363% (1.5B screen rung)" — never
       bare. Until then the champion's production-facing gain is UNKNOWN, not 27%.
+      **MEASURED 2026-09-02T12:49Z — the production-rung headline is `-1.600%`, and the run is
+      DRIFT-FLAGGED so it is INCONCLUSIVE, not a proven regression.**
+      champion `732389d6` vs frozen production-v9 on Qwen3.8-27B-Q8_0, dec-b4, 20 pairs, floor
+      0.949%: production median **66.09 t/s** vs champion **65.05 t/s**. Residency clean (40/40
+      resident, 1 KFD proc, 28.0 GB VRAM, clocks pinned 1700/1700, `clock_stable` true), so this
+      is NOT a placement or throttle artifact. BUT `drifting: True` — both arms declined together
+      (anchor -0.535%, candidate -0.654%; trend rho -0.481 / -0.668), and the instrument therefore
+      returns `decisive: False` despite |effect| > floor. Contrast the SAME surface at 06:52-10:03Z
+      (the A/A calibration): drift 0.13/0.27, rho 0.06/0.21, `drifting: False` — the machine was
+      steady this morning and is not now, after ~6 h of continuous GPU load.
+      **What is established**: the +27.363% figure does NOT transfer to production; the champion's
+      production-rung gain is at best flat and possibly negative. **What is NOT established**: that
+      it is a real -1.6% regression.
+      **Consequence**: run 24 stays HELD (pre-auth not restored). Next action is R23-22.
+- [x] **R23-22 — DONE ✅ 2026-09-02 — re-measure the production-rung headline on a SETTLED device.** The 12:49Z run is
+      drift-flagged and cannot carry a verdict either way. Let the GPU idle (no benches) before
+      re-running `headline_on_confirm_rung.py` with the same arguments, and check `drifting` is
+      False before believing the number. If the settled re-measure is inside the floor -> champion
+      is production-NEUTRAL (the keeps bought screen-rung speed that does not transfer); if it
+      reproduces beyond the floor -> the keeps are a real production REGRESSION and the lineage
+      needs a bisect (`7d2ea88b` / `db18f393` / `732389d6`) before any promotion. Either outcome is
+      a decision package for the operator, not an autonomous action.
+      **RESULT 2026-09-02T14:2xZ, 30 min idle settle, device verified 0% before start:
+      `-1.414%`, `drifting: False`, `decisive: True`.** production median **65.92 t/s** vs
+      champion **65.00 t/s**; drift 0.385/0.318, rho -0.307/-0.389 (inside tolerance), 40/40
+      resident, clocks pinned 1700/1700. It REPRODUCES the drift-flagged 12:49Z run (-1.600%),
+      two independent measurements agreeing within 0.19 pp.
+      **VERDICT: the champion is a REAL ~1.4% production REGRESSION on dec-b4** — while being
+      +27.363% on the 1.5B screen rung on THAT SAME SURFACE. The keeps are model-scale-specific
+      and actively harmful at production scale. This is the sharpest possible vindication of the
+      two-rung design (R23-10/R23-11) and of holding run 24.
+      **Note the workload split**: DFlash2 generation is FINE on this champion (R23-17: 72.65 t/s,
+      acceptance 0.6501). The regression is specific to the dec-b4 prefill-shaped surface — the
+      very surface the loop optimized on the 1.5B.
+- [x] **R23-23 — RESOLVED ✅ 2026-09-02 — OPERATOR DECISION: what to do with the regressing champion lineage before run 24.**
+      Run 24 would launch WITH the confirm gate active, so it cannot repeat this defect going
+      forward — but it would start from a base that is already -1.4% on production. Options:
+      (a) **Bisect then repair** — first measure the pre-keep parent `9e18beb0` vs production
+      (~50 min, ONE measurement): if it is neutral, today's three keeps own the regression and the
+      culprit is isolated in 1-2 more runs; if it is already negative, the regression predates them
+      and the whole lineage is suspect. Most informative; tells us WHICH mechanism class hurts
+      production. (b) **Re-anchor to production-v9** — discard all three keeps, start run 24 clean
+      with the confirm gate on. Cheapest, zero measurement, loses only screen-rung work that is
+      worthless on production anyway. (c) **Launch run 24 as-is** — the confirm gate protects
+      future keeps but bakes in the -1.4%. NOT recommended.
+      **CORRECTED 2026-09-02 (before acting — two errors in the options above):**
+      **(i) Option (b) is BARRED by the ratified single-champion invariant.** "Seed Champion = frozen
+      production" is correct in exactly ONE moment: immediately after a promotion. We are MID-cycle,
+      so applying it would silently discard the accumulated research — the precise 2026-08-31
+      incident whose ruling reads *"I NEVER WANT TO SEE YOU MAKE THIS MISTAKE EVER AGAIN."*
+      Option (b) is withdrawn; it must never be recommended mid-cycle again.
+      **(ii) The -1.414% is the AGGREGATE's standing, NOT proven to be the three keeps' fault.**
+      The champion is **67 commits / +4720 -310** above v9 and contains the manual-admission
+      aggregate — DFlash2 loader + metadata, iqk fallbacks, speculative work (`5c278648a` verified
+      an ancestor) — as well as every autokernel keep. Attributing the regression to run 23's three
+      keeps was premature; R23-23's `9e18beb0` probe is exactly the test that attributes it.
+      **Revised options**: (a) probe `9e18beb0` (RUNNING, result ~15:55Z) — if it is neutral the
+      three keeps own the regression and a 3-commit revert cleans the base; if it is also ~-1.4%
+      the regression predates them and lives in the older aggregate. (c) **launch run 24 as-is with
+      the confirm gate already configured** — invariant-compliant, zero GPU cost, and every FUTURE
+      keep must clear the 27B, so the loop cannot deepen the hole.
+      **Recommendation: (a) then (c)** — the probe is already in flight and free, and run 24 cannot
+      start before it finishes anyway (a second GPU workload would contend and corrupt both).
+      **Recommendation (superseded): (a) then (b)** — spend one 50-minute measurement on `9e18beb0` to learn
+      whether the defect is today's keeps or the whole lineage, then re-anchor accordingly.
+      **RESOLVED 2026-09-02T16:15Z — probe (a) run, keeps EXONERATED, run 24 launched as-is (c).**
+      `9e18beb0` (the pre-keep parent) measures **-1.751%** vs production — `drifting: False`,
+      `decisive: True`, cleanest drift of any run yet (0.080/0.079, rho 0.081/0.090); production
+      66.10 t/s vs 64.91 t/s. Against the champion's -1.414%, the three run-23 keeps moved
+      production by **+0.337 pp — INSIDE the 0.949% floor** — so they are production-NEUTRAL, not
+      the cause. **The regression predates them and lives in the older aggregate.** A 3-commit
+      revert would have fixed nothing; none was made.
+      **Reframing: this is very likely a FEATURE COST, not a defect.** The aggregate's
+      -1.4/-1.75% is measured on dec-b4 = `pp=512, tg=0, ubatch=4` — a PREFILL-shaped surface that
+      by construction cannot see DFlash2, whose entire value is in DECODE. The same champion
+      delivers **2.38x speculative decode** at acceptance 0.6501 (R23-17). Paying ~1.7% of prefill
+      for 2.38x decode is a good trade for real serving, not a regression to repair.
+      Run 24 launched **pid 260751**, confirm gate ACTIVE (27B, 5 pairs, dec-b4 1.142% + dec-b8
+      1.753%), screen parity waived-and-recorded, claim held on mi210_0.
+- [ ] **R23-26 — the champion-vs-production HEADLINE SURFACE is wrong for this aggregate.**
+      Established by R23-22/R23-23: the headline is measured on dec-b4 (`pp512/tg0`), a
+      prefill-only shape, while the champion's largest asset (DFlash2, 2.38x) is a DECODE feature
+      that surface cannot observe. The published headline therefore systematically UNDERSTATES the
+      champion and reads as a regression while the aggregate may be strongly net-positive in real
+      serving. Propose: the headline for an aggregate carrying decode features must include a
+      decode/speculative surface (tg128 and/or a DFlash2-enabled arm) reported ALONGSIDE prefill,
+      never replacing it. Until then quote the headline as "prefill-only".
+- [x] **R23-27 — run 24 STOPPED and reconfigured to hunt ON the confirm rung** ✅ 2026-09-03
+      (operator: *"do the third"*). **Why**: run 24 ran 14 h and produced **116 measurements, ZERO
+      keeps** — best effect +0.650% against a 0.668% floor, only 4 attempts above +0.468%: the 1.5B
+      screen surface is exhausted. Worse, R23-19/22/23 established that surface is anti-correlated
+      with production for exactly the size-dependent families the planner keeps proposing (R23-25),
+      so its verdicts were not worth the GPU claim. The confirm gate was NEVER exercised (no screen
+      keep -> no KEEP_CANDIDATE -> the 27B path never ran).
+      **Also degrading**: 161 planner transients, escalating 0-5/hr (evening) -> 23 at 01:00Z -> 21
+      at 04:00Z -> **64 at 05:00Z against 7 measurements**, all malformed structured output
+      (`hypothesis is missing [...]` 63+26, `authoring returned no changed paths` 26, `no parseable
+      JSON object` 25) — the same class as the v3-v27 planner-outage spin. A fresh process clears it.
+      **New configuration (dry-run PROVEN before launch)**: `--model Qwen3.8-27B-Q8_0` (was the 1.5B),
+      `--surface dec-b4 --pairs 5`, NO `--confirm-model` (redundant once the screen IS the confirm
+      rung). Dry-run reports `workload Qwen3.8-27B-Q8_0: n_embd=5120, dominant Q8_0`, floor
+      **1.142%** correctly keyed to the 27B, and — the tell that this is right — **no "screen parity
+      WAIVED" line**, because the hunting rung is now production-shaped by construction.
+      **Consequences, stated honestly**: throughput drops (a 5-pair 27B A/B is ~14 min of device vs
+      ~8 min for a 20-pair 1.5B run, so roughly 3/hr instead of 8/hr) and the keep bar rises to
+      1.142%. In exchange every verdict is a PRODUCTION verdict, false negatives from rung transfer
+      vanish by construction, and `headline_model` now equals the production model so the loop's own
+      headline republish lands on the right rung (partially addressing R23-26; the SURFACE is still
+      prefill-only, which R23-26 still owns).
+      Run 24 stopped by SIGTERM to captured pid 260751, death verified before relaunch.
+- [x] **R23-31 — Q4_K SIGNAL PROBE: +7.066%. The banked-gains thesis is CONFIRMED** ✅ 2026-09-03
+      (step 1 of the operator-approved two-step). Champion `732389d6` (anchor-gen-014) vs frozen
+      production-v9 on **`gemma-4-26B-A4B-it-Q4_K_M`** — an **in-fleet production role model** (the
+      worker), not a hypothetical target — `dec-b4`, 5 pairs:
+      **production 175.96 t/s -> champion 188.40 t/s = +7.066%**, `drifting: False`, residency clean
+      (10/10 resident, 17.4 GB VRAM, clocks pinned 1700/1700, `clock_stable` true).
+      **Status: SIGNAL, not a verdict** — no calibrated floor exists for this (surface, model), so
+      `decisive` is `None` by construction. For scale: the 27B's dec-b4 floor at 5 pairs is 1.142%,
+      so +7.07% is ~6x a comparable bar and very unlikely to be noise — but that reasoning borrows
+      another model's floor and is NOT a substitute for calibrating this one.
+      **What it establishes**: the Q4_K-gated keeps (`7d2ea88b`, `732389d6`) **do fire and do help**
+      on a real Q4_K workload. R23-29's "dormant, not dead" reading is correct, and my earlier
+      "worthless on production" framing was wrong in a way that mattered.
+      **The champion's real standing is workload-dependent, not a single number**:
+      | workload | champion vs production-v9 |
+      |---|---|
+      | Qwen3.8-27B Q8_0, dec-b4 (prefill) | **-1.414%** (decisive; Q4_K keeps inert, DFlash2 feature cost) |
+      | gemma-4-26B-A4B Q4_K_M, dec-b4 (prefill) | **+7.066%** (signal; Q4_K keeps active) |
+      | Qwen3.8-27B Q8_0, speculative decode | **2.38x** with DFlash2 (R23-17) |
+      A single "champion vs production" headline cannot express this — which is R23-26's point,
+      now with hard numbers behind it.
+- [x] **R23-32 — DONE ✅ 2026-09-03 — step 2: calibrate the Q4_K surface and convert the +7.066% signal into a claim.**
+      Approved shape (operator, 2026-09-03: cheap signal first, then calibrate only if promising —
+      the signal is promising). Run the A/A bootstrap for
+      (`dec-b4`, `gemma-4-26B-A4B-it-Q4_K_M`) to produce a keyed floor (~3 h, the 27B dec-b4
+      calibration took 3 h 11 m), then re-measure with `headline_on_confirm_rung.py`, which will
+      then pass its uncalibrated-surface refusal (rc=3) instead of tripping it.
+      **Why it is worth the 3 h**: this is a production win available on a model we ALREADY SERVE.
+      If it holds, the promotion argument changes from "the champion is neutral-to-negative" to
+      "the champion is +7% on the worker", which is a different conversation entirely.
+      **Needs a GPU window** — no run is currently hunting, so the window is open now.
+      **RESULT 2026-09-03T12:1xZ — CLAIM-GRADE: `+7.206%`, `decisive: True`, `drifting: False`.**
+      Champion `732389d6` vs frozen production-v9 on `gemma-4-26B-A4B-it-Q4_K_M`, dec-b4, **20
+      pairs against the freshly calibrated 0.456% floor** — production **174.26 t/s** vs champion
+      **186.76 t/s**, i.e. **15.8x the floor**. Drift inside tolerance (-0.223/-0.061, rho
+      -0.311/-0.215), residency clean (40/40 resident, 1 KFD proc, clocks pinned 1700/1700).
+      It reproduces the 5-pair signal (+7.066%) within 0.14 pp — two independent measurements,
+      different pair counts, same answer.
+      **The calibration that made it claim-grade** (R23-32's prerequisite): floor curve
+      1.843/1.257/0.936/0.699/0.456 for k=1/3/5/9/20 — a 4.04x fall against the ideal sqrt(20)=4.47x,
+      i.e. textbook parametric scaling and structurally believable (contrast dec-b8's anomalous 45x,
+      which only the parametric guard caught). A/A effect **-0.061%**, `drifting: False`, despite a
+      peer running a 48-thread CPU bench concurrently — the flagged memory-bandwidth co-residency
+      did NOT contaminate it.
+      **Isolation held**: run in the scratch store, so the live `champion-vs-production.json` still
+      carries the 27B production headline (-1.414%, model field = Qwen3.8-27B-Q8_0) and was not
+      overwritten by a Q4_K number.
+      **What this establishes.** The champion is **+7.206% on a model the fleet already serves**
+      (the worker). The Q4_K-gated keeps are not merely dormant — they are worth ~7% where they
+      fire. The program's standing is now three measured workloads, not one number:
+      -1.414% (27B Q8_0 prefill, decisive) · **+7.206% (26B-A4B Q4_K prefill, decisive)** ·
+      2.38x (27B speculative decode, DFlash2). R23-26's "the headline surface is wrong for this
+      aggregate" is now backed by two decisive measurements pointing opposite directions.
+- [x] **R23-34 — planner/critic model split (operator directive 2026-09-03: "swap the models
+      used by planner/critic. Use Fable-5.1-medium for the planner and gpt-5.6-sol-high for
+      critic") — DONE, NOT launched** ✅ 2026-09-03. Research lane `f81bbeb6`.
+      **Before**: both roles ran one `codex exec` argv with NO model/effort flag — whatever
+      `~/.codex/config.toml` said (`gpt-5.6-sol`/`high`, so the critic target was already the
+      implicit default, but unpinned). **After**: `actors.Backend.argv` is the per-CLI contract;
+      `backend_for(model, effort)` routes `claude-*` to the `claude` CLI, else codex. Defaults =
+      the directive; `--planner-model/--planner-effort/--critic-model/--critic-effort` override;
+      the startup banner prints `actors    planner=claude:claude-fable-5-1@medium
+      critic=codex:gpt-5.6-sol@high` (dry-run verified) so a run records what drove it —
+      provenance R23-19 showed is not optional. Classes `CodexPlanner/CodexCritic` ->
+      `AgentPlanner/AgentCritic`. 390/390 loop tests, 5 new ones pin exact argv tokens.
+      **Measured constraints that shaped it (all live smokes, one call each):**
+      · codex `-c` is TOML — `model_reasoning_effort="high"` MUST be quoted (unquoted rejected).
+      · `claude -p --bare` would skip the worktree's CLAUDE.md but accepts ONLY
+        `ANTHROPIC_API_KEY`/apiKeyHelper — OAuth is never read; this host is claude.ai-OAuth-only,
+        so `--bare` and `CLAUDE_CODE_SIMPLE=1` both fail "Not logged in". Not used.
+      · The lane worktrees carry the llama-tree freeze overlay CLAUDE.md. A deliberately hostile
+        fake ("never create files") made Fable REFUSE ("The project's CLAUDE.md marks this
+        directory as frozen"); `--system-prompt` does not suppress it. **But the REAL overlay
+        scopes its freeze to `production-consolidated-*` and says to check the branch — in a real
+        detached champion worktree (probe `worktree add --detach` @732389d6, removed after) Fable
+        AUTHORED cleanly.** The fake was harsher than reality; the real artifact is what counts.
+      · Mitigation shipped: `_CLAUDE_SANDBOX_NOTE` via `--append-system-prompt` states that scoping
+        explicitly so authoring does not depend on the model re-deriving it. Residual risk: the
+        overlay IS loaded and the real-worktree proof is n=1 — watch the first iterations of the
+        next run for `planner_transient` refusals of the "frozen" shape.
+      **Regrowth guard** 2160 -> 2210 (+44 code lines, reason recorded in the guard per its own
+      doctrine). **Also fixed en route** (`078d9c3c`, separate commit): `test_bench`'s live-store
+      test asserted the 27B is uncalibrated (None) — true 09-01, false since the 09-02 keyed
+      floors; now asserts the actual intent (27B rows != 1.5B rows). R21-4 family.
+      **Cost note**: 2 of the 4 actor calls per iteration (propose, author) now run on Fable 5.1;
+      2 (both critic passes) stay on codex. **NO RUN WAS STARTED** — standing instruction; the
+      config is the default, so the run-25 launch shape restarts it unchanged when the operator
+      says so.
+      **RUN 26 LAUNCHED 2026-09-03T12:59Z, pid 24549** (operator: "start the run"). Preflight gated the
+      launch: GPU 0%, zero loops, champ2 tip == anchor-gen-014 provenance (732389d6). Banner confirms
+      `actors    planner=claude:claude-fable-5-1@medium  critic=codex:gpt-5.6-sol@high`, claim held,
+      27B production rung, floor 1.142% @5 pairs. Monitor armed for keeps/advances, measured rows,
+      transient counts, frozen-shaped refusals (the R23-34 residual risk) and death.
+      **Run 26 STOPPED 13:05->13:22Z and RUN 27 LAUNCHED 13:24Z, pid 2047396** — operator ("I have
+      no issue restarting") took the second-surface guard: `--confirm-model` = the same 27B,
+      `--confirm-surfaces dec-b8 --confirm-pairs 5` (floor 1.753%). Screen==confirm model, so
+      parity is EXACT (no waiver line). Every dec-b4 keep candidate must now clear dec-b8 before
+      touching the champion; the gate fires only on candidates (~14 min each). **Run 26's 25 min
+      delivered the end-to-end proof of the planner swap**: `akm-gdn-next-token-register-prefetch`
+      went propose->critic->author->critic->build->MEASURED (+0.305%, null) — a `gated_delta_net`
+      target the 1.5B could never have surfaced. Not guarded: decode. tg128 has no 27B floor
+      (each floor is per (surface, model) — see the operator Q&A in progress 2026-09-03); the
+      DFlash2 path is llama-server-only and is guarded by R23-18's smoke, still open.
+- [x] **R23-35 — first confirm-gate keep + the planner-backend evolution** ✅ 2026-09-03.
+      **Run 27 keep** `akm-cdna2-q8-b4-mmvq-route`: **+23.339% dec-b4** decisive (floor 1.142%),
+      **cleared the dec-b8 confirm gate** (+0.313%) — the FIRST time the two-rung gate fired. It is
+      a production number: headline **+22.443%** vs frozen production-v9 on the 27B, champion now
+      `b0eb4fab` / anchor-gen-015. Mechanism: Q8_0 ne11<=4 rerouted MMQ->MMVQ (the in-tree lever
+      around the vendor Tensile GEMM). Banked regardless of planner.
+- [x] **R23-36 — actor exit-1 storm made diagnosable** ✅ 2026-09-03 (`b5cd2817`). Run 27 logged 74
+      `actor exited 1:` with EMPTY detail because `claude -p` reports errors on STDOUT (empty stderr)
+      and `_run_agent` kept only the stderr tail. Fix: non-zero exits carry backend id + BOTH tails.
+      Storm was intermittent (~40% iters), cleared on its own; live repro ruled out auth/concurrency/
+      overlay/prompt-size. **NOT root-caused** — see R23-38.
+- [x] **R23-37 — planner backend is now DeepSeek V4 Flash @max via opencode** ✅ 2026-09-03
+      (`c2bfe916`). Third `Backend` kind wired: `opencode run --auto --dir <wt> -m
+      deepseek/deepseek-v4-flash --variant max <prompt>`; `backend_for` routes `provider/model`
+      (has `/`) to opencode. Path was Fable 5.1 @medium (`f81bbeb6`, ~75s/call, 54-71% GPU-idle) ->
+      Opus 5 @high (`1ffe4fdf`, default set but NEVER launched) -> DeepSeek (smoke: authored in a
+      real champion worktree in ~4s). **TRUST BOUNDARY**: opencode drives an EXTERNAL provider, so
+      planner prompts egress off-host — operator-sanctioned as the backup, recorded in code+commit.
+      Run 28 live pid 470013 with this planner + the dec-b8 confirm gate.
+- [x] **R23-40 — FIXED+CONFIRMED ✅ 2026-09-04 — INCIDENT: Run-18 build-non-determinism fault recurred on the 445e93a8 anchor
+      promotion; run 28 aborted.** After the second keep (`akm-cdna2-q8-b4-y-stream-amortize`
+      +10.098%, dec-b8-confirmed, champion `445e93a8`), the anchor guard found the promoted
+      anchor-gen-016 binary's code-section digest DIFFERS from a fresh champion rebuild even after
+      one heal (`d6d195bb...` vs `5e3ca1e7...`) — the Run-18 fault class — and raised RunAborted
+      ("proven with zero pairs spent"). The integrity system worked: it refused to seat a
+      non-reproducible anchor. Consequences: headline never republished for 445e93a8 (still shows
+      b0eb4fab +22.443%); run 28 is a ZOMBIE (pid 470013 alive but `run_aborted` recorded, step
+      None, GPU idle, 1 child, no measurement since 21:58); no anchor-gen-017 recovery. **BOTH
+      KEEPS ARE SAFE in git** (champion 445e93a8 = b0eb4fab +23.3% + 445e93a8 +10.1%, both
+      screen-decisive + dec-b8-confirmed). ROOT CAUSE to find: why champ2 builds are
+      non-deterministic (ccache? -j race? worktree state?) — same class as the 2026-08-31 anchor
+      attestation doctrine. **BLOCKS relaunch**: the next keep will hit the same guard abort until
+      the build is reproducible. Decision for operator: (a) kill the zombie + investigate build
+      determinism before relaunch; (b) relaunch anyway and accept aborts at each keep. Recommend
+      (a).
+      **ROOT-CAUSED 2026-09-03 (cheap, no rebuild): `libggml-hip.so` is non-reproducible; the
+      CPU executable is NOT.** champ2 clean at 445e93a8, ccache absent -> genuine non-determinism.
+      Hashing existing binaries' .text: `llama-bench` is BYTE-IDENTICAL across anchor-gen-016 +
+      champ2 + all 7 lanes (`7337b4bb`), but `libggml-hip.so` (`6bac92af` vs `55f783de`),
+      `libggml.so`, `libllama.so` all DIFFER. The guard (`anchor_integrity.build_digest`,
+      run.py:405/475) hashes `bin/libggml-hip.so` ALONE — the gfx90a HIP kernel lib, which is the
+      non-deterministic one. Cause class: hipcc gfx90a code-object generation is not reproducible
+      build-to-build (parallel-compile ordering / embedded metadata), plausibly aggravated by the
+      7-lane concurrent build load; contradicts the guard's R22-3/R21-10 determinism premise, so
+      something regressed. FIX (operator design call): (i) make the HIP build reproducible — hipcc
+      determinism flags / libggml-hip.so at -j1 / isolate the anchor build from lane builds;
+      (ii) hash a deterministic proxy (defeats purpose — the kernels ARE the artifact); (iii) widen
+      the guard to accept a hash mismatch when a functional A/A confirms equivalence (weakens the
+      R18/R21 doctrine). Recommend (i). Until fixed EVERY keep aborts at its anchor guard, so the
+      loop cannot advance past one keep. Both current keeps remain safe in git.
+      **FIX CONFIRMED 2026-09-04**: `build_champion` -> `-j1` (research `f4f13116`). The
+      determinism probe built champion 445e93a8's `libggml-hip.so` twice at `-j1`: byte-identical
+      code digests (`1d04c67a...595bb4`, A=B), VERDICT DETERMINISTIC. So `-j64` parallelism was the
+      root cause and serial build fixes it; the promoted anchor and the guard's fresh build now
+      match. Measured cost: ~13 min per `-j1` build (786s/794s), per-KEEP only, lane builds stay
+      `-j64`. **RELAUNCH-READY** (operator-gated): run 29 = run 28's command on the current champion
+      445e93a8/anchor-gen-... rebuilt clean, DeepSeek planner + codex critic + dec-b8 confirm gate.
+      Follow-up R23-41: hipcc determinism flags to restore parallel anchor builds later (optional).
+- [ ] **R23-42 — the dec-b4 keeps do NOT move DFlash2 decode; run 29 pivoted to tg128 (operator
+      2026-09-04).** MEASURED the DFlash2 smoke on champion 445e93a8 (both new keeps): **71.22 t/s**
+      decode, acceptance 0.6427, 2.35x boost — vs 72.65 on the prior champion 732389d6 (R23-17) and
+      70.0 at the DF2-5 baseline. So the two keeps that measured **+23.3% and +10.1% on dec-b4**
+      (batched prefill) produce **~0% on DFlash2 decode** — the R23-26 non-transfer lesson, now with
+      the sharpest contrast yet (decisive +35% prefill -> flat decode). dec-b4 keeps optimize a
+      batched-forward path the DFlash2 decode loop is not bottlenecked on (its speed is set by the
+      draft model + acceptance, not the target verify). Operator corrected the arithmetic
+      `70*1.233*1.101=95` -> measured 71. **Run 29 pivots to hunt a decode-relevant surface**:
+      `--surface tg128` (target single-token decode — the "none"/fallback path, ~30 t/s; more
+      serving-relevant than dec-b4 prefill, though still not a DIRECT DFlash2 measure since
+      llama-bench can't drive the spec-decode loop), dec-b8 confirm gate retained. Needs a tg128 27B
+      floor first — **calibration RUNNING** pid 3807583 (~1h), run 29 launches once it writes a sane
+      floor. Champion 445e93a8 = anchor-gen-016; -j1 build fix (R23-40) in place so keeps won't abort.
+      Open sub-question: is there a surface that DIRECTLY tracks DFlash2 throughput? (would need a
+      server-based spec-decode bench, not llama-bench.)
+- [x] **R23-43 — RE-ARCHITECT ✅ 2026-09-04 (a-d BUILT; serving floor tightened via option (2)): keeps demonstrated on llama-server under the champion's CANONICAL
+      RECIPE, not llama-bench (operator directive 2026-09-04, four messages).** Principle: "the only
+      performance that matters is serving performance; no point boosting llama-bench numbers not
+      reflective of a live environment." Proven necessary: dec-b4 keeps +23.3%/+10.1% (bench)
+      -> DFlash2 decode 71.22 t/s FLAT (R23-42). Design (operator's):
+      · **Champion = (kernel commit + canonical serving recipe).** The recipe is a GENERAL,
+        parameterized artifact describing the champion's optimal serving config on its hardware:
+        model, quant, `spec_decode.type` in {none, draft-dflash, draft-mtp, ...}, drafter (if any),
+        concurrency (np), ctx, ctk/ctv, server flags, and the metric (aggregate vs per-slot tok/s).
+        Flexible by construction: a non-DFlash2 model carries `spec_decode: none`/`mtp` + its own
+        optimal np -- NO DFlash2 assumption in the framework. It is also the PROMOTION recipe
+        (production needs it anyway), so it is not extra work.
+      · **llama-bench = experiment/screen layer** (fast, deterministic, planner hypothesis testing,
+        null-killing). NEVER decides a keep.
+      · **llama-server under the canonical recipe = keep gate + headline.** A keep is real only if it
+        improves SERVING throughput under the champion's own optimal recipe.
+      BUILD ORDER: (a) canonical-recipe schema + the current champion's recipe (27B/GPU/DFlash2 at
+      optimal np -- DF2-5 grid peaked np4-8 ~154 t/s aggregate; pin the optimal); (b) generalize
+      `dflash2_capability_smoke.sh` -> a recipe-driven serving A/B (champion vs candidate,
+      paired/alternating, reads the recipe); (c) calibrate the SERVING noise floor under the recipe
+      (A/A x~12, like dec-b4/b8) so a keep is decisive vs serving noise; (d) wire as the keep gate,
+      llama-bench demoted to screen. Supersedes the dec-b8-llama-bench confirm rung and subsumes
+      R23-18 (DFlash2 regression guard) and R23-26 (headline surface). Substantial -- a new
+      measurement core. Run 29 HOLDS until (a)-(d) exist; champion 445e93a8 + -j1 fix are ready.
+      **BUILT + committed 2026-09-04**: (a) `loop/serving.py` general canonical Recipe +
+      np-concurrent aggregate-tok/s measurement (research `8285d1bf`); (b) champion recipe
+      (27B/GPU/DFlash2 np4, matches DF2-5); (c) serving-floor calibration; (d) `--serving-recipe`
+      keep gate wired into commit_pooled, fail-closed, 400 tests (`a745a583`). Dry-run proves the
+      gate. **BLOCKER — serving noise floor too coarse**: np4 aggregate throughput A/A =
+      **10.375% at temp 0.6** (sampling->acceptance variance), **4.911% at temp 0/greedy** (still
+      ~8% run spread from np4 scheduling jitter; wall-clock aggregate is tail-dominated). A >5%
+      floor can only demonstrate LARGE serving keeps and would reject the typical small (1-3%) real
+      serving gain -- the inherent noise llama-bench existed to avoid. **OPTIONS for the operator**:
+      **RESOLVED — operator chose (2) 2026-09-04**: `_measure_once` now returns the SUM of each
+      concurrent slot's OWN `predicted_per_second` (not wall-clock aggregate), plus a discarded
+      warmup round and a greedy recipe (temp 0, top_k 1, n_predict 384). Result: **floor 3.536%,
+      cv 1.572%**, and the median (157.8 agg-tok/s) now MATCHES DF2-5 np4 (~155) instead of the
+      wall-clock's misleading 108 — the metric is both tighter AND more accurate (commit `e0b63239`).
+      The 3.5% floor is inflated by one tail sample; typical run-to-run is ~1.5%. A ~3.5% floor is
+      viable under R23-44 (batch keeps past 2-3x the floor before the serving gate).
+- [x] **R23-44 — COMPOUND-THEN-GATE ✅ 2026-09-04 (BUILT+WIRED; run 29 operator-gated): batch bench keeps until they compound past the serving floor, then gate once (operator directive 2026-09-04:
+      "collect llama-bench keeps until they compound to 2x-3x noise floor before the llama-server
+      final champion advancement gate").** WHY: the serving floor is 3.5% (R23-43(2)) and a single
+      bench keep is 1-3%, so a per-keep serving gate vetoes EVERY keep — the loop cannot advance. FIX
+      is a TWO-TIER champion: an ACCUMULATOR (working champion) advances on every cheap bench keep and
+      the anchor tracks it so keeps compound; a CHAMPION OF RECORD (last serving-demonstrated commit)
+      advances only when the accumulator's compounded bench gain clears fire_multiple x floor (default
+      2.5 -> ~8.8%) AND the one serving gate fired then is decisive-positive. Serving gate runs ONCE
+      per bundle, not per keep. **BUILT + committed 2026-09-04**: `loop/accumulate.py` pure policy core
+      (Decision/Outcome/DivergenceAction, Bundle, decide_after_keep, classify_serving, resolve), 9
+      tests, loop LOC budget 2400->2500 with reason (`9d139c5a`).
+      - [x] policy core + tests + budget note ✅ 2026-09-04
+      - [x] **DivergenceAction — RESOLVED, operator 2026-09-04** ✅: HOLD + planner evidence. On a
+        bundle that clears bench but not serving (the PROVEN dec-b4 +35%->serving 0% case), the
+        champion of record HOLDS, the bundle is KEPT, and `resolve()` emits a `planner_evidence`
+        record (kind serving_divergence) that NAMES the bundled keeps. The planner reads it next
+        iteration and may revert/revise a specific bundled keep or aim the next hypothesis at the
+        serving gap — divergence becomes a strategy signal, not a dead end or a blind pile-on.
+        DivergenceAction default flipped ROLLBACK->HOLD; ROLLBACK stays available. (research `a3838ec1`)
+      - [x] **WIRED into the live pooled loop** ✅ 2026-09-04 (research `91925166`): commit_pooled
+        inverted — the bench confirm rung is the keep gate, per-keep serving_confirm REMOVED;
+        `accumulate_after_keep` re-measures compounded bench (cor_build vs accumulator), fires
+        `serving.compare(cor_build, anchor_build)` once on FIRE_SERVING, PROMOTE advances the champion
+        of record + snapshots its build + publishes the headline + resets the bundle, DIVERGED journals
+        planner_evidence (measured_divergence) and keeps batching. cor_build lives in a protected
+        `cor-build` slot (prune only hits anchor-gen-*), snapshotted by copy at startup + each promote.
+        Headline moved OUT of promote_anchor — follows serving-demonstrated advances only. New
+        `--fire-multiple` (default 2.5). 4 new wiring tests + updated guard-order test; 414 loop tests
+        pass, guard exit 0, --help shows the flags.
+      - [ ] **R23-46 (rtx6kpro intake) — does the in-window residency sampler perturb the measured
+        process?** External production runbook forbids `nvidia-smi dmon` during qualification (NVML polling
+        "reproduced a persistent target-cycle reduction on an unchanged control process"). Ours polls
+        rocm-smi/hwmon DURING every window by doctrine. A/A on the canonical tg128 anchor: current rate vs
+        1 Hz vs off (residency proven once before the window), 20 pairs. If >0.638% floor, lower the
+        cadence — "sample DURING" stays, the rate changes.
+      - [ ] **R23-47 — P-KLD: distil `rtx6kpro/kld/README.md` into a divergence-protocol annex** (we have
+        NO ratified KLD/PPL/coherence protocol — MEASUREMENT.md §2 has zero divergence terms): full-vocab
+        only, fp64 sums, declared estimand, bootstrap by document cluster, no universal bands, fail-closed
+        runner + receipts, and for MoE a B×Q route-pinned cell before attributing KLD to the codec.
+        **Human-amendment-only trust boundary → operator decision package (`ratify_*.sh`), not a session
+        edit.** Cross-cutting: INF-70's Flash-Next KLD 0.0649@37.9σ on a MoE has no route control.
+      - [ ] **R23-49 — CPU CO-TENANCY: our builds, not our bench, are the contention (INF-70 relay 2026-09-07)**.
+        INF-70 flagged `bench.py:34 CPU_LIST="184-191"` (8 GPU host threads) as contending with their 0-95
+        bench region. Verified true but it is the SMALLEST of three. Kernel-verified sibling map
+        (`/sys/.../thread_siblings_list`): logical `c` and `c+96` share one physical core, so
+        **our build region `96-183` (run.py:338,458,481, `jobs=64`) covers 88 of their 96 bench cores**, our
+        bench covers the other 8, and **no logical CPU on this box lacks a sibling in 0-95**. Measured live
+        during run 30: 9 × `cc1plus` at 100% CPU pinned to 96-183, and with `--workers 7` several lanes can
+        build at `jobs=64` at once. Third finding, ours alone: **`serving.py` pins nothing** — `llama-server`
+        at the serving gate is unpinned and free to land directly on 0-95.
+        Consequences: (a) "fence tooling out of 0-95" is IMPOSSIBLE here — there is nowhere to fence to;
+        the only real options are SERIALIZE (region lock) or accept-and-regress. (b) INF-70's 16.8% A/A
+        spread on a bit-identical binary is plausibly OUR compile load, not their kernel. (c) Our own
+        serving numbers inherit the same hazard from the unpinned server.
+        Tasks: pin `llama-server` in `serving.py` (ours to fix, no decision needed); take the orchestrator
+        `region-lock` role `bench` around bench AND build, or publish a schedule. Blocked on the operator
+        decision below because serializing builds against CPU arms costs autokernel throughput directly.
+        → **operator decision queued as OP-41**; INF-70 files the same tradeoff as MEAS-1.
+        - [x] `llama-server` is now PINNABLE ✅ 2026-09-07 (research `da3b0368` → main `7996467f`):
+          `Recipe.cpu_list`, default `None` = unchanged behaviour because setting it invalidates the
+          3.536% serving floor until re-calibrated; `describe()` records the condition; +3 tests (419).
+        - [ ] **Activate the pin**: set `cpu_list` in `qwen3.8-27b-q8-gpu-dflash2-np4.json` AND re-calibrate
+          the serving floor under the pin, in the SAME window. Blocked on GPU time (run 30 holds the claim)
+          and on OP-41, which may mandate the region lock instead.
+        - [ ] **Reuse INF-70's sibling-expanded affinity check** rather than rebuilding it: their sampler
+          resolves foreign processes via `/proc/*/exe` and compares `cpus_allowed` against the
+          SIBLING-EXPANDED bench set (the literal-range compare is what made `184-191` read as disjoint).
+          Source: `/mnt/raid0/llm/tmp/inf70/agents/sync19-20/foreign.py` — **NOT `sync16/`, which INF-70
+          RETRACTED 2026-09-07: its `arm.sh:45` carries the same literal `Cpus_allowed_list` vs `0-95`
+          compare, so it is the bug, not the fix.** `foreign.py` reads sibling lists from the kernel AND
+          samples live `/proc/<pid>/stat` deltas instead of `ps %CPU` — a process-lifetime average
+          structurally cannot see a burst, which is what undid INF-70's slowest arm (lowest median foreign
+          load, killed by one 3218% spike). Same trap as our own `ps %CPU is cumulative not live` note.
+          Wire into the serving gate's residency check.
+        - [ ] **Bounded quiet window for SYNC-19/20** (INF-70 offer 2026-09-07): they will message when those
+          arms acquire the region and ask us to hold at the next task boundary. Their levers measure 1-3%
+          effects against a 16.8% contended A/A floor, so contended they are unresolvable. **Operator call —
+          a loop hold is a run-lifecycle action.** Folded into OP-41 as the bounded form of option (A).
+          Default if unruled: INF-70 measures contended and labels the result non-claim.
+      - [x] **R23-50 — THREE KEPT KEEPS NEVER REACHED THE CHAMPION (2026-08-29), now protected** ✅ 2026-09-07.
+        Operator asked whether relaunches lost keeps. Audited all 31 `kept` rows against the champion
+        branch: **28 present, 3 absent** — `akm-q8-1-float2-halfwave` (+5.353%), `akm-q8-1-float4-eighthwave`
+        (+4.849%), `akm-q8-1-fourlane-dual-fragment` (+1.846%), one chain on `quantize.cu` branching off
+        `042cb2e41`. The loop forked that day: the other branch off the same parent became the lineage the
+        2026-08-31 reconcile (`a27287015`, "38 keeps") merged; this chain was never merged and was
+        **unreachable** until tagged `ak/orphan-keeps-quantize-20260829` (nothing gc's here, but unreachable
+        is one `git gc` from gone). NOT lost to run-29/30 relaunches — this predates them.
+        **Do NOT trust the +12.5% compounded these imply.** Same day, `akm-q4k-q8-sum-sidecar` measured
+        +6.723%, +2.978%, +2.374%, +1.952%, +1.595% AND four nulls (0.477/0.993/0.999/0.112%) against a
+        0.668% floor — a 6.6 pp spread on one mechanism in one day — and every re-measurement since
+        (~80 attempts through 2026-09-02) came back null or negative, ending at −0.449%/−0.091%.
+        2026-08-29 is also the retraction day (correctness gate ran `test-backend-ops` with an unsupported
+        `--suite-seed`, so verdicts were never really measured). Corroborates INF-70's contention finding.
+      - [x] **R23-50a — RECOVERY SEEDED (operator directive: "we must ABSOLUTELY recover them")** ✅ 2026-09-07:
+        inbox `23-recover-q8-1-quantize-cdna2-wave-vectorized.md` = `AK-H-RQ-1`, diffs saved under
+        `loop-memory/patches/orphan-keeps-20260829/` (3 per-step + combined). Re-DERIVATION, not cherry-pick:
+        the champion's `quantize_q8_1_1d` is verified still the upstream scalar kernel (no CDNA2 branch), but
+        five later keeps rewrote the batched reductions in the same file. **Ceiling finding that bounds the
+        prize: `quantize_q8_1_1d` is ≤3.6% of tg128 in the live profile, so +12.5% from this one pass was
+        never physically possible — the 08-29 numbers were noise; the recoverable mechanism is worth 1–3%.**
+        Mutually exclusive with `AK-H-AQ-1` (deletes the pass) — seed says which supersedes which. Run 30
+        picks it up on its next planner call (live inbox re-read, no restart).
+      - [ ] **R23-50b — step 3 (`fourlane-dual-fragment`, batched `quantize_q8_1`)** re-derive only after
+        RQ-1 lands and only if the five later reduction keeps left that kernel's loads scalar.
+      - [x] **R23-51 — THE BUNDLE IS NOW DURABLE; the serving gate had NEVER fired** ✅ 2026-09-07
+        (research `706e6894` → main `2de94d08`). `run.py` built `Bundle(champion_of_record=anchor_commit)`
+        fresh at every startup, so each restart reset the keeps AND advanced the champion of record to the
+        accumulated tip — **laundering bench-only keeps into the serving-demonstrated slot**. Verified: no
+        `epyc.autokernel.serving_ab.v1` record exists anywhere on disk, i.e. the R23-44 gate has never once
+        run. Trajectory: bundle reached +5.19% (4 keeps, the ~5% the operator remembered), peaked at +6.13%
+        (5 keeps), reset to 0 by the run-30 launch — against an +8.84% threshold it was never allowed to
+        reach. `load_bundle()` now restores it and refuses state the tree no longer contains.
+      - [ ] **R23-51a — seed the true champion of record at the next launch.** cor should be `445e93a8`
+        (where R23-44 took effect), with the 5 keeps since it. The bundle's `compounded_bench_pct` must be a
+        **MEASURED tip-vs-cor bench, never the product of solos** (+6.13% is a product and R23-48 is exactly
+        the rule against quoting one) — so it needs one bench arm at launch. Blocked on GPU time.
+      - [x] **R23-52 — status heartbeat during keep post-processing** ✅ 2026-09-07 IMPLEMENTED (research `70d98807`; 4 `publish()` calls: anchor build / headline / reprofile / accumulate; 422 tests; takes effect at the next launch — run 30 holds the old module). Observed run 30, 2026-09-07: after the first
+        keep (`bff30cebe`, +2.583%) `loop-status.json` went **30+ min without a write** while `promote_anchor` did
+        the clean anchor build (gen-021, 117 objects at 20:07Z, `cmake`/`gmake` children 9 min in), then verify,
+        headline bench, reprofile, accumulate. The dashboard's freshness envelope reads that as a dead loop and the
+        monitor had to infer the keep from the anchor-gen directory appearing. Fix: `status.write()` at each keep
+        sub-stage (`building anchor gen N`, `guard`, `headline`, `reprofile`, `accumulate`) so the loop is never
+        silent for longer than one build. Cheap; no measurement impact.
+      - [x] **R23-52b — 30 s STATUS HEARTBEAT + ACTOR HEALTH** ✅ 2026-09-08 (operator: "the ENTIRE point of the dashboard
+        is up-to-date visibility… without wasting ANY extra tokens on LLM sessions to monitor"). Root cause of the
+        STALE banners: status was written only at stage boundaries (30-47 min gaps during builds / 20-pair gates), and
+        the 135 `planner_transient` rows of run 30 (claude CLI **"You've hit your session limit"**, 16:31-23:35Z, GPU
+        idle-while-claimed 48%) were invisible — status said `running`. Fix (research `c488ad4a` → main `81b3c017`): a
+        daemon thread re-publishes the last step every 30 s (envelope 180 s: silence = process gone) and the body
+        carries `actor_health {recent_attempts, planner_transient, failing, last_failure}`; `loop.html` shows
+        `ACTORS FAILING · n/m · <reason>` in the header. Takes effect at the next launch (run 30 holds the old module).
+      - [ ] **R23-53 — Q4_K-GATED KEEPS ARE DEAD WEIGHT ON THE PRODUCTION TARGETS; retract or re-target.** Operator
+        2026-09-08: autokernel targets **Q8_0 Qwen3.8-27B and Qwen3.6-35B-A3B**. Audit of the champion: 52 tg128 keeps,
+        product-of-solos +252%; **22 are Q4_K-gated and cannot fire on Q8_0** (R23-29 already said "production-neutral");
+        the 30 non-Q4K tg128 keeps multiply to +89% vs a MEASURED headline of **+5.6%** (2026-09-08 champion-vs-production
+        record). Plan: (a) R23-48 LOO on PROMOTE classifies every keep; Q4_K-gated ones measure 0 on Q8_0 by construction
+        → `retracted_by_loo` unless a Q4_K production target is declared; (b) the second target **Qwen3.6-35B-A3B is not a
+        loop surface at all** (confirm-model = 27B only) — add it as a surface under INF-73 U2 before any keep is claimed
+        for it; (c) the headline card must state the product-of-solos ESTIMATE next to the measured number so this gap is
+        visible, not discovered by the operator.
+      - [ ] **R23-48 — LEAVE-ONE-OUT ARM PER ACCUMULATED LEVER, run whenever the champion changes**
+        (INF-70 finding relayed 2026-09-07 while run 29 was down). Verified: the loop A/Bs each NEW keep
+        against the accumulated tip but never re-measures a PRIOR keep (`grep -rn "leave.one.out|re-?test|
+        ablat" loop/` → nothing). INF-70 measured the failure this design hides: a lever that passed a
+        26-arm study at +1.0% turned **−1.39%, sign-stable over 3 rounds**, after two later levers removed
+        the stall it was paying for — *levers interact through what they remove*. GPU interaction classes
+        differ (occupancy / bandwidth / launch overhead) but the shape is identical. Design: on each
+        PROMOTE (champion-of-record advance) build one arm per accumulated keep with that keep reverted
+        (`git revert --no-commit <keep>` in a detached worktree, incremental build via the object-digest
+        path), paired A/B vs the champion at the calibrated floor; a keep whose removal is neutral-or-
+        better is a candidate DROP (dropped keeps go to `experiments.md` as `retracted_by_loo` with the
+        two sample vectors, never silently). Cost bound: n_keeps arms per promotion, not per iteration.
+        Corollary already true here and to keep true: the headline is the assembled-stack A/B, never the
+        product of solo deltas — the accumulator's `compounded_bench_pct` is a product ESTIMATE and must
+        stay labelled as such on the dashboard (INF-70: product-of-solos predicted 1.50, measured 1.69;
+        second stack sub-additive). Not applicable: page-cache eviction (models are VRAM-resident) and
+        hot-server arm switching (reload is cheap on GPU). Evidence: `handoffs/active/cpu-decode-roofline-
+        program.md` (CHAMP-2, SYNC-15), `wiki/benchmark-methodology.md` → *Measure the stack, not the parts*.
+      - [x] **Run 30 launched** ✅ 2026-09-07 16:31Z — run 29 stopped (opencode `event` change-feed grew the
+        actor DB to 236 GB); defaults switched to codex planner + Fable@medium critic (`e371788d`), no
+        opencode actor; same measurement config; accumulator restarts at 0 keeps (run 29's 2 keeps are on
+        the champion branch). Next launch: `python3 -u` (stdout block-buffered → empty run30.log).
+      - [x] **Headline freeze (R23-44 defect) fixed** ✅ 2026-09-07: moving `publish_headline()` to the
+        serving-PROMOTE branch froze the champion-vs-production headline for the whole accumulation phase
+        (operator saw a 3.8-day-old SUPERSEDED number, 2 champion gens back, on the OLD dec-b4 surface).
+        Restored per-keep publish in `promote_anchor` after the guard (research `f3282204`; activates at
+        next relaunch, run 29 not restarted) and the dashboard now renders a superseded headline during
+        accumulation as "ACCUMULATION IN PROGRESS — tip, keeps, +X%, % to gate" (`d0d11065`).
+      - [x] **Accumulator observability** ✅ 2026-09-04: the loop status now carries the two-tier
+        bundle (`accumulator`: champion-of-record, keeps, compounded_bench_pct, fire_threshold_pct,
+        progress_fraction, fires_next) and the `/loop` dashboard renders an "Accumulator — compound-
+        then-gate" card with a progress bar toward the ~8.84% serving-gate threshold (research `ee0456fd`,
+        dashboard `6f630ecf`). Operator can watch keeps batch toward the gate.
+      - [x] **RUN 29 LAUNCHED** ✅ 2026-09-04 (PID 3217060, continuous): tg128/27B calibrated (floor
+        0.638%@20p), two-tier gate live (screen tg128 / keep-gate tg128 / serving np4-DFlash2 3.536%),
+        DeepSeek planner + codex critic, champion 445e93a8. First end-to-end compound-then-gate run.
+- [ ] **R23-38 — root-cause the claude -p exit-1 storm before Fable/Opus are used as a planner
+      again.** The instrumentation (R23-36) will now capture the reason, but the storm cleared
+      before it landed, so the cause is still unknown. It gated ~40% of run-27 iterations and cost
+      the retry-backoff ladder each time. Only matters if a claude-CLI backend is reselected;
+      opencode/DeepSeek is the current planner, so this is NOT blocking. Re-open if the exit-1
+      pattern recurs with the new instrumented build.
+- [ ] **R23-39 — measure whether DeepSeek/opencode restores throughput.** Run 28's open question:
+      does the ~4s DeepSeek call latency close the 54-71% GPU-idle gap the Fable planner opened?
+      Read idle_fraction_while_claimed + iterations/hour after run 28 has a few hours, compare to
+      run 26 (all-codex) and run 27 (Fable). Decides whether the external-provider trust cost is
+      worth it or the planner should return to a local CLI.
+- [ ] **R23-33 — OPERATOR DECISION: does +7.206% on the worker change the promotion calculus?**
+      Before today the promotion argument was "the champion is neutral-to-negative on production".
+      It is now "the champion is decisively +7.2% on an in-fleet production role model, -1.4% on
+      the 27B prefill surface, and 2.38x on speculative decode". That is a materially different
+      conversation and it is the operator's to have. Inputs: the freeze runbook
+      (`docs/reference/kernel-freeze-runbook.md`), R23-29's promotion-time condition (the Q4_K paths
+      are now performance-VALIDATED by this measurement, closing that gap for dec-b4), and R23-26
+      (a promotion headline must state its workload). **No run starts, and no promotion step is
+      taken, without explicit operator permission** (standing instruction 2026-09-03).
+- [ ] **R23-30 — the boundary driver's 15-min SIGTERM grace is WRONG for a confirm-rung run and
+      will SIGKILL every stop.** Measured 2026-09-03 stopping run 25 (27B rung, 7 workers):
+      graceful drain took **~87 min** (SIGTERM 07:59:09Z -> last publish ~09:25Z), because each lane
+      holding a measurement finishes it and lanes serialize on the claim. Publish cadence was
+      steady at **17.3 / 17.5 / 17.8 min** per lane; 2 lanes abandoned at formation, 5 completed.
+      `boundary_20260901.sh:98` sets `KILL_WAIT_S=900` with the comment *"drain-tier loop: <=5 min
+      historically"* — true for the 1.5B screen rung (run 23 drained in 15 min) and **false by ~6x
+      for the 27B rung**. As written the next boundary SIGKILLs mid-measurement every time,
+      discarding up to ~17 min of device work per in-flight lane and losing those verdicts.
+      **Fix**: scale the grace to `workers x per-measurement-time` for the configured rung (~2 h for
+      7 workers on the 27B), or make the driver poll for loop exit rather than use a fixed deadline.
+      **Diagnostic note for whoever reads a drain**: `loop-status.step` names only the ONE active
+      lane, never the queue — lanes serialize on the claim, so remaining work must be derived as
+      `workers - (abandoned + published)`, not inferred from the step field. Two ETAs were wrong in
+      this session for exactly that reason.
+- [ ] **R23-28 — a FAITHFUL cheap screen rung may be impossible; route by SENSITIVITY AXIS**
+      (operator question 2026-09-03: *"shouldn't we then use a different screening model in the
+      appropriate quantization?"*). Refines R23-25. A screen must match production on THREE axes:
+      **quant family**, **architecture**, and **GEMM dimensions**. The first two are cheap to match;
+      the third is not, and that is the trap: the winning tile (`MT128x96x64`, 23.89% of production
+      device time) is selected by rocBLAS/Tensile FROM THE MATRIX DIMENSIONS, which derive from
+      n_embd=5120. Any model small enough to be a cheap screen has different dims and therefore
+      dispatches different tiles — **the property that makes a screen cheap is the property that
+      destroys its fidelity for GEMM work.**
+      **Measured evidence** (run 25's first profile vs run 24's): production top hotspot
+      `MT128x96x64` (23.89%) then `MT64x64x64` (18.44%) then `gated_delta_net_cuda` (13.55%) then
+      `MT64x32x64` (11.97%) then `dequantize_block_q8_0_f16` (10.75%). The 1.5B Q4_K screen's top
+      was `MT64x64x64` and it dispatches NO Q8_0 dequant and NO gated_delta_net at all.
+      **So**: a same-quant same-architecture small model WOULD faithfully screen dequant kernels,
+      SSM/gated_delta_net work and attention geometry, but NOT GEMM tiling or occupancy. Those must
+      be hunted on production (which run 25 now does).
+      **Availability check (2026-09-03): no such screen exists on disk** — the Qwen3.8 (SSM-hybrid)
+      family has only the 27B. `Qwen3-1.7B-Q8_0.gguf` is a DENSE transformer and would not exercise
+      `gated_delta_net` at all. Filing rather than acting: sourcing or building a small
+      SSM-hybrid Q8_0 screen is a real piece of work with its own value question.
+- [ ] **R23-29 — the Q4_K keeps are BANKED for a future Q4_K GPU target, not wasted** (operator
+      question: *"could the gains obtained through the current screening model still be useful if we
+      were to one day choose a Q4_K target model on the GPU?"* — yes, and this CORRECTS my earlier
+      "worthless on production" framing, which was too strong).
+      **VERIFIED by reading the diffs**: `7d2ea88b` gates on `GGML_TYPE_Q4_K` and `732389d6` on
+      `type == GGML_TYPE_Q4_K` — both are hard-gated and **cannot execute on a Q8_0 model**. That is
+      precisely WHY the champion measures production-NEUTRAL (+0.337 pp, inside floor): the code
+      never fires. They are DORMANT, not harmful. `db18f393` (fattn) carries no quant gate and is
+      the only one of the three that runs on the current production model.
+      **Consequence**: on a Q4_K GPU serving path — the large-MoE-with-CPU-offload roadmap item is
+      exactly that class — these become live again. **Caveat against over-claiming**: the +5.097%
+      and +13.930% were measured on a 1.5B Q4_K; a large Q4_K model has different GEMM dims, so the
+      quant PATH transfers but the MAGNITUDE does not. Treat them as promising leads to re-measure
+      on the real target, never as banked numbers.
+      **Actionable**: record a `quant_family` / `applies_to` field on every keep so (i) the headline
+      can be reported per target, (ii) a future Q4_K path inherits them deliberately rather than by
+      archaeology, (iii) the loop can be told which quant family to hunt. llama.cpp already templates
+      per quant type and our keeps already gate correctly, so this is metadata, not restructuring.
+      **PROMOTION-TIME CONDITION (folded in 2026-09-03 at operator request).** These paths have
+      **zero performance validation on any Q4_K workload since they were written** — every
+      measurement since has run on Q8_0, where they cannot fire. Correctness coverage is probably
+      fine (the gate runs `test-backend-ops -o MUL_MAT`, which sweeps quant types by design, 1139/1139
+      passing) but is NOT provable from the stored record: the gate `detail` field is truncated to
+      **500 chars**, so grepping it for `type_a=q4_K` returns nothing and that absence proves nothing
+      (see [[feedback_verify_negatives_before_concluding_absence]]). Before any promotion ships these
+      into production they must EITHER be exercised against a real Q4_K workload OR be explicitly
+      marked carried-but-unvalidated-on-this-path in the freeze runbook — otherwise the first person
+      to serve Q4_K on the promoted kernel is the one who discovers the state of them.
+      **Q4_K targets available on disk for that check (inventoried 2026-09-03)**:
+      `gemma-4-26B-A4B-it-Q4_K_M.gguf` (16.8 GB, MoE, and **already an in-fleet production role
+      model** — the worker — so this is not a hypothetical future target),
+      `gemma-4-31B-it-Q4_K_M.gguf` (18.7 GB, dense), `MathSmith-...-Qwen3-8B.Q4_K_M.gguf` (5.0 GB).
+      All fit the MI210's 64 GB comfortably and carry production-scale GEMM dims, unlike the 1.5B.
+      **Cost warning — it is NOT a quick check as gated**: `headline_on_confirm_rung.py` REFUSES on an
+      uncalibrated (surface, model) pair (rc=3, mutation-tested), and no Q4_K floor exists; the A/A
+      bootstrap that produced the 27B floor took **3 h 11 m**. Cheap first step instead: an
+      UNGATED llama-bench A/B (champion vs production on a Q4_K model, ~15 min) as a signal only —
+      not claim-grade, but enough to decide whether the 3 h calibration is worth spending. Needs a
+      GPU window: run 25 holds the mi210_0 claim.
+- [ ] **R23-24 — FALSE-NEGATIVE exposure: screen-rung rejections may hide production WINS**
+      (operator question, 2026-09-02: *"Doesn't the above also mean that measured regressions
+      performed by autokernel could have actually been beneficial in production?"* — yes).
+      **Why today's result raises this, not just the false-positive risk**: the prior working
+      model was ATTENUATION (CH-6: +23.09% on the 0.5B -> +0.50% on the 27B). Attenuation is
+      monotone — it shrinks magnitude but preserves sign, so it can only manufacture false
+      POSITIVES. R23-22 measured a **sign INVERSION** (+27.363% screen -> -1.414% production on
+      the same surface). Once the transfer function can flip sign it can flip in BOTH directions,
+      so the same evidence that convicted the keeps also admits false negatives.
+      **Structurally they may be MORE likely than false positives**: an optimization with fixed
+      setup cost + size-scaling benefit looks NEGATIVE at n_embd=1536 (overhead dominates) and
+      POSITIVE at n_embd=5120 (benefit dominates). That is the textbook false negative.
+      **Bounded exposure, measured**: run 23 produced 80 `measured_null` rows, but **71 were
+      INSIDE the floor** — inconclusive on the screen rung, carrying no information about
+      production either way. Only **9 were decisive negatives**, and they are the candidates:
+      `akm-fattn-causal-tile-skip` -4.851% · `akm-cdna2-mmvq-256-thread-block` -1.885% ·
+      `akm-cdna2-b1-mmvq-eight-nwarps` -1.699% · `akm-mmvq-dense-256-thread-launch` -1.055% ·
+      `akm-mmvq-gfx90a-four-wave-launch` -1.020% · `akm-q4k-wave-scale-broadcast-rerun` -0.959% ·
+      `akm-mmvq-gfx90a-256-thread-launch` -0.928% · `akm-mmvq-cdna2-256-thread-launch` -0.830% ·
+      `akm-fattn-gfx90a-prefill-eight-wave-vkq` -0.720%.
+      **They cluster in exactly the size-dependent families** (MMVQ thread-block/wave-launch
+      geometry, fattn wave geometry) — the same families as the keeps whose sign just inverted.
+      **Nothing is lost**: every negative carries mechanism, statement, falsifier and full sample
+      vector in `experiments.db` (a rebuild design goal), so all 9 are re-testable on the confirm
+      rung at ~50 min each (~7.5 h for all). Do NOT chase all of them reflexively.
+- [ ] **R23-25 — route hypotheses to a rung by MECHANISM FAMILY, not uniformly.** Follows from
+      R23-24. A screen-rung verdict is only informative for mechanisms whose effect is
+      size-INDEPENDENT (removing redundant work, algebraic simplification, fewer dispatches).
+      For size-DEPENDENT families — launch geometry, occupancy, wave/thread-block counts, tiling —
+      the 1.5B verdict is uninformative and today's evidence suggests it can be anti-informative.
+      Proposal: mark those families to SKIP the screen and go straight to the confirm rung,
+      accepting the higher per-attempt cost in exchange for a verdict that means something.
+      Decide after R23-23's bisect names the culprit family.
       **APPROVED + ARMED 2026-09-02** (operator: "approved"). Tool:
       `scripts/benchmark/headline_on_confirm_rung.py` (research `HEAD`) — reuses the loop's own
       `production.refresh` + `bench.compare`, so the bundle is schema-identical and carries

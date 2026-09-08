@@ -64,9 +64,10 @@ SHARED_REPOS = [
     "/mnt/raid0/llm/llama.cpp",
 ]
 
-# Splits a shell line into segments at separators, so `cd /tmp/x && git add -A`
-# is analysed per segment rather than as one blob.
-_SEP = re.compile(r"(?:\|\||&&|[;&|\n])")
+# Separator TOKENS a command is cut at (see split_into_segments below). Kept as
+# a set of literal shlex tokens, not a regex over raw text -- that distinction
+# is the HYG-2 fix (see split_into_segments' docstring).
+_SEP_TOKENS = {"&&", "||", ";", "|"}
 
 WHOLESALE_ADD_FLAGS = {"-A", "--all", "-u", "--update"}
 # Flags that take a value we must not scan for short flags (the message text).
@@ -200,6 +201,52 @@ def strip_heredoc_bodies(cmd: str) -> str:
         if i < len(lines):                            # the terminator line itself
             i += 1
     return "\n".join(out)
+
+
+def split_into_segments(cmd: str) -> list[str]:
+    """Command segments, cut at &&/||/;/| -- QUOTE-AWARE.
+
+    HYG-2 (filed 2026-09-05): the previous implementation was `_SEP.split(cmd)`,
+    a regex (`\\|\\||&&|[;&|\\n]`) run directly over the UNPARSED command text.
+    That regex has no idea what a quote is, so a bare newline sitting inside a
+    quoted argument -- most commonly a multi-line `-m` commit message -- was
+    sliced apart exactly like a real command boundary. Concretely:
+
+        git commit -m "Fix hook bug: a message that quotes
+            git commit -- file.txt
+        must not be misread as a pathspec commit"
+
+    is ONE shell command (a single `-m` value spanning three lines), but the
+    old splitter produced three fragments, and the middle one --
+    `    git commit -- file.txt` -- parses on its own as a perfectly valid
+    `git commit -- <pathspec>` invocation. `main()`'s pathspec-commit rule
+    (below) then blocked it, misreading a commit MESSAGE that merely quotes a
+    git invocation as the real thing. Same family as the heredoc false
+    positive `strip_heredoc_bodies` already fixed, and the guard must not
+    forbid its own idiom: a hook whose own source (or, here, its own filed
+    bug report) documents a banned shape must not be unusable to describe it.
+
+    The fix tokenises the WHOLE command ONCE with shlex -- which balances
+    quotes across the entire string, so a newline (or `;`, `&`, `|`) inside a
+    quoted argument is consumed as part of that one token and never considered
+    for a cut -- and only THEN splits the resulting token stream at literal
+    separator tokens. A quote can never be split mid-way because tokenising
+    happens before segmenting, not after.
+    """
+    try:
+        tokens = shlex.split(cmd)
+    except ValueError:
+        return []                          # unparsable -> no segments (fail open, as before)
+    segments: list[str] = []
+    current: list[str] = []
+    for tok in tokens:
+        if tok in _SEP_TOKENS:
+            segments.append(shlex.join(current))
+            current = []
+        else:
+            current.append(tok)
+    segments.append(shlex.join(current))
+    return segments
 
 
 def git_invocations(segment: str) -> list[list[str]]:
@@ -352,7 +399,7 @@ def fetch_precedes_commit(cmd: str, repo: str) -> bool:
     """
     fetch_at: int | None = None
     commit_at: int | None = None
-    for idx, segment in enumerate(_SEP.split(cmd)):
+    for idx, segment in enumerate(split_into_segments(cmd)):
         for tokens in git_invocations(segment):
             sub, _args, dash_c = subcommand_of(tokens)
             if sub not in {"fetch", "commit", "pull"}:
@@ -428,7 +475,7 @@ def main() -> int:
 
     max_age = int(os.environ.get("EPYC_FETCH_MAX_AGE_S", "600"))
 
-    for segment in _SEP.split(cmd):
+    for segment in split_into_segments(cmd):
         for tokens in git_invocations(segment):
             sub, args, dash_c = subcommand_of(tokens)
             if sub not in {"add", "commit", "checkout", "restore", "stash"}:

@@ -51,6 +51,23 @@ HD3"""
 _COMMIT_F_HEREDOC = """git commit -F - -- a.md <<'HD4'
 subject line
 HD4"""
+
+# ---- HYG-2 (filed 2026-09-05): a quoted newline must not be mistaken for a
+# command boundary. The prior segmenter (`_SEP.split(cmd)`) ran a raw regex
+# over the UNPARSED text, so a bare newline inside a quoted `-m` message was
+# sliced apart exactly like `&&`/`;` -- and the fragment left behind could
+# parse on its own as a real (and rule-violating) git invocation. This is a
+# distinct bug from the heredoc class above: no heredoc syntax is involved at
+# all, just an ordinary multi-line commit message.
+_MULTILINE_QUOTE_BUG = ("git commit -m \"Fix hook bug: a message that quotes\n"
+                         "    git commit -- file.txt\n"
+                         "must not be misread as a pathspec commit\"")
+
+# PAIR, the other direction: a REAL two-command shape written across literal
+# newlines (no `&&`, no quoting) must still be segmented and still enforced --
+# proving the fix does not buy its permissiveness by refusing to segment at
+# all.
+_MULTILINE_REAL_CHAIN = 'git add -A\ngit commit -m "x"'
 CASES: list[tuple[str, int, dict, str]] = [
     # ---- heredoc bodies are stdin DATA, not commands (measured false positive 2026-08-18) ----
     # `_SEP` splits on newlines, so every body line was tokenised as its own command: a Python
@@ -61,6 +78,10 @@ CASES: list[tuple[str, int, dict, str]] = [
     (_CAT_HEREDOC, 0, STALE, "cat>file heredoc writing git commands as file text"),
     (_SHELL_HEREDOC, 2, STALE, "bash heredoc - body IS commands, still enforced"),
     (_COMMIT_F_HEREDOC, 2, STALE, "commit -F - opener line still checked"),
+    (_MULTILINE_QUOTE_BUG, 0, FRESH,
+     "HYG-2: a multi-line -m message that quotes a pathspec commit must not be BLOCKED"),
+    (_MULTILINE_REAL_CHAIN, 2, FRESH,
+     "HYG-2 PAIR: a real add -A / commit chain across literal newlines is still enforced"),
     # ---- rule A: wholesale staging must BLOCK ----
     ("git add -A", 2, FRESH, "git add -A"),
     ("git add --all", 2, FRESH, "git add --all"),

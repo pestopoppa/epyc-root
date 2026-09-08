@@ -23,6 +23,60 @@ proof, and measurement roots. ~~No DFlash2 result may enter the kernel-source ch
 > `draft-dflash` is a capability, not a conflict. Program handoff:
 > [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md).
 
+## ⭐ OPEN — DRAFTER-PER-MODEL: a served model without a DFlash2 head serves slow (Qwopus3.8-27B, 2026-09-05)
+
+**Why this matters (operator-flagged):** DFlash2 is the champion's serving edge (2.38× on Qwen3.8-27B).
+The operator's own ruling above — *"Not all models have dflash2 drafter heads"* — got its first concrete
+measurement: **Qwopus3.8-27B-Flash** (a Qwen3.8-27B fine-tune, same `qwen35` arch) benched on the champion
+build at **identical raw speed** (30.3 t/s, coherent) but its serving spec-decode is capped by drafter quality:
+
+| spec-decode path | decode t/s | speedup | acceptance |
+|---|---|---|---|
+| its own native MTP head | 45.5 | 1.50× | 0.590 |
+| our DFlash2 drafter (base-trained) | 45.7 | 1.51× | **0.356 — does NOT transfer** |
+| (ref) Qwen3.8-27B + its DFlash2 | ~72 | 2.38× | high |
+
+**The lesson generalizes:** a base-trained DFlash2 drafter does not transfer to a fine-tune (distribution
+shift), so **each model we want to serve at champion speed needs its own DFlash2-class drafter.** Qwopus's
+shipped MTP (1.5×) is a floor, not the ceiling.
+
+- [ ] **DF2-QWOPUS — scope + estimate training a DFlash2 head for Qwopus** (before committing card-days).
+      DFlash2/EAGLE-style drafters are distillation of a small (~2 GB) head from the frozen target — NOT a
+      pretrain — so tractable: capture Qwopus hidden states + outputs over a corpus (teacher-forcing), train
+      the draft head, validate acceptance. Rough recon: **~2–5 days on the single MI210** (inference-bound
+      feature gen + light head training), pending the exact DFlash2 recipe/data volume — which this scoping
+      pass must nail. Weigh against: (a) the native MTP already gives 1.5× for free; (b) GPU contention — the
+      one MI210 also runs AutoKernel/serving, so training days compete with everything else on the card.
+- [ ] **SL-1 (rtx6kpro intake 2026-09-07) — `--spec-draft-n-max` sweep {4,6,7,8} × `--spec-draft-p-min` {0,0.5}**
+      under the canonical np4 recipe, 1/2/4/8 in-flight, >=5 alternating pairs, temp 0.6/seed 42; report
+      `aggregate_tok_s` AND verifier steps/s. External per-position acceptance decay says positions 6–8
+      carry 10–30%; external S6 says a BW-bound verifier LOSES tokens with shorter blocks — either answer
+      is decision-grade. `p-min` has never been set on any GPU arm. n-max 7 makes the np1 verify batch
+      exactly 8 = a confound-free test of seed 19's premise (verify runs MMQ at ne11 9..36).
+- [ ] **SL-2 — verifier steps/s in the serving keep gate** (`loop/serving.py`): emit sum-over-slots
+      `n_draft_verif_steps`/wall (already counted at `server-context.cpp:295`) beside `aggregate_tok_s`.
+      tok/s = steps/s × accepted/step; only steps/s is a kernel property. Our np4 floor 3.536% vs tg128
+      0.638% is mostly acceptance-trajectory variance. Re-calibrate the floor on both; keep gate on
+      steps/s, headline on tok/s. Lands at a run boundary (changes the calibrated metric).
+- [ ] **SL-4 — serving-gate hygiene**: add one long-context cell (~32k prompt) and randomise arm order
+      after any prefill-heavy arm (external: cc64 read −15–20% after a 128k sweep; spec gain can collapse
+      with context for some quants). Also gives a C8 sustained cell to confront the external
+      "DFlash2 −19% at sustained C8 on Qwen3.8-27B" one-liner (contradicts our DF2-5 +47.8% at 8 in-flight).
+- [ ] **SL-5 — A/A control on the DF2-6 losslessness/coherence gate**: run the 12-prompt suite twice on
+      the identical build and report the A/A pass distribution before reading 7/12 vs 5/12 (external
+      identical-checkpoint control: 95.24 vs 90.69).
+- [ ] **DF2-RNG — diagnostic lead for the DF2-6 failures**: both DFlash2 AND `draft_simple` fail at the
+      SAME first-differing indices (34/216/238) → a shared verify-path cause. External S24 names "draft
+      RNG entangled with acceptance RNG" as exactly this shape. Check whether the drafter's sampling
+      advances the target's RNG stream under `--spec-type draft-dflash`/`draft-simple` at temp 0.6.
+- [ ] **RULE-RESCOPE — "all spec-dec levers are a single-stream story" is now contradicted by two
+      sources**: external MTP +51.5% C1 → +52.3% C32 (flat), and our own DF2-5 (+28%→+48% from 1→8
+      in-flight, flat per-slot acceptance). The rule (fable5 lever-category matrix) was derived on
+      GPU-MoE/gemma4 MTP; re-scope it to that regime rather than leave it standing over dense-27B DFlash2.
+- [ ] **DF2-DRAFTER-CAPABILITY — generalize:** treat "train a DFlash2 drafter for target model X" as a
+      reusable capability (the pipeline, not a one-off), since every new serving candidate will need one.
+
+
 The runtime receipt chain is fixed and resumable: `experimental_build` → `cpu_gpu_regression` →
 `matched_np1` → `concurrency_grid` → `greedy_parity` → `decision`. Each receipt binds the candidate,
 build/model/protocol identities, predecessor hash, and (for GPU stages) the claim window. A stopped

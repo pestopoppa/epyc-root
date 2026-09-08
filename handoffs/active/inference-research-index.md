@@ -16,17 +16,17 @@
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Run 21 (ranking ON) is the relaunch on champion a2728701 — watch to sci>=1; AK-INST-1 still unproven | INF-48, EVL-47, INF-64 |
 | INF-64 | autokernel restart-loop fix | [autokernel-restart-and-strip.md](autokernel-restart-and-strip.md) | AK-INST-2: grep the discovery plane for 40-hex constants compared with `==` and convert the instrument pins | — |
-| INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | CH-14: write the runbook starting from serving_evidence_refresh.py (research 8179dde0); CH-16 — coordinate with INF-66 R21-3 | INF-06, INF-62, INF-64 |
-| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | Seam ~12:45Z: run DFlash2 smoke then 27B confirm-rung headline (R23-17/19); PASS restores PREAUTH and resumes run 24 | INF-06, INF-64, INF-65 |
+| INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | FOLD-1..3 at run 30 boundary after INF-70 signals gate 1; FOLD-0 first re-based onto inf70/champion3 (9c4f73e29) | INF-06, INF-62, INF-64 |
+| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | At run 30 boundary: R23-51a seed cor 445e93a8 (MEASURED) + R23-49 pin/recal in one window; then R23-48 LOO arm | INF-06, INF-64, INF-65 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Fusion arms DONE 2026-08-27 — est +10–15% REFUTED (both −0.57% tg128); next: re-rank levers (GGML_PERF profile) from the receipts | — |
 | INF-67 | cpu fused decoder blocks | [cpu-fused-decoder-blocks.md](cpu-fused-decoder-blocks.md) | A1 (INF-70 axis A): swap per-row vec_dot -> batched mul_mat; judge on the gemv column, same build both arms; correctness hunt paused | INF-10 |
-| INF-62 | dflash2 block drafter experimental build | [dflash2-block-drafter-experimental-build.md](dflash2-block-drafter-experimental-build.md) | DF2-5/6/7 closed; next DF2-6b-bis (ngram arm was confounded by near-zero draft volume) and DF2-2 | INF-06, INF-50 |
+| INF-62 | dflash2 block drafter experimental build | [dflash2-block-drafter-experimental-build.md](dflash2-block-drafter-experimental-build.md) | DF2-QWOPUS: scope training a DFlash2 head for Qwopus (base drafter doesn't transfer, 0.356 acc); then DF2-6b-bis, DF2-2 | INF-06, INF-50 |
 | INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | — |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
 | INF-16 | gemma challenge kernel techniques v7 | [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md) | K10 — (follow-up) Lever A quiet-host re-eval: on a quiesced host (fresh-server/run, fprintf(stderr) keylog to confirm the nodes0 collision… | — |
-| INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | C0 read-only DRAM bandwidth under the recipe, then C5 clean-build re-anchor sweep (t1/t48/t64, uniform IQ4_XS, OMP on/off); then B1 + D0 | INF-67, INF-10, INF-63 |
+| INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | SYNC-19/20 measuring; then C0 DRAM bandwidth under the recipe, then C5 re-anchor sweep on the hot harness; OP-40 is the operator gate | INF-67, INF-10, INF-63 |
 | INF-72 | moe routing locality tap | [moe-routing-tap-and-locality-measurement.md](moe-routing-tap-and-locality-measurement.md) | Port llama-moe-trace onto an llama.cpp-experimental branch off v9; emit SRP/SCH/EOR | INF-34, INF-70 |
 | INF-69 | glm53 flash evaluation | [glm53-flash-evaluation.md](glm53-flash-evaluation.md) | T0: arch-support audit — does any tree load `glm5next`? (backport-or-wait decision, qwen4exp-bringup shape) | — |
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
@@ -67,7 +67,7 @@
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
 | INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap DONE; run stack_change_pipeline regen + stack-change checklist to verify live==config on next start | — |
 | INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | SWE closed on both protocols; re-collect the 24-cell grid at the measured n-max 8 optimum when GPU frees | INF-60 |
-
+| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | P1 fold at run 30 boundary (both gates); then P2 surface dimension + stale_baseline; P4-0 done | INF-66, INF-65, INF-70 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.

@@ -1,0 +1,43 @@
+=== libgomp | t=8 | OMP stack ON ===
+threads=8 groups(CCDs)=8 members: ccd0=1 ccd1=1 ccd3=1 ccd4=1 ccd6=1 ccd7=1 ccd9=1 ccd10=1  OMP_PROC_BIND=spread OMP_PLACES=cores WAIT=active
+omp        1.35 us/barrier
+flat       1.18 us/barrier
+hier       1.17 us/barrier
+work       5.79 us/iter (omp barrier + 1.0 us private work) -> overhead 4.79 us
+
+=== libgomp | t=16 | OMP stack ON ===
+threads=16 groups(CCDs)=12 members: ccd0=2 ccd1=1 ccd2=1 ccd3=2 ccd4=1 ccd5=1 ccd6=2 ccd7=1 ccd8=1 ccd9=2 ccd10=1 ccd11=1  OMP_PROC_BIND=spread OMP_PLACES=cores WAIT=active
+omp        1.88 us/barrier
+flat       1.64 us/barrier
+hier       1.76 us/barrier
+work       2.65 us/iter (omp barrier + 1.0 us private work) -> overhead 1.65 us
+
+=== libgomp | t=24 | OMP stack ON ===
+threads=24 groups(CCDs)=12 members: ccd0=2 ccd1=2 ccd2=2 ccd3=2 ccd4=2 ccd5=2 ccd6=2 ccd7=2 ccd8=2 ccd9=2 ccd10=2 ccd11=2  OMP_PROC_BIND=spread OMP_PLACES=cores WAIT=active
+omp        1.84 us/barrier
+flat       1.74 us/barrier
+hier       1.99 us/barrier
+work       2.59 us/iter (omp barrier + 1.0 us private work) -> overhead 1.59 us
+
+=== libgomp | t=48 | OMP stack ON ===
+threads=48 groups(CCDs)=12 members: ccd0=4 ccd1=4 ccd2=4 ccd3=4 ccd4=4 ccd5=4 ccd6=4 ccd7=4 ccd8=4 ccd9=4 ccd10=4 ccd11=4  OMP_PROC_BIND=spread OMP_PLACES=cores WAIT=active
+omp        1.93 us/barrier
+flat       1.87 us/barrier
+hier       2.06 us/barrier
+work       2.78 us/iter (omp barrier + 1.0 us private work) -> overhead 1.78 us
+
+=== libgomp | t=64 | OMP stack ON ===
+threads=64 groups(CCDs)=12 members: ccd0=4 ccd1=4 ccd2=4 ccd3=4 ccd4=4 ccd5=4 ccd6=4 ccd7=4 ccd8=8 ccd9=8 ccd10=8 ccd11=8  OMP_PROC_BIND=spread OMP_PLACES=cores WAIT=active
+omp        2.39 us/barrier
+flat       2.10 us/barrier
+hier       2.10 us/barrier
+work       3.01 us/iter (omp barrier + 1.0 us private work) -> overhead 2.01 us
+
+=== libgomp | t=96 | OMP stack ON ===
+threads=96 groups(CCDs)=12 members: ccd0=8 ccd1=8 ccd2=8 ccd3=8 ccd4=8 ccd5=8 ccd6=8 ccd7=8 ccd8=8 ccd9=8 ccd10=8 ccd11=8  OMP_PROC_BIND=spread OMP_PLACES=cores WAIT=active
+omp        3.19 us/barrier
+flat       2.77 us/barrier
+hier       2.84 us/barrier
+work       3.72 us/iter (omp barrier + 1.0 us private work) -> overhead 2.72 us
+
+=== libomp via LD_PRELOAD (GOMP ABI) | t=24 | OMP stack ON ===

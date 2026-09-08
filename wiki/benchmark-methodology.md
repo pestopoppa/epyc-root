@@ -5,6 +5,186 @@
 **Last compiled**: 2026-09-07 (three-valued gate verdicts, CJ-8/9/11/12: the same absence-read-as-pass defect found in three independent subsystems in one afternoon -- GPQA gold fabrication, an RL timeout charged as failure, a missing baseline accuracy silently passing a promotion gate; earlier: two screening-loop measurement defects, both generalizable: a noise floor estimated as p95 over subsets of ONE fixed sample cannot exceed that sample's own tail, so the decode floor was low by 0.846 pp at 9 pairs and ~18× at 20 — rebuilt by bootstrap from a three-condition A/A campaign to 2.422%/2.021%/1.188% at 5/9/20 pairs, with `pp512` still UNCALIBRATED; and a static v9 anchor against an accumulating candidate tree made every effect cumulative rather than marginal, committing a −2.864% regression as a "+1.846% keep" — an anchor must advance with the champion, and when per-commit attribution is lost the correct fallback is a block audit of the whole range; earlier: 2026-08-25 TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (2026-08-30: EV-14a ran its first real band attempt - EV-14c landed the pinned-reference baseline revisions (per-tier REVISIONS + compare-to-ghost refusal), the SC37 write side shipped (eval_tower_band.py, one self-hashed .band.json per suite, instrument-resolution-only ClaimTuple), and the 2026-08-28 CPU-only run completed repeat 1/3 clean on protocol before 17 infra-failed questions made build_band_artifact refuse the band fail-closed - corrected attribution split them into a PhysReason data defect (images never extracted), GPU-lane escalations, and transients, so EV-14a is HELD pending the GPU lanes, ~12 h ETA)
 **Sources**: 128+ documents
 
+## Compiled Update — 2026-09-07: cross-model rows are inadmissible without a locked harness — the citation gate, the two-sided aggregation-identity check, and four benchmark-reading rules
+
+**Confidence: verified** for the external figures below — each traces to a dive-verified
+research-intake entry read against its primary source; **inferred** for the admissibility and
+reporting rules generalised from them. Nothing here was measured on our hardware. All of it is
+**compiled knowledge**: none of these rules is a measurement-constitution amendment, and none may
+be cited as one.
+
+### The two-regime admissibility rule, adopted as a CITATION GATE (`intake-1344`)
+
+Model quality and harness quality are two regimes, and a benchmark row that varies both measures
+neither. **Adopted as a citation gate:** any cross-model row entering a wiki page or a handoff must
+either **name a locked harness** or carry an explicit **"harness-confounded, within-harness only"**
+label. A row that does neither does not enter.
+
+Worked example: LOCA Table 3 shows a **22.6-pp scaffold-only swing at fixed Claude-4.5-Opus** — the
+weights are held constant and the scaffold alone moves the score by more than the gap most
+cross-model tables are drawn to argue about. A table that does not say which scaffold produced each
+row cannot distinguish a better model from a better harness.
+
+Apply the gate **first** to the two citation families landing in this wave: the BEAM citations
+(`intake-1330`) and the LOCA-bench citations (`intake-1342`; the plan item that filed this rule
+mistyped the id as `intake-1331`, which is the firstmate outcome-store entry — corrected here).
+
+**Filed as compiled knowledge, NOT as a `MEASUREMENT_POLICY` amendment.** The measurement trust
+boundary is human-amendment-only, and an intake dive cannot propose edits into it. This section is
+the gate's home; promoting it to policy grammar would be an operator action, not a session write.
+
+### The standing budget-matching gap on the harness-vs-weights axis (`intake-1339`)
+
+Three papers now sit on the harness-versus-weights axis — Harness-R1 (`intake-1323`),
+`intake-1339`'s source, and the arXiv:2607.12227 critique carried via `intake-921` — and **none of
+them is budget-matched**. `intake-1339`'s source indicts prior work *twice* for hiding
+harness-design cost and then prices only its own training side (~1,800 H200 GPU-hours).
+
+**Standing rule: any future proposal on this axis must state both costs — the harness-design cost
+and the weights/training cost — or be declined.** A one-sided budget cannot support a claim that
+one regime beats the other.
+
+### The interaction-protocol rule and the resolution rule (`intake-1330`)
+
+A benchmark that publishes **no admissible-protocol rule** — no statement of what an evaluated
+system is and is not allowed to do while answering — cannot arbitrate cross-system comparisons.
+Whatever it measures, it is not "the same task" across two systems that read the environment
+differently. **BEAM is the worked example.**
+
+**Resolution rule.** BEAM asks **2 questions per ability per conversation**, so a single question is
+worth **5 pp at 10M** and **2.5 pp at 100K**. Any BEAM delta below that granularity is one
+question's worth of noise and must not be reported as an ability difference. The same arithmetic is
+the general check: divide 100 by the per-cell question count before quoting a per-cell delta.
+Pair it with the confounded-ability test — an ability whose score moves only together with another
+is not independently measured.
+
+### The aggregation-identity check is TWO-SIDED (`intake-1337`)
+
+- **Positive case:** four external BEAM_10M headlines **reproduce the unweighted ten-ability mean to
+  the decimal**. The published headline is that mean; the identity holds.
+- **Negative case:** a run using the benchmark's **own rubric files** lands **4–7 pp off** the
+  published headline, via a **micro-average** over items plus **`≥0.5` binarisation** of rubric
+  scores. Same data, different fold, different number.
+
+**Rule: reproduce a quoted headline from its own per-category table before comparing it to
+anything.** If the headline does not fall out of the table by a stated fold, you do not yet know
+what the number is, and any delta you compute against it is undefined.
+
+### BEAM / LongMemEval protocol asymmetry (`intake-1316#record`)
+
+Worded exactly: **"BEAM specifies a single-inference-step protocol and neither permits nor forbids
+multi-turn agentic retrieval; at least one baseline vendor measured that agentic retrieval raises
+the score and voluntarily withheld it."**
+
+Two consequences. First, the withholding is the evidence — a vendor measured the uplift and did not
+publish it, so the published table understates what the protocol tolerates. Second, **no
+one-shot-versus-iterative argument may be attributed to Cognee**: that attribution was a Stage-1
+reconstruction, not a quote from any source, and it does not survive the dive.
+
+### Answer-cardinality rule and the k/n granularity check (`intake-1342`)
+
+**A benchmark that scales difficulty by scaling an environment must hold ground-truth answer
+cardinality fixed.** If the environment grows and the number of correct answers grows with it, the
+difficulty axis and the scoring axis are the same axis, and a score curve across scales measures
+the construction, not the system.
+
+Paired with it, the **k/n granularity check**: before quoting a delta, compute the smallest score
+step the k-of-n scoring can express. A difference smaller than one unit of `1/n` is not a result.
+
+### Per-row provenance: resolve the row, never the caption (`intake-1342`)
+
+**Resolve the PER-ROW citation, never the table caption.** A caption naming a source does not
+establish that every row came from it; mixed tables are normal and the rows carry their own
+provenance.
+
+And: **a benchmark's public leaderboard is a separate artifact from its paper**, with its own date
+and its own revision history. A leaderboard number and a paper number for the same system and the
+same benchmark are two different measurements, and neither substitutes for the other in a citation.
+
+### Reporting convention: the paired recovery ratio (`intake-1340#record`)
+
+**Recovery ratio = student score / the SAME teacher**, reported **per model per workload**, and
+**never pooled** across differing model sets. Pooling recovery ratios computed against different
+teachers produces a number with no referent: the denominator changes between the terms being
+averaged.
+
+**Filed here as compiled knowledge.** Promoting this convention to
+`agents/shared/MEASUREMENT_POLICY.md` is an **operator decision package**, not a session write —
+the measurement trust boundary is human-amendment-only.
+
+## Compiled Update — 2026-09-04: a bench win is not a serving win — the proxy-divergence finding, the per-request throughput metric, and the A/A serving floor
+
+**Confidence: verified** for the divergence measurement, the three-metric A/A floor comparison,
+and the surface definitions. This is a screening-loop methodology result, not a promotion.
+
+The AutoKernel loop produced its cleanest demonstration yet that **a llama-bench gain and a
+serving gain are different measurements**, and re-architected its keep gate around it.
+
+### The proxy-divergence finding: bench does not predict serving
+
+Two keeps measured **decisively positive on the bench proxy** — `+23.339%` and `+10.098%` on the
+`dec-b4` surface, each confirmed on the `dec-b8` shape — and together moved live DFlash2 serving
+decode to **~0%: a flat 71.22 t/s** (vs 72.65 on the prior champion and the 70.0 DF2-5 baseline).
+The bench surfaces optimize a batched-forward path the serving decode loop is not bottlenecked on;
+its throughput is set by the drafter and acceptance rate, not the target verify. **The rule: a
+llama-bench keep must be confirmed on llama-server under the production serving recipe before it is
+credited as a serving improvement.** llama-bench is a screen and a null-killer; it never decides a
+keep.
+
+### Note surface semantics — what each bench surface actually measures
+
+The confusion above is easy to make because the surface names hide their shapes. The two families
+are not interchangeable:
+
+| surface | shape | measures |
+|---|---|---|
+| `dec-b4` / `dec-b8` | prefill-shaped (`pp=512, tg=0`, small ubatch), verify-batch width `ne11=4`/`8` | batched-forward / speculative-verify throughput |
+| `tg128` | pure decode (`pp=0, tg=128`), `ne11=1` | single-token decode throughput |
+
+A keep on a prefill-shaped surface says nothing about a decode-bound serving path, and vice versa —
+this is the mechanism behind the proxy divergence and behind the H1 finding that the loop's
+`ne11=1` headline collapses on serving shapes.
+
+### The per-request serving throughput metric removes scheduling-tail variance
+
+A serving A/B under concurrency (np4) has to combine per-slot throughput into one number, and the
+choice is load-bearing. Measuring **wall-clock aggregate** (`sum tokens / max wall`) is
+tail-dominated — the slowest slot's scheduling jitter sets the denominator. Replacing it with the
+**sum of each concurrent slot's own `predicted_per_second`**, plus a discarded warmup round and a
+greedy recipe (temp 0, top_k 1), both tightens and corrects the metric:
+
+| metric | A/A floor (p95) | CV | median agg-tok/s |
+|---|---|---|---|
+| wall-clock, temp 0.6 | 10.375% | 5.79% | 115 |
+| wall-clock, greedy | 4.911% | 2.73% | 109 |
+| **per-request, greedy** | **3.536%** | **1.572%** | **157.8** (matches the DF2-5 np4 grid ~155) |
+
+The wall-clock median (108–115) was not just noisier but *wrong* — the per-request median of 157.8
+agg-tok/s reproduces the independently measured DF2-5 np4 grid, so the tighter metric is also the
+accurate one. **The rule: aggregate concurrent throughput by summing per-slot predicted rates, not
+by dividing total tokens by the tail wall-clock.**
+
+### The A/A serving floor is usable only via compound-then-gate
+
+A ~3.5% serving floor cannot demonstrate the typical 1–3% serving keep on its own — the inherent
+noise llama-bench was built to avoid. The loop therefore batches cheap bench keeps in an
+accumulator and fires the single serving gate only once the compounded bench gain clears ~2.5× the
+serving floor (~8.8%); see [Autonomous Research](autonomous-research.md) for the two-tier champion
+that consumes this floor.
+
+### Source References (2026-09-04 serving-vs-bench methodology)
+
+- [AutoKernel rebuild program](../handoffs/active/autokernel-rebuild-program.md) — R23-42 (the
+  proxy divergence), R23-43 (serving re-architecture, the floor options and the chosen per-request
+  metric), R23-44 (compound-then-gate).
+- [Serving-floor noise reduction](../progress/2026-09/2026-09-04-ak-rebuild-20260828.md) — the
+  three-metric A/A comparison table and the tg128 calibration blocker.
+- [DFlash2 decode non-transfer and the tg128 pivot](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
+- [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — the DF2-5
+  np-concurrency grid the per-request median reproduces.
+- [Inference research index](../handoffs/active/inference-research-index.md) — row INF-66.
+
+
 ## Compiled Update — 2026-08-30: a noise floor estimated from subsets of ONE sample cannot exceed that sample's own tail — and a fixed anchor turns every effect cumulative
 
 **Confidence: verified** for the bootstrap floor table, the anchor-drift arithmetic and the
@@ -3668,6 +3848,562 @@ newly worked:
   metered cost.
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
   record.
+## Compiled Update — 2026-09-03 (incremental): a cheap screening rung cannot be faithful for GEMM work — the tile follows the matrix dimensions
+
+**Confidence: verified** (both profiles measured on the same host, same recipe, one day apart;
+the quant-gating claims were read directly from the champion's diffs).
+
+The 2026-09-02 entry above established that a headline states a RUNG. This is the mechanism
+underneath it, and it generalises beyond one campaign: **a screening model small enough to be
+cheap dispatches different kernels than the production model it is standing in for.**
+
+Measured, profiling the same surface (`dec-b4`) on both rungs:
+
+| | 1.5B screen rung (Q4_K) | 27B production rung (Q8_0) |
+|---|---|---|
+| top hotspot | `MT64x64x64` GEMM | **`MT128x96x64` GEMM (23.89%)** |
+| also hot | — | `gated_delta_net_cuda` 13.55%, `dequantize_block_q8_0_f16` 10.75% |
+
+The production model's hottest kernel is a **different tile geometry**, and two of its top five
+kernels (the Q8_0 dequant, the SSM `gated_delta_net`) **do not execute on the screen model at
+all**. The screening rung was optimising code production either dispatches in a different shape or
+never dispatches.
+
+**Why this is structural, not a tuning error.** The tile is selected by rocBLAS/Tensile *from the
+GEMM dimensions*, which derive from `n_embd`. Matching it requires matching `n_embd`; matching
+`n_embd` means matching model size; and model size is exactly what made the screen cheap. **The
+property that makes a screening rung cheap is the property that destroys its fidelity for
+GEMM-shaped work.** No amount of care in choosing the small model fixes this.
+
+**What a screen CAN still do.** Fidelity is per-axis, so route by the axis a mechanism is sensitive
+to. A same-quant, same-architecture small model faithfully screens **quant-family** work (dequant
+kernels) and **architecture** work (SSM/attention blocks), because those depend on the type and the
+block structure rather than the matrix extent. It cannot screen **tiling or occupancy**. Send those
+straight to the production rung and pay the higher per-attempt cost for a verdict that means
+something.
+
+**Corollary — a rejection on the wrong rung is not evidence.** If the transfer function can invert
+sign (it did: +27.363% screen became −1.414% production), then screen-rung *negatives* are equally
+suspect. An optimisation with fixed setup cost and size-scaling benefit reads NEGATIVE at small
+`n_embd` and POSITIVE at large. Keep every negative's mechanism and sample vector so the suspect
+ones can be re-tested on the real rung later; discarding them makes the error permanent.
+
+**Corollary — quant-gated work is dormant, not dead.** Optimisations gated on a specific quant type
+(`GGML_TYPE_Q4_K`) cannot execute under a different-quant production model, which is why a
+Q4_K-tuned aggregate can measure production-NEUTRAL rather than harmful. They cost a branch and
+carry no risk on the inactive path, and they become live again if that quant is ever served — but
+their measured *magnitude* does not transfer, because a larger model of the same quant has
+different GEMM dimensions. Treat them as leads to re-measure, never as banked numbers. The
+promotion consequence: such paths ship **performance-unvalidated** unless deliberately exercised.
+
+**Sources**
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-27
+  (the reconfiguration and both profiles), R23-28 (screen fidelity axes), R23-29 (quant-gating and
+  the promotion condition).
+- [`2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md) —
+  session record.
+
+## Compiled Update — 2026-09-03 (incremental): one kernel, two decisive results with OPPOSITE signs — a headline without its workload is not a claim
+
+**Confidence: verified** — both numbers are `decisive: True`, `drifting: False`, each measured at
+20 pairs against its own model-keyed A/A floor, residency proven on both.
+
+The strongest possible demonstration that a champion-vs-production number is meaningless without
+the workload attached. The *same* kernel build, measured against the *same* frozen production
+baseline, on the *same* surface (`dec-b4`), one day apart:
+
+| workload | floor | result |
+|---|---|---|
+| `Qwen3.8-27B-Q8_0` (the production model) | 0.949% | **−1.414% DECISIVE** |
+| `gemma-4-26B-A4B-it-Q4_K_M` (an in-fleet worker) | 0.456% | **+7.206% DECISIVE** |
+
+Both are correct. The mechanism is quant gating: the champion's two largest optimisations are
+hard-gated on `GGML_TYPE_Q4_K`, so they execute on the Q4_K model and are **inert** on the Q8_0
+one — where the residual −1.4% is the aggregate's feature machinery (a speculative-decode loader)
+measured on a *prefill-only* surface that structurally cannot observe that feature's own **2.38×
+decode** win. Three workloads, three answers, one build.
+
+**The practical rules this yields:**
+
+1. **Never publish a champion-vs-production figure without naming its workload.** A bare number
+   invites the reader to generalise it to the model they care about, which is exactly the error
+   that made a +27.363% screen-rung figure read as a production claim.
+2. **A decisive negative on one workload does not condemn a kernel.** Check whether the code even
+   *executes* on the workload that regressed — `git show <commit> | grep GGML_TYPE_` answers it in
+   seconds, and here it inverted the entire conclusion from "the champion is a regression" to "the
+   champion is +7.2% where its code runs".
+3. **Quant-gated work is dormant, not dead.** It costs a branch on the inactive path and becomes
+   live again if that quant is served. But its *magnitude* does not transfer across model sizes —
+   the same optimisations measured +5.097%/+13.930% on a 1.5B Q4_K and +7.206% on a 26B Q4_K.
+4. **Calibrate per (surface, model) and sanity-check the curve's shape.** A believable floor falls
+   ≈√n: this one went 1.843→0.456 across k=1→20 (4.04× vs the ideal 4.47×). A curve that collapses
+   far faster is the warning sign — one measured surface fell 45× and was only made safe by the
+   parametric σ/√n bound the floor lookup takes a max against.
+
+**Sources**
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — the
+  champion's standing, now recorded as three measured workloads with evidence paths.
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-29
+  (quant gating), R23-31 (the signal), R23-32 (the claim), R23-26 (headline surface).
+- [`2026-09-03-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-03-ak-rebuild-20260828.md).
+
+## Compiled Update — 2026-09-03 (INF-70): a coherence gate at 12 prompt tokens certified a kernel that produced garbage at 42
+
+The most expensive methodological failure of this program to date was not a wrong number. It was a **right number
+measured on the wrong regime**, and it survived every gate the campaign had because every gate used the same short
+prompt.
+
+### What happened
+
+A full day of INF-70 kernel work — parallel `GET_ROWS`, a `CONCAT` default, a batch-1 barrier removal, contiguous
+expert slabs — was validated with greedy bit-identity gates and a claim-grade `llama-server` re-anchor, and produced
+a published deployable figure of 12.55 / 13.06 t/s. **Every one of those gates used a 12-token prompt.** A later check
+with prompts of 42, 81 and 233 tokens found the same binary emitting deterministic garbage (`>> .> .>`,
+`The function l The function l`, `2222-2222-`) at full speed. The decode rate was real; it was the decode rate of
+garbage.
+
+Root cause was a **row-count-triggered kernel branch**: iqk's `is_dequant_better()` switched IQ4_XS to a requantised
+`Q8_K_R16` repack GEMM once a ubatch reached `nrc_y >= 32`, and that converter is wrong on this Zen host. The tree's
+own source comment already documented the converter family as producing "incorrect results for some large-Ny dense
+and MoE shapes on Zen 4" and excluded five IQ2/IQ3 families for exactly that reason — IQ4_XS had been left in.
+
+### Why a short-prompt gate is structurally vacuous
+
+The threshold was ~32 **rows**, which presents as ~32 **tokens** for a single sequence. A 12-token prompt never
+reaches the branch, so the gate could not fail no matter how broken the kernel was. The same mechanism explained a
+symptom filed separately for days as a concurrency bug: four simultaneous 12-token prompts form a 48-row ubatch and
+corrupt, while staggered starts stay under 32 rows and do not. One row-count threshold, three "different" defects.
+
+`llama-bench` cannot catch this class at all — it never inspects output, so every pp/tg number it produces is the
+throughput of whatever tokens emerged. On this lineage that meant **every pp512 prefill figure was timing a wrong
+forward**, and the pre-fix control's 231 t/s had to be withdrawn outright.
+
+### The rules this produces
+
+1. **Gate coherence at production prompt lengths, not toy lengths.** At minimum one prompt each at ~40, ~90 and
+   ~200+ tokens, real prose, with a degeneracy check *and* an eyeball of the output. Put a long prompt in the
+   greedy-identity gate, not only in the speed arm.
+2. **A `llama-bench` number is a kernel-throughput proxy and can never support a serving claim.**
+3. **When a length threshold appears, it is a row-count branch until proven otherwise.** Discriminate in this order:
+   flip the accelerated kernel off (`GGML_IQK=0`); then find the FIRST differing graph node with a per-node trace
+   (`cb_eval`, batch-of-n vs n singles); only then name a kernel.
+4. **Do not infer the culprit from `-ub 1` being coherent.** `-ub 1` also keeps every GEMM under the row threshold,
+   so it is a serving workaround (decode unchanged, prefill ~10× slower), not a discriminator. This inference was
+   made here and was wrong; the node trace refuted it.
+5. **Classify failures by reason, never pass/fail.** The first classifier used scored a 1-token EOS as "degenerate"
+   because unique-ratio and top-token-share are both 1.0 at n=1. Classes must separate COHERENT / SALAD / EARLY-EOS /
+   EMPTY / HTTP-ERROR, and statistics must only be computed above a minimum n (16 here). A fix that changes the
+   failure *mode* — salad becoming early-EOS — is evidence, and a pass/fail metric destroys it.
+
+### The corollary about withdrawal
+
+Retracting the deployable figure was not sufficient. The prefill numbers derived from the same forward had to be
+withdrawn too, and the replacement had to be a **fresh anchor on production-length prompts**, not a restoration of
+the old short-prompt figure under a new build. A number's scope is part of the number.
+
+### Source References (2026-09-03, INF-70 coherence gate)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — LONG-PROMPT-GARBAGE, GDN-ROWEXACT, BATCH-ENVELOPE task lines
+- `/mnt/raid0/llm/tmp/inf70/longprompt/` — the 42/81/233-token repro (prompts, harness, results, timeline)
+- `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/REPORT.md` — checkpoints 0–10: node-level localisation, the
+  `is_dequant_better` mechanism, `classify.py`, the object-level no-op proof of the guard lift
+- `/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/REPORT.md` — independent threshold bracket (16/23 coherent; 39+ garbage)
+- `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70): a near-tie is not a defect — measure the quantity, don't infer it from a proxy
+
+A single claim moved through **four** states in one day: *disputed* → *leaning-downgrade* → *confirmed and severity
+raised* → *reclassified as not-a-fix-defect-at-all*. Every move came from evidence rather than argument, and the
+final version was narrower and more useful than any predecessor. The route there is the lesson.
+
+### The claim, and why three of the four positions were wrong
+
+A 233-token prompt returned a single EOS token on the raw completion path after a kernel fix. It was filed as the
+fix's *residual risk*: "a raw un-templated prompt whose top-2 gap is under ~0.5 nats can flip its argmax." Three
+things then happened, in order:
+
+1. A second agent found the prompt simply **reads as complete** without a continuation cue — appending
+   `\n\nAnswer:` makes it generate. This looked like a competing, more mundane explanation, and the claim was
+   downgraded.
+2. The gap was then **measured** rather than inferred: **0.01695 nats** — 27× tighter than the 0.457 that had been
+   reported. The "prompt formatting" story turned out not to be a competitor at all but *the same fact from the
+   other side*: the cue moves the gap to 2.249 nats and the winner becomes **exactly the runner-up of the cue-free
+   case**. The cue works by breaking a tie that genuinely exists. Severity was raised.
+3. The decisive arm then forced the GEMM row-exact and the token **still** did not flip — the gap merely widened
+   0.017 → 0.092 nats. **No flip occurs under either kernel path**, so it was never a defect of the fix.
+
+Final: a **prompt-shape caveat, not a fix caveat**. The decision is batch-shape *sensitive* (batching moves the gap
+by ~4× the gap itself) but batch-shape *stable* in outcome. Templating removes the fragility entirely (0.017 → 4.74
+nats), so the production serving path has no exposure at all.
+
+### The rules this produces
+
+- **A near-tie is not a defect.** When two candidates sit 0.017 nats apart, *something* must win and numerical
+  detail decides it. The correct output of such an investigation is "this decision is a knife-edge", not "the kernel
+  is broken". Distinguish the **risk class** (real) from **an instance** (which may never realise it).
+- **Measure the quantity; do not infer it from a proxy that merely correlates.** "The cued version generates
+  coherently" was treated as evidence *against* a marginal flip when it was evidence *for* one. Only the measured
+  top-2 gap separated the hypotheses, and it inverted the reading twice.
+- **A cheap intervention that removes the suspected mechanism is worth more than more observation.** Forcing
+  row-exactness answered in one arm what three rounds of argument had not.
+- **State superseded positions rather than overwriting them.** Both the agent and the coordinator recorded each
+  wrong position with its reason. A reader who only sees the final answer cannot tell which evidence is load-bearing.
+
+### The instrument bug that nearly returned "unmeasurable"
+
+The probe script read `probs`/`top_probs`; llama.cpp emits **`top_logprobs`**. The live log therefore printed
+`top2_gap_nats=None` — and had that been trusted, the whole question would have been reported unanswerable and left
+open indefinitely. The raw JSON carried the data the entire time; a recovery script extracted every gap from the
+persisted files. **A null from your own instrument is a hypothesis about your instrument, not a result.** Persist
+raw responses, not just parsed summaries, so a parser bug is recoverable after the fact rather than requiring a
+re-run under a contended lock.
+
+### A control that makes "X changes the output" falsifiable
+
+Before attributing a stream difference to a feature, prove the baseline is reproducible: a **repeat plain arm 45
+minutes later, on a fresh server instance, was 24/24 byte-identical**. Without that control, "MTP changes the
+output" and "the run is nondeterministic" are indistinguishable, and the former is unfalsifiable.
+
+### Source References (2026-09-04)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — LONG-PROMPT-GARBAGE (reclassification), BATCH-ENVELOPE, E3
+- `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/` — `REPORT.md`, `FINDING-lossless.md`, `runs/EOS*.eosprobe.json`, `regap.py`
+- `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/REPORT.md` — checkpoints 0–10, the node-level localisation
+- `/mnt/raid0/llm/tmp/inf70/agents/e3-run/REPORT-FINAL.md` — Addendum B, the identity control
+- `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70 / C9): when the defect is only reachable from the instrument
+
+`llama-perplexity` returned `nan` on this model for weeks. It was filed, probed, and left open. The cause turned out
+to be a kernel defect **that no serving workload can reach** — and the only caller that could reach it was the
+quality gate itself.
+
+### The mechanism, and why the shape mattered
+
+iqk reroutes a matmul to a requantised Q8 repack above a row-count threshold. For `GGML_TYPE_Q6_K` that threshold is
+**64** — and Q6_K appears exactly **once** in the model, on `output.weight`. In every served path the output head
+runs as a **GEMV**: generation emits one token (`n_outputs == 1`), and speculative verification emits a small `k`.
+Neither ever reaches 64 rows.
+
+Perplexity is different. It requests logits on `pos >= n_ctx/2`, so `n_outputs == n_ctx/2` exactly — **256 rows at
+`-c 512`, four times over the threshold.** It is the only caller in the entire stack that runs the output head as a
+GEMM. The repack converter is wrong on this host (the tree's own source comment says so, and a sibling type had
+already been excluded for it), so the one path that exercised it produced `nan`.
+
+**The instrument was the one caller its own bug disabled.** A defect that only breaks your measuring device is
+invisible to every test that uses the device — the tests all pass, and the device reports nothing, which reads as
+"no signal" rather than "broken probe".
+
+### What the earlier investigation missed, and why
+
+A prior pass had probed `-b`, `-c` and `-fa` and found nothing. That matrix could not have found it: **it never
+varied the kernel environment**, and the kernel was the only determining variable. When the probe finally ran,
+`GGML_IQK=0` produced a finite, reproducible `PPL = 4.9043 ± 0.59979` across three arms agreeing to the last digit,
+while every `GGML_IQK=1` arm was `nan`. `-fa` and the fused-decode gate were irrelevant.
+
+**Rule: when a tool fails on one architecture and works on others, vary the ACCELERATION PATH before varying the
+tool's own parameters.** A parameter sweep explores the space the tool author imagined; a kernel swap explores the
+space the kernel author imagined. The bug lives in whichever one you didn't sweep.
+
+### Two disciplines worth copying from the fix
+
+- **Do not write a claim into a source comment before it is measured.** The fix's comment asserted a specific
+  threshold bracket; the bisect confirming that bracket had not returned, so the commit was held. A comment is a
+  claim with a very long half-life and no attached evidence — it will be believed years later by someone who cannot
+  re-derive it.
+- **Verify the fix, not the workaround.** Every verification arm ran with the accelerated kernel **enabled**. An arm
+  that passes only with the accelerator disabled is testing the escape hatch, not the repair — and would have
+  "confirmed" a fix that changed nothing.
+
+### The corollary for quality gates generally
+
+If your quality instrument runs a code path that production never runs, then **the instrument's correctness is an
+independent thing to verify**, not something inherited from the fact that serving works. Here the two paths differed
+in exactly one property — the number of output rows — and that was enough to make one of them wrong while the other
+was fine for months.
+
+### Source References (2026-09-04, C9)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — C9, and BE-1 for the sibling exclusion that convicted the family
+- `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md` — the kernel-env probe, the type histogram, the fix
+- `/mnt/raid0/llm/tmp/inf70/agents/b4/REPORT.md` — the original `nan` finding and its probe matrix
+- `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70): instrument defaults that sit below the phenomenon
+
+Twice in one investigation, a diagnostic tool's **default** silently placed the experiment below the threshold of
+the thing being hunted. Both times the tool reported a clean negative, and both times that negative was vacuous.
+
+1. A node-level row-exactness tracer defaulted to `n_ctx = 1024` with `n_seq_max = 4`, capping every run at **256
+   tokens per sequence** — exactly the boundary at which the flash-attention carrier being hunted switches paths.
+   The carrier was invisible for as long as the default stood.
+2. The same tool's tokeniser allocated a **fixed 512-token buffer**, hard-capping `prefix + n` at 512 — below the
+   model's top-k width of 2051. **Every run ever made on that model had a vacuous top-k selection** and could not
+   have detected a selection flip even had one existed. The first non-vacuous measurement came only after the
+   buffer was fixed.
+
+### Why this class is dangerous
+
+A tool that *crashes* below the phenomenon is harmless — you notice. A tool that quietly runs a smaller experiment
+returns **a clean result for a question you did not ask**, and a clean result is exactly what an investigator is
+hoping to see. It reads as "no effect here", not "this configuration cannot show an effect". Both instances above
+were found only because someone independently derived the phenomenon's scale and compared it to the tool's
+configuration — never because the tool complained.
+
+### The rule
+
+**Before trusting a negative, state the phenomenon's threshold and prove your instrument reaches past it.** Write
+the comparison down next to the result: *"the carrier switches at n_kv 257; this arm ran at n_kv 2304"*. If you
+cannot state the threshold, you cannot interpret the negative, and the honest report is *inconclusive* rather than
+*no effect*.
+
+Corollaries that fall out of the same failure:
+- **A knob that changes nothing may be inert rather than irrelevant.** Identical timings and byte-identical logs
+  under a flipped flag are the signature of a flag that never fired. Instrument the dispatcher rather than inferring
+  from the output — three published claims in this campaign rested on a kernel knob that had never had any effect.
+- **Prefer instruments that self-validate.** A probe designed so that a null result *also* demonstrates the probe
+  was live — e.g. printing the metric on both arms, or logging the code path actually taken — converts an ambiguous
+  negative into an interpretable one at near-zero cost.
+- **Defaults are claims.** A default `n_ctx`, buffer size, or batch width is an assertion about the regime that
+  matters, usually made by someone solving a different problem. Treat every default in a diagnostic path as
+  something to justify against the phenomenon, not to inherit.
+
+### Source References (2026-09-04)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — BE-2 (carrier 2, `--n-ctx` default), BE-3 (carrier 3, the
+  512-token tokeniser buffer), BE-1 (the inert `GGML_ROWEXACT_N`), C9
+- `/mnt/raid0/llm/tmp/inf70/agents/be3-dsa/{REPORT.md,MECHANISM.md}` — the fixed buffer and the first non-vacuous
+  top-k measurement on this model
+- `/mnt/raid0/llm/tmp/inf70/agents/be2-fa/MECHANISM.md`, `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md`
+- `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Compiled Update — 2026-09-04 (INF-70 / C9): "the tip" names a source tree, not the binary you ran
+
+A quality instrument returned corrupt output for two days and drew four competing kernel hypotheses out of two
+investigators. The cause was that **the shared build directory was two days older than the source beside it**, and
+the commit in between was the very fix that would have prevented the corruption.
+
+    build-cpu/libggml-cpu.so   built  Sep 1 19:40
+    ggml/.../iqk_mul_mat.cpp   source Sep 3 19:36     <- the fix landed here
+
+Everyone — the agent running the probes and the coordinator directing them — said "the merged tip" and meant a
+source revision, while the binary under test predated it. The shared tree held **five** build directories spanning
+four days.
+
+### What the stale binary did to the investigation
+
+- A kill-switch flag (`GGML_IQK_DEQUANT=0`) appeared **inert**: identical timings, byte-identical logs. That was
+  read as "the knob is a no-op, so this path is exonerated" — the same signature as a genuinely inert knob earlier
+  in the campaign. **It was neither: the binary simply had no such symbol.** `strings` found zero occurrences.
+- A threshold was inferred from where corruption appeared and then refuted by a later arm — because the *real*
+  threshold belonged to a different quant type whose fix was missing from the binary. Both the original hypothesis
+  and its refutation were artefacts.
+- Two investigators produced four hypotheses, retracted all four, and each retraction was correct on the evidence
+  available. **No amount of reasoning about the source could have found it**, because the source was right.
+
+### The rule
+
+**Prove binary freshness by CONTENT before attributing behaviour to code you have read.** Directory names, mtimes
+and "I merged that commit" are not evidence. Cheap and decisive:
+
+- `strings <lib> | grep -c <symbol_introduced_by_the_fix>` — zero means the fix is not in there
+- `<binary> --version` and compare the reported commit to the tree's `HEAD`
+- resident-library check on a live process (`/proc/<pid>/maps`) rather than the path you *intended* to launch
+
+Make it a precondition of any kernel-attribution claim, in the same class as proving NUMA placement before quoting a
+bandwidth number. The failure is silent, survives every source-level review, and generates confident, well-argued,
+entirely wrong mechanisms.
+
+### The corollary that saved this investigation
+
+Per-agent worktrees with their **own** build directories were what contained the damage. Every result published
+that day came from an agent that built its own tree; the affected probes were the ones reaching into the *shared*
+build. **A shared build directory is a shared mutable dependency with no version in its name** — the same hazard as
+a shared index or a shared working tree, and it deserves the same treatment: don't reach into it, build your own.
+
+### Source References (2026-09-04, C9 root cause)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — C9, BE-1 (`99425578d`, the fix that was already present in source)
+- `/mnt/raid0/llm/tmp/inf70/agents/b7-ple/REPORT.md` — the probe series, the four retracted hypotheses, the `strings` proof
+- `progress/2026-09/2026-09-03-inf70-audit.md`
+
+## Host drift: the ~5% evidence floor for cross-window comparisons (2026-09-04)
+
+The EPYC 9655 **drifts ~3% over hours while repeating to ~1.1% within a single lock window.** Same
+configuration, same harness: 23.16 t/s at 12:52 versus 22.58–22.73 t/s at 15:05–15:55.
+
+**Therefore any comparison with an expected effect below ~5% must be SAME-WINDOW and ALTERNATING (A/B/A/B,
+≥3 rounds, one lock hold), reporting per-round ratios and a per-prompt win count — not just means.** A
+sequential arm matrix confounds arm order with time and measures drift as if it were the treatment.
+
+Two published INF-70 results were overturned on 2026-09-04 as cross-window artefacts of exactly this
+magnitude:
+
+- The **23.623 t/s MTP headline** did not reproduce. A 3-round ABA gave **23.16 t/s (sd 0.14, spread 1.1%),
+  ratio 1.876×**, with the old figure sitting 2.0% above the mean and **2.6 round-sd out**. Notably the
+  *mechanism* reproduced exactly — α 0.8274 and drafted/token 0.8900, identical to 4 dp across all seven
+  n-max-4 arms — so the configuration was confirmed and only the magnitude was noise. **A stable mechanism
+  with an unstable number means you picked the right config and quoted the wrong figure.**
+- **"Depth beyond n-max 4 pays ~3%"** was false. A same-window alternating n4-vs-n5 test returned ratio
+  **0.9987**, 12/20 and 10/20 prompts — coin flips.
+
+The 18-arm matrix behind both ran sequentially over ~4 hours. **Within-window repeatability is not the
+uncertainty of a cross-window comparison**; quoting the former as the error bar on the latter understates it
+roughly threefold.
+
+Corollary on attribution: `ps %CPU` is cumulative and read idle peer processes at 40–50%. A delta-based
+sampler plus `Cpus_allowed_list` separated a GPU-pinned peer (cores 184-191 — not contention) from a real
+one (`test-backend-ops` at `0-191` taking 1.7–3.3 live cores, which landed on a control arm).
+
+### Source References (2026-09-04, host drift)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — the ABA supersession, the depth closure, the standing rule
+- `/mnt/raid0/llm/tmp/inf70/agents/speed-claim/REPORT.md` — 25 arms × 24 production prompts, 600 requests
+- `progress/2026-09/2026-09-04-inf70-audit.md`
+
+## A knob that is not in the binary returns a null that looks like evidence (2026-09-05)
+
+Three separate incidents in one week, one root shape: **a control was reasoned from without first proving it
+reaches the running code.**
+
+- **C9** — `llama-perplexity` returned `nan` on qwen4exp and two agents spent two days diagnosing a live
+  kernel defect. The library predated its own fix by two days and contained **zero** `GGML_IQK_DEQUANT`
+  symbols, so the kill-switch they reasoned from was inert. The remedy was a rebuild.
+- **Every build dir in the shared tree was stale** — none contained `GGML_FA_SPLIT_KV`, `GGML_ROWEXACT_N` or
+  `GGML_IQK_DEQUANT`; setting any of them there was a silent no-op.
+- **`ggml_get_n_tasks()` is advisory on the CPU backend** — `ggml_graph_compute_thread()` overwrites
+  `params.nth` per node, so `n_tasks` only sizes the work buffer. `GGML_GET_ROWS_MIN_BYTES` was dead code,
+  which is why one A/B ran parallel on *both* arms and read a meaningless +0.97%.
+
+**The rule: before trusting any null from a knob, prove the symbol is in the binary you are running** —
+`strings <lib> | grep <KNOB>` — and compare the artifact's mtime against the fixing commit's date. An mtime
+check proves freshness against source; only `strings` proves the code is present. After reverting diagnostic
+instrumentation, verify the revert **structurally** rather than by assertion.
+
+A vacuous null is more dangerous than a wrong number: it presents as a clean negative result and is acted on
+with confidence. The corollary is that a defect reachable from only one code path can **disable the sole gate
+that would detect it** — so "never seen in production" is not evidence of absence.
+
+### Source References (2026-09-05, vacuous knobs)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — C9, SYNC-4, SYNC-7, HYG-1b
+- `/mnt/raid0/llm/tmp/inf70/agents/sync4/REPORT.md` — the advisory-`n_tasks` finding
+- `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## Measure the stack, not the parts — levers do not compose predictably (2026-09-07)
+
+INF-70 measured seven bit-identical CPU-decode levers individually and then in combination. **In no case did
+the solo numbers predict the stack**, and the errors ran in both directions:
+
+| lever | measured ALONE | measured IN THE STACK |
+|---|---|---|
+| row/column-chunk elementwise split | +3.05% served | **+5.3%** |
+| barrier elision on single-task nodes | +3.86% plain | **below the 1.1% noise floor** |
+| zero-element node skip | +0.87% plain | **−0.2%** |
+| vectorised Q8_K quantizer | +3.12% served | **+0.86% marginal** |
+| activation-quant grain split | +3.04% served | **+1.13% marginal** |
+| whole-process `PR_SET_THP_DISABLE` | **+1.0% served** | **−1.39% — NEGATIVE, and dropped** |
+
+The first champion was **super-additive**: the product of four solo gains predicted 1.5017 plain, the measured
+combination was **1.6934** (a 12.8% excess). The second stack was **sub**-additive and one member turned
+negative outright.
+
+**The mechanism, in both directions, is that levers interact through what they remove.** Two barrier levers
+looked valuable only because their baseline was starved by a placement defect a sibling lever later fixed —
+remove the starvation and the barriers stop mattering. Conversely the process-wide THP shim won by making a
+shared work buffer cheaper to touch; once two other levers reduced traffic to that buffer, its remaining
+benefit no longer covered the TLB reach it costs. **A lever that removes a stall can delete another lever's
+entire justification, and a lever that reduces traffic can invert a locality optimisation.**
+
+**Rules that follow:**
+- **A lever's value is a property of the kernel it is measured in, not of the lever.** Re-measure in
+  combination; never scale a solo number into a stack, in either direction.
+- **Measure the stack in its own A/B window** rather than multiplying components. Both stacks above were
+  measured directly, and both would have been misreported from arithmetic.
+- **Run leave-one-out on the assembled stack.** It is the only thing that finds a member which has gone
+  negative, and it costs one arm per lever. Here it caught a lever that had passed a 26-arm study of its own.
+- **Do not delete a lever that measures negative in one stack** — gate it OFF and keep the evidence. Its win
+  was real in the kernel it was measured in, and a future stack with different traffic may want it back.
+
+### Source References (2026-09-07, stack composition)
+
+- `handoffs/active/cpu-decode-roofline-program.md` — the champion blocks, CHAMP-2, SYNC-15, CHAMPION-3
+- `/mnt/raid0/llm/tmp/inf70/agents/champion1/REPORT.md` — the first stack's leave-one-out
+- `/mnt/raid0/llm/tmp/inf70/agents/champ2/REPORT.md` · `sync15/REPORT.md` — the solo measurements
+- `progress/2026-09/2026-09-05-inf70-audit.md`
+
+### GPU-side corollary (2026-09-07): an accumulating champion never re-tests its own members
+
+The finding above was relayed to the autokernel GPU loop, whose architecture is the exact structure it
+describes: **one champion aggregates all work between promotions**, so a lever accepted once is carried
+indefinitely. Verified by inspection — the loop A/Bs each *new* keep against the accumulated tip, but nothing
+re-measures a *prior* keep after later keeps land (`grep` for leave-one-out / re-test / ablation in the loop
+package returns nothing). The interaction classes differ on a GPU (occupancy, bandwidth, launch overhead
+rather than barrier/placement/quantization) but the failure shape is identical: *levers interact through what
+they remove*, so a lever that paid for a stall another lever later eliminated goes silently negative.
+
+Filed as **R23-48**: on every champion-of-record promotion, build one arm per accumulated keep with that keep
+reverted, paired-A/B it against the champion at the calibrated floor, and record a keep whose removal is
+neutral-or-better as `retracted_by_loo` with both sample vectors. Cost is bounded at n_keeps arms **per
+promotion**, not per iteration — cheap because the object-digest incremental build recompiles only the
+translation units a revert touches.
+
+One distinction worth preserving, because it rescues a number the rule above would otherwise condemn: the
+loop's accumulator carries a `compounded_bench_pct` that *is* a product of solo deltas. That is legitimate
+**only** because it schedules the gate rather than claiming a result — it decides when the assembled bundle is
+worth an expensive serving A/B, and the serving A/B is what actually moves the champion. **A product of solos
+is a scheduling heuristic, never a result**, and it must stay labelled as an estimate wherever it is displayed.
+
+
+## Compiled Update — 2026-09-07 (wrap-up): confirmation state that is re-derived on restart, and orphaned numbers that are not prizes
+
+### a restart-rebuilt bundle silently launders unconfirmed keeps into the champion of record
+
+**A loop that rebuilds its confirmation state from the champion tip on every restart cannot
+tell "bench-measured" from "serving-confirmed" across a restart.** The autokernel loop's
+`Bundle(champion_of_record=anchor_commit)` was reconstructed at every startup from the current
+anchor, so a SIGTERM/SIGKILL restart reset the accumulated keep list **and simultaneously
+promoted the champion of record to the accumulated tip** — marking every bench-only keep as
+serving-demonstrated with no serving measurement having occurred. Verified directly: zero
+`epyc.autokernel.serving_ab.v1` records exist anywhere on disk, meaning the serving-throughput
+keep gate (a hard promotion gate) had **never once fired** despite the accumulator trajectory
+showing +5.19% at 4 keeps and +6.13% at 5 — both below the +8.84% threshold the gate was
+supposed to enforce before those keeps could count. The state loss was invisible in the
+accumulator's own numbers; it only surfaced by asking "does the confirmation record this
+depends on actually exist" and finding none. Fix: persist the bundle to disk and reload it,
+refusing to accept a champion-of-record claim the current tree cannot substantiate.
+Generalizes: any two-tier promotion state (bench-passed vs. serving-confirmed,
+staged-vs-published, draft-vs-reviewed) that is *derived* from a mutable pointer on every
+process start will re-derive the wrong answer across a restart unless the confirmation state
+is itself persisted and validated against — never rebuilt from — the pointer.
+Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"Did relaunches lose keeps?"),
+`handoffs/active/autokernel-rebuild-program.md` (R23-51), research commit `706e6894` →
+main `2de94d08`.
+
+### a same-day multi-percent measurement spread is instrument noise, not a lost prize, until re-measured at the current floor
+
+**Three commits that once measured a combined +12.5% turned out to be unreachable (orphaned
+off a fork the reconcile never merged), and recovering the *code* is not the same claim as
+recovering the *number*.** Auditing all 31 historical `kept` rows against the champion tree
+found 28 present and 3 absent — a `quantize.cu` chain (`float2-halfwave` +5.353% →
+`float4-eighthwave` +4.849% → `fourlane-dual-fragment` +1.846%) that forked on 2026-08-29 and
+was never carried forward when a sibling branch became the lineage the 2026-08-31 reconcile
+merged. The operator's instinct ("recover them, that's massive") was right about the
+*mechanism* and wrong about the *number*: the same day, on the same kernel, a **sibling**
+measurement swung 6.6 percentage points across five re-runs (+6.723% down to a null −0.449% by
+2026-09-02, roughly 80 re-measurements later), and 2026-08-29 is independently the day a
+correctness gate was found to have run with an unsupported flag (retraction day). A live
+roofline check bounded the *physically possible* prize at ≤3.6% of tg128 for that kernel — so
+"+12.5% compounded" was never achievable regardless of measurement noise. The corrective action
+is not "restore the historical commits and credit their historical numbers" — it is "recover
+the mechanism as a fresh hypothesis and MEASURE it once at the current floor," which is exactly
+how it was seeded (tag `ak/orphan-keeps-quantize-20260829`, task `AK-H-RQ-1`, prize bounded and
+stated plainly). Generalizes: an unreachable/orphaned artifact's *historical* measurement is
+evidence the mechanism once existed, never evidence of the gain it will produce on re-measurement
+— re-verify at the current floor before compounding anything into a live total.
+Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"orphan-keep recovery seeded",
+§"Did relaunches lose keeps?" second half), `handoffs/active/autokernel-rebuild-program.md`
+(R23-50, R23-50a), tag `ak/orphan-keeps-quantize-20260829`.
 
 
 ## Compiled Update — 2026-09-07: absence read as a negative verdict, found three times in one afternoon, three independent subsystems

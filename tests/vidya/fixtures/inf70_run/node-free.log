@@ -1,0 +1,12 @@
+10:38:08 start | node 0 free: 23001 MB node 1 free: 2649 MB node 2 free: 797 MB node 3 free: 11648 MB 
+10:38:08 before inf68-asis | node 0 free: 23001 MB node 1 free: 2649 MB node 2 free: 795 MB node 3 free: 11648 MB 
+10:45:58 after pre_evict | node 0 free: 70953 MB node 1 free: 31553 MB node 2 free: 34839 MB node 3 free: 24230 MB 
+10:46:04 after pre_evict | node 0 free: 70956 MB node 1 free: 31554 MB node 2 free: 34844 MB node 3 free: 24246 MB 
+10:47:04 before inf68-evicted | node 0 free: 70803 MB node 1 free: 31268 MB node 2 free: 34702 MB node 3 free: 24159 MB 
+10:50:06 after pre_evict | node 0 free: 70671 MB node 1 free: 30297 MB node 2 free: 34209 MB node 3 free: 23313 MB 
+10:52:16 before c5-omp-on | node 0 free: 70684 MB node 1 free: 30956 MB node 2 free: 34566 MB node 3 free: 23801 MB 
+11:08:53 after pre_evict | node 0 free: 70891 MB node 1 free: 30601 MB node 2 free: 34269 MB node 3 free: 23430 MB 
+11:11:23 before c5-omp-off | node 0 free: 70773 MB node 1 free: 31170 MB node 2 free: 34638 MB node 3 free: 23846 MB 
+11:13:05 after pre_evict | node 0 free: 70905 MB node 1 free: 30515 MB node 2 free: 34553 MB node 3 free: 23348 MB 
+11:14:55 before c5-t1 | node 0 free: 70783 MB node 1 free: 30945 MB node 2 free: 34648 MB node 3 free: 23816 MB 
+11:16:28 end | node 0 free: 70757 MB node 1 free: 31130 MB node 2 free: 34572 MB node 3 free: 24008 MB 

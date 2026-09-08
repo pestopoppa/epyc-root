@@ -410,7 +410,12 @@ executed for the first time (requirement 4 evidence, verdict ITERATE pending req
       null-T0, void, malformed or authority-bearing events. The first real post-hook event remains an
       empirical observation, not a static implementation gap.
 - [x] SC11 Survey the remaining candidate sources named in the register ✅ 2026-08-26 — **priced-and-declined, both sub-sources, verdict recorded rather than carried.** (1) llama-bench: the bulk corpus was already REJECTED by SC6-PRICE (0/200 full tuple); the scout subset is 3 records all from 2026-08-12 with no successor producer since — below any adapter's pay line. (2) speech kernels (whisper/qwentts): frozen production serving paths; examination shows no protocol-admissible measurement corpus exists to sample — runs are serving telemetry, and pricing requires a corpus. If a speech benchmark protocol or a new llama-bench scout campaign is ever declared, re-file a wiring row at that moment (the SC9 rule)
-- [ ] **SC53 — Wire the INF-70 CPU decode roofline ledger on the write side before its first run (filed 2026-09-02).**
+- [x] **SC53 — Wire the INF-70 CPU decode roofline ledger on the write side before its first run (filed 2026-09-02).** ✅ 2026-09-02
+      — adapter `scripts/vidya/adapters/inf70_roofline_ledger.py` (13bb588c): one ClaimTuple per llama-bench arm / readbw kernel row /
+      barrier row through the existing measurement ladder, no new grading rule; strict reader refuses by name what it cannot rederive
+      (missing bench log, arms.log/bench-log row disagreement, absent or mismatched `artifact.sha256`); 37 tests + a real-corpus replay
+      pinning identity. Write side wired the same day (7d2d2e1d): `cli.py ingest inf70`, dry-run over the corpus = 147 rows / 441 frames,
+      zero arm refusals; producer gap closed (bced4565).
       [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) C0/C5/B1/D0 produce the numbers every later
       keep/revert in that program will cite: read-only DRAM bandwidth under the decode recipe, the clean-build
       re-anchor sweep (t1/t48/t64, uniform IQ4_XS, OMP stack on/off), the per-path achieved GB/s and the per-node
@@ -943,6 +948,34 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       `created_at` entirely (it is publication metadata, and `as_of` ranges over the evidence
       frontier) or refuse future frames at append time. What is NOT defensible is the current
       accident of neither. Pick one; an append-time refusal is the cheaper guard
+- [ ] **SC55 — wire the INF-70 per-node / per-thread graph profiler as a measurement source, write side
+      FIRST.** Filed 2026-09-05 by INF-70 as its arms began producing them. This instrument
+      (`GGML_CPU_PROF` + SYNC-1's per-(node,thread) extension: `wall_max`, `argmax_ev`, `spikes`, per-thread
+      compute, `NNODES_EQ/MIN/MAX` graph-shape filters, `PATHROW` with `ne_calls`/`GBs_per_ne_call`) now
+      produces the campaign's primary evidence and has already overturned four published figures.
+      **Project, not grade.** Caveats that MUST ride in every tuple, each one a measured way these numbers
+      have already been misread: (a) **thread-0 vs mean-thread** — a dead-time figure from thread 0
+      understates coordination by ~half (57.6 vs 46.9 ms), so the measuring thread must be recorded;
+      (b) **graph identity** — plain and MTP configs differ by 3.1× on barrier cost, so `nnodes` / graph shape
+      is part of the key, not metadata; (c) **eval-count semantics** — empty catch-up evals (`logits=0`,
+      `dst ne[1]=0`) are charged full weight bytes unless excluded, which is what forced one derived rate;
+      (d) **dispersion** — a per-node mean over N evals with no max/spike count can hide a discrete host stall
+      (4 nodes, 2.39 ms/token, measured), so a tuple without dispersion is an upper bound, not a value;
+      (e) **binary attestation** by `.so` hash AND `strings` proof of the knobs, since every shared build dir
+      in the tree was found stale; (f) **`GGML_IQK` state**, which is load-bearing for cache-residency rates.
+      Source-table row to be added to `scripts/vidya/adapters/README.md` alongside SC54's.
+
+- [ ] **SC54 — wire the qwen4exp `llama-perplexity` / KLD quality gate as a measurement source, write side
+      FIRST.** Filed 2026-09-04 by INF-70 the moment the gate was restored (C9: it returned `nan` on this model
+      until a rebuild fixed it). This is the ONLY PPL/KL instrument for qwen4exp, so every quant-quality decision
+      on the model routes through it — B7's PLE-Q8_0 A/B is its first consumer and is running now. **Project, not
+      grade.** Four caveats are mandatory in every tuple and are the whole reason to wire the write side now:
+      `GGML_IQK` state (a real 2.2% systematic offset between kernel paths), determinism (the ± is corpus
+      sampling, not run noise — two binaries reproduced to every digit, so overlapping bars are NOT agreement),
+      Ny regime (perplexity runs Ny>=32, serving runs Ny=1 — a PPL observation says nothing about the serving
+      path), and BINARY attestation by `.so` hash + mtime rather than commit alone, because C9 was a stale
+      artifact whose library predated its own fix. Source-table row added to `scripts/vidya/adapters/README.md`.
+
 - [ ] SC18 **Wire the `test-backend-ops` property layer as a measurement source — write side FIRST**
       (filed 2026-08-10 per CLAUDE.md's belief-kernel rule, at the layer's *design* time rather than
       after it ships). The property layer specified as `RVP-C2-2` in
@@ -1122,6 +1155,28 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       corpus. Test unique real-corpus identity, scored-vs-attempted reps, q8↔f16/4K control binding,
       direction, tamper refusal, pre-hook refusal, and absence of private grading logic. The adapter
       PROJECTS; `claim_tuple.grade()` decides.
+
+- [ ] **VB-INF70-ARMS — adapter for the INF-70 serving-harness ARM records** (filed 2026-09-07 by
+      HARNESS-1; distinct producer from the already-wired `inf70_roofline_ledger.py`). Each arm emits a
+      token-weighted rate with a `pred_n>=16` floor, per-node placement, build id, artifact SHA,
+      coherence classified by REASON, and — since 2026-09-07 — a per-arm **CONTENTION verdict**
+      (`foreign_cpu_max`, `foreign_cpu_mean`, DIRECT vs SMT-SIBLING).
+      **The contention verdict is the write-side hook that matters, and it is unrecoverable after the
+      fact**: it decides whether an arm can support a claim at all. The measured argument is this
+      campaign's own — pair p95 moved **19.89% → 6.25%** purely by dropping one contended arm, and that
+      was only possible because the sampler recorded contention *during* the arm, not before it (a
+      `loadavg` pre-gate provably cannot: one arm passed at load 11.61 and then ran through 23.9 → 32.0
+      → 55.7).
+      **Pre-2026-09-07 arms are PRE-HOOK and are worse than absent**: the sampler compared
+      `Cpus_allowed_list` literally against `0-95`, so work pinned to `184-191` — the SMT siblings of
+      bench cores 88-95 — was labelled `disjoint-from-0-95`. Their labels are **WRONG, not missing**.
+      They emit zero rows and must never be reconstructed on read (the DF2-4 precedent).
+      **Locator/support key = the ARM, never the per-prompt row.** 20 per-prompt wins inside one
+      pairing are not 20 independent witnesses — a quiet moment lifts all 20 (SC6-HAZARD class).
+      The adapter PROJECTS into `ClaimTuple`; **do not write a new grading rule** —
+      `claim_tuple.grade()` decides (`docs/design/vidya-pilot-spec.md` §4.7).
+      Source-table row added to `scripts/vidya/adapters/README.md` the same day.
+
 
 ## Dependency notes
 
@@ -1501,6 +1556,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       produced the number cannot be compared to any external BEAM figure later — this wave's dive is
       the proof (49.0 vs 55.7 on the same run). Source-table row in
       `scripts/vidya/adapters/README.md`; task here. Project, do not grade.
+- [ ] **SC74 — repair the blocking `intake-1300#record` citation in `docs/design/vidya-pilot-spec.md`.** The 2026-09-07 external-corroboration paragraph cites the entry at ENTRY level, so it inherits that entry's overturned deprecation claim (`intake-1300#record`) and `scripts/handoffs/index_state.py --check` reports it as the one blocking cite-check problem on main. The faithful narrowing is ambiguous between claim 0 (immutability is half-scoped) and claim 2 (the trust score gates nothing), so the author of the paragraph decides which claim the corroboration actually rests on — a passing session must not guess. Introduced by commit `51f9ef61`; surfaced by the 2026-09-07 research-intake wrap-up. Filed as SC69, renumbered to SC74 the same day because a concurrent session claimed SC69-SC73 in commit `6ebb8878`. Zero compute.
 
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 

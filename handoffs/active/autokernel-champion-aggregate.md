@@ -39,6 +39,29 @@ before quoting anything from the old branch's commit messages. Enforcement: sing
 startup refusal (research `470378a9`) — the loop refuses to start off the canonical branch; run
 21 runs attached to it at `a2728701`.
 
+**STANDING UPDATED 2026-09-03 — the champion has advanced to `732389d6`, and its standing is
+THREE measured workloads, not one number.** The paragraph above records `a2728701`; run 23 then
+added three keeps (`7d2ea88b` MMVQ crossover, `db18f393` fattn eight-wave VKQ, `732389d6` Q4_K
+weight-block hoist), all ancestors of the current tip. Measured against frozen production-v9,
+resolved live:
+
+| workload | surface | result | evidence |
+|---|---|---|---|
+| `gemma-4-26B-A4B-it-Q4_K_M` (**in-fleet worker**) | dec-b4 | **+7.206% DECISIVE** (174.26→186.76 t/s, 20 pairs, floor 0.456% — 15.8× it) | `champion-vs-production.732389d6d9d0.gemma-4-26B-A4B-it-Q4_K_M.json` |
+| `Qwen3.8-27B-Q8_0` (production) | dec-b4 (prefill) | **−1.414% DECISIVE** (66.09→65.00 t/s, 20 pairs, floor 0.949%) | `champion-vs-production.732389d6d9d0.json` |
+| `Qwen3.8-27B-Q8_0` | speculative decode | **2.38× with DFlash2** (acceptance 0.6501) | `boundary-20260901/dflash2-smoke/verdict.json` |
+
+**Reading it.** The two decisive numbers point OPPOSITE directions and both are correct: the Q4_K
+keeps are hard-gated on `GGML_TYPE_Q4_K` and therefore fire on the worker and are inert on the
+Q8_0 production model, where the residual −1.4% is the aggregate's DFlash2/feature machinery
+measured on a prefill-only surface that cannot observe DFlash2's own 2.38× decode win. A single
+champion-vs-production headline cannot express this (INF-66 R23-26); quoting one without naming
+its workload is the defect that made the +27.363% screen-rung number misleading (R23-19).
+
+**Not superseded, still true:** the +12.618% tg128 standing above was measured on `a2728701` and
+has NOT been re-measured on the current tip — treat it as the last known value for that surface,
+not as the current champion's tg128 standing.
+
 ## The finding that reframes this
 
 **`champion.py` already implements composition, not best-of.** `compatible_groups` is documented as
@@ -581,3 +604,28 @@ nothing in `mmq.*`.
       Owned by INF-66 as **R18-C**; listed here because this page is where someone comes to ask
       what the champion is worth. **Blocked on run 19 finishing** — `ak-loop-tree` is off limits
       while it runs.
+
+## FOLD — INF-70 CPU kernel work into THE champion (operator request 2026-09-07)
+
+Plan: [`docs/design/inf70-cpu-fold-into-champion-20260907.md`](../../docs/design/inf70-cpu-fold-into-champion-20260907.md).
+Same lineage (fork `270b48ed6` on this branch), merge-tree **0 conflicts**; two default-ON blockers on
+the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's request reverses it.
+
+- [x] **FOLD-OP — operator decided 2026-09-07** ✅: (a) fold IS wanted — no reversal ceremony needed,
+      folding at the right time is fine (NOTE: the CPU work is NOT yet in the champion; it sits on
+      `inf70/champion @ 6f032c48d`, forked from this lineage but unmerged); (b) **timing: fold as soon as
+      run 29 ends — the operator will stop it to reboot the machine; that reboot boundary is the fold
+      trigger.** Do not stop run 29 for the fold; do not hand FOLD-0 to `inf70-audit` yet — this was a
+      preliminary investigation for clarity on blockers. Surface FOLD-0 to `inf70-audit` when the
+      run-29 / reboot boundary approaches, so the fold-ready commit is prepared in time.
+- [ ] **FOLD-0 (`inf70-audit`, own branch)**: fold-ready commit on `6f032c48d` — `GGML_OP_MOE_TOPK_NORM`
+      opt-in (or CUDA kernel + test-backend-ops case), INF-64 fused decode opt-in, `ggml-alloc.c` stray
+      define; re-run greedy bit-identity + `test-backend-ops -b CPU`; record the PROD-2 reversal in the
+      INF-70 ledger; **push** `inf70/champion` (private clone today).
+- [ ] **FOLD-1 (champion owner)**: at a run boundary — STOP run 29 (verified dead) → tag pre-fold →
+      fetch + `git merge --no-ff inf70/champion-fold` in champ2 → house-recipe HIP build + CPU-only build.
+- [ ] **FOLD-2 gates, SAME merged tree**: GPU (test-backend-ops ROCm0 incl. SSM_SCAN, tg128 vs gen-020,
+      serving compare, DF2-10, **one GPU MoE model** for the fused op) + CPU (canonical recipe vs v9 AND
+      vs `6f032c48d`, served ABA plain+MTP with merged DEFAULTS, coherence by reason).
+- [ ] **FOLD-3**: relaunch the loop on the merged champion (`--allow-unverified-anchor`); PROD-1 codifies
+      the CPU launch recipe before any promotion headline.
