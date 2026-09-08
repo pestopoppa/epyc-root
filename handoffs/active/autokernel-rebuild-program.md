@@ -1742,6 +1742,10 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           effects against a 16.8% contended A/A floor, so contended they are unresolvable. **Operator call —
           a loop hold is a run-lifecycle action.** Folded into OP-41 as the bounded form of option (A).
           Default if unruled: INF-70 measures contended and labels the result non-claim.
+        - [x] serving recipe pinned 184-191 committed (research `bdfab023` → main `624adbdd`) ✅ 2026-09-08
+        - [ ] serving floor re-calibration under the pin: first run **CONTAMINATED** (10.255%, INF-70
+          server running) → quarantined; clean n=10 re-run in progress 10:16Z — record the number here
+          when it lands
       - [x] **R23-50 — THREE KEPT KEEPS NEVER REACHED THE CHAMPION (2026-08-29), now protected** ✅ 2026-09-07.
         Operator asked whether relaunches lost keeps. Audited all 31 `kept` rows against the champion
         branch: **28 present, 3 absent** — `akm-q8-1-float2-halfwave` (+5.353%), `akm-q8-1-float4-eighthwave`

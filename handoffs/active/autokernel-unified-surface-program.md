@@ -86,6 +86,8 @@ bench host threads on `184-191` cover the other 8; our `llama-server` was unpinn
 has nowhere to fence to. The only real options are SERIALIZE, SCHEDULE, or ACCEPT-AND-REGRESS**, and only
 a single owner can serialize builds, CPU arms and GPU arms coherently. INF-70's own builds
 (`build3.sh`, `-j40`, unpinned, unlocked) have the same defect.
+**Placement is not even sufficient**: both sides were correctly pinned on 2026-09-08 and still poisoned
+each other through DRAM bandwidth — see the admission-control bullet at the top of §3.4.
 
 ### 2.4 What already exists and must be reused, not rebuilt
 | capability | where | status |
@@ -188,6 +190,38 @@ change (recipes are code, in git) and the recipe hash becomes part of the epoch.
 correctness-oracle failure, not a tolerance — the oracle must diff op coverage, not just outputs.
 
 ### 3.4 Track U4 — resource broker and per-surface budgets
+
+- **Admission control, not screening (measured 2026-09-08, both directions):** during the fold window the
+  GPU and CPU surfaces each measured the other as a confound, **with both sides correctly pinned and
+  INF-70 holding the CPU region lock correctly**.
+
+  | direction | victim instrument | confound | quiet reference | contaminated | ratio |
+  |---|---|---|---|---|---|
+  | 1 (INF-70 MEAS-6) | their hot-harness A/A (`llama-bench`, one process at a time, tg128, 20 alternating pairs, host threads `taskset -c 184-191`) | my bundle-seed bench, straddled deliberately | pair p95 0.80% drain-era; quiet-host subset re-measured **0.509%, sd 0.279%** | **7.223%** (n=5, sd 3.268%); restated **2.151%** on their adjacent subset | **~4.2×** |
+  | 2 | my pinned serving-floor recalibration (10:05-10:08Z) | their RETEST-1 `llama-server` pid 1167737, `-t 48`, 242 threads, 4800% CPU across 0-95, launched 09:53:47Z by `session2.sh RA_AA`, holding q0-q3 as `retest1-campaign3` correctly | unpinned quiet-host floor **3.536%** (n=8, cv 1.572%) | **10.255%** p95 (cv 5.977%; 155.02/168.48/152.81/144.17/143.22 tok/s) | **~2.9×** |
+
+  Direction 1 put the detectable effect at n=8/side at **4.575%**, i.e. 1-3% CPU levers are unmeasurable
+  under concurrency, and their pre-registered gate halted before any lever arm ran. Direction 2 cost a
+  quarantined floor file and an aborted n=10 run.
+
+  **The channel is DRAM bandwidth, not cores.** INF-70's contention screen (foreign %CPU,
+  sibling-expanded) PASSED every contaminated arm: prefill flat (±2%) while decode fell 7%, NUMA
+  placement and AnonHugePages constant. **No CPU-occupancy screen on either side can see it.**
+
+  **Halt semantics are part of the broker, not a courtesy.** Both sides had a "halt" that did not stop
+  queued successors: my loop's drain let a lane start a `jobs=64` build at 09:31Z (killed at the build
+  stage); INF-70's `chain2.sh` (launched 09:41:41Z) ran a `-j 48` build 09:48:11-09:49:17Z on its own
+  after campaign 1 halted, and their agent re-ran a campaign at 09:53:41Z, reading "STOP and report" as
+  "diagnose and re-run". Structural, not carelessness.
+
+  **Rules this fixes into U4:** (a) the broker **admits ONE surface at a time** — time-slicing, with a
+  quiet-host A/A at each switch; (b) the broker owns process **LIFECYCLE**, not just locks: *nothing
+  queued may fire across a halt*; (c) CPU-occupancy screens stay **necessary for diagnosis but
+  insufficient for admission**. Cost of the alternative (INF-70, arms at 80% power): detecting +1.0%
+  needs 2 arms/side quiet, 10 concurrent, 168 during an excursion — serialising is worth **5×-84×**;
+  CHAMP-2's pooled +0.16% needs ~48 sessions/side ≈ **10 h exclusive**, not resolvable on this host
+  under any realistic booking.
+
 The loop becomes the single scheduler for: build slots (pinned, `jobs` bounded, **locked**), GPU arms (the
 `mi210_0` flock, as today), CPU arms (the orchestrator `cpu_region_lock`, role `bench`), and the
 foreign-load sampler (sibling-expanded, `/proc/<pid>/stat` deltas — reuse `foreign.py`, do not rebuild).
@@ -344,6 +378,9 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 | **UD-4 — SSM_SCAN `K` port rides with the fold: measure, don't split (2026-09-08)** | INF-70 found the CPU lineage changes `ggml_backend_cuda_device_supports_op` for `GGML_OP_SSM_SCAN` (`K > 1` → decline on CUDA → CPU fallback), an UPSTREAM port (`4595b1bca` = ggml `1692f9e50`, recurrent-state rollback), with all 5 CPU levers committed ON TOP of it (27 commits after). Splitting = cherry-picking 27 commits = exactly what the runbook forbids and how keeps get dropped. Their operator: *"make sure the gpu-focused autokernel session is aware… reserve a quiet GPU window to verify impact on GPU performance… just make sure we don't lose any performance keeps."* | **Recommendation: take the whole `champion3` as ONE candidate; in the window run test-backend-ops SSM_SCAN with an explicit `K > 1` case, `verify_ggml_linkage.sh`, and OBSERVE the 27B's SSM_SCAN dispatch on ROCm0 (it is a hybrid; SSM_SCAN runs every token); hold K out only on measured evidence.** |
 | **UD-0 — RESOLVED ✅ 2026-09-07 (~20:20Z)**: operator ruled DIRECTLY to `workspace-1c`: *"yes, fold onto the champion once the measurement windows clear."* Two gates remain, neither side controls both: (1) INF-70's windows clear (SYNC-19/20 w1 MTP block → w2 `AP` controls + 3 F1 arms → HARNESS-1 Phase B + hot session) — **they message us; do not schedule on an estimate**; (2) run 30's next boundary — ours. | The CPU session (`workspace-1c`) holds a DIRECT operator instruction from earlier this session — *"we're not folding into autokernel champion just yet. make sure we don't forget the canonical recipe."* — and correctly refuses to rebase on a relayed directive. **The operator must confirm the fold directly to that session**; a peer relay cannot override a direct instruction, and should not. | confirm directly; until then P1 proceeds only on the loop-side items (R23-51a seed, R23-49 recal) |
 | OP-41 (open) | serialize / schedule / regress on CPU co-tenancy | **serialize, structurally** — P4 builds it; until then accept INF-70's bounded-hold requests |
+
+**OP-41 headline evidence (2026-09-08):** two campaigns, both pinned, lock respected → **4.2× / 2.9×**
+mutual degradation via DRAM bandwidth; see §3.4. (Master-index row update owed to its owning session.)
 | UD-1 | CPU serving recipe = the gate for the CPU surface | the CPU session's canonical served recipe (Qwen3.8-Flash-Next), codified as `Recipe`; not a bench proxy |
 | UD-2 | promotion granularity | one production candidate carries BOTH surfaces; a surface without a demonstrated gate does not block the other's keeps landing on the champion, but does block promotion |
 | UD-3 | who authors CPU hypotheses after U3 | loop planner for RUNTIME_CONFIG/SOURCE on the CPU surface; CPU session keeps diagnosis; revisit after 10 CPU iterations |
