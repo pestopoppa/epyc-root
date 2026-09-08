@@ -1,0 +1,433 @@
+--- wrapup-20260908/prod1-draft-backup/lib/qwen38_flash_next_recipe.py	2026-09-08 16:25:17.334096608 +0000
++++ agents/prod1/draft/lib/qwen38_flash_next_recipe.py	2026-09-08 16:31:41.332090586 +0000
+@@ -58,7 +58,7 @@
+ from typing import Iterable, Optional
+ 
+ RECIPE_ID = "qwen38-flash-next-cpu-mtp"
+-RECIPE_REVISION = "2026-09-07"
++RECIPE_REVISION = "2026-09-08"   # CHAMP-2 THP shim ADOPTED into the recipe
+ 
+ 
+ class RecipeViolation(AssertionError):
+@@ -155,11 +155,76 @@
+ # ---------------------------------------------------------------------------
+ # 2. KERNEL IDENTITY (the champion)
+ # ---------------------------------------------------------------------------
++# ★★ THE CHAMPION IS NOT A COMMIT. IT IS A COMMIT PLUS A LAUNCH RECIPE.
++#    ef81196d5 + GGML_NOHUGEPAGE_PROCESS=1 at launch (see CHAMPION_GGML_ENV /
++#    THP_SHIM). Naming only the commit names a different, slower, ~8x noisier
++#    thing. This constant block is HALF the artifact; the env block is the other.
++#
++# ★ THE CHAMPION MOVED 2026-09-08 (the fold). `inf70/champion3` @ 9c4f73e29 is now
++#   an ANCESTOR, not the champion -- it is contained in ef81196d5 by ancestry.
++#   Standing rule: THE CHAMPION IS ALWAYS CURRENT.
++# ★ THE PIN IS NOT YET RESOLVED TO THE CURRENT CHAMPION, AND THE MODULE SAYS SO.
++# CHAMPION_* below still name the PIN-VERIFIABLE artifact (champion3, build 10241),
++# because that is the only tree whose object digests were measured. The CURRENT
++# champion is the folded ef81196d5, for which no build number and no digests exist
++# yet. Rather than pin a half-known artifact or silently keep naming a superseded
++# one, the module carries BOTH and refuses to certify identity until WRAP-10 resolves
++# it (CHAMPION_PIN_RESOLVED). A recipe that quietly names last week's champion is the
++# failure this module exists to prevent.
+ CHAMPION_BRANCH = "inf70/champion3"
+ CHAMPION_COMMIT = "9c4f73e2965ff347593ef335d52aea585af92106"
+ CHAMPION_BUILD_NUMBER = 10241
+ CHAMPION_TREE = "/mnt/raid0/llm/worktrees/inf70/champion2"  # branch inf70/champion3
+ CHAMPION_BINDIR = "/mnt/raid0/llm/worktrees/inf70/champion2/build-cpu/bin"
++
++# ★★ THE CURRENT CHAMPION. commit + recipe; the commit alone under-specifies it.
++CURRENT_CHAMPION = {
++    "commit": "ef81196d5",          # ⚠ SHORT FORM -- full sha not yet recorded here
++    "branch": "inf70/fold-candidate-20260908",
++    "recipe": "GGML_NOHUGEPAGE_PROCESS=1 at launch (see CHAMPION_GGML_ENV / THP_SHIM)",
++    "build_number": None,           # ⚠ NOT MEASURED -- do NOT reuse 10241
++    "sha256": None,                 # ⚠ NOT MEASURED
++    "folded": "2026-09-08",
++    "lineages_by_ancestry": {
++        "gpu_tip":            "bff30cebe",
++        "champion_of_record": "445e93a8",
++        "cpu_lineage":        "9c4f73e29",   # == CHAMPION_COMMIT above (now an ANCESTOR)
++        "frozen_production":  "0db32c06e",
++    },
++    "fold_properties": (
++        "zero files deleted; exactly one --no-ff merge; NO cherry-picks; "
++        "57 akm- keeps reachable; pre-fold rollback tag on the fork; "
++        "FOLD-2 passed in full (G1 SSM_SCAN 7/7 incl. K=4/K=3 rollback, "
++        "G2 MUL_MAT 1140/1140, G3 GDN 39/39, G4 dispatch observed -- 27,516 nodes, "
++        "SSM_SCAN=0, recurrent ops on ROCm0; G5 tg128 +0.052% NOT decisive)"
++    ),
++    "do_not_fold": {
++        "inf70/sync17-fix2 @ 2516c9807": (
++            "GGML_SCALE_SPLIT and GGML_SOLO_YIELD_ROWCOL BOTH DEFAULT ON, and that "
++            "default IS the -2.136% regression. Flip both OFF before any fold."
++        ),
++        "inf70/retest1-fix1 @ 2516c9807": (
++            "measurement instrument only -- all five knobs runtime-switchable; "
++            "it is the binary the final numbers came from. Do NOT merge."
++        ),
++        "feature/tree-draft-v6": (
++            "the champion carries a LATER CONTRADICTING DECISION. Folding a superseded "
++            "decision is a failure class ancestry cannot see, and cherry-equivalence "
++            "waves it through."
++        ),
++    },
++}
++
++# ★ FAIL-CLOSED. assert_binary_identity() and the headline both depend on this.
++# While False, the module can verify the PRIOR artifact and must NOT be read as
++# certifying the current champion's binary.
++CHAMPION_PIN_RESOLVED = False
++CHAMPION_PIN_GAP = (
++    "CHAMPION_* name champion3 (build 10241, digests measured). CURRENT_CHAMPION is "
++    "ef81196d5 with no build number and no digests. WRAP-10 must either rebuild and "
++    "re-digest at ef81196d5, or land the module with this flag False and a loud "
++    "refusal in preflight."
++)
+ # Byte-identical preserved copy of the same binaries (survives a worktree rebuild):
+ CHAMPION_BINDIR_ARCHIVE = "/mnt/raid0/llm/tmp/inf70/agents/champion3/bin-c3"
+ 
+@@ -208,14 +273,110 @@
+     "OMP_DYNAMIC": "false",
+ }
+ 
+-# GGML runtime env, EXACTLY as read back from the live champion process
+-# (champion3/runs/Q_C3_r1.env). GGML_IQK defaults to OFF in this tree
++# GGML runtime env. The first three are EXACTLY as read back from the live
++# champion-3 process (champion3/runs/Q_C3_r1.env). ★ THE FOURTH IS NOT: the
++# champion-3 arms did NOT carry GGML_NOHUGEPAGE_PROCESS -- it was adopted
++# 2026-09-08 on separate, later evidence (CHAMP-2), and adding it here is a
++# DELIBERATE change of the measured condition, not a transcription of that
++# readback. See THP_SHIM and the HEADLINES caveat.
++# GGML_IQK defaults to OFF in this tree
+ # (iqk_dispatch.cpp: `s && atoi(s) != 0`) — the kernels are compiled in but
+ # runtime-gated, so omitting GGML_IQK=1 measures a different kernel entirely.
+ CHAMPION_GGML_ENV = {
+     "GGML_IQK": "1",
+     "GGML_FUSED_DECODE_OFF": "1",  # champion runs the GRAPH path, not the megakernel
+     "GGML_FA_SPLIT_KV": "0",       # BE-2: makes 1-row decode and n-row verify row-exact
++    # ★ CHAMP-2, ADOPTED 2026-09-08 (operator-ruled). UNIT = SESSION (one process
++    # launch), set AT LAUNCH. See THP_SHIM below for the full record. This entry is
++    # what makes the champion artifact "commit + recipe" rather than "commit".
++    "GGML_NOHUGEPAGE_PROCESS": "1",
++}
++
++# ---------------------------------------------------------------------------
++# 3b. ★ THE THP SHIM (CHAMP-2) — ADOPTED, AND ITS UNIT IS THE SESSION
++# ---------------------------------------------------------------------------
++# ★ THE CHAMPION COMMIT ALONE UNDER-SPECIFIES THE CHAMPION.
++# The artifact is `ef81196d5` + GGML_NOHUGEPAGE_PROCESS=1 AT LAUNCH. Quoting the
++# commit without this env entry names a different, slower, ~8x noisier thing.
++#
++# ⚠⚠ TWO KNOBS, NOT ONE. NEVER WRITE ONE AND MEAN THE OTHER. Spell both out:
++#
++#   GGML_NOHUGEPAGE          madvise(MADV_NOHUGEPAGE) on the model buffer inside
++#                            ggml_aligned_malloc (libggml-base). ALREADY ON by
++#                            compiled default; 86.4% of the champion. LEAVE UNSET.
++#   GGML_NOHUGEPAGE_PROCESS  prctl(PR_SET_THP_DISABLE) for the WHOLE PROCESS, taken
++#                            BEFORE the 92 GB model allocation (common/common.cpp).
++#                            Compiled default OFF (opt-in). ★ EXPORT IT =1.
++#
++# Conflating them discards 86.4% of the champion. They have different mechanisms
++# (madvise vs prctl), different scopes (one buffer vs the whole process), and
++# different default states.
++#
++# GATING: the process shim requires the madvise knob to be on --
++#   common_thp_env_on("GGML_NOHUGEPAGE") && common_thp_env_opt_in("GGML_NOHUGEPAGE_PROCESS")
++# so GGML_NOHUGEPAGE=0 is a MASTER OFF that silently disables this too.
++THP_SHIM = {
++    "knob": "GGML_NOHUGEPAGE_PROCESS",
++    "value": "1",
++    "mechanism": "prctl(PR_SET_THP_DISABLE) before the 92 GB model allocation",
++    "set_at": "LAUNCH (process environment)",
++    # ★ THE FIELD PEOPLE GET WRONG. A floor carries its harness, its n, its
++    # contention model, its host state AND ITS UNIT.
++    "unit": "SESSION (one process launch) -- NEVER the arm",
++    "compiled_default": "OFF (opt-in)",
++    "recommended_default": "ON",
++    "not_this_knob": "GGML_NOHUGEPAGE (madvise, already ON, 86.4% of the champion)",
++    "requires": "GGML_NOHUGEPAGE on (its own default)",
++    # Verification, also session-unit: 1 = THP allowed (shim OFF), 0 = prctl in force
++    # (shim ON). Read ONCE PER LAUNCH, fail-closed -- abort a session whose requested
++    # state does not match the observed one. AnonHugePages is NOT a valid
++    # discriminator (0.06% of Rss at load, ~6% minutes later on the same process).
++    "verify": "grep ^THP_enabled /proc/<pid>/status   # 0 = shim ON, 1 = shim OFF",
++    "verify_expect": "0",
++    "fail_closed": True,
++    # Evidence. Pre-registered paired sign test, PREREG-THP-DECISION.md frozen
++    # 14:08:05Z (sha256 337200315c6b...) BEFORE the lock; boundary in tools/decide.py,
++    # unit-tested before the run.
++    "decision": "ADOPTED -- likely improvement, KEEP (operator-ruled 2026-09-08)",
++    "design": "paired sign test, 6 pairs (12 sessions), order-balanced, early stop at first look",
++    "result": "6/6 pairs ON-faster",
++    # ★ EXACT alpha, ENUMERATED over all 2**10 sequences with nested stopping.
++    # A union bound would have said 0.078 and been OVER BUDGET SILENTLY.
++    "alpha_exact_two_sided": 0.0430,
++    "alpha_union_bound_would_have_said": 0.078,
++    # ★ DIRECTION IS CLAIMED. MAGNITUDE IS NOT -- the design sized for direction only.
++    "magnitude_claimed": False,
++    "median_effect_pct": 5.23,
++    "pair_effects_pct": (4.843, 5.617, 5.934, 5.664, 0.321, 0.558),
++    # ★ It bought PRECISION as well as throughput -- this may outlast the speed result.
++    "between_launch_sd_pct_off": 5.081,   # 9 launches, range 12.55% -- RETIRED config
++    "between_launch_sd_pct_on": 0.609,    # 6 launches, range 1.79%  -- ADOPTED config
++    "sd_ratio": 8.3,
++    "variance_ratio": 70,
++    "paired_test_variance_ratio": 25.3,
++    # Launches needed for a given 95% CI, ON vs OFF.
++    "launches_for_ci": {"1.0%": (2, 100), "0.5%": (6, 397), "0.25%": (23, 1587)},
++    # ★ NO FOLD, NO BRANCH, NO REBUILD. The champion binary stays ef81196d5,
++    # BIT-IDENTICAL. This is a RECIPE change, not a kernel change, and the evidence
++    # was collected via exactly this per-session env route.
++    "delivery": "launcher env only -- no code change, no rebuild, trivially reversible",
++    "binary_unchanged": "ef81196d5",
++    # Correctness: page backing, not arithmetic. Every champion-state comparison in
++    # the campaign was 24/24 byte-identical, including cross-binary. No shim-ON-vs-OFF
++    # specific correctness gate was run, and none is claimed.
++    "correctness": "24/24 byte-identical across the campaign; no shim-specific gate run",
++    # ★ THE 1200-FOLD ERROR THIS FIELD EXISTS TO PREVENT.
++    # Applying the ARM floor (0.501% within-session) to this SESSION-unit question
++    # said "4 sessions/side" for +0.16%. The correct session-unit answer is 4780.
++    # The shim cannot be switched between arms in a live process; a per-arm number
++    # for it is meaningless BY CONSTRUCTION.
++    "arm_floor_does_not_transfer": (
++        "within-session arm sd 0.501% vs between-session launch sd 2.793% (~13x coarser). "
++        "Using the arm floor here gave 4 sessions/side where the answer is 4780 -- a "
++        "1200-fold error."
++    ),
++    "record": "handoffs/active/cpu-decode-roofline-program.md (CHAMP-2); "
++              "/mnt/raid0/llm/tmp/inf70/agents/retest1/FOLD-RECORD-THP.md",
+ }
+ 
+ # No GOMP_* and no KMP_* anywhere in this recipe: the build is libgomp (GNU 15.2.0),
+@@ -246,6 +407,9 @@
+     "GGML_IQK":               ("1",  "export", "compiled default OFF; iqk kernels runtime-gated"),
+     "GGML_FUSED_DECODE_OFF":  ("1",  "export", "compiled default: fused decode ON; champion runs graph path"),
+     "GGML_FA_SPLIT_KV":       ("0",  "export", "compiled default ON (ops.cpp: e ? atoi(e)!=0 : true)"),
++    # ★ CHAMP-2 ADOPTED 2026-09-08. Was ("off","leave unset") through 2026-09-07.
++    # UNIT = SESSION. NOT GGML_NOHUGEPAGE (see THP_SHIM). Requires GGML_NOHUGEPAGE on.
++    "GGML_NOHUGEPAGE_PROCESS":("1",  "export", "CHAMP-2 prctl(PR_SET_THP_DISABLE) shim, compiled default OFF (opt-in); ADOPTED -- 6/6 pairs ON-faster, exact alpha 0.0430, unit=SESSION; verify THP_enabled==0 per launch"),
+     # --- default ON, leave unset ---
+     "GGML_ROWCOL_SPLIT":      ("on", "leave unset", "common.h: unset/empty => true; =0 restores upstream row-only split"),
+     "GGML_TINY_SOLO":         ("on", "leave unset", "ggml-cpu.c: unset/empty => true"),
+@@ -259,7 +423,9 @@
+     "GGML_QSPLIT_MIN":        ("INT64_MAX", "leave unset", "multi-row branch only; verified in machine code (movabs 0x7fffffffffffffff)"),
+     "GGML_ROWEXACT_N":        ("0",  "leave unset", "ggml-cpu.c GGML_ROWEXACT_DEFAULT_N 0 — inert"),
+     "GGML_VEC_SIGMOID":       ("off","leave unset", "common.h: set-and-nonzero required; not bit-identical to libm expf"),
+-    "GGML_NOHUGEPAGE_PROCESS":("off","leave unset", "CHAMP-2 PR_SET_THP_DISABLE shim; polarity inverted to opt-IN at 9c4f73e29 (pooled +0.16%, 73/120 = zero)"),
++    # (GGML_NOHUGEPAGE_PROCESS moved to the EXPORTED block above -- CHAMP-2 adopted
++    #  2026-09-08. Its former note quoted "pooled +0.16%, 73/120 = zero", which was an
++    #  ARM-unit result for a SESSION-unit knob: SUPERSEDED, see THP_SHIM.)
+     "GGML_TINY_SOLO_ROWS":    ("1",  "leave unset", "SYNC-15 widened predicate; 1 = champion"),
+     "GGML_IQK_Q8_0":          ("off","leave unset", "iqk_dispatch.cpp: set-and-nonzero required"),
+     "GGML_ROWCOL_MIN_ELEMS":  ("512","leave unset", "common.h default"),
+@@ -270,7 +436,9 @@
+ # discards 86.4% of the champion. The first is the madvise inside ggml_aligned_malloc
+ # (libggml-base) and STAYS ON — proven live at AnonHugePages 0.057% of RSS against
+ # pristine's 99.888%. Only the process-wide PR_SET_THP_DISABLE in libllama-common
+-# (GGML_NOHUGEPAGE_PROCESS) is default-OFF.
++# (GGML_NOHUGEPAGE_PROCESS) is default-OFF *in the binary* — and as of 2026-09-08 the
++# RECIPE turns it ON. Compiled default OFF, recipe default ON: both statements are
++# true and they are not in conflict. See THP_SHIM (§3b) for the unit and the evidence.
+ 
+ 
+ # ---------------------------------------------------------------------------
+@@ -388,7 +556,59 @@
+         ),
+     },
+ }
+-CANONICAL_HEADLINE = "champion3"
++# ★ THE FINAL CHARACTERISATION, 2026-09-08. Unit = LAUNCH; precision = between-launch.
++# 18 launches, none dropped, all 24/24 rows complete, shim ON verified per launch.
++HEADLINES["champion_final_20260908"] = {
++    "binary": "ef81196d5 (folded champion) + GGML_NOHUGEPAGE_PROCESS=1 at launch",
++    "window": "2026-09-08 15:05:39Z-16:12:47Z, GPU loop down, host exclusive",
++    "prereg": "PREREG-FINAL.md frozen 15:05:15Z sha256 1d8f4ddc... BEFORE the lock",
++    "unit": "LAUNCH",
++    "plain_served_tps": 27.893,        # n=6, between-launch sd 0.609%, CI +/-0.487%
++    "mtp_served_tps": 43.281,          # n=6, between-launch sd 0.356%, CI +/-0.285%
++    "pristine_plain_tps": 12.762,      # n=3, sd 0.360%
++    "pristine_mtp_tps": 23.709,        # n=3, sd 0.926%
++    "ratio_vs_pristine_plain": 2.1857, # CI [2.1730, 2.1974]
++    "ratio_vs_pristine_mtp": 1.8255,   # CI [1.8081, 1.8399]
++    "ratio_mtp_over_plain": 1.5516,    # CI [1.5439, 1.5598]
++    "alpha": 0.821,                    # identical on champion and pristine
++    # ★ HEADLINE FORM IS A SIGN CLAIM WITH A BOUNDED MAGNITUDE (operator-ruled).
++    # Bounds are the LOWER ENDS of 95% bootstrap CIs over launches, not point
++    # estimates. Do NOT restate as "2.19x".
++    "headline": ("champion beats pristine by >=117% plain and >=81% served-MTP; "
++                 "MTP beats plain by >=54%"),
++    # ⚠ CAVEAT 1 -- must travel with EVERY ratio.
++    "ratio_is_recipe_to_recipe": (
++        "NOT knob-controlled. Pristine contains NEITHER THP knob (0 occurrences of "
++        "both, no marker), so equal shim state is impossible BY CONSTRUCTION. What IS "
++        "controlled: same harness, window, prompt set, server flags, host state, and "
++        "adjacent interleaved launches. ★ RETROACTIVE COROLLARY: no champion-vs-"
++        "pristine ratio this campaign ever quoted was knob-controlled either -- the "
++        "THP difference sat inside all of them, unlabelled."
++    ),
++    # ⚠ CAVEAT 2 -- must travel with EVERY ratio.
++    "open_flag": (
++        "CHAMPION-DIVERGENCE.md STAYS OPEN: 2.1857x here vs the standing 1.7151x. Two "
++        "conditions differ at once (shim state AND harness/window). Pristine reproduces "
++        "across both (12.762 vs 12.366, +3.2%); the champion does not. Adoption explains "
++        "PART of the movement and the instability -- NOT asserted to explain all of it."
++    ),
++    "supersedes": ("1.5149x, +4.50%, 1.7151x, 1.4993x, +4.27%, 33.370 t/s and the "
++                   "~36.9 t/s projection -- all champion3 / shim OFF / old harness. "
++                   "MARK THEM SUPERSEDED; do not silently replace."),
++}
++
++# ★ The prior headlines were measured WITHOUT the adopted knob and on a retired
++# harness. Adopting a launch-time knob CHANGES THE MEASURED CONDITION and invalidates
++# a recipe's floor until it is re-calibrated -- the same rule cpu_list carries.
++HEADLINES["champion3"]["status"] = (
++    "SUPERSEDED 2026-09-08 by champion_final_20260908; measured shim OFF on the "
++    "retired harness. Retained as the record of a configuration, not as the champion."
++)
++HEADLINES["speed_claim_aba"]["status"] = (
++    "build-10221 number, NEVER a champion number (already flagged); also pre-shim."
++)
++
++CANONICAL_HEADLINE = "champion_final_20260908"
+ 
+ # The workload the headline was measured on. Reproducing the number requires this too.
+ WORKLOAD = {
+@@ -411,7 +631,35 @@
+     "linkage_proof": "the libggml-cpu.so in /proc/PID/maps must be under the arm's own bindir",
+     "placement_proof": "numastat -p PID; max per-node deviation <= 15%, else re-evict and retry",
+     "env_readback": "tr '\\0' '\\n' < /proc/PID/environ | grep -E '^(GGML_|OMP_|LLAMA_)'",
+-    "thp_readback": "AnonHugePages / Rss from /proc/PID/smaps_rollup (champion ~0.057%)",
++    # ⚠ AnonHugePages/Rss is NOT a valid discriminator for the PROCESS shim: it reads
++    # 0.06% of Rss at load and ~6% minutes later ON THE SAME PROCESS, so a pass or a
++    # fail depends on WHEN you looked. It remains a useful sanity read for the
++    # madvise knob (GGML_NOHUGEPAGE), and only for that.
++    "thp_readback_madvise_only": "AnonHugePages / Rss from /proc/PID/smaps_rollup (champion ~0.057%)",
++    # ★ THE AUTHORITATIVE, TIME-INVARIANT CHECK for CHAMP-2. Read ONCE PER LAUNCH.
++    # 0 = prctl in force (shim ON, what the champion recipe wants); 1 = THP allowed.
++    # FAIL CLOSED: abort the session on a mismatch. A launch that cannot prove its
++    # shim state did not measure the champion.
++    "thp_process_shim": (
++        "grep ^THP_enabled /proc/PID/status  ==  'THP_enabled:\t0'   # fail-closed, once per LAUNCH"
++    ),
++}
++
++# ★ Unit register. A floor, a knob and a claim each carry a UNIT, and mixing them is
++# the 1200-fold error (arm floor 0.501% vs launch floor 2.793%, ~13x coarser).
++MEASUREMENT_UNITS = {
++    "GGML_NOHUGEPAGE_PROCESS": "SESSION (process launch)",
++    "champion_vs_pristine_ratio": "LAUNCH",
++    "arm-scoped GGML_* knobs": "ARM (within one server process)",
++}
++FLOORS = {
++    # (unit, sd %, what it governs)
++    "arm_best_case":      ("arm, within session",       0.071, "4 consecutive undisturbed arms"),
++    "arm_routine":        ("arm, within session",       0.433, "A/A gate, 5 kept arms"),
++    "arm_campaign":       ("arm, within session",       0.501, "arm-scoped knobs"),
++    "session":            ("session, between launches", 2.793, "PROCESS-scoped knobs -- e.g. CHAMP-2"),
++    "launch_shim_on":     ("launch, shim ON",           0.609, "the adopted recipe (champion plain, n=6)"),
++    "launch_shim_off":    ("launch, shim OFF",          5.081, "RETIRED config (n=9, range 12.55%)"),
+ }
+ 
+ 
+--- wrapup-20260908/prod1-draft-backup/lib/test_qwen38_flash_next_recipe.py	2026-09-08 16:25:17.334143929 +0000
++++ agents/prod1/draft/lib/test_qwen38_flash_next_recipe.py	2026-09-08 16:32:10.142750653 +0000
+@@ -149,7 +149,56 @@
+ 
+     def test_both_knobs_present_and_distinct(self):
+         self.assertEqual(R.CHAMPION_KNOBS["GGML_NOHUGEPAGE"][0], "on")
+-        self.assertEqual(R.CHAMPION_KNOBS["GGML_NOHUGEPAGE_PROCESS"][0], "off")
++        # CHAMP-2 ADOPTED 2026-09-08: the process shim is now EXPORTED =1.
++        self.assertEqual(R.CHAMPION_KNOBS["GGML_NOHUGEPAGE_PROCESS"][0], "1")
++        self.assertEqual(R.CHAMPION_KNOBS["GGML_NOHUGEPAGE_PROCESS"][1], "export")
++        # ...and it must actually be in the env the recipe emits, not merely documented.
++        self.assertEqual(R.CHAMPION_GGML_ENV["GGML_NOHUGEPAGE_PROCESS"], "1")
++        # The two knobs must never collapse into one entry.
++        self.assertNotIn("GGML_NOHUGEPAGE", R.CHAMPION_GGML_ENV)
++
++    def test_thp_shim_carries_its_unit(self):
++        """★ A floor/knob record without its UNIT is the 1200-fold error.
++
++        CHAMP-2 is a SESSION-unit knob. The arm floor does not transfer to it.
++        """
++        self.assertEqual(R.THP_SHIM["knob"], "GGML_NOHUGEPAGE_PROCESS")
++        self.assertIn("SESSION", R.THP_SHIM["unit"])
++        self.assertIn("LAUNCH", R.THP_SHIM["set_at"])
++        # Direction is claimed; magnitude is NOT.
++        self.assertFalse(R.THP_SHIM["magnitude_claimed"])
++        # The exact alpha was enumerated, not union-bounded.
++        self.assertLess(R.THP_SHIM["alpha_exact_two_sided"], 0.05)
++        self.assertGreater(R.THP_SHIM["alpha_union_bound_would_have_said"], 0.05)
++        # Recipe change, not kernel change.
++        self.assertEqual(R.THP_SHIM["binary_unchanged"], "ef81196d5")
++
++    def test_shim_is_not_verified_by_the_invalid_discriminator(self):
++        """★ Vacuous-instrument guard.
++
++        AnonHugePages/Rss reads 0.06% at load and ~6% minutes later on the SAME
++        process, so it cannot decide the shim's state. The authoritative check is
++        THP_enabled in /proc/PID/status, read once per LAUNCH, fail-closed.
++        """
++        shim_check = R.PRECONDITIONS["thp_process_shim"]
++        self.assertIn("THP_enabled", shim_check)
++        self.assertIn("fail-closed", shim_check)
++        self.assertIn("LAUNCH", shim_check)
++        self.assertNotIn("AnonHugePages", shim_check)
++        # The time-varying read must still exist, but named for what it can decide.
++        self.assertIn("AnonHugePages", R.PRECONDITIONS["thp_readback_madvise_only"])
++        self.assertNotIn("thp_readback", R.PRECONDITIONS)
++
++    def test_every_floor_carries_its_unit(self):
++        """★ A bare number is not a floor. 1200-fold error guard."""
++        for name, (unit, sd, governs) in R.FLOORS.items():
++            self.assertTrue(unit and isinstance(unit, str), name)
++            self.assertTrue(any(u in unit for u in ("arm", "session", "launch")), name)
++            self.assertIsInstance(sd, float, name)
++            self.assertTrue(governs, name)
++        # The arm floor and the session floor must not be the same number.
++        self.assertNotEqual(R.FLOORS["arm_campaign"][1], R.FLOORS["session"][1])
++        self.assertGreater(R.FLOORS["session"][1], R.FLOORS["arm_campaign"][1] * 5)
+ 
+ 
+ class TestArtifactIdentity(unittest.TestCase):
+@@ -206,7 +255,40 @@
+         self.assertNotIn("10241", R.HEADLINES["speed_claim_aba"]["binary"])
+ 
+     def test_canonical_headline_is_the_champion(self):
+-        self.assertEqual(R.CANONICAL_HEADLINE, "champion3")
++        """★ Was `assertEqual(CANONICAL_HEADLINE, "champion3")` -- a literal that
++        became WRONG the moment the champion moved (fold, 2026-09-08) while still
++        passing every other test. Assert the PROPERTY, not the string: the canonical
++        headline must name the CURRENT champion and must not be a superseded entry.
++        The standing rule is `the champion is always current`.
++        """
++        h = R.HEADLINES[R.CANONICAL_HEADLINE]
++        self.assertNotIn("status", h,
++                         "the canonical headline must not be a superseded entry")
++        self.assertIn(R.CURRENT_CHAMPION["commit"], h["binary"])
++        # And every superseded entry must SAY it is superseded, not just be unused.
++        for name, entry in R.HEADLINES.items():
++            if name == R.CANONICAL_HEADLINE:
++                continue
++            self.assertIn("status", entry,
++                          f"{name} is not canonical and carries no supersession note")
++
++    def test_the_pin_gap_is_declared_not_hidden(self):
++        """★ The module names champion3's digests but ef81196d5 is the champion.
++        That gap must be DECLARED and fail-closed, never papered over."""
++        self.assertFalse(R.CHAMPION_PIN_RESOLVED)
++        self.assertTrue(R.CHAMPION_PIN_GAP)
++        self.assertIsNone(R.CURRENT_CHAMPION["build_number"])
++        self.assertIsNone(R.CURRENT_CHAMPION["sha256"])
++        # The prior champion is an ANCESTOR of the current one, not the champion.
++        self.assertEqual(R.CURRENT_CHAMPION["lineages_by_ancestry"]["cpu_lineage"],
++                         R.CHAMPION_COMMIT[:9])
++
++    def test_do_not_fold_list_is_carried(self):
++        """★ Folding a superseded decision is a failure ancestry cannot see."""
++        self.assertIn("feature/tree-draft-v6", R.CURRENT_CHAMPION["do_not_fold"])
++        joined = " ".join(R.CURRENT_CHAMPION["do_not_fold"])
++        self.assertIn("sync17-fix2", joined)
++        self.assertIn("retest1-fix1", joined)
+ 
+     def test_workload_is_pinned(self):
+         for k in ("prompts", "max_tokens", "temperature", "cache_prompt"):

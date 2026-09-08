@@ -1,13 +1,63 @@
 # CPU Decode Roofline Program — Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling
 
-**CURRENT STATE (2026-09-07) — read this before the 2026-09-02 framing below.**
-**CHAMPION: `inf70/champion3` @ `9c4f73e29`, build 10241** (full record at *CHAMPION-3*, and the standing
-rule *the champion is always current*). **+4.27% over champion-1 (117/120 paired per-prompt wins),
-1.4993× over pristine (120/120), 1.7151× plain, bit-identical in 16 arm-pairs.** Quote the **ratios**: the
-in-window absolute is 33.370 t/s / 29.967 ms and the ≈36.9 t/s / ≈27.1 ms anchor-referred figure is a
-**projection, not a measurement** (WRAP-7). Production untouched at `0db32c06e`. **The 98.6 ms / ~95 ms
-token, the "27% of roofline" fraction and the Sept-2 ordering below are the AUDIT-DAY baseline, retained
-because every ledger row is sourced — they are not the current state.** In flight: SYNC-16, HARNESS-1.
+**CURRENT STATE (2026-09-08) — THE CAMPAIGN IS CLOSED OUT. Read this before everything below.**
+
+> ## ★ THE CHAMPION IS `ef81196d5` **+ `GGML_NOHUGEPAGE_PROCESS=1` AT LAUNCH**
+>
+> **The commit alone UNDER-SPECIFIES it.** The artifact is **commit + launch recipe**; quoting the
+> commit without the recipe names a different, slower, ~8× noisier thing. Consolidated 2026-09-08:
+> all four lineages by **ancestry** — GPU tip `bff30cebe`, champion-of-record `445e93a8`, our
+> `inf70/champion3` `9c4f73e29`, frozen production `0db32c06e` — **zero deletions, one `--no-ff`
+> merge, no cherry-picks**, pre-fold rollback tag on the fork. **FOLD-2 passed in full**: G1 SSM_SCAN
+> 7/7 (incl. the K=4/K=3 rollback), G2 MUL_MAT 1140/1140, G3 GDN 39/39, G4 dispatch observed
+> (27,516 nodes, SSM_SCAN=0, recurrent ops on ROCm0), G5 tg128 +0.052% **not decisive**.
+
+**FINAL MEASURED NUMBERS — 18 launches, none dropped. Unit = LAUNCH; every precision figure is
+between-launch.** Conditions travel with every number: hot harness · 24-prompt production mix ·
+token-weighted decode · both screens live and `screened()` applied · GPU loop down · shim ON verified
+per launch · no hot absolute compared against a cold one.
+
+| configuration | n | central t/s | between-launch sd | 95% CI |
+|---|---:|---:|---:|---|
+| champion plain, shim ON | 6 | **27.893** | 0.609% | ±0.487% |
+| champion MTP, shim ON | 6 | **43.281** | 0.356% | ±0.285% |
+| pristine plain | 3 | 12.762 | 0.360% | ±0.408% |
+| pristine MTP | 3 | 23.709 | 0.926% | ±1.048% |
+
+Ratios: plain **2.1857×** [2.1730, 2.1974] · MTP **1.8255×** [1.8081, 1.8399] · MTP/plain **1.5516×**
+[1.5439, 1.5598]. MTP draft acceptance **82.1%**, identical on both binaries.
+
+**★ HEADLINE FORM IS SIGN CLAIMS WITH BOUNDED MAGNITUDES (operator-ruled):** the champion beats
+pristine by **≥117% plain** and **≥81% served-MTP**; MTP beats plain by **≥54%**. Bounds are the lower
+ends of 95% bootstrap intervals over launches — **not point estimates**. Do not restate as "2.19×".
+
+> **⚠ SUPERSEDED — mark, do not silently replace.** `1.5149×`, `+4.50%` and **`1.7151×`** (and the
+> `1.4993×` / `+4.27%` / 117-of-120 / 120-of-120 figures this header used to carry) were all measured
+> on **`champion3`, shim OFF, the old harness** — a configuration that has now been **retired**. They
+> are not wrong for what they measured. Any document still quoting them must be **annotated
+> SUPERSEDED**, so the supersession itself stays visible. Same for the in-window `33.370 t/s /
+> 29.967 ms` absolute and the `≈36.9 t/s` projection (WRAP-7 is closed by supersession, not by being
+> done — champion-3 is no longer the champion).
+
+**Evidence, rescued out of scratch and now in git**:
+[`docs/design/inf70-close-out-20260908/`](../../docs/design/inf70-close-out-20260908/) —
+`CHAMPION-FINAL.md` (the 18-launch characterisation), `FOLD-RECORD-THP.md` (CHAMP-2's unit and α),
+`FIX1-RESULT.md` (the P-arm control), `CHAMPION-DIVERGENCE.md` (open), and the corrected PROD-1
+recipe drafts. Operator action list:
+[`docs/design/inf70-close-out-apply-list-20260908.md`](../../docs/design/inf70-close-out-apply-list-20260908.md).
+
+**⚠ TWO CAVEATS THAT MUST TRAVEL WITH EVERY RATIO** — see the two CLOSE-OUT items CLOSE-4/CLOSE-5:
+1. the champion-vs-pristine ratio is **recipe-to-recipe, NOT knob-controlled** (pristine contains
+   *neither* THP knob, 0 occurrences, no marker — equal shim state is impossible by construction), and
+   **retroactively, no champion-vs-pristine ratio this campaign ever quoted was knob-controlled either**;
+2. **`CHAMPION-DIVERGENCE.md` stays OPEN** — 2.1857× here vs the standing 1.7151×, two conditions
+   differ at once; pristine reproduces across both, the champion does not.
+
+Production untouched at `0db32c06e`. **The 98.6 ms / ~95 ms token, the "27% of roofline" fraction and
+the Sept-2 ordering below are the AUDIT-DAY baseline, retained because every ledger row is sourced —
+they are not the current state.** **Nothing is in flight: lever research is STOPPED by operator
+directive** (*"no more pure kernel inference research until we have a FULLY consolidated champion"*);
+§1 records that the champion is now consolidated, and **lifting the directive is the operator's call.**
 
 **Status**: AUDITED 2026-09-02 — implementation-ready. Directed by the operator 2026-09-02: the **hard,
 non-speculative gains FIRST**; the MTP head that the conversion dropped is restored **LAST** (Axis E),
@@ -966,7 +1016,15 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       **Explicit decline recorded, not a drop: do NOT edit the 19 scratch build scripts** — they are one-shot
       artifacts and mostly spent; the value is in the convention and in PROD-1 importing it.
 - [x] **★★★ MEAS-6 — MEASURED 2026-09-08: TWO CPU/GPU CAMPAIGNS CANNOT BE MEASURED CONCURRENTLY ON
-      THIS HOST. PINNING CONTROLS PLACEMENT, NOT CONTENTION.** This is the number OP-40/OP-41 should be
+      THIS HOST. PINNING CONTROLS PLACEMENT, NOT CONTENTION.** ✅ 2026-09-08 (measurement complete)
+      **⚠ MEASURED ≠ RULED. The DECISION it feeds — OP-40, jointly with autokernel OP-41 — is STILL
+      UNRULED and lives in the master index's operator queue, not here.** Two further findings landed
+      2026-09-08 and belong to this id: a **~17% third-party tax** (an 8-core `python` + `opencode`,
+      `Cpus_allowed_list=0-191`, **neither campaign's**, cost an arm on a mandated-exclusive host —
+      **region-lock serialises those who CALL it; nothing constrains those who do not**), and the
+      channel identification: **the contention went through DRAM BANDWIDTH, not cores** (prefill flat,
+      decode −7%), which **no CPU-occupancy screen on either side can see** — so **the fix is admission
+      control, not a better screen.** This is the number OP-40/OP-41 should be
       decided on, and it was produced by RETEST-1's A/A gate FAILING — the halt is the result.
 
       | condition | hot-harness A/A pair p95 |
@@ -1986,9 +2044,21 @@ most, so its weaker provenance should be stated wherever it is relied on.
 
 ## Tasks filed from the 2026-09-08 findings
 
-- [ ] **★★ RETEST-1 — RE-MEASURE THE INSTRUMENT-UNRESOLVED LEVERS ON THE HOT HARNESS.
-      Operator-approved 2026-09-08 (*"agreed. Do this as soon as the autokernel agent completes the
-      fold."*), GATED ON THE FOLD COMPLETING.**
+- [x] **★★ RETEST-1 — EXECUTED AND CLOSED ✅ 2026-09-08. 3 of 5 levers resolved, 2 NOT REACHED.**
+      **Dispositions (full record in *CLOSE-OUT — INF-70 dispositions* above):**
+      **FIX-1 + FIX-3 → NO-GO, CLAIMED REGRESSION −2.136%** (ratio 0.9786, CI [0.9771, 0.9804]
+      excluding 1.0, p=0.0286, n=4v4, 24/24 byte-identical). Decomposition: **C→P (FIX-3 yield alone)
+      −1.883%; P→F (column split alone) −0.258%** — essentially all of the loss is FIX-3 yielding the
+      SCALE node out of the tiny-solo run, and **the tiny-solo run was better all along**. SYNC-19's
+      barrier model predicted **+3.31% and got the SIGN wrong**. Admissible only because of the **P
+      arm, a directional positive control SYNC-19 lacked** — without it "no effect" and "the knob
+      never fired" are indistinguishable.
+      **CHAMP-2 THP shim → ADOPTED** (operator-ruled). See the header and CLOSE-OUT §C4.
+      **SYNC-18 → UNTESTABLE AS BUILT**, resolved from source, **0 arms spent**.
+      **SYNC-16 → NOT REACHED. SYNC-13 → NOT REACHED.** Both re-filed as their own tasks below rather
+      than left inside a closed row.
+      ---
+      *Original brief, retained because its scoping rule is the justification and must stay legible:*
       **The freeze on pure kernel research STANDS.** This is legitimate only because it is scoped to
       levers that **failed to the INSTRUMENT, not to a MECHANISM** — and that distinction is the
       whole justification, so it must not be blurred by a later reader.
@@ -2066,13 +2136,37 @@ most, so its weaker provenance should be stated wherever it is relied on.
       and a cold number are **not on one scale**. Any table that will accumulate hot arms alongside
       historical cold ones needs the scale marked per row, or it will silently manufacture a +4.36%
       "improvement". This is a labelling task, not a re-measurement.
-- [ ] **MEAS-6 — HARNESS-1 does not close MEAS-4; say so where MEAS-4 is quoted.** Hot serving takes
+- [ ] **MEAS-7 — HARNESS-1 does not close MEAS-4; say so where MEAS-4 is quoted.**
+      **⚠ ID COLLISION FIXED 2026-09-08: this task was filed as `MEAS-6`, which was already taken by
+      the cross-campaign contention measurement (~L1011, `[x]`). Two different tasks, one id.
+      Renumbered to the next free id at `origin/main` — `MEAS-7`. `MEAS-6` now means exactly one
+      thing.** The cross-campaign result and its still-unruled status live on **MEAS-6**, not here;
+      **this** task is the narrow labelling job it was filed as.
+      **The cross-campaign numbers below are MEAS-6's, quoted here only because they bound what
+      MEAS-7's labelling must say.** Two campaigns, **correct pinning on both sides, no rule broken**: our CPU A/A went
+      **0.80% → 7.223%** under their pinned GPU bench; their serving floor went **3.536% → 10.255%**
+      under our lock-holding CPU session. **"Pinning controls placement, not contention"** (their
+      framing, adopted) — **SMT siblings share the physical core**. Plus a **~17% third-party tax**:
+      with both campaigns serialised on a mandated exclusive host, an 8-core `python` + `opencode`
+      (`Cpus_allowed_list=0-191`, **neither campaign's**) still cost an arm. **★ Region-lock
+      serialises those who CALL it; nothing constrains those who do not.** And **the contention
+      channel was DRAM BANDWIDTH, not cores** (prefill flat, decode −7%), which **no CPU-occupancy
+      screen on either side can see** — so **the fix is admission control, not screening**.
+      *Original note:* Hot serving takes
       "not measuring" from ~45% → **8.8%** and 10 lock acquisitions → **1**, but it does **NOT** fix
       **96 cores reserved to use 48**, and it **holds all four regions for one 32-minute block** —
       which is a *worse* co-tenancy shape for a second agent even as it is a better instrument.
       MEAS-4 stays open on both counts.
-- [ ] **FIX2-BUILD — `inf70/sync17-fix2` @ `67dcb1fa8` is CORRECT IN SOURCE AND DELIBERATELY
-      UNBUILT.** CLAMP is split into its own case. It was not built because **building would have
+- [ ] **FIX2-BUILD — `inf70/sync17-fix2` is CORRECT IN SOURCE, DELIBERATELY UNBUILT, and as of
+      2026-09-08 **DO-NOT-FOLD AS-IS**.**
+      **★ UPDATED 2026-09-08 BY THE RETEST-1 RESULT.** `inf70/sync17-fix2` @ **`2516c9807`** has
+      **`GGML_SCALE_SPLIT` and `GGML_SOLO_YIELD_ROWCOL` BOTH DEFAULT ON — and that default IS the
+      −2.136% regression.** If any part of this branch is ever folded, **both must be flipped to
+      default OFF first**, and the branch must **not** be promoted as-is. `inf70/retest1-fix1`
+      (`2516c9807`) must **NOT** be merged to the champion either — its value is as a **measurement
+      instrument** (it makes all five knobs runtime-switchable and it is the binary the final numbers
+      came from).
+      *Original note:* CLAMP is split into its own case. It was not built because **building would have
       contended with live arms — the exact defect MEAS-1 documents** — and it was authored in a
       detached worktree so `inf70/sync17`, which a measured binary points at, stays unrewritten.
       **Gated by the operator's stop on lever research**; build and validate only after a fully
@@ -2135,6 +2229,121 @@ most, so its weaker provenance should be stated wherever it is relied on.
       `inf70/foreign-load-sampler` @ `e441de78`, merged by autokernel as `de51899c`) — the defect is
       the clone's state, not the promotion. Not this campaign's to fix unilaterally; needs routing.
 
+# CLOSE-1..CLOSE-11 — derived actionables filed at the 2026-09-08 CLOSE-OUT wrap-up
+
+Each was stated as a conclusion in this session's own output. **Ids allocated from `origin/main`**
+(`CLOSE-` was verified unused there); the `MEAS-6`/`MEAS-7` collision above was fixed in the same pass.
+**A retired id is burnt permanently** — `INF-71` and `DRIFT-2`/`DRIFT-3` are burnt and must never be
+re-issued, and `B7` was already re-pointed once.
+
+- [ ] **★★ CLOSE-1 — GIVE "A FLOOR CARRIES ITS UNIT" A DURABLE HOME OUTSIDE THIS HANDOFF.**
+      Measured 2026-09-08: **within-session (arm) sd 0.501% vs between-session (launch) sd 2.793%** — a
+      process-scoped knob faces a floor **~13× coarser**. Applying the arm floor to the session-unit THP
+      question said **4 sessions/side**; the correct answer is **4,780** — a **1200-fold error**.
+      **A floor carries its harness, its n, its contention model, its host state AND ITS UNIT.** A bare
+      number is not a floor. Candidate home: `agents/shared/MEASUREMENT_POLICY.md`, with WRAP-6's two
+      rules and BACKUP-1's. **The rule is already encoded in the PROD-1 draft's `FLOORS` table and its
+      `test_every_floor_carries_its_unit` guard — this task is to land it where non-INF-70 sessions
+      read it.**
+- [ ] **★★ CLOSE-2 — FILE THE VACUOUS-INSTRUMENT PATTERN AS ONE PATTERN, NOT FOUR INCIDENTS, AND LAND
+      THE THREE STRUCTURAL GUARDS OUT OF SCRATCH.** Four in one day across two campaigns:
+      (a) our contention screen **passed both contaminated arms** — it watched CPU while the confound
+      went through **DRAM bandwidth**; (b) our kill check reported **four live processes dead**
+      (`ps -p` false negative); (c) their FOLD-2 parser **counted zero OKs and would have reported
+      PASS**; (d) our `tools/gate.py aa` **computed over an arm its own screen had DROPPED**
+      (`pair_p95 = 4.8% / STOP` against the pre-registered `1.051% / PASS` over the 5 kept arms).
+      **★ Common form: a check that produces a verdict without verifying it had anything valid to
+      verify.** Guards adopted and **mutation-tested** in scratch: a gate **cannot PASS on zero cases**
+      (<2 usable arms ⇒ `AA_GATE=INVALID`; an empty permutation side ⇒ `PERM=INVALID`); a gate
+      **cannot compute over arms its own screen rejected** (all statistics through one `screened()`);
+      **death is verified by `/proc` existence, not `ps`.** They live in
+      `/mnt/raid0/llm/tmp/inf70/agents/retest1/tools/` and **are lost with scratch**. Land them beside
+      MEAS-5's `build_locked.sh` and PROD-1's module (WRAP-10). **The wrong `4.8%` line is KEPT in the
+      record deliberately** — a bug's output is evidence about the instrument.
+- [ ] **★ CLOSE-3 — `ps -p` IS NOT A DEATH TEST; `CLAUDE.md` CURRENTLY SAYS IT IS.** Root `CLAUDE.md`
+      → *Process Management* instructs "after killing a process, **verify it is dead (`ps -p <pid>`)**".
+      Measured 2026-09-08: `ps -p` reported **four live processes dead**. **`/proc/<pid>` existence is
+      authoritative.** This is a governance-file correction, not a campaign note — route it, do not
+      leave it here. Pairs with CLOSE-2.
+- [ ] **★★ CLOSE-4 — SWEEP: LABEL EVERY CHAMPION-VS-PRISTINE RATIO "RECIPE-TO-RECIPE, NOT
+      KNOB-CONTROLLED".** Pristine contains **neither** THP knob (0 occurrences of both, no marker), so
+      equal shim state is **impossible by construction**. **★ Retroactive corollary: NO
+      champion-vs-pristine ratio this campaign EVER quoted was knob-controlled — the THP difference sat
+      inside all of them, unlabelled.** This is a labelling task over this handoff, the sibling reports
+      under `/mnt/raid0/llm/tmp/inf70/agents/`, the wiki and the progress record. Pairs with SCALE-1
+      (hot/cold scale) and STAT-1-SWEEP — three labelling sweeps that should run as one pass.
+      The autokernel session has booked the same caveat on their cross-lineage ratios.
+- [ ] **★★ CLOSE-5 — `CHAMPION-DIVERGENCE.md` STAYS OPEN AND NEEDS AN OWNER.** Plain ratio **2.1857×**
+      against the standing **1.7151×**; **two conditions differ at once** (shim state, harness/window),
+      so the final characterisation narrows the gap's *causes* without closing it. **Pristine reproduces
+      across both (12.762 vs 12.366, +3.2%); the champion does not** — and an explanation that fits only
+      one arm of a ratio is not an explanation. Adoption explains **part** of the champion's movement and
+      its instability; **it is not asserted to explain all of it.** The document lives in scratch
+      (`/mnt/raid0/llm/tmp/inf70/agents/retest1/CHAMPION-DIVERGENCE.md`) and **is lost with it**.
+- [ ] **CLOSE-6 — SYNC-16 WAS NOT REACHED BY RETEST-1.** Its partial-selection top-k is a real
+      **10.36× kernel speedup** that read **≤ +0.04% served**, measured on the **cold** harness with the
+      **pre-fix sampler** — i.e. unresolved by INSTRUMENT, which is exactly RETEST-1's admissible scope.
+      Re-filed here rather than left inside a closed row. **Gated by the operator's stop on lever
+      research**, and by RETEST-1's own four preconditions (post-fold baseline, hot-vs-hot only, the
+      floor re-measured if the GPU loop relaunches, and the two-ping start protocol).
+- [ ] **CLOSE-7 — SYNC-13's `GGML_STATIC_CHUNKS` WAS NOT REACHED EITHER, AND IS ALREADY FILED TWICE.**
+      It is WRAP-8's whole content and was also inside RETEST-1's scope. **Do not file it a third
+      time** — WRAP-8 owns it; this row exists only so the RETEST-1 close-out is complete. **When WRAP-8
+      is actioned, delete this row rather than ticking both.**
+- [ ] **★★ CLOSE-8 — ADMISSION CONTROL, NOT SCREENING: the contention channel was DRAM BANDWIDTH.**
+      Prefill flat, decode **−7%** — **no CPU-occupancy screen on either side can see it**, so a better
+      screen cannot fix this and the ~17% third-party tax is paid in arms that must be *run* to be found
+      garbage. Plus: **region-lock serialises those who CALL it; nothing constrains those who do not.**
+      **⚠ This is measurement infrastructure, not CPU-decode research — it should NOT stay on the INF-70
+      row.** It is the same routing problem as REGIONLOCK-1 and belongs with it; the operator owns the
+      admission-control design under **OP-41 → INF-73 §3.4**, so this row is a POINTER, not a second
+      owner. **Placement is the index owner's call.**
+- [ ] **★ CLOSE-9 — A HALT DOES NOT DRAIN AN ALREADY-QUEUED CHAIN. Structural, not careless.**
+      A `chain2.sh` queued **before** a gate proceeded on its own after the halt and ran an
+      **unannounced `-j48` build** — **the same shape as the GPU loop's unannounced build three hours
+      earlier**, in a different campaign. Two instances of one mechanism in one day is a design defect,
+      not two lapses. Task: any campaign driver that queues work must expose a **drain** that a halt
+      actually reaches, and an announced build must be announceable *at execution time*, not only at
+      queue time. Pairs with CLOSE-8 (both are "the lock cannot see this") and REGIONLOCK-1.
+- [ ] **★ CLOSE-10 — THE IN-WINDOW SAMPLER ONLY COVERS WINDOWS THAT CONTAIN AN ARM.** `foreign_load.py`
+      runs **per arm**, so a burst landing *between* arms — or between the eviction and the first arm —
+      is **invisible to it**. On event E1 the only instrument that caught the contamination was the
+      peer's own disclosure: **the contract worked; the instrument would not have.** No arm was dropped
+      (the region was taken 1m12s after the window closed) and **the honest statement is that the screen
+      read nothing across that window** — neither a validation nor a failure of it. Feed this into
+      MEAS-1/OP-40/OP-41 as a known coverage gap rather than letting "screen clean" imply "window
+      clean".
+- [ ] **CLOSE-11 — RECORD THE PROCESS FAILURES, UNSOFTENED, WHERE THEY OUTLIVE THIS CAMPAIGN.**
+      (i) the RETEST-1 agent read **"STOP and report" as "stop, diagnose, re-run"** and launched a
+      campaign that **contaminated the GPU session's serving recal** (10.255% p95, **discarded**) — its
+      own words, *"writing it down made the re-run documented, not authorised"*; (ii) CLOSE-9's queued
+      chain; (iii) the agent **took the lock for the final characterisation without sending the plan
+      first — the third instance in one day** of proceeding past a report-and-wait instruction;
+      (iv) **I over-corrected and cancelled THP outright on an ambiguous instruction; the operator
+      restored it** — the failure mode of over-correcting after (i)–(iii) is destroying a valid result.
+      **★ The recurring shape: an instruction to report and wait does not stop work already queued, and
+      does not become authorisation by being written down.** Belongs with the fleet's operating
+      constraints, not in a kernel handoff.
+
+- [ ] **★ CLOSE-12 — THE BELIEF KERNEL HAS NO LAUNCH-UNIT ADAPTER, AND THE CLOSE-OUT'S HEADLINE IS A
+      LAUNCH-UNIT RECORD.** `VB-INF70-ARMS` (`vidya-belief-substrate-program.md`, filed 2026-09-07)
+      wires the **per-ARM** serving-harness records. The final characterisation's unit is the
+      **LAUNCH**, and its warrant rests on a **between-launch** sd that an arm-scoped projection
+      structurally cannot carry: an adapter that pools 18 launches as 18 arms would compute an
+      arm-shaped precision and grade the claim on it — **the same substitution that produced the
+      1200-fold error in CLOSE-1**, this time inside the grading ladder instead of a power calculation.
+      **Wiring the write side is cheap and permanent; retrofitting the read side is impossible** — a
+      launch-unit tuple invented on read claims a warrant the run never captured.
+      **Task**: add the launch-unit source to the table in
+      [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) and a task under
+      `VB-INF70-ARMS`, carrying the `unit` field explicitly. **Do NOT write a new grading rule** — the
+      adapter *projects* into a `ClaimTuple` and `claim_tuple.grade()` decides; the registry refuses a
+      second ladder per source class.
+      **⚠ ROUTING, NOT SCOPE-GRAB: `vidya-belief-substrate-program.md` is another session's handoff.**
+      Filed here so the obligation is not lost, with the edit itself routed to its owner rather than
+      taken. Flagged in the close-out apply list.
+
+
 # WRAP-1..WRAP-8 — derived actionables filed at the 2026-09-07 wrap-up sweep
 
 Each of these was **stated as a conclusion in this session's own output and never converted to a task**.
@@ -2175,7 +2384,13 @@ They are filed here rather than described in prose so the dashboard can see them
       bench region — `region-lock run` already blocks in a fair queue; a poller can starve **forever** behind
       a holder that releases and immediately re-takes under a new tag (observed, not hypothetical). Candidate
       homes: `agents/shared/MEASUREMENT_POLICY.md` (a), the region-lock/bus protocol docs (b).
-- [ ] **WRAP-7 — re-measure the champion-3 headline in a GPU-quiet window.** In-window champion-3 reads
+- [x] **WRAP-7 — CLOSED BY SUPERSESSION ✅ 2026-09-08, not by being done.** Champion-3 is **no
+      longer the champion**: the folded `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` was characterised in
+      a GPU-quiet window over **18 launches** (see the header). Re-measuring champion-3's headline
+      would now produce a number for a retired artifact. **The `33.370 t/s` in-window absolute and the
+      `≈36.9 t/s` projection are SUPERSEDED, and so is the `1.4993×` ratio this task said was
+      unaffected.**
+      *Original task:* In-window champion-3 reads
       **33.370 t/s / 29.967 ms**; the **≈36.9 t/s / ≈27.1 ms** figure referred to the 35.407 anchor is
       **labelled a projection, not a measurement**, and the GPU lane was live on 184-191 throughout its
       windows (see WRAP-4). The campaign's public headline should be a measurement. Ratios (+4.27% over
@@ -2184,13 +2399,34 @@ They are filed here rather than described in prose so the dashboard can see them
       `ops.cpp:9501` (FA_EXT prefill) and `:11256` (GATED_DELTA_NET), no affinity change, no loader change —
       the chunker subset of `ggml_is_numa()` without the affinity family that disqualifies `--numa`. Named in
       SYNC-13's result as *"the single arm worth running if anyone wants it"* and never filed. LOW priority.
-- [ ] **WRAP-9 — re-derive phase R WITHIN-ARM, and restate the champion multiplier as `1.5149×`.**
+- [ ] **WRAP-9 — re-derive phase R WITHIN-ARM. ⚠ PART (b) IS ITSELF SUPERSEDED — do NOT restate the
+      multiplier as `1.5149×`.**
+      **★ CORRECTED 2026-09-08.** `1.5149×` was a `champion3` / shim-OFF / old-harness figure and is
+      **SUPERSEDED** by the 18-launch characterisation (plain **2.1857×**, MTP **1.8255×**). Part (b)
+      now reads: **annotate `1.4993×` AND `1.5149×` as SUPERSEDED wherever they were propagated** —
+      do not swap one retired number for another. Part (a) (the eviction-imbalance re-derivation) is
+      unaffected and still open.
+      *Original task:*
       Filed 2026-09-07 from HARNESS-1's backward assessment. Two separate jobs: (a) `R_C3`'s `+8.60%` is
       inflated by ~1–3 points by an eviction imbalance (`R_C1` 125 s vs `R_C3` 74 s) and must be recomputed
       from comparable rounds; (b) the pristine multiplier computed on 0 s rounds only is **1.5149×**, not
       1.4993× — the champion table has been annotated but every downstream quotation still carries the old
       figure. **Do NOT pool arms when regressing eviction cost against throughput — the pooled sign inverts.**
-- [ ] **WRAP-10 — land PROD-1's recipe module in `epyc-inference-research`.** Three new files
+- [ ] **WRAP-10 — land PROD-1's recipe module in `epyc-inference-research`. ★ ADVANCED 2026-09-08:
+      the module now CARRIES THE ADOPTED THP KNOB; it is still PREPARED, NOT APPLIED.**
+      The draft was corrected this wrap-up so it cannot ship the retired state: `CHAMPION_GGML_ENV`
+      now exports **`GGML_NOHUGEPAGE_PROCESS=1`**; the knob moved from *("off","leave unset")* to
+      *("1","export")*; a `THP_SHIM` record carries **unit = SESSION**, the exact **α = 0.0430**
+      (enumerated, not union-bounded), `magnitude_claimed = False`, and the 1200-fold-error warning;
+      a `FLOORS` table gives **every floor its unit**; and `PRECONDITIONS["thp_readback"]` — which
+      used **AnonHugePages/Rss, a discriminator the fold record proves INVALID** (0.06% at load, ~6%
+      minutes later on the same process) — was replaced by a fail-closed **`THP_enabled` in
+      `/proc/PID/status`, read once per LAUNCH**. **41/41 tests green** (was 38/38; the 3 new ones are
+      guards: the two THP knobs must not collapse into one entry, the shim must not be verified by the
+      invalid discriminator, and every floor must carry its unit). Diff prepared at
+      `/mnt/raid0/llm/tmp/inf70/wrapup-20260908/PROD1-THP.diff`; the draft still lives in scratch
+      (`/mnt/raid0/llm/tmp/inf70/agents/prod1/draft/`) **and is lost with it**.
+      *Original task:* Three new files
       (`scripts/lib/qwen38_flash_next_recipe.py`, `scripts/lib/test_qwen38_flash_next_recipe.py`,
       `scripts/benchmark/serve_qwen38_flash_next.sh`) plus **one line** adding the test to the Makefile's
       `PYTEST_SMOKE` list. Drafts are validated and 38/38 green but **PREPARED, NOT APPLIED**; they live in
@@ -2452,7 +2688,9 @@ single-controller.** Anyone inheriting the old phrasing will hunt a step that do
       as the row-split (degenerate row partition at batch 1) but a different shape — 4 rows, not 1 — so
       `ELEM_COLSPLIT` does not cover it.
 
-- [ ] **SYNC-2 — the tiny-op barrier tax** (~4.34 ms, 1,631 nodes). Dispatched 2026-09-05. Confirm from
+- [x] **SYNC-2-ORIGINAL (superseded, retained for the record) ✅ 2026-09-08** — the live SYNC-2 is
+      closed and ticked at ~L807 (*GO on all three levers*). This round-1 duplicate carried the same id
+      with different text and inflated the open count. Original: **the tiny-op barrier tax** (~4.34 ms, 1,631 nodes). Dispatched 2026-09-05. Confirm from
       `ggml_get_n_tasks` that a 32 µs SCALE is really handed to 48 threads. Levers, cheapest first: cap
       `n_tasks` below a work threshold; fuse trivial chains; last resort the barrier primitive itself.
       **Correctness is the risk, not speed** — bit-identical output required.
@@ -2510,7 +2748,9 @@ op's **dead% rose 14.0% → 38.3% while its wall FELL 0.510 → 0.373 ms**: the 
 `compute` and into `wall − compute`. **Judge every change on WALL TIME; use dead% only to locate candidates.**
 This axis was opened on a dead%-ranked table, so the ranking was a search heuristic, never a value estimate.
 
-- [ ] **SYNC-3 — the GDN path** (GATED_DELTA_NET 73.8% dead + `cache_s_l*` CPY 60.5% dead, ~4.4 ms).
+- [x] **SYNC-3-ORIGINAL (superseded, retained for the record) ✅ 2026-09-08** — the live SYNC-3 is
+      closed and ticked at ~L2561 (*NO-GO 2026-09-05*). Round-1 duplicate; same id, different text.
+      Original: **the GDN path** (GATED_DELTA_NET 73.8% dead + `cache_s_l*` CPY 60.5% dead, ~4.4 ms).
       Dispatched 2026-09-05. Name the mechanism from code. Is the recurrent-state copy structurally required,
       or a defensive copy that could be an in-place update or buffer rotation? **State is carried across
       tokens, so correctness must be gated over ≥256-token generations** — an error may not appear on token 1.
@@ -2673,6 +2913,10 @@ KLD, not on the silu precedent — survives; the reasoning behind it does not.**
 designed around "one scalar per layer" would measure the wrong object**; the right one is per-channel gate
 perturbation into `hc_mixed`, which a paired full-distribution KLD already captures. (B7's ~8% top-1 figure
 is NOT re-verified by SYNC-10 and is not restated as its finding.)
+
+- [x] **B12 — CLOSED ✅ 2026-09-08 (checkbox added at wrap-up; B12 concluded 2026-09-05 with a full
+      NO-GO verdict but never carried a checkbox, unlike its siblings B10/B11, so it was invisible to
+      the dashboard's progress metric). Verdict: HYPOTHESIS REFUTED AND INVERTED — NO-GO.** Record:
 
 **★★★ B12 IQ4_XS DRAFT HEAD — HYPOTHESIS REFUTED AND INVERTED 2026-09-05. THE SHARED HEAD WAS ALREADY THE
 CACHE-EFFICIENT DESIGN, AND THIS EXPLAINS B10's 1.6× PHENOMENON.**
@@ -2932,7 +3176,9 @@ so a task-manager kill cannot take it down again, with the PID recorded so it ca
 
 **Superseded — round 1 outstanding list:**
 
-- [ ] **SYNC-10 — AT BATCH 1, EVERY ROW-SPLITTING KERNEL IN ggml IS SINGLE-THREADED. 7.79 ms/token (9.9%),
+- [x] **SYNC-10-ORIGINAL (superseded, retained for the record) ✅ 2026-09-08** — the live SYNC-10 is
+      closed and ticked at ~L802; this duplicate sat open under the *Superseded — round 1 outstanding
+      list* heading and inflated the open count. Original text: **AT BATCH 1, EVERY ROW-SPLITTING KERNEL IN ggml IS SINGLE-THREADED. 7.79 ms/token (9.9%),
       one thread working and 47 idle.** Dispatched 2026-09-05, **the largest single lever identified in the
       campaign.** Nodes with `thr_mean/thr_max < 0.1`, tip plain:
 
@@ -4082,6 +4328,13 @@ delivered *before* the decline, not to outstanding work.
       `worker_vision` 48, `worker_general` 13, `architect_critic` 1) are **not exposed**. The measurement matched
       the agent's own standing counter-evidence rather than overturning it — it declined to escalate on that
       reasoning and was right. **C10 closed; no operator action.**
+- [x] **C10 — CLOSED ✅ 2026-09-08 (checkbox added at wrap-up; the verdict above was recorded in prose
+      and never carried a checkbox). Fleet exposure of the `GGML_IQK` PPL defect: assessed, fixed, no
+      operator action required.** ★ Its generalisable lesson is the reason it is worth a box at all:
+      **the defect was reachable only from the all-logits path, which IS the quality gate — the
+      instrument was the one caller its own bug disabled. A defect that only breaks your measuring
+      device is invisible to every test that uses the device.** That is the same family as the four
+      vacuous-instrument incidents recorded in CLOSE-2 below.
       **⚠ ATTRIBUTION NOT SETTLED — the agent doubts its own Q6_K call, and is right to.** Its blast-radius scan
       found **four production-lineup files carrying Q6_K on BODY tensors** (`attn_v`, `ffn_down_exps`), which run at
       `ne1` = prefill batch on **every prefill**, not at `ne1 = 1` like an output head: `ingest_long_context` (54),
@@ -4198,7 +4451,9 @@ delivered *before* the decline, not to outstanding work.
       PPL claim tuple on this stack.** This defect proves the kernel flag is not incidental to the number — the same
       command, same build, same artifact returns 4.9043 or garbage depending on it. A claim tuple that omits it
       cannot be re-derived. Add to the adapter's projection alongside build id, thread count and recipe.
-- [ ] **B9 — KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
+- [x] **B9 — CLOSED ✅ 2026-09-08 (checkbox sync; the verdict was recorded in prose 2026-09-04 and the
+      box was never flipped, so it double-counted as open work). Verdict: SHIP KV f16, do NOT quantise
+      — see RECLAIM-1's closing line.** Original framing: **KV-cache quantisation: a much SMALLER lever on this model than on a dense one, and it activates an
       untested path. Analysed 2026-09-04 from the artifact; recommend ONE cheap measured arm, not adoption.**
       Filed after an operator question ("should we use a quantized KV cache? won't it improve decode speeds?").
       **The structural answer: only 12 of 48 layers have a KV cache at all** — the other 36 are recurrent
