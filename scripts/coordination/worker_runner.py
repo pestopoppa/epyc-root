@@ -602,6 +602,15 @@ def screen_premise_safe(row: dict) -> dict:
     so an absent, broken, throwing, or malformed screener returns UNKNOWN — and
     UNKNOWN parks the row. A screener that cannot answer must never be
     indistinguishable from a screener that said yes.
+
+    AIR-12 (2026-09-07): this pass-through is now as strict as the module it
+    calls. The ladder grew a fourth rung (`blocked`, premise alive but blocked
+    on a named dependency) and the MANDATORY-EVIDENCE contract is enforced at
+    the point of dispatch, not only inside `premise_screener`: a verdict with no
+    evidence quote is a screen that was skipped, and an unevidenced
+    "still-needed" would re-dispatch work nobody re-checked. Premise screening
+    is NON-OPTIONAL here — nothing dispatches on an absent, unevidenced, or
+    unrecognised screen.
     """
     def unknown(reason: str) -> dict:
         return {"verdict": "unknown", "evidence": "", "reason": reason}
@@ -621,8 +630,14 @@ def screen_premise_safe(row: dict) -> dict:
     if not isinstance(verdict, dict):
         return unknown(f"premise_screener returned {type(verdict).__name__}, expected dict")
     value = str(verdict.get("verdict") or "").strip().lower()
-    if value not in {"still-needed", "stale", "unknown"}:
+    if value not in {"still-needed", "stale", "unknown", "blocked"}:
         return unknown(f"premise_screener returned unrecognised verdict {value!r}")
+    if value != "unknown" and not str(verdict.get("evidence") or "").strip():
+        return unknown(
+            f"premise_screener returned {value!r} with no evidence quote, and an "
+            f"unevidenced verdict is not a screen — nothing was re-checked. Refused at "
+            f"the dispatch path (AIR-12); treat as do-not-dispatch."
+        )
     return {
         "verdict": value,
         "evidence": str(verdict.get("evidence") or ""),
@@ -1451,6 +1466,14 @@ def park_rows(bus_root: Path, agent: str, rows: list[dict], verdicts: dict,
                 "task_text": row["task_text"],
                 "screener_evidence": verdict["evidence"][:500],
                 "screener_reason": verdict["reason"][:500],
+                # AIR-14: the typed verdict, so the daemon's transcription lands
+                # it in the row's screen_result field rather than losing it.
+                "screen_result": {
+                    "premise": verdict["verdict"],
+                    **({"blocked_by": verdict["blocked_by"]}
+                       if verdict.get("blocked_by") else {}),
+                    "evidence": verdict["evidence"][:500],
+                },
             },
         }))
         emitted.append(emit(bus_root, agent, {

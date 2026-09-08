@@ -51,6 +51,12 @@ FT_CORRECTION_REVIEWED = "epyc.vidya/frame/correction_reviewed/v1"
 # exactly the semantic call the substrate keeps out of the deterministic path (spec §4.2 boundary).
 # The fold only APPLIES an alias somebody else authored, and records that it did.
 FT_ALIAS = "epyc.vidya/frame/claim_alias/v1"
+# SC61: a human-authored judgment that a claim FOLLOWS FROM the proposition a checker decided --
+# the producer for SC56's `attested` binding. Same boundary as the alias: the judgment is made
+# off the deterministic path (a review worksheet), and the fold only APPLIES the resulting frame
+# -- by resolving the `binding_ref` claim frames carry against the live binding frames, and
+# refusing a reference that names no live judgment, a different claim, or a different proposition.
+FT_STATEMENT_BINDING = "epyc.vidya/frame/claim_statement_binding/v1"
 FT_SOURCE = "epyc.vidya/frame/source_observed/v1"
 FT_DEPENDS = "epyc.vidya/frame/claim_depends_on/v1"
 
@@ -260,6 +266,10 @@ class FoldResult:
     reviewed_corrections: list[str] = field(default_factory=list)
     applied_aliases: list[str] = field(default_factory=list)
     alias_map: dict[str, str] = field(default_factory=dict)
+    # SC61: canonical claim id -> the live statement-binding frame ids applied to it. A reader
+    # can see which claims carry an attested binding and point at the human judgment that
+    # licenses it -- the fold applies these frames, it never derives them.
+    statement_bindings: dict[str, list[str]] = field(default_factory=dict)
     # R1b negation stratum: entries whose transitive dependents are all clear, and those still
     # holding at least one flagged claim. An entry appears in exactly one of the two.
     discharged: dict[str, list[str]] = field(default_factory=dict)
@@ -342,6 +352,14 @@ def _normalize_locator(url: str) -> str:
     if m:
         return "arxiv:" + re.sub(r"v\d+$", "", m.group(1).removesuffix(".pdf"))
     return "url:" + re.sub(r"^https?://(www\.)?", "", u).rstrip("/")
+
+
+# SC72: the source key for a support path that names no source at all. Shared across every such
+# path of a claim -- an unidentified source could be one or many, so the only sound statement is
+# that at least one stands behind them. A per-frame fallback key (the evidence label) would mint
+# one pseudo-source per edge and manufacture exactly the corroboration the statistic exists to
+# measure: two records of one paper produce two labels and would report as independent support.
+UNNAMED_SOURCE_KEY = "<unnamed-source>"
 
 
 def fold(
@@ -467,6 +485,27 @@ def fold(
             cid = alias_of[cid]
         return cid
 
+    # SC61 pre-pass: collect the live statement-binding frames before interpretation, so a claim
+    # frame's `binding_ref` can be resolved against the whole ledger rather than against whatever
+    # happened to precede it. The fold only APPLIES these human judgments; it never makes one.
+    binding_by_frame: dict[str, tuple[str, str]] = {}
+    for frame in frames:
+        if frame.get("frame_type") != FT_STATEMENT_BINDING:
+            continue
+        fid = frame.get("frame_id", "")
+        if fid in retracted:
+            continue
+        assertion = frame.get("assertion") or {}
+        cid = assertion.get("claim_id")
+        decided = assertion.get("decided_proposition")
+        if not isinstance(cid, str) or not cid \
+                or not isinstance(decided, str) or not decided.strip():
+            raise FoldError(
+                f"statement-binding frame {fid} must name a claim_id and the decided "
+                "proposition it was judged against, verbatim -- a binding with nothing on "
+                "the other end binds nothing (SC61)")
+        binding_by_frame[fid] = (_canonical(cid), decided)
+
     # Pass 2: interpret the surviving frames.
     for frame in frames:
         ftype = frame.get("frame_type")
@@ -490,6 +529,33 @@ def fold(
             claims.add(claim_id)
             if assertion.get("source_id"):
                 claim_source[claim_id] = assertion["source_id"]
+            # SC61: an attested binding is a human judgment someone must be able to point at.
+            # A `binding_ref` that names no live binding frame, a binding about a DIFFERENT
+            # claim, or a binding judged against a DIFFERENT proposition is a FALSE attestation
+            # and is refused, never downgraded (SC56's missing-vs-false distinction).
+            ref = assertion.get("binding_ref")
+            if isinstance(ref, str) and ref:
+                bound = binding_by_frame.get(ref)
+                if bound is None:
+                    raise FoldError(
+                        f"claim frame {fid} asserts an attested binding to {ref}, which is not "
+                        "a live claim_statement_binding frame in this ledger -- a judgment "
+                        "nobody can retrieve is indistinguishable from none (SC61)")
+                bound_claim, bound_decided = bound
+                if bound_claim != claim_id:
+                    raise FoldError(
+                        f"claim frame {fid} cites binding {ref}, which binds claim "
+                        f"{bound_claim} -- an attestation about one claim cannot license "
+                        "another (SC61)")
+                from claim_tuple import normalize_proposition
+                decided = assertion.get("decided_proposition")
+                if not isinstance(decided, str) \
+                        or normalize_proposition(decided) != normalize_proposition(bound_decided):
+                    raise FoldError(
+                        f"claim frame {fid} cites binding {ref}, which was judged against a "
+                        f"DIFFERENT proposition ({bound_decided!r}) than the claim frame "
+                        "carries -- a claim cannot cite a judgment about another proposition "
+                        "(SC61)")
 
         elif ftype in (FT_SUPPORT, FT_OPPOSE):
             assertion = frame.get("assertion", {})
@@ -508,7 +574,7 @@ def fold(
                 dependent_group.get(raw_claim)
                 or source_locator.get(assertion.get("source_id") or "")
                 or assertion.get("source_id")
-                or label
+                or UNNAMED_SOURCE_KEY
             )
             bucket = support if ftype == FT_SUPPORT else oppose
             bucket.setdefault(claim_id, []).append((label, grade))
@@ -534,10 +600,16 @@ def fold(
             src = assertion.get("depends_on_source")
             ent = assertion.get("depends_on_entry") or src or ""
             if isinstance(cid, str) and isinstance(src, str):
-                depends_edges.append((_canonical(cid), src, ent))
+                # SC70: the edge REGISTERS its dependent claim. Without this a claim the ledger
+                # has never otherwise seen has no belief, so a withdrawal of the source it rests
+                # on computes an alert nothing surfaces on, and the discharge stratum reports the
+                # entry clear while its only dependent was never a belief at all.
+                cid = _canonical(cid)
+                claims.add(cid)
+                depends_edges.append((cid, src, ent))
             continue
 
-        elif ftype in (FT_CORRECTION_REVIEWED, FT_ALIAS):
+        elif ftype in (FT_CORRECTION_REVIEWED, FT_ALIAS, FT_STATEMENT_BINDING):
             continue
 
         elif ftype == FT_JUDGMENT:
@@ -559,6 +631,21 @@ def fold(
 
         else:
             ignored[str(ftype)] = ignored.get(str(ftype), 0) + 1
+
+    # SC61: apply the collected bindings to the claims that exist. A binding whose claim never
+    # appears in the ledger is a judgment about nothing -- SC70's shape one level up, where a
+    # dangling reference used to register nothing. Refused, because unlike a `depends_on` edge a
+    # binding frame cannot itself create the belief it annotates: it carries no claim text and no
+    # evidence, and a belief made of nothing but an annotation would read as a supported claim.
+    statement_bindings: dict[str, list[str]] = {}
+    for fid, (cid, _decided) in binding_by_frame.items():
+        if cid not in claims:
+            raise FoldError(
+                f"statement-binding frame {fid} names claim {cid}, which does not appear in "
+                "this ledger -- a binding with nothing on the other end binds nothing (SC61)")
+        statement_bindings.setdefault(cid, []).append(fid)
+    for cid, bound_frames in statement_bindings.items():
+        bound_frames.sort()
 
     # Derivation. With only direct evidence->claim edges the fixpoint is reached in one pass; the
     # loop and its assertion are kept because the budget is the invariant, not the current rule
@@ -739,6 +826,7 @@ def fold(
         reviewed_corrections=sorted(reviewed_corrections),
         applied_aliases=sorted(a for a in applied_aliases if a),
         alias_map=dict(sorted(alias_of.items())),
+        statement_bindings=statement_bindings,
         discharged=discharged,
         undischarged=undischarged,
     )

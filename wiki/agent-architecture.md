@@ -2,8 +2,194 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
-**Sources**: 99+ documents
+**Last compiled**: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Sources**: 100+ documents
+
+## Compiled Update — 2026-09-08 (incremental): screening became the dispatch path's first-class citizen — AIR-12/13/14 land the premise contract, fan-out waste has a measured band not a point, and the heavy-wrap receipt stops destroying the manifest it must preserve
+
+**Confidence: verified** — every landing below is a closed commit (`945c8820`, `af4c5c63`); the AIR
+censuses are reads of the shipped instrument; and the fan-out corpus (`fanout_timing.v2`, 4,278
+subagents over 14,004 workflows) is committed precisely because the transcripts it was mined from no
+longer are.
+
+### AIR-11 answered by censuses, not samples: already-satisfied and blocked-on-row are both screening failures, never missing edges
+
+The instrument built to answer "how often is a queued row already satisfied or blocked?" had itself
+answered it zero times: `premise_screener` holds **9 verdicts in its whole life — 4 `still-needed`,
+0 `stale`, 5 `unknown`, every `unknown` because the probe bundle lacked the artifact that would
+settle the premise**. Against n=38 tasks ever queued (n=25 ever screened):
+
+- **Already-satisfied at dispatch: 1–4 of 25 (4–16%).** One hard case — `AK-RUN-3` carries a
+  completion note dated 2026-08-12 and was screened `DISPATCHABLE` at 2026-08-13T18:10Z: *done the
+  day before it was dispatched*, and the checkbox could not see it. Three more are INDETERMINATE
+  (closed 1.5–4 h after the screen) and are counted, folded nowhere.
+- **Blocked-on-another-row: 3 of 25 (12%)** — all three sit in a node whose `.index-graph.json`
+  already marks `readiness: blocked`, a file `backlog_row_check.py` never reads (nor the `Deps`
+  column).
+- **The modal fate of a queued row is that no subagent ever starts**: 29 of 38 died at `ASSIGNED`
+  on lease expiry; only 9 were ever `CLAIMED`/`RUNNING`.
+- **Not determinable fleet-wide**: 0 of 4,278 subagent records carry a task identity, and 0 of 280
+  queue events carry an already-satisfied field — the external comparator's 15.5% has no local
+  counterpart. Do NOT repurpose the fan-out `blocked` bucket for it (that means an external blocker
+  and is itself a lower bound).
+
+**Verdict, and what it explicitly rules out**: already-satisfied is a screening failure, not a
+missing edge — all 25 rows were correctly `[ ]` at screen time and no dependency field would have
+caught the one hard miss; blocked-on-row is the same failure (the screener consulting the owning
+handoff's readiness would have flagged 3 of 25 at zero schema cost), with **flag, never
+hard-refuse** — handoff-granular blocking is over-broad at row level (2 of those 3 were
+legitimately completed anyway). **Do NOT build a dependency-edge graph inside the queue**: row-level
+dep-blocking is ~12–13% and a minority of all gating (operator gates and inference-window gates
+dominate, and no edge field touches either); the one genuine schema need is a place to WRITE what
+screening found — verdicts currently ride as prose inside `failure_reason` on statuses that mean
+something else, which is exactly how 3 of them became uncountable.
+
+### AIR-12/13/14 landed (`945c8820`, 9 files, 719 coordination tests) — the premise contract now has a home
+
+- **AIR-12 — screening is non-optional and the ladder is closed four-value.** `premise_screener`
+  now decides `still-needed|stale|unknown|blocked` (`SCREENER_VERSION` 1→2). Probe-bundle repair —
+  the settling-artifact miss was the sole cause of all 5 lifetime `unknown`s: `mechanical_screen`
+  falls back to the row's own C50b `spec_ref`/`row_ref` anchor when text search misses, and
+  `probe_artifacts(also=…)` probes the anchor artifact even when the row text names no path. On the
+  dispatch path, an **unevidenced non-unknown verdict is refused** — a screen that was skipped or
+  absent can never read as go; `blocked` parks like stale/unknown. 7 new red-first tests.
+- **AIR-13 — the row screener consults `.index-graph.json` readiness, advisory only.**
+  `backlog_row_check.index_graph_readiness()` reads the `index_graph.v2` sidecar; `classify()`
+  appends an `INDEX-GRAPH (advisory, NOT a refusal)` reason on the dispatchable branch only, the
+  exit code never changes, and the advisory reaches the model via `classify_reasons`. Silent on
+  missing/unreadable graph. 3 red-first tests. (This is the mechanised form of the flag-not-refuse
+  verdict above — the 2026-08-16 pilot's `premise-unknown` parking extended to a fourth verdict.)
+- **AIR-14 — a screening verdict has somewhere to live.** `session_bus.schema.json`
+  `queue_row.screen_result` is whole-field nullable (`null`/absent = **never screened, NOT a
+  verdict**), `premise` is required-when-present over the closed four-value ladder, `blocked_by` is
+  nullable and meaningful only for `blocked`, and unknown keys are refused
+  (`additionalProperties: false`). The coordinator enforces the same gate at intake/transcription;
+  `screen_result` joins `_IDENTITY_FIELDS` so it survives every row rewrite (the census
+  uncountability); worker `requeue` transcribes it onto the row — parked verdicts previously died in
+  the outbox. Schema validated under both validators; live-bus validate: 0 new failures. 3
+  red-first tests.
+
+### WS-1..4 — the delivery-plane residuals, filed with their design constraints attached
+
+Four rows from the lost-wake/wake-spike round (2026-09-07 intake; zero compute; WS-3 is a decision
+gate on WS-2; WS-4 is independent):
+
+- **WS-1 — artifact reconciliation at the drain boundary**: compare worker-written completion
+  artifacts against the handled set *independent of whether a bus row exists* — that independence is
+  the whole value, because the lost-wake case is precisely the one where no row was seen. One-shot
+  and receipted; a **notifier, no standing obligation** (cannot become background noise). This is the
+  mechanism referenced from the coordinator failure ledger's F-33(a) evidence note.
+- **WS-2 — durable processed watermark**: a monotonic `seq` on bus rows plus a `processed_seq` in
+  the owner-write-only `cursors/<agent>.json`, replacing the O(history) `routed_view`
+  recomputation. Unlike WS-1 this creates a standing obligation, so it carries hard preconditions:
+  any persistent re-presentation must first carry C39's spent-receipt lookup and its
+  "annotate, never suppress" polarity, and satisfy C49's ruling that *"an escalation that fires on a
+  well-run night trains everyone to ignore it"* — the external precedent is safe only because its
+  backstop is one-shot and byte-capped.
+- **WS-3 — store-before-deliver must be an EXPLICIT decision, never a silent flip**: it inverts the
+  deliberate house ordering at `session_bus_coordinator.py:1626` ("the save happens AFTER the relay
+  pass, so a crash loses at most one tick of ledger updates, never a delivery") and the fail-safe
+  cursor default at `session_bus.py:1790-1815`. Both of ours bias toward **duplicate delivery over
+  loss**, and so does the external migration path — the biases agree, which is exactly why the flip
+  could happen silently.
+- **WS-4 — asyncRewake wake spike (merged)**: a Stop `asyncRewake` hook that exits 2 to wake an
+  idle main, replacing doorbell keystroke injection (closes RC-4's "between turns nothing runs").
+  Four facts ride with it: the timeout is **unenforced** on async hooks; backgrounding requires
+  interactive-or-streaming so **headless `claude -p` actors are excluded**; the "zero-token
+  waiting" contract (durable suspension resumed on ingress, with write-ahead journaling and
+  generation fencing — the source's Table 1 scores Claude Code "no" on zero-token waits); and a
+  **build pin of "verified against Claude Code 2.1.263"** — the stale npm-global 2.1.241 on this
+  host is not the version these facts were verified against.
+
+### FM-5/FM-6 measured: fan-out waste is a BAND, not a point — and 86.5% is the low end, never the finding
+
+The local measurement the 2026-09-07 section above (intake-1304/1305/1306) called for now exists —
+`scripts/coordination/fanout_timing.py` at schema `fanout_timing.v2` (strict superset of v1; v1 rows
+count as `schema_v1_no_outcome` and never fold into a bucket), 58 tests, corpus **4,278 subagents
+over 14,004 workflows**:
+
+| bucket | n | share of known | share of tokens |
+|---|---|---|---|
+| produced-and-used | 2,265 | 60.0% | 13.5% |
+| produced-and-discarded | 1,281 | 33.9% | 79.7% |
+| no-output | 122 | 3.2% | ~0% |
+| aborted | 109 | 2.9% | 6.8% |
+| blocked | 0 | 0.0% | 0.0% |
+| *unknown* | *501* | *excluded* | *excluded* |
+
+**The headline is the band form, revised 2026-09-07 by SC62.** Over the 3,777 subagents whose
+outcome is known: head-count waste **40.0% – 95.5%**, token waste (total basis) **86.5% – 99.7%**,
+token waste (new basis) **83.8% – 99.6%**, blocked share ≥ 0.0% with **no upper bound**, and exactly
+501 unclassifiable (held out of every denominator). The two ends rest on **different evidence, not
+different confidence** — this is not a confidence interval and must never be rendered as one: the
+low end counts 2,265 `produced-and-used`, an upper bound on usefulness because 2,094 of those
+verdicts are `parent-reference` substring hits (evidence the parent *saw* the output, not that it
+*used* it); the high end counts **171 `git-landed` (4.5%)**, the only proven floor, holding just
+2.85B of 1,110.7B tokens — which is why the token ceiling reads 99.7%. The projection enforces the
+band: `scripts/vidya/adapters/fanout_outcome.py` yields a `Bound` whose `.point`, `float()` and
+`int()` **raise** (a point estimate is a different and stronger claim than the one that was made).
+**Correction of record:** the earlier one-sided "≥86.5%" (commit messages `5f1c4ba4` and session
+reporting) is true as a lower bound but incomplete; the band supersedes it everywhere.
+
+**Why the two units disagree by ~46 points, which is itself the finding**: discarded subagents are
+the token-heavy ones — cost does not track head count here, so a width-based cost argument measures
+the wrong thing (the ratified discarded-work clause). The aborted share is 6.8%, an order of
+magnitude below the external swarm's 51.6% — our loss is concentrated in DISCARDED, not aborted,
+so the ported remedy would be reconnection, not crash-loop repair. **FM-6 gives that a number**:
+orphan rate **35.0%**, declared width 1,187 → measured 928 (−21.8%); a fan-out record counts only
+when each subagent's output links to a backlog row or an artifact path, and an orphan-blind width
+count cannot distinguish a main that dispatched five subagents usefully from one that dispatched
+five and used none. Do NOT read this wave as an argument to narrow the 3–5 width — the evidence
+points the other way (3/5 workers beat 1 at matched completion; coordination is ~11% of compute).
+Carry the corpus caveat: **the v2 artifacts are committed because the corpus is not reproducible**
+(Claude transcripts pruned 1,546→1,078 since the v1 snapshot; Codex grew 2,344→13,942 workflows) —
+a measurement whose corpus no longer exists is unfalsifiable.
+
+### The heavy-wrap receipt stops destroying the manifest it must preserve (`af4c5c63`, RTG-51 wave-2)
+
+`heavy_wrap.step_7_compile_wiki` previously **clobbered the tracked content-hash
+`wiki/source_manifest.json`**, replacing it with a bare `{"compiled_by": [...]}` — the next
+incremental scan would fail loudly by design (the scanner reads hashes the receipts dict no longer
+carries). Now the manifest is preserved wholesale with `compiled_by` merged as an extra top-level
+key; a corrupt or non-dict manifest raises `WrapError` instead of being replaced; and the scanner is
+verified tolerant of the extra key (`read_manifest` validates kind/schema/sources only). 2 new
+tests. This is the executor-side half of the scanner's content-hash migration (the scanner half is
+compiled on [Knowledge Management](knowledge-management.md)).
+
+### Trust-boundary and accounting riders from the same wave (2026-09-07 intake)
+
+- **P5-1 — `PostToolUse hookSpecificOutput.classifierContext` is a write path into a main's
+  CONSENT state** available to any hook script: a classifier may weigh a user statement relayed
+  there as user intent (it can satisfy a consent bar a user turn would satisfy — never a hard
+  boundary). Declared out of bounds for any coordination-plane hook. The corresponding
+  `INVARIANTS.md` text is human-amendment-only (operator token-request, never an agent edit).
+- **P5-3 — per-turn PURPOSE LABEL must be written at write time** (bus rows, delegated-task
+  envelopes, orchestrator turn telemetry) so the Eq.-2 split (system / replayed history / tool
+  schemas / retrieval / coordination) becomes computable — post-hoc classification of transcripts is
+  explicitly refused (a 32-author team with full trace-shim control published no share number
+  because their meter recorded totals, not purposes). P5-2 lands the NL-only rule as a labeled
+  fixture example beside C23, never a new BUS_PROTOCOL conjunct (the prose-rule moratorium this file
+  itself declared).
+
+### Source References (2026-09-08 fleet-coordination compile)
+
+- [`session-bus-thin-dispatcher.md`](../handoffs/active/session-bus-thin-dispatcher.md) — the AIR-11
+  censuses and verdict (2026-09-07), the AIR-12/13/14 landings with `945c8820`, and the WS-1..4 rows
+  with their C39/C49 preconditions and intake anchors.
+- [`fleet-fanout-measurement.md`](../handoffs/active/fleet-fanout-measurement.md) — the FM-5/FM-6
+  result section: the v2 schema, the bucket table, the band bounds and their evidence split, the
+  FM-6 reconnection requirement, and the corpus reproducibility caveat.
+- [`progress/2026-09/2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md)
+  — the BANDS correction of record (one-sided `≥86.5%` superseded) and the SC62 projection guard.
+- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the AIR-12/13/14 landing
+  record (`945c8820`, 719 coordination tests) and the wave-2 RTG-51 manifest-preservation fix
+  (`af4c5c63`).
+- [`loop-owned-fleet-implementation.md`](../handoffs/active/loop-owned-fleet-implementation.md) —
+  the P5-1/P5-2/P5-3 trust-boundary riders.
+- [`coordinator-role-failure-modes-and-refactor.md`](../handoffs/active/coordinator-role-failure-modes-and-refactor.md)
+  — the F-33(a) evidence note WS-1 mechanises.
+- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — NIB2-68/OBS-13, the
+  scanner-side half of the same content-hash migration.
 
 ## Compiled Update — 2026-09-07: a frozen served model is structurally immune to tool-environment shift — and one engineer update costs a full eval sweep
 

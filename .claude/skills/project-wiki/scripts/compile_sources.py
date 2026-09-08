@@ -3,16 +3,27 @@
 
 Scans knowledge streams (handoffs, progress logs, deep-dives, docs) and
 outputs a JSON manifest of files that need to be compiled into wiki articles.
-Compares file modification times against the last compilation timestamp.
+Incremental selection is a content-hash diff against the tracked source
+manifest (wiki/source_manifest.json — the one shared watermark): a source is
+new when its path is absent from the manifest and changed when its content
+hash differs. Filesystem mtimes are never used for the watermark, so the
+scan answers identically from any worktree of the repo; lane worktrees carry
+checkout-time mtimes that made mtime-based scans report the entire repo
+(measured 908 vs a true delta of 17, and 942 vs 4). A missing tracked
+manifest means nothing is recorded compiled yet: the first incremental run
+emits the full source set once. --touch regenerates the tracked manifest
+from the current source set after the reported delta has been compiled, so
+the next incremental run reports nothing; the manifest is tracked, so a lane
+--touch records the same content hashes a shared-clone --touch would.
 
 Adapted for epyc-root's flat directory layout (no per-user nesting).
 
 Usage (run with the orchestrator venv interpreter — PyYAML is required):
-    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py  # incremental (since last compile)
-    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --full  # all sources regardless of timestamp
-    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --touch  # update .last_compile after output
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py  # incremental (content-hash diff vs tracked manifest)
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --full  # all sources regardless of the baseline
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --touch  # advance the tracked manifest + .last_compile after compiling the delta
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --type research  # filter by source type
-    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --since 2026-04-01  # override since-date
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --since 2026-04-01  # explicit mtime since-date override (not the default selection)
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --full --write-manifest
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --check-manifest
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --changed-since-manifest
@@ -423,23 +434,39 @@ def build_manifest_drift_report(saved_path: Path) -> dict:
     }
 
 
-def changed_sources_since_manifest(saved_path: Path) -> dict:
-    """Build a manifest containing sources added/changed since saved_path."""
-    saved = read_manifest(saved_path)
-    current = full_current_manifest()
+def _baseline_display(path: Path) -> str:
+    """Render a manifest path for display, repo-relative when possible."""
+    if path.is_relative_to(ROOT):
+        return str(path.relative_to(ROOT))
+    return str(path)
+
+
+def _drift_manifest(
+    saved: dict,
+    current: dict,
+    type_filter: str | None,
+    mode: str,
+    baseline: str,
+) -> dict:
+    """Build the added/changed-source manifest from a saved/current diff.
+
+    Selection is keyed on path + content hash only — never on mtime — so the
+    result is identical from any worktree of the repo. Removed sources are
+    carried for review but do not count toward ``total_new``.
+    """
     drift = diff_manifest_sources(saved["sources"], current["sources"])
     changed_paths = {
         str(source["path"])
         for source in [*drift["added"], *drift["changed"]]
         if source.get("path")
     }
-    changed_sources = [
-        source for source in current["sources"] if source.get("path") in changed_paths
+    selected = [
+        source for source in current["sources"]
+        if source.get("path") in changed_paths
+        and (not type_filter or source.get("type") == type_filter)
     ]
-    manifest = build_manifest(changed_sources, f"changed-since-manifest:{saved_path}")
-    manifest["baseline_manifest"] = str(saved_path.relative_to(ROOT)) if (
-        saved_path.is_relative_to(ROOT)
-    ) else str(saved_path)
+    manifest = build_manifest(selected, mode)
+    manifest["baseline_manifest"] = baseline
     manifest["baseline_source_set_hash"] = saved.get("source_set_hash")
     manifest["current_source_set_hash"] = current.get("source_set_hash")
     manifest["removed_sources"] = drift["removed"]
@@ -451,6 +478,59 @@ def changed_sources_since_manifest(saved_path: Path) -> dict:
         "has_drift": drift["has_drift"],
     }
     return manifest
+
+
+def changed_sources_since_manifest(saved_path: Path) -> dict:
+    """Build a manifest containing sources added/changed since saved_path."""
+    saved = read_manifest(saved_path)
+    return _drift_manifest(
+        saved,
+        full_current_manifest(),
+        None,
+        f"changed-since-manifest:{saved_path}",
+        _baseline_display(saved_path),
+    )
+
+
+def incremental_since_tracked_manifest(type_filter: str | None = None) -> dict:
+    """Diff the current source set against the tracked source manifest.
+
+    This is the default incremental selection. The per-source content hashes
+    stored in the manifest make the delta independent of checkout mtimes, so
+    any worktree of the repo reports the same sources. Raises ValueError when
+    the tracked manifest is missing — the caller falls back to a full
+    baseline for that first-run state.
+    """
+    saved = read_manifest(SOURCE_MANIFEST_PATH)
+    return _drift_manifest(
+        saved,
+        full_current_manifest(),
+        type_filter,
+        "incremental",
+        _baseline_display(SOURCE_MANIFEST_PATH),
+    )
+
+
+def refresh_tracked_manifest() -> dict:
+    """Regenerate the tracked manifest from the current source set.
+
+    This is what ``--touch`` does: after the reported delta has been compiled
+    into wiki pages, recording the current full set means the next
+    incremental scan reports nothing. The manifest is the shared watermark —
+    tracked, so it advances only when the change is committed, and identical
+    content hashes are recorded whichever worktree the touch runs from.
+    Refuses when no baseline manifest exists yet; establish one with
+    ``--full --write-manifest`` first.
+    """
+    if not SOURCE_MANIFEST_PATH.exists():
+        raise ValueError(
+            f"no tracked baseline manifest at {SOURCE_MANIFEST_PATH}; "
+            "run --full --write-manifest first (nothing is recorded compiled)"
+        )
+    touch_last_compile()
+    full = build_manifest(scan_sources(0.0, None), "touch")
+    write_manifest(SOURCE_MANIFEST_PATH, full)
+    return full
 
 
 def resolve_manifest_arg(value: str | None) -> Path:
@@ -470,12 +550,16 @@ def main() -> int:
     parser.add_argument(
         "--full",
         action="store_true",
-        help="Ignore .last_compile, return all sources.",
+        help="Return all sources regardless of the tracked manifest baseline.",
     )
     parser.add_argument(
         "--touch",
         action="store_true",
-        help="Update .last_compile after outputting manifest.",
+        help=(
+            "After compiling the reported delta, regenerate the tracked "
+            "source manifest (and advance .last_compile) so the next "
+            "incremental scan reports nothing."
+        ),
     )
     parser.add_argument(
         "--type",
@@ -484,7 +568,10 @@ def main() -> int:
     )
     parser.add_argument(
         "--since",
-        help="Override since-date (YYYY-MM-DD). Takes precedence over .last_compile.",
+        help=(
+            "Explicit mtime-based since-date (YYYY-MM-DD) override; the "
+            "default selection is a content-hash diff, not mtimes."
+        ),
     )
     parser.add_argument(
         "--write-manifest",
@@ -552,34 +639,64 @@ def main() -> int:
         return 0
 
     if args.full:
-        since = 0.0
-        mode = "full"
+        sources = scan_sources(0.0, args.type_filter)
+        manifest = build_manifest(sources, "full")
     elif args.since:
         try:
             dt = datetime.strptime(args.since, "%Y-%m-%d").replace(
                 tzinfo=timezone.utc
             )
-            since = dt.timestamp()
-            mode = f"since:{args.since}"
         except ValueError:
             print(f"ERROR: Invalid date format: {args.since} (expected YYYY-MM-DD)",
                   file=sys.stderr)
             return 1
+        sources = scan_sources(dt.timestamp(), args.type_filter)
+        manifest = build_manifest(sources, f"since:{args.since}")
+    elif SOURCE_MANIFEST_PATH.exists():
+        try:
+            manifest = incremental_since_tracked_manifest(args.type_filter)
+        except ValueError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 1
     else:
-        since = get_last_compile()
-        mode = "incremental"
-
-    sources = scan_sources(since, args.type_filter)
-    manifest = build_manifest(sources, mode)
+        print(
+            f"NOTE: no tracked manifest at {SOURCE_MANIFEST_PATH} — nothing is "
+            "recorded compiled yet; emitting the full source set once.",
+            file=sys.stderr,
+        )
+        sources = scan_sources(0.0, args.type_filter)
+        manifest = build_manifest(sources, "full")
 
     json.dump(manifest, sys.stdout, indent=2)
     print()
 
     if args.write_manifest is not None:
-        write_manifest(resolve_manifest_arg(args.write_manifest), manifest)
+        target = resolve_manifest_arg(args.write_manifest)
+        if target.resolve() == SOURCE_MANIFEST_PATH.resolve() and (
+            manifest.get("mode") != "full"
+        ):
+            print(
+                f"ERROR: refusing to overwrite the tracked baseline manifest "
+                f"{SOURCE_MANIFEST_PATH} with a partial "
+                f"({manifest.get('mode')}) scan; pass an explicit PATH or run "
+                "--full --write-manifest.",
+                file=sys.stderr,
+            )
+            return 1
+        write_manifest(target, manifest)
 
     if args.touch:
-        touch_last_compile()
+        try:
+            refreshed = refresh_tracked_manifest()
+        except ValueError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 1
+        print(
+            f"touch: regenerated {SOURCE_MANIFEST_PATH} from the current "
+            f"source set ({len(refreshed['sources'])} sources) and advanced "
+            f"{LAST_COMPILE_PATH}",
+            file=sys.stderr,
+        )
 
     return 0
 

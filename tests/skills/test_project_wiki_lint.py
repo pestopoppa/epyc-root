@@ -27,6 +27,130 @@ def _write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+CLONE_REPOS_FARM = """#!/bin/bash
+repos=(
+    epyc-orchestrator:epyc-orchestrator:epyc-orchestrator
+    epyc-inference-research:epyc-inference-research:epyc-inference-research
+    epyc-llama:llama.cpp:llama.cpp
+)
+"""
+
+
+def _write_farm_definition(root: Path) -> None:
+    _write(root / "scripts" / "clone-repos.sh", CLONE_REPOS_FARM)
+
+
+def _wiki_page_with_links() -> str:
+    return """# Page
+
+**Category**: `agent_architecture`
+
+## Summary
+
+Summary.
+
+## Source References
+
+- [handoff](../handoffs/active/real.md)
+- [missing handoff](../handoffs/active/missing.md)
+- [research chapter](../repos/epyc-inference-research/docs/chapters/06-benchmarking-framework.md)
+- [unknown repo](../repos/not-a-farm-member/docs/x.md)
+"""
+
+
+def test_wiki_link_targets_skips_cross_repo_targets_when_farm_absent(
+    tmp_path: Path,
+) -> None:
+    module = _load_module()
+    _write_farm_definition(tmp_path)
+    _write(tmp_path / "handoffs" / "active" / "real.md", "# Real\n")
+    _write(tmp_path / "wiki" / "agent-architecture.md", _wiki_page_with_links())
+
+    issues = module.check_wiki_link_targets(tmp_path / "wiki")
+
+    errors = [issue for issue in issues if issue[0] == module.ERROR]
+    infos = [issue for issue in issues if issue[0] == module.INFO]
+    assert len(errors) == 2
+    assert [error[2] for error in errors] == [
+        "Dangling link target: ../handoffs/active/missing.md "
+        f"(resolves to {tmp_path / 'handoffs' / 'active' / 'missing.md'})",
+        "Dangling link target: ../repos/not-a-farm-member/docs/x.md "
+        f"(resolves to {tmp_path / 'repos' / 'not-a-farm-member' / 'docs' / 'x.md'})",
+    ]
+    assert len(infos) == 1
+    assert "cross-repo target under repos/" in infos[0][2]
+
+
+def test_wiki_link_targets_verifies_cross_repo_targets_when_farm_present(
+    tmp_path: Path,
+) -> None:
+    module = _load_module()
+    _write_farm_definition(tmp_path)
+    _write(
+        tmp_path / "repos" / "epyc-inference-research" / "docs" / "ok.md",
+        "# Ok\n",
+    )
+    _write(
+        tmp_path / "wiki" / "agent-architecture.md",
+        """# Page
+
+**Category**: `agent_architecture`
+
+## Summary
+
+Summary.
+
+## Source References
+
+- [present](../repos/epyc-inference-research/docs/ok.md)
+- [absent](../repos/epyc-inference-research/docs/gone.md)
+""",
+    )
+
+    issues = module.check_wiki_link_targets(tmp_path / "wiki")
+
+    errors = [issue for issue in issues if issue[0] == module.ERROR]
+    assert [error[1] for error in errors] == ["wiki/agent-architecture.md"]
+    assert "gone.md" in errors[0][2]
+    assert all("cross-repo" not in error[2] for error in errors)
+
+
+def test_missing_crossrefs_skips_cross_repo_targets_when_farm_absent(
+    tmp_path: Path,
+) -> None:
+    module = _load_module()
+    _write_farm_definition(tmp_path)
+    active_dir = tmp_path / "handoffs" / "active"
+    completed_dir = tmp_path / "handoffs" / "completed"
+    _write(active_dir / "owner.md", "# Owner\n")
+    _write(
+        active_dir / "links.md",
+        """# Links
+
+- [research notes](../../repos/epyc-inference-research/research/notes.md)
+- [missing](../../handoffs/completed/never-was.md)
+""",
+    )
+
+    issues = module.check_missing_crossrefs(active_dir, completed_dir)
+
+    assert issues == [
+        (
+            module.INFO,
+            "links.md",
+            "cross-repo target under repos/epyc-inference-research cannot be "
+            "verified from this worktree (the repos/ symlink farm exists only "
+            "in /workspace); skipped, not flagged dangling: "
+            "../../repos/epyc-inference-research/research/notes.md",
+        ),
+        (
+            module.ERROR,
+            "links.md",
+            "Broken link: [../../handoffs/completed/never-was.md] target not found",
+        ),
+    ]
+
+
 def test_wiki_article_structure_accepts_reviewable_article(tmp_path: Path) -> None:
     module = _load_module()
     wiki_dir = tmp_path / "wiki"

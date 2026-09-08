@@ -24,6 +24,7 @@ Two properties matter and are pinned by tests:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -69,6 +70,25 @@ def iter_measured_rows(root: Path | None = None) -> Iterator[tuple[Path, dict]]:
                     yield shard, row
 
 
+def _attestation_verified(row: dict) -> bool:
+    """SC69: re-derive the digest the trial writer computed over the entry's own content.
+
+    The writer hashes ``entry minus measurement`` — a digest that covered the block it lives in
+    could never be recomputed, so it would attest to nothing (experiment_journal.py). The row on
+    disk is that entry after a JSON round trip, so the same canonical serialization re-derives
+    the digest here; a row whose digest does not re-derive has been mutated since emit.
+    """
+    recorded = (row.get("measurement") or {}).get("attestation") or {}
+    claimed = str(recorded.get("sha256") or "")
+    if not claimed:
+        return False
+    payload = {k: v for k, v in row.items() if k != "measurement"}
+    recomputed = hashlib.sha256(
+        json.dumps(payload, sort_keys=True, default=str, allow_nan=False).encode("utf-8")
+    ).hexdigest()
+    return recomputed == claimed
+
+
 def as_record(shard: Path, row: dict) -> dict:
     """Shape a journal row into the record `measurement_record.grade()` consumes."""
     meas = row["measurement"]
@@ -99,6 +119,11 @@ def as_record(shard: Path, row: dict) -> dict:
             "sha256": att.get("sha256"),
             "locator": att.get("locator") or "",
             "git_tag": att.get("git_tag") or "",
+            # SC69: this reader re-derived the recorded digest over the entry's own content
+            # (the writer's attestation semantics — not the shard bytes, which an append-only
+            # journal can never pin). The verification result is carried in the record the
+            # measurement ladder grades.
+            "verified": True if _attestation_verified(row) else None,
         },
     }
 

@@ -521,10 +521,21 @@ def step_7_compile_wiki(ctx: WrapContext) -> dict:
     if not ctx.dry_run and manifest_path.exists():
         try:
             parsed = json.loads(manifest_path.read_text(encoding="utf-8"))
-            if isinstance(parsed, dict) and isinstance(parsed.get("compiled_by"), list):
-                manifest = parsed
-        except json.JSONDecodeError:
-            manifest = {"compiled_by": []}
+        except json.JSONDecodeError as exc:
+            raise WrapError(
+                f"tracked wiki/source_manifest.json is corrupt and will NOT be "
+                f"replaced by a receipt write: {exc}"
+            ) from exc
+        if not isinstance(parsed, dict):
+            raise WrapError(
+                f"tracked wiki/source_manifest.json is not a dict "
+                f"({type(parsed).__name__}); refusing to replace it with receipts"
+            )
+        # Preserve the content-hash manifest (kind project-wiki-source-
+        # manifest) whenever present: compiled_by is merged as an extra
+        # top-level key, never a replacement structure. The bare legacy
+        # shape {"compiled_by": []} is preserved the same way.
+        manifest = dict(parsed)
     entries = sorted(set(manifest.get("compiled_by", [])) | {ctx.request["request_id"]})
     manifest["compiled_by"] = entries
     watermark = f"{ctx.request['request_id']} {datetime.now(timezone.utc).isoformat(timespec='seconds')}"

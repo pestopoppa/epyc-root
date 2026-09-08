@@ -139,6 +139,14 @@ Run the manifest scanner to identify compilable sources:
 /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py
 ```
 
+Incremental selection is a **content-hash diff against the tracked
+`wiki/source_manifest.json`** (the one shared watermark) — never filesystem
+mtimes, which are checkout-time artifacts in lane worktrees and would make
+every lane report the whole repo. A source is new when its path is absent
+from the manifest, changed when its stored `content_hash` differs. The first
+run with no tracked manifest (nothing recorded compiled yet) emits the full
+source set once.
+
 For a full recompilation (ignore last compile timestamp):
 ```
 /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --full
@@ -247,13 +255,21 @@ After successful compilation:
 /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --touch
 ```
 
+`--touch` regenerates the tracked `wiki/source_manifest.json` from the
+current source set and advances `wiki/.last_compile`, so the next incremental
+scan reports nothing. Because the manifest is tracked, the watermark is
+shared across worktrees and advances when the change is committed; a lane
+`--touch` records the same content hashes a shared-clone `--touch` would.
+`--touch` refuses (exit 1) when no tracked manifest exists — establish the
+baseline with `--full --write-manifest` first.
+
 #### Compilation Principles
 
 - **Synthesize, don't copy.** Wiki pages distill knowledge across sources; they are not duplicates.
 - **Cite sources.** Every claim traces to a source via the Source References section.
 - **Cross-reference.** Link related wiki pages to each other via the Related Categories section.
 - **Confidence levels.** Use `verified` for tested/measured findings, `inferred` for analysis, `external` for third-party claims.
-- **Incremental.** Only process sources newer than `.last_compile` unless doing a full recompile.
+- **Incremental.** Only process sources whose content hash differs from the tracked `wiki/source_manifest.json` unless doing a full recompile. Content hashes, never checkout mtimes.
 - **Preserve existing.** Update wiki pages in place; merge new findings into existing structure.
 
 ## Boundaries

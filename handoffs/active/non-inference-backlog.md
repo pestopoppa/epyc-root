@@ -276,6 +276,16 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   `scripts/clone-repos.sh` creates only in `/workspace`. Both tools silently assume they are running
   in the shared clone; neither can say "I cannot tell from here". Whatever fixes the scanner should
   also give the linter a way to resolve or explicitly skip cross-repo targets it cannot see.
+  **✅ 2026-09-08 (`0ea91f3e`)** — both halves closed. Scanner default scan = content-hash diff
+  against the TRACKED `wiki/source_manifest.json` (mtime never consulted; a scratch run with every
+  source stamped 2030 returns 0 — phantom-942 mechanism dead); `--touch` regenerates the tracked
+  manifest from the current full set, so lane and main record byte-identical hashes; no baseline →
+  stderr note + one full emission, never a phantom; incremental scans refuse to overwrite the
+  tracked manifest with a partial (`--full` required). Linter: a missing target is provably
+  cross-repo only when it enters `repos/<member>/` with `<member>` in the tracked
+  `scripts/clone-repos.sh` farm array and this worktree has no farm → INFO skip, never ERROR; farm
+  present or non-farm paths keep ERROR. 11 new tests; scratch proof: lane-vs-main `--touch`
+  produces identical per-file hashes.
 - [ ] **OBS-8** (LOW): **`scripts/session/start_orchestrator_test.sh`'s port gate is vacuous on this
   host.** `netstat` is not installed and `2>/dev/null` swallows the "command not found", so the kill
   loop silently iterates zero times and the availability check prints `[✓] Ports 8000 and 8080
@@ -355,6 +365,13 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
   peer session's independently-touched local watermark) has already compiled part of the delta.
   The content-hash-against-`source_manifest.json` fix already proposed here is the correct fix
   for both mechanisms at once — no separate row needed.
+  **✅ 2026-09-08 (`0ea91f3e`) — closed with the OBS-13 fix.** Scanner selection is now a
+  content-hash diff against the tracked `wiki/source_manifest.json`; `--touch` advances the
+  tracked manifest (lane-safe by construction — hashes are worktree-invariant). Post-deploy note:
+  the tracked manifest baseline is 2026-08-27, so the first post-fix scan reports the real 86-source
+  delta (unrecorded drift, not phantom) — reconciling it (compile the delta, or one lease-held
+  `--touch` if the fleet's Sep-3 sweep already compiled it) is a deployment decision, not a code
+  question.
 
 ---
 

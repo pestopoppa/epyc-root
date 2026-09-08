@@ -132,6 +132,10 @@ def project(native: Any) -> ClaimTuple:
         attestation_sha256=expected["event_sha256"],
         attestation_locator=expected["event_locator"],
         attestation_present=expected["attestation_present"],
+        # SC69: the event digest was re-derived from the event content at the read boundary
+        # (evaluation_event.load_event_source refuses a mismatch), so it was verified at this
+        # write boundary; the result is carried, and the ladder stays pure.
+        attestation_verified=True,
         source_kind="autokernel-property-measurement",
         extra={
             "event_id": event_id,

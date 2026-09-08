@@ -1349,6 +1349,23 @@
         "failure_reason": {
           "type": "string"
         },
+        "screen_result": {
+          "type": ["object", "null"],
+          "description": "AIR-14 (2026-09-07): where a PREMISE-screening verdict lives, so it stops riding as prose in failure_reason on statuses that mean something else (AIR-11 measured exactly that, and 3 verdicts became uncountable). Nullable: a row that has never been premise-screened carries null/absent, which is NOT a verdict. The ladder mirrors premise_screener.VERDICTS: still-needed | stale | unknown | blocked. blocked_by names the dependency only when premise is 'blocked'; evidence is the screener's quote. Written by the daemon/its intake from typed payloads — agents propose, never author queue rows.",
+          "properties": {
+            "premise": {
+              "enum": ["still-needed", "stale", "unknown", "blocked"]
+            },
+            "blocked_by": {
+              "type": ["string", "null"]
+            },
+            "evidence": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["premise"]
+        },
         "routing_annotation": {
           "type": "object",
           "description": "from triage; advisory only"

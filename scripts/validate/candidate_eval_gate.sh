@@ -23,7 +23,7 @@ Runs deterministic root governance checks:
   - agent reference validation
   - CLAUDE.md matrix validation
   - registry operating-point validation
-  - held-out PII fixture validation
+  - same-sample PII fixture validation (observation-only)
   - repo-readiness scorer regeneration into a temp directory
 
 Options:

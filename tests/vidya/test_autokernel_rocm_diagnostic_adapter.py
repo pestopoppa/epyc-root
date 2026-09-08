@@ -223,7 +223,7 @@ def test_saturation_projects_four_attested_directional_claims() -> None:
     assert len(projected) == 4
     assert [row.metric_direction for row in projected] == [
         "higher_better", "higher_better", "lower_better", "higher_better"]
-    assert all(ct.grade(row)[:2] == ("Witnessed", "Attested") for row in projected)
+    assert all(ct.grade(row)[:2] == ("Witnessed", "Anchored") for row in projected)
     assert all(row.extra["grants_campaign_authority"] is False for row in projected)
 
 

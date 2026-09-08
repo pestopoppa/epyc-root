@@ -219,7 +219,7 @@ def test_projects_baseline_and_candidate_rows_through_the_shared_ladder():
     assert all(item.extra["authority"] == gpu.AUTHORITY for item in tuples)
     assert all(item.attestation_locator for item in tuples)
     assert len({item.measurement_id for item in tuples}) == 3
-    assert all(ct.grade(item)[:2] == ("Witnessed", "Attested") for item in tuples)
+    assert all(ct.grade(item)[:2] == ("Witnessed", "Anchored") for item in tuples)
 
 
 def test_native_contract_baseline_center_rederives_from_anchor_samples():
@@ -234,7 +234,7 @@ def test_native_contract_baseline_center_rederives_from_anchor_samples():
                              receipt_locator="gpu:v27/native-result.json",
                              receipt_sha256="4" * 64, attestation_present=True)
     assert len(result) == 2
-    assert all(ct.grade(gpu.project(native))[:2] == ("Witnessed", "Attested")
+    assert all(ct.grade(gpu.project(native))[:2] == ("Witnessed", "Anchored")
                for native in (*bank, *result))
 
 
@@ -422,7 +422,7 @@ def test_corrected_record_projects_the_like_for_like_effect():
     legacy_center = sum(SKEWED_ANCHOR) / 3
     legacy = sorted((v - legacy_center) / legacy_center for v in CANDIDATE)[1]
     assert legacy - CORRECTED_EFFECT > 0.03, "fixture no longer separates the two rules"
-    assert all(ct.grade(gpu.project(native))[:2] == ("Witnessed", "Attested")
+    assert all(ct.grade(gpu.project(native))[:2] == ("Witnessed", "Anchored")
                for native in gpu.native_rows(
                    bank, receipt_locator="gpu:v38/baseline-bank.json",
                    receipt_sha256="8" * 64, attestation_present=True))

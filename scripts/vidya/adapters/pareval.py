@@ -605,6 +605,12 @@ def project(native: Any) -> ClaimTuple:
     n = record["n"]
     measurement_id = f"pareval_{record['run_id']}_{record['problem']}_{model}_k{k}_n{n}"
     pinned = bool(native.get("git_pinned"))
+    # SC69: native_rows recomputed the run output's sha256 the moment it read the file and
+    # REFUSES a mismatch — that recompute is the write-boundary verification, and its result is
+    # carried in the tuple. Unreachable or absent artifact -> not verified -> Anchored.
+    recomputed = native.get("run_output_sha256_recomputed")
+    verified = True if (isinstance(recomputed, str) and
+                        recomputed == record["run_output_sha256"]) else None
     return ClaimTuple(
         measurement_id=measurement_id,
         metric=PRIMARY_METRIC,
@@ -631,6 +637,7 @@ def project(native: Any) -> ClaimTuple:
         # tree whose HEAD equals the recorded pinned revision. Out-of-tree or unpinned
         # -> False -> the ladder's honest Witnessed/Anchored.
         attestation_present=pinned,
+        attestation_verified=verified,
         source_kind=SOURCE_KIND,
         extra={
             "schema": record["schema"],

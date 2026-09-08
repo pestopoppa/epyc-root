@@ -44,6 +44,7 @@ something else, and caps at `Judged`; a bound one caps at `Verified`, per §4.5.
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable
@@ -142,6 +143,15 @@ class ClaimTuple:
     # — a sealed manifest checks its `authority/*` files, not the manifest itself — sets it
     # explicitly. Without this the ladder silently downgraded every sealed run to Anchored.
     attestation_present: bool | None = None
+    # SC69 — whether `attestation_sha256` was recomputed over the artifact at the ADAPTER/WRITE
+    # boundary and matched. `grade()` is a pure function of the tuple and hashing is I/O, so the
+    # check lives where attestations are constructed and its result is carried HERE. `None` (the
+    # default) means "not checked": the digest is a recorded claim, nothing more, and never
+    # reaches `Attested` — `Attested` means the artifact was re-read and matched, not that a
+    # 64-character string was typed. `True` is set only by a write path that re-derived the
+    # digest (`verify_attestation` is the tool). `False` is REFUSED: a tuple that records a
+    # digest WHILE recording that the digest did not match asserts two contradictory facts.
+    attestation_verified: bool | None = None
     source_kind: str = "measurement"
     # SC57 — the verifier-class element. WHAT THE CHECK ASSERTED, in the checker's own terms: the
     # theorem statement a prover discharged, the property a validator decided, the postcondition a
@@ -188,6 +198,21 @@ class ClaimTuple:
                                   "a measurement")
         if self.attestation_sha256 and len(self.attestation_sha256) != 64:
             raise ProjectionError("attestation_sha256 must be a 64-character hex digest")
+        # SC69. A carried verification without a digest to verify is a lie about a structural
+        # fact (nothing was verified); a carried MISmatch records the digest AND that the digest
+        # is wrong, which is the same lie with the contradiction stated. Missing (None) is the
+        # honest default and grades down.
+        if self.attestation_verified is not None and not self.attestation_sha256:
+            raise ProjectionError(
+                "attestation_verified without attestation_sha256: nothing was verified. Record "
+                "the digest the artifact was checked against, or leave verification unclaimed "
+                "(SC69)")
+        if self.attestation_verified is False:
+            raise ProjectionError(
+                "attestation_verified=False is refused, never downgraded: recording a digest "
+                "WHILE recording that it does not match the artifact asserts two contradictory "
+                "facts. Re-verify against the current artifact, or record no digest and take "
+                "the grade that describes what is known (SC69)")
         if not isinstance(self.decided_proposition, str):
             raise ProjectionError(
                 "decided_proposition must be a string — the proposition the check actually "
@@ -252,6 +277,29 @@ def artifact_present(tup: ClaimTuple) -> bool:
     if rel.is_absolute() or ".." in rel.parts:
         return False
     return (REPO_ROOT / rel).is_file()
+
+
+def verify_attestation(tup: ClaimTuple) -> bool:
+    """SC69 — the write-boundary check: re-read the artifact and compare its sha256.
+
+    The ONLY function here that opens the artifact, and deliberately never called by `grade()`:
+    grading must stay reproducible from a stored tuple alone, so the digest check happens where
+    attestations are constructed and the RESULT is carried in `attestation_verified`.
+
+    Resolves the path exactly as `artifact_present` does (same containment rules), hashes the raw
+    bytes, and compares against `attestation_sha256`. False on any mismatch, absence, or escape —
+    never raises.
+    """
+    if not tup.attestation_sha256 or not tup.attestation_path:
+        return False
+    rel = PurePosixPath(tup.attestation_path)
+    if rel.is_absolute() or ".." in rel.parts:
+        return False
+    try:
+        actual = hashlib.sha256((REPO_ROOT / rel).read_bytes()).hexdigest()
+    except OSError:
+        return False
+    return actual == tup.attestation_sha256.lower()
 
 
 def _q_min(a: str, b: str) -> str:
@@ -358,7 +406,16 @@ def _measurement_ladder(tup: ClaimTuple) -> tuple[str, str, list[str]]:
     if not (tup.reps is not None and tup.date and has_ref):
         return "Verified", "Located", reasons
     if tup.attestation_sha256 and artifact_present(tup):
-        return "Witnessed", "Attested", reasons
+        if tup.attestation_verified is True:
+            return "Witnessed", "Attested", reasons
+        # SC69. Present and hashed is not the top rung: a hash claim nobody re-derived from the
+        # artifact is "a 64-character string was typed", and Attested means the artifact was
+        # re-read and matched. The verification happens at the adapter/write boundary and rides
+        # in the tuple, so grading stays a pure function of the record.
+        reasons.append(
+            "attestation sha256 never verified against the artifact's bytes — Attested means "
+            "the artifact was re-read and its digest matched, and this digest was recorded "
+            "without a re-read (SC69)")
     return "Witnessed", "Anchored", reasons
 
 

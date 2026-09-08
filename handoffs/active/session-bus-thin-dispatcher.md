@@ -3111,15 +3111,34 @@ and no edge field touches either. The one genuine schema need is a place to WRIT
 found: today already-satisfied verdicts ride as prose inside `failure_reason` on statuses that mean
 something else, which is exactly how 3 of them became uncountable.
 
-- [ ] **AIR-12 — make premise screening non-optional on the dispatch path, and fix its probe
+- [x] **AIR-12 — make premise screening non-optional on the dispatch path, and fix its probe
   bundle.** 5 of 9 lifetime verdicts were `unknown` solely because the bundle lacked the settling
   artifact. Add a `blocked` verdict to the ladder (today it is forced-choice
   `still-needed|stale|unknown`). Filed from the AIR-11 measurement, 2026-09-07.
-- [ ] **AIR-13 — have the row screener consult `.index-graph.json` readiness, advisory only.**
+  **✅ 2026-09-08 (`945c8820`).** Ladder is now `still-needed|stale|unknown|blocked`
+  (`premise_screener.SCREENER_VERSION` 1→2). Probe-bundle repair: `mechanical_screen` falls back to
+  the row's own C50b `spec_ref`/`row_ref` anchor when text search misses, and
+  `probe_artifacts(also=…)` probes the anchor artifact even when the row text names no path — the
+  missing settling artifact was the sole cause of all 5 `unknown`s. Dispatch path: an unevidenced
+  non-unknown verdict is refused (screen skipped/absent can never read as go); `blocked` parks like
+  stale/unknown. 7 new red-first tests.
+- [x] **AIR-13 — have the row screener consult `.index-graph.json` readiness, advisory only.**
   Zero schema cost; would have flagged 3 of 25. Flag, never hard-refuse — handoff-granular
   readiness is over-broad at row level and 2 of those 3 rows were legitimately completed anyway.
-- [ ] **AIR-14 — add a nullable `screen_result` to the queue row** (`premise`, `blocked_by`,
+  **✅ 2026-09-08 (`945c8820`).** `backlog_row_check.index_graph_readiness()` reads the
+  `index_graph.v2` sidecar and `classify()` appends an `INDEX-GRAPH (advisory, NOT a refusal)`
+  reason on the dispatchable branch only — exit code never changes; advisory flows to the model via
+  `classify_reasons` in the screener bundle; silent on missing/unreadable graph. 3 red-first tests.
+- [x] **AIR-14 — add a nullable `screen_result` to the queue row** (`premise`, `blocked_by`,
   `evidence`) so a screening verdict has somewhere to live other than prose in `failure_reason`.
+  **✅ 2026-09-08 (`945c8820`).** `session_bus.schema.json` `queue_row.screen_result`:
+  whole-field nullable (`null`/absent = never screened, NOT a verdict), `premise` required-when-
+  present over the closed four-value ladder, `blocked_by` nullable and meaningful only for
+  `blocked`, unknown keys refused (`additionalProperties: false`). Coordinator enforces the same
+  gate at intake/transcription; `screen_result` joins `_IDENTITY_FIELDS` so it survives every row
+  rewrite (the census uncountability); worker `requeue` now transcribes `screen_result` onto the
+  row (parked verdicts previously died in the outbox). Schema validated under both validators;
+  live-bus validate: 0 new failures. 3 red-first tests.
 
 - [ ] **Decide the fate of the two daemon-written TRACKED bus files.** `coordination/session-bus/{alarm_state.json,relay_state.json}` are tracked but written by the running bus/relay daemons, so they are perpetually dirty and any broad pathspec commit sweeps them. Filed from the 2026-08-25 staged-rollback resolution (they were excluded from the restore as daemon-owned). Options: (a) `.gitignore` them + keep a committed schema/config twin (`alarm_config.yaml` already covers the config side), (b) `git update-index --assume-unchanged` for the two paths, or (c) leave tracked-and-dirty and rely on hunk-selective commits (status quo). Recommendation: (a) — the state is regenerable runtime data, exactly the class `.gitignore` exists for; the config (`alarm_config.yaml`) stays tracked.
 

@@ -2,8 +2,31 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-07-31 (adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
+**Last compiled**: 2026-09-08 (the rtx6kpro intake — a same-class 96 GB single-GPU local-inference field wiki read for stealable hypotheses: p-min sweep, steps/s keep gate, long-context + sustained-C8 cells, A/A losslessness control, the RNG-entanglement lead, and the contradictions/non-transferables vs our record; earlier 2026-07-31 note: adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
 **Sources**: 36 documents
+
+## Compiled Update — 2026-09-08: the rtx6kpro intake — a same-class local-GPU field wiki, read for our hypotheses
+
+**Confidence: `external`** — third-party measurements (the intake's own credibility audit: ~35% rigorous-with-conditions, ~35% measured-but-underconditioned, ~20% attributed Discord anecdote — several retracted in-repo — ~10% config dumps). Zero llama.cpp/GGUF and zero ROCm content; every CUDA item was dispositioned with a gfx90a/HIP analog or an explicit "no analog".
+
+The intake record ([`docs/research-intake/rtx6kpro-20260907.md`](../docs/research-intake/rtx6kpro-20260907.md), source pinned at upstream `44e817b`, 739 commits / 399 pages, active to 2026-09-07) is a community field wiki for exactly the class this page covers — serving frontier open-weight models on ONE 96 GB-class workstation GPU (NVIDIA RTX PRO 6000 Blackwell: SM120, 96 GB GDDR7, PCIe, no NVLink) with vLLM/SGLang plus their own kernel library. The local-serving-relevant steals, each filed to a local row:
+
+- **`--spec-draft-n-max` × `--spec-draft-p-min` sweep under np4** — p-min has never been set on any GPU arm here; external per-position acceptance decay says draft positions 6–8 carry 10–30%, and n-max 7 makes the np1 verify batch exactly 8 (confound-free test of the MMQ-verify premise). Filed SL-1.
+- **Verifier steps/s as the serving keep-gate metric** (`tok/s = steps/s × accepted/step`; only steps/s is a kernel property). Filed SL-2.
+- **A long-context (~32k) cell + arm-order randomisation in the serving gate** (external: cc64 reads −15–20% after a 128k sweep; spec gain can collapse with context for some quants) — doubles as the sustained-C8 cell against external "DFlash2 −19% at C8" (vs our +47.8%). Filed SL-4.
+- **An A/A control on the losslessness gate** before 7/12-vs-5/12 is read as a difference. Filed SL-5.
+- **Draft RNG entangled with acceptance RNG** — the lead for why both DFlash2 AND `draft_simple` fail at identical indices (34/216/238). Filed DF2-RNG.
+
+Full dispositions: [Speculative Decoding](speculative-decoding.md) (SL-1/2/4/5, DF2-RNG, RULE-RESCOPE), [Hardware Optimization](hardware-optimization.md) (kernel candidates AK-H-*, the MMQ-M=9..36 serving-verify finding, protocol rows R23-46/47, and the INF-70 CPU-path note).
+
+**Contradictions with our record worth keeping visible** (flagged, not resolved): their spec-dec-vs-concurrency numbers contradict the "single-stream only" rule (RULE-RESCOPE filed); external "DFlash2 −19% at sustained C8" vs our +47.8% at 8 in-flight; their HIP-graph "4.3×" is vs an eager baseline while ours is +4..14%; power: they scale +30% at C64 from 300→600 W while our MI210 draws ~200 W of its 300 W — **re-check draw DURING np4 serving** (only proven under llama-bench/GEMM windows so far).
+
+**Not transferable here:** GDDR7 memory overclock (+7–10% decode there) — MI210 HBM2e has no overdrive exposed under ROCm 6.2 on Instinct, and we run at 47% of HBM bandwidth, so clock is not binding (named, declined); FP8 KV as a hardware cast; NVFP4 weights/KV; vLLM/SGLang scheduler/loader/allocator internals; DCP-replicated drafts; WSL; multi-GPU PCIe/NCCL/topology. Their Qwen3.8 TP1/TP4 absolute numbers are not comparable to a 64 GB HBM2e llama.cpp Q8_0 path, and all their kernel-level numbers are CUDA-only (no HIP analog).
+
+### Source References (2026-09-08, rtx6kpro)
+
+- [`docs/research-intake/rtx6kpro-20260907.md`](../docs/research-intake/rtx6kpro-20260907.md) — credibility breakdown, the filed-candidate destinations, contradictions 1–10, and the complete not-transferable/deferred list.
+- [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/dflash2-block-drafter-experimental-build.md) — SL-1/2/4/5 and DF2-RNG filing rows.
 
 ## Compiled Update — 2026-07-31: a `LD_LIBRARY_PATH` ordering landmine silently redirects fresh ggml builds to the frozen production kernel
 

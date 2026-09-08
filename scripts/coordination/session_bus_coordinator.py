@@ -1408,6 +1408,29 @@ def spec_ref_state(spec_ref: str, repo_root: Path | None = None) -> tuple[str, s
     return ("closed" if tick == "x" else "open"), detail
 
 
+#: The premise-verdict ladder of scripts/coordination/premise_screener.py,
+#: mirrored here because queue-row `screen_result` is schema-enforced and the
+#: schema enum is this tuple's only consumer-facing copy. AIR-14, 2026-09-07.
+SCREEN_RESULT_VERDICTS = ("still-needed", "stale", "unknown", "blocked")
+
+
+def _valid_screen_result(value: Any) -> bool:
+    """Schema-shaped `screen_result`, or not. Nullable whole-field at the schema
+    level; when present it must carry a verdict from the ladder and nothing but
+    the three AIR-14 fields. Returns False on None — absent is the schema's own
+    word for 'never screened'."""
+    if not isinstance(value, dict):
+        return False
+    if value.get("premise") not in SCREEN_RESULT_VERDICTS:
+        return False
+    if set(value) - {"premise", "blocked_by", "evidence"}:
+        return False
+    for key in ("blocked_by", "evidence"):
+        if key in value and value[key] is not None and not isinstance(value[key], str):
+            return False
+    return True
+
+
 def spec_ref_with_content_anchor(spec_ref: str | None,
                                  repo_root: Path | None = None) -> str | None:
     """Stamp the content anchor onto a `path#Lnnn` ref AT SEED TIME. Idempotent.
@@ -1456,7 +1479,12 @@ _IDENTITY_FIELDS = ("spec_ref", "task_text", "screened_by", "expected_occupancy"
                     "audit_origin", "checkpoint_id", "checkpoint_msg_id",
                     "checkpoint_outcome", "checkpoint_commit_sha", "checkpoint_pushed_ref",
                     "integration_state", "audit_verdict_id", "followup_task_ids",
-                    "rework_findings", "missing_evidence", "evidence_request_pending")
+                    "rework_findings", "missing_evidence", "evidence_request_pending",
+                    # AIR-14 (2026-09-07): a premise-screening verdict is a claim about
+                    # the WORLD at a moment, recorded with a timestamp; like screened_by
+                    # it must survive every rewrite of its row or it silently becomes
+                    # uncountable (the AIR-11 census lost 3 verdicts to exactly that).
+                    "screen_result")
 
 
 def _carry_row_identity(row: dict | None) -> dict:
@@ -2635,9 +2663,22 @@ def transcribe(latest: dict[str, dict], reports: dict[str, list[dict]], epoch: i
             target = _ACK_IMPLIES.get(target, target)
         if "status" in kinds:
             target = _STATUS_IMPLIES.get(target, target)
+        # AIR-14 (2026-09-07): a worker-pool `requeue` returns its row to READY —
+        # the parked-pre-premise case among them — and its typed `screen_result`
+        # is transcribed onto the row so the verdict lives in the schema field
+        # instead of dying in an outbox nobody folds (the AIR-11 census: verdicts
+        # rode as prose on statuses that mean something else, or nowhere at all).
+        screen_result: Optional[dict] = None
+        if "requeue" in kinds:
+            req = [m for m in msgs if m.get("kind") == "requeue"][-1]
+            payload = req.get("payload") or {}
+            if _valid_screen_result(payload.get("screen_result")):
+                screen_result = payload["screen_result"]
+            target = "READY"
         if target != status:
             out.append({**base, "schema_version": QUEUE_SCHEMA_VERSION, "ts": _utcnow_iso(),
                         "task_id": tid, "status": target, "epoch": epoch,
+                        **({"screen_result": screen_result} if screen_result is not None else {}),
                         "claim_ts": _utcnow_iso() if target == "CLAIMED" else row.get("claim_ts")})
     return [{k: v for k, v in r.items() if v is not None} for r in out]
 
@@ -3875,20 +3916,28 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
                    "status": "READY", "lane": pl.get("lane"), "gating": pl.get("gating"),
                    "epoch": epoch, "origin": f"proposed-by:{msg.get('from')}",
                    "spec_ref": spec_ref_with_content_anchor(pl.get("spec_ref"))}
+            note = ""
             for key in ("priority", "priority_class", "contention_class", "role_affinity",
                         "est_wall_clock_h", "replay_eligible",
                         # AUD-2: carry the dispatch identity + its receipts onto the
                         # row, so the daemon's own task-assign can be typed without
                         # re-reading the handoff at assign time (when the anchor has
                         # already moved).
-                        "task_text", "screened_by", "expected_occupancy"):
+                        "task_text", "screened_by", "expected_occupancy",
+                        # AIR-14: a proposal may arrive ALREADY premise-screened
+                        # (typed screen_result); carry it so the verdict has
+                        # somewhere to live other than prose. Validated — a
+                        # misshapen one is dropped with a note, never admitted.
+                        "screen_result"):
                 if pl.get(key) is not None:
-                    row[key] = pl[key]
+                    if key == "screen_result" and not _valid_screen_result(pl[key]):
+                        note += " screen_result=INVALID(dropped)"
+                    else:
+                        row[key] = pl[key]
             # A proposal's `summary` IS the row text when nothing better was given.
             if not row.get("task_text") and pl.get("summary"):
                 row["task_text"] = pl["summary"]
 
-            note = ""
             if not row.get("screened_by"):
                 result = _screen_proposal(row)
                 if result is not None:
@@ -3900,7 +3949,7 @@ def intake_proposals(bus_root: Path, latest: dict[str, dict], reports: dict[str,
                             + ("Re-anchor this row by TEXT and re-propose it."
                                if result.needs_reanchor else
                                "The row resolved but is not dispatchable work."))
-                        note = f" screen={result.verdict}->{row['status']}"
+                        note += f" screen={result.verdict}->{row['status']}"
             if not isinstance(row.get("expected_occupancy"), dict):
                 occ = row_intake.estimate_occupancy(
                     row.get("task_text") or "", lane=row.get("lane"),

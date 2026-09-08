@@ -27,6 +27,7 @@ decay this substrate exists to surface.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -100,11 +101,17 @@ def sealed_at(manifest: dict) -> str | None:
 
 
 def project(manifest: dict, *, run_id: str = "run", locator: str = "",
-            artifacts_present: bool = True) -> ClaimTuple:
+            artifacts_present: bool = True,
+            artifacts_verified: bool | None = None) -> ClaimTuple:
     """Map a sealed manifest into the canonical claim tuple. Projection only — no grading.
 
     `artifacts_present` is threaded into the tuple as a synthetic path rather than being graded
     here, because presence is a property of the artifact and the ladder is the ladder's business.
+
+    `artifacts_verified` (SC69) carries the result of re-reading the attested files — recomputed
+    digests over the `authority/*` files and `hashes.json` beside the manifest, compared against
+    the recorded values. Verification is I/O, so it happens at the frame boundary
+    (`frames_for_manifest`, which holds the path) and only its RESULT crosses into the tuple.
     """
     atts = attestations(manifest)
     digest = next(iter(sorted(atts.values())), "")
@@ -125,12 +132,14 @@ def project(manifest: dict, *, run_id: str = "run", locator: str = "",
         # Presence is decided by the projector: a sealed manifest attests to its `authority/*`
         # files, not to itself, so the ladder cannot derive it from a path.
         attestation_present=artifacts_present,
+        attestation_verified=artifacts_verified,
         source_kind="sealed-measurement",
         extra={"attestations": sorted(atts)},
     )
 
 
-def grade(manifest: dict, *, artifacts_present: bool) -> tuple[str, str, list[str]]:
+def grade(manifest: dict, *, artifacts_present: bool,
+          artifacts_verified: bool | None = None) -> tuple[str, str, list[str]]:
     """Kept as a thin shim over the single ladder in `claim_tuple`.
 
     This function used to carry its OWN copy of the constitution's rule, and on 2026-08-10 it was
@@ -139,7 +148,8 @@ def grade(manifest: dict, *, artifacts_present: bool) -> tuple[str, str, list[st
     two dialects of it; the divergence then shows up as unexplainable grade differences between
     corpora. Delegating is the fix, and this docstring is the reason it must stay delegated.
     """
-    return _grade(project(manifest, artifacts_present=artifacts_present))
+    return _grade(project(manifest, artifacts_present=artifacts_present,
+                          artifacts_verified=artifacts_verified))
 
 
 def _artifacts_present(manifest_path: Path, manifest: dict) -> bool:
@@ -149,6 +159,48 @@ def _artifacts_present(manifest_path: Path, manifest: dict) -> bool:
     base = manifest_path.parent
     return all((base / "authority" / name).is_file() or (base / name).is_file()
                for name in authority)
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _artifacts_verified(manifest_path: Path, manifest: dict) -> bool | None:
+    """SC69: re-read every file a sealed manifest's digests can resolve to and recompute.
+
+    `Attested` means the artifact was re-read and matched. A sealed manifest attests its
+    `authority/*` files (present beside the manifest) and `hashes.json`; every digest
+    `attestations()` names must equal a recomputed file hash. True when every attested digest
+    matched a re-read file; None (not verified) otherwise — a digest nobody re-derived proves
+    nothing, however the file is named, and None is the honest "not checked" state.
+    """
+    authority = manifest.get("authority")
+    if not isinstance(authority, dict) or not authority:
+        return None
+    attested = attestations(manifest)
+    if not attested:
+        return None
+    base = manifest_path.parent
+    recomputed: set[str] = set()
+    for name in authority:
+        for cand in (base / "authority" / name, base / name):
+            if cand.is_file():
+                try:
+                    recomputed.add(_file_sha256(cand))
+                except OSError:
+                    pass
+                break
+    hashes_file = base / "hashes.json"
+    if hashes_file.is_file():
+        try:
+            recomputed.add(_file_sha256(hashes_file))
+        except OSError:
+            pass
+    return True if recomputed and all(v in recomputed for v in attested.values()) else None
 
 
 def frames_for_manifest(manifest_path: Path, *, as_of: str) -> list[dict]:
@@ -171,7 +223,12 @@ def frames_for_manifest(manifest_path: Path, *, as_of: str) -> list[dict]:
     ident = re.sub(r"[^a-z0-9]+", "_", run_id.lower()).strip("_")
     source_id = f"src_seal_{ident}"
     claim_id = f"clm_seal_{ident}"
-    q, t, reasons = grade(manifest, artifacts_present=_artifacts_present(manifest_path, manifest))
+    q, t, reasons = grade(
+        manifest,
+        artifacts_present=_artifacts_present(manifest_path, manifest),
+        # SC69: verification is I/O over the files beside the manifest, so it happens HERE at
+        # the frame boundary — the result rides in the tuple, never recomputed by the ladder.
+        artifacts_verified=_artifacts_verified(manifest_path, manifest))
     atts = attestations(manifest)
 
     scope = manifest.get("scope") or manifest.get("conversion_policy") or ""

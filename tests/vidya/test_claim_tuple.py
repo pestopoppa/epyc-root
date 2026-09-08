@@ -88,9 +88,20 @@ def test_named_but_unhashed_reaches_anchored():
     assert any("not hashed" in r for r in reasons)
 
 
-def test_full_tuple_with_present_hashed_artifact_reaches_attested():
+def test_present_hashed_but_unverified_artifact_reaches_anchored_not_attested():
+    """SC69: Attested means the artifact was re-read and its digest MATCHED. A recorded
+    64-character digest that nothing re-derived is a claim about the artifact, not a
+    verification of it — this test is the mutation pair for the one below."""
+    q, t, reasons = ct.grade(tup(protocol_id="P-1", reps=3, attestation_path="MEASUREMENT.md",
+                                 attestation_sha256="a" * 64))
+    assert (q, t) == ("Witnessed", "Anchored")
+    assert any("never verified" in r for r in reasons)
+
+
+def test_full_tuple_with_a_verified_digest_reaches_attested():
     assert ct.grade(tup(protocol_id="P-1", reps=3, attestation_path="MEASUREMENT.md",
-                        attestation_sha256="a" * 64))[:2] == ("Witnessed", "Attested")
+                        attestation_sha256="a" * 64,
+                        attestation_verified=True))[:2] == ("Witnessed", "Attested")
 
 
 def test_hash_over_a_missing_file_does_not_attest():
@@ -104,7 +115,8 @@ def test_an_explicit_presence_override_wins_over_the_path():
     """A sealed manifest attests to its `authority/*` files, not to itself, so the projector
     decides presence. Without this the ladder downgraded every sealed run to Anchored."""
     t = tup(protocol_id="P-1", reps=3, attestation_locator="manifest:run-1",
-            attestation_sha256="a" * 64, attestation_present=True)
+            attestation_sha256="a" * 64, attestation_present=True,
+            attestation_verified=True)
     assert ct.grade(t)[:2] == ("Witnessed", "Attested")
 
 

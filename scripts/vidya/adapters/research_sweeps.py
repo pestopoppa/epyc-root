@@ -470,6 +470,10 @@ def project_g1(native: Any) -> ClaimTuple:
                               "(callers cannot bypass native_rows)")
     pinned = bool(native.get("git_pinned"))
     cls = row["prompt_class"]
+    # SC69: the tuple's attested digest is the manifest's content SELF-HASH, and
+    # `validate_manifest` above just re-derived it from the read manifest (a disagreement is
+    # refused: "manifest_sha256 does not bind the manifest content"). That re-derivation is the
+    # write-boundary verification; its result is carried so the ladder stays a pure function.
     return ClaimTuple(
         measurement_id=f"g1_{run_name}_{row['prompt_length_target']}_{cls}",
         metric="first_sampled_token_is_eog",
@@ -496,6 +500,7 @@ def project_g1(native: Any) -> ClaimTuple:
         # Presence/pin decided here, not by the ladder's containment root: in-git
         # at the recorded research_commit -> True (Attested), else honest Anchored.
         attestation_present=pinned,
+        attestation_verified=True,
         source_kind=G1_SOURCE_KIND,
         extra={
             "schema": G1_MANIFEST_SCHEMA,
