@@ -4644,3 +4644,170 @@ no longer silent.
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the CJ-8/9
   contract record ("roughly 94 more call sites ... left unconverted, several deliberately") and the
   cross-repo naming ratification (`inconclusive` on the wire, `out-of-coverage` in code).
+
+## Compiled Update — 2026-09-08 (INF-70): an environment knob bought the precision that repetitions could not — 8.3× sd for zero extra arms, and two rules about what a floor is
+
+**Confidence: verified** — 18 launches, none dropped, pre-registered before the region lock
+(`PREREG-FINAL.md`, frozen 15:05:15Z, sha256 `1d8f4ddc…`); the paired decision plan frozen
+separately (`PREREG-THP-DECISION.md`, 14:08:05Z, sha256 `337200315c6b…`) and its early-stop boundary
+unit-tested before the run.
+
+### A launch-time environment knob moved between-launch sd from 5.081% to 0.609% — 8.3× in sd, ~70× in variance
+
+INF-70's final characterisation adopted **`GGML_NOHUGEPAGE_PROCESS=1`**, a `prctl(PR_SET_THP_DISABLE)`
+taken **before** the 92 GB model allocation. It is **set at LAUNCH** (process env) and its **unit is
+the SESSION** — one process launch, never the arm. It is **not** `GGML_NOHUGEPAGE`, the `madvise` on
+the model buffer that was already ON and is 86.4% of the champion; the two knobs have different
+scopes and **must be spelled out separately every time**.
+
+| | launches | between-launch sd | range |
+|---|---:|---:|---:|
+| **BEFORE** — shim OFF (now-retired configuration) | 9 | **5.081%** | **12.55%** |
+| **AFTER** — shim ON (adopted) | 6 | **0.609%** | **1.79%** |
+
+**sd ratio 8.3× · variance ratio ~70×.** Independently corroborated by the pre-registered paired
+decision test, in which the shim was the only thing varying: **OFF/ON variance ratio 25.3×**, **6/6
+pairs ON-faster**.
+
+**What the precision costs, in launches, for a 95% CI:**
+
+| target 95% CI | shim ON (adopted) | shim OFF (retired) |
+|---|---:|---:|
+| ±1.0% | **2** | 100 |
+| ±0.5% | **6** | 397 |
+| ±0.25% | **23** | 1587 |
+
+> **A ±0.5% champion headline now costs ~23 minutes. Before adoption it would have cost ~25 hours.**
+
+**The ON sd was VERIFIED, not assumed.** The plan sized from the decision test's **0.481%** and
+required the figure be checked *as it ran*: observed **0.609%** (plain, 5 dof) and **0.356%** (MTP) —
+same order, slightly above reference for plain, below for MTP. The delivered CI (**±0.487%**) is
+fractionally wider than the projected **±0.385%**, and **the headline precision is quoted at the
+OBSERVED value, not the projected one**. n=6 is a coarse variance estimate and is labelled a check,
+not a precise sd.
+
+> **⚠ THE CONDITIONS CLAUSE TRAVELS WITH THE NUMBER — never quote 0.609% bare.**
+> Hot harness · 24-prompt production mix · token-weighted decode · **unit = LAUNCH** (one arm per
+> launch) · precision = **between-launch** · both contention screens live and `screened()` applied ·
+> **GPU loop DOWN** · **host exclusive** · shim ON verified per launch under a fail-closed
+> `THP_enabled` assertion. No hot absolute is compared against a cold one.
+> This campaign spent 2026-09-07 filing *against other people's* numbers for exactly this defect,
+> then quoted its own **0.80%** A/A floor all morning without saying it had been measured during a
+> GPU-loop drain. A bare number is not a floor, and the applicable floor **under** the loop remains
+> **UNMEASURED and certainly worse**.
+
+The nine-launch spread table is the **before** picture, measured entirely in the configuration that
+has now been retired. It is **not** a standing property of the champion.
+
+**Verification method is also session-unit**: `THP_enabled` in `/proc/<pid>/status` — **1 = THP
+allowed (shim off), 0 = prctl in force (shim on)** — read once per launch, fail-closed. It read **0
+on every champion launch and 1 on every pristine launch**. `AnonHugePages` is **not** a valid
+discriminator (0.06% of Rss at load, ~6% minutes later on the same process).
+
+**Magnitude of the knob's speed effect is NOT claimed** — the design sized for direction only. Pair
+effects were `+4.843, +5.617, +5.934, +5.664, +0.321, +0.558` %, median **+5.23%**. Anyone quoting a
+number for it must measure it, at **launch** granularity. The exact α was **enumerated over all 2¹⁰
+sequences with nested stopping** (two-sided **0.0430**); **a union bound would have said 0.078 and
+been over budget silently** — an inflated-α claim looks identical to a valid one from the outside.
+
+### A floor carries its harness, its n, its contention model, its host state — AND ITS UNIT
+
+**Extends the 2026-09-07 ratified amendments below** — see
+[`## Compiled Update — 2026-09-07 (incremental): name the unit, control the instrument, place the
+caveat`](#compiled-update--2026-09-07-incremental-name-the-unit-control-the-instrument-place-the-caveat--three-ratified-measurement-amendments-fb755192).
+That section ratified *naming* the unit; this is the measured cost of getting it wrong.
+
+| floor | scale | sd | governs |
+|---|---|---:|---|
+| Q3–Q6, four consecutive undisturbed arms | **arm**, within session | 0.071% | best case, arm-scoped knobs |
+| A/A gate, 5 kept arms | **arm**, within session | 0.433% | routine, arm-scoped knobs |
+| within-session, campaign figure | **arm** | **0.501%** | arm-scoped knobs |
+| THP block, 8 sessions | **session**, between launches | **2.793%** | **process-scoped knobs** |
+| concurrent GPU chain (earlier) | arm | 0.772% | superseded — host now exclusive |
+
+**A process-scoped knob faces a floor ~13× coarser than the arm floor.** Applying the arm floor to
+the session-unit THP question said the study needed **4 sessions/side** for +0.16%; the correct
+session-unit answer is **4,780** — a **1200-fold error**. The wrong number was not marginally wrong;
+it was the difference between a feasible study and an impossible one, and nothing in the arithmetic
+flagged it, because a floor quoted as a bare percentage carries no unit to disagree with.
+
+> **A bare number is not a floor.** The rule now reads: a floor carries its **harness**, its **n**,
+> its **contention model**, its **host state** — **AND ITS UNIT**. This is the same error that let
+> the 0.80% figure mislead this campaign all morning.
+
+This also extends `## Compiled Update — 2026-08-31 (evening): … floors that travel without their
+model …` (same family: a floor detached from what produced it) and is the measured cost of violating
+**U2** on [Hardware Optimization](hardware-optimization.md) — "per-surface floors carry their
+measurement conditions (harness, n, contention model, host-state hash), not just a number".
+
+### The vacuous instrument, fifth instalment: a check that produces a verdict without verifying it had anything valid to verify
+
+This page already carries four sections of this family —
+`## Four more ways a check passes for the wrong reason (2026-08-12)`,
+`## Compiled Update — 2026-08-21: the vacuous-pass campaign closed — and the guard needed five
+repairs of its own`,
+`## Two ways an A/B screen reports a win that does not exist (2026-08-28)`, and, one day earlier and
+the same shape, `## Compiled Update — 2026-09-07: absence read as a negative verdict, found three
+times in one afternoon, three independent subsystems`. **The value of this entry is that the family
+recurred a fifth time, not that the four incidents below are novel.** Four in one day, across two
+campaigns, filed as **one pattern**:
+
+| # | instrument | how it was vacuous |
+|---|---|---|
+| a | our contention screen | **passed both contaminated arms** — it watched **CPU** while the confound went through **DRAM bandwidth** |
+| b | our kill check | reported **four live processes dead** (`ps -p` false negative) |
+| c | their FOLD-2 parser | counted **zero OKs** and **would have reported PASS** |
+| d | our `tools/gate.py aa` | computed the gate over **an arm its own screen had DROPPED** — reported `pair_p95 = 4.8% / STOP`; the pre-registered answer over the 5 kept arms is **1.051% / PASS** |
+
+> **★ The common form: a check that produces a verdict without verifying it had anything valid to
+> verify.** Note that (a) is *not* a screen-quality problem — a better screen cannot detect a
+> confound that does not travel through the resource it watches; see
+> [Hardware Optimization](hardware-optimization.md) on admission control.
+
+**Three structural guards adopted, and mutation-tested:**
+
+1. **A gate cannot PASS on zero cases** — fewer than 2 usable arms returns `AA_GATE=INVALID`, never a
+   verdict; a permutation test with an empty side returns `PERM=INVALID`.
+2. **A gate cannot compute over arms its own screen rejected** — **all** statistics route through one
+   `screened()` function applying both instruments' drop rules.
+3. **Death is verified by `/proc` existence, not `ps`.**
+
+Mutation evidence: the exact gate that was wrong now reports `SCREEN DROPPED ['Q2']` and
+`AA_GATE=PASS pair_p95=1.051%`; a gate over only-dropped arms returns `INVALID`.
+
+**The wrong `4.8%` line is KEPT in the record rather than deleted.** A bug's output is evidence about
+the instrument, and this defect class is only visible because the wrong number was preserved next to
+the right one.
+
+Two routing notes. Incident (d) is the same class as **STAT-1** in the INF-70 audit record
+(per-prompt paired statistics are pseudo-replication; the **arm** is the unit) — cite it rather than
+re-deriving it. Incident (b) is a **process-management** defect, not a benchmark one: root
+`CLAUDE.md` → *Process Management* currently instructs "after killing a process, verify it is dead
+(`ps -p <pid>`)", and that guidance is **affected** — `/proc/<pid>` existence is authoritative. See
+also the daemon-liveness-predicate family on
+[Tool Implementation](tool-implementation.md) and [Agent Architecture](agent-architecture.md).
+
+**A related coverage gap, recorded so "screen clean" is not read as "window clean":**
+`foreign_load.py` runs **per arm**, so a burst landing *between* arms — or between the eviction and
+the first arm — is **invisible to it**. On event E1 the only instrument that caught the
+contamination was the peer's own disclosure. **The contract worked; the instrument would not have.**
+No arm was dropped (the region was taken 1m12s after the window closed), and the honest statement is
+that the screen read **nothing** across that window — which is neither a validation nor a failure of
+it.
+
+### Source References (2026-09-08, INF-70 close-out)
+
+- [`progress/2026-09/2026-09-08-inf70-audit.md`](../progress/2026-09/2026-09-08-inf70-audit.md) — the
+  CLOSE-OUT of record: §2 the 18-launch table, §3 the variance result and the launch-cost table, §9
+  the floors-and-units table and the 1200-fold error, §10 the four vacuous-instrument incidents and
+  the three adopted guards; also STAT-1 and the 0.80%-floor conditions clause.
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — CURRENT
+  STATE header (unit = LAUNCH, the conditions clause, the supersession block) and CLOSE-1 (a floor
+  carries its unit), CLOSE-2 (the vacuous-instrument pattern and the three guards), CLOSE-3 (`ps -p`
+  is not a death test), CLOSE-10 (the per-arm sampler's coverage gap).
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+  — U2: per-surface floors carry their measurement conditions, not just a number; the U3
+  `RUNTIME_CONFIG` arm type into which the THP shim was filed on the GPU side.
+- [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
+  — the peer campaign's side of the shared window, including the FOLD-2 parser incident's home run.
+```

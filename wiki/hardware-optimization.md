@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
+**Last compiled**: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× — RETIRED 2026-09-08 (INF-70 close-out); the champion is now `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch, plain 2.1857× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
 **Sources**: 110+ documents
 
 ## Compiled Update — 2026-09-08 (pm): the CPU champion's throughput varies ~12% between process launches while the pristine build does not
@@ -131,6 +131,178 @@ Fold window: `inf70/champion3` folds unchanged; `cor 445e93a8` built at `/mnt/ra
 ### The champion multiplier was understated — and the corrected magnitude is provisional
 
 HARNESS-1 recomputed the champion multiplier from the 0 s-eviction rounds only: **1.4993× → 1.5149× vs pristine** (the +4.27% headline was never exposed — all arms evicted in 0 s; the independent recompute is +4.50%). Phase R is materially exposed (R_C1 averaged 125 s of eviction vs R_C3's 74 s, inflating R_C3's +8.60% by an estimated 1–3 points), and the harness sat under a contended instrument (pair_p95 19.89% contended vs ~5% clean). **The corrected magnitude is at or below its own instrument's floor: the sign is solid (60/60 paired wins; 117/120 per-prompt on champion-3), the magnitude is provisional** until a quiet-window re-measurement. One trap generalises: pooling all nine phase-R arms gives r = +0.420 — the OPPOSITE sign to the within-arm relationship (**Simpson's paradox**: pristine runs carry cheap evictions, champion runs expensive ones). Any future eviction-cost-vs-throughput read must be within-arm.
+
+
+### The champion is `ef81196d5` **+ `GGML_NOHUGEPAGE_PROCESS=1` at launch** — the commit alone under-specifies it (2026-09-08 close-out)
+
+> **`ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` AT LAUNCH.**
+
+**The artifact is COMMIT + LAUNCH RECIPE.** Quoting the commit without the recipe names a
+**different, slower, ~8× noisier thing**. This resolves the "provisional magnitude" qualifier in the
+H3 above: the quiet-window re-measurement was performed and the champion-3 figures it qualified are
+now **superseded** (see the banner on *The champion kernel: 1.4834× …*, below).
+
+**What it contains — all four lineages, by ancestry, not by cherry-pick:**
+
+| lineage | tip | route |
+|---|---|---|
+| GPU | `bff30cebe` | merge base |
+| champion-of-record | `445e93a8` | contained by ancestry |
+| our CPU lineage | `inf70/champion3` @ `9c4f73e29` | the one `--no-ff` merge |
+| frozen production | `0db32c06e` | contained by ancestry |
+
+**Structural properties, verified**: zero files deleted · exactly one `--no-ff` merge · **no
+cherry-picks** · 57 `akm-` keeps reachable · a pre-fold rollback tag on the fork. Production itself
+is untouched at `0db32c06e`.
+
+**FOLD-2 passed in full:**
+
+| gate | scope | result |
+|---|---|---|
+| G1 | `SSM_SCAN` | **7/7**, including the K=4 / K=3 rollback |
+| G2 | `MUL_MAT` | **1140/1140** |
+| G3 | GDN | **39/39** |
+| G4 | dispatch, observed | 27,516 nodes · `SSM_SCAN`=0 · recurrent ops on ROCm0 |
+| G5 | tg128 | +0.052% — **not decisive**, and not claimed as one |
+
+**Final measured numbers — 18 launches, none dropped**, pre-registered in `PREREG-FINAL.md` (frozen
+15:05:15Z, sha256 `1d8f4ddc…`) **before** the region lock was taken; region held
+15:05:39Z–16:12:47Z; all 24/24 rows complete on all 18 launches.
+
+| configuration | n | **central t/s** | between-launch sd | 95% CI on the mean |
+|---|---:|---:|---:|---|
+| **champion plain, shim ON** | 6 | **27.893** | **0.609%** | ±0.487%  [27.758, 28.029] |
+| **champion MTP, shim ON** | 6 | **43.281** | **0.356%** | ±0.285%  [43.157, 43.404] |
+| pristine plain | 3 | 12.762 | 0.360% | ±0.408%  [12.710, 12.814] |
+| pristine MTP | 3 | 23.709 | 0.926% | ±1.048%  [23.461, 23.957] |
+
+Conditions that travel with every number: hot harness · 24-prompt production mix · token-weighted
+decode · **unit = LAUNCH** · precision = **between-launch** · both screens live and `screened()`
+applied · **GPU loop down** · baseline `ef81196d5` · shim ON verified per launch. **No hot absolute
+is compared against a cold one** (hot reads **+4.36%** above cold on the same binary with
+byte-identical output). MTP draft acceptance **82.1%**, identical on champion and pristine — a
+property of the draft head and the prompt set, **not of the CPU levers**.
+
+**★ HEADLINE FORM IS SIGN CLAIMS WITH BOUNDED MAGNITUDES (operator-ruled):** the champion beats
+pristine by **≥117% plain (117.3%)** and **≥81% served-MTP (80.8%)**; **MTP beats plain by ≥54%
+(54.4%)**. Bounds are the **lower ends of 95% bootstrap intervals over launches — not point
+estimates. Do not restate them as "2.19×" in a headline.**
+
+A completeness gate earned its place: every arm must carry 24 rows plus an `ARM_DONE` marker, and all
+18 passed. An interim reading of an in-flight MTP arm looked like a **+7% outlier** (`draft_n` 2814
+vs 3267) and would have entered the sd at face value — **a partial arm is a different token mix, not
+a comparable one.**
+
+> **⚠ TWO CAVEATS THAT MUST TRAVEL WITH EVERY RATIO ABOVE.**
+>
+> **Caveat 1 — the champion-vs-pristine ratio is RECIPE-TO-RECIPE, not knob-controlled.** Established
+> *before* the run by inspecting the binaries rather than assuming: pristine `bin-p` (10221,
+> `c51e4dabf`) contains **0 occurrences of `GGML_NOHUGEPAGE_PROCESS` and 0 of `GGML_NOHUGEPAGE`**, no
+> marker; champion `bin-r1` (10303) contains both. **Neither THP knob exists in pristine, so equal
+> shim state is impossible by construction.** The ratio is *champion under its canonical adopted
+> recipe* vs *pristine as it shipped*. What **is** controlled: same harness, same window, adjacent
+> interleaved launches (`CP PP CP PP CP PP CP CP CP`), same prompt set, same server flags, same host
+> state.
+> **★ RETROACTIVE COROLLARY: no champion-vs-pristine ratio this campaign ever quoted was
+> knob-controlled. The THP difference sat inside all of them, unlabelled.**
+>
+> **Caveat 2 — `CHAMPION-DIVERGENCE` stays OPEN.** Plain ratio **2.1857×** here against the standing
+> **1.7151×**. **Two conditions differ at once** — shim state *and* harness/window — so this run
+> narrows the gap's *causes* without closing it. **Pristine reproduces across both (12.762 vs 12.366,
+> +3.2%); the champion does not**, and an explanation that fits only one arm of a ratio is not an
+> explanation. Adoption explains **part** of the champion's movement and its instability; **it is not
+> asserted to explain all of it**, and the flag is **not closed**.
+
+**CHAMP-2 is a RECIPE change, not a kernel change.** No fold, no branch, no rebuild — the champion
+binary stays `ef81196d5`, bit-identical; the knob defaults **OFF (opt-in)** in that commit
+(marker `INF70_CHAMPION3_PROCESS_THP_DISABLE=DEFAULT_OFF;OPT_IN=GGML_NOHUGEPAGE_PROCESS=1`), gated by
+`common_thp_env_on("GGML_NOHUGEPAGE") && common_thp_env_opt_in("GGML_NOHUGEPAGE_PROCESS")`, and the
+**recommended default is ON**. Delivery is per-session env, trivially reversible. A code-default flip
+is the alternative but would need its own build, its own `THP_enabled` verification and a fresh
+correctness gate — **none of which this campaign performed**, so the code route is *likely* but **not
+tested** equivalent. Correctness: the shim changes **page backing, not arithmetic**; every
+champion-state comparison across the campaign was **24/24 byte-identical**, including cross-binary,
+and **no shim-ON-vs-OFF-specific correctness gate was run, and none is claimed**.
+
+**Standing directive**: lever research remains **STOPPED** by operator directive — *"no more pure
+kernel inference research until we have a FULLY consolidated champion."* The champion is now
+consolidated; **lifting the directive is the operator's call.**
+
+### Source References (2026-09-08, INF-70 close-out champion)
+
+- [`progress/2026-09/2026-09-08-inf70-audit.md`](../progress/2026-09/2026-09-08-inf70-audit.md) —
+  CLOSE-OUT §1 (the champion and its four lineages, FOLD-2 gates), §2 (the 18-launch table, the
+  ratios and the bounded-magnitude headline form, the supersession table), §4 (CHAMP-2 adopted as a
+  recipe change), §7 (the two caveats), §14 (the standing directive).
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — CURRENT
+  STATE header (the champion line, the supersession block naming every retired figure, the two
+  caveats) and CLOSE-4 (label every champion-vs-pristine ratio recipe-to-recipe) / CLOSE-5
+  (`CHAMPION-DIVERGENCE` stays open and needs an owner).
+- [`docs/design/champion-consolidation-audit-20260908.md`](../docs/design/champion-consolidation-audit-20260908.md)
+  — the consolidation audit: git custody of the fold, ancestry containment, and the `--branches`
+  backup lesson.
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+  — U1/U3: CPU keeps entering the durable bundle, and the `RUNTIME_CONFIG` arm type under which the
+  THP shim was filed on the GPU surface (its first worked instance).
+```
+
+---
+---
+
+# PART 3 — BLAST-RADIUS CHECKLIST — run **before** pasting ITEM 2b
+
+Derived by grep over `wiki/` in
+`/mnt/raid0/llm/worktrees/audits/inf70-audit-20260902` on 2026-09-08. Governing rule:
+`benchmark-methodology.md:3658` — *"retracting a number is not done until you chase what was derived
+from it."*
+
+| superseded figure | file:line | note |
+|---|---|---|
+| `1.4834×` | `wiki/hardware-optimization.md:4564` | the section **heading itself** — the banner goes directly under it |
+| `1.4834×` | `wiki/hardware-optimization.md:4567` | body, served ratio vs pristine 23.870 t/s |
+| `1.6934×` | `wiki/hardware-optimization.md:4569` | body, plain ratio |
+| `1.6934` | `wiki/hardware-optimization.md:4590` | **DERIVED** — inside the super-additivity finding ("predicted 1.5017 … measured 1.6934 … 12.8% excess") |
+| **`1.6934`** | **`wiki/benchmark-methodology.md:4308`** | **★ CROSS-PAGE DERIVED — VERIFIED PRESENT. The one most likely to be missed.** Section `## Measure the stack, not the parts — levers do not compose predictably (2026-09-07)`; re-uses 1.6934 in the same super-additivity/12.8%-excess derivation. If the plain ratio moves, this arithmetic moves with it. |
+| `1.305×` prefill | `wiki/hardware-optimization.md:4569` | same sentence as the plain ratio |
+| `1.4993×` | `wiki/hardware-optimization.md:49` | HARNESS-1 recompute sentence |
+| `1.5149×` | `wiki/hardware-optimization.md:5` | **front-matter `**Last compiled**` digest** — must be amended with 2b |
+| `1.5149×` | `wiki/hardware-optimization.md:26` | inside the AutoKernel unified-surface FOLD-0 paragraph |
+| `1.5149×` | `wiki/hardware-optimization.md:49` | HARNESS-1 recompute sentence |
+| `+4.27%` | `wiki/hardware-optimization.md:49` | "the +4.27% headline was never exposed" |
+| `+4.50%` | `wiki/hardware-optimization.md:26` | FOLD-0 paragraph, twice in one sentence |
+| `+4.50%` | `wiki/hardware-optimization.md:49` | "the independent recompute is +4.50%" |
+| `1.7151×` | — | **NOT PRESENT anywhere under `wiki/`.** Verified by grep. It lives only in the handoff header and the close-out. No wiki edit needed; 2b names it so the retirement is complete, and Caveat 2 in 2c is where it is still load-bearing. |
+| `33.370 t/s` (`/ 29.967 ms`) | — | **NOT PRESENT anywhere under `wiki/`.** Verified by grep for both `33.370` and `29.967`. |
+| `≈36.9 t/s` projection | — | **NOT PRESENT under `wiki/`.** The only `36.9` hits are `agent-architecture.md:3057` and `:3061`, which are an unrelated **36.9% MAST citation-defect rate**. **Do not touch those two lines.** |
+
+**Adjacent figures that ride with the retired champion-3 block** — chase these in the same pass, they
+are the same measurement and are *not* separately superseded by name in the close-out:
+
+| figure | file:line | note |
+|---|---|---|
+| `35.407 t/s / 28.24 ms` | `wiki/hardware-optimization.md:4566` | the retired served absolute the 1.4834× was computed from |
+| `23.870 t/s / 41.90 ms` | `wiki/hardware-optimization.md:4567` | the retired pristine baseline. **Do not touch `:376` or `:2939`** — those are GEMM TFLOP/s numbers that coincidentally read 41.90/41.904 |
+| `60/60 paired wins` | `wiki/hardware-optimization.md:4567`, `:49` | belongs to the retired configuration. **Do not touch `autonomous-research.md:528`, `:1020`, `hardware-optimization.md:277`** — unrelated `60/60` |
+| `117/120` | `wiki/hardware-optimization.md:26`, `:49` | champion-3 per-prompt wins, retired configuration |
+| `1.5017` predicted | `wiki/hardware-optimization.md:4589`, `wiki/benchmark-methodology.md:4307` | the super-additivity *prediction* half — moves with 1.6934 |
+| `12.8% excess` | `wiki/hardware-optimization.md:4590`, `wiki/benchmark-methodology.md:4308` | the derived quantity itself |
+| `23.16 t/s` / `1.876×` | `wiki/hardware-optimization.md:57`; `wiki/benchmark-methodology.md:4233`, `:4242`, `:4243` | **already half-recorded as superseded** at `:57` ("a build-10221 number, not a champion-3 number — it must not be quoted as the champion figure"). Extend that note rather than restating it; the benchmark-methodology hits are the ABA-reproduction record and should be annotated, not rewritten. |
+
+**Checklist to execute, in order:**
+
+1. `grep -rn '1\.4834\|1\.6934\|1\.305\|1\.4993\|1\.5149\|4\.27%\|4\.50%\|1\.7151\|33\.370\|29\.967' wiki/`
+   — re-run at paste time; the line numbers above are as of 2026-09-08 and will shift once ITEM 2c is
+   inserted near the top of the file.
+2. Insert **2c first** (it is near line 49 and shifts every later line number), then re-run the grep,
+   then insert **2b** and **2a** at their re-derived lines.
+3. Amend `wiki/hardware-optimization.md:5` (`**Last compiled**`) — it names `1.5149×`.
+4. Annotate `wiki/benchmark-methodology.md:4308` **in place** (the composition finding survives; the
+   1.6934-derived excess does not carry forward) — do not delete the section.
+5. **Do not touch**: `agent-architecture.md:3057`/`:3061` (36.9% MAST), `hardware-optimization.md:376`
+   /`:2939` (41.90 TFLOP/s), `autonomous-research.md:528`/`:1020` and
+   `hardware-optimization.md:277` (unrelated `60/60`).
+6. Then lint (`lint_wiki.py`, pass 6 structural) and `compile_sources.py --check-manifest`.
+   **Stop there — `--touch` is blocked on OP-34 (PART 4).**
 
 ### Four upstream defects verified still present on current upstream (UP-1/UP-2)
 
@@ -4647,6 +4819,30 @@ shape of a curve you have not sampled.**
 
 ## The champion kernel: 1.4834× from two levers, and what the other two taught us (2026-09-06)
 
+> **⚠ SUPERSEDED 2026-09-08 (INF-70 close-out) — every ratio in this section was measured on
+> `champion3`, shim OFF, the old harness: a configuration that has now been RETIRED.**
+> Retired figures: **1.4834×** (served), **1.6934×** (plain), **1.305×** (prefill), **1.4993×** and
+> **1.5149×** (the HARNESS-1 recompute), **+4.27%** and **+4.50%**, **1.7151×** (CI [1.6882, 1.7439],
+> 60/60 wins), the in-window absolute **33.370 t/s / 29.967 ms** and the **≈36.9 t/s** projection.
+> **They are not wrong for what they measured** — they measured a configuration that no longer
+> exists, and the supersession is marked rather than edited away so it stays visible.
+>
+> **Replaced by (18 launches, none dropped, unit = LAUNCH, between-launch precision, shim ON):**
+>
+> | ratio | value | 95% CI |
+> |---|---:|---|
+> | champion / pristine, **plain** | **2.1857×** | [2.1730, 2.1974] |
+> | champion / pristine, **MTP** | **1.8255×** | [1.8081, 1.8399] |
+> | champion **MTP / plain** | **1.5516×** | [1.5439, 1.5598] |
+>
+> See *The champion is `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch* (2026-09-08) below for
+> the conditions clause and the **two caveats that must travel with every one of these ratios**.
+> **The `12.8% super-additivity excess` derived from 1.6934 in this section, and its cross-page twin
+> on [Benchmark Methodology](benchmark-methodology.md), are derived figures of a retired ratio** —
+> they are retained as a record of the *composition* finding (levers do not compose predictably),
+> which is unaffected, but the excess must not be re-derived against the new plain ratio without a
+> fresh leave-one-out.
+
 INF-70 closed with a bit-identical CPU decode kernel measured at **35.407 t/s / 28.24 ms per token** in the
 serving configuration against a pristine baseline of **23.870 t/s / 41.90 ms** — **1.4834×, 60/60 paired
 prompt wins**, over three same-window alternating rounds on a 24-prompt production harness. Plain decode:
@@ -4694,6 +4890,59 @@ candidate inside the instrument's own variance rather than asking the reader to 
 
 
 ## Compiled Update — 2026-09-07 (wrap-up): SMT siblings make core-range fencing impossible; the build is the contention
+
+
+### The channel was DRAM bandwidth — so a better screen was never the remedy (2026-09-08)
+
+**Two campaigns, correct pinning on both sides, no rule broken on either.** Measured floors:
+
+| direction | floor, uncontended | floor, under the other campaign |
+|---|---:|---:|
+| our CPU A/A under their pinned GPU bench | **0.80%** | **7.223%** |
+| their serving floor under our lock-holding CPU session | **3.536%** | **10.255%** |
+
+**"Pinning controls placement, not contention"** (the autokernel session's framing, adopted here) —
+**SMT siblings share the physical core**, so a correctly-pinned job on `96-183` is a correctly-pinned
+job sitting on the other half of our cores. That is the half the section below already owns. The new
+half is that the confound then travelled through **memory bandwidth**: prefill flat, decode **−7%**.
+An instrument that samples CPU occupancy is watching the wrong resource, and it **passed both
+contaminated arms** (recorded as incident (a) of the vacuous-instrument pattern on
+[Benchmark Methodology](benchmark-methodology.md)).
+
+> **★ Region-lock serialises those who CALL it; nothing constrains those who do not.**
+
+With both campaigns serialised on a **mandated exclusive host**, an 8-core `python` + `opencode`
+(`Cpus_allowed_list=0-191`, **belonging to neither campaign**) still cost an arm. At ~165 s/arm and a
+1-in-6 hit rate in that block, that is a **~17% tax on every measurement campaign** — paid in arms
+correctly identified as garbage, but which still had to be *run* to find that out. A lock cannot see
+a process that never asks for it; only admission control can.
+
+> **⚠ RECONCILE WITH MEAS-1, ABOVE.** The 2026-09-08 INF-70 audit section on this page states the
+> MEAS-1 discriminator as "the **PEAK**, not the total foreign load — what hurts is a burst of 3218%
+> (~32 cores…)". **That is an occupancy read.** It remains the right discriminator for the
+> compile-contention case it was derived from — a `jobs=64` build *does* show up as an occupancy
+> peak — but **if the channel is DRAM bandwidth, an occupancy peak is at best a proxy**, and a clean
+> peak reading is not evidence of a clean window. The two statements are not in conflict, but they
+> are not interchangeable: MEAS-1 discriminates *among observed foreign load*; it does not
+> establish that foreign load was observable at all. Read them together, not separately.
+
+Sibling cross-reference: [Inference Serving](inference-serving.md) records that the GPU lane's host
+threads pin to SMT siblings **184-191** → physical cores **88-95** — the other 8 of our 96 bench
+cores.
+
+### Source References (2026-09-08, contention channel)
+
+- [`progress/2026-09/2026-09-08-inf70-audit.md`](../progress/2026-09/2026-09-08-inf70-audit.md) — §8
+  MEAS-6/OP-40/OP-41: the four floors, the ~17% third-party tax, and the DRAM-bandwidth channel
+  (prefill flat, decode −7%).
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — CLOSE-8
+  (admission control, not screening; the row is a POINTER, not a second owner — the operator owns the
+  admission-control design under OP-41 → INF-73 §3.4) and CLOSE-10 (the sampler's coverage gap).
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+  — U4: the resource broker, arm-second budgets, and the structural resolution of OP-41.
+- [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
+  — the peer campaign's serving-floor recalibration and its side of the shared window.
+```
 
 ### SMT sibling topology makes CPU core-range "fencing" between concurrent workloads structurally impossible, and the real contention is builds, not the benchmark itself
 
