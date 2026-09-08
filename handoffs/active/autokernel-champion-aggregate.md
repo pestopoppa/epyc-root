@@ -618,14 +618,27 @@ the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's
       trigger.** Do not stop run 29 for the fold; do not hand FOLD-0 to `inf70-audit` yet — this was a
       preliminary investigation for clarity on blockers. Surface FOLD-0 to `inf70-audit` when the
       run-29 / reboot boundary approaches, so the fold-ready commit is prepared in time.
-- [ ] **FOLD-0 (`inf70-audit`, own branch)**: fold-ready commit on `6f032c48d` — `GGML_OP_MOE_TOPK_NORM`
+- [ ] **FOLD-0 (`inf70-audit`, own branch)** — *note 2026-09-08: the re-base onto the CPU champion
+      (`inf70/champion3` @ `9c4f73e29`) was done by INF-70 inside the fold candidate, so `ef81196d5` already
+      carries champion3; the remaining FOLD-0 items below are theirs to close in their own turn*: fold-ready commit on `6f032c48d` — `GGML_OP_MOE_TOPK_NORM`
       opt-in (or CUDA kernel + test-backend-ops case), INF-64 fused decode opt-in, `ggml-alloc.c` stray
       define; re-run greedy bit-identity + `test-backend-ops -b CPU`; record the PROD-2 reversal in the
       INF-70 ledger; **push** `inf70/champion` (private clone today).
-- [ ] **FOLD-1 (champion owner)**: at a run boundary — STOP run 29 (verified dead) → tag pre-fold →
-      fetch + `git merge --no-ff inf70/champion-fold` in champ2 → house-recipe HIP build + CPU-only build.
-- [ ] **FOLD-2 gates, SAME merged tree**: GPU (test-backend-ops ROCm0 incl. SSM_SCAN, tg128 vs gen-020,
-      serving compare, DF2-10, **one GPU MoE model** for the fused op) + CPU (canonical recipe vs v9 AND
-      vs `6f032c48d`, served ABA plain+MTP with merged DEFAULTS, coherence by reason).
-- [ ] **FOLD-3**: relaunch the loop on the merged champion (`--allow-unverified-anchor`); PROD-1 codifies
-      the CPU launch recipe before any promotion headline.
+- [x] **FOLD-1 (champion owner)** ✅ 2026-09-08: loop stopped at the boundary (verified dead), pre-fold GPU tip
+      tagged `ak/pre-fold-gpu-tip-20260908` (pushed), fold candidate `ef81196d5` built at
+      `/mnt/raid0/llm/tmp/build-fold-ef81196d5`; `verify_ggml_linkage.sh` PASS.
+- [x] **FOLD-2 gates, SAME merged tree** ✅ 2026-09-08 — all PASS with real tallies on `ef81196d5`:
+      G1 `test-backend-ops -o SSM_SCAN -b ROCm0` 7/7 OK (incl. K=4/K=3 rollback), G2 MUL_MAT 1140/1140 OK
+      (326 unsupported type combos), G3 GATED_DELTA_NET 39/39, G4 dispatch **observed** (`llama-bench -v` +
+      `GGML_SCHED_DEBUG=2`: 27,516 nodes, SSM_SCAN=0, SSM_CONV 576 + GATED_DELTA_NET 576 on ROCm0, CPU holds only
+      12 GET_ROWS), G5 tg128 vs gen-021 **+0.052%** (20 pairs, floor 0.638%, not decisive). Result file
+      `/mnt/raid0/llm/tmp/fold-window-20260908/fold2-result.json`. NOTE: the first G1-G4 run reported PASS with
+      **OK=0** (ANSI-coloured verdicts defeated the `\bOK\b` match; `llama-bench` swallowed scheduler logs
+      without `-v`) — structural guards added: a gate PASSES only with ≥1 case run AND an agreeing `N/N tests
+      passed` tally, and the graph check only with a plausible node count AND the expected recurrent ops present.
+- [x] **FOLD-3** ✅ 2026-09-08 — **fast-forward + push, NOT a relaunch** (operator directive: no relaunch):
+      `ak/champion/llama-cpp-0db32c06e3e5` `bff30cebe` → **`ef81196d5`** (`--ff-only`, tip == candidate) at
+      11:16:49Z, lineage verified (`bff30cebe`, `445e93a8`, `9c4f73e29`, production `0db32c06e` all ancestors),
+      worktree clean, pushed to fork `pestopoppa/llama.cpp`. Production branch untouched. Consolidated champion =
+      GPU tip (6 unconfirmed keeps) + CPU champion3 `9c4f73e29`. PROD-1 still owes the CPU launch recipe before
+      any promotion headline.

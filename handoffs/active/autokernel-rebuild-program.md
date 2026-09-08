@@ -1750,8 +1750,17 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           154.24/163.16/159.23), written with its conditions to
           `loop-memory/serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json`. Unpinned quiet-host floor
           was 3.536% (n=8).
-        - [ ] serving gate under the new floor (5 pairs, `--force` one-off, floor 4.581%) started
-          10:22Z — record the verdict here when it lands
+        - [x] **serving gate under the new floor** ✅ 2026-09-08 (first firing of a gate that had NEVER run;
+          `--force` was a one-off operator permission for this window). cor `445e93a8` vs tip `bff30cebe`
+          (anchor-gen-021), recipe `qwen3.8-27b-q8-gpu-dflash2-np4` pinned 184-191, floor 4.581%:
+          **n=5** (10:22-10:27Z) 168.74 vs 159.99 tok/s = **−5.19%**, per-pair −4.72/−1.19/−3.16/+0.25/−11.77,
+          decisive → `diverged`. INF-70 flagged −11.8 as a **3.6σ outlier** (the other four average −2.2%, inside
+          the floor) and that a per-keep LOO at n=5 against a 4.58% floor cannot resolve ~1% keeps — so we **re-ran**
+          rather than running LOO. **n=10** (10:35-10:46Z) 164.63 vs 161.05 tok/s = **−2.18%, NOT decisive** →
+          disposition **UNCONFIRMED (not refuted)**: sign probably negative, magnitude unclaimable at any affordable
+          n. **Champion-of-record HOLDS at `445e93a8`**; the six keeps stay on the tip as provisional and
+          re-gateable. Record `loop-memory/serving/bundle-bff30cebee0d.json` (the n=10 record overwrote the n=5
+          record; the n=5 numbers are preserved here).
       - [x] **R23-50 — THREE KEPT KEEPS NEVER REACHED THE CHAMPION (2026-08-29), now protected** ✅ 2026-09-07.
         Operator asked whether relaunches lost keeps. Audited all 31 `kept` rows against the champion
         branch: **28 present, 3 absent** — `akm-q8-1-float2-halfwave` (+5.353%), `akm-q8-1-float4-eighthwave`
@@ -1789,6 +1798,16 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         (where R23-44 took effect), with the 5 keeps since it. The bundle's `compounded_bench_pct` must be a
         **MEASURED tip-vs-cor bench, never the product of solos** (+6.13% is a product and R23-48 is exactly
         the rule against quoting one) — so it needs one bench arm at launch. Blocked on GPU time.
+        - [x] **seeded MEASURED +5.958%** ✅ 2026-09-08 (tg128 tip-vs-cor over the 6 keeps since `445e93a8`,
+          20 pairs, decisive, `drifting=False`); **serving gate n=10 −2.18%, not decisive → cor HOLDS at
+          `445e93a8`**, keeps provisional. Durable bundle: cor `445e93a8`, tip `bff30cebe`, 6 keeps, compounded
+          +5.958 (bench, measured); on the next launch `load_bundle` advances the tip to the new anchor and
+          keeps the cor.
+      - [ ] **R23-54 — serving gate is MANDATORY, not threshold-triggered.** Its first firing (2026-09-08)
+        showed an **11-point proxy-vs-truth gap**: the tg128 proxy said **+5.958%** while the serving gate said
+        *"cannot tell, probably slightly negative"* (−2.18%, n=10) — a gap the bench alone would never have shown.
+        Make the loop spend the serving gate on **every N keeps regardless of the compounded estimate** (or drop
+        `fire_multiple` to 1.0). **Operator to confirm the cadence.**
       - [x] **R23-52 — status heartbeat during keep post-processing** ✅ 2026-09-07 IMPLEMENTED (research `70d98807`; 4 `publish()` calls: anchor build / headline / reprofile / accumulate; 422 tests; takes effect at the next launch — run 30 holds the old module). Observed run 30, 2026-09-07: after the first
         keep (`bff30cebe`, +2.583%) `loop-status.json` went **30+ min without a write** while `promote_anchor` did
         the clean anchor build (gen-021, 117 objects at 20:07Z, `cmake`/`gmake` children 9 min in), then verify,
