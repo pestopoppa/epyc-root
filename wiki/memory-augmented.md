@@ -2,8 +2,139 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
-**Sources**: 36+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, the 2026-06-28 W4/W6 reboot-readiness checkpoint, and the RAO/ReDel substrate spike)
+**Last compiled**: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Sources**: 39+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, the 2026-06-28 W4/W6 reboot-readiness checkpoint, the RAO/ReDel substrate spike, and the BEAM/Tulving M-12 instrument set)
+
+## Compiled Update — 2026-09-08: the memory A/B that never existed now has instruments, an operator gate, and a do-not-copy checklist
+
+**Confidence: verified for every filed/landed state below** (rows read from the handoffs, commits
+`945c8820`-era landings referenced where closed). **The A/B runs themselves remain compute-gated and
+have not run**; the instrument admission is an operator decision currently queued, not a ratified
+one. External reference numbers are quoted as floors/sanity checks only, per the rows that filed
+them.
+
+### M-12 — the protocol is written; the instruments sit behind OP-42 in the operator queue
+
+M-12 ("run the memory-on vs memory-off A/B that has never existed in either repo") is the only thing
+that will answer "does episodic retrieval help" with evidence. Filed 2026-09-07 via research-intake,
+the protocol is **two instruments, in order, judge/scorer held fixed across every arm**, and the
+admission itself is an **operator decision (OP-42, queued)**: admit BEAM 128K and Tulving 200ch/100K
+and grant one inference window — M-12a (Tulving) first, M-12b (BEAM) second; eval-pool registration
+is a separate decision from adoption as an instrument (CJ-GATE precedent; MEASUREMENT.md is
+human-amendment-only). Rows are compute-gated: filed, never run.
+
+- **M-12a — Tulving 200ch/100K first.** Variant `Udefault_Sdefault_seed0`, chapters=200 (the
+  adapter already resolves this to the 196ch parquet on disk). Three prompt-matched arms:
+  memory-OFF (question + answer contract, no book), memory-ON (`src/trace` retrieval fills the
+  context), CEILING (full book — what the adapter does today). **Headline on the five-bin Simple
+  Recall Score WITH bin 0 included** — the hallucination bin is the point. Chronological Awareness
+  is reported separately as a diagnostic until the tau fix (M-12d/M-12e) lands; Entities/Times/
+  Spaces are reported separately from Event-contents/Full-details; identical list-only + "If none,
+  say 'None'" contract on every arm; deterministic scorer, no LLM judge.
+- **M-12b — BEAM 128K second, abstention EXCLUDED from the headline.** BEAM's Vanilla column =
+  memory-off, its `pair_chunk` RAG column = the naive-memory control, our trace/navigation surface =
+  the only new arm. Headline on the five-ability discriminating core; instruction-following,
+  preference-following and event-ordering reported separately. Prompt-match all arms — do NOT give
+  the memory arm a closed-book instruction the memory-off arm lacks.
+- **M-12c — the pre-run do-not-copy checklist, seven items**, each traceable to a site in MemPalace
+  issue #125: (1) report BEAM's own fold, never a binarised micro-average; (2) ingest BOTH roles,
+  never user turns only; (3) no synthesis `max_tokens` below what the highest-nugget ability needs;
+  (4) judge model != reader model, held FIXED across arms; (5) no SSL bypass — stage under
+  `/mnt/raid0/llm/data/eval/` with a verified digest; (6) identical retrieval budget AND chunking
+  for control and arm; (7) prompt-match all arms, closed-book instruction included.
+- **M-12d — external reference curves are floors and sanity checks, never targets.** Tulving: the
+  authors' shipped 12-arm results (548 rows × 12 arms on disk) — chapter-chunk RAG beats full 100K
+  in-context for all four published models. BEAM: issue #125's Raw ChromaDB arm (49.0% author fold /
+  55.7% BEAM fold at 100K) is a **sanity floor** — far below it means a configuration bug, not a
+  finding; it is NOT a target (that run discarded assistant turns and capped answers at 512 tokens).
+
+### M-12e — two scorer defects must be fixed BEFORE any arm, zero compute, and they flag this page's own quoted numbers
+
+In `score_tulving_run.py`: (i) the unconditional `simple_inputs.append(scored)` (**verified at :121
+this session; the dive ledger recorded :120**) must fire only when `get_style == "all"`, so Simple
+Recall is computed over recall questions as the paper defines it; (ii) `chronological_tau` (def at
+**:51**) must return 0.0 unless the matched set covers the FULL ground truth. The scorer reads
+stored responses — no model loads — so the existing run artifacts can be **re-scored offline**, and
+the paragraphs quoting SRS 0.5530 / CAS 0.1593 refreshed afterwards. That refresh order covers the
+2026-06-20 Tulving baseline numbers compiled on this page: they stand as measured until the M-12e
+re-score, and must not be re-quoted as settled after the scorer fix without the refresh.
+
+### CME-1..4 (EVL-50) — the two adapters M-12 needs are filed with their harness defects attached
+
+The EVL-50 stub owns the instrument work: a BEAM 128K/100K adapter and a `context_mode` axis on the
+existing Tulving adapter — the two pieces our five-suite long-context roster lacked. Adapter
+authoring is pure code; compute-gated work is filed, never run.
+
+- **CME-1** — `BEAMAdapter` registered at the five enumerated points of the intake-1330 dive
+  (`_get_long_context_adapter`, `ADAPTER_SUITES`, the `get_adapter` dispatch, `ROLE_SUITE_MAP`);
+  loads `Mohammadta/BEAM` 100K (20 rows; `probing_questions` is a STRING needing
+  `ast.literal_eval`); emits `scoring_method: "llm_judge"` with the nugget list in `scoring_config`
+  so the served-judge path scores per-nugget, not per-answer.
+- **CME-2** — the FOLD as an explicit tested contract: per-question mean of three-valued nugget
+  verdicts, per-ability mean, unweighted headline mean; rubric micro-average and binarised counts
+  only as labelled secondary diagnostics; the unit test a synthetic all-0.5 run scores **0.500, not
+  1.000** — the exact mutation that catches a `>= 0.5` binarisation regression.
+- **CME-3** — the **BEAM harness-defect note must ride wherever a BEAM number is quoted, ours or
+  anyone's**: the judge never sees the probing question (all ten `evaluate_*` functions accept
+  `probing_question` and discard it, against a prompt that mandates a responsiveness check), and
+  every abstention rubric is a single-nugget refusal template. Both are properties of the PUBLISHED
+  artifact and apply retroactively to Table 1 and every third-party quote.
+- **CME-4** — `context_mode {none, retrieved, full}` on the Tulving adapter's `_row_to_prompt`
+  (:582), `retrieved` routed through the FTS5 + `navigation.py` surface. Load-bearing detail: the
+  `"context"` key the adapter already emits at :637 is **INERT** — `run_benchmark.py` never reads it
+  — so each arm must be expressed in the prompt itself.
+
+### UTM-B1..B4 — the trace/memory read surface is the retrieval backend for both arms — and it was mis-described before
+
+The 2026-09-07 update corrects the bearing text's "zero consumers": the `src/trace` read surface
+(`navigation.py`: `search_records`, `search_conversation`, `get_records`, `get_conversation`,
+allowlisted `read_file`, pure RRF k=60 — no ingest, no schema mutation, no embedding call) has
+**exactly one non-test consumer, `src/trace/cli.py:22`** — the gap is registration (UTM-B1:
+`ms.search`/`ms.expand` model-facing tools), not construction. UTM-B2 exposes that surface as the
+BEAM memory backend — embarrassingly parallel by construction (one retriever/prefix reused across
+all 20 questions, no cross-question accumulation); UTM-B3 makes the ingest FILTER a first-class
+experimental parameter (a silent role filter or chunking choice moves the score more than the
+retrieval algorithm); UTM-B4 routes the Tulving `retrieved` arm through the same surface — the
+backend half of CME-4. UTM-M9's mandatory no-memory control arm stays an operator-gated
+MEASUREMENT.md trust-boundary ask; M-12a/M-12b satisfy its intent and **UTM-M9 must not be ticked**.
+
+### Riders from the same wave: the memento correction, the REPL digest boundary, and BEAM as CF-3c corroboration
+
+- **Memento (2026-09-07) — the sawtooth/duplicate-processing argument is banked for the summarize
+  family WITH the correction that inverts the naive reading**: the axis on which prefix+sliding
+  beats a summarize/last-k family is **accuracy-per-second and GPU utilisation, NOT raw
+  throughput** — last-k is 1.54× FASTER in tok/s at 32K. Filing it without the correction would
+  propagate an error into a GPU-gated decision. Relevant to Memento Failure Mode 1 (excessive
+  generation) and the reasoning-compression Tier-3+ comparison.
+- **REPL session memory (D-h/D-i) — the namespace digest is NOT a rendering job**: `variable_lineage`
+  records name, type, provenance and tier but never **shape** (`state.py:450-462`, re-verified
+  2026-09-07), so a digest built from lineage alone would silently lie about shape — and lineage is
+  written only for checkpoint-surviving variables, omitting exactly the un-picklable ones most worth
+  naming. Companion row D-i: enumerate and BOUND every kernel-to-context channel and make
+  auto-rendering of the cell final expression opt-IN — do NOT adopt "make `print` the sole egress"
+  (the source has seven channels and auto-prints the final expression; the model must opt OUT).
+- **BEAM Table 8 corroborates the CF-3c masking anchor from a different group**: removing working
+  memory BEATS the full system at 100K–1M (0.327 vs 0.311 at 100K) — a self-published negative
+  result (the paper's own abstract contradicts it) that independently supports the masking anchor
+  context-folding already mandates. Full context-folding compilation lives on [Context
+  Management](context-management.md), not here.
+
+### Source References (2026-09-08 memory-instruments compile)
+
+- [`episodic-memory-integrity.md`](../handoffs/active/episodic-memory-integrity.md) — the M-12
+  protocol block (M-12a/b/c/d/e) filed 2026-09-07 with its intake anchors and the OP-42 pointer.
+- [`conversational-memory-eval-instrument.md`](../handoffs/active/conversational-memory-eval-instrument.md)
+  — the EVL-50 stub: CME-1..4, the fold contract test, and the BEAM harness-defect note.
+- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — the
+  2026-09-07 update: UTM-B1..B4, the one-consumer correction, and the UTM-M9 operator-gate note.
+- [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md) — OP-42 (queued):
+  instrument admission and the single inference window, M-12a before M-12b.
+- [`memento-block-reasoning-compression.md`](../handoffs/active/memento-block-reasoning-compression.md)
+  — the 2026-09-07 sawtooth correction (`intake-1315#04`).
+- [`repl-session-memory-maturity.md`](../handoffs/active/repl-session-memory-maturity.md) — D-h/D-i:
+  the shape-capture-before-digest boundary and the kernel-to-context channel enumeration.
+- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — the BEAM
+  Table 8 CF-3c corroboration row.
 
 ## Compiled Update — 2026-08-08: memory operations need provenance, calibrated verification, and a no-memory control
 

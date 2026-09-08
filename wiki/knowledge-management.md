@@ -2,8 +2,163 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below)
-**Sources**: 50+ documents
+**Last compiled**: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
+**Sources**: 55+ documents
+
+## Compiled Update — 2026-09-08: the watermark saga closed as a fix — selection is content-hash against the tracked manifest, mtime never consulted
+
+**Confidence: verified** — `0ea91f3e` (6 files, 11 new tests) closes NIB2-68 together with OBS-13;
+the phantom-942 mechanism below was reproduced from the shared clone with a genuine local watermark
+before the fix; the post-fix reconcile counts come from a scan against the tracked baseline.
+
+The three failure shapes compiled on 2026-09-03 (watermark destroyed · written to a vanished tree ·
+never present in a worktree) shared one root the fixes could not reach: **incremental selection keyed
+on `mtime > since` is only valid in the checkout that produced those mtimes**. The shipped remedy
+now removes the mtime basis entirely rather than patching around it:
+
+- **Selection is a content-hash diff against the TRACKED `wiki/source_manifest.json`** — mtime is
+  never consulted. Scratch proof: a run with every source stamped 2030 returns 0 new. The
+  phantom-942 mechanism is dead.
+- **`--touch` advances the tracked manifest**, regenerating it from the current full set — lane-safe
+  by construction (identical per-file hashes lane-vs-main; `--touch` in a worktree can no longer
+  serialize nothing).
+- **No baseline → one full emission plus a stderr note, never a phantom.** Incremental scans
+  refuse to overwrite the tracked manifest with a partial set (`--full` required to regenerate).
+- The gitignored `wiki/.last_compile` file is retired from the decision path; the tracked manifest
+  is the single watermark.
+
+**The 942 phantom (2026-09-07) proved the failure fires from `/workspace` itself, no lane
+involved**: run correctly from the shared clone against a genuinely-real 2026-09-03 local
+`.last_compile`, `total_new` read **942** — not a checkout-time mtime artifact, but a 4-day gap
+dominated by a ~300-commit campaign merge. The addendum's own diagnosis generalizes: mtime-since-
+watermark is unreliable from ANY single checkout whenever a different clone (or a peer session's
+independently-touched watermark) has already compiled part of the delta. `--touch` was withheld
+rather than run (it would have falsely marked all 942 compiled), and the genuinely-real subset was
+compiled by hand (`95c7e46d`). This was the same row all along — no separate filing was needed.
+
+**Linter half of OBS-13**: `lint_wiki.py` now proves a missing link target is cross-repo —
+`repos/<member>/` with `<member>` in the tracked `scripts/clone-repos.sh` farm array and no farm in
+this worktree — before INFO-skipping it; farm present or non-farm paths keep ERROR. The linter can
+now say "I cannot tell from here" instead of silently assuming the shared clone.
+
+**Reconcile note — quantified, not falsified.** The tracked manifest's baseline is 2026-08-27, so
+the first post-fix scan reports the real unrecorded drift. Measured against that baseline:
+**87 genuinely-pending sources** (57 handoff-active, 24 progress, 4 handoff-completed, 2 docs) —
+the `95c7e46d` hand-compile predates the wave's closure edits, so no subset is provably compiled
+as-of-current content. Advancing the manifest now would falsify it; the decision recorded is to
+**compile the 87 at the next operator-invoked `/wrap-up` — no `--touch` before** (the sweep stays
+operator-cadence; deployment reconcile is the wrap-up owner's call, not a code question).
+
+**The compile-receipt fix that protects the new basis**: `heavy_wrap.step_7_compile_wiki` used to
+overwrite the tracked content-hash manifest with a bare receipts dict — which would now make the
+next incremental scan fail loudly *by design*. Fixed (`af4c5c63`): the manifest is preserved
+wholesale with `compiled_by` merged as an extra top-level key, a corrupt manifest raises
+`WrapError`, and the scanner tolerates the extra key. Executor-side detail on [Agent
+Architecture](agent-architecture.md); the consequence for this page is that the wiki toolchain's
+write side and read side now agree on one tracked artifact.
+
+### Source References (2026-09-08 watermark closure)
+
+- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — NIB2-68 (the
+  2026-09-07 addendum: the 942 shared-clone measurement and the withheld `--touch`) and OBS-13
+  (both instrument halves) with the `0ea91f3e` closure text.
+- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the NIB2-68/OBS-13 landing
+  record (11 tests, scratch proof) and the wave-2 reconcile quantification (87 pending) +
+  `af4c5c63`.
+- [`progress/2026-09/2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md)
+  — the hand-compile of the real subset (`95c7e46d`) in the 942 window.
+- [Agent Architecture](agent-architecture.md) — the heavy-wrap receipt fix compiled (RTG-51
+  executor half).
+
+## Compiled Update — 2026-09-08: the vidya register tells the truth again — SC47/48 decline verdicts applied to the rows, and the ledger holds at frontier 13,141 after its own fail-open fix
+
+**Confidence: verified** — row states in the program handoff (inline verdicts applied 2026-09-07);
+the frontier is the SC73 post-fix live-ledger smoke (`5d7f14be`).
+
+- **SC47 and SC48 kept rendering open for nearly two weeks because their verdicts were never
+  applied to the rows.** Both were decided 2026-08-26 — recorded in the program summary and in
+  `progress/2026-08/2026-08-26.md` §Track E — but the checkbox rows carried no inline verdict, so
+  the register misstated them as open work until the 2026-09-07 Tier-C disposition applied the
+  verdicts per the SC11/SC13 precedent. The meta-lesson is the register-hygiene one: **a decision
+  recorded in prose is not a closed row** — the register's open count stayed wrong until the row
+  itself carried the verdict.
+- **SC48 — priced-and-declined.** The MI210 power-sensor probe corpus is two persistent
+  observations, below the SC9 pay line for an adapter; the verdict is recorded rather than carried,
+  with an explicit re-file trigger at the first successor power-probe campaign with a larger
+  corpus.
+- **SC47 — declined as a carrier, adopted as corroboration.** FlashInfer-Bench's
+  `Definition x Solution x Workload x Evaluation` record shape is not adopted as the
+  kernel-candidate carrier, but its per-operation-class evaluator registry stands as **external
+  corroboration that the one-ladder-per-source-class adapter contract is right** (the registry
+  comparison and the record-shape analysis remain the record); the tolerance-constant read stays
+  tracked as RVP-C6-23.
+- **The gen-2 ledger survives its own fail-open class.** The SC73 closure made
+  `ledger.verify()` refuse what it used to certify — a missing/empty ledger now reports problems,
+  and a ledger truncated below the newest published checkpoint tree size fails chain. The post-fix
+  live smoke read **frontier 13,141, chain OK, checkpoints OK** — up from 12,479 at the 2026-08-26
+  P5c promotion-gate execution, reflecting the intake-wave and citation-gate re-ingests since. The
+  kernel-integrity wave that produced it (SC61 + SC69-73, `5d7f14be`, 43 files, suite 899 → 967)
+  is compiled on [formal-verification](formal-verification.md); what belongs to this page is the
+  program state: the ledger's own integrity claims now come from the same refusal discipline the
+  substrate imposes on every producer.
+
+### Source References (2026-09-08 vidya state)
+
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) —
+  SC47/SC48 closure text (2026-08-26 decision, 2026-09-07 inline application, SC9 re-file
+  triggers) and the SC73 closure with its frontier-13,141 smoke.
+- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the Tier-C disposition
+  table (SC47/SC48 rows, evidence, SC11/SC13 precedent) and the `5d7f14be` wave record.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the
+  SC69-73 audit-origin and filing record (32 surviving mutations, five filed).
+
+## Compiled Update — 2026-09-08: the backlog graph derives ready/blocked — and the cycle class that blocked the readiness rule is now a gate
+
+**Confidence: verified** — commit `457abd40` and the measured baseline in the owning handoff row;
+`dep_cycles()` in `index_state.py --check` (12 tests).
+
+- **Per-node ready/blocked is now derived, never authored** (`index_state.py`, schema
+  `index_graph.v2`): a node is `blocked` iff at least one `dep` target still has `open > 0`, else
+  `ready`; a handoff with no open work of its own is `no_open` — a distinct third value, because
+  `open` counts DISPATCHABLE boxes and a handoff whose remaining boxes are all guarded or
+  classify-refused also reads `open == 0`. Calling that `ready` would put undispatchable rows on
+  the dispatch frontier (the same category error the module header already rules on, one level
+  down). `blocked` is a floor, not a finding: active+blocked and blocked+ready are both meaningful
+  and must not merge.
+- **First measured baseline (2026-09-07): 170 nodes, 42 `dep` edges — 136 ready / 24 blocked /
+  10 no_open.** 85% of rows were already ready, so the derivation is priced honestly: its value is
+  that cycle-class defects become visible on the hub instead of requiring the computation to be
+  run by hand — not that it discriminates dispatch.
+- **Generated means timestamped.** The sidecar regenerates as rows close (the 2026-09-08
+  regeneration reads 135 ready / 29 blocked / 10 no_open over 174 nodes), so a quoted count is
+  only valid with its `generated_at` — the row's own 41-vs-42 edge-count correction is the
+  standing lesson (a six-day-old sidecar was measured without regenerating first).
+- **The cycle class is now a gate.** `BAD DEP` validated only that a dep points at a *known* row —
+  which every edge in a cycle does — so cycles were invisible while each edge was well-formed.
+  `dep_cycles()` (iterative DFS, one error per elementary cycle, unknown ids left to `BAD DEP`)
+  closes that. The real instance it would have caught: **INF-06 ⇄ INF-64**, a rider-of relation
+  written into the blocked-on column — found 2026-09-07 by the first readiness run over
+  `.index-graph.json`; the back-edge cell was deleted and the relationship survives untouched as
+  the derived `ref` edge the graph builder already generates from the markdown link.
+- **The dispatch screener now reads the sidecar — advisory only.** AIR-13 wires
+  `index_graph_readiness()` into `backlog_row_check.classify()` with an explicit
+  INDEX-GRAPH (advisory, NOT a refusal) reason; flag, never hard-refuse, because handoff-granular
+  readiness is over-broad at row level (2 of 3 blocked rows were legitimately completed while
+  their handoff was marked blocked). Full compiled record of the AIR-12/13/14 premise-screening
+  closure is on [agent-architecture](agent-architecture.md); this page's interest is the coupling:
+  the graph's derived readiness is now consumed by a second surface (the row screener) that never
+  reads the `Deps` column.
+
+### Source References (2026-09-08 index graph)
+
+- [`handoff-index-and-backlog-graph.md`](../handoffs/active/handoff-index-and-backlog-graph.md) —
+  the INF-06/INF-64 cycle record, the `dep_cycles()` gate, the ready/blocked/no_open derivation
+  row with its measured baseline and its regeneration lesson.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the
+  `457abd40` execution record (136 ready / 24 blocked / 10 no_open) and the gate.py defect fix
+  that rode the same wave.
+- [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — AIR-12/13/14 landing
+  record (`945c8820`, 719 coordination tests).
 
 ## Compiled Update — 2026-09-07: WikiSkill corroborates the clean-window compile rule — its window never overlaps the phenomenon
 

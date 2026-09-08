@@ -2,8 +2,31 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-08-27 (official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
+**Last compiled**: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
 **Sources**: 82 documents
+
+## Compiled Update — 2026-09-08: Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — INF-63 is blocked, and the Qwen fleet census opens the offload question
+
+**Confidence: verified** — artifact absence verified against the path 2026-08-31; census from GGUF metadata keys and tensor patterns (`intake-1328#record`). **The 2026-08-27 acquisition section below is superseded on its central fact.**
+
+### Correction to the 08-27 record: the artifact was deleted, and re-acquisition is disk-gated
+
+The 08-28 `rm -rf` incident (progress 08-28) deleted `models/Qwen3.8-Flash-Next-FP8/` AFTER this page's 08-27 verification; the path verifies absent 2026-08-31. The INF-63 evaluation is **BLOCKED**. The 08-27 section below remains the integrity-verified acquisition record (payload 185,563,783,823 bytes / 145 files / 131 safetensors shards; ModelScope revision `f88480ebce48…`, checksum-identical HF weight pin `bcd9f01d…`) — but nothing of it is loadable today. Re-acquisition (~185 GB) is gated on disk headroom (98% full at the incident) and the open re-download-vs-park checkbox; the backend-qualification scope, the coherence-smoke plan, and the final GO/WAIT/KILL verdict definition are unchanged and parked with the artifact.
+
+### The Qwen fleet census (2026-09-07): all three Qwen MoE families carry a gated shared expert
+
+INF-63's stage-1 premise that Qwen is "group 1" (no shared experts) is FALSE. Qwen3.6-35B-A3B (qwen35moe, 256/8 + 1, 40 blocks), Qwen3.8-Flash-Next (qwen4exp, 512/10 + 1, 48 blocks) and Qwen3-Next-80B (qwen3next, 512/10 + 1) all carry a **gated shared expert** — metadata keys and tensor patterns recorded in `intake-1328#record` (`intake-1328#03`). Consequences for this fleet: the offload/caching question is OPEN because nothing on this axis has been measured here — NOT because the architecture is favourable — and the shared expert is resident by definition and enters no ρ budget. The routing-tap instrument (INF-72, compiled on [MoE Optimization](moe-optimization.md)) is what closes the axis with a local number; its port has a qwen4exp coverage gap on v9, noted there. Cross-ref [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md).
+
+### GPU-path state changes
+
+- **HIP offload-mode compatibility has its first independent AMD measurement**: the `-ot "exps=CPU"`-style offload mode runs on HIP (`CUDA0` → `HIP0`): Gemma-4-26B-A4B on an RX 9060 XT at **62–73 tok/s vs `--n-cpu-moe` 15.0** — an external observation (llama.cpp b10630; PCIe latency the bottleneck, not CPU compute speed), recorded via `intake-1343#03` in [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md). The closed-form miss-split framing that this path used to be justified with was overturned 09-07 — `T*(q*) = mS/B_H` means a split is worth zero latency and pays only in residency (compiled on [MoE Optimization](moe-optimization.md)) — so the datum stands as a HIP-compatibility fact, not a speed expectation for a split.
+- DFlash2 experimental posture is unchanged; the serving-gate protocol updates (steps/s metric, n-max × p-min sweep, sustained-C8 cell) are compiled on [Speculative Decoding](speculative-decoding.md).
+
+### Source References (2026-09-08, Qwen3.8-Flash-Next-FP8 state)
+
+- [`qwen38-flash-next-fp8-evaluation.md`](../handoffs/active/qwen38-flash-next-fp8-evaluation.md) — BLOCKED status, artifact-deletion correction, the census half, and the re-acquisition checkbox.
+- [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — the 2026-09-07 HIP-offload measurement and the miss-split overturn record.
+- [`moe-routing-tap-and-locality-measurement.md`](../handoffs/active/moe-routing-tap-and-locality-measurement.md) — the qwen4exp v9-coverage gap the tap port must close.
 
 ## Compiled Update — 2026-09-01: GLM-MoE-DSA is dense-mask on this fork, GLM-5.2 is KILLED, and a requant A/B fixed how a CPU headline is denominated
 
