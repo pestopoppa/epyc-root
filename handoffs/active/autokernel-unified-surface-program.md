@@ -206,6 +206,10 @@ sequencing: measurement first, authoring later).
 
 ### P1 — the fold at run 30's next boundary (U1)  · exit: ONE champion tip carrying both lineages, GPU floors unchanged
 - [x] **UD-0**: operator confirmed the fold DIRECTLY to `workspace-1c` ✅ 2026-09-07 — gate 1 (their windows clear) is theirs to signal; gate 2 (run 30 boundary) is ours
+- [ ] **FOLD-2 additions (UD-4)**: `test-backend-ops -b ROCm0 -o SSM_SCAN` with an explicit `K > 1` case; `verify_ggml_linkage.sh`
+      on the merged tree BEFORE the serving gate (`ggml/include/ggml.h` +18 → ABI hazard across the three ggml generations);
+      observe the 27B's SSM_SCAN dispatch decision (not inferred from tg128); tg128 A/B merged-tree vs anchor-gen-021 inside 0.638%
+- [x] Champion branch + orphan tag pushed to the GitHub fork ✅ 2026-09-08 (`ak-loop-tree` was swept from scratch mid-fold; `champ2` was one sweep from the same)
 - [ ] INF-70 stages levers on a lane branch off the champion tip, merge-tree disjointness proven, FOLD-0 re-based onto `inf70/champion3` (or their champion at the boundary) — they do this unprompted once gate 1 clears
 - [ ] FOLD-0 (`inf70-audit`): fold-ready commit with both blockers opt-in; bit-identity + `test-backend-ops -b CPU`.
       **FOLD-0 as written targets `6f032c48d`, two CPU champions old — re-base onto the CPU champion at the
@@ -272,6 +276,7 @@ sequencing: measurement first, authoring later).
 
 | ID | Decision | Recommendation |
 |---|---|---|
+| **UD-4 — SSM_SCAN `K` port rides with the fold: measure, don't split (2026-09-08)** | INF-70 found the CPU lineage changes `ggml_backend_cuda_device_supports_op` for `GGML_OP_SSM_SCAN` (`K > 1` → decline on CUDA → CPU fallback), an UPSTREAM port (`4595b1bca` = ggml `1692f9e50`, recurrent-state rollback), with all 5 CPU levers committed ON TOP of it (27 commits after). Splitting = cherry-picking 27 commits = exactly what the runbook forbids and how keeps get dropped. Their operator: *"make sure the gpu-focused autokernel session is aware… reserve a quiet GPU window to verify impact on GPU performance… just make sure we don't lose any performance keeps."* | **Recommendation: take the whole `champion3` as ONE candidate; in the window run test-backend-ops SSM_SCAN with an explicit `K > 1` case, `verify_ggml_linkage.sh`, and OBSERVE the 27B's SSM_SCAN dispatch on ROCm0 (it is a hybrid; SSM_SCAN runs every token); hold K out only on measured evidence.** |
 | **UD-0 — RESOLVED ✅ 2026-09-07 (~20:20Z)**: operator ruled DIRECTLY to `workspace-1c`: *"yes, fold onto the champion once the measurement windows clear."* Two gates remain, neither side controls both: (1) INF-70's windows clear (SYNC-19/20 w1 MTP block → w2 `AP` controls + 3 F1 arms → HARNESS-1 Phase B + hot session) — **they message us; do not schedule on an estimate**; (2) run 30's next boundary — ours. | The CPU session (`workspace-1c`) holds a DIRECT operator instruction from earlier this session — *"we're not folding into autokernel champion just yet. make sure we don't forget the canonical recipe."* — and correctly refuses to rebase on a relayed directive. **The operator must confirm the fold directly to that session**; a peer relay cannot override a direct instruction, and should not. | confirm directly; until then P1 proceeds only on the loop-side items (R23-51a seed, R23-49 recal) |
 | OP-41 (open) | serialize / schedule / regress on CPU co-tenancy | **serialize, structurally** — P4 builds it; until then accept INF-70's bounded-hold requests |
 | UD-1 | CPU serving recipe = the gate for the CPU surface | the CPU session's canonical served recipe (Qwen3.8-Flash-Next), codified as `Recipe`; not a bench proxy |

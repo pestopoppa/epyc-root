@@ -369,3 +369,11 @@ Canonical sources (always verify status in these files first):
 - [ ] **NI-IO (rtx6kpro intake 2026-09-07)** — NVMe/md-RAID0 I/O scheduler check: `cat /sys/block/nvme*/queue/scheduler`
       should be `none` (external: 91.8k vs 48.6k IOPS under BFQ); md `group_thread_cnt=8` for RAID5/6 only;
       Docker overlay2 `syncfs` stall fix only if inference containers exist here. 2-minute check.
+
+- [x] **NI-OC — opencode event-feed growth bounded AT SOURCE** ✅ 2026-09-08. The change-feed regrew 11.4 → 35 GB in 13 h
+  (1.7 GB/h) from the operator's interactive TUI + @general subagents — pruning alone was a symptom fix. Now:
+  `scripts/system/prune_agent_event_store.py --idle-hours H` (reaper mode: only sessions idle > H h, never the live
+  TUI/subagents, VACUUM skipped while opencode runs) and `scripts/system/opencode_event_reaper.sh` (daemon, every 30
+  min, pid `/mnt/raid0/llm/tmp/opencode-reaper.pid`, log `/mnt/raid0/llm/tmp/opencode-reaper.log`). First reap: 680
+  idle sessions, 232k events; 5.6k events / 12.7 GB (2 live sessions) kept; integrity ok. No cron/systemd in the
+  container, so the daemon must be re-launched after a reboot — **operator: add to the post-reboot checklist**.
