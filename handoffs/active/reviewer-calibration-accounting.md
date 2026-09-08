@@ -53,20 +53,49 @@ Two dive results reshape the report's design. First, **overcorrection dominates*
     (intake-875 Table 5). Any A/B here must hold framing byte-identical across arms and say so.
   - **Standing constraint (RC-6a):** until the operator PR merges, every number this row produces is an
     **observation** and MUST NOT gate any keep/revert/deploy/promote decision in H5/H7.
-- [ ] **RC-11 — report false-accept and false-reject SEPARATELY** (intake-1307; 2026-09-07). A single
+- [x] **RC-11 — report false-accept and false-reject SEPARATELY** (intake-1307; 2026-09-07). A single
   aggregate accuracy does not satisfy this plane's gate. Where one side is not computable — typically
   false-reject, because a rejected item has no ground truth — **say so explicitly and report the cause
   histogram instead; never omit the side silently.** intake-1307 is the citable precedent for the
   omission being the *default* behaviour rather than an oversight: it quantifies false-accept in three
   places (8% wrong-class proved, 0.877 and 0.932 accepted accuracy) and never converts false-reject to
   a rate at all, decomposing it by cause instead. That asymmetry is the finding, not the paper's bug.
-- [ ] **RC-12 — audit every reviewer/gate threshold for selection-on-the-certification-sample**
+  **✅ 2026-09-08 — audited + one residual gap closed.** Audit result: all four FA/FR-reporting
+  surfaces were already separate (pii_fixture_eval.py FA 0/21 + FR 0/30 with own denominators and
+  cause histograms; reviewer_calibration_report.py per-side columns with Wilson CIs;
+  safety_gate.py / review_policy_trials.py / screening_tier_runner.py separate with absent side
+  surviving as null). Residual gap — `reviewer_calibration_from_decisions` returned only the
+  computable axes and the corpus reader silently dropped observation-gold rows — CLOSED in
+  epyc-orchestrator `15d0858f`: every axis key always present, an unmeasured side is `None`
+  (never absent, never `0.0`), `n_gate_fail`/`n_gate_pass` ride along, and exclusions are counted by
+  cause at both the corpus-read seam (`judgeable_row_cause`: no_candidate_answer /
+  non_conclusive_gold_label / observation_gold_confidence / not_a_record) and the gate-None seam
+  (`excluded_no_conclusive_gate`). Full audit record: `progress/2026-09/2026-09-08.md`.
+- [x] **RC-12 — audit every reviewer/gate threshold for selection-on-the-certification-sample**
   (intake-1307; 2026-09-07). For each threshold, record whether it was chosen on a split independent
   of the one used to certify it. Where it was not, either re-derive on a held-out split or record the
   multiplicity penalty owed. The source makes the size of this concrete: the same data certifies at
   materially different risk levels under a union-bounded grid search versus a threshold picked on an
   independent dev split, and it treats that difference as decisive rather than cosmetic. Maps directly
   onto the standing "eight ways a check passes for the wrong reason" catalogue.
+  **✅ 2026-09-08 — 16-threshold audit filed.** The referenced ~110-threshold subagent report is not
+  recoverable from the tree (re-enumerated from code instead; every `file:line` verified by direct
+  read). Three VIOLATIONS: (1) `rubric_pass_threshold` default 0.60 in `eval_tower.py:4334-4335` —
+  unknown derivation, converts rubric aggregates into per-question `correct` feeding the SafetyGate
+  quality axis; remedy: derive from a rubric-vs-gold slice or make `scoring_config` name threshold +
+  rationale per suite (mirroring gate_verdict's mandatory rationale), until then observation-only.
+  (2) PII-hook exemption surface in `pii_precommit.sh` — tuned on observed over-blocks with fixture
+  rows added in the same commits that certify it (catalogue face 15: the oracle endorses the defect);
+  mitigation present (evaluator prints same-sample provenance; `candidate_eval_gate.sh:26` mislabels
+  it "held-out" — relabel to "same-sample PII fixture validation (observation-only)", wording fix
+  only). (3) `DEFAULT_BASELINE_QUALITY=1.16` `safety_gate.py:365` — silent fallback default of
+  undocumented derivation; prefer fail-closed. Plus: review_ledger FA/FR tolerances are
+  self-declared placeholders (stamped `thresholds_are_placeholders`) pending P-REV-1 — re-derive on a
+  held-out near miss slice before any live wiring. One previously-filed VIOLATION already fixed
+  (impact.py ordinal drift, `ae8ab82b`). OK-class: sequential_verdict e-process policy
+  (protocol-derived), SafetyGate tuning constants (incident-derived, continuously gated), gate_verdict
+  (design is the anti-VIOLATION), CITATION_THRESHOLD_N=20, vidya policy floors, repo-readiness 80%
+  (external rubric). Full findings table: `progress/2026-09/2026-09-08.md`.
 
 ## Dependency Graph
 

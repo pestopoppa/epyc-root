@@ -1203,6 +1203,11 @@ findings to docs, move to `completed/`, delete the master-index row.
       times lower-better; peak_over_floor higher-better) and let `claim_tuple.grade()` decide; it must
       NOT write a new grading rule. Every tuple must carry the API-scaling caveat (raw counter x 15.3)
       and the load-generator identity (1024^2 fp16 mm, sync-per-op).
+      **CLOSED 2026-08-26 (inline verdict applied 2026-09-07) — priced-and-declined.** The decision is
+      recorded in the program summary above (:78-79) and `progress/2026-08/2026-08-26.md` §Track E; this
+      row was never updated with its inline verdict, which is why it kept rendering open. The corpus is
+      two persistent observations — the SC9 pay-line judgment applies. Re-file per the SC9 rule at the
+      first successor power-probe campaign with a larger corpus.
 - [ ] **SC47 — evaluate the FlashInfer Trace schema as the carrier shape for kernel-candidate records.**
       Filed 2026-08-21 from `intake-1245#record` (FlashInfer-Bench, arXiv:2601.00227v1, Apache-2.0, repo @
       `40e6ca78`). **It is a write-side claim-tuple carrier in all but name**: an immutable
@@ -1220,6 +1225,12 @@ findings to docs, move to `completed/`, delete the master-index row.
       adapter must **PROJECT into a `ClaimTuple` and let `claim_tuple.grade()` decide — it must NOT write a
       new grading rule.** Read `flashinfer_bench/bench/evaluators/{lowbit,default}.py` at the pinned SHA for
       the actual tolerance constants before adopting anything (also tracked as RVP-C6-23).
+      **CLOSED 2026-08-26 (inline verdict applied 2026-09-07) — declined as a carrier, adopted as
+      corroboration.** The decision is recorded in the program summary above (:78-79) and
+      `progress/2026-08/2026-08-26.md` §Track E; this row was never updated with its inline verdict. The
+      two TAKEs above stand as the record — the record-shape comparison for a kernel-candidate carrier
+      and the evaluator-registry corroboration of the adapter contract; the tolerance-constant read stays
+      tracked as RVP-C6-23.
 - [ ] **SC45 — wire ParEval runs into the belief kernel BEFORE the first run, not after.** Filed
       2026-08-21 by the `/research-intake` Stage-4 pass that ingested it (`intake-1225`, dive-verified,
       MIT, HPDC'24, credibility 6/6 — the highest of that cohort). ParEval is a candidate C5 secondary
@@ -1400,7 +1411,7 @@ commercial incentive to accrue reputation arrived independently at this program'
       and `citable_summary()` already refuses it. Source-table row to be added to
       `scripts/vidya/adapters/README.md` when the adapter lands.
 
-- [ ] **SC61 — `claim_statement_binding/v1`, the producer for SC56's `attested` binding.** SC56
+- [x] **SC61 — `claim_statement_binding/v1`, the producer for SC56's `attested` binding.** SC56
       (below/adjacent) accepts two binding kinds: `identity`, machine-checkable by normalized string
       equality, and `attested`, a human judgment that a claim follows from a proposition the checker
       decided. **`attested` has no producer**, so only `identity` is reachable in practice and the
@@ -1409,6 +1420,17 @@ commercial incentive to accrue reputation arrived independently at this program'
       pass. Filed separately on purpose: this is a **build**, and letting it ride inside SC56 would
       have turned a one-function cap into a new frame type, a worksheet and a fold pass under one
       checkbox. Surfaced by the SC56 design pass, 2026-09-07.
+      **✅ 2026-09-08 (`5d7f14be`) — landed.** New `scripts/vidya/statement_binding.py` +
+      `cli.py binding-candidates`/`binding-emit`: frame type `epyc.vidya/frame/claim_statement_binding/v1`
+      asserts `{claim_id, decided_proposition}` verbatim with human reviewer + worksheet digest in
+      provenance (parallel to `claim_alias/v1`); candidates only where a binding is missing
+      (identity-eligible pairs are never proposed — the machine needs no human); worksheet rows are
+      `pending` until a human `follows` with a named reviewer. Fold pass: `binding_ref` must resolve
+      to a LIVE binding naming the SAME claim and the SAME proposition (claim_tuple's own
+      normalization), else FoldError — a false attestation is refused, never downgraded; a binding
+      naming a claim absent from the ledger is refused (it cannot create a belief — SC70's shape one
+      level up); retracting a binding withdraws it; resolved bindings surface on
+      `FoldResult.statement_bindings`. 20 unit tests + 1 CLI e2e.
 
 **Declined from this wave, recorded so they are not re-derived.** A dead-end/negative-evidence
 ledger (real problem, but a coordination artifact rather than a claim-level belief — it would widen
@@ -1489,7 +1511,7 @@ defects the audit REPORTED but did not fix; each is a place where the kernel gra
 its own spec says must be earned. They share one shape — **a presence check standing in for a
 verification** — which is SC58's shape and SC56's, so treat the block as one theme, not five chores.*
 
-- [ ] **SC69 (P1) — `Attested` never verifies the digest it is named after.** `claim_tuple.py:189`
+- [x] **SC69 (P1) — `Attested` never verifies the digest it is named after.** `claim_tuple.py:189`
       length-checks `attestation_sha256` (64 chars) and `:350` branches on its mere presence;
       `hashlib` does not appear in the file at all. Demonstrated: `attestation_path="MEASUREMENT.md"`
       with `attestation_sha256="0"*64` grades **`Witnessed/Attested`** — the top of BOTH axes, on a
@@ -1499,25 +1521,61 @@ verification** — which is SC58's shape and SC56's, so treat the block as one t
       the adapter/write boundary with the result carried in the tuple — decide that placement first,
       because putting I/O inside `grade()` would make grading unreproducible from a stored frame.
       Pair every fix with the mutation that reverts it (`"0"*64` must not reach `Attested`).
-- [ ] **SC70 — `fold.py:530` `claim_depends_on` never calls `claims.add`.** A `depends_on` edge into
+      **✅ 2026-09-08 (`5d7f14be`) — P1 closed.** Placement decision: `grade()` stays pure —
+      verification happens at the adapter/write boundary and the result is CARRIED in the tuple:
+      new field `attestation_verified: bool | None` (`None` = never checked → can never reach
+      `Attested`; `True` = digest recomputed against the artifact bytes at write time and matched;
+      explicit `False` is refused — an admitted mismatch asserts two contradictory facts).
+      `claim_tuple.verify_attestation()` does the I/O for boundaries that want it. `Witnessed/Attested`
+      now requires the carried `True`; hashed+present+unverified lands `Witnessed/Anchored` with the
+      "attestation sha256 never verified against the artifact's bytes" reason. Ten wired producers
+      carry the recompute result (sealed_manifest, measurement_record, autopilot_journal,
+      autokernel corpus/evaluation_event/property, memento_lora, pareval, chat_template_ab,
+      contention_matrix, eval_tower_band). The REAL sealed corpus and REAL autopilot writer keep
+      `Attested` through genuine recomputation; receipt rows whose digest cannot be re-derived from an
+      artifact in hand grade honestly `Anchored` until their write path implements its own recompute.
+      Mutation-pinned: `"0"*64` no longer reaches `Attested`. 12 red-first tests.
+- [x] **SC70 — `fold.py:530` `claim_depends_on` never calls `claims.add`.** A `depends_on` edge into
       an id the ledger has never otherwise seen registers no claim, so the dependent silently has no
       belief to alert on. This is the same file whose `chain_grade` the wave already found to be a
       single unreferenced definition — the claim→claim plane is thinner than it reads.
+      **✅ 2026-09-08 (`5d7f14be`).** `FT_DEPENDS` now canonicalizes and `claims.add`s the dependent.
+      Red-first: a dependent seen only via a depends_on edge had no belief; withdrawal alerts for it
+      vanished; discharge classified the entry discharged while its only dependent never existed. 3
+      tests in `tests/vidya/test_vidya_depends_on_fold.py`.
 - [ ] **SC71 — vacuous obligation satisfaction in `impact.py:352` and `:318-329`.** An obligation
       with an empty required-set is reported satisfied, which fills an absence the pilot spec says
       must be *recorded* (§4.7, "absence is recorded, never filled"). Same class as the `blocked = 0`
       uncountability found in the fan-out corpus this week: nothing to check reads identically to
       everything checked.
-- [ ] **SC72 — `gate.py:121` manufactured corroboration + `frames.py:139-142`/`:90` presence-only
+      **✅ 2026-09-08 (`5d7f14be`).** `impact.py` `_evaluate` refuses an empty required-set under
+      `all`/`any` with a ValueError ("an obligation that requires nothing reads identical to one whose
+      requirements all passed"). Red-first: `{"all": []}` graded SATISFIED before; 4/5 new tests in
+      `tests/vidya/test_vidya_obligation_vacuity.py` failed first; mutation companion (non-empty
+      `all` still evaluates) green.
+- [x] **SC72 — `gate.py:121` manufactured corroboration + `frames.py:139-142`/`:90` presence-only
       subject validation.** The gate can count a single source twice as corroboration; `frames.py`
       validates that a subject is *present*, not that it is *well-formed*, so `sha256:aa` passes one
       layer below where SC69 bites. Filed together because the digest-shaped-string-is-not-a-digest
       defect appears at both layers and a fix at one alone leaves the other reachable.
-- [ ] **SC73 — `ledger.verify()` returns clean on an empty or deleted ledger.** A verifier that
+      **✅ 2026-09-08 (`5d7f14be`).** (a) Fold keys that name no source map to one shared
+      `UNNAMED_SOURCE_KEY` instead of minting a pseudo-source per evidence label; (b) the gate's
+      disjoint-supports fallback counts an unaccounted belief as ONE unnamed source, never its labels;
+      (c) `frames.validate_frame` refuses any subject digest that is not exactly
+      `{sha256: 64-hex}` and any unnamed subject. One existing test encoded the defect (two
+      source-less paths satisfied a 2-source policy) — its fixture now names two real sources, and a
+      mutation case pins that unnamed paths abstain. 11 red-first tests.
+- [x] **SC73 — `ledger.verify()` returns clean on an empty or deleted ledger.** A verifier that
       passes on the absence of the thing it verifies is the fail-open shape
       (`feedback_fail_open_defaults_conceal_their_own_corruption`): the strongest possible reading of
       "chain=OK" is produced by having no chain. Require a non-empty frontier and a declared expected
       count before reporting OK.
+      **✅ 2026-09-08 (`5d7f14be`).** `verify(expected_count=None)` now reports problems for a
+      missing/empty ledger and flags a ledger shorter than a declared count; `cli.py cmd_verify`
+      passes the newest published checkpoint tree size as the declared count (a ledger truncated to a
+      consistent prefix now fails chain — same-length rewrites remain the L1 case). Live-ledger smoke
+      after the fix: frontier 13,141, chain OK, checkpoints OK. 5 red-first tests in
+      `tests/vidya/test_ledger_empty_verify.py`.
 
 **Audit coverage bound — do not read this block as exhaustive.** Q.1 did **not** reach
 `scripts/vidya/adapters/`, `canonical.py`, `checkpoint.py`, `evaluate.py`, `cli.py`,
