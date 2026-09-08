@@ -5,6 +5,48 @@
 **Last compiled**: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
 **Sources**: 110+ documents
 
+## Compiled Update — 2026-09-08: measurement scope and close-out corrections
+
+**Confidence: verified** for the documented observations/corrections, not for a universal contention
+penalty or an unmeasured partition-transfer benefit. These qualifications supersede broader claims in
+older entries below. The recorded fold is complete at `ef81196d5`; older pending-fold text is historical.
+
+For the measured host-wide CPU hot-server allocation, pinning GPU host work did not establish isolation.
+The admission check recorded a substantially wider A/A distribution during the sustained GPU bundle-seed
+chain than during its drain. Those windows do not distinguish incremental seed-chain cost from an
+optimistic drain-era floor. Later cooperative serialization still lost an arm to unattributed
+foreign load: that is a window-specific observation, not an estimated permanent host-wide tax.
+Quiet alternating windows are supported for this recipe/overlap; the result does not rule out validated
+smaller or cache-resident mechanism tests running concurrently. Sibling-aware allocation, shared-memory
+contention, and foreign-load sampling during the whole arm are separate concerns.
+
+Calibration must name the independent experimental unit: arm, session or process, as well as workload,
+placement, sample count and host state. A floor from within a launch cannot size an effect that varies
+between launches. The corresponding floor-unit refusal is a tracked implementation requirement, not a
+newly deployed guarantee. Small reported nulls, “no cost” labels and gains below the relevant floor remain
+unresolved; they do not erase independently established topology or placement mechanisms. The hot-harness
+speedup was measured at 1.65× per arm, not the proposed 3–5×, and its drain-window floor is not general.
+
+Correctness gates also need nonempty evidence. The fold report records an initial vacuous PASS caused by
+ANSI-sensitive parsing and missing verbose dispatch logs. Guards were added to require positive case
+counts, agreement with harness tallies and a populated expected dispatch graph. A build invocation,
+equal count or empty grep result is not sufficient proof that the intended path was exercised.
+
+Two historical framings must not be revived: the fused-decoder “last path to 20–60 t/s” priority claim is
+stale, and rescued decode branches are not untested merely because their refs were rediscovered. Preserve
+their existing dispositions while separating a no-keep decision from an unresolved numerical magnitude.
+Also, seven AutoKernel workers did not mean seven overlapping builds: the inspected serialized tail
+orders build/oracle/A–B/commit within that process; it does not serialize foreign campaigns or builds.
+
+### Source References (September 8 measurement corrections)
+
+- [CPU roofline, MEAS-6](../handoffs/active/cpu-decode-roofline-program.md) — drain versus seed-chain observations and their attribution limit.
+- [September 8 CPU audit](../progress/2026-09/2026-09-08-inf70-audit.md) — arm-level replication, unresolved effects and hot-harness timing.
+- [September 8 rebuild report](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — foreign-load loss, completed fold and nonempty evidence guards.
+- [Unified-surface design audit](../handoffs/active/autokernel-unified-surface-program.md#autonomy-design-20260908) — serialized-tail scope and conditional partition/coexistence proposals.
+- [Batched decode](../handoffs/active/batched-decode-measurement.md) and [NUMA placement](../handoffs/active/numa-placement-defect-20260730.md) — sub-floor claims qualified separately from operational mechanisms.
+- [Fused decoder](../handoffs/active/cpu-fused-decoder-blocks.md), [prefill](../handoffs/active/cpu-prefill-compute-large-models.md), and [shape-specialized decode](../handoffs/active/cpu-shape-specialized-gemv-decode.md) — superseded opportunity framing and prior branch dispositions.
+
 ## Compiled Update — 2026-09-08: AutoKernel becomes the unified CPU+GPU surface, and the rebuild lane's three operator complaints are fixed in code
 
 **Confidence: verified** for the 09-08 code fixes and their measurements (heartbeat, reaper, R23-53 arithmetic); `inferred`-to-`verified` for the unified-surface design, whose phase-1 fold was in progress at compile time.
