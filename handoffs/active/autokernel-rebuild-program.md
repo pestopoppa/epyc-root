@@ -1803,11 +1803,17 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           `445e93a8`**, keeps provisional. Durable bundle: cor `445e93a8`, tip `bff30cebe`, 6 keeps, compounded
           +5.958 (bench, measured); on the next launch `load_bundle` advances the tip to the new anchor and
           keeps the cor.
-      - [ ] **R23-54 — serving gate is MANDATORY, not threshold-triggered.** Its first firing (2026-09-08)
+      - [x] **R23-54 — serving gate is MANDATORY, not threshold-triggered** ✅ 2026-09-08. Its first firing (2026-09-08)
         showed an **11-point proxy-vs-truth gap**: the tg128 proxy said **+5.958%** while the serving gate said
         *"cannot tell, probably slightly negative"* (−2.18%, n=10) — a gap the bench alone would never have shown.
         Make the loop spend the serving gate on **every N keeps regardless of the compounded estimate** (or drop
         `fire_multiple` to 1.0). **Operator to confirm the cadence.**
+        **RULED (operator, 2026-09-08): N = 4** — the gate fires every 4 keeps regardless of the compounded bench
+        estimate, in addition to (not instead of) the existing `fire_multiple` threshold trigger; implemented in
+        research `56195d3e` (`accumulate.SERVING_GATE_EVERY_KEEPS = 4`, durable `Bundle.keeps_since_serving_gate`
+        reset on every gate run whatever the outcome, and a `trigger: threshold|cadence|both` recorded in the
+        serving-gate record, the status body and the dashboard card; 434 loop tests, was 423). The uncalibrated-floor
+        fail-closed guard is unchanged: with no floor the gate can only return DIVERGED, so neither trigger spends it.
       - [ ] **R23-55 — A FLOOR WITHOUT ITS UNIT IS A 1200-FOLD ERROR. Every floor file must record `unit`.**
         Measured by INF-70 (2026-09-08, RETEST-1) and owed to INF-73 U2, which already requires each floor to
         carry harness, n, contention model and host-state hash — **`unit` (arm | session | process) is the
