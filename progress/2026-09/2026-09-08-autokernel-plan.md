@@ -16,7 +16,10 @@ PLAN-DOC-1; PLAN-DOC-2 explicitly remains iterative documentation, not authoriza
 Numerical defaults and unresolved engineering choices are labeled provisional. Refreshed the existing
 INF-73 index pointer; created no duplicate handoff or implementation dispatch queue.
 
-Validation: documentation diff/links and generated handoff index checks are run before publication.
+Validation: `git diff --check`, local Markdown link targets, balanced code fences, generated handoff
+index/citation checks (zero problems), and README freshness check passed before publication.
+Integrated concurrent upstream close-out findings without overwriting them: floor-unit refusal and
+third-party contamination despite cooperative locks remain in the owning handoff.
 GitNexus's stale index has no symbol for this Markdown target; no code dependency changes are involved.
 Used the wrap-up skill to capture the handoff, progress and focused documentation publication; no wiki
 compilation or index pruning was requested.
