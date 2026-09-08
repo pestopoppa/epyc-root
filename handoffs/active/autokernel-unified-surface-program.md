@@ -192,6 +192,24 @@ states its unit, and **a gate comparing an effect to a floor of a different unit
 Mirror task: `autokernel-rebuild-program.md` **R23-55** (write `unit` into `loop-memory/serving-floor.*.json`
 and the bench-floor records).
 
+**And the champion arm itself is not stable across launches (measured 2026-09-08, INF-70) — so HEADLINE
+ADMISSIBILITY is a U2 property, not a reporting style.** An **identical** champion configuration measured
+**24.4 → 27.4 tok/s** plain across four of that day's sessions (~**12%** spread: gate 25.6-25.9, THP-OFF
+24.4-25.3, FIX-1 controls 27.3-27.4, characterisation 27.3-27.4) while the **pristine control reproduced**
+(12.637 vs 12.366 standing, **+2.2%**). Champion 27.383 vs standing ~21.21 is **+29.1%**, and the
+champion/pristine ratio reads **2.167×** today against **1.7151×** standing. A hot-vs-cold harness offset
+(**+4.36%**) would move *both* arms; only the champion moved, so the harness does not explain it. **The
+mechanism is UNEXPLAINED.** Two rules follow for this track:
+
+- **A headline is admissible only from ≥N independent launches with a session-unit CI.** One tight session
+  is not a headline whatever its internal spread, because the arm-unit floor is the wrong instrument for a
+  quantity that varies at process-launch scope. N is sized from the between-session sd (**2.793%**), never
+  the arm sd (0.501%).
+- **Investigate the source of the between-launch variance on the champion** — page-cache / NUMA placement,
+  THP state, HIP graph capture, allocator — before any final champion number is published. Until it is
+  explained, a **"cannot tell"** verdict (CHAMP-2 THP) is as consistent with this instability as with a weak
+  effect. Mirror task: `autokernel-rebuild-program.md` **R23-57**.
+
 **Re-baselining rule (INF-70 review, 2026-09-07).** The cor is SHARED, so when any surface's promotion
 advances it, every other surface's `compounded_bench_pct` is momentarily stated against a baseline its own
 harness never measured. That number is INVALID until that surface re-measures tip-vs-new-cor on its own
@@ -401,6 +419,10 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model
       and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES (INF-70 RETEST-1,
       2026-09-08: arm sd 0.501% vs process-launch sd 2.793%; the 1200-fold THP sizing error). See R23-55.
+- [ ] **Headline admissibility: ≥N independent launches with a session-unit CI**, N sized from the
+      between-session sd (2.793%), not the arm sd; a single-session headline is refused (R23-57)
+- [ ] **Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP
+      state, HIP graph capture, allocator) — ~12% spread on an identical config, pristine control stable (R23-57)
 - [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
 - [ ] **Re-baseline on cor advance**: `stale_baseline` set on every non-promoting surface at PROMOTE, cleared only by
       a tip-vs-new-cor measurement on that surface's own harness; test that a quote while flagged is refused

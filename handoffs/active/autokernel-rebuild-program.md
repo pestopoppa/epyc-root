@@ -1847,13 +1847,85 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         don't."* -> feeds **OP-41** (admission-control broker), see `autokernel-unified-surface-program.md` 3.4.
         Host-state change for the record: at **12:05Z** the operator stopped the orchestrator API (uvicorn
         :8000 + 6 workers, **pid 3961116**, up since 2026-08-26) via `orchestrator_stack.py stop orchestrator`;
-        hub :8100, OCR :9001, sd_server :8190 and the docker containers remain. **Candidate (unproven)** source
-        of the 800% python that cost one Q2 arm.
+        hub :8100, OCR :9001, sd_server :8190 and the docker containers remain. Originally recorded here as a
+        **candidate (unproven)** source of the 800% python that cost one Q2 arm; **CORRECTED 2026-09-08**: the
+        stop is a **measured NON-CONFOUND**. INF-70's host sampler straddled it inside one session (`S14_ON`)
+        and read **flat** across 12:05Z — busy cores **47.89-48.26** against 48 benchmark threads, i.e. no step.
+        The Q2 disturbance stands; only its attribution to the API process is withdrawn.
         Also inherited: INF-70's `gate.py` now routes all statistics through one `screened()` function (cannot
         compute over screen-dropped arms, cannot PASS on zero cases), mutation-tested both directions — this
         **generalises the ak-rebuild FOLD-2 vacuous-pass guard**.
         The operator's *no kernel research until a FULLY consolidated champion* condition is **satisfied**;
         **loop relaunch remains a separate operator go** and is deliberately not scheduled here.
+      - [ ] **R23-57 — CHAMPION LAUNCH-TO-LAUNCH INSTABILITY: ~12% spread on an IDENTICAL configuration, and
+        it moves ONLY the champion arm. UNEXPLAINED — no headline may be quoted from one session.**
+        Measured by INF-70, 2026-09-08, across four of today's sessions on the **same** champion configuration:
+
+        | session | champion plain (tok/s) |
+        |---|---|
+        | gate | 25.6 - 25.9 |
+        | THP-OFF arms | 24.4 - 25.3 |
+        | FIX-1 controls | 27.3 - 27.4 |
+        | characterisation (stopped mid-run) | 27.3 - 27.4 |
+
+        | control / derived | today | standing | delta |
+        |---|---|---|---|
+        | pristine | **12.637** | 12.366 | **+2.2%** |
+        | champion | **27.383** | ~21.21 | **+29.1%** |
+        | champion / pristine ratio | **2.167x** | **1.7151x** | — |
+
+        **Not a harness artefact.** A hot-vs-cold harness offset (measured **+4.36%**) would move **both** arms;
+        only the champion moved, and the pristine control reproduced to within +2.2%. The mechanism is unknown.
+        Two consequences, both binding:
+        - **Headline admissibility**: a final champion headline requires **>=N independent launches with a
+          session-unit CI**, never one tight session. N is set with the between-session sd (2.793%, R23-55),
+          not the arm sd. Mirror in `autokernel-unified-surface-program.md` **U2**.
+        - **Read CHAMP-2 against this**: a THP **"cannot tell"** may be *this* instability rather than a weak
+          effect. Do not convert a cannot-tell into a mechanism refutation while R23-57 is open.
+
+        **LEAD (INF-70, 2026-09-08, from the resolved CHAMP-2 THP test) — the instability may BE the THP
+        default.** The shim changes variance far more than it changes the mean:
+
+        | configuration | mean tok/s | between-launch sd | range |
+        |---|---:|---:|---:|
+        | OFF (champion default today) | 26.8604 | **2.510%** | 6.17% |
+        | ON (`GGML_NOHUGEPAGE_PROCESS=1`) | 27.8726 | **0.481%** | 1.36% |
+
+        Variance ratio **25.3x**. The large-effect pairs are exactly those where the **OFF** launch was slow —
+        **ON never was** — so the shim looks like it removes a downside *tail*, not that it shifts the mean.
+        **All 9 launches in the champion-spread table were shim-OFF**, so the champion may have been
+        characterised in its high-variance configuration all along. This is a **LEAD, NOT A CONCLUSION** (n=6,
+        the spread table is unpaired). Evidence: `/mnt/raid0/llm/tmp/inf70/agents/retest1/CHAMPION-LAUNCH-TABLE.md`
+        (9 launches, between-launch sd **5.081%** quiet-host-only n=7, range **12.55%**; `bin-h1` at defaults and
+        `bin-r1` at champion knob state proven the SAME configuration — 24/24 byte-identical, identical
+        `ggml/src/ggml-cpu` tree hash `040d43aa`). Restricting to a quiet host slightly **widens** the spread, so
+        contention is not the driver. Sizing at OFF variance: +/-3% = 12 launches (0.76 h), +/-1% = 100 (6.33 h),
+        +/-0.5% = 397 (25 h).
+
+      - [ ] **R23-58 — MEASURE THE THP SHIM AGAINST THE SERVING FLOOR BEFORE SPENDING ANOTHER SERVING GATE.**
+        The serving gate launches a fresh `llama-server` per sample, so it is **session-unit** and pays exactly
+        the variance above; its clean floor is **4.581% p95 at n=10** (`serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json`),
+        and that floor is the binding constraint on every GPU keep — it is why the 6-keep bundle resolved only to
+        "cannot tell" (R23-51/CHAMP-1). If `GGML_NOHUGEPAGE_PROCESS=1` compresses launch variance on the GPU
+        serving path the way it did on the CPU decode path, **a recipe change found on the CPU surface unblocks
+        GPU keeps that are currently unresolvable** — the first result in either campaign that pays on the other
+        surface. Method, with INF-70's two cautions: **pair adjacent launches** (session unit; keep every arm-unit
+        floor out of the arithmetic), and **compare tails, not only means** — the effect was a compressed downside
+        tail, so a means-only design can miss it entirely. Cost ~= one floor recalibration per arm. Run it BEFORE
+        the next serving gate, not after. Gated on the operator's relaunch go.
+      - [ ] **R23-59 — THE CHAMPION IS NOT FULLY DESCRIBED BY A COMMIT: carry the launch/build recipe under the
+        champion's identity.** CHAMP-2 is the first concrete instance — the artifact is `ef81196d5` **plus** a
+        launch recipe, and a champion identified only by a commit hash is **under-specified in a silent way**,
+        because the binary verifies and the recipe does not. This is the standing "build recipe as a champion arm"
+        gap (rebuild plan D3, currently inexpressible in `champion.py`/`Bundle`). INF-70's PROD-1 exists for the
+        same reason in prose form: a recipe transcribed by hand into a handoff cost seven MTP arms to a flag that
+        does not exist; their fix was **importable constants with validators, not documentation**. Do the same at
+        the bundle level: the champion record carries its recipe, the gate refuses a measurement whose recipe
+        hash does not match, and no recipe is ever re-typed. Ties to R23-55 (`unit`) — both are fields a
+        measurement must carry to be admissible.
+        Action: **investigate the source of between-launch variance on the champion** — page-cache / NUMA
+        placement, THP state, HIP graph capture, allocator. Cross-ref R23-55 (`unit` on every floor) and
+        INF-73 U2 / P2.
       - [x] **R23-52 — status heartbeat during keep post-processing** ✅ 2026-09-07 IMPLEMENTED (research `70d98807`; 4 `publish()` calls: anchor build / headline / reprofile / accumulate; 422 tests; takes effect at the next launch — run 30 holds the old module). Observed run 30, 2026-09-07: after the first
         keep (`bff30cebe`, +2.583%) `loop-status.json` went **30+ min without a write** while `promote_anchor` did
         the clean anchor build (gen-021, 117 objects at 20:07Z, `cmake`/`gmake` children 9 min in), then verify,
