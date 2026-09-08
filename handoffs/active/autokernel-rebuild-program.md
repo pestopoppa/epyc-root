@@ -1913,6 +1913,54 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         floor out of the arithmetic), and **compare tails, not only means** — the effect was a compressed downside
         tail, so a means-only design can miss it entirely. Cost ~= one floor recalibration per arm. Run it BEFORE
         the next serving gate, not after. Gated on the operator's relaunch go.
+
+        **PRE-REGISTERED AND READY 2026-09-08 (not run).** Design, runner and pre-flight live at
+        `/mnt/raid0/llm/tmp/r2358-shim-serving-20260908/` (`PREREGISTRATION.md` sha256 `0a72a0256a0c8977…`,
+        freeze before the first launch; `run_r2358.py` dry-by-default, `--run` required; `CHECKLIST.md`).
+        | element | value |
+        |---|---|
+        | design | **two interleaved, order-balanced A/A calibrations**, NOT a paired A/B |
+        | why not A/B | `serving.compare` varies the BUILD from one recipe, so a same-build env arm is inexpressible; and its median-contrast statistic is exactly what misses a compressed tail |
+        | interleaving | couple-by-couple (odd OFF,ON / even ON,OFF) so host drift cannot alias into the arm contrast |
+        | n | **24 couples = 48 launches**, up to 28 launched (4-couple replacement budget) |
+        | primary statistic | ratio of `p95_dev_pct` (the same formula `floor_pct` is defined by, via `serving._spread`), sd(log) alongside |
+        | inference | within-couple label permutation on median-normalised runs (exhaustive ≤18 couples, else 200,000 draws, seed 2358) — null exact for any statistic |
+        | power | ~0.97 vs a 3x dispersion ratio, ~0.69 vs 2x; 3x is the campaign-relevant threshold (it is what would have made the −2.176% bundle decisive) |
+        | wall-clock | **~60 min typical, <=77 min worst case** at 75-82 s per launch (derived two independent ways from loop-memory serving artifacts) |
+        | throughput claim | read from the SAME 48 launches at zero extra cost; a null here with a real dispersion effect is a **SUCCESS, not a mixed result** |
+        **Build: NO REBUILD NEEDED** — `/mnt/raid0/llm/tmp/build-fold-ef81196d5` (the FOLD-2 candidate build of the
+        champion; `CMakeCache.txt` -> source `fold-ef81196d5-src` at `ef81196d5`, clean tree, all four
+        `gfx90a-house-v1` flags matching) already carries the shim in `bin/libllama-common.so.0.0.10301`
+        (marker, both env strings, `prctl` in `nm -D`; `ldd bin/llama-server` resolves to it).
+        **Controls, all fail-closed:** Control 0 resolves the library through `ldd` under
+        `Recipe.server_env(build_dir)`, refuses a library resolving OUTSIDE the build dir, records its sha256
+        per launch, and **must reject a known pre-fold build** (`build-cor-445e93a8`) or the run does not start.
+        The knob readback is `serving.verify_env_readback` (declared, not re-implemented); AnonHugePages is the
+        independent second control, and a `thp_enabled=0` with `anon_huge_pct >= 1.0%` stops the run as a
+        controls conflict with no verdict issued.
+        **Two vacuous-pass hazards found and closed while preparing this** (both now impossible by construction):
+        an any-match glob over `libllama-common.so.0.0.*` would have passed on a stale sibling the loader never
+        maps — `champ2/build-hip/bin` holds FIVE vintages from five dates; and the first pre-flight concluded
+        "no build carries the shim" after scanning the `llama-server` EXECUTABLE, which never contains strings
+        from a linked library. That false blocker would have cost a 64-job rebuild contending with INF-70's live
+        measurement. See the eleventh sign in the vacuous-verification record.
+
+      - [ ] **R23-60 — THE SERVING PATH PROVES NO GPU RESIDENCY.** `bench.py` samples residency; `serving.py`
+        samples nothing. **Every serving number this campaign has taken is therefore un-proven as GPU-resident**,
+        including the 4.581% floor and the bundle gate that held the champion at `445e93a8`. The numbers are
+        very likely fine — this is a missing proof, not a suspected defect — but it is exactly the kind of gap
+        that cannot be filled retroactively: a residency tuple invented on read claims warrant the original run
+        never captured. Wrap each serving launch in `residency.Sampler` (the R23-58 runner already does this
+        itself; the fix is to move it into `serving.py` so every consumer gets it) and record VRAM sampled
+        DURING the run plus the KFD process count in the serving record. Standing rule: "I invoked the HIP build"
+        is not evidence of a HIP run, and `ldd` cannot prove one.
+      - [ ] **R23-61 — RECALIBRATE THE LIVE SERVING FLOOR SO IT STOPS BEING `unverified`.**
+        `loop-memory/serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json` (4.581%, n=10, 2026-09-08T10:21:45Z)
+        carries no `recipe_hash`, so nothing proves it was calibrated under the recipe now in force. Its
+        `conditions.cpu_list` does match the pinned recipe, so it is probably right; nothing proves it, which is
+        the point. The gate now announces the unverified provenance on every invocation (R23-59 work). Fix with
+        `recal_serving_floor --apply` (now in-repo and routed through `serving.write_floor`). Needs the host;
+        do it in the same window as R23-58, since that run recalibrates both arms anyway.
       - [ ] **R23-59 — THE CHAMPION IS NOT FULLY DESCRIBED BY A COMMIT: carry the launch/build recipe under the
         champion's identity.** CHAMP-2 is the first concrete instance — the artifact is `ef81196d5` **plus** a
         launch recipe, and a champion identified only by a commit hash is **under-specified in a silent way**,
