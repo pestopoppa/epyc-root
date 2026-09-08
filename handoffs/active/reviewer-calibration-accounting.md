@@ -96,6 +96,24 @@ Two dive results reshape the report's design. First, **overcorrection dominates*
   (protocol-derived), SafetyGate tuning constants (incident-derived, continuously gated), gate_verdict
   (design is the anti-VIOLATION), CITATION_THRESHOLD_N=20, vidya policy floors, repo-readiness 80%
   (external rubric). Full findings table: `progress/2026-09/2026-09-08.md`.
+  **Follow-on execution 2026-09-08 (all zero-inference):**
+  - **(1) mechanism half landed** (epyc-orchestrator `5a9442d3`): every rubric row now carries
+    `rubric_threshold_source` — `declared` (threshold + `rubric_threshold_rationale` named in
+    `scoring_config`), `declared-no-rationale`, or `undeclared-default-0.60` — serialized into the
+    detail row, plus a once-per-suite warning naming the remediation. The defaulted 0.60 is no
+    longer silent anywhere. Hard refusal at decision-grade seams is NOT yet enforced: rubric scoring
+    is ~0.7% of the quality objective, no suite currently declares the threshold, and RC-6a makes
+    the plane observation-only — the refusal half lands with the RC-6a/P-REV-1 operator window
+    (same gate as the reviewer tolerances below).
+  - **(2) relabel landed** (epyc-root `af4c5c63`): `candidate_eval_gate.sh` usage now reads
+    "same-sample PII fixture validation (observation-only)".
+  - **(3) loudness landed** (epyc-orchestrator `5a9442d3`): `Baseline.load` warns loudly when a
+    persisted baseline file names no quality source (SG-3 already forces strict same-tier reads at
+    every decision site, so the legacy 1.16 now only reaches lenient/display reads — but a number
+    nobody re-derived must not be silent). Behavior unchanged otherwise.
+  - **#1 reviewer tolerances + refusal halves: NOT executed — inference/cadence-gated.** Both need
+    the RC-8 near-miss baseline data (shadow reviewer runs) and the RC-6a P-REV-1 operator PR
+    (human-amendment-only). Recorded here so they cannot read as lost.
 
 ## Dependency Graph
 
