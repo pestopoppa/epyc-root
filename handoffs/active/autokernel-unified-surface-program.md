@@ -274,6 +274,19 @@ the docker containers remain — a **candidate, unproven** source of that 800% p
 - **Gate guards (2026-09-08):** a gate cannot PASS on zero cases or an unobserved graph; verify process
   death by `/proc/<pid>` existence, not `ps` exit codes.
 
+- **OP-41 RULED (operator, 2026-09-08) — the operator owns this design, and it lands LAST.** The admission-control
+  broker is **the operator's own design**, refined through this handoff (INF-73 §3.4); it will be **implemented by
+  the operator**, and only **AFTER**, in order: **(1)** the champion is finalised, **(2)** the champion is promoted to
+  production, **(3)** the host is rebooted. **No action now** — no broker code, no scheduler, no admission daemon,
+  and no session may start building one. Until then the standing behaviour is unchanged: cooperative region-lock
+  plus INF-70's bounded-hold requests, with the measured 4.2×/2.9× mutual degradation and the ~17% third-party arm
+  tax accepted and labelled, not engineered around.
+  - [ ] **U4-SEQ — hold admission control until the operator's three gates clear**, then hand this section's
+        evidence (both degradation directions, the 1-in-6 disturbance tax, *"region-lock serialises those who call
+        it; nothing constrains those who don't"*) to the operator as the design input. Gates: champion finalised →
+        promoted to production → host reboot. Nothing in U4 is buildable before that, and this row exists to record
+        the sequencing, not to authorise work.
+
 ### 3.5 Track U5 — one monitoring session; authoring roles
 One roster session monitors both surfaces (status, keeps, gates, errors — what `ak-rebuild-20260828`
 does today). The CPU session's role becomes **diagnosis and hypothesis authoring into the inbox**
@@ -419,7 +432,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 |---|---|---|
 | **UD-4 — SSM_SCAN `K` port rides with the fold: measure, don't split (2026-09-08)** | INF-70 found the CPU lineage changes `ggml_backend_cuda_device_supports_op` for `GGML_OP_SSM_SCAN` (`K > 1` → decline on CUDA → CPU fallback), an UPSTREAM port (`4595b1bca` = ggml `1692f9e50`, recurrent-state rollback), with all 5 CPU levers committed ON TOP of it (27 commits after). Splitting = cherry-picking 27 commits = exactly what the runbook forbids and how keeps get dropped. Their operator: *"make sure the gpu-focused autokernel session is aware… reserve a quiet GPU window to verify impact on GPU performance… just make sure we don't lose any performance keeps."* | **Recommendation: take the whole `champion3` as ONE candidate; in the window run test-backend-ops SSM_SCAN with an explicit `K > 1` case, `verify_ggml_linkage.sh`, and OBSERVE the 27B's SSM_SCAN dispatch on ROCm0 (it is a hybrid; SSM_SCAN runs every token); hold K out only on measured evidence.** |
 | **UD-0 — RESOLVED ✅ 2026-09-07 (~20:20Z)**: operator ruled DIRECTLY to `workspace-1c`: *"yes, fold onto the champion once the measurement windows clear."* Two gates remain, neither side controls both: (1) INF-70's windows clear (SYNC-19/20 w1 MTP block → w2 `AP` controls + 3 F1 arms → HARNESS-1 Phase B + hot session) — **they message us; do not schedule on an estimate**; (2) run 30's next boundary — ours. | The CPU session (`workspace-1c`) holds a DIRECT operator instruction from earlier this session — *"we're not folding into autokernel champion just yet. make sure we don't forget the canonical recipe."* — and correctly refuses to rebase on a relayed directive. **The operator must confirm the fold directly to that session**; a peer relay cannot override a direct instruction, and should not. | confirm directly; until then P1 proceeds only on the loop-side items (R23-51a seed, R23-49 recal) |
-| OP-41 (open) | serialize / schedule / regress on CPU co-tenancy | **serialize, structurally** — P4 builds it; until then accept INF-70's bounded-hold requests |
+| **OP-41 — RULED ✅ 2026-09-08** | serialize / schedule / regress on CPU co-tenancy | **Operator owns the admission-control design**, refined through this handoff (§3.4), and implements it himself **after** champion finalised → promotion to production → host reboot. **No action now**; until then accept INF-70's bounded-hold requests and label contended arms. |
 
 **OP-41 headline evidence (2026-09-08):** two campaigns, both pinned, lock respected → **4.2× / 2.9×**
 mutual degradation via DRAM bandwidth; see §3.4. (Master-index row update owed to its owning session.)
