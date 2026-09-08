@@ -2325,6 +2325,24 @@ re-issued, and `B7` was already re-pointed once.
       does not become authorisation by being written down.** Belongs with the fleet's operating
       constraints, not in a kernel handoff.
 
+- [ ] **★ CLOSE-12 — THE BELIEF KERNEL HAS NO LAUNCH-UNIT ADAPTER, AND THE CLOSE-OUT'S HEADLINE IS A
+      LAUNCH-UNIT RECORD.** `VB-INF70-ARMS` (`vidya-belief-substrate-program.md`, filed 2026-09-07)
+      wires the **per-ARM** serving-harness records. The final characterisation's unit is the
+      **LAUNCH**, and its warrant rests on a **between-launch** sd that an arm-scoped projection
+      structurally cannot carry: an adapter that pools 18 launches as 18 arms would compute an
+      arm-shaped precision and grade the claim on it — **the same substitution that produced the
+      1200-fold error in CLOSE-1**, this time inside the grading ladder instead of a power calculation.
+      **Wiring the write side is cheap and permanent; retrofitting the read side is impossible** — a
+      launch-unit tuple invented on read claims a warrant the run never captured.
+      **Task**: add the launch-unit source to the table in
+      [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) and a task under
+      `VB-INF70-ARMS`, carrying the `unit` field explicitly. **Do NOT write a new grading rule** — the
+      adapter *projects* into a `ClaimTuple` and `claim_tuple.grade()` decides; the registry refuses a
+      second ladder per source class.
+      **⚠ ROUTING, NOT SCOPE-GRAB: `vidya-belief-substrate-program.md` is another session's handoff.**
+      Filed here so the obligation is not lost, with the edit itself routed to its owner rather than
+      taken. Flagged in the close-out apply list.
+
 
 # WRAP-1..WRAP-8 — derived actionables filed at the 2026-09-07 wrap-up sweep
 

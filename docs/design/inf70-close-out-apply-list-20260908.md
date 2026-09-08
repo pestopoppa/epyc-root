@@ -262,7 +262,7 @@ they also read as free), and every allocated-but-dequeued `OP-` id: OP-2, 4, 7, 
 | `CHAMP-` | CHAMP-4 | | `DRIFT-` | **DRIFT-6** (2, 3 burnt) |
 | `OP-` | OP-43 | | `STAT-`/`METH-`/`HYG-` | STAT-2 / METH-3 / HYG-4 |
 | `R23-` | R23-62 | | INF-70's `B` / `G` | B13 / G5 |
-| `CLOSE-` | **CLOSE-12** | | `X-` | X-12 |
+| `CLOSE-` | **CLOSE-13** (12 used) | | `X-` | X-12 |
 
 **The structural fix this keeps asking for:** ids are still minted from local context. The check is
 one grep against `origin/main`, and a *lane* grep is not it — the lane was 33 commits stale today.
@@ -279,5 +279,6 @@ one grep against `origin/main`, and a *lane* grep is not it — the lane was 33 
 | Push / promote / merge | Explicitly forbidden this session. §A is the sync the promoter must do first. |
 | Executing the compaction split | Operator-cadence step; §E is the proposal, and it has no row deletions to hand over. |
 | Landing WRAP-10 / CLOSE-2 out of scratch | Needs the `epyc-inference-research` repo and a decision on the unresolved champion pin (§F). |
+| **Routing CLOSE-12 into `vidya-belief-substrate-program.md`** | That handoff belongs to another session; *handoff = whole scope theirs*. **CLOSE-12 is a real gap**: `VB-INF70-ARMS` is **arm**-unit, but the close-out headline is **launch**-unit, and an arm-shaped projection would grade the claim on a precision the run never captured — CLOSE-1's substitution, inside the grading ladder. The write side is cheap now and **impossible to retrofit**. Route it; do not let it lapse. |
 | Ruling OP-40 / OP-41 / MEAS-6 | An operator decision, and it must be ruled **jointly** — deciding separately silently sets the other campaign's default. |
 | Re-measuring anything | No inference, no region lock; the GPU session owns the host. |
