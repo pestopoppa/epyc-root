@@ -1837,7 +1837,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Action here: `loop-memory/serving-floor.*.json` and the bench-floor records must **record `unit`
         alongside harness, n, contention model and host state**, and a gate that compares an effect to a floor
         of a different unit must **refuse**, not warn. Cross-ref: `autokernel-unified-surface-program.md` U2.
-      - [ ] **RATIFY-MEAS-1 — MEASUREMENT AMENDMENT PREPARED, AWAITING THE OPERATOR.** The three
+      - [x] **RATIFY-MEAS-1 — RATIFIED BY THE OPERATOR 2026-09-08** ✅ 2026-09-08 (applied via the script, committed as `b05c4433`; additions only, no code or threshold changed). Originally:  **RATIFY-MEAS-1 — MEASUREMENT AMENDMENT PREPARED, AWAITING THE OPERATOR.** The three
         rules this campaign established on 2026-09-08 are written as **ONE** ratification against the
         human-amendment-only measurement paths: **INSTRUMENT-CLASS-1** (a bench-surface number is
         never a serving number — `tg128` **31.0 tok/s** quoted where the production recipe measures
