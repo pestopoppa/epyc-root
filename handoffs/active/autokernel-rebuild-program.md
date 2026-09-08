@@ -1743,9 +1743,15 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           a loop hold is a run-lifecycle action.** Folded into OP-41 as the bounded form of option (A).
           Default if unruled: INF-70 measures contended and labels the result non-claim.
         - [x] serving recipe pinned 184-191 committed (research `bdfab023` → main `624adbdd`) ✅ 2026-09-08
-        - [ ] serving floor re-calibration under the pin: first run **CONTAMINATED** (10.255%, INF-70
-          server running) → quarantined; clean n=10 re-run in progress 10:16Z — record the number here
-          when it lands
+        - [x] serving floor re-calibration under the pin ✅ 2026-09-08: first run **CONTAMINATED**
+          (10.255%, INF-70 server running) → quarantined; clean re-run 10:16:16-10:21:45Z on a
+          verified-quiet host (0-95 at 0.4%, zero INF-70 processes) gives **4.581% p95** (n=10,
+          cv 3.136%, median 161.08 tok/s; runs 163.13/154.21/154.31/168.46/160.63/168.14/161.53/
+          154.24/163.16/159.23), written with its conditions to
+          `loop-memory/serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json`. Unpinned quiet-host floor
+          was 3.536% (n=8).
+        - [ ] serving gate under the new floor (5 pairs, `--force` one-off, floor 4.581%) started
+          10:22Z — record the verdict here when it lands
       - [x] **R23-50 — THREE KEPT KEEPS NEVER REACHED THE CHAMPION (2026-08-29), now protected** ✅ 2026-09-07.
         Operator asked whether relaunches lost keeps. Audited all 31 `kept` rows against the champion
         branch: **28 present, 3 absent** — `akm-q8-1-float2-halfwave` (+5.353%), `akm-q8-1-float4-eighthwave`
