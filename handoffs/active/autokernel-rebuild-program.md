@@ -2131,6 +2131,154 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           R23-58 is closed. Extend `serving.write_floor` so the floor file carries `n` and a CI next to the
           percentage; a floor that cannot state its `n` must not gate.
 
+      - [ ] **★ R23-64 — RE-SWEEP THE CPU DECODE THREAD COUNT ON THE CHAMPION (t48 / t64 / t96).
+        ★ GATED: MUST NOT RUN UNTIL AFTER THE OPERATOR'S PLANNED HOST REBOOT + BIOS SESSION.**
+        Filed 2026-09-08 out of the MEAS-4 correction in
+        [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) (MEAS-4 at `:1078`, D4 at
+        `:376-392`). Filed HERE and not in that file because INF-70 is **CLOSED** — a task there has
+        no dispatching owner — and because the sweep runs on the **champion** artifact
+        (`ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1`), which is this program's object, behind a gate
+        that is a host-level event this program already tracks.
+
+        **Why it must be redone — D4's OWN WRITTEN RE-OPEN CONDITION HAS BEEN MET.** D4 closed
+        2026-09-02 with *“Re-open only if D1/D2/B3-k or Axis A change the floor”*
+        (`cpu-decode-roofline-program.md:378`). The floor has since moved **2.76×**: **10.09 t/s /
+        99.1 ms per token** (`:141`) → the champion's **27.893 t/s / 35.9 ms** (18 launches, unit =
+        launch, `:22`). Graph nodes fell only **13%** over the same period (7,906 → 6,887, `:155`).
+        So the **barrier / dispatch term — the ONE term that scales with thread count** (1.9 µs per
+        barrier at 48T, 2.4 at 64T, **3.2 at 96T**, `:157`) — is now a **far larger fraction of the
+        token** than it was when 48 won. **The DIRECTION of the shift is NOT determined by the
+        record**: it could favour **fewer** threads (more barrier exposure per token) or **more** (if
+        the residual is per-thread work). Do not assume 48 still wins, and do not assume it does not.
+        **Second unresolved item this settles: the 48-vs-64 flip.** 2026-08-29 measured **t64 13.95 >
+        t48 13.46** (`progress/2026-08/2026-08-28.md:259`); 2026-09-02 reversed the order to **t48
+        10.09 > t64 9.69** (`cpu-decode-roofline-program.md:376-392`). Nobody ever chased it.
+
+        **Design — 3 arms, everything else held at the champion recipe** (`ef81196d5` +
+        `GGML_NOHUGEPAGE_PROCESS=1` at launch, `taskset -c 0-95 numactl --interleave=all`,
+        `OMP_PROC_BIND=spread OMP_PLACES=cores`, MTP on, the 24-prompt production mix, both screens
+        live and `screened()` applied):
+        - **`t48` — control** (today's champion recipe).
+        - **`t64`**.
+        - **`t96`**.
+        - *Optional 4th arm:* **`t48` masked to `0-47`** — the **6-CCD-vs-12-CCD** arm D4 planned and
+          never ran (`:376-392`, *“4 threads per CCD across all 12 CCDs vs 8 per CCD on 6, which
+          decides how many GMI links carry the weight stream”*). **It is the only arm that tests
+          whether the 96-core RESERVATION is load-bearing**, which is MEAS-4's actual question: under
+          `spread`/`cores` inside `0-95` the 48 threads sit **4 per CCD across all 12 CCDs, all 4 NUMA
+          nodes, all 12 memory channels**; masked to `0-47` they sit 8 per CCD on 6 CCDs, 2 NUMA
+          nodes, 6 channels.
+
+        **Unit = LAUNCH.** `-t` is a launch-time server flag, so the admissible floor is the
+        **shim-on LAUNCH floor, sd 0.609%, n=6** (`cpu-decode-roofline-program.md:22`) — **NOT** the
+        within-session **arm** floor (0.501%, `MEASUREMENT.md:141`). Substituting the arm floor for
+        the launch floor is precisely the error that produced the **1200-fold** THP sizing mistake:
+        **FLOOR-UNIT-1**, ratified 2026-09-08 (`MEASUREMENT.md:489`) — *a gate asked to compare an
+        effect against a floor of a different unit REFUSES; it does not warn and it does not caveat.*
+        (FLOOR-UNIT-1 Rule 2 also asks for n ≥ 24 on a floor **intended to gate**; the n=6 here is the
+        per-configuration ARM count, so this sweep states its own MDE rather than borrowing one, and
+        it consumes whatever launch floor **R23-65** produces post-reboot.)
+
+        **Cost: 3 arms × 6 launches = 18 launches ≈ 70 minutes in ONE region hold.** Calibration: the
+        18-launch champion characterisation held **15:05:39Z–16:12:47Z**. The optional 4th arm adds
+        ~23 min.
+
+        **Preconditions:** launches **interleaved / order-randomised**; quiet host with the **GPU loop
+        DOWN**. MEAS-6 measured the CPU A/A floor going **0.80% → 7.223%** under a *correctly pinned*
+        concurrent GPU bench chain (`cpu-decode-roofline-program.md:1043`) — at 7.223% a sweep whose
+        arms differ by a few percent is **unresolvable**, so a co-resident GPU chain does not merely
+        add noise, it voids the run.
+
+        **★ THE GATE (operator ruling, 2026-09-08, binding): DO NOT RUN THIS UNTIL AFTER THE
+        OPERATOR'S PLANNED HOST REBOOT, AT WHICH THEY WILL MAKE BIOS CHANGES.** The **contents of
+        those changes are operator-planned and are NOT recorded here** — whoever runs the post-reboot
+        work must get the specifics from the operator. (`cpu-decode-roofline-program.md:280` — **C8**
+        — carries a *prepared proposal* for a BIOS session: 5600 MT/s, UCLK:MEMCLK 1:1, APBDIS with
+        fixed SOC/DF P0, DRAM power-down off, keep NPS4. **Nothing in the record says the operator's
+        planned changes are C8's list, and it must not be assumed.**) Two reasons the gate is right,
+        not merely procedural: (1) a pre-reboot result is host time spent on a condition that is about
+        to change; (2) if BIOS lifts the measured **global ~170 GB/s read cap** (`:149`), the
+        bandwidth-versus-barrier trade this sweep exists to measure moves with it — while the
+        **dispatch floor (~70 ms) does not** (C8's own note), so the two terms move differently and
+        the answer can flip. Run **C8's verification first** (`bench_readbw`, then C5), then this.
+
+      - [ ] **★ R23-65 — POST-REBOOT FLOOR RECALIBRATION: EVERY FLOOR MUST BE RE-MEASURED AFTER THE
+        BIOS SESSION BEFORE IT GATES ANYTHING, BECAUSE A FLOOR IS *DISPERSION* AND DISPERSION IS WHAT
+        GATES A/B DECISIONS.** Filed 2026-09-08 alongside R23-64. Larger and more urgent than the
+        thread sweep, and independent of it.
+
+        **★ FIRST, THE THING THIS TASK IS *NOT* — operator ruling, 2026-09-08.** An earlier draft of
+        this item claimed the BIOS change is an instrument-era boundary that makes today's champion
+        numbers incomparable and requires re-measurement before they may be quoted. **That was wrong
+        and the operator struck it.** Operator's words: *“just because the instrument era changes
+        doesn't mean we can't compare numbers. Performance speed is an absolute metric which we're
+        trying to maximize. As long as it improves, it unlocks new performance regardless of the
+        instrument era. The issue would appear if, after making the BIOS changes, the performance
+        numbers were to regress.”* **Tokens per second is a physical quantity, not an
+        instrument-relative score.** So:
+        - **Today's absolute headlines are the PRE-BIOS REFERENCE POINT, and the post-reboot
+          re-measurement is compared against them DIRECTLY, with no era caveat.** CPU champion
+          **27.893 t/s plain / 43.281 t/s MTP** (`cpu-decode-roofline-program.md:22`); GPU
+          **Qwen3.8-27B 79.25 single-user / 179.12 aggregate at np=8** and **Qwen3.6-35B-A3B 112.68 /
+          310.96 at 16 slots** (`autokernel-champion-aggregate.md:839,842,867,872`).
+        - **The operational rule is an ASYMMETRY: an improvement is a genuine gain and needs no
+          caveat; a REGRESSION is the signal to investigate the BIOS change.** That is the whole
+          decision rule for the absolute numbers.
+        - **Do not cite `MEASUREMENT.md` §6 as if it forbade comparing absolute magnitudes.** It does
+          not — its subject is claims produced by a changed *instrument*, and its prime directive is
+          *never destroy primary records; demote, label, or re-derive interpretations*.
+
+        **What genuinely does need care — two narrow things.**
+
+        **(1) ATTRIBUTION, and it is the ordinary two-conditions-at-once confound, not an
+        era-labelling rule.** If the BIOS changes at the same time as anything else — a build, a
+        recipe knob, a model artifact — the resulting delta **cannot be assigned to either cause**.
+        This is the **same confound as R23-62's champion divergence** (*“two conditions differ:
+        different build, different window”*), and the remedy is the same: change one thing across the
+        reboot, or accept that the delta is unattributed and say so. Practically: re-measure the
+        champion on the **same commit and the same launch recipe** across the boundary before any
+        other change lands.
+
+        **(2) FLOORS, which is why this task exists.** **A floor describes DISPERSION, not level, and
+        its job is to gate A/B decisions.** If the BIOS change alters the machine's variance — memory
+        clock, fabric P-state and power-down all plausibly do — then a stale floor **mis-gates every
+        subsequent comparison in both directions: too tight and the gate calls noise decisive; too
+        loose and it refuses a real effect.** Nothing about the absolute-metric point above touches
+        this; a floor is not a performance number. Recalibrate:
+
+        | floor | value today | unit | record |
+        |---|---|---|---|
+        | CPU champion plain, shim ON | sd **0.609%** (n=6) | **launch** | `cpu-decode-roofline-program.md:22` |
+        | CPU champion MTP, shim ON | sd **0.356%** (n=6) | **launch** | same |
+        | within-session dispersion | sd **0.501%** | **arm** | `MEASUREMENT.md:141` |
+        | between-session dispersion | sd **2.793%** | **launch** | same |
+        | GPU serving `p95_dev`, standing | **4.581%** n=10, provenance `unverified`, recomputes to 4.494% | launch | `serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json`; **R23-61** |
+        | GPU serving `p95_dev`, today | **6.596%** n=24 | launch | `MEASUREMENT.md:140` |
+        | CPU A/A under a concurrent GPU chain | **7.223%** (n=5, sd 3.268%) | arm | `cpu-decode-roofline-program.md:1043` |
+
+        **★ INTERACTION WITH R23-61a, WHICH CURRENTLY SAYS “nothing is blocking it”.** R23-61a
+        recalibrates the GPU serving floor at n ≥ 24. Run **before** the reboot, it produces a floor
+        that may not describe the post-reboot machine's variance — ~30 min of host time that has to be
+        spent again. **Decide explicitly, do not drift: either (a) run R23-61a AFTER the reboot, or
+        (b) run it now and queue a post-reboot repeat, recording the pre-BIOS floor as such.** Not
+        deciding is the failure mode. Note that (b) has real value: **two floors either side of one
+        change is itself the measurement of whether BIOS moved the variance**, which no single
+        calibration can give.
+
+        **Work.** (1) Re-run each floor above **under its own unit**, at **n ≥ 24** where it is
+        intended to gate (**FLOOR-UNIT-1**, `MEASUREMENT.md:489`), recording `n` and an interval, not
+        a point. (2) Re-measure the champion CPU and GPU headlines on the **unchanged** commit +
+        launch recipe, and compare **directly** against the pre-BIOS reference figures above —
+        improvement is a gain; a regression is the trigger to investigate the BIOS change with the
+        operator. (3) Update `MEASUREMENT.md` §4's standing-noise table — **human-amendment-only**, so
+        present it as a ratification bundle, never a session edit. If an era row turns out to be
+        warranted for a *derived view* (frontiers, dashboards), the era registry
+        (`epyc-orchestrator/orchestration/instrument_eras.yaml`) is likewise a **human-only,
+        append-only write** (`agents/shared/MEASUREMENT_POLICY.md:149`) — prepare it, do not write it.
+        **Blocked by:** the operator's planned host reboot (contents of the BIOS changes not recorded
+        here; get them from the operator). **Sequenced with:** C8's post-reboot verification
+        (`cpu-decode-roofline-program.md:280`), then **R23-64**.
+
       - [ ] **R23-59 — THE CHAMPION IS NOT FULLY DESCRIBED BY A COMMIT: carry the launch/build recipe under the
         champion's identity.** CHAMP-2 is the first concrete instance — the artifact is `ef81196d5` **plus** a
         launch recipe, and a champion identified only by a commit hash is **under-specified in a silent way**,
