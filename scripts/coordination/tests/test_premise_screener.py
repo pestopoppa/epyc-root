@@ -146,12 +146,16 @@ class EvidenceGateTests(unittest.TestCase):
 
 # ------------------------------------------ 2. mechanical short-circuit
 
-class MechanicalShortCircuitTests(unittest.TestCase):
-    """A closed checkbox is proof. Proof costs zero tokens.
+class _HandoffDirMixin:
+    """A REAL temporary handoffs directory with a closed and an open row.
 
-    Built against a REAL temporary handoff file driven through
-    `backlog_row_check.find_by_text`/`classify` — not a mocked mechanical layer.
+    Shared by every test that drives the mechanical layer through
+    `backlog_row_check` against real files — not a mocked mechanical layer.
     Mocking it would test that the mock returns what the mock was told to.
+
+    Layout (line numbers are the anchor the AIR-12 tests resolve by):
+        5:  - [x] QQ-1 Relocate the widget cache to the raid array ✅ 2026-08-15
+        6:  - [ ] QQ-2 Teach the widget cache to expire entries older than a week
     """
 
     def setUp(self):
@@ -173,6 +177,15 @@ class MechanicalShortCircuitTests(unittest.TestCase):
     def _restore(self):
         brc.HANDOFFS = self._saved
         self.tmp.cleanup()
+
+
+class MechanicalShortCircuitTests(_HandoffDirMixin, unittest.TestCase):
+    """A closed checkbox is proof. Proof costs zero tokens.
+
+    Built against a REAL temporary handoff file driven through
+    `backlog_row_check.find_by_text`/`classify` — not a mocked mechanical layer.
+    Mocking it would test that the mock returns what the mock was told to.
+    """
 
     def test_closed_row_returns_stale_with_zero_model_calls(self):
         client = RecordingClient(reply("still-needed", "a perfectly good quote here"))
@@ -218,6 +231,136 @@ class MechanicalShortCircuitTests(unittest.TestCase):
         self.assertIn("QQ-2 Teach the widget cache", prompt)
         self.assertIn("fake-handoff.md", prompt)
         self.assertIn("WORKED EXAMPLES", prompt)
+
+
+# -------------------------------------------- 2b. AIR-12 anchor fallback
+
+class AnchorFallbackTests(_HandoffDirMixin, unittest.TestCase):
+    """AIR-12 probe-bundle repair (2026-09-07).
+
+    The AIR-11 census: 5 of 9 lifetime verdicts were `unknown` because the probe
+    bundle lacked the artifact that would settle the premise. A QUEUE row names
+    its settling artifact in its own `spec_ref`/`row_ref` anchor — and when the
+    row's task text matched no checkbox, that anchor was never probed. These pin
+    the fallback: an unmatched-text row that still carries its own anchor gets
+    the mechanical resolution a text hit would have earned.
+    """
+
+    UNMATCHED_TEXT = "Zzq premise sentinel that matches no checkbox anywhere"
+
+    def test_closed_anchor_box_proves_stale_with_zero_model_calls(self):
+        client = RecordingClient(reply("still-needed", "a perfectly good quote here"))
+        out = ps.screen_premise(
+            {"task_id": "qq-1",
+             "task_text": self.UNMATCHED_TEXT,
+             "spec_ref": "handoffs/active/fake-handoff.md:5"},
+            client=client,
+        )
+        self.assertEqual(out["verdict"], "stale")
+        self.assertEqual(client.n_calls, 0,
+                         "an anchor that resolves to a closed box must prove stale "
+                         "without an LLM call, exactly like a text hit would")
+        self.assertEqual(out["provenance"]["decided_by"], "mechanical")
+        self.assertIn("Relocate the widget cache", out["evidence"])
+        self.assertTrue(out["provenance"]["mechanical"]["anchor_resolved"])
+
+    def test_open_anchor_box_reaches_the_model_with_the_anchor_probed(self):
+        client = RecordingClient(reply("still-needed", "the expiry code is absent"))
+        out = ps.screen_premise(
+            {"task_id": "qq-2",
+             "task_text": self.UNMATCHED_TEXT,
+             "spec_ref": "handoffs/active/fake-handoff.md:6"},
+            client=client,
+        )
+        self.assertEqual(client.n_calls, 1)
+        self.assertEqual(out["verdict"], "still-needed")
+        mech = out["provenance"]["mechanical"]
+        self.assertTrue(mech["resolved"])
+        self.assertEqual(mech["state"], "open")
+        self.assertTrue(mech["path"].endswith("fake-handoff.md"))
+        # The anchor artifact itself is in the probe bundle, quotable.
+        prompt = client.calls[0]
+        self.assertIn("fake-handoff.md", prompt)
+        self.assertIn(self.UNMATCHED_TEXT, prompt)
+
+    def test_rotted_anchor_abstains_instead_of_asserting(self):
+        """A line that is no longer a checkbox must NOT be graded from the line
+        number — same rule as a missing text match: state it, let the model
+        weigh it. (The C50b machinery can do more, but that machinery is the
+        coordinator's, and this screener may not import it.)"""
+        client = RecordingClient(reply("still-needed", "a quotable line of evidence"))
+        out = ps.screen_premise(
+            {"task_id": "qq-9",
+             "task_text": self.UNMATCHED_TEXT,
+             "spec_ref": "handoffs/active/fake-handoff.md:900"},
+            client=client,
+        )
+        self.assertEqual(client.n_calls, 1, "a rotted anchor is not a mechanical answer")
+        self.assertFalse(out["provenance"]["mechanical"]["resolved"])
+        self.assertNotEqual(out["verdict"], "stale")
+
+
+# --------------------------------- 2c. AIR-13 index-graph advisory consult
+
+class IndexGraphAdvisoryTests(_HandoffDirMixin, unittest.TestCase):
+    """AIR-13 (2026-09-07): the row screener consults `.index-graph.json`
+    readiness — ADVISORY only.
+
+    AIR-11 measured that 3 of 25 dispatched rows sat in a node the graph already
+    marked `readiness: blocked`, and that `backlog_row_check.py` never read the
+    file. It must FLAG, never hard-refuse: 2 of those 3 rows were legitimately
+    completed while their handoff was marked blocked, so handoff-granular
+    blocking is over-broad at row level. A blocked-readiness row therefore
+    still screens `still-needed` and still dispatches; the block rides into the
+    model's evidence as a reason, not as a verdict.
+    """
+
+    def _write_blocked_graph(self, blocked_by=("QQ-8",)):
+        (self.dir / ".index-graph.json").write_text(json.dumps({
+            "schema": "index_graph.v2",
+            "nodes": [{"id": "QQ-9", "domain": "test", "track": "unused",
+                       "handoff": "fake-handoff.md", "state": "active",
+                       "open": 1, "readiness": "blocked",
+                       "blocked_by": list(blocked_by)}],
+            "edges": [],
+        }), encoding="utf-8")
+
+    def test_classify_flags_but_stays_dispatchable(self):
+        """The row form-screener's contract is (exit_code, reasons). The consult
+        may append a reason; it must NEVER change the exit code to a refusal."""
+        self._write_blocked_graph()
+        exit_code, reasons = brc.classify(self.dir / "fake-handoff.md", 6, " ",
+                                          "QQ-2 Teach the widget cache to expire "
+                                          "entries older than a week", "Phase 0")
+        self.assertEqual(exit_code, 0, "an advisory flag must not hard-refuse")
+        joined = "\n".join(reasons)
+        self.assertIn("INDEX-GRAPH", joined)
+        self.assertIn("QQ-8", joined)
+
+    def test_blocked_ready_row_still_screens_still_needed_and_dispatches(self):
+        """The dispatch-side contract of the advisory consult: the row still
+        screens `still-needed` (the screener decides; the consult only informs),
+        so a blocked-readiness row still dispatches."""
+        self._write_blocked_graph()
+        client = RecordingClient(reply("still-needed", "the expiry code is absent"))
+        out = ps.screen_premise(
+            {"task_text": "QQ-2 Teach the widget cache to expire entries "
+                          "older than a week"},
+            client=client,
+        )
+        self.assertEqual(out["verdict"], "still-needed")
+        self.assertEqual(client.n_calls, 1)
+        reasons = out["provenance"]["mechanical"]["classify_reasons"]
+        self.assertTrue(any("INDEX-GRAPH" in r for r in reasons),
+                        "the advisory flag must ride in the model's evidence bundle")
+
+    def test_no_graph_file_adds_no_reasons(self):
+        exit_code, reasons = brc.classify(self.dir / "fake-handoff.md", 6, " ",
+                                          "QQ-2 Teach the widget cache to expire "
+                                          "entries older than a week", "Phase 0")
+        self.assertEqual(exit_code, 0)
+        self.assertFalse(any("INDEX-GRAPH" in r for r in reasons),
+                         "a missing graph must not manufacture reasons")
 
 
 # --------------------------------------------- 3. failure is always unknown
@@ -378,6 +521,27 @@ class VerdictEnumTests(unittest.TestCase):
         self.assertEqual(ps._coerce_verdict("STALE"), "stale")
         self.assertEqual(ps._coerce_verdict("whatever"), "unknown")
         self.assertEqual(ps._coerce_verdict(None), "unknown")
+
+    def test_blocked_is_a_rung_of_the_ladder(self):
+        """AIR-12 (2026-09-07): the forced choice grew a fourth rung. `blocked`
+        must round-trip as ITSELF — coerced to unknown it would read as a generic
+        refusal and the named dependency would be lost; treated as stale it would
+        re-dispatch blocked work's fix task."""
+        quote = "index-graph: node QQ-9 readiness=blocked on QQ-8 (open)"
+        out = ps.screen_premise(
+            dict(UNRESOLVABLE_ROW),
+            client=RecordingClient(reply("blocked", quote)))
+        self.assertEqual(out["verdict"], "blocked")
+        self.assertIn("blocked", ps.VERDICTS)
+        self.assertEqual(ps._coerce_verdict("blocked"), "blocked")
+        self.assertEqual(ps._coerce_verdict("dependency-blocked"), "blocked")
+        self.assertEqual(ps._coerce_verdict("BLOCKED"), "blocked")
+        # Unevidenced "blocked" is not a verdict either — the mandatory-evidence
+        # gate applies to every rung.
+        out = ps.screen_premise(
+            dict(UNRESOLVABLE_ROW),
+            client=RecordingClient(reply("blocked", "n/a")))
+        self.assertEqual(out["verdict"], "unknown")
 
 
 # ------------------------------------------------------------- provenance
