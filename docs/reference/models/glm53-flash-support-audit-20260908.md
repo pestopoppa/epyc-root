@@ -145,3 +145,50 @@ speculative code require the regression matrix above. No kernel edits were made.
 Raw API/source snapshots from this session are in
 `/mnt/raid0/llm/tmp/glm53-support-audit-20260908/` and `/tmp/glm53-mtp-audit/`;
 commit-pinned links and the identities above are the durable external references.
+
+
+## Executed CPU validation — 2026-09-08
+
+The source-only audit above is superseded for CPU execution by candidate
+`2346de90942e29534053df434db89c4a2b110616` on
+`experimental/glm53-text-mtp-20260908`. Production is unchanged. The candidate
+adapts the upstream text/MTP implementation and local metadata compatibility;
+no GLM vision path or new performance kernel was developed.
+
+The full six-shard local model runs. With the champion's t48 CPU recipe,
+matched five-by-512-token measurements produced these observation-only results:
+
+| Mode | Median output tokens/s | MAD | Exact token parity against plain |
+|---|---:|---:|---|
+| Plain | 6.366087 | 0.011553 | reference |
+| Native MTP, parallel verification | 7.595921 | 0.008261 | FAIL, index 6 in every repetition |
+| Native MTP, `LLAMA_SPEC_EXACT=serial` | 5.783764 | 0.008529 | PASS, all five 512-token arrays |
+
+Serial MTP's measured requests contain 939 completed verification events:
+2809 drafted tokens, 1615 accepted, 609 events rejecting at least one draft.
+These are real native-MTP executions, not merely load or flag checks. The exact
+serial mode is about 9.1% slower than plain on this trajectory. Parallel mode's
+higher rate is not a validated lossless speedup.
+
+The real-artifact target-only discriminator reproduces token 13931 instead of
+plain token 1246 from a clean sequential prefix followed by a four-token batch,
+without any prior rollback (maximum logit difference 0.1989278793). Therefore
+batch non-invariance alone suffices to explain the first mismatch. Existing
+champion serial verification avoids that path. This result does not prove that
+every other rollback history is correct; separate tests cover 48 forced
+rejection/replay cases, four used-MTP-context restores, and 24 pool boundary
+cases across tiny fixtures, plus the Qwen35 regression checks.
+
+Evidence: `/mnt/raid0/llm/tmp/glm53-validation-20260908/`;
+`runtime/reports/serial-plain-full-audit.json` reopens raw response and native
+verification-log records, checks source/model/binary identities, and validates
+exact requests and all token arrays. The earlier parallel failure is retained
+in `runtime/reports/paired-full-audit.json`. The target-only discriminator is
+in `runtime/real-divergence-20260908T212632Z/`.
+
+Limits: the shared host has about 26 days uptime, so timings are observations,
+not canonical promotion evidence. One prompt was measured, using the saved
+model template with reasoning enabled and `ignore_eos=true` to force 512 output
+tokens. No natural-stop parity, broad model quality, GPU regression, long-context
+sparse-selection performance, or independent unquantized reference parity is
+claimed. Thread-count screens are recorded in the session progress report.

@@ -1680,7 +1680,10 @@ no rate at all. A later session may extend the audit but may not report these fi
   observation-only host caveats, and forced-prefix rollback/replay results. Project quantitative
   records through the existing ClaimTuple ladder; categorical correctness verdicts stay categorical.
   Do not turn per-token or forced-prefix samples into independent run witnesses. Source table entry
-  filed before the first run; no measurements exist yet.
+  filed before the first run; completed CPU evidence now exists. The 2026-09-08
+  profiling extension also preserves perf/tool/event identity, symbols, phase boundaries,
+  sample counts and loss/overhead caveats. Profile shares are attribution, not realized
+  optimization speedups; no second grading rule is introduced.
 
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 

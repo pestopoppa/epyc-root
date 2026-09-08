@@ -1,6 +1,6 @@
 # GLM-5.3-Flash Evaluation (glm5next)
 
-**Status**: IMPLEMENTING 2026-09-08 — text/MTP experimental port prepared; build/runtime validation pending
+**Status**: VALIDATING 2026-09-08 — CPU build and tiny native-MTP/rollback/pool tests pass; CPU native MTP validated with serial verification; t48 is slower than plain; thread screens and high-value prefill/decode profiling complete
 **Created**: 2026-08-31 (spun out of the OP-8 KILL ruling; inherits the GLM-MoE-DSA findings)
 **Priority**: MEDIUM — one of the two operator-named novel-under-test models (with qwen3.8-next-flash)
 **Categories**: inference_serving, local_inference, kernel_architecture
@@ -56,12 +56,17 @@ for pinned identities, metadata/quantization differences and the full validation
 vision optional. Candidate `experimental/glm53-text-mtp-20260908` lives at
 `/mnt/raid0/llm/llama.cpp-experimental-glm53-20260908`, based on champion
 `ef81196d5bdd4190b46dff4ae7eecc333a46c8ce`. The six-shard tensor/schema audit and
-tiny-fixture Python checks pass (7 tests); no build or inference result yet.
-Source checkpoint `7d1e80a31` also includes portable fixture tests (5/5 with
-the local artifact enabled) and a target rollback/full-restore test executable's
-source. Neither native MTP correctness nor speed has been validated.
-The task-scoped compute-authority/observation-only host exception question is
-pending; offline integration and executable test preparation continue. Details:
+portable fixture checks pass (5/5 with the local artifact enabled).
+The extra compute-approval gate was withdrawn after the operator challenged the
+stop; the requested experimental work runs under physical locks, with timings
+restricted to observations on this unrebooted host. Candidate `2346de909`
+(`llama-server` 10308) builds and passes all four tiny variants: 48 rejection/replay
+cases, four used-MTP-context restores, and 24 pool-boundary cases. The full-model
+native-MTP smoke passed (10.5371 output tokens/s for 32 tokens; 21/28 drafts
+accepted), and trace events witness actual draft rejection. The paired five-by-512
+throughput benchmark completed; normal parallel MTP fails parity and existing
+serial verification passes. Profiling and bounded configuration experiments
+identify the high-value levers in the [profile report](../../docs/reference/models/glm53-cpu-profile-20260908.md). Details:
 [session progress](../../progress/2026-09/2026-09-08-glm53-support-audit.md).
 
 - [x] T0 — **Arch-support audit**: does any tree on this host load `glm5next` (production v9: no —
@@ -70,15 +75,18 @@ pending; offline integration and executable test preparation continue. Details:
   Evidence: [audit](../../docs/reference/models/glm53-flash-support-audit-20260908.md).
   Recommend adapting pinned #27773 + #27917 into a champion-descended experimental candidate;
   this is a source-audit recommendation, not a built or validated port.
-- [ ] T0-SPEC — Adapt the architecture and native-MTP stack with local GGUF compatibility;
+- [x] T0-SPEC — Adapt the architecture and native-MTP stack with local GGUF compatibility;
   validate target/draft hidden-state semantics, index sharing and convolution/KDA/cache rollback
   at every rejection position before declaring speculative decoding supported. Trunk-only load
-  is an intermediate gate, not completion. See the audit's execution plan.
-- [ ] T1 — Load + short-context coherence smoke on the chosen tree (abort on repetition loops),
+  is an intermediate gate, not completion. Completed for CPU with existing serial
+  verification: five exact 512-token trajectories, actual accepted/rejected drafts,
+  and independent rollback/MTP-state fixture tests. Parallel verification fails
+  greedy parity; see the executed validation section in the audit.
+- [x] T1 — Load + short-context coherence smoke on the chosen tree (abort on repetition loops),
   CPU-only, canonical env; record `(arch, indexer defaults, kpool)` from the load log.
 - [ ] T2 — DSA-path disposition for glm5next: DENSE-MASK vs sparse (expect DENSE-MASK per finding 1);
   `indexer_top_k`/`kpool` semantics probe BEFORE any quality run (finding 2).
-- [ ] T3 — Throughput baseline at the canonical recipe (interleave + no-mmap, t48/t64, r5) —
+- [x] T3 — Throughput baseline at the canonical recipe (interleave + no-mmap, t48/t64, r5) —
   observation-grade first; codified attestation only if it becomes a serving candidate.
 - [ ] T4 — Quality/role fit per the standard suites; GO / WAIT / KILL disposition with the disk-retention
   decision (artifact is in the novel-under-test keep bucket until this verdict).
