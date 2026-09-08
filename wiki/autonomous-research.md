@@ -2,8 +2,45 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-08-30 (the rebuilt AutoKernel loop reached continuous unattended operation — run 17 delivered 464 iterations, 68 measurements and 30 champion commits with zero lanes lost, and the 30 were audited as a block at +3.942% rather than individually attributed; eight of fourteen defects across runs 11–18 shared one shape, a test proving a component EXISTED rather than that it was WIRED IN, and the remedy that worked was mutation testing; the guards' own CI had been red on 43 of 43 runs since its first commit on a missing pytest, hiding two real regressions, and a suite-floor guard now catches the partial-collapse case that exits 0; earlier: 2026-08-27 AutoKernel's v3→v27 zero-science era traced to failure semantics, not science: planner outages spun with no backoff and a `max_restarts == 0` deployment clamp made recovery mean "start over", resetting the very counter that measures progress; four fixes plus a rotted critic-version pin landed, and latched v28 produced the loop's first-ever disposition — an evidenced null result — in 56 minutes with zero restarts; earlier: 2026-08-25 the root repo's last L5 readiness criterion closed via the vidya belief-substrate loop with the passive-pickup guardrail test-pinned; F1 real-task corpus COMPLETE 10/10; F6's first upstream post went out and its second half is blocked on G1; F4's first real backup attempt was cancelled by target rejection — W2/W3 stay unchecked with tooling one named target from a first snapshot; earlier: 2026-08-23 v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition) (v20-v24 lifecycle closure: durable supervisor survived its launcher's death; path-bound graph v4 identity replaced by logical-content graph v5; dual-config-identity refusal repaired; the runtime-only import gap got a real run_build boundary test; and v24's real semantic regression turned an uncaught crash into a sealed correctness_falsified disposition)
+**Last compiled**: 2026-09-08 (consolidation close-out and provisional autonomy design; earlier dated findings retained below)
 **Sources**: 121+ documents
+
+## Compiled Update — 2026-09-08: consolidation complete; autonomy remains a design
+
+**Confidence: verified** for the recorded dispositions and operator choices below, not for the
+effectiveness of the proposed autonomy mechanisms. This update supersedes the pending-fold posture in
+the September 7 entry; it does not certify new performance measurements.
+
+The recorded assembled champion is `ef81196d5`, combining GPU tip `bff30cebe` with CPU champion3
+`9c4f73e29`. Consolidation is complete, but production promotion and loop relaunch are separate gates.
+The six accumulated GPU keeps remain **UNCONFIRMED**: positive bench screening did not establish a
+serving improvement in the subsequent comparison. The recorded champion-of-record stays
+`445e93a8`. Do not turn an inconclusive serving result into a refutation, multiply solo gains into an
+assembled result, or quote the initial comparison's gap beside the later repeat's result.
+
+The rescued-ref audit is a disposition ledger, not a queue of proven missing keeps: chunked GDN and
+quantize reciprocal/broadcast remain research candidates; the tested GEMV fusion route was refuted;
+`de447119f` must not be folded because later dispatch work superseded it. The earlier claim that unsafe
+math flags remained was corrected: their removal was already recorded on August 31. Final retests
+produced no additional CPU keeps; the sync17-fix2 default-ON bundle is DO-NOT-FOLD, while the THP estimate
+remains unresolved rather than mechanism-refuted.
+
+**Autonomy design status — documentation only.** The operator selected adaptive scheduling with seed
+priority and continuing production coverage, the smallest informative CPU allocation, deeper
+applicability-aware belief integration, deterministic checks for prevalidated runtime options, and
+minimal pause/drain/resume and seeding controls. The owning handoff's §8 proposes concrete manifests,
+broker operations, journal/recovery contracts, mechanism-specific transfer and coexistence evidence,
+candidate validation, dashboard health and migration tests. These implementation designs and numerical
+defaults remain provisional; no service, CLI, admission controller or new belief producer was installed
+by this planning session. The next step is iteration on that notebook, not execution of its work packages.
+
+### Source References (September 8 close-out and autonomy design)
+
+- [Unified-surface handoff, §8](../handoffs/active/autokernel-unified-surface-program.md#autonomy-design-20260908) — accepted preferences, explicit authority boundary and implementation proposals.
+- [Champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — current assembled identity and separate record/production gates.
+- [September 8 rebuild report](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — serving repeat, fold gates and final retest dispositions.
+- [Rescued-ref consolidation audit](../docs/design/champion-consolidation-audit-20260908.md) — corrected provenance and candidate/refuted/must-not-fold distinctions.
+- [Planning progress](../progress/2026-09/2026-09-08-autokernel-plan.md) — documentation-only deliverable and validation.
 
 ## Compiled Update — 2026-09-07: folding parallel kernel work into the one champion — same-lineage merges are cheap, default-ON ops are the hidden risk
 

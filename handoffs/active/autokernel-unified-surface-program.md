@@ -5,6 +5,14 @@
 (R23 series) and [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (FOLD series)
 **Index row**: `inference-research-index.md` → this file. **Domain**: inference research.
 
+> **2026-09-08 planning update — documentation only.** The operator is iterating on a VERY detailed
+> autonomy plan, including IMPLEMENTATION details; this session is explicitly **not implementing it**.
+> [§8 — autonomy design notebook](#autonomy-design-20260908) captures accepted preferences, dated audit
+> findings, proposed interfaces/algorithms, migration, tests, and provisional numerical defaults.
+> It is not an approved implementation specification or permission to launch research. Consolidation
+> ownership and the no-relaunch directive below remain in force. P1 records the fold at `ef81196d5`;
+> earlier pending-fold/running-run-30 descriptions are historical, not live-process observations.
+
 ## Operator directive (2026-09-07, verbatim intent)
 
 > "Shouldn't both CPU and GPU kernel work be subsumed by the autokernel loop (which would then be
@@ -462,3 +470,456 @@ CHAMP-2 (`cpu-decode-roofline-program.md`) · `cpu_region_lock.py` · `sync19-20
 `scripts/kernel_rnd/autokernel/loop/{accumulate,run,serving,bench,anchor,pipeline}.py` ·
 `controller/anchor_integrity.py` · `/mnt/raid0/llm/tmp/champ2` (champion tree) ·
 `/mnt/raid0/llm/autokernel/loop-memory/` (store) · `docs/design/inf70-cpu-fold-into-champion-20260907.md`.
+
+<a id="autonomy-design-20260908"></a>
+
+## 8. Autonomy design notebook — 2026-09-08, evolving and documentation-only
+
+### 8.1 Purpose, authority, and accepted decisions
+
+**Session purpose:** collect and refine the plan in this handoff across multiple operator iterations,
+including implementation details. Do not implement, deploy, launch experiments, modify production,
+or alter running campaigns as a consequence of this section. The operator explicitly clarified:
+"by details, I also mean IMPLEMENTATION details" and "We won't actually be implementing the plan
+in this session." Retaining concrete designs does not make those designs approved.
+
+The eventual outcome is one standalone AutoKernel service: the operator supplies its resource envelope
+and targets, then follows the dashboard. CPU/GPU research, compilation, measurement scheduling, routine
+recovery and evidence handling should no longer require two manually coordinated agent sessions.
+
+**Vocabulary:** accepted = explicitly selected/agreed by the operator; observed = dated finding with
+source; proposed = engineering design for later discussion; provisional default = suggested number or
+policy, not ratified and not a measured performance result. Existing operational policy remains
+authoritative until deliberately changed in a later session.
+
+| Topic | Accepted direction / preference |
+|---|---|
+| Compute | Declare CPU, GPU, or both; explore production workloads applicable to those interfaces. |
+| Prospective models | Seed a model outside the lineup; preserve production/candidate distinction. |
+| Scheduling | **Adaptive, seed prioritized**: initial exploration window, then adaptation with continuing production coverage. |
+| CPU experiment size | Smallest informative allocation for the mechanism; no full-host reservation by default for discovery. |
+| Transfer | Mechanism-specific applicability; a small-allocation result is not automatically a full-serving gain. |
+| Beliefs | Deeper integration for memory, applicability, transfer, invalidation and experiment selection. |
+| Friction | Automatic capture, cached routes, asynchronous projection; no extra routine approval/review layers. |
+| Runtime fast path | **Deterministic checks** for prevalidated recipe options, without the two critic rounds. New options and code retain review. |
+| Dashboard | **Minimal controls**: pause/drain/resume and model/hypothesis seeding; advanced configuration stays in CLI/manifest. |
+| This session | Documentation and iterative design only; no implementation authorization. |
+
+Documentation checklist (only these boxes describe this session's work):
+
+- [x] **PLAN-DOC-1** — capture audit, accepted choices, implementation proposals, tests and provisional defaults in the owning handoff. ✅ 2026-09-08
+- [ ] **PLAN-DOC-2** — iterate §8 with the operator before converting proposals into an implementation queue. Documentation-only; no compute or deployment authorized.
+
+### 8.2 Dated audit findings and corrections
+
+The audit covered August 25–September 8 reports and inspected the newer research lane
+`/mnt/raid0/llm/worktrees/mains/ak-rebuild-research` (`bdfab023`) and research `origin/main` (`624adbdd`)
+during that pass. The shared research checkout was behind those refs. Code-present, merged and loaded
+in a process are separate statements. Resolve symbols at the recorded revision and current code before
+implementation. This planning session ran no new benchmarks and re-certifies no historical percentages.
+
+| Finding | Evidence / correction | Design consequence |
+|---|---|---|
+| Builds contaminated CPU arms | [Sept 7 co-tenancy audit](../../progress/2026-09/2026-09-07-ak-rebuild-20260828.md): build `96–183` shares cores with bench `0–95`; some manual builds were also unpinned/unlocked. | Broker all build paths; do not attribute all contamination to one session. |
+| Seven workers did not mean seven concurrent builds | `loop/pipeline.py::SerializedTail.session` serializes build → oracle → A/B → commit; `run.py::gate_for` documents its `jobs=64`. | Preserve ancestry protection; process-local serialization does not protect external CPU experiments. |
+| Threads are not physical allocation | [CPU roofline handoff](cpu-decode-roofline-program.md), C5/B2/MEAS-4: `-t 48` in a 96-core reservation, OMP spread, interleaved memory. | Fewer threads spread over the host do not prove a NUMA-local quarter equivalent. |
+| Disjoint cores still share bandwidth/fabric | CPU roofline C0 concurrent node-local streams; this handoff §3.4 later DRAM contention. | Core locks alone cannot certify measurement coexistence; compare against quiet controls. |
+| Wrong screening workloads | [Sept 1 transfer study](../../progress/2026-09/2026-09-01-ak-rebuild-20260828.md), [Sept 3 retargeting](../../progress/2026-09/2026-09-03-ak-rebuild-20260828.md): quantization, dimensions and speculative verify changed dispatched kernels. | Preserve shapes/dispatch; same quant label or a smaller model is insufficient transfer evidence. |
+| NUMA/stale builds/dead controls masqueraded as kernel behavior | [Sept 2 audit](../../progress/2026-09/2026-09-02-inf70-audit.md), [Sept 5 audit](../../progress/2026-09/2026-09-05-inf70-audit.md). | Bind actual build/library, placement and effective path, not just source or requested env. |
+| Transfer depends on mechanism and composition | CPU roofline SYNC-17 and final plain→MTP correction: tiny parallel work may lose to serial; universal transfer divisor retracted; later keeps change prior benefits. | No timeless class multiplier; small-only nulls cannot retire scale-sensitive ideas. |
+| Persistence fix retained unsafe recovery in inspected code | `loop/accumulate.py::save/load_bundle`: direct write; missing/corrupt/lineage-invalid state sets cor=anchor; advanced tip retains old gain. | Replayable state; no implicit confirmation; invalidate affected values. Reinspect before fixing. |
+| Serving metric/statistics differed from labels | `loop/serving.py`: sums per-request rates; always A then B; calibration uses individual-run deviations. | Separate metric identities, counterbalance, calibrate the actual estimator; incompatible floors cannot transfer. |
+| Source fixes were not deployed-contract proof | [Sept 8 report](../../progress/2026-09/2026-09-08-ak-rebuild-20260828.md); ~09:47 UTC snapshot: running, age 879 s, budget 1800 s, no step/actor_health, health ok. | Snapshot does not prove a stalled process; new producer contract was not exposed then. Show loaded version and independent health axes. |
+| New heartbeat had lifecycle/progress gaps | Inspected `run.py`: heartbeat always writes running, stop event not set/joined, claim/profile failures outside failed handler. Hub `panels.py` shares silence/progress budget; `loop_status.py` watermark omits stage. | Single status writer, terminal ordering, separate heartbeat/stage/science clocks. |
+| Belief wiring largely covered older producers | Current loop reads local archive; legacy execution has capture. `ClaimTuple.to_frames` omits value/unit/extra; `UsePolicy` lacks workload matching. | Current-loop prospective capture + typed applicability; grade alone cannot establish transfer. |
+| Resource plumbing requires reconciliation | `instance_topology.py::parse_cpu_list` drops IDs >95; cross-role global locks already exist. Ratified daemon authority differs from inspected inference-only/disabled-GPU config. | Fix normalization and existing provider path; no self-grants or second build-lock authority. |
+| Serving contention allowance is not experimental equivalence | Existing contention provider allows bounded serving degradation. | Separate research coexistence use; do not turn serving allow into measurement-isolation proof. |
+
+**Later consolidation supersedes early state:** P1 records fold `ef81196d5`, a real serving gate,
+pin/recalibration and **UNCONFIRMED** bundle with cor held at `445e93a8`. Thus "gate never fired",
+"pin not activated", "fold pending" and "run 30 live" are historical. Do not undo that work or seed
+a new lineage. Remaining source findings require current-code reinspection, not an assumption that
+another session has not fixed them. Root handoff snapshot at capture: `e5d1846d`.
+
+### 8.3 Proposed architecture and loop
+
+One service owns campaign state; coordination policy owns grants; broker suballocates within them using
+existing physical providers. Actors own hypotheses/changes; adapters own execution/validity; journal owns
+durable transitions; Vidya owns evidence/relationships; dashboard projects state and submits typed commands.
+
+```text
+START
+  resolve manifest + registry snapshot + candidate seeds
+  recover journal, desired state, candidate and validated evidence
+  request authority and physical claims through existing policy
+WHILE active
+  apply controls at boundaries
+  scheduler chooses target using coverage, cost, seed priority and scoped evidence
+  if prevalidated runtime combination:
+    deterministic recipe/compatibility checks; no critic calls
+  else:
+    planner reads current profile + scoped history + cached beliefs + inbox
+    forms hypothesis and mechanism annotation
+    existing critic pass 1: objection -> exact reason to planner
+    author source/build/novel-recipe change
+    existing critic pass 2: objection -> exact reason to author
+  choose cheapest informative route; unknown transfer permits scoped exploration
+  broker admits build if needed, correctness, load/place/warm/profile, comparison
+  compile/correctness failure -> tool reason to author, separate bounded retry budget
+  contamination -> invalid comparison unit, reschedule; not scientific negative
+  unavailable actor/resource -> other eligible work, or release claims and wait visibly
+  stale parent -> superseded, preserve idea, rebase/retest; not refutation
+  valid null/regression -> scoped finding for planner
+  experimental keep -> integration lock, parent check, journal intent, commit, completion
+  due validation batch -> assembled candidate + serving + required LOO; evidence matrix
+  advance validated record only after required rows pass at exact identities
+BACKGROUND
+  native journal -> local memory/status -> async Vidya/index projection
+  supervisor -> bounded recovery; broker-aware storage maintenance
+```
+
+Retain existing independent hypothesis/patch review budgets. No additional reviewer or per-attempt
+protocol-writing step. Runtime fast-path approval is the accepted exception. Tool failures return to
+the author without another critic ceremony. Retiring an attempt does not retire its idea. Build and
+measurement are expensive brokered stages; correctness/validation follow where they need produced output.
+Brokered probes replace uncontrolled actor host compute, without requiring an operator for each probe.
+
+### 8.4 Proposed campaign and target interfaces
+
+Proposed supported commands, not installed by this update:
+
+```text
+autokernel start --manifest campaign.yaml
+autokernel status --campaign ID [--json]
+autokernel pause --campaign ID
+autokernel drain --campaign ID
+autokernel resume --campaign ID
+autokernel seed --campaign ID --file seed.yaml
+```
+
+Manifest declares campaign/consumer, requested CPU regions/affinity and GPUs, build job/memory/disk
+limits, duration/budget or continuous mode, production selectors and seeds, configured actors/explicit
+fallbacks, recipes/objectives/acceptance-policy refs, scheduling/validation and control-access settings.
+Resolve an immutable launch snapshot of registry/model/recipe/topology/policy/instrument/controller
+identities. Dry-run before admission; no silent active-campaign change when registry or checkout moves.
+Report requested, granted, physically held and actively used resources separately.
+
+Target records bind model/hash, architecture/tensor census, backend/kernel tree, context/concurrency,
+speculation/drafter, environment, metric/direction, correctness and regression requirements, route and
+calibration refs. Deduplicate roles only on complete workload-signature equality. A seed creates its own
+candidate target without changing production or inheriting another calibration. If production cannot
+load it, use the first compatible experimental build as exploration baseline, never a fabricated
+production delta. Missing artifact blocks only that target; others continue.
+
+**Proposed v1 scope:** llama.cpp CPU/GPU first, retaining per-kernel-tree identity for future speech;
+local artifacts and registered references first. Remote downloads, requantization and lineup edits
+are outside this proposed v1, subject to operator iteration. Do not silently dismiss a source/model as
+inapplicable. Candidate rows are advisory unless explicitly included in the required validation set.
+
+### 8.5 Proposed durable event model and migration compatibility
+
+Reuse `scripts/kernel_rnd/autokernel/journal.py`: fsynced append, validation, torn-tail recovery and
+durable cursors. Extend narrow current-loop kinds; do not restore the old deployment factory or create
+another WAL/outbox. Current-loop records must not manufacture legacy `evaluation_event.v5` receipts.
+
+| Record group | Automatically captured fields |
+|---|---|
+| Identity | campaign/hypothesis/attempt/execution, measured parent/candidate source, build/object digest, build/runtime recipe, target/model, instrument/protocol. |
+| Scope | backend/architecture, quant/dispatch/op shapes, serving recipe, threads, physical cores/siblings/NUMA, placement, grant, neighbor envelope. |
+| Measurement | metric/direction/unit/value, baseline, raw artifacts/hashes, comparison order/block, independent experimental unit, attempted/completed/valid/scored counts, window timestamps. |
+| Validity | correctness/effective path, loaded-library/residency, contamination/drift/refusal; invalid timing never becomes a null. |
+| Annotation | planner mechanism class and uncertainty, explicitly not measured fact. |
+| Relationships | reduced->target transfer, quiet->overlap, individual->assembled benefit, supersession/retraction, original evidence IDs. |
+
+Mint attempt ID before execution; retries have separate execution IDs. Related arms retain their
+shared support/independence grouping. Keep large data in references, not copied into each projection.
+Capture facts from launchers/instruments rather than asking an actor to author evidence paperwork.
+
+Journal is authoritative; SQLite history, Bundle JSON, Markdown memory, status and belief index are
+projections. Integration: record `keep_intent` (attempt/parent/tree) -> integration lock/current-parent
+check -> commit with attempt trailer -> `keep_committed` -> projections. Replay reconciles exactly once.
+An unexpected tree advance preserves code but clears affected measurements; it cannot silently confirm.
+
+Derived files use temp/write/fsync/rename/directory fsync. Missing/corrupt Bundle replays journal;
+insufficient evidence means last provable validated head or `validation_required`, never cor=anchor.
+Local journal failure stops new irreversible transitions and drains; downstream Vidya/dashboard failure
+does not. Preserve legacy records as history; do not infer missing write-side provenance on read.
+
+### 8.6 Proposed broker and resource foundation
+
+```text
+acquire(StageRequest) -> AllocationReceipt
+launch(AllocationReceipt, ExecutableRequest) -> OwnedProcess
+release(AllocationReceipt, outcome)
+drain(reason) / resume() / recover()
+```
+
+Requests bind stage, CPU affinity/GPU set, memory/build limits, workload signature, bounded duration and
+coexistence profile. Reuse lease/provider open/close fields. Reconcile inspected config with ratified
+D4 and verify the actual grant/activate/renew/release path; never impersonate inference or self-grant.
+
+Normalize CPUs using discovered sibling topology, not dropping 96+ or assuming historical NUMA labels.
+Proposed v1 keeps four existing region claims: a microtest can use fewer cores while reserving its
+containing region. No second fine-grained lock authority. Reuse cross-role global exclusion; build is
+attribution, not a private nonconflicting namespace.
+
+Broker ALL compute: candidate/anchor/validation/recovery builds, correctness/profiling, load/place/warm,
+calibration/bench/serving/ablation. Enforce limits on descendants and bound/account actor local work.
+Multi-resource acquisition uses deterministic order and releases partial claims on failure. External
+grants cover useful batches, not a bus transaction per hypothesis/compiler. Internal admission uses one
+broker lock. Preserve current tail serialization until immutable-base stages and integration locking
+can reject/rebase/retest superseded candidates safely.
+
+Check control/grant validity at every expensive stage, including queued work. No new bounded stage
+past expiry without acknowledged renewal. Follow existing grant drain semantics, invalidate incomplete
+evidence and manage only owned PID-start/process-group/cgroup identities. Never name-pattern kill or
+delete locks. Release claims during no-runnable-work outages and reacquire through policy on recovery.
+
+### 8.7 Proposed partition routes and coexistence profiles
+
+Correctness transfer, reduction of local work, and end-to-end speedup transfer are separate claims.
+Fewer threads across the host are not a smaller physical allocation: cache/CCD distribution, memory
+placement, per-thread shape, clock and dispatch can change. More production threads are not inherently
+better; final validation targets the best intended serving recipe, not all cores by definition.
+
+| Family | Proposed cheapest informative route | Transfer limitation |
+|---|---|---|
+| Local SIMD/arithmetic/redundant work/dispatch | Op test in one quarter preserving production shapes/quant/path; then target model on reduced allocation. | Benefit may disappear when serving becomes bandwidth-bound; never assume same percentage. |
+| Copies/traffic reduction | Small allocation retaining relevant memory level and representation. | Cache vs DRAM and preprocessing cost change the claim. |
+| Blocking/prefetch/layout/repack | Match working set, cache, placement and dispatch. | Same quant label is insufficient; cache route only under matching dependencies. |
+| Barriers/scheduling/partitioning/NUMA/scaling | Representative thread/topology geometry. | Small-only null cannot retire a scale-sensitive idea. |
+| Unknown/mixed | Safe exclusive exploration, uncertainty recorded. | Missing transfer/classification is not a blocker to all experimentation. |
+
+Prefer actual target on fewer cores over a tiny model that changes the kernel under study. Intermediate
+sizes are optional tests of a specific scaling uncertainty. Periodically sample rejected small-screen
+candidates to detect false negatives; rate/selection remain proposed design choices.
+
+**Transfer and coexistence are independent:** predictive partitions may still be contaminated by a
+compiler, and isolated tests may still mispredict serving. Research profiles bind workload+neighbor,
+allocation/pressure bounds, topology/runtime dependencies and quiet-versus-overlap evidence. Store them
+through the existing contention provider, separately from serving-throughput allowances.
+
+No profile means serialize incompatible work, not seek operator approval. Cache validated routes and
+profiles until relevant dependency/declared expiry/drift changes. Telemetry alone is not absence proof
+for fabric/DRAM interference: certify against quiet controls and monitor the envelope DURING arms,
+including placement/warmup/residency. Invalidate the predefined contaminated comparison unit and repeat;
+no selective favorable samples or widened floor. Indexing/hashing/cleanup/actor CPU are neighbors too.
+
+### 8.8 Proposed adaptive scheduling and independent budgets
+
+Adaptive seed priority and production coverage are accepted; algorithm/numbers below are provisional:
+
+- Weighted deficit scheduling by physical CPU fraction and GPU-device time, with separate resource
+  opportunity accounting. Charge held load/warmup/build/validation, not just timed inference.
+- New target weight 2 for three valid comparisons; normal weight 1; one boosted seed/backend, FIFO,
+  preventing repeated seeds from silently starving production.
+- Thereafter weights bounded 1–3, revisited every ten valid comparisons using target-scale confirmed
+  outcomes, not screen gains alone. Exact update formula remains open for iteration.
+- Nonzero share for each eligible production frontier, bounded ready queue to limit obsolete work.
+  Define a quantitative starvation bound; nonzero weight alone is not that proof.
+- Calibration and validation are explicit budgeted work, not unbounded priority. Invalid arms/outages
+  cost operational budget but are not scientific nulls. No runnable backlog -> release and wait visibly.
+
+Separate provider retry, hypothesis review, patch repair, contamination retry, calibration, serving/LOO
+and campaign budgets. Learn cost from observed stage durations. Report exclusion, resource waiting,
+actor waiting and no-eligible-work separately. Optimize valid research per budget; contaminated hardware
+saturation is not productivity. Scheduling score/formula and coverage guarantees still need refinement.
+
+### 8.9 Proposed runtime fast path and measurement repairs
+
+Versioned recipe option sets declare supported model/backend, argv/env mapping, compatibility and
+effective-path witness. In-contract combinations are deterministic, reuse binary, skip critic calls,
+and use ordinary correctness/measurement. New options/arbitrary env/build/source changes retain review.
+Flag acceptance is insufficient: detect absent compiled knobs, no-op controls, unexpected fall-through
+or op coverage. Runtime recipe hashes are part of experiment and champion identity.
+
+Serving instrument proposals:
+
+- Version common-window completed-token throughput separately from sum-of-slot decode rates.
+  Exclude declared startup/warmup from the metric but charge scheduling; retain production concurrency
+  and speculation. Report request latency, and TTFT via suitable streaming capture if adopted.
+- Counterbalance AB/BA and use identical declared estimator for A/A calibration and comparisons.
+  Calibrate its actual distribution at the independent arm/block count, not individual-run deviation.
+- Floors bind model/recipe/metric/estimator/instrument/placement/coexistence/N; changes cannot inherit
+  an incompatible floor. Select N before execution under applicable protocol minimums/resolution;
+  no favorable optional stopping. Uncalibrated exploratory observations cannot become gated gains.
+- Preserve attempted/completed/valid/scored counts; prompts within one arm and reuse of the same
+  treatment arm do not manufacture independent samples. Pairing alone does not prove contamination cancels.
+- Preserve correctness/library/dispatch/residency evidence; search cannot edit its measurement policy.
+
+Exact per-target objective/window, estimator, calibration design, non-regression/equivalence margins
+and legacy metric migration remain explicit discussion items, not accepted thresholds. Reinspect source
+and run controls before implementing a repair; do not widen policy to fit observed noise.
+
+### 8.10 Proposed champion evidence matrix and validation cadence
+
+Distinguish accumulated source+recipe candidate, last globally validated candidate+recipe record, and
+current frozen-production comparator. Matrix rows bind candidate/build/model/backend/recipe/metric/
+instrument, correctness, validity and effect. CPU pass cannot certify GPU; runtime keep changes identity
+even with unchanged source SHA. New candidate invalidates previous combined-candidate rows while retaining
+per-change historical findings.
+
+Proposed global validated advancement waits for required production rows at identical candidate
+identities. This tightens §3.0's earlier any-surface/shared-cor advance: reconcile deliberately, not by
+implicit amendment. Preserve required re-baseline/LOO rules until then. Missing resources hold their
+validation rows while scoped research continues. Candidate models are advisory unless explicitly required.
+Direct assembled measurements are headlines; products of solo gains remain estimates.
+
+Retain compound-then-gate. Proposed due triggers: configured gain trigger OR ten unvalidated keeps OR
+24 hours since oldest unvalidated keep. Added numbers are provisional liveness checks so serving is
+not avoided forever, not weaker acceptance. Budget required LOO at validated advancement over assembled
+candidate/required surfaces. Neutral/inconclusive removal evidence does not automatically justify deletion.
+Record drops with evidence; resulting new candidate needs applicable validation. Do not globally discard
+dormant quant-specific improvements based on another target's null, or seed from production mid-cycle.
+
+### 8.11 Proposed low-friction Vidya integration
+
+At future implementation start, register current-loop capture in
+[`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) and link its task in
+[`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md). This documentation update
+creates no measurement producer and claims no new hook. Adapter verifies original artifact identities,
+projects into `ClaimTuple`, and delegates to existing `grade()`; no new ladder. Invalid attempts stay
+operational records. Typed versioned applicability projection links value/unit/scope/dependencies to
+event/claim/evidence IDs without dumping arbitrary extra into legacy frames or changing their IDs.
+
+```text
+retrieve(target_scope, mechanism?, intended_use, limit=40)
+  -> exact | supported_transfer | hypothesis_only | incompatible
+     findings, scoped nulls, transfer links, conflicts/staleness,
+     missing-evidence suggestions, snapshot frontier and reasons
+```
+
+Quality and applicability filter independently. Supported transfer requires recorded source/target
+comparisons; class labels are priors. Unknown historical scope cannot certify overlap/exact transfer.
+Preserve epoch magnitude redaction: relevant history is not numerically comparable history.
+
+Async consumer tails journal at a durable cursor, ingests deterministic IDs, advances on acknowledgment,
+quarantines malformed events individually and publishes an atomic local index. Planner reads once per
+proposal batch plus unprojected local attempts to avoid immediate repeats. No network query per arm,
+compiler or scheduler tick, no corpus rescan per iteration, and no additional LLM call for classification.
+Use existing journal as outbox, not another delivery ledger.
+
+Vidya outage permits fresh local measurements and established safe exploration; new overlap requiring
+missing evidence falls back to serialization. A validation decision waits on its own evidence, not all
+research. Recovery catches up idempotently. Invalidate topology/neighbor->coexistence, recipe/instrument
+->calibration, model/shape->matching, relevant code/dispatch->transfer, candidate->combined validation.
+Age alone is not universal invalidation. Retain scoped history and supersession/retraction reasons.
+
+Provisional targets: query p95 ≤100 ms on 100k events; normal lag ≤30 s outside quiet windows; batch
+≤100 events or five seconds; added bookkeeping <1% of campaign wall time with denominator reported.
+Append at lifecycle boundaries, not tokens; never weaken fsync for a target. Hash immutable verified
+artifacts once and cache; broker/suspend heavy projection/hashing/cleanup around quiet windows. Accepted
+nonnumeric constraint: zero added routine operator interactions or critic calls for established sweeps.
+
+### 8.12 Proposed standalone lifecycle, dashboard and storage
+
+Small research-owned supervisor wraps existing engine, independent of tmux/monitoring agents/orchestrator
+API. Coordination grant service remains necessary for new authority. Avoid old controller custody machinery.
+Persist desired state separately from observed worker state. Proposed states: starting, recovering,
+running, waiting_resource, waiting_actor, paused, draining, drained, validation_required, failed, complete.
+
+- Pause closes new admissions, completes safe active work and releases compute when quiescent; service remains.
+- Drain closes admissions, completes or invalidates bounded work, stops workers and releases claims.
+- Resume reconciles identities and reacquires authority/claims; paused state survives restart.
+- Actor outages honor reset/retry hints, otherwise bounded exponential backoff; repeated identical
+  failure becomes visible cooldown, not spin. No silent model/provider changes outside explicit fallback list.
+- Recover owned children using PID-start/process-group/cgroup identity, not names/stale JSON. Respect
+  valid long-running measurement drain boundaries and make partial invalidation visible.
+
+CLI/UI share typed idempotent commands, requested -> applied/refused(reason); daemon is sole writer.
+UI says pending until acknowledgment. Duplicate clicks/reconnect/concurrent requests cannot duplicate
+seeds. Keep /loop in existing hub, registered health/freshness. Proposed gateway uses owner-only Unix
+socket plus token-paired browser session, token+trusted origin for writes, no credentials in URL, no
+arbitrary shell/executable request. Current GET/CORS is not authentication. Token lifecycle/storage and
+gateway detail remain design choices; minimal controls are accepted. Advanced configuration stays in CLI.
+
+Display loaded producer/schema/instance, heartbeat, stage/activity/deadline, last valid scientific result,
+actor last success/retry/reset, requested/granted/held/used resources, target/seed coverage, refusal/
+contamination/supersession, accumulation vs validation, evidence age/projection lag and exact prerequisites.
+Fold actor/evidence availability into health; HTTP reachability is separate. Proposed heartbeat 30 s and
+missing-producer deadline 180 s do not define stage progress. Single synchronized writer stops/joins
+heartbeat before terminal publish and covers startup claim/profile and shutdown errors. Verify loaded
+version, not just source commit, when claiming deployment.
+
+Reserve space before builds; protect active, validated and in-flight/referenced generations (absolute
+RUNPATH means copied builds need original paths). Reclaim only explicitly unreferenced disposable
+artifacts through recoverable operations, never age-only guesses. Keep source/recipes/journal/results
+durable; rotate logs and bound campaign-owned actor storage. Maintenance is brokered; disk pressure
+pauses storage-heavy admissions while reporting/control remain. Do not prune unrelated users' databases.
+
+### 8.13 Proposed work packages and existing-task mapping
+
+**NOT A DISPATCH QUEUE.** IDs retain implementation detail for iteration; no new implementation
+checkboxes are created. PLAN-DOC-2 owns review. P1/P1b consolidation remains its owners' operational work.
+
+| Proposal | Deliverable | Dependencies | Acceptance / existing mapping |
+|---|---|---|---|
+| AK-AUTO-01 | Reconcile code/fold state and dated findings | — | No stale live claims; final aggregate anchors future launch; preserve P1/P1b. |
+| AK-AUTO-02 | Native current-loop journal and safe recovery | 01 | Keep replay once; corrupt bundle cannot certify; expands R23-51. |
+| AK-AUTO-03 | Topology and policy/claim-provider path | 01 | Sibling affinity conflicts; real standalone activate/renew/release; foundational P4 moves earlier. |
+| AK-AUTO-04 | Manifest/target enrollment | 01 | CPU/GPU/both/candidate resolve without lineup mutation; P2 expansion. |
+| AK-AUTO-05 | Broker all compute/build paths | 02,03,04 | No unlocked anchor/recovery/candidate build; queued-stage pause/expiry; P4 foundation. |
+| AK-AUTO-06 | CPU adapter and serving repairs | 04,05 | Explicit metric/calibration/units and witnesses; recheck fixes; P2. |
+| AK-AUTO-07 | Runtime fast path and mechanism routes | 05,06 | No extra critic calls; scale-sensitive null not globally retired; P3. |
+| AK-AUTO-08 | Prospective Vidya and scoped local retrieval | 02,04 | Typed scope, idempotence/outage recovery, unchanged grader; linked Vidya task later. |
+| AK-AUTO-09 | Certified coexistence/adaptive scheduling | 05,06,07,08 | Cache reuse, unknown overlap serialized, seeds advance and production not starved; P4. |
+| AK-AUTO-10 | Evidence matrix/batched serving/LOO | 02,06,08 | One surface cannot certify others; assembled evidence; P2/R23-48. |
+| AK-AUTO-11 | Supervisor/minimal authenticated controls | 02,04,05 | Persistent idempotent lifecycle, honest health, bounded recovery; proposed replacement for P5 endpoint. |
+| AK-AUTO-12 | Migration/bounded live run/unattended acceptance | 07–11 | Tests below, no monitoring agent required for routine recovery. |
+
+Retain one INF-73 row; future implementation reuses existing task text/owners instead of duplicating
+P2–P5/R23/FOLD checkboxes. Update normative loop description only when adopted. Do not rewrite measurement
+constitution or compute-authority policy as a side effect of this documentation update.
+
+### 8.14 Proposed tests, migration and completion criteria
+
+| Area | Test scenarios |
+|---|---|
+| Recovery | Crashes around intent/commit/completion/checkpoint; corrupt/missing bundle, torn tail, replay/cursor, disk full, missing artifact, branch movement; exactly one keep and no false validation. |
+| Candidate concurrency | Two racing keeps -> one integrates, one superseded/retested; runtime change cannot reuse source-only evidence. |
+| Claims | Sibling-only affinity, cross-role conflicts, partial acquisition rollback, denied/disabled provider, renewal/expiry, queued build after pause, orphan recovery; no lock deletion. |
+| Coexistence | Serving allow not research proof; unvalidated shared DRAM serialized; stale topology invalidates; quiet controls detect bias even when occupancy looks clean. |
+| Statistics | Common denominator vs slot rates; AB/BA/calibration match; independent units; incompatible floor refused; invalid units cannot support gain/null/transfer/coexistence. |
+| Transfer | Same threads/different topology, same quant/different shape/dispatch, absent/supported/refuted transfer, scaling null not global rejection, composition-dependent invalidation. |
+| Beliefs | Legacy frame IDs/grader unchanged; scope retained, epochs not pooled, quarantine, replay equivalence, outage safe exploration and idempotent catch-up. |
+| Controls | Duplicates/concurrent CLI/UI, paused/draining restart, unauthorized writes, browser disconnect, no silent actor fallback, orchestrator-API outage. |
+| Health | Long healthy stage vs stalled child, quota/auth/malformed output, producer death with live hub, hub restart, terminal overwrite prevented, loaded-version proof. |
+| Storage/overhead | Referenced RUNPATH generation protected; maintenance obeys quiet windows; projection/retrieval and campaign overhead measured; no routine extra review/operator steps. |
+
+Proposed migration: isolated pinned runtime -> inventory final champion/bundles/recipes/evidence -> import
+legacy observations without retrofitted warrant -> preserve rollback stores -> authorized owner boundary
+-> initially serialized broker -> partition routes -> only certified overlaps -> adaptive scheduling/
+controls after bounded checks. This does not authorize a stop/relaunch now; cutover remains separate.
+
+Proposed acceptance: bounded mixed run, then **48-hour** unattended soak with production CPU, production
+GPU and seeded local candidate. Source/build and prevalidated runtime routes; **ten valid comparisons
+per active backend**, target-scale confirmation (valid null acceptable), useful overlap under one certified
+profile; actor/worker/dashboard/Vidya faults and pause/drain/resume. Duration/counts are provisional.
+
+Eventual completion: no routine manual relaunch/monitoring agent; no unlocked builds, accepted contaminated
+units, implicit confirmation, false full-scale transfer, or eligible-production starvation; seed progress;
+no extra critic calls for established sweeps; visible bounded overhead; durable reproducible candidate
+and truthful dashboard. Positive kernel gains are not required to prove the service works.
+
+### 8.15 Provisional defaults and next discussion
+
+Accepted directions are in §8.1; the operator did not approve every number/detail in the previous draft.
+
+| Proposed detail | Open refinement |
+|---|---|
+| Local artifacts / llama.cpp-first v1 | Remote enrollment and speech-adapter scope. |
+| Four claim regions, sub-quarter execution | Discovered topology and actual concurrency; region is not assumed to be NUMA node. |
+| Seed 2×/three comparisons; weights 1–3/ten-result update | Exact formula, normalization, starvation and repeated-null/futility policy. |
+| Sample small-screen rejects | Rate and selection avoiding expensive universal confirmation. |
+| Existing 2.5× trigger + ten-keep/24-hour triggers | Serving/LOO cadence, cost and reserved budget; no threshold weakening. |
+| Global validation before shared cor advance | Reconcile prior per-surface pseudocode and re-baseline/LOO semantics. |
+| Common-window throughput / counterbalanced comparison | Objective, estimator/calibration, margins and legacy migration. |
+| 30 s lag; 100 events/5 s; query 100 ms at 100k; overhead <1% | Feasibility, denominators, quiet-window behavior, invalidation dependencies. |
+| Heartbeat 30 s / missing 180 s | Independent stage/activity and retry deadlines. |
+| Socket + token-paired browser controls | Token lifecycle and gateway security without per-command ceremonies. |
+| 48-hour / ten comparisons per backend soak | Workload/cost and fault schedule; positive gains unnecessary. |
+
+**Next action here:** iterate these implementation details with the operator and update this notebook.
+Do not run proposed work packages or turn defaults into new approval friction. The broker enforces
+allocations; belief-backed mechanism awareness should make choices cheaper and less conservative while
+preserving the distinction between permission to explore and evidence sufficient for production claims.
