@@ -965,6 +965,48 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       alongside PROD-1's recipe module** so it outlives scratch and PROD-1 can import it.
       **Explicit decline recorded, not a drop: do NOT edit the 19 scratch build scripts** — they are one-shot
       artifacts and mostly spent; the value is in the convention and in PROD-1 importing it.
+- [x] **★★★ MEAS-6 — MEASURED 2026-09-08: TWO CPU/GPU CAMPAIGNS CANNOT BE MEASURED CONCURRENTLY ON
+      THIS HOST. PINNING CONTROLS PLACEMENT, NOT CONTENTION.** This is the number OP-40/OP-41 should be
+      decided on, and it was produced by RETEST-1's A/A gate FAILING — the halt is the result.
+
+      | condition | hot-harness A/A pair p95 |
+      |---|---|
+      | run-30 **draining** (one bench at a time, host threads pinned 184-191) | **0.80%** (n=7) |
+      | concurrent with the autokernel **bundle-seed chain** (llama-bench ×20 alternating pairs, host threads pinned 184-191) | **7.223%** (n=5, sd 3.268%) |
+
+      **A 9× degradation with correct pinning on both sides and no rule broken by anyone.** Detectable
+      effect at n=3/side 7.471%, n=5/side 5.787%, **n=8/side 4.575%** — so RETEST-1's 1-3% targets are
+      unmeasurable under concurrency at any affordable n. RETEST-1 halted **before any lever arm**, per
+      §7 of its pre-registration (`PREREGISTRATION.md` + `.sha256`, written 09:30Z, lock taken 09:33Z),
+      rather than producing numbers it would have had to label non-claims. No arm was spent, no lever
+      was touched, and the levers remain untested rather than mis-tested.
+
+      **Mechanism (the autokernel session's framing, which is better than mine): pinning controls
+      PLACEMENT, not CONTENTION.** SMT siblings share the physical core's execution resources, so a
+      sustained GPU host-thread chain on 184-191 is a sustained load on physical cores 88-95. The
+      drain differed from the seed chain in *intensity*, not in placement — one bench with gaps versus
+      a continuous 20-pair alternation.
+
+      **⚠ ATTRIBUTION CAVEAT, retained verbatim and not to be dropped when this is quoted:** the split
+      between "the seed chain costs ~6.4 pp" and "the drain-era 0.80% floor was optimistic because the
+      drain was quieter than characterised" is **NOT separable from these two points**. What is
+      established is the CONJUNCTION — a correctly-pinned GPU bench chain and a CPU hot session cannot
+      both run and both produce sub-5% results — and that conclusion holds regardless of which side
+      owns the degradation.
+
+      **Design consequence, for OP-40/OP-41 and for the unified-surface program's north star:** the
+      U4 broker must **TIME-SLICE the host between surfaces, not co-schedule them**. "Autokernel owns
+      both GPU and CPU and maximally uses them" has to mean **alternating windows with a quiet-host
+      A/A at each switch**, not overlap. That is a real cost to the north star and it should reach the
+      operator as a number rather than as a preference. **Option (C) accept-and-regress now has a
+      price: the CPU surface cannot resolve anything under ~5% whenever the GPU side is working.**
+
+      Filed jointly with autokernel **OP-41** (their R23-49, renumbered), which carries this as its
+      headline. Evidence: `/mnt/raid0/llm/tmp/inf70/agents/retest1/`. **RETEST-1 is NOT cancelled — it
+      re-runs its A/A on "window complete" and proceeds to levers only if the floor returns near
+      0.80%. If it does NOT return with the GPU chain fully stopped, that is a larger finding and
+      changes what OP-41 is choosing between; report immediately.**
+
 - [ ] **★ MEAS-4 — THE INSTRUMENT RESERVES 96 CORES TO USE 48, AND BLOCKS A SECOND AGENT WHILE
       DOING IT.** Filed 2026-09-07 from an operator observation ("I see cpu resources idle") that was
       correct and that nobody in the campaign had raised. Four effects stack:
