@@ -2,8 +2,8 @@
 
 **Category**: `formal_verification`
 **Confidence**: verified
-**Last compiled**: 2026-05-27
-**Sources**: 7 documents (added RustEvo2 verification gate)
+**Last compiled**: 2026-09-07 (added the belief kernel's own grading-implementation audit — 5 survivors from a mutation audit, led by a verifier grading Attested on a digest never checked; earlier: RustEvo2 verification gate)
+**Sources**: 8 documents
 
 ## Summary
 
@@ -285,3 +285,58 @@ which is exactly the failure the storage rule prevents.
   SC56–SC60, the statement-binding rows this finding funded.
 - [`docs/design/vidya-pilot-spec.md`](../docs/design/vidya-pilot-spec.md) §4.1/§4.7 — the two-plane
   split and the one-ladder-per-source-class adapter contract.
+
+
+## Compiled Update — 2026-09-07: the belief kernel's own T-axis top grade was reachable without verification
+
+The prior entry on this page established the rule — *"a verifier verdict must be stored next to the
+proposition it decided"* — as an EXTERNAL finding about a citing paper's number. A same-day mutation
+audit of the belief kernel itself (`scripts/vidya/`, 62 mutations, 32 survivors over the portion it
+reached) found the kernel's own implementation violates an adjacent version of that rule, at the top
+of its own trust ladder.
+
+**`Attested` — the highest grade on the T-axis of the kernel's `Q x T` lattice — never verifies the
+digest it is named after.** `claim_tuple.py` length-checks `attestation_sha256` (must be 64 hex
+characters) and branches on its mere presence; `hashlib` occurs zero times in the file. A tuple with
+`attestation_path="MEASUREMENT.md"` and `attestation_sha256="0"*64` grades **Witnessed/Attested** —
+the top of both axes of the lattice, on a digest of nothing. This is not fixed by adding a `hashlib`
+call inside the grading function: `grade()` is pure and hashing is I/O, so the verification has to
+happen at the adapter/write boundary, with the result carried in the tuple — the placement decision
+comes before the code, which is why this is filed (SC69, P1) rather than patched inline.
+
+Four further survivors share the same shape — **a presence check standing in for a verification** —
+at different points in the same kernel: `claim_depends_on` (SC70) registers a dependency edge
+without registering the claim it points at, so a dependent can silently have no belief to alert on;
+an obligation with an EMPTY required-set reports itself satisfied (SC71) — the same
+absence-filled-not-recorded defect this wave's benchmark-methodology page found three times
+elsewhere, here inside the pilot spec's own §4.7 carrier; a gate can count one source as
+corroboration twice, and a subject field is validated for presence rather than well-formedness one
+layer below where the `Attested` defect bites (SC72); and `ledger.verify()` returns clean on an
+empty or deleted ledger — the strongest possible reading of "chain=OK" is produced by having no
+chain at all (SC73), the fail-open shape named elsewhere in this project's own standing feedback
+record.
+
+**Two things worth carrying forward, not just the finding.** First, the audit that found these five
+also found three weaknesses in a test written the SAME DAY by the same session that landed SC56-60
+— an assertion character-identical to its neighbor, a negation four different values satisfied, and
+a whitespace-brittle source grep — a reminder that a same-day fix and its test are not exempt from
+the review that finds defects in everything older. Second, the audit's own coverage is explicitly
+bounded: it never reached `scripts/vidya/adapters/`, `canonical.py`, `checkpoint.py`, `evaluate.py`,
+`cli.py`, `citation_gate.py`, `correction_queue.py`, `machine_anchor.py`, or roughly 29 adapter test
+files. 32 surviving mutations is the measured rate over the portion actually reached; the unreached
+portion carries no rate at all and must not be read as clean by omission.
+
+### Sources
+
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) —
+  SC69 through SC73, each with file:line, the demonstrated grade-inflation input, and the stated
+  reason it was filed rather than fixed inline.
+- `scripts/vidya/claim_tuple.py` — independently confirmed 2026-09-07: `hashlib` occurs 0 times in
+  the file; `attestation_sha256` is length-checked at one site and presence-checked at another.
+- `scripts/vidya/fold.py:409`, `scripts/vidya/projection.py:124`/`:288` — the two P1s the same audit
+  found AND this wave fixed (a retraction with an empty target matching every id-less frame; a
+  review-cause reporter naming only the first of two true reasons), each with a paired mutation
+  test, kept here as the contrast case: same audit, same day, two fixed inline and five filed.
+- [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the
+  session record, including the independent re-verification of the `hashlib` claim before this page
+  was written.
