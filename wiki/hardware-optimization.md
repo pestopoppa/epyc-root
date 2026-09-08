@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-09-08 (pm, R23-58): the THP process shim is CPU-DECODE-ONLY — it returned a bounded null on the GPU serving path (p95_dev ratio 0.713, p=0.3159, ON arm slightly wider) with the mechanism proven to have fired, so ONE champion commit now carries TWO different launch recipes and a champion record keyed by a single recipe is under-specified by construction; earlier: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× — RETIRED 2026-09-08 (INF-70 close-out); the champion is now `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch, plain 2.1857× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
+**Last compiled**: 2026-09-08 (late): **`-t 48` is a MEASURED optimum, not a comparability convention** (t48 10.09 / t64 9.69 / t96 9.67 t/s, C5) — and its measurement EXPIRED when the decode floor moved 2.76x while graph nodes fell only 13%, so the re-sweep is filed as R23-64 behind the operator's BIOS reboot; the 48 threads spread 4-per-CCD across all 12 CCDs and all 4 NUMA nodes, so the CORES are half idle while the REGIONS are 100% used and two of three "reclaim the idle half" remedies recover nothing; decode is NOT bandwidth-bound (27% of achieved, 9% of theoretical, against a >70% gate) and the binding term is the ~7,906 graph-nodes/token dispatch floor; earlier: 2026-09-08 (pm, R23-58): the THP process shim is CPU-DECODE-ONLY — it returned a bounded null on the GPU serving path (p95_dev ratio 0.713, p=0.3159, ON arm slightly wider) with the mechanism proven to have fired, so ONE champion commit now carries TWO different launch recipes and a champion record keyed by a single recipe is under-specified by construction; earlier: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× — RETIRED 2026-09-08 (INF-70 close-out); the champion is now `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch, plain 2.1857× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
 **Sources**: 110+ documents
 
 ## Compiled Update — 2026-09-08 (pm, R23-58): the THP shim is CPU-ONLY — a launch recipe is PER-SURFACE, so a commit hash plus one recipe still under-specifies a kernel
@@ -316,7 +316,7 @@ consolidated; **lifting the directive is the operator's call.**
 ---
 ---
 
-# PART 3 — BLAST-RADIUS CHECKLIST — run **before** pasting ITEM 2b
+## PART 3 — BLAST-RADIUS CHECKLIST — run **before** pasting ITEM 2b
 
 Derived by grep over `wiki/` in
 `/mnt/raid0/llm/worktrees/audits/inf70-audit-20260902` on 2026-09-08. Governing rule:
@@ -5035,3 +5035,96 @@ isolation on any SMT host without checking siblings; and co-tenancy audits shoul
 Sources: `progress/2026-09/2026-09-07-ak-rebuild-20260828.md` (§"CPU co-tenancy with INF-70"),
 `handoffs/active/autokernel-rebuild-program.md` (R23-49), research commit `da3b0368` →
 main `7996467f`.
+
+## 48 threads is a MEASURED OPTIMUM, not a comparability convention — and its measurement expired when the floor moved 2.76× (2026-09-08)
+
+**Confidence: verified** — every number below is a measured arm in the C5 re-anchor campaign
+(2026-09-02, clean proven-interleaved placement, one build, one window, one artifact) or a live
+topology read of 2026-09-08.
+
+### The claim that was wrong, and where its disproof already sat
+
+A standing backlog item (`MEAS-4`) asserted that the CPU decode recipe reserves 96 cores and runs
+`-t 48` **for comparability with older numbers** — i.e. that 48 is a *convention*. It is not. The
+disproof was in the **same handoff, ~690 lines above the item**: item `D4` closed the thread sweep
+by measurement on 2026-09-02 —
+
+| threads | decode t/s (C5 build 10196, clean placement) |
+|---|---|
+| **48** | **10.09** |
+| 64 | 9.69 |
+| 96 | 9.67 |
+
+— with `B2`'s independent `-t 8,24,48` arm at 9.57 / 9.53 / 10.26. **48 won.** Comparability is a
+*consequence* of 48 having won, never the reason for it, and the value is codified as a measured
+result, not a convention: `docs/design/inf70-close-out-20260908/qwen38_flash_next_recipe.py.draft:447`
+— `THREADS = 48  # NOT 96: the served decode optimum on this model`.
+
+### Why more threads lose: the trade was never "cores buy bandwidth"
+
+48 → 96 buys **+8.5 % of DRAM bandwidth** (152.6 → 165.6 GB/s) and costs **+10 ms/token of barrier**
+(1.9 → 3.2 µs/barrier over ~7,800 sync events). The bandwidth side is not the binding term at all:
+achieved read bandwidth is **27 % of the 153 GB/s the recipe actually delivers and 9 % of the
+460.8 GB/s theoretical**, against a formal bandwidth-bound gate of **> 70 % of theoretical** — **not
+met**. *(Unreconciled discrepancy, flagged so the two are never quoted as agreeing: the Axis S
+preamble states "~36 % of the 152.6 GB/s ceiling" where the ledger's achieved-fraction row says 27 %.
+Both sit far below the 70 % gate, so no conclusion here turns on it.)*
+
+The binding term is the **dispatch floor**: ~70 ms of a 97.3 ms token, **7,906 graph nodes/token**,
+22.5 ms of barrier/straggler wait.
+
+### "Half the reserved cores are idle" does not mean the reservation is oversized
+
+With `OMP_PROC_BIND=spread` + `OMP_PLACES=cores` inside mask `0-95`, the 48 threads land **4 per CCD
+across all 12 CCDs**, spanning **all 4 NUMA nodes and all 12 memory channels**. Live topology read
+2026-09-08: EPYC 9655, **96 physical / 192 logical**, **12 L3 domains × 8 physical cores**, **4 NUMA
+nodes × 24 physical cores** (node0 `0-23,96-119`, node1 `24-47,120-143`, node2 `48-71,144-167`,
+node3 `72-95,168-191`), 3 memory channels per node.
+
+**The CORES are half idle; the REGIONS are 100 % used.** That kills two of the three candidate
+remedies outright:
+
+- *"reserve only the regions actually used"* recovers **nothing** — every region already is used.
+- *"run a second arm concurrently on the unused half"* has **no unused half** — the idle cores are
+  interleaved one-per-pair inside every CCD, sharing L3 and the same memory controllers.
+
+48 is neither a CCD nor a NUMA boundary; it is half the physical cores and the size of a fleet
+`half` region, and the recipe deliberately does **not** use a contiguous half. The *scheduling*
+half of `MEAS-4` — who else may use the reserved cores while decode runs — stands untouched on its
+own evidence; only the "why 48" half is corrected.
+
+### The generalizable rule: a measured optimum expires when the thing it optimized against moves
+
+`D4`'s own re-open condition was *"re-open only if D1/D2/B3-k or Axis A change the floor"*. **That
+condition has now been met.** The decode floor moved **2.76×** (10.09 t/s / 99.1 ms → the champion's
+**27.893 t/s / 35.9 ms**) while graph nodes fell only **13 %** — so the barrier/dispatch term, the
+one term that scales with thread count, is now a far larger fraction of the token than when 48 won.
+The optimum may well have moved with it.
+
+Two consequences worth carrying forward:
+
+1. **A closed measurement is closed under stated conditions.** Writing the re-open condition into
+   the closed item is what made this detectable at all — without it, `t=48` would have hardened into
+   exactly the convention `MEAS-4` accused it of being.
+2. **A single number in a recipe carries no evidence of its own vintage.** `THREADS = 48` looked
+   identical before and after the floor moved 2.76×; only the handoff entry behind it knew.
+
+The re-sweep is filed as **R23-64** (t48 / t64 / t96 on the champion, 18 launches ≈ 70 min, unit =
+LAUNCH, against the 0.609 % n=6 launch floor) and is **gated behind the operator's planned host
+reboot + BIOS session**, whose contents are deliberately not recorded and must be obtained from the
+operator. The companion **R23-65** recalibrates every floor after that reboot.
+
+### Source References (2026-09-08, why 48)
+
+- [`handoffs/active/cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md)
+  — `D4` (the closed thread sweep, its re-open condition, and the 2026-09-08 pointer recording that
+  the condition is met), the `MEAS-4` correction block, and the C5 decode-anchor and DRAM-bandwidth
+  ledger rows.
+- [`handoffs/active/autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md)
+  — **R23-64** (the reboot-gated thread re-sweep, with its unit and floor) and **R23-65**
+  (post-reboot floor recalibration).
+- [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
+  — § *"MEAS-4's 'why 48' framing corrected…"*, parts 1-4, including the topology read and the
+  27 %-vs-36 % discrepancy.
+- `docs/design/inf70-close-out-20260908/qwen38_flash_next_recipe.py.draft:447` — the codified
+  `THREADS = 48` constant and its inline justification.
