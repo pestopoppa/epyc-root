@@ -279,6 +279,49 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
       premise that the loop "pays the OFF variance today" is refuted for that surface (OFF p95_dev 6.657%
       vs ON 9.334%; the ON arm was wider). Closing this as *resolved-negative* rather than deleting it, so a
       later reader does not re-derive the same candidate and re-spend the 27 minutes.
+> ### THE RECIPE FORMAT — NOT THE KERNELS — IS THE BINDING CONSTRAINT ON WHAT THIS CAMPAIGN CAN ASK
+>
+> **Three expressiveness gaps in the recipe schema were found and fixed on ONE DAY, 2026-09-08.** Each one
+> surfaced only when somebody asked a slightly new question, and each one made a measurement **impossible**
+> rather than merely slow:
+>
+> | # | research commit | what the recipe could not carry | how it surfaced |
+> |---|---|---|---|
+> | 1 | `b5f58b74` | **an env var** — so a RUNTIME_CONFIG arm (the THP shim) had nowhere to live, and serving compare reported only the mean | CHAMP-2 needed a launch-time knob and a *spread* comparison |
+> | 2 | `4952e95e` | **its own identity hash** — so a floor was keyed by recipe NAME and a gate could be fed a floor calibrated under a different recipe | R23-58 needed floors that could not be silently swapped |
+> | 3 | `c3e362a1` | **a self-drafting model** — `Recipe.server_argv` required `spec_decode["drafter"]` unconditionally, so an MTP model raised `KeyError` and **could not be expressed at all** | the Qwen3.6-35B-A3B sweep |
+>
+> Gap 3 is the sharpest statement of the pattern. MTP carries its draft head *inside the model weights*
+> (`blk.N.nextn.*`), so there is no drafter file to name. Absence of `drafter` is now itself the declaration
+> that the model self-drafts: `-md`/`-ngld` are omitted and `--spec-type` is still passed. Tests cover both
+> shapes and spec=none, **and carry a control proving the negative assertion can fail** (suite 587 → 592).
+>
+> **The generalisation, and it is a U3 statement:** every one of these was found by *tripping over it*, at the
+> moment a measurement was wanted. The schema is the interface between "a question we can ask" and "a question
+> we cannot", and it has now failed that test three times in a day. **Do not wait for the fourth question to
+> expose the fourth gap** — U3-EXPRESS below is a deliberate pass over the schema instead of a reactive one.
+>
+> Gap 3 also had an immediate consequence beyond its own sweep: it means the **dense Qwen3.8-27B is now
+> expressible as an MTP recipe too** (it carries `blk.64.nextn.*` and `nextn_predict_layers = 1`), which is
+> exactly the configuration frozen production supports for that model — the missing PROD-BASE-1 denominator.
+> Tracked as **MTP-27B-1** in `autokernel-champion-aggregate.md`.
+
+- [x] **U3-EXPRESS-3 — a self-drafting model is expressible as a recipe** ✅ 2026-09-08
+      (research `c3e362a1`: `spec_decode.drafter` optional, `-md`/`-ngld` omitted when absent, `--spec-type`
+      still passed; `test_selfdraft_recipe.py` covers both shapes, spec=none, and a fail-control; suite
+      587 → 592). Third of the three gaps above; the first two landed the same day as `b5f58b74` and
+      `4952e95e`.
+- [ ] **U3-EXPRESS — run a DELIBERATE expressiveness pass over the recipe schema instead of waiting for the
+      next question to expose the next gap.** Three gaps in one day (env var, identity hash, self-draft), each
+      found by tripping over it mid-measurement, each blocking a measurement outright. Enumerate what a
+      `Recipe` must be able to express for the surfaces this campaign already runs — multi-GPU / split modes,
+      tensor-split and per-device `ngl`, LoRA and control vectors, RPC/distributed serving, per-arm env sets
+      (not just one), draft models with their own recipe fields (`draft_p_min`, `draft_n_min`), grammar and
+      sampler variants, `--no-kv-offload`/`--cache-type` combinations, and the *absence* semantics that gap 3
+      showed can be load-bearing — then write a failing test per gap before fixing any of them. Belongs with
+      **U3 (RUNTIME_CONFIG arm type)**: a RUNTIME_CONFIG arm mutates a codified recipe, so the arm type is
+      bounded by exactly what the recipe can say. Blocked on nothing.
+
 - [ ] **U3-DEFAULTS-b — carry a PER-SURFACE recipe on the champion record.** R23-58 makes the champion
       `ef81196d5` + *CPU* recipe (shim ON) + *GPU* recipe (shim NOT set). `champion.py`/`Bundle` can express
       one recipe per champion, which is now demonstrably under-specified. Extend the record to key the

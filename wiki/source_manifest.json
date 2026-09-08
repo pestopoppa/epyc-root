@@ -8,11 +8,11 @@
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-08T18:53:52Z",
+  "last_compile": "2026-09-08T20:48:20Z",
   "mode": "touch",
-  "scan_time": "2026-09-08T18:53:52Z",
+  "scan_time": "2026-09-08T20:48:20Z",
   "schema_version": 1,
-  "source_set_hash": "cf4e33c88bf383d2b6b8e2dc833119c251b16d0bd71c97f87fec9fc4d0bc1c1c",
+  "source_set_hash": "c0207badd001309eb4185dc618ce26c658aca3210a66d1a10a472efed1f2601c",
   "sources": [
     {
       "content_hash": "78d85eb43bfb442f5800bcdfb61e75ae587647787f8c0974f9f687139d4b9dff",
@@ -79,18 +79,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4c97b8edadf619ac0e78e340bf089e80695bbde044a5a9a3542c4ba3a8497df2",
-      "modified": "2026-09-08T18:43:20Z",
+      "content_hash": "7a010a0455971b622eca76edfe103182e241d6075859b76881cb3f86607e4518",
+      "modified": "2026-09-08T20:41:54Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 67588,
+      "size": 74153,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "8adf39cd78870bbad3b6a75d206718adc33bcd9c054a8fcfc349c554cd45aae8",
-      "modified": "2026-09-08T18:53:46Z",
+      "content_hash": "6aa7e2dd716f482f53c0dd7c3e4a678db0443bee908721f02030bd21ff9bd166",
+      "modified": "2026-09-08T19:29:51Z",
       "path": "handoffs/active/autokernel-rebuild-program.md",
-      "size": 205426,
+      "size": 208570,
       "title": "AutoKernel \u2014 teardown and rebuild program",
       "type": "handoff-active"
     },
@@ -111,10 +111,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9424e26e43a15270d9ed09ba4ffa720b442fcfd53ba1abc87b6c37ed03048e6e",
-      "modified": "2026-09-08T18:45:16Z",
+      "content_hash": "3e90b98ba8dea8c31790fef5709db65fffb735104250463bdd0d324ca3edbdd9",
+      "modified": "2026-09-08T20:42:21Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 93866,
+      "size": 97707,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
@@ -6935,10 +6935,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "c2f8d9163cbca3d6bd94e6284451aa899c471afa1b6fd154ad2337288d3a5466",
-      "modified": "2026-09-08T18:41:03Z",
+      "content_hash": "9867f2a8a5e77fd5b4a71f13ec1d247f00ae0378b567a54c1918ad1fdfc77250",
+      "modified": "2026-09-08T20:43:14Z",
       "path": "progress/2026-09/2026-09-08-ak-rebuild-20260828.md",
-      "size": 50516,
+      "size": 61648,
       "title": "2026-09-08 \u2014 ak-rebuild-20260828 (AutoKernel rebuild lane)",
       "type": "progress"
     },
@@ -6991,11 +6991,11 @@
       "type": "docs"
     },
     {
-      "content_hash": "c9e4aa1d4809dd4ad45dc9f4ebc7f3a574793ac742a997d446893319f9833038",
-      "modified": "2026-09-08T18:44:38Z",
+      "content_hash": "00b932482406a10311198c58279745a9fd9a031880509fd6c16acfa78cc1ea4d",
+      "modified": "2026-09-08T20:40:56Z",
       "path": "docs/design/champion-max-performance-20260908.md",
-      "size": 9789,
-      "title": "Champion maximum-performance sweep \u2014 Qwen3.8-27B-Q8_0 on MI210, 2026-09-08",
+      "size": 22138,
+      "title": "Champion maximum-performance sweeps \u2014 MI210, 2026-09-08",
       "type": "docs"
     },
     {

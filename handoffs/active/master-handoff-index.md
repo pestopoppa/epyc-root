@@ -53,6 +53,8 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-22 | Rebuild the devcontainer to deploy `136894e8` (2026-07-31, drops CPU-only llama dirs from the global `LD_LIBRARY_PATH`). Committed but NOT live: container PID 1 started 2026-07-29, so every shell inherits the pre-fix `containerEnv` and hand-run speech binaries silently load mixed ggml generations. Production serving is unaffected; host/container lifecycle is operator-only | [ggml-linkage-and-speech-kernels](../../scripts/session/verify_speech_kernels.sh) | 2026-08-12 |
 | OP-25 | After C5-3 produces a live gfx90a correctness run, choose whether to leave SOL scoring disabled or port measured gfx90a constants for k215 only. Recommendation: k215-only if scoring is needed; never present the four >100×-headroom seeds as speed-of-light objectives | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) C5 | 2026-08-16 |
 | OP-29 | Scope decision: is video generation a product need? Gates the 165 GB MiniMax-H3 Ref2VA + 10Eros-Max download (volume at 92%, 291 GB free) | [minimax-h3-video-generation-evaluation.md](minimax-h3-video-generation-evaluation.md) EVL-32 | 2026-08-30 |
+| OP-44 | EVL-09 design triage (2026-07-23) unruled for 6+ weeks; it carries no checkboxes, so nothing in it is dispatchable until each item is ruled | [design-backlog-triage-2026-07-23.md](design-backlog-triage-2026-07-23.md) | 2026-07-23 |
+| OP-45 | RTG-44 WP9/WP10 runbook is PREPARED, NOT EXECUTED; execution is operator-owned (NUMA recert cascade). Declare do-not-dispatch or schedule it | [wp9-wp10-lineup-event-prep.md](wp9-wp10-lineup-event-prep.md) | 2026-07-21 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -76,11 +78,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 58 | 661 | 16 | 2026-07-29 |
+| inference-research | 58 | 665 | 16 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
-| research-evaluation | 45 | 386 | 10 | 2026-07-29 |
+| research-evaluation | 44 | 386 | 10 | 2026-07-29 |
 | reviewer-control-plane | 7 | 33 | 11 | 2026-07-29 |
-| routing-and-optimization | 51 | 439 | 19 | 2026-07-29 |
+| routing-and-optimization | 50 | 439 | 19 | 2026-07-29 |
 | user-facing-harness | 7 | 50 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
