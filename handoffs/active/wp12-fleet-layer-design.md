@@ -8,7 +8,7 @@ operator_authorization: op-bundle ESC-8 (2026-07-22) — "WP-12 sequencing (a): 
 constitution: operator-endorsed 2026-07-22 (quoted verbatim below)
 predecessors:
   - handoffs/active/within-role-placement-state-machine.md      # WP-8..WP-14, mode-exclusivity contract, DISPATCH-A/A2/A3
-  - handoffs/active/wp9-wp10-lineup-event-prep.md               # fleet-shape recert cascade (WP-9/WP-10)
+  - handoffs/archived/wp9-wp10-lineup-event-prep.md               # fleet-shape recert cascade (WP-9/WP-10)
 supersedes_on_land:
   - WP-13 (stack_priors alias-ports inheritance) — durable fix + interim Fix-A field delegations + parity drift-guard test
   - WP-14 (runtime-facts phantom-lineup writer) — subsumed by fleet-from-registry (reader hardening still useful standalone)
