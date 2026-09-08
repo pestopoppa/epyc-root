@@ -44,6 +44,45 @@
 > both measure **9.76**, identical); iqk (it never engages for Q8_0 — gated behind an unset
 > `GGML_IQK_Q8_0`); MTP head overhead; and mmap page-faulting.
 >
+> ### Amended 2026-09-08 (INF-70 audit, MEAS-1 / HARNESS-1 / HARNESS-2 / STAT-1) — sub-floor labels
+>
+> The original text above and below is **retained verbatim**; this block corrects *labels*, not
+> numbers. The cold-targeted CPU harness on this box has a measured **A/A p95 floor of 3.21%**
+> (adjacent-window) and **19.89% contended**; the new hot-server harness floor is 0.80% p95.
+> **Any delta in this file smaller than ~5% is at or below that floor — its label is WRONG, not
+> merely missing, and must be read as UNRESOLVED.** Corrections of fact:
+> 1. **`"a v8 kernel regression (v7 and v8 both measure 9.76, identical)"` is not "ruled out"** —
+>    restate as **"no v7/v8 difference resolvable above the harness floor"**. Nothing below ~5% was
+>    ruled out by that arm.
+> 2. **The E1 `-np` ladder interpretation** (*"`-np 2`, `-np 8`, and `-np 16` are all close on
+>    aggregate throughput"*; 839.08 / 799.03 / 846.72 = a 0.3–5.9% spread) is **UNRESOLVED at the
+>    floor** — "close" and the implied saturation knee are not measured. The **p95 latency ladder
+>    (12.31 s → 109.69 s) is far above the floor and stands unchanged**, and it carries that item's
+>    actual conclusion.
+> 3. **A pre-window host-health precheck establishes ELIGIBILITY, not trustworthiness.** The
+>    *"post-reboot host-health gate returns ZERO warnings … so Stage-B is decision-grade eligible"*
+>    item must not be cited as evidence that the arms ran clean: INF-70 measured a `loadavg` gate
+>    passing at **11.61** and the arm then running through **loadavg 55.7**. The per-cell mid-run
+>    re-enforcement recorded further down is the stronger claim and is the one to cite.
+> 4. **STAT-1 (harness-wide): the ARM is the unit of replication.** Per-prompt paired statistics are
+>    pseudo-replication — a "0/40 prompts lost, p≈0" claim became **−1.04% UNRESOLVED** under
+>    arm-level permutation. E5's **one pass per cell** therefore has no error term, and no margin
+>    ranked off it (R1–R4) carries significance.
+> 5. **DRIFT-1**: there is no linear within-block drift in this harness (slope +0.03%/slot,
+>    R² 0.004). "It was drift" is retired as an explanation here.
+>
+> **Flagged, deliberately NOT actioned (scope changes, owning session's call):** the *"36-39 tok/s …
+> independently matching the AutoPilot production anchor (median 35.7)"* and *"8.80 vs the
+> registry-documented 8.90 — a 1% match, so the meter is sound"* steps compare a **cold** bench
+> absolute against a **differently-harnessed** absolute, which HARNESS-2 forbids (hot reads **+4.36%**
+> above cold on the same binary, byte-identical output); the pre-registered **≥5% split-vs-unified
+> escalation trigger** sits exactly on the floor and will fire on noise; **R1's ≥10% margin** rule is
+> valid only in the quiet/adjacent-window regime, not the 19.89% contended one; and the queued
+> re-measurement campaigns (the 31-cell Stage-B re-run, the 24 remaining manifests) should be
+> re-planned before firing — **MTP arms are ~2.8× more precise than plain** (sd 0.61% vs 1.71%),
+> i.e. **~8× fewer arms** for the same power, and the hot harness is 4× tighter than cold — all under
+> the operator directive that lever research is **STOPPED** until a fully consolidated champion exists.
+>
 > ### SUSPENDED — do not cite, do not gate on
 >
 > - **ALL absolute throughput values** — tok/s, tasks/hour, aggregate rates — in every E5

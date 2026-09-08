@@ -1,8 +1,8 @@
 # CPU Fused Decoder Blocks (batch-1 decode megakernel)
 
-**Status**: **PLAN APPROVED by operator 2026-08-30** — bit-exactness prioritized (NMSE ≤1e-4 acceptable fallback); qwen4exp-first with the GDN family in mind; op-based execution model (direct fast-path acceptable if diligent); decode prioritized, pp desirable; plan persisted before work begins.
+**Status**: **A-GATE FAILED 2026-09-02 — the plan below is the historical design record, not a live plan.** ~~**PLAN APPROVED by operator 2026-08-30** — bit-exactness prioritized (NMSE ≤1e-4 acceptable fallback); qwen4exp-first with the GDN family in mind; op-based execution model (direct fast-path acceptable if diligent); decode prioritized, pp desirable; plan persisted before work begins.~~ The approval stands as a historical fact; what it authorised did not pass its own gate — see *Viability gate result 2026-09-02* below (fused 961 ms/token vs graph 196.9 ms in the same process and window). The 2026-09-01 control arm reproduced the same direction (graph-1T 350 ms vs fused-1T 1350 ms): **the megakernel does not currently deliver, and the scratch churn is the liability.**
 **Created**: 2026-08-30
-**Priority**: HIGH — the last identified path to 20-60 t/s batch-1 CPU decode
+**Priority**: ~~HIGH — the last identified path to 20-60 t/s batch-1 CPU decode~~ **STALE 2026-09-08 (INF-70 audit)** — the "last identified path to 20-60 t/s" framing predates A-GATE. Re-ranking this handoff's priority is an operator/owning-session decision and is deliberately NOT made here; note only that the operator directive of 2026-09-07 stops lever research until a fully consolidated champion exists.
 **Categories**: hardware_optimization, inference_serving, local_inference, kernel_architecture
 **Workstream**: Inference Acceleration
 **Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-67; the kernel-tree commit tags historically said INF-64)
