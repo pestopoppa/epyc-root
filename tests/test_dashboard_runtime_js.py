@@ -85,6 +85,93 @@ def test_no_render_function_throws_on_a_real_payload(tmp_path: Path) -> None:
     assert result["ran"] == 1, f"{result['ran']} render functions executed"
 
 
+@pytest.mark.parametrize("experimental", [False, True])
+def test_explicit_experimental_scope_reaches_reader_and_page(tmp_path, monkeypatch, experimental):
+    from dashboard import loop_status
+
+    payload = _payload()
+    body = json.loads((REPO / "tests/fixtures/autokernel_loop_status_sample.json").read_text())
+    if experimental:
+        body["baseline_scope"] = "experimental_candidate_not_champion"
+    else:
+        body.pop("baseline_scope", None)
+    (tmp_path / "loop-status.json").write_text(json.dumps(body))
+    original = loop_status.champion_snapshot
+    forwarded = []
+
+    def capture(*args, **kwargs):
+        forwarded.append(kwargs["champion_head"])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(loop_status, "champion_snapshot", capture)
+    observed = loop_status.snapshot(tmp_path)[0]
+    assert forwarded == [None if experimental else body["champion_head"]]
+    # Keep the actual canonical panels from the hub. Compare the exact same
+    # selected run with/without its subject label: numbers must not disappear.
+    payload["loop"] = {k: v for k, v in observed["loop"].items() if k != "baseline_scope"}
+    baseline = _run(_page_js(), payload, tmp_path,
+                    ["renderChampion", "renderOperatorGate"])
+    payload["loop"] = observed["loop"]
+    rendered = _run(_page_js(), payload, tmp_path,
+                    ["renderChampion", "renderOperatorGate", "renderIdentity"])
+    assert rendered["threw"] == []
+    ident = rendered["by_id"]["ident"]
+    if experimental:
+        assert "<dt>experimental candidate head</dt>" in ident
+        assert "<dt>champion head</dt>" not in ident
+        assert "separate from the selected live experiment" in rendered["text_by_id"]["champ-scope"]
+        assert "not measurements of the selected live experiment" in rendered["text_by_id"]["opgate-scope"]
+    else:
+        assert "<dt>champion head</dt>" in ident
+        assert "<dt>experimental candidate head</dt>" not in ident
+    for panel, badge in (("champ", "champ-badgetxt"), ("opgate", "opgate-badgetxt")):
+        # Canonical measurements and their original supersession labels remain
+        # byte-for-byte visible; selecting a trial only adds subject separation.
+        assert rendered["by_id"][panel] == baseline["by_id"][panel]
+        assert rendered["text_by_id"][badge] == baseline["text_by_id"][badge]
+
+
+@pytest.mark.parametrize("explicit_root", [False, True])
+def test_live_store_override_does_not_relocate_canonical_history(tmp_path, monkeypatch, explicit_root):
+    from dashboard import loop_status
+
+    canonical, trial = tmp_path / "canonical", tmp_path / "trial"
+    original = json.loads((REPO / "tests/fixtures/autokernel_loop_status_sample.json").read_text())
+    selected = {**original, "champion_head": "c" * 40, "epoch_sha256": "d" * 64,
+                "baseline_scope": "experimental_candidate_not_champion"}
+    for path, body in ((canonical, original), (trial, selected)):
+        path.mkdir()
+        (path / "loop-status.json").write_text(json.dumps(body))
+    monkeypatch.setattr(loop_status, "DEFAULT_STORE_ROOT", canonical)
+    monkeypatch.setenv(loop_status.STORE_ROOT_ENV, str(trial))
+    captured = {}
+
+    def champion(root, **kwargs):
+        captured["champion"] = (root, kwargs["champion_head"])
+        return {"evidence": str(root / "champion-vs-production.json")}
+
+    def knowledge(root, **kwargs):
+        captured["knowledge"] = (root, kwargs["status_body"])
+        return {"evidence": str(root / "memory.sqlite")}
+
+    monkeypatch.setattr(loop_status, "champion_snapshot", champion)
+    monkeypatch.setattr(loop_status, "knowledge_snapshot", knowledge)
+    payload = loop_status.snapshot(trial if explicit_root else None)[0]
+    assert payload["loop"] == selected
+    expected_root = trial if explicit_root else canonical
+    assert payload["canonical_store_root"] == str(expected_root)
+    assert captured["champion"] == (expected_root, None if explicit_root else original["champion_head"])
+    assert captured["knowledge"] == (expected_root, selected if explicit_root else original)
+
+    # Already-running older publishers have no scope flag: root separation still
+    # prevents their head being called the canonical champion in the live view.
+    payload["loop"].pop("baseline_scope")
+    rendered = _run(_page_js(), payload, tmp_path, ["renderIdentity"])
+    assert rendered["threw"] == []
+    expected_label = "champion head" if explicit_root else "live run head"
+    assert f"<dt>{expected_label}</dt>" in rendered["by_id"]["ident"]
+
+
 def test_both_producers_reach_rendered_output(tmp_path: Path) -> None:
     """Executing without throwing is not the same as rendering something.
 

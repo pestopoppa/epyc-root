@@ -1,5 +1,21 @@
 # Unified AutoKernel implementation — 2026-09-09
 
+## Correction: live-store selection hid canonical history
+
+Operator caught a real regression in the preceding dashboard fix: all panels followed
+the fresh CPU store, hiding existing champion evidence, capabilities and historical
+attempts. Reader roots are now separate; live API verification restored original
+`loop-memory/experiments.db` (2,397 attempts, 32 keeps) and original production comparison
+(bff30c measured, ef811 canonical tip, not a fabricated direct ef811 ratio). Five
+capabilities survive in `champion-vs-production.json.pre-reconcile`; the reader reopens
+them with source identity, original timestamp and verified ancestry, explicitly historical.
+Main combined targeted checks:19 passed. Future CPU status explicitly identifies the
+experimental scope (`51abc7a3` → research main `e2a01699`), without restarting this trial.
+Dashboard deployment now uses the reviewed primary ROOT lane instead of stale shared
+source. Yesterday's final records remain in `docs/design/champion-max-performance-20260908.md`
+and `docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md`; the latter's pristine CPU
+baseline is not frozen v9, and its instrument-to-delivery mapping must stay explicit.
+
 ## Live dashboard store repair
 
 The existing dashboard selected stale GPU history. Orchestrator `59782734` (main

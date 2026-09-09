@@ -15,6 +15,14 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 > settlement defaults to invalid) and is not an accepted replacement. The original
 > feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
 
+- [x] **Separate live trial from retained champion/history readers**: ✅ 2026-09-09.
+  Corrected the store-selection regression: live GLM status no longer relocates canonical
+  measurements or the 2,397-row historical experiment database. Canonical capability
+  fallback reopens five original evidence entries with historical attribution and
+  verified lineage; no new measurement or inferred production ratio is manufactured.
+  Main focused combined checks:19 passed. Experimental CPU status now has explicit scope
+  (`51abc7a3`, research main `e2a01699`); the already-running trial is not restarted.
+
 - [x] **Live CPU trial dashboard selection**: ✅ 2026-09-09. Orchestrator
   `59782734` → main `0ad401dd` selects the dedicated GLM store through the existing
   dashboard environment. Dashboard-only reload verified PID1339228; `/api/loop/health`
