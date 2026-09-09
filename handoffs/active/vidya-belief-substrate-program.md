@@ -1634,6 +1634,10 @@ retrofitting the read side is impossible. Source row added to
     reducer replay is not independent reparsing or fresh observation. Also register same-server
     raw request/response/token evidence before any real run; missing seed/token contracts cannot
     establish determinism. These supporting records use this existing task and source ladder.
+    Research 8f582b22 now writes `epyc.autokernel.native_server_response.v1` leaves and
+    `epyc.autokernel.native_server_response_unit.v1` ordered units in the actual contained
+    serving lifecycle. Original instrument pins and exact request/response bytes are retained;
+    ROOT per-witness consumption remains required, and raw capture alone grants no grade.
   - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
     Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
     three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,
