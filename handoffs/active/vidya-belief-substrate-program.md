@@ -1642,6 +1642,10 @@ retrofitting the read side is impossible. Source row added to
     original marker bounds, host/claim/storage samples and lifecycle interval joins with
     prospective source/configuration identity. Extend this same consumer to reopen those
     dependencies; raw factual coverage is not a quiet-window or calibration/control verdict.
+    Research 8f536e0e additionally emits separate parent-final trial/pair records and native
+    unified-arm capture v3 referencing unchanged original v2 carriers. The ROOT reader must
+    verify original/final/source joins and preserve diagnostic unknowns under the existing
+    source class/ladder; never relabel the child v2 producer closure as a parent v3 writer.
   - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
     Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
     three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,
