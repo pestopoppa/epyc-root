@@ -951,3 +951,39 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   or real artifact deletion occurred. Per-task wrap-up only: no pruning, compaction or wiki sweep.
   README freshness is clean; lane identity passed. Bus drain/heartbeat again refused this
   non-roster ID; no other session's identity or outbox was used.
+
+### Durable maintenance ownership and replay integration
+
+- Published research source **c5525fb8**, main **b77215bb**: six-file maintenance ownership,
+  native Journal replay, candidate/worker/publication fences, shutdown guards and focused tests.
+  Exact accepted blobs came from a clean 1accc7f2-based acceptance tree through a private
+  index; main composed only the additive hunks into moving native journal/controller files.
+  Native nineteen-file work remains unpublished and was not swept into this commit.
+- Final review reproduced five malformed replay cases: first misbound hold accepted, prior
+  terminal hold/cost carried into a fresh job, changed completed cost, arbitrary accounting digest,
+  and invalid fresh/recovery token chains. Corrections bind every hold, reconstruct exact completed
+  accounting, preserve IO_COMPLETE cost, and reset state only under a valid distinct intent.
+  A sixth active same-token/nonidentical-intent regression also refuses rather than losing a hold.
+  Valid legacy non-abort rows retain their closed schema; unproved legacy abort remains refused.
+- Clean acceptance: **1,873 passed plus 165 subtests**. Main's composition with the current native
+  packet: **1,899 passed plus 165 subtests in 26.49s**. Main separately reproduced **39 maintenance
+  tests** and **six independent shutdown/abort/uncertainty probes**. Unresolved ownership prevents
+  close/drain completion; exact settlement wakes command waiters without holding locks across I/O.
+- Fresh cleanup remains unavailable: candidate manifests alone do not establish the complete
+  worker/evidence/DSO/RUNPATH/physical artifact catalog, and no concrete broker maintenance hold
+  provider is installed. These requirements remain explicit in AKU-10d/10f/10g. No retained research
+  artifact was deleted, and no live provider grant or service activation occurred.
+- Native review advanced: main PID/expiry probes **3 passed**, broader lifecycle/driver/observation
+  **67 passed**, and actual child/reopened ROOT projector **1 passed**. The cgroup fixture verifies
+  real tiny-child membership and cleanup only; synthetic scored witnesses establish schema wiring,
+  not correctness/contention/placement evidence. The canonical source-loader stale-bytecode and
+  FIFO probes both pass in the delivery working tree (**2 passed**), pending its publication.
+- New AKU-07l records public planner/materializer v2 routing, which the existing fixture bypassed
+  by manually upgrading its prepared envelope. New AKU-07m records sealed-artifact completion IPC
+  and concrete parent witness derivation; source configuration callbacks alone do not supply these
+  facts. Both independent implementation slices are assigned without widening HIGH shared helpers.
+- Checklist synchronization adds **one completed sub-item (AKU-10e)**, bringing the accepted count
+  to **40**, and **four open tasks (07l/07m/10f/10g)**; zero declines. All twelve parent tasks remain
+  open. No installed standalone dry run or five-loop hardware acceptance is claimed. Per-task
+  wrap-up excludes index pruning, compaction and wiki sweep. ROOT code index refreshed successfully;
+  bus drain still refuses this non-roster id and no peer identity/outbox was used.
