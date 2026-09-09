@@ -2,35 +2,8 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-09-08 (evening): a **self-drafting model has no drafter file** — `Recipe.server_argv` required `spec_decode.drafter` unconditionally, so MTP raised `KeyError` and was **inexpressible as a recipe** until research `c3e362a1`; absence of `drafter` is now the declaration that the model self-drafts; measured through it, Qwen3.6-35B-A3B MTP reaches 112.68 tok/s single user / 310.96 aggregate; and the **dense Qwen3.8-27B carries the MTP head too** (`blk.64.nextn.*`), which is the missing PROD-BASE-1 denominator; earlier: 2026-09-08 (pm): production v9 NEVER ran the DFlash2 lane — dflash_lineup_enabled false, the certification names Qwen3.6-27B not 3.8, and the frozen binary rejects the DFlash2 GGUF (expected 81 tensors, got 58) — so NO champion-vs-production ratio exists for Qwen3.8-27B + DFlash2 and the advantage is partly a CAPABILITY; the honest comparison is the incumbent at ITS own best, never forced through the challenger recipe; measured DFlash2 ceiling 79.25 tok/s np=1 / 179.12 aggregate np=8; earlier: 2026-09-08 (the DFlash2 serving-gate protocol absorbs the rtx6kpro wave — verifier steps/s as the kernel metric with tok/s = steps/s × accepted/step, the n-max × p-min sweep, the sustained-C8 and A/A-losslessness cells, the DF2-RNG shared-verify-path lead, and RULE-RESCOPE: "spec-dec levers are a single-stream story" is re-scoped to the GPU-MoE regime it was measured in; earlier 2026-09-03 note: incremental: MoE-Spec measured on live CPU verification batches for the first time — architect_critic **+10.7%** at B=128 against frontdoor **−11.4%**, so the mechanism's SIGN is role-dependent rather than a property of the mechanism; the registry change stays proposed-not-applied behind the E8-reseed/OP-19 gate, a strict bit-exact guard is enforceable only via the gate-skip control, and the GPU champion's paired `tg128` "no regression" row is uninformative BY CONSTRUCTION because batch-1 decode never reaches `--moe-spec-min-batch 4`; also, #27442 part two is no longer blocked on G1; earlier: 2026-08-23 wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
+**Last compiled**: 2026-09-08 (pm): production v9 NEVER ran the DFlash2 lane — dflash_lineup_enabled false, the certification names Qwen3.6-27B not 3.8, and the frozen binary rejects the DFlash2 GGUF (expected 81 tensors, got 58) — so NO champion-vs-production ratio exists for Qwen3.8-27B + DFlash2 and the advantage is partly a CAPABILITY; the honest comparison is the incumbent at ITS own best, never forced through the challenger recipe; measured DFlash2 ceiling 79.25 tok/s np=1 / 179.12 aggregate np=8; earlier: 2026-09-08 (the DFlash2 serving-gate protocol absorbs the rtx6kpro wave — verifier steps/s as the kernel metric with tok/s = steps/s × accepted/step, the n-max × p-min sweep, the sustained-C8 and A/A-losslessness cells, the DF2-RNG shared-verify-path lead, and RULE-RESCOPE: "spec-dec levers are a single-stream story" is re-scoped to the GPU-MoE regime it was measured in; earlier 2026-09-03 note: incremental: MoE-Spec measured on live CPU verification batches for the first time — architect_critic **+10.7%** at B=128 against frontdoor **−11.4%**, so the mechanism's SIGN is role-dependent rather than a property of the mechanism; the registry change stays proposed-not-applied behind the E8-reseed/OP-19 gate, a strict bit-exact guard is enforceable only via the gate-skip control, and the GPU champion's paired `tg128` "no regression" row is uninformative BY CONSTRUCTION because batch-1 decode never reaches `--moe-spec-min-batch 4`; also, #27442 part two is no longer blocked on G1; earlier: 2026-08-23 wave-2 intake pass — greedy parity is now an INSTRUMENT, not an ad-hoc check: `P-PARITY-1`/`P-NONDET-1` are registered in MEASUREMENT.md §2 as Annex D, STAGED; upstream #27407 is re-scoped to "a minimal batched-verify arm reproduced it ONCE, on CUDA" and is subsumed by the uncited #25618, where the defect is drafter-BLIND and is a kernel-SELECTION class, not an fp-associativity class; frozen v9 already contains the only bit-exact reference construction that exists anywhere — `use_serial_speculative_verify` — and its gate excludes every arm DF2-6 will run; and for KV-asymmetric self-speculation **α is not speedup**, because the drafter is the full model; earlier same-day DFlash2 campaign note: np1 sealed against the predeclared 55.46 t/s MTP comparator, np2/4/8 grid + greedy parity still mandatory, production already serves MTP draft_max 8; previously 2026-08-22 (third pass — greedy-parity and concurrency verdicts are control-arm-limited: frozen v9 is deliberately non-bit-exact at verify-batch widths on gfx90a via our own `a6b4b5263` routing patch, batch invariance holds on none of the three compute planes, and the naive DF2-5/DF2-6 protocols would have returned meaningless clean sheets; prior 2026-08-12 pass — the weight-delta geometry probe over ThinkingCap's byte-level MTP identity has now EXECUTED: ThinkingCap's tensor topology (15 extra `blk.64.*` tensors) is name-identical to the MTP checkpoint's, not to plain stock, so it descends from the MTP lineage rather than a plain-stock conversion — see below; earlier same-day note: v9's per-request speculative surface is exactly **one** field wide — `speculative.n_max` — and the other fields present in the source are not wired to the request path; the Qwen3.6-27B DFlash lane is the first case where a **large measured speedup and an ineligible acceptance rate co-exist**, so the lane ships disabled; earlier 2026-08-11 note: DSpark is a decoding variant on a `dflash` sidecar, not a separate GGUF architecture; the pinned standardized Q2_K/Q8_0 comparison drafter is checksum-verified)
 **Sources**: 67+ documents
-
-## Compiled Update — 2026-09-08 (evening): a SELF-DRAFTING model has no drafter file — MTP was inexpressible as a recipe, and the dense 27B is MTP-capable too
-
-**Confidence: verified.** The fix and its tests are research commit `c3e362a1` (suite 587 → 592); the model-capability facts are exact tensor-name and metadata reads of the two GGUFs.
-
-### MTP carries its draft head inside the weights, and the recipe schema could not say so
-
-`Recipe.server_argv` required `spec_decode["drafter"]` **unconditionally**. A model that drafts for itself has no drafter file to name — the head lives in the weights as `blk.N.nextn.eh_proj / .enorm / .hnorm / .shared_head_norm`, with `<arch>.nextn_predict_layers = 1` in the metadata. So every self-drafting model raised `KeyError` and **could not be measured through the loop at all**. Not slow: *impossible*.
-
-The fix makes `drafter` optional, and **its absence IS the declaration that the model self-drafts**: `-md` and `-ngld` are omitted, `--spec-type` is still passed. Tests cover both shapes and `spec=none`, and carry a **control proving the negative assertion can fail** — a negative assertion with no failing control is a vacuous pass.
-
-### What it bought immediately
-
-The Qwen3.6-35B-A3B-MTP-Q8_0 concurrency sweep, which is the first MTP configuration this campaign has measured through a codified recipe: `--spec-type draft-mtp`, `--spec-draft-n-max 4`, no drafter, **112.68 tok/s single user and 310.96 tok/s aggregate at 16 slots**, residency proven 24/24.
-
-### The dense Qwen3.8-27B is ALSO MTP-capable — and that is the missing PROD-BASE-1 denominator
-
-The Qwen3.8-27B GGUF carries the same MTP head tensors at `blk.64.nextn.*` with `qwen35.nextn_predict_layers = 1` — the identical shape the 35B has at `blk.40`. **It can self-draft**, and until `c3e362a1` that configuration was inexpressible, so it had never been run through the loop.
-
-This matters beyond convenience. Frozen production v9 **cannot load the DFlash2 GGUF at all** (`wrong number of tensors; expected 81, got 58`), so **MTP self-draft is exactly what production supports for this model** — which is why no champion-vs-production ratio exists for the DFlash2 lane (see the section above). A `qwen3.8-27b-q8-gpu-mtp` recipe is now writable, and it is the denominator PROD-BASE-1 has been waiting for: the comparison becomes measurable on a lane production actually has, instead of one it does not. Tracked as MTP-27B-1.
-
-### Source References (2026-09-08, evening — the 35B sweep)
-
-- [`champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) — the canonical citable artifact; §6 is the 35B sweep (per-point `recipe_hash`, residency, exact conditions), §7 the architecture explanation.
-- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
-- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
-- [`2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session log with the raw-artifact paths.
 
 ## Compiled Update — 2026-09-08 (pm): production never ran the DFlash2 lane, so the champion's advantage here is partly a CAPABILITY and NO ratio exists — plus the measured DFlash2 serving ceiling
 
@@ -1788,6 +1761,49 @@ Key findings:
 - sudoingX/qwen38-mtp PR #70 and `sweeps/instinct-cdna.md` — the public artifact and its caveats.
 - [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
   — INF-61, the prior server-side n-max 8 optimum this independently corroborates on a second instrument.
+
+## Compiled Update — 2026-09-09 (incremental): a concurrency sweep confounds itself if the prompt set moves with `np`
+
+**Confidence: verified** (source-read of the harness; the affected sweep is our own).
+
+PR #70 merged upstream 2026-09-09 (`3097ca3`). Two follow-ups submitted the same day:
+**PR #75** (MI210 `-np` sweep, supplementary section — not a table row) and **PR #76** (a `Quant`
+column for the community table). The champion tip behind #75, `ef81196d5`, is **public and
+rebuildable** at `pestopoppa/llama.cpp` branch `ak/champion/llama-cpp-0db32c06e3e5` — unlike #70's
+`9e18beb0`, so the "not stock upstream" caveat now costs a reader a build, not a black box.
+
+**The transferable finding is about the instrument, not the card.**
+`autokernel/loop/serving.py` fires **one request per slot** from a fixed prompt list
+(`_PROMPTS[i % len(_PROMPTS)]` over `range(recipe.np)`). The prompts are deliberately distinct so
+the slots do not share a KV prefix — correct for measuring real per-request work — but it means:
+
+> **`np=1` measures one prompt and `np=8` measures eight. Any comparison ACROSS `np` is confounded
+> with the prompt mix.**
+
+Scope it precisely, because the harness is not broken: a kernel A/B at a **fixed** `np` fires the
+identical prompt set in both arms and the mix cancels exactly. The confound exists only when `np`
+is itself the swept variable. That matters here because prompt dependence on this hardware is
+large — PR #70 measured a **2.4x span across three prompts** at n-max 8 on the same card, with the
+prose prompt gaining nothing at all.
+
+**Rule: a concurrency sweep must hold the prompt set fixed across slot counts, or state that it
+did not.** The 2026-09-08 maximum-performance sweep did not; the turnover it reports between np=4
+and np=8 is large and monotone across every launch, so it is unlikely to be a pure artifact, but
+the sweep cannot separate the two effects. A prompt-matched sweep is the experiment that settles
+it.
+
+Two smaller carries from the same review:
+- **"Aggregate tok/s" needs its definition attached.** Ours is the sum of the concurrent slots'
+  own `timings.predicted_per_second`, which deliberately excludes scheduling-tail jitter — so it
+  reads *higher* than a client-side wall-clock aggregate of the same run. Cross-instrument
+  comparison without stating which is which is meaningless.
+- **Dispersion is not monotone in slot count**: p95 deviation over launches ran 0.44% (np=1),
+  1.60% (np=2), 3.33% (np=4), 1.82% (np=8). np=4 is the least stable point measured; there is no
+  trend to quote from four points at n=3.
+
+- [`2026-09-09-adhoc-qwen38mtp.md`](../progress/2026-09/2026-09-09-adhoc-qwen38mtp.md) — the two
+  PRs, the four defects caught in pre-submission review, and the number reconciliation
+  (np=4 is 167.76, n=3; the 167.117 figure is R23-58's THP OFF arm, n=24).
 
 ## Compiled Update — 2026-09-03 (INF-70 Axis E): eliminating the rollback checkpoint, and why acceptance rate is not evidence of exactness
 
