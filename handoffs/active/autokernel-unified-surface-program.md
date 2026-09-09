@@ -2164,6 +2164,9 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     `actor_preparation_state.validate_event` changes (HIGH16, Journal publication/replay);
     OP-AKU-REFRESH approval was requested. Do not conceal new authority in a nested v1 contract.
   - [ ] **AKU-06j — install the concrete owned CPU profiling producer for GLM discovery**:
+    Concrete full-request producer is implemented and tested under AKU-06o below; this task
+    remains open for registered prospective projection, exact GLM prompt/configuration and
+    real deployment conformance. Do not relabel independent full-request v1 as cached decode.
     emit existing target_profile_output.v1 through the installed ProfileMechanism, retaining
     bounded original perf-script/counter/request-window artifacts and source/tool/model/recipe
     identities. Reuse the preliminary GLM capture semantics, not its independent launcher/lock;
@@ -2173,6 +2176,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     share, recoverable spin time, bandwidth saturation or measured gains. Add real configuration
     and registered write-side projection; test offline without presenting fixture profiles as
     fresh hardware evidence. Existing GPU/C4 profilers remain separate selected mechanisms.
+  - [x] **AKU-06o — implement and verify owned full-request CPU profile capture**:
+    ✅ 2026-09-09. Research `cpu_profile.py`, installed benchmark entry and the optional
+    concrete serving hook retain original request/model/source/process/DSO identities,
+    bounded sample/counter artifacts, warmup/request windows and deterministic raw replay.
+    Reader-only waitid proof fixes exited-child readback races without invented argv/exe.
+    Exact six-file packet SHA256 `8fc48b84bf78cc41567239b714cd6b9cc4b84dd8a54f98c49ff70d7e3db0731c`;
+    main composed acceptance: 205 passed, 14 subtests, 36.22s, no skips. Tiny HTTP/perf fixtures
+    cover installed publication/settlement/planner/restart, bounded failures and cleanup.
+    No real perf events, GLM run or production change. Contract: research
+    `docs/autokernel-owned-cpu-profile.md`. Sampled periods are attribution, not gains;
+    receipt integrity is not production validation. AKU-06j and all parent tasks remain open.
   - [x] **AKU-06k — connect actual actor preparation to owned native build enrollment**:
     ✅ 2026-09-09. Concrete SourceBuildExecutionOwner consumes the real ActorPreparationConsumer,
     binds exact selected advice/source/BuildPlan, executes the controller-owned build and reopens

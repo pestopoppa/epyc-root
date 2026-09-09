@@ -1663,6 +1663,13 @@ retrofitting the read side is impossible. Source row added to
     an A2 nomination as a keep, validation or release result.
 
   - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.**
+    Concrete emitter now exists: research `cpu_profile.run_profile_request`, compact
+    `epyc.autokernel.cpu_profile_capture.v1` and two authored mappings in
+    `epyc.autokernel.profile_measurement_carrier.v1`, checked by `reopen_capture` before
+    output. Producer SHA256 `e626efddf14530a7d4eb3f2ec06b5b86b70a14a2b329a2e59b9054b46cdb20eb`.
+    Registered ROOT projection and durable feed terminal/profile pairing are assigned and
+    not yet implemented. Preserve sampled-period attribution and receipt-integrity-only
+    scope; neither is model correctness, comparable performance or production validation.
     Owner `autokernel-unified-20260908`; implementation assigned to the actor/profile consumer.
     Preserve the selected profiling request and original target/model/quant/recipe, loaded
     profiler identity, actual owned worker result, raw artifacts and observation intervals when
