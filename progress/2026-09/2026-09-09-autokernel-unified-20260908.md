@@ -101,11 +101,35 @@ management controls are the next disjoint assignments.
 - ExperimentPlan source is published as research `93e049f1`, main merge `027e9ec7`. Only the five
   reviewed plan/CLI/test/documentation files were included; service and candidate drafts remain outside
   this checkpoint. Publication is not activation or scientific validation.
+- Its root handoff/progress checkpoint is `2712b6ae`, main merge `f2d125a2`.
 
-Resolved launch recipes, independent-unit ExperimentPlan validation and private-index accepted-patch
-commits are the next disjoint sol-medium assignments. A helper is not a completed parent slice until
-real consumers and integration acceptance exist. The Vidya source table/task registers the prospective
-current-loop measurement hook. Operational journal snapshots are not claim tuples.
+### Candidate contract accepted; control/evidence review in progress
+
+- AKU-05b is now accepted: 28 focused tests within **159 adjacent tests** pass in main's run. Candidate
+  source/build sets and per-target exact execution identities are separate, both candidate/comparator
+  rows bind precisely, and complete carried production obligations/LOO cannot be bypassed with loaded
+  state. Actual registered evidence verification remains required and is not supplied by JSON labels.
+- Main required and reviewed monotonic gain-trigger generations, exact duplicate batch starts,
+  preservation of keeps integrated after a batch was frozen, typed verifier failures, and optional
+  seed rows remaining pending without blocking required production rows. Validation debt persists
+  until trusted advancement; a completed gate's cadence reset is not validation. These are pure offline
+  transitions and CLI validation, not journal transactions, live measurements or promotion authority.
+- Candidate source is published as research `378fdc9c`, main merge `bf08bc25`; its five reviewed files
+  are frozen. That worker is now implementing the optional planned-serving consumer using the actual
+  launcher with fake processes/providers; the other two workers retain control/evidence ownership.
+- The control draft fixes the reproduced closed-writer bug, normalizes the whole resolved campaign,
+  validates replay order and poisons uncertain append failures until recovery. Main requested a final
+  pass on named-lock replacement, nested store identity, slow-client shutdown and observer-independent
+  producer heartbeat. A socket's per-read timeout is not a total service-shutdown deadline.
+- Scoped retrieval/transfer is the third isolated draft. Main review requires local quarantine/outage
+  fences to invalidate cached certificates, unknown generations to stay unknown, mandatory applicable
+  conflicts before ranking, and complete retrieval to remain distinct from positive use authority.
+  No draft is published merely because its happy-path fixtures pass.
+
+The next consumer integrations are frozen planned serving arms, durable candidate transactions and the
+existing dashboard's campaign surface. A helper is not a completed parent slice until real consumers
+and integration acceptance exist. The Vidya source table/task registers the prospective current-loop
+measurement hook. Operational journal snapshots are not claim tuples.
 
 The built-in dispatcher retained two completed review threads and exhausted its thread limit; one new
 sol-medium worker uses it and two use supported `codex exec` with explicit model/medium effort. Main
