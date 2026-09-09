@@ -1065,3 +1065,33 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   implementation sub-items now **43**; all twelve parent tasks remain open. No installed full
   dry run, five-loop hardware acceptance, grant, service activation or production kernel change.
   Per-task wrap-up only; no pruning, compaction or wiki sweep. README freshness check is clean.
+
+### Registered native-v2 projector and artifact-reader corrections
+
+- Accepted the three-file ROOT projector/corpus/test packet against the published native-v2
+  research producer. Shared source-class ID and ClaimTuple grading remain unchanged; v1 keeps
+  its original interpretation. Native-v2 loaded instrument, lifecycle and exact process ownership
+  now rederive through the existing corpus and single-event consumer. No live corpus ingestion.
+- Main reproduced **133 tests** with the real research-root conformance fixture enabled, and
+  **one actual owned-child v2 → ROOT projector test in 1.08s**. This uses fixture telemetry,
+  not real hardware isolation evidence. Initial main test invocation named a nonexistent generic
+  ledger test; corrected to the two actual ledger regression files before recording these passes.
+- Main review found a FIFO-open hang; worker reproduced the pre-fix timeout (exit124) and
+  fixed the leaf open before fstat using O_NONBLOCK. Container shape/types, target worker binding
+  and boot equality now have resealed mismatch regressions. Existing-symbol impact was LOW:
+  artifact reader 5 upstream, native_rows 2, validation 4; new helper unindexed, directly reviewed.
+  Exact adapter SHA-256: ad87bdec7afc4d07f04fe48375adf4fe476a20423481b2be662e776a2b590192.
+- Final semantic pins/default construction and actual typed eligibility/decision consumers remain
+  AKU-08c. Per-witness parent receipt authentication remains AKU-07m and its registered substrate
+  task; the projector does not manufacture absent purpose, contention or correctness evidence.
+- Startup review corrected mandatory candidate enrollment: explicit empty candidate lists must
+  support production-only campaigns. Parent-evidence review corrected positive-but-wrong output
+  token counts and targetless/cross-phase placement samples; those packets remain under integration,
+  not published by this checkpoint. Actor/profile main acceptance reproduced 61 passes and one
+  expected selected-accounting failure, still governed by OP-AKU-BIND.
+- The completed delivery team is running a new isolated current-base runtime/inputs/recovery
+  composition; no duplicate parent-evidence or startup-factory ownership was assigned.
+- Checklist: **one newly completed item (AKU-08e), zero new open tasks, zero declines**; 44
+  accepted implementation sub-items, all twelve parent tasks remain open. No installed full dry
+  run, five-loop acceptance, live grant, service activation or production kernel modification.
+  Per-task wrap-up only; no index pruning, compaction or wiki sweep.

@@ -2251,7 +2251,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     the published native fixture also passes actual ROOT reopening, but remains fixture-only.
     The canonical receipt/readiness/LOO source bridge is published at research dc580b75 / ad86b9e3;
     its final ROOT/producer pins remain unset and receipts compatibility-only. Publish the exact
-    ROOT v2 projector, install final pins/default construction and connect receipt eligibility,
+    ROOT v2 projector (completed as AKU-08e), install final pins/default construction and connect receipt eligibility,
     owning comparison/validation decisions and actual incremental feedback. Keep experimental champion selection
     separate from deployment authority; always-Unavailable adapters do not complete this task.
   - [x] **AKU-08d — execute exactly the pinned canonical source bytes**: stable bounded no-follow,
@@ -2263,6 +2263,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     1,916 tests plus 165 subtests (19 including independent edge/reopen probes). Research source
     dc580b75, main ad86b9e3. Sole ClaimTuple grading is unchanged; final pins and permitted-use
     decisions remain AKU-08c, and compatibility receipts grant no production-validation authority.
+  - [x] **AKU-08e — reopen native-v2 artifacts through the existing registered ROOT projector**:
+    preserve the v1 source class and shared ClaimTuple ladder while dispatching exact v2 plan,
+    loaded-instrument, lifecycle, native-attempt and journal envelopes. ✅ 2026-09-09
+    Main reproduced 133 projector/corpus/ladder/ledger tests plus the actual owned-child v2
+    cross-repository probe (1.08s). The reader reopens exact native dependencies; operational and
+    diagnostic records emit no scalar. Review reproduced a FIFO hang before fstat and corrected
+    it with nonblocking open; resealed container/target-worker/boot mismatch tests now refuse.
+    Adapter SHA-256 ad87bdec7afc4d07f04fe48375adf4fe476a20423481b2be662e776a2b590192.
+    Fixture telemetry proves integration, not real measurement eligibility. Final semantic pins,
+    typed receipt consumption and the bounded live feed remain AKU-08c; parent factual receipt
+    authentication remains AKU-07m/VB-AK-UNIFIED-PARENT. No Ledger.append or grading changes.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
