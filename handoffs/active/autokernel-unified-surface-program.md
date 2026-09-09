@@ -15,6 +15,12 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 > settlement defaults to invalid) and is not an accepted replacement. The original
 > feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
 
+- [x] **Live CPU trial dashboard selection**: ✅ 2026-09-09. Orchestrator
+  `59782734` → main `0ad401dd` selects the dedicated GLM store through the existing
+  dashboard environment. Dashboard-only reload verified PID1339228; `/api/loop/health`
+  reports fresh CPU evidence. Trial PID1329820 remained live. This is current-trial
+  visibility, not completion of automatic multi-campaign dashboard selection.
+
 - [x] **Existing-loop CPU serving and request-bound calibration**: ✅ 2026-09-09.
   Published serving forwarding `1799ade6` → main `12bfe8a3` and existing-loop CPU
   entry route `2f066e53` → main `fbecc61c`. CPU candidates reuse the existing
