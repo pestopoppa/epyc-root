@@ -1633,3 +1633,22 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   publication. Enrollment alone still does not settle the scheduler transition.
 - Per-task checkpoint adds one completed subtask and one open producer task; all parents stay
   open. No hardware run, production change, index pruning or wiki sweep.
+
+## Owned source/build integration checkpoint
+
+- Applied the exact eight-file source/build packet on published research ee99f549; all eight
+  hashes match the frozen handback and current-base proof. Packet SHA-256
+  `1f55a3b42cb126870f42e1043a9d60aefa920056776e19d417fb5904a574cb5b`.
+  Main independently passed60 source/preparation/discovery-guard tests in4.57s; worker current-base
+  source/preparation/startup passed62 in5.32s. Earlier full focused composition passed129 in7.58s.
+- The real profile→ActorPreparationConsumer→two actor children→owned tiny CMake build→verified
+  enrollment path passes. Original pre-issuance campaign namespace and recipe options are exact;
+  neither selected requests nor actor output were rewritten to make the test pass.
+- Fixed actual startup build/build_recipe mismatch, bounded original log reopening, and candidate
+  source-cwd import shadowing with Python safe-path launch. The genuine test commits an adversarial
+  autokernel entrypoint into the source tree and proves it never executes. Source capabilities are
+  identity-keyed native issuances, not serializable or copyable authority.
+- Added completed AKU-06k and explicit next AKU-06l for installed source/build dispatch and original
+  scheduler settlement. Enrollment is not settlement or durable expiry permission. BIND/HELD/ENROLL
+  gates remain unchanged; all 12 parent tasks remain open. No live inference, production mutation,
+  index pruning or wiki sweep.
