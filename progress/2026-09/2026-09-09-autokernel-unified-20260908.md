@@ -1510,3 +1510,18 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   remain unresolved; pre-settlement restart refuses safely. Every solve stays diagnostic-only.
 - Added completed AKU-04g; all 12 parent items remain open. Existing tasks own remaining gates;
   no new open tasks, production writes, live measurements, index pruning or wiki sweep.
+
+## Full-suite startup-fixture admission repair — AKU-04h
+
+- Full published ebb5e9fa loop/Journal suite: 2,435 passed, two strict expected failures,
+  83 subtests, one unexpected startup fixture failure (290.33s). The failing case also
+  reproduced alone in 1.03s, ruling out test-order dependence.
+- Production admission correctly rejected 64 samples for a 32-second/10ms window requiring
+  3,209. Only that test's budget is now prospectively derived before instrument sealing;
+  exact prepared/configuration capacity is asserted. No production source or duration,
+  cadence, gap, byte-budget, witness or acceptance threshold changed.
+- Main independently passed all six file tests (1.73s), verified identical acceptance/primary
+  SHA256 663f674897230ada5aed552ffd26a4be0cc6892cb5c394d9d5d6559b96d733d3,
+  then passed 80 primary startup/binding/lifecycle tests (3.10s). Full-suite rerun remains
+  necessary; these focused results do not turn the earlier failing full run into a pass.
+- Added completed AKU-04h; existing BIND/HELD gates and all parent milestones stay open.

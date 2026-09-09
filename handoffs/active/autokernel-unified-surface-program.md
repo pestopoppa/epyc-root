@@ -1941,6 +1941,11 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     first-issue permit. Replayed unknown is not absence proof; terminal recovery and durable
     not-acquired retries must preserve exact identity. No hidden three-unit launch or one-unit
     plan rehash. Coordinate this bridge with AKU-07i's actual observation/lifecycle owner.
+  - [x] **AKU-04h — align native startup fixture with prospective sample admission**:
+    ✅ 2026-09-09. The full published suite exposed one fixture declaring 64 samples for
+    32 seconds at 10ms cadence (requires 3,209). The test now derives its count before
+    sealing instrument identity and asserts exact prepared-plan admission. Timing, cadence,
+    gap, byte limits and production admission are unchanged; main's 80 adjacent tests pass.
   - [x] **AKU-04g — installed raw serving-calibration preparation**: ✅ 2026-09-09.
     Startup v4 prospectively derives bounded A/A and neutral-copy process pairs and retries;
     the actual driver/controller/native worker collects immutable original chunks. Only exact
