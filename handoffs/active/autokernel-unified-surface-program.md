@@ -2165,14 +2165,13 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     artifact reads and check before/after identity stability; no FIFO wait or changing artifact
     may fabricate a pinned instrument. The operator approved the specific HIGH-impact validator
     change on 2026-09-09; unrelated trust boundaries and frozen kernels remain unchanged.
-    Main verified eight artifact-reader tests but reproduced a reused-PID ancestry defect:
-    compare each observed start tick/boot identity and recheck target/container membership before
-    durable capture. The expired-owner publication probe also fails (two independent failures).
-    Main reproduced 254 focused tests plus 15 subtests and the real child/v2/restart IPC fixture,
-    but that fixture mocks containment/telemetry and emits only diagnostic arms: the actual ROOT
-    projector returns no claim, with zero scored independent launches. Add a genuinely scored
-    parent-verified fixture without weakening diagnostic refusal; prove test-owned real cgroup
-    containment separately or retain the exact platform refusal. Neither is live inference evidence.
+    The working-tree correction now passes main's three independent PID/expiry probes and 67
+    lifecycle/driver/observation tests. Both diagnostic refusal and fixture-scored child/v2/restart
+    modes exist; main's actual ROOT projector reopen probe passes. Synthetic witness passes prove
+    serialization/consumer wiring, not scientific witness derivation. The separate real test-owned
+    cgroup membership/cleanup fixture also passes; it does not prove controller enforcement,
+    resource exclusivity, production telemetry or performance. Finish source acceptance/publication
+    and the concrete parent evidence path below; no live inference acceptance is claimed.
   - [ ] **AKU-07j — persist provider-held cost for process-restart settlement**: add the exact
     versioned held-receipt lifecycle record after OWNED_TERMINAL and validated provider close,
     before WORKER_RESULT_ACCEPTED/STALE. Restore separate accounting-only indexes and bind lookup
@@ -2189,6 +2188,22 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Current provider authorize/close APIs receive no typed backend/class binding, so request-ID-only
     changes cannot fix profile settlement. The additional HIGH22/three-process validator scope awaits
     OP-AKU-BIND approval; descendant approval does not cover it. Preserve v1 and old-reader refusal.
+  - [ ] **AKU-07l — select and materialize native-v2 work through the public driver**:
+    plan_iteration currently compares v2 plans against v1-only expected arm identities, and
+    materialize_runtime emits PREPARED_SCHEMA v1. Select the existing schema-appropriate identity
+    builder and loaded-instrument identity without changing proposal recipe identities; preserve
+    explicit v1 compatibility. Test actual public scheduler selection through v2 preparation,
+    without manually upgrading the test's prepared stage. Exact two caller seams were LOW;
+    the shared HIGH-impact serving_arm_identity helper remains unchanged.
+  - [ ] **AKU-07m — derive parent witnesses from sealed native lifecycle evidence**:
+    carry the exact sealed native-observation StoredArtifact through closed v2 completion IPC;
+    reopen it and its lifecycle reference in the bounded parent evidence producer, joined to the
+    parent-issued process/grant/container receipts and frozen plan/recipe/request identities.
+    Derive each supported factual witness separately, retain underlying artifacts/source pins,
+    and reconcile the same receipt during native capture. Generic request success cannot pass
+    correctness, placement or contention. Unsupported purpose/GPU/runtime checks remain unknown
+    until their concrete owning adapters are connected. Preserve v1 completion grammar, exact
+    retry identity and existing grading/noise policy; configuration injection alone is insufficient.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
@@ -2323,13 +2338,28 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     authority is created. Source `1be3cf79`, main `e678a2e2`; live import/cutover and future durable
     legacy database schema marking remain outside this completed snapshot-reader slice.
   - [ ] **AKU-10d — finish native maintenance ownership and uncertain-provider recovery**:
-    integrate reviewed controller exclusion/native roots/real hold accounting, and retain the
-    exclusion on acquisition reply loss or false/misbound aborted-settlement receipts. The four
-    uncertainty/abort probes now pass with the focused suite (35 tests): receiptless public abort
-    refuses and settlement uses the latest validated renewed receipt. A subsequent legacy INTENT
-    probe fails because validation adds a v2 field while retaining the closed v1 schema; preserve
-    accepted legacy bytes and revalidation/replay, while refusing unproved legacy ABORTED rows.
-    The same owner is correcting and refreezing; real native catalog/provider coverage remains.
+    complete fresh admission and real execution using the native catalog and provider below.
+    The durable ownership/replay slice is published as AKU-10e; absence of the remaining roots
+    or actual provider must continue to refuse fresh cleanup, not become an eligibility bypass.
+  - [x] **AKU-10e — durable maintenance ownership, replay and shutdown fences**: short controller
+    transactions retain exclusion across unlocked provider/filesystem work; uncertain acquisition,
+    tombstone publication and settlement preserve recovery ownership. ✅ 2026-09-09
+    First holds bind to their token; completed accounting reconstructs the exact receipt digest
+    and matches IO_COMPLETE cost; fresh and recovery intents enforce their distinct token chains
+    and clear prior hold/cost state. Receiptless abort refuses; valid legacy non-abort bytes replay.
+    Worker/candidate/new-native publication and clean shutdown cannot bypass owned exclusion.
+    Clean six-file acceptance passed 1,873 tests plus 165 subtests; main's composed native/maintenance
+    tree passed 1,899 plus 165, with 39 maintenance tests and six independent probes. Research
+    source c5525fb8; fresh catalog/provider execution and real artifact deletion are not completed.
+  - [ ] **AKU-10f — connect complete native retained-artifact/dependency catalog**: populate the
+    controller-owned catalog from existing worker/evidence/candidate/DSO/RUNPATH/physical-root
+    write hooks; prove completeness and exact protected/live dependencies before fresh admission.
+    CandidateTransactions.retention_view currently verifies candidate manifests, then refuses
+    incomplete external coverage. Caller-supplied roots or membership cannot replace owner records.
+  - [ ] **AKU-10g — connect real maintenance holds and accounting**: implement the broker-owned
+    hold/refresh/settlement provider and concrete controller backend, preserving bounded unlocked
+    I/O, exact abort/completion receipts and uncertain replay. Default execution remains unavailable;
+    source publication does not authorize live deletion or provider activation.
 - [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
   finalise → promote → reboot gate. Exact pending choice: whether the operator's new implementation
   instruction delegates broker-code work now while preserving live activation gates. No answer inferred.
