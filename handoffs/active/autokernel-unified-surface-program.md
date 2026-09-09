@@ -2250,9 +2250,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     projector tests include resealed PID mismatch refusal and existing v1 producer compatibility;
     the published native fixture also passes actual ROOT reopening, but remains fixture-only.
     The canonical receipt/readiness/LOO source bridge is published at research dc580b75 / ad86b9e3;
-    its final ROOT/producer pins remain unset and receipts compatibility-only. Publish the exact
-    ROOT v2 projector (completed as AKU-08e), install final pins/default construction and connect receipt eligibility,
-    owning comparison/validation decisions and actual incremental feedback. Keep experimental champion selection
+    the published ROOT v2 projector and exact default verifier pins are AKU-08e/08f. Old receipts
+    remain compatibility-only until original-run producer capture is proved (AKU-08g). Connect
+    typed receipt eligibility, owning comparison/validation decisions and incremental feedback.
+    Keep experimental champion selection
     separate from deployment authority; always-Unavailable adapters do not complete this task.
   - [x] **AKU-08d — execute exactly the pinned canonical source bytes**: stable bounded no-follow,
     nonblocking regular-file reads are hashed and those exact bytes compiled/executed, bypassing
@@ -2274,6 +2275,23 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Fixture telemetry proves integration, not real measurement eligibility. Final semantic pins,
     typed receipt consumption and the bounded live feed remain AKU-08c; parent factual receipt
     authentication remains AKU-07m/VB-AK-UNIFIED-PARENT. No Ledger.append or grading changes.
+  - [x] **AKU-08f — load the published canonical projector by default without retroactive authority**:
+    install the exact six-field verifier closure and select it during ordinary construction;
+    preserve explicit legacy compatibility loading. ✅ 2026-09-09
+    Research source 9ed6fc35, main b83b1027; main reproduced 19 focused tests and independent
+    source-loader/reopen probes. ROOT source 2010b713 and adapter ad87bdec are pinned exactly.
+    Existing native-v2 records lack captured producer implementations, so receipts retain
+    compatibility_only even with current verifier pins; receipt-pair decisions check that scope
+    independently. This fixes the default loader, not the outstanding scientific-use consumer.
+  - [ ] **AKU-08g — capture producer implementation identity before the original run**:
+    seal a closed producer_source_closure in loaded-instrument used_constants before plan freeze,
+    using existing loaded-callable/config identities for the selected deferred native sink and
+    observation seal/validation path. Include actual builder/finalizer dependencies, not only a
+    wrapper label or today's module hash. Bind the actual selected implementations during capture;
+    canonical receipt reopening must match the captured closure to the installed expected closure.
+    Old instruments lacking it stay compatibility-only. Connect only its supported provenance
+    warrant to typed eligibility under AKU-08c; no new carrier grammar, grading ladder or
+    numerical acceptance policy is implied. Lifecycle and semantic owners coordinate one writer.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.

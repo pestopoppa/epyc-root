@@ -1095,3 +1095,36 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   accepted implementation sub-items, all twelve parent tasks remain open. No installed full dry
   run, five-loop acceptance, live grant, service activation or production kernel modification.
   Per-task wrap-up only; no index pruning, compaction or wiki sweep.
+
+### Canonical default loader and prospective producer provenance
+
+- Published research **9ed6fc35 / b83b1027**: ordinary PinnedRootProjection construction now
+  uses the published ROOT source 2010b713 and exact corrected adapter ad87bdec. Explicit legacy
+  pins remain available. Main reproduced **19 focused tests and source-loader/reopen probes in
+  1.28s**; initial subprocess probe lacked PYTHONPATH and was rerun with the exact acceptance
+  package root. All three accepted file hashes match the frozen owner packet.
+- Review distinguished installed verifier identity from original producer identity. Existing
+  native-v2 records do not capture the two producer implementations represented by configured
+  hashes, so current verifier pins cannot upgrade their authority retrospectively. Receipts
+  remain compatibility_only and receipt-pair consumption checks that scope independently.
+  Added **AKU-08g** for prospective loaded producer closure and linked the ongoing typed consumer.
+  This extends the existing native/lifecycle source, not the shared grading policy.
+- The startup factory passed **29 main-run tests** and independent module-CLI generation to
+  `tmp/autokernel-implementation-20260908/startup-factory-independent-review-bundle` under
+  `/mnt/raid0/llm`. Its emitted frozen-driver command returned exit0 with unavailable/false
+  execution authority and exact provider/evidence/profile debt. Synthetic inputs and an older
+  isolated runner do not satisfy installed AKU-12a. Publication waits current runtime composition.
+- Actor/profile review reproduced unsafe cancellation after actual terminal but before held-cost
+  access, mutable caller configurations and nonfinite budgets; scoped fixes are released in its
+  isolated acceptance. Feed review identified a possible deadline-before-checkpoint/next-retry-ACK
+  ordering fault, assigned to the restarted feed owner for reproduction and correction. These are
+  active fixes under AKU-06/07/08, not completed acceptance claims.
+- Rechecked the real orchestrator exporter at 3b77bc5a using both-instance mode: exit2,
+  `compiled priors are stale for descriptors`. OP-AKU-STACK remains necessary. The initial uv
+  invocation unexpectedly created the isolated lane's ignored .venv and installed151 packages;
+  tracked status remains clean, no generated stack files or services changed. Use the existing
+  interpreter for subsequent checks; no environment deletion was performed.
+- Checklist: **one newly completed item (AKU-08f), one new open task (AKU-08g), zero declines**;
+  45 accepted implementation sub-items, all twelve parent tasks remain open. No full installed
+  dry run, five hardware loops, live grants, deployment or production kernel change. Per-task
+  wrap-up only; no pruning, compaction or wiki sweep.
