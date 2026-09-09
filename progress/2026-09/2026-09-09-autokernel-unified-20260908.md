@@ -47,6 +47,38 @@ labelled measured/current. Those corrections are in accepted code, not deferred 
 First source checkpoint was published as research `93ce4bad` / main merge `585aef6f`, root `ca9a6fb7` /
 main merge `8bf6f108`. Publication did not move shared worktrees or restart live processes.
 The enrollment/recovery/heartbeat source checkpoint is research `6682e4af`, main merge `f5941fd0`.
+Its root dashboard/handoff checkpoint is `971f91fe`, main merge `3eaca1cb`.
+
+### Accepted source-commit isolation
+
+- AKU-05a: `archive.keep()` uses a captured-parent private index and exact accepted paths. Peer staging
+  and working bytes are retained; selected paths use the accepted working version rather than a peer's
+  differently staged version. Hooks run against the private index; unexpected staged paths refuse.
+- Branch/repository identity checks, expected-parent CAS, tracked deletion and post-commit notification
+  failure have hermetic tests. Main run: **83 passed, 7 subtests passed** (26 focused cases included).
+  The ref update is atomic against its old commit; HEAD binding is immediately rechecked, not claimed
+  as an atomic symref-plus-ref transaction. The existing single integration owner remains required.
+- A source commit is not proof of build or measurement; module documentation now makes that distinction.
+  Cross-repository integration intent, manifests and validation debt are separate upcoming work.
+
+### Accepted resolved recipe consumer
+
+- AKU-02b: immutable snapshot and normalized execution identity, exact injected artifacts/DSO load names,
+  effective allowlisted environment and absences, derived CPU/GPU/speculation capability, and real serving
+  launcher consumption. The old template hash is preserved. CPU zero VRAM is not a GPU veto; missing
+  CPU placement/contention and runtime-set/master-off witness samplers remain explicitly unproven.
+- Main review required duplicate argv values, port/path normalization without erasing DSO load names,
+  effective inherited readbacks, cross-field capability checks, unknown/mixed GPU-draft refusal and
+  pre-launch template/environment integrity. **31 focused tests passed**, followed by **150 adjacent
+  tests and 28 subtests**. No real server was launched.
+- The loader now actually removes inherited `HSA_OVERRIDE_GFX_VERSION`, as its prior contract required.
+  The floor writer uses `status.write_json`. Serving metric documentation now says sum of each slot's
+  reported rate; the estimator, legacy identities and acceptance thresholds did not change.
+
+These source/recipe slices are published as research `1b44675d`, main merge `d1611123`; publication
+does not deploy the loop or move the shared checkout. Evidence-plan drafts remain unpublished pending
+main-requested authority, pairing and calibration-cache corrections; candidate manifests and durable
+management controls are the next disjoint assignments.
 
 Resolved launch recipes, independent-unit ExperimentPlan validation and private-index accepted-patch
 commits are the next disjoint sol-medium assignments. A helper is not a completed parent slice until

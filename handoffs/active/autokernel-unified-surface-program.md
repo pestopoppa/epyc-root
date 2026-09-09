@@ -1812,6 +1812,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     ✅ 2026-09-09 — reviewed `Recipe.explicit_unsets`, real `server_env()` consumer and bidirectional
     readback fixtures; 89 focused tests and 611 loop tests / 59 subtests pass. This does not yet freeze
     the full inherited environment or supply the new CPU runtime-arm adapter.
+  - [x] **AKU-02b — frozen launch resolution and CPU serving consumer**: explicit artifact identities,
+    allowlisted effective environment and absences, derived backend/speculation capability, frozen
+    argv/workload/readback expectations, and the optional real `_measure_once()` consumer.
+    ✅ 2026-09-09 — 31 main-run focused tests. Exact snapshot integrity is separate from normalized
+    execution identity: relocation/port/recipe label do not change execution, while model/DSO load-name
+    content, runtime semantics and environment do. CPU uses explicit `device=none, ngl=0`; zero VRAM
+    is not a GPU veto, but placement/contention remain unproven. Multi-device/mixed-draft, overriding
+    extension flags and unknown capabilities refuse before launch. Runtime-set/master-off samplers,
+    CPU lifecycle witnesses, planned no-build arms and policy consumers remain required. Legacy recipe
+    hashes are unchanged; the inherited HSA override is actually removed and floor writes now use the
+    hardened JSON publisher. Metric prose now accurately describes the unchanged sum-of-slot-rates.
 - [ ] **AKU-03 — native journal and recovery** (AK-AUTO-02): current-loop event schemas, phase boundaries,
   integration intent/completion, original provenance and replayed projections. Missing/corrupt/stale
   bundle never silently certifies anchor; interrupted units and schema rollback follow §8.17.
@@ -1835,6 +1846,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
   delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
   identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
+  - [x] **AKU-05a — private-index accepted source commits**: the real `archive.keep()` consumer commits
+    only accepted literal paths from captured HEAD, preserves peer index bytes, honors commit hooks and
+    advances the selected ref with expected-parent CAS. ✅ 2026-09-09 — 83 main-run adjacent tests and
+    7 subtests pass, including 26 focused private-index cases. Wrong repository/branch, path expansion,
+    hook-added peer staging and concurrent ref advance refuse; notification failure after a landed
+    commit does not report a nonexistent commit failure. HEAD binding is rechecked immediately before
+    ref CAS, not claimed as an atomic branch-binding transaction; the owning integration lock remains
+    necessary. This supplies source safety, not a measured candidate or cross-repository transaction.
 - [ ] **AKU-06 — bounded scheduler and mechanism routes** (AK-AUTO-07/09): pure accounting/coverage model,
   bounded seed boost/opportunity, reservations and rejection audits; directed transfer and noncomposable
   coexistence evidence. Live admission/coexistence waits for AKU-11, not a fake-provider pass.
