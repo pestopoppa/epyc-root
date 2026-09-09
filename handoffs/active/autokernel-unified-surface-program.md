@@ -2290,6 +2290,23 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     entry path/SHA receipt before spawn and observe one original validator invocation without
     changing its pinned identity. Synchronous filesystem I/O is not claimed cancellable.
     Standalone configuration installation and remaining scientific witnesses stay AKU-07n/07o.
+  - [x] **AKU-07u — install closed native startup configuration and prospective instrument**:
+    ✅ 2026-09-09 research 9e2125b1 / main 625348f8. Startup v3 binds per-target/per-recipe
+    complete-model preparation, explicit observation configuration and the installed adapter.
+    Dry-run performs no model/store/grant I/O and labels the instrument planned_unpublished;
+    runtime publishes/reopens exact instrument bytes before scheduling and retains one adapter
+    instance. V1/v2 remain supported. The startup test proves configured owner construction;
+    separate genuine-child tests prove raw receipt seal/reopen, not one installed end-to-end run.
+  - [x] **AKU-07v — collect bounded same-attempt raw search windows**:
+    ✅ 2026-09-09 research 9e2125b1 / main 625348f8. Original source-pinned marker IPC covers
+    warmup, measurement, measurement end and teardown after model preparation. Parent polling
+    retains bounded host/claim/storage observations and joins original lifecycle intervals.
+    Cross-phase, zero-duration, incomplete and post-close coverage cannot become clean windows.
+    Exact source/configuration/native/parent receipts seal and reopen; no WindowAttestations,
+    calibration/control qualification or scientific verdict is invented. Main full suite:
+    2,284 passed, one existing accounting xfailed, 83 subtests, no skips in 68.90s;
+    fresh integration subset 56 passed in 8.39s. All 21 published files match accepted hashes.
+    Same-server finalization and actual scientific feedback remain AKU-07o/08c.
   - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
     add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
     candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,

@@ -1638,6 +1638,10 @@ retrofitting the read side is impossible. Source row added to
     `epyc.autokernel.native_server_response_unit.v1` ordered units in the actual contained
     serving lifecycle. Original instrument pins and exact request/response bytes are retained;
     ROOT per-witness consumption remains required, and raw capture alone grants no grade.
+    Research 9e2125b1 / main 625348f8 additionally retains same-attempt raw window receipts:
+    original marker bounds, host/claim/storage samples and lifecycle interval joins with
+    prospective source/configuration identity. Extend this same consumer to reopen those
+    dependencies; raw factual coverage is not a quiet-window or calibration/control verdict.
   - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
     Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
     three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,
