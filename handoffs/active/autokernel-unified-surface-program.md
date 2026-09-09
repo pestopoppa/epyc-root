@@ -1968,6 +1968,21 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     builds receipt/seed indices once; hot-path updates avoid historical scans. V1 explicitly uses fixed
     weights and no compatibility authority. CLI selections grant no execution. Journal transitions,
     native provider receipts, registered adaptation, planner/routes and live admission remain required.
+  - [x] **AKU-06b — mechanism-scoped planner and prepared runtime-recipe consumer**: production
+    CPU/GPU profiles, exact scoped evidence, runtime dimensions and persistent scheduler selection
+    bind a prospective dispatch intent to the actual target, proposal, claim key and final plan.
+    ✅ 2026-09-09 — main's **228 tests** pass across planner, scheduling, evidence, enrollment, recipes
+    and plans. Each unique export/policy is validated once when preparing immutable anchors; repeated
+    planning performs no export/filesystem reads. Anchors bind the complete resolved campaign, not
+    only its requested manifest. Thread/placement/NUMA/batch/ubatch and allowlisted environment
+    set/unset arms retain exact model/executable/DSO provenance and rederive canonical launch semantics.
+    Runtime dispatch requires a matching complete ExperimentPlan; source/build proposals remain typed
+    final-plan preparation, never permission from a claimed plan hash. Mandatory conflicts survive
+    prompt truncation; Q4_K findings do not rank Q8_0 work and cross-epoch values do not rank fresh work.
+    Stops do not consume undispatched scheduler slots. This is a nonexecuting planner boundary;
+    standalone driver, preselected actor preparation, local-seed runtime/profile adapter, native intent
+    persistence and worker/receipt/evidence integration remain required. Source `26171408`, main
+    `1e5b766a`; the AKU-06 parent remains open.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.

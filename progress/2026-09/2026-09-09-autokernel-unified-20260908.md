@@ -442,6 +442,28 @@ measurement hook. Operational journal snapshots are not claim tuples.
   owned teardown despite returned Journal errors. The root worker-aware v2 consumer is now dispatched;
   neither lifecycle nor dashboard-v2 source is accepted or deployed by this checkpoint.
 
+### Planner accepted; standalone consumer integration dispatched
+
+- Research source **26171408**, main merge **1e5b766a**, publishes the scoped planner and its tests/docs.
+  Main independently reran **228 tests** across planning, persistent scheduling/CLI, scoped evidence,
+  canonical recipes, enrollment and experiment plans; Ruff and whitespace checks pass.
+- Prepared runtime anchors validate unique exports/policies once, retain actual full/partition recipe
+  provenance, and bind the complete resolved campaign. Repeated iterations read no export files. Typed
+  runtime dimensions rederive actual launch semantics and require a matching full ExperimentPlan.
+  Source/build actors cannot assert final-plan identity. Immutable dispatch records bind the exact
+  proposal, ClaimKey and effect question; arm levels are not reported as gain evidence.
+- Main's corrections cover mismatched target/model identity, hash labels beside unmatched recipes,
+  mutable carriers, environment-sweep templates, cross-epoch ranking and stale same-manifest resolved
+  artifacts. Startup validation is cached without promising that backing files cannot change before
+  launch; execution-time checks remain required.
+- The planner worker now owns a design-first standalone driver integration. It must select/budget
+  expensive preparation before actor calls, persist prospective native intent, account actual held
+  receipts and connect local seed profiling/runtime preparation. Existing lifecycle/controller files
+  remain with their current worker until release. No isolated helper is labeled a completed service.
+- Lifecycle and matching dashboard-v2 source remain under final review. Recovery, trusted bootstrap
+  origin, teardown despite returned journal errors and accepted-versus-completed controls are tested
+  with temporary fixtures only. No live service, provider, production kernel or research run changed.
+
 The built-in dispatcher retained two completed review threads and exhausted its thread limit; one new
 sol-medium worker uses it and two use supported `codex exec` with explicit model/medium effort. Main
 caps active concurrency at three, owns process handles, reviews proposals and publishes accepted files.
