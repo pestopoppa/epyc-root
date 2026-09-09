@@ -613,3 +613,35 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   handoff/progress/index application and reviewed publication. Bus drain/heartbeat again refused the
   non-roster session ID; no peer identity was used. Frozen kernels, real grants, services, research
   runs and historical stores remain untouched; OP-41 and measurement/cutover gates remain intact.
+
+### Reviewed lifecycle-observation and advisory runtime-screen boundary
+
+- Published research source **04d73260**, main **d75bc9ec**: nine exact reviewed files add the
+  bounded lifecycle observer/serving hooks and generic A2 runtime screens. Main prepared an independent
+  checkout from published `8cbcce9f`, copied only those nine files, checked every SHA-256 against the
+  final packets, and ran **1,512 tests plus 83 subtests**. Final focused validation passed **143 tests
+  plus 3 subtests**, all seven Python files passed Ruff, and scoped diff checks passed. Driver-execution
+  drafts and other teams' packages were excluded. Fresh GitNexus impact was LOW (serving: two callers;
+  eligibility: zero indexed upstream callers).
+- Observer acceptance includes six independent main regressions: loaded constants/nested code, mixed
+  dict/slot configuration, unsupported hidden native payload, dropped-sample cost accounting and an
+  unjoined reader between probes. The actual finish path now preserves unknown reader cost even when
+  no read is active. Frozen records cannot accept late samples/callbacks; serving cleanup cannot be
+  skipped by observation/export errors. GPU attribution requires explicit trusted target evidence,
+  not a fabricated proc path or global VRAM; missing purpose/runtime verification stays unknown.
+- A2 screens bind complete same-artifact runtime/policy/host frames. They seal three anchor samples,
+  run three candidate-only samples and require a live registered verifier for cache/nomination
+  authority. Invalid terminal results are retained; ambiguous launch intent requires reconciliation.
+  Actual different-epoch plans exercise A3 stale-history handling: conclusions survive, magnitudes
+  are null. Mixed current frames cannot be ranked. Ordinary build/agent/filesystem load remains
+  diagnostic noise; only the owning protocol's verified overlapping inference can veto an A2 arm.
+- Per-task wrap-up adds **AKU-04d and AKU-07d**, bringing the accepted implementation sub-item count
+  to **31**. All twelve parent tasks remain open. The two already-registered prospective Vidya tasks
+  remain open until actual native attachment/phase projection is connected; no historical claims are
+  invented. No extra task/decline is needed for these residuals: they are already owned by AKU-04/07/08.
+- Main review also found the driver and actor connectors bypassing the actual controller-owned
+  worker engine. Corrections now require the real Journal sink, admission/drain gates and active
+  projection, with narrow public execution/terminal seams. These are active assigned implementation
+  fixes, not operator blockers. Other teams retain separate file ownership and per-package wrap-ups.
+  Bus drain/heartbeat again rejected the non-roster session ID; no roster/peer identity was changed.
+  No frozen kernel, live service, real grant, inference run, corpus or historical artifact was touched.
