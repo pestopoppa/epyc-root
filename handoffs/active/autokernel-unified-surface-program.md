@@ -2248,15 +2248,21 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     missing-adapter refusal. No actor string/dict supplies grading authority. Complete actual
     feed/frontier/ACK/invalidation consumers and the final producer-to-projector path. Main's 56
     projector tests include resealed PID mismatch refusal and existing v1 producer compatibility;
-    they do not establish native-v2 end-to-end acceptance. Keep experimental champion selection
+    the published native fixture also passes actual ROOT reopening, but remains fixture-only.
+    The canonical receipt/readiness/LOO source bridge is published at research dc580b75 / ad86b9e3;
+    its final ROOT/producer pins remain unset and receipts compatibility-only. Publish the exact
+    ROOT v2 projector, install final pins/default construction and connect receipt eligibility,
+    owning comparison/validation decisions and actual incremental feedback. Keep experimental champion selection
     separate from deployment authority; always-Unavailable adapters do not complete this task.
-  - [ ] **AKU-08d — execute exactly the pinned canonical source bytes**: replace separate hash/path
-    execution in the semantic owner with bounded stable regular-file reads and compile those exact
-    verified bytes, bypassing stale timestamp-valid bytecode. Preserve import metadata and restore
-    module state on failure; concurrent constructors must not cross-wire ClaimTuple registration.
-    Main reproduced one failing stale-pyc test: the current source SHA matches new bytes while the
-    loader executes old cached code. Add permanent replacement/cache/failure/concurrency regressions
-    before publishing the semantic receipt packet; no grading-policy change is authorized.
+  - [x] **AKU-08d — execute exactly the pinned canonical source bytes**: stable bounded no-follow,
+    nonblocking regular-file reads are hashed and those exact bytes compiled/executed, bypassing
+    stale timestamp-valid bytecode. ✅ 2026-09-09
+    Serialized registration and BaseException cleanup preserve module state; replacement, FIFO,
+    cached bytecode, cancellation and concurrent constructors have permanent regressions. Main
+    reproduced 13 focused/source-loader tests after composition; clean native-v2 acceptance passed
+    1,916 tests plus 165 subtests (19 including independent edge/reopen probes). Research source
+    dc580b75, main ad86b9e3. Sole ClaimTuple grading is unchanged; final pins and permitted-use
+    decisions remain AKU-08c, and compatibility receipts grant no production-validation authority.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.

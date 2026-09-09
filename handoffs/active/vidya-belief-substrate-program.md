@@ -1620,6 +1620,14 @@ retrofitting the read side is impossible. Source row added to
     Native attachment and strict reader must agree on the versioned identity; old records are never
     relabelled using today's source. Observations alone produce no gain claim, quiet-host rule or
     competing grader. Wire the actual serving/worker consumer before claiming lifecycle completion.
+  - [ ] **VB-AK-UNIFIED-PARENT — wire parent per-witness receipts prospectively.** Owner
+    `autokernel-unified-20260908`; new source candidate under review with AKU-07m. Retain exact
+    native/lifecycle artifacts, loaded source pins, parent-issued worker/grant/container/process/
+    unit/phase identities and the finding underlying each non-unknown witness. Carry the sealed
+    artifact through closed completion IPC; native capture and the existing ROOT arm reader must
+    reopen the same receipt and reject mismatched witness/finding references. Unsupported purpose,
+    correctness/contention/GPU warrants stay unknown. Reuse the existing source-class grading;
+    these supporting receipts are not an independent performance claim or a second ladder.
   - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
     Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
     three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,
