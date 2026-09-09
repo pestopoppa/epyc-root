@@ -1039,3 +1039,29 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
 - Checklist: **one completed item (AKU-07i), zero new open tasks, zero declines**. Accepted
   implementation sub-items now **42**; all twelve parent tasks remain open. Per-task wrap-up
   only, without index pruning, compaction or wiki sweep; README freshness remains clean.
+
+### Exact-source canonical validation receipt bridge
+
+- Published research source **dc580b75**, main **ad86b9e3**: seven-file canonical receipt,
+  readiness/LOO provenance and exact public row replay bridge. Native producer dependency is the
+  published a3b251bc tree. Canonical grading remains ROOT's sole ClaimTuple ladder; all six final
+  producer/projector pins remain unset, so receipts explicitly retain compatibility-only scope.
+  Advisory readiness is not turned into production permission; v1 LOO closure stays fixture-only.
+- The loader verifies one stable bounded regular-file byte sequence and compiles that sequence,
+  without a second source read or timestamp-based bytecode reuse. Nonblocking open rejects FIFO
+  input, BaseException restores module state, and one reentrant lock serializes registration.
+  Main independently reproduced **13 tests**, including its stale-bytecode and subprocess-FIFO
+  probes. Clean acceptance on published native-v2: **1,916 passed plus 165 subtests in 28.40s**;
+  focused plus independent edge/reopen probes: **19 passed**. No policy/eligibility bypass added.
+- Parent factual evidence candidate has 33 focused tests and remains under integration review.
+  Added its prospective supporting-evidence source row immediately, plus **VB-AK-UNIFIED-PARENT**
+  under the existing substrate handoff. Native capture and the ROOT reader must reopen each exact
+  per-witness receipt; correctness/contention/purpose/GPU unknowns cannot pass by receipt presence.
+  No independent measurement source class or second grading ladder is introduced.
+- Next canonical gate is the registered ROOT v2 projector publication, then exact final source
+  pins/default construction and actual eligibility/decision/feed consumption (AKU-08c remains open).
+  Its frozen source is being composed separately against published native-v2; no live ingestion.
+- Checklist: **one completed item (AKU-08d), one new open wiring task, zero declines**. Accepted
+  implementation sub-items now **43**; all twelve parent tasks remain open. No installed full
+  dry run, five-loop hardware acceptance, grant, service activation or production kernel change.
+  Per-task wrap-up only; no pruning, compaction or wiki sweep. README freshness check is clean.
