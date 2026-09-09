@@ -395,7 +395,7 @@ PANELS: Mapping[str, PanelSource] = _index((
         route="/api/loop",
         health_route="/api/loop/health",
         health_func="loop_data_health",
-        producer="autokernel.loop.status.write (the rebuilt AutoKernel loop)",
+        producer="selected AutoKernel campaign controller, otherwise legacy loop.status.write",
         producer_repo="epyc-inference-research",
         evidence="/mnt/raid0/llm/autokernel/loop-memory/loop-status.json",
         timestamp_field="generated_at",
@@ -423,11 +423,12 @@ PANELS: Mapping[str, PanelSource] = _index((
         # /api/loop/health reports `absent` with HTTP 503 — nothing is hidden;
         # the cold start just does not cry wolf.
         absence_is_anomalous=False,
-        notes="Deliberately NOT part of the Kernel-R&D surface: that surface pins "
-              "29 cross-repo source paths and 47 content digests and is slated for "
-              "wholesale rewrite. One contract, one panel, no shared blast radius. "
-              "A loop that DECLARES state=complete reads `idle`; state=failed is "
-              "never laundered into idle — loop_data_health raises it to degraded.",
+        notes="The existing /loop surface selects an explicitly configured unified campaign "
+              "or the legacy loop. The evidence path above is the legacy fallback; unified "
+              "observations carry their selected campaign-snapshot.json path. A durable snapshot "
+              "alone is history: matching transport identity and producer heartbeat establish "
+              "liveness. Legacy complete reads idle; failed never becomes idle. Other evidence "
+              "cards retain their own envelopes and cannot certify this producer.",
     ),
     PanelSource(
         panel="bus",

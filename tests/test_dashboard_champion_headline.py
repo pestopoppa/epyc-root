@@ -136,6 +136,14 @@ def real_bundle() -> dict:
     return json.loads(REAL_BUNDLE.read_text(encoding="utf-8"))
 
 
+def expected_gate_treatment(bundle: dict) -> str:
+    """Format the copied producer's treatment without consulting page code."""
+    effect = bundle["headline"]["effect_fraction"]
+    if isinstance(effect, bool) or not isinstance(effect, (int, float)):
+        raise TypeError("real gate headline effect_fraction is not numeric")
+    return f"{effect * 100:+.1f}%"
+
+
 def real_champion() -> dict:
     if not REAL_CHAMPION.is_file():
         raise unittest.SkipTest(
@@ -229,12 +237,13 @@ class _Store(unittest.TestCase):
         target.write_text(body if isinstance(body, str) else json.dumps(body),
                           encoding="utf-8")
 
-    def use_real_bundle(self) -> None:
+    def use_real_bundle(self) -> dict:
         """Copy the REAL emitted bundle in, so its mtime is inside its envelope."""
         source = real_bundle()
         target = self.root / "operator_gate_bundle.json"
         target.write_text(json.dumps(source), encoding="utf-8")
         S.OPERATOR_GATE_BUNDLE_JSON = target
+        return source
 
     def use_bundle_with_commit(self, commit: str) -> None:
         """The REAL emitted bundle, re-pointed at ``commit`` — for driving the
@@ -1020,7 +1029,8 @@ class Rendering(_Store):
         """THE defect, in one assertion. Both cards carry a large percentage;
         each must name its own anchor, its own producer and its own question."""
         self.write_loop(recorded_loop())
-        self.use_real_bundle()
+        source = self.use_real_bundle()
+        treatment = expected_gate_treatment(source)
         self.write_champion(self.bundle())
         out = self._render()
         champ = self._text(out["by_id"]["champ"])
@@ -1034,8 +1044,8 @@ class Rendering(_Store):
         # satisfied by the branch name and stayed green through a mutation that
         # dropped the anchor entirely. The key has to be the claim, not a
         # substring that happens to co-occur with it.
-        self.assertIn("+48.9%", gate)
-        anchor = real_bundle()["production_anchor"]["commit"][:12]
+        self.assertIn(treatment, gate)
+        anchor = source["production_anchor"]["commit"][:12]
         self.assertIn(f"the frozen production kernel {anchor}", gate)
         self.assertNotIn("an anchor this bundle does not name", gate)
         # ...and says which commit it measured. Its relationship to the current
@@ -1045,12 +1055,12 @@ class Rendering(_Store):
         # commit a PARENT of the champion. In this fixture the champion tree is
         # deliberately unresolvable, so the honest verdict is "cannot say" —
         # the four computed verdicts are executed in GateScopeRelationship.
-        self.assertIn(real_bundle()["champion"]["commit"][:12], gate)
+        self.assertIn(source["champion"]["commit"][:12], gate)
         self.assertIn("cannot be established", gate)
         self.assertNotIn("a different tree", gate)
         # The champion card does not carry the gate bundle's figure at all.
-        self.assertNotIn("+48.9%", champ)
-        self.assertNotIn("48.9", champ)
+        self.assertNotIn(treatment, champ)
+        self.assertNotIn(treatment.lstrip("+-").removesuffix("%"), champ)
 
     def test_the_gate_cards_measured_points_carry_BOTH_arms(self):
         """A `delta_pct` with no baseline beside it is the headline defect one
@@ -1365,7 +1375,7 @@ class GateCardCompact(Rendering):
 
     def test_the_evidence_is_collapsed_by_default_and_nothing_is_deleted(self):
         self.write_loop(recorded_loop())
-        self.use_real_bundle()
+        source = self.use_real_bundle()
         html = self._card()
         m = re.search(r'<details class="og-details"([^>]*)>(.*?)</details>\s*$',
                       html, re.S)
@@ -1386,8 +1396,8 @@ class GateCardCompact(Rendering):
         self.assertNotIn("evidence:", outside)
         # ...while the summary stays visible: number, anchor, authority badge.
         text = self._text(outside)
-        self.assertIn("+48.9%", text)
-        anchor = real_bundle()["production_anchor"]["commit"][:12]
+        self.assertIn(expected_gate_treatment(source), text)
+        anchor = source["production_anchor"]["commit"][:12]
         self.assertIn(f"the frozen production kernel {anchor}", text)
         self.assertIn("operator-gated · no promotion authority", text)
 

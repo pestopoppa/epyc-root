@@ -69,6 +69,7 @@ import shutil
 import subprocess
 import sys
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -80,13 +81,15 @@ HARNESS = Path(__file__).resolve().parent / "js" / "render_harness.js"
 REAL_BUNDLE = Path("/mnt/raid0/llm/autokernel/surface/operator_gate_bundle.json")
 
 sys.path.insert(0, str(REPO))
-from dashboard import loop_status  # noqa: E402
-from dashboard import server  # noqa: E402
+from dashboard import loop_status, server
+
 # The temp-repo builders are shared with the champion-headline suite on
 # purpose: one way to pose as the frozen tree and the champion tree, not two
 # that drift.
-from tests.test_dashboard_champion_headline import (  # noqa: E402
-    advance_production_repo, make_production_repo)
+from tests.test_dashboard_champion_headline import (
+    advance_production_repo,
+    make_production_repo,
+)
 
 FIVE_STATES = {"relevant", "superseded", "unverifiable", "absent", "malformed"}
 
@@ -178,7 +181,7 @@ def bundle_at(tmp_path, monkeypatch, subject):
     target = tmp_path / "operator_gate_bundle.json"
 
     def place(*, body_edit=None, age_days=None, raw_bytes=None, delete=False,
-              align=True):
+              align=True, legacy_date=False):
         if delete:
             target.unlink(missing_ok=True)
         elif raw_bytes is not None:
@@ -189,6 +192,12 @@ def bundle_at(tmp_path, monkeypatch, subject):
                 value.update(subject.aligned())
             if body_edit:
                 value.update(body_edit)
+            if legacy_date:
+                value.pop("generated_at", None)
+            elif (age_days is not None and "generated_at" in value
+                  and not (body_edit and "generated_at" in body_edit)):
+                value["generated_at"] = (
+                    datetime.now(timezone.utc) - timedelta(days=age_days)).isoformat()
             target.write_text(json.dumps(value))
         if age_days is not None:
             old = time.time() - age_days * 86400
@@ -199,6 +208,8 @@ def bundle_at(tmp_path, monkeypatch, subject):
     place.raw = raw
     place.path = target
     place.subject = subject
+    place.effect = json.loads(raw)["headline"]["effect_fraction"]
+    place.display_pct = f"{place.effect * 100:.1f}%"
     return place
 
 
@@ -206,14 +217,13 @@ def bundle_at(tmp_path, monkeypatch, subject):
 # GAP A — the reader
 # --------------------------------------------------------------------------- #
 
-def test_the_real_record_carries_no_date_of_its_own(bundle_at):
-    """The premise of the mtime fallback, pinned against the producer.
-
-    If a future emitter adds ``generated_at`` this fails, and the reader's
-    ``generated_at_source`` labelling stops being load-bearing. That is worth
-    being told about rather than discovering as a silent behaviour change.
-    """
-    assert "generated_at" not in json.loads(bundle_at.raw)
+def test_body_generated_at_and_legacy_mtime_are_both_labelled(bundle_at):
+    """Exercise the current producer shape and the supported legacy fallback."""
+    body_dated = bundle_at(age_days=0)
+    assert body_dated["freshness"]["generated_at_source"] == "body_generated_at"
+    legacy = bundle_at(age_days=0, legacy_date=True)
+    assert legacy["freshness"]["generated_at_source"] == "file_mtime"
+    assert "mtime" in legacy["freshness"]["detail"]
 
 
 def test_a_relevant_bundle_reads_relevant_and_says_how_it_was_dated(bundle_at):
@@ -224,10 +234,9 @@ def test_a_relevant_bundle_reads_relevant_and_says_how_it_was_dated(bundle_at):
     fresh = got["freshness"]
     assert got["available"] is True
     assert fresh["state"] == "relevant"
-    assert fresh["generated_at_source"] == "file_mtime"
+    assert fresh["generated_at_source"] == "body_generated_at"
     assert fresh["age_s"] is not None and fresh["age_s"] < 60
-    # The weaker fact must be labelled as the weaker fact.
-    assert "mtime" in fresh["detail"]
+    assert "mtime" not in fresh["detail"]
 
 
 def test_an_old_bundle_with_an_unmoved_subject_reads_RELEVANT_not_stale(
@@ -247,7 +256,7 @@ def test_an_old_bundle_with_an_unmoved_subject_reads_RELEVANT_not_stale(
     assert got["freshness"]["state"] == "relevant"
     assert got["freshness"]["basis"] == "subject"
     # The number still rides, and the age is still an honest, visible fact...
-    assert got["headline"]["effect_fraction"] == pytest.approx(0.489, abs=0.01)
+    assert got["headline"]["effect_fraction"] == bundle_at.effect
     assert got["freshness"]["age_s"] == pytest.approx(16.7 * 86400, rel=0.01)
     assert "16.7 d" in got["freshness"]["detail"]
     # ...but it is informational: no advisory yet, and never an alarm state.
@@ -277,7 +286,7 @@ def test_ancestry_broken_reads_SUPERSEDED_naming_the_champion_fact(bundle_at):
     assert "promoted past" not in fresh["detail"]
     # The evidence itself still rides — superseded is not absent.
     assert got["available"] is True
-    assert got["headline"]["effect_fraction"] == pytest.approx(0.489, abs=0.01)
+    assert got["headline"]["effect_fraction"] == bundle_at.effect
 
 
 def test_production_promoted_reads_SUPERSEDED_naming_the_anchor_fact(bundle_at):
@@ -452,7 +461,7 @@ pytestmark_node = pytest.mark.skipif(
 
 def _page_js() -> str:
     html = PAGE.read_text(encoding="utf-8")
-    blocks = re.findall(r"<script[^>]*>(.*?)</script>", html, re.S)
+    blocks = re.findall(r"<script[^>]*>(.*?)</script>", html, re.DOTALL)
     assert blocks, "no script blocks found in loop.html"
     return "\n".join(blocks)
 
@@ -463,7 +472,7 @@ def _render(payload: dict, fn: str, tmp_path: Path) -> dict:
     proc = subprocess.run(
         ["node", str(HARNESS), str(tmp_path / "page.js"),
          str(tmp_path / "payload.json"), fn],
-        capture_output=True, text=True, timeout=120)
+        capture_output=True, text=True, timeout=120, check=False)
     assert proc.stdout.strip(), f"harness produced no output; stderr={proc.stderr[:600]}"
     out = json.loads(proc.stdout)
     assert out["threw"] == [], f"{fn} threw: {out['threw']}"
@@ -479,7 +488,21 @@ def loop_body() -> dict:
     other key stays the server's own, so a page-side fault outside the champion
     card still surfaces here rather than being fixtured away.
     """
-    return server.loop_payload()
+    payload = json.loads(json.dumps(server.loop_payload()))
+    now = time.time()
+    payload["now"] = now
+    payload["generated_at"] = datetime.fromtimestamp(now, timezone.utc).isoformat()
+    payload["age_s"] = 0.0
+    payload["freshness_state"] = "fresh"
+    payload["detail"] = "synthetic current producer observation for render isolation"
+    payload["notice"] = {"kind": "none", "run_state": "running",
+                         "detail": "synthetic current producer observation"}
+    if isinstance(payload.get("_freshness"), dict):
+        payload["_freshness"].update({
+            "staleness_class": "fresh", "age_s": 0.0, "timestamp": now,
+            "reporting": "active", "detail": payload["detail"],
+        })
+    return payload
 
 
 def _text(html: str) -> str:
@@ -526,11 +549,11 @@ def test_a_superseded_bundle_renders_a_loud_verdict_beside_the_number(
     payload["operator_gates"] = bundle_at(
         body_edit=subject.aligned(measured=subject.divergent), age_days=0.1)
     card = _opgate(payload, tmp_path)
-    assert "48.9%" in card, "the operator-gated figure did not render at all"
+    assert bundle_at.display_pct in card, "the operator-gated figure did not render at all"
     assert "SUPERSEDED" in card, (
         "the number rendered with no supersession verdict beside it")
     assert "no longer in the champion lineage" in _text(card)
-    assert "SUPERSEDED" in card.split("48.9%")[0], (
+    assert "SUPERSEDED" in card.split(bundle_at.display_pct)[0], (
         "the verdict must precede the number, not trail it")
     # And it must not be painted as a live gain. `og-num dated` is the amber
     # rendering; `og-num pos` is the green one.
@@ -585,7 +608,7 @@ def test_a_relevant_OLD_bundle_renders_CALM(bundle_at, loop_body, tmp_path):
     payload["operator_gates"] = bundle_at(age_days=3.1)
     out = _render(payload, "render", tmp_path)
     card = out["by_id"]["opgate"]
-    assert "48.9%" in card
+    assert bundle_at.display_pct in card
     for alarm in ("STALE", "SUPERSEDED", "UNVERIFIABLE", "ABSENT", "MALFORMED"):
         assert alarm not in card, f"a calm state rendered the {alarm} alarm"
     assert "og-verdict" not in card, "a banner rendered over the healthy state"
@@ -624,7 +647,7 @@ def test_absent_and_malformed_bundles_render_differently(
     a = _opgate(absent, tmp_path)
     m = _opgate(broken, tmp_path)
     assert a != m, "an absent emitter and a broken one render identically"
-    assert "48.9%" not in a and "48.9%" not in m
+    assert bundle_at.display_pct not in a and bundle_at.display_pct not in m
     assert "ABSENT" in a and "MALFORMED" not in a
     assert "MALFORMED" in m and "ABSENT" not in m
 

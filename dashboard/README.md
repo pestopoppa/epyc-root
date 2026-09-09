@@ -582,6 +582,36 @@ audits its own source to keep it that way.
 
 ## Kernel R&D (`/loop`) — THE surface
 
+### Unified campaign consumer — source integration, 2026-09-09
+
+The same registered `/loop` page can select a research-owned
+`epyc.autokernel.campaign_snapshot.v1` via `AUTOKERNEL_CAMPAIGN_STORE_ROOT`,
+`AUTOKERNEL_CAMPAIGN_ID`, `AUTOKERNEL_CAMPAIGN_CONFIG_GENERATION` and
+`AUTOKERNEL_CAMPAIGN_CONFIG_DIGEST`. Without that explicit configuration the legacy
+loop remains selected. A malformed configured campaign never falls back to a healthy
+legacy producer; conversely, failed legacy history cannot veto a live selected campaign.
+Champion, serving-gate and belief evidence retain independent envelopes.
+
+`dashboard/campaign_status.py` validates closed snapshots and matches the gateway's
+transport identity to campaign/config/incarnation/stream. A file written by `--once`
+does not prove a live service. One lazy health-probe owner has a bounded caller wait;
+late/expired observations are unknown. Producer heartbeat, stage activity and last
+scientific result are distinct. Historical terminal snapshots stay labelled history,
+with controls unavailable. `/health` remains hub transport-only; `/api/loop/health`
+follows the selected producer and `/api/health` retains the existing three-valued fold.
+
+Controls require an explicit browser-reachable `AUTOKERNEL_CAMPAIGN_GATEWAY_URL`,
+`AUTOKERNEL_CAMPAIGN_HUB_ORIGIN`, exact producer origin allowlist and a secure browser
+context. The bearer token stays in tab memory; the hub neither stores it nor proxies
+commands. Authenticated refresh precedes commands, stream keys reject rollback, and an
+uncertain acknowledgment retains its exact request for the explicit same-operation
+Retry button. Management v1 cannot authorize execution or report an active worker.
+Source integration does not configure a gateway, start the service or grant compute.
+The research-owned deployment/schema details are in
+`epyc-inference-research/docs/autokernel-campaign-service.md`.
+
+### Existing surface and legacy contract
+
 `/loop` is the single Kernel-R&D page. It was built as a second, separate surface
 and it is now the only one: `/kernel` was retired to a redirect on 2026-08-30 and
 its markup deleted.

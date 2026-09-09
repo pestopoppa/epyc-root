@@ -80,7 +80,7 @@ if str(_REPO_ROOT) not in sys.path:
 # ``freshness`` is no longer imported here: every classification now goes through
 # ``panels`` (which owns the one classifier), so the hub cannot grow a fourth
 # hand-rolled threshold ladder by reaching past the registry.
-from dashboard import handoff_parser, loop_status, panels
+from dashboard import campaign_status, handoff_parser, loop_status, panels
 
 # ``resolve()`` follows the /workspace -> /mnt/raid0/llm/epyc-root symlink, so the
 # hub always reads its own repo regardless of which path launched it.
@@ -14569,29 +14569,54 @@ def loop_data_health() -> tuple[int, dict]:
     # fold's leniency as this panel's verdict is exactly the true-about-a-wider-
     # set error that lets a surface report green over a producer nobody can find.
     body = payload.get("loop") or {}
-    loop_state = body.get("state")
-    if payload["freshness_state"] == loop_status.STATE_ABSENT:
-        _raise(panels.STATUS_ABSENT)
-    elif payload["freshness_state"] == loop_status.STATE_MALFORMED:
-        # BROKEN IS NOT A COLD START. Something wrote here and the write is
-        # unusable; that is a defect in the producer's writer, and it must not
-        # inherit absence's benefit of the doubt.
-        _raise(panels.STATUS_DEGRADED)
-    elif payload["freshness_state"] == loop_status.STATE_STALE:
-        # ...unless the loop DECLARED it finished. That is the compliant path
-        # this repo already ratified for `kernel` and `outcome`: a producer that
-        # says it stopped is allowed to be silent, and the hub never INFERS
-        # idleness from silence alone.
-        if loop_state != "complete":
-            _raise(panels.STATUS_DEGRADED)
-
+    legacy_state = body.get("state")
+    campaign = payload.get("campaign") or {"configured": False}
+    selected_campaign = bool(campaign.get("configured"))
     declared_failure = None
-    if loop_state == "failed":
-        _raise(panels.STATUS_DEGRADED)
-        declared_failure = (
-            "the loop DECLARED state=failed. It published on the way out rather "
-            "than going quiet, so this reading is fresh and the loop is dead; "
-            "freshness alone would have answered 'ok'.")
+    if not selected_campaign:
+        if payload["freshness_state"] == loop_status.STATE_ABSENT:
+            _raise(panels.STATUS_ABSENT)
+        elif payload["freshness_state"] == loop_status.STATE_MALFORMED:
+            _raise(panels.STATUS_DEGRADED)
+        elif (payload["freshness_state"] == loop_status.STATE_STALE
+              and legacy_state != "complete"):
+            _raise(panels.STATUS_DEGRADED)
+        if legacy_state == "failed":
+            _raise(panels.STATUS_DEGRADED)
+            declared_failure = (
+                "the legacy loop DECLARED state=failed; it remains visible history "
+                "but is the selected producer only when no unified campaign is configured.")
+    campaign_attention = None
+    if selected_campaign:
+        campaign_state = campaign.get("state")
+        campaign_body = campaign.get("campaign") or {}
+        if campaign_state == "absent":
+            _raise(panels.STATUS_ABSENT)
+            campaign_attention = "configured unified campaign snapshot is absent"
+        elif campaign_state in {"malformed", "degraded"}:
+            _raise(panels.STATUS_DEGRADED)
+            campaign_attention = campaign.get("error") or (
+                "unified campaign producer identity/health is degraded")
+        elif campaign_state == "history" and campaign_body.get("observed_state") != "drained":
+            _raise(panels.STATUS_DEGRADED)
+            campaign_attention = (
+                "unified campaign is historical without a terminal drained state")
+    campaign_body = campaign.get("campaign") or {}
+    if selected_campaign:
+        selected_state = campaign.get("state")
+        selected_age = ((campaign.get("clocks") or {}).get(
+            "producer_heartbeat_at") or {}).get("age_s")
+        selected_evidence = campaign.get("evidence")
+        selected_error = campaign.get("error") or campaign_attention
+        selected_loop_state = campaign_body.get("observed_state")
+        selected_stale_after = campaign_status.HEARTBEAT_STALE_AFTER_S
+    else:
+        selected_state = payload["freshness_state"]
+        selected_age = payload["age_s"]
+        selected_evidence = payload["evidence"]
+        selected_error = payload["reader_error"]
+        selected_loop_state = legacy_state
+        selected_stale_after = payload["stale_after_s"]
     out = {
         "status": status,
         "probe": "panel-data",
@@ -14607,13 +14632,18 @@ def loop_data_health() -> tuple[int, dict]:
         # They answer different questions — "is this report current?" versus "is
         # this panel healthy?" — and printing one under the other's name is how
         # an operator reads the wrong offender.
-        "freshness_state": payload["freshness_state"],
-        "age_s": payload["age_s"],
-        "stale_after_s": payload["stale_after_s"],
-        "evidence": payload["evidence"],
-        "reader_error": payload["reader_error"],
-        "loop_state": loop_state,
+        "selected_producer": "campaign" if selected_campaign else "legacy_loop",
+        "freshness_state": selected_state,
+        "age_s": selected_age,
+        "stale_after_s": selected_stale_after,
+        "evidence": selected_evidence,
+        "reader_error": selected_error,
+        "loop_state": selected_loop_state,
         "declared_failure": declared_failure,
+        "campaign_state": campaign.get("state"),
+        "campaign_attention": campaign_attention,
+        "legacy_history": {"freshness_state": payload["freshness_state"],
+                           "state": legacy_state, "evidence": payload["evidence"]},
         "freshness": env,
     }
     return (200 if status == panels.STATUS_OK else 503), out

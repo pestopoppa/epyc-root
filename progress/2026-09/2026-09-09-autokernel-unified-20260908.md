@@ -323,6 +323,41 @@ measurement hook. Operational journal snapshots are not claim tuples.
   New helper work proceeds while existing-file edits wait for checkpoint/index refresh. All testing
   remains temporary Git/fake execution; no frozen kernel tree, broker, live service or corpus changes.
 
+### Freeze safety and management dashboard accepted
+
+- AKU-05d closes the legacy archive freeze hole using the same dependency-light root/branch guard
+  as candidate ref transactions. The canonical llama/whisper/qwentts roots, aliases, detached canonical
+  checkouts and both production branch families refuse. Pre-CAS root/branch checks remain in place;
+  experimental linked worktrees may share production objects. Main reviewed the exact six-file diff
+  and ran **198 tests and 4 subtests** across guard/archive/candidate/controller/service consumers.
+- Research source checkpoint **3ed96a9d**, main merge **1552744b**, publishes that guard and the
+  previously held authenticated management transport: exact-origin CORS, loaded transport identity,
+  no-I/O health probe, one owned connection-deadline watchdog and bounded close. Publication touched
+  nine exact accepted files, excluding canonical enrollment and scheduler drafts. No live activation.
+- AKU-09c now has a passing full hub acceptance: **414 tests and 125 subtests**, including actual page
+  JavaScript timeout/body-stall, malformed/uncertain ACK, double-click, monotonic-stream, DOM, selected
+  unified-versus-legacy health, registry/navigation, separate evidence clocks and existing headline
+  behavior. New native reader/test files pass Ruff; all diffs pass whitespace checks.
+- The expanded run found three additional old headline fixture failures, independently reproduced
+  on clean baseline (**80 passed, 3 failed, 23 subtests**). The test-only fix derives its expected
+  treatment/anchor from the exact copied producer record, preserving disambiguation, authority and
+  collapsed-evidence checks. The helper's indexed impact was MEDIUM over six test callers and zero
+  production processes; its full file now passes **83 tests and 23 subtests**. Main also restored the
+  registry's explicit champion-headline/frozen-production wording after its wiring test caught an
+  omission. No recorded measurements or renderer semantics were changed to make tests pass.
+- Explicit selected campaign/config identity gates management-v1 snapshots and direct authenticated
+  controls. Token and uncertain request remain tab-memory only; no hub command proxy, new page or
+  deployment was added. V1 has no active worker/compute authority. Terminal history is not a live
+  producer. Actual gateway/service deployment and unattended reliability remain untested here.
+- Scheduler corrections are dispatched (fixed v1 weights, indexed hot path, fair coverage/FIFO,
+  receipt/campaign binding, scoped outages and honest overruns). The next worker owns opt-in worker
+  lifecycle only and must propose/obtain approval for a closed v2 contract before controller/schema
+  edits; new helper work may proceed. Tiny owned fixture children are permitted, not kernel/model/
+  compiler jobs, real cgroup mutation, broker implementation or live research.
+- Research incremental indexing exited139 again after the source checkpoint. The supported wrapper's
+  full `--force` rebuild is running under the canonical lock; no metadata is manually removed and
+  existing lifecycle edits remain held until the index/interface releases.
+
 The built-in dispatcher retained two completed review threads and exhausted its thread limit; one new
 sol-medium worker uses it and two use supported `codex exec` with explicit model/medium effort. Main
 caps active concurrency at three, owns process handles, reviews proposals and publishes accepted files.
