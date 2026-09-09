@@ -21,9 +21,36 @@ source completion, publication, deployment and live acceptance are separate.
 
 ## In progress and boundaries
 
-Immutable campaign enrollment, journal-backed accumulator recovery and worker-heartbeat lifecycle
-are assigned to disjoint sol-medium workers. A helper is not a completed parent slice until real
-consumers and integration acceptance exist. The Vidya source table/task now registers the prospective
+### Enrollment, recovery and worker-status checkpoint
+
+- AKU-01a: immutable explicit-snapshot campaign resolver and offline CLI, with CPU/GPU targets, seed
+  alias deduplication, pinned baselines, source identities and independent prerequisite states. Optional
+  artifact verification does not grant admission or rewrite identities. Main's focused run: 52 passed.
+- AKU-03b: authoritative `LOOP_BUNDLE_SAVED` before derived JSON; v1 import retains the original parsed
+  snapshot/provenance, v2 requires validity, missing/corrupt history refuses. External tip movement
+  preserves COR/keeps/cadence and labels prior magnitude stale. The current loop and manual serving gate
+  use recovery; dry mode cannot create locks or state. Native snapshots confer zero ClaimTuples.
+- AKU-09a/b: bounded heartbeat stop/join/lock waits before terminal publication, durable final artifact,
+  preserved original exceptions and latest outcomes; both hub render sites distinguish current from
+  historical magnitude and unverified threshold signals. 46 focused lifecycle/status tests and 69 root
+  render tests / 5 subtests pass. No full browser or live producer was exercised.
+- Main integration run after these slices: **707 passed, 59 subtests passed** in the loop suite.
+  The changed unified handoff/progress citation check is clean. A separate repository-wide scan flags
+  pre-existing citations in other documents (including citation-syntax examples); no claim in this
+  implementation checkpoint relies on those entries.
+
+Main rejected and corrected: silently repinned implicit baselines, legacy-as-current validity, stale
+magnitude replaced with zero, v1 schema allowing unsafe old-reader fallback, ancestry checked after
+import, dry inspection creating locks, an unbounded heartbeat shutdown lock wait, and historical values
+labelled measured/current. Those corrections are in accepted code, not deferred recommendations.
+
+First source checkpoint was published as research `93ce4bad` / main merge `585aef6f`, root `ca9a6fb7` /
+main merge `8bf6f108`. Publication did not move shared worktrees or restart live processes.
+The enrollment/recovery/heartbeat source checkpoint is research `6682e4af`, main merge `f5941fd0`.
+
+Resolved launch recipes, independent-unit ExperimentPlan validation and private-index accepted-patch
+commits are the next disjoint sol-medium assignments. A helper is not a completed parent slice until
+real consumers and integration acceptance exist. The Vidya source table/task registers the prospective
 current-loop measurement hook. Operational journal snapshots are not claim tuples.
 
 The built-in dispatcher retained two completed review threads and exhausted its thread limit; one new

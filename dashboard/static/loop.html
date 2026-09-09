@@ -601,6 +601,27 @@ const CH_BANNERS = {
                     "refused bundle."}
 };
 
+/* The accumulator's magnitude is authoritative only for the exact measured tip.
+   Old producers have no validity field: keep them readable, but never upgrade
+   their number to a current claim merely because it exists. */
+function accumulatorMeasurement(a){
+  const reported = (a && typeof a.measurement_validity === "string")
+    ? a.measurement_validity : "unknown_legacy";
+  const current = reported === "current_snapshot";
+  const comp = current && num(a.compounded_bench_pct)
+    ? a.compounded_bench_pct : null;
+  const historical = !current && num(a.historical_compounded_bench_pct)
+    ? a.historical_compounded_bench_pct : null;
+  const detail = current
+    ? (comp == null ? "current snapshot has no finite compounded magnitude" : "current snapshot")
+    : reported === "stale_external_tip_advance"
+      ? "tip advanced after the retained measurement"
+      : reported === "unknown_legacy"
+        ? "legacy snapshot did not establish measurement validity"
+        : `unrecognized measurement validity ${reported}`;
+  return {reported, current, comp, historical, detail};
+}
+
 function renderChampion(d){
   const host = document.getElementById("champ");
   const badge = document.getElementById("champ-badge");
@@ -733,16 +754,28 @@ function renderChampion(d){
     // Say so, and point at the live number: the accumulator card is the progress.
     const acc = (d.loop && d.loop.accumulator) || null;
     if (acc && num(acc.n_keeps)) {
-      const comp = num(acc.compounded_bench_pct) ? acc.compounded_bench_pct : 0;
-      const thr  = num(acc.fire_threshold_pct) ? acc.fire_threshold_pct : null;
+      const measurement = accumulatorMeasurement(acc);
+      const comp = measurement.comp;
+      const thr  = num(acc.fire_threshold_pct) && acc.fire_threshold_pct > 0
+        ? acc.fire_threshold_pct : null;
+      const cadence = (num(acc.keeps_since_serving_gate) && num(acc.gate_every_keeps))
+        ? ` · mandatory gate cadence ${acc.keeps_since_serving_gate}/${acc.gate_every_keeps}` : "";
       h += `<div class="ch-sup"><b>ACCUMULATION IN PROGRESS</b> — the current champion ` +
         `<span class="mono">${esc(short(acc.accumulator_tip))}</span> carries ` +
-        `<b>${esc(acc.n_keeps)}</b> guard-verified keep(s) in the live bundle, ` +
-        `<b>+${comp.toFixed(2)}%</b> compounded bench vs the champion of record ` +
-        `<span class="mono">${esc(short(acc.champion_of_record))}</span>` +
-        (thr != null ? ` — ${(100*Math.min(1, comp/thr)).toFixed(0)}% of the way to the ` +
-                       `${thr.toFixed(2)}% serving gate` : ``) +
-        `. That is the live progress (Accumulator card below); this headline is the last ` +
+        `<b>${esc(acc.n_keeps)}</b> recorded keep(s) in the bundle, ` +
+        (comp != null
+          ? `<b>${comp >= 0 ? "+" : ""}${comp.toFixed(2)}%</b> current compounded bench vs ` +
+            `the champion of record <span class="mono">${esc(short(acc.champion_of_record))}</span>` +
+            (thr != null ? ` — ${(100*Math.min(1, comp/thr)).toFixed(0)}% of the way to the ` +
+                           `${thr.toFixed(2)}% serving gate` : ``)
+          : `<b>awaiting remeasurement</b> of compounded bench vs the champion of record ` +
+            `<span class="mono">${esc(short(acc.champion_of_record))}</span> ` +
+            `(${esc(measurement.detail)})` +
+            (measurement.historical != null
+              ? `; historical estimate was ${measurement.historical >= 0 ? "+" : ""}` +
+                `${measurement.historical.toFixed(2)}%` : ``)) +
+        cadence + `. The bundle membership and cadence are retained in this snapshot; ` +
+        `this headline is the last ` +
         `tip-vs-production A/B and refreshes on the next keep.</div>`;
     }
   }
@@ -864,15 +897,17 @@ function renderAccumulator(d){
       `champion is the headline above. A missing bundle is not “0% to the gate”.</div>`;
     return;
   }
-  const comp = num(a.compounded_bench_pct) ? a.compounded_bench_pct : 0;
-  const thr  = num(a.fire_threshold_pct) ? a.fire_threshold_pct : null;
+  const measurement = accumulatorMeasurement(a);
+  const comp = measurement.comp;
+  const thr  = num(a.fire_threshold_pct) && a.fire_threshold_pct > 0
+    ? a.fire_threshold_pct : null;
   const floor = num(a.serving_floor_pct) ? a.serving_floor_pct : null;
   const mult = num(a.fire_multiple) ? a.fire_multiple : null;
   const keeps = Array.isArray(a.keeps) ? a.keeps : [];
   const nKeeps = num(a.n_keeps) ? a.n_keeps : keeps.length;
   const fires = a.fires_next === true;
-  let frac = num(a.progress_fraction) ? a.progress_fraction : 0;
-  frac = Math.max(0, Math.min(1, frac));
+  const hasProgress = comp != null && num(a.progress_fraction) && thr != null;
+  const frac = hasProgress ? Math.max(0, Math.min(1, a.progress_fraction)) : null;
   /* R23-54 (operator 2026-09-08): the gate ALSO fires every `gate_every_keeps` keeps
      regardless of the compounded estimate — the 2026-09-08 firing measured the bench
      proxy (+5.958%) disagreeing with serving (-2.18%), so the estimate no longer
@@ -882,6 +917,10 @@ function renderAccumulator(d){
   const since = num(a.keeps_since_serving_gate) ? a.keeps_since_serving_gate : null;
   const cadence = (since != null && every != null) ? `${since}/${every}` : "—";
   const trig = typeof a.next_trigger === "string" ? a.next_trigger : null;
+  const cadenceDue = since != null && every != null && every > 0 && since >= every;
+  const thresholdNamed = trig === "threshold" || trig === "both" || trig == null;
+  const thresholdSupported = measurement.current && comp != null && thr != null;
+  const unverifiedThresholdSchedule = fires && thresholdNamed && !thresholdSupported;
   const last = (a.last_serving_gate && typeof a.last_serving_gate === "object")
     ? a.last_serving_gate : null;
   const why = {threshold: "the compounded bench estimate cleared the threshold",
@@ -893,11 +932,23 @@ function renderAccumulator(d){
     ? keeps.map(k => `<span class="acc-keep">${esc(k)}</span>`).join("")
     : `<span class="muted">none yet — the bundle is empty; the champion of record still stands</span>`;
 
-  const label = `${comp.toFixed(1)}% / ${thr != null ? thr.toFixed(1) : "—"}% to serving gate`;
+  const label = comp != null
+    ? (thr != null
+      ? `${comp.toFixed(1)}% / ${thr.toFixed(1)}% to serving gate`
+      : `${comp.toFixed(1)}% current compounded bench; positive threshold unavailable`)
+    : "awaiting remeasurement — no current compounded magnitude";
 
   host.innerHTML =
     `<div class="acc ${fires ? "fires" : ""}">` +
-      (fires
+      (unverifiedThresholdSchedule
+        ? `<div class="acc-fire"><strong>PRODUCER-REPORTED SCHEDULING — UNVERIFIED</strong> — ` +
+          (trig === "both" && cadenceDue
+            ? `the retained ${esc(cadence)} cadence is due, but the producer's ` +
+              `<strong>both</strong> flag also relies on threshold evidence that is not current`
+            : `the producer reported <strong>${esc(trig || "threshold")}</strong>, but no ` +
+              `current finite magnitude and positive threshold support that threshold firing`) +
+          `. Await remeasurement before treating it as threshold warrant.</div>`
+        : fires
         ? `<div class="acc-fire">Fires next iteration — trigger: ` +
           `<strong>${esc(trig || "threshold")}</strong>` +
           `${trig && why[trig] ? ` (${esc(why[trig])})` : ""}; the expensive llama-server ` +
@@ -914,8 +965,17 @@ function renderAccumulator(d){
           `<div class="v">${esc(nKeeps)}</div>` +
           `<div class="sub">cheap llama-bench keeps batched</div></div>` +
         `<div class="acc-stat"><div class="k">compounded bench</div>` +
-          `<div class="v ${comp > 0 ? "pos" : ""}">+${comp.toFixed(2)}%</div>` +
-          `<div class="sub">of the bundle vs champion of record</div></div>` +
+          (comp != null
+            ? `<div class="v ${comp > 0 ? "pos" : ""}">` +
+              `${comp >= 0 ? "+" : ""}${comp.toFixed(2)}%</div>` +
+              `<div class="sub">current measurement of the bundle vs champion of record</div>`
+            : `<div class="v">awaiting remeasurement</div>` +
+              `<div class="sub">${esc(measurement.detail)}; validity ` +
+              `<span class="mono">${esc(measurement.reported)}</span></div>` +
+              (measurement.historical != null
+                ? `<div class="sub">historical estimate (not current): ` +
+                  `${measurement.historical >= 0 ? "+" : ""}` +
+                  `${measurement.historical.toFixed(2)}%</div>` : ``)) + `</div>` +
         `<div class="acc-stat"><div class="k">keeps to mandatory gate</div>` +
           `<div class="v">${esc(cadence)}</div>` +
           `<div class="sub">R23-54: the gate fires on this cadence whatever the bench ` +
@@ -938,8 +998,11 @@ function renderAccumulator(d){
         `<div class="acc-prlabel"><span>${esc(label)}</span>` +
           `<span class="muted">gate = ${mult != null ? mult.toFixed(1) : "—"}&times; serving floor` +
             `${floor != null ? ` (${floor.toFixed(2)}%)` : ""}</span></div>` +
-        `<div class="acc-track"><div class="acc-fill ${fires ? "hot" : ""}" ` +
-          `style="width:${(frac * 100).toFixed(1)}%"></div></div>` +
+        (hasProgress
+          ? `<div class="acc-track"><div class="acc-fill ${fires ? "hot" : ""}" ` +
+            `style="width:${(frac * 100).toFixed(1)}%"></div></div>`
+          : `<div class="muted">No threshold progress is shown until this exact tip is ` +
+            `remeasured. Mandatory keep cadence remains visible above.</div>`) +
       `</div>` +
     `</div>`;
 }
