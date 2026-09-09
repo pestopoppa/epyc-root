@@ -126,6 +126,35 @@ management controls are the next disjoint assignments.
   conflicts before ranking, and complete retrieval to remain distinct from positive use authority.
   No draft is published merely because its happy-path fixtures pass.
 
+### Accepted management service; native consumers continue
+
+- The preceding candidate root checkpoint is `bfe58955`, main merge `52bf582f`.
+- AKU-07a now has a real opt-in controller/HTTP/CLI consumer over the existing journal: full resolved
+  config binding, persistent supervisor incarnation/stream, strict control replay and idempotent
+  durable acceptance, one pinned store/named lock, in-process serialization, closed-writer fencing and
+  poisoned uncertain writes. Resume without a trusted prerequisite remains waiting, not executable.
+- The service owns initial/periodic snapshot publication without observer traffic. Public transport
+  health performs no journal read or fsync; snapshot/commands require authentication. Slow-client
+  teardown closes captured sockets and shares a bounded join deadline. A blocked synchronous filesystem
+  call cannot be forcibly bounded: stop refuses and retains ownership when its threads remain.
+- Main's final test run passed **217 tests and 15 subtests**, with **69 focused control/service tests**
+  included. A separate 256-case nested-field mutation sweep returned no uncaught validator exceptions.
+  Main caught resume-state list/dict exceptions after the worker's first malformed-input fixtures; these
+  are now regression-tested. Producer identity uses stable loaded bytecode projections, not adaptive
+  marshal bytes or changing on-disk mtimes, and honestly excludes unmeasured package dependencies.
+- Scoped-evidence review reproduced another cache failure: a newly added refutation left a previously
+  supported cached decision eligible because only explicit invalidation events advanced its local
+  fences. The worker must bind relevant evidence-set changes and broader-support dependencies without
+  global cache churn. This draft is not accepted. Planned serving is addressing exact continuation
+  membership/order and preserving partial slot observations before any completion callback.
+- Root GitNexus is refreshed at `52bf582f`; research was refreshed at `bf08bc25`. The existing dashboard
+  loop snapshot has one reported upstream consumer (LOW), and `_measure_once` has comparison/calibration
+  callers (LOW); manually reviewed injected callbacks are additional edges the graph does not capture.
+- The accepted management source is published as research `30316f05`, main merge `babf5b9b`. Only its
+  six reviewed files were included; evidence/serving drafts stayed outside the checkpoint. That worker
+  now owns durable candidate transactions and the narrow serialized controller/journal seam; the other
+  two workers retain scoped evidence and planned serving. No service was deployed or activated.
+
 The next consumer integrations are frozen planned serving arms, durable candidate transactions and the
 existing dashboard's campaign surface. A helper is not a completed parent slice until real consumers
 and integration acceptance exist. The Vidya source table/task registers the prospective current-loop
