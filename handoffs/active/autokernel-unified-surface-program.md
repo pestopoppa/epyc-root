@@ -1941,6 +1941,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     first-issue permit. Replayed unknown is not absence proof; terminal recovery and durable
     not-acquired retries must preserve exact identity. No hidden three-unit launch or one-unit
     plan rehash. Coordinate this bridge with AKU-07i's actual observation/lifecycle owner.
+    Native durable event/permit semantics require OP-AKU-A2 approval: the transition validator
+    has HIGH17 upstream impact, including Journal validation and replay. Changing its helper
+    language is the same authority change, not an exemption. Independent selected-range
+    transport may proceed but cannot enable discovery or complete this task by itself.
   - [x] **AKU-04h — align native startup fixture with prospective sample admission**:
     ✅ 2026-09-09. The full published suite exposed one fixture declaring 64 samples for
     32 seconds at 10ms cadence (requires 3,209). The test now derives its count before
