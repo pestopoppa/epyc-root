@@ -467,10 +467,11 @@ def campaign_observation(campaign: Mapping[str, Any],
             artifact_present=True, timestamp=None, source="campaign-malformed",
             detail=campaign.get("error"), evidence=campaign.get("evidence"))
     state = campaign.get("state")
+    runtime_detail = (campaign.get("runtime_freshness") or {}).get("reason")
     if state not in {"live", "history"}:
         return panels.Observation(
             artifact_present=True, timestamp=None, source=f"campaign-{state}",
-            detail=(campaign.get("health") or {}).get("reason"),
+            detail=runtime_detail or (campaign.get("health") or {}).get("reason"),
             evidence=campaign.get("evidence"))
     terminal = body.get("observed_state") == "drained"
     if state == "history" and not terminal:

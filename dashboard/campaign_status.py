@@ -25,6 +25,7 @@ SNAPSHOT_SCHEMA = "epyc.autokernel.campaign_snapshot.v1"
 SNAPSHOT_SCHEMA_V2 = "epyc.autokernel.campaign_snapshot.v2"
 SNAPSHOT_SCHEMA_V3 = "epyc.autokernel.campaign_snapshot.v3"
 UNIFIED_PROJECTION_SCHEMA = "epyc.autokernel.unified_campaign_projection.v1"
+UNIFIED_PROJECTION_SCHEMA_V2 = "epyc.autokernel.unified_campaign_projection.v2"
 HEALTH_SCHEMA = "epyc.autokernel.campaign_transport_health.v1"
 SNAPSHOT_FILENAME = "campaign-snapshot.json"
 STORE_ROOT_ENV = "AUTOKERNEL_CAMPAIGN_STORE_ROOT"
@@ -373,11 +374,57 @@ def _validate_accounting(value: Any) -> dict[str, Any]:
     return row
 
 
+def _validate_runtime(value: Any) -> dict[str, Any]:
+    _exact(value, frozenset({"status", "reason", "reason_truncated", "observed_at",
+        "observation_sequence", "retry_after_seconds", "work_kind", "target_revision",
+        "transition_id", "settlement_outcome", "installed_work_kinds", "publication_error"}), "runtime observation")
+    row = dict(value)
+    _enum(row["status"], {"not_reported", "recovered", "waiting", "settled", "stopped",
+                          "recovery_required"}, "runtime status")
+    if len(_text(row["reason"], "runtime reason")) > 4096 or type(row["reason_truncated"]) is not bool:
+        raise CampaignStatusError("runtime reason/bound differs")
+    _integer(row["observation_sequence"], "runtime sequence")
+    error = _text(row["publication_error"], "runtime publication error", nullable=True)
+    if error is not None and len(error) > 4096:
+        raise CampaignStatusError("runtime publication error exceeds bound")
+    delay = _finite(row["retry_after_seconds"], "runtime retry delay")
+    if delay < 0:
+        raise CampaignStatusError("runtime retry delay is negative")
+    _timestamp(row["observed_at"], "runtime observation time", nullable=True)
+    missing = row["status"] == "not_reported"
+    if (missing != (row["observed_at"] is None) or not missing and row["observation_sequence"] == 0
+            or missing and row["observation_sequence"] > 0 and error is None):
+        raise CampaignStatusError("runtime date/sequence differs")
+    kinds = {"runtime_comparison", "actor_preparation", "profile_preparation", "calibration_preparation"}
+    installed = _string_list(row["installed_work_kinds"], "installed runtime work kinds")
+    if len(set(installed)) != len(installed) or any(kind not in kinds for kind in installed):
+        raise CampaignStatusError("installed runtime work kinds differ")
+    selected = row["work_kind"] is not None
+    if selected:
+        _enum(row["work_kind"], kinds, "runtime work kind")
+    for name in ("target_revision", "transition_id"):
+        if row[name] is not None:
+            _digest(row[name], "runtime " + name)
+        if selected != (row[name] is not None):
+            raise CampaignStatusError("runtime selection identity differs")
+    settled = row["settlement_outcome"] is not None
+    if settled:
+        _enum(row["settlement_outcome"], {"valid_comparison", "invalid", "failed", "prerequisite",
+              "calibration", "validation", "reject_audit", "maintenance"}, "runtime settlement")
+    if ((row["status"] == "settled") != settled or settled and not selected
+            or missing and (selected or delay != 0 or row["reason_truncated"])):
+        raise CampaignStatusError("runtime work/settlement differs")
+    return row
+
+
 def _validate_unified(value: Any) -> dict[str, Any]:
-    _exact(value, _UNIFIED_FIELDS, "unified projection")
+    runtime_aware = isinstance(value, Mapping) and value.get("schema") == UNIFIED_PROJECTION_SCHEMA_V2
+    _exact(value, _UNIFIED_FIELDS | ({"runtime", "worker_timing"} if runtime_aware else set()), "unified projection")
     unified = dict(value)
-    if unified["schema"] != UNIFIED_PROJECTION_SCHEMA:
+    if unified["schema"] not in {UNIFIED_PROJECTION_SCHEMA, UNIFIED_PROJECTION_SCHEMA_V2}:
         raise CampaignStatusError("unified projection schema is unsupported")
+    if runtime_aware:
+        unified["runtime"] = _validate_runtime(unified["runtime"])
     scheduler = unified["scheduler"]
     _exact(scheduler, _UNIFIED_SCHEDULER_FIELDS, "unified scheduler")
     scheduler = dict(scheduler)
@@ -578,6 +625,35 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
     row["command_results"] = results
     if version == 3:
         row["unified"] = _validate_unified(row["unified"])
+        if "runtime" in row["unified"]:
+            worker, timing = row["active_worker"], row["unified"]["worker_timing"]
+            if worker is None:
+                if timing is not None:
+                    raise CampaignStatusError("runtime timing has no original worker")
+            else:
+                _exact(timing, frozenset({"worker_id", "worker_generation", "lifecycle_revision",
+                    "checked_at", "state", "remaining_seconds"}), "runtime worker timing")
+                _integer(timing["worker_generation"], "timing worker generation", 1)
+                _integer(timing["lifecycle_revision"], "timing lifecycle revision")
+                if (timing["worker_id"] != worker["worker_id"]
+                        or timing["worker_generation"] != worker["worker_generation"]
+                        or timing["lifecycle_revision"] != row["worker_lifecycle_revision"]
+                        or timing["checked_at"] != row["generated_at"]):
+                    raise CampaignStatusError("runtime timing original identity differs")
+                _enum(timing["state"], {"within_deadline", "deadline_elapsed", "clock_unavailable"},
+                      "runtime timing state")
+                if timing["state"] == "clock_unavailable":
+                    if timing["remaining_seconds"] is not None:
+                        raise CampaignStatusError("unknown clock cannot supply a remainder")
+                else:
+                    remaining = _finite(timing["remaining_seconds"], "runtime timing remainder")
+                    if remaining < 0 or (remaining > 0) != (timing["state"] == "within_deadline"):
+                        raise CampaignStatusError("runtime timing remainder differs")
+        runtime = row["unified"].get("runtime")
+        if runtime is not None and runtime["observed_at"] is not None and \
+                datetime.fromisoformat(runtime["observed_at"].replace("Z", "+00:00")) > \
+                datetime.fromisoformat(row["generated_at"].replace("Z", "+00:00")):
+            raise CampaignStatusError("runtime observation is newer than snapshot")
     return row
 
 
@@ -719,6 +795,21 @@ def advance_snapshot(previous: Mapping[str, Any] | None,
                 and old_worker["worker_id"] != new_worker["worker_id"] \
                 and new_worker["worker_generation"] <= old_worker["worker_generation"]:
             raise CampaignStatusError("new worker does not advance worker generation")
+    old_runtime = (old.get("unified") or {}).get("runtime")
+    new_runtime = (new.get("unified") or {}).get("runtime")
+    if old_runtime is not None:
+        if new_runtime is None:
+            raise CampaignStatusError("same campaign cannot downgrade runtime projection")
+        if new["supervisor_incarnation"] == old["supervisor_incarnation"]:
+            if (new_runtime["observation_sequence"] < old_runtime["observation_sequence"]
+                    or new_runtime["observation_sequence"] == old_runtime["observation_sequence"]
+                    and new_runtime != old_runtime):
+                raise CampaignStatusError("runtime observation sequence rolled back or changed")
+            old_time, new_time = old_runtime["observed_at"], new_runtime["observed_at"]
+            if old_time is not None and (new_time is None or
+                    datetime.fromisoformat(new_time.replace("Z", "+00:00")) <
+                    datetime.fromisoformat(old_time.replace("Z", "+00:00"))):
+                raise CampaignStatusError("runtime observation time rolled back")
     return {"status": "accepted", "snapshot": new}
 
 
@@ -887,6 +978,45 @@ def _age(stamp: str | None, now: float) -> float | None:
     return round(max(0.0, delta), 1)
 
 
+def runtime_freshness(body: Mapping[str, Any], *, now: float) -> dict[str, Any] | None:
+    observation = (body.get("unified") or {}).get("runtime")
+    if observation is None:
+        return None  # old projections make no runtime-progress claim
+    age = _age(observation["observed_at"], now)
+    if observation["publication_error"] is not None:
+        return {"state": "unknown", "age_s": age, "activity_age_s": None,
+                "activity_silent": False,
+                "reason": "runtime observation publication failed: " + observation["publication_error"]}
+    worker = body.get("active_worker")
+    if worker is not None:
+        activity_age = _age(worker["activity_at"] or worker["started_at"], now)
+        unresolved = worker["state"] in {"unresolved", "teardown_failed"}
+        timing = body["unified"]["worker_timing"]
+        checked_age = _age(timing["checked_at"], now)
+        state = "unknown"
+        if unresolved:
+            state = "unresolved"
+        elif checked_age is not None and timing["state"] != "clock_unavailable":
+            state = ("in_progress" if timing["remaining_seconds"] > checked_age else "stale")
+        return {"state": state,
+                "age_s": age, "activity_age_s": activity_age,
+                "activity_silent": activity_age is None or activity_age > HEARTBEAT_STALE_AFTER_S,
+                "reason": ({"unresolved": "owned worker unresolved",
+                    "unknown": "owned deadline unavailable or future-dated; activity is not inferred",
+                    "stale": "original owned deadline elapsed; publisher heartbeat is not worker progress",
+                    "in_progress": "owned stage remains within its original deadline; silence is not progress"
+                    }[state])}
+    if observation["status"] == "not_reported" or age is None:
+        return {"state": "unknown", "age_s": age, "activity_age_s": None,
+                "activity_silent": False, "reason": "runtime observation is absent or undated"}
+    budget = HEARTBEAT_STALE_AFTER_S + observation["retry_after_seconds"]
+    state = "stale" if age > budget else "current"
+    if observation["status"] == "recovery_required":
+        state = "unresolved"
+    return {"state": state, "age_s": age, "activity_age_s": None,
+            "activity_silent": False, "reason": observation["reason"]}
+
+
 def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
              health_cache: _HealthProbeCache | None = None) -> dict[str, Any]:
     report = read()
@@ -909,6 +1039,7 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
               for name in ("producer_heartbeat_at", "worker_activity_at",
                            "last_scientific_result_at")}
     heartbeat_age = clocks["producer_heartbeat_at"]["age_s"]
+    runtime_clock = runtime_freshness(body, now=current)
     live = health["state"] == "live" and heartbeat_age is not None \
         and heartbeat_age <= HEARTBEAT_STALE_AFTER_S
     terminal = body["observed_state"] == "drained"
@@ -920,6 +1051,8 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
                      and any(body["unified"][name]["status"] != "available"
                              for name in ("scheduler", "resources", "actors", "evidence",
                                           "candidate", "targets")))
+    if runtime_clock is not None and runtime_clock["state"] in {"unknown", "stale", "unresolved"}:
+        unified_stuck = True
     if live and not unresolved and not unified_stuck:
         state = "live"
     elif unresolved or (live and unified_stuck) or health["state"] in {"failed", "mismatch"}:
@@ -941,7 +1074,8 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
             "gateway URL, and exact allowed hub origin")
     return {"configured": True, "state": state, "campaign": body,
             "snapshot_digest": report["content_digest"], "health": health,
-            "clocks": clocks, "controls": controls, "evidence": report.get("path")}
+            "clocks": clocks, "runtime_freshness": runtime_clock,
+            "controls": controls, "evidence": report.get("path")}
 
 
 __all__ = [

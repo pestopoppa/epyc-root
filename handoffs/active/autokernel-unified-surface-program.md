@@ -2663,6 +2663,26 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     same-campaign downgrade fences remain. Null grants/candidate/evidence values stay unknown, and
     declared capacity is not a grant. No new route, proxy, registry row, gateway configuration, service
     activation or live reliability claim is made; connected consumers and deployment remain AKU-09.
+  - [x] **AKU-09f — connect runtime outcomes and separately dated owned-work observations**:
+    ✅ 2026-09-09. Existing snapshot-v3 supports closed unified projection-v2; actual runtime
+    result/wait reason, installed kinds and original selection/settlement are owner-bound.
+    Publisher heartbeat cannot refresh operational observation. First-publication and post-settlement
+    reporting faults preserve execution/retry semantics. Producer checks original current-domain
+    worker deadlines; consumers age only its relative remainder, distinguishing long work, silence,
+    expiry and unknown clocks. Python/page rollback fences and rejected-envelope rendering agree.
+    Main integrated **181 research tests passed, one strict HELD xfail in33.09s** and **113 ROOT
+    tests passed in2.37s**. Worker broader ROOT327 passed plus51 subtests. Ten exact packet file
+    hashes match; the remaining documentation file additionally retains the published factory fix.
+    Existing52 loop_status lint findings remain baseline-identical; changed logic adds no findings.
+    Contract: research docs/autokernel-runtime-observation.md. No service reload, deployment,
+    live reliability, resource grant or scientific-validation claim; AKU-09 remains open.
+  - [ ] **AKU-09g — connect original aggregate producer state and finish dashboard acceptance**:
+    replace remaining not_connected sections with bounded evidence-frontier, preparation/actor,
+    resource and candidate projections from their actual owning indexes. Keep original expiry,
+    settlement and validation authority distinct; no publisher-thread SQLite or artifact reopening.
+    Runtime observation alone is not aggregate readiness. Finish existing service configuration,
+    health/freshness/control acceptance and monitored reliability under AKU-12; do not create a
+    second page or treat transport health as proof of scientific progress.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.

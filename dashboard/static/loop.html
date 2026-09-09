@@ -635,11 +635,41 @@ function campaignValidateNumberMap(value,label){
     throw new Error(`${label} is malformed`);
 }
 
+function campaignValidateRuntime(value){
+  campaignExact(value,["status","reason","reason_truncated","observed_at","observation_sequence",
+    "retry_after_seconds","work_kind","target_revision","transition_id","settlement_outcome",
+    "installed_work_kinds","publication_error"],"runtime observation");
+  const statuses=["not_reported","recovered","waiting","settled","stopped","recovery_required"];
+  const kinds=["runtime_comparison","actor_preparation","profile_preparation","calibration_preparation"];
+  const missing=value.status==="not_reported",selected=value.work_kind!==null;
+  if(!statuses.includes(value.status) || !campaignText(value.reason) || [...value.reason].length>4096 ||
+     !(value.publication_error===null || campaignText(value.publication_error) && [...value.publication_error].length<=4096) ||
+     typeof value.reason_truncated!=="boolean" || !campaignInteger(value.observation_sequence,0) ||
+     !campaignNonnegative(value.retry_after_seconds) ||
+     !(value.observed_at===null || campaignTimestamp(value.observed_at)) ||
+     missing!==(value.observed_at===null) || (!missing && value.observation_sequence===0) ||
+     (missing && value.observation_sequence>0 && value.publication_error===null) ||
+     !Array.isArray(value.installed_work_kinds) ||
+     !value.installed_work_kinds.every(kind=>kinds.includes(kind)) ||
+     new Set(value.installed_work_kinds).size!==value.installed_work_kinds.length ||
+     (selected && !kinds.includes(value.work_kind)) ||
+     ![value.target_revision,value.transition_id].every(item=>selected ? campaignDigestValue(item) : item===null) ||
+     (missing && (selected || value.retry_after_seconds!==0 || value.reason_truncated)) ||
+     !(value.settlement_outcome===null || ["valid_comparison","invalid","failed","prerequisite",
+       "calibration","validation","reject_audit","maintenance"].includes(value.settlement_outcome)) ||
+     (value.status==="settled")!==(value.settlement_outcome!==null) ||
+     (value.status==="settled" && !selected)) throw new Error("runtime observation is malformed");
+  return value;
+}
+
 function campaignValidateUnified(value){
-  campaignExact(value,["schema","scheduler","resources","actors","evidence","candidate","targets"],
+  const runtimeAware=value && value.schema==="epyc.autokernel.unified_campaign_projection.v2";
+  campaignExact(value,["schema","scheduler","resources","actors","evidence","candidate","targets",
+    ...(runtimeAware?["runtime","worker_timing"]:[])],
     "campaign unified projection");
-  if(value.schema!=="epyc.autokernel.unified_campaign_projection.v1")
+  if(!["epyc.autokernel.unified_campaign_projection.v1","epyc.autokernel.unified_campaign_projection.v2"].includes(value.schema))
     throw new Error("campaign unified projection schema is unsupported");
+  if(runtimeAware) campaignValidateRuntime(value.runtime);
   const s=value.scheduler;
   campaignExact(s,["schema","projection_digest","config_digest","policy_digest","round_number",
     "accounting_epoch","capacity","pending_selection_digest","status","reason","campaign_attempts",
@@ -799,7 +829,27 @@ function campaignValidateSnapshot(value){
     if(!basis)
       throw new Error("campaign v2 settling snapshot lacks an active worker or accepted command basis");
   }
-  if(v3) campaignValidateUnified(value.unified);
+  if(v3){
+    campaignValidateUnified(value.unified);
+    if(value.unified.runtime){
+      const worker=value.active_worker,timing=value.unified.worker_timing;
+      if(!worker){if(timing!==null)throw new Error("runtime timing has no original worker");}
+      else{
+        campaignExact(timing,["worker_id","worker_generation","lifecycle_revision","checked_at",
+          "state","remaining_seconds"],"runtime worker timing");
+        if(timing.worker_id!==worker.worker_id || timing.worker_generation!==worker.worker_generation ||
+           timing.lifecycle_revision!==value.worker_lifecycle_revision || timing.checked_at!==value.generated_at ||
+           !["within_deadline","deadline_elapsed","clock_unavailable"].includes(timing.state) ||
+           (timing.state==="clock_unavailable" ? timing.remaining_seconds!==null :
+            !campaignNonnegative(timing.remaining_seconds) ||
+            ((timing.remaining_seconds>0)!==(timing.state==="within_deadline"))))
+          throw new Error("runtime worker timing differs");
+      }
+    }
+    const stamp=value.unified.runtime && value.unified.runtime.observed_at;
+    if(stamp!==undefined && stamp!==null && Date.parse(stamp)>Date.parse(value.generated_at))
+      throw new Error("runtime observation is newer than snapshot");
+  }
   return value;
 }
 
@@ -845,6 +895,22 @@ function campaignAcceptSnapshot(next, explicitSwitch=false){
         next.supervisor_incarnation <= campaignAccepted.supervisor_incarnation))
       {campaignStreamError = "campaign stream epoch/incarnation relationship is invalid";
        throw new Error(campaignStreamError);}
+    const oldRuntime=campaignAccepted.unified?.runtime,newRuntime=next.unified?.runtime;
+    if(oldRuntime){
+      if(!newRuntime){
+        campaignStreamError="same campaign cannot downgrade runtime projection";
+        throw new Error(campaignStreamError);
+      }
+      if(next.supervisor_incarnation===campaignAccepted.supervisor_incarnation &&
+         (newRuntime.observation_sequence<oldRuntime.observation_sequence ||
+          (newRuntime.observation_sequence===oldRuntime.observation_sequence &&
+           campaignCanonical(newRuntime)!==campaignCanonical(oldRuntime)) ||
+          (oldRuntime.observed_at!==null && (newRuntime.observed_at===null ||
+           Date.parse(newRuntime.observed_at)<Date.parse(oldRuntime.observed_at))))){
+        campaignStreamError="runtime observation sequence or time rolled back or changed";
+        throw new Error(campaignStreamError);
+      }
+    }
     if(rank[next.schema]>=2 && rank[campaignAccepted.schema]>=2){
       if(next.worker_lifecycle_revision<campaignAccepted.worker_lifecycle_revision){
         campaignStreamError="newer campaign snapshot rolled back worker lifecycle revision";
@@ -1073,13 +1139,26 @@ async function campaignSend(operation, config, retry=false){
   }
 }
 
-function campaignRenderUnified(snapshot){
+function campaignRenderUnified(snapshot,runtimeClock=null){
   if(snapshot.schema!=="epyc.autokernel.campaign_snapshot.v3") return "";
   const u=snapshot.unified,s=u.scheduler,c=s.capacity,a=s.accounting,t=u.targets;
   const unknown=value=>value===null ? "unknown / not connected" : String(value);
   const section=(name,row,detail)=>`<div class="pad"><h4>${esc(name)} · ${esc(row.status)}</h4>`+
     `<div class="muted">${esc(row.reason)}</div><dl class="kv">${detail}</dl></div>`;
-  return `<div class="subgrid">`+
+  const runtime=u.runtime;
+  const runtimeCard=!runtime ? "" : section("runtime observation",runtime,
+    `<dt>observed at (not publisher heartbeat)</dt><dd>${esc(runtime.observed_at || "not reported")}</dd>`+
+    `<dt>observation / declared retry delay</dt><dd>${esc(runtime.observation_sequence)} / ${esc(runtime.retry_after_seconds)} s</dd>`+
+    `<dt>installed execution kinds (not grants)</dt><dd>${esc(runtime.installed_work_kinds.join(", ") || "none")}</dd>`+
+    `<dt>last selected work / target</dt><dd>${esc(runtime.work_kind || "none")} / ${esc(runtime.target_revision || "none")}</dd>`+
+    `<dt>transition / durable operational outcome</dt><dd>${esc(runtime.transition_id || "none")} / ${esc(runtime.settlement_outcome || "none")}</dd>`+
+    `<dt>observation publication error</dt><dd>${esc(runtime.publication_error || "none reported")}</dd>`+
+    (runtimeClock ? `<dt>runtime freshness (separate from transport)</dt><dd>${esc(runtimeClock.state)}: ${esc(runtimeClock.reason)}</dd>`+
+      `<dt>last observation / owned stage activity age</dt><dd>${esc(runtimeClock.age_s ?? "unknown")} / ${esc(runtimeClock.activity_age_s ?? "unknown")} s</dd>`+
+      `<dt>stage activity silence</dt><dd>${runtimeClock.activity_silent ? "no recent stage event; ongoing work is not proof of progress" : "none indicated"}</dd>` : "")+
+    `<dt>scientific authority</dt><dd>none inferred; calibration collection is not qualification</dd>`+
+    (runtime.reason_truncated ? `<dt>reason</dt><dd>bounded prefix shown</dd>` : ""));
+  return `<div class="subgrid">`+runtimeCard+
     section("scheduler",s,
       `<dt>round / accounting epoch</dt><dd>${esc(s.round_number)} / ${esc(s.accounting_epoch)}</dd>`+
       `<dt>pending selection</dt><dd>${esc(unknown(s.pending_selection_digest))}</dd>`+
@@ -1109,7 +1188,7 @@ function campaignRenderUnified(snapshot){
       `<dt>frozen production</dt><dd>${esc(unknown(u.candidate.frozen_production_identity))}</dd>`+
       `<dt>validation debt</dt><dd>${esc(unknown(u.candidate.validation_debt))}</dd>`)+
     section("targets",t,
-      `<dt>ready / prerequisite / total</dt><dd>${esc(t.ready)} / ${esc(t.prerequisite)} / `+
+      `<dt>enrollment ready / prerequisite / total (not execution readiness)</dt><dd>${esc(t.ready)} / ${esc(t.prerequisite)} / `+
         `${esc(t.total)}</dd><dt>production / seed enrolled</dt><dd>${esc(t.production_enrolled)} / `+
         `${esc(t.seed_enrolled)}</dd><dt>items endpoint</dt><dd>`+
         `${t.items_page_ref===null ? "none promised" : esc(t.items_page_ref)}</dd>`)+
@@ -1191,7 +1270,7 @@ function renderCampaign(d){
     `<dt>last command</dt><dd>${last ? `accepted=${esc(last.accepted)}; completed=` +
       `${esc(last.completed)}; ${esc(last.prerequisite_reason || "no reason")}` : "none"}</dd>` +
     `</dl>${campaignStreamError ? `<div class="warn">${esc(campaignStreamError)}</div>` : ""}</div>`+
-    campaignRenderUnified(s);
+    campaignRenderUnified(s,envelope.runtime_freshness);
   const secure = campaignSecure();
   const available = !!(!rejected && envelope.controls && envelope.controls.available && secure);
   let pendingResult=null;
