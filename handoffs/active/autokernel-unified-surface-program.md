@@ -1925,6 +1925,22 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     refuses mixed current frames. Ordinary load remains recorded noise, not an automatic A2 veto.
     Source `04d73260`, main `d75bc9ec`; actual controller/native phase adapters and shared Vidya
     projection remain active work under AKU-04/08 and VB-AK-UNIFIED-DISCOVERY.
+  - [x] **AKU-04e — controller-owned A2 phase persistence and cached-bank replay**: exact
+    fixed-plan INTENT/TERMINAL/SEALED records use the native Journal and one startup-built bounded
+    index; ambiguous append poisons that lifetime and exact retry preserves original bytes.
+    ✅ 2026-09-09 — main's clean composition with published standalone controls passes **1,831
+    loop/Journal/storage tests plus 165 subtests**, including the independent cached-bank probe;
+    Ruff/diff checks pass. Candidate-only reuse references its original seven anchor event/Journal
+    identities and sealed bank, adds no synthetic anchors, and reopens after restart. Foreign,
+    missing, forged or stale-frame sources refuse. Fourteen actual phase events and at most one
+    separate bank reference remain the bound. Source `6b5d5fda`, main `c36411a7`; no actual native
+    invocation, semantic grading or real comparison is established by this persistence slice.
+  - [ ] **AKU-04f — native per-unit A2 execution and first-issue reservation**: select one
+    digest-covered contiguous unit range from the unchanged full ExperimentPlan; parent validation
+    rederives membership. Bind each launch to its fsynced unit INTENT and an opaque current-owner
+    first-issue permit. Replayed unknown is not absence proof; terminal recovery and durable
+    not-acquired retries must preserve exact identity. No hidden three-unit launch or one-unit
+    plan rehash. Coordinate this bridge with AKU-07i's actual observation/lifecycle owner.
 - [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
   delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
   identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
