@@ -1188,3 +1188,40 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   sessions, live grants, hardware benchmarks, service reloads or production-kernel changes.
 - Checklist: **two completed sub-items, one new open task, zero declines**; 48 accepted sub-items,
   all twelve parent tasks open. Per-task wrap-up only; no pruning, compaction or wiki sweep.
+
+### Standalone runtime/startup composition and GLM trial target
+
+- Published research **38b29326 / 2c7762dc**: fifteen code/test/docs paths connect exact
+  issued-intent recovery, bounded retries, typed startup materialization, offline enrollment
+  factory and the service-owned execution thread. Replay precedes listener admission; shutdown
+  retains ownership until actual cleanup. No installed provider or scientific authority is invented.
+- Main composed the runtime/factory packet with published actor/native evidence on d51f9de6,
+  preserving their existing controller/driver hunks. The complete loop plus Journal suite passed
+  **2,024 tests, one strict expected accounting failure and 83 subtests in 45.26s**. The factory's
+  subprocess dry-run used this same composition. Ruff and diff checks passed; the first
+  `python3 -m ruff` invocation lacked that module, so the installed `/usr/local/bin/ruff` was used.
+- Fixed a reproduced planning/drain race: controller admission closure now has an exact typed
+  refusal interpreted as stop/wait, while unrelated errors still fail. Historical logical-attempt
+  membership is indexed at four existing replay/append points; the regression refuses iteration
+  and preserves cross-incarnation denial fencing. No event schema changed in this correction.
+- Source/runtime and offline factory slices are **AKU-07p/07q complete**. AKU-07h/07n remain
+  open for installed bindings, all work-kind dispatch, durable held-cost recovery, scientific
+  adapter configuration and real export-backed acceptance. These tests do not satisfy AKU-12a/b.
+- Operator's five-loop target is now explicitly experimental GLM-5.3-Flash CPU research in
+  AKU-12b. Read final GLM progress/source handoff, verified exact local core c463f601b and reference
+  f8e2668b6 commits and primary evidence/ingestion receipt existence. Preserve canonical model,
+  MTP and placement identities and existing four measured_null seeds. GLM comparisons require an
+  experimental GLM control; champion is only the cross-model baseline. The historical Flash-Next
+  CPU signal is unresolved, not a causal estimate or admission. No duplicate ingestion or kernel
+  changes occurred. Broader CPU/GPU acceptance and production gates remain required.
+- External feed team exited normally with an isolated frozen packet; main review still identifies
+  deadline-expiry/retry ACK-before-checkpoint risk. Assigned the exact evidence_feed/test correction
+  to the available semantic worker in a separate tree. Team also disclosed accidental Journal
+  restoration in its original source tree: bytecode-equivalent reconstruction does not restore
+  the prior textual SHA. That tree is not an integration source; PRIMARY was unaffected.
+- Concrete parent T0 witness implementation and source/build preparation continue in isolated
+  worker trees. HIGH held-cost/binding/generated-export and OP-41 choices remain separate operator
+  gates, not inferred from the GLM direction. No services, grants, builds or inference were launched.
+- Checklist: **two newly completed sub-items, zero new open tasks, zero declines**; 50 accepted
+  sub-items, all twelve parents open. README freshness clean. Bus drain and heartbeat again refused
+  this non-roster identity; no peer identity was used. Per-task wrap-up; no pruning or wiki sweep.

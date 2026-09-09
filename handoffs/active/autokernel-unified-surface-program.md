@@ -2167,10 +2167,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     retry the retained exact transaction/execution after transient authority or reply loss with
     bounded backoff; preserve unresolved ownership, stop responsiveness and no duplicate child.
     Connect the service-owned run thread and typed process-restart reconstruction of unsettled
-    work. Exact autoretry, startup pipe/signal cleanup and finite recovered/settled success handling
-    have working-tree corrections; main reproduced 84 service/runtime/driver tests, including the
-    formerly failing pipe-creation cleanup probe. Finish the actual installed startup materializer
-    and its real inputs; a source-level runtime_factory callback is not standalone acceptance.
+    work. Source composition is accepted under AKU-07p; finish installed provider bindings,
+    durable held-cost restart settlement (07j), all selected work-kind dispatch and native-v2
+    scientific adapter configuration. A source-level runtime_factory is not standalone acceptance.
+  - [x] **AKU-07p — compose bounded runtime, startup parser and service ownership**:
+    exact issued-intent recovery, bounded same-outcome retry, one service-owned non-daemon run
+    thread, recovery before listener admission and owned shutdown are connected. Closed startup
+    manifests materialize existing typed inputs and resolve application-owned provider identifiers;
+    unified CLI dry-run opens no store or claims. ✅ 2026-09-09 — main combined suite:
+    **2,024 passed, one strict accounting xfailed, 83 subtests passed in 45.26s**; Ruff clean.
+    Research source `38b29326`, main `2c7762dc`.
+    Fixed the planning/drain race with a typed admission-closed refusal and indexed historical
+    logical attempts without scanning or reusing old-incarnation denial proofs. Fixture CPU/GPU
+    paths are not real provider acceptance. Runtime currently executes runtime_comparison only;
+    actor/profile dispatch, continuous feed and production scientific witnesses remain open.
   - [x] **AKU-07i — native-v2 actual-descendant binding and replay**: published the narrowly
     approved lifecycle event/validator with legacy refusal, current-owner capture, immutable v2
     artifact references and restart/acquisition closure. ✅ 2026-09-09
@@ -2235,12 +2245,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
     add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
     candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,
-    plans/execution inputs, evidence and installed provider/verifier identifiers). No real manifest
-    currently exists; the delivery dry-run only validates a prebuilt test-shaped manifest and
-    does not invoke export/enrollment or emit dashboard projection. Reuse canonical recipe and
+    plans/execution inputs, evidence and installed provider/verifier identifiers). Factory code
+    is accepted under AKU-07q, but no real export-backed manifest currently exists; hermetic CLI
+    tests are not installed acceptance and do not prove dashboard projection. Reuse canonical recipe and
     campaign resolution; do not invent profiles, grants or witness receipts. Retain exact real
     input/output paths and a runnable command; satisfy AKU-12a's full chain after separately gated
     generated-export repair. Provider absence is reported debt, not permission to fabricate it.
+  - [x] **AKU-07q — construct pinned startup bundles through the enrollment factory**:
+    bounded offline CLI consumes sealed campaign_cli v2 output plus matching production export,
+    explicit CPU/GPU/candidate configuration and existing typed scheduler/profile/plan/evidence
+    inputs; emits closed startup manifest, original pins, preflight debt and exact dry-run command.
+    ✅ 2026-09-09 — included in main's 2,024-test combined gate; subprocess factory/driver tests
+    use the same composed tree and actual interpreter. No provider, profile, claim or epoch is
+    invented. Real generated export repair and installed acceptance remain AKU-12c/12a.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
@@ -2454,10 +2471,24 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Retain the exact command/config, loaded code identities, output and refusal/debt evidence.
   - [ ] **AKU-12b — five-loop monitored acceptance and bug-fix rerun**: after applicable real
     resource and operator gates, complete five monitored unified research iterations through the
-    actual CPU/GPU execution path; retain selections, held-resource receipts, lifecycle samples,
+    actual unified execution path, focusing this five-loop trial on **experimental GLM-5.3-Flash
+    CPU kernel research**, as directed by the operator on 2026-09-09. Retain selections, held-resource receipts, lifecycle samples,
     results, evidence updates, dashboard freshness/control observations and teardown checks.
     Fix failures and rerun affected acceptance; five mock/helper iterations do not satisfy this
     operator-requested goal. Keep performance/validation claims within the owning protocol.
+    Reuse [the GLM source handoff](../../docs/reference/models/glm53-autokernel-handoff.md) and
+    [final progress log](../../progress/2026-09/2026-09-09-glm53-cpu-optimization.md): core
+    c463f601bd39d0e313b744c214b8c22f9455bcd3 is experimental and NOT ACCEPTED; reference
+    f8e2668b6a951d7c44f3264f87d1bc882299bae5 preserves default-off experiments/tests. Compare GLM
+    against a validated experimental GLM control, not the GLM-incapable champion; champion remains
+    the cross-model regression baseline. Preserve six-shard UD-Q4_K_XL identity, canonical48
+    placement/environment, native MTP depth3 and exact trajectory/rejection/rollback gates.
+    Reuse the four already-seeded measured_null records without duplicate ingestion. Resolve the
+    Flash-Next CPU historical regression signal with matched evidence before any champion admission;
+    do not infer causality from its single cross-session comparison. Rejected expert/Q8 experiments
+    and the disproven copy route require new evidence before retry. Smaller partitions are distinct
+    validated recipes, not automatic full-instance transfer. This CPU focus does not waive broader
+    CPU/GPU integration acceptance, cross-model regressions or separate production-promotion gates.
   - [ ] **AKU-12c — repair and verify canonical generated export inputs**: real production export
     currently refuses stale descriptor/compiled-priors provenance. The supported writer is
     stack_change_pipeline.py update, regenerating lean registry, descriptors, priors, procedure
