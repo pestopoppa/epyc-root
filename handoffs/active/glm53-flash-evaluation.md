@@ -150,10 +150,22 @@ Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
   noncontiguous routes, row tails and chunk offsets; Q4_K 49,152/49,152 and
   Q5_K 98,304/98,304 outputs match exactly, with branch traces. Full-model and
   performance gates remain T11/T14. ✅ 2026-09-09
+- [x] T11b — Run the five-pair operator microdiagnostic for expert reuse at the
+  GLM dimensions. All 80 type/width/arm/round cells have exact paired output
+  hashes. Median serial/optimized ratios for widths 2/3/4 are
+  1.075/1.120/1.149 for Q4_K and 1.108/1.156/1.227 for Q5_K; width 1 controls
+  are 1.017/1.013. This is noisy, noncanonical kernel-level evidence only;
+  full-model performance and replay gates remain open. ✅ 2026-09-09
 - [ ] T12 — Implement and validate exact batched native Q8 verification.
-- [ ] T12a — Rebuild and repeat the Q8 operator gate after the final source/test
-  corrections; the earlier four-case pass predates those edits and cannot attest
-  the current candidate.
+- [x] T12a — Rebuild and repeat the Q8 operator gate for the specialized mode-1
+  source/test corrections. That binary passes 4/4 cases and CTest with
+  an active rows=4 branch witness, covering Ny2/3/4, native and converted Q8,
+  noncontiguous input, broadcast stride, multiple heads and worker tails.
+  ✅ 2026-09-09
+- [ ] T12b — Complete paired Q8 mode comparison and retain or reject the lever.
+  The first exact microdiagnostic is negative (0.960x MLA, 0.943x projection);
+  treat it as directional until the queued interleaved repeat resolves noise.
+  A subsequent two-weight-row mode-2 experiment requires its own compiled gate.
 - [ ] T13 — Measure node-level worker waits and validate a bounded scheduling change.
 - [ ] T14 — Retest the integrated retained candidate against the preserved baseline.
 
