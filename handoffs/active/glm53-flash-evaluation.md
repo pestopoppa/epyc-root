@@ -156,6 +156,12 @@ Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
   1.075/1.120/1.149 for Q4_K and 1.108/1.156/1.227 for Q5_K; width 1 controls
   are 1.017/1.013. This is noisy, noncanonical kernel-level evidence only;
   full-model performance and replay gates remain open. ✅ 2026-09-09
+- [x] T11c — Run the matched one-request full-model expert screen with Q8 row
+  batching disabled. Off/on produce the same 512-token trajectory as the prior
+  plain/MTP reference, the same 561/323 drafted/accepted counters, and 122
+  verification events with rejection. Expert reuse reaches its rows=2 branch
+  but measures 9.8985 versus 9.7305 output tokens/s (0.9830x). Keep the lever
+  off; this screen does not justify a five-repeat expert-only run. ✅ 2026-09-09
 - [ ] T12 — Implement and validate exact batched native Q8 verification.
 - [x] T12a — Rebuild and repeat the Q8 operator gate for the specialized mode-1
   source/test corrections. That binary passes 4/4 cases and CTest with

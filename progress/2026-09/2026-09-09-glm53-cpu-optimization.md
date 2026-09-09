@@ -132,6 +132,26 @@ bench binary SHA256 is
 The wrapper did not retain an outer affinity/NUMA/OMP receipt, so these are noisy,
 noncanonical kernel-level diagnostics and no full-model gain is claimed.
 
+A matched full-model screen then isolated expert reuse with Q8 row batching off.
+Both arms used the preserved mode-1 snapshot: server SHA256
+`2034495c3f386123990082ad3ede4ea0e38164b22f9996bbe2561db956ccce07`
+and `libggml-cpu.so` SHA256 `9ca2c34504642ff3523b48a688c56b351e579c57b3e1c3a14730b7b69571799d`.
+Actual launch receipts confirm canonical 48-thread affinity, NUMA interleave,
+OMP settings, native MTP depth3, row-exact scoping, Q8 prefill threshold32, and
+`GGML_Q8_ROWEXACT_BATCH=0` in both arms. The expert-on log witnesses the rows=2
+branch; the off log does not.
+
+Both arms emit the same 512-token SHA256
+`b3ab59a69a821c714357a95e54df03490bee1ba73b404548f6ae88c417fdb576`,
+which also matches the prior plain and MTP reference. Each reports 561 drafted
+and 323 accepted tokens; parsed logs contain 187 completed verification events,
+including 122 events with actual rejection and 238 rejected draft tokens. Off is
+9.89853 output tokens/s and expert-on is 9.73052, a 0.98303x ratio. Both owned
+servers exit rc0 and are confirmed absent. This single short-prompt screen is a
+rejection signal rather than a sustained benchmark; expert reuse remains off and
+does not warrant a five-repeat expert-only run. Evidence is under
+`lever3-screen-20260909T085500Z`.
+
 Checkpoint `558e8005` and the six earlier GLM documentation commits are safely
 pushed on `origin/lane/glm53-three-levers-20260909`. A guarded clean promotion to
 the independently advanced root `main` was aborted because the generated
