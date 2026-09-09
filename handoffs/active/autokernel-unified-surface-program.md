@@ -2159,6 +2159,29 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     JSON cannot enable unified deletion. Native current-controller roots, immediate generation checks,
     existing tombstone-before-bytes expiry and journaled maintenance results remain required. Tests
     use temporary fixtures only; no research artifacts were deleted and AKU-10 remains open.
+  - [x] **AKU-10b — typed native retention consumer and exact tombstone recovery**: bounded
+    candidate/native-root projection feeds existing retained-artifact closure and dry expiry policy;
+    actual deletion requires a held generation/root-exclusion capability. ✅ 2026-09-09 — main
+    reproduced **250 tests and 82 subtests**, including actual temporary CandidateTransactions,
+    ArtifactStore and native Journal close/reopen recovery. One bounded tombstone index per operation
+    checks complete descriptor/preconditions/policy identity; intent-after-removal recovery cannot
+    delete twice. Generation, source/branch, protected kernels, changed content and shared DSO/ancestor
+    roots fail closed. Sequential callers prove idempotence, not concurrency. Source `1be3cf79`,
+    main `e678a2e2`. Default execution remains unavailable pending the assigned actual maintenance
+    exclusion/native-root/provider-accounting consumer; slow I/O must not hold the controller mutex.
+    Only disposable fixture bytes were deleted; no research artifacts or real cleanup were touched.
+  - [x] **AKU-10c — versioned historical migration and verified store exclusion**: bounded
+    noncreating dry-run and explicit immutable snapshot import reuse read-only accumulator recovery,
+    actual ExperimentStore rows and the existing content-addressed ArtifactStore. ✅ 2026-09-09
+    Main reproduced **110 targeted tests**; the combined clean eleven-file retention/migration
+    release passed **1,750 tests and 165 subtests**, with **68 final focused tests** and Ruff clean.
+    Public reentrant store exclusion serializes nested writes and same-root threads/processes;
+    closed/replaced roots refuse. URI-escaped SQLite paths, active WAL/SHM, changing source frontier,
+    strict row/byte bounds, unsupported versions and source/destination aliases are tested. Emitted
+    snapshots must pass their installed v1 reader before publication, and exact retries preserve
+    source bytes. Historical evidence stays `unknown_legacy`; no candidate/validated/serving
+    authority is created. Source `1be3cf79`, main `e678a2e2`; live import/cutover and future durable
+    legacy database schema marking remain outside this completed snapshot-reader slice.
 - [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
   finalise → promote → reboot gate. Exact pending choice: whether the operator's new implementation
   instruction delegates broker-code work now while preserving live activation gates. No answer inferred.
