@@ -412,6 +412,36 @@ measurement hook. Operational journal snapshots are not claim tuples.
   Main owns root ledger/index changes; workers now own planner, lifecycle and
   retention scopes. No production kernel, live stack, research run or historical corpus was changed.
 
+### Retention safety accepted; worker/planner consumer review continues
+
+- Research source **3c273f7b**, main merge **5b1cf412**, publishes the six-file retention/legacy cleanup
+  slice. Main ran **174 tests and 13 subtests** across retention, pipeline, anchor, gates and six
+  independent graph probes. Ruff passes for changed production/new files; the legacy test file keeps
+  only its independently identified pre-existing F841 exclusion. Whitespace checks pass.
+- Deterministic closure is rederived at the maintenance boundary. Rehashing a forged plan cannot move
+  a retained artifact into the expiry set. Permanent classifications retain dependencies, and distinct
+  artifact IDs with equal/ancestor/descendant paths retain their overlapping bytes and dependency closure
+  to a fixed point. Missing references/uncertain scopes withhold all expiry. The helper previews through
+  existing storage policy; it creates no new expiry/grading authority.
+- Legacy pruning captures/open-verifies parent identity before descriptor-based discovery, moves the
+  exact target into an owned private 0700 quarantine, and deletes relative to its descriptor. Mutation
+  fixtures cover store, generation and quarantine substitution. Discovery/finalization I/O failures close
+  all owned descriptors. Replacement public paths are not mislabeled as recoverable owned artifacts;
+  only remaining owned content gets a descriptor-derived recovery location. Byte reclamation is unknown.
+- The current run-path cleanup now visibly returns `retention_unknown` instead of guessing that an old
+  generation is unused. Even complete supplied JSON cannot enable unified deletion: current native root
+  projection, generation recheck, existing storage tombstone expiry and native maintenance result wiring
+  are still required. No live artifact cleanup or kernel/model/build work was performed.
+- Planner review found target/recipe hashes supplied beside unmatched objects, source/build actors able
+  to assert a final-plan hash, mutable dispatch carriers, and unnecessary canonical env-sweep refusal.
+  Corrections are being tested against actual sealed CPU/GPU enrollment, exact prospective intent and
+  persistent scheduler bindings; this draft is not accepted or published yet.
+- Worker/control review passes the initial control/escalation/generation probes. A new prospective
+  acquisition intent is approved before provider I/O, with typed denial versus unresolved recovery and
+  stable v2 snapshot shape. Remaining review covers pipe cleanup, trusted bootstrap import origin and
+  owned teardown despite returned Journal errors. The root worker-aware v2 consumer is now dispatched;
+  neither lifecycle nor dashboard-v2 source is accepted or deployed by this checkpoint.
+
 The built-in dispatcher retained two completed review threads and exhausted its thread limit; one new
 sol-medium worker uses it and two use supported `codex exec` with explicit model/medium effort. Main
 caps active concurrency at three, owns process handles, reviews proposals and publishes accepted files.

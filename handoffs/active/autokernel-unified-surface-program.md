@@ -2043,6 +2043,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.
+  - [x] **AKU-10a — retained-artifact closure and truthful legacy cleanup consumer**: immutable
+    root/dependency snapshots, deterministic expiry previews through the existing storage policy,
+    and exact owned-path legacy pruning with recoverable failure reporting.
+    ✅ 2026-09-09 — main's **174 tests and 13 subtests** pass. Maintenance rederives closure instead of
+    trusting a rehashed plan; permanent classes, shared paths, ancestor/descendant overlaps and their
+    transitive dependencies remain retained. Missing/uncertain closure emits no expiry candidates.
+    Legacy cleanup binds captured/opened parent identity, uses private 0700 descriptor-bound quarantine,
+    preserves unexpected replacements, closes descriptors on I/O errors, and reports only actual owned
+    remaining content as recoverable. Reclaimed bytes are unknown, not a fabricated fixed estimate.
+    Current `loop.run` deliberately withholds pruning with `retention_unknown`; even complete caller
+    JSON cannot enable unified deletion. Native current-controller roots, immediate generation checks,
+    existing tombstone-before-bytes expiry and journaled maintenance results remain required. Tests
+    use temporary fixtures only; no research artifacts were deleted and AKU-10 remains open.
 - [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
   finalise → promote → reboot gate. Exact pending choice: whether the operator's new implementation
   instruction delegates broker-code work now while preserving live activation gates. No answer inferred.
