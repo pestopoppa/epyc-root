@@ -1959,6 +1959,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     missing witnesses remain unknown and captures diagnostic. This adds no A2 event/permit,
     scheduler discovery kind or standalone activation; AKU-04f remains open under OP-AKU-A2.
     Contract: research `docs/autokernel-selected-unit-transport.md`.
+  - [x] **AKU-04j — refuse discovery misrouting through ordinary comparisons**:
+    ✅ 2026-09-09. Inline pinned driver guards exclude canonical discovery phase, record class
+    or A2 protocol declarations before catalog issuance, retaining other eligible work and one
+    precise unavailable reason. Historical misclassified intents remain readable but refuse
+    materialization before binding or worker acquisition. No new discovery permit/event or
+    activation is supplied. Main final **18 tests passed**; worker compatibility **122 passed,
+    one existing strict HELD xfailed, no skips**. Exact two-file packet
+    `9abb2115347b8d4af796bc6157c6845addc3aafab4544c9fc9e27cfe6ecc2c21` matches primary.
+    Prior published transport main `0114da9b` independently passed the complete loop/Journal
+    suite: **2,490 passed, two strict xfailed, 83 subtests, no skips in 309.68s**.
+    That full run predates this guard; final guard coverage is the focused/compatibility scope.
   - [x] **AKU-04h — align native startup fixture with prospective sample admission**:
     ✅ 2026-09-09. The full published suite exposed one fixture declaring 64 samples for
     32 seconds at 10ms cadence (requires 3,209). The test now derives its count before
@@ -2152,6 +2163,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     alone is insufficient. Explicit versioned successor/predecessor semantics require shared
     `actor_preparation_state.validate_event` changes (HIGH16, Journal publication/replay);
     OP-AKU-REFRESH approval was requested. Do not conceal new authority in a nested v1 contract.
+  - [ ] **AKU-06j — install the concrete owned CPU profiling producer for GLM discovery**:
+    emit existing target_profile_output.v1 through the installed ProfileMechanism, retaining
+    bounded original perf-script/counter/request-window artifacts and source/tool/model/recipe
+    identities. Reuse the preliminary GLM capture semantics, not its independent launcher/lock;
+    server and profiler must be owned descendants. Use supported perf-script per-TID/period
+    parsing (the historical helper's perf report -F tid was invalid). Historical token prompts,
+    seed42 and returned-token handling do not bypass OP-AKU-PROMPT. CPU samples are not wall-time
+    share, recoverable spin time, bandwidth saturation or measured gains. Add real configuration
+    and registered write-side projection; test offline without presenting fixture profiles as
+    fresh hardware evidence. Existing GPU/C4 profilers remain separate selected mechanisms.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
