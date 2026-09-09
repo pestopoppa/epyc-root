@@ -358,6 +358,60 @@ measurement hook. Operational journal snapshots are not claim tuples.
   full `--force` rebuild is running under the canonical lock; no metadata is manually removed and
   existing lifecycle edits remain held until the index/interface releases.
 
+### Scheduler accounting accepted; enrollment/lifecycle integration continues
+
+- Main accepted the five-file scheduler/accounting slice after **138 passing tests** across scheduler,
+  CLI, campaign and scoped-evidence consumers; all four Python files pass Ruff. Nine independent main
+  probes exposed/fixed unused-slot stalls, ineligible-frontier stalls, non-FIFO seeds, oversized optional
+  work blocking production, receipt outcome mutation, unavailable coverage hiding seeds, and full-region
+  backfill incorrectly skipping a reserved seed. Coverage debt records unserved work without pretending
+  it was measured. Required reservations survive; repeated optional arrivals cannot erase them.
+- CLI state binds the complete resolved campaign, not only its name. Alias groups bind the actual
+  workload signature and share seed history. Typed prerequisites are distinct from serving-ready work.
+  Indexed receipt/seed maps and per-backend FIFO heaps remove historical scans from operational updates.
+  Actual held resources remain charged after invalid results/overruns; fixed-v1 weights are explicitly
+  non-adaptive. No allocation, concurrency certificate, measurement grade or live execution is implied.
+- Scheduler worker proceeds to narrowly scoped retention/legacy prune safety. Main retains publication
+  ownership. Real Journal/provider wiring and the unified runner remain implementation work.
+- Production enrollment passed **114 research tests** plus **19 orchestrator/cross-repository tests**
+  before final readiness review. Sealed per-target recipe artifacts prevent full/partition identity
+  collapse; true aliases still merge. A further main probe found that sealed bytes could erase exported
+  unsupported/waiting status in the Campaign projection; the worker is correcting that before acceptance.
+  Future-model seeds are explicit local pins, not downloads or proof of executable model compatibility.
+- Worker lifecycle/controller v2 seams are approved under the existing provider boundary (Journal impact
+  MEDIUM, controller LOW). Main is reviewing exact deadlines, partial-create/spawn crash cuts, current
+  result fences and asynchronous control completion before accepting worker-aware dashboard integration.
+  Tiny owned fixture children only; no live cgroup/provider/broker or inference activation.
+- Earlier research forced indexing completed successfully (**76.1 seconds**, fresh at `1552744b`), and
+  root refresh completed (**86.5 seconds**, fresh at `dc3d28e6`). Dashboard source `7868b919` and its main
+  merge `dc3d28e6` are published. New source checkpoints will refresh affected indexes again.
+
+### Production enrollment and canonical serving adapter accepted
+
+- The readiness correction is main-verified: sealed unsupported rows remain `unsupported_capability`;
+  sealed rows waiting on any artifact, including DSOs, remain unresolved/missing. Byte identity never
+  creates capability readiness. The complete research acceptance now passes **118 tests**, including
+  nine main probes; orchestrator exporter/cross-repository **19** plus adjacent command/thread/runtime/
+  environment/NUMA **109** tests pass (**128 total**). New Python files and all research edits pass Ruff.
+- The exporter derives the actual production roster, verifies loaded configuration against pinned
+  source bytes, refuses stale prior dependency closure, and creates no runtime directories. Only
+  explicit `--out` publishes owned, immutable, fsynced recipe sidecars and the bundle. Read-only
+  consumers verify actual sidecar bytes and their correspondence to the exported launch. Hashes differ
+  for full/partition recipes; cosmetic aliases preserve identity. No global-export hash stands in for
+  all target recipes. Retry after interrupted publication and sidecar tamper are covered.
+- A closed canonical recipe adapter preserves exact CPU/GPU launcher argv/environment while rederiving
+  every semantic field; unknown/ambiguous NUMA/flag forms and secret-bearing environment refuse. The
+  cross-repository fixture now resolves Campaign and fake serving from the SAME sealed export, rather
+  than comparing independent pre/post-seal identities. Ordinary production builder defaults remain.
+- Optional local seeds reuse existing TargetSpec/artifact contracts and pin their comparator. No
+  production-ref override or opposite-backend production build/recipe reuse is allowed. These are
+  prospective local model enrollments, not downloads or proof that the new model can execute. Speech
+  and other unsupported rows remain explicit in the production-only dry-resolution v2 envelope.
+- Scheduler source `e3a7a073` and main merge `fb42601f` are published. Enrollment/canonical source is
+  published as research `bed678d2` / main `8ea1e10e` and orchestrator `ee304926` / main `3b77bc5a`.
+  Main owns root ledger/index changes; workers now own planner, lifecycle and
+  retention scopes. No production kernel, live stack, research run or historical corpus was changed.
+
 The built-in dispatcher retained two completed review threads and exhausted its thread limit; one new
 sol-medium worker uses it and two use supported `codex exec` with explicit model/medium effort. Main
 caps active concurrency at three, owns process handles, reviews proposals and publishes accepted files.
