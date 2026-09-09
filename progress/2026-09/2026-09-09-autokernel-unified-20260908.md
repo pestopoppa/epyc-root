@@ -838,3 +838,28 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
 - Per-task wrap-up adds **AKU-07g**: **37 accepted implementation sub-items**, all twelve parents
   remain open. Three newly explicit implementation tasks (AKU-07h/07i/10d), zero declines. The
   index next action is refreshed; no index pruning, compaction or wiki sweep is performed.
+
+### Reviewed A2 phase persistence and original-bank reuse
+
+- Published research source **6b5d5fda**, main **c36411a7b1ec8a386c161f30c4c1b4d9f649dc0b**.
+  Main reviewed the eight-file persistence packet in an isolated acceptance worktree, composed
+  the just-published CLI/control delta, and independently ran **1,831 loop/Journal/storage tests
+  plus 165 subtests** (32.93 s), including the previously failing cached-bank probe. Ruff and
+  diff checks pass. `append_a2_runtime_transition` has LOW exact indexed impact, zero upstream.
+  Publication excludes the moving native-observation/worker changes through a private index.
+- Root cause: generic bank verification did not supply a durable source in a second logical
+  controller-backed screen. The corrected reuse adds a separately closed original-bank reference
+  before candidate phases, preserving seven source anchor events and Journal IDs, plan/frame,
+  seal and bank identities. Restart recomputes the reference from indexed original history;
+  foreign stores, missing or ambiguous sources, changed frames and forged references refuse.
+  It runs zero replacement anchors and exactly three candidate invocations in the fixture.
+- The actual phase bound remains fourteen, plus at most one bank reference. In-flight INTENT
+  replay remains fenced. The next assigned bridge must use one selected unit of the unchanged
+  full plan and an opaque fresh-current-owner reservation; unknown after restart cannot become
+  proof that acquisition never happened. No native launch, claim, grading or production authority
+  was added by persistence tests. The prospective discovery source registration already exists;
+  its native evidence/ClaimTuple consumer remains required rather than invented on read.
+- Per-task wrap-up adds **AKU-04e**: **38 accepted implementation sub-items**, all twelve parents
+  remain open. **AKU-04f** records the exact next native bridge task; zero declines. Main kept
+  the native worker as the sole owner of its changing lifecycle/observation regions. No live
+  inference, research artifact deletion, service activation or production-kernel change occurred.
