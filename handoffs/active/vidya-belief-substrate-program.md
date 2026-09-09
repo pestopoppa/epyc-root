@@ -1647,8 +1647,10 @@ retrofitting the read side is impossible. Source row added to
     verify original/final/source joins and preserve diagnostic unknowns under the existing
     source class/ladder; never relabel the child v2 producer closure as a parent v3 writer.
     ROOT direct arm/corpus reopening is implemented under AKU-08j with actual producer and
-    malformed-reference tests. Registered verifier/default-consumer source closure must still
-    include the new final-trial helper prospectively (AKU-08k); this parent task remains open.
+    malformed-reference tests. Registered feed source closure now captures the final-trial
+    helper prospectively (AKU-08k, research bcd32f1d), with actual v3 ingestion/restart and
+    six-file compatibility tests. The separate semantic receipt source/version integration
+    remains AKU-08l; this parent task remains open.
   - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
     Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
     three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,

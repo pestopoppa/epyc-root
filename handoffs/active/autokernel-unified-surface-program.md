@@ -2448,10 +2448,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     references fail exact joins. No v3-to-v2 relabelling or new grading ladder. Main acceptance:
     91 actual-producer/arm/corpus tests in 46.05s plus 65 claim-tuple/ledger tests in 0.09s.
     Actual child/HTTP/Journal artifacts yield no measurement tuples when diagnostic.
-  - [ ] **AKU-08k — include the final-trial helper in the registered verifier source closure**:
-    wire the new ROOT projection dependency into prospective registered/default consumer pins,
-    preserving old six-module closure compatibility without retrospective scientific authority.
-    Direct arm/corpus conformance in AKU-08j does not prove installed verifier consumption.
+  - [x] **AKU-08k — include the final-trial helper in the registered verifier source closure**:
+    ✅ 2026-09-09. Installed feed supports exact six/seven-file pinned closures; the current
+    seven-file closure captures the final-trial helper and its exact lazy relative imports.
+    All source bytes are verified before execution; no ambient helper fallback. Actual child
+    v3 results drain through FeedRuntimeOwner/EvidenceFeed and restart idempotently with no
+    scientific promotion. Main acceptance: 42 tests in 46.76s, no skips. Six-file v3 reads refuse.
+  - [ ] **AKU-08l — version the separate semantic receipt source closure**: connect current
+    final-trial projection to the owning semantic receipt path with prospective source pins
+    and versioned receipt grammar. Preserve historical two-file/v2 compatibility-only receipts;
+    do not repin old receipts. Four old semantic-loader tests reproduce source-pin mismatch on
+    unchanged research f8fee017 against ROOT 80f4f60b; installed feed acceptance does not close
+    this separate validation consumer requirement.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
