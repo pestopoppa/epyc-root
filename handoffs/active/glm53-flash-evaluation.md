@@ -115,6 +115,24 @@ additional512 responses; repeated512 also preserves the original reference.
 Q8 prefill changes22/24 trajectories versus the old kernel; the bounded quality
 screen is3/5 versus2/5, not broad quality certification. Production is unchanged.
 
+## Reprofile follow-up — 2026-09-09
+
+- [x] T9 — Reprofile the integrated candidate at canonical48, separating prefill
+  and decode, and rank the next high-value levers. Completed with matched2029-token
+  prefill and512-token plain/MTP profiles, corroborating short-context pair and
+  independent period/output audit. [Report](../../docs/reference/models/glm53-cpu-next-levers-20260909.md).
+- [x] T10 — Repair the discovered multi-ubatch MTP selection-width assertion,
+  reproduce on the old binary, validate both aliases and retry the real long
+  input. Fix `7c78663de`, full/chunk regression `c463f601b`; original experimental
+  tree and canonical build updated. CPU library arithmetic is unchanged.
+
+Current tested recipe remains native-MTP depth3. The depth2 diagnostic is
+rejected: exact output diverges at index58 and its single observed rate is
+lower. Do not generalize the passing depth3 evidence to arbitrary draft widths.
+The next proposed kernel work is reference-exact multirow expert reuse, then
+exact batched Q8, then measured graph/worker scheduling. Profiling shares are
+not prospective speedups; no performance kernel was developed in this follow-up.
+
 ## Constraints
 
 - Authorized experimental inference runs under held physical CPU-region claims; observations on the unrebooted host do not authorize production promotion.

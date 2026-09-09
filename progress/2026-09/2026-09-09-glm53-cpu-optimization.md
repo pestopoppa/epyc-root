@@ -36,3 +36,30 @@ Portable workload helpers and pinned inputs committed as `49612aae5`; benchmark
 identity remains kernel `04ffb8ad0`. Wrapper/client10/10, serve-plan6/6,
 artifact4/4 (+one opt-in skip), py_compile and diff checks pass. Main independently
 reran the six new client checks successfully. Candidate tree is clean.
+
+## Reprofile and next levers
+
+Operator requested fresh profiling after the integrated improvements. Canonical48
+plain/MTP profiles captured prefill and decode separately with model load excluded.
+The2029-token MTP attempt exposed a selector-width assertion across ubatches;
+fix7c78663de suppresses unused prompt-catch-up export, and c463f601b adds a
+full-ubatch control. Old-binary negative control aborts; both repaired aliases
+pass selection equality and declared logit tolerance. The original experimental
+source/build is current and clean; production remains frozen.
+
+Final matched fixed2029/512 profiles have exact plain/depth3 tokens and real
+accepted/rejected drafts. CANDIDATE observations:7.3249 plain versus8.8855 MTP
+output tokens/s. MTP expert self cycles31.53%, Q8 25.71%, OpenMP23.37%; expert
+cycles/output rise15.14% while Q8 falls45.40% and OpenMP falls25.59%. Expert
+kernels/conversion also account for32.7% of prefill cycles. Rank next work as
+exact multirow K-expert reuse, exact batched Q8, then measured graph granularity.
+No speedup forecast from cycle shares and no DRAM saturation claim.
+
+One corrected flat-key depth2 control is rejected:8.6150 output tokens/s and
+first divergence at generated index58. An earlier nested-key attempt was ignored
+and retained as an instrument diagnostic. No broader depth sweep was performed.
+All owned server PIDs are confirmed absent and q0-q3 claims released.
+
+[Full report](../../docs/reference/models/glm53-cpu-next-levers-20260909.md).
+Independent audit SHA256:
+`41628e353a153fd33fd34a9fd95d9ba9b5d41e91064a9350d30dc829e6a62fff`.

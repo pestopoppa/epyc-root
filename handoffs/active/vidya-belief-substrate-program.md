@@ -1686,6 +1686,9 @@ no rate at all. A later session may extend the audit but may not report these fi
   optimization speedups; no second grading rule is introduced. The row-exact extension
   preserves explicit prefill/verification policy, checkpoint chunk boundaries,
   cached-plan toggle verdicts, and supersession of failed row-count-only runs.
+  The September9 reprofile adds per-output sampled-period normalization, matched
+  plain/MTP capture identity, request-local depth controls and parity failures,
+  aborted-capture exclusion, and long-prefill bug-fix/negative-control lineage.
 
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 

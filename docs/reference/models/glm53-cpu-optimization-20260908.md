@@ -2,6 +2,11 @@
 
 **Status:** implemented and tested on the private experimental candidate at canonical 48 threads, September 8–9, 2026. Production remains unchanged. Performance figures are observations, not promotion attestations.
 
+**September9 follow-up:** [Reprofiling and next levers](glm53-cpu-next-levers-20260909.md)
+exposed and fixed a multi-chunk long-prefill MTP assertion. Current experimental
+source is `c463f601b`; the historical benchmark identities below remain intact.
+Depth3 passes the new long-input comparison; a depth2 diagnostic fails parity.
+
 ## Candidate and scope
 
 The implementation is commit `04ffb8ad0` (`cpu: gate Q8 prefill and scope row-exact MTP verification`) on `experimental/glm53-text-mtp-20260908`, based on champion `ef81196d5bdd4190b46dff4ae7eecc333a46c8ce`. It retains the text-only GLM5Next and native embedded-MTP port adapted from pinned upstream heads `8134115f88ed8018474e7db69afcfe97fb097fc4` and `5b8593b5451ec45fd4a81fb844efb6be9b45fd36`. GLM vision code is excluded.
