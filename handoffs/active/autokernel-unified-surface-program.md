@@ -2184,6 +2184,8 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Exact six-file packet SHA256 `8fc48b84bf78cc41567239b714cd6b9cc4b84dd8a54f98c49ff70d7e3db0731c`;
     main composed acceptance: 205 passed, 14 subtests, 36.22s, no skips. Tiny HTTP/perf fixtures
     cover installed publication/settlement/planner/restart, bounded failures and cleanup.
+    Full published research3762a517 acceptance: 2577 passed, 2 strict expected BIND/HELD
+    failures, 83 subtests, 332.81s, no skips (original handle20212, terminal0).
     No real perf events, GLM run or production change. Contract: research
     `docs/autokernel-owned-cpu-profile.md`. Sampled periods are attribution, not gains;
     receipt integrity is not production validation. AKU-06j and all parent tasks remain open.

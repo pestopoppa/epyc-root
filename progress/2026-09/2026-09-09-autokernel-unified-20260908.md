@@ -10,6 +10,15 @@ source completion, publication, deployment and live acceptance are separate.
 
 ### Owned CPU profile producer integration checkpoint
 
+- Post-publication full-suite acceptance on research `3762a517e16adc41916b67b4ca59b1652f26d8c0`
+  with ROOT409fee28: original handle20212 completed0, **2577 passed,2 strict xfailed,
+  83 subtests,332.81s**, no skips. Command: `python3 -B -m pytest -q
+  scripts/kernel_rnd/autokernel/loop scripts/kernel_rnd/autokernel/test_journal.py`,
+  with RAID TMPDIR, primary research factory-dry-run tree, primary ROOT and
+  `PYTHONPATH=.:scripts/kernel_rnd`. Strict xfails still demonstrate missing original
+  selected-work binding and interrupted held-cost durability; neither is waived.
+  This is software acceptance, not a hardware dry run or GLM trial.
+
 - Integrated exact six-file v2 packet on research4657160c; producer SHA256
   `e626efddf14530a7d4eb3f2ec06b5b86b70a14a2b329a2e59b9054b46cdb20eb`.
   New installed entry, bounded raw capture/replay and concrete optional serving hook preserve
