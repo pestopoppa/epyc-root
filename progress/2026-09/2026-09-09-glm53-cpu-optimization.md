@@ -159,3 +159,25 @@ the independently advanced root `main` was aborted because the generated
 the durable backup and main was not modified. Candidate base `c463f601b` remains
 backed up on the private experimental fork. The uncommitted expert/Q8 kernels and
 the ongoing full-model/scheduling experiments are outside both pushes.
+
+### Q8 mode-2 compiled milestone
+
+The two-weight-row Q8 experiment preserves each output's original accumulator
+and reduction order. Modes 0/1/2 each pass five exact operator cases; CTest and
+ACTIVE witnesses pass. Correctness uses three workers for chunk tails; the
+AB/BA microbenchmark uses 48 workers, explicit affinity/NUMA/OMP placement,
+and verifies identical outputs. MLA means are 0.074/0.069 ms (1.0730x); output
+projection means are 4.403/4.305 ms (1.0230x). This is a bounded kernel screen,
+not a full-model speedup. Full-model mode 0/2 comparison keeps expert reuse off.
+
+Evidence: `q8-mode2-20260909T085524Z` under the validation artifact root.
+CPU library SHA256 `e8c93f6c095fa642bef1c72fb156d1ca98a17666fea63dfac702416d3fdcf451`;
+test SHA256 `32c41b5e939801cbb733e3fc8922392bdb4542cfbf5784f7cd09d2b6a990870a`.
+Assembly review found no vector accumulator spills in the specialized mode-2
+hot loops. Both experimental levers remain disabled by default.
+
+The guarded expert and Q8 source/test experiments are committed and pushed as
+`0da0d2728` on the private `fork/experimental/glm53-text-mtp-20260908` branch.
+This backs up the implemented work; it does not enable either experiment. The
+expert CTest platform guard and ordered microbenchmark sample logging still
+need their final build check. Production remains untouched.

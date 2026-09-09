@@ -168,10 +168,17 @@ Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
   an active rows=4 branch witness, covering Ny2/3/4, native and converted Q8,
   noncontiguous input, broadcast stride, multiple heads and worker tails.
   ✅ 2026-09-09
+- [x] T12c — Validate Q8 mode 2 (two weight rows across up to four activation
+  rows): all five operator cases pass for each of modes 0/1/2, with branch
+  witnesses and CTest. Tail-focused correctness uses three workers; the paired
+  microbenchmark uses canonical 48 workers and exact outputs. AB/BA means
+  improve 1.073x for MLA and 1.023x for output projection. These bounded
+  operator observations warrant the full-model screen, not enablement.
+  CPU library SHA256 begins `e8c93f6c`; both modes remain default off. ✅ 2026-09-09
 - [ ] T12b — Complete paired Q8 mode comparison and retain or reject the lever.
   The first exact microdiagnostic is negative (0.960x MLA, 0.943x projection);
-  treat it as directional until the queued interleaved repeat resolves noise.
-  A subsequent two-weight-row mode-2 experiment requires its own compiled gate.
+  treat it as directional. Mode 2 has cleared its separate compiled and
+  paired micro gates (T12c); its full-model screen is running.
 - [ ] T13 — Measure node-level worker waits and validate a bounded scheduling change.
 - [ ] T14 — Retest the integrated retained candidate against the preserved baseline.
 
