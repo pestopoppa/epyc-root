@@ -194,6 +194,12 @@ Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
   an opportunity bound, not a speedup. A guarded outer-row partition fix now
   owns T13's remaining correctness and timing gates.
   [Audit](../../docs/reference/models/glm53-cpu-worker-audit-20260909.md). ✅ 2026-09-09
+- [x] T13b — Implement guarded outer-row CPY scheduling with conservative
+  overlap fallbacks and pass separate/fallback copy tests on committed source
+  `068db793f`. Expert, Q8 projection, and both CPY CTests pass in the final
+  build; serving snapshot is pinned to version 10315 and CPU library
+  `f820fe5a`. Model rejection/replay and performance retention remain T13/T14.
+  ✅ 2026-09-09
 - [ ] T14 — Retest the integrated retained candidate against the preserved baseline.
 
 ## Constraints

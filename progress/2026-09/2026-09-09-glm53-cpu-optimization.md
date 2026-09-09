@@ -231,3 +231,25 @@ The capture mixes three prompt graphs with 99 verification graphs; metadata
 comes from the first prompt graph. The 4.36% wall share is an opportunity
 bound, not recoverable speedup. Full digests, denominator distinctions and
 source audit are in `docs/reference/models/glm53-cpu-worker-audit-20260909.md`.
+
+### Committed recurrent-copy gate
+
+Private experimental commit `068db793f9be9225910ce80827129f959a5a4979`
+adds default-off outer-row CPY partitioning. Overlapping storage or logical
+rows retain the old path. Copy tests cover real 4 MiB rows, one/two/four
+planes, independent permuted outer strides, padded Q8 rows, one and 48
+workers, shared-buffer aliasing and overlapping source/destination rows.
+Separate-copy cases enter the new branch; fallback cases do not. Initial
+include/loop-typo build failures and a fixture allocation assertion were
+repaired; the committed rebuild passes all four focused CTests.
+
+Serving snapshot: `candidate-068db793f` under the validation artifact root,
+version 10315. Identity SHA256
+`967e27a0150dcde800d3090a9953128e5a9164f9cd1fe380099a4b20a312008e`;
+server SHA256 `f6eba94f109015cba5131f8d62f60fe3c87a99941f6eb8571c28e7b4b6d4c270`;
+CPU library SHA256 `f820fe5a0d2a206c43abbb04776c67e47723af52fb486f125edb3b55e1358b4c`.
+Main verified library freshness and compiled guard strings. Separate
+`regression-tools-068db793f` holds the replay/alias/export test executables.
+Its NOTICE excludes the superseded CPY benchmark helper; the corrected
+benchmark is being built separately. Full-model replay and timing gates
+remain active, with no new default enablement or production change.
