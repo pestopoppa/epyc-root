@@ -1465,3 +1465,24 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   checkpoint is substituted for the missing original durable provider receipt.
 - No real-host dry run, GLM loop, provider activation, production mutation, live deletion,
   index pruning or wiki compilation occurred. All twelve parent tasks remain open.
+
+### AKU-07y — bounded native sampler admission and phase races
+
+- Research source 40b22fae was pushed and promoted to main 6efcfe24. Post-application
+  lifecycle/binding acceptance passed 74 tests in 1.23s on the primary tree.
+- Native serving checks ceil((max_stage_seconds+teardown_seconds)/cadence)+9 against the
+  configured sample budget before producer thread creation, resource acquisition or launch.
+  It reuses existing enforced time limits, rejects invalid/nonfinite arithmetic and does not
+  enlarge a budget, slow sampling, reserve markers or change evidence thresholds.
+- The observer preserves a monotonic due time through empty early wakes and rechecks phase,
+  pending markers and stop after unlocked clock reads. This prevents extra early samples,
+  indefinite postponement and stale-phase periodic samples behind newer boundaries.
+- Main independent acceptance: 123 passed in 49.85s, followed by final lifecycle 56 passed
+  in 0.47s. The added deterministic boundary tests exercise 100 periodic deadlines plus all
+  nine hooks: capacity 109 preserves measurement_end/teardown; capacity 108 explicitly refuses
+  teardown. Tests use synthetic clocks/probes, not hardware measurements. Existing unknown,
+  missing-marker, gap, byte, queue and shutdown refusals remain unchanged.
+- All seven applied files match the frozen current-c6 composition hashes. Prospective source
+  identities include the sampler/admission helpers; historical identities are not rewritten.
+  Completed AKU-07y; profile preparation, source/build execution and qualified evidence remain
+  active work. No live GLM trial, grants, production mutation, index pruning or wiki sweep.

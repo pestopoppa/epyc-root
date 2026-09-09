@@ -2465,12 +2465,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     supply original qualified calibration/control and measurement evidence through the same
     registered verifier/evaluator; prove actual required-row completion and restart. Diagnostic
     receipt replay alone does not authorize ranking, validation, or production promotion.
-  - [ ] **AKU-07y — prevent lifecycle sampling-budget starvation**: size bounded sampling against
-    declared lifecycle duration and/or reserve finite mandatory-marker capacity. Periodic samples
-    currently share the entire budget with boundaries/checkpoints and can exhaust it during placement.
-    Preserve explicit exhaustion/gap refusal; prove later measurement/teardown coverage without
-    widening scientific thresholds. The accepted test-only 100 ms/256-sample recipe is not a
-    production sampler fix.
+  - [x] **AKU-07y — prevent lifecycle sampling-budget starvation**: ✅ 2026-09-09.
+    Native producer admission now requires ceil((stage+teardown)/cadence)+9 samples before
+    thread creation, grants or child launch, using existing enforced durations and fixed hooks.
+    Spurious wakes retain an absolute due time; periodic enqueue rechecks phase/pending/stop
+    after unlocked clock reads. No new knob, automatic budget enlargement or marker reservation.
+    Main independently passed 123 regression tests and the final 56-test lifecycle file;
+    exact 109-slot success/108-slot teardown refusal covers the full 100-periodic-plus-nine-hook
+    boundary. Missing/gap/byte/queue/shutdown failures remain unknown; no scientific threshold
+    or historical identity changed. Prospective sampler/helper source identities are pinned.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
