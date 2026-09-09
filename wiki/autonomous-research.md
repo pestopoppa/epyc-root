@@ -2442,3 +2442,45 @@ read-back), RA-13b (its write-time instrumentation) and RA-13c (its record forma
   SC58, the judgment-frame-pinned-to-artifact-digest row this pattern's staleness rule funded.
 - [`2026-09-07-prove2me-intake.md`](../progress/2026-09/2026-09-07-prove2me-intake.md) — the wave
   record.
+
+## Compiled Update — 2026-09-09: the unified AutoKernel control plane is being built, but it is not live research yet
+
+The unified CPU/GPU AutoKernel plan has moved from a documentation notebook into bounded source
+implementation. The durable design still has one champion and separate surface-specific recipes,
+evidence and floors. It now distinguishes the source actually measured from the intended delivery
+tree, preserves accumulated, validated and production pointers separately, and treats discovery as
+an advisory nomination before strict confirmation. Ratified measurement rules remain authoritative;
+the design does not create new thresholds or turn an underpowered observation into a null finding.
+
+The accepted implementation slices cover several failure boundaries that previously existed only in
+prose: explicit removal of inherited environment variables; atomic and directory-synced status writes;
+immutable campaign enrollment and recovery; source commits through a captured-parent private index;
+resolved recipe identities consumed by the serving launcher; immutable ExperimentPlans with paired-unit
+exclusion; public selected-profile materialization; native v2 lifecycle/descendant evidence; and durable
+maintenance ownership and replay. The latest reported clean composition ran **1,905 tests plus 165
+subtests**. That is source and recovery validation, not an inference result or evidence that the
+standalone loop is operational.
+
+The boundary is explicit. All twelve parent implementation tasks remain open. There has been no real
+standalone dry run, five-loop hardware acceptance, provider grant, service activation, research
+relaunch, production-kernel mutation or destructive artifact cleanup. Several remaining connections
+still need real producer manifests, parent witness derivation, runtime/GPU/purpose adapters, sealed
+artifact completion, scientific evidence projection and concrete broker enforcement. OP-41 retains the champion-finalisation, production-promotion and host-reboot sequence for live activation; delegation of broker-code work is tracked separately.
+Published source checkpoints therefore describe an implementation in progress, not a running autonomous
+research service.
+
+The planning history matters because it records why these boundaries are strict. In one day the recipe
+schema was found unable to express an environment treatment, its own identity hash and a self-drafting
+model; those gaps blocked questions rather than merely slowing them. The implementation now keys recipes
+by target, surface and operating mode, records effective environment absences, and refuses identity or
+claim uses it cannot prove. Ordinary foreign load remains recorded search noise under the ratified search
+protocol; it is not silently promoted into either a clean result or a universal scheduling veto.
+
+### Source References (2026-09-08/09 unified AutoKernel)
+
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+  current design, authority boundaries, implementation ledger and still-open parent tasks.
+- [`2026-09-08-autokernel-plan.md`](../progress/2026-09/2026-09-08-autokernel-plan.md) — planning,
+  final-session audit and the corrections that preceded implementation.
+- [`2026-09-09-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-09-autokernel-unified-20260908.md) —
+  accepted source slices, reproduced test counts, publication identities and remaining live-system gaps.
