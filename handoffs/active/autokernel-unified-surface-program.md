@@ -1945,6 +1945,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     has HIGH17 upstream impact, including Journal validation and replay. Changing its helper
     language is the same authority change, not an exemption. Independent selected-range
     transport may proceed but cannot enable discovery or complete this task by itself.
+  - [x] **AKU-04i — transport one original native plan unit through the owned worker**:
+    ✅ 2026-09-09. Additive Prepared v4 and result/run/artifact v3 bind the unchanged full
+    native-v2 plan, exact absolute unit range and attempt lineage. Both parent and child refuse
+    unselected units; direct multi-unit admission is rejected. Reopening rederives original
+    unit/process/arm/prompt/order and full-plan completeness; operational range completion
+    cannot imply scientific completion. Exact loaded source/default pins reject non-Python
+    callable substitution. Main independently passed **46 tests including explicit factory
+    startup**; worker composition passed **238 tests, one existing strict HELD xfail, no skips**.
+    All eight primary file hashes match final packet
+    `fb5cb9e3ba5bdd7e10c6eeaca721e4778b6949e5c1ab7e8bf62e65968f48c495`.
+    Real child/receipt/restart tests use labelled synthetic measurements/provider/procfs;
+    missing witnesses remain unknown and captures diagnostic. This adds no A2 event/permit,
+    scheduler discovery kind or standalone activation; AKU-04f remains open under OP-AKU-A2.
+    Contract: research `docs/autokernel-selected-unit-transport.md`.
   - [x] **AKU-04h — align native startup fixture with prospective sample admission**:
     ✅ 2026-09-09. The full published suite exposed one fixture declaring 64 samples for
     32 seconds at 10ms cadence (requires 3,209). The test now derives its count before

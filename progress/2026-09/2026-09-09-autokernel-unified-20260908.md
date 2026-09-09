@@ -1591,3 +1591,22 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   workaround. Source/build integration continues independently.
 - This checkpoint strengthens evidence for already completed AKU-06h and documents the gate on
   existing AKU-06i; zero new task/checkbox flips. All 12 parent tasks remain open.
+
+## Corrected selected-unit transport integration
+
+- Applied exact eight-file packet on research `81b87368`; all file hashes match its final
+  manifest. Packet SHA-256 `fb5cb9e3ba5bdd7e10c6eeaca721e4778b6949e5c1ab7e8bf62e65968f48c495`.
+  Main independent final tests: **46 passed in 4.02s**, including explicit factory-tree startup.
+  Worker final composition: **238 passed, one strict HELD xfailed, no skips in 52.03s**.
+- Native parent and child execute exactly one original full-plan unit, preserving absolute
+  order and process membership. Additive versions preserve legacy closure; selected completion
+  never relabels incomplete scientific evidence. Fixed both reproduced admission/source crashes.
+  Adversarial reopening tests rehash result/reference and replace supplied terminal result digest
+  while retaining the actual fence; these are refusal tests, not positive recovery authority.
+- Added completed AKU-04i; AKU-04f's original durable first-issue permit/installed discovery work
+  remains open and HIGH-gated. No new source class, grader, live resource grant, inference or
+  kernel modification. Parent checkboxes remain open. No pruning/wiki sweep.
+- Source/build actual startup integration exposed an independent actor-kind mismatch: manifest
+  accepts build while planner requires build_recipe. Owning worker is checking exact impact and
+  correcting startup with roundtrip tests; this remains within existing AKU-06d implementation,
+  not a new duplicate task or a synthetic manifest workaround.
