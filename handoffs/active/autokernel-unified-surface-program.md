@@ -2586,6 +2586,22 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     hold/refresh/settlement provider and concrete controller backend, preserving bounded unlocked
     I/O, exact abort/completion receipts and uncertain replay. Default execution remains unavailable;
     source publication does not authorize live deletion or provider activation.
+  - [x] **AKU-10h — installed native retention catalog and dependency frontier**: ✅ 2026-09-09.
+    Actual standalone v3 derives and durably installs its catalog before runtime composition;
+    restart replays the exact seed. Exact model inventories, recipe snapshots/aliases, executable,
+    DSO/build/RUNPATH and protected roots join candidate, native, driver and worker/acquisition
+    state. Collection performs filesystem work outside the controller mutex and rechecks the
+    frontier before binding a job. Main passed 155 composed tests without skips, then 104 tests
+    and 15 subtests for Journal/catalog/installed startup after byte-exact application.
+    No owner-issued expiry descriptors or live deletion: the current native view retains all
+    declared artifacts. This does not complete AKU-10f/10d/10g or authorize provider activation.
+  - [ ] **AKU-10i — prospective source/build/evaluation expiry authority**: install the actual
+    source/build execution owner and bind its verified BuildIdentity, exact recipe snapshot and
+    retained source refs before opt-in candidate integration. Persist the enrollment pointer
+    before integration so restart can reconcile it; ordinary/legacy integrations remain unchanged.
+    Require closed original evaluation/native/worker/held-cost evidence and exclusive physical
+    ownership before issuing any disposition. No inferred rejection, caller-label authority,
+    historical backfill, temporary duplicate accounting record or deletion-policy change.
 - [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
   finalise → promote → reboot gate. Exact pending choice: whether the operator's new implementation
   instruction delegates broker-code work now while preserving live activation gates. No answer inferred.
