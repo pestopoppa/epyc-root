@@ -662,7 +662,70 @@ function campaignValidateRuntime(value){
   return value;
 }
 
+const campaignAggregateSchema="epyc.autokernel.unified_campaign_projection.v3";
+const campaignAggregateRows=u=>({evidence:u.evidence,actor:u.actors.actor,profile:u.actors.profile,calibration:u.actors.calibration});
+function campaignValidateAggregates(u){
+  const text=(v,nullable=false,max=512)=>nullable&&v===null || typeof v==="string"&&[...v].length>0&&[...v].length<=max;
+  const number=(v,integer=false,nullable=false)=>nullable&&v===null || typeof v==="number"&&Number.isFinite(v)&&v>=0&&v<=2**63-1&&(!integer||Number.isInteger(v));
+  const date=v=>v===null || text(v,false,64)&&/(Z|[+-]\d\d:\d\d)$/.test(v)&&Number.isFinite(Date.parse(v));
+  const scalar=(k,v)=>k.endsWith("_at")?date(v):
+    k.endsWith("_count")||k.endsWith("_frontier")||["items_total","lag_events"].includes(k)?number(v,true,true):
+    k.endsWith("seconds")?number(v,false,true):
+    k.endsWith("_digest")||k.endsWith("_revision")||["transition_id","projection_checksum"].includes(k)?v===null||campaignDigestValue(v):
+    ["ready","proof_pending","items_truncated","ranking_authorized","executor_installed","available_at_planning","settled","clock_known","consumed_request_debt"].includes(k)?
+      typeof v==="boolean"||k==="consumed_request_debt"&&v===null:text(v,true);
+  const fields={evidence:"reader_id epoch owner_state ready readiness source_frontier cursor_frontier projection_frontier admission_frontier last_admitted_frontier projection_checksum proof_pending lag_events lag_seconds quarantine_count cached_finding_count",
+    profile:"configured_count usable_count mechanism_count debt_count planning_observed_at items items_total items_truncated",
+    calibration:"request_count pending_count collected_count exhausted_count failed_count contaminated_count qualification ranking_authorized items items_total items_truncated",
+    actor:"pending_count finished_count backend_count event_count executor_installed reserved spent items items_total items_truncated"};
+  const items={profile:"target_revision profile_digest transition_id available_at_planning settled remaining_seconds clock_known consumed_request_debt",
+    calibration:"request_digest chunk_digest outcome",
+    actor:"request_digest target_revision transition_id phase settlement_outcome retry_remaining_seconds clock_known"};
+  const fail=()=>{throw new Error("campaign aggregate shape/semantics differ")};
+  campaignExact(u.actors,["schema","status","reason","actor","profile","calibration"],"preparation aggregate");
+  if(u.actors.schema!=="epyc.autokernel.unified_actor_status.v2"||!["available","unknown"].includes(u.actors.status)||!text(u.actors.reason))fail();
+  const rows=campaignAggregateRows(u);let count=0;
+  for(const [kind,row] of Object.entries(rows)){
+    campaignExact(row,["schema","status","reason","observed_at","attempted_at","generation","error","data"],"aggregate");
+    if(row.schema!==`epyc.autokernel.${kind}_observation.v1`||!["available","unknown","not_connected"].includes(row.status)||
+       !text(row.reason)||!text(row.error,true)||!date(row.observed_at)||!date(row.attempted_at)||!number(row.generation,true)||
+       row.error!==null&&row.status!=="unknown"||row.observed_at&&row.attempted_at&&Date.parse(row.observed_at)>Date.parse(row.attempted_at))fail();
+    const d=row.data;if(d===null){if(row.status==="available"||row.observed_at!==null)fail();continue;}
+    campaignExact(d,fields[kind].split(" "),"aggregate data");if(row.observed_at===null)fail();
+    for(const [key,value] of Object.entries(d)){
+      if(key==="items"){
+        if(!Array.isArray(value)||value.length>{actor:16,profile:24,calibration:24}[kind])fail();count+=value.length;
+        for(const item of value){campaignExact(item,items[kind].split(" "),"aggregate item");
+          if(!Object.entries(item).every(([k,v])=>scalar(k,v)))fail();}
+      }else if(["reserved","spent"].includes(key)){
+        campaignExact(value,"actor_calls_per_target patch_repairs_per_target provider_seconds_per_target resource_failures_per_target contamination_events_per_target actor_calls_per_campaign".split(" "),"aggregate budgets");
+        if(!Object.values(value).every(v=>number(v)))fail();
+      }else if(!scalar(key,value))fail();
+    }
+    if(d.items&&(!number(d.items_total,true)||d.items_total<d.items.length||d.items_truncated!==(d.items_total>d.items.length)))fail();
+    if(kind==="calibration"&&(d.qualification!=="unavailable"||d.ranking_authorized))fail();
+    if(kind==="evidence"&&(d.lag_seconds!==null||!["ready","pending","failed","closed"].includes(d.owner_state)||
+       !["unknown","projected","outage"].includes(d.readiness)||d.ready!==(d.owner_state==="ready")||row.status==="available"&&!d.ready))fail();
+    if(kind==="profile"&&d.planning_observed_at!==row.observed_at)fail();
+    for(const item of d.items||[]){
+      if(kind==="calibration"&&![null,"calibration","invalid","failed"].includes(item.outcome))fail();
+      if(kind==="actor"&&(!["pending","settled","finished_unsettled"].includes(item.phase)||
+         ![null,"prerequisite","failed","invalid"].includes(item.settlement_outcome)||(item.phase==="settled")!==(item.settlement_outcome!==null)))fail();
+      if(["actor","profile"].includes(kind)&&!item.clock_known&&item[kind==="profile"?"remaining_seconds":"retry_remaining_seconds"]!==null)fail();
+    }
+  }
+  if(u.actors.status!==(["actor","profile","calibration"].some(k=>rows[k].status==="unknown")?"unknown":"available")||
+     count>64||new TextEncoder().encode(JSON.stringify(rows)).length>32768)fail();
+}
 function campaignValidateUnified(value){
+  if(value?.schema===campaignAggregateSchema){
+    campaignExact(value,["schema","scheduler","resources","actors","evidence","candidate","targets","runtime","worker_timing"],"aggregate unified projection");
+    campaignValidateAggregates(value);
+    campaignValidateUnified({...value,schema:"epyc.autokernel.unified_campaign_projection.v2",
+      actors:{schema:"epyc.autokernel.unified_actor_status.v1",status:"not_connected",reason:"legacy shape check",clock_semantics:"UTC wall-clock projection; runtime fences remain monotonic",items:[]},
+      evidence:{schema:"epyc.autokernel.unified_evidence_status.v1",status:"not_connected",reason:"legacy shape check",frontier_digest:null,lag_seconds:null}});
+    return value;
+  }
   const runtimeAware=value && value.schema==="epyc.autokernel.unified_campaign_projection.v2";
   campaignExact(value,["schema","scheduler","resources","actors","evidence","candidate","targets",
     ...(runtimeAware?["runtime","worker_timing"]:[])],
@@ -831,6 +894,11 @@ function campaignValidateSnapshot(value){
   }
   if(v3){
     campaignValidateUnified(value.unified);
+    if(value.unified.schema===campaignAggregateSchema)
+      for(const row of Object.values(campaignAggregateRows(value.unified)))
+        for(const field of ["observed_at","attempted_at"])
+          if(row[field]!==null&&Date.parse(row[field])>Date.parse(value.generated_at))
+            throw new Error("aggregate timestamp is newer than snapshot");
     if(value.unified.runtime){
       const worker=value.active_worker,timing=value.unified.worker_timing;
       if(!worker){if(timing!==null)throw new Error("runtime timing has no original worker");}
@@ -896,6 +964,18 @@ function campaignAcceptSnapshot(next, explicitSwitch=false){
       {campaignStreamError = "campaign stream epoch/incarnation relationship is invalid";
        throw new Error(campaignStreamError);}
     const oldRuntime=campaignAccepted.unified?.runtime,newRuntime=next.unified?.runtime;
+    if(campaignAccepted.unified?.schema===campaignAggregateSchema){
+      if(next.unified?.schema!==campaignAggregateSchema)throw new Error("same campaign cannot downgrade aggregate projection");
+      if(next.supervisor_incarnation===campaignAccepted.supervisor_incarnation){
+        const before=campaignAggregateRows(campaignAccepted.unified),after=campaignAggregateRows(next.unified);
+        for(const kind of Object.keys(before)){
+          if(after[kind].generation<before[kind].generation)throw new Error("aggregate source generation rolled back");
+          for(const field of ["observed_at","attempted_at"])
+            if(before[kind][field]!==null&&(after[kind][field]===null||Date.parse(after[kind][field])<Date.parse(before[kind][field])))
+              throw new Error("aggregate source/attempt time rolled back");
+        }
+      }
+    }
     if(oldRuntime){
       if(!newRuntime){
         campaignStreamError="same campaign cannot downgrade runtime projection";
@@ -1139,7 +1219,44 @@ async function campaignSend(operation, config, retry=false){
   }
 }
 
-function campaignRenderUnified(snapshot,runtimeClock=null){
+function campaignRenderAggregates(u,clocks){
+  const unknown=v=>v===null||v===undefined?"unknown":String(v);
+  let html="";
+  for(const [kind,row] of Object.entries(campaignAggregateRows(u))){
+    const d=row.data,clock=clocks?.[kind];
+    html+=`<div class="pad"><h4>${esc(kind)} observation · ${esc(row.status)}</h4><div class="muted">${esc(row.reason)}</div><dl class="kv">`+
+      `<dt>source observation / last attempt</dt><dd>${esc(row.observed_at||"not observed")} / ${esc(row.attempted_at||"not attempted")}</dd>`+
+      `<dt>source generation (not publisher sequence)</dt><dd>${esc(row.generation)}</dd>`+
+      `<dt>freshness / publication error</dt><dd>${esc(clock?clock.state+": "+clock.reason:"unknown; no matching envelope")} / ${esc(row.error||"none reported")}</dd>`;
+    if(d){
+      if(kind==="evidence")html+=`<dt>source / cursor / projection frontier</dt><dd>${esc(unknown(d.source_frontier))} / ${esc(unknown(d.cursor_frontier))} / ${esc(unknown(d.projection_frontier))}</dd>`+
+        `<dt>captured admission / last admitted frontier</dt><dd>${esc(unknown(d.admission_frontier))} / ${esc(unknown(d.last_admitted_frontier))}</dd>`+
+        `<dt>owner / admission ready / proof pending</dt><dd>${esc(d.owner_state)} / ${esc(d.ready)} / ${esc(d.proof_pending)}</dd>`+
+        `<dt>event lag / time lag</dt><dd>${esc(unknown(d.lag_events))} / unknown (not derived from event count)</dd>`+
+        `<dt>quarantine / cached findings (not total corpus)</dt><dd>${esc(unknown(d.quarantine_count))} / ${esc(unknown(d.cached_finding_count))}</dd>`+
+        `<dt>epoch / projection checksum</dt><dd>${esc(d.epoch)} / ${esc(unknown(d.projection_checksum))}</dd>`+
+        `<dt>support</dt><dd>per-query only; projected evidence is not scientific validity</dd>`;
+      if(kind==="profile")html+=`<dt>configured / usable at original planning observation</dt><dd>${esc(unknown(d.configured_count))} / ${esc(unknown(d.usable_count))}</dd>`+
+        `<dt>installed mechanisms / original refresh debt</dt><dd>${esc(unknown(d.mechanism_count))} / ${esc(unknown(d.debt_count))}</dd>`+
+        `<dt>current usable total</dt><dd>unknown; no eligibility recalculation in dashboard</dd>`+
+        `<dt>expired / unknown validity in shown sample</dt><dd>${esc(unknown(clock?.expired_sample_count))} / ${esc(unknown(clock?.unknown_validity_sample_count))}</dd>`;
+      if(kind==="calibration")html+=`<dt>predeclared attempts / pending / collected original chunks</dt><dd>${esc(unknown(d.request_count))} / ${esc(unknown(d.pending_count))} / ${esc(unknown(d.collected_count))}</dd>`+
+        `<dt>exhausted chunks / failed / contaminated attempts</dt><dd>${esc(unknown(d.exhausted_count))} / ${esc(unknown(d.failed_count))} / ${esc(unknown(d.contaminated_count))}</dd>`+
+        `<dt>controls qualification / ranking authority</dt><dd>unavailable / false; numeric collection is not qualification</dd>`;
+      if(kind==="actor")html+=`<dt>pending / finished actor records / installed backends</dt><dd>${esc(unknown(d.pending_count))} / ${esc(unknown(d.finished_count))} / ${esc(unknown(d.backend_count))}</dd>`+
+        `<dt>source/build executor installed (not authority)</dt><dd>${esc(d.executor_installed)}</dd>`+
+        `<dt>global scheduler-settled actor total</dt><dd>unknown; settlement labels are sampled only; FINISH is not settlement</dd>`+
+        `<dt>original reserved / spent budgets</dt><dd>${esc(JSON.stringify(d.reserved))} / ${esc(JSON.stringify(d.spent))}</dd>`;
+      if(d.items){
+        html+=`<dt>bounded details / original total / truncated</dt><dd>${d.items.length} / ${esc(unknown(d.items_total))} / ${esc(d.items_truncated)}</dd>`;
+        for(const item of d.items)html+=`<dt>sampled ${esc(kind)} record</dt><dd class="mono">${esc(JSON.stringify(item))}</dd>`;
+      }
+    }
+    html+="</dl></div>";
+  }
+  return html;
+}
+function campaignRenderUnified(snapshot,runtimeClock=null,aggregateClocks=null){
   if(snapshot.schema!=="epyc.autokernel.campaign_snapshot.v3") return "";
   const u=snapshot.unified,s=u.scheduler,c=s.capacity,a=s.accounting,t=u.targets;
   const unknown=value=>value===null ? "unknown / not connected" : String(value);
@@ -1176,12 +1293,12 @@ function campaignRenderUnified(snapshot,runtimeClock=null){
       `<dt>requested / granted / held / used</dt><dd>${esc(unknown(u.resources.requested))} / `+
         `${esc(unknown(u.resources.granted))} / ${esc(unknown(u.resources.held))} / `+
         `${esc(unknown(u.resources.used))}</dd>`)+
-    section("actors",u.actors,
+    (u.schema===campaignAggregateSchema?campaignRenderAggregates(u,aggregateClocks):section("actors",u.actors,
       `<dt>actor items</dt><dd>${u.actors.items.length ? esc(u.actors.items.length) : "none reported"}</dd>`+
       `<dt>clock semantics</dt><dd>${esc(u.actors.clock_semantics)}</dd>`)+
     section("evidence",u.evidence,
       `<dt>frontier / projection lag</dt><dd>${esc(unknown(u.evidence.frontier_digest))} / `+
-        `${esc(unknown(u.evidence.lag_seconds))}</dd>`)+
+        `${esc(unknown(u.evidence.lag_seconds))}</dd>`))+
     section("candidate",u.candidate,
       `<dt>accumulated</dt><dd>${esc(unknown(u.candidate.accumulated_identity))}</dd>`+
       `<dt>validated</dt><dd>${esc(unknown(u.candidate.validated_identity))}</dd>`+
@@ -1270,7 +1387,7 @@ function renderCampaign(d){
     `<dt>last command</dt><dd>${last ? `accepted=${esc(last.accepted)}; completed=` +
       `${esc(last.completed)}; ${esc(last.prerequisite_reason || "no reason")}` : "none"}</dd>` +
     `</dl>${campaignStreamError ? `<div class="warn">${esc(campaignStreamError)}</div>` : ""}</div>`+
-    campaignRenderUnified(s,envelope.runtime_freshness);
+    campaignRenderUnified(s,envelope.runtime_freshness,envelope.aggregate_freshness);
   const secure = campaignSecure();
   const available = !!(!rejected && envelope.controls && envelope.controls.available && secure);
   let pendingResult=null;

@@ -2703,7 +2703,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Existing52 loop_status lint findings remain baseline-identical; changed logic adds no findings.
     Contract: research docs/autokernel-runtime-observation.md. No service reload, deployment,
     live reliability, resource grant or scientific-validation claim; AKU-09 remains open.
-  - [ ] **AKU-09g — connect original aggregate producer state and finish dashboard acceptance**:
+  - [x] **AKU-09h — connect bounded evidence, actor, profile and calibration observations**:
+    ✅ 2026-09-09. Closed unified projection-v3 retains original owner reduction dates separately
+    from attempts and publisher heartbeat; 64 total detail rows and a32KiB bound constrain payloads.
+    Publisher performs no SQLite/artifact reopening. Diagnostic faults retain the prior dated cache
+    and cannot change settlement; future timestamps are rejected before cache replacement.
+    Main integration:165 research tests passed, two strict BIND/HELD xfails in81.65s, no skips;
+    ROOT41 dashboard tests passed in0.51s. Changed research Python passes Ruff.
+    Actor completion is not settlement, collected calibration is not qualification, and cached
+    evidence totals are not current eligibility. Resource/candidate sections remain not_connected;
+    no live deployment/reliability or scientific acceptance is claimed.
+  - [ ] **AKU-09g — connect remaining aggregate producer state and finish dashboard acceptance**:
     replace remaining not_connected sections with bounded evidence-frontier, preparation/actor,
     resource and candidate projections from their actual owning indexes. Keep original expiry,
     settlement and validation authority distinct; no publisher-thread SQLite or artifact reopening.

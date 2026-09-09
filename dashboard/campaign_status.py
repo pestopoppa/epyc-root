@@ -26,6 +26,7 @@ SNAPSHOT_SCHEMA_V2 = "epyc.autokernel.campaign_snapshot.v2"
 SNAPSHOT_SCHEMA_V3 = "epyc.autokernel.campaign_snapshot.v3"
 UNIFIED_PROJECTION_SCHEMA = "epyc.autokernel.unified_campaign_projection.v1"
 UNIFIED_PROJECTION_SCHEMA_V2 = "epyc.autokernel.unified_campaign_projection.v2"
+UNIFIED_PROJECTION_SCHEMA_V3 = "epyc.autokernel.unified_campaign_projection.v3"
 HEALTH_SCHEMA = "epyc.autokernel.campaign_transport_health.v1"
 SNAPSHOT_FILENAME = "campaign-snapshot.json"
 STORE_ROOT_ENV = "AUTOKERNEL_CAMPAIGN_STORE_ROOT"
@@ -417,7 +418,145 @@ def _validate_runtime(value: Any) -> dict[str, Any]:
     return row
 
 
+_AGGREGATE_FIELDS = {
+    "evidence": {"reader_id", "epoch", "owner_state", "ready", "readiness", "source_frontier", "cursor_frontier", "projection_frontier", "admission_frontier", "last_admitted_frontier", "projection_checksum", "proof_pending", "lag_events", "lag_seconds", "quarantine_count", "cached_finding_count"},
+    "profile": {"configured_count", "usable_count", "mechanism_count", "debt_count", "planning_observed_at", "items", "items_total", "items_truncated"},
+    "calibration": {"request_count", "pending_count", "collected_count", "exhausted_count", "failed_count", "contaminated_count", "qualification", "ranking_authorized", "items", "items_total", "items_truncated"},
+    "actor": {"pending_count", "finished_count", "backend_count", "event_count", "executor_installed", "reserved", "spent", "items", "items_total", "items_truncated"},
+}
+_AGGREGATE_ITEMS = {
+    "profile": {"target_revision", "profile_digest", "transition_id", "available_at_planning", "settled", "remaining_seconds", "clock_known", "consumed_request_debt"},
+    "calibration": {"request_digest", "chunk_digest", "outcome"},
+    "actor": {"request_digest", "target_revision", "transition_id", "phase", "settlement_outcome", "retry_remaining_seconds", "clock_known"},
+}
+_AGGREGATE_BUDGETS = {"actor_calls_per_target", "patch_repairs_per_target", "provider_seconds_per_target", "resource_failures_per_target", "contamination_events_per_target", "actor_calls_per_campaign"}
+
+
+def _aggregate_number(value, *, integer=False, nullable=False):
+    if nullable and value is None:
+        return
+    if (type(value) not in ((int,) if integer else (int, float))
+            or not 0 <= value <= 2**63 - 1 or not math.isfinite(value)):
+        raise CampaignStatusError("aggregate number is outside its bound")
+
+
+def _aggregate_text(value, *, nullable=False, maximum=512):
+    if nullable and value is None:
+        return
+    if not isinstance(value, str) or not 0 < len(value) <= maximum:
+        raise CampaignStatusError("aggregate text is outside its bound")
+
+
+def _aggregate_scalar(name, value):
+    if name.endswith("_at"):
+        _aggregate_text(value, nullable=True, maximum=64)
+        _timestamp(value, name, nullable=True)
+    elif name.endswith(("_count", "_frontier")) or name in {"items_total", "lag_events"}:
+        _aggregate_number(value, integer=True, nullable=True)
+    elif name.endswith("seconds"):
+        _aggregate_number(value, nullable=True)
+    elif name.endswith(("_digest", "_revision")) or name in {"transition_id", "projection_checksum"}:
+        if value is not None:
+            _digest(value, name)
+    elif name in {"ready", "proof_pending", "items_truncated", "ranking_authorized", "executor_installed",
+                  "available_at_planning", "settled", "clock_known", "consumed_request_debt"}:
+        if type(value) is not bool and not (name == "consumed_request_debt" and value is None):
+            raise CampaignStatusError("aggregate flag is invalid")
+    else:
+        _aggregate_text(value, nullable=True)
+
+
+def _aggregate_rows(unified):
+    return {"evidence": unified["evidence"],
+            **{kind: unified["actors"][kind] for kind in ("actor", "profile", "calibration")}}
+
+
+def _validate_aggregates(unified):
+    actors = unified["actors"]
+    _exact(actors, {"schema", "status", "reason", "actor", "profile", "calibration"}, "preparation aggregate")
+    if (actors["schema"] != "epyc.autokernel.unified_actor_status.v2"
+            or actors["status"] not in {"available", "unknown"}):
+        raise CampaignStatusError("preparation aggregate schema/status differs")
+    _aggregate_text(actors["reason"])
+    rows = _aggregate_rows(unified)
+    for kind, row in rows.items():
+        _exact(row, {"schema", "status", "reason", "observed_at", "attempted_at", "generation", "error", "data"}, "aggregate")
+        if (row["schema"] != f"epyc.autokernel.{kind}_observation.v1"
+                or row["status"] not in {"available", "unknown", "not_connected"}):
+            raise CampaignStatusError("aggregate schema/status differs")
+        _aggregate_text(row["reason"])
+        _aggregate_text(row["error"], nullable=True)
+        _aggregate_number(row["generation"], integer=True)
+        for name in ("observed_at", "attempted_at"):
+            _aggregate_scalar(name, row[name])
+        if row["error"] is not None and row["status"] != "unknown":
+            raise CampaignStatusError("aggregate publication error must remain unknown")
+        if row["observed_at"] and row["attempted_at"] and datetime.fromisoformat(
+                row["observed_at"].replace("Z", "+00:00")) > datetime.fromisoformat(row["attempted_at"].replace("Z", "+00:00")):
+            raise CampaignStatusError("aggregate observation is after its attempt")
+        data = row["data"]
+        if data is None:
+            if row["status"] == "available" or row["observed_at"] is not None:
+                raise CampaignStatusError("missing aggregate cannot be available or dated")
+            continue
+        _exact(data, _AGGREGATE_FIELDS[kind], "aggregate data")
+        if row["observed_at"] is None:
+            raise CampaignStatusError("aggregate data is undated")
+        for name, value in data.items():
+            if name == "items":
+                if not isinstance(value, list) or len(value) > {"actor": 16, "profile": 24, "calibration": 24}[kind]:
+                    raise CampaignStatusError("aggregate row bound exceeded")
+                for item in value:
+                    _exact(item, _AGGREGATE_ITEMS[kind], "aggregate item")
+                    for key, part in item.items():
+                        _aggregate_scalar(key, part)
+            elif name in {"reserved", "spent"}:
+                _exact(value, _AGGREGATE_BUDGETS, "aggregate budgets")
+                for part in value.values():
+                    _aggregate_number(part)
+            else:
+                _aggregate_scalar(name, value)
+        if "items" in data and (type(data["items_total"]) is not int or data["items_total"] < len(data["items"])
+                or data["items_truncated"] != (data["items_total"] > len(data["items"]))):
+            raise CampaignStatusError("aggregate sample completeness differs")
+        if kind == "calibration" and (data["qualification"] != "unavailable" or data["ranking_authorized"]):
+            raise CampaignStatusError("calibration observation cannot confer qualification")
+        if kind == "evidence" and (data["lag_seconds"] is not None
+                or data["owner_state"] not in {"ready", "pending", "failed", "closed"}
+                or data["readiness"] not in {"unknown", "projected", "outage"}
+                or data["ready"] != (data["owner_state"] == "ready")
+                or row["status"] == "available" and not data["ready"]):
+            raise CampaignStatusError("evidence aggregate readiness differs")
+        if kind == "profile" and data["planning_observed_at"] != row["observed_at"]:
+            raise CampaignStatusError("profile reduction timestamp differs")
+        for item in data.get("items", ()):
+            if kind == "calibration" and item["outcome"] not in {None, "calibration", "invalid", "failed"}:
+                raise CampaignStatusError("calibration observation outcome differs")
+            if kind == "actor" and (item["phase"] not in {"pending", "settled", "finished_unsettled"}
+                    or item["settlement_outcome"] not in {None, "prerequisite", "failed", "invalid"}
+                    or (item["phase"] == "settled") != (item["settlement_outcome"] is not None)):
+                raise CampaignStatusError("actor sampled settlement differs")
+            seconds = "remaining_seconds" if kind == "profile" else "retry_remaining_seconds"
+            if kind in {"profile", "actor"} and not item["clock_known"] and item[seconds] is not None:
+                raise CampaignStatusError("unknown clock cannot supply validity remainder")
+    if actors["status"] != ("unknown" if any(rows[k]["status"] == "unknown" for k in ("actor", "profile", "calibration")) else "available"):
+        raise CampaignStatusError("preparation aggregate status contradicts observations")
+    if (sum(len((row["data"] or {}).get("items", ())) for row in rows.values()) > 64
+            or len(json.dumps(rows, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode()) > 32768):
+        raise CampaignStatusError("combined aggregate bound exceeded")
+
+
 def _validate_unified(value: Any) -> dict[str, Any]:
+    if isinstance(value, Mapping) and value.get("schema") == UNIFIED_PROJECTION_SCHEMA_V3:
+        _exact(value, _UNIFIED_FIELDS | {"runtime", "worker_timing"}, "unified aggregate projection")
+        _validate_aggregates(value)
+        legacy = dict(value, schema=UNIFIED_PROJECTION_SCHEMA_V2,
+            actors={"schema": "epyc.autokernel.unified_actor_status.v1", "status": "not_connected",
+                "reason": "legacy shape check", "clock_semantics": "UTC wall-clock projection; runtime fences remain monotonic", "items": []},
+            evidence={"schema": "epyc.autokernel.unified_evidence_status.v1", "status": "not_connected",
+                "reason": "legacy shape check", "frontier_digest": None, "lag_seconds": None})
+        _validate_unified(legacy)
+        return dict(value)
     runtime_aware = isinstance(value, Mapping) and value.get("schema") == UNIFIED_PROJECTION_SCHEMA_V2
     _exact(value, _UNIFIED_FIELDS | ({"runtime", "worker_timing"} if runtime_aware else set()), "unified projection")
     unified = dict(value)
@@ -625,6 +764,11 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
     row["command_results"] = results
     if version == 3:
         row["unified"] = _validate_unified(row["unified"])
+        if row["unified"]["schema"] == UNIFIED_PROJECTION_SCHEMA_V3:
+            for aggregate in _aggregate_rows(row["unified"]).values():
+                for field in ("observed_at", "attempted_at"):
+                    if aggregate[field] is not None and datetime.fromisoformat(aggregate[field].replace("Z", "+00:00")).timestamp() > generated:
+                        raise CampaignStatusError("aggregate timestamp is newer than snapshot")
         if "runtime" in row["unified"]:
             worker, timing = row["active_worker"], row["unified"]["worker_timing"]
             if worker is None:
@@ -797,6 +941,18 @@ def advance_snapshot(previous: Mapping[str, Any] | None,
             raise CampaignStatusError("new worker does not advance worker generation")
     old_runtime = (old.get("unified") or {}).get("runtime")
     new_runtime = (new.get("unified") or {}).get("runtime")
+    if (old.get("unified") or {}).get("schema") == UNIFIED_PROJECTION_SCHEMA_V3:
+        if (new.get("unified") or {}).get("schema") != UNIFIED_PROJECTION_SCHEMA_V3:
+            raise CampaignStatusError("same campaign cannot downgrade aggregate projection")
+        if new["supervisor_incarnation"] == old["supervisor_incarnation"]:
+            before, after = _aggregate_rows(old["unified"]), _aggregate_rows(new["unified"])
+            for kind in before:
+                if after[kind]["generation"] < before[kind]["generation"]:
+                    raise CampaignStatusError("aggregate source generation rolled back")
+                for name in ("observed_at", "attempted_at"):
+                    left, right = before[kind][name], after[kind][name]
+                    if left is not None and (right is None or datetime.fromisoformat(right.replace("Z", "+00:00")) < datetime.fromisoformat(left.replace("Z", "+00:00"))):
+                        raise CampaignStatusError("aggregate source/attempt time rolled back")
     if old_runtime is not None:
         if new_runtime is None:
             raise CampaignStatusError("same campaign cannot downgrade runtime projection")
@@ -1017,6 +1173,39 @@ def runtime_freshness(body: Mapping[str, Any], *, now: float) -> dict[str, Any] 
             "activity_silent": False, "reason": observation["reason"]}
 
 
+def aggregate_freshness(body: Mapping[str, Any], *, now: float) -> dict[str, Any] | None:
+    unified = body.get("unified") or {}
+    if unified.get("schema") != UNIFIED_PROJECTION_SCHEMA_V3:
+        return None
+    result = {}
+    for kind, row in _aggregate_rows(unified).items():
+        age, attempt_age = _age(row["observed_at"], now), _age(row["attempted_at"], now)
+        state = "current"
+        reason = row["reason"]
+        if row["status"] == "not_connected":
+            state = "not_connected"
+        elif row["error"] is not None or row["status"] == "unknown" or age is None:
+            state = "unknown"
+        elif age > HEARTBEAT_STALE_AFTER_S:
+            state, reason = "historical", "source observation aged; publisher/refresh attempt is not source progress"
+        expired = unknown = 0
+        if kind == "profile" and row["data"] is not None:
+            for item in row["data"]["items"]:
+                if item["profile_digest"] is None:
+                    continue
+                if age is None or not item["clock_known"] or item["remaining_seconds"] is None:
+                    unknown += 1
+                elif item["remaining_seconds"] <= age:
+                    expired += 1
+            if expired or unknown:
+                state = "unknown"
+                reason = "sampled profile validity expired/unknown; planning totals are historical, not current eligibility"
+        result[kind] = {"state": state, "age_s": age, "attempt_age_s": attempt_age,
+            "reason": reason, "expired_sample_count": expired,
+            "unknown_validity_sample_count": unknown}
+    return result
+
+
 def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
              health_cache: _HealthProbeCache | None = None) -> dict[str, Any]:
     report = read()
@@ -1040,6 +1229,7 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
                            "last_scientific_result_at")}
     heartbeat_age = clocks["producer_heartbeat_at"]["age_s"]
     runtime_clock = runtime_freshness(body, now=current)
+    aggregate_clock = aggregate_freshness(body, now=current)
     live = health["state"] == "live" and heartbeat_age is not None \
         and heartbeat_age <= HEARTBEAT_STALE_AFTER_S
     terminal = body["observed_state"] == "drained"
@@ -1052,6 +1242,8 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
                              for name in ("scheduler", "resources", "actors", "evidence",
                                           "candidate", "targets")))
     if runtime_clock is not None and runtime_clock["state"] in {"unknown", "stale", "unresolved"}:
+        unified_stuck = True
+    if aggregate_clock is not None and any(row["state"] != "current" for row in aggregate_clock.values()):
         unified_stuck = True
     if live and not unresolved and not unified_stuck:
         state = "live"
@@ -1074,7 +1266,7 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
             "gateway URL, and exact allowed hub origin")
     return {"configured": True, "state": state, "campaign": body,
             "snapshot_digest": report["content_digest"], "health": health,
-            "clocks": clocks, "runtime_freshness": runtime_clock,
+            "clocks": clocks, "runtime_freshness": runtime_clock, "aggregate_freshness": aggregate_clock,
             "controls": controls, "evidence": report.get("path")}
 
 

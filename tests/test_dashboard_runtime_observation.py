@@ -200,7 +200,8 @@ console.log(JSON.stringify({html,errors,retainedHTML,retainedBadge,undated:faile
 '''
     fixture = tmp_path / "runtime.json"
     fixture.write_text(json.dumps({"body": real, "clock": C.runtime_freshness(real, now=time.time())}))
-    result = json.loads(subprocess.run(["node", "-e", runner, str(fixture)],
+    result = json.loads(subprocess.run(["node", "-e",
+        "eval(require('fs').readFileSync(0,'utf8'))", str(fixture)], input=runner,
         check=True, capture_output=True, text=True, timeout=10).stdout)
     assert len(result["errors"]) == 3 and result["undated"] is None
     assert "ACCEPTED_FRESHNESS" in result["retainedHTML"]
