@@ -1225,3 +1225,37 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
 - Checklist: **two newly completed sub-items, zero new open tasks, zero declines**; 50 accepted
   sub-items, all twelve parents open. README freshness clean. Bus drain and heartbeat again refused
   this non-roster identity; no peer identity was used. Per-task wrap-up; no pruning or wiki sweep.
+
+### Selected source/build input consumption; feed and semantic boundary review
+
+- Published research **de4396ca / ba0644e7**: public SelectedActorWork/materialize_actor and
+  source_build_preparation bind actual selected advice to immutable native source manifests and
+  explicit BuildPlans. Consumption reopens the issued catalog rather than trusting caller-supplied
+  matching IDs. The source path delegates to the existing guarded Worktree; the build path checks
+  exact clean detached snapshot, CPU/job/deadline bounds and forwards original owning arguments.
+  No new launcher, grant, build identity, scientific policy or promotion authority is created.
+- Main combined on published runtime2c7762dc, preserving all runtime/actor/native driver hunks:
+  **2,061 passed, one strict expected accounting failure, 83 subtests in 47.29s**; Ruff/diff clean.
+  Worker frozen four-file packet additionally passed 1,978 tests and 83 subtests. Tests exercise
+  real guarded application/commit on a disposable tiny fixture; no CMake or model inference.
+- Marked AKU-06g complete; AKU-06d remains open for actual contained patch authoring under a new
+  reservation, native result persistence, real build ownership and verified planner feedback.
+  Registered VB-AK-UNIFIED-PREPARATION and its source-table row immediately for source-policy
+  findings/artifact dependencies. A source mutation receipt is not model correctness or speed.
+- Corrected feed packet composed with runtime in a separate acceptance tree: **2,077 passed,
+  one expected failure, 83 subtests in 50.01s**. Publication remains held: main independently
+  reproduced both new journal probes failing (0.36s): bounded reads eagerly enumerate all pending
+  shards, and ordinary acknowledged-shard growth followed by rotation incorrectly refuses the
+  next poll. Assigned lazy traversal plus exact sealed retired-shard read/ACK validation and
+  tamper/no-prefix-scan tests. Frozen sources and PRIMARY remain untouched by that correction.
+- Semantic review found shallow receipt immutability and a stronger view-substitution case:
+  comparing against a caller's pair.admissible_view_digest is insufficient if both the view and
+  pair field change. Assigned reopening the actual native carrier/view and concrete-verifier
+  refusal tests. No permissive grading or reduced witness list is accepted.
+- Continuous feed proposal must create/recover/drain/close SQLite on the actual service execution
+  thread, not create on main then cross SQLite's thread boundary. One mutable EvidenceIndex feeds
+  planning; no background mutation thread or check_same_thread=False shortcut. Scientific owner
+  is investigating same-instrument serving correctness: CLI T0 cannot attest a server binary.
+- Checklist: **one completed sub-item, one new open Vidya task, zero declines**; 51 accepted
+  implementation sub-items, all twelve parents open. README freshness clean; bus identity still
+  refused without roster mutation/impersonation. Per-task wrap-up; no pruning or wiki sweep.

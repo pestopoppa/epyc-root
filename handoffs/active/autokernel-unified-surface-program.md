@@ -2050,6 +2050,12 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Nonzero/malformed profile output still settles spent cost without PROFILE_VERIFIED. The actual
     driver E2E currently refuses mismatched provider proposal/backend/class (AKU-07k); a permissive
     settlement-validator lambda or private receipt seeding cannot satisfy acceptance.
+    Source/build input consumption is published as AKU-06g, not a complete authoring pipeline.
+    Finish separately contained patch authoring with a fresh attempt/reservation, immutable source
+    context and owner-assigned scope; authenticated bounded output constructs the native manifest.
+    Persist advice → authored patch → source commit → real build identity through native ownership,
+    then refresh planner prerequisites from verified results. Never reuse a finished advice grant,
+    invent patch bytes from prose or treat a forwarded build-runner return as verified build identity.
   - [x] **AKU-06e — public exact selected-profile materialization**: immutable SelectedProfileWork
     and UnifiedCampaignDriver.materialize_profile bind catalog, transition, selected proposal,
     profile request, preparation-plan digest and current controller identity through the public
@@ -2071,6 +2077,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     not waived acceptance. Proposed advice to private source/build preparation remains AKU-06d;
     prospective measured-profile projection remains VB-AK-UNIFIED-PROFILE. No live actors,
     inference, builds, provider grants or full campaign acceptance are claimed.
+  - [x] **AKU-06g — bind selected advice to guarded source/build preparation**: public immutable
+    SelectedActorWork and materialize_actor re-open the exact issued catalog/selection; consuming
+    adapters revalidate that actual request before using immutable authored manifests or explicit
+    BuildPlans. Guarded private source application yields actual commit/tree/diff-policy evidence;
+    build delegation preserves the owning runner's arguments/results and enforces configured
+    affinity/jobs/deadlines without creating a grant. ✅ 2026-09-09 — research `de4396ca`, main
+    `ba0644e7`; main combined gate **2,061 passed, one strict xfailed, 83 subtests in 47.29s**,
+    Ruff and diff checks clean. Tests apply/commit only a disposable tiny source fixture; no CMake
+    or inference. Actual contained authoring, build ownership and planner feedback remain AKU-06d.
+    Prospective source-policy findings are registered under VB-AK-UNIFIED-PREPARATION before live use.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
