@@ -600,15 +600,61 @@ scientific result are distinct. Historical terminal snapshots stay labelled hist
 with controls unavailable. `/health` remains hub transport-only; `/api/loop/health`
 follows the selected producer and `/api/health` retains the existing three-valued fold.
 
+The reader dispatches only the two closed producer schemas; it is not an open union:
+
+| Contract | Exact extension and dashboard meaning |
+|---|---|
+| `campaign_snapshot.v1` | The accepted management-only field set is unchanged: null worker, no execution authority, and the original compact command result. |
+| `campaign_snapshot.v2` | Adds only `execution_capability_available` and `worker_lifecycle_revision`; `active_worker` is either null or the closed 17-field lifecycle projection; command results use the closed timestamped `campaign_command_result.v2` field set. |
+| v2 active worker | Shows lifecycle state/generation and the finite provider/termination deadlines in their producer-declared clock domain. Worker, grant, container, executable and environment identities are never command inputs and are not rendered. |
+| v2 command result | `accepted=true, completed=false` remains pending. Only a later result for the same request ID, operation, digest and control revision confirms completion; exact-ID retry remains available after uncertainty. |
+
+The v2 command-result combinations are finite: resume completes as either running or
+waiting on its named prerequisite; pause/drain are either settling without completion,
+quiescent with a producer-defined completion reason, or (for pause only) completed as
+superseded by a later accepted drain. Unknown completion text and cross-operation state
+combinations are rejected, as are command results from the other snapshot protocol. A
+selected campaign may migrate from v1 to v2 but cannot later downgrade to v1, even
+across a new stream epoch. A null-worker settling snapshot is accepted only when its
+matching accepted/incomplete pause or drain result supplies the visible transition basis.
+
+Provider capability and current authority are separate facts. An injected provider may
+make `execution_capability_available=true`, while `execution_authorized=false` remains
+the honest snapshot value because publication performs no fresh provider query. A null
+worker in paused/drained state is intentional quiescence. A pre-acquisition intent is
+instead `active_worker=null`, `observed_state=ownership_unresolved`, and
+`prerequisite_reason=worker_acquisition_pending:<request>`; the hub degrades that state
+even when transport and heartbeat are live. Unresolved/teardown-failed workers likewise
+degrade semantic health.
+
+Within a selected campaign, the consumer rejects lifecycle-revision rollback, a worker
+change without a lifecycle revision, and a replacement worker whose generation does not
+advance. This prevents delayed old-worker telemetry from becoming current merely because
+it arrived in a newer HTTP response. Producer, worker activity, and scientific clocks
+remain independent; monotonic provider deadlines are displayed with their clock-domain
+label and are never compared to wall time.
+
 Controls require an explicit browser-reachable `AUTOKERNEL_CAMPAIGN_GATEWAY_URL`,
 `AUTOKERNEL_CAMPAIGN_HUB_ORIGIN`, exact producer origin allowlist and a secure browser
 context. The bearer token stays in tab memory; the hub neither stores it nor proxies
 commands. Authenticated refresh precedes commands, stream keys reject rollback, and an
 uncertain acknowledgment retains its exact request for the explicit same-operation
-Retry button. Management v1 cannot authorize execution or report an active worker.
+Retry button. An ACK-confirmed incomplete pause may escalate to a distinct drain request
+after a fresh matching snapshot; the pause identity remains tracked until the producer
+publishes its superseded completion, and resume cannot displace a pending drain.
+Management v1 cannot authorize execution or report an active worker.
 Source integration does not configure a gateway, start the service or grant compute.
 The research-owned deployment/schema details are in
-`epyc-inference-research/docs/autokernel-campaign-service.md`.
+`epyc-inference-research/docs/autokernel-campaign-service.md`; owned worker lifecycle and
+the remaining real-cgroup/provider acceptance limits are in
+`epyc-inference-research/docs/autokernel-worker-lifecycle.md`.
+
+The cross-repository producer integration tests locate the research checkout through
+`EPYC_INFERENCE_RESEARCH_ROOT`, falling back to the normal repository-map path
+`/workspace/repos/epyc-inference-research`. If neither checkout exists, only those
+producer integration cases skip; the root-owned v2 schema and browser tests use local
+fixtures and continue to run. Acceptance against a nonstandard worktree must set the
+override explicitly.
 
 ### Existing surface and legacy contract
 

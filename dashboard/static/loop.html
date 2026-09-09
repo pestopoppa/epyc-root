@@ -494,6 +494,8 @@ const fmtPct = e => `${e >= 0 ? "+" : ""}${(e * 100).toFixed(2)}%`;
 const MEASURED = new Set(["kept", "measured_null"]);
 let campaignAccepted = null;
 let campaignPending = null;
+let campaignPendingAck = null;
+let campaignEscalatedPause = null;
 let campaignToken = "";
 let campaignStreamError = "";
 let campaignAcceptedEnvelope = null;
@@ -540,19 +542,54 @@ function campaignValidateBuild(value,label){
     throw new Error(`${label} is malformed`);
 }
 
-function campaignValidateAck(value,pending=null){
-  campaignExact(value,["request_id","operation","payload_digest","accepted","completed",
-    "control_revision","desired_state","observed_state","prerequisite_reason"],
-    "campaign command result");
+function campaignValidateAck(value,pending=null,expectedV2=null){
+  const v2=value && value.schema==="epyc.autokernel.campaign_command_result.v2";
+  campaignExact(value,v2 ? ["schema","request_id","operation","payload_digest","accepted",
+    "accepted_at","completed","completed_at","completion_reason","control_revision",
+    "desired_state","observed_state","prerequisite_reason"] :
+    ["request_id","operation","payload_digest","accepted","completed","control_revision",
+    "desired_state","observed_state","prerequisite_reason"],"campaign command result");
   const expected={pause:"paused",resume:"running",drain:"drained"};
   if(!campaignText(value.request_id) ||
      !Object.prototype.hasOwnProperty.call(expected,value.operation) ||
      !campaignDigestValue(value.payload_digest) || value.accepted !== true ||
      typeof value.completed !== "boolean" || !campaignInteger(value.control_revision,1) ||
-     value.desired_state !== expected[value.operation] ||
+     (!v2 && value.desired_state !== expected[value.operation]) ||
      !(value.prerequisite_reason === null || campaignText(value.prerequisite_reason)))
     throw new Error("campaign command acknowledgment is malformed");
-  if(value.operation === "resume"){
+  if(expectedV2!==null && v2!==expectedV2)
+    throw new Error("command acknowledgment protocol does not match the pending snapshot");
+  if(v2){
+    const states=["paused","running","drained","pausing","draining",
+      "waiting_prerequisite","ownership_unresolved"];
+    if(!campaignTimestamp(value.accepted_at) || !["paused","running","drained"].includes(value.desired_state) ||
+       !states.includes(value.observed_state) ||
+       (value.completed ? (!campaignTimestamp(value.completed_at) || !campaignText(value.completion_reason)) :
+        (value.completed_at!==null || value.completion_reason!==null)))
+      throw new Error("campaign v2 command acknowledgment is malformed");
+    if(value.completed && Date.parse(value.completed_at)<Date.parse(value.accepted_at))
+      throw new Error("campaign v2 command completion timestamp is contradictory");
+    const quiescent=["already quiescent","owned workers quiesced and claims released"];
+    let semantic=false;
+    if(value.operation==="resume") semantic=value.completed && value.desired_state==="running" &&
+      ((value.observed_state==="running" && value.completion_reason==="running" &&
+        value.prerequisite_reason===null) ||
+       (value.observed_state==="waiting_prerequisite" &&
+        value.completion_reason==="waiting on named prerequisite" &&
+        campaignText(value.prerequisite_reason)));
+    else if(value.operation==="pause" && value.desired_state==="drained")
+      semantic=value.completed && value.observed_state==="draining" &&
+        value.completion_reason==="superseded by a later accepted drain" &&
+        value.prerequisite_reason===null;
+    else{
+      const desired=value.operation==="pause"?"paused":"drained";
+      const settling=value.operation==="pause"?"pausing":"draining";
+      semantic=value.desired_state===desired && value.prerequisite_reason===null &&
+        (value.completed ? (value.observed_state===desired &&
+          quiescent.includes(value.completion_reason)) : value.observed_state===settling);
+    }
+    if(!semantic) throw new Error("campaign v2 command semantics are contradictory");
+  }else if(value.operation === "resume"){
     if(value.completed ? (value.observed_state !== "running" || value.prerequisite_reason !== null) :
        (value.observed_state !== "waiting_prerequisite" || !campaignText(value.prerequisite_reason)))
       throw new Error("campaign resume acknowledgment is contradictory");
@@ -566,14 +603,38 @@ function campaignValidateAck(value,pending=null){
   return value;
 }
 
+function campaignValidateWorker(value){
+  campaignExact(value,["worker_id","worker_generation","request_id","plan_digest","lineage_id",
+    "stage_id","state","grant_id","grant_generation","container_id","provider_deadline",
+    "deadline_clock_domain","control_revision","started_at","activity_at","termination_deadline",
+    "unresolved_reason"],"campaign active worker");
+  const textFields=["worker_id","request_id","lineage_id","stage_id","grant_id","container_id",
+    "deadline_clock_domain"];
+  const states=["intent","container_created","child_captured","exec_release_intent","executing",
+    "result_retained","tearing_down","teardown_failed","unresolved"];
+  if(textFields.some(name=>!campaignText(value[name])) || !campaignDigestValue(value.plan_digest) ||
+     !states.includes(value.state) || !campaignInteger(value.worker_generation,1) ||
+     !campaignInteger(value.grant_generation,1) || !campaignInteger(value.control_revision,0) ||
+     !campaignTimestamp(value.started_at) ||
+     !(value.activity_at===null || campaignTimestamp(value.activity_at)) ||
+     !(value.unresolved_reason===null || campaignText(value.unresolved_reason)) ||
+     !([value.provider_deadline,value.termination_deadline].every(v=>v===null ||
+       (typeof v==="number" && Number.isFinite(v)))))
+    throw new Error("campaign active worker is malformed");
+  return value;
+}
+
 function campaignValidateSnapshot(value){
+  const v2=value && value.schema==="epyc.autokernel.campaign_snapshot.v2";
   campaignExact(value,["schema","producer_build","producer_schema","campaign_id",
     "config_generation","config_digest","requested_manifest_digest","supervisor_incarnation",
     "stream_epoch","sequence","journal_cursor","control_revision","generated_at",
     "desired_state","observed_state","command_results","active_worker",
     "producer_heartbeat_at","last_scientific_result_at","worker_activity_at",
-    "execution_authorized","prerequisite_reason"],"campaign snapshot");
-  if(value.schema !== "epyc.autokernel.campaign_snapshot.v1" || value.producer_schema !== value.schema ||
+    "execution_authorized",...(v2?["execution_capability_available","worker_lifecycle_revision"]:[]),
+    "prerequisite_reason"],"campaign snapshot");
+  if(!["epyc.autokernel.campaign_snapshot.v1","epyc.autokernel.campaign_snapshot.v2"].includes(value.schema) ||
+     value.producer_schema !== value.schema ||
      !campaignText(value.campaign_id) || !campaignDigestValue(value.config_digest) ||
      !campaignDigestValue(value.requested_manifest_digest) || !campaignTimestamp(value.generated_at) ||
      !campaignTimestamp(value.producer_heartbeat_at) ||
@@ -581,7 +642,7 @@ function campaignValidateSnapshot(value){
      !(value.worker_activity_at === null || campaignTimestamp(value.worker_activity_at)))
     throw new Error("campaign snapshot identity or timestamps are malformed");
   for(const [name,min] of [["config_generation",1],["supervisor_incarnation",1],
-       ["stream_epoch",1],["sequence",1],["journal_cursor",1],["control_revision",0]])
+       ["stream_epoch",1],["sequence",1],["journal_cursor",v2?0:1],["control_revision",0]])
     if(!campaignInteger(value[name],min)) throw new Error(`campaign snapshot ${name} is malformed`);
   const generatedMs=Date.parse(value.generated_at);
   for(const name of ["producer_heartbeat_at","last_scientific_result_at","worker_activity_at"]){
@@ -589,24 +650,66 @@ function campaignValidateSnapshot(value){
       throw new Error(`campaign snapshot ${name} exceeds generated_at observation window`);
   }
   campaignValidateBuild(value.producer_build,"campaign producer build");
-  const allowed={paused:["paused"],running:["running","waiting_prerequisite"],drained:["drained"]};
+  const allowed=v2 ? {paused:["paused","pausing","ownership_unresolved"],
+    running:["running","waiting_prerequisite","ownership_unresolved"],
+    drained:["drained","draining","ownership_unresolved"]} :
+    {paused:["paused"],running:["running","waiting_prerequisite"],drained:["drained"]};
   if(!Object.prototype.hasOwnProperty.call(allowed,value.desired_state) ||
      !allowed[value.desired_state].includes(value.observed_state) ||
-     value.execution_authorized !== false || value.active_worker !== null ||
+     value.execution_authorized !== false || (!v2 && value.active_worker !== null) ||
      !(value.prerequisite_reason === null || campaignText(value.prerequisite_reason)) ||
      !Array.isArray(value.command_results))
     throw new Error("campaign snapshot management boundary is malformed");
   if((value.observed_state==="waiting_prerequisite" && !campaignText(value.prerequisite_reason)) ||
      (["running","drained"].includes(value.observed_state) && value.prerequisite_reason!==null))
     throw new Error("campaign snapshot prerequisite state is contradictory");
+  if(v2){
+    if(typeof value.execution_capability_available!=="boolean" ||
+       !campaignInteger(value.worker_lifecycle_revision,0))
+      throw new Error("campaign v2 lifecycle projection is malformed");
+    if(value.active_worker!==null){
+      campaignValidateWorker(value.active_worker);
+      if(value.worker_activity_at!==value.active_worker.activity_at ||
+         value.active_worker.control_revision>value.control_revision)
+        throw new Error("campaign v2 worker projection is contradictory");
+      for(const name of ["started_at","activity_at"])
+        if(value.active_worker[name]!==null &&
+           Date.parse(value.active_worker[name])>generatedMs+5000)
+          throw new Error(`campaign active worker ${name} exceeds generated_at observation window`);
+      if(["paused","drained","waiting_prerequisite"].includes(value.observed_state))
+        throw new Error("campaign v2 quiescent snapshot carries an active worker");
+      if(["teardown_failed","unresolved"].includes(value.active_worker.state) &&
+         (value.observed_state!=="ownership_unresolved" || !campaignText(value.prerequisite_reason)))
+        throw new Error("campaign v2 unresolved worker lacks unresolved ownership state");
+    }else if(value.worker_activity_at!==null)
+      throw new Error("campaign v2 has worker activity without a worker");
+    if(value.active_worker===null && value.observed_state==="ownership_unresolved" &&
+       !(campaignText(value.prerequisite_reason) &&
+         value.prerequisite_reason.startsWith("worker_acquisition_pending:") &&
+         value.prerequisite_reason.slice("worker_acquisition_pending:".length).trim()))
+      throw new Error("campaign v2 pending acquisition identity is missing");
+  }
   const requestIds=new Set();let priorRevision=0;
   value.command_results.forEach(row=>{
+    if(v2 !== !!(row && row.schema==="epyc.autokernel.campaign_command_result.v2"))
+      throw new Error("campaign command result protocol does not match its snapshot");
     campaignValidateAck(row);
     if(requestIds.has(row.request_id) || row.control_revision<=priorRevision ||
        row.control_revision>value.control_revision)
       throw new Error("campaign command result ordering is malformed");
+    if(v2 && (Date.parse(row.accepted_at)>generatedMs+5000 ||
+       (row.completed && Date.parse(row.completed_at)>generatedMs+5000)))
+      throw new Error("campaign command result exceeds generated_at observation window");
     requestIds.add(row.request_id);priorRevision=row.control_revision;
   });
+  if(v2 && value.active_worker===null && ["pausing","draining"].includes(value.observed_state)){
+    const operation=value.observed_state==="pausing"?"pause":"drain";
+    const basis=value.command_results.some(row=>row.operation===operation &&
+      row.desired_state===value.desired_state && row.observed_state===value.observed_state &&
+      row.completed===false);
+    if(!basis)
+      throw new Error("campaign v2 settling snapshot lacks an active worker or accepted command basis");
+  }
   return value;
 }
 
@@ -619,8 +722,15 @@ function campaignAcceptSnapshot(next, explicitSwitch=false){
       throw new Error(campaignStreamError);
     }
     campaignPending = null;
+    campaignPendingAck = null;
+    campaignEscalatedPause = null;
   }
   if(campaignAccepted && campaignIdentity(next) === campaignIdentity(campaignAccepted)){
+    if(campaignAccepted.schema==="epyc.autokernel.campaign_snapshot.v2" &&
+       next.schema==="epyc.autokernel.campaign_snapshot.v1"){
+      campaignStreamError="same campaign cannot downgrade snapshot protocol v2 to v1";
+      throw new Error(campaignStreamError);
+    }
     const oldKey = campaignStreamKey(campaignAccepted), newKey = campaignStreamKey(next);
     if(newKey[0] < oldKey[0] || (newKey[0] === oldKey[0] && newKey[1] < oldKey[1])){
       campaignStreamError = "ignored an older campaign snapshot; retained view is historical";
@@ -644,7 +754,26 @@ function campaignAcceptSnapshot(next, explicitSwitch=false){
         next.supervisor_incarnation <= campaignAccepted.supervisor_incarnation))
       {campaignStreamError = "campaign stream epoch/incarnation relationship is invalid";
        throw new Error(campaignStreamError);}
+    if(next.schema==="epyc.autokernel.campaign_snapshot.v2" &&
+       campaignAccepted.schema==="epyc.autokernel.campaign_snapshot.v2"){
+      if(next.worker_lifecycle_revision<campaignAccepted.worker_lifecycle_revision){
+        campaignStreamError="newer campaign snapshot rolled back worker lifecycle revision";
+        throw new Error(campaignStreamError);
+      }
+      if(next.worker_lifecycle_revision===campaignAccepted.worker_lifecycle_revision &&
+         campaignCanonical(next.active_worker)!==campaignCanonical(campaignAccepted.active_worker)){
+        campaignStreamError="worker changed without a worker lifecycle revision";
+        throw new Error(campaignStreamError);
+      }
+      const oldWorker=campaignAccepted.active_worker,newWorker=next.active_worker;
+      if(oldWorker && newWorker && oldWorker.worker_id!==newWorker.worker_id &&
+         newWorker.worker_generation<=oldWorker.worker_generation){
+        campaignStreamError="new worker did not advance worker generation";
+        throw new Error(campaignStreamError);
+      }
+    }
   }
+  campaignReconcileEscalatedPause(next);
   campaignAccepted = next;
   campaignStreamError = "";
   return true;
@@ -737,25 +866,56 @@ async function campaignRefreshAuthenticated(config){
 }
 
 function campaignCommandStatus(result){
+  const reason=result.completed ? result.completion_reason : result.prerequisite_reason;
   return `accepted revision ${result.control_revision}; ` +
-    (result.completed ? "completed" : `not completed: ${result.prerequisite_reason}`);
+    (result.completed ? `completed${reason ? `: ${reason}` : ""}` :
+     `not completed${reason ? `: ${reason}` : " — awaiting the same request/revision"}`);
+}
+
+function campaignRecordedResult(request){
+  return campaignAccepted && (campaignAccepted.command_results||[]).find(row=>
+    row.request_id===request.request_id && row.operation===request.operation &&
+    row.payload_digest===request.payload_digest &&
+    row.control_revision===request.expected_control_revision+1);
+}
+
+function campaignReconcileEscalatedPause(snapshot){
+  if(!campaignEscalatedPause) return;
+  const request=campaignEscalatedPause.request;
+  const result=(snapshot.command_results||[]).find(row=>row.request_id===request.request_id);
+  if(!result && snapshot.control_revision>=request.expected_control_revision+1)
+    throw new Error("escalated pause identity disappeared from the campaign snapshot");
+  if(!result) return;
+  campaignValidateAck(result,request,true);
+  campaignEscalatedPause.result=result;
+  if(result.completed) campaignEscalatedPause=null;
 }
 
 function campaignUpdateCommandButtons(){
+  const mayEscalate=!!(campaignPending && campaignPendingAck &&
+    !campaignPendingAck.completed && campaignPending.operation==="pause");
   for(const op of ["pause","resume","drain"]){
     const button=document.getElementById(CAMPAIGN_BUTTON_IDS[op]);
-    if(button) button.disabled=!campaignControlsAvailable || campaignInFlight || !!campaignPending;
+    if(button) button.disabled=!campaignControlsAvailable || campaignInFlight ||
+      (!!campaignPending && !(mayEscalate && op==="drain"));
   }
   const retry=document.getElementById("campaign-retry");
-  if(retry) retry.disabled=!campaignControlsAvailable || campaignInFlight || !campaignPending;
+  if(retry) retry.disabled=!campaignControlsAvailable || campaignInFlight ||
+    !campaignPending || !!campaignPendingAck;
 }
 
 async function campaignSend(operation, config, retry=false){
   const status = document.getElementById("campaign-command-status");
   if(campaignInFlight){status.textContent="another campaign request is still in flight";return;}
   if(campaignPending && !retry){
-    status.textContent=`${campaignPending.operation} has an uncertain acknowledgment; use Retry `+
-      `before requesting ${operation}`;campaignUpdateCommandButtons();return;
+    const mayEscalate=operation==="drain" && campaignPending.operation==="pause" &&
+      campaignPendingAck && !campaignPendingAck.completed;
+    if(!mayEscalate){
+      status.textContent=campaignPendingAck ?
+        `${campaignPending.operation} is accepted but incomplete; only drain escalation is permitted` :
+        `${campaignPending.operation} has an uncertain acknowledgment; use Retry before requesting ${operation}`;
+      campaignUpdateCommandButtons();return;
+    }
   }
   if(retry && !campaignPending){status.textContent="there is no uncertain command to retry";return;}
   campaignInFlight=true; campaignUpdateCommandButtons();
@@ -763,21 +923,40 @@ async function campaignSend(operation, config, retry=false){
     if(!campaignSecure()) throw new Error(
       "controls require a secure browser context (use an authenticated HTTPS tunnel)");
     const fresh = await campaignRefreshAuthenticated(config);
+    let escalationSource=null;
     if(campaignPending){
       const recorded=(fresh.command_results||[]).find(row=>row.request_id===campaignPending.request_id);
       if(recorded){
-        campaignValidateAck(recorded,campaignPending);
+        campaignValidateAck(recorded,campaignPending,campaignPending._resultV2);
         status.textContent=campaignCommandStatus(recorded);
-        campaignPending=null;
-        return;
+        campaignPendingAck=recorded;
+        if(recorded.completed){campaignPending=null;campaignPendingAck=null;
+          if(retry) return;
+        }else if(operation==="drain" && !retry && campaignPending.operation==="pause"){
+          escalationSource={request:campaignPending,result:recorded};
+        }else return;
       }
+      if(!recorded && campaignPendingAck)
+        throw new Error("accepted command is absent from the authenticated snapshot");
     }
-    if(!campaignPending){
+    if(escalationSource){
+      const payloadDigest = await campaignDigest(operation, fresh);
+      const nextRequest={schema:"epyc.autokernel.campaign_command.v1",
+        campaign_id:fresh.campaign_id,config_generation:fresh.config_generation,
+        request_id:crypto.randomUUID(),operation:operation,payload:{},
+        payload_digest:payloadDigest,expected_control_revision:fresh.control_revision};
+      Object.defineProperty(nextRequest,"_resultV2",{value:true});
+      campaignEscalatedPause=escalationSource;
+      campaignPending=nextRequest;
+      campaignPendingAck=null;
+    }else if(!campaignPending){
       const payloadDigest = await campaignDigest(operation, fresh);
       campaignPending = {schema:"epyc.autokernel.campaign_command.v1",
         campaign_id:fresh.campaign_id,config_generation:fresh.config_generation,
         request_id:crypto.randomUUID(),operation:operation,payload:{},
         payload_digest:payloadDigest,expected_control_revision:fresh.control_revision};
+      Object.defineProperty(campaignPending,"_resultV2",{
+        value:fresh.schema==="epyc.autokernel.campaign_snapshot.v2"});
     }
     const request=campaignPending;
     const response = await campaignFetch(config.controls.gateway_url.replace(/\/$/, "") + "/commands", {
@@ -786,12 +965,19 @@ async function campaignSend(operation, config, retry=false){
       body:JSON.stringify(request)},CAMPAIGN_ACK_MAX_BYTES);
     const result = response.body;
     if(!response.ok) throw new Error((result && result.error) || `command responded ${response.status}`);
-    campaignValidateAck(result,request);
-    status.textContent=campaignCommandStatus(result);
-    if(campaignPending===request) campaignPending=null;
+    campaignValidateAck(result,request,request._resultV2);
+    const recorded=campaignRecordedResult(request);
+    const effective=(recorded && recorded.completed) ? recorded : result;
+    status.textContent=campaignCommandStatus(effective);
+    if(campaignPending===request){
+      if(effective.completed){campaignPending=null;campaignPendingAck=null;}
+      else campaignPendingAck=effective;
+    }
   }catch(err){
     status.textContent = `${err.message || err}. ` +
-      (campaignPending ? "Retry keeps the same request ID and payload." : "No command was sent.");
+      (campaignPending && !campaignPendingAck ?
+       "Retry keeps the same request ID and payload." :
+       campaignPendingAck ? "The accepted command remains pending." : "No command was sent.");
   }finally{
     campaignInFlight=false;campaignUpdateCommandButtons();
   }
@@ -808,7 +994,8 @@ function renderCampaign(d){
       `<code>loop_status.v1</code> view remains available.</div>`;
     controls.innerHTML = "";
     campaignAccepted = null; campaignAcceptedEnvelope = null;
-    campaignPending = null; campaignToken = "";
+    campaignPending = null; campaignPendingAck = null; campaignEscalatedPause = null;
+    campaignToken = "";
     return;
   }
   let s = view.campaign;
@@ -847,6 +1034,12 @@ function renderCampaign(d){
     (rejected ? "UNKNOWN / HISTORY" : state.toUpperCase());
   const clock = name => s[name] || "unknown";
   const last = (s.command_results || []).slice(-1)[0];
+  const worker=s.active_worker;
+  const workerText=worker ? `${esc(worker.state)}; generation ${esc(worker.worker_generation)}; `+
+    `deadline ${esc(worker.provider_deadline==null?"unknown":worker.provider_deadline)} `+
+    `(${esc(worker.deadline_clock_domain)})` :
+    (s.observed_state==="ownership_unresolved" ?
+      `ACQUISITION UNRESOLVED — ${esc(s.prerequisite_reason||"unknown reason")}` : "none reported");
   host.innerHTML = `<div class="pad"><dl class="kv">` +
     `<dt>campaign / generation</dt><dd>${esc(s.campaign_id)} / ${esc(s.config_generation)}</dd>` +
     `<dt>supervisor / stream</dt><dd>${esc(s.supervisor_incarnation)} / ` +
@@ -856,22 +1049,43 @@ function renderCampaign(d){
     `<dt>supervisor heartbeat</dt><dd>${esc(clock("producer_heartbeat_at"))}</dd>` +
     `<dt>stage activity</dt><dd>${esc(clock("worker_activity_at"))}</dd>` +
     `<dt>last scientific result</dt><dd>${esc(clock("last_scientific_result_at"))}</dd>` +
-    `<dt>worker</dt><dd>${s.active_worker ? "reported" : "none reported"}</dd>` +
-    `<dt>execution authority</dt><dd>${s.execution_authorized === false ? "false" : "INVALID"}</dd>` +
+    `<dt>worker</dt><dd>${workerText}</dd>` +
+    (s.schema==="epyc.autokernel.campaign_snapshot.v2" ?
+      `<dt>worker lifecycle revision</dt><dd>${esc(s.worker_lifecycle_revision)}</dd>`+
+      `<dt>execution capability / current authority</dt><dd>${esc(s.execution_capability_available)} / `+
+      `${esc(s.execution_authorized)}</dd>` :
+      `<dt>execution authority</dt><dd>${s.execution_authorized === false ? "false" : "INVALID"}</dd>`) +
     `<dt>last command</dt><dd>${last ? `accepted=${esc(last.accepted)}; completed=` +
       `${esc(last.completed)}; ${esc(last.prerequisite_reason || "no reason")}` : "none"}</dd>` +
     `</dl>${campaignStreamError ? `<div class="warn">${esc(campaignStreamError)}</div>` : ""}</div>`;
   const secure = campaignSecure();
   const available = !!(!rejected && envelope.controls && envelope.controls.available && secure);
+  let pendingResult=null;
+  if(campaignPending){
+    pendingResult=campaignRecordedResult(campaignPending)||null;
+    if(pendingResult){
+      try{campaignValidateAck(pendingResult,campaignPending,campaignPending._resultV2);}
+      catch(err){campaignStreamError=String(err.message||err);pendingResult=null;}
+      if(pendingResult){
+        campaignPendingAck=pendingResult;
+        if(pendingResult.completed){campaignPending=null;campaignPendingAck=null;}
+      }
+    }
+  }
   campaignControlsAvailable=available;
   controls.innerHTML = `<label>Bearer token (memory only) <input id="campaign-token" ` +
     `type="password" autocomplete="off"></label>` +
     ["pause","resume","drain"].map(op => `<button id="campaign-${op}" ` +
       `${available ? "" : "disabled"}>${op}</button>`).join("") +
-    `<button id="campaign-retry" ${available && campaignPending ? "" : "disabled"}>`+
+    `<button id="campaign-retry" ${available && campaignPending && !campaignPendingAck ? "" : "disabled"}>`+
       `Retry ${esc(campaignPending ? campaignPending.operation : "pending")}</button>`+
-    `<span id="campaign-command-status" class="muted">${esc(available ?
-      "refreshes the authenticated producer before every command" :
+    `<span id="campaign-command-status" class="muted">${esc(pendingResult ?
+      campaignCommandStatus(pendingResult) : available ?
+      (campaignPending ? (campaignPendingAck && campaignPending.operation==="pause" ?
+       "pause is accepted but incomplete; drain escalation is available" :
+       campaignPendingAck ? "accepted command is still incomplete" :
+       "command acknowledgment is uncertain; Retry keeps the same request/revision") :
+       "refreshes the authenticated producer before every command") :
       (!secure ? "controls unavailable: secure context/Web Crypto required" :
        ((envelope.controls||{}).reason || "controls unavailable")))}</span>`;
   const input = document.getElementById("campaign-token");

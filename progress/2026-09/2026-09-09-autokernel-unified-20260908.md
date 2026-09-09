@@ -479,3 +479,43 @@ no answer is inferred, and independent implementation continues.
 Bus drain rejected this non-roster session ID. No peer identity or coordination file was impersonated.
 Per-task wrap-up is being used for checklist/progress/index/publication. No index pruning, handoff
 compaction or wiki compilation sweep is performed by this implementation checkpoint.
+
+### Owned-worker lifecycle and existing dashboard v2 accepted
+
+- Research source **865c1e62**, main merge **bb0c2c38**, publishes eight reviewed lifecycle/control
+  files. Main independently ran **307 tests and 15 subtests**, including 21 extra boundary probes;
+  submitted file digests were confirmed before publication. The dashboard companion passed main's
+  **296 tests and 79 subtests** across ten affected/adjacent files. Ruff, whitespace and README
+  freshness checks pass. These are hermetic source/integration results, not live hardware evidence.
+- Acquisition intent is durable before provider I/O, and launch intent precedes spawn. Typed denial
+  proves no allocation; ambiguous authorization/inspection retains exact pending ownership. Recovery
+  binds campaign, request, worker/grant generations, container inode, PID-start and boot identities.
+  The isolated pipe-gated bootstrap excludes experimental import paths and inherited credentials.
+  Stage/setup/native-I/O/teardown share one budget; provider methods still need their own enforced
+  I/O deadlines. A returned journal error cannot disable exact owned cleanup, but uncertain durability
+  cannot certify a terminal result or authorize a successor. Descriptor failure paths are covered.
+- V2 separates accepted controls from actual quiescence. Pause-to-drain escalation retains the prior
+  identity and cannot be overwritten by a superseded completion. Denied/no-launch worker generation
+  gaps replay correctly. V2 START uses an explicit recognized version fence: an actual old reader is
+  tested refusing before admission, not merely a current reader configured in a legacy mode.
+- The existing hub consumes real producer snapshots and executes the actual page JavaScript in its
+  tests. It rejects mixed result versions and same-campaign protocol downgrade; capability is not
+  current grant authority. Pending acquisitions and failed teardown degrade semantic health even
+  while transport/heartbeat are live. Failed digest/UUID construction retains an acknowledged pending
+  pause; uncertain ACK retry keeps the same ID; newer completion wins over late HTTP responses.
+- A fixture race was corrected with a deterministic post-release WORKER_STAGE barrier: observing an
+  intent alone did not prove stage admission. Optional cross-repo tests locate explicit/standard
+  checkouts, while ordinary v2 unit tests remain portable. The broader dashboard run's **15 legacy
+  failures** (11 tests plus four subtests) reproduce at unchanged root HEAD `5ad7cbfd`; they are
+  separately scoped ambient operator-gate/legacy v26 fixture failures, not attributed to this slice.
+- Main accepted AKU-07b and AKU-09d only; their parent tasks remain open. The driver must still connect
+  selected preparations, native intent, actual held accounting and evidence feedback. Its per-tick
+  transition cannot copy receipt or retired-seed history, and caller-rehashed after-state is not
+  scheduler authority. A contained planned-serving bridge now owns child-side execution/deferred
+  artifact sealing and parent-only current-result ingestion. A third worker is implementing whole-
+  lifecycle observation separately from protocol verdicts. No independent helper is labeled a
+  complete autonomous campaign, and the generic parent-side serving guard still honestly refuses.
+- Publication uses exact accepted paths/private indices and isolated main merges. Shared checkouts,
+  frozen production kernels, real resource providers/cgroups, services, research runs and historical
+  evidence stores remain unchanged. Bus drain and heartbeat again reject the non-roster session ID;
+  no peer identity is impersonated. OP-41, research-relaunch and measurement-ratification gates remain.

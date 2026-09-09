@@ -21,6 +21,7 @@ from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 SNAPSHOT_SCHEMA = "epyc.autokernel.campaign_snapshot.v1"
+SNAPSHOT_SCHEMA_V2 = "epyc.autokernel.campaign_snapshot.v2"
 HEALTH_SCHEMA = "epyc.autokernel.campaign_transport_health.v1"
 SNAPSHOT_FILENAME = "campaign-snapshot.json"
 STORE_ROOT_ENV = "AUTOKERNEL_CAMPAIGN_STORE_ROOT"
@@ -39,6 +40,7 @@ HEALTH_RESULT_WAIT_S = 0.02
 _SHA256 = frozenset("0123456789abcdef")
 _DESIRED = frozenset({"paused", "running", "drained"})
 _OBSERVED = frozenset({"paused", "running", "drained", "waiting_prerequisite"})
+_OBSERVED_V2 = _OBSERVED | frozenset({"pausing", "draining", "ownership_unresolved"})
 _SNAPSHOT_FIELDS = frozenset({
     "schema", "producer_build", "producer_schema", "campaign_id",
     "config_generation", "config_digest", "requested_manifest_digest",
@@ -48,6 +50,9 @@ _SNAPSHOT_FIELDS = frozenset({
     "last_scientific_result_at", "worker_activity_at", "execution_authorized",
     "prerequisite_reason",
 })
+_SNAPSHOT_V2_FIELDS = _SNAPSHOT_FIELDS | frozenset({
+    "execution_capability_available", "worker_lifecycle_revision",
+})
 _BUILD_FIELDS = frozenset({
     "schema", "scope", "module", "identity_basis", "included_symbols",
     "excluded_scope", "sha256",
@@ -56,6 +61,25 @@ _RESULT_FIELDS = frozenset({
     "request_id", "operation", "payload_digest", "accepted", "completed",
     "control_revision", "desired_state", "observed_state", "prerequisite_reason",
 })
+_RESULT_V2_FIELDS = frozenset({
+    "schema", "request_id", "operation", "payload_digest", "accepted",
+    "accepted_at", "completed", "completed_at", "completion_reason",
+    "control_revision", "desired_state", "observed_state", "prerequisite_reason",
+})
+_ACTIVE_WORKER_V2_FIELDS = frozenset({
+    "worker_id", "worker_generation", "request_id", "plan_digest", "lineage_id",
+    "stage_id", "state", "grant_id", "grant_generation", "container_id",
+    "provider_deadline", "deadline_clock_domain", "control_revision", "started_at",
+    "activity_at", "termination_deadline", "unresolved_reason",
+})
+_WORKER_STATES_V2 = frozenset({
+    "intent", "container_created", "child_captured", "exec_release_intent",
+    "executing", "result_retained", "tearing_down", "teardown_failed", "unresolved",
+})
+_QUIESCENT_COMPLETION_REASONS_V2 = frozenset({
+    "already quiescent", "owned workers quiesced and claims released",
+})
+_SUPERSEDED_PAUSE_REASON_V2 = "superseded by a later accepted drain"
 _HEALTH_FIELDS = frozenset({
     "schema", "ok", "transport", "producer", "service_build", "campaign_id",
     "config_generation", "config_digest", "supervisor_incarnation",
@@ -91,6 +115,15 @@ def _text(value: Any, label: str, *, nullable: bool = False) -> str | None:
 def _integer(value: Any, label: str, minimum: int = 0) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
         raise CampaignStatusError(f"{label} must be an integer >= {minimum}")
+    return value
+
+
+def _finite(value: Any, label: str, *, nullable: bool = False) -> float | int | None:
+    if value is None and nullable:
+        return None
+    if (isinstance(value, bool) or not isinstance(value, (int, float))
+            or not math.isfinite(float(value))):
+        raise CampaignStatusError(f"{label} must be finite")
     return value
 
 
@@ -130,7 +163,7 @@ def _string_list(value: Any, label: str) -> list[str]:
     return [str(item) for item in result]
 
 
-def _validate_result(value: Any) -> dict[str, Any]:
+def _validate_result_v1(value: Any) -> dict[str, Any]:
     _exact(value, _RESULT_FIELDS, "command result")
     row = dict(value)
     _text(row["request_id"], "command result request_id")
@@ -158,6 +191,77 @@ def _validate_result(value: Any) -> dict[str, Any]:
     return row
 
 
+def _validate_result_v2(value: Any) -> dict[str, Any]:
+    _exact(value, _RESULT_V2_FIELDS, "v2 command result")
+    row = dict(value)
+    if row["schema"] != "epyc.autokernel.campaign_command_result.v2":
+        raise CampaignStatusError("v2 command result schema is unsupported")
+    _text(row["request_id"], "v2 command result request_id")
+    operation = _enum(row["operation"], {"pause", "resume", "drain"},
+                      "v2 command result operation")
+    _digest(row["payload_digest"], "v2 command result payload_digest")
+    if row["accepted"] is not True or not isinstance(row["completed"], bool):
+        raise CampaignStatusError("v2 command result accepted/completed must be boolean")
+    _timestamp(row["accepted_at"], "v2 command result accepted_at")
+    if row["completed"]:
+        _timestamp(row["completed_at"], "v2 command result completed_at")
+        _text(row["completion_reason"], "v2 command result completion_reason")
+    elif row["completed_at"] is not None or row["completion_reason"] is not None:
+        raise CampaignStatusError("incomplete v2 command result carries completion fields")
+    _integer(row["control_revision"], "v2 command result control_revision", 1)
+    desired = _enum(row["desired_state"], _DESIRED, "v2 command result desired_state")
+    observed = _enum(row["observed_state"], _OBSERVED_V2,
+                     "v2 command result observed_state")
+    prerequisite = _text(row["prerequisite_reason"],
+                         "v2 command result prerequisite_reason", nullable=True)
+    completion_reason = row["completion_reason"]
+    if operation == "resume":
+        running = (observed == "running" and completion_reason == "running"
+                   and prerequisite is None)
+        waiting = (observed == "waiting_prerequisite"
+                   and completion_reason == "waiting on named prerequisite"
+                   and prerequisite is not None)
+        if not row["completed"] or desired != "running" or not (running or waiting):
+            raise CampaignStatusError("v2 resume result semantics are contradictory")
+    elif operation == "pause" and desired == "drained":
+        if (not row["completed"] or observed != "draining" or prerequisite is not None
+                or completion_reason != _SUPERSEDED_PAUSE_REASON_V2):
+            raise CampaignStatusError("v2 superseded pause result semantics are contradictory")
+    else:
+        expected_desired = "paused" if operation == "pause" else "drained"
+        settling = "pausing" if operation == "pause" else "draining"
+        settled = expected_desired
+        if desired != expected_desired or prerequisite is not None:
+            raise CampaignStatusError("v2 lifecycle command desired state is contradictory")
+        if row["completed"]:
+            if (observed != settled
+                    or completion_reason not in _QUIESCENT_COMPLETION_REASONS_V2):
+                raise CampaignStatusError("v2 lifecycle completion semantics are contradictory")
+        elif observed != settling:
+            raise CampaignStatusError("v2 incomplete lifecycle command is not settling")
+    return row
+
+
+def _validate_active_worker_v2(value: Any) -> dict[str, Any]:
+    _exact(value, _ACTIVE_WORKER_V2_FIELDS, "v2 active_worker")
+    row = dict(value)
+    for field in ("worker_id", "request_id", "lineage_id", "stage_id", "grant_id",
+                  "container_id", "deadline_clock_domain"):
+        _text(row[field], f"v2 active_worker {field}")
+    _digest(row["plan_digest"], "v2 active_worker plan_digest")
+    for field in ("worker_generation", "grant_generation"):
+        _integer(row[field], f"v2 active_worker {field}", 1)
+    _integer(row["control_revision"], "v2 active_worker control_revision", 0)
+    _enum(row["state"], _WORKER_STATES_V2, "v2 active_worker state")
+    _timestamp(row["started_at"], "v2 active_worker started_at")
+    _timestamp(row["activity_at"], "v2 active_worker activity_at", nullable=True)
+    _text(row["unresolved_reason"], "v2 active_worker unresolved_reason", nullable=True)
+    _finite(row["provider_deadline"], "v2 active_worker provider_deadline", nullable=True)
+    _finite(row["termination_deadline"], "v2 active_worker termination_deadline",
+            nullable=True)
+    return row
+
+
 def _validate_build(value: Any, label: str) -> dict[str, Any]:
     _exact(value, _BUILD_FIELDS, label)
     row = dict(value)
@@ -174,9 +278,20 @@ def _validate_build(value: Any, label: str) -> dict[str, Any]:
 
 
 def validate_snapshot(value: Any) -> dict[str, Any]:
-    _exact(value, _SNAPSHOT_FIELDS, "campaign snapshot")
+    if not isinstance(value, Mapping):
+        raise CampaignStatusError("campaign snapshot must be an object")
+    schema = value.get("schema")
+    if schema == SNAPSHOT_SCHEMA:
+        version = 1
+        fields = _SNAPSHOT_FIELDS
+    elif schema == SNAPSHOT_SCHEMA_V2:
+        version = 2
+        fields = _SNAPSHOT_V2_FIELDS
+    else:
+        raise CampaignStatusError("campaign snapshot schema is unsupported")
+    _exact(value, fields, f"campaign snapshot v{version}")
     row = dict(value)
-    if row["schema"] != SNAPSHOT_SCHEMA or row["producer_schema"] != SNAPSHOT_SCHEMA:
+    if row["producer_schema"] != schema:
         raise CampaignStatusError("campaign snapshot schema is unsupported")
     build = _validate_build(row["producer_build"], "producer_build")
     _text(row["campaign_id"], "campaign_id")
@@ -184,7 +299,7 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
     _digest(row["config_digest"], "config_digest")
     _digest(row["requested_manifest_digest"], "requested_manifest_digest")
     for field, minimum in (("supervisor_incarnation", 1), ("stream_epoch", 1),
-                           ("sequence", 1), ("journal_cursor", 1),
+                           ("sequence", 1), ("journal_cursor", 0 if version == 2 else 1),
                            ("control_revision", 0)):
         _integer(row[field], field, minimum)
     _timestamp(row["generated_at"], "generated_at")
@@ -193,21 +308,33 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
                nullable=True)
     _timestamp(row["worker_activity_at"], "worker_activity_at", nullable=True)
     desired = _enum(row["desired_state"], _DESIRED, "campaign desired_state")
-    observed = _enum(row["observed_state"], _OBSERVED, "campaign observed_state")
-    if row["active_worker"] is not None:
+    observed = _enum(row["observed_state"], _OBSERVED if version == 1 else _OBSERVED_V2,
+                     "campaign observed_state")
+    active_worker = row["active_worker"]
+    if version == 1 and active_worker is not None:
         raise CampaignStatusError("campaign_snapshot.v1 active_worker must be null")
     if row["execution_authorized"] is not False:
-        raise CampaignStatusError("campaign_snapshot.v1 cannot authorize execution")
+        raise CampaignStatusError(
+            f"campaign_snapshot.v{version} does not establish current execution authority")
     reason = _text(row["prerequisite_reason"], "prerequisite_reason", nullable=True)
-    if ((desired == "running" and observed not in {"running", "waiting_prerequisite"})
-            or (desired != "running" and observed != desired)):
+    allowed_observed = ({
+        "running": {"running", "waiting_prerequisite"},
+        "paused": {"paused"},
+        "drained": {"drained"},
+    } if version == 1 else {
+        "running": {"running", "waiting_prerequisite", "ownership_unresolved"},
+        "paused": {"paused", "pausing", "ownership_unresolved"},
+        "drained": {"drained", "draining", "ownership_unresolved"},
+    })
+    if observed not in allowed_observed[desired]:
         raise CampaignStatusError("campaign desired and observed states contradict")
     if ((observed == "waiting_prerequisite" and reason is None)
             or (observed in {"running", "drained"} and reason is not None)):
         raise CampaignStatusError("campaign prerequisite reason contradicts observed state")
     if not isinstance(row["command_results"], list):
         raise CampaignStatusError("command_results must be an array")
-    results = [_validate_result(item) for item in row["command_results"]]
+    result_validator = _validate_result_v1 if version == 1 else _validate_result_v2
+    results = [result_validator(item) for item in row["command_results"]]
     request_ids = [item["request_id"] for item in results]
     revisions = [item["control_revision"] for item in results]
     if len(set(request_ids)) != len(request_ids) or len(set(revisions)) != len(revisions):
@@ -215,12 +342,69 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
     if revisions != sorted(revisions) or (revisions and revisions[-1] > row["control_revision"]):
         raise CampaignStatusError("command_results are not in control revision order")
     generated = datetime.fromisoformat(row["generated_at"].replace("Z", "+00:00")).timestamp()
+    if version == 2:
+        if not isinstance(row["execution_capability_available"], bool):
+            raise CampaignStatusError("v2 execution capability flag must be boolean")
+        _integer(row["worker_lifecycle_revision"], "worker_lifecycle_revision", 0)
+        if active_worker is not None:
+            active_worker = _validate_active_worker_v2(active_worker)
+            if row["worker_activity_at"] != active_worker["activity_at"]:
+                raise CampaignStatusError("v2 worker activity clocks disagree")
+            if active_worker["control_revision"] > row["control_revision"]:
+                raise CampaignStatusError("v2 active worker is from a future control revision")
+            if observed in {"paused", "drained", "waiting_prerequisite"}:
+                raise CampaignStatusError(
+                    "v2 quiescent snapshot cannot carry an active worker")
+            if (active_worker["state"] in {"teardown_failed", "unresolved"}
+                    and (observed != "ownership_unresolved" or reason is None)):
+                raise CampaignStatusError(
+                    "v2 unresolved worker lacks unresolved ownership state")
+        elif row["worker_activity_at"] is not None:
+            raise CampaignStatusError("v2 snapshot has worker activity without active worker")
+        if (active_worker is None and observed == "ownership_unresolved"
+                and (reason is None
+                     or not reason.startswith("worker_acquisition_pending:")
+                     or not reason.removeprefix(
+                         "worker_acquisition_pending:").strip())):
+            raise CampaignStatusError(
+                "v2 null-worker ownership state lacks acquisition-pending identity")
+        if active_worker is None and observed in {"pausing", "draining"}:
+            operation = "pause" if observed == "pausing" else "drain"
+            has_basis = any(
+                result["operation"] == operation
+                and result["desired_state"] == desired
+                and result["observed_state"] == observed
+                and not result["completed"]
+                for result in results
+            )
+            if not has_basis:
+                raise CampaignStatusError(
+                    "v2 settling snapshot lacks an active worker or accepted command basis")
+        row["active_worker"] = active_worker
+        for result in results:
+            accepted_at = datetime.fromisoformat(
+                result["accepted_at"].replace("Z", "+00:00")).timestamp()
+            if accepted_at > generated + MAX_CLOCK_SKEW_S:
+                raise CampaignStatusError("command accepted_at is later than snapshot generation")
+            if result["completed"]:
+                completed_at = datetime.fromisoformat(
+                    result["completed_at"].replace("Z", "+00:00")).timestamp()
+                if completed_at < accepted_at or completed_at > generated + MAX_CLOCK_SKEW_S:
+                    raise CampaignStatusError("command completion timestamp is contradictory")
     for field in ("producer_heartbeat_at", "worker_activity_at",
                   "last_scientific_result_at"):
         if row[field] is not None:
             event_time = datetime.fromisoformat(row[field].replace("Z", "+00:00")).timestamp()
             if event_time > generated + MAX_CLOCK_SKEW_S:
                 raise CampaignStatusError(f"{field} is later than snapshot generation")
+    if version == 2 and active_worker is not None:
+        for field in ("started_at", "activity_at"):
+            if active_worker[field] is not None:
+                event_time = datetime.fromisoformat(
+                    active_worker[field].replace("Z", "+00:00")).timestamp()
+                if event_time > generated + MAX_CLOCK_SKEW_S:
+                    raise CampaignStatusError(
+                        f"active_worker {field} is later than snapshot generation")
     row["producer_build"] = dict(build)
     row["command_results"] = results
     return row
@@ -325,6 +509,8 @@ def advance_snapshot(previous: Mapping[str, Any] | None,
         if not allow_campaign_switch:
             raise CampaignStatusError("campaign switch requires explicit selection")
         return {"status": "switched", "snapshot": new}
+    if old["schema"] == SNAPSHOT_SCHEMA_V2 and new["schema"] == SNAPSHOT_SCHEMA:
+        raise CampaignStatusError("same campaign cannot downgrade snapshot protocol v2 to v1")
     old_key = (old["stream_epoch"], old["sequence"])
     new_key = (new["stream_epoch"], new["sequence"])
     if new_key < old_key:
@@ -344,10 +530,23 @@ def advance_snapshot(previous: Mapping[str, Any] | None,
             raise CampaignStatusError("newer sequence rolls back cursor/control/incarnation")
     elif new["stream_epoch"] <= old["stream_epoch"]:
         return {"status": "older", "snapshot": old}
-    if (new["control_revision"] < old["control_revision"]
-            or new["journal_cursor"] < old["journal_cursor"]
-            or new["supervisor_incarnation"] <= old["supervisor_incarnation"]):
+    if (new["stream_epoch"] != old["stream_epoch"]
+            and (new["control_revision"] < old["control_revision"]
+                 or new["journal_cursor"] < old["journal_cursor"]
+                 or new["supervisor_incarnation"] <= old["supervisor_incarnation"])):
         raise CampaignStatusError("new epoch rolls back cursor/control/incarnation")
+    if new["schema"] == SNAPSHOT_SCHEMA_V2 and old["schema"] == SNAPSHOT_SCHEMA_V2:
+        if new["worker_lifecycle_revision"] < old["worker_lifecycle_revision"]:
+            raise CampaignStatusError("newer snapshot rolls back worker lifecycle revision")
+        old_worker, new_worker = old["active_worker"], new["active_worker"]
+        if (new["worker_lifecycle_revision"] == old["worker_lifecycle_revision"]
+                and new_worker != old_worker):
+            raise CampaignStatusError(
+                "worker changed without a worker lifecycle revision")
+        if old_worker is not None and new_worker is not None \
+                and old_worker["worker_id"] != new_worker["worker_id"] \
+                and new_worker["worker_generation"] <= old_worker["worker_generation"]:
+            raise CampaignStatusError("new worker does not advance worker generation")
     return {"status": "accepted", "snapshot": new}
 
 
@@ -541,9 +740,13 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
     live = health["state"] == "live" and heartbeat_age is not None \
         and heartbeat_age <= HEARTBEAT_STALE_AFTER_S
     terminal = body["observed_state"] == "drained"
-    if live:
+    worker = body.get("active_worker")
+    unresolved = (body["observed_state"] == "ownership_unresolved"
+                  or (worker is not None
+                      and worker["state"] in {"teardown_failed", "unresolved"}))
+    if live and not unresolved:
         state = "live"
-    elif health["state"] in {"failed", "mismatch"}:
+    elif unresolved or health["state"] in {"failed", "mismatch"}:
         state = "degraded"
     elif terminal or health["state"] == "unknown":
         state = "history"
@@ -552,7 +755,8 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
     gateway = report.get("gateway_url")
     origin = report.get("hub_origin")
     health_origin = (health.get("identity") or {}).get("allowed_origin")
-    controls = {"available": bool(live and gateway and origin and health_origin == origin),
+    controls = {"available": bool(live and not unresolved and gateway and origin
+                                  and health_origin == origin),
                 "gateway_url": gateway, "hub_origin": origin,
                 "reason": None}
     if not controls["available"]:
@@ -567,7 +771,8 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
 __all__ = [
     "CAMPAIGN_ID_ENV", "CONFIG_DIGEST_ENV", "CONFIG_GENERATION_ENV",
     "GATEWAY_URL_ENV", "HEALTH_SCHEMA", "HEALTH_TIMEOUT_S", "HUB_ORIGIN_ENV",
-    "SNAPSHOT_FILENAME", "SNAPSHOT_SCHEMA", "STORE_ROOT_ENV", "CampaignStatusError",
+    "SNAPSHOT_FILENAME", "SNAPSHOT_SCHEMA", "SNAPSHOT_SCHEMA_V2", "STORE_ROOT_ENV",
+    "CampaignStatusError",
     "advance_snapshot", "observe_health", "read", "snapshot", "validate_health",
     "validate_snapshot",
 ]

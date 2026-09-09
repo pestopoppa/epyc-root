@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
+import sys
 import threading
 import time
 from datetime import datetime, timedelta, timezone
@@ -47,6 +49,69 @@ def body(**changes):
         "execution_authorized": False,
         "prerequisite_reason": "explicit resume required",
     }
+    row.update(changes)
+    return row
+
+
+def result_v2(operation="pause", *, request_id="request-v2", completed=False,
+              control_revision=1, accepted_at=None, **changes):
+    accepted_at = accepted_at or stamp()
+    desired = "paused" if operation == "pause" else (
+        "drained" if operation == "drain" else "running")
+    observed = desired if completed else (
+        "pausing" if operation == "pause" else
+        "draining" if operation == "drain" else "waiting_prerequisite")
+    reason = ("already quiescent" if completed else None)
+    prerequisite = ("authority unavailable" if operation == "resume" else None)
+    if operation == "resume":
+        completed = True
+        observed = "waiting_prerequisite"
+        reason = "waiting on named prerequisite"
+    row = {
+        "schema": "epyc.autokernel.campaign_command_result.v2",
+        "request_id": request_id, "operation": operation, "payload_digest": H,
+        "accepted": True, "accepted_at": accepted_at, "completed": completed,
+        "completed_at": accepted_at if completed else None,
+        "completion_reason": reason if completed else None,
+        "control_revision": control_revision, "desired_state": desired,
+        "observed_state": observed, "prerequisite_reason": prerequisite,
+    }
+    row.update(changes)
+    return row
+
+
+def active_worker_v2(**changes):
+    row = {
+        "worker_id": "worker-v2", "worker_generation": 1,
+        "request_id": "worker-request-v2", "plan_digest": "1" * 64,
+        "lineage_id": "lineage-v2", "stage_id": "stage-v2",
+        "state": "executing", "grant_id": "grant-v2", "grant_generation": 1,
+        "container_id": "container-v2", "provider_deadline": 12345.0,
+        "deadline_clock_domain": "linux-monotonic:fixture", "control_revision": 1,
+        "started_at": stamp(), "activity_at": stamp(),
+        "termination_deadline": None, "unresolved_reason": None,
+    }
+    row.update(changes)
+    return row
+
+
+def body_v2(**changes):
+    generated = stamp()
+    row = body(schema=C.SNAPSHOT_SCHEMA_V2, producer_schema=C.SNAPSHOT_SCHEMA_V2,
+               journal_cursor=0, generated_at=generated,
+               producer_heartbeat_at=generated)
+    row.update({"execution_capability_available": True,
+                "worker_lifecycle_revision": 0})
+    row.update(changes)
+    return row
+
+
+def active_body_v2(**changes):
+    worker = active_worker_v2()
+    row = body_v2(desired_state="running", observed_state="running",
+                  prerequisite_reason=None, control_revision=1,
+                  worker_lifecycle_revision=1, active_worker=worker,
+                  worker_activity_at=worker["activity_at"])
     row.update(changes)
     return row
 
@@ -102,6 +167,171 @@ def write(root: Path, value) -> None:
     (root / C.SNAPSHOT_FILENAME).write_text(json.dumps(value), encoding="utf-8")
 
 
+@pytest.fixture(scope="module")
+def research_v2_contract(tmp_path_factory):
+    """Snapshots/results emitted by the real research controller, not mirror JSON."""
+    configured_research = os.environ.get("EPYC_INFERENCE_RESEARCH_ROOT")
+    candidates = ([Path(configured_research)] if configured_research else []) + [
+        Path("/workspace/repos/epyc-inference-research"),
+    ]
+    source_root = next((path for path in candidates if (
+        path / "scripts/kernel_rnd/autokernel/loop/campaign_control.py").is_file()), None)
+    if source_root is None:
+        pytest.skip("optional matching epyc-inference-research producer checkout is unavailable")
+    research = source_root / "scripts" / "kernel_rnd"
+    sys.path.insert(0, str(research))
+    try:
+        from autokernel.loop import campaign_control as producer
+        from autokernel.loop.test_campaign_control import _command, _resolved
+        from autokernel.loop.test_campaign_worker_lifecycle import _request
+        from autokernel.loop.test_worker_lifecycle import MockProvider
+    finally:
+        sys.path.remove(str(research))
+
+    def _run_captured(controller, request, outcomes, failures):
+        try:
+            outcomes.append(controller.run_worker_stage(request))
+        except BaseException as exc:  # noqa: BLE001 - never lose a thread failure
+            failures.append(exc)
+
+    def _install_stage_barrier(controller):
+        entered, release = threading.Event(), threading.Event()
+
+        def barrier(phase):
+            if phase == "WORKER_STAGE":
+                entered.set()
+                if not release.wait(2):
+                    raise AssertionError("root producer fixture stage barrier timed out")
+
+        controller._worker_lifecycle.fault_hook = barrier
+        return entered, release
+
+    root = tmp_path_factory.mktemp("research-v2-producer")
+    containers = root / "containers"
+    containers.mkdir(mode=0o700)
+    resolved = _resolved("root-dashboard-real-v2")
+    store = root / "store"
+    provider = MockProvider(containers)
+    controller = producer.CampaignController(
+        resolved, store, snapshot_version=2, lifecycle_provider=provider,
+        readiness_check=lambda: (True, None))
+    controller.__enter__()
+    try:
+        initial = controller.publish_snapshot()
+        controller.apply_command(_command(resolved, "resume", "resume", 0))
+        outcomes, failures = [], []
+        stage_entered, stage_release = _install_stage_barrier(controller)
+        thread = threading.Thread(target=_run_captured, args=(
+            controller, _request(root, 1, "import time; time.sleep(0.15)"),
+            outcomes, failures))
+        thread.start()
+        try:
+            assert stage_entered.wait(2)
+            active = controller.snapshot()
+            assert active["active_worker"]["state"] == "executing"
+            pause_ack = controller.apply_command(
+                _command(resolved, "pause", "pause", 1))
+            settling = controller.publish_snapshot()
+        finally:
+            stage_release.set()
+            thread.join(2)
+        assert not thread.is_alive() and not failures and outcomes[0].accepted
+        paused = controller.publish_snapshot()
+    finally:
+        controller.close()
+    with producer.CampaignController(
+            resolved, store, snapshot_version=2, lifecycle_provider=provider,
+            readiness_check=lambda: (True, None)) as restarted:
+        restart_paused = restarted.publish_snapshot()
+        duplicate_pause = dict(_command(resolved, "pause", "pause", 1),
+                               expected_control_revision=999)
+        pause_duplicate = restarted.apply_command(duplicate_pause)
+        drain_ack = restarted.apply_command(_command(resolved, "drain", "drain", 2))
+        drained = restarted.publish_snapshot()
+    escalation_containers = root / "escalation-containers"
+    escalation_containers.mkdir(mode=0o700)
+    escalation_provider = MockProvider(escalation_containers)
+    escalation_resolved = _resolved("root-dashboard-real-v2-escalation")
+    escalation_controller = producer.CampaignController(
+        escalation_resolved, root / "escalation-store", snapshot_version=2,
+        lifecycle_provider=escalation_provider, readiness_check=lambda: (True, None))
+    escalation_controller.__enter__()
+    escalation_outcomes, escalation_failures = [], []
+    try:
+        escalation_controller.apply_command(
+            _command(escalation_resolved, "escalation-resume", "resume", 0))
+        escalation_entered, escalation_release = _install_stage_barrier(
+            escalation_controller)
+        escalation_thread = threading.Thread(target=_run_captured, args=(
+            escalation_controller,
+            _request(root, 1, "import time; time.sleep(0.15)"),
+            escalation_outcomes, escalation_failures))
+        escalation_thread.start()
+        try:
+            assert escalation_entered.wait(2)
+            escalation_active = escalation_controller.snapshot()
+            assert escalation_active["active_worker"]["state"] == "executing"
+            escalation_pause_ack = escalation_controller.apply_command(
+                _command(escalation_resolved, "escalation-pause", "pause", 1))
+            escalation_pause_snapshot = escalation_controller.publish_snapshot()
+            escalation_drain_ack = escalation_controller.apply_command(
+                _command(escalation_resolved, "escalation-drain", "drain", 2))
+            escalation_draining = escalation_controller.publish_snapshot()
+        finally:
+            escalation_release.set()
+            escalation_thread.join(2)
+        assert (not escalation_thread.is_alive() and not escalation_failures
+                and escalation_outcomes[0].accepted)
+        escalation_drained = escalation_controller.publish_snapshot()
+    finally:
+        escalation_controller.close()
+    pending_containers = root / "pending-containers"
+    pending_containers.mkdir(mode=0o700)
+    pending_provider = MockProvider(pending_containers)
+    acquisition_entered, acquisition_finish = threading.Event(), threading.Event()
+
+    def ambiguous_authorize(_request_value, _container_id, _deadline):
+        acquisition_entered.set()
+        assert acquisition_finish.wait(1)
+        raise TimeoutError("root fixture ambiguous acquisition")
+
+    pending_provider.authorize = ambiguous_authorize
+    pending_resolved = _resolved("root-dashboard-real-v2-pending")
+    pending_controller = producer.CampaignController(
+        pending_resolved, root / "pending-store", snapshot_version=2,
+        lifecycle_provider=pending_provider, readiness_check=lambda: (True, None))
+    pending_controller.__enter__()
+    pending_controller.apply_command(
+        _command(pending_resolved, "pending-resume", "resume", 0))
+    pending_failures = []
+
+    def attempt_pending():
+        try:
+            pending_controller.run_worker_stage(_request(root, 1, "pass"))
+        except producer.worker_lifecycle_module.ContainmentFailure as exc:
+            pending_failures.append(exc)
+
+    pending_thread = threading.Thread(target=attempt_pending)
+    pending_thread.start()
+    assert acquisition_entered.wait(1)
+    pending_acquisition = pending_controller.publish_snapshot()
+    acquisition_finish.set()
+    pending_thread.join(2)
+    assert not pending_thread.is_alive() and pending_failures
+    pending_controller.reconcile_workers()
+    pending_controller.close()
+    return {"initial": initial, "active": active, "pause_ack": pause_ack,
+            "settling": settling, "paused": paused, "restart_paused": restart_paused,
+            "pause_duplicate": pause_duplicate, "drain_ack": drain_ack,
+            "drained": drained, "pending_acquisition": pending_acquisition,
+            "escalation_active": escalation_active,
+            "escalation_pause_ack": escalation_pause_ack,
+            "escalation_pause_snapshot": escalation_pause_snapshot,
+            "escalation_drain_ack": escalation_drain_ack,
+            "escalation_draining": escalation_draining,
+            "escalation_drained": escalation_drained}
+
+
 def test_checked_producer_v1_fixture_contract_digest():
     fixture = body(generated_at="2026-09-09T00:00:00Z",
                    producer_heartbeat_at="2026-09-09T00:00:00Z")
@@ -109,6 +339,185 @@ def test_checked_producer_v1_fixture_contract_digest():
         fixture, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     assert digest == "bdfa1d9b472ef649ca64b690da5ce1bf02146d6370dcd5a8628beb1f598555db"
     assert C.validate_snapshot(fixture) == fixture
+
+
+def test_real_research_v2_producer_round_trips_through_independent_reader(
+        research_v2_contract):
+    rows = research_v2_contract
+    for name in ("initial", "active", "settling", "paused", "restart_paused", "drained"):
+        assert C.validate_snapshot(rows[name]) == rows[name], name
+    assert rows["active"]["active_worker"]["state"] in {
+        "intent", "container_created", "child_captured", "exec_release_intent", "executing"}
+    assert rows["active"]["execution_capability_available"] is True
+    assert rows["active"]["execution_authorized"] is False
+    assert rows["pause_ack"]["accepted"] is True
+    assert rows["pause_ack"]["completed"] is False
+    assert rows["paused"]["command_results"][-1]["request_id"] == \
+        rows["pause_ack"]["request_id"]
+    assert rows["paused"]["command_results"][-1]["completed"] is True
+    assert rows["pause_duplicate"] == rows["paused"]["command_results"][-1]
+    assert rows["drained"]["active_worker"] is None
+    assert rows["drained"]["observed_state"] == "drained"
+    for name in ("escalation_active", "escalation_pause_snapshot",
+                 "escalation_draining", "escalation_drained"):
+        assert C.validate_snapshot(rows[name]) == rows[name], name
+    superseded = next(result for result in rows["escalation_draining"]["command_results"]
+                      if result["request_id"] == rows["escalation_pause_ack"]["request_id"])
+    assert superseded["completed"] is True
+    assert superseded["desired_state"] == "drained"
+    assert superseded["observed_state"] == "draining"
+    assert superseded["completion_reason"] == "superseded by a later accepted drain"
+
+
+@pytest.mark.parametrize("result", [
+    result_v2("pause"),
+    result_v2("pause", completed=True),
+    result_v2("pause", completed=True, desired_state="drained",
+              observed_state="draining",
+              completion_reason="superseded by a later accepted drain"),
+    result_v2("drain"),
+    result_v2("drain", completed=True),
+    result_v2("resume"),
+    result_v2("resume", observed_state="running", prerequisite_reason=None,
+              completion_reason="running"),
+])
+def test_v2_command_semantic_combinations_are_closed(result):
+    snapshot = body_v2(control_revision=result["control_revision"],
+                       command_results=[result])
+    assert C.validate_snapshot(snapshot)["command_results"] == [result]
+
+
+@pytest.mark.parametrize("changes", [
+    {"desired_state": "running", "observed_state": "running", "completed": True,
+     "completed_at": stamp(), "completion_reason": "running"},
+    {"completed": True, "completed_at": stamp(),
+     "completion_reason": "operator says it is probably done", "observed_state": "paused"},
+    {"completed": False, "completed_at": None, "completion_reason": None,
+     "observed_state": "paused"},
+    {"operation": "resume", "desired_state": "running", "observed_state": "running",
+     "completed": False, "completed_at": None, "completion_reason": None},
+])
+def test_v2_command_semantic_mutations_cannot_invent_completion(changes):
+    result = result_v2("pause")
+    result.update(changes)
+    with pytest.raises(C.CampaignStatusError, match="semantics|settling|contradictory"):
+        C.validate_snapshot(body_v2(control_revision=1, command_results=[result]))
+
+
+@pytest.mark.parametrize("snapshot", [
+    active_body_v2(desired_state="paused", observed_state="paused"),
+    body_v2(desired_state="paused", observed_state="pausing"),
+    active_body_v2(observed_state="running"),
+])
+def test_v2_snapshot_rejects_impossible_worker_quiescence(snapshot):
+    if snapshot["active_worker"] is not None and snapshot["observed_state"] == "running":
+        snapshot["active_worker"].update(
+            state="unresolved", unresolved_reason="cleanup uncertain")
+    with pytest.raises(C.CampaignStatusError, match="active worker|settling|unresolved"):
+        C.validate_snapshot(snapshot)
+
+
+@pytest.mark.parametrize("operation,desired,observed", [
+    ("pause", "paused", "pausing"),
+    ("drain", "drained", "draining"),
+])
+def test_v2_null_worker_settling_requires_matching_incomplete_result_basis(
+        operation, desired, observed):
+    result = result_v2(operation)
+    snapshot = body_v2(desired_state=desired, observed_state=observed,
+                       prerequisite_reason=None, control_revision=1,
+                       command_results=[result])
+    assert C.validate_snapshot(snapshot) == snapshot
+    snapshot["command_results"] = []
+    with pytest.raises(C.CampaignStatusError, match="accepted command basis"):
+        C.validate_snapshot(snapshot)
+
+
+def test_v2_null_worker_pending_acquisition_is_the_only_unresolved_null_basis():
+    snapshot = body_v2(desired_state="running", observed_state="ownership_unresolved",
+                       prerequisite_reason="worker_acquisition_pending:request-v2")
+    assert C.validate_snapshot(snapshot) == snapshot
+    for malformed in ("worker_acquisition_pending:", "worker_acquisition_pending:   "):
+        snapshot["prerequisite_reason"] = malformed
+        with pytest.raises(C.CampaignStatusError, match="acquisition-pending"):
+            C.validate_snapshot(snapshot)
+
+
+def test_real_v2_restart_and_late_worker_snapshot_do_not_roll_back(
+        research_v2_contract):
+    paused = research_v2_contract["paused"]
+    restarted = research_v2_contract["restart_paused"]
+    advanced = C.advance_snapshot(paused, restarted)
+    assert advanced["status"] == "accepted"
+    assert restarted["stream_epoch"] > paused["stream_epoch"]
+    late = C.advance_snapshot(restarted, research_v2_contract["active"])
+    assert late["status"] == "older" and late["snapshot"] == C.validate_snapshot(restarted)
+    rollback = json.loads(json.dumps(restarted))
+    rollback["sequence"] += 1
+    rollback["worker_lifecycle_revision"] -= 1
+    with pytest.raises(C.CampaignStatusError, match="worker lifecycle"):
+        C.advance_snapshot(restarted, rollback)
+
+
+def test_unknown_snapshot_version_is_not_an_open_union():
+    row = active_body_v2()
+    row["schema"] = row["producer_schema"] = "epyc.autokernel.campaign_snapshot.v3"
+    with pytest.raises(C.CampaignStatusError, match="unsupported"):
+        C.validate_snapshot(row)
+
+
+@pytest.mark.parametrize("mutation,match", [
+    (lambda row: row.update({"execution_capability_available": "yes"}), "capability"),
+    (lambda row: row.update({"worker_lifecycle_revision": -1}), "lifecycle"),
+    (lambda row: row["active_worker"].update({"state": "future-worker-v3"}), "state"),
+    (lambda row: row["active_worker"].update({"provider_deadline": float("inf")}), "finite"),
+    (lambda row: row["active_worker"].update({"deadline_clock_domain": ""}), "clock_domain"),
+])
+def test_v2_worker_mutations_fail_closed(mutation, match):
+    row = active_body_v2()
+    mutation(row)
+    with pytest.raises(C.CampaignStatusError, match=match):
+        C.validate_snapshot(row)
+
+
+def test_v2_preacquisition_pending_intent_is_degraded_not_quiescent(
+        research_v2_contract, configured, monkeypatch):
+    row = research_v2_contract["pending_acquisition"]
+    write(configured, row)
+    monkeypatch.setenv(C.CAMPAIGN_ID_ENV, row["campaign_id"])
+    monkeypatch.setenv(C.CONFIG_DIGEST_ENV, row["config_digest"])
+    monkeypatch.setenv(C.GATEWAY_URL_ENV, "http://127.0.0.1:9999")
+    monkeypatch.setenv(C.HUB_ORIGIN_ENV, "http://127.0.0.1:8100")
+    result = C.snapshot(health_opener=lambda *_args, **_kwargs: Response(health(row)))
+    assert result["state"] == "degraded"
+    assert result["controls"]["available"] is False
+    assert result["campaign"]["active_worker"] is None
+
+
+@pytest.mark.parametrize("name", ["active", "paused", "drained"])
+def test_real_v2_active_and_intentional_quiescence_are_live_with_live_producer(
+        name, research_v2_contract, configured, monkeypatch):
+    row = research_v2_contract[name]
+    write(configured, row)
+    monkeypatch.setenv(C.CAMPAIGN_ID_ENV, row["campaign_id"])
+    monkeypatch.setenv(C.CONFIG_DIGEST_ENV, row["config_digest"])
+    monkeypatch.setenv(C.GATEWAY_URL_ENV, "http://127.0.0.1:9999")
+    monkeypatch.setenv(C.HUB_ORIGIN_ENV, "http://127.0.0.1:8100")
+    monkeypatch.setattr(C, "observe_health", lambda *_args, **_kwargs: {
+        "state": "live", "matched": True, "reason": "producer fixture",
+        "identity": {"allowed_origin": "http://127.0.0.1:8100"}})
+    result = C.snapshot()
+    assert result["state"] == "live"
+    assert result["controls"]["available"] is True
+    assert (result["campaign"]["active_worker"] is None) == (name != "active")
+
+
+def test_v2_null_worker_unresolved_requires_exact_pending_identity():
+    row = body_v2()
+    row.update({"observed_state": "ownership_unresolved",
+                "prerequisite_reason": "looks quiet"})
+    with pytest.raises(C.CampaignStatusError, match="acquisition-pending"):
+        C.validate_snapshot(row)
 
 
 def test_unconfigured_is_legacy_and_configured_absence_is_not_legacy(monkeypatch, configured):
@@ -442,6 +851,22 @@ def test_epoch_change_consumes_full_snapshot_and_preserves_revisions():
         C.advance_snapshot(first, dict(changed, supervisor_incarnation=1))
 
 
+def test_same_campaign_protocol_cannot_downgrade_but_v1_can_migrate_to_v2():
+    active = active_body_v2()
+    downgrade_same_epoch = body(
+        campaign_id=active["campaign_id"], config_digest=active["config_digest"],
+        requested_manifest_digest=active["requested_manifest_digest"], sequence=2,
+        journal_cursor=1, control_revision=1, prerequisite_reason=None)
+    downgrade_new_epoch = dict(
+        downgrade_same_epoch, stream_epoch=2, sequence=1, supervisor_incarnation=2)
+    for candidate in (downgrade_same_epoch, downgrade_new_epoch):
+        with pytest.raises(C.CampaignStatusError, match="downgrade"):
+            C.advance_snapshot(active, candidate)
+    legacy = body()
+    migrated = body_v2(sequence=2, journal_cursor=1)
+    assert C.advance_snapshot(legacy, migrated)["status"] == "accepted"
+
+
 def test_command_results_preserve_accepted_separate_from_completed():
     result = {"request_id": "resume-1", "operation": "resume",
               "payload_digest": H, "accepted": True, "completed": False,
@@ -610,6 +1035,231 @@ eval(page+`;globalThis.hooks={renderCampaign,campaignSend,campaignRefreshAuthent
     assert result["staleRender"]["badge"] == "UNKNOWN / HISTORY"
     assert result["staleRender"]["drainDisabled"] is True
     assert "accepted revision 1; completed" in result["status"]
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
+def test_browser_v2_incomplete_ack_settles_only_from_same_request_revision_and_old_ack_loses(
+        tmp_path):
+    page = Path(__file__).resolve().parents[1] / "dashboard/static/loop.html"
+    source = "\n".join(re.findall(
+        r"<script[^>]*>(.*?)</script>", page.read_text(encoding="utf-8"), re.DOTALL
+    )).replace("tick();\nsetInterval(tick, 20000);", "")
+    fixture_path = tmp_path / "fixture.json"
+    active = active_body_v2()
+    paused = body_v2(sequence=2, journal_cursor=1, control_revision=2,
+                     worker_lifecycle_revision=2, prerequisite_reason=None)
+    drained = body_v2(sequence=3, journal_cursor=2, control_revision=3,
+                      worker_lifecycle_revision=2, desired_state="drained",
+                      observed_state="drained", prerequisite_reason=None)
+    fixture_path.write_text(json.dumps({
+        "active": active, "paused": paused, "drained": drained,
+    }), encoding="utf-8")
+    page_js, runner = tmp_path / "page.js", tmp_path / "runner.js"
+    page_js.write_text(source, encoding="utf-8")
+    runner.write_text(r'''
+const fs=require("fs"),{webcrypto}=require("crypto");global.crypto=webcrypto;
+global.TextEncoder=TextEncoder;const made={};function el(id){return made[id]||(made[id]={id,
+ style:{},classList:{add(){},remove(){},toggle(){}},_html:"",set innerHTML(v){this._html=String(v)},
+ get innerHTML(){return this._html},set textContent(v){this._text=String(v)},get textContent(){return this._text||""},
+ addEventListener(){},setAttribute(){},removeAttribute(){},querySelector(){return el(id+">q")},querySelectorAll(){return[]}})}
+global.document={getElementById:el,querySelector:el,querySelectorAll:()=>[],createElement:()=>el("new"),
+ createElementNS:()=>el("newns"),addEventListener(){},body:el("body")};
+global.window={isSecureContext:true,addEventListener(){},location:{href:""}};
+global.setInterval=()=>0;global.setTimeout=()=>0;
+const page=fs.readFileSync(process.argv[2],"utf8"),f=JSON.parse(fs.readFileSync(process.argv[3],"utf8"));
+let current=f.active,posted=[],delayDrain=null,releaseDrain=null;
+function resultFor(request,completed){return {schema:"epyc.autokernel.campaign_command_result.v2",
+ request_id:request.request_id,operation:request.operation,payload_digest:request.payload_digest,
+ accepted:true,accepted_at:current.generated_at,completed,
+ completed_at:completed?current.generated_at:null,
+ completion_reason:completed?"owned workers quiesced and claims released":null,
+ control_revision:request.expected_control_revision+1,
+ desired_state:request.operation==="drain"?"drained":"paused",
+ observed_state:completed?(request.operation==="drain"?"drained":"paused"):
+   (request.operation==="drain"?"draining":"pausing"),prerequisite_reason:null};}
+global.fetch=async(url,options={})=>{if(url.endsWith("/snapshot"))return{ok:true,status:200,json:async()=>current};
+ const request=JSON.parse(options.body);posted.push(request);const ack=resultFor(request,false);
+ if(request.operation==="drain")await new Promise(r=>{releaseDrain=r;delayDrain=ack});
+ return{ok:true,status:200,json:async()=>ack};};
+eval(page+`;globalThis.h={renderCampaign,campaignSend,setToken:v=>campaignToken=v,
+ pending:()=>campaignPending};`);
+const envelope=s=>({configured:true,state:"live",campaign:s,clocks:{},controls:{available:true,
+ gateway_url:"https://gateway.test",hub_origin:"https://hub.test",reason:null}});
+(async()=>{h.renderCampaign({campaign:envelope(current)});const activeHtml=made.campaign._html;
+ h.setToken("tab-secret");
+ await h.campaignSend("pause",envelope(current));const incomplete={pending:h.pending(),
+  status:made["campaign-command-status"]._text};
+ const pauseRequest=posted[0],pauseDone=resultFor(pauseRequest,true);
+ current={...f.paused,command_results:[...f.active.command_results,pauseDone],control_revision:2};
+ h.renderCampaign({campaign:envelope(current)});const settled={pending:h.pending(),
+  status:made["campaign-command-status"]._text};
+ const delayed=h.campaignSend("drain",envelope(current));
+ while(!releaseDrain)await new Promise(r=>setImmediate(r));
+ const drainRequest=posted[1],drainDone=resultFor(drainRequest,true);
+ current={...f.drained,command_results:[...current.command_results,drainDone],control_revision:3};
+ h.renderCampaign({campaign:envelope(current)});releaseDrain();await delayed;
+ console.log(JSON.stringify({incomplete,settled,afterDelayed:{pending:h.pending(),
+  status:made["campaign-command-status"]._text},posted,delayDrain,activeHtml}));
+})().catch(e=>{console.error(e);process.exit(2)});
+''', encoding="utf-8")
+    result = json.loads(subprocess.run(
+        ["node", str(runner), str(page_js), str(fixture_path)], capture_output=True,
+        text=True, timeout=10, check=True).stdout)
+    assert result["incomplete"]["pending"]["request_id"] == result["posted"][0]["request_id"]
+    assert "not completed" in result["incomplete"]["status"]
+    assert result["settled"]["pending"] is None
+    assert "completed" in result["settled"]["status"]
+    assert result["delayDrain"]["completed"] is False
+    assert result["afterDelayed"]["pending"] is None
+    assert "completed" in result["afterDelayed"]["status"]
+    assert "execution capability / current authority" in result["activeHtml"]
+    worker = active["active_worker"]
+    assert worker["worker_id"] not in result["activeHtml"]
+    assert worker["grant_id"] not in result["activeHtml"]
+    assert worker["container_id"] not in result["activeHtml"]
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
+def test_browser_real_producer_pause_escalates_to_distinct_drain_atomically(
+        research_v2_contract, tmp_path):
+    page = Path(__file__).resolve().parents[1] / "dashboard/static/loop.html"
+    source = "\n".join(re.findall(
+        r"<script[^>]*>(.*?)</script>", page.read_text(encoding="utf-8"), re.DOTALL
+    )).replace("tick();\nsetInterval(tick, 20000);", "")
+    fixtures = {name: research_v2_contract[name] for name in (
+        "escalation_active", "escalation_pause_ack", "escalation_pause_snapshot",
+        "escalation_drain_ack", "escalation_draining", "escalation_drained")}
+    active = fixtures["escalation_active"]
+    fixtures["downgrade_same"] = body(
+        campaign_id=active["campaign_id"], config_digest=active["config_digest"],
+        requested_manifest_digest=active["requested_manifest_digest"],
+        sequence=active["sequence"] + 10, journal_cursor=active["journal_cursor"] + 10,
+        control_revision=3, prerequisite_reason=None)
+    fixtures["downgrade_epoch"] = dict(
+        fixtures["downgrade_same"], stream_epoch=active["stream_epoch"] + 1,
+        sequence=1, supervisor_incarnation=active["supervisor_incarnation"] + 1)
+    fixtures["migration_v1"] = body(campaign_id="protocol-migration")
+    fixtures["migration_v2"] = body_v2(
+        campaign_id="protocol-migration", sequence=2, journal_cursor=1)
+    page_js, runner, fixture = (
+        tmp_path / "page.js", tmp_path / "runner.js", tmp_path / "fixture.json")
+    page_js.write_text(source, encoding="utf-8")
+    fixture.write_text(json.dumps(fixtures), encoding="utf-8")
+    runner.write_text(r'''
+const fs=require("fs"),{webcrypto}=require("crypto");
+const f=JSON.parse(fs.readFileSync(process.argv[3],"utf8"));
+const ids=[f.escalation_pause_ack.request_id,f.escalation_drain_ack.request_id];
+Object.defineProperty(global,"crypto",{value:{subtle:webcrypto.subtle,randomUUID:()=>ids.shift()}});
+global.TextEncoder=TextEncoder;
+const made={};function el(id){return made[id]||(made[id]={id,disabled:false,style:{},
+ classList:{add(){},remove(){},toggle(){}},_html:"",set innerHTML(v){this._html=String(v)},
+ get innerHTML(){return this._html},set textContent(v){this._text=String(v)},
+ get textContent(){return this._text||""},addEventListener(){},setAttribute(){},
+ removeAttribute(){},querySelector(){return el(id+">q")},querySelectorAll(){return[]}})}
+global.document={getElementById:el,querySelector:el,querySelectorAll:()=>[],
+ createElement:()=>el("new"),createElementNS:()=>el("newns"),addEventListener(){},body:el("body")};
+global.window={isSecureContext:true,addEventListener(){},location:{href:""}};
+global.setInterval=()=>0;global.setTimeout=()=>0;
+const page=fs.readFileSync(process.argv[2],"utf8");let current=f.escalation_active;
+let posts=[],releaseDrain=null;
+global.fetch=async(url,options={})=>{
+ if(url.endsWith("/snapshot"))return{ok:true,status:200,json:async()=>current};
+ const request=JSON.parse(options.body);posts.push(request);
+ const ack=request.operation==="pause"?f.escalation_pause_ack:f.escalation_drain_ack;
+ if(request.operation==="drain")await new Promise(resolve=>releaseDrain=resolve);
+ return{ok:true,status:200,json:async()=>ack};
+};
+eval(page+`;globalThis.h={renderCampaign,campaignSend,setToken:v=>campaignToken=v,
+ pending:()=>campaignPending,pendingAck:()=>campaignPendingAck,
+ escalated:()=>campaignEscalatedPause,validateAck:campaignValidateAck,
+ validateSnapshot:campaignValidateSnapshot,
+ acceptSnapshot:campaignAcceptSnapshot,
+ failDigestOnce:()=>{const saved=campaignDigest;campaignDigest=async()=>{
+   campaignDigest=saved;throw new Error("synthetic digest failure")}}};`);
+const envelope=s=>({configured:true,state:"live",campaign:s,clocks:{},controls:{available:true,
+ gateway_url:"https://gateway.test",hub_origin:"https://hub.test",reason:null}});
+const buttons=()=>({pause:made["campaign-pause"].disabled,resume:made["campaign-resume"].disabled,
+ drain:made["campaign-drain"].disabled,retry:made["campaign-retry"].disabled});
+(async()=>{
+ h.renderCampaign({campaign:envelope(current)});h.setToken("tab-secret");
+ await h.campaignSend("pause",envelope(current));
+ const afterPause={pending:h.pending(),ack:h.pendingAck(),buttons:buttons()};
+ current=f.escalation_pause_snapshot;h.failDigestOnce();
+ await h.campaignSend("drain",envelope(current));
+ const afterDigestFailure={pending:h.pending(),ack:h.pendingAck(),buttons:buttons(),
+   status:made["campaign-command-status"]._text,postCount:posts.length};
+ const drainingRequest=h.campaignSend("drain",envelope(current));
+ while(!releaseDrain)await new Promise(resolve=>setImmediate(resolve));
+ const duringPost={pending:h.pending(),ack:h.pendingAck(),escalated:h.escalated(),buttons:buttons()};
+ current=f.escalation_draining;h.renderCampaign({campaign:envelope(current)});
+ const newerSnapshot={pending:h.pending(),ack:h.pendingAck(),escalated:h.escalated(),buttons:buttons()};
+ releaseDrain();await drainingRequest;
+ const afterLateAck={pending:h.pending(),ack:h.pendingAck(),escalated:h.escalated(),buttons:buttons()};
+ current=f.escalation_drained;h.renderCampaign({campaign:envelope(current)});
+ const completed={pending:h.pending(),ack:h.pendingAck(),escalated:h.escalated(),buttons:buttons()};
+ let semanticError="";const invented={...f.escalation_pause_ack,completed:true,
+   completed_at:f.escalation_pause_ack.accepted_at,observed_state:"paused",
+   completion_reason:"operator says it is probably done"};
+ try{h.validateAck(invented)}catch(err){semanticError=err.message}
+ let settlingError="";const nullSettling={...f.escalation_pause_snapshot,
+   active_worker:null,worker_activity_at:null};h.validateSnapshot(nullSettling);
+ try{h.validateSnapshot({...nullSettling,command_results:nullSettling.command_results.filter(
+   row=>row.request_id!==f.escalation_pause_ack.request_id)})}
+ catch(err){settlingError=err.message}
+ let pendingIdentityError="";try{h.validateSnapshot({...nullSettling,
+   observed_state:"ownership_unresolved",prerequisite_reason:"worker_acquisition_pending:   "})}
+ catch(err){pendingIdentityError=err.message}
+ const a=f.escalation_pause_ack;const legacyAck={request_id:a.request_id,
+   operation:a.operation,payload_digest:a.payload_digest,accepted:true,completed:true,
+   control_revision:a.control_revision,desired_state:"paused",observed_state:"paused",
+   prerequisite_reason:null};
+ let v1InV2="",v2InV1="",directProtocol="",sameDowngrade="",epochDowngrade="";
+ try{h.validateSnapshot({...f.escalation_active,command_results:[legacyAck]})}
+ catch(err){v1InV2=err.message}
+ try{h.validateSnapshot({...f.downgrade_same,command_results:[a],control_revision:a.control_revision})}
+ catch(err){v2InV1=err.message}
+ try{h.validateAck(legacyAck,posts[0],true)}catch(err){directProtocol=err.message}
+ try{h.acceptSnapshot(f.downgrade_same)}catch(err){sameDowngrade=err.message}
+ try{h.acceptSnapshot(f.downgrade_epoch)}catch(err){epochDowngrade=err.message}
+ const switched=h.acceptSnapshot(f.migration_v1,true);
+ const migrated=h.acceptSnapshot(f.migration_v2);
+ console.log(JSON.stringify({posts,afterPause,afterDigestFailure,duringPost,newerSnapshot,
+   afterLateAck,completed,semanticError,settlingError,pendingIdentityError,v1InV2,v2InV1,
+   directProtocol,sameDowngrade,epochDowngrade,switched,migrated}));
+})().catch(err=>{console.error(err);process.exit(2)});
+''', encoding="utf-8")
+    result = json.loads(subprocess.run(
+        ["node", str(runner), str(page_js), str(fixture)], capture_output=True,
+        text=True, timeout=10, check=True).stdout)
+    assert result["afterPause"]["pending"]["operation"] == "pause"
+    assert result["afterPause"]["ack"]["completed"] is False
+    assert result["afterPause"]["buttons"] == {
+        "pause": True, "resume": True, "drain": False, "retry": True}
+    assert result["afterDigestFailure"]["postCount"] == 1
+    assert result["afterDigestFailure"]["pending"] == result["afterPause"]["pending"]
+    assert result["afterDigestFailure"]["ack"] == result["afterPause"]["ack"]
+    assert "synthetic digest failure" in result["afterDigestFailure"]["status"]
+    assert result["afterDigestFailure"]["buttons"] == result["afterPause"]["buttons"]
+    assert [request["operation"] for request in result["posts"]] == ["pause", "drain"]
+    assert result["posts"][0]["request_id"] != result["posts"][1]["request_id"]
+    assert [request["expected_control_revision"] for request in result["posts"]] == [1, 2]
+    assert result["duringPost"]["pending"]["operation"] == "drain"
+    assert result["duringPost"]["escalated"]["request"] == result["posts"][0]
+    assert result["newerSnapshot"]["escalated"] is None
+    assert result["newerSnapshot"]["ack"]["completed"] is False
+    assert result["newerSnapshot"]["buttons"]["resume"] is True
+    assert result["afterLateAck"]["pending"]["operation"] == "drain"
+    assert result["completed"]["pending"] is None
+    assert result["completed"]["ack"] is None
+    assert "semantics are contradictory" in result["semanticError"]
+    assert "accepted command basis" in result["settlingError"]
+    assert "pending acquisition identity" in result["pendingIdentityError"]
+    assert "result protocol" in result["v1InV2"]
+    assert "result protocol" in result["v2InV1"]
+    assert "acknowledgment protocol" in result["directProtocol"]
+    assert "downgrade" in result["sameDowngrade"]
+    assert "downgrade" in result["epochDowngrade"]
+    assert result["switched"] is True and result["migrated"] is True
 
 
 def test_page_keeps_token_memory_only_and_has_no_hub_control_proxy():
