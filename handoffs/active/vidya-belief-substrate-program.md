@@ -1629,6 +1629,22 @@ retrofitting the read side is impossible. Source row added to
     eligibility. Do not change historical GGML_IQK bank semantics, backfill missing claims, or treat
     an A2 nomination as a keep, validation or release result.
 
+  - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.**
+    Owner `autokernel-unified-20260908`; implementation assigned to the actor/profile consumer.
+    Preserve the selected profiling request and original target/model/quant/recipe, loaded
+    profiler identity, actual owned worker result, raw artifacts and observation intervals when
+    deriving hotspots/opportunities. Reuse an existing profiler source/adapter where applicable;
+    configuration metadata cannot substitute for observed profile freshness. Project measured
+    findings only through the existing source-class ladder; retain unsupported/unknown states.
+  - [ ] **VB-AK-UNIFIED-VALIDATION — wire owning objective and LOO decisions at write time.**
+    Owner `autokernel-unified-20260908`; implementation assigned to the semantic consumer.
+    Preserve the exact proposition decided by the existing production-validation protocol,
+    objective identity, batch/row/manifests and native measurement/calibration evidence, decision
+    and immutable artifact references. Reopen through the concrete row/LOO verifier without a
+    history scan. Reuse canonical verifier-class grading and proposition-binding rules; do not
+    manufacture a scientific policy, combine measurement grades into a new ladder, or reconstruct
+    a missing decided proposition on read. Source quality and permitted scientific use stay separate.
+
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 
 *Source: the Q.1 mutation audit of `tests/vidya/` run at the end of the Prove2Me wave — 62 mutations
