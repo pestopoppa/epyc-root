@@ -2188,6 +2188,13 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     including a committed malicious shadow package. No kernel/hardware or production build.
     Contract: research `docs/autokernel-source-build-execution.md`. This does not settle the selected
     scheduler transition, install standalone source/build dispatch, or activate expiry authority.
+  - [x] **AKU-06m — full software regression checkpoint after owned build integration**:
+    ✅ 2026-09-09. Published research `1f38aefb122b73bd6001ba2b54ea11d66546fa3d`,
+    main terminal run: **2,513 passed, two strict expected failures, 83 subtests passed**
+    in307.84s, no skips. Scope is the entire loop test directory plus test_journal.py,
+    using the exact primary factory tree and ROOT checkout. Expected BIND/HELD failures
+    remain explicit. This does not validate subsequent worker edits, real-host export,
+    hardware measurements, five-loop GLM acceptance or production promotion.
   - [ ] **AKU-06l — install source/build dispatch and original outcome settlement**:
     connect the published owner to startup/standalone work-kind dispatch; retain exact selected
     request, original actor/build terminal and held-cost references through retries/restart.
