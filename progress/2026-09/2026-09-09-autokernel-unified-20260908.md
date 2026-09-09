@@ -1402,3 +1402,21 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   the new helper's source identity before installed semantic use. No historical closure is
   upgraded. Calibration recovery and retention catalog work continue; all twelve parents remain
   open. No hardware runs, live grants, production changes, index pruning or wiki sweep.
+
+## Registered final-trial feed source closure
+
+- Integrated the exact three-file research loader/test/contract patch from frozen f8fee017
+  acceptance. Current installation pins seven ROOT files, while explicit historical six-file
+  pins remain unchanged and cannot borrow the missing v3 helper from ambient Python modules.
+  Caller mappings are snapshotted before validation; all source hashes precede execution.
+- Main independent acceptance: 42 passed in 46.76s, no skips, including actual tiny HTTP child
+  results, installed feed ingestion and idempotent restart. Four native captures remain
+  diagnostic; twenty operational Journal events also count as diagnostics. Corrected the test
+  expectation, not the production counter. No measurement tuple or finding is manufactured.
+- Worker combined run: 88 passed and four semantic-loader failures; untouched PRIMARY f8fee017
+  reproduces those same four failures (plus eight passes). The separate historical two-file
+  semantic loader expects an older adapter digest. Filed AKU-08l for explicit source/receipt
+  versioning, rather than changing historical pins to make tests green.
+- Completed AKU-08k; all twelve parent tasks remain open. Calibration execution/recovery and
+  native retention integration continue. No installed hardware dry run or five-loop GLM trial,
+  production mutation, resource activation, index pruning, or wiki compilation was performed.
