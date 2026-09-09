@@ -1525,3 +1525,12 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   then passed 80 primary startup/binding/lifecycle tests (3.10s). Full-suite rerun remains
   necessary; these focused results do not turn the earlier failing full run into a pass.
 - Added completed AKU-04h; existing BIND/HELD gates and all parent milestones stay open.
+- Final full loop/Journal rerun on repaired research main `b9cc11af` completed with
+  **2,436 passed, two strict expected failures, 83 subtests, no skips** in 299.83s.
+  The fixture fix is source `0c446f36`; runtime source is unchanged from `ebb5e9fa`.
+  Command used explicit AUTOKERNEL_FACTORY_DRY_RUN_TREE at the research primary and
+  EPYC_ROOT_REPO at the ROOT primary, PYTHONPATH=.:scripts/kernel_rnd, python3 -B -m pytest -q
+  scripts/kernel_rnd/autokernel/loop scripts/kernel_rnd/autokernel/test_journal.py.
+  Expected failures still track native scheduler/provider binding and unfinished held-cost
+  recovery. This establishes combined software regression acceptance, not live hardware,
+  scientific qualification, dashboard deployment or the five-loop GLM trial.

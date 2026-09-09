@@ -1946,6 +1946,9 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     32 seconds at 10ms cadence (requires 3,209). The test now derives its count before
     sealing instrument identity and asserts exact prepared-plan admission. Timing, cadence,
     gap, byte limits and production admission are unchanged; main's 80 adjacent tests pass.
+    Repaired research main `b9cc11af` then passed the full loop/Journal suite: **2,436 passed,
+    two strict expected failures, 83 subtests**, no skips (299.83s). Expected failures remain
+    OP-AKU-BIND and OP-AKU-HELD, not successful native resource binding or interrupted recovery.
   - [x] **AKU-04g — installed raw serving-calibration preparation**: ✅ 2026-09-09.
     Startup v4 prospectively derives bounded A/A and neutral-copy process pairs and retries;
     the actual driver/controller/native worker collects immutable original chunks. Only exact
