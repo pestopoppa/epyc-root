@@ -1612,6 +1612,23 @@ retrofitting the read side is impossible. Source row added to
       planner question bindings and registered current-use consumers. Evaluator identity/lifecycle
       instrumentation remain separately required; a source schema is not a protocol registration.
 
+  - [ ] **VB-AK-UNIFIED-LIFECYCLE — bind prospective whole-lifecycle observations and loaded
+    instrument identity to native arm evidence.** Owner `autokernel-unified-20260908`; source work
+    under review. Reuse the existing immutable ArtifactStore and native Journal, with exact
+    worker/grant/container/PID-start and actual probe intervals. Missing attribution, exceeded
+    observation budgets, incomplete shutdown and unproven loaded code stay explicit unknowns.
+    Native attachment and strict reader must agree on the versioned identity; old records are never
+    relabelled using today's source. Observations alone produce no gain claim, quiet-host rule or
+    competing grader. Wire the actual serving/worker consumer before claiming lifecycle completion.
+  - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
+    Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
+    three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,
+    prospective effect question and original raw/phase provenance. The bounded feed consumes the
+    sealed receipt rather than inventing an improvement by joining independently emitted arm levels.
+    Strict reader and the shared ClaimTuple ladder remain separate from registered nomination/use
+    eligibility. Do not change historical GGML_IQK bank semantics, backfill missing claims, or treat
+    an A2 nomination as a keep, validation or release result.
+
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 
 *Source: the Q.1 mutation audit of `tests/vidya/` run at the end of the Prove2Me wave — 62 mutations
