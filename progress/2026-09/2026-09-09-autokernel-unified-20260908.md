@@ -1486,3 +1486,27 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   identities include the sampler/admission helpers; historical identities are not rewritten.
   Completed AKU-07y; profile preparation, source/build execution and qualified evidence remain
   active work. No live GLM trial, grants, production mutation, index pruning or wiki sweep.
+
+## Installed serving-calibration preparation — AKU-04g
+
+- Published research source `097c5be8` to main `ebb5e9fa`; all 19 primary files matched
+  the frozen acceptance manifest before publication. Main independently ran 144 tests,
+  one strict OP-AKU-HELD expected failure, no skips (39.04s). Worker full prior-c6 suite:
+  2,398 passed, two strict expected failures, 83 subtests; final sampler-composed focus:
+  117 passed, one strict expected failure. These scopes are not a current full-suite claim.
+- Startup v4 and Prepared v3 use the existing scheduler/controller/native worker for original
+  A/A and neutral-copy calibration. Original seeds, statistical rules, independent-process
+  membership and finite retries are fixed before selection. Exact durable settlement alone
+  admits original chunks to the existing numeric owner. Settled restart reopens original
+  chunks/results without a new launch, reseeding or repeated accounting.
+- Public driver enrollment independently checks metric/direction, prompt manifest, selected
+  per-unit prompt count, instrument and time limits. Neutral copies preserve separate physical
+  retention roots while sharing execution identity only after compatible native settings checks.
+  Published sampler admission/source pins remain intact; new fixture sample capacity is derived
+  prospectively from unchanged durations/cadence, never widened after observing a run.
+- Actual startup/child tests use synthetic bytes, observations and a fixture provider that
+  authors calibration metadata. They do not prove native provider binding, live host readiness,
+  or scientific qualification. OP-AKU-BIND, OP-AKU-HELD and original qualified controls/windows
+  remain unresolved; pre-settlement restart refuses safely. Every solve stays diagnostic-only.
+- Added completed AKU-04g; all 12 parent items remain open. Existing tasks own remaining gates;
+  no new open tasks, production writes, live measurements, index pruning or wiki sweep.
