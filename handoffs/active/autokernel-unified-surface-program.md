@@ -2258,6 +2258,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     generic success, late sample, synthetic telemetry or reduced required-witness list may
     substitute for the owning protocol. Coordinate ROOT per-witness receipt reopening under
     VB-AK-UNIFIED-PARENT and real standalone wiring before mixed CPU/GPU acceptance.
+  - [x] **AKU-07r — retain original parent T0 and complete model identity issuance**:
+    ✅ 2026-09-09 research f6e0cfe1 / main e495de82. Closed configured registry retains
+    immutable original inputs, raw captures and full 17-gate reports; post-teardown replay
+    uses the owning reducer, not fresh observation or independent reparsing. Claim-held
+    preparation hashes the full model inventory once and binds the native entry-file digest;
+    units check original receipts and metadata continuity without model rereads. Producer
+    source closure v2 binds actual configured adapters; v1 remains supported. Main tests:
+    2,004 loop tests plus 85 Journal tests, one existing expected failure, 83 subtests;
+    Ruff/diff clean. Ordinary T0 collection is not contained same-server execution.
+    AKU-07o remains open for actual scheduling, same-server multi-request correctness,
+    remaining witnesses and ROOT receipt consumption. Proposed frozen-prompt v2 needs
+    explicit seed/token-output fields; its HIGH-impact schema edits await OP-AKU-PROMPT.
   - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
     add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
     candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,

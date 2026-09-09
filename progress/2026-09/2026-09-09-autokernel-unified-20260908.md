@@ -1259,3 +1259,26 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
 - Checklist: **one completed sub-item, one new open Vidya task, zero declines**; 51 accepted
   implementation sub-items, all twelve parents open. README freshness clean; bus identity still
   refused without roster mutation/impersonation. Per-task wrap-up; no pruning or wiki sweep.
+
+### Original native T0/model issuance checkpoint
+
+- Research f6e0cfe1 / main e495de82 publishes the closed parent scientific registry,
+  original ordered T0 captures/full owning reports, model inventory preparation and
+  prospective configured source closure v2. Lost issuance remains unknown; reducer replay
+  is not independent reparsing. Full-model hashing occurs once under preparation ownership,
+  not during each unit. Ordinary T0 subprocess collection is not contained server execution.
+- Main composition on ba0644e7 passed 2,004 loop tests with one existing expected failure
+  and 68 subtests in 49.39s; Journal separately passed 85 tests/15 subtests in 0.30s.
+  Ruff on all ten source/test files and diff checks passed. Corrected patch packaging
+  SHA 9218f94c9c6ff7f3a6c36c990171eba093ba64b9f723b83afe34731205c2e767;
+  malformed initial context failed atomically without changing the acceptance tree.
+- AKU-07r complete; AKU-07o remains open. Extended existing VB-AK-UNIFIED-PARENT
+  source/task to original T0/model and prospective same-server supporting records;
+  no competing ladder or fabricated eligibility. HIGH frozen-prompt v2 serialization
+  work paused for OP-AKU-PROMPT; independent raw server-response capture continues.
+- Journal worker frozen after bounded metadata/proof/retired-shard checks and safe append
+  corrections; main independently passed 33 owner tests. Feed worker integrating exact
+  owned ACK, captured-frontier readiness and actual service-thread lifecycle. Service test
+  failure was resume after terminal SIGTERM drain; preserve terminal rule, split test cases.
+- One newly completed implementation sub-item; all twelve parent tasks remain open.
+  No real installed dry run, model builds/inference, grants or production changes.

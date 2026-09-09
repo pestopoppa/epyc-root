@@ -1629,6 +1629,11 @@ retrofitting the read side is impossible. Source row added to
     reopen the same receipt and reject mismatched witness/finding references. Unsupported purpose,
     correctness/contention/GPU warrants stay unknown. Reuse the existing source-class grading;
     these supporting receipts are not an independent performance claim or a second ladder.
+    Include prospective original T0 issuance/full-report/raw-capture receipts and complete model
+    inventory receipts (separate inventory and native entry-file digests). Native deterministic
+    reducer replay is not independent reparsing or fresh observation. Also register same-server
+    raw request/response/token evidence before any real run; missing seed/token contracts cannot
+    establish determinism. These supporting records use this existing task and source ladder.
   - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
     Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
     three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,
