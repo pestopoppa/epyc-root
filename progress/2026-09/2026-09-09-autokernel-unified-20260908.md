@@ -80,6 +80,28 @@ does not deploy the loop or move the shared checkout. Evidence-plan drafts remai
 main-requested authority, pairing and calibration-cache corrections; candidate manifests and durable
 management controls are the next disjoint assignments.
 
+### Accepted ExperimentPlan structural boundary
+
+- AKU-04a: the requested corrections are now reviewed and **72 focused tests pass** in main's run.
+  The shared immutable plan freezes class/phase, identities, unit/prompt membership, pairing, order,
+  fixed-N stopping and intended use. Invalid/partial pairs are excluded together and empty input is
+  incomplete. Direct dataclass inputs and forged/foreign unit views are revalidated.
+- Observation-to-release laundering, strict-search headlines, and BASELINE production/certificate uses
+  refuse. Nomination remains policy-undefined until the exact A2 semantic attestation adapter exists;
+  claim-bearing uses require the unimplemented shared-grade/registered-protocol adapters. Structural
+  completeness is not measurement/independence warrant; every offline output denies execution authority.
+- Calibration has exact registered replay and treatment-aware applicability seams, n/unit/interval
+  structure, separate raw-replay versus plan/rule caches, and no cached transient callback failures.
+  No estimator, acceptance threshold, statistical power classifier or bounded-null rule was invented.
+- The source/recipe root checkpoint is `59d86f76`, main merge `fb70d74e`. Service/control drafts are
+  still unpublished: main reproduced a closed incarnation accepting a command while its replacement
+  held the lock in a disposable test store, and required lifetime fencing, validated event-order replay,
+  complete resolved-config identity, append-fault recovery and bounded HTTP shutdown corrections.
+  Candidate manifests and scoped retrieval/transfer are the other disjoint sol-medium assignments.
+- ExperimentPlan source is published as research `93e049f1`, main merge `027e9ec7`. Only the five
+  reviewed plan/CLI/test/documentation files were included; service and candidate drafts remain outside
+  this checkpoint. Publication is not activation or scientific validation.
+
 Resolved launch recipes, independent-unit ExperimentPlan validation and private-index accepted-patch
 commits are the next disjoint sol-medium assignments. A helper is not a completed parent slice until
 real consumers and integration acceptance exist. The Vidya source table/task registers the prospective
