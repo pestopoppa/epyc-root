@@ -2122,7 +2122,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     exact primary application hashes match and focused rerun **37 passed in 3.46s**.
     Successful settlement tests use an explicitly synthetic provider authoring correct original
     metadata; native BIND/HELD refusals remain. No hardware or scientific qualification claimed.
-    Contract: research `docs/autokernel-installed-profile-preparation.md`.
+    Contract: research `docs/autokernel-installed-profile-preparation.md`. Published source
+    `54eb195d`, main `81b87368`; final main full loop/Journal acceptance: **2,473 passed,
+    two strict xfailed, 83 subtests, no skips in 298.45s**. The expected failures are still
+    OP-AKU-BIND and OP-AKU-HELD; this is software acceptance, not hardware qualification.
   - [ ] **AKU-06i — automatically renew installed profiles with bounded request generations**:
     derive requests before selection from the installed template, exact settled predecessor and
     campaign attempt cap; durably reuse the original selected request on restart. Preserve original
@@ -2130,7 +2133,11 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     attribution together, expiry/restart and exhausted budget. The current connector reports
     per-target `profile_refresh_unavailable:original_request_consumed:fresh_predeclared_request_required`
     while allowing unrelated eligible work; this safe fixed-request limitation is not completed
-    autonomous refresh and must not become a recurring operator request.
+    autonomous refresh and must not become a recurring operator request. Existing actor projection
+    refuses a second distinct PROFILE_VERIFIED for the same target, so generating fresh request IDs
+    alone is insufficient. Explicit versioned successor/predecessor semantics require shared
+    `actor_preparation_state.validate_event` changes (HIGH16, Journal publication/replay);
+    OP-AKU-REFRESH approval was requested. Do not conceal new authority in a nested v1 contract.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
