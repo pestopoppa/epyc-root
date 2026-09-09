@@ -1645,6 +1645,14 @@ retrofitting the read side is impossible. Source row added to
     deriving hotspots/opportunities. Reuse an existing profiler source/adapter where applicable;
     configuration metadata cannot substitute for observed profile freshness. Project measured
     findings only through the existing source-class ladder; retain unsupported/unknown states.
+  - [ ] **VB-AK-UNIFIED-PREPARATION — wire source/build preparation findings at write time.**
+    Owner `autokernel-unified-20260908`; bind selected actor advice/assignment, authored immutable
+    manifest and patch, actual guarded source commit/tree, derived diff-policy checks and original
+    mutation receipt before the first live preparation. Persist through the owning native artifact
+    transaction; strict reopening projects only the proposition actually verified. Build findings
+    additionally require the actual owning build identity and inputs, never a runner return label.
+    Reuse the canonical verifier-class ladder; no new grading rule, retrospective warrant,
+    model-correctness claim or performance inference from successful source application.
   - [ ] **VB-AK-UNIFIED-VALIDATION — wire owning objective and LOO decisions at write time.**
     Owner `autokernel-unified-20260908`; implementation assigned to the semantic consumer.
     Preserve the exact proposition decided by the existing production-validation protocol,
