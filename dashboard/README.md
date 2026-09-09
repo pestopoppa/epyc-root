@@ -600,12 +600,13 @@ scientific result are distinct. Historical terminal snapshots stay labelled hist
 with controls unavailable. `/health` remains hub transport-only; `/api/loop/health`
 follows the selected producer and `/api/health` retains the existing three-valued fold.
 
-The reader dispatches only the two closed producer schemas; it is not an open union:
+The reader dispatches only the three closed producer schemas; it is not an open union:
 
 | Contract | Exact extension and dashboard meaning |
 |---|---|
 | `campaign_snapshot.v1` | The accepted management-only field set is unchanged: null worker, no execution authority, and the original compact command result. |
 | `campaign_snapshot.v2` | Adds only `execution_capability_available` and `worker_lifecycle_revision`; `active_worker` is either null or the closed 17-field lifecycle projection; command results use the closed timestamped `campaign_command_result.v2` field set. |
+| `campaign_snapshot.v3` | Retains the complete v2 management/worker/control contract and adds exactly one closed `unified_campaign_projection.v1`: scheduler, resources, actors, evidence, candidate and targets. The page renders these inside the existing `/loop` surface; it adds no route, proxy, registry row or service. |
 | v2 active worker | Shows lifecycle state/generation and the finite provider/termination deadlines in their producer-declared clock domain. Worker, grant, container, executable and environment identities are never command inputs and are not rendered. |
 | v2 command result | `accepted=true, completed=false` remains pending. Only a later result for the same request ID, operation, digest and control revision confirms completion; exact-ID retry remains available after uncertainty. |
 
@@ -617,6 +618,23 @@ combinations are rejected, as are command results from the other snapshot protoc
 selected campaign may migrate from v1 to v2 but cannot later downgrade to v1, even
 across a new stream epoch. A null-worker settling snapshot is accepted only when its
 matching accepted/incomplete pause or drain result supplies the visible transition basis.
+
+V3 uses the v2 command-result and worker-lifecycle contracts unchanged. Protocol migration
+is ordered `v1 → v2 → v3`; after a v3 snapshot is accepted, neither v2 nor v1 can replace it
+for the same campaign/config identity, including across a new stream epoch. The nested
+projection is a closed union, not an extensible label bag. The current producer connects the
+scheduler and target enrollment while resources, actors, evidence and candidate explicitly
+report `not_connected`, a nonempty reason and null/empty values. Those nulls remain
+unknown/not-connected in the view: declared scheduler capacity is labelled **not a grant**,
+candidate labels cannot become validated identities, and `items_page_ref=null` promises no
+target endpoint. Scheduler/accounting digests, nonnegative bounded resource vectors, compact
+accounting totals and target-count conservation are checked by the Python reader, which also
+rederives the accounting content digest. The page JavaScript independently validates the closed
+nested shapes, schemas, statuses and value constraints before rendering; it validates digest
+syntax but does not synchronously rederive the accounting hash. Any non-`available` unified section degrades
+semantic health only while the producer is live; a drained snapshot whose producer is unknown remains
+history. An identity-matched live gateway can still expose pause/drain/resume: a
+stuck dependency must remain controllable, and control reachability does not certify its health.
 
 Provider capability and current authority are separate facts. An injected provider may
 make `execution_capability_available=true`, while `execution_authorized=false` remains

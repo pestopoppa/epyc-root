@@ -1983,6 +1983,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     standalone driver, preselected actor preparation, local-seed runtime/profile adapter, native intent
     persistence and worker/receipt/evidence integration remain required. Source `26171408`, main
     `1e5b766a`; the AKU-06 parent remains open.
+  - [x] **AKU-06c — durable controller-owned unified driver and compact accounting projection**:
+    native fsynced issuance/settlement, exact catalog/selection/arm binding, idempotent replay and
+    immutable runtime materialization feed the actual campaign controller. ✅ 2026-09-09
+    Accepted together with AKU-07c: the clean 17-file release passed **1,444 tests and 83 subtests**,
+    plus **20 independent boundary probes**. Preview failures preserve committed receipts and seed
+    queues; old intents cannot rematerialize under a new supervisor. Slow provider/verifier I/O runs
+    outside the controller mutex and rechecks lifetime. Operational projections use indexed totals
+    and a rolling seed commitment, not per-tick historical scans. V3 START fences actual old readers;
+    the closed snapshot connects scheduler/targets and reports other consumers as not connected.
+    Source `61a63c42`, main `8cbcce9f`. One outstanding selection and a management-only default do not
+    constitute concurrent CPU/GPU execution. The end-to-end execution/receipt consumer, prepared
+    actors, native evidence feedback and real authority remain required under AKU-06/07/08.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
@@ -2014,6 +2026,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     deadlines: a numerical deadline or fake cgroup test is not live containment proof. The generic
     parent-side planned-serving guard still refuses until the contained-child bridge is connected.
     Driver/native-result integration, real authority and deployment remain required for AKU-07.
+  - [x] **AKU-07c — contained planned-worker bridge and parent-verified native result boundary**:
+    fixed bounded child IPC, actual PID-start/boot/container HELLO before payload, isolated bootstrap,
+    immutable deferred capture and all-captures-first parent validation. ✅ 2026-09-09
+    Main independently accepted the same clean 17-file release as AKU-06c; final focused checks
+    passed **42 tests** and Ruff. Parent evidence requests remain bounded after notice draining;
+    arbitrary callbacks cannot run inside the watchdog. Default Linux containment verifies cgroup2
+    mount/device/membership; an ordinary directory is not containment. Terminal result fencing follows
+    durable native acceptance, and exact owned provider-held receipts retain all cost, including a
+    late return that makes the scientific result stale. Provider I/O must enforce its own deadlines.
+    Tiny owned fork/IPC fixtures and real-bootstrap containment refusal are separate tests, not live
+    grants. Source `61a63c42`, main `8cbcce9f`. Driver-to-bridge execution/settlement, observer authority,
+    versioned native attachment and real OP-41 provider/deployment remain required for AKU-07.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
@@ -2083,6 +2107,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     **15 baseline-proved legacy failures** (11 tests plus four subtests); these are not v2 acceptance.
     No gateway configuration, service activation, resource grants or live reliability claim is made.
     Unified planner/resource/evidence projections and unattended deployment remain AKU-09 work.
+  - [x] **AKU-09e — existing hub consumes closed unified snapshot v3**: scheduler, resources,
+    actors, evidence, candidate and targets render within the existing `/loop` page with strict
+    independent Python/page validation. ✅ 2026-09-09 — main reproduced **96 focused tests** against
+    the published research producer, including execution of actual page JavaScript. Python rederives
+    accounting content identity; page validation checks closed nested shapes, statuses and values.
+    Unknown dependencies degrade a live producer without disabling identity-matched controls; a
+    drained snapshot with an unknown producer remains history. V1/v2 compatibility, exact retry and
+    same-campaign downgrade fences remain. Null grants/candidate/evidence values stay unknown, and
+    declared capacity is not a grant. No new route, proxy, registry row, gateway configuration, service
+    activation or live reliability claim is made; connected consumers and deployment remain AKU-09.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.

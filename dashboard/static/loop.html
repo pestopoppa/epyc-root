@@ -93,6 +93,7 @@
   .campaign-controls input{background:var(--bg);color:var(--text);border:1px solid var(--border);padding:6px 8px}
   .campaign-controls button{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:6px 10px;border-radius:5px}
   .campaign-controls button:disabled{opacity:.45}
+  .subgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:var(--border)}
   footer{padding:8px 20px 28px;color:var(--muted);font-size:12px;max-width:1400px;margin:0 auto}
 
   /* The freshness banner. Loud on purpose: this is the one control that stops a
@@ -624,16 +625,104 @@ function campaignValidateWorker(value){
   return value;
 }
 
+function campaignNonnegative(value){
+  return typeof value==="number" && Number.isFinite(value) && value>=0;
+}
+
+function campaignValidateNumberMap(value,label){
+  if(!value || typeof value!=="object" || Array.isArray(value) ||
+     Object.keys(value).some(key=>!campaignText(key) || !campaignNonnegative(value[key])))
+    throw new Error(`${label} is malformed`);
+}
+
+function campaignValidateUnified(value){
+  campaignExact(value,["schema","scheduler","resources","actors","evidence","candidate","targets"],
+    "campaign unified projection");
+  if(value.schema!=="epyc.autokernel.unified_campaign_projection.v1")
+    throw new Error("campaign unified projection schema is unsupported");
+  const s=value.scheduler;
+  campaignExact(s,["schema","projection_digest","config_digest","policy_digest","round_number",
+    "accounting_epoch","capacity","pending_selection_digest","status","reason","campaign_attempts",
+    "campaign_charged_seconds","accounting","coverage_debt_count"],"campaign unified scheduler");
+  const statuses=["available","unknown","not_connected"];
+  if(s.schema!=="epyc.autokernel.unified_scheduler_projection.v1" ||
+     ![s.projection_digest,s.config_digest,s.policy_digest].every(campaignDigestValue) ||
+     ![s.round_number,s.accounting_epoch,s.campaign_attempts,s.coverage_debt_count].every(
+       value=>campaignInteger(value,0)) || !campaignNonnegative(s.campaign_charged_seconds) ||
+     !(s.pending_selection_digest===null || campaignDigestValue(s.pending_selection_digest)) ||
+     !statuses.includes(s.status) || !campaignText(s.reason))
+    throw new Error("campaign unified scheduler is malformed");
+  campaignExact(s.capacity,["schema","physical_region_fraction","gpu_devices",
+    "memory_reservation_bytes"],"campaign unified scheduler capacity");
+  if(s.capacity.schema!=="epyc.autokernel.resource_vector.v1" ||
+     !campaignNonnegative(s.capacity.physical_region_fraction) ||
+     s.capacity.physical_region_fraction>1 || !Array.isArray(s.capacity.gpu_devices) ||
+     !s.capacity.gpu_devices.every(campaignText) ||
+     new Set(s.capacity.gpu_devices).size!==s.capacity.gpu_devices.length ||
+     !campaignInteger(s.capacity.memory_reservation_bytes,0) ||
+     (s.capacity.gpu_devices.length && s.capacity.physical_region_fraction<=0))
+    throw new Error("campaign unified scheduler capacity is malformed");
+  const a=s.accounting;
+  campaignExact(a,["schema","receipt_count","held_seconds","physical_region_seconds",
+    "gpu_device_seconds","memory_byte_seconds","beneficiary_seconds","view_digest"],
+    "campaign unified scheduler accounting");
+  if(a.schema!=="epyc.autokernel.accounting_view.v1" || !campaignInteger(a.receipt_count,0) ||
+     ![a.held_seconds,a.physical_region_seconds,a.memory_byte_seconds].every(campaignNonnegative) ||
+     !campaignDigestValue(a.view_digest))
+    throw new Error("campaign unified scheduler accounting is malformed");
+  campaignValidateNumberMap(a.gpu_device_seconds,"campaign GPU accounting");
+  campaignValidateNumberMap(a.beneficiary_seconds,"campaign beneficiary accounting");
+  const fields={resources:["schema","status","reason","requested","granted","held","used"],
+    actors:["schema","status","reason","clock_semantics","items"],
+    evidence:["schema","status","reason","frontier_digest","lag_seconds"],
+    candidate:["schema","status","reason","accumulated_identity","validated_identity",
+      "frozen_production_identity","validation_debt"],
+    targets:["schema","status","reason","total","ready","prerequisite","production_enrolled",
+      "seed_enrolled","items_page_ref"]};
+  const schemas={resources:"epyc.autokernel.unified_resource_status.v1",
+    actors:"epyc.autokernel.unified_actor_status.v1",
+    evidence:"epyc.autokernel.unified_evidence_status.v1",
+    candidate:"epyc.autokernel.unified_candidate_status.v1",
+    targets:"epyc.autokernel.unified_target_status.v1"};
+  Object.keys(fields).forEach(name=>{
+    campaignExact(value[name],fields[name],`campaign unified ${name}`);
+    if(value[name].schema!==schemas[name] || !statuses.includes(value[name].status) ||
+       !campaignText(value[name].reason)) throw new Error(`campaign unified ${name} is malformed`);
+  });
+  for(const name of ["resources","actors","evidence","candidate"])
+    if(value[name].status!=="not_connected")
+      throw new Error(`campaign unified ${name} v1 supports only not_connected`);
+  if([value.resources.requested,value.resources.granted,value.resources.held,value.resources.used]
+       .some(item=>item!==null) ||
+     value.actors.clock_semantics!=="UTC wall-clock projection; runtime fences remain monotonic" ||
+     !Array.isArray(value.actors.items) || value.actors.items.length ||
+     value.evidence.frontier_digest!==null || value.evidence.lag_seconds!==null ||
+     [value.candidate.accumulated_identity,value.candidate.validated_identity,
+      value.candidate.frozen_production_identity,value.candidate.validation_debt]
+       .some(item=>item!==null))
+    throw new Error("campaign disconnected unified values must remain null/empty");
+  const t=value.targets;
+  if(![t.total,t.ready,t.prerequisite,t.production_enrolled,t.seed_enrolled].every(
+       item=>campaignInteger(item,0)) || t.ready+t.prerequisite!==t.total ||
+     t.production_enrolled>t.total || t.seed_enrolled>t.total || t.items_page_ref!==null)
+    throw new Error("campaign unified target counts are malformed");
+  return value;
+}
+
 function campaignValidateSnapshot(value){
   const v2=value && value.schema==="epyc.autokernel.campaign_snapshot.v2";
+  const v3=value && value.schema==="epyc.autokernel.campaign_snapshot.v3";
+  const workerAware=v2||v3;
   campaignExact(value,["schema","producer_build","producer_schema","campaign_id",
     "config_generation","config_digest","requested_manifest_digest","supervisor_incarnation",
     "stream_epoch","sequence","journal_cursor","control_revision","generated_at",
     "desired_state","observed_state","command_results","active_worker",
     "producer_heartbeat_at","last_scientific_result_at","worker_activity_at",
-    "execution_authorized",...(v2?["execution_capability_available","worker_lifecycle_revision"]:[]),
+    "execution_authorized",...(workerAware?["execution_capability_available","worker_lifecycle_revision"]:[]),
+    ...(v3?["unified"]:[]),
     "prerequisite_reason"],"campaign snapshot");
-  if(!["epyc.autokernel.campaign_snapshot.v1","epyc.autokernel.campaign_snapshot.v2"].includes(value.schema) ||
+  if(!["epyc.autokernel.campaign_snapshot.v1","epyc.autokernel.campaign_snapshot.v2",
+       "epyc.autokernel.campaign_snapshot.v3"].includes(value.schema) ||
      value.producer_schema !== value.schema ||
      !campaignText(value.campaign_id) || !campaignDigestValue(value.config_digest) ||
      !campaignDigestValue(value.requested_manifest_digest) || !campaignTimestamp(value.generated_at) ||
@@ -642,7 +731,7 @@ function campaignValidateSnapshot(value){
      !(value.worker_activity_at === null || campaignTimestamp(value.worker_activity_at)))
     throw new Error("campaign snapshot identity or timestamps are malformed");
   for(const [name,min] of [["config_generation",1],["supervisor_incarnation",1],
-       ["stream_epoch",1],["sequence",1],["journal_cursor",v2?0:1],["control_revision",0]])
+       ["stream_epoch",1],["sequence",1],["journal_cursor",workerAware?0:1],["control_revision",0]])
     if(!campaignInteger(value[name],min)) throw new Error(`campaign snapshot ${name} is malformed`);
   const generatedMs=Date.parse(value.generated_at);
   for(const name of ["producer_heartbeat_at","last_scientific_result_at","worker_activity_at"]){
@@ -650,20 +739,20 @@ function campaignValidateSnapshot(value){
       throw new Error(`campaign snapshot ${name} exceeds generated_at observation window`);
   }
   campaignValidateBuild(value.producer_build,"campaign producer build");
-  const allowed=v2 ? {paused:["paused","pausing","ownership_unresolved"],
+  const allowed=workerAware ? {paused:["paused","pausing","ownership_unresolved"],
     running:["running","waiting_prerequisite","ownership_unresolved"],
     drained:["drained","draining","ownership_unresolved"]} :
     {paused:["paused"],running:["running","waiting_prerequisite"],drained:["drained"]};
   if(!Object.prototype.hasOwnProperty.call(allowed,value.desired_state) ||
      !allowed[value.desired_state].includes(value.observed_state) ||
-     value.execution_authorized !== false || (!v2 && value.active_worker !== null) ||
+     value.execution_authorized !== false || (!workerAware && value.active_worker !== null) ||
      !(value.prerequisite_reason === null || campaignText(value.prerequisite_reason)) ||
      !Array.isArray(value.command_results))
     throw new Error("campaign snapshot management boundary is malformed");
   if((value.observed_state==="waiting_prerequisite" && !campaignText(value.prerequisite_reason)) ||
      (["running","drained"].includes(value.observed_state) && value.prerequisite_reason!==null))
     throw new Error("campaign snapshot prerequisite state is contradictory");
-  if(v2){
+  if(workerAware){
     if(typeof value.execution_capability_available!=="boolean" ||
        !campaignInteger(value.worker_lifecycle_revision,0))
       throw new Error("campaign v2 lifecycle projection is malformed");
@@ -691,18 +780,18 @@ function campaignValidateSnapshot(value){
   }
   const requestIds=new Set();let priorRevision=0;
   value.command_results.forEach(row=>{
-    if(v2 !== !!(row && row.schema==="epyc.autokernel.campaign_command_result.v2"))
+    if(workerAware !== !!(row && row.schema==="epyc.autokernel.campaign_command_result.v2"))
       throw new Error("campaign command result protocol does not match its snapshot");
     campaignValidateAck(row);
     if(requestIds.has(row.request_id) || row.control_revision<=priorRevision ||
        row.control_revision>value.control_revision)
       throw new Error("campaign command result ordering is malformed");
-    if(v2 && (Date.parse(row.accepted_at)>generatedMs+5000 ||
+    if(workerAware && (Date.parse(row.accepted_at)>generatedMs+5000 ||
        (row.completed && Date.parse(row.completed_at)>generatedMs+5000)))
       throw new Error("campaign command result exceeds generated_at observation window");
     requestIds.add(row.request_id);priorRevision=row.control_revision;
   });
-  if(v2 && value.active_worker===null && ["pausing","draining"].includes(value.observed_state)){
+  if(workerAware && value.active_worker===null && ["pausing","draining"].includes(value.observed_state)){
     const operation=value.observed_state==="pausing"?"pause":"drain";
     const basis=value.command_results.some(row=>row.operation===operation &&
       row.desired_state===value.desired_state && row.observed_state===value.observed_state &&
@@ -710,6 +799,7 @@ function campaignValidateSnapshot(value){
     if(!basis)
       throw new Error("campaign v2 settling snapshot lacks an active worker or accepted command basis");
   }
+  if(v3) campaignValidateUnified(value.unified);
   return value;
 }
 
@@ -726,9 +816,10 @@ function campaignAcceptSnapshot(next, explicitSwitch=false){
     campaignEscalatedPause = null;
   }
   if(campaignAccepted && campaignIdentity(next) === campaignIdentity(campaignAccepted)){
-    if(campaignAccepted.schema==="epyc.autokernel.campaign_snapshot.v2" &&
-       next.schema==="epyc.autokernel.campaign_snapshot.v1"){
-      campaignStreamError="same campaign cannot downgrade snapshot protocol v2 to v1";
+    const rank={"epyc.autokernel.campaign_snapshot.v1":1,
+      "epyc.autokernel.campaign_snapshot.v2":2,"epyc.autokernel.campaign_snapshot.v3":3};
+    if(rank[next.schema] < rank[campaignAccepted.schema]){
+      campaignStreamError="same campaign cannot downgrade snapshot protocol";
       throw new Error(campaignStreamError);
     }
     const oldKey = campaignStreamKey(campaignAccepted), newKey = campaignStreamKey(next);
@@ -754,8 +845,7 @@ function campaignAcceptSnapshot(next, explicitSwitch=false){
         next.supervisor_incarnation <= campaignAccepted.supervisor_incarnation))
       {campaignStreamError = "campaign stream epoch/incarnation relationship is invalid";
        throw new Error(campaignStreamError);}
-    if(next.schema==="epyc.autokernel.campaign_snapshot.v2" &&
-       campaignAccepted.schema==="epyc.autokernel.campaign_snapshot.v2"){
+    if(rank[next.schema]>=2 && rank[campaignAccepted.schema]>=2){
       if(next.worker_lifecycle_revision<campaignAccepted.worker_lifecycle_revision){
         campaignStreamError="newer campaign snapshot rolled back worker lifecycle revision";
         throw new Error(campaignStreamError);
@@ -956,7 +1046,7 @@ async function campaignSend(operation, config, retry=false){
         request_id:crypto.randomUUID(),operation:operation,payload:{},
         payload_digest:payloadDigest,expected_control_revision:fresh.control_revision};
       Object.defineProperty(campaignPending,"_resultV2",{
-        value:fresh.schema==="epyc.autokernel.campaign_snapshot.v2"});
+        value:fresh.schema!=="epyc.autokernel.campaign_snapshot.v1"});
     }
     const request=campaignPending;
     const response = await campaignFetch(config.controls.gateway_url.replace(/\/$/, "") + "/commands", {
@@ -981,6 +1071,49 @@ async function campaignSend(operation, config, retry=false){
   }finally{
     campaignInFlight=false;campaignUpdateCommandButtons();
   }
+}
+
+function campaignRenderUnified(snapshot){
+  if(snapshot.schema!=="epyc.autokernel.campaign_snapshot.v3") return "";
+  const u=snapshot.unified,s=u.scheduler,c=s.capacity,a=s.accounting,t=u.targets;
+  const unknown=value=>value===null ? "unknown / not connected" : String(value);
+  const section=(name,row,detail)=>`<div class="pad"><h4>${esc(name)} · ${esc(row.status)}</h4>`+
+    `<div class="muted">${esc(row.reason)}</div><dl class="kv">${detail}</dl></div>`;
+  return `<div class="subgrid">`+
+    section("scheduler",s,
+      `<dt>round / accounting epoch</dt><dd>${esc(s.round_number)} / ${esc(s.accounting_epoch)}</dd>`+
+      `<dt>pending selection</dt><dd>${esc(unknown(s.pending_selection_digest))}</dd>`+
+      `<dt>campaign attempts / charged seconds</dt><dd>${esc(s.campaign_attempts)} / `+
+        `${esc(s.campaign_charged_seconds)}</dd>`+
+      `<dt>coverage debt count</dt><dd>${esc(s.coverage_debt_count)}</dd>`+
+      `<dt>declared scheduling capacity (not a grant)</dt><dd>CPU fraction `+
+        `${esc(c.physical_region_fraction)}; GPUs ${esc(c.gpu_devices.length?c.gpu_devices.join(", "):"none")}; `+
+        `memory ${esc(c.memory_reservation_bytes)} bytes</dd>`+
+      `<dt>compact accounting</dt><dd>held ${esc(a.held_seconds)} s; CPU-region `+
+        `${esc(a.physical_region_seconds)} s; memory-byte ${esc(a.memory_byte_seconds)} s</dd>`+
+      `<dt>projection / config / policy digests</dt><dd class="mono">${esc(s.projection_digest)} / `+
+        `${esc(s.config_digest)} / ${esc(s.policy_digest)}</dd>`)+
+    section("resources",u.resources,
+      `<dt>requested / granted / held / used</dt><dd>${esc(unknown(u.resources.requested))} / `+
+        `${esc(unknown(u.resources.granted))} / ${esc(unknown(u.resources.held))} / `+
+        `${esc(unknown(u.resources.used))}</dd>`)+
+    section("actors",u.actors,
+      `<dt>actor items</dt><dd>${u.actors.items.length ? esc(u.actors.items.length) : "none reported"}</dd>`+
+      `<dt>clock semantics</dt><dd>${esc(u.actors.clock_semantics)}</dd>`)+
+    section("evidence",u.evidence,
+      `<dt>frontier / projection lag</dt><dd>${esc(unknown(u.evidence.frontier_digest))} / `+
+        `${esc(unknown(u.evidence.lag_seconds))}</dd>`)+
+    section("candidate",u.candidate,
+      `<dt>accumulated</dt><dd>${esc(unknown(u.candidate.accumulated_identity))}</dd>`+
+      `<dt>validated</dt><dd>${esc(unknown(u.candidate.validated_identity))}</dd>`+
+      `<dt>frozen production</dt><dd>${esc(unknown(u.candidate.frozen_production_identity))}</dd>`+
+      `<dt>validation debt</dt><dd>${esc(unknown(u.candidate.validation_debt))}</dd>`)+
+    section("targets",t,
+      `<dt>ready / prerequisite / total</dt><dd>${esc(t.ready)} / ${esc(t.prerequisite)} / `+
+        `${esc(t.total)}</dd><dt>production / seed enrolled</dt><dd>${esc(t.production_enrolled)} / `+
+        `${esc(t.seed_enrolled)}</dd><dt>items endpoint</dt><dd>`+
+        `${t.items_page_ref===null ? "none promised" : esc(t.items_page_ref)}</dd>`)+
+    `</div>`;
 }
 
 function renderCampaign(d){
@@ -1050,14 +1183,15 @@ function renderCampaign(d){
     `<dt>stage activity</dt><dd>${esc(clock("worker_activity_at"))}</dd>` +
     `<dt>last scientific result</dt><dd>${esc(clock("last_scientific_result_at"))}</dd>` +
     `<dt>worker</dt><dd>${workerText}</dd>` +
-    (s.schema==="epyc.autokernel.campaign_snapshot.v2" ?
+    (s.schema!=="epyc.autokernel.campaign_snapshot.v1" ?
       `<dt>worker lifecycle revision</dt><dd>${esc(s.worker_lifecycle_revision)}</dd>`+
       `<dt>execution capability / current authority</dt><dd>${esc(s.execution_capability_available)} / `+
       `${esc(s.execution_authorized)}</dd>` :
       `<dt>execution authority</dt><dd>${s.execution_authorized === false ? "false" : "INVALID"}</dd>`) +
     `<dt>last command</dt><dd>${last ? `accepted=${esc(last.accepted)}; completed=` +
       `${esc(last.completed)}; ${esc(last.prerequisite_reason || "no reason")}` : "none"}</dd>` +
-    `</dl>${campaignStreamError ? `<div class="warn">${esc(campaignStreamError)}</div>` : ""}</div>`;
+    `</dl>${campaignStreamError ? `<div class="warn">${esc(campaignStreamError)}</div>` : ""}</div>`+
+    campaignRenderUnified(s);
   const secure = campaignSecure();
   const available = !!(!rejected && envelope.controls && envelope.controls.available && secure);
   let pendingResult=null;
