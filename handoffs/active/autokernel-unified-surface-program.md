@@ -2038,8 +2038,8 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Source `61a63c42`, main `8cbcce9f`. One outstanding selection and a management-only default do not
     constitute concurrent CPU/GPU execution. The end-to-end execution/receipt consumer, prepared
     actors, native evidence feedback and real authority remain required under AKU-06/07/08.
-  - [ ] **AKU-06d — connect actual selected actor/profile preparation**: compose the actor owner
-    packet on current published source and test the real UnifiedCampaignDriver-issued selection,
+  - [ ] **AKU-06d — connect actual selected actor/profile preparation**: finish the real
+    UnifiedCampaignDriver-issued sequence using the actor/profile owner published in AKU-06f,
     public producer registration/reservation, contained fixture execution, exact held cost/stdout,
     native finish/profile publication and restart. Replace private projection/receipt seeding in
     acceptance tests; independently test durable budget drift with a valid current producer receipt.
@@ -2059,6 +2059,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     capability. Actor execution, provider metadata and source/build consumption remain AKU-06d/07k.
     The same checkpoint makes the disk-floor boundary test deterministic without changing storage
     policy: fixed 4 GiB free is OK at equality and pressured below a 5 GiB floor.
+  - [x] **AKU-06f — contained actor/profile producer and durable preparation state**:
+    public controller reservation, exact owned terminal/cost/stdout joins, native
+    INTENT/FINISH/PROFILE_VERIFIED replay and independent preparation budgets are implemented.
+    Cancellation atomically precedes provider admission or refuses; exact owner-local tombstones
+    prevent later admission without pretending to be durable restart authority. Executable reads
+    are bounded/nonblocking, configuration limits finite, and profile receipts deeply immutable
+    with detached canonical serialization. ✅ 2026-09-09 — research source `a9ce9d88`, main
+    `da7dd5bc`; main reproduced **1,839 passed, one strict xfailed, 83 subtests passed**.
+    The strict failure is still the real selected-profile scheduler accounting mismatch (AKU-07k),
+    not waived acceptance. Proposed advice to private source/build preparation remains AKU-06d;
+    prospective measured-profile projection remains VB-AK-UNIFIED-PROFILE. No live actors,
+    inference, builds, provider grants or full campaign acceptance are claimed.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
