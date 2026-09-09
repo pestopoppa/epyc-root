@@ -2110,6 +2110,27 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Ruff and diff checks clean. Tests apply/commit only a disposable tiny source fixture; no CMake
     or inference. Actual contained authoring, build ownership and planner feedback remain AKU-06d.
     Prospective source-policy findings are registered under VB-AK-UNIFIED-PREPARATION before live use.
+  - [x] **AKU-06h — connect installed profile preparation to settled planner feedback**:
+    exact typed mechanism bindings now select the owned profiling child; original authenticated
+    PROFILE_VERIFIED publication joins original issuance, receipt and successful prerequisite
+    settlement before planner feedback. Same-boot replay preserves original validity without
+    restoring live held authority or appending reconstructed evidence. Malformed output closes
+    the original reservation and retains incurred cost. Exact source/default closure and complete
+    retry identities refuse substitution. ✅ 2026-09-09 — final nine-file packet SHA-256
+    `623cbf63587b772747ef9e45cb9e75bf43c94cb79afdf5dc6f4b6ccf30577792`;
+    independent combined acceptance **85 passed, two existing strict xfailed**, no skips;
+    exact primary application hashes match and focused rerun **37 passed in 3.46s**.
+    Successful settlement tests use an explicitly synthetic provider authoring correct original
+    metadata; native BIND/HELD refusals remain. No hardware or scientific qualification claimed.
+    Contract: research `docs/autokernel-installed-profile-preparation.md`.
+  - [ ] **AKU-06i — automatically renew installed profiles with bounded request generations**:
+    derive requests before selection from the installed template, exact settled predecessor and
+    campaign attempt cap; durably reuse the original selected request on restart. Preserve original
+    validity, cost accounting and fairness across targets. Test older-profile/new-failed-attempt
+    attribution together, expiry/restart and exhausted budget. The current connector reports
+    per-target `profile_refresh_unavailable:original_request_consumed:fresh_predeclared_request_required`
+    while allowing unrelated eligible work; this safe fixed-request limitation is not completed
+    autonomous refresh and must not become a recurring operator request.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
