@@ -6,6 +6,26 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 (R23 series) and [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (FOLD series)
 **Index row**: `inference-research-index.md` → this file. **Domain**: inference research.
 
+> **Operator correction, 2026-09-09:** extend the working loop; do not replace it with
+> a prerequisite-heavy framework. Prioritize an actual five-loop experimental GLM CPU
+> run, fix observed failures and retry. Unpublished diagnostic/retention expansion is
+> set aside, not a launch dependency. Preserve existing GPU behavior, original
+> measurement reuse, bounded anchor pruning, resource ownership and production freezes.
+> The new standalone route is incomplete (no source/build dispatch; ordinary runtime
+> settlement defaults to invalid) and is not an accepted replacement. The original
+> feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
+
+- [x] **Compatibility repair — fresh legacy stores and anchor pruning**: ✅ 2026-09-09.
+  Fresh-store initialization restored without resetting populated/corrupt history
+  (`009ef659`, main `cdd13df5`; main 31 focused tests). Legacy keep path again uses
+  bounded existing pruning with current/COR protection (`457f5e37`, main `602bdf16`;
+  actual keep-path regression passes with deletion intercepted). No live deletion.
+- [x] **GLM request transport and original topology order**: ✅ 2026-09-09.
+  Original token-array/cache/seed42 requests and explicit CPU launch flags use existing
+  serving code (`002fc0d0`, main `bfb86301`); retained taskset/numactl order supported
+  (`20b9621c`, main `5038e406`). Main focused combined check:50 passed. No hardware
+  performance or five-loop completion claim.
+
 > **Implementation authorization, 2026-09-08:** the operator has now directed implementation of this
 > handoff, using **GPT-5.6-sol medium** workers for bounded work and the main thread for coordination,
 > review and integration. This supersedes the earlier documentation-only scope, not protected production
