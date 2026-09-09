@@ -116,6 +116,54 @@ def active_body_v2(**changes):
     return row
 
 
+def body_v3(**changes):
+    accounting_body = {
+        "schema": "epyc.autokernel.accounting_view.v1", "receipt_count": 0,
+        "held_seconds": 0.0, "physical_region_seconds": 0.0,
+        "gpu_device_seconds": {}, "memory_byte_seconds": 0.0,
+        "beneficiary_seconds": {},
+    }
+    accounting = accounting_body | {"view_digest": hashlib.sha256(json.dumps(
+        accounting_body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()}
+    unified = {
+        "schema": C.UNIFIED_PROJECTION_SCHEMA,
+        "scheduler": {
+            "schema": "epyc.autokernel.unified_scheduler_projection.v1",
+            "projection_digest": "1" * 64, "config_digest": "2" * 64,
+            "policy_digest": "3" * 64, "round_number": 0, "accounting_epoch": 1,
+            "capacity": {"schema": "epyc.autokernel.resource_vector.v1",
+                         "physical_region_fraction": 0.5, "gpu_devices": ["gpu0"],
+                         "memory_reservation_bytes": 1024},
+            "pending_selection_digest": None, "status": "available",
+            "reason": "controller-owned scheduler projection", "campaign_attempts": 0,
+            "campaign_charged_seconds": 0.0, "accounting": accounting,
+            "coverage_debt_count": 0,
+        },
+        "resources": {"schema": "epyc.autokernel.unified_resource_status.v1",
+                      "status": "not_connected", "reason": "resource telemetry not connected",
+                      "requested": None, "granted": None, "held": None, "used": None},
+        "actors": {"schema": "epyc.autokernel.unified_actor_status.v1",
+                   "status": "not_connected", "reason": "actor result cache not connected",
+                   "clock_semantics": "UTC wall-clock projection; runtime fences remain monotonic",
+                   "items": []},
+        "evidence": {"schema": "epyc.autokernel.unified_evidence_status.v1",
+                     "status": "not_connected", "reason": "evidence frontier not connected",
+                     "frontier_digest": None, "lag_seconds": None},
+        "candidate": {"schema": "epyc.autokernel.unified_candidate_status.v1",
+                      "status": "not_connected", "reason": "candidate projection not connected",
+                      "accumulated_identity": None, "validated_identity": None,
+                      "frozen_production_identity": None, "validation_debt": None},
+        "targets": {"schema": "epyc.autokernel.unified_target_status.v1",
+                    "status": "available", "reason": "resolved campaign enrollment",
+                    "total": 2, "ready": 1, "prerequisite": 1,
+                    "production_enrolled": 1, "seed_enrolled": 1, "items_page_ref": None},
+    }
+    row = body_v2(schema=C.SNAPSHOT_SCHEMA_V3, producer_schema=C.SNAPSHOT_SCHEMA_V3,
+                  unified=unified)
+    row.update(changes)
+    return row
+
+
 def health(snapshot=None, **changes):
     source = snapshot or body()
     row = {"schema": C.HEALTH_SCHEMA, "ok": True,
@@ -185,6 +233,12 @@ def research_v2_contract(tmp_path_factory):
         from autokernel.loop.test_campaign_control import _command, _resolved
         from autokernel.loop.test_campaign_worker_lifecycle import _request
         from autokernel.loop.test_worker_lifecycle import MockProvider
+        if hasattr(producer, "validate_snapshot_v3"):
+            from autokernel.loop import scheduling as producer_scheduling
+            from autokernel.loop.test_scheduling import config as _scheduler_config
+        else:
+            producer_scheduling = None
+            _scheduler_config = None
     finally:
         sys.path.remove(str(research))
 
@@ -320,6 +374,21 @@ def research_v2_contract(tmp_path_factory):
     assert not pending_thread.is_alive() and pending_failures
     pending_controller.reconcile_workers()
     pending_controller.close()
+    v3 = None
+    if hasattr(producer, "validate_snapshot_v3"):
+        assert producer_scheduling is not None and _scheduler_config is not None
+        v3_resolved = _resolved("root-dashboard-real-v3")
+        scheduler_config = producer_scheduling.SchedulerConfig.from_dict(
+            _scheduler_config() | {"config_id": v3_resolved.campaign_id})
+        scheduler_engine = producer_scheduling.SchedulerEngine(
+            scheduler_config,
+            producer_scheduling.initial_state(scheduler_config, v3_resolved.campaign_id))
+        v3_store = root / "v3-store"
+        with producer.CampaignController(
+                v3_resolved, v3_store, snapshot_version=3,
+                scheduler_engine=scheduler_engine) as v3_controller:
+            v3 = v3_controller.publish_snapshot()
+            producer.validate_snapshot_v3(v3)
     return {"initial": initial, "active": active, "pause_ack": pause_ack,
             "settling": settling, "paused": paused, "restart_paused": restart_paused,
             "pause_duplicate": pause_duplicate, "drain_ack": drain_ack,
@@ -329,7 +398,10 @@ def research_v2_contract(tmp_path_factory):
             "escalation_pause_snapshot": escalation_pause_snapshot,
             "escalation_drain_ack": escalation_drain_ack,
             "escalation_draining": escalation_draining,
-            "escalation_drained": escalation_drained}
+            "escalation_drained": escalation_drained, "v3": v3,
+            "v3_fields": sorted(getattr(producer, "SNAPSHOT_V3_FIELDS", ())),
+            "v3_schema": getattr(producer, "SNAPSHOT_SCHEMA_V3", None),
+            "v3_source": Path(producer.__file__).read_bytes()}
 
 
 def test_checked_producer_v1_fixture_contract_digest():
@@ -367,6 +439,67 @@ def test_real_research_v2_producer_round_trips_through_independent_reader(
     assert superseded["desired_state"] == "drained"
     assert superseded["observed_state"] == "draining"
     assert superseded["completion_reason"] == "superseded by a later accepted drain"
+
+
+def test_real_research_v3_producer_round_trips_through_independent_reader(
+        research_v2_contract):
+    row = research_v2_contract["v3"]
+    if row is None:
+        pytest.skip("selected optional research checkout has no snapshot v3 producer")
+    assert row["schema"] == research_v2_contract["v3_schema"] == C.SNAPSHOT_SCHEMA_V3
+    assert sorted(row) == research_v2_contract["v3_fields"]
+    assert C.validate_snapshot(row) == row
+    assert row["unified"]["scheduler"]["status"] == "available"
+    assert row["unified"]["resources"]["requested"] is None
+    assert row["unified"]["targets"]["items_page_ref"] is None
+    assert hashlib.sha256(research_v2_contract["v3_source"]).hexdigest()
+
+
+def test_portable_v3_fixture_retains_v2_commands_and_three_valued_projection():
+    result = result_v2("pause")
+    row = body_v3(control_revision=1, desired_state="paused", observed_state="pausing",
+                  command_results=[result])
+    row["unified"]["scheduler"].update(
+        status="unknown", reason="projection refresh outcome unknown")
+    row["unified"]["targets"].update(
+        status="not_connected", reason="target projection not connected")
+    validated = C.validate_snapshot(row)
+    assert validated["command_results"] == [result]
+    assert validated["unified"]["scheduler"]["status"] == "unknown"
+    assert validated["unified"]["targets"]["status"] == "not_connected"
+    assert validated["unified"]["resources"]["requested"] is None
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda row: row["unified"].update({"invented": {}}),
+    lambda row: row["unified"]["resources"].update({"requested": {}}),
+    lambda row: row["unified"]["resources"].update({"status": "unknown"}),
+    lambda row: row["unified"]["actors"]["items"].append({}),
+    lambda row: row["unified"]["evidence"].update({"lag_seconds": 0}),
+    lambda row: row["unified"]["candidate"].update({"validated_identity": "label"}),
+    lambda row: row["unified"]["targets"].update({"ready": True}),
+    lambda row: row["unified"]["targets"].update({"ready": 2}),
+    lambda row: row["unified"]["scheduler"].update({"pending_selection_digest": "bad"}),
+    lambda row: row["unified"]["scheduler"]["capacity"].update({"grant": True}),
+    lambda row: row["unified"]["scheduler"]["accounting"].update({"held_seconds": 1}),
+])
+def test_v3_nested_projection_mutations_fail_closed(mutation):
+    row = body_v3()
+    mutation(row)
+    with pytest.raises(C.CampaignStatusError):
+        C.validate_snapshot(row)
+
+
+def test_v3_is_a_durable_same_campaign_downgrade_fence():
+    v1 = body(campaign_id="migration", sequence=1)
+    v2 = body_v2(campaign_id="migration", sequence=2, journal_cursor=2)
+    v3 = body_v3(campaign_id="migration", sequence=3, journal_cursor=3)
+    assert C.advance_snapshot(v1, v2)["status"] == "accepted"
+    assert C.advance_snapshot(v2, v3)["status"] == "accepted"
+    downgrade = body_v2(campaign_id="migration", stream_epoch=2, sequence=1,
+                        journal_cursor=4, supervisor_incarnation=2)
+    with pytest.raises(C.CampaignStatusError, match="downgrade"):
+        C.advance_snapshot(v3, downgrade)
 
 
 @pytest.mark.parametrize("result", [
@@ -461,7 +594,7 @@ def test_real_v2_restart_and_late_worker_snapshot_do_not_roll_back(
 
 def test_unknown_snapshot_version_is_not_an_open_union():
     row = active_body_v2()
-    row["schema"] = row["producer_schema"] = "epyc.autokernel.campaign_snapshot.v3"
+    row["schema"] = row["producer_schema"] = "epyc.autokernel.campaign_snapshot.v4"
     with pytest.raises(C.CampaignStatusError, match="unsupported"):
         C.validate_snapshot(row)
 
@@ -510,6 +643,34 @@ def test_real_v2_active_and_intentional_quiescence_are_live_with_live_producer(
     assert result["state"] == "live"
     assert result["controls"]["available"] is True
     assert (result["campaign"]["active_worker"] is None) == (name != "active")
+
+
+def test_v3_disconnected_dependencies_degrade_health_without_disabling_controls(
+        configured, monkeypatch):
+    row = body_v3()
+    write(configured, row)
+    monkeypatch.setenv(C.GATEWAY_URL_ENV, "http://127.0.0.1:9999")
+    monkeypatch.setenv(C.HUB_ORIGIN_ENV, "http://127.0.0.1:8100")
+    monkeypatch.setattr(C, "observe_health", lambda *_args, **_kwargs: {
+        "state": "live", "matched": True, "reason": "producer fixture",
+        "identity": {"allowed_origin": "http://127.0.0.1:8100"}})
+    result = C.snapshot()
+    assert result["state"] == "degraded"
+    assert result["controls"]["available"] is True
+    assert result["campaign"]["unified"]["actors"]["status"] == "not_connected"
+
+
+def test_v3_disconnected_dependencies_stay_history_when_drained_producer_unknown(
+        configured):
+    row = body_v3(desired_state="drained", observed_state="drained",
+                  prerequisite_reason=None)
+    write(configured, row)
+    result = C.snapshot(health_opener=lambda *_args, **_kwargs: (_ for _ in ()).throw(
+        OSError("historical producer is unreachable")))
+    assert result["health"]["state"] == "unknown"
+    assert result["state"] == "history"
+    assert result["controls"]["available"] is False
+    assert result["campaign"]["unified"]["actors"]["status"] == "not_connected"
 
 
 def test_v2_null_worker_unresolved_requires_exact_pending_identity():
@@ -1271,6 +1432,80 @@ def test_page_keeps_token_memory_only_and_has_no_hub_control_proxy():
     assert "secure browser context" in page
     assert "campaign-retry" in page
     assert "AbortController" in page
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
+def test_browser_executes_real_v3_projection_and_preserves_downgrade_fence(
+        research_v2_contract, tmp_path):
+    page = Path(__file__).resolve().parents[1] / "dashboard/static/loop.html"
+    source = "\n".join(re.findall(
+        r"<script[^>]*>(.*?)</script>", page.read_text(encoding="utf-8"), re.DOTALL
+    )).replace("tick();\nsetInterval(tick, 20000);", "")
+    v3 = research_v2_contract["v3"]
+    if v3 is None:
+        pytest.skip("selected optional research checkout has no snapshot v3 producer")
+    v2 = {key: value for key, value in v3.items() if key != "unified"}
+    v2.update(schema=C.SNAPSHOT_SCHEMA_V2, producer_schema=C.SNAPSHOT_SCHEMA_V2,
+              stream_epoch=v3["stream_epoch"] + 1, sequence=1,
+              supervisor_incarnation=v3["supervisor_incarnation"] + 1)
+    settling = body_v3(control_revision=1, desired_state="paused", observed_state="pausing",
+                       command_results=[result_v2("pause")])
+    page_js, runner, fixture = tmp_path / "page.js", tmp_path / "runner.js", tmp_path / "v3.json"
+    page_js.write_text(source, encoding="utf-8")
+    fixture.write_text(json.dumps({"v3": v3, "v2": v2, "settling": settling}),
+                       encoding="utf-8")
+    runner.write_text(r'''
+const fs=require("fs"),{webcrypto}=require("crypto");global.crypto=webcrypto;
+global.TextEncoder=TextEncoder;const made={};function el(id){return made[id]||(made[id]={id,
+ disabled:false,style:{},classList:{add(){},remove(){},toggle(){}},_html:"",
+ set innerHTML(v){this._html=String(v)},get innerHTML(){return this._html},
+ set textContent(v){this._text=String(v)},get textContent(){return this._text||""},
+ addEventListener(){},setAttribute(){},removeAttribute(){},querySelector(){return el(id+">q")},
+ querySelectorAll(){return[]}})}
+global.document={getElementById:el,querySelector:el,querySelectorAll:()=>[],
+ createElement:()=>el("new"),createElementNS:()=>el("newns"),addEventListener(){},body:el("body")};
+global.window={isSecureContext:true,addEventListener(){},location:{href:""}};
+global.setInterval=()=>0;global.setTimeout=()=>0;
+const page=fs.readFileSync(process.argv[2],"utf8"),f=JSON.parse(fs.readFileSync(process.argv[3],"utf8"));
+eval(page+`;globalThis.h={validate:campaignValidateSnapshot,accept:campaignAcceptSnapshot,
+ render:renderCampaign,send:campaignSend,token:value=>campaignToken=value,
+ pending:()=>campaignPending};`);
+(async()=>{h.validate(f.v3);h.validate(f.settling);let posted=null;
+ let unknownField="",disconnectedNonNull="";
+ const unknown=JSON.parse(JSON.stringify(f.v3));unknown.unified.scheduler.invented={};
+ try{h.validate(unknown)}catch(err){unknownField=err.message}
+ const nonNull=JSON.parse(JSON.stringify(f.v3));nonNull.unified.resources.requested={cpu:"claimed"};
+ try{h.validate(nonNull)}catch(err){disconnectedNonNull=err.message}
+ const view={configured:true,state:"degraded",campaign:f.v3,clocks:{},controls:{available:true,
+   gateway_url:"https://gateway.test",reason:null}};
+ global.fetch=async(url,options={})=>{if(url.endsWith("/snapshot"))
+   return{ok:true,status:200,json:async()=>f.v3};posted=JSON.parse(options.body);
+   return{ok:true,status:200,json:async()=>({schema:"epyc.autokernel.campaign_command_result.v2",
+     request_id:posted.request_id,operation:posted.operation,payload_digest:posted.payload_digest,
+     accepted:true,accepted_at:f.v3.generated_at,completed:true,completed_at:f.v3.generated_at,
+     completion_reason:"already quiescent",control_revision:posted.expected_control_revision+1,
+     desired_state:"paused",observed_state:"paused",prerequisite_reason:null})};};
+ h.render({campaign:view});h.token("fixture-token");await h.send("pause",view);
+ let downgrade="";try{h.accept(f.v2)}catch(err){downgrade=err.message}
+ console.log(JSON.stringify({html:made.campaign._html,downgrade,unknownField,disconnectedNonNull,
+   posted,pending:h.pending(),
+   command:made["campaign-command-status"]._text,badge:made["campaign-badgetxt"]._text}));
+})().catch(err=>{console.error(err);process.exit(2)});
+''', encoding="utf-8")
+    result = json.loads(subprocess.run(
+        ["node", str(runner), str(page_js), str(fixture)], capture_output=True,
+        text=True, timeout=10, check=True).stdout)
+    assert result["badge"] == "DEGRADED"
+    assert "declared scheduling capacity (not a grant)" in result["html"]
+    assert "resources · not_connected" in result["html"]
+    assert "unknown / not connected" in result["html"]
+    assert "none promised" in result["html"]
+    assert "downgrade" in result["downgrade"]
+    assert "unsupported fields" in result["unknownField"]
+    assert "must remain null/empty" in result["disconnectedNonNull"]
+    assert result["posted"]["operation"] == "pause"
+    assert result["pending"] is None
+    assert "completed" in result["command"]
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")

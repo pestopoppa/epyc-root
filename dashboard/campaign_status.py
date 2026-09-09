@@ -5,6 +5,7 @@ only a matching transport-health identity can make its producer live.
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import math
@@ -22,6 +23,8 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 SNAPSHOT_SCHEMA = "epyc.autokernel.campaign_snapshot.v1"
 SNAPSHOT_SCHEMA_V2 = "epyc.autokernel.campaign_snapshot.v2"
+SNAPSHOT_SCHEMA_V3 = "epyc.autokernel.campaign_snapshot.v3"
+UNIFIED_PROJECTION_SCHEMA = "epyc.autokernel.unified_campaign_projection.v1"
 HEALTH_SCHEMA = "epyc.autokernel.campaign_transport_health.v1"
 SNAPSHOT_FILENAME = "campaign-snapshot.json"
 STORE_ROOT_ENV = "AUTOKERNEL_CAMPAIGN_STORE_ROOT"
@@ -53,6 +56,7 @@ _SNAPSHOT_FIELDS = frozenset({
 _SNAPSHOT_V2_FIELDS = _SNAPSHOT_FIELDS | frozenset({
     "execution_capability_available", "worker_lifecycle_revision",
 })
+_SNAPSHOT_V3_FIELDS = _SNAPSHOT_V2_FIELDS | frozenset({"unified"})
 _BUILD_FIELDS = frozenset({
     "schema", "scope", "module", "identity_basis", "included_symbols",
     "excluded_scope", "sha256",
@@ -84,6 +88,44 @@ _HEALTH_FIELDS = frozenset({
     "schema", "ok", "transport", "producer", "service_build", "campaign_id",
     "config_generation", "config_digest", "supervisor_incarnation",
     "stream_epoch", "allowed_origin", "error",
+})
+_UNIFIED_FIELDS = frozenset({
+    "schema", "scheduler", "resources", "actors", "evidence", "candidate", "targets",
+})
+_UNIFIED_SCHEDULER_FIELDS = frozenset({
+    "schema", "projection_digest", "config_digest", "policy_digest", "round_number",
+    "accounting_epoch", "capacity", "pending_selection_digest", "status", "reason",
+    "campaign_attempts", "campaign_charged_seconds", "accounting", "coverage_debt_count",
+})
+_UNIFIED_SECTION_FIELDS = {
+    "resources": frozenset({
+        "schema", "status", "reason", "requested", "granted", "held", "used",
+    }),
+    "actors": frozenset({"schema", "status", "reason", "clock_semantics", "items"}),
+    "evidence": frozenset({"schema", "status", "reason", "frontier_digest", "lag_seconds"}),
+    "candidate": frozenset({
+        "schema", "status", "reason", "accumulated_identity", "validated_identity",
+        "frozen_production_identity", "validation_debt",
+    }),
+    "targets": frozenset({
+        "schema", "status", "reason", "total", "ready", "prerequisite",
+        "production_enrolled", "seed_enrolled", "items_page_ref",
+    }),
+}
+_UNIFIED_SECTION_SCHEMAS = {
+    "resources": "epyc.autokernel.unified_resource_status.v1",
+    "actors": "epyc.autokernel.unified_actor_status.v1",
+    "evidence": "epyc.autokernel.unified_evidence_status.v1",
+    "candidate": "epyc.autokernel.unified_candidate_status.v1",
+    "targets": "epyc.autokernel.unified_target_status.v1",
+}
+_UNIFIED_STATUSES = frozenset({"available", "unknown", "not_connected"})
+_RESOURCE_VECTOR_FIELDS = frozenset({
+    "schema", "physical_region_fraction", "gpu_devices", "memory_reservation_bytes",
+})
+_ACCOUNTING_FIELDS = frozenset({
+    "schema", "receipt_count", "held_seconds", "physical_region_seconds",
+    "gpu_device_seconds", "memory_byte_seconds", "beneficiary_seconds", "view_digest",
 })
 
 
@@ -277,6 +319,130 @@ def _validate_build(value: Any, label: str) -> dict[str, Any]:
     return row
 
 
+def _number_map(value: Any, label: str) -> dict[str, float | int]:
+    if not isinstance(value, Mapping) or any(
+            not isinstance(key, str) or not key for key in value):
+        raise CampaignStatusError(f"{label} must be an object with non-empty text keys")
+    result = dict(value)
+    for key, item in result.items():
+        checked = _finite(item, f"{label}.{key}")
+        assert checked is not None
+        if checked < 0:
+            raise CampaignStatusError(f"{label}.{key} must be nonnegative")
+    return result
+
+
+def _validate_resource_vector(value: Any) -> dict[str, Any]:
+    _exact(value, _RESOURCE_VECTOR_FIELDS, "unified scheduler capacity")
+    row = dict(value)
+    if row["schema"] != "epyc.autokernel.resource_vector.v1":
+        raise CampaignStatusError("unified scheduler capacity schema is unsupported")
+    fraction = _finite(row["physical_region_fraction"], "capacity physical_region_fraction")
+    assert fraction is not None
+    if fraction < 0 or fraction > 1:
+        raise CampaignStatusError("capacity physical_region_fraction must be between 0 and 1")
+    row["gpu_devices"] = _string_list(row["gpu_devices"], "capacity gpu_devices")
+    _integer(row["memory_reservation_bytes"], "capacity memory_reservation_bytes")
+    if row["gpu_devices"] and fraction <= 0:
+        raise CampaignStatusError("GPU capacity must declare a host CPU fraction")
+    return row
+
+
+def _validate_accounting(value: Any) -> dict[str, Any]:
+    _exact(value, _ACCOUNTING_FIELDS, "unified scheduler accounting")
+    row = dict(value)
+    if row["schema"] != "epyc.autokernel.accounting_view.v1":
+        raise CampaignStatusError("unified scheduler accounting schema is unsupported")
+    _integer(row["receipt_count"], "accounting receipt_count")
+    for field in ("held_seconds", "physical_region_seconds", "memory_byte_seconds"):
+        checked = _finite(row[field], f"accounting {field}")
+        assert checked is not None
+        if checked < 0:
+            raise CampaignStatusError(f"accounting {field} must be nonnegative")
+    row["gpu_device_seconds"] = _number_map(
+        row["gpu_device_seconds"], "accounting gpu_device_seconds")
+    row["beneficiary_seconds"] = _number_map(
+        row["beneficiary_seconds"], "accounting beneficiary_seconds")
+    _digest(row["view_digest"], "accounting view_digest")
+    body = {key: row[key] for key in _ACCOUNTING_FIELDS if key != "view_digest"}
+    expected = hashlib.sha256(json.dumps(
+        body, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        allow_nan=False).encode()).hexdigest()
+    if row["view_digest"] != expected:
+        raise CampaignStatusError("accounting view_digest does not match its content")
+    return row
+
+
+def _validate_unified(value: Any) -> dict[str, Any]:
+    _exact(value, _UNIFIED_FIELDS, "unified projection")
+    unified = dict(value)
+    if unified["schema"] != UNIFIED_PROJECTION_SCHEMA:
+        raise CampaignStatusError("unified projection schema is unsupported")
+    scheduler = unified["scheduler"]
+    _exact(scheduler, _UNIFIED_SCHEDULER_FIELDS, "unified scheduler")
+    scheduler = dict(scheduler)
+    if scheduler["schema"] != "epyc.autokernel.unified_scheduler_projection.v1":
+        raise CampaignStatusError("unified scheduler schema is unsupported")
+    for field in ("projection_digest", "config_digest", "policy_digest"):
+        _digest(scheduler[field], f"unified scheduler {field}")
+    for field in ("round_number", "accounting_epoch", "campaign_attempts",
+                  "coverage_debt_count"):
+        _integer(scheduler[field], f"unified scheduler {field}")
+    charged = _finite(scheduler["campaign_charged_seconds"],
+                      "unified scheduler campaign_charged_seconds")
+    assert charged is not None
+    if charged < 0:
+        raise CampaignStatusError("unified scheduler campaign_charged_seconds is negative")
+    if scheduler["pending_selection_digest"] is not None:
+        _digest(scheduler["pending_selection_digest"],
+                "unified scheduler pending_selection_digest")
+    _enum(scheduler["status"], _UNIFIED_STATUSES, "unified scheduler status")
+    _text(scheduler["reason"], "unified scheduler reason")
+    scheduler["capacity"] = _validate_resource_vector(scheduler["capacity"])
+    scheduler["accounting"] = _validate_accounting(scheduler["accounting"])
+    unified["scheduler"] = scheduler
+
+    for name, fields in _UNIFIED_SECTION_FIELDS.items():
+        item = unified[name]
+        _exact(item, fields, f"unified {name}")
+        item = dict(item)
+        if item["schema"] != _UNIFIED_SECTION_SCHEMAS[name]:
+            raise CampaignStatusError(f"unified {name} schema is unsupported")
+        _enum(item["status"], _UNIFIED_STATUSES, f"unified {name} status")
+        _text(item["reason"], f"unified {name} reason")
+        unified[name] = item
+
+    resources = unified["resources"]
+    actors = unified["actors"]
+    evidence = unified["evidence"]
+    candidate = unified["candidate"]
+    targets = unified["targets"]
+    for name in ("resources", "actors", "evidence", "candidate"):
+        if unified[name]["status"] != "not_connected":
+            raise CampaignStatusError(f"unified {name} v1 supports only not_connected")
+    if any(resources[field] is not None for field in ("requested", "granted", "held", "used")):
+        raise CampaignStatusError("disconnected unified resources must remain null")
+    if (actors["clock_semantics"] !=
+            "UTC wall-clock projection; runtime fences remain monotonic"
+            or not isinstance(actors["items"], list) or actors["items"]):
+        raise CampaignStatusError("disconnected unified actors are malformed")
+    if evidence["frontier_digest"] is not None or evidence["lag_seconds"] is not None:
+        raise CampaignStatusError("disconnected unified evidence must remain null")
+    if any(candidate[field] is not None for field in (
+            "accumulated_identity", "validated_identity", "frozen_production_identity",
+            "validation_debt")):
+        raise CampaignStatusError("disconnected unified candidate must remain null")
+    for field in ("total", "ready", "prerequisite", "production_enrolled", "seed_enrolled"):
+        _integer(targets[field], f"unified targets {field}")
+    if targets["ready"] + targets["prerequisite"] != targets["total"]:
+        raise CampaignStatusError("unified target counts disagree")
+    if (targets["production_enrolled"] > targets["total"]
+            or targets["seed_enrolled"] > targets["total"]
+            or targets["items_page_ref"] is not None):
+        raise CampaignStatusError("unified target enrollment/page reference is invalid")
+    return unified
+
+
 def validate_snapshot(value: Any) -> dict[str, Any]:
     if not isinstance(value, Mapping):
         raise CampaignStatusError("campaign snapshot must be an object")
@@ -287,10 +453,13 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
     elif schema == SNAPSHOT_SCHEMA_V2:
         version = 2
         fields = _SNAPSHOT_V2_FIELDS
+    elif schema == SNAPSHOT_SCHEMA_V3:
+        version = 3
+        fields = _SNAPSHOT_V3_FIELDS
     else:
         raise CampaignStatusError("campaign snapshot schema is unsupported")
     _exact(value, fields, f"campaign snapshot v{version}")
-    row = dict(value)
+    row = copy.deepcopy(dict(value))
     if row["producer_schema"] != schema:
         raise CampaignStatusError("campaign snapshot schema is unsupported")
     build = _validate_build(row["producer_build"], "producer_build")
@@ -299,7 +468,7 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
     _digest(row["config_digest"], "config_digest")
     _digest(row["requested_manifest_digest"], "requested_manifest_digest")
     for field, minimum in (("supervisor_incarnation", 1), ("stream_epoch", 1),
-                           ("sequence", 1), ("journal_cursor", 0 if version == 2 else 1),
+                           ("sequence", 1), ("journal_cursor", 0 if version >= 2 else 1),
                            ("control_revision", 0)):
         _integer(row[field], field, minimum)
     _timestamp(row["generated_at"], "generated_at")
@@ -342,7 +511,7 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
     if revisions != sorted(revisions) or (revisions and revisions[-1] > row["control_revision"]):
         raise CampaignStatusError("command_results are not in control revision order")
     generated = datetime.fromisoformat(row["generated_at"].replace("Z", "+00:00")).timestamp()
-    if version == 2:
+    if version >= 2:
         if not isinstance(row["execution_capability_available"], bool):
             raise CampaignStatusError("v2 execution capability flag must be boolean")
         _integer(row["worker_lifecycle_revision"], "worker_lifecycle_revision", 0)
@@ -397,7 +566,7 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
             event_time = datetime.fromisoformat(row[field].replace("Z", "+00:00")).timestamp()
             if event_time > generated + MAX_CLOCK_SKEW_S:
                 raise CampaignStatusError(f"{field} is later than snapshot generation")
-    if version == 2 and active_worker is not None:
+    if version >= 2 and active_worker is not None:
         for field in ("started_at", "activity_at"):
             if active_worker[field] is not None:
                 event_time = datetime.fromisoformat(
@@ -407,6 +576,8 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
                         f"active_worker {field} is later than snapshot generation")
     row["producer_build"] = dict(build)
     row["command_results"] = results
+    if version == 3:
+        row["unified"] = _validate_unified(row["unified"])
     return row
 
 
@@ -509,8 +680,9 @@ def advance_snapshot(previous: Mapping[str, Any] | None,
         if not allow_campaign_switch:
             raise CampaignStatusError("campaign switch requires explicit selection")
         return {"status": "switched", "snapshot": new}
-    if old["schema"] == SNAPSHOT_SCHEMA_V2 and new["schema"] == SNAPSHOT_SCHEMA:
-        raise CampaignStatusError("same campaign cannot downgrade snapshot protocol v2 to v1")
+    protocol_rank = {SNAPSHOT_SCHEMA: 1, SNAPSHOT_SCHEMA_V2: 2, SNAPSHOT_SCHEMA_V3: 3}
+    if protocol_rank[new["schema"]] < protocol_rank[old["schema"]]:
+        raise CampaignStatusError("same campaign cannot downgrade snapshot protocol")
     old_key = (old["stream_epoch"], old["sequence"])
     new_key = (new["stream_epoch"], new["sequence"])
     if new_key < old_key:
@@ -535,7 +707,7 @@ def advance_snapshot(previous: Mapping[str, Any] | None,
                  or new["journal_cursor"] < old["journal_cursor"]
                  or new["supervisor_incarnation"] <= old["supervisor_incarnation"])):
         raise CampaignStatusError("new epoch rolls back cursor/control/incarnation")
-    if new["schema"] == SNAPSHOT_SCHEMA_V2 and old["schema"] == SNAPSHOT_SCHEMA_V2:
+    if protocol_rank[new["schema"]] >= 2 and protocol_rank[old["schema"]] >= 2:
         if new["worker_lifecycle_revision"] < old["worker_lifecycle_revision"]:
             raise CampaignStatusError("newer snapshot rolls back worker lifecycle revision")
         old_worker, new_worker = old["active_worker"], new["active_worker"]
@@ -744,9 +916,13 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
     unresolved = (body["observed_state"] == "ownership_unresolved"
                   or (worker is not None
                       and worker["state"] in {"teardown_failed", "unresolved"}))
-    if live and not unresolved:
+    unified_stuck = (body["schema"] == SNAPSHOT_SCHEMA_V3
+                     and any(body["unified"][name]["status"] != "available"
+                             for name in ("scheduler", "resources", "actors", "evidence",
+                                          "candidate", "targets")))
+    if live and not unresolved and not unified_stuck:
         state = "live"
-    elif unresolved or health["state"] in {"failed", "mismatch"}:
+    elif unresolved or (live and unified_stuck) or health["state"] in {"failed", "mismatch"}:
         state = "degraded"
     elif terminal or health["state"] == "unknown":
         state = "history"
@@ -771,7 +947,8 @@ def snapshot(*, now: float | None = None, health_opener=_NO_REDIRECT_OPENER,
 __all__ = [
     "CAMPAIGN_ID_ENV", "CONFIG_DIGEST_ENV", "CONFIG_GENERATION_ENV",
     "GATEWAY_URL_ENV", "HEALTH_SCHEMA", "HEALTH_TIMEOUT_S", "HUB_ORIGIN_ENV",
-    "SNAPSHOT_FILENAME", "SNAPSHOT_SCHEMA", "SNAPSHOT_SCHEMA_V2", "STORE_ROOT_ENV",
+    "SNAPSHOT_FILENAME", "SNAPSHOT_SCHEMA", "SNAPSHOT_SCHEMA_V2", "SNAPSHOT_SCHEMA_V3",
+    "STORE_ROOT_ENV", "UNIFIED_PROJECTION_SCHEMA",
     "CampaignStatusError",
     "advance_snapshot", "observe_health", "read", "snapshot", "validate_health",
     "validate_snapshot",

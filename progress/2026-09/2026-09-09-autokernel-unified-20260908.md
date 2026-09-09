@@ -578,3 +578,38 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
 - This is an in-progress coordination/source-registration checkpoint. **No new implementation
   checkbox is marked complete**: the previously accepted count remains 26. The two prospective
   Vidya wiring tasks remain open; all live hardware, OP-41 and cutover gates are unchanged.
+
+### Reviewed driver/worker foundation and dashboard-v3 boundary
+
+- Published research source **61a63c42**, promoted to main **8cbcce9f**: 17 reviewed files connect
+  durable unified driver issuance/settlement and the contained planned-worker/parent-native boundary.
+  An independent clean checkout containing only those release files passed **1,444 tests and
+  83 subtests**, twice; five main-owned boundary-probe files passed **20 tests**. After removing two
+  unused imports, the final focused run passed **42 tests** and all 15 Python files passed Ruff.
+  Draft A2, lifecycle-observation and end-to-end driver-execution files were excluded from publication.
+- The driver binds current catalog, complete arm identity and supervisor before materialization;
+  duplicate/conflicting preview cannot delete receipt history, and rollback preserves seed queues.
+  Issuance and settlement are native/fsynced before state application. Indexed totals keep the
+  operational projection independent of historical receipt length. The accepted v3 protocol fences
+  old readers and reports genuinely disconnected consumers instead of inventing readiness.
+- The worker bridge proves current child/process/container membership before releasing its payload,
+  bounds IPC and pending parent-evidence requests, validates all sealed captures before the first
+  native measurement callback, and fences terminal results only after durable acceptance. Late
+  provider returns retain actual held cost but cannot preserve scientific freshness. Real-bootstrap
+  cgroup2 refusal and tiny explicitly owned fork fixtures do not imply real-provider containment.
+- Accepted and integrated the secondary team's exact four-file dashboard-v3 packet. Main independently
+  reproduced **96 tests** against the published producer, including actual page JavaScript, and
+  confirmed every submitted SHA-256. Refreshed GitNexus reports LOW impact, five internal consumers.
+  The existing page preserves v1/v2 controls and downgrade fencing, rederives accounting identity in
+  Python, and keeps disconnected values null. A live disconnected producer is degraded; an offline
+  drained snapshot remains history. No route, proxy, registry or running service was changed.
+- Per-task wrap-up now marks **AKU-06c, AKU-07c and AKU-09e** complete: **three new accepted sub-items**,
+  **29 total accepted implementation sub-items**. All twelve parent tasks remain open. The actual
+  driver-to-worker execution/held-settlement connection is still a separate assigned package; actor,
+  evidence, retention, validation, migration and standalone packaging remain under their owners.
+  Whole-lifecycle telemetry and A2 drafts still require main acceptance. These are active source
+  implementation tasks, not operator blockers or unattended/live-completion claims.
+- Teams received publication receipts and retain per-package wrap-up obligations. Main owns shared
+  handoff/progress/index application and reviewed publication. Bus drain/heartbeat again refused the
+  non-roster session ID; no peer identity was used. Frozen kernels, real grants, services, research
+  runs and historical stores remain untouched; OP-41 and measurement/cutover gates remain intact.
