@@ -155,7 +155,30 @@ management controls are the next disjoint assignments.
   now owns durable candidate transactions and the narrow serialized controller/journal seam; the other
   two workers retain scoped evidence and planned serving. No service was deployed or activated.
 
-The next consumer integrations are frozen planned serving arms, durable candidate transactions and the
+### Frozen planned-serving consumer accepted
+
+- The management root checkpoint is `94b8b93a`, main merge `40cfe499`.
+- AKU-04b now connects immutable plan/recipes/prompts to the existing `_measure_once` path without
+  rebuilding for runtime arms. Main's **117 tests and 3 subtests** pass across serving, resolved recipe,
+  ExperimentPlan and planned consumer. Focused worker coverage is 26 tests plus 3 subtests; ruff and
+  diff checks pass. The concurrently changing evidence draft prevented a clean full-loop worker run;
+  those constructor mismatches were not suppressed or attributed to serving.
+- Raw artifacts are retained before provider completion. No failed/missing/nonfinite timing becomes
+  zero; native slot errors and warmup are preserved without increasing independent-unit N. Main
+  required exact request count/digests before admission, previous-unit membership/prefix validation,
+  prior-lineage binding, distinct typed witnesses, and stopping after an invalid unit. Legacy estimator
+  and defaults remain unchanged. This is a real launcher consumer tested with fake processes/providers,
+  not proof of a deployed enclosing guard or valid live CPU/GPU measurement.
+- Research publication: `1d7de099`, main merge `b4d7db7b`; only its five reviewed files were included.
+  That worker now owns prospective measurement capture and the root Vidya reader/corpus consumer.
+  Candidate transactions retain exclusive journal/controller ownership; the native-kind delta must be
+  reviewed/integrated by main, not concurrent worker writes. Existing source registration is reused.
+- Production enrollment audit found that canonical command construction itself creates slot-save
+  directories, and startup adds environment, placement and pre-eviction behavior beyond argv. A future
+  canonical export must be genuinely non-mutating and pin these lifecycle declarations. Nothing was
+  imported/launched/pre-evicted or changed in the orchestrator; only source was inspected.
+
+The next consumer integrations are prospective native evidence, durable candidate transactions and the
 existing dashboard's campaign surface. A helper is not a completed parent slice until real consumers
 and integration acceptance exist. The Vidya source table/task registers the prospective current-loop
 measurement hook. Operational journal snapshots are not claim tuples.

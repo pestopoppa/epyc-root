@@ -1855,6 +1855,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     cached. This is structural validation, not verified independence or a second grading ladder. Actual
     instrument consumers, native phase/unit events, A2 semantic attestation, power/bounded-null handling
     and shared ClaimTuple projection remain required for AKU-04.
+  - [x] **AKU-04b — frozen planned-serving launcher consumer**: distinct resolved recipes, exact
+    canonical prompt bytes, fixed unit order/membership, retained native observations and one shared
+    admissible-unit view. ✅ 2026-09-09 — main's 117 tests and 3 subtests pass, including legacy serving,
+    resolved recipe and ExperimentPlan coverage. Missing/nonfinite/boolean timing fields cannot become
+    zero measurements; warmup/measurement slot failures are retained, raw observations are sunk before
+    provider completion, and witness states are not inferred from references. Failed units stop the
+    sequence. Continuation prevalidates an exact completed prefix and prior lineage before any admission.
+    The trusted provider must enclose the worker with owned-descendant and stage-plus-teardown bounds;
+    these are injected consumer contracts, not a local process-tree enforcement implementation. Native
+    journal/ClaimTuple hook, real lifecycle samplers, registered inference protocol and worker/provider
+    integration remain required. All resulting use status remains `policy_undefined` in this slice.
 - [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
   delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
   identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
