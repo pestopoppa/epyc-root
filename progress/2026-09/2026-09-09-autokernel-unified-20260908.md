@@ -645,3 +645,39 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   fixes, not operator blockers. Other teams retain separate file ownership and per-package wrap-ups.
   Bus drain/heartbeat again rejected the non-roster session ID; no roster/peer identity was changed.
   No frozen kernel, live service, real grant, inference run, corpus or historical artifact was touched.
+
+### Reviewed retention and historical-migration boundary
+
+- Published research source **1be3cf79**, main **e678a2e2**: the exact four-file team-2 retention
+  packet and seven-file team-3 migration packet were reviewed and integrated. Migration's older
+  measurement-capture module was not copied wholesale: only its public `ArtifactStore.exclusive()`
+  method and focused tests were added, preserving the published native bridge/read APIs. All eleven
+  resulting hashes matched the independent clean acceptance checkout. Main reproduced **250 tests
+  plus 82 subtests** for retention and **110 tests** for migration; the combined clean release passed
+  **1,750 tests plus 165 subtests**, final primary-tree focused checks **68 tests**, and Ruff/diff gates.
+- The first combined run correctly refused fixture storage beneath the scratch directory used for
+  the clean checkout (68 failed, 1,690 passed, 150 subtests passed). Main moved only its disposable
+  checkout to the worktree area and reran the identical code successfully. No policy was relaxed.
+  GitNexus refresh initially exited 139; the repository wrapper's next full recovery succeeded at
+  `d75bc9ec` without deleting metadata. Fresh impacts were LOW: store exclusion nine upstream
+  dependants, retention dry-selection helper zero indexed callers.
+- Retention now exercises actual candidate/store/native-Journal reopen recovery, validates one
+  bounded exact tombstone index per held operation, and requires matching descriptor, preconditions,
+  source/path/content and prepared policy. Sequential replay is not called concurrency. Its actual
+  maintenance-owner connection remains assigned: separate exclusion must survive slow provider/disk
+  I/O without holding the health/control mutex or fabricating release/accounting. Only explicitly
+  disposable fixture bytes were removed; these tests touched no research artifacts.
+- Migration uses safely escaped read-only SQLite URIs, strict integer/record/byte bounds, and its own
+  installed closed v1 reader before creating the destination snapshot. Public verified reentrant
+  exclusion covers dedicated-destination checks and publication, with thread/process tests. Unknown
+  legacy measurement authority remains unknown; import does not initialize candidate state or grant
+  serving/validation rights. No real migration, cleanup, provider, service, or frozen tree was used.
+- Per-task wrap-up adds **AKU-10b and AKU-10c**: **33 accepted implementation sub-items**, all twelve
+  parents still open. No separate new source family or grader is introduced. Remaining native owner,
+  evidence and live-cutover work is already tracked; no new task/decline is needed for this boundary.
+  Teams receive publication receipts and keep the operator's per-package wrap-up discipline.
+- Main's further validation review reproduced five sealed-row replay identity gaps (batch, row,
+  candidate, comparator and row-set); that owner is correcting them before acceptance. Actual A2
+  native persistence and versioned lifecycle attachment are also actively assigned, with disjoint
+  controller/Journal ownership. Bus drain/heartbeat still reject the non-roster session ID; no peer
+  file, roster entry, service ownership or live authority was changed.
