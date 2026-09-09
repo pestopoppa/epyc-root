@@ -1282,3 +1282,22 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   failure was resume after terminal SIGTERM drain; preserve terminal rule, split test cases.
 - One newly completed implementation sub-item; all twelve parent tasks remain open.
   No real installed dry run, model builds/inference, grants or production changes.
+
+### Continuous evidence and bounded native journal checkpoint
+
+- Research 50b0d23f connects explicit startup/factory v2 feed configuration to the actual
+  runtime execution thread and planner. Exact source-byte loading, stable index facade,
+  coherent retrieval/snapshot, relevant eviction incompleteness and finite admission frontier
+  prevent stale or incomplete evidence from silently restoring support. V1 stays supported.
+- Durable projection now precedes the sole owned ACK. Journal v2 fences old readers, caps
+  metadata at 64 KiB, bounds shared seal/data traversal, persists proof/empty-shard progress,
+  validates retired descriptors and permits verified active append. Review corrections covered
+  deadline/ACK ordering, FIFO reads, post-proof mutation, rotation, restart and archive resealing.
+- Main on published native e495de82: 2,185 passed, one existing accounting xfailed, 83 subtests,
+  no skips in 55.30s. Focused feed/runtime/owner: 95 passed in 4.10s. Ruff fourteen paths clean;
+  all sixteen publication files byte-equal tested composition. Frozen full patch SHA:
+  23d9ca0beaeb900776f0f34892dff41a34e18c4ea75e14c9100e6853db50fdb7.
+- AKU-08i complete; AKU-08c remains open for real effect/use and semantic decision consumers.
+  No fake grading, fallback snapshot, new ledger ladder, production admission or hardware run.
+  Server evidence and scheduled model preparation continue separately. One new completed
+  sub-item, all twelve parents open. Per-task wrap-up; no index pruning or wiki sweep.

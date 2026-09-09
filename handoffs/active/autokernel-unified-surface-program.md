@@ -2325,6 +2325,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     typed receipt eligibility, owning comparison/validation decisions and incremental feedback.
     Keep experimental champion selection
     separate from deployment authority; always-Unavailable adapters do not complete this task.
+  - [x] **AKU-08i — connect bounded continuous evidence to actual standalone planning**:
+    ✅ 2026-09-09 research 50b0d23f. Startup/factory v2 installs explicit feed configuration;
+    SQLite/reader ownership opens, drains and closes on the execution thread. The planner
+    consumes one coherent retrieval/snapshot bundle through a stable view; relevant evicted
+    conflicts remain incomplete before top-k and cached admission. Exact captured ROOT bytes
+    avoid stale module/bytecode execution. Finite captured-frontier readiness prevents skipped
+    queued invalidations without chasing unrelated writes forever. Durable projection precedes
+    sole owned ACK; Journal v2 bounded proof/metadata reads preserve rotation, archive, retry
+    and restart semantics. Main latest-native composition: 2,185 passed, one existing strict
+    expected failure, 83 subtests, no skips (55.30s); 95 focused tests independently pass.
+    Fourteen code/test paths pass Ruff; all sixteen publication files match tested bytes.
+    Registered effect/use adapters, scientific eligibility, actual installed providers/export
+    and hardware acceptance remain AKU-08c/07n/12, not granted by a live feed connection.
   - [x] **AKU-08d — execute exactly the pinned canonical source bytes**: stable bounded no-follow,
     nonblocking regular-file reads are hashed and those exact bytes compiled/executed, bypassing
     stale timestamp-valid bytecode. ✅ 2026-09-09
