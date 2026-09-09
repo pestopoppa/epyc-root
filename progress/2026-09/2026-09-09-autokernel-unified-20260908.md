@@ -732,3 +732,43 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   are active source fixes, not operator-deferred work. ROOT/research GitNexus wrappers refreshed
   successfully; README freshness is clean. No live inference, service activation, real grant, corpus
   ingestion, production kernel or historical research artifact changed.
+
+### Reviewed native validation consumer boundary
+
+- Published research source **1ac8393e**, main **deab8f40a0a6e1bb96d17e4fa4f6d0097bc541d7**:
+  exactly the three frozen validation-consumer files from team 3. Main reproduced their hashes in
+  an independent checkout at `6f869803`, with **246 adjacent/edge tests** and the combined
+  **1,762 loop/Journal/storage tests plus 165 subtests**, Ruff and scoped diff checks passing.
+  The primary worker separately reproduced 252 tests in the in-flight primary tree; the clean
+  release is the publication evidence, not an assertion that unrelated drafts are accepted.
+- The consumer binds each submission to the current due frozen batch, both manifests, required
+  row set, plan/lineage and full executable/loader-name/DSO identities. A sealed row retains and
+  reopens exact carrier/raw/calibration bytes and repeats complete-measurement and structural-use
+  checks. Main's earlier receipt substitution regressions and team 3's diagnostic/ineligible-pair
+  corrections are included. Required CPU and GPU rows remain independent; optional seed debt
+  cannot silently substitute for production coverage.
+- Real semantic authority remains explicitly unavailable for v1's unproven loaded instrument.
+  The same team-3 owner is now implementing the actual native-v2/ClaimTuple/owning-objective and
+  row/LOO semantic consumer. This is assigned source work, not an operator-deferred proposal.
+  No competing grading ladder or retrospective claim reconstruction was introduced. This
+  package is a consumer of the already registered native arm source, not a new measurement source.
+- Fresh research indexing initially exited 139 during incremental analysis; the wrapper's
+  subsequent full recovery succeeded without metadata deletion (88,643 nodes, 152,016 edges).
+  Exact `record_native_row` and `reopen_row` impacts are LOW with zero indexed upstream callers.
+  Three-file publication preserves all in-flight A2, observation-v2 and stdout hunks.
+- Additional review reproduced a controller-backed cached-bank regression: a second logical
+  discovery screen could not use a verified sealed bank without creating a new anchor phase.
+  The original A2 owner is correcting durable bank-reference/restart handling before acceptance.
+  Stdout review found blocking lock acquisition and same-inode/same-size replacement exposure;
+  its owner is binding reads to the bootstrap's recorded bytes/hash/truncation fields and
+  preserving terminal/held-cost evidence on optional output failure. Both fixes remain assigned.
+- Main released precise actor/profile native-owner hooks to team 2, independently of its
+  disjoint feed and maintenance work. Existing Journal/ClaimTuple authorities remain reused.
+  The user goal explicitly includes the complete dry run and five-loop monitored test;
+  **AKU-12a/12b** now make those acceptance requirements discoverable, without treating mock
+  loops as live acceptance or widening production/resource trust boundaries.
+- Per-task wrap-up adds **AKU-05e**: **35 accepted implementation sub-items**, all twelve
+  parents still open. Two explicit acceptance tasks were added; zero new declines. No index
+  pruning, handoff compaction or wiki compilation sweep was run. Bus drain still refuses this
+  non-roster session ID; no roster or peer bus file was changed. A continuation log initially
+  used the default audit shard; subsequent logging restored the established session/shard IDs.
