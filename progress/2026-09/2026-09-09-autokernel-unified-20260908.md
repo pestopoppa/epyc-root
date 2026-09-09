@@ -1652,3 +1652,23 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   scheduler settlement. Enrollment is not settlement or durable expiry permission. BIND/HELD/ENROLL
   gates remain unchanged; all 12 parent tasks remain open. No live inference, production mutation,
   index pruning or wiki sweep.
+
+## Full regression checkpoint at research 1f38aefb
+
+- Re-polled the original live test handle34837 to terminal exit0; did not restart it.
+  Published research `1f38aefb122b73bd6001ba2b54ea11d66546fa3d` passes2,513 tests,
+  two strict expected BIND/HELD failures, and83 subtests in307.84s, with no skips.
+  Command: `python3 -B -m pytest -q scripts/kernel_rnd/autokernel/loop scripts/kernel_rnd/autokernel/test_journal.py`;
+  `PYTHONPATH=.:scripts/kernel_rnd`, `PYTHONDONTWRITEBYTECODE=1`, RAID TMPDIR,
+  `AUTOKERNEL_FACTORY_DRY_RUN_TREE` points to the primary research lane and
+  `EPYC_ROOT_REPO` to the primary ROOT lane at0d999909. No production or model build.
+- Added completed AKU-06m for this exact software acceptance checkpoint; all12 parent tasks
+  remain open. CPU profiling and runtime-dashboard changes are still worker-local and are
+  not covered by this result. No real-host export dry-run or five-loop GLM run has occurred.
+- Main review requested that dashboard observation faults cannot turn an already durable
+  settlement into an execution retry, and that observation snapshots avoid mutable runtime
+  reads under the controller lock. These remain within the assigned dashboard implementation.
+- Multi-child accounting review confirms single-receipt settlement cannot charge planner,
+  critic and build as one attempt. AKU-06l remains open under existing BIND/HELD approval;
+  proposal refinement covers prelaunch denial, partial prefixes, durable append ordering,
+  legitimate partition overlap and resource-time versus elapsed-time accounting.
