@@ -8,6 +8,23 @@ source completion, publication, deployment and live acceptance are separate.
 
 ## Accepted first slices
 
+### Aggregate dashboard integration
+
+- Integrated nine research and five ROOT files for bounded evidence, actor, profile and
+  calibration observations in the existing snapshot/page. The original owner computes reductions;
+  the publisher reads cached values only. Original observation timestamps, failed attempt dates
+  and heartbeat remain separate; resource/candidate sections still explicitly lack producers.
+- Final review reproduced a future diagnostic timestamp poisoning later snapshots and close.
+  The setter now rejects it before replacing cache. Regression proves preserved prior observation,
+  exactly one settlement despite a malformed actor report, and safe runtime close.
+- Main current-tree acceptance:165 research tests passed, two strict BIND/HELD xfails, no skips,
+  in81.65s;41 ROOT dashboard tests passed in0.51s. Changed research Python Ruff/diff checks pass.
+  Earlier pre-compaction test results were unavailable; process inspection proved no pytest was
+  live before this new run. These results cover the corrected integrated tree, not a hardware run.
+- Added completed AKU-09h. AKU-09g still owns resource/candidate connection and live acceptance;
+  all12 parents remain open. Profile Vidya projection is separate and still under review.
+  No production mutation, service reload, hardware trial, index pruning or wiki sweep.
+
 ### GLM expected-inventory publication
 
 - Added metadata-only preparation packet at

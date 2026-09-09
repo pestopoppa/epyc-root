@@ -1,5 +1,19 @@
 # EPYC Project Dashboard Hub
 
+The existing unified `/loop` campaign view also accepts additive
+`unified_campaign_projection.v3` within `campaign_snapshot.v3`. Evidence and
+actor/profile/calibration observations come from bounded original producer caches
+(16 + 24 + 24 detail rows, 32 KiB combined); the publisher never opens their SQLite
+or native artifacts. Original source time, refresh-attempt time and publisher heartbeat
+are distinct. Profile counts describe the last owning planning reduction, not current
+eligibility; FINISH is not scheduler settlement; raw calibration is not qualified
+controls/ranking. Cached findings are not a total corpus count. The independent Python
+and browser readers retain old closed versions, reject aggregate rollback/downgrade,
+and render the retained accepted freshness envelope after a malformed newer response.
+Diagnostics never change command ACK semantics or confer execution authority.
+Resource and candidate aggregates remain explicitly unconnected. This source change
+does not reload, deploy or claim freshness of any existing running dashboard.
+
 A tiny, dependency-free web server (Python **stdlib only**) owned by the
 governance repo (`epyc-root`). It is the project's **view plane**: every
 dashboard page, the shared nav, and the machine-readable dashboard directory
