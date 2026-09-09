@@ -178,6 +178,33 @@ management controls are the next disjoint assignments.
   canonical export must be genuinely non-mutating and pin these lifecycle declarations. Nothing was
   imported/launched/pre-evicted or changed in the orchestrator; only source was inspected.
 
+### Scoped evidence boundary accepted
+
+- Planned-serving root checkpoint: `c92af8a4`, main merge `45740647`.
+- AKU-08a is accepted after main's **173 tests** pass, including **57 focused evidence tests**. Mandatory
+  applicable conflicts precede top-k; raw grades, retrieval completeness and actual support remain
+  distinct. Transfer is directed/nontransitive, coexistence victim-directed and noncomposable, and
+  reject audits have explicit target-confirmation budgets. No new measurement ladder or execution
+  authority is created. The offline CLI uses the real projection and remains non-executing.
+- Main reproduced and required fixes for missing generation maps, malformed invalidation quarantine,
+  new same-generation findings, new broader refutations, dropped older findings with unchanged maximum
+  event number, epoch/rule changes and missing semantic bucket data. Relevant content and semantic
+  fences now invalidate cached decisions without global re-query; explicit empty is not missing.
+  Serialized state re-derives all fences but restores no trusted Python callback authority. V1 candidate
+  lookup limits are explicit; registered verifiers cannot certify an unsupported candidate universe.
+- Root index refresh succeeded; research incremental indexing crashed with exit 139. The normal wrapper
+  then detected interrupted state and completed its recovery rebuild in 76.9 seconds. No metadata was
+  manually deleted. Existing research consumer edits paused during recovery; new-file work continued.
+- Prepared a clean orchestrator lane at `5a9442d31b716f64d408ed4a3908fc4bc22c69b1` for future canonical
+  enrollment; no application files changed. Default Python3.13 lacked FastAPI; the existing project
+  Python3.11 environment ran 23 registry/environment baseline tests successfully (one unrelated
+  opentelemetry deprecation warning), so no dependencies were installed. Its index is fresh; canonical
+  builder impacts are LOW/4, including live startup/autopilot. Export must preserve default behavior.
+- Scoped source is published as research `77e536aa`, main merge `b6cf5f92`. Its worker now owns the
+  existing dashboard campaign reader/control consumer and the narrow service transport seams; the
+  native capture and candidate transaction workers retain their disjoint ownership. Publication does
+  not activate the control service, evidence policy or any inference research.
+
 The next consumer integrations are prospective native evidence, durable candidate transactions and the
 existing dashboard's campaign surface. A helper is not a completed parent slice until real consumers
 and integration acceptance exist. The Vidya source table/task registers the prospective current-loop

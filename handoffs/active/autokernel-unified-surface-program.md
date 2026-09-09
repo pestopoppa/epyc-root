@@ -1911,6 +1911,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
+  - [x] **AKU-08a — scoped retrieval/route contracts and offline evidence consumer**: exact claim keys,
+    mandatory applicable conflicts before top-k, directed nontransitive transfer, victim-directed
+    noncomposable coexistence and bounded reject-audit decisions. ✅ 2026-09-09 — main's 173 regression
+    tests pass, including 57 focused evidence tests. Cached reuse binds intended use, full support basis,
+    relevant dependency content/generation/frontier, explicit semantic buckets, epoch and registered
+    rule version; new broader conflicts, removed findings, missing state and quarantine/outage cannot
+    preserve obsolete eligibility. Unrelated buckets stay reusable with O(bound dependencies/scopes)
+    admission checks. Replay re-derives fences but cannot restore callback authority from JSON. Raw
+    grade, retrieval completeness and supported use remain separate; absent registered verifiers fail
+    closed. The offline CLI grants no execution authority. V1 broad lookup is deliberately exact in
+    mechanism/model/quant/workload/effect question; unsupported candidate universes cannot be certified.
+    Actual journal/ClaimTuple producer, asynchronous cursor/invalidation feed, policy adapters, planner,
+    audit budget and scheduler consumers remain required; AKU-06/08 are not complete.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
