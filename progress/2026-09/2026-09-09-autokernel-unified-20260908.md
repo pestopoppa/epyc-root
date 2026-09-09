@@ -1690,6 +1690,28 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   Completed AKU-07z; all12 parents remain open. No service reload, hardware trial, production
   mutation, index pruning or wiki sweep. Dashboard/CPU producer packets remain separate work.
 
+## Runtime observation dashboard integration
+
+- Applied frozen research7-file and ROOT4-file packets. Existing unified projection-v1 remains
+  exact; projection-v2 adds original runtime status/reasons, selected work and settlement,
+  diagnostic publication failures and producer-owned relative worker deadline observations.
+  Snapshot-v3 remains the carrier; no new endpoint or daemon.
+- Main review fixed publication exceptions contaminating execution retries, undated first-failure
+  reporting, stale-active-worker freshness, and rejected incoming browser freshness leaking into
+  the retained accepted card. Actual profile/calibration/discovery paths retain their original
+  outcome or wait/debt; calibration collection is not scientific qualification.
+- Main primary combined factory+dashboard research suite:181 passed, one strict HELD xfail,
+  no skips,33.09s. ROOT actual producer/page suite:113 passed2.37s, no skips. Worker broader ROOT
+  suite327 passed plus51 subtests15.14s. Changed Python clean except exactly52 baseline loop_status
+  lint findings, unchanged by code/message comparison. No blanket clean-lint claim.
+- All ten non-overlapping files match frozen manifests; standalone-runtime.md intentionally
+  differs only by the six-line already-published factory-reuse paragraph. No factory fix was lost.
+  Packet SHA-256 research `5e17296a02b461fe5378ac28cfe24bd01e154e07686883097a88ab76e0c098ce`;
+  ROOT `a12f4b29a92dcb75d81cdd288c68b0d27d21e65b21873045d00dd13eec2c1ae2`.
+- Completed AKU-09f; added AKU-09g for actual aggregate producer connections and live dashboard
+  acceptance. Evidence/preparation projection proposal assigned. All12 parent tasks remain open;
+  no service activation, hardware run, production mutation, index pruning or wiki sweep.
+
 ## Full regression checkpoint at research 1f38aefb
 
 - Re-polled the original live test handle34837 to terminal exit0; did not restart it.
