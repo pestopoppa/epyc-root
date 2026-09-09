@@ -31,3 +31,8 @@ seven measured fixed512 windows contain1262 completed verification events,
 rejection. Plain has zero events. Exact generated tokens do not imply exact
 logits; fixed512 tests use ignore_eos. All raw evidence and request identities
 are retained. Broader natural-EOS/role-quality certification is not claimed.
+
+Portable workload helpers and pinned inputs committed as `49612aae5`; benchmark
+identity remains kernel `04ffb8ad0`. Wrapper/client10/10, serve-plan6/6,
+artifact4/4 (+one opt-in skip), py_compile and diff checks pass. Main independently
+reran the six new client checks successfully. Candidate tree is clean.

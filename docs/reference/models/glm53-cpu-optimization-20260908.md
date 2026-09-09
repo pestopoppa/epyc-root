@@ -111,7 +111,12 @@ real-model phase test establishes phase behavior. Both servers exited with rc0 a
 confirmed absent; their physical q0–q3 CPU locks were released. Explicit
 candidate library paths and loaded-library identities were retained for both
 runs. The benchmark source remains `04ffb8ad0`; subsequent report/helper commits
-do not change the measured kernel.
+do not change the measured kernel. Portable workload clients and pinned inputs
+are preserved by helper-only commit `49612aae5`; see
+[reproduction instructions](/mnt/raid0/llm/llama.cpp-experimental-glm53-20260908/tests/glm53/run/README.md).
+Helper validation passes 10 wrapper/client, six serve-plan and four artifact
+tests (one additional artifact check is opt-in and skipped), plus Python
+compilation checks. The candidate working tree is clean.
 
 Evidence lives under `/mnt/raid0/llm/tmp/glm53-validation-20260908/`:
 
