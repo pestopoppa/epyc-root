@@ -1602,6 +1602,13 @@ retrofitting the read side is impossible. Source row added to
       or a new source class, and produce zero tuples. Add strict reader and replay/outage fixtures,
       mandatory pre-top-k conflict checks and dependency-generation admission checks. This is source
       wiring authority only; live research/resource gates remain unchanged.
+      **2026-09-09 source checkpoint:** AKU-04c/08b implements the prospective sealed-arm producer,
+      strict shared-ladder reader and existing corpus dispatch, including actual raw-byte rederivation
+      and same-ID conflicting-carrier quarantine. Supported scalar is serving/process/level/median;
+      absent witnesses remain diagnostic. No historical ingestion or warrant backfill occurred.
+      This parent remains open for controller-native events, bounded cursor/feed replay, producer-side
+      planner question bindings and registered current-use consumers. Evaluator identity/lifecycle
+      instrumentation remain separately required; a source schema is not a protocol registration.
 
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 

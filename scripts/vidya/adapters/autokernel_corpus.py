@@ -31,12 +31,13 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import json
+from collections.abc import Callable, Iterator
 from pathlib import Path
-from typing import Any, Callable, Iterator
+from typing import Any
 
-from claim_tuple import ClaimTuple, ProjectionError, to_frames  # noqa: E402
+from claim_tuple import ClaimTuple, ProjectionError, to_frames
 
-from adapters import (  # noqa: E402
+from adapters import (
     autokernel_aux_receipt,
     autokernel_evaluation_event,
     autokernel_governed_receipt,
@@ -44,6 +45,7 @@ from adapters import (  # noqa: E402
     autokernel_property,
     autokernel_reward_integrity,
     autokernel_rocm_diagnostic,
+    autokernel_unified_arm,
 )
 
 ADAPTER_ID = "vidya.adapters.autokernel_corpus/v1"
@@ -56,6 +58,7 @@ _RECEIPT_ADAPTERS = (
     autokernel_rocm_diagnostic,
     autokernel_governed_receipt,
     autokernel_reward_integrity,
+    autokernel_unified_arm,
 )
 
 # Call-shape B: readers that take one event or journal envelope.
@@ -112,6 +115,12 @@ def _dispatch_schema(document: dict) -> str | None:
     accept that envelope whole and unwrap it themselves, so the envelope is what
     gets dispatched. Keying only on `schema` would miss every journal record.
     """
+    payload = document.get("payload")
+    if (document.get("journal_schema") == autokernel_unified_arm.JOURNAL_SCHEMA
+            and document.get("kind") == autokernel_unified_arm.JOURNAL_KIND
+            and isinstance(payload, dict)
+            and payload.get("schema") == autokernel_unified_arm.CAPTURE_SCHEMA):
+        return autokernel_unified_arm.CAPTURE_SCHEMA
     for key in ("schema", "journal_schema"):
         value = document.get(key)
         if isinstance(value, str) and value.startswith("epyc."):
@@ -152,15 +161,18 @@ def iter_documents(root: Path) -> Iterator[tuple[Path, dict, str]]:
                 yield path.with_name(f"{path.name}#L{number}"), document, _sha256_bytes(line)
 
 
-def rows_for_document(path: Path, document: dict, digest: str) -> list[dict]:
+def rows_for_document(path: Path, document: dict, digest: str,
+                      *, corpus_root: Path | None = None) -> list[dict]:
     """Native rows for one document, or [] if no adapter claims its schema."""
     module = SCHEMA_TO_ADAPTER.get(_dispatch_schema(document) or "")
     if module is None:
         return []
     if module in _RECEIPT_ADAPTERS:
-        return list(module.native_rows(
-            document, receipt_locator=f"autokernel:{path}",
-            receipt_sha256=digest, attestation_present=True))
+        kwargs = {"receipt_locator": f"autokernel:{path}",
+                  "receipt_sha256": digest, "attestation_present": True}
+        if module is autokernel_unified_arm:
+            kwargs["corpus_root"] = corpus_root
+        return list(module.native_rows(document, **kwargs))
     return list(module.native_rows(document))
 
 
@@ -196,9 +208,14 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
     than abort on the first one. Refusals are reported, never silently dropped.
     """
     frames: list[dict] = []
-    seen = refused = projected = unaccepted = no_rows = 0
+    seen = refused = projected = unaccepted = no_rows = duplicate_measurements = 0
     refusals: list[dict] = []
+    diagnostics: list[dict] = []
     by_adapter: dict[str, int] = {}
+    # Unified arm records can appear both as a standalone carrier and in a journal.
+    # Hold them until the complete walk proves that no same-ID conflicting carrier exists.
+    unified_pending: dict[str, tuple[str, Path, object, object]] = {}
+    unified_conflicts: set[str] = set()
 
     for path, document, digest in iter_documents(root):
         dispatch = _dispatch_schema(document)
@@ -207,7 +224,7 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
         seen += 1
         module = SCHEMA_TO_ADAPTER[dispatch]
         try:
-            natives = rows_for_document(path, document, digest)
+            natives = rows_for_document(path, document, digest, corpus_root=root)
         except ProjectionError as exc:
             # A reader saying "unsupported schema" is this dispatcher's mapping being
             # imprecise -- the schema constant exists on the module but names an inner
@@ -229,6 +246,13 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
             # This is the single most common honest outcome and it is NOT a refusal;
             # counting it separately is what makes the accounting balance.
             no_rows += 1
+            diagnostic = getattr(module, "diagnostic_reason", None)
+            reason = (diagnostic(document, corpus_root=root)
+                      if module is autokernel_unified_arm and callable(diagnostic)
+                      else diagnostic(document) if callable(diagnostic) else None)
+            if reason:
+                diagnostics.append({"path": str(path), "schema": dispatch,
+                                    "reason": reason})
             continue
         for native in natives:
             try:
@@ -239,15 +263,64 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
                                  "reason": str(exc)})
                 continue
             tuples = _carry_verification(tuples, native, digest)
-            emitted = to_frames(tuples, as_of=as_of,
+            batch = list(tuples) if isinstance(tuples, (list, tuple)) else [tuples]
+            projection = batch if isinstance(tuples, (list, tuple)) else batch[0]
+            if module is autokernel_unified_arm:
+                carrier = native.get("carrier") if isinstance(native, dict) else None
+                full_id = carrier.get("measurement_id") if isinstance(carrier, dict) else None
+                carrier_digest = carrier.get("carrier_digest") if isinstance(carrier, dict) else None
+                if not isinstance(full_id, str) or not isinstance(carrier_digest, str):
+                    refused += 1
+                    reason = "unified native row lacks full carrier identity"
+                    refusals.append({"path": str(path), "schema": dispatch, "reason": reason})
+                    if on_refusal is not None:
+                        on_refusal(path, reason)
+                    continue
+                if full_id in unified_conflicts:
+                    refused += 1
+                    reason = "conflicting unified carriers share one native measurement ID"
+                    refusals.append({"path": str(path), "schema": dispatch, "reason": reason})
+                    if on_refusal is not None:
+                        on_refusal(path, reason)
+                    continue
+                prior = unified_pending.get(full_id)
+                if prior is not None:
+                    if prior[0] == carrier_digest:
+                        duplicate_measurements += 1
+                        continue
+                    unified_pending.pop(full_id)
+                    unified_conflicts.add(full_id)
+                    refused += 2
+                    reason = "conflicting unified carriers share one native measurement ID"
+                    for refused_path in (prior[1], path):
+                        refusals.append({"path": str(refused_path), "schema": dispatch,
+                                         "reason": reason})
+                        if on_refusal is not None:
+                            on_refusal(refused_path, reason)
+                    continue
+                unified_pending[full_id] = (carrier_digest, path, projection, module)
+                continue
+            emitted = to_frames(projection, as_of=as_of,
                                 adapter_id=getattr(module, "ADAPTER_ID", ADAPTER_ID),
                                 authority=getattr(module, "AUTHORITY", None))
             frames.extend(emitted)
             projected += 1
             name = module.__name__.rsplit(".", 1)[-1]
             by_adapter[name] = by_adapter.get(name, 0) + 1
+        if (limit is not None and projected >= limit
+                and not unified_pending and not unified_conflicts):
+            break
+
+    for _, _, projection, module in unified_pending.values():
         if limit is not None and projected >= limit:
             break
+        emitted = to_frames(projection, as_of=as_of,
+                            adapter_id=getattr(module, "ADAPTER_ID", ADAPTER_ID),
+                            authority=getattr(module, "AUTHORITY", None))
+        frames.extend(emitted)
+        projected += 1
+        name = module.__name__.rsplit(".", 1)[-1]
+        by_adapter[name] = by_adapter.get(name, 0) + 1
 
     if not dry_run and frames:
         for frame in frames:
@@ -258,6 +331,7 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
         "documents_matched": seen,
         "rows_projected": projected,
         "frames_emitted": len(frames),
+        "duplicate_measurements": duplicate_measurements,
         "refused": refused,
         # Schema matched this dispatcher's map but the adapter does not accept that
         # document as an entry point. A mapping miss, not a rederivation failure.
@@ -268,6 +342,7 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
         # Bounded: the point is to surface that refusals happened and what kind, not
         # to reproduce the whole corpus in a report.
         "refusal_sample": refusals[:20],
+        "diagnostic_sample": diagnostics[:20],
         "unwired_adapters": UNWIRED,
         "dry_run": dry_run,
     }

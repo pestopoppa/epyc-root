@@ -210,6 +210,69 @@ existing dashboard's campaign surface. A helper is not a completed parent slice 
 and integration acceptance exist. The Vidya source table/task registers the prospective current-loop
 measurement hook. Operational journal snapshots are not claim tuples.
 
+### Candidate/native/dashboard review in progress
+
+- Scoped-evidence root checkpoint published as `8ff376cd`, main merge `c2c56571`. Both owned root and
+  research indexes refreshed successfully after that publication; dashboard existing-consumer edits
+  were released only after the refresh. No shared checkout was fast-forwarded or restaged.
+- Main's isolated candidate regression fixtures reproduced two draft defects: an exact retry of an
+  old initialization request rewrites the derived pointer over a newer keep, and a callback can pass
+  its active append capability to another thread outside the controller's mutex ownership. Candidate
+  acceptance is held for corrections and permanent tests. No real source refs or kernels were touched.
+- Review also covers torn immutable-object publication, recoverable partially prepared transactions,
+  historical validation reconstruction versus present eligibility, and avoiding whole-history Git/file
+  replay on every operation. Native capture is checked against real frozen requests, unit/pair
+  membership, lifecycle timestamps and exact raw artifacts before any prospective projection.
+- Dashboard review is checking malformed-input totality, clock skew, identity-matched liveness,
+  bounded network probes, stale response ordering and memory-only authenticated controls. These are
+  ongoing review requirements, not accepted implementations or evidence of live service reliability.
+- The four original candidate probes now pass: old-request retries preserve the latest projection,
+  cross-thread append capabilities refuse, arbitrary non-owned refs refuse, and frozen llama checkouts
+  refuse. Remaining review covers full-history copying on the hot path, speech-tree freeze coverage
+  and use of the shared crash-safe artifact store. The transaction slice is not yet accepted.
+- Main accepted the **ArtifactStore component for reuse** after **126 tests**, including partial-stage
+  crash recovery, two descriptor-leak regressions and same-instance thread exclusion. Cooperative
+  directory locks alone did not exclude threads sharing one descriptor; the corrected store also has
+  an in-process nested lock. Noncreating verification, exact-inode quarantine/recovery, same-descriptor
+  read/fsync, parent durability and pre-publication finite-JSON checks are covered. Native producer,
+  adapter and controller-journal integration remain separate review boundaries.
+- Three additional root adapter probes exposed native process-identity mismatch, substitution of a
+  different manifest prompt, and an uncaught malformed diagnostic payload. Positive fixtures also
+  needed the complete producer plan/observation contract. The worker is correcting these plus exact
+  interval/unit derivation and conflicting-carrier deduplication; no real corpus was ingested.
+- Main independently reproduced the three preexisting INF70 adapter-test failures: stale expectations
+  equated recorded hash/presence with verified attestation despite SC69. The historical adapter, grader
+  and tests were unchanged from the lane base. A narrowly scoped expectation correction is assigned;
+  no historical in-window witness or stronger measurement warrant will be invented.
+
+### Candidate transactions and prospective evidence accepted
+
+- Main accepted AKU-04c/05c after **382 tests and 15 subtests**, including Journal/recovery, the real
+  planned-serving consumer, six candidate/cache adversarial probes and four artifact-store probes.
+  Public cache aliases/setters no longer mutate authoritative state. The new shared store provides
+  no-overwrite, byte-verified, fsynced immutable publication and recoverable partial staging. Candidate
+  phases are durable INTENT/PREPARED/COMMITTED; exact retries preserve the latest projection, and
+  historical state does not restore trusted verifier authority. All frozen kernel paths/branches refuse.
+- Research source checkpoint **82ec8a11**, main merge **54c1f0fd**. No shared checkout, kernel, service
+  or live research was changed. The next candidate worker task is actual controller-native arm capture;
+  existing journal/controller edits wait for publication/index refresh, while new helper work proceeds.
+- Main accepted AKU-08b after **90 focused tests**, including actual producer→reader conformance and
+  three independently reproduced tamper/malformed cases. Full Vidya: **1,044 passed, 2 skipped** under
+  default fixture configuration; the skipped research conformance case passed in the explicit-root run.
+  The other skip requires an orchestrator repo location not present in that test's default context.
+  Strict reader/corpus rederive complete closed native inputs and stored bytes; conflicting carriers
+  sharing one full measurement ID emit neither. Only this native family deduplicates. Three stale
+  INF70 expectations now reflect SC69's actual-byte-verification requirement; no grader or historical
+  evidence was changed. No real corpus was ingested.
+- Producer supports serving/process/level/median only and keeps unknown environment/placement or absent
+  GPU residency diagnostic. Loaded evaluator identity, actual lifecycle samplers, native journal feed
+  and registered current-use policy remain required. Source/schema success is not measured performance.
+- The enrollment worker now owns the prepared orchestrator lane and a bounded non-mutating canonical
+  exporter→research resolver task. The default launcher remains unchanged; no imported process manager,
+  pre-eviction, build or inference is authorized. Dashboard final corrections remain separately reviewed.
+- README freshness check emitted no warnings. Bus remains unavailable to this non-roster identity;
+  no peer identity or coordination file is impersonated.
+
 The built-in dispatcher retained two completed review threads and exhausted its thread limit; one new
 sol-medium worker uses it and two use supported `codex exec` with explicit model/medium effort. Main
 caps active concurrency at three, owns process handles, reviews proposals and publishes accepted files.
