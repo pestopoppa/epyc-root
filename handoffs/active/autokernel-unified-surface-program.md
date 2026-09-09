@@ -2172,6 +2172,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     TIDs are valid without invented samples. Main combined current-tree acceptance:89 research
     tests in24.94s and65 ROOT adapter/dashboard tests in3.21s, no skips. Existing dashboard cache
     hooks survive composition. No new grading rule, production-validation claim or hardware run.
+  - [x] **AKU-06r — correct feed integration regressions without narrowing coverage**:
+    ✅ 2026-09-09. Restore original operational diagnostics for unrelated lifecycle/settlement
+    events; profile-specific bookkeeping no longer silently consumes their classification.
+    Real service test signals only after its publisher observes evidence. Explicit v2/v3 feed
+    fixtures use independent source cursors and preserve all native-final/restart assertions;
+    scientific-receipt fixtures pin their separately owned seven-file v2 contract.
+    Main110 affected integration tests passed in118.63s, no skips; all four applied file hashes
+    match the tested tree, Ruff clean. The preceding full run had5 failures and15 setup errors
+    (2583 passed,2 strict xfails,83 subtests); a fresh full-suite result is still required.
   - [ ] **AKU-06j — install the concrete owned CPU profiling producer for GLM discovery**:
     Concrete full-request producer is implemented and tested under AKU-06o below; this task
     remains open for exact GLM prompt/configuration and
