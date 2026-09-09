@@ -2440,6 +2440,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     ✅ 2026-09-09 — research `0a4aada6`, main `d51f9de6`; actual default closure is complete,
     with cross-hash-seed, changed-implementation/configuration and historical-absence tests.
     This captures provenance only, not scientific eligibility or retrospective authority.
+  - [x] **AKU-08j — reopen original parent-final v3 evidence in the ROOT arm/corpus reader**:
+    ✅ 2026-09-09. Closed final/original/pair/result/lifecycle/source joins preserve immutable
+    original v2 carriers, exact owning gate membership and diagnostic status. Original schema
+    is checked before dispatch to prevent recursive v3 chains resetting read budgets; malformed
+    reference types refuse before field access. Same-unit foreign lifecycle and deferred-capture
+    references fail exact joins. No v3-to-v2 relabelling or new grading ladder. Main acceptance:
+    91 actual-producer/arm/corpus tests in 46.05s plus 65 claim-tuple/ledger tests in 0.09s.
+    Actual child/HTTP/Journal artifacts yield no measurement tuples when diagnostic.
+  - [ ] **AKU-08k — include the final-trial helper in the registered verifier source closure**:
+    wire the new ROOT projection dependency into prospective registered/default consumer pins,
+    preserving old six-module closure compatibility without retrospective scientific authority.
+    Direct arm/corpus conformance in AKU-08j does not prove installed verifier consumption.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.

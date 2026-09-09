@@ -1384,3 +1384,21 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   circularity and pending operator choice. Existing belief registration/task includes final-v3
   dependencies. All twelve parents remain open. No real dry run, hardware loops, grants,
   production changes, index pruning or wiki sweep. README freshness check clean.
+
+### ROOT parent-final reader checkpoint
+
+- Four-file native-v3 arm/corpus integration reopens the original final/pair/native/result/
+  lifecycle/source closure under bounded reads and the existing source class/ClaimTuple ladder.
+  Original v2 carrier identity is checked before recursive dispatch; unknown reference shapes,
+  changed gate membership and same-unit foreign lifecycle/capture refs refuse.
+- Actual producer conformance exposed a carrier-versus-envelope mismatch in the reader; fixed
+  to compare the stored carrier and exact payload artifact reference. Both actual original v3
+  arms remain diagnostic and produce no measurement tuple. A test expected tuple instead of
+  the corpus API's empty list; its assertion was corrected without changing production semantics.
+- Main fresh acceptance using published research f8fee017: 91 tests in 46.05s, including real
+  child HTTP, original T0, final capture and Journal/restart. Claim-tuple/ledger regression:
+  65 tests in 0.09s. Four primary files match frozen accepted hashes; Ruff/diff checks clean.
+- One completed sub-item AKU-08j and one new open AKU-08k: the registered verifier must capture
+  the new helper's source identity before installed semantic use. No historical closure is
+  upgraded. Calibration recovery and retention catalog work continue; all twelve parents remain
+  open. No hardware runs, live grants, production changes, index pruning or wiki sweep.

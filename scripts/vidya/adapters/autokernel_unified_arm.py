@@ -25,10 +25,12 @@ from claim_tuple import ClaimTuple, ProjectionError, register
 ADAPTER_ID = "vidya.adapters.autokernel_unified_arm/v1"
 CAPTURE_SCHEMA = "epyc.autokernel.unified_arm_capture.v1"
 CAPTURE_SCHEMA_V2 = "epyc.autokernel.unified_arm_capture.v2"
+CAPTURE_SCHEMA_V3 = "epyc.autokernel.unified_arm_capture.v3"
 JOURNAL_SCHEMA = "epyc.autokernel.journal_entry.v1"
 JOURNAL_KIND = "PLANNED_SERVING_ARM_CAPTURED"
 PRODUCER_ID = "epyc.autokernel.measurement_capture/v1"
 PRODUCER_ID_V2 = "epyc.autokernel.measurement_capture/v2"
+PRODUCER_ID_V3 = "epyc.autokernel.measurement_capture/v3"
 _SHA = re.compile(r"^[0-9a-f]{64}$")
 _MAX_ARTIFACT_BYTES = 64 * 1024 * 1024
 
@@ -148,12 +150,12 @@ def _timestamp(value: Any, label: str) -> datetime:
 def _carrier(source: Any) -> tuple[dict, dict | None]:
     if not isinstance(source, dict):
         raise ProjectionError("unified arm source must be an object")
-    if source.get("schema") in {CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2}:
+    if source.get("schema") in {CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2, CAPTURE_SCHEMA_V3}:
         return source, None
     if source.get("journal_schema") == JOURNAL_SCHEMA:
         payload = source.get("payload")
         if (source.get("kind") != JOURNAL_KIND or not isinstance(payload, dict)
-                or payload.get("schema") not in {CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2}
+                or payload.get("schema") not in {CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2, CAPTURE_SCHEMA_V3}
                 or payload.get("measurement_id") != source.get("record_id")
                 or not isinstance(payload.get("carrier"), dict)
                 or payload["carrier"].get("measurement_id") != payload["measurement_id"]
@@ -563,7 +565,8 @@ def _validate_witnesses(value: Any, label: str) -> dict:
 
 def _validate(source: Any, *, corpus_root: Path | None) -> tuple[dict, dict | None]:
     carrier, payload = _carrier(source)
-    v2 = carrier.get("schema") == CAPTURE_SCHEMA_V2
+    v3 = carrier.get("schema") == CAPTURE_SCHEMA_V3
+    v2 = carrier.get("schema") in {CAPTURE_SCHEMA_V2, CAPTURE_SCHEMA_V3}
     carrier_fields = {"schema", "producer", "measurement_id", "arm", "arm_locator",
                       "plan", "prompt_manifest", "prompt_manifest_digest", "lineage_id",
                       "comparison_identities", "source_identity", "capture_context",
@@ -573,10 +576,26 @@ def _validate(source: Any, *, corpus_root: Path | None) -> tuple[dict, dict | No
                       "instrument_id", "interval", "carrier_digest"}
     if v2:
         carrier_fields |= {"loaded_instrument", "lifecycle_observations"}
+    if v3:
+        carrier_fields |= {"original_arm_capture", "parent_final_trial"}
     _exact(carrier, carrier_fields, "unified arm carrier")
+    if v3:
+        from .autokernel_final_trial import REFERENCE_SCHEMA
+        final_reference = _exact(carrier["parent_final_trial"], {"schema", "artifact", "digest"},
+                                 "parent final reference")
+        original_reference = _exact(carrier["original_arm_capture"],
+                                    {"measurement_id", "carrier_digest", "artifact"}, "original arm reference")
+        if final_reference["schema"] != REFERENCE_SCHEMA:
+            raise ProjectionError("parent final reference schema is unsupported")
+        for reference, fields in ((final_reference, ("digest",)),
+                                  (original_reference, ("measurement_id", "carrier_digest"))):
+            _artifact_ref(reference["artifact"], "parent final/original artifact")
+            if any(not isinstance(reference[field], str) or not _SHA.fullmatch(reference[field])
+                   for field in fields):
+                raise ProjectionError("parent final/original reference digest is malformed")
     arm = carrier["arm"]
-    producer = PRODUCER_ID_V2 if v2 else PRODUCER_ID
-    if (carrier["schema"] not in {CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2}
+    producer = PRODUCER_ID_V3 if v3 else PRODUCER_ID_V2 if v2 else PRODUCER_ID
+    if (carrier["schema"] not in {CAPTURE_SCHEMA, CAPTURE_SCHEMA_V2, CAPTURE_SCHEMA_V3}
             or carrier["producer"] != producer
             or not isinstance(carrier["measurement_id"], str)
             or not _SHA.fullmatch(carrier["measurement_id"])
@@ -613,13 +632,17 @@ def _validate(source: Any, *, corpus_root: Path | None) -> tuple[dict, dict | No
     measurement_identity = {"producer": producer, "plan_digest": plan_digest,
                             "lineage_id": carrier.get("lineage_id"), "arm": arm}
     if v2:
-        measurement_identity |= {"capture_schema": CAPTURE_SCHEMA_V2,
+        measurement_identity |= {"capture_schema": carrier["schema"],
                                  "instrument_identity_sha256":
                                      loaded_instrument["identity_sha256"]}
+    if v3:
+        measurement_identity["parent_final_trial_digest"] = carrier["parent_final_trial"].get("digest")
     expected_measurement_id = _hash(measurement_identity)
+    expected_locator = (f"parent-final-serving:{plan_digest}:{carrier.get('lineage_id')}:{arm}:"
+                        f"{carrier['parent_final_trial'].get('digest')}" if v3 else
+                        f"planned-serving:{plan_digest}:{carrier.get('lineage_id')}:{arm}")
     if (carrier["measurement_id"] != expected_measurement_id
-            or carrier.get("arm_locator") !=
-            f"planned-serving:{plan_digest}:{carrier.get('lineage_id')}:{arm}"):
+            or carrier.get("arm_locator") != expected_locator):
         raise ProjectionError("unified arm measurement/locator identity mismatch")
     prompts, frozen_by_id = _validate_prompts(carrier["prompt_manifest"])
     prompt_digest = prompts["digest"]
@@ -684,6 +707,10 @@ def _validate(source: Any, *, corpus_root: Path | None) -> tuple[dict, dict | No
             or carrier["claim"] != f"{arm} {plan['metric']} for frozen plan {plan['plan_id']}"):
         raise ProjectionError("carrier instrument or claim relabels the frozen measurement")
     artifacts = _embedded_artifacts(carrier, corpus_root)
+    original_final_witnesses = None
+    if v3:
+        from .autokernel_final_trial import validate_final
+        original_final_witnesses = validate_final(carrier, corpus_root=corpus_root)
     if carrier.get("status") == "diagnostic":
         if carrier.get("measurement") is not None \
                 or not isinstance(carrier.get("diagnostic_reason"), str) \
@@ -851,8 +878,18 @@ def _validate(source: Any, *, corpus_root: Path | None) -> tuple[dict, dict | No
                 or not isinstance(native.get("observations"), list)
                 or not native["observations"] or native["observations"][-1] != selected):
             raise ProjectionError("unified arm native request rows are missing")
-        _exact(selected, {"schema", "process_pid", "requests", "residency", "teardown",
-                          "failure"}, "selected serving observation")
+        selected_fields = {"schema", "process_pid", "requests", "residency", "teardown", "failure"}
+        if "server_responses" in selected:
+            if not v2 or corpus_root is None:
+                raise ProjectionError("server response observation requires its original instrument")
+            loaded_body = _artifact_bytes(corpus_root, loaded_instrument["artifact"]["locator"],
+                                          loaded_instrument["artifact"]["sha256"])
+            declared_response = loaded_body["used_constants"].get("server_response_source")
+            if not isinstance(declared_response, dict) or declared_response.get("schema") != \
+                    "epyc.autokernel.native_server_response.v1":
+                raise ProjectionError("server response observation was not prospectively declared")
+            selected_fields.add("server_responses")
+        _exact(selected, selected_fields, "selected serving observation")
         if selected["schema"] != "epyc.autokernel.serving_observation.v1" \
                 or not isinstance(selected["residency"], dict):
             raise ProjectionError("selected serving observation is malformed")
@@ -939,7 +976,9 @@ def _validate(source: Any, *, corpus_root: Path | None) -> tuple[dict, dict | No
             raise ProjectionError("unified arm raw slot sum differs from unit value")
         witnesses = attempt.get("stage_witnesses")
         _validate_witnesses(witnesses, "completed attempt witnesses")
-        if witnesses != row["witnesses"]:
+        original_witnesses = (original_final_witnesses[row["unit_id"]]
+                              if v3 else row["witnesses"])
+        if witnesses != original_witnesses:
             raise ProjectionError("attempt witnesses differ from selected raw unit")
         for name in ("contention", "placement"):
             witness = witnesses.get(name)
@@ -1050,11 +1089,14 @@ def _project_impl(native: Any) -> ClaimTuple:
              "comparison_identities": carrier["comparison_identities"],
              "interval": interval, "applicability": "observation_only"
              if carrier["record_class"] != "registered_claim" else "policy_undefined"}
-    if carrier["schema"] == CAPTURE_SCHEMA_V2:
-        extra |= {"capture_schema": CAPTURE_SCHEMA_V2,
+    if carrier["schema"] in {CAPTURE_SCHEMA_V2, CAPTURE_SCHEMA_V3}:
+        extra |= {"capture_schema": carrier["schema"],
                   "instrument_identity_sha256":
                       carrier["loaded_instrument"]["identity_sha256"],
                   "lifecycle_observation_references": carrier["lifecycle_observations"]}
+    if carrier["schema"] == CAPTURE_SCHEMA_V3:
+        extra |= {"parent_final_trial": carrier["parent_final_trial"],
+                  "original_arm_capture": carrier["original_arm_capture"]}
     return ClaimTuple(
         measurement_id=f"akarm_{carrier['measurement_id'][:24]}",
         metric=measurement["metric"], value=measurement["value"],
@@ -1118,6 +1160,6 @@ def project_journal_event(source: Any, *, corpus_root: Path) -> ClaimTuple | Non
     return replace(project(rows[0]), attestation_verified=True)
 
 
-__all__ = ["ADAPTER_ID", "CAPTURE_SCHEMA", "CAPTURE_SCHEMA_V2", "JOURNAL_KIND",
+__all__ = ["ADAPTER_ID", "CAPTURE_SCHEMA", "CAPTURE_SCHEMA_V2", "CAPTURE_SCHEMA_V3", "JOURNAL_KIND",
            "JOURNAL_SCHEMA",
            "diagnostic_reason", "native_rows", "project", "project_journal_event"]

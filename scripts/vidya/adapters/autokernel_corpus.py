@@ -121,7 +121,8 @@ def _dispatch_schema(document: dict) -> str | None:
             and document.get("kind") == autokernel_unified_arm.JOURNAL_KIND
             and isinstance(payload, dict)
             and payload.get("schema") in {autokernel_unified_arm.CAPTURE_SCHEMA,
-                                          autokernel_unified_arm.CAPTURE_SCHEMA_V2}):
+                                          autokernel_unified_arm.CAPTURE_SCHEMA_V2,
+                                          autokernel_unified_arm.CAPTURE_SCHEMA_V3}):
         return payload["schema"]
     for key in ("schema", "journal_schema"):
         value = document.get(key)
