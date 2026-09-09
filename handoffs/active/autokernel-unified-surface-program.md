@@ -2064,6 +2064,21 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     cannot mutate the record. Source `04d73260`, main `d75bc9ec`. Native versioned attachment and
     containing-owner successor enforcement remain assigned AKU-04/07/08 integration work; no live
     observation, real grant, containment success or deployment is claimed by hermetic tests.
+  - [x] **AKU-07e — actual controller-owned runtime execution and exact held-cost settlement**:
+    one durable driver selection now traverses the real controller admission/acquisition/lifecycle
+    path, contained planned-worker result ingestion and scheduler settlement. ✅ 2026-09-09
+    Main's clean six-file release passed **1,729 loop/Journal/storage tests plus 165 subtests** and
+    **136 focused/adjacent tests**, including an independent shutdown reproducer. No separate
+    injected lifecycle can bypass controller ownership. Exact current-owner denial/pre-engine
+    refusal is positive no-acquisition proof; unseen, old-incarnation or ambiguous state is not.
+    Failed work retains provider-authored cost and settles once. A successful child followed by
+    producer failure retains its immutable terminal/result diagnostically without native scientific
+    acceptance; an unjoined producer fences successors, retains its handle, and makes close retryable
+    rather than claiming teardown. Concurrent execution/close and exact lost-reply retries are
+    covered. Source `59eb3f30`, main `6f869803`. The default parent evidence evaluator remains unknown,
+    so this connector cannot produce a valid comparison. Observation-v2, A2 native invocation,
+    actor/profile/semantic consumers, standalone composition and real provider acceptance remain
+    assigned work. No live inference, service, resource grant or frozen kernel was changed.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
@@ -2203,13 +2218,15 @@ built-in sol-medium worker and two explicitly configured `codex exec` workers. O
 for dashboard v3, actor/target-profile preparation and the bounded belief feed. Its isolated root and
 research worktrees are `autokernel-consumers-{root,research}-20260909`, on
 `lane/autokernel-consumers-20260909`, starting at root `519acd08` and research `bb0c2c38`.
-The secondary team cannot edit primary-owned controller/Journal/worker files or publish changes;
-the primary owns final review, integration and publication. Exact shared seams are coordinated
-before edits, not merged by assumption. A third coordinating CLI session, also requested by the
+The secondary team cannot publish changes or edit primary core files without a precise seam release;
+released core hunks stay in its isolated worktree and are applied only after primary review. The
+primary owns final integration and publication. Exact shared seams are coordinated before edits,
+not merged by assumption. A third coordinating CLI session, also requested by the
 operator on 2026-09-09, started three sol-medium workers for candidate-validation consumption,
 versioned legacy migration, and standalone CLI/service packaging. It owns only the isolated research
 worktree `autokernel-delivery-research-20260909`, branch `lane/autokernel-delivery-20260909`, starting
-at `bb0c2c38`; core and secondary-team files remain read-only. The secondary dashboard worker moved
+at `bb0c2c38`; core and secondary-team files remain read-only except for explicitly released,
+disjoint core hunks. The secondary dashboard worker moved
 to retention after its package was frozen for review. The nine-worker arrangement is scheduling,
 not a claim of completed source, live execution or greater measurement authority.
 GitNexus impact results are supplemented by actual caller inspection and adversarial integration tests.

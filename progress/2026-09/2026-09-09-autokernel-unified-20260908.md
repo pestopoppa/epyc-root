@@ -681,3 +681,54 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   native persistence and versioned lifecycle attachment are also actively assigned, with disjoint
   controller/Journal ownership. Bus drain/heartbeat still reject the non-roster session ID; no peer
   file, roster entry, service ownership or live authority was changed.
+
+### Reviewed controller-owned runtime execution boundary
+
+- Published research source **59eb3f30**, main **6f869803fb49fb8afc334cebd55ed1cdfd328fa9**.
+  Main built an independent six-file acceptance tree from `e678a2e2`, excluded the other owners'
+  in-flight A2/observation/stdout hunks, and reproduced **136 focused/adjacent tests** plus
+  **1,729 loop/Journal/storage tests and 165 subtests**. All five Python files passed Ruff and
+  scoped diff checks. Publication staged exact accepted blobs through a private index; pending
+  same-file worker/controller hunks remained untouched and unpublished. Fresh run-worker impact
+  was LOW, zero indexed upstream callers; actual caller and failure-path review supplemented it.
+- Selected runtime execution now uses the actual controller-owned engine, durable acquisition and
+  lifecycle Journal, native result validation, provider-held costs and exact scheduler settlement.
+  A positive current-lifetime pre-engine refusal or exact durable provider denial permits retry;
+  empty active projections, unseen requests, old incarnations and ambiguous acquisition do not.
+  Duplicate execution and execute/close are serialized. Failed work is charged once without
+  granting a scientific comparison or rewriting immutable lifecycle results.
+- Main independently reproduced a successful-child/producer-shutdown-error bug: accounting committed,
+  then the receipt rejected its own accepted terminal. The corrected path retains the exact result
+  diagnostically and returns an idempotent failed settlement with no scientific native admission.
+  Further review caught lost ownership when close swallowed an unjoined producer and cleared its
+  handle. Real finite blocked-thread tests now cover both post-terminal and partial-start cleanup;
+  handles remain retained, new work is fenced, exact settlement retries remain possible, and close
+  refuses/retries until the producer joins. The default evidence evaluator remains unknown.
+- An initially overbroad historical test run encountered failures and was stopped. Main identified
+  its exact owned pytest PID **160697** by command, start time and acceptance-tree cwd, sent SIGINT
+  then SIGTERM, and verified the PID absent (exit 143); no name-pattern or foreign process signal was
+  used. Subsequent `--maxfail=1` runs on unchanged `e678a2e2` and the six-file candidate produced the
+  identical first failure: `ArenaAdapterTest.test_c5_reference_seed_is_bound_into_the_priced_task_context`,
+  **365 passed, 58 subtests passed, one failed** on each. The C5 registry pins mutable
+  `/workspace/handoffs/active/agentic-rocm-kernel-authoring.md`; its `ev-gfx90a-sol-bound-quality-20260815`
+  digest differs. No all-historical-suite pass is claimed. Explicit decline: do not refresh or bypass
+  this pre-existing external evidence pin in the unified-execution package; changing its warrant is
+  outside this source slice. No new backlog row is filed for that deliberate non-change.
+- Per-task wrap-up adds **AKU-07e**: **34 accepted implementation sub-items**, all twelve parent
+  workstreams still open. Main separately reproduced the current actor (**71**) and feed (**88**)
+  focused tests; these drafts remain unaccepted until their real owner connections are complete.
+  The actor stdout accessor, versioned observation attachment, A2 native persistence/invocation,
+  validation, standalone shutdown/composition and maintenance exclusion remain actively assigned.
+- The precise Journal durable-reader/ACK and maintenance native-exclusion seams were released to
+  separate secondary-team workers. A proposed shared Vidya `Ledger.append` modification returned
+  **CRITICAL** impact (**25 upstream, 16 workflows**); main warned the operator and stopped that
+  mutation. Feed implementation continues against the existing single-writer contract without
+  private-cache authority or a new grader. Journal append/lock impacts were MEDIUM (17/15), cursor
+  LOW (0). No shared Ledger writer or measurement trust-boundary change was made.
+- Standalone composition now has the published execution dependency and a narrow driver-discriminator
+  release. Unavailable actor/profile work must remain visible before issuance while other executable
+  runtime work proceeds; shutdown retains unresolved ownership. Main's two additional controller-only
+  probes found already-drained and management-v1 SIGTERM bugs; the CLI owner is fixing both. These
+  are active source fixes, not operator-deferred work. ROOT/research GitNexus wrappers refreshed
+  successfully; README freshness is clean. No live inference, service activation, real grant, corpus
+  ingestion, production kernel or historical research artifact changed.
