@@ -45,6 +45,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-38 | **P-KLD divergence protocol** — we have NO ratified KLD/PPL/coherence protocol (`MEASUREMENT.md` §2 has zero divergence terms) while two campaigns now quote divergence numbers. Distilled annex ready: full-vocab only, fp64 sums, declared estimand, bootstrap by document cluster, no universal bands, fail-closed runner + receipts, and a route-pinned cell before attributing KLD to the codec on a MoE. **Human-amendment-only trust boundary → needs an operator-run `ratify_*.sh`, not a session edit** | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) → R23-47 | 2026-09-07 |
 | OP-41 | **CPU co-tenancy: serialize or regress.** RULED 2026-09-08: operator owns admission-control design/implementation after champion finalised → promotion → host reboot. Clarify whether the new implementation instruction delegates broker-code work now; live activation gates remain unchanged. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → §3.4, AKU-11 | 2026-09-08 |
 | OP-AKU-HELD | Approve the additional versioned provider-held-cost lifecycle event and replay/settlement recovery (HIGH: 22 upstream, three processes). Descendant-event approval is already granted but does not include this addition; no live grant or measurement-policy change. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-07j | 2026-09-09 |
+| OP-AKU-BIND | Approve versioned scheduled-work metadata through native StageRequest, provider admission, lifecycle/recovery and receipt verification (HIGH: 22 upstream, three processes). Fixes missing proposal/backend/stage-class identity; distinct from descendant approval, with no live grants or production changes. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-07k | 2026-09-09 |
 | OP-AKU-STACK | Approve canonical generated-stack repair in the isolated orchestrator lane (HIGH: 66 upstream): lean registry, descriptors, priors, procedure enums and summary; preserve split-instance mode. No compiler edits, service reload or production-kernel change. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-12c | 2026-09-09 |
 | OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-13 | Ratify a P2-5j placement amendment or require a full P-BENCH-PLACEMENT-1 composite; the old four-arm design is observation-only | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P2-5j | 2026-08-11 |
@@ -78,7 +79,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 58 | 688 | 16 | 2026-07-29 |
+| inference-research | 58 | 690 | 16 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
 | research-evaluation | 44 | 391 | 10 | 2026-07-29 |
 | reviewer-control-plane | 7 | 33 | 11 | 2026-07-29 |

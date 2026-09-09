@@ -2044,7 +2044,21 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     native finish/profile publication and restart. Replace private projection/receipt seeding in
     acceptance tests; independently test durable budget drift with a valid current producer receipt.
     Connect proposed advice to the existing private source/build preparation consumer, not dispatch
-    or publication authority. The owner is preparing this current-source acceptance composition.
+    or publication authority. Require selected-work admission before profiler execution and bind
+    profile publication to the registered producer, exact current terminal, held receipt and
+    controller-authenticated stdout; schema-valid caller events are not verified profiles.
+    Nonzero/malformed profile output still settles spent cost without PROFILE_VERIFIED. The actual
+    driver E2E currently refuses mismatched provider proposal/backend/class (AKU-07k); a permissive
+    settlement-validator lambda or private receipt seeding cannot satisfy acceptance.
+  - [x] **AKU-06e — public exact selected-profile materialization**: immutable SelectedProfileWork
+    and UnifiedCampaignDriver.materialize_profile bind catalog, transition, selected proposal,
+    profile request, preparation-plan digest and current controller identity through the public
+    controller callback. ✅ 2026-09-09 — source `c3303474`, main `1accc7f2`; main reproduced
+    24 focused tests and **1,834 tests plus 165 subtests** in the clean combined acceptance tree.
+    The record is deeply immutable advice with execution_authorized=False, not a grant or launch
+    capability. Actor execution, provider metadata and source/build consumption remain AKU-06d/07k.
+    The same checkpoint makes the disk-floor boundary test deterministic without changing storage
+    policy: fixed 4 GiB free is OK at equality and pressured below a 5 GiB floor.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
@@ -2153,7 +2167,12 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     change on 2026-09-09; unrelated trust boundaries and frozen kernels remain unchanged.
     Main verified eight artifact-reader tests but reproduced a reused-PID ancestry defect:
     compare each observed start tick/boot identity and recheck target/container membership before
-    durable capture. Verify deadline handling and actual child/restart coverage before acceptance.
+    durable capture. The expired-owner publication probe also fails (two independent failures).
+    Main reproduced 254 focused tests plus 15 subtests and the real child/v2/restart IPC fixture,
+    but that fixture mocks containment/telemetry and emits only diagnostic arms: the actual ROOT
+    projector returns no claim, with zero scored independent launches. Add a genuinely scored
+    parent-verified fixture without weakening diagnostic refusal; prove test-owned real cgroup
+    containment separately or retain the exact platform refusal. Neither is live inference evidence.
   - [ ] **AKU-07j — persist provider-held cost for process-restart settlement**: add the exact
     versioned held-receipt lifecycle record after OWNED_TERMINAL and validated provider close,
     before WORKER_RESULT_ACCEPTED/STALE. Restore separate accounting-only indexes and bind lookup
@@ -2162,6 +2181,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     provider reacquisition/duplicate child/current measurement acceptance. The additional HIGH
     validator event (22 upstream, three processes) awaits its own operator approval, distinct from
     approved descendant capture; low-risk independent work continues. See OP-AKU-HELD in the router.
+  - [ ] **AKU-07k — bind scheduled work through provider admission/accounting**: version the native
+    StageRequest accounting binding with catalog/transition/selection/proposal digests, proposal ID,
+    backend and scheduler stage class; include it in prospective request identity, launch contract,
+    lifecycle events and recovery validation. Verify provider receipts against it before indexing;
+    never rewrite receipts or infer classification from argv, setup stage or an opaque digest.
+    Current provider authorize/close APIs receive no typed backend/class binding, so request-ID-only
+    changes cannot fix profile settlement. The additional HIGH22/three-process validator scope awaits
+    OP-AKU-BIND approval; descendant approval does not cover it. Preserve v1 and old-reader refusal.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
@@ -2196,6 +2223,13 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     projector tests include resealed PID mismatch refusal and existing v1 producer compatibility;
     they do not establish native-v2 end-to-end acceptance. Keep experimental champion selection
     separate from deployment authority; always-Unavailable adapters do not complete this task.
+  - [ ] **AKU-08d — execute exactly the pinned canonical source bytes**: replace separate hash/path
+    execution in the semantic owner with bounded stable regular-file reads and compile those exact
+    verified bytes, bypassing stale timestamp-valid bytecode. Preserve import metadata and restore
+    module state on failure; concurrent constructors must not cross-wire ClaimTuple registration.
+    Main reproduced one failing stale-pyc test: the current source SHA matches new bytes while the
+    loader executes old cached code. Add permanent replacement/cache/failure/concurrency regressions
+    before publishing the semantic receipt packet; no grading-policy change is authorized.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
