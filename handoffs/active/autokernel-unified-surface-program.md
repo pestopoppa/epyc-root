@@ -1866,6 +1866,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     commit does not report a nonexistent commit failure. HEAD binding is rechecked immediately before
     ref CAS, not claimed as an atomic branch-binding transaction; the owning integration lock remains
     necessary. This supplies source safety, not a measured candidate or cross-repository transaction.
+  - [x] **AKU-05b — immutable candidate/validation contract and offline CLI**: explicit Git object
+    format, one source set with per-target exact CPU/HIP build selection, candidate/control recipe and
+    workload identities, declared keep deltas, separate integration/validated pointers and frozen rows.
+    ✅ 2026-09-09 — main reviewed 28 focused tests within 159 passing adjacent tests. Required production
+    target/backend obligations and complete keep-set LOO are checked at batch start and advancement;
+    loaded state cannot bypass them. Trusted bound row/LOO verifiers are mandatory, and callback errors
+    refuse. Completing an older gate preserves newer keeps and monotonic gain-trigger generations;
+    cadence reset does not clear validation debt. Exact start retries are idempotent, conflicting batch
+    payloads refuse, and optional seed rows may remain pending without being counted as passed or blocking
+    required-row completion. Output-correctness equivalence does not grant timing. The offline CLI always
+    denies execution/promotion authority. Actual registered verifiers, durable candidate transactions,
+    native validation events and retention consumers remain required; this is not a measured candidate.
 - [ ] **AKU-06 — bounded scheduler and mechanism routes** (AK-AUTO-07/09): pure accounting/coverage model,
   bounded seed boost/opportunity, reservations and rejection audits; directed transfer and noncomposable
   coexistence evidence. Live admission/coexistence waits for AKU-11, not a fake-provider pass.
