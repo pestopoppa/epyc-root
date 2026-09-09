@@ -910,3 +910,44 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   concerns. No dry run, five-loop hardware campaign, grant, live service activation or production
   kernel change is claimed. README freshness check is clean. Bus drain/heartbeat still reject this
   non-roster session id; no peer roster/outbox was impersonated or modified.
+
+### Public selected-profile materialization and integration-review checkpoint
+
+- Published research source **c3303474**, main **1accc7f2**: public
+  UnifiedCampaignDriver.materialize_profile and immutable SelectedProfileWork bind the exact
+  issued catalog/transition/selection/profile request/plan/current controller. Public native
+  controller tests require no private issued-state seeding. The advice grants no execution.
+  Main reproduced **24 focused tests**, then **1,834 passed plus 165 subtests in 24.47s** on
+  clean c36411a7 composition. Only unified_driver.py, its new focused test and test_storage.py
+  are published; moving native/actor/service/maintenance hunks remain excluded.
+- Broad acceptance initially returned 1 failure, 1,833 passes and 165 subtests: the unchanged
+  storage boundary fixture sampled live free space twice while other sessions wrote files.
+  The deterministic test now mocks one fixed statvfs observation; exact equality stays OK and
+  a higher floor reports pressure. Production storage.py is untouched. Main's storage/profile
+  focused rerun passed **183 tests and 82 subtests**; the final broad result above is green.
+- Actual profile → scheduler E2E with --runxfail independently fails because provider receipt
+  identity does not match selected proposal/backend/class. Source audit confirms those typed
+  fields never reach provider authorize/close in current StageRequest. New AKU-07k and router
+  OP-AKU-BIND request the exact additional HIGH22/three-process versioned contract extension.
+  No request-ID-only workaround, argv classification or rewritten provider receipt is accepted.
+  Independent selected admission and authenticated-output hardening remain assigned under 06d.
+- Main native regression pass: **254 tests and 15 subtests in 12.59s**. The actual bootstrap,
+  worker, four serving descendants, v2 artifact append and restart fixture also passes alone.
+  Cross-repository replay through the actual team-2 projector returns None for both arms with
+  **diagnostic:zero scored independent launches**. This is correct diagnostic refusal, not a
+  scored-v2 integration success; synthetic containment/telemetry remain explicitly fixture-only.
+  Separate PID-incarnation and expired-owner publication probes still fail pending owner fixes.
+- New AKU-08d records a reproduced canonical-loader defect: verified new source SHA can still
+  execute old timestamp/size-valid .pyc. The semantic owner must compile the exact bytes verified
+  and test failure/concurrency cleanup. The existing 08c receipt/feed task remains open.
+- OpenAI Docs/local CLI inspection identified an existing-session message queue. Main queued
+  direct review nudges to all three exact live owner threads without starting duplicate owners.
+  Queue acceptance is not acknowledgement; owners must still read, correct and refreeze. The
+  control-socket proxy was unavailable and no daemon was started. Delivery evidence stays in
+  tasktmp/owner-review-message-delivery.md.
+- Checklist sync adds **one completed sub-item (AKU-06e)**, bringing accepted implementation
+  sub-items to **39**; all twelve parents remain open. Two new open tasks (07k/08d), zero declines.
+  No standalone dry run, five-loop hardware acceptance, grant, service activation, kernel change
+  or real artifact deletion occurred. Per-task wrap-up only: no pruning, compaction or wiki sweep.
+  README freshness is clean; lane identity passed. Bus drain/heartbeat again refused this
+  non-roster ID; no other session's identity or outbox was used.
