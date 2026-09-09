@@ -1550,3 +1550,22 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
 - Main independently ran the intermediate profile suite: 31 passed in 2.64s. Final current-base
   composition and successful settled-feedback/multi-target coverage remain worker work;
   this intermediate run is not final profile integration acceptance.
+
+## Installed profile connector integration
+
+- Applied the frozen nine-file b9cc-based profile connector packet; all nine publication hashes
+  match. Main independently reproduced 85 passing tests with two existing strict BIND/HELD
+  expected failures and no skips (32.94s), then 37 focused tests on primary (3.46s).
+- Installed typed mechanisms now run actual owned profiling children; original verified output
+  feeds the planner only after exact original prerequisite settlement. Source/default mutation,
+  mismatched retry identity and malformed output fail closed without losing incurred cost.
+  Same-boot replay never invents held authority or extends original validity.
+- Added completed AKU-06h and open AKU-06i. Automatic bounded refresh generations are active
+  worker work: fixed consumed-request debt is an interim safety boundary, not full autonomy.
+  Source/build worker may compose this exact frozen dependency for the genuine actor-consumer
+  integration test; selected-unit transport remains separately under review.
+- Successful settlement fixtures explicitly author correct synthetic provider metadata; native
+  BIND/HELD gates, production freeze and measurement constitution remain unchanged. No live
+  GLM trial, hardware acceptance or dashboard deployment. All 12 parent tasks remain open.
+- README freshness check returned clean. Per-task wrap-up adds one completed subtask and one
+  open follow-up; no index pruning or wiki compilation sweep was performed.
