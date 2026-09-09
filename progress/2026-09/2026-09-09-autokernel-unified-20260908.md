@@ -1342,3 +1342,25 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   Standalone native configuration is next, including per-target recipe mapping so shared
   recipes cannot overwrite another target's preparation. Window collection and same-server
   scientific evidence continue independently. No hardware run, new grant or production change.
+
+### Native startup and same-attempt raw-window checkpoint
+
+- Research source 9e2125b1 promoted to main 625348f846fd23d24f6bde4326847e632de5bc8b.
+  Closed startup v3 installs target/recipe-specific model preparation, original adapter identity,
+  explicit telemetry configuration and prospective instrument publication before scheduling.
+- Raw windows open after model preparation, sample on the parent evidence thread, retain exact
+  phase bounds and join original lifecycle observations. Cross-phase or insufficient samples
+  stay unknown. No scientific all-clear, calibration/control receipt or grade is manufactured.
+- Main combined acceptance: 2,284 passed, one existing accounting xfailed, 83 subtests, no skips
+  in 68.90s. Fresh frozen subset: 56 passed in 8.39s. All 21 published file hashes match the
+  accepted tree; apply-patch packet added trailing blank lines to six new files, corrected
+  before publication. Ruff and diff checks clean; README freshness check clean.
+- Startup-owner construction and genuine-child receipt seal/reopen are separate hermetic
+  integration paths, not an uninterrupted installed real-export dry run. Generic T0 selection
+  does not prove same-server correctness. AKU-07u/07v are two new completed sub-items; all
+  twelve parent tasks remain open. Existing belief source/task now includes raw windows.
+- Parent-final trial work separately passes main's five actual-child/HTTP/Journal/restart tests
+  in 42.18s, but remains unpublished pending full composition and ROOT reader wiring.
+  Calibration preparation and native retained-root catalog work continue independently.
+- No hardware run, new grant, frozen-kernel change, index pruning or wiki sweep. Bus drain
+  still refuses this unregistered session ID; no other roster identity was impersonated.
