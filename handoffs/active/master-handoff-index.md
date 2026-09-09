@@ -43,7 +43,10 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-42 | Admit BEAM 128K and Tulving 200ch/100K as M-12's instruments and grant one inference window: M-12a (Tulving) first, M-12b (BEAM) second. Eval-pool registration is a separate decision from adoption as an instrument (CJ-GATE precedent; MEASUREMENT.md is human-amendment-only) | [episodic-memory-integrity.md](episodic-memory-integrity.md) M-12 | 2026-09-07 |
 | OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
 | OP-38 | **P-KLD divergence protocol** — we have NO ratified KLD/PPL/coherence protocol (`MEASUREMENT.md` §2 has zero divergence terms) while two campaigns now quote divergence numbers. Distilled annex ready: full-vocab only, fp64 sums, declared estimand, bootstrap by document cluster, no universal bands, fail-closed runner + receipts, and a route-pinned cell before attributing KLD to the codec on a MoE. **Human-amendment-only trust boundary → needs an operator-run `ratify_*.sh`, not a session edit** | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) → R23-47 | 2026-09-07 |
-| OP-41 | **CPU co-tenancy: serialize or regress.** RULED 2026-09-08: operator owns the admission-control design via INF-73 §3.4 and implements it after champion finalised → promotion to production → host reboot; no action now. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → §3.4 | 2026-09-08 |
+| OP-41 | **CPU co-tenancy: serialize or regress.** RULED 2026-09-08: operator owns admission-control design/implementation after champion finalised → promotion → host reboot. Clarify whether the new implementation instruction delegates broker-code work now; live activation gates remain unchanged. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → §3.4, AKU-11 | 2026-09-08 |
+| OP-AKU-HELD | Approve the additional versioned provider-held-cost lifecycle event and replay/settlement recovery (HIGH: 22 upstream, three processes). Descendant-event approval is already granted but does not include this addition; no live grant or measurement-policy change. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-07j | 2026-09-09 |
+| OP-AKU-BIND | Approve versioned scheduled-work metadata through native StageRequest, provider admission, lifecycle/recovery and receipt verification (HIGH: 22 upstream, three processes). Fixes missing proposal/backend/stage-class identity; distinct from descendant approval, with no live grants or production changes. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-07k | 2026-09-09 |
+| OP-AKU-STACK | Approve canonical generated-stack repair in the isolated orchestrator lane (HIGH: 66 upstream): lean registry, descriptors, priors, procedure enums and summary; preserve split-instance mode. No compiler edits, service reload or production-kernel change. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-12c | 2026-09-09 |
 | OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-13 | Ratify a P2-5j placement amendment or require a full P-BENCH-PLACEMENT-1 composite; the old four-arm design is observation-only | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P2-5j | 2026-08-11 |
 | OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
@@ -76,11 +79,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 58 | 662 | 16 | 2026-07-29 |
+| inference-research | 58 | 691 | 16 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
-| research-evaluation | 45 | 387 | 10 | 2026-07-29 |
+| research-evaluation | 44 | 392 | 10 | 2026-07-29 |
 | reviewer-control-plane | 7 | 33 | 11 | 2026-07-29 |
-| routing-and-optimization | 51 | 439 | 19 | 2026-07-29 |
+| routing-and-optimization | 49 | 439 | 19 | 2026-07-29 |
 | user-facing-harness | 7 | 50 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

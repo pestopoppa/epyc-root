@@ -382,6 +382,15 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       weight stream). Measured 2026-09-02 with clean placement: t48 10.09, t64 9.69, t96 9.67 — more threads
       do not help today because the floor is not bandwidth; re-sweep only after D1/D2 or Axis A move the
       floor. Same build, same window, same artifact.
+      **★ POINTER 2026-09-08 — THIS ENTRY'S RE-OPEN CONDITION HAS BEEN MET.** The floor moved
+      **2.76×** (10.09 t/s / 99.1 ms → the champion's **27.893 t/s / 35.9 ms**, header table) while
+      graph nodes fell only 13%, so the barrier/dispatch term — the one term that scales with thread
+      count — is now a far larger fraction of the token than when 48 won here. The re-sweep is filed
+      and **gated behind the operator's planned host reboot + BIOS session** as **R23-64** in
+      [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md); the post-reboot recalibration
+      of every FLOOR (dispersion, which gates A/B decisions — not the absolute headline numbers, which
+      stay directly comparable) is **R23-65** there. **This entry is also the disproof of MEAS-4's
+      "why 48" framing** below — see the correction block under the MEAS-4 heading.
 - [ ] **D5 — huge pages (demoted to verify-only).** Measured 2026-09-02: with free memory on the nodes the
       weight buffers are **100% `AnonHugePages`** (96.3 of 96.4 GB) with no code change — THP `always` does
       it at fault time; only the as-is/cache-full regime showed 68%. Nothing to gain once C7 is in place;
@@ -1067,11 +1076,77 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       changes what OP-41 is choosing between; report immediately.**
 
 - [ ] **★ MEAS-4 — THE INSTRUMENT RESERVES 96 CORES TO USE 48, AND BLOCKS A SECOND AGENT WHILE
-      DOING IT.** Filed 2026-09-07 from an operator observation ("I see cpu resources idle") that was
+      DOING IT.**
+
+      **⚠ CORRECTION 2026-09-08 — THE "WHY 48" HALF OF THIS ITEM IS FACTUALLY WRONG IN THREE
+      SPECIFIC WAYS, AND THE DISPROOF LIVES ~690 LINES ABOVE IN THIS SAME FILE (D4).** Read this
+      before quoting MEAS-4. **MEAS-4's SCHEDULING complaint — effects 2, 3 and 4, the `loadavg`
+      gate costing ~36% of arm wall-time, and the starved second agent — STANDS UNTOUCHED on its own
+      evidence. This correction does not dismiss MEAS-4; it corrects only the "why 48" half.**
+
+      1. **`-t 48` is NOT a convention held for comparability — it is a MEASURED OPTIMUM on this
+         model, swept three times.** **D4** (this file, Axis D, closed 2026-09-02) under clean
+         placement: **t48 10.09 / t64 9.69 / t96 9.67 t/s**, with B2's `-t 8,24,48` arm at
+         9.57 / 9.53 / 10.26 — *"the decode floor is saturated at 8 threads and more threads do not
+         buy bandwidth."* The two earlier sweeps agree in sign: 2026-08-28, pre-NUMA-fix, **t48 7.70
+         vs t96 3.1** ("sync collapse", `progress/2026-08/2026-08-28.md:139`); 2026-08-29 **t48 13.46
+         / t64 13.95 / t96 12.84** (`progress/2026-08/2026-08-28.md:259` — note **t64 WON there** and
+         the order reversed by 2026-09-02; never chased). The mechanism is measured on both sides:
+         48→96 buys **+8.5% bandwidth** (152.6 → 165.6 GB/s, the C0 row in the ledger above) and
+         costs **+10 ms/token of barrier** (1.9 → 3.2 µs/barrier over ~7,800 sync events, the barrier
+         row). It is codified as a measured result, not a convention:
+         `docs/design/inf70-close-out-20260908/qwen38_flash_next_recipe.py.draft:447` —
+         `THREADS = 48  # NOT 96: the served decode optimum on this model`. **Comparability is a
+         CONSEQUENCE of 48 having won, not the reason for it.**
+         And **decode here is not bandwidth-bound at all**, so "more cores buy more bandwidth" was
+         never the trade on offer: the ledger's own *achieved fraction* row reads **27% of the
+         153 GB/s the recipe delivers and 9% of the 460.8 GB/s theoretical**, against the formal
+         bandwidth-bound gate of **achieved BW > 70% of theoretical**
+         (`handoffs/completed/cpu-decode-flops-roofline-audit.md:26`) — **not met**. The binding term
+         is the **dispatch floor**: ~70 ms of a 97.3 ms token, **7,906 graph nodes/token**, 22.5 ms of
+         barrier/straggler wait. *(Unreconciled discrepancy, flagged so it is not quoted as agreement:
+         the Axis S preamble states "~36% of the 152.6 GB/s ceiling" where the ledger's achieved-
+         fraction row says 27%. Both are far below the 70% gate, so the conclusion is unaffected.)*
+
+      2. **"Half the reserved cores idle by design" does NOT mean the 96-core reservation is
+         oversized.** With `OMP_PROC_BIND=spread` + `OMP_PLACES=cores` inside mask `0-95`, the 48
+         threads land **4 per CCD across all 12 CCDs** (the barrier row's conditions; D4's original
+         text names this arm) — spanning **all 4 NUMA nodes and all 12 memory channels**. Live
+         topology, read 2026-09-08: EPYC 9655, **96 physical / 192 logical**, **12 L3 domains × 8
+         physical cores** (= 12 CCDs), **4 NUMA nodes × 24 physical cores** (node0 `0-23,96-119`,
+         node1 `24-47,120-143`, node2 `48-71,144-167`, node3 `72-95,168-191`), 3 memory channels per
+         node. **The CORES are half idle; the REGIONS are 100% used.** Therefore the candidate remedy
+         *"reserve only the regions actually used"* **recovers nothing** — every region already is.
+         (48 is neither a CCD nor a NUMA boundary. It is half the physical cores and the size of a
+         fleet `half` region, but the recipe does **not** use a contiguous half.)
+
+      3. **"Run a second arm concurrently on the unused half" — there is no unused half.** The idle
+         cores are interleaved one-per-pair inside every CCD, sharing L3 and the same memory
+         controllers as the busy ones. And **MEAS-6 measured the cross-campaign contention channel as
+         DRAM BANDWIDTH, invisible to any CPU-occupancy screen**: our CPU A/A floor went **0.80% →
+         7.223%** under a *correctly pinned* concurrent GPU bench chain (MEAS-6's table; restated on
+         MEAS-7). So that option must be costed as a **bandwidth-contention experiment needing its own
+         floor**, never as a free scheduling win.
+
+      **Citation hazard, recorded here so it stops recurring.**
+      `handoffs/active/numa-placement-defect-20260730.md:333-345` (*"+13% for `-t 48` over `-t 96`"*)
+      is the **SMT-oversubscription** experiment: 96 logical threads on a cpuset of **48 physical
+      cores plus their 48 SMT siblings** (`0-47,96-143`). It says *do not oversubscribe SMT*. It does
+      **NOT** say 48 physical beats 96 physical, and must never be cited as if it did.
+
+      **Follow-up.** The re-sweep this correction implies (t48 / t64 / t96 on the champion, plus the
+      6-CCD-vs-12-CCD arm D4 planned and never ran) is filed as **R23-64** in
+      [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md), **gated behind the operator's
+      planned host reboot + BIOS session**; the post-reboot recalibration of every calibrated FLOOR is
+      **R23-65** there. See also **C8** in Axis C above (the prepared BIOS checklist).
+
+      Filed 2026-09-07 from an operator observation ("I see cpu resources idle") that was
       correct and that nobody in the campaign had raised. Four effects stack:
       1. **`-t 48` on a 96-core bench region** — half the reserved cores idle during decode *by design*,
          because 48 threads is the canonical recipe and is load-bearing for comparability with every
-         number already measured.
+         number already measured. **[CORRECTED 2026-09-08 — see the correction block above: 48 is a
+         MEASURED optimum (D4), not a comparability convention; and although half the CORES idle, the
+         reserved REGIONS — all 12 CCDs, all 4 NUMA nodes, all 12 channels — are 100% used.]**
       2. **One arm at a time**, serialized by `region-lock`, holding **all four** regions q0-q3 throughout.
       3. **~45% of each arm is not measurement**: HARNESS-1's Phase A breakdown is mean **129 s** in the
          `loadavg < 10` gate + **32 s** server load out of ~357 s held. The eviction it was sent to
@@ -1083,11 +1158,18 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       catches a burst; a lagging 1-minute average cannot. Post-hoc screening on `foreign_cpu_max` took
       HARNESS-1's pair p95 from **19.89% → 6.25%** by dropping one arm, free and instantaneous.
       **Do NOT change the recipe or the reservation mid-flight** — `-t 48` is comparability-critical and
-      arms are running. This is a design input for OP-40, which it approaches from the other side: MEAS-1
+      arms are running. **[2026-09-08: the campaign is closed and no arms are running; and `-t 48` is
+      measured-optimal as well as comparability-critical — correction block above. Any change to it is
+      R23-64, gated behind the operator's BIOS reboot.]** This is a design input for OP-40, which it
+      approaches from the other side: MEAS-1
       asks who else may use the bench cores; MEAS-4 asks why we hold 96 to use 48. Candidate answers, none
-      costed yet: reserve only the regions actually used; drop the `loadavg` gate for post-hoc screening
-      (recovers ~36% of arm wall-time AND gives a better instrument); or run a second arm concurrently on
-      the unused half, which is a *different measurement condition* and would need its own floor.
+      costed yet: ~~reserve only the regions actually used~~ **[DEAD — correction 2: the regions are
+      already 100% used; this recovers nothing]**; drop the `loadavg` gate for post-hoc screening
+      (recovers ~36% of arm wall-time AND gives a better instrument) **[this one stands]**; or run a
+      second arm concurrently on
+      the unused half **[correction 3: there is no unused half — the idle cores are interleaved
+      one-per-pair inside every CCD; cost it as a DRAM-bandwidth-contention experiment]**, which is a
+      *different measurement condition* and would need its own floor.
       **Cross-reference: autokernel's unified design (U4) makes the loop the single owner of build slots,
       GPU arms and CPU arms precisely so this is schedulable rather than first-come.** Their north star —
       "own both GPU and CPU and maximally use them" — is the same observation from the other direction.

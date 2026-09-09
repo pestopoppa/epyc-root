@@ -7,6 +7,7 @@ This digest exists so a session can act correctly without reading the full const
 ## The claim rule
 
 A decision-gating number = `(metric, protocol-id, n/reps, date, attestation ref)`. A number without a protocol citation is an **observation**: usable for hypotheses, never for keep/revert/deploy/promote/buy/close decisions.
+It also declares its **instrument class** (`bench` | `serving`), and if it is a null it declares its power and its fired-knob control — see *Instrument class, floor unit, and bounded nulls* below.
 
 ## Category — declare one, always
 
@@ -82,6 +83,40 @@ supplied the counterexample to each.
   Worked example: the sharpest limitations of that artifact lived in generated HTML inside a large
   folder while the headline sat in the README, and the producers' own `limitations.md` was written,
   fed to the doc generator, and withheld from publication.
+
+## Instrument class, floor unit, and bounded nulls (ratified 2026-09-08)
+
+Three rules, one origin: the 2026-09-08 champion / R23-58 / INF-70 campaign, where each was paid for
+in our own measurements rather than someone else's. Normative text and receipts are the appendix
+blocks **INSTRUMENT-CLASS-1**, **FLOOR-UNIT-1** and **BOUNDED-NULL-1** in `MEASUREMENT.md`; the
+required declarations are in its §3 and the measured rows in its §4. This is the digest.
+
+- **A bench-surface number is never a serving number** (`INSTRUMENT-CLASS-1`). Declare
+  `instrument_class` = `serving` (the registered production recipe — its drafter, batching,
+  concurrency, pinning) or `bench` (a kernel A/B surface). **Absolute numbers come only from
+  `serving`**; a `bench` number is a valid build-vs-build A/B on its own surface and is inadmissible
+  as a headline or a rate. **A cross-class comparison is REFUSED, not caveated.** What learning this
+  cost: asked for the champion's decode rate we quoted `llama-bench` tg128 at **31.0 tok/s** where the
+  production recipe measures **79.25** — a 2.5× understatement of our own system, because
+  `llama-bench` cannot do speculative decoding at all. Nor is the gap a constant to correct for: the
+  same day, the tg128 proxy read **+5.958%** over six keeps while the serving gate returned "cannot
+  tell, probably slightly negative" (**−2.18%, n=10**) — 11 points, and the wrong sign.
+- **A floor carries its `unit`, and n=10 cannot gate** (`FLOOR-UNIT-1`). Every floor record writes
+  `unit ∈ {arm, session, process}` next to harness, n, contention model and host state; a floor with
+  no unit is not a gate input, and a gate facing a cross-unit comparison **refuses**. Measured: arm sd
+  **0.501%** against process-launch sd **2.793%**, so a process-scoped knob faces a ~**13×** coarser
+  floor — and using the arm floor for a launch-scoped knob sized a test at **4 sessions/side** when
+  the answer was **4,780**. Separately, `p95` from n=10 is an extreme order statistic: the standing
+  serving floor (**4.581%**, n=10) measures **6.596%** at n=24, and only **9.0%** of 20,000 bootstrap
+  n=10 draws land at or below the standing value. **Calibrate a gating floor at n ≥ 24, and record
+  `n` and an interval rather than a point.**
+- **A null needs its power AND its fired-knob control** (`BOUNDED-NULL-1`). State the effect sizes
+  your power excludes, and cite a positive control proving the mechanism reached the system under
+  test — asserted in **both** directions, so a mislabelled arm cannot pass. Missing either, the result
+  is `untested`, not a negative. Worked case: R23-58's bounded null carried ~0.97 power against a 3×
+  dispersion ratio, and all 48 positive-control readbacks fired both ways (AnonHugePages ~53% of RSS
+  in the control arm, **0.0%** in the treatment arm). Counter-case from the same campaign: INF-70's
+  SYNC-18, where "no effect" and "the knob never fired" were indistinguishable.
 
 ## Deterministic replay before regeneration (operator-ratified 2026-07-27)
 

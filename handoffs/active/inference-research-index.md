@@ -16,8 +16,8 @@
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | AK-INST-1 still unproven; no run is live — loop relaunch on champion ef81196d5 is a separate operator go, nothing here schedules it | INF-48, EVL-47, INF-64 |
 | INF-64 | autokernel restart-loop fix | [autokernel-restart-and-strip.md](autokernel-restart-and-strip.md) | AK-INST-2: grep the discovery plane for 40-hex constants compared with `==` and convert the instrument pins | — |
-| INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | PROD-BASE-1: measure production at ITS own best (MTP self-draft, own np sweep) or the champion headline stays absolute, with no ratio | INF-06, INF-62, INF-64 |
-| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | R23-61a: recalibrate the serving floor at n>=24, recording n and a CI; then R23-62 champion-divergence closer (shim OFF, today's harness) | INF-06, INF-64, INF-65 |
+| INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | HEAD-4: promote the 35B sweep out of scratch into research data/; then MTP-27B-1 — the 27B is MTP-capable, PROD-BASE-1's denominator | INF-06, INF-62, INF-64 |
+| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | R23-64/R23-65 GATED on the operator's reboot+BIOS; decide R23-61a pre- or post-reboot first; then R23-62 divergence closer | INF-06, INF-64, INF-65 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Fusion arms DONE 2026-08-27 — est +10–15% REFUTED (both −0.57% tg128); next: re-rank levers (GGML_PERF profile) from the receipts | — |
@@ -26,9 +26,9 @@
 | INF-12 | delta mem reproduction | [delta-mem-reproduction.md](delta-mem-reproduction.md) | Gate 2 MemoryAgentBench accuracy reproduction - GPU-only (CPU-infeasible) | — |
 | INF-13 | engram conditional memory | [engram-conditional-memory.md](engram-conditional-memory.md) | Make k budget-conditional rather than fixed (intake-936 rider) | — |
 | INF-16 | gemma challenge kernel techniques v7 | [gemma-challenge-kernel-techniques-v7.md](gemma-challenge-kernel-techniques-v7.md) | K10 — (follow-up) Lever A quiet-host re-eval: on a quiesced host (fresh-server/run, fprintf(stderr) keylog to confirm the nodes0 collision… | — |
-| INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | CLOSED 2026-09-08: champion = ef81196d5 + GGML_NOHUGEPAGE_PROCESS=1 at launch; next WRAP-10 lands PROD-1's recipe module; OP-40 unruled | INF-67, INF-10, INF-63 |
+| INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | CLOSED 2026-09-08; MEAS-4's 'why 48' framing corrected (48 is a measured optimum per D4) — re-sweep is R23-64 | INF-67, INF-10, INF-63 |
 | INF-72 | moe routing locality tap | [moe-routing-tap-and-locality-measurement.md](moe-routing-tap-and-locality-measurement.md) | Port llama-moe-trace onto an llama.cpp-experimental branch off v9; emit SRP/SCH/EOR | INF-34, INF-70 |
-| INF-69 | glm53 flash evaluation | [glm53-flash-evaluation.md](glm53-flash-evaluation.md) | T11–T14: validate exact expert/Q8 batching, measure worker waits, and retest the integrated candidate at 48 threads | — |
+| INF-69 | glm53 flash evaluation | [glm53-flash-evaluation.md](glm53-flash-evaluation.md) | T15: use seeded AutoKernel evidence to resolve CPU regression before GLM admission; then T2/T4 | — |
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
 | INF-19 | gpu cot scaffold sidecar | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade, | — |
 | INF-20 | gpu drafter control redesign | [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md) | DR-3 — broader K2 admission runner/package: build the dry-run-first K2 | — |
@@ -67,7 +67,7 @@
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
 | INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap DONE; run stack_change_pipeline regen + stack-change checklist to verify live==config on next start | — |
 | INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | SWE closed on both protocols; re-collect the 24-cell grid at the measured n-max 8 optimum when GPU frees | INF-60 |
-| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | U3-SEED: RUNTIME_CONFIG arm vs the measured THP instance (session unit, spread not mean); then U3-DEFAULTS-b per-surface champion recipe | INF-66, INF-65, INF-70 |
+| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Connect published native v2 to parent witnesses, canonical receipts, verified actors and real startup inputs | INF-66, INF-65, INF-70 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.

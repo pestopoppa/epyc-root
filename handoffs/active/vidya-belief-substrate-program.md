@@ -1589,6 +1589,62 @@ retrofitting the read side is impossible. Source row added to
       Trigger: the next serving-harness arm produced on either surface. Zero compute to file; the adapter is
       ~40 lines of projection.
 
+### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09)
+
+- [ ] **VB-AK-UNIFIED — wire the unified current loop before its first new measurement**
+      (`autokernel-unified-surface-program.md` §9 AKU-08). Emit producer-authored, self-hashed carriers
+      at sealed experiment/arm boundaries with exact immutable model/build/recipe, protocol and metric
+      direction, independent-unit/paired execution membership, raw evidence and during-arm contention,
+      placement and GPU residency witnesses. Reuse SC75 for serving arms and the shared `ClaimTuple`
+      grader. Preserve intended-use/applicability separately from grade; search-only results cannot
+      become bank/release claims through projection. Historical pre-hook rows remain history, never
+      retrofitted warrant. Journal `LOOP_BUNDLE_SAVED` records are operational snapshots, not measurements
+      or a new source class, and produce zero tuples. Add strict reader and replay/outage fixtures,
+      mandatory pre-top-k conflict checks and dependency-generation admission checks. This is source
+      wiring authority only; live research/resource gates remain unchanged.
+      **2026-09-09 source checkpoint:** AKU-04c/08b implements the prospective sealed-arm producer,
+      strict shared-ladder reader and existing corpus dispatch, including actual raw-byte rederivation
+      and same-ID conflicting-carrier quarantine. Supported scalar is serving/process/level/median;
+      absent witnesses remain diagnostic. No historical ingestion or warrant backfill occurred.
+      AKU-03c additionally wires verified native controller events, exact retry and restart; the actual
+      producer→Journal→reader path passes hermetic integration. No live worker fence is inferred.
+      This parent remains open for bounded cursor/feed replay, producer-side
+      planner question bindings and registered current-use consumers. Evaluator identity/lifecycle
+      instrumentation remain separately required; a source schema is not a protocol registration.
+
+  - [ ] **VB-AK-UNIFIED-LIFECYCLE — bind prospective whole-lifecycle observations and loaded
+    instrument identity to native arm evidence.** Owner `autokernel-unified-20260908`; source work
+    under review. Reuse the existing immutable ArtifactStore and native Journal, with exact
+    worker/grant/container/PID-start and actual probe intervals. Missing attribution, exceeded
+    observation budgets, incomplete shutdown and unproven loaded code stay explicit unknowns.
+    Native attachment and strict reader must agree on the versioned identity; old records are never
+    relabelled using today's source. Observations alone produce no gain claim, quiet-host rule or
+    competing grader. Wire the actual serving/worker consumer before claiming lifecycle completion.
+  - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
+    Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
+    three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,
+    prospective effect question and original raw/phase provenance. The bounded feed consumes the
+    sealed receipt rather than inventing an improvement by joining independently emitted arm levels.
+    Strict reader and the shared ClaimTuple ladder remain separate from registered nomination/use
+    eligibility. Do not change historical GGML_IQK bank semantics, backfill missing claims, or treat
+    an A2 nomination as a keep, validation or release result.
+
+  - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.**
+    Owner `autokernel-unified-20260908`; implementation assigned to the actor/profile consumer.
+    Preserve the selected profiling request and original target/model/quant/recipe, loaded
+    profiler identity, actual owned worker result, raw artifacts and observation intervals when
+    deriving hotspots/opportunities. Reuse an existing profiler source/adapter where applicable;
+    configuration metadata cannot substitute for observed profile freshness. Project measured
+    findings only through the existing source-class ladder; retain unsupported/unknown states.
+  - [ ] **VB-AK-UNIFIED-VALIDATION — wire owning objective and LOO decisions at write time.**
+    Owner `autokernel-unified-20260908`; implementation assigned to the semantic consumer.
+    Preserve the exact proposition decided by the existing production-validation protocol,
+    objective identity, batch/row/manifests and native measurement/calibration evidence, decision
+    and immutable artifact references. Reopen through the concrete row/LOO verifier without a
+    history scan. Reuse canonical verifier-class grading and proposition-binding rules; do not
+    manufacture a scientific policy, combine measurement grades into a new ladder, or reconstruct
+    a missing decided proposition on read. Source quality and permitted scientific use stay separate.
+
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 
 *Source: the Q.1 mutation audit of `tests/vidya/` run at the end of the Prove2Me wave — 62 mutations

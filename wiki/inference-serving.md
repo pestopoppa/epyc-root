@@ -2,8 +2,90 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-09-08 (pm): the champion serving ceiling measured with residency proven on every launch — 79.25 tok/s single user, 179.12 aggregate at np=8, and np=4 is the operating point at 93.7% of peak aggregate for ~42 tok/s per user; aggregate throughput saturates well before the slot count, and between-launch dispersion widens 7.6x from np=1 to np=4; R23-60 landed residency sampling on the serving path, which previously proved none; earlier: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
-**Sources**: 82 documents
+**Last compiled**: 2026-09-09: GLM core validated but admission held on CPU performance; AutoKernel seed complete. Earlier: 2026-09-08 (evening): a SECOND headline model on the same champion binary — Qwen3.6-35B-A3B-MTP-Q8_0 at **112.68 tok/s single user / 310.96 tok/s aggregate at 16 slots**, residency proven 24/24 — and the curve is **NOT saturated** there (+15.98% on the last step, 41.4 of 64 GiB VRAM), so 310.96 is the highest measured point and never a maximum; the two models take **different operating points for structural reasons** (dense 27B turns over at 4→8 → np=4; MoE 35B still climbing at 16); and the 35B's np=1 dispersion is 2.70% and did NOT tighten when n doubled; earlier: 2026-09-08 (pm): the champion serving ceiling measured with residency proven on every launch — 79.25 tok/s single user, 179.12 aggregate at np=8, and np=4 is the operating point at 93.7% of peak aggregate for ~42 tok/s per user; aggregate throughput saturates well before the slot count, and between-launch dispersion widens 7.6x from np=1 to np=4; R23-60 landed residency sampling on the serving path, which previously proved none; earlier: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
+**Sources**: 139 distinct linked Markdown sources
+
+## Compiled Update — 2026-09-09: GLM-5.3-Flash text/native-MTP qualification and the three rejected follow-on levers
+
+**Confidence: verified for the tested CPU candidate and recorded artifact; experimental for serving adoption.** Production and the measured AutoKernel champion remain unchanged.
+
+### The model now loads as its actual hybrid architecture
+
+The private candidate implements text-only `glm5next`/`glm5-next` loading and the embedded one-block NextN drafter. The local artifact is the six-shard, 199,707,321,347-byte **UD-Q4_K_XL** distribution, but that label does not mean every tensor is Q4_K: routed experts use K-quants while mHC mixers, indexer projections and gates, KDA projections, MLA low-rank projections, and NextN tensors include Q8_0. Performance findings must therefore name the exact artifact and active tensor family instead of calling the model “Q4” or “Q8.” Its graph is also hybrid: 34 KDA recurrent blocks, 11 MLA/DSA blocks, four mHC streams, 288 routed experts with top-8 selection, one shared expert, and the NextN block.
+
+The loader accepts both architecture spellings and metadata prefixes, supplies the official true defaults for absent index-share and tail-selection keys, and falls back from missing NextN embedding/head tensors to the trunk embedding/output tensors. These are compatibility rules for the immutable local shards; no header rewrite or vision port is involved.
+
+### Native MTP is exact at the validated depth and phase boundary
+
+Depth-3 native MTP uses `--spec-type draft-mtp` with no separate draft model. `LLAMA_SPEC_EXACT=row` preserves prompt and ordinary-decode arithmetic while enabling row-exact CPU math only for identified target-verification batches. The real-model phase gate passes six exact comparisons, including split 22+4 prefill, reject/replay, and off→on→off context reuse. Both architecture aliases pass 12 rollback cases, state restore, pool/chunk checks, and the long-prefill export contract: a logical decode split across ubatches exports no invalid rectangular selector, and the following single-row draft decode exports a fresh selection. Final 512-token MTP trajectories include actual accepted and rejected drafts and match their plain references exactly.
+
+This exactness claim is bounded to the tested depth-3, single-slot CPU recipe. Depth 2 diverged in its long-prompt control, and multi-slot serving, broader context lengths, HIP execution, and natural-EOS parity remain outside this qualification.
+
+### Profiling produced no additional retained performance lever
+
+The follow-on round tested exact multirow K-quant expert reuse, exact batched dense-Q8 verification, and graph-worker scheduling. Operator and micro gates showed the intended branches could be exact, but the expert full-model screen and balanced Q8 repeats did not establish a gain; both experiments remain disabled. The scheduling audit also corrected a concrete diagnosis error: the 34 large recurrent-state copies are contiguous and already use the existing 48-worker block-copy path. The proposed outer-row branch reached unrelated `[3,8192,1,1]` copies that were already row-parallel. Its 2.52× synthetic padded-copy microbenchmark therefore did not describe the model route, and the experiment was removed in `f8e2668b6`.
+
+The retained work is the GLM enablement and exact phase-scoped MTP/Q8-prefill recipe. This three-lever round produced no additional retained decode optimization.
+
+### Champion admission is held on CPU performance
+
+The champion-descended `c463f601b` candidate passed the fresh alias, rollback/replay, recurrent-state, long-export and real-phase fixtures. Its 31 plain/native-MTP CPU trajectory pairs are token-exact, with 5,419 accepted and 2,949 verified rejected draft tokens. The matched historical-harness Qwen3.8-27B DFlash2 GPU sanity measured 79.5987 tok/s versus the prior 79.2453 median with residency proven; this is a no-slowdown observation, not a speedup claim.
+
+Through the original Flash-Next CPU harness, c463 native MTP measured 32.1526 tok/s versus the historical 43.2807 mean (−25.71%). Outputs and draft counters match and the original host screens passed. This single candidate launch against historical observations is not a paired causal estimate, but it leaves the performance acceptance condition unsatisfied. Champion `ef81196d5` and frozen production remain unchanged.
+
+The completed work was seeded into AutoKernel as four cross-epoch `measured_null` records under campaign `ak-external-glm53-core-20260909`, with a live planner inbox pointer. Four initial inserts and zero duplicate inserts were verified, and all four records were independently retrieved. These preserve the source, recipes, evidence and unsuccessful experiments for future work; they do not advance the champion. The existing `VB-GLM53-MTP` task owns prospective producer-time measurement wiring; these external memory records are not retrofitted into decision-grade ClaimTuples. See the [memory seed receipt](../docs/reference/models/glm53-autokernel-memory-seed-20260909.md).
+
+### Source References (2026-09-09, GLM-5.3-Flash)
+
+- [AutoKernel memory seed receipt](../docs/reference/models/glm53-autokernel-memory-seed-20260909.md) — four nonaccepted records, artifact hashes, retrieval and idempotence checks.
+
+- [`glm53-flash-support-audit-20260908.md`](../docs/reference/models/glm53-flash-support-audit-20260908.md) — pinned upstream/base identities, exact six-shard hybrid layout, mixed tensor types, alias/default requirements, and original validation contract.
+- [`glm53-cpu-optimization-20260908.md`](../docs/reference/models/glm53-cpu-optimization-20260908.md) — phase-scoped row-exact implementation, native-MTP recipe, correctness gates, candidate observations, and bounded quality limits.
+- [`glm53-cpu-worker-audit-20260909.md`](../docs/reference/models/glm53-cpu-worker-audit-20260909.md) — node-level CPU evidence and the corrected recurrent-copy route analysis.
+- [`glm53-flash-evaluation.md`](../handoffs/active/glm53-flash-evaluation.md) — current implementation status, completed expert/Q8/scheduling decisions, and remaining DSA/role-fit work.
+- [`glm53-autokernel-handoff.md`](../docs/reference/models/glm53-autokernel-handoff.md) — exact private-fork branch boundary, champion ancestry, retained recipe, rejected experiments, and mandatory fold gates.
+- [`2026-09-09-glm53-cpu-optimization.md`](../progress/2026-09/2026-09-09-glm53-cpu-optimization.md) — executed gates, exact final regression evidence, rejected experiments, and immutable candidate identities.
+
+## Compiled Update — 2026-09-08 (evening): a second headline model — Qwen3.6-35B-A3B at 112.68 tok/s single user / 310.96 aggregate, unsaturated at 16 slots
+
+**Confidence: verified.** 24 launches on an idle host, 19:37:30–20:14:00Z, GPU residency **`proven` 24/24** (2,952 samples), sclk flat 1700 MHz at every point. Unit: **LAUNCH** — a fresh `llama-server` per sample, as `FLOOR-UNIT-1` requires.
+
+Champion `ef81196d5`, MI210 gfx90a, recipe `qwen3.6-35b-a3b-q8-gpu-mtp` (research `c3e362a1`), **MTP self-drafting with no separate drafter**, `draft_n_max=4`, only `np` varied.
+
+| slots (`np`) | aggregate tok/s | per slot | p95 dev | peak VRAM | launches |
+|---:|---:|---:|---:|---:|---:|
+| **1** | **112.676** | 112.676 | **2.696%** | 36.61 GiB | **6** |
+| 2 | 130.540 | 65.270 | 1.378% | 36.90 GiB | 3 |
+| 4 | 189.575 | 47.394 | 1.128% | 37.50 GiB | 3 |
+| 8 | 242.755 | 30.344 | 1.226% | 38.78 GiB | 3 |
+| 12 | 268.120 | 22.343 | 1.877% | 40.16 GiB | 3 |
+| **16** | **310.958** | 19.435 | 2.530% | 41.37 GiB | 3 |
+
+### 310.96 tok/s is the HIGHEST MEASURED POINT, not a ceiling
+
+Marginal aggregate gain per step: +15.85% (1→2), +45.22% (2→4), **+28.05%** (4→8), +10.45% (8→12), **+15.98%** (12→16). The last step is the **second largest of the six** — the decay is not even monotonic, which is not itself a claim at p95 deviations of 1.9–2.5%, but is nowhere near the flattening that would license calling `np=16` a peak. Memory is not the binding constraint either: **41.4 of the card's 64 GiB**, growing ~1.2 GiB per doubling above np=4. `np=24` and `np=32` were offered and the operator declined; the gap is a **recorded decision** (HEAD-3), not an oversight. **Never quote 310.96 as a maximum.**
+
+### The operating point is PER MODEL, and the difference is structural
+
+| | Qwen3.8-27B (dense, DFlash2) | Qwen3.6-35B-A3B (MoE, MTP) |
+|---|---|---|
+| curve | **turns over at 4→8** — +6.8% aggregate for ~half the per-user rate | **still climbing at 16** — +16.0% on the last step |
+| recommended `np` | **4** — 93.7% of peak, ~42 tok/s per user | **16 of what was measured** — 311 aggregate, ~19 tok/s per user |
+| single user | 79.245 tok/s (p95 dev 0.44%) | 112.676 tok/s (p95 dev 2.70%) |
+| best aggregate | 179.122 at np=8 | 310.958 at np=16 |
+
+A dense model saturates the memory system early, so extra slots stop buying throughput; an MoE at low batch is not bandwidth-saturated, so extra concurrent tokens route into expert reads that are already being paid for. **Do not carry one model's `np` recommendation to another architecture** — the shape of the curve, not a tuning preference, is what sets it. If per-user responsiveness is the requirement, the 35B's own `np=4` (47.4 tok/s per slot, 189.6 aggregate) beats the 27B's `np=1`.
+
+### The 35B's single-slot dispersion is a PROPERTY of the model
+
+2.350% p95 dev at n=3 → **2.696% at n=6**: doubling the sample made it slightly *wider*, not tighter. Against the 27B's **0.44%** at the same slot count on the same GPU in the same window — a **6.1× difference**. Every single-user headline for this model must carry that ~2.7% between-launch dispersion; implying 27B-grade ±0.5% precision here is a `FLOOR-UNIT-1` violation.
+
+### Source References (2026-09-08, evening — the 35B sweep)
+
+- [`champion-max-performance-20260908.md`](../docs/design/champion-max-performance-20260908.md) — the canonical citable artifact; §6 is the 35B sweep (per-point `recipe_hash`, residency, exact conditions), §7 the architecture explanation.
+- [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — both headline models in one place; HEAD-2/HEAD-3/HEAD-4 and MTP-27B-1.
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — INF-73 U3: the recipe-expressiveness pattern and U3-EXPRESS.
+- [`2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — the session log with the raw-artifact paths.
 
 ## Compiled Update — 2026-09-08 (pm): the champion's measured serving ceiling — 79.25 tok/s single user, 179.12 aggregate — and why np=4 is the operating point
 
@@ -816,9 +898,9 @@ The operator ruled the v7-cutover's quarters-only launch an **accidental regress
 
 ### Key Findings (2026-07-24)
 
-- **The "quarters-only" v7 lineup was a mistake, not the design — restored same day via a new additive promotion primitive.** Operator ruling (verbatim intent): every role runs a full-performance instance *plus* quarter instances for concurrent aggregate boost; exclusivity is a **dispatch-time thread-overlap property** (region locks), not a launch-time mode choice. `orchestrator_stack.py` gained `start --only <role> --numa-mode both` (`_only_mode_transition_allowed`): over an already-quarters-live fleet it launches **only the missing big instance**, skip-healthy, zero outage to running quarters. Executed for all three quarterable fleets — worker_general 8072 (full, interleave), frontdoor 8070 (NODE0 half), ingest_long_context 8085 (NODE0 half) — sequentially, three-gates green (pipeline + 183-test promotion suite + live affinity + solo-dispatch-lands-on-big verified per fleet). J2/J3 KV-migration replay then PASSED on the restored lineup: forward=6, reverse=1, committed=7, aborted=0. [stack-lineup-dossier-2026-07-23](../handoffs/active/stack-lineup-dossier-2026-07-23.md), [within-role-placement-state-machine](../handoffs/active/within-role-placement-state-machine.md)
+- **The "quarters-only" v7 lineup was a mistake, not the design — restored same day via a new additive promotion primitive.** Operator ruling (verbatim intent): every role runs a full-performance instance *plus* quarter instances for concurrent aggregate boost; exclusivity is a **dispatch-time thread-overlap property** (region locks), not a launch-time mode choice. `orchestrator_stack.py` gained `start --only <role> --numa-mode both` (`_only_mode_transition_allowed`): over an already-quarters-live fleet it launches **only the missing big instance**, skip-healthy, zero outage to running quarters. Executed for all three quarterable fleets — worker_general 8072 (full, interleave), frontdoor 8070 (NODE0 half), ingest_long_context 8085 (NODE0 half) — sequentially, three-gates green (pipeline + 183-test promotion suite + live affinity + solo-dispatch-lands-on-big verified per fleet). J2/J3 KV-migration replay then PASSED on the restored lineup: forward=6, reverse=1, committed=7, aborted=0. [stack-lineup-dossier-2026-07-23](../handoffs/archived/stack-lineup-dossier-2026-07-23.md), [within-role-placement-state-machine](../handoffs/active/within-role-placement-state-machine.md)
 
-- **A 5-agent read-only archaeology settled a genuine operator-recall vs. git-history conflict — both sides were partly right.** The operator recalled "2 halves + 4 quarters" per role and a 192-thread architect; git history showed the fulls were deliberately dropped at v7 cutover (mode-exclusivity contract 2026-07-21, `full_disabled`). Resolution: **the launch-time drop was real and deliberate** (accurate history) **but was never operator-ratified intent** — hence "accidental." Separately, **"2 halves per role" was never a committed config** — the one live 2-half event (2026-05-26, certified affinity) was an ad-hoc experiment that measured **negative** (co-run ratios 0.455–0.541: two 48-core halves contend on the memory channels serving the shared mmap'd weight pages) and was reverted same day. The architect has always been -t 96 physical-only, never 192 threads; `worker_vision` ran 4 quarters for ~90 minutes once (2026-05-24) and was deliberately reverted with a regression-test pin (flat scaling, 11.39 vs 11.30 t/s — model too small to benefit). [stack-lineup-dossier-2026-07-23](../handoffs/active/stack-lineup-dossier-2026-07-23.md)
+- **A 5-agent read-only archaeology settled a genuine operator-recall vs. git-history conflict — both sides were partly right.** The operator recalled "2 halves + 4 quarters" per role and a 192-thread architect; git history showed the fulls were deliberately dropped at v7 cutover (mode-exclusivity contract 2026-07-21, `full_disabled`). Resolution: **the launch-time drop was real and deliberate** (accurate history) **but was never operator-ratified intent** — hence "accidental." Separately, **"2 halves per role" was never a committed config** — the one live 2-half event (2026-05-26, certified affinity) was an ad-hoc experiment that measured **negative** (co-run ratios 0.455–0.541: two 48-core halves contend on the memory channels serving the shared mmap'd weight pages) and was reverted same day. The architect has always been -t 96 physical-only, never 192 threads; `worker_vision` ran 4 quarters for ~90 minutes once (2026-05-24) and was deliberately reverted with a regression-test pin (flat scaling, 11.39 vs 11.30 t/s — model too small to benefit). [stack-lineup-dossier-2026-07-23](../handoffs/archived/stack-lineup-dossier-2026-07-23.md)
 
 - **WP-12 fleet layer flipped live; its case-10 acceptance gate found that production within-role concurrency comes from OS process fan-out, not the role-concurrency semaphore.** `ServerFleet`/`RoleBinding` (one CAB per physical fleet, one breaker/lock identity per endpoint, same-fleet fallback compiled to a no-op) merged and flagged live (`ORCHESTRATOR_FLEET_LAYER=1`) after 33/33 acceptance + 53/53 regression. The live case-10 burst probe (worker_math, 4-wide) passed cleanly — 4 disjoint busy quarters, fleet identity on every dispatch, zero same-fleet fallback — but surfaced **C10-F1**: `live_warm_worker_slots()` filters `tier=="warm"`, and every live production role is `hot`, so `get_role_max_concurrency()` resolves to **1 for every role**; the in-process `Semaphore(1)` therefore serializes each role fully **per API worker**. The real within-role concurrency mechanism in production is **6-uvicorn-process spread × cross-process region flocks**, not a role-level concurrency cap of N — a single-worker API test artifact (staircase completion times) had been silently misread as semaphore behavior. A follow-up flag (`ORCHESTRATOR_FLEET_ROLE_CONCURRENCY=1`) derives `get_role_max_concurrency` from the realized fleet's disjoint-quarter capacity instead — built and tested, but **default OFF** (raises real in-process concurrency; deploy decision), timed to enable **after E5** so every E5 comparison and the R3 eval-lane baseline describe one consistent lane. [wp12-fleet-layer-design](../handoffs/active/wp12-fleet-layer-design.md), [batched-decode-measurement](../handoffs/active/batched-decode-measurement.md)
 
@@ -832,7 +914,7 @@ The operator ruled the v7-cutover's quarters-only launch an **accidental regress
 
 ### Source References (2026-07-24)
 
-- [stack-lineup-dossier-2026-07-23.md](../handoffs/active/stack-lineup-dossier-2026-07-23.md) — 5-agent archaeology + operator override + same-day restoration; per-role intended/configured/realized table; reader-contradiction resolution.
+- [stack-lineup-dossier-2026-07-23.md](../handoffs/archived/stack-lineup-dossier-2026-07-23.md) — 5-agent archaeology + operator override + same-day restoration; per-role intended/configured/realized table; reader-contradiction resolution.
 - [wp12-fleet-layer-design.md](../handoffs/active/wp12-fleet-layer-design.md) — fleet-layer design, flip-boundary execution, case-10 live gate, C10-F1/F2 findings.
 - [within-role-placement-state-machine.md](../handoffs/active/within-role-placement-state-machine.md) — DESIGN CONTRACT (full/quarters mutual exclusivity is dispatch-time), WP-12 checkbox closure, J2/J3 restored-lineup pass.
 - [inference-batch-loop.md](../handoffs/active/inference-batch-loop.md) — parked-island decision menu, ownership transfer.

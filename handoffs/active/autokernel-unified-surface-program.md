@@ -1,9 +1,17 @@
 # AutoKernel Unified-Surface Program — one champion, one accumulator, one runbook for CPU + GPU kernel work
 
-**Status**: ACTIVE · opened 2026-09-07 · owner `ak-rebuild-20260828` (loop side) with `inf70-audit` /
-`workspace-1c` (CPU side) · rider on [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md)
+**Status**: IMPLEMENTATION STARTED · opened 2026-09-07 · original campaign owners `ak-rebuild-20260828` (loop)
+and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current implementation owner:
+`autokernel-unified-20260908` · rider on [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md)
 (R23 series) and [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (FOLD series)
 **Index row**: `inference-research-index.md` → this file. **Domain**: inference research.
+
+> **Implementation authorization, 2026-09-08:** the operator has now directed implementation of this
+> handoff, using **GPT-5.6-sol medium** workers for bounded work and the main thread for coordination,
+> review and integration. This supersedes the earlier documentation-only scope, not protected production
+> freezes, measurement ratification, live-research relaunch or OP-41's explicit ownership/sequencing gate.
+> [§9](#implementation-ledger-20260908) is the current execution ledger. The notebook remains the design
+> contract; old campaign checkboxes are not proof of present implementation or inherited ownership.
 
 > **2026-09-08 planning update — documentation only.** The operator is iterating on a VERY detailed
 > autonomy plan, including IMPLEMENTATION details; this session is explicitly **not implementing it**.
@@ -12,6 +20,13 @@
 > It is not an approved implementation specification or permission to launch research. Consolidation
 > ownership and the no-relaunch directive below remain in force. P1 records the fold at `ef81196d5`;
 > earlier pending-fold/running-run-30 descriptions are historical, not live-process observations.
+> **Final-close-out audit:** [§8.16](#final-closeout-audit-20260908) reconciles both completed sessions,
+> ratified measurement rules, measured-versus-delivery identity, per-surface recipes, and implementation
+> refinements. It supersedes conflicting earlier design assumptions, not the operator's sequencing gates.
+> **Fresh implementation-contract review:** [§8.17](#implementation-contract-review-20260908) resolves
+> search-phase policy, the already-ruled four-keep cadence, validation transactions, bounded scheduling,
+> scoped evidence use, restart fencing and control/status consistency. Details remain proposals except
+> where explicitly identified as existing ratified policy; no campaign restart or implementation follows.
 
 ## Operator directive (2026-09-07, verbatim intent)
 
@@ -43,16 +58,20 @@ arms or builds subject to the contention bounds in §3.4. The manual CPU campaig
 NO research relaunch after the fold window; consolidation only; relaunch is a separate operator go.
 The CPU session (INF-70 / `workspace-1c`) received this directly and has parked all lever campaigns.
 
-## Start here (executor)
+## Start here (implementation)
 
-1. Read §2 (evidence) once — it is why every phase below is shaped the way it is.
-2. Phase 1 is the FOLD at run 30's next boundary; it is already specified as FOLD-0..3 in
-   `autokernel-champion-aggregate.md` and `docs/design/inf70-cpu-fold-into-champion-20260907.md`. **Do not
-   re-plan it; execute it, plus the two additions in §4 P1.**
-3. Phases 2–5 are loop code in `epyc-inference-research/scripts/kernel_rnd/autokernel/loop/`. Every phase
-   has a measured exit criterion; "tests green" is never one of them.
-4. Run starts/stops are operator-gated. The loop is running (run 30, pgid 892348) on the champion tree at
-   `/mnt/raid0/llm/tmp/champ2`; **nothing here lands on `ak/champion/llama-cpp-0db32c06e3e5` mid-run.**
+1. Read §8.1 for accepted preferences and authority, §8.16 for final-session findings, and §8.17 for
+   implementable contracts. Then use §8.13 to locate each proposal's existing owner/task mapping.
+2. **Current execution is §9**, in dependency order, with tested bounded slices. §1–7 retain the original
+   campaign design/history and other owners' checkboxes. Re-resolve their state by task text before any
+   future dispatch. The fold/run-30 process descriptions are historical; neither closed session is revived.
+3. Ratified measurement rules and operator directives outrank every proposal. Within proposed design,
+   §8.17 refines §8.16/§8.3–15 and explicitly identifies replacements for §3 pseudocode. It does not
+   silently replace current runtime behavior or waive a protocol, release gate, or operator decision.
+4. Research relaunch remains a separate operator go. OP-41 implementation remains operator-owned,
+   after champion finalisation → production promotion → host reboot. The new instruction authorizes
+   application implementation; its relation to OP-41's narrower broker-code restriction was explicitly
+   asked, not assumed. Work not dependent on that answer continues.
 
 ## 1. The problem in one paragraph
 
@@ -86,7 +105,7 @@ wrong, not missing. Three of our 31 `kept` rows never reached the champion (tagg
 **Consequence for design: measurement must be one system with one contention model, or every magnitude
 either side quotes is provisional.**
 
-### 2.3 Isolation by placement is impossible on this host — R23-49 / OP-41
+### 2.3 Placement alone cannot isolate the historical full-host recipe — R23-49 / OP-41
 Kernel-read `thread_siblings_list`: logical `c` and `c+96` share a physical core, exhaustively. Our
 `jobs=64` builds on `96-183` cover 88 of INF-70's 96 bench cores (9×`cc1plus`@100% measured live); our
 bench host threads on `184-191` cover the other 8; our `llama-server` was unpinned (now pinnable,
@@ -121,6 +140,10 @@ through** (see the MUST-NOT-FOLD entry in P1b).
 ## 3. Design
 
 ### 3.0 The unified iteration — pseudocode first (rule: agent loops get pseudocode before the plan)
+
+**Historical starting design.** §8 proposes the runtime fast path, phase-specific evidence handling and
+separate accumulated/validated pointers; §8.17 makes those replacements explicit. The two universal
+critic passes and any-surface `cor` advancement below are not the current implementation specification.
 
 ```
 STATE (durable, in loop-memory):
@@ -279,6 +302,49 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
       premise that the loop "pays the OFF variance today" is refuted for that surface (OFF p95_dev 6.657%
       vs ON 9.334%; the ON arm was wider). Closing this as *resolved-negative* rather than deleting it, so a
       later reader does not re-derive the same candidate and re-spend the 27 minutes.
+> ### THE RECIPE FORMAT — NOT THE KERNELS — IS THE BINDING CONSTRAINT ON WHAT THIS CAMPAIGN CAN ASK
+>
+> **Three expressiveness gaps in the recipe schema were found and fixed on ONE DAY, 2026-09-08.** Each one
+> surfaced only when somebody asked a slightly new question, and each one made a measurement **impossible**
+> rather than merely slow:
+>
+> | # | research commit | what the recipe could not carry | how it surfaced |
+> |---|---|---|---|
+> | 1 | `b5f58b74` | **an env var** — so a RUNTIME_CONFIG arm (the THP shim) had nowhere to live, and serving compare reported only the mean | CHAMP-2 needed a launch-time knob and a *spread* comparison |
+> | 2 | `4952e95e` | **its own identity hash** — so a floor was keyed by recipe NAME and a gate could be fed a floor calibrated under a different recipe | R23-58 needed floors that could not be silently swapped |
+> | 3 | `c3e362a1` | **a self-drafting model** — `Recipe.server_argv` required `spec_decode["drafter"]` unconditionally, so an MTP model raised `KeyError` and **could not be expressed at all** | the Qwen3.6-35B-A3B sweep |
+>
+> Gap 3 is the sharpest statement of the pattern. MTP carries its draft head *inside the model weights*
+> (`blk.N.nextn.*`), so there is no drafter file to name. Absence of `drafter` is now itself the declaration
+> that the model self-drafts: `-md`/`-ngld` are omitted and `--spec-type` is still passed. Tests cover both
+> shapes and spec=none, **and carry a control proving the negative assertion can fail** (suite 587 → 592).
+>
+> **The generalisation, and it is a U3 statement:** every one of these was found by *tripping over it*, at the
+> moment a measurement was wanted. The schema is the interface between "a question we can ask" and "a question
+> we cannot", and it has now failed that test three times in a day. **Do not wait for the fourth question to
+> expose the fourth gap** — U3-EXPRESS below is a deliberate pass over the schema instead of a reactive one.
+>
+> Gap 3 also had an immediate consequence beyond its own sweep: it means the **dense Qwen3.8-27B is now
+> expressible as an MTP recipe too** (it carries `blk.64.nextn.*` and `nextn_predict_layers = 1`), which is
+> exactly the configuration frozen production supports for that model — the missing PROD-BASE-1 denominator.
+> Tracked as **MTP-27B-1** in `autokernel-champion-aggregate.md`.
+
+- [x] **U3-EXPRESS-3 — a self-drafting model is expressible as a recipe** ✅ 2026-09-08
+      (research `c3e362a1`: `spec_decode.drafter` optional, `-md`/`-ngld` omitted when absent, `--spec-type`
+      still passed; `test_selfdraft_recipe.py` covers both shapes, spec=none, and a fail-control; suite
+      587 → 592). Third of the three gaps above; the first two landed the same day as `b5f58b74` and
+      `4952e95e`.
+- [ ] **U3-EXPRESS — run a DELIBERATE expressiveness pass over the recipe schema instead of waiting for the
+      next question to expose the next gap.** Three gaps in one day (env var, identity hash, self-draft), each
+      found by tripping over it mid-measurement, each blocking a measurement outright. Enumerate what a
+      `Recipe` must be able to express for the surfaces this campaign already runs — multi-GPU / split modes,
+      tensor-split and per-device `ngl`, LoRA and control vectors, RPC/distributed serving, per-arm env sets
+      (not just one), draft models with their own recipe fields (`draft_p_min`, `draft_n_min`), grammar and
+      sampler variants, `--no-kv-offload`/`--cache-type` combinations, and the *absence* semantics that gap 3
+      showed can be load-bearing — then write a failing test per gap before fixing any of them. Belongs with
+      **U3 (RUNTIME_CONFIG arm type)**: a RUNTIME_CONFIG arm mutates a codified recipe, so the arm type is
+      bounded by exactly what the recipe can say. Blocked on nothing.
+
 - [ ] **U3-DEFAULTS-b — carry a PER-SURFACE recipe on the champion record.** R23-58 makes the champion
       `ef81196d5` + *CPU* recipe (shim ON) + *GPU* recipe (shim NOT set). `champion.py`/`Bundle` can express
       one recipe per champion, which is now demonstrably under-specified. Extend the record to key the
@@ -499,7 +565,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 ### P2 — surface dimension (U2)  · exit: two bundle files, two floors, a CPU serving A/B record on disk
 - [ ] `Bundle.surface`; per-surface store filenames; `load_bundle()` per surface; shared cor invariant test
 - [ ] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) — the CPU session's canonical recipe codified
-- [ ] CPU A/A calibration: screen floor + serving floor, n=20 pairs, host-state hash recorded
+- [ ] CPU A/A calibration: screen floor + serving floor, unit and host-state hash recorded; gating-floor calibration n≥24 with interval (FLOOR-UNIT-1 supersedes the earlier n=20 proposal)
 - [ ] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model
       and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES (INF-70 RETEST-1,
       2026-09-08: arm sd 0.501% vs process-launch sd 2.793%; the 1200-fold THP sizing error). See R23-55.
@@ -556,6 +622,9 @@ still insufficient** — third-party disturbance ran at a **1-in-6 hit rate ≈ 
 the arm was run. *"Region-lock serialises those who call it; nothing constrains those who don't."* This is
 evidence for the **admission-control broker** (option A) over any further tightening of the lock protocol;
 see §3.4.
+
+| ID | Decision | Recommendation |
+|---|---|---|
 | UD-1 | CPU serving recipe = the gate for the CPU surface | the CPU session's canonical served recipe (Qwen3.8-Flash-Next), codified as `Recipe`; not a bench proxy |
 | UD-2 | promotion granularity | one production candidate carries BOTH surfaces; a surface without a demonstrated gate does not block the other's keeps landing on the champion, but does block promotion |
 | UD-3 | who authors CPU hypotheses after U3 | loop planner for RUNTIME_CONFIG/SOURCE on the CPU surface; CPU session keeps diagnosis; revisit after 10 CPU iterations |
@@ -629,6 +698,13 @@ source; proposed = engineering design for later discussion; provisional default 
 policy, not ratified and not a measured performance result. Existing operational policy remains
 authoritative until deliberately changed in a later session.
 
+**Binding close-out updates:** `MEASUREMENT.md` INSTRUMENT-CLASS-1, FLOOR-UNIT-1 and BOUNDED-NULL-1
+were operator-ratified after the first notebook draft; they are requirements, not provisional defaults.
+OP-41 (§3.4) reserves admission-broker implementation to the operator **after champion finalisation →
+production promotion → host reboot**. R23-64/65 wait for the operator's BIOS/reboot boundary. The architecture
+below is a dependency design, not permission to move those gates earlier. No implementation is authorized
+by this audit. Current evidence and corrections are consolidated in §8.16.
+
 | Topic | Accepted direction / preference |
 |---|---|
 | Compute | Declare CPU, GPU, or both; explore production workloads applicable to those interfaces. |
@@ -645,7 +721,9 @@ authoritative until deliberately changed in a later session.
 Documentation checklist (only these boxes describe this session's work):
 
 - [x] **PLAN-DOC-1** — capture audit, accepted choices, implementation proposals, tests and provisional defaults in the owning handoff. ✅ 2026-09-08
-- [ ] **PLAN-DOC-2** — iterate §8 with the operator before converting proposals into an implementation queue. Documentation-only; no compute or deployment authorized.
+- [x] **PLAN-DOC-2** — iterate §8 with the operator before converting proposals into an implementation queue. ✅ 2026-09-08: operator authorized implementation; §9 records execution and retained boundaries. No production or live-research authorization inferred.
+- [x] **PLAN-DOC-3** — audit both final September 8 close-outs and refine the notebook with evidence-scoped implementation contracts and tests (§8.16). ✅ 2026-09-08
+- [x] **PLAN-DOC-4** — fresh independent audit; reconcile protocol/cadence contradictions and delineate scheduler, evidence, validation and lifecycle implementation contracts (§8.17). ✅ 2026-09-08
 
 ### 8.2 Dated audit findings and corrections
 
@@ -701,15 +779,22 @@ WHILE active
     author source/build/novel-recipe change
     existing critic pass 2: objection -> exact reason to author
   choose cheapest informative route; unknown transfer permits scoped exploration
+  resolve phase/protocol/category/use and freeze its ExperimentPlan
   broker admits build if needed, correctness, load/place/warm/profile, comparison
   compile/correctness failure -> tool reason to author, separate bounded retry budget
-  contamination -> invalid comparison unit, reschedule; not scientific negative
+  classify interference under phase/protocol -> retain noise or invalidate/checkpoint as authorized
+    ordinary foreign load is recorded noise, not a search-admission veto (P-AK-SEARCH-1-A2)
   unavailable actor/resource -> other eligible work, or release claims and wait visibly
   stale parent -> superseded, preserve idea, rebase/retest; not refutation
-  valid null/regression -> scoped finding for planner
-  experimental keep -> integration lock, parent check, journal intent, commit, completion
+  discovery completed -> advisory nomination only; schedule separate strict confirmation if selected
+  completed valid comparison -> typed scoped conclusion for planner
+    inconclusive / direction_only / estimated_effect / bounded_null / regression
+    purported null missing power record or fired-mechanism control -> untested, no negative warrant
+    valid measured contrast with inadequate resolution -> inconclusive; preserve data/uncertainty
+  strict-confirmed eligible experimental keep -> integration lock, parent check, intent, commit, completion
   due validation batch -> assembled candidate + serving + required LOO; evidence matrix
-  advance validated record only after required rows pass at exact identities
+  advance validated record only after applicable production-serving rows pass at exact identities
+    bench/non-production BASELINE rows remain research/addenda, not production vetoes
 BACKGROUND
   native journal -> local memory/status -> async Vidya/index projection
   supervisor -> bounded recovery; broker-aware storage maintenance
@@ -743,7 +828,8 @@ Report requested, granted, physically held and actively used resources separatel
 
 Target records bind model/hash, architecture/tensor census, backend/kernel tree, context/concurrency,
 speculation/drafter, environment, metric/direction, correctness and regression requirements, route and
-calibration refs. Deduplicate roles only on complete workload-signature equality. A seed creates its own
+calibration refs. Key recipes by target/surface/operating mode, not one global recipe or backend alone.
+Deduplicate roles only on complete workload-signature equality. A seed creates its own
 candidate target without changing production or inheriting another calibration. If production cannot
 load it, use the first compatible experimental build as exploration baseline, never a fabricated
 production delta. Missing artifact blocks only that target; others continue.
@@ -761,11 +847,12 @@ another WAL/outbox. Current-loop records must not manufacture legacy `evaluation
 
 | Record group | Automatically captured fields |
 |---|---|
-| Identity | campaign/hypothesis/attempt/execution, measured parent/candidate source, build/object digest, build/runtime recipe, target/model, instrument/protocol. |
+| Identity | campaign/hypothesis/attempt/execution, actual measured source/build/object digests, intended delivery candidate, compiled defaults and effective runtime state, recipe-map entry, target/model, instrument/protocol. |
 | Scope | backend/architecture, quant/dispatch/op shapes, serving recipe, threads, physical cores/siblings/NUMA, placement, grant, neighbor envelope. |
-| Measurement | metric/direction/unit/value, baseline, raw artifacts/hashes, comparison order/block, independent experimental unit, attempted/completed/valid/scored counts, window timestamps. |
+| Measurement | instrument_class (bench/serving), category (OPTIMUM/BASELINE/CANDIDATE), phase/protocol_ref and record_class, metric/direction/physical unit/value, comparison_kind and changed factors, raw artifacts/hashes, estimator version, order/block and stopping plan, independent experimental unit/IDs, attempted/completed/valid/scored counts, window timestamps. |
 | Validity | correctness/effective path, loaded-library/residency, contamination/drift/refusal; invalid timing never becomes a null. |
 | Annotation | planner mechanism class and uncertainty, explicitly not measured fact. |
+| Conclusion | estimand (level/dispersion/etc.), conclusion type, permitted claim strength, interval/power and effect-size bounds, both-direction fired-mechanism control refs; lack of significance alone is not a bounded null. |
 | Relationships | reduced->target transfer, quiet->overlap, individual->assembled benefit, supersession/retraction, original evidence IDs. |
 
 Mint attempt ID before execution; retries have separate execution IDs. Related arms retain their
@@ -783,6 +870,10 @@ Local journal failure stops new irreversible transitions and drains; downstream 
 does not. Preserve legacy records as history; do not infer missing write-side provenance on read.
 
 ### 8.6 Proposed broker and resource foundation
+
+**Sequencing constraint:** the operator owns admission-control implementation and its post-promotion,
+post-reboot gate (§3.4). These interfaces are retained as design input only. Until that gate clears,
+existing cooperative locks and bounded-hold coordination remain; this plan creates no scheduler/daemon.
 
 ```text
 acquire(StageRequest) -> AllocationReceipt
@@ -818,6 +909,10 @@ Correctness transfer, reduction of local work, and end-to-end speedup transfer a
 Fewer threads across the host are not a smaller physical allocation: cache/CCD distribution, memory
 placement, per-thread shape, clock and dispatch can change. More production threads are not inherently
 better; final validation targets the best intended serving recipe, not all cores by definition.
+The final MEAS-4 correction establishes that t48 was a measured optimum in earlier recipes, spread over
+all 12 CCDs/four NUMA nodes—not an arbitrary half-instance or a contiguous unused half. That optimum need
+not survive changed dispatch costs or BIOS settings. R23-64 owns the gated re-sweep; topology-shaped
+partition discovery remains a separate experiment from simply lowering `-t`.
 
 | Family | Proposed cheapest informative route | Transfer limitation |
 |---|---|---|
@@ -836,31 +931,38 @@ compiler, and isolated tests may still mispredict serving. Research profiles bin
 allocation/pressure bounds, topology/runtime dependencies and quiet-versus-overlap evidence. Store them
 through the existing contention provider, separately from serving-throughput allowances.
 
-No profile means serialize incompatible work, not seek operator approval. Cache validated routes and
+No profile means serialize incompatible **owned** work under its applicable admission policy, not seek
+operator approval or veto search for ordinary foreign load (§8.17A). Cache validated routes and
 profiles until relevant dependency/declared expiry/drift changes. Telemetry alone is not absence proof
 for fabric/DRAM interference: certify against quiet controls and monitor the envelope DURING arms,
-including placement/warmup/residency. Invalidate the predefined contaminated comparison unit and repeat;
-no selective favorable samples or widened floor. Indexing/hashing/cleanup/actor CPU are neighbors too.
+including placement/warmup/residency. Apply the protocol's predefined disposition: recorded search noise
+can widen reported uncertainty, not an acceptance threshold; invalidate/repeat only on that protocol's
+actual invalidity conditions. No selective favorable samples. Indexing/hashing/cleanup/actor CPU are
+neighbors too. Quiet/overlap profiling is a separate planned experiment, not an ad hoc quiet-host demand.
 
 ### 8.8 Proposed adaptive scheduling and independent budgets
 
 Adaptive seed priority and production coverage are accepted; algorithm/numbers below are provisional:
 
-- Weighted deficit scheduling by physical CPU fraction and GPU-device time, with separate resource
-  opportunity accounting. Charge held load/warmup/build/validation, not just timed inference.
-- New target weight 2 for three valid comparisons; normal weight 1; one boosted seed/backend, FIFO,
-  preventing repeated seeds from silently starving production.
+- Weighted deficit scheduling by held physical-region and GPU-device time, including GPU stages' CPU
+  claims; retain the resource vector and charge load/warmup/build/validation, not just timed inference.
+- New target weight 2 until three valid comparisons **or** a finite charged-time/attempt cap; normal
+  weight 1; one boosted seed/backend, FIFO. Duplicates earn no new boost (§8.17D).
 - Thereafter weights bounded 1–3, revisited every ten valid comparisons using target-scale confirmed
   outcomes, not screen gains alone. Exact update formula remains open for iteration.
-- Nonzero share for each eligible production frontier, bounded ready queue to limit obsolete work.
-  Define a quantitative starvation bound; nonzero weight alone is not that proof.
+- Bounded production-coverage rounds and reservations supplement weights; §8.17D defines the service
+  bound and eligibility/outage assumptions. Bound the ready queue to limit obsolete work.
 - Calibration and validation are explicit budgeted work, not unbounded priority. Invalid arms/outages
   cost operational budget but are not scientific nulls. No runnable backlog -> release and wait visibly.
+- Count informative bounded transfer negatives and precision improvements as research outcomes, with
+  their scope/power retained; do not reward only positive mean-throughput keeps. Forecast measurement
+  cost from completed independent units under the current recipe, not a retired recipe's spread.
 
 Separate provider retry, hypothesis review, patch repair, contamination retry, calibration, serving/LOO
 and campaign budgets. Learn cost from observed stage durations. Report exclusion, resource waiting,
 actor waiting and no-eligible-work separately. Optimize valid research per budget; contaminated hardware
-saturation is not productivity. Scheduling score/formula and coverage guarantees still need refinement.
+saturation is not productivity. §8.17D supplies the proposed deterministic algorithm; numerical budgets
+and adaptive coefficients remain for iteration, not unstated runtime defaults.
 
 ### 8.9 Proposed runtime fast path and measurement repairs
 
@@ -877,12 +979,23 @@ Serving instrument proposals:
   and speculation. Report request latency, and TTFT via suitable streaming capture if adopted.
 - Counterbalance AB/BA and use identical declared estimator for A/A calibration and comparisons.
   Calibrate its actual distribution at the independent arm/block count, not individual-run deviation.
-- Floors bind model/recipe/metric/estimator/instrument/placement/coexistence/N; changes cannot inherit
-  an incompatible floor. Select N before execution under applicable protocol minimums/resolution;
-  no favorable optional stopping. Uncalibrated exploratory observations cannot become gated gains.
+- Floors bind model/resolved recipe/metric/estimator/instrument/placement/coexistence and independent
+  `unit ∈ {arm, session, process}`. A gating-floor calibration requires **n≥24 and an interval**, not
+  just a point; missing/cross-unit floors refuse. This minimum is for calibration, not every experiment.
+  Preserve historical dispositions; older floors acquire rederivation debt, not retroactive re-verdicts.
+- Register fixed N **or a complete sequential look/stopping plan** before execution using reusable
+  protocol templates; no outcome-chosen extension. The CPU two-look sign test is a worked example,
+  not a reason to ban registered early stopping. Direction-only evidence cannot mint a magnitude.
+- Replay stored samples through the declared estimator/version once per immutable calibration and
+  applicable policy identity; cache the validated result for routine arms. Require reproducibility
+  before gate use. A differing quantile convention/normalization is not rounding to accept
+  silently. Changes cannot inherit an incompatible floor; n≥24 alone does not guarantee useful precision.
 - Preserve attempted/completed/valid/scored counts; prompts within one arm and reuse of the same
   treatment arm do not manufacture independent samples. Pairing alone does not prove contamination cancels.
 - Preserve correctness/library/dispatch/residency evidence; search cannot edit its measurement policy.
+- Dispatch comparator by **estimand**, not only experiment type: same-binary env arms can test level
+  and/or dispersion without rebuilding. Emit separate conclusions; a nonsignificant level contrast does
+  not answer a tail-compression hypothesis. A null needs power/bounds and both-direction mechanism controls.
 
 Exact per-target objective/window, estimator, calibration design, non-regression/equivalence margins
 and legacy metric migration remain explicit discussion items, not accepted thresholds. Reinspect source
@@ -891,27 +1004,36 @@ and run controls before implementing a repair; do not widen policy to fit observ
 ### 8.10 Proposed champion evidence matrix and validation cadence
 
 Distinguish accumulated source+recipe candidate, last globally validated candidate+recipe record, and
-current frozen-production comparator. Matrix rows bind candidate/build/model/backend/recipe/metric/
+current frozen-production comparator. Matrix rows bind actual measured build and proposed candidate,
+model/backend/operating mode/resolved recipe/metric/
 instrument, correctness, validity and effect. CPU pass cannot certify GPU; runtime keep changes identity
-even with unchanged source SHA. New candidate invalidates previous combined-candidate rows while retaining
-per-change historical findings.
+even with unchanged source SHA. A new candidate cannot reuse earlier combined-candidate rows for its own
+manifest; those rows remain valid for their original immutable batch, as do per-change historical findings.
 
-Proposed global validated advancement waits for required production rows at identical candidate
-identities. This tightens §3.0's earlier any-surface/shared-cor advance: reconcile deliberately, not by
-implicit amendment. Preserve required re-baseline/LOO rules until then. Missing resources hold their
+Proposed global validated advancement waits for required **production-optimal serving** rows at identical candidate
+identities. §8.17C explicitly replaces §3.0's proposed any-surface/shared-cor transition with an immutable
+validation batch and one atomic advancement; existing policy remains until adoption. Preserve required
+re-baseline/LOO rules. Missing resources hold their
 validation rows while scoped research continues. Candidate models are advisory unless explicitly required.
-Direct assembled measurements are headlines; products of solo gains remain estimates.
+Absolute headlines require serving-class evidence with its registered recipe and protocol status visible;
+bench relative comparisons remain on their own surface, never cross-class ratios or conversion factors.
+Non-production BASELINE and bench cells that cannot exercise the registered recipe are addenda, not
+production promotion vetoes (MEASUREMENT.md §5). Products of solo gains remain estimates.
 
-Retain compound-then-gate. Proposed due triggers: configured gain trigger OR ten unvalidated keeps OR
-24 hours since oldest unvalidated keep. Added numbers are provisional liveness checks so serving is
-not avoided forever, not weaker acceptance. Budget required LOO at validated advancement over assembled
+Retain compound-then-gate and the **already-ruled four-keep cadence**, OR the configured gain trigger
+(R23-54; research `56195d3e`, `SERVING_GATE_EVERY_KEEPS=4`). The durable counter resets on every completed
+gate run regardless of outcome; trigger reason is threshold/cadence/both. No calibrated floor means no
+serving spend under the existing guard. A proposed additional 24-hour due signal is for iteration, not a
+replacement for four keeps and never weaker acceptance. §8.17C separates that counter from outstanding
+validation debt. Budget required LOO at validated advancement over assembled
 candidate/required surfaces. Neutral/inconclusive removal evidence does not automatically justify deletion.
 Record drops with evidence; resulting new candidate needs applicable validation. Do not globally discard
 dormant quant-specific improvements based on another target's null, or seed from production mid-cycle.
 
 ### 8.11 Proposed low-friction Vidya integration
 
-At future implementation start, register current-loop capture in
+Reuse the already-filed **VB-INF70-ARMS / SC75** source/task for CPU arm capture; do not recreate it.
+At future implementation start, register any distinct current-loop capture source in
 [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) and link its task in
 [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md). This documentation update
 creates no measurement producer and claims no new hook. Adapter verifies original artifact identities,
@@ -928,7 +1050,10 @@ retrieve(target_scope, mechanism?, intended_use, limit=40)
 
 Quality and applicability filter independently. Supported transfer requires recorded source/target
 comparisons; class labels are priors. Unknown historical scope cannot certify overlap/exact transfer.
-Preserve epoch magnitude redaction: relevant history is not numerically comparable history.
+Apply warrant/epoch rules by record class and intended use (§8.17A/E). Cross-epoch P-AK search history
+can supply attempted mechanisms/conclusions, **not comparable numerical values** (A3). Separately, the
+operator permits pre/post-BIOS absolute serving observations: show those rates under their actual
+authority, while simultaneous changes limit causal attribution and changed dispersion requires new floors.
 
 Async consumer tails journal at a durable cursor, ingests deterministic IDs, advances on acknowledgment,
 quarantines malformed events individually and publishes an atomic local index. Planner reads once per
@@ -965,18 +1090,26 @@ running, waiting_resource, waiting_actor, paused, draining, drained, validation_
 
 CLI/UI share typed idempotent commands, requested -> applied/refused(reason); daemon is sole writer.
 UI says pending until acknowledgment. Duplicate clicks/reconnect/concurrent requests cannot duplicate
-seeds. Keep /loop in existing hub, registered health/freshness. Proposed gateway uses owner-only Unix
+seeds. Keep /loop in existing hub, registered health/freshness. Proposed **research-producer-owned**
+gateway uses owner-only Unix
 socket plus token-paired browser session, token+trusted origin for writes, no credentials in URL, no
 arbitrary shell/executable request. Current GET/CORS is not authentication. Token lifecycle/storage and
-gateway detail remain design choices; minimal controls are accepted. Advanced configuration stays in CLI.
+gateway detail remain design choices; minimal controls are accepted. Browser contacts the producer
+directly; the hub owns page/nav/registry and does not proxy commands or acquire broker authority
+([plane rule](../../dashboard/README.md)). Advanced configuration stays in CLI.
 
 Display loaded producer/schema/instance, heartbeat, stage/activity/deadline, last valid scientific result,
 actor last success/retry/reset, requested/granted/held/used resources, target/seed coverage, refusal/
 contamination/supersession, accumulation vs validation, evidence age/projection lag and exact prerequisites.
 Fold actor/evidence availability into health; HTTP reachability is separate. Proposed heartbeat 30 s and
 missing-producer deadline 180 s do not define stage progress. Single synchronized writer stops/joins
-heartbeat before terminal publish and covers startup claim/profile and shutdown errors. Verify loaded
+the worker's status publisher before terminal publish and covers startup claim/profile and shutdown
+errors; the retained supervisor heartbeat remains live (§8.17G). Verify loaded
 version, not just source commit, when claiming deployment.
+Scientific cards also expose instrument class, actual measured artifact, resolved recipe, independent
+unit, n/interval, protocol/calibration status, and supported conclusion strength. Separate single-user
+rate, highest **measured** aggregate point and selected operating point; never label a sweep endpoint
+as an established ceiling. Preserve historical sum-of-slot-rate identity until a versioned metric migration.
 
 Reserve space before builds; protect active, validated and in-flight/referenced generations (absolute
 RUNPATH means copied builds need original paths). Reclaim only explicitly unreferenced disposable
@@ -993,13 +1126,13 @@ checkboxes are created. PLAN-DOC-2 owns review. P1/P1b consolidation remains its
 |---|---|---|---|
 | AK-AUTO-01 | Reconcile code/fold state and dated findings | — | No stale live claims; final aggregate anchors future launch; preserve P1/P1b. |
 | AK-AUTO-02 | Native current-loop journal and safe recovery | 01 | Keep replay once; corrupt bundle cannot certify; expands R23-51. |
-| AK-AUTO-03 | Topology and policy/claim-provider path | 01 | Sibling affinity conflicts; real standalone activate/renew/release; foundational P4 moves earlier. |
+| AK-AUTO-03 | Topology and policy/claim-provider path | 01; OP-41 operator gate | Sibling affinity conflicts; standalone activate/renew/release; design dependency does not move broker implementation ahead of promotion/reboot. |
 | AK-AUTO-04 | Manifest/target enrollment | 01 | CPU/GPU/both/candidate resolve without lineup mutation; P2 expansion. |
-| AK-AUTO-05 | Broker all compute/build paths | 02,03,04 | No unlocked anchor/recovery/candidate build; queued-stage pause/expiry; P4 foundation. |
+| AK-AUTO-05 | Broker all compute/build paths | 02,03,04; OP-41 operator gate | Operator-owned implementation after finalisation/promotion/reboot; no unlocked build paths or queued-stage expiry gaps in eventual acceptance. |
 | AK-AUTO-06 | CPU adapter and serving repairs | 04,05 | Explicit metric/calibration/units and witnesses; recheck fixes; P2. |
 | AK-AUTO-07 | Runtime fast path and mechanism routes | 05,06 | No extra critic calls; scale-sensitive null not globally retired; P3. |
-| AK-AUTO-08 | Prospective Vidya and scoped local retrieval | 02,04 | Typed scope, idempotence/outage recovery, unchanged grader; linked Vidya task later. |
-| AK-AUTO-09 | Certified coexistence/adaptive scheduling | 05,06,07,08 | Cache reuse, unknown overlap serialized, seeds advance and production not starved; P4. |
+| AK-AUTO-08 | Prospective Vidya and scoped local retrieval | 02,04 | Typed scope, idempotence/outage recovery, unchanged grader; reuse SC75 and register only distinct current-loop sources. |
+| AK-AUTO-09 | Certified coexistence/adaptive scheduling | 05,06,07,08 | Cache reuse, uncertified incompatible owned work serialized under policy, seeds advance and production not starved; P4. |
 | AK-AUTO-10 | Evidence matrix/batched serving/LOO | 02,06,08 | One surface cannot certify others; assembled evidence; P2/R23-48. |
 | AK-AUTO-11 | Supervisor/minimal authenticated controls | 02,04,05 | Persistent idempotent lifecycle, honest health, bounded recovery; proposed replacement for P5 endpoint. |
 | AK-AUTO-12 | Migration/bounded live run/unattended acceptance | 07–11 | Tests below, no monitoring agent required for routine recovery. |
@@ -1016,7 +1149,7 @@ constitution or compute-authority policy as a side effect of this documentation 
 | Candidate concurrency | Two racing keeps -> one integrates, one superseded/retested; runtime change cannot reuse source-only evidence. |
 | Claims | Sibling-only affinity, cross-role conflicts, partial acquisition rollback, denied/disabled provider, renewal/expiry, queued build after pause, orphan recovery; no lock deletion. |
 | Coexistence | Serving allow not research proof; unvalidated shared DRAM serialized; stale topology invalidates; quiet controls detect bias even when occupancy looks clean. |
-| Statistics | Common denominator vs slot rates; AB/BA/calibration match; independent units; incompatible floor refused; invalid units cannot support gain/null/transfer/coexistence. |
+| Statistics | Instrument-class separation; unit and n≥24/interval floor admission; replay equality; registered sequential looks; level vs dispersion; complete screened units only; power plus both-direction controls for bounded nulls. |
 | Transfer | Same threads/different topology, same quant/different shape/dispatch, absent/supported/refuted transfer, scaling null not global rejection, composition-dependent invalidation. |
 | Beliefs | Legacy frame IDs/grader unchanged; scope retained, epochs not pooled, quarantine, replay equivalence, outage safe exploration and idempotent catch-up. |
 | Controls | Duplicates/concurrent CLI/UI, paused/draining restart, unauthorized writes, browser disconnect, no silent actor fallback, orchestrator-API outage. |
@@ -1027,14 +1160,16 @@ Proposed migration: isolated pinned runtime -> inventory final champion/bundles/
 legacy observations without retrofitted warrant -> preserve rollback stores -> authorized owner boundary
 -> initially serialized broker -> partition routes -> only certified overlaps -> adaptive scheduling/
 controls after bounded checks. This does not authorize a stop/relaunch now; cutover remains separate.
+The broker step is additionally held behind the operator's finalise → promote → reboot sequence;
+R23-64/65 and new post-BIOS calibration dependencies remain explicit rather than inferred completed.
 
 Proposed acceptance: bounded mixed run, then **48-hour** unattended soak with production CPU, production
 GPU and seeded local candidate. Source/build and prevalidated runtime routes; **ten valid comparisons
 per active backend**, target-scale confirmation (valid null acceptable), useful overlap under one certified
 profile; actor/worker/dashboard/Vidya faults and pause/drain/resume. Duration/counts are provisional.
 
-Eventual completion: no routine manual relaunch/monitoring agent; no unlocked builds, accepted contaminated
-units, implicit confirmation, false full-scale transfer, or eligible-production starvation; seed progress;
+Eventual completion: no routine manual relaunch/monitoring agent; no unlocked builds, protocol-invalid
+units accepted as evidence, implicit confirmation, false full-scale transfer, or eligible-production starvation; seed progress;
 no extra critic calls for established sweeps; visible bounded overhead; durable reproducible candidate
 and truthful dashboard. Positive kernel gains are not required to prove the service works.
 
@@ -1048,8 +1183,8 @@ Accepted directions are in §8.1; the operator did not approve every number/deta
 | Four claim regions, sub-quarter execution | Discovered topology and actual concurrency; region is not assumed to be NUMA node. |
 | Seed 2×/three comparisons; weights 1–3/ten-result update | Exact formula, normalization, starvation and repeated-null/futility policy. |
 | Sample small-screen rejects | Rate and selection avoiding expensive universal confirmation. |
-| Existing 2.5× trigger + ten-keep/24-hour triggers | Serving/LOO cadence, cost and reserved budget; no threshold weakening. |
-| Global validation before shared cor advance | Reconcile prior per-surface pseudocode and re-baseline/LOO semantics. |
+| Existing gain trigger + **ruled four-keep cadence**; proposed 24-hour addition | Only the time trigger/new multi-surface budgeting remain provisional; preserve R23-54. |
+| Global validation before shared cor advance | §8.17C specifies the replacement transition and LOO semantics; not yet adopted/implemented. |
 | Common-window throughput / counterbalanced comparison | Objective, estimator/calibration, margins and legacy migration. |
 | 30 s lag; 100 events/5 s; query 100 ms at 100k; overhead <1% | Feasibility, denominators, quiet-window behavior, invalidation dependencies. |
 | Heartbeat 30 s / missing 180 s | Independent stage/activity and retry deadlines. |
@@ -1060,3 +1195,1240 @@ Accepted directions are in §8.1; the operator did not approve every number/deta
 Do not run proposed work packages or turn defaults into new approval friction. The broker enforces
 allocations; belief-backed mechanism awareness should make choices cheaper and less conservative while
 preserving the distinction between permission to explore and evidence sufficient for production claims.
+
+<a id="final-closeout-audit-20260908"></a>
+
+### 8.16 Final-close-out audit — refinements to implement later, not a new execution queue
+
+**Audit basis:** root `2a710cab`, both final September 8 progress records, the committed CPU close-out
+packet, GPU sweep and R23-58 receipts, and targeted source inspection. Research shared checkout inspected
+at `6ab403ed`; self-draft support separately inspected at `c3e362a1`. No benchmarks, servers, builds,
+reboots, policy amendments or deployment changes were performed. This section refines the implementation
+notebook; it does not adopt §5b's unowned residue or reopen either closed research session.
+
+#### A. Evidence that changes the plan
+
+| Final finding | What follows for unified AutoKernel |
+|---|---|
+| CPU process-THP recipe adoption, but GPU R23-58 ends T0/D0 bounded null after 48 launches; controls fired in both directions. | One source champion needs a target/surface recipe map. CPU adoption must not set GPU defaults; GPU non-transfer must not retract CPU evidence. R23-58's coarse simulated power was ~0.97 for a 3× dispersion effect and ~0.69 for 2×; this is not proof of no smaller effect. |
+| CPU final characterisation uses instrument `bin-r1`/build 10303, with champion-control state explicitly set; THP fold record identifies source `2516c9807`, not clean `ef81196d5`. | Store actual measurement identity separately from intended delivery. The instrument adds knob-page/dispatch controls and is explicitly NOT TO FOLD. Reports' champion label is not a binary identity witness. |
+| Pristine contains neither THP knob; CPU final contrast changes source and adopted recipe. | Preserve `recipe_to_recipe` scope; it is not a source-only or THP-only attribution. The asymmetric champion divergence remains R23-62, not explained away by adoption. |
+| Late MEAS-4 correction: t48 was previously measured, with spread placement over all CCDs/NUMA nodes. | “Unused cores” is not unused cache/memory capacity. Encode placement geometry and test partition recipes; do not infer an available contiguous half. R23-64/65 own the post-BIOS revisit. |
+| Same-build runtime and dispersion questions needed a separate runner; env, recipe hash and self-draft support were added during the campaign. | Reuse those fixes at verified revisions. Generalize experiment plans/estimands and run a recipe expressiveness matrix, rather than creating another ad hoc runner for each knob. |
+| Stored/recomputed floor values differ; n=10 tail floors are unstable; new n≥24/interval/unit rules are ratified. | Version and replay the estimator, retain raw sample membership, check calibration applicability. Never treat an estimator change or different build/window as proof of changed host variance. |
+| Partial MTP arm looked ~7% faster because its prompt/token mix was incomplete. | Completion and screening are scientific admission conditions, not UI formatting. An in-flight fast arm cannot enter means, spread, beliefs or scheduling scores. |
+| GPU curves differ by model, and v9 has no measured matching DFlash2 production baseline. | Optimize an operating frontier under an explicit objective; distinguish highest measured point from ceiling and capability gain from an unmeasured speed ratio. |
+
+Sources: [final CPU report](../../docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md),
+[THP fold record](../../docs/design/inf70-close-out-20260908/FOLD-RECORD-THP.md),
+[CPU final progress](../../progress/2026-09/2026-09-08-inf70-audit.md),
+[AutoKernel final progress](../../progress/2026-09/2026-09-08-ak-rebuild-20260828.md),
+[GPU sweep](../../docs/design/champion-max-performance-20260908.md), and R23-58/61/62/64/65 in
+[the rebuild handoff](autokernel-rebuild-program.md). Raw CPU `PREREG-FINAL.md` and GPU
+`VERDICT.json` are in research `data/inf70-retest1-2026-09-08/` and
+`data/ak-r2358-shim-serving-2026-09-08/`; original evidence commits are recorded in the final progress.
+
+#### B. Recipe identity and expressiveness — one resolution path, no hand transcription
+
+Proposed contracts refine AK-AUTO-04/06/07/10 and existing U3-EXPRESS/U3-SEED/U3-DEFAULTS-b:
+
+```text
+resolve_recipe(template, target, surface, operating_point, build, environment_policy)
+  -> ResolvedRecipe + CapabilityReport
+ResolvedRecipe:
+  template_id/version/hash; model and optional drafter identities
+  speculation_kind: none | self_draft | external_draft
+  resolved argv; measurement-relevant env; explicit_unsets
+  declared defaults; requested overrides; dependency/master-off semantics
+  controls[]: {set_at: process_launch | runtime_arm, scope_definition, state_witness}
+  effective_state_witnesses; normalized_execution_digest
+ChampionRecord:
+  intended_source; build_manifest
+  recipes[(target_id, backend, operating_mode)] -> normalized_execution_digest
+EvidenceBinding:
+  actual_measured_source/build/object_digests; runtime_state_snapshot
+  intended_delivery_id; typed_equivalence_receipts[permitted_uses] | validation_required
+```
+
+Resolve/load once per immutable generation and reuse it for launcher, calibration, comparisons, report
+and dashboard. Keep template/module-source hashes as provenance, distinct from resolved execution identity.
+Normalize launch to process only when each sample is an independent process; preserve the policy's
+arm/session/process distinctions with explicit unit definitions and IDs. The comparison unit belongs to
+ExperimentPlan, while activation scope belongs to each control—a recipe can contain launch and runtime
+controls together. No new LLM call or per-run approval is needed for this resolution.
+
+**Source-confirmed holes to design out, not fixes made by this audit:**
+
+- `Recipe.with_env(KNOB=None)` at `c3e362a1` removes only the declared recipe override, while
+  `server_env()` starts from inherited environment. A parent `KNOB=1` can survive an intended unset;
+  the declared recipe hash does not expose that difference. Model **unset / set / permitted inherit**
+  separately; apply explicit unsets after constructing the inherited environment. Hash/record only the
+  allowlisted measurement-relevant resolved environment; never dump credentials into evidence.
+  R23-58's THP readback would catch this mismatch, so this finding does **not** invalidate that run;
+  generic recipes with no readback do not have that protection.
+- The rescued CPU draft declares `CHAMPION_PIN_RESOLVED=False`, but its `preflight()` does not test
+  the flag and its digest function checks old champion3 objects. A declarative flag/test of the flag
+  is not an enforced refusal. Final-candidate admission must execute the unresolved-pin check; a
+  diagnostic `--skip-digests` path must never emit verified final-candidate evidence. The existing draft
+  is a starting point, not a proven final-candidate launcher.
+- THP `prctl` and model-buffer `madvise` are separate controls. Record master-off dependency and verify
+  `THP_enabled` in the launched process; time-dependent AnonHugePages alone is not a general switch
+  witness. Diagnostic knob-page defaults differ from champion state: capture each arm's effective state,
+  not just the process environment or source defaults.
+
+Expressiveness fixtures should cover existing admitted targets first: CPU/GPU placement, none/self/external
+speculation, drafter-specific flags, per-arm and per-launch state, unset/master-off, cache/batch/context
+and concurrency. Unsupported combinations return structured capability reasons. Future multi-GPU/RPC,
+LoRA and sampler extensions remain scoped capability entries, not a demand to implement every backend
+before first use. Existing `c3e362a1` absence semantics map to explicit self-draft in the proposed schema;
+do not break existing JSON recipes silently. Recipe validation/plan creation must be useful without compute.
+
+Sources: research `loop/serving.py::{Recipe.with_env,Recipe.server_env,Recipe.recipe_hash}` at the inspected
+revisions; [CPU recipe draft](../../docs/design/inf70-close-out-20260908/qwen38_flash_next_recipe.py.draft),
+[pin caveat](../../docs/design/inf70-close-out-20260908/README.md), and research `PREREG-FINAL.md`.
+
+#### C. One typed comparison plan and admissible-unit pipeline
+
+Proposed `ExperimentPlan` carries `instrument_class`, `category`, `phase`, `protocol_ref`, `record_class`,
+`intended_use`, `comparison_kind`, `estimand`, changed factors,
+metric/estimator identities, required unit/control/completeness predicates, pairing/order, fixed-N or
+registered sequential stopping rule, power model/margins, calibration reference and permitted conclusions.
+`comparison_kind` distinguishes controlled mechanism attribution, assembled candidate comparison and
+best-supported-recipe product comparison. `estimand` distinguishes level, dispersion and separately
+registered objectives; a variance effect cannot be inferred from a mean test or vice versa.
+
+Use reusable deterministic templates, populated from the resolved recipe and existing policy, then
+freeze/hash once before execution. One shared validator feeds comparison, journal publication, planner,
+dashboard and Vidya projection; it validates existing warrants and delegates grading to `ClaimTuple.grade()`.
+It is not another grading ladder or critic review. Missing formal serving-protocol registration
+(RATIFY-MEAS-2) stays visible: exploration/evidence collection can proceed within authority, but a template
+cannot invent an approved protocol ID or auto-ratify a gating claim. Apply-time human boundaries stay intact.
+
+```text
+native samples -> complete independent unit -> predefined screen disposition
+  -> immutable admissible-unit view -> exact estimator + registered stopping rule
+  -> typed conclusion + claim eligibility -> journal / planner / dashboard / belief projection
+```
+
+Completeness includes expected prompt IDs/counts, workload/token-mix identity, terminal marker and required
+witnesses. Preserve `flagged_but_retained(reason)` separately from CLEAN and rejected, following the declared
+policy. All consumers use the **same unit set**; a dropped arm cannot reappear in floor estimation or CI.
+Repeated prompts inside one process do not multiply independent launch N. Control assertions must witness
+the execution path in both directions—not merely a profiler's task-plan counter that execution ignores
+(SYNC-18's exact failure). Zero/insufficient observations return invalid rather than an empty PASS.
+
+Typed results keep `inconclusive`, `direction_only`, `estimated_effect`, `bounded_null` and `regression`
+distinct. A purported null missing its power record or fired-knob control is `untested` under
+BOUNDED-NULL-1; retain the raw measurements and missing-warrant reason. This is different from a valid
+measured contrast whose documented power/resolution is inadequate: that is `inconclusive`, with its
+effect/uncertainty preserved. Do not encode the
+CPU six-pair direction-only THP keep as a validated +5.23% magnitude, or the joint FIX-1+FIX-3 regression
+as two separately significant component effects. Save the original registered action separately from
+today's claim eligibility; policy upgrades do not silently rewrite historical decisions.
+
+Sources: [FIX1 result](../../docs/design/inf70-close-out-20260908/FIX1-RESULT.md),
+[final-arm completeness](../../docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md),
+[ratified rules](../../MEASUREMENT.md), and final CPU progress §§6/10.
+
+#### D. Calibration, precision economics and host changes
+
+A proposed `CalibrationReceipt` contains exact model/build/resolved recipe, metric and estimator version,
+quantile/normalization convention, independent-unit definition and IDs, raw sample digest, n, interval,
+window/host/neighbor envelope, sampler version and protocol. Deserialize → replay → compare **once per
+immutable calibration, estimator and applicable policy identity**, then cache validation for routine
+arms; invalidate the cache when those dependencies change. No raw-sample replay per arm.
+The 4.581/4.494 and 6.657/6.596 discrepancies are **unreconciled estimator/provenance observations**, not
+permission to choose a convenient value or assume rounding. A changed estimator creates a new identity.
+
+Maintain reference precision and observed per-treatment precision separately. The CPU shim's paired test
+and later six-launch characterisation support examining precision as a resource-saving lever, not a
+universal fixed noise multiplier. Estimates from a few launches remain uncertain. Forecast cost under the
+current recipe with that uncertainty; a cheap low-power “null” is not cheaper useful science. Select the
+cheapest instrument that exercises the mechanism **and** matches intended use; MTP's better precision in
+one CPU block does not license applying its floor to plain decode or another target.
+
+For BIOS/reboot, retain pre/post absolute serving rates when metric/workload semantics match; classify
+the difference as unattributed if several conditions changed. Do not hide improved capability behind an
+era label or attribute it solely to a kernel. Re-resolve topology/host settings and recalibrate gating
+floors because dispersion may change. No assumption that C8's prepared BIOS proposal equals the operator's
+actual changes. R23-61a's pre/post choice and gated R23-64/65 remain the existing route, not duplicate tasks.
+
+#### E. Selection, transfer memory and honest dashboard objectives
+
+Seed the mechanism/transfer fixture with CPU-THP adopted / GPU-THP bounded non-transfer. Store source and
+target scopes, actual mechanism controls, bounds, effect statistic, dependencies and registered disposition.
+Unknown transfer permits scoped exploration; negative evidence suppresses **the same tested claim** until
+relevant dependencies or the effect-size question change. It must neither retire all small possible
+effects nor propagate CPU defaults to GPU. Cheap bounded disproof is useful progress, not a failed campaign.
+
+For each target, retain the tested concurrency/placement frontier, objective and SLO, not only one scalar
+best. `single_user`, `aggregate_capacity` and a selected responsiveness/throughput operating point are
+different objectives. Choose under an explicit workload/resource envelope and policy; missing SLO does
+not authorize inventing one. Publish sweep bounds and operator stop reason. The dense np=8 result is the
+highest tested point with diminishing returns, **not a measured turnover/global ceiling**; the MoE np=16
+endpoint likewise leaves its ceiling unknown. Small-n spread is descriptive, not a certified floor.
+
+For kernel attribution hold a compatible recipe fixed. For product improvement compare each build at its
+own best **supported** recipe under the same workload/objective/resources, with the changed factors visible.
+Production lacking the experimental drafter is `unsupported_capability`, not a zero denominator;
+`baseline_not_measured` emits no ratio. A candidate model outside production still gets a baseline in a
+compatible experimental build. Cross-model architecture comparisons are not kernel gains. Preserve the
+historical aggregate metric's exact definition; migrating to common-window throughput needs a new metric
+identity and calibration, not a relabeled card.
+
+#### F. Lifecycle coverage, durable closure and cross-campaign reuse
+
+One campaign sampler should cover allocation/setup/eviction/load/placement/warmup, **between-arm gaps**,
+request phases and teardown, with timestamp coverage attached to each unit. Otherwise foreign work can
+change cache/placement before timed sampling begins. Recovery/re-admission uses the existing declared
+quiescence/reset conditions; this notebook invents no magic cooldown duration. Retain ownership and
+samples rather than guessing a culprit: the API stop was subsequently observed as a non-event in the
+sampled CPU window, superseding the earlier suspected attribution, not proving global noninterference.
+
+Reuse SC75's prospective CPU arm wiring. Its pre-September-7 erroneous sibling-isolation labels must not
+be upgraded into clean measurements; keep historical records discoverable but emit no eligible measurement
+claims from that known-bad set under the existing adapter policy. A corrected sampler version invalidates
+dependent **warrant**, not the fact that a run occurred. New GPU residency capture R23-60 is already landed;
+reuse its raw readbacks and inspect the loaded revision rather than restating it as missing.
+
+Before releasing a campaign, derive a retention manifest from all evidence/candidate/recipe references,
+including non-branch refs and absolute RUNPATH dependencies. Verify the backup actually covers the named
+ref/object/artifact closure, not merely that a bundle command succeeded. Commit compact receipts/checksums
+and explicit large-artifact provenance; never silently promote a hedge copy into the evidence record.
+Drafts remain drafts, no-fold refs remain exclusions, and a closed researcher does not transfer ownership
+of unadopted tasks. This is automated bookkeeping and validation, not an additional sign-off ceremony.
+
+#### G. Acceptance fixtures and integration into the existing plan
+
+| Fixture | Required behavior | Existing design/task mapping |
+|---|---|---|
+| Parent env sets treatment, control requests unset | Resolved control really unsets; digest distinguishes relevant state; THP readback still catches mismatch | AK-AUTO-04/07; U3-EXPRESS |
+| Unresolved champion pin with old digests matching | Actual admission refuses; diagnostic bypass cannot claim final validation | AK-AUTO-01/04/10; PROD-1 context only |
+| Instrument build in champion-control state | Preserve measured identity; no automatic clean-candidate timing/correctness inheritance | AK-AUTO-10; G2-CONC requirement |
+| CPU adoption plus GPU bounded null | Two recipe entries; independent dispositions and power bounds; no cross-surface default leak | AK-AUTO-08/10; U3-DEFAULTS-b |
+| Partial fast arm / dropped arm / zero evidence | Exclude consistently until complete/valid; never a gain or vacuous PASS | AK-AUTO-02/06 |
+| Direction-only / component non-claim / dispersion-only effect | Claim serializer and all projections preserve conclusion strength | AK-AUTO-06/08 |
+| Floor wrong unit, missing interval, n<24, or replay mismatch | Refuse new gate use with exact reason; queue scoped recalibration; keep historical record | AK-AUTO-06; R23-55/61/65 |
+| Hypothesis control only changes profiler counters | No executed-path warrant; record untested and diagnose before spending measurement budget | AK-AUTO-07; SYNC-18 fixture |
+| Production cannot load candidate recipe | Capability status, no invented speed ratio; optional own-best supported baseline | AK-AUTO-04/10; PROD-BASE-1 |
+| BIOS change / superseded sampler | Absolute rate remains visible; attribution and calibration/coexistence eligibility updated separately | AK-AUTO-03/08; R23-64/65 |
+| Operator stops sweep at highest measured point | Record endpoint/stop reason; do not claim saturation or resume without authority | AK-AUTO-11 |
+| Scratch cleanup or session retirement | Referenced evidence/refs/build dependencies survive; unresolved ownership remains explicit | AK-AUTO-02/11 |
+
+**No duplicate execution queue:** these are refinements to §8.13's proposals and PLAN-DOC-2, not newly
+authorized implementation tasks. Declined to create separate dispatch rows because this session's scope
+is iterative design and existing U3/R23/SC75 rows already route applicable work. Before implementation,
+re-resolve their actual state and ownership. OP-41 stays operator-owned and sequenced last as recorded.
+
+**Audit cautions retained rather than copied into formulas:** some summaries call the final +5.958% bench
+versus −2.18% serving contrast an “11-point” gap (arithmetic is 8.138 points, and cross-class subtraction is
+not a performance claim); the listed sd values 2.793/0.501 do not themselves imply a 13× ratio; and one GPU
+discussion compares unlike concurrency points as though they establish better per-user responsiveness.
+Do not import those shorthands as evidence or thresholds. The ratified rules remain unchanged; this audit
+does not edit protected policy or re-verdict historical experiments. Exact estimators and original
+receipts, not persuasive prose, must drive future automated decisions.
+
+<a id="implementation-contract-review-20260908"></a>
+
+### 8.17 Fresh review — deterministic implementation boundaries
+
+**Basis:** three independent read-only reviews of root `452bee84`, followed by reconciliation against
+the ratified protocols, R23-54 and research `loop/accumulate.py` at `6ab403ed`. These are design refinements,
+not implementation, new measurements, retroactive verdicts or adoption of unowned tasks. A–B identify
+existing authority; the concrete interfaces/algorithms below are proposed ways to enforce it cheaply.
+
+#### A. Phase-specific admission and evidence-use authority
+
+The earlier blanket contamination/refusal wording conflicted with **ratified P-AK-SEARCH-1-A2**.
+Ordinary foreign builds, agents, filesystem activity and host load are recorded noise for AutoKernel
+search, not reasons to wait/refuse/abort or request quiet. This applies to search, not merely its cheapest
+screen. The sole environmental-interference blocker is witnessed competing model inference overlapping
+the held claim. Correctness, identity, power/frequency envelope and claim-witness gates remain mandatory.
+The planner may reduce overlap among its **own** queued jobs under authorized resource policy, but cannot
+turn that scheduling choice into a foreign-load veto, a signal to foreign processes, or a quiet-host demand.
+
+| Phase / authority | Execution and reuse | Permitted consequence |
+|---|---|---|
+| A2 discovery, category CANDIDATE | Exactly three anchor invocations create an immutable baseline bank; exactly three candidate-only invocations per screen, zero new anchors while the full common frame matches. No strict T1 floor prerequisite. | Advisory nomination only; no banking, champion entry, readiness or headline claim. |
+| Original P-AK confirmation, narrowed by its amendments | Fully paired, randomized, calibrated selection/confirmation; frozen ordering/stopping/control requirements. Never pool discovery samples into confirmation. | Strict evidence can satisfy the protocol's experimental banking/composition prerequisites; remains a search record, not a release claim. |
+| Serving observation or owning release protocol | Execute the identified instrument and registered recipe; apply that protocol's validity/isolation requirements, not a search default. Missing RATIFY-MEAS-2 is observation-only where applicable. | Only the actual registered authority can supply a production gate/headline. A serving-class label alone grants nothing. |
+
+Bank identity includes the full runtime/environment frame, not just a build hash. A2 runtime screens
+require exactly one unequal runtime field and identical sealed executable/DSOs; no build/worktree.
+Source-changing screens retain identical runtime semantics. No-op or multi-factor screens are invalid;
+broader recipe combinations/product comparisons need their appropriate plan, not a fabricated A2 attestation.
+Ordinary noise may widen **uncertainty** or reduce nomination priority, never the acceptance threshold.
+Complete identity-matching phases survive restart and changes in ordinary load. Identity drift closes a
+baseline bank; no relabeling it to the new frame. No retrospective application to pre-ratification records.
+
+Proposed shared interface, evaluated from templates and cached receipts rather than actor paperwork:
+
+```text
+eligibility(record, intended_use, policy_snapshot)
+  -> permitted | refused(reason, missing_dependencies)
+inputs: record_class = discovery_screen | strict_search | observation | registered_claim
+        category = OPTIMUM | BASELINE | CANDIDATE
+        phase, protocol_ref/status, instrument_class, actual scope/identities, warrant refs
+uses: explore | nominate | rank | bank | certify_transfer | certify_overlap | validate | headline
+```
+
+This is a **use/applicability check**, not a second grading ladder: `ClaimTuple.grade()` remains the
+existing warrant grader. Persist the original authority/disposition; derive present use eligibility
+without rewriting history. BASELINE diagnostics cannot veto or justify production promotion; required
+rows concern the production-optimal serving recipe and its candidate counterpart. A3 permits same-epoch
+search ranking, but cross-epoch search retrieval exposes attempted mechanisms/conclusions with staleness,
+not comparable magnitudes. The separately authorized absolute pre/post-BIOS serving observations in
+§8.16D do not repeal that search restriction.
+
+Sources: [Annex K A2/A3](../../measurement/protocols/kernel-research.md),
+[category and instrument rules](../../MEASUREMENT.md), and R23-54 in the
+[rebuild handoff](autokernel-rebuild-program.md). These restrictions already exist; no policy amendment here.
+
+#### B. Calibration applicability and measured-to-delivery identity
+
+Separate **exact provenance** (`CalibrationReceipt` in §8.16D) from **applicability to a comparison**:
+
+```text
+calibration_applicability(receipt, complete_ExperimentPlan, registered_rule_version)
+  -> applicable | recalibration_required(reason) | policy_undefined(reason)
+```
+
+The rule considers both actual arm identities, declared changed factor(s), resolved recipes, estimator,
+experimental unit, planned count/stopping scheme, metric and host/coexistence envelope. It specifies
+which intended source/build differences can share calibration and which runtime/placement/instrument
+changes require a new one. Exact build provenance does not mean every source patch automatically needs
+a wholly new floor; conversely, matching a model name or n does not establish applicability. A runtime
+intervention affecting variance needs the registered treatment-aware comparison/calibration method;
+do not transplant a control-only noise estimate or assume equal arm variances.
+
+Resolve the gate's scalar floor and its use from the **existing registered estimator/policy**, retain
+the calibration interval alongside it, and apply any registered precision requirement. Do not silently
+substitute an interval endpoint, increase a multiplier, or reinterpret a percentile. If that mapping or
+allowed transfer is undefined, mark only the dependent gate `policy_undefined`/`recalibration_required`;
+discovery continues under A2. A new gate floor still needs n≥24 at the declared unit and an interval.
+Cache applicability by receipt + complete plan dependencies + rule version; a cheap key check suffices
+before each admitted stage. Neither every-arm raw replay nor an actor-selected calibration is required.
+
+Equivalence receipts have explicit assertion/use types: output correctness, local-work/path equivalence,
+or timing under a named workload/envelope. Correctness equivalence cannot certify timing. No receipt
+overrides an exact-candidate requirement: **G2-CONC uses the promotion candidate binary**. A measured
+instrument in champion-control state remains evidence about that instrument, not clean-delivery timing.
+Historical measurements stay discoverable even when current validation requires a different build.
+
+#### C. One accumulated candidate, one validation transaction, one frozen production reference
+
+Proposed durable pointers—not separate per-surface champions:
+
+```text
+production_ref       # frozen kernel set and ratified serving recipe identities; never mutated by loop
+integration_tip      # one assembled source/build/recipe-map manifest; experimental keeps may accumulate
+validated_candidate  # one immutable manifest + complete required validation batch; may lag integration
+ValidationBatch:
+  id; candidate_manifest; comparator_manifest; required_row_set_version
+  exact per-row target/recipe/instrument/protocol/objective identities
+  required LOO treatments; receipts; outstanding debt; terminal disposition
+```
+
+Freeze a due batch at a specific integration manifest; newer keeps do not retarget its running arms.
+Reserve budget to finish it, so perpetual integration cannot postpone validation forever. A passing
+batch advances `validated_candidate` once through a journaled compare-and-swap on its expected predecessor;
+it never claims a newer integration tip is validated. Per-row recipe hashes may differ across targets,
+but all rows must belong to the **same manifest and required-set version**. CPU pass/GPU missing leaves
+the batch pending; a newer recipe cannot inherit old rows. Missing capabilities/resources have explicit
+row status, not zero denominators, fictitious pass values, or a veto from an unrelated optional model.
+
+**Proposed replacement for §3.0/U2:** `cor` denotes this validated candidate, not the most recently passing
+surface. Any-surface pass fills a row; it no longer advances shared `cor`. After a full batch advances,
+mark all outstanding tip-versus-old-cor summaries stale and remeasure under each applicable harness
+before quoting against the new baseline. Never rescale old percentages or copy a gain across surfaces.
+Production promotion remains a separate runbook/operator action requiring its owning gates. Until this
+design is adopted, preserve current behavior and annotate its limitations rather than silently migrating it.
+
+Integration must survive source and recipe changes in **different repositories**: under the integration
+lock verify parent, persist intent, create retained immutable source/recipe refs, then journal one
+content-addressed manifest and atomically publish its pointer. Git commits across repositories are not
+one atomic transaction. Recovery reconciles intent/trailers/refs; orphan refs remain retained until
+resolved, and no half-published manifest becomes a champion. Workers never advance these pointers.
+
+Each keep records source/build/runtime delta, parent manifest, affected scopes and dependencies. LOO
+constructs a derived candidate with that treatment absent, not a blind commit revert on the live tip.
+Runtime-only ablations reuse the same binary with a distinct recipe. Dependent source changes or two
+keeps overwriting the same knob require an identifiable registered treatment; if impossible, record
+`nonidentifiable`/`unsupported`/`build_failed`, not a neutral measurement or a satisfied required gate.
+Evaluate required applicable production surfaces; preserve dormant-quant findings as scoped history.
+Neutral/inconclusive LOO is not automatic deletion authority. Removing a keep creates another candidate
+manifest requiring its own applicable validation; nothing rebases or rewrites frozen production.
+
+Preserve R23-54's **four keeps OR gain trigger**, durable count and reset on every completed gate run,
+including inconclusive outcomes. Refusal before a gate starts is not a completed run. Proposed unified
+cadence counts each integrated keep once, not once per affected surface, and schedules a frozen validation
+batch; retain per-surface receipts. Maintain separate `validation_debt` until required rows pass: resetting
+the cadence counter cannot erase unresolved rows or falsely validate. Calibration absence exposes debt
+and schedules its authorized prerequisite instead of spinning. The additional 24-hour trigger is still
+proposed; it creates a due reservation, not permission to violate grants, policies or serving budgets.
+
+#### D. Enrollment, accounting and bounded coverage without scheduler ceremony
+
+```text
+enroll(request_id, seed_spec) -> immutable TargetRevision + enrolled_event
+  status: baseline_pending | ready | artifact_missing | unsupported_capability
+Proposal:
+  versioned_claim_key; target_revision; immutable parent/control/intervention identities
+  mechanism/estimand/effect-bound question; route; required witnesses
+  estimated stage resource vector/deadline; evidence snapshot + dependency generations
+```
+
+Keep the launch snapshot; later seeds append target revisions rather than mutate it. Resolve registered
+references and pin the intended compatible baseline at enrollment (or the first capability-resolving
+transition before execution), using actual model/build/recipe identities. Retries cannot silently follow
+a moved reference. An artifact appearing later creates an explicit resolution event. Deduplicate aliases
+by full workload signature, retain the union of production obligations/candidate roles, and grant no new
+boost for a duplicate. Missing/unsupported targets report a precise prerequisite while other work proceeds;
+this is not a decision to dismiss that model or permission to download/convert it outside v1 scope.
+
+Proposed deterministic scheduler, implemented within one admission owner:
+
+1. Charge each stage the time integral of its **held claims**: physical-region fraction, GPU-device
+   seconds and any separately limiting memory reservation. A quarter claimed for four executing cores
+   costs the quarter; GPU stages also pay their CPU claims. Include setup/load/warmup/build/teardown,
+   invalid attempts and held idle time. Record estimated versus actual service; attribute shared builds
+   once by a recorded apportionment rule, not once per beneficiary or to nobody.
+2. At a coverage-round boundary freeze the continuously eligible production-frontier set and `K`/`D`.
+   Give each member one bounded stage opportunity; arrivals/seeds cannot reset the round. Count **every**
+   admitted expensive stage, including prerequisites/calibration/validation/reject audits/maintenance,
+   exactly once against either its frontier's coverage slot or the `K` noncoverage slots. No uncounted
+   priority queue may bypass this bound. With `N` members and maximum stage-plus-teardown `D`,
+   conservative serial completion is bounded by `(N + K) * D`, plus explicitly recorded authority/resource
+   outages and any already-running bounded stage. This bounds **service opportunities**, not valid results
+   under unbounded noise/failures. Oversized jobs need a declared larger bound or scientific-safe chunking;
+   never interrupt arbitrary samples to make a scheduling theorem look true. Reserve at least one
+   noncoverage seed opportunity per round when an eligible seed and budget exist (`K>=1` then); otherwise
+   “at most K” would allow zero forever. Use oldest eligible FIFO seed, skipping temporarily ineligible
+   entries without resetting their history/budget. Dry-run refuses conflicting reserved-slot totals;
+   new eligibility joins the next round rather than silently changing the current bound.
+3. In noncoverage slots use weighted deficit over actual charged resource service. A normalized dominant
+   share supplies a scalar ordering while the vector remains visible; grant changes start an accounting
+   epoch without forgiving prior service. Normal weight 1; seed weight 2 ends after three valid comparisons
+   **or its finite attempt/charged-time cap**, whichever first. One boosted seed/backend, FIFO; campaign
+   budget bounds seed admission. Invalid-only seeds cannot monopolize a boost or block later seeds forever.
+4. Adapt weights in the proposed 1–3 range at batch boundaries using same-epoch target-confirmation and
+   informative bounded negatives/precision results per charged cost, plus uncertainty. No screen-only gain
+   jackpot or cross-epoch numerical search ranking. Keep coefficients/reward normalization versioned and
+   provisional; weights never override coverage, budget or evidence eligibility.
+5. Reserve calibration, target-scale reject audits and due validation explicitly. Full-region reservations
+   stop new incompatible backfill early enough to finish current bounded work; certified backfill cannot
+   extend the reservation. Record budget exhaustion, infeasible stage demands and external outages
+   separately. Resume existing rounds/debts after recovery instead of awarding a fresh startup boost.
+
+Finite manifest defaults for stage limits, `K`, seed caps and reserve shares must be selected before
+eventual deployment; dry-run reports the resulting bound/cost. This is configuration, not a new review
+for each experiment. The coverage test uses fake time/claims; real service can promise no hard wall-time
+bound while its external authority is unavailable. Initial admission stays serialized under §3.4;
+certified overlap is an eventual policy revision within OP-41's sequence, not a per-profile operator task.
+
+#### E. Transfer, coexistence and retrieval contracts
+
+The versioned claim key covers target scope, intervention/control, mechanism, estimand, effect-size
+question and dependency identities. A planner annotation is a hypothesis, never a path witness. Transfer
+edges are **directed and nontransitive**, separately typed `correctness`, `local_work`, `serving_effect`:
+A→B and B→C do not establish A→C, nor does CPU→GPU follow from a shared mechanism name. A bounded null
+suppresses only its tested effect-size question under matching dependencies; changing a bound defines
+a new question, not positive evidence or automatic renewed priority.
+
+Routes declare preserved dimensions, required executed-path witnesses, covered targets and disposition
+authority: `exploration_only` or `may_screen_out(scope, effect_bound)`. Matching a mechanism class alone
+does not certify rejection transfer. Audit a configured fraction of rejects via a stable hash of claim
+key + route revision, stratified by mechanism/allocation; record selection probability and charge a
+separate bounded target-confirmation budget. Restart keeps the same sample. A successful target-scale
+audit of a rejected candidate revokes the route's negative-screen authority in the affected scope, not
+its true local result or unrelated correctness evidence. Audit-budget exhaustion stays visible.
+
+Coexistence receipts bind measured workload, **complete neighbor multiset or certified pressure envelope**,
+physical claims, all lifecycle phases, dependencies, registered equivalence margins, estimands and
+uncertainty. No significant difference is not equivalence. A+B and A+C do not certify A+B+C; B tolerating
+A does not certify A tolerating B. Certify each victim direction, including setup and burst exposure;
+average pressure alone cannot cover untested bursts. Missing evidence/margins leaves owned incompatible
+admission serialized, subject to A's explicit search/foreign-noise distinction. A serving-throughput
+allowance is never a research equivalence receipt.
+
+```text
+retrieve(scope, claim_key, intended_use, limit=40)
+  -> ranked_findings[<=limit] + mandatory_applicable_conflict/retraction_status
+     dependency_generations + snapshot_frontier + complete_for_intended_use
+admit_cached(proposal, local_generations) -> eligible | stale(affected_dependencies)
+```
+
+Indexed conflict/retraction checks occur **before top-k truncation**; a relevant refutation cannot hide
+in position 41. Preserve raw grade separately from applicability. Maintain a reverse dependency index
+and local invalidation generations; compare cached generations immediately before expensive admission.
+A local retraction/recipe/topology change takes effect even while asynchronous Vidya projection lags.
+Malformed invalidation events are quarantined with affected eligibility marked incomplete, not silently
+clean. If dependencies cannot be identified, withhold certificate-dependent uses at the uncertain
+frontier; fresh exploration remains available. Unrelated changes preserve cache reuse. No corpus scan,
+network request, raw-calibration replay or LLM classification is added to the per-arm fast path.
+
+#### F. Supervisor fencing, controls, grant expiry and scientific restart
+
+One campaign-scoped exclusive supervisor/writer lock plus a monotonic **supervisor incarnation** fences
+workers and command application. Use the host's service-manager restart facility with bounded backoff
+and an explicit failed state; tmux or a monitoring agent is not the recovery mechanism. Separate process
+incarnation from immutable campaign/config generation: an unchanged restart preserves campaign evidence.
+Relevant topology/recipe/policy changes resolve a new generation and scoped invalidation before admission,
+not a silent snapshot mutation or automatic research relaunch beyond the operator's authority.
+
+Persist `launch_intent` with allocation/worker generation and a preassigned owned process-container ID
+**before spawn**. On crash, reconcile that container and PID-start identities before replacement. This
+closes the spawn-before-PID-receipt gap; recovery cannot assume absence because its JSON lacks a PID.
+Workers return results tagged with campaign/config generation, supervisor incarnation and worker/allocation
+identity, never write journal/pointers directly. Reject stale responses;
+retain their raw artifacts as history. Another supervisor cannot steal a live lock or act on an old grant.
+
+Commands contain campaign/generation, request ID, payload digest and expected control revision. Persist
+acceptance before acknowledgment and linearize it with admissions. Duplicate ID/payload returns prior
+result; same ID/different payload refuses; stale expected revision returns current state. CLI and browser
+use the same contract. Show **accepted** separately from **completed**, with reason/deadline.
+
+| Command | Admission boundary | Completion |
+|---|---|---|
+| pause | Close new expensive-stage admission. Already admitted bounded stage may finish within its grant/deadline; its queued successor needs fresh admission. | Quiescent, compute released, supervisor/control live; desired pause survives restart. |
+| drain | Close admissions, finish only permitted bounded active stage or invalidate/tear it down at its declared boundary. | Owned workers/descendants gone, final state durable, claims released; no implicit restart. |
+| resume | Reconcile retained work, config dependencies, control revision and authority; fresh admission only after checks. | Running or explicit waiting/prerequisite state; cannot erase a later accepted drain. |
+
+An interrupted independent unit is invalid. Reuse completed units only if the frozen plan explicitly
+permits continuation with unchanged identities, unit membership, ordering and stopping rules; otherwise
+new comparison execution ID, old observations retained. Drain midway through a pair cannot create an
+unpaired winner or an outcome-dependent extension. Reuse sealed completed phases per A2 instead of
+restarting the entire campaign. Record reused-phase IDs in the new execution's lineage.
+
+Each allocation receipt binds grant identity/deadline and ownership generation. Admission must fit the
+bounded stage **plus teardown** within the remaining authorization or the provider's existing explicit
+drain allowance; admission one second before expiry is not enough. A renewal watchdog blocks successors
+on renewal failure; an already authorized stage may finish within its current deadline/drain allowance.
+Distinguish failed future renewal from current revocation, and start bounded owned teardown in time to
+meet the applicable provider deadline. Verify the affected allocation's owned descendants exited before
+releasing its claims or admitting replacements. Uncertain ownership stops affected replacement, not a broad name-pattern
+kill. The provider remains grant authority; this proposed consumer contract does not implement OP-41 early.
+
+#### G. Coherent dashboard snapshots and lifecycle-aware health
+
+Publish one versioned snapshot from the journal projection: campaign/config generation, supervisor
+incarnation, journal cursor, projection sequence, generated time, producer/loaded schema/build identity,
+desired/observed state, applied command revision and worker stage/deadline. Assign a durable monotonic
+`stream_epoch` at producer incarnation/config-generation changes, plus a sequence increasing within that
+epoch; compare `(stream_epoch, sequence)` within a campaign, never order content hashes lexically. Worker
+telemetry carries its worker/allocation incarnation so delayed old telemetry cannot enter a new snapshot.
+Health-only refreshes advance sequence without pretending the scientific journal advanced. Consumers
+reject older stream keys; after an epoch change request a full snapshot, not a partial old/new merge.
+Capture journal cursor, command revision and derived state atomically from one projection revision;
+attach heartbeat/resource observations with their own sample timestamps and matching worker incarnation.
+A stale cached page may display history but cannot acknowledge commands or claim live progress.
+
+Separate supervisor heartbeat, worker stage/activity and last scientific result clocks. Paused/drained
+campaigns intentionally have no active worker; that is not failed-worker health. A retained service keeps
+its own heartbeat while its campaign is terminal; if the service exits, the terminal record is historical,
+not live. Stop/join the **worker's** status publisher before terminal publication so it cannot resurrect
+`running`. An actor/evidence outage degrades the dependent capability, not transport. Use existing `/health`
+versus `/api/health` semantics and freshness envelopes; do not invent a second hub health definition.
+Commands go directly to the authenticated producer gateway; hub pages remain non-proxy projections.
+
+#### H. Code seams, versioning and acceptance fixtures
+
+Keep changes in the existing ownership boundaries. The names below describe proposed seams, not installed
+APIs; no monolithic second controller, second WAL, new evidence grader or new grant authority is intended.
+
+| Existing home | Proposed extension / test seam |
+|---|---|
+| Research `autokernel/journal.py::Journal` | Typed phase/control/integration/validation events, replay and schema migration; crash/torn-tail fixtures. |
+| Research `loop/run.py` and `loop/pipeline.py::SerializedTail` | Extract small campaign-service/admission interfaces around current engine; fake actors/workers/clock/claim provider. Preserve serial tail until immutable parent checks exist. |
+| Research `loop/accumulate.py` | Immutable candidate manifests, validation batches/debt and cadence; CAS/restart/LOO fixtures. |
+| Research `loop/serving.py`, `loop/bench.py`, `loop/residency.py` | Shared resolved recipe and ExperimentPlan/use validator, applicable calibration, unit view and lifecycle witnesses; no duplicated estimator per consumer. |
+| Existing orchestrator claim/contention providers | Eventual operator-owned grant/region/coexistence contract; research supplies an adapter, not a competing policy daemon. |
+| Root Vidya adapters and existing retrieval/projection | Prospective source registration at implementation, existing grader, scoped use/transfer and invalidation index; reuse SC75. |
+| Research status/control producer; root dashboard hub | Producer-side command/snapshot schema and gateway; hub rendering/registry/freshness/health probes. |
+
+Version event and manifest schemas; defaults for absent provenance are `unknown`, never clean/validated.
+Keep legacy records readable as history; unsupported schema versions cannot grant evidence eligibility.
+Migration writes a replayable versioned snapshot without rewriting the original journal. Rollback must
+refuse unsupported newer state rather than fall back to `cor=anchor`; preserve the last compatible
+read-only view and require a compatible engine for further admissions. New fields need adapter fixtures
+and producer/consumer compatibility tests, not silent deserialization defaults that change authority.
+
+| Deterministic fixture | Required result |
+|---|---|
+| Ordinary foreign build during A2; overlapping foreign model inference | First remains recorded noise; second follows witnessed checkpoint/resource rule; no foreign signalling. |
+| A2 nominee/serving-class search record presented for banking/headline | Intended-use refusal; strict confirmation and owning release authority remain separate. |
+| Wrong calibration unit/estimator, runtime variance intervention, output-equivalent delivery build | No incompatible floor or timing inheritance; exact-candidate gate stays exact. |
+| Fourth keep, restart at count 3, inconclusive completed gate | Cadence fires/persists/resets as ruled; unresolved validation debt remains. |
+| CPU row passes, GPU missing; recipe changes; crash during cross-repo integration | Accumulation preserved; no partial validation or half-published manifest. |
+| Dependent source keeps, overwritten runtime knob, unsupported ablation | Identifiable LOO or explicit missing gate; failed revert never counts as measured neutral. |
+| Duplicate seeds, moving refs, invalid-only seed, larger region than affinity, GPU host CPU | Stable enrollment/baseline; finite boost; exact charged claims and persisted coverage round. |
+| Full-host validation waits while short jobs arrive; grant outage | Reservation prevents backfill starvation; opportunity bound excludes explicitly recorded outage only. |
+| A→B/B→C, correctness-only transfer, rejected small-scale scale-sensitive idea | No transitive/timing inference; reproducible reject audit and scoped authority revocation. |
+| Pairwise-safe but triple-contended work; asymmetric/bursty overlap | No composed or symmetric certificate; lifecycle/neighbor envelope enforced. |
+| Refutation ranks 41st; retraction after proposal; malformed invalidation; projection outage | Mandatory status survives top-k; cheap local fence invalidates dependent use; fresh exploration survives. |
+| Crash after spawn before PID receipt; two simultaneous supervisors | Reconcile preassigned owned container; one writer, no duplicate worker/claim use. |
+| Duplicate/stale pause-resume-drain commands; restart mid-pair; grant expiry | Ordered durable controls, no successor leak, exact unit membership, teardown before release. |
+| Delayed old snapshot after resume; hub restart while paused | No false running/command completion; intentional worker absence not producer failure. |
+
+Run these with fixtures/fake time before any hardware spend; later real lifecycle/contention and unattended
+acceptance remain §8.14, after their existing authorization gates. Integrate under AK-AUTO-02/04/06–11;
+no new dispatch rows. The remaining numerical/objective choices in §8.15 are still iterative design,
+but these failure modes now have explicit data, transition and test contracts. **Friction budget remains
+zero additional routine operator decisions or critic calls for established runtime sweeps.**
+
+<a id="implementation-ledger-20260908"></a>
+
+## 9. Implementation ledger — started 2026-09-08
+
+**Owner:** `autokernel-unified-20260908`. Root lane starts at `088427b0`; research lane starts at
+`1d9733f1`. Shared checkouts, frozen kernel trees and research artifacts are not modified by lane setup.
+Subagent output is proposed until main-thread review and targeted/integration tests accept it. Source
+completion, main-branch publication, deployment and live measurement acceptance remain distinct.
+
+**Current-code reconciliation:** `loop/run.py` still uses one GPU claim and `ExperimentStore` history;
+the reviewed implementation now journals accumulator snapshots before publishing derived JSON.
+Existing Journal, recipes, claim primitives and dashboard are reused, not mistaken for a unified
+service. The four-keep cadence is present and survives recovery. Broad
+historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly adopted as a §9 slice.
+
+### Executable slices and acceptance
+
+- [ ] **AKU-01 — immutable campaign/target enrollment** (AK-AUTO-01/04): versioned CPU/GPU/both request,
+  immutable registry/recipe/model identities, local candidate seeds, idempotent aliases/requests,
+  per-target missing/unsupported state, pinned baseline and no silent reference movement. Pure resolver
+  and dry-run fixtures first; no resource authority inferred from a manifest.
+  - [x] **AKU-01a — explicit-snapshot enrollment and offline CLI**: immutable typed CPU/GPU targets,
+    exact artifact/source identities, alias/obligation union, idempotent requests, finite seed marker,
+    pinned explicit/implicit baselines and per-target prerequisite states. ✅ 2026-09-09 — main-reviewed
+    `campaign.py` plus `campaign_cli.py`, 52 focused tests. Optional local file verification reports
+    failures separately without rewriting pins; every output says `admission_ready: false`.
+    `docs/autokernel-unified-campaign.md` contains the tested CLI/schema example. The real production
+    registry selector/adapter, enrollment events and service consumer remain required for AKU-01.
+  - [x] **AKU-01b — canonical production exporter and local-model seed enrollment consumer**:
+    automatic CPU/GPU production roster, pinned source/launch context, alias/obligation union,
+    explicit local TargetSpec/artifact seeds and per-target unsupported/missing dispositions.
+    ✅ 2026-09-09 — main's **118 research tests** and **128 orchestrator/cross-repository tests** pass.
+    Export validates loaded launcher tables against pinned inputs and refuses stale compiled priors;
+    it cannot accept an injected stale registry. Explicit `--out` seals create-only/fsynced per-target
+    recipe sidecars; stdout export and research resolution remain noncreating. Full/quarter recipes
+    have distinct actual byte hashes; true aliases still merge. A sealed recipe cannot erase a source
+    unsupported/waiting status, including missing DSO prerequisites. Production dry-resolution v2 keeps
+    speech/unknown/unsupported rows visible; v1 ordinary manifests remain supported. Local seed refs
+    cannot replace production pins or reuse an opposite-backend production recipe/build. Model launch
+    compatibility and current byte verification are separate from declared enrollment; no downloads,
+    live registry recompilation, worker launch, enrollment Journal event or grant is added here.
+- [ ] **AKU-02 — resolved runtime recipes and no-build arms** (AK-AUTO-06/07): explicit unsets,
+  effective environment/dispatch witnesses, option compatibility, same-binary arms and canonical CPU
+  adapter; established runtime combinations skip critic calls. Hardware execution follows its gate.
+  - [x] **AKU-02a — explicit environment-unset semantics**: inherited treatment is absent in the
+    control; immutable unset state roundtrips/hashes; legacy no-unset identities remain unchanged.
+    ✅ 2026-09-09 — reviewed `Recipe.explicit_unsets`, real `server_env()` consumer and bidirectional
+    readback fixtures; 89 focused tests and 611 loop tests / 59 subtests pass. This does not yet freeze
+    the full inherited environment or supply the new CPU runtime-arm adapter.
+  - [x] **AKU-02b — frozen launch resolution and CPU serving consumer**: explicit artifact identities,
+    allowlisted effective environment and absences, derived backend/speculation capability, frozen
+    argv/workload/readback expectations, and the optional real `_measure_once()` consumer.
+    ✅ 2026-09-09 — 31 main-run focused tests. Exact snapshot integrity is separate from normalized
+    execution identity: relocation/port/recipe label do not change execution, while model/DSO load-name
+    content, runtime semantics and environment do. CPU uses explicit `device=none, ngl=0`; zero VRAM
+    is not a GPU veto, but placement/contention remain unproven. Multi-device/mixed-draft, overriding
+    extension flags and unknown capabilities refuse before launch. Runtime-set/master-off samplers,
+    CPU lifecycle witnesses, planned no-build arms and policy consumers remain required. Legacy recipe
+    hashes are unchanged; the inherited HSA override is actually removed and floor writes now use the
+    hardened JSON publisher. Metric prose now accurately describes the unchanged sum-of-slot-rates.
+  - [x] **AKU-02c — canonical CPU/GPU launcher recipe adapter and existing serving conformance**:
+    closed explicit canonical recipe schema, full semantic/argv rederivation, NUMA prefix grammar,
+    immutable launch environment and exact artifact/source provenance.
+    ✅ 2026-09-09 — the AKU-01b acceptance includes the real sealed production export → Campaign CLI →
+    canonical recipe → existing `_measure_once()` path with fake CPU/GPU processes. Conflicting flag
+    aliases, unknown NUMA policies, rehashed semantic mismatches and credential-bearing environment
+    refuse; source/recipe identity cannot substitute for witnessed placement or execution. Production
+    command construction defaults are unchanged; its opt-in dry seam only skips runtime-directory
+    creation. Actual whole-arm observers, runtime sweeps, worker containment and registered policy
+    consumers remain separate required work.
+- [ ] **AKU-03 — native journal and recovery** (AK-AUTO-02): current-loop event schemas, phase boundaries,
+  integration intent/completion, original provenance and replayed projections. Missing/corrupt/stale
+  bundle never silently certifies anchor; interrupted units and schema rollback follow §8.17.
+  - [x] **AKU-03a — durable derived JSON publication**: file fsync, atomic replace and directory fsync;
+    injected pre/post-rename failures preserve the right artifact and never report durable success.
+    ✅ 2026-09-09 — real `status.write_json()` caller hardened; 28 focused tests pass, including
+    descriptor cleanup and post-rename durability failure. This alone is not journal recovery.
+  - [x] **AKU-03b — journal-backed bundle recovery**: snapshot before projection; replay, explicitly
+    labelled legacy import, fail-closed missing/unsupported/corrupt state and ancestry; preserve cadence
+    while invalidating stale compounded gain after an external tip change.
+    ✅ 2026-09-09 — `LOOP_BUNDLE_SAVED` is operational state, not a claim. v1 imports preserve original
+    snapshots and default to `unknown_legacy`; current v2 requires validity and makes old readers refuse
+    unsupported state. Journal replay repairs missing/corrupt projections, never invents COR. Tip
+    advance retains historical magnitude but disables its threshold authority. Main run and manual
+    `serving_gate --tip` consume recovery; dry manual inspection opens only an existing read lock and
+    never imports or rewrites. Corrupt history requires restoration, not blind reseeding. Native phase,
+    integration/control events and candidate transactions remain AKU-03 work.
+  - [x] **AKU-03c — serialized prospective arm-capture consumer**: native
+    `PLANNED_SERVING_ARM_CAPTURED` events, current campaign/config/supervisor/worker-result fences,
+    byte-verified immutable artifacts, exact-payload retry index and restart/uncertainty handling.
+    ✅ 2026-09-09 — actual planned-serving→store→controller→journal→restart→independent Vidya reader
+    integration passes; main acceptance **278 tests and 15 subtests**. Both comparison identities,
+    process/prompt/request/witness links, selected launch values and aggregate are rederived from
+    frozen/native inputs. Closed unsupported/malformed inputs refuse; genuine unsupported-unit and
+    continuation carriers remain diagnostic. Scoped same-thread/lifetime callbacks serialize lookup,
+    append/fsync and projection under the controller mutex; ambiguous append/index failure poisons
+    that incarnation. Historical retries return the original event without recreating current worker
+    authority. The real lifecycle owner must supply the trusted result fence; none is inferred from
+    JSON, and this slice adds no workers, grants, grading, candidate advancement or scientific clock.
+- [ ] **AKU-04 — shared ExperimentPlan and evidence-use validator** (AK-AUTO-06/07): phase/category/
+  protocol/use, independent-unit view, immutable stopping plan and applicability checks; A2 discovery
+  never becomes a keep/release claim; calibration provenance, replay and n/unit/interval requirements.
+  - [x] **AKU-04a — immutable structural plan/unit view and calibration applicability API**: strict
+    record-class/phase identity, declared fixed-N membership/pairing/order, complete prompt/terminal/
+    witness binding, one immutable admissible view, and offline CLI using the real validator.
+    ✅ 2026-09-09 — 72 main-run focused tests. Directly constructed objects and supplied view digests
+    are revalidated; zero/incomplete or invalid paired units cannot become a complete result. Observation
+    cannot become a claim; discovery cannot bank/release; strict-search cannot headline. A2 nomination
+    and claim-bearing uses lack their registered verifier/grader integrations and fail closed. Calibration
+    requires declared unit, n≥24/interval, exact registered-estimator replay and a registered applicability
+    rule; raw replay and plan applicability have separate caches, and transient callback failures are not
+    cached. This is structural validation, not verified independence or a second grading ladder. Actual
+    instrument consumers, native phase/unit events, A2 semantic attestation, power/bounded-null handling
+    and shared ClaimTuple projection remain required for AKU-04.
+  - [x] **AKU-04b — frozen planned-serving launcher consumer**: distinct resolved recipes, exact
+    canonical prompt bytes, fixed unit order/membership, retained native observations and one shared
+    admissible-unit view. ✅ 2026-09-09 — main's 117 tests and 3 subtests pass, including legacy serving,
+    resolved recipe and ExperimentPlan coverage. Missing/nonfinite/boolean timing fields cannot become
+    zero measurements; warmup/measurement slot failures are retained, raw observations are sunk before
+    provider completion, and witness states are not inferred from references. Failed units stop the
+    sequence. Continuation prevalidates an exact completed prefix and prior lineage before any admission.
+    The trusted provider must enclose the worker with owned-descendant and stage-plus-teardown bounds;
+    these are injected consumer contracts, not a local process-tree enforcement implementation. Native
+    journal/ClaimTuple hook, real lifecycle samplers, registered inference protocol and worker/provider
+    integration remain required. All resulting use status remains `policy_undefined` in this slice.
+  - [x] **AKU-04c — prospective sealed arm producer and shared immutable store**: actual planned
+    serving emits raw observations before its sealed arm carrier, binding the complete frozen plan,
+    exact request bytes, process membership, worker/source identities, timestamps and canonical unit
+    view. ✅ 2026-09-09 — main's integrated capture/candidate/Journal suite passes 382 tests and 15
+    subtests. Supported scalar is serving/process/level/median with units `t/s`; independent n counts
+    scored process launches. Unknown placement/contention or absent GPU residency remains diagnostic,
+    not a widened threshold. Store publication uses owned private paths, nested thread/process exclusion,
+    no-overwrite content addressing, fsync and exact-inode crash recovery; noncreating verification
+    cannot recreate a lost published dependency. Controller-native journal wiring is the next consumer.
+    Loaded evaluator identity, real lifecycle witnesses and registered policy remain required; no
+    measurement, historical backfill or execution authority is claimed by fixture success.
+  - [x] **AKU-04d — generic fixed-member A2 runtime discovery consumer**: exact same-artifact
+    runtime frames produce a sealed three-anchor bank and three candidate-only invocations;
+    cached-bank reuse adds no fresh anchors. ✅ 2026-09-09 — main's clean nine-file release passes
+    **1,512 tests and 83 subtests**; the final focused observation/screen/plan/serving run passes
+    **143 tests and 3 subtests**, with Ruff clean. Full frame identity includes target/prompt,
+    estimator/estimand, required witnesses, policy, evaluator, power/frequency, resource claim and
+    host epoch. Invalid completed units are durably terminal, never silently rerun; uncertain intent
+    requires reconciliation. Serialized replay grants no bank/nomination authority without the exact
+    live verifier. Registered nomination permits only the completed candidate-only advisory view;
+    keep, validation, release and grading remain unavailable. A3 hides stale-epoch magnitudes and
+    refuses mixed current frames. Ordinary load remains recorded noise, not an automatic A2 veto.
+    Source `04d73260`, main `d75bc9ec`; actual controller/native phase adapters and shared Vidya
+    projection remain active work under AKU-04/08 and VB-AK-UNIFIED-DISCOVERY.
+  - [x] **AKU-04e — controller-owned A2 phase persistence and cached-bank replay**: exact
+    fixed-plan INTENT/TERMINAL/SEALED records use the native Journal and one startup-built bounded
+    index; ambiguous append poisons that lifetime and exact retry preserves original bytes.
+    ✅ 2026-09-09 — main's clean composition with published standalone controls passes **1,831
+    loop/Journal/storage tests plus 165 subtests**, including the independent cached-bank probe;
+    Ruff/diff checks pass. Candidate-only reuse references its original seven anchor event/Journal
+    identities and sealed bank, adds no synthetic anchors, and reopens after restart. Foreign,
+    missing, forged or stale-frame sources refuse. Fourteen actual phase events and at most one
+    separate bank reference remain the bound. Source `6b5d5fda`, main `c36411a7`; no actual native
+    invocation, semantic grading or real comparison is established by this persistence slice.
+  - [ ] **AKU-04f — native per-unit A2 execution and first-issue reservation**: select one
+    digest-covered contiguous unit range from the unchanged full ExperimentPlan; parent validation
+    rederives membership. Bind each launch to its fsynced unit INTENT and an opaque current-owner
+    first-issue permit. Replayed unknown is not absence proof; terminal recovery and durable
+    not-acquired retries must preserve exact identity. No hidden three-unit launch or one-unit
+    plan rehash. Coordinate this bridge with AKU-07i's actual observation/lifecycle owner.
+- [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
+  delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
+  identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
+  - [x] **AKU-05a — private-index accepted source commits**: the real `archive.keep()` consumer commits
+    only accepted literal paths from captured HEAD, preserves peer index bytes, honors commit hooks and
+    advances the selected ref with expected-parent CAS. ✅ 2026-09-09 — 83 main-run adjacent tests and
+    7 subtests pass, including 26 focused private-index cases. Wrong repository/branch, path expansion,
+    hook-added peer staging and concurrent ref advance refuse; notification failure after a landed
+    commit does not report a nonexistent commit failure. HEAD binding is rechecked immediately before
+    ref CAS, not claimed as an atomic branch-binding transaction; the owning integration lock remains
+    necessary. This supplies source safety, not a measured candidate or cross-repository transaction.
+  - [x] **AKU-05b — immutable candidate/validation contract and offline CLI**: explicit Git object
+    format, one source set with per-target exact CPU/HIP build selection, candidate/control recipe and
+    workload identities, declared keep deltas, separate integration/validated pointers and frozen rows.
+    ✅ 2026-09-09 — main reviewed 28 focused tests within 159 passing adjacent tests. Required production
+    target/backend obligations and complete keep-set LOO are checked at batch start and advancement;
+    loaded state cannot bypass them. Trusted bound row/LOO verifiers are mandatory, and callback errors
+    refuse. Completing an older gate preserves newer keeps and monotonic gain-trigger generations;
+    cadence reset does not clear validation debt. Exact start retries are idempotent, conflicting batch
+    payloads refuse, and optional seed rows may remain pending without being counted as passed or blocking
+    required-row completion. Output-correctness equivalence does not grant timing. The offline CLI always
+    denies execution/promotion authority. Actual registered verifiers, durable candidate transactions,
+    native validation events and retention consumers remain required; this is not a measured candidate.
+  - [x] **AKU-05c — durable candidate transactions and recovery consumer**: native journaled
+    INTENT → PREPARED → COMMITTED phases, immutable manifest objects, owned experimental refs, exact
+    idempotence and expected-state CAS. ✅ 2026-09-09 — main's 382-test integration includes six
+    adversarial candidate/cache probes. Old-request retries return the original result without replacing
+    the newest projection. Controller capabilities are lifetime/thread fenced; retained public views
+    cannot mutate authoritative state. Startup rebuilds indexes once; ordinary operations use bounded
+    cached state and the requested transaction, not whole-history Git/JSON replay. Source preparation
+    across repositories is recoverable, not atomic. All three frozen kernel paths and both production
+    branch families refuse. Historical validated state restores provenance without restoring verifier
+    authority; new validation still requires registered live callbacks. Offline CLI has no execution or
+    promotion authority. Retention, registered row/LOO verifiers and live validation remain required.
+  - [x] **AKU-05d — shared frozen-kernel mutation guard in legacy and candidate paths**:
+    canonical llama/speech worktrees and both protected branch families refuse before mutation;
+    archive rechecks root/branch binding before its ref CAS, and candidate refs reuse the same guard.
+    ✅ 2026-09-09 — main's combined guard/transport acceptance passed **198 tests and 4 subtests**.
+    Symlink aliases and detached canonical roots refuse; experimental linked worktrees sharing the
+    production object database remain allowed. Existing private-index, hook and peer-staging behavior
+    is preserved. Tests use temporary repositories only; no production tree or ref was changed.
+  - [x] **AKU-05e — native validation consumer and replayable exact batch wiring**: due state
+    freezes candidate/comparator/required rows and cadence generations; every submission rejoins
+    the current transaction projection before artifact I/O. Both native arms require one frozen
+    plan/lineage/comparison and exact executable plus full loader-name/content DSO closure.
+    ✅ 2026-09-09 — main's independent clean three-file release passes **246 adjacent/edge tests**
+    and **1,762 loop/Journal/storage tests plus 165 subtests**, with Ruff clean. The sealed row
+    binds batch, row, both manifests and row-set identities; reopen verifies original carrier/raw
+    artifacts, calibration, complete-measurement status and structural eligibility without history
+    scans. CPU success cannot satisfy a required GPU row; optional seed debt stays separate.
+    Source `1ac8393e`, main `deab8f40`. V1's loaded-instrument identity remains unknown for real
+    validation authority; fixture-only transaction tests do not certify a candidate. The assigned
+    semantic consumer must connect native-v2 instrument evidence, canonical ClaimTuple grading,
+    the owning production-validation objective and exact row/LOO verification. No inference,
+    production mutation, new grading rule or promotion authority is added by this slice.
+- [ ] **AKU-06 — bounded scheduler and mechanism routes** (AK-AUTO-07/09): pure accounting/coverage model,
+  bounded seed boost/opportunity, reservations and rejection audits; directed transfer and noncomposable
+  coexistence evidence. Live admission/coexistence waits for AKU-11, not a fake-provider pass.
+  - [x] **AKU-06a — indexed scheduler/accounting and resolved-campaign inspection consumer**:
+    frozen coverage rounds, finite FIFO seed boost, required reservations, held-resource charging,
+    exact issued-selection/receipt/outcome binding and explicit unavailable-frontier debt.
+    ✅ 2026-09-09 — main's **138 tests** pass, including nine independent regression probes.
+    Full resolved-campaign identity and grouped workload aliases prevent stale-state/seed-budget reuse;
+    non-ready targets require separately typed prerequisite work. Unused optional slots and unavailable
+    frontiers cannot indefinitely stall ready production work. Full-region reservations skip only
+    unreserved backfill, preserving earlier required seed/other slots. Actual physical-region, GPU
+    host, device and memory held time is charged; overruns retain cost and fence successors. Startup
+    builds receipt/seed indices once; hot-path updates avoid historical scans. V1 explicitly uses fixed
+    weights and no compatibility authority. CLI selections grant no execution. Journal transitions,
+    native provider receipts, registered adaptation, planner/routes and live admission remain required.
+  - [x] **AKU-06b — mechanism-scoped planner and prepared runtime-recipe consumer**: production
+    CPU/GPU profiles, exact scoped evidence, runtime dimensions and persistent scheduler selection
+    bind a prospective dispatch intent to the actual target, proposal, claim key and final plan.
+    ✅ 2026-09-09 — main's **228 tests** pass across planner, scheduling, evidence, enrollment, recipes
+    and plans. Each unique export/policy is validated once when preparing immutable anchors; repeated
+    planning performs no export/filesystem reads. Anchors bind the complete resolved campaign, not
+    only its requested manifest. Thread/placement/NUMA/batch/ubatch and allowlisted environment
+    set/unset arms retain exact model/executable/DSO provenance and rederive canonical launch semantics.
+    Runtime dispatch requires a matching complete ExperimentPlan; source/build proposals remain typed
+    final-plan preparation, never permission from a claimed plan hash. Mandatory conflicts survive
+    prompt truncation; Q4_K findings do not rank Q8_0 work and cross-epoch values do not rank fresh work.
+    Stops do not consume undispatched scheduler slots. This is a nonexecuting planner boundary;
+    standalone driver, preselected actor preparation, local-seed runtime/profile adapter, native intent
+    persistence and worker/receipt/evidence integration remain required. Source `26171408`, main
+    `1e5b766a`; the AKU-06 parent remains open.
+  - [x] **AKU-06c — durable controller-owned unified driver and compact accounting projection**:
+    native fsynced issuance/settlement, exact catalog/selection/arm binding, idempotent replay and
+    immutable runtime materialization feed the actual campaign controller. ✅ 2026-09-09
+    Accepted together with AKU-07c: the clean 17-file release passed **1,444 tests and 83 subtests**,
+    plus **20 independent boundary probes**. Preview failures preserve committed receipts and seed
+    queues; old intents cannot rematerialize under a new supervisor. Slow provider/verifier I/O runs
+    outside the controller mutex and rechecks lifetime. Operational projections use indexed totals
+    and a rolling seed commitment, not per-tick historical scans. V3 START fences actual old readers;
+    the closed snapshot connects scheduler/targets and reports other consumers as not connected.
+    Source `61a63c42`, main `8cbcce9f`. One outstanding selection and a management-only default do not
+    constitute concurrent CPU/GPU execution. The end-to-end execution/receipt consumer, prepared
+    actors, native evidence feedback and real authority remain required under AKU-06/07/08.
+  - [ ] **AKU-06d — connect actual selected actor/profile preparation**: compose the actor owner
+    packet on current published source and test the real UnifiedCampaignDriver-issued selection,
+    public producer registration/reservation, contained fixture execution, exact held cost/stdout,
+    native finish/profile publication and restart. Replace private projection/receipt seeding in
+    acceptance tests; independently test durable budget drift with a valid current producer receipt.
+    Connect proposed advice to the existing private source/build preparation consumer, not dispatch
+    or publication authority. Require selected-work admission before profiler execution and bind
+    profile publication to the registered producer, exact current terminal, held receipt and
+    controller-authenticated stdout; schema-valid caller events are not verified profiles.
+    Nonzero/malformed profile output still settles spent cost without PROFILE_VERIFIED. The actual
+    driver E2E currently refuses mismatched provider proposal/backend/class (AKU-07k); a permissive
+    settlement-validator lambda or private receipt seeding cannot satisfy acceptance.
+  - [x] **AKU-06e — public exact selected-profile materialization**: immutable SelectedProfileWork
+    and UnifiedCampaignDriver.materialize_profile bind catalog, transition, selected proposal,
+    profile request, preparation-plan digest and current controller identity through the public
+    controller callback. ✅ 2026-09-09 — source `c3303474`, main `1accc7f2`; main reproduced
+    24 focused tests and **1,834 tests plus 165 subtests** in the clean combined acceptance tree.
+    The record is deeply immutable advice with execution_authorized=False, not a grant or launch
+    capability. Actor execution, provider metadata and source/build consumption remain AKU-06d/07k.
+    The same checkpoint makes the disk-floor boundary test deterministic without changing storage
+    policy: fixed 4 GiB free is OK at equality and pressured below a 5 GiB floor.
+- [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
+  launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
+  test worker/provider faults hermetically before attaching real compute.
+  - [x] **AKU-07a — durable management-only campaign controller and service**: full resolved-config
+    identity, lifetime store/named-lock ownership, native fsynced START/control events, strict replay,
+    monotonic incarnation/stream/revision and idempotent pause/resume/drain acknowledgments.
+    ✅ 2026-09-09 — main's 217 focused/adjacent tests and 15 subtests pass, plus a 256-case malformed
+    native-event mutation sweep. Closed/replaced/uncertain writers refuse; accepted-but-unpublished
+    commands recover from the journal. The authenticated loopback service owns initial/periodic full
+    snapshot publication independent of dashboard traffic; health ticks advance no scientific cursor.
+    Slow-client shutdown closes owned sockets and shares one join deadline. Arbitrary blocked filesystem
+    I/O remains unbounded: shutdown refuses and retains ownership instead of claiming a clean handoff.
+    Loaded producer identity describes only its enumerated bytecode/constants, not the whole package.
+    Dry CLI does not write; management mode grants no compute and launches no workers. Exact trusted
+    grant-consumer checks create no grants. Real launch intent/container recovery, worker/protocol/broker
+    integration and deployment remain required; management-v1 dashboard integration is now AKU-09c.
+    AKU-07/09 are not complete.
+  - [x] **AKU-07b — owned-worker lifecycle and crash-safe v2 control consumer**: prospective durable
+    acquisition and launch intent, exact grant/container/PID-start/boot identities, isolated pipe-gated
+    bootstrap, bounded stage/teardown lifecycle and accepted-versus-completed pause/drain controls.
+    ✅ 2026-09-09 — main's **307 tests and 15 subtests** pass, including independent descriptor-leak,
+    credential/import-isolation, old-terminal fencing, command-semantic and actual-old-reader probes.
+    Typed denial proves no acquisition; ambiguous provider I/O retains pending ownership for exact
+    recovery. Returned journal errors do not disable owned cleanup, but uncertain durability cannot
+    certify a terminal result. Pause can escalate to drain without a late superseded completion
+    overwriting current control. Indexed replay accepts denied/no-launch generation gaps while
+    refusing rollback; the v2 START fence makes the actual older reader refuse before admission.
+    Snapshot v2 is explicit and management-v1 defaults remain. Provider calls must themselves enforce
+    deadlines: a numerical deadline or fake cgroup test is not live containment proof. The generic
+    parent-side planned-serving guard still refuses until the contained-child bridge is connected.
+    Driver/native-result integration, real authority and deployment remain required for AKU-07.
+  - [x] **AKU-07c — contained planned-worker bridge and parent-verified native result boundary**:
+    fixed bounded child IPC, actual PID-start/boot/container HELLO before payload, isolated bootstrap,
+    immutable deferred capture and all-captures-first parent validation. ✅ 2026-09-09
+    Main independently accepted the same clean 17-file release as AKU-06c; final focused checks
+    passed **42 tests** and Ruff. Parent evidence requests remain bounded after notice draining;
+    arbitrary callbacks cannot run inside the watchdog. Default Linux containment verifies cgroup2
+    mount/device/membership; an ordinary directory is not containment. Terminal result fencing follows
+    durable native acceptance, and exact owned provider-held receipts retain all cost, including a
+    late return that makes the scientific result stale. Provider I/O must enforce its own deadlines.
+    Tiny owned fork/IPC fixtures and real-bootstrap containment refusal are separate tests, not live
+    grants. Source `61a63c42`, main `8cbcce9f`. Driver-to-bridge execution/settlement, observer authority,
+    versioned native attachment and real OP-41 provider/deployment remain required for AKU-07.
+  - [x] **AKU-07d — bounded whole-lifecycle observation producer and serving hooks**: setup/load,
+    placement, health, warmup, measurement and teardown markers enclose each serving unit, with
+    bounded process census, NUMA/affinity/memory/PSI, prepared DSO and explicit target-GPU evidence.
+    ✅ 2026-09-09 — accepted in the same clean release as AKU-04d. Six independent main probes
+    cover loaded code/bound state and shutdown/cost edge cases. Loaded identities include constants,
+    nested code and explicit instance state; unsupported native payload remains unproven. In-window
+    DSO metadata and actual PID-start/boot/container attribution refuse replacement/reuse. Missing
+    trusted foreign/runtime/GPU verifiers stay unknown; no name-based inference classifier or grader
+    is introduced. Cleanup runs on every serving exception. Unjoined readers freeze unknown evidence,
+    retain all incurred reader cost even for dropped samples, and fence successor units; late return
+    cannot mutate the record. Source `04d73260`, main `d75bc9ec`. Native versioned attachment and
+    containing-owner successor enforcement remain assigned AKU-04/07/08 integration work; no live
+    observation, real grant, containment success or deployment is claimed by hermetic tests.
+  - [x] **AKU-07e — actual controller-owned runtime execution and exact held-cost settlement**:
+    one durable driver selection now traverses the real controller admission/acquisition/lifecycle
+    path, contained planned-worker result ingestion and scheduler settlement. ✅ 2026-09-09
+    Main's clean six-file release passed **1,729 loop/Journal/storage tests plus 165 subtests** and
+    **136 focused/adjacent tests**, including an independent shutdown reproducer. No separate
+    injected lifecycle can bypass controller ownership. Exact current-owner denial/pre-engine
+    refusal is positive no-acquisition proof; unseen, old-incarnation or ambiguous state is not.
+    Failed work retains provider-authored cost and settles once. A successful child followed by
+    producer failure retains its immutable terminal/result diagnostically without native scientific
+    acceptance; an unjoined producer fences successors, retains its handle, and makes close retryable
+    rather than claiming teardown. Concurrent execution/close and exact lost-reply retries are
+    covered. Source `59eb3f30`, main `6f869803`. The default parent evidence evaluator remains unknown,
+    so this connector cannot produce a valid comparison. Observation-v2, A2 native invocation,
+    actor/profile/semantic consumers, standalone composition and real provider acceptance remain
+    assigned work. No live inference, service, resource grant or frozen kernel was changed.
+  - [x] **AKU-07f — controller-owned authenticated bounded worker output**: exact current
+    request/plan/lineage/stage/worker/generation/result binding exposes bytes, never a path or
+    runtime handle. Terminal-time file identity and bootstrap-recorded length/SHA-256 bind the
+    output; truncation, replacement, same-inode tampering, missing/nonregular files and lock
+    contention refuse. ✅ 2026-09-09 — main's clean release passes **126 focused/adjacent tests**
+    and **1,768 loop/Journal/storage tests plus 165 subtests**, with Ruff clean. Reads and hashing
+    run outside the controller mutex, followed by an exact owner recheck. Optional output-capture
+    failure preserves the durable terminal and provider-held accounting. Source `47ce0677`, main
+    `6fc75192`. This supplies the actor's output consumer, not authority to apply its advice;
+    native actor/profile persistence and actual execution remain assigned under AKU-06/07.
+  - [x] **AKU-07g — authenticated standalone controls and durable shutdown**: closed command-v2
+    semantics and command-transition-v3 replay bind the full campaign/config/supervisor/request/
+    revision identity. SIGTERM reuses or records one durable drain, fences resume, and retains
+    ownership until actual cleanup. ✅ 2026-09-09 — main reproduced **331 tests plus 15 subtests**
+    and **1,810 loop/Journal/storage tests plus 165 subtests** in a clean composed checkout.
+    The independent restarted-service probe exposed and corrected a client-side retry refusal:
+    control submission preserves historical command bytes while allowing a newer authenticated
+    supervisor to consult its journal; absent old commands still refuse and status pins remain
+    exact. Typed v3 HTTP loopback, bounded transport/token handling and prior shutdown regressions
+    pass. Source `29b8120b`, main `1fea54a5`. The template is deliberately not installed or enabled;
+    runtime/service composition and actual provider/live acceptance are not completed by this slice.
+  - [ ] **AKU-07h — finish standalone run-level recovery and service composition**: automatically
+    retry the retained exact transaction/execution after transient authority or reply loss with
+    bounded backoff; preserve unresolved ownership, stop responsiveness and no duplicate child.
+    Connect the service-owned run thread and typed process-restart reconstruction of unsettled
+    work. Exact autoretry, startup pipe/signal cleanup and finite recovered/settled success handling
+    have working-tree corrections; main reproduced 84 service/runtime/driver tests, including the
+    formerly failing pipe-creation cleanup probe. Finish the actual installed startup materializer
+    and its real inputs; a source-level runtime_factory callback is not standalone acceptance.
+  - [x] **AKU-07i — native-v2 actual-descendant binding and replay**: published the narrowly
+    approved lifecycle event/validator with legacy refusal, current-owner capture, immutable v2
+    artifact references and restart/acquisition closure. ✅ 2026-09-09
+    Every ancestry stat row checks PID/start identity; target, ancestor, ancestry, container and
+    membership are rechecked before append outside the controller/watchdog lock. Expired, reused
+    or reparented identities cannot publish. Loaded-builtin reads are bounded/stability checked.
+    All nineteen final file hashes matched; main's final suite passed 1,905 tests plus 165 subtests
+    and four independent PID/expiry/actual-ROOT-projector probes. Research source 3df1192b,
+    main a3b251bc. Diagnostic refusal and fixture-scored child/v2/restart modes remain separate.
+    Synthetic telemetry proves consumer wiring only; real test-owned cgroup membership/cleanup
+    proves neither controller enforcement nor exclusivity. Production parent witnesses/runtime/GPU
+    adapters remain AKU-07m, resource authority AKU-11, and live acceptance AKU-12. The operator's
+    specific HIGH-impact approval does not cover held-cost/accounting events or frozen kernels.
+  - [ ] **AKU-07j — persist provider-held cost for process-restart settlement**: add the exact
+    versioned held-receipt lifecycle record after OWNED_TERMINAL and validated provider close,
+    before WORKER_RESULT_ACCEPTED/STALE. Restore separate accounting-only indexes and bind lookup
+    to the original unsettled driver selection. Handle crash after held append but before final
+    result with deterministic stale accounting, one durable stale event and one settlement, no
+    provider reacquisition/duplicate child/current measurement acceptance. The additional HIGH
+    validator event (22 upstream, three processes) awaits its own operator approval, distinct from
+    approved descendant capture; low-risk independent work continues. See OP-AKU-HELD in the router.
+  - [ ] **AKU-07k — bind scheduled work through provider admission/accounting**: version the native
+    StageRequest accounting binding with catalog/transition/selection/proposal digests, proposal ID,
+    backend and scheduler stage class; include it in prospective request identity, launch contract,
+    lifecycle events and recovery validation. Verify provider receipts against it before indexing;
+    never rewrite receipts or infer classification from argv, setup stage or an opaque digest.
+    Current provider authorize/close APIs receive no typed backend/class binding, so request-ID-only
+    changes cannot fix profile settlement. The additional HIGH22/three-process validator scope awaits
+    OP-AKU-BIND approval; descendant approval does not cover it. Preserve v1 and old-reader refusal.
+  - [x] **AKU-07l — select and materialize native-v2 work through the public driver**:
+    plan_iteration selects the existing schema-appropriate plan identity builder while preserving
+    proposal recipe identities; materialize_runtime preserves the issued version and checks the
+    v2 loaded-instrument pin against startup execution input. ✅ 2026-09-09
+    Main reproduced 57 public scheduler/materialization tests (CPU/GPU v1/v2, bad instrument pin,
+    wrong recipe identity) and 1,905 combined tests plus 165 subtests. No test upgrades an issued
+    prepared stage. Exact two caller seams were LOW; the shared HIGH-impact serving_arm_identity
+    helper remains unchanged. Native execution/producer acceptance is still AKU-07i/07m, not this
+    selection/materialization slice; no hardware performance claim is implied.
+    Research source c65af942, main 9eafac1f.
+  - [ ] **AKU-07m — derive parent witnesses from sealed native lifecycle evidence**:
+    carry the exact sealed native-observation StoredArtifact through closed v2 completion IPC;
+    reopen it and its lifecycle reference in the bounded parent evidence producer, joined to the
+    parent-issued process/grant/container receipts and frozen plan/recipe/request identities.
+    Derive each supported factual witness separately, retain underlying artifacts/source pins,
+    and reconcile the same receipt during native capture. Generic request success cannot pass
+    correctness, placement or contention. Unsupported purpose/GPU/runtime checks remain unknown
+    until their concrete owning adapters are connected. Preserve v1 completion grammar, exact
+    retry identity and existing grading/noise policy; configuration injection alone is insufficient.
+  - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
+    add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
+    candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,
+    plans/execution inputs, evidence and installed provider/verifier identifiers). No real manifest
+    currently exists; the delivery dry-run only validates a prebuilt test-shaped manifest and
+    does not invoke export/enrollment or emit dashboard projection. Reuse canonical recipe and
+    campaign resolution; do not invent profiles, grants or witness receipts. Retain exact real
+    input/output paths and a runnable command; satisfy AKU-12a's full chain after separately gated
+    generated-export repair. Provider absence is reported debt, not permission to fabricate it.
+- [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
+  before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
+  pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
+  - [x] **AKU-08a — scoped retrieval/route contracts and offline evidence consumer**: exact claim keys,
+    mandatory applicable conflicts before top-k, directed nontransitive transfer, victim-directed
+    noncomposable coexistence and bounded reject-audit decisions. ✅ 2026-09-09 — main's 173 regression
+    tests pass, including 57 focused evidence tests. Cached reuse binds intended use, full support basis,
+    relevant dependency content/generation/frontier, explicit semantic buckets, epoch and registered
+    rule version; new broader conflicts, removed findings, missing state and quarantine/outage cannot
+    preserve obsolete eligibility. Unrelated buckets stay reusable with O(bound dependencies/scopes)
+    admission checks. Replay re-derives fences but cannot restore callback authority from JSON. Raw
+    grade, retrieval completeness and supported use remain separate; absent registered verifiers fail
+    closed. The offline CLI grants no execution authority. V1 broad lookup is deliberately exact in
+    mechanism/model/quant/workload/effect question; unsupported candidate universes cannot be certified.
+    Actual journal/ClaimTuple producer, asynchronous cursor/invalidation feed, policy adapters, planner,
+    audit budget and scheduler consumers remain required; AKU-06/08 are not complete.
+  - [x] **AKU-08b — strict prospective arm reader and existing corpus consumer**: full closed
+    plan/view/native request and attempt rederivation, exact stored-byte verification, shared ClaimTuple
+    projection and native-family-only deduplication. ✅ 2026-09-09 — main's 90 focused tests pass
+    with the explicit research-root fixture enabled, including the real research producer → root reader and
+    three malformed/tampered regression probes. Identical standalone/journal carriers coalesce by full
+    measurement ID plus digest; conflicting carriers emit neither and report refusal. Other source
+    families retain their existing semantics. Grade remains the shared ladder; protocol/current use
+    and raw attestation are separate. Missing witnesses emit no scalar. No corpus was ingested; native
+    controller events are now AKU-03c; bounded asynchronous feed and registered planner-use consumers
+    remain required.
+  - [ ] **AKU-08c — connect canonical v2 grade receipts and bounded live evidence feedback**:
+    retain the registered projector and sole ClaimTuple grader; write immutable receipts from
+    reopened native-v2 artifacts and reproject them at eligibility, discharging only the exact
+    missing-adapter refusal. No actor string/dict supplies grading authority. Complete actual
+    feed/frontier/ACK/invalidation consumers and the final producer-to-projector path. Main's 56
+    projector tests include resealed PID mismatch refusal and existing v1 producer compatibility;
+    they do not establish native-v2 end-to-end acceptance. Keep experimental champion selection
+    separate from deployment authority; always-Unavailable adapters do not complete this task.
+  - [ ] **AKU-08d — execute exactly the pinned canonical source bytes**: replace separate hash/path
+    execution in the semantic owner with bounded stable regular-file reads and compile those exact
+    verified bytes, bypassing stale timestamp-valid bytecode. Preserve import metadata and restore
+    module state on failure; concurrent constructors must not cross-wire ClaimTuple registration.
+    Main reproduced one failing stale-pyc test: the current source SHA matches new bytes while the
+    loader executes old cached code. Add permanent replacement/cache/failure/concurrency regressions
+    before publishing the semantic receipt packet; no grading-policy change is authorized.
+- [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
+  commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
+  health, hub registry/probes/freshness; no hub proxy or second dashboard.
+  - [x] **AKU-09a — stop/join worker heartbeat before terminal publication**: no late `running` state;
+    startup/claim/profile failures publish failure; original errors survive status errors; fake-race tests
+    prove the real run path uses the lifecycle guard.
+    ✅ 2026-09-09 — one deadline bounds close-lock/write-lock acquisition and thread join. Timeout
+    refuses terminal publication; an arbitrary synchronous filesystem write itself is not claimed
+    time-bounded. Heartbeats retain `starting` until the run advances; final artifact is durable before
+    `complete`, and failure snapshots retain available outcomes. 46 focused lifecycle/status tests pass.
+  - [x] **AKU-09b — current versus historical accumulator rendering**: both existing hub render sites
+    withhold magnitude/progress unless validity is current and the threshold is positive/finite.
+    ✅ 2026-09-09 — missing/stale/legacy magnitudes remain labelled history; membership/cadence remain
+    visible. Stale threshold signals are producer-reported/unverified, not fresh warrant. Main's Node
+    DOM harness covers these combinations (69 tests, 5 subtests); this is not a browser or live-soak test.
+  - [x] **AKU-09c — existing hub consumes coherent management-v1 snapshots and direct controls**:
+    explicit campaign/config selection, closed snapshot/ACK validation, monotonic stream fencing,
+    separate producer/activity/science clocks and independently dated evidence cards.
+    ✅ 2026-09-09 — main's full hub acceptance passed **414 tests and 125 subtests**; combined research
+    service/controller/guard acceptance passed **198 tests and 4 subtests**. One lazy bounded health
+    probe owner rejects stale/late/mismatched replies; selected unified health is not vetoed by absent
+    legacy state. Bearer tokens remain in tab memory and commands go directly to the authenticated,
+    exact-origin producer gateway, never through a hub proxy. Browser deadlines cover headers and body;
+    uncertain ACKs retain the exact retry, while double-clicks serialize. The service bounds trickling
+    connections with one owned watchdog and identifies loaded transport code with stable projection.
+    Existing registry/nav/probes/freshness remain the surface; no second page. Legacy fixture repairs
+    retain producer/anchor/authority assertions without hard-coded current-host percentages or age.
+    V1 remains management-only with no active worker or compute authority. Gateway/service deployment,
+    worker-aware v2 integration and unattended live reliability remain separate acceptance work.
+  - [x] **AKU-09d — existing hub consumes the actual worker-aware v2 producer**: strict closed
+    snapshot/result versions, monotonic worker/stream identity, lifecycle-aware semantic health and
+    exact accepted-versus-completed controls, retaining v1 as a distinct management-only contract.
+    ✅ 2026-09-09 — main's **296 tests and 79 subtests** pass, including real research-controller
+    snapshots and execution of the actual page JavaScript. Acknowledged incomplete pause can escalate
+    to a distinct drain; failed request construction retains the old pending pause, uncertain ACKs
+    retain exact-ID retry, and late ACKs cannot erase a newer completion. Python/page validators agree
+    on finite result semantics, acquisition-pending identities, permitted null-worker transition
+    windows, protocol-version matching and same-campaign downgrade refusal. Cross-repo fixtures use
+    explicit/standard checkout discovery and a post-release worker barrier; ordinary v2 unit tests
+    remain independent of the optional checkout. The broader dashboard run separately reproduces
+    **15 baseline-proved legacy failures** (11 tests plus four subtests); these are not v2 acceptance.
+    No gateway configuration, service activation, resource grants or live reliability claim is made.
+    Unified planner/resource/evidence projections and unattended deployment remain AKU-09 work.
+  - [x] **AKU-09e — existing hub consumes closed unified snapshot v3**: scheduler, resources,
+    actors, evidence, candidate and targets render within the existing `/loop` page with strict
+    independent Python/page validation. ✅ 2026-09-09 — main reproduced **96 focused tests** against
+    the published research producer, including execution of actual page JavaScript. Python rederives
+    accounting content identity; page validation checks closed nested shapes, statuses and values.
+    Unknown dependencies degrade a live producer without disabling identity-matched controls; a
+    drained snapshot with an unknown producer remains history. V1/v2 compatibility, exact retry and
+    same-campaign downgrade fences remain. Null grants/candidate/evidence values stay unknown, and
+    declared capacity is not a grant. No new route, proxy, registry row, gateway configuration, service
+    activation or live reliability claim is made; connected consumers and deployment remain AKU-09.
+- [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
+  invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
+  maintenance and documented validated CLI/config examples.
+  - [x] **AKU-10a — retained-artifact closure and truthful legacy cleanup consumer**: immutable
+    root/dependency snapshots, deterministic expiry previews through the existing storage policy,
+    and exact owned-path legacy pruning with recoverable failure reporting.
+    ✅ 2026-09-09 — main's **174 tests and 13 subtests** pass. Maintenance rederives closure instead of
+    trusting a rehashed plan; permanent classes, shared paths, ancestor/descendant overlaps and their
+    transitive dependencies remain retained. Missing/uncertain closure emits no expiry candidates.
+    Legacy cleanup binds captured/opened parent identity, uses private 0700 descriptor-bound quarantine,
+    preserves unexpected replacements, closes descriptors on I/O errors, and reports only actual owned
+    remaining content as recoverable. Reclaimed bytes are unknown, not a fabricated fixed estimate.
+    Current `loop.run` deliberately withholds pruning with `retention_unknown`; even complete caller
+    JSON cannot enable unified deletion. Native current-controller roots, immediate generation checks,
+    existing tombstone-before-bytes expiry and journaled maintenance results remain required. Tests
+    use temporary fixtures only; no research artifacts were deleted and AKU-10 remains open.
+  - [x] **AKU-10b — typed native retention consumer and exact tombstone recovery**: bounded
+    candidate/native-root projection feeds existing retained-artifact closure and dry expiry policy;
+    actual deletion requires a held generation/root-exclusion capability. ✅ 2026-09-09 — main
+    reproduced **250 tests and 82 subtests**, including actual temporary CandidateTransactions,
+    ArtifactStore and native Journal close/reopen recovery. One bounded tombstone index per operation
+    checks complete descriptor/preconditions/policy identity; intent-after-removal recovery cannot
+    delete twice. Generation, source/branch, protected kernels, changed content and shared DSO/ancestor
+    roots fail closed. Sequential callers prove idempotence, not concurrency. Source `1be3cf79`,
+    main `e678a2e2`. Default execution remains unavailable pending the assigned actual maintenance
+    exclusion/native-root/provider-accounting consumer; slow I/O must not hold the controller mutex.
+    Only disposable fixture bytes were deleted; no research artifacts or real cleanup were touched.
+  - [x] **AKU-10c — versioned historical migration and verified store exclusion**: bounded
+    noncreating dry-run and explicit immutable snapshot import reuse read-only accumulator recovery,
+    actual ExperimentStore rows and the existing content-addressed ArtifactStore. ✅ 2026-09-09
+    Main reproduced **110 targeted tests**; the combined clean eleven-file retention/migration
+    release passed **1,750 tests and 165 subtests**, with **68 final focused tests** and Ruff clean.
+    Public reentrant store exclusion serializes nested writes and same-root threads/processes;
+    closed/replaced roots refuse. URI-escaped SQLite paths, active WAL/SHM, changing source frontier,
+    strict row/byte bounds, unsupported versions and source/destination aliases are tested. Emitted
+    snapshots must pass their installed v1 reader before publication, and exact retries preserve
+    source bytes. Historical evidence stays `unknown_legacy`; no candidate/validated/serving
+    authority is created. Source `1be3cf79`, main `e678a2e2`; live import/cutover and future durable
+    legacy database schema marking remain outside this completed snapshot-reader slice.
+  - [ ] **AKU-10d — finish native maintenance ownership and uncertain-provider recovery**:
+    complete fresh admission and real execution using the native catalog and provider below.
+    The durable ownership/replay slice is published as AKU-10e; absence of the remaining roots
+    or actual provider must continue to refuse fresh cleanup, not become an eligibility bypass.
+  - [x] **AKU-10e — durable maintenance ownership, replay and shutdown fences**: short controller
+    transactions retain exclusion across unlocked provider/filesystem work; uncertain acquisition,
+    tombstone publication and settlement preserve recovery ownership. ✅ 2026-09-09
+    First holds bind to their token; completed accounting reconstructs the exact receipt digest
+    and matches IO_COMPLETE cost; fresh and recovery intents enforce their distinct token chains
+    and clear prior hold/cost state. Receiptless abort refuses; valid legacy non-abort bytes replay.
+    Worker/candidate/new-native publication and clean shutdown cannot bypass owned exclusion.
+    Clean six-file acceptance passed 1,873 tests plus 165 subtests; main's composed native/maintenance
+    tree passed 1,899 plus 165, with 39 maintenance tests and six independent probes. Research
+    source c5525fb8; fresh catalog/provider execution and real artifact deletion are not completed.
+  - [ ] **AKU-10f — connect complete native retained-artifact/dependency catalog**: populate the
+    controller-owned catalog from existing worker/evidence/candidate/DSO/RUNPATH/physical-root
+    write hooks; prove completeness and exact protected/live dependencies before fresh admission.
+    CandidateTransactions.retention_view currently verifies candidate manifests, then refuses
+    incomplete external coverage. Caller-supplied roots or membership cannot replace owner records.
+  - [ ] **AKU-10g — connect real maintenance holds and accounting**: implement the broker-owned
+    hold/refresh/settlement provider and concrete controller backend, preserving bounded unlocked
+    I/O, exact abort/completion receipts and uncertain replay. Default execution remains unavailable;
+    source publication does not authorize live deletion or provider activation.
+- [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
+  finalise → promote → reboot gate. Exact pending choice: whether the operator's new implementation
+  instruction delegates broker-code work now while preserving live activation gates. No answer inferred.
+- [ ] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
+  compute authority; applicable post-BIOS calibration and owning serving protocol. Bounded mixed campaign
+  and eventual soak demonstrate the actual CPU/GPU/candidate paths, not only helpers or fixtures.
+  - [ ] **AKU-12a — complete standalone dry run**: exercise the installed unified entrypoint,
+    real production export and explicit candidate enrollment, planner prerequisites/budgets,
+    recovery and dashboard/control projections without acquiring compute or inventing grants.
+    Retain the exact command/config, loaded code identities, output and refusal/debt evidence.
+  - [ ] **AKU-12b — five-loop monitored acceptance and bug-fix rerun**: after applicable real
+    resource and operator gates, complete five monitored unified research iterations through the
+    actual CPU/GPU execution path; retain selections, held-resource receipts, lifecycle samples,
+    results, evidence updates, dashboard freshness/control observations and teardown checks.
+    Fix failures and rerun affected acceptance; five mock/helper iterations do not satisfy this
+    operator-requested goal. Keep performance/validation claims within the owning protocol.
+  - [ ] **AKU-12c — repair and verify canonical generated export inputs**: real production export
+    currently refuses stale descriptor/compiled-priors provenance. The supported writer is
+    stack_change_pipeline.py update, regenerating lean registry, descriptors, priors, procedure
+    enums and summary while preserving declared full/split instance mode; bare compile_stack_priors
+    would lose the split mode. The isolated generated-file repair awaits explicit approval for its
+    HIGH-impact scope (66 upstream); no compiler logic, service reload or frozen kernel change.
+    Verify reproducibility and exporter closure, then supply exact artifact pins/configs to AKU-12a.
+    See OP-AKU-STACK in the router; no stale digest bypass or fabricated export is permitted.
+
+### Execution discipline and retained decisions
+
+Use existing classes/functions where their contract is sufficient; new helpers must gain explicit
+consumers before the corresponding parent slice is complete. Unit-tested interfaces alone do not
+complete a service, broker, adapter or measurement gate. No deployment/restart is hidden in publication.
+Defaults not fixed by policy are versioned configuration with dry-run validation; do not invent a
+statistical acceptance threshold, ratification, resource grant or unsupported production capability.
+
+The primary built-in dispatcher retained completed review threads; its implementation team uses one
+built-in sol-medium worker and two explicitly configured `codex exec` workers. On the operator's
+2026-09-09 request, a separate CLI coordinating session started three additional sol-medium workers
+for dashboard v3, actor/target-profile preparation and the bounded belief feed. Its isolated root and
+research worktrees are `autokernel-consumers-{root,research}-20260909`, on
+`lane/autokernel-consumers-20260909`, starting at root `519acd08` and research `bb0c2c38`.
+The secondary team cannot publish changes or edit primary core files without a precise seam release;
+released core hunks stay in its isolated worktree and are applied only after primary review. The
+primary owns final integration and publication. Exact shared seams are coordinated before edits,
+not merged by assumption. A third coordinating CLI session, also requested by the
+operator on 2026-09-09, started three sol-medium workers for candidate-validation consumption,
+versioned legacy migration, and standalone CLI/service packaging. It owns only the isolated research
+worktree `autokernel-delivery-research-20260909`, branch `lane/autokernel-delivery-20260909`, starting
+at `bb0c2c38`; core and secondary-team files remain read-only except for explicitly released,
+disjoint core hunks. The secondary dashboard worker moved
+to retention after its package was frozen for review. The nine-worker arrangement is scheduling,
+not a claim of completed source, live execution or greater measurement authority.
+GitNexus impact results are supplemented by actual caller inspection and adversarial integration tests.
+
+Every team performs per-package boundary wrap-up: owned documentation, exact validation evidence,
+file hashes, remaining integration tasks, and proposed ledger/progress text. Team leads independently
+review those handbacks and label them `awaiting_primary_acceptance` until the primary applies shared
+handoff/index/progress updates and publishes accepted paths. No team waits for all peers before
+submitting a completed package, and no unreviewed draft becomes a published checkpoint.
+
+Per-task handoff/progress/checklist/publication follows the wrap-up workflow. Index pruning, handoff
+compaction and wiki compilation are not part of this implementation request's routine checkpoints.

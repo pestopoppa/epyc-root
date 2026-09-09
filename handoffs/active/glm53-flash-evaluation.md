@@ -1,17 +1,30 @@
 # GLM-5.3-Flash Evaluation (glm5next)
 
-**Status**: IMPLEMENTED / CPU-VALIDATED 2026-09-09 — Q8 prefill and reference-correct parallel MTP pass canonical48 paired checks. Observed +22.6% long prefill, +24.8% repeated512 MTP decode and +41.1% on the24-prompt workload. Qwen reachability audit complete; broader role-fit remains T4.
+**Status**: CORE IMPLEMENTED / CANDIDATE NOT ACCEPTED 2026-09-09 — text-only
+`glm5next` and native depth-3 MTP pass exact rollback/replay and all 31 full-model
+plain/MTP trajectory pairs with real draft rejection. Candidate `c463f601b` is
+**not** the canonical champion: `ef81196d5` remains unchanged. The exact
+historical-harness CPU check measured 32.152575 tokens/s against the historical
+43.280708, so CPU performance admission remains unresolved; the matched GPU
+DFlash2 sanity check measured 79.598706 against 79.245255. The earlier GLM
+prefill/MTP gains remain historical candidate observations, while the subsequent
+expert, batched-Q8 and CPY experiments produced no additional full-model gain and
+remain disabled or removed. Four `measured_null` records and the source/evidence
+bundle are now in AutoKernel memory for future CPU investigation. DSA semantics
+(T2) and role/quality fit (T4) remain open; no inference job remains queued by
+this session.
 **Created**: 2026-08-31 (spun out of the OP-8 KILL ruling; inherits the GLM-MoE-DSA findings)
 **Priority**: MEDIUM — one of the two operator-named novel-under-test models (with qwen3.8-next-flash)
 **Categories**: inference_serving, local_inference, kernel_architecture
 **Workstream**: Inference Acceleration
 **Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-69)
 **Related**:
+- [AutoKernel source handoff](../../docs/reference/models/glm53-autokernel-handoff.md) — exact private-fork source, build/launch recipe, rejected experiments and mandatory MTP gates
 - [`../completed/glm51-reap-cpu-evaluation.md`](../completed/glm51-reap-cpu-evaluation.md) — the
   GLM-5.2 evaluation (KILLED 2026-08-31, artifact deleted): the evidence record this handoff inherits from
 - [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) — owns the generic DSA
   D2/D3 sparse-attention profiling gates (do not duplicate them here)
-- [`tree-draft-forward-port-plan.md`](tree-draft-forward-port-plan.md) — native GLM MTP head port scoping
+- [`tree-draft-forward-port-plan.md`](../completed/tree-draft-forward-port-plan.md) — native GLM MTP head port scoping
 
 ## Artifact identity
 
@@ -129,9 +142,10 @@ screen is3/5 versus2/5, not broad quality certification. Production is unchanged
 Current tested recipe remains native-MTP depth3. The depth2 diagnostic is
 rejected: exact output diverges at index58 and its single observed rate is
 lower. Do not generalize the passing depth3 evidence to arbitrary draft widths.
-The next proposed kernel work is reference-exact multirow expert reuse, then
-exact batched Q8, then measured graph/worker scheduling. Profiling shares are
-not prospective speedups; no performance kernel was developed in this follow-up.
+The proposed expert, batched-Q8, and graph-worker experiments are now complete.
+All passed their bounded correctness gates, but none demonstrated a full-model
+gain. Their default-off/reverted implementations and final AutoKernel source are
+summarized in the [source handoff](../../docs/reference/models/glm53-autokernel-handoff.md).
 
 ## Three-lever implementation follow-up — 2026-09-09
 
@@ -143,13 +157,15 @@ retain only correctness-passing improvements. Use five repeated 512-token
 continuations per arm for short and 2,029-token prompts, plus matched prefill.
 Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
 
-- [ ] T11 — Implement and validate exact multirow Q4_K/Q5_K expert reuse.
+- [x] T11 — Implement and validate exact multirow Q4_K/Q5_K expert reuse; reject
+  retention after the exact one-request short full-model screen showed no gain.
+  ✅ 2026-09-09
 - [x] T11a — Implement the guarded expert-kernel experiment and pass its compiled
   bitwise operator gate at the real GLM Q4_K/Q5_K dimensions. The test compares
   mapped multirow buckets with the serial Ny=1 path at 48 threads, including
   noncontiguous routes, row tails and chunk offsets; Q4_K 49,152/49,152 and
-  Q5_K 98,304/98,304 outputs match exactly, with branch traces. Full-model and
-  performance gates remain T11/T14. ✅ 2026-09-09
+  Q5_K 98,304/98,304 outputs match exactly, with branch traces. T11c and T14
+  record the completed full-model and final regression disposition. ✅ 2026-09-09
 - [x] T11b — Run the five-pair operator microdiagnostic for expert reuse at the
   GLM dimensions. All 80 type/width/arm/round cells have exact paired output
   hashes. Median serial/optimized ratios for widths 2/3/4 are
@@ -162,7 +178,9 @@ Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
   verification events with rejection. Expert reuse reaches its rows=2 branch
   but measures 9.8985 versus 9.7305 output tokens/s (0.9830x). Keep the lever
   off; this screen does not justify a five-repeat expert-only run. ✅ 2026-09-09
-- [ ] T12 — Implement and validate exact batched native Q8 verification.
+- [x] T12 — Implement and validate exact batched native Q8 verification; keep
+  it default off after the balanced five-request short full-model screen showed
+  no gain. ✅ 2026-09-09
 - [x] T12a — Rebuild and repeat the Q8 operator gate for the specialized mode-1
   source/test corrections. That binary passes 4/4 cases and CTest with
   an active rows=4 branch witness, covering Ny2/3/4, native and converted Q8,
@@ -175,37 +193,66 @@ Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
   improve 1.073x for MLA and 1.023x for output projection. These bounded
   operator observations warrant the full-model screen, not enablement.
   CPU library SHA256 begins `e8c93f6c`; both modes remain default off. ✅ 2026-09-09
-- [ ] T12b — Complete paired Q8 mode comparison and retain or reject the lever.
-  The first exact microdiagnostic is negative (0.960x MLA, 0.943x projection);
-  treat it as directional. Mode 2 has cleared its separate compiled and
-  paired micro gates (T12c); its first full-model pair is correctness-only
-  because the off arm overlapped substantially higher unrelated CPU work.
+- [x] T12b — Complete the paired Q8 comparison and reject retention. A balanced
+  A3/B3/B2/A2 run produced five measurements per setting: baseline mean/median
+  9.2318/9.2866 and Q8 mode-2 mean/median 9.0863/9.0452 tokens/s, ratios
+  0.9842/0.9740. Outputs, stable request projections, MTP counters and actual
+  rejection events match; comparable contention and a clean second Q8 block
+  confirm that the short gate did not clear. ✅ 2026-09-09
 - [x] T12d — Run the first full-model mode0/mode2 reachability and correctness
   screen inside the same UD-Q4_K_XL model. Both arms match the prior 512-token
   trajectory and MTP counters, with real draft rejection; mode2 reaches its
   rows=2 branch. The apparent 1.0497x ratio is rejected for attribution because
   median unrelated load was 8.41 versus 1.82 CPU-equivalents. A clean mode0
-  bracket reaches 9.3046 versus mode2's 9.4659 tokens/s (1.0173x); this remains
-  a single bracket, so the interleaved decision gate stays open. ✅ 2026-09-09
-- [ ] T13 — Measure node-level worker waits and validate a bounded scheduling change.
+  bracket reaches 9.3046 versus mode2's 9.4659 tokens/s (1.0173x); this single
+  bracket was superseded by the balanced rejection result in T12b. ✅ 2026-09-09
+- [x] T13 — Measure node-level worker waits and validate a bounded scheduling
+  change. Measurement completed; route validation rejected the candidate before
+  retention. ✅ 2026-09-09
 - [x] T13a — Complete the node-level worker audit. The mixed MTP target topology
-  exposes 34 recurrent-state copies totaling 11.132 ms (4.36% of sampled wall
-  time); their `ne01=1` partition assigns four snapshots to one worker. This is
-  an opportunity bound, not a speedup. A guarded outer-row partition fix now
-  owns T13's remaining correctness and timing gates.
+  records 34 recurrent-state copies totaling 11.132 ms (4.36% of sampled wall),
+  but their source and destination are contiguous. They already use the
+  48-worker block-partitioned path, so the initial `ne01=1` single-worker claim
+  is retracted. The measured copy cost remains valid; it is not an opportunity
+  bound for the rejected outer-row patch.
   [Audit](../../docs/reference/models/glm53-cpu-worker-audit-20260909.md). ✅ 2026-09-09
-- [x] T13b — Implement guarded outer-row CPY scheduling with conservative
-  overlap fallbacks and pass separate/fallback copy tests on committed source
-  `068db793f`. Expert, Q8 projection, and both CPY CTests pass in the final
-  build; serving snapshot is pinned to version 10315 and CPU library
-  `f820fe5a`. Model rejection/replay and performance retention remain T13/T14.
-  ✅ 2026-09-09
-- [x] T13c — Run the bounded canonical-48 copy microbenchmark: five AB/BA
-  cycles (10 exact pairs, 50 repetitions per arm) preserve full backing bytes
-  and canaries. Mean copy time is 0.464135/0.183828 ms off/on (2.524827x),
-  median ratio 2.430912x. This is copy-only evidence; model retention remains
-  gated by T13/T14. Benchmark-only commit `a4ec393a9` is pushed. ✅ 2026-09-09
-- [ ] T14 — Retest the integrated retained candidate against the preserved baseline.
+- [x] T13b — Implement and correctness-test the default-off outer-row CPY
+  experiment at `068db793f`, then audit actual model reachability. The inventory
+  contains 408 qualifying small F32 `[3,8192,1,1]` copies already parallel over
+  8192 rows; the first ACTIVE witness verifies this route class, while
+  contiguity proves the branch cannot reach the 34 large state copies. The experiment was rejected
+  and removed in private commit `f8e2668b6`; its overlap/fallback tests remain
+  a valid record of the discarded implementation. ✅ 2026-09-09
+- [x] T13c — Run the bounded canonical-48 copy microbenchmark and model screen.
+  The synthetic padded, noncontiguous `[1048576,1,4]` case was byte-exact and
+  measured 0.464135/0.183828 ms off/on means (2.524827x; median ratio 2.430912x),
+  but that layout is absent from the profiled state copies. The five-arm model
+  selector was exact but its opening/closing controls drifted 4.08%; it supports
+  no CPY or Q8 throughput claim. Benchmark-only commit `a4ec393a9` preserves the
+  rejected micro evidence. ✅ 2026-09-09
+- [x] T14 — Complete integrated selection and mandatory speculative regression
+  gates. The five-arm selector was exact but drifted; the balanced Q8-only repeat
+  rejected the last candidate lever. Final `f8e2668b6` regression executables
+  pass both aliases, rollback, used-MTP restore, pooled state, long export and
+  six real-model row-exact comparisons. No new lever was retained, and the long
+  performance phase was not run after the short gate failed. ✅ 2026-09-09
+
+Final evidence and the exact branch intended for future discovery are collected
+in the [AutoKernel source handoff](../../docs/reference/models/glm53-autokernel-handoff.md).
+
+## Champion integration — operator-authorized 2026-09-09
+
+- [ ] T15 — Fold the GLM core through `c463f601b` into the existing AutoKernel champion lineage, build CPU/HIP with the champion recipe, validate GLM native-MTP and existing-model regressions, and refresh the admitted champion identity/standing. Validation worktree: `/mnt/raid0/llm/llama.cpp-experimental-glm53-champion-20260909`, branch `ak/champion-glm53-candidate-20260909`; created from current champion `ef81196d5` by fast-forward. The rejected experiments remain at `f8e2668b6`. **Disposition:** do not admit `c463f601b`; the matched CPU result remains below the historical champion observation. `ef81196d5` stays canonical. Any causal investigation or revised candidate is future AutoKernel work, not a pending inference task in this session. Frozen production is unchanged.
+
+- [x] T15a — Create the champion-descended GLM core candidate, build matching CPU control/candidate and the house-flag HIP candidate, and pass the freshly built GLM alias/rollback/restore/pool/long-export and six exact real-model phase comparisons. Evidence: `final-spec-regressions-champion-candidate-c463f601b-20260909T104706Z`. Full-model trajectories subsequently passed T15b; existing-model sanity is recorded in T15c/d, with CPU admission held. ✅ 2026-09-09
+
+- [x] T15b — Validate full-model GLM plain/native-MTP parity on the fresh core candidate at canonical 48 threads. All 31 trajectory pairs match exactly; plain has zero verification events, while MTP records 2,804 verification events, 5,419 accepted and 2,949 rejected draft tokens. Evidence: `/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-core-pair-c463f601b-20260909T105800Z/comparison-audit.json`. Both owned servers exited with rc0 and are absent. The post-hoc audit preserves null plain counters and accepts them only with zero plain verification events; no serving data was rewritten. Existing-model functional sanity is recorded in T15c/d; CPU throughput still blocks official champion admission under T15. ✅ 2026-09-09
+
+- [x] T15c — Complete the operator-narrowed single-stream sanity checks: Qwen3.8-Flash-Next (`qwen4exp`) CPU native-MTP, and the distinct Qwen3.8-27B (`qwen35`) GPU DFlash2 target. Flash-Next MTP matches all 24 historical text/count/finish/draft trajectories at 31.0587 tok/s; 27B DFlash2 passes the preliminary, differently configured smoke at 65.0559 tok/s (superseded for performance comparison by T15d), acceptance 0.6427, and 1.963× its same-build no-spec control. GPU residency and owned-process cleanup pass. Evidence: `/mnt/raid0/llm/tmp/qwen-glm-core-fold-20260909/candidate-c463-serving-20260909T115700Z/FAILFAST-RESULT.md` and `/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-gpu-c463f601b/dflash-smoke-run.json`. CPU performance is unresolved: the new plain/MTP observations are lower than historical instrumented results, whose own report flags an unexplained high regime. These sanity passes do not certify unchanged CPU throughput. No additional repeats or standing campaign were run after the operator narrowed scope; official canonical admission remains T15 and has not occurred. ✅ 2026-09-09
+
+- [x] T15d — Repeat the two candidate-only sanity tests through last night's original instruments, as requested. GPU27B DFlash2:79.5987 vs79.2453 tok/s, matched recipe/prompt/warmup, residency proven. CPUFlash-Next MTP:32.1526 vs43.2807 tok/s (-25.71%), all24 historical output/draft trajectories exact and original host screens CLEAN. The mismatched GPU65.06 smoke is superseded for performance comparison; CPU performance still prevents official admission under T15. Evidence and complete paths are in the dated progress entry's “Matched historical-harness retest” section. All owned inference exited; no additional repeats. ✅ 2026-09-09
+
+- [x] T15e — Seed the completed GLM work into the live AutoKernel memory without changing the champion. Four `measured_null` records were inserted and independently retrieved under campaign `ak-external-glm53-core-20260909`; the normal loop reads inbox `24-glm53-core-c463-external.md`. The self-contained source/evidence bundle and receipt are `/mnt/raid0/llm/autokernel/loop-memory/external/glm53-core-c463-20260909/ingestion-receipt.json`. Idempotence passed: four initial inserts and zero duplicate inserts. These cross-epoch records cannot advance the champion. ✅ 2026-09-09
 
 ## Constraints
 

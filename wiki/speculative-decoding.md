@@ -1762,6 +1762,49 @@ Key findings:
 - [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/gpu-candidates-surface-qwen38-update.md)
   — INF-61, the prior server-side n-max 8 optimum this independently corroborates on a second instrument.
 
+## Compiled Update — 2026-09-09 (incremental): a concurrency sweep confounds itself if the prompt set moves with `np`
+
+**Confidence: verified** (source-read of the harness; the affected sweep is our own).
+
+PR #70 merged upstream 2026-09-09 (`3097ca3`). Two follow-ups submitted the same day:
+**PR #75** (MI210 `-np` sweep, supplementary section — not a table row) and **PR #76** (a `Quant`
+column for the community table). The champion tip behind #75, `ef81196d5`, is **public and
+rebuildable** at `pestopoppa/llama.cpp` branch `ak/champion/llama-cpp-0db32c06e3e5` — unlike #70's
+`9e18beb0`, so the "not stock upstream" caveat now costs a reader a build, not a black box.
+
+**The transferable finding is about the instrument, not the card.**
+`autokernel/loop/serving.py` fires **one request per slot** from a fixed prompt list
+(`_PROMPTS[i % len(_PROMPTS)]` over `range(recipe.np)`). The prompts are deliberately distinct so
+the slots do not share a KV prefix — correct for measuring real per-request work — but it means:
+
+> **`np=1` measures one prompt and `np=8` measures eight. Any comparison ACROSS `np` is confounded
+> with the prompt mix.**
+
+Scope it precisely, because the harness is not broken: a kernel A/B at a **fixed** `np` fires the
+identical prompt set in both arms and the mix cancels exactly. The confound exists only when `np`
+is itself the swept variable. That matters here because prompt dependence on this hardware is
+large — PR #70 measured a **2.4x span across three prompts** at n-max 8 on the same card, with the
+prose prompt gaining nothing at all.
+
+**Rule: a concurrency sweep must hold the prompt set fixed across slot counts, or state that it
+did not.** The 2026-09-08 maximum-performance sweep did not; the turnover it reports between np=4
+and np=8 is large and monotone across every launch, so it is unlikely to be a pure artifact, but
+the sweep cannot separate the two effects. A prompt-matched sweep is the experiment that settles
+it.
+
+Two smaller carries from the same review:
+- **"Aggregate tok/s" needs its definition attached.** Ours is the sum of the concurrent slots'
+  own `timings.predicted_per_second`, which deliberately excludes scheduling-tail jitter — so it
+  reads *higher* than a client-side wall-clock aggregate of the same run. Cross-instrument
+  comparison without stating which is which is meaningless.
+- **Dispersion is not monotone in slot count**: p95 deviation over launches ran 0.44% (np=1),
+  1.60% (np=2), 3.33% (np=4), 1.82% (np=8). np=4 is the least stable point measured; there is no
+  trend to quote from four points at n=3.
+
+- [`2026-09-09-adhoc-qwen38mtp.md`](../progress/2026-09/2026-09-09-adhoc-qwen38mtp.md) — the two
+  PRs, the four defects caught in pre-submission review, and the number reconciliation
+  (np=4 is 167.76, n=3; the 167.117 figure is R23-58's THP OFF arm, n=24).
+
 ## Compiled Update — 2026-09-03 (INF-70 Axis E): eliminating the rollback checkpoint, and why acceptance rate is not evidence of exactness
 
 ### E2b-2: 44.7 GiB of memcpy removed, +3.09% decode
@@ -1991,3 +2034,37 @@ weight read across accepted tokens — not raising GB/s.
 - `/mnt/raid0/llm/tmp/inf70/agents/b10/REPORT.md` — the L3 measurement, coverage analysis, break-even correction
 - `/mnt/raid0/llm/tmp/inf70/agents/b10-survey/REPORT.md` — FR-Spec, VocabTrim, NanoSpec, EAGLE-3, llama.cpp #25187
 - `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## Compiled Update — 2026-09-09: Qwen3.8 community submissions preserve the DFlash2 scope and expose an `np`-sweep confound
+
+Two community follow-ups were submitted without rerunning inference. PR #75 adds the existing MI210
+Qwen3.8-27B DFlash2 concurrency sweep as a supplementary section rather than a main-table row, because
+the repository's main table uses a different client instrument, speculative path and kernel identity.
+The submitted values are 79.2, 109.4, 167.8 and 179.1 aggregate tokens/s at `np=1/2/4/8`; aggregate here
+means the sum of per-slot server-reported rates and excludes client-side scheduling tail. The submission
+also records context 16,384, warmup/sampling details, the unstable-clock launch at `np=8`, and that
+dispersion is not monotone: `np=4`, rather than `np=8`, was the least stable measured point.
+
+A source audit found that `calibrate_floor` changes the prompt set when `np` changes: it maps one distinct
+prompt to each slot, so `np=1` sees prompt 1 while `np=8` sees all eight. Fixed-`np` kernel A/Bs remain
+properly prompt-matched because both arms receive the same set. A sweep whose independent variable is
+`np` cannot separate concurrency from prompt mix. The observed 4-to-8 turnover is consistent across its
+three launches, but the causal concurrency claim stays bounded until a prompt-matched sweep is authorized.
+No live run or pending process was created by this follow-up.
+
+PR #76 adds a quantization column and sorts the community table by bits per weight. Footnote review
+resolved 66 of 68 rows; the two unresolved early rows remain marked unknown. A mechanical multiset check
+preserved every pre-existing Baseline, With-flag, n-max, Acceptance and Contributor cell through the
+reorder. The resulting distribution shows that 45 of 68 rows are in the 4-bit tier, including 22
+UD-Q4_K_XL and 17 Q4_K_M rows. Both PR outcomes remain pending external maintainer review. A future
+prompt-matched `np` sweep and a separate MTP-path concurrency sweep require a GPU measurement window and
+explicit authorization; neither is represented as completed work.
+
+### Source References (2026-09-09 community follow-up)
+
+- [`2026-09-09-adhoc-qwen38mtp.md`](../progress/2026-09/2026-09-09-adhoc-qwen38mtp.md) — source audit,
+  submitted values, integrity checks, scope limits and pending follow-ups.
+- [sudoingX/qwen38-mtp PR #75](https://github.com/sudoingX/qwen38-mtp/pull/75) — supplementary MI210
+  DFlash2 concurrency section.
+- [sudoingX/qwen38-mtp PR #76](https://github.com/sudoingX/qwen38-mtp/pull/76) — quantization column and
+  quant-ordered table.

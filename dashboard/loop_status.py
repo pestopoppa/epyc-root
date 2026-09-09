@@ -59,7 +59,7 @@ import subprocess
 import time
 from typing import Any, Mapping, Optional
 
-from dashboard import panels
+from dashboard import campaign_status, panels
 
 #: The producer's schema string. A body carrying anything else is not this
 #: contract and is refused as malformed rather than rendered on a page whose
@@ -450,6 +450,43 @@ def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
         producer_idle=(state == "complete"),
         silence_budget_s=_budget(body),
     )
+
+
+def campaign_observation(campaign: Mapping[str, Any],
+                         legacy: panels.Observation) -> panels.Observation:
+    """Use the configured unified producer for health; otherwise retain legacy."""
+    if not campaign.get("configured"):
+        return legacy
+    body = campaign.get("campaign")
+    if body is None:
+        if campaign.get("state") == "absent":
+            return panels.absent(
+                panels.source("autokernel_loop"),
+                "an explicitly configured unified campaign has no snapshot")
+        return panels.Observation(
+            artifact_present=True, timestamp=None, source="campaign-malformed",
+            detail=campaign.get("error"), evidence=campaign.get("evidence"))
+    state = campaign.get("state")
+    if state not in {"live", "history"}:
+        return panels.Observation(
+            artifact_present=True, timestamp=None, source=f"campaign-{state}",
+            detail=(campaign.get("health") or {}).get("reason"),
+            evidence=campaign.get("evidence"))
+    terminal = body.get("observed_state") == "drained"
+    if state == "history" and not terminal:
+        return panels.Observation(
+            artifact_present=True, timestamp=None, source="campaign-history",
+            detail="campaign snapshot is history without a live matching producer",
+            evidence=campaign.get("evidence"))
+    heartbeat = _stamp_epoch(body.get("producer_heartbeat_at"))
+    return panels.Observation(
+        artifact_present=True, timestamp=heartbeat,
+        source=f"campaign-{body.get('observed_state')}", populated=True,
+        detail=(campaign.get("health") or {}).get("reason"),
+        evidence=campaign.get("evidence"),
+        watermark=(f"{body.get('stream_epoch')}|{body.get('sequence')}|"
+                   f"{body.get('journal_cursor')}|{body.get('control_revision')}"),
+        producer_idle=terminal, silence_budget_s=180.0)
 
 
 # --------------------------------------------------------------------------- #
@@ -1925,6 +1962,7 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
     report = read(root)
     fresh = freshness(report, now=now)
     body = report.get("body")
+    campaign = campaign_status.snapshot(now=now)
     wire = {
         "schema": STATUS_SCHEMA,
         "evidence": report.get("path"),
@@ -1957,8 +1995,12 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         # hypothesis ledger joins the store against THIS reading's hotspot
         # profile and epoch, not a second read a moment later.
         "knowledge": knowledge_snapshot(root, now=now, status_body=body),
+        # The unified supervisor is an additive, producer-owned full snapshot.
+        # With no explicit selection this reports `configured: false` and the
+        # historical loop_status.v1 surface remains unchanged/read-only.
+        "campaign": campaign,
     }
-    return wire, observation(report, fresh)
+    return wire, campaign_observation(campaign, observation(report, fresh))
 
 
 __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
@@ -1987,6 +2029,7 @@ __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
            "STATUS_FILENAME", "STATUS_SCHEMA", "STORE_ROOT_ENV",
            "champion_freshness", "champion_path", "champion_relationship",
            "champion_snapshot",
+           "campaign_observation",
            "freshness", "frozen_tree", "knowledge_freshness", "knowledge_inbox",
            "knowledge_ledger", "knowledge_path",
            "knowledge_snapshot", "notice",
