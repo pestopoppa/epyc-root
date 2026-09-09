@@ -1804,6 +1804,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     failures separately without rewriting pins; every output says `admission_ready: false`.
     `docs/autokernel-unified-campaign.md` contains the tested CLI/schema example. The real production
     registry selector/adapter, enrollment events and service consumer remain required for AKU-01.
+  - [x] **AKU-01b — canonical production exporter and local-model seed enrollment consumer**:
+    automatic CPU/GPU production roster, pinned source/launch context, alias/obligation union,
+    explicit local TargetSpec/artifact seeds and per-target unsupported/missing dispositions.
+    ✅ 2026-09-09 — main's **118 research tests** and **128 orchestrator/cross-repository tests** pass.
+    Export validates loaded launcher tables against pinned inputs and refuses stale compiled priors;
+    it cannot accept an injected stale registry. Explicit `--out` seals create-only/fsynced per-target
+    recipe sidecars; stdout export and research resolution remain noncreating. Full/quarter recipes
+    have distinct actual byte hashes; true aliases still merge. A sealed recipe cannot erase a source
+    unsupported/waiting status, including missing DSO prerequisites. Production dry-resolution v2 keeps
+    speech/unknown/unsupported rows visible; v1 ordinary manifests remain supported. Local seed refs
+    cannot replace production pins or reuse an opposite-backend production recipe/build. Model launch
+    compatibility and current byte verification are separate from declared enrollment; no downloads,
+    live registry recompilation, worker launch, enrollment Journal event or grant is added here.
 - [ ] **AKU-02 — resolved runtime recipes and no-build arms** (AK-AUTO-06/07): explicit unsets,
   effective environment/dispatch witnesses, option compatibility, same-binary arms and canonical CPU
   adapter; established runtime combinations skip critic calls. Hardware execution follows its gate.
@@ -1823,6 +1836,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     CPU lifecycle witnesses, planned no-build arms and policy consumers remain required. Legacy recipe
     hashes are unchanged; the inherited HSA override is actually removed and floor writes now use the
     hardened JSON publisher. Metric prose now accurately describes the unchanged sum-of-slot-rates.
+  - [x] **AKU-02c — canonical CPU/GPU launcher recipe adapter and existing serving conformance**:
+    closed explicit canonical recipe schema, full semantic/argv rederivation, NUMA prefix grammar,
+    immutable launch environment and exact artifact/source provenance.
+    ✅ 2026-09-09 — the AKU-01b acceptance includes the real sealed production export → Campaign CLI →
+    canonical recipe → existing `_measure_once()` path with fake CPU/GPU processes. Conflicting flag
+    aliases, unknown NUMA policies, rehashed semantic mismatches and credential-bearing environment
+    refuse; source/recipe identity cannot substitute for witnessed placement or execution. Production
+    command construction defaults are unchanged; its opt-in dry seam only skips runtime-directory
+    creation. Actual whole-arm observers, runtime sweeps, worker containment and registered policy
+    consumers remain separate required work.
 - [ ] **AKU-03 — native journal and recovery** (AK-AUTO-02): current-loop event schemas, phase boundaries,
   integration intent/completion, original provenance and replayed projections. Missing/corrupt/stale
   bundle never silently certifies anchor; interrupted units and schema rollback follow §8.17.
@@ -1933,6 +1956,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-06 — bounded scheduler and mechanism routes** (AK-AUTO-07/09): pure accounting/coverage model,
   bounded seed boost/opportunity, reservations and rejection audits; directed transfer and noncomposable
   coexistence evidence. Live admission/coexistence waits for AKU-11, not a fake-provider pass.
+  - [x] **AKU-06a — indexed scheduler/accounting and resolved-campaign inspection consumer**:
+    frozen coverage rounds, finite FIFO seed boost, required reservations, held-resource charging,
+    exact issued-selection/receipt/outcome binding and explicit unavailable-frontier debt.
+    ✅ 2026-09-09 — main's **138 tests** pass, including nine independent regression probes.
+    Full resolved-campaign identity and grouped workload aliases prevent stale-state/seed-budget reuse;
+    non-ready targets require separately typed prerequisite work. Unused optional slots and unavailable
+    frontiers cannot indefinitely stall ready production work. Full-region reservations skip only
+    unreserved backfill, preserving earlier required seed/other slots. Actual physical-region, GPU
+    host, device and memory held time is charged; overruns retain cost and fence successors. Startup
+    builds receipt/seed indices once; hot-path updates avoid historical scans. V1 explicitly uses fixed
+    weights and no compatibility authority. CLI selections grant no execution. Journal transitions,
+    native provider receipts, registered adaptation, planner/routes and live admission remain required.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
