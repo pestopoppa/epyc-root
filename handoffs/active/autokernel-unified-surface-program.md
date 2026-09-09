@@ -1866,6 +1866,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     these are injected consumer contracts, not a local process-tree enforcement implementation. Native
     journal/ClaimTuple hook, real lifecycle samplers, registered inference protocol and worker/provider
     integration remain required. All resulting use status remains `policy_undefined` in this slice.
+  - [x] **AKU-04c — prospective sealed arm producer and shared immutable store**: actual planned
+    serving emits raw observations before its sealed arm carrier, binding the complete frozen plan,
+    exact request bytes, process membership, worker/source identities, timestamps and canonical unit
+    view. ✅ 2026-09-09 — main's integrated capture/candidate/Journal suite passes 382 tests and 15
+    subtests. Supported scalar is serving/process/level/median with units `t/s`; independent n counts
+    scored process launches. Unknown placement/contention or absent GPU residency remains diagnostic,
+    not a widened threshold. Store publication uses owned private paths, nested thread/process exclusion,
+    no-overwrite content addressing, fsync and exact-inode crash recovery; noncreating verification
+    cannot recreate a lost published dependency. Controller-native journal wiring is the next consumer.
+    Loaded evaluator identity, real lifecycle witnesses and registered policy remain required; no
+    measurement, historical backfill or execution authority is claimed by fixture success.
 - [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
   delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
   identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
@@ -1889,6 +1900,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     required-row completion. Output-correctness equivalence does not grant timing. The offline CLI always
     denies execution/promotion authority. Actual registered verifiers, durable candidate transactions,
     native validation events and retention consumers remain required; this is not a measured candidate.
+  - [x] **AKU-05c — durable candidate transactions and recovery consumer**: native journaled
+    INTENT → PREPARED → COMMITTED phases, immutable manifest objects, owned experimental refs, exact
+    idempotence and expected-state CAS. ✅ 2026-09-09 — main's 382-test integration includes six
+    adversarial candidate/cache probes. Old-request retries return the original result without replacing
+    the newest projection. Controller capabilities are lifetime/thread fenced; retained public views
+    cannot mutate authoritative state. Startup rebuilds indexes once; ordinary operations use bounded
+    cached state and the requested transaction, not whole-history Git/JSON replay. Source preparation
+    across repositories is recoverable, not atomic. All three frozen kernel paths and both production
+    branch families refuse. Historical validated state restores provenance without restoring verifier
+    authority; new validation still requires registered live callbacks. Offline CLI has no execution or
+    promotion authority. Retention, registered row/LOO verifiers and live validation remain required.
 - [ ] **AKU-06 — bounded scheduler and mechanism routes** (AK-AUTO-07/09): pure accounting/coverage model,
   bounded seed boost/opportunity, reservations and rejection audits; directed transfer and noncomposable
   coexistence evidence. Live admission/coexistence waits for AKU-11, not a fake-provider pass.
@@ -1924,6 +1946,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     mechanism/model/quant/workload/effect question; unsupported candidate universes cannot be certified.
     Actual journal/ClaimTuple producer, asynchronous cursor/invalidation feed, policy adapters, planner,
     audit budget and scheduler consumers remain required; AKU-06/08 are not complete.
+  - [x] **AKU-08b — strict prospective arm reader and existing corpus consumer**: full closed
+    plan/view/native request and attempt rederivation, exact stored-byte verification, shared ClaimTuple
+    projection and native-family-only deduplication. ✅ 2026-09-09 — main's 90 focused tests pass
+    with the explicit research-root fixture enabled, including the real research producer → root reader and
+    three malformed/tampered regression probes. Identical standalone/journal carriers coalesce by full
+    measurement ID plus digest; conflicting carriers emit neither and report refusal. Other source
+    families retain their existing semantics. Grade remains the shared ladder; protocol/current use
+    and raw attestation are separate. Missing witnesses emit no scalar. No corpus was ingested; native
+    controller events, bounded asynchronous feed and registered planner-use consumers remain required.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
