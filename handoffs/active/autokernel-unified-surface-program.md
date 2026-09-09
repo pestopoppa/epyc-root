@@ -2103,6 +2103,29 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     failure preserves the durable terminal and provider-held accounting. Source `47ce0677`, main
     `6fc75192`. This supplies the actor's output consumer, not authority to apply its advice;
     native actor/profile persistence and actual execution remain assigned under AKU-06/07.
+  - [x] **AKU-07g — authenticated standalone controls and durable shutdown**: closed command-v2
+    semantics and command-transition-v3 replay bind the full campaign/config/supervisor/request/
+    revision identity. SIGTERM reuses or records one durable drain, fences resume, and retains
+    ownership until actual cleanup. ✅ 2026-09-09 — main reproduced **331 tests plus 15 subtests**
+    and **1,810 loop/Journal/storage tests plus 165 subtests** in a clean composed checkout.
+    The independent restarted-service probe exposed and corrected a client-side retry refusal:
+    control submission preserves historical command bytes while allowing a newer authenticated
+    supervisor to consult its journal; absent old commands still refuse and status pins remain
+    exact. Typed v3 HTTP loopback, bounded transport/token handling and prior shutdown regressions
+    pass. Source `29b8120b`, main `1fea54a5`. The template is deliberately not installed or enabled;
+    runtime/service composition and actual provider/live acceptance are not completed by this slice.
+  - [ ] **AKU-07h — finish standalone run-level recovery and service composition**: automatically
+    retry the retained exact transaction/execution after transient authority or reply loss with
+    bounded backoff; preserve unresolved ownership, stop responsiveness and no duplicate child.
+    Connect the service-owned run thread and typed process-restart reconstruction of unsettled
+    work. Main reproduced `run()` returning `recovery_required` instead of using an available
+    exact retry; the existing runtime owner is correcting and testing this path.
+  - [ ] **AKU-07i — finish native-v2 actual-descendant binding**: implement the narrowly approved
+    lifecycle event/validator with legacy refusal and replay/acquisition/archive tests; verify
+    the real contained-child → parent capture → current-owner append path. Bound loaded-builtin
+    artifact reads and check before/after identity stability; no FIFO wait or changing artifact
+    may fabricate a pinned instrument. The operator approved the specific HIGH-impact validator
+    change on 2026-09-09; unrelated trust boundaries and frozen kernels remain unchanged.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
@@ -2221,6 +2244,11 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     source bytes. Historical evidence stays `unknown_legacy`; no candidate/validated/serving
     authority is created. Source `1be3cf79`, main `e678a2e2`; live import/cutover and future durable
     legacy database schema marking remain outside this completed snapshot-reader slice.
+  - [ ] **AKU-10d — finish native maintenance ownership and uncertain-provider recovery**:
+    integrate reviewed controller exclusion/native roots/real hold accounting, and retain the
+    exclusion on acquisition reply loss or false/misbound aborted-settlement receipts. Main's
+    two disposable probes reproduced erroneous release before any artifact deletion; the same
+    maintenance owner is correcting both and adding controller-replay/gate regressions.
 - [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
   finalise → promote → reboot gate. Exact pending choice: whether the operator's new implementation
   instruction delegates broker-code work now while preserving live activation gates. No answer inferred.

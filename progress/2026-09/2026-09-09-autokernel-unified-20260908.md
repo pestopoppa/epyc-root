@@ -803,3 +803,38 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   workstreams still open. Two prospective wiring tasks added, zero new declines. No production
   tree, service, real resource grant or research artifact was changed; only owned temporary test
   processes ran. README freshness is clean; index pruning/compaction/wiki sweep remain untouched.
+
+### Reviewed standalone controls, restart retry and shutdown
+
+- Published research source **29b8120b**, main **1fea54a57e377cfb86b27decffb09ca7ddd246f1**.
+  Eleven reviewed CLI/control/service/test/template files were staged from a clean acceptance
+  checkout through a private index. Moving A2 and native-observation hunks were preserved in the
+  primary working tree and excluded from publication. The control method's exact indexed impact
+  is LOW, two upstream callers; research index was current at `6fc75192` before integration.
+- Main independently reproduced **331 tests plus 15 subtests** (8.64 s) and **1,810 complete
+  loop/Journal/storage tests plus 165 subtests** (31.52 s). The integrated primary's targeted
+  smoke run passed **88 tests**. Main's extra real-service restart probe first failed: the CLI
+  rejected an original supervisor pin before the journal could answer an exact accepted retry.
+  The correction permits a newer coherent authenticated supervisor only for control submission,
+  preserving original command bytes. Status stays exact-pinned; new old-incarnation commands
+  still fail at the server. No silent repinning or duplicate application was introduced.
+- Versioned controls bind campaign/config/supervisor/request/revision semantics. SIGTERM writes
+  or reuses one durable drain; repeated signals and already-drained restart do not invent new
+  commands. Status remains available and resume is fenced while ownership is unresolved. The
+  source-only service template was neither installed nor enabled. These tests are not the
+  required standalone dry run or five-loop mixed research acceptance.
+- Additional independent probes changed the next implementation actions: standalone `run()`
+  stopped after a transient authority refusal despite having an exact retry; maintenance cleared
+  its exclusion after acquisition reply loss or a false aborted-settlement result. The original
+  runtime and maintenance owners are correcting these paths, with three failed probes retained
+  in the session's temporary evidence directory. Both maintenance tests failed before deletion
+  and verified that their disposable artifact remained. Feed startup-lease cleanup and expired
+  ACK deadline probes passed (2 tests). Cached A2 bank reuse passed 21 focused clean-tree tests;
+  its separate full acceptance remains in progress.
+- User approval was recorded for the precise HIGH-impact actual-descendant lifecycle validator
+  change, not unrelated HIGH/CRITICAL code, production kernels or measurement policy. Its owner
+  remains active on the native integration; loaded-builtin artifact bounds/stability are also
+  under review. Main retained single ownership rather than launching a concurrent second writer.
+- Per-task wrap-up adds **AKU-07g**: **37 accepted implementation sub-items**, all twelve parents
+  remain open. Three newly explicit implementation tasks (AKU-07h/07i/10d), zero declines. The
+  index next action is refreshed; no index pruning, compaction or wiki sweep is performed.
