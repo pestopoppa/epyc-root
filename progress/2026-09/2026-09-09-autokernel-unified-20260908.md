@@ -1320,3 +1320,25 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
 - One new completed sub-item; all twelve parents remain open. No installed real-export
   dry run or hardware loops. README check clean. Bus drain still refuses the unregistered
   session ID; no other roster identity was impersonated. No index pruning or wiki sweep.
+
+### Selected complete-model preparation checkpoint
+
+- Research b9d2151e / main f7e65365 connects the selected native service to original
+  full-inventory model verification before releasing the child's observation binding.
+  Closed preparation inputs bind target revision, recipe execution, entry digest and full
+  inventory identity. Exact live claim checks cover publication of both receipt artifacts.
+- Main found and fixed two expiry windows: after model receipt write before private issuance,
+  and after selected preparation binding write before observation authorization. Expiry leaves
+  diagnostic CAS bytes only and no measurement authorization. Filesystem I/O is synchronous;
+  no cancellation guarantee or implicit deadline extension is claimed.
+- Main exact nine-file composition on published server-response code: 2,229 passed,
+  one existing accounting xfailed, 83 subtests, no skips in 66.47s. Focused preparation/driver
+  tests: 29 passed in 8.01s. Ruff eight code/test files and diff checks clean. Final files
+  match the worker's frozen hashes.
+- Test review replaced a source-changing validator wrapper with profiler observation, and
+  strengthened the child's pre-spawn check from any receipt to its exact selected recipe and
+  model path/SHA receipt. One full validator invocation is observed across both recipes.
+- AKU-07t complete (one new completed sub-item); all twelve parent tasks remain open.
+  Standalone native configuration is next, including per-target recipe mapping so shared
+  recipes cannot overwrite another target's preparation. Window collection and same-server
+  scientific evidence continue independently. No hardware run, new grant or production change.
