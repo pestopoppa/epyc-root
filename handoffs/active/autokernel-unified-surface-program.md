@@ -2173,6 +2173,29 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     share, recoverable spin time, bandwidth saturation or measured gains. Add real configuration
     and registered write-side projection; test offline without presenting fixture profiles as
     fresh hardware evidence. Existing GPU/C4 profilers remain separate selected mechanisms.
+  - [x] **AKU-06k — connect actual actor preparation to owned native build enrollment**:
+    ✅ 2026-09-09. Concrete SourceBuildExecutionOwner consumes the real ActorPreparationConsumer,
+    binds exact selected advice/source/BuildPlan, executes the controller-owned build and reopens
+    original stdout/log/process/source/binary evidence before immutable enrollment. The candidate
+    path requires the original identity-keyed materialized-source capability; copies, parsed bytes,
+    foreign owners and changed source refuse. Startup now accepts actual build_recipe identity while
+    retaining legacy build without relabelling. Explicit log limits bound parent verification;
+    Python safe-path launch prevents candidate-cwd package shadowing before verification.
+    Exact eight-file packet `1f55a3b42cb126870f42e1043a9d60aefa920056776e19d417fb5904a574cb5b`;
+    all primary hashes match. Main current-base **60 tests passed in 4.57s**; worker **62 passed
+    in 5.32s**, prior source/profile/actor/startup composition129 passed. Genuine profile settlement,
+    selected build advice, two actor children, actual tiny CMake build and verified enrollment pass,
+    including a committed malicious shadow package. No kernel/hardware or production build.
+    Contract: research `docs/autokernel-source-build-execution.md`. This does not settle the selected
+    scheduler transition, install standalone source/build dispatch, or activate expiry authority.
+  - [ ] **AKU-06l — install source/build dispatch and original outcome settlement**:
+    connect the published owner to startup/standalone work-kind dispatch; retain exact selected
+    request, original actor/build terminal and held-cost references through retries/restart.
+    Complete owning scheduler settlement and candidate feedback without synthesizing composite
+    receipts or treating enrollment as execution completion. Bind actual source authoring output
+    to its original guarded manifest before build; no caller-authored mapping becomes authority.
+    Preserve OP-AKU-BIND/HELD and ENROLL approval boundaries and existing native refusals. Prove
+    actual startup→profile→actor/source/build→settlement through the same installed entrypoint.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
