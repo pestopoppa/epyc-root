@@ -1442,3 +1442,26 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   bounded lifecycle sampling starvation prevention. All twelve parent tasks remain open.
   Standalone preparation and retention workers continue; no real-host dry run, live GLM loop,
   production mutation, resource activation, index pruning, or wiki sweep was performed.
+
+### AKU-10h — installed native retained-artifact catalog
+
+- Research source 3a3d87fa was pushed and promoted to main c6c49c0b.
+- Applied the reviewed ten-file packet against research 0e4ce89b, preserving the newer
+  final-v3 Journal/controller paths. Every composed file matches its frozen SHA-256 manifest.
+  Actual standalone v3 now derives and installs the owner catalog before runtime composition;
+  old readers refuse the new native event and restart checks the original exact seed.
+- Protects declared physical roots, exact model inventory/shards, both recipe snapshots for
+  equivalent executable aliases, native/candidate evidence and current driver/worker/acquisition
+  dependencies. Filesystem work occurs outside the controller mutex; exact frontiers and selected
+  maintenance policy/artifact identities are rechecked before admission.
+- Main independent composed acceptance: 155 passed in 6.02s, no skips. After primary application:
+  104 Journal/catalog/installed-startup tests and 15 subtests passed in 7.50s.
+  Separately, the preceding published 0e4ce89b full loop/Journal baseline passed 2,334 tests,
+  one expected failure and 83 subtests in 272.13s; that is not a full-suite claim for this new patch.
+- Completed AKU-10h; filed AKU-10i for original source/build/evaluation expiry authority.
+  The catalog itself emits no expiry descriptors and cannot authorize destructive maintenance.
+  Actual source/build owner integration remains implementation work, not an external blocker.
+  Provider-held crash recovery still requires the pending OP-AKU-HELD scope approval; no late
+  checkpoint is substituted for the missing original durable provider receipt.
+- No real-host dry run, GLM loop, provider activation, production mutation, live deletion,
+  index pruning or wiki compilation occurred. All twelve parent tasks remain open.
