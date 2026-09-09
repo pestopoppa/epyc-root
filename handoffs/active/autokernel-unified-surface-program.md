@@ -2163,9 +2163,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     alone is insufficient. Explicit versioned successor/predecessor semantics require shared
     `actor_preparation_state.validate_event` changes (HIGH16, Journal publication/replay);
     OP-AKU-REFRESH approval was requested. Do not conceal new authority in a nested v1 contract.
+  - [x] **AKU-06q — project original CPU profile evidence through the durable feed**:
+    ✅ 2026-09-09. ROOT closure-v3 registers measurement and receipt-integrity projections;
+    original accepted terminal and PROFILE_VERIFIED join precedes compact artifact verification.
+    Pair projection/associations persist before ACK; restart and capacity-one retraction retain
+    both carriers. Failed settlement and consumed quarantined/conflicting profiles release only
+    their exact terminal, while forged joins cannot discard pending evidence. Unsampled pinned
+    TIDs are valid without invented samples. Main combined current-tree acceptance:89 research
+    tests in24.94s and65 ROOT adapter/dashboard tests in3.21s, no skips. Existing dashboard cache
+    hooks survive composition. No new grading rule, production-validation claim or hardware run.
   - [ ] **AKU-06j — install the concrete owned CPU profiling producer for GLM discovery**:
     Concrete full-request producer is implemented and tested under AKU-06o below; this task
-    remains open for registered prospective projection, exact GLM prompt/configuration and
+    remains open for exact GLM prompt/configuration and
     real deployment conformance. Do not relabel independent full-request v1 as cached decode.
     emit existing target_profile_output.v1 through the installed ProfileMechanism, retaining
     bounded original perf-script/counter/request-window artifacts and source/tool/model/recipe
