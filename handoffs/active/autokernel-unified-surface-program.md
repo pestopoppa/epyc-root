@@ -2279,6 +2279,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Tiny HTTP integration uses a pre-enrollment ephemeral port and exact response PID checks.
     This is factual capture only: same-server T0 and remaining scientific witnesses stay
     open under AKU-07o. See research docs/autokernel-native-server-response.md.
+  - [x] **AKU-07t — prepare selected complete-model identity before observation binding**:
+    ✅ 2026-09-09 research b9d2151e / main f7e65365. Closed target/recipe/model inventory
+    preparation runs on the existing parent evidence thread while the child waits for its
+    binding. Full-byte verification occurs once; both recipes reuse original issuance and
+    verify metadata continuity. Fresh claim checks after model and binding artifact publication
+    prevent expired claims from releasing measurement; orphan CAS bytes confer no authority.
+    Main full integration: 2,229 passed, one existing accounting xfailed, 83 subtests, no skips
+    in 66.47s; eight code/test paths Ruff clean. Actual-child tests match each recipe's own
+    entry path/SHA receipt before spawn and observe one original validator invocation without
+    changing its pinned identity. Synchronous filesystem I/O is not claimed cancellable.
+    Standalone configuration installation and remaining scientific witnesses stay AKU-07n/07o.
   - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
     add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
     candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,
