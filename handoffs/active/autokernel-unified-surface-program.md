@@ -2454,12 +2454,23 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     All source bytes are verified before execution; no ambient helper fallback. Actual child
     v3 results drain through FeedRuntimeOwner/EvidenceFeed and restart idempotently with no
     scientific promotion. Main acceptance: 42 tests in 46.76s, no skips. Six-file v3 reads refuse.
-  - [ ] **AKU-08l — version the separate semantic receipt source closure**: connect current
-    final-trial projection to the owning semantic receipt path with prospective source pins
-    and versioned receipt grammar. Preserve historical two-file/v2 compatibility-only receipts;
-    do not repin old receipts. Four old semantic-loader tests reproduce source-pin mismatch on
-    unchanged research f8fee017 against ROOT 80f4f60b; installed feed acceptance does not close
-    this separate validation consumer requirement.
+  - [x] **AKU-08l — version the separate semantic receipt source closure**: ✅ 2026-09-09.
+    Seven-file captured ROOT closure and original native producer/finalizer identities feed
+    versioned canonical receipts. Diagnostics contain no tuple or grade. The actual validation
+    consumer persists and reopens exact historical pairs through fresh stores/controllers without
+    live issuance; CANDIDATE diagnostics cannot fill required OPTIMUM rows or advance validation.
+    Main independently passed 90 tests in 64.27s; worker regression passed 132 in 70.71s, no skips.
+    Historical two-file pins remain unchanged; legacy tests load their exact original source bytes.
+  - [ ] **AKU-08m — connect qualified serving decisions to the registered semantic consumer**:
+    supply original qualified calibration/control and measurement evidence through the same
+    registered verifier/evaluator; prove actual required-row completion and restart. Diagnostic
+    receipt replay alone does not authorize ranking, validation, or production promotion.
+  - [ ] **AKU-07y — prevent lifecycle sampling-budget starvation**: size bounded sampling against
+    declared lifecycle duration and/or reserve finite mandatory-marker capacity. Periodic samples
+    currently share the entire budget with boundaries/checkpoints and can exhaust it during placement.
+    Preserve explicit exhaustion/gap refusal; prove later measurement/teardown coverage without
+    widening scientific thresholds. The accepted test-only 100 ms/256-sample recipe is not a
+    production sampler fix.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
