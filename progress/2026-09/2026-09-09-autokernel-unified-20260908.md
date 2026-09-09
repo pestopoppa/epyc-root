@@ -1128,3 +1128,36 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   45 accepted implementation sub-items, all twelve parent tasks remain open. No full installed
   dry run, five hardware loops, live grants, deployment or production kernel change. Per-task
   wrap-up only; no pruning, compaction or wiki sweep.
+
+### Contained actor/profile preparation publication
+
+- Published research **a9ce9d88 / da7dd5bc**: thirteen exact reviewed files implement
+  controller-owned actor/profile execution and native preparation state. Main reproduced
+  **1,839 passed, one strict xfailed, 83 subtests passed in 28.80s** on the integration
+  checkout; focused actor/profile checks passed 85 tests plus the same strict expected failure.
+  The failure remains the genuine selected proposal/backend/stage-class accounting gap under
+  OP-AKU-BIND, not a mocked success or completed campaign claim.
+- Main review corrected cancellation after actual terminal but before first held-cost lookup,
+  and cancellation racing provider admission. Owner-maintained prelaunch/attempting phases and
+  exact cancellation tombstones order those transitions under the existing mutex. These are
+  current-owner safeguards, not durable restart evidence. FIFO/oversize executable checks reuse
+  the bounded regular-file reader; budgets reject nonfinite values; configuration and nested
+  profile receipts are immutable. The resulting shallow-serialization test failure was fixed
+  using detached canonical receipt serialization, then the full suite passed.
+- Existing VB-AK-UNIFIED-PROFILE/VALIDATION source registrations remain required; native carrier
+  labels do not attest measured profiles or create a new grading ladder. Actor advice still
+  needs its actual private source/build preparation consumer, being reviewed under AKU-06d.
+- Independently composed the eleven-file runtime packet and three-file startup factory on a
+  clean b83b checkout. Runtime focused gate: **302 passed in 16.30s**. Factory gate: **29 passed
+  in 0.77s** after the test selected its actual interpreter rather than assuming a checkout-local
+  .venv. The combined run reproduced a SIGTERM/DriverRefused race, assigned for correction before
+  runtime publication. This is not an installed dry run or five-loop hardware acceptance.
+- Native producer/source integration: main reproduced **80 tests in 5.00s** with explicit package
+  root. Default actual producer closure is now complete; a subprocess-test import assumption is
+  corrected by its owner. Exact measurement/view receipt joins and the existing serving-rule
+  consumer remain under integration, not published here. Historical native records remain
+  compatibility-only. No numerical policy, live service, grant or production kernel changed.
+- Checklist: **one newly completed item (AKU-06f), zero new open tasks, zero declines**; 46
+  accepted implementation sub-items, all twelve parent tasks remain open. README freshness is
+  clean. Bus drain/heartbeat rejected this non-roster session id; no other identity was used.
+  Per-task wrap-up only; no pruning, compaction or wiki sweep.
