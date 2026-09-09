@@ -1941,6 +1941,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     first-issue permit. Replayed unknown is not absence proof; terminal recovery and durable
     not-acquired retries must preserve exact identity. No hidden three-unit launch or one-unit
     plan rehash. Coordinate this bridge with AKU-07i's actual observation/lifecycle owner.
+  - [x] **AKU-04g — installed raw serving-calibration preparation**: ✅ 2026-09-09.
+    Startup v4 prospectively derives bounded A/A and neutral-copy process pairs and retries;
+    the actual driver/controller/native worker collects immutable original chunks. Only exact
+    durable settlements admit chunks to the existing numeric solver; fresh settled restart
+    preserves identities and accounting. Neutral physical snapshots stay retained without fake
+    runtime dimensions. Main independently passed 144 tests with one strict held-recovery xfail;
+    the prior-base full suite passed 2,398 with two strict xfails and 83 subtests. Research source
+    `097c5be8`, main `ebb5e9fa`. Fixture providers and observations are explicit, not hardware proof.
+    All solves remain diagnostic/unqualified: original qualified controls/window and phase/cell
+    scope are still required. OP-AKU-BIND and OP-AKU-HELD remain open; interrupted pre-settlement
+    restart refuses rather than recollecting. This does not complete AKU-04 or AKU-12a/b.
 - [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
   delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
   identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
