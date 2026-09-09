@@ -2159,19 +2159,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     have working-tree corrections; main reproduced 84 service/runtime/driver tests, including the
     formerly failing pipe-creation cleanup probe. Finish the actual installed startup materializer
     and its real inputs; a source-level runtime_factory callback is not standalone acceptance.
-  - [ ] **AKU-07i — finish native-v2 actual-descendant binding**: implement the narrowly approved
-    lifecycle event/validator with legacy refusal and replay/acquisition/archive tests; verify
-    the real contained-child → parent capture → current-owner append path. Bound loaded-builtin
-    artifact reads and check before/after identity stability; no FIFO wait or changing artifact
-    may fabricate a pinned instrument. The operator approved the specific HIGH-impact validator
-    change on 2026-09-09; unrelated trust boundaries and frozen kernels remain unchanged.
-    The working-tree correction now passes main's three independent PID/expiry probes and 67
-    lifecycle/driver/observation tests. Both diagnostic refusal and fixture-scored child/v2/restart
-    modes exist; main's actual ROOT projector reopen probe passes. Synthetic witness passes prove
-    serialization/consumer wiring, not scientific witness derivation. The separate real test-owned
-    cgroup membership/cleanup fixture also passes; it does not prove controller enforcement,
-    resource exclusivity, production telemetry or performance. Finish source acceptance/publication
-    and the concrete parent evidence path below; no live inference acceptance is claimed.
+  - [x] **AKU-07i — native-v2 actual-descendant binding and replay**: published the narrowly
+    approved lifecycle event/validator with legacy refusal, current-owner capture, immutable v2
+    artifact references and restart/acquisition closure. ✅ 2026-09-09
+    Every ancestry stat row checks PID/start identity; target, ancestor, ancestry, container and
+    membership are rechecked before append outside the controller/watchdog lock. Expired, reused
+    or reparented identities cannot publish. Loaded-builtin reads are bounded/stability checked.
+    All nineteen final file hashes matched; main's final suite passed 1,905 tests plus 165 subtests
+    and four independent PID/expiry/actual-ROOT-projector probes. Research source 3df1192b,
+    main a3b251bc. Diagnostic refusal and fixture-scored child/v2/restart modes remain separate.
+    Synthetic telemetry proves consumer wiring only; real test-owned cgroup membership/cleanup
+    proves neither controller enforcement nor exclusivity. Production parent witnesses/runtime/GPU
+    adapters remain AKU-07m, resource authority AKU-11, and live acceptance AKU-12. The operator's
+    specific HIGH-impact approval does not cover held-cost/accounting events or frozen kernels.
   - [ ] **AKU-07j — persist provider-held cost for process-restart settlement**: add the exact
     versioned held-receipt lifecycle record after OWNED_TERMINAL and validated provider close,
     before WORKER_RESULT_ACCEPTED/STALE. Restore separate accounting-only indexes and bind lookup

@@ -1015,3 +1015,27 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   Accepted implementation sub-items now **41**; all twelve parent tasks remain open. No real
   dry run, five-loop hardware run, provider grant, service activation or production kernel change.
   Per-task wrap-up only; no pruning, compaction or wiki sweep. README freshness is clean.
+
+### Approved native descendant/lifecycle publication
+
+- Published research source **3df1192b**, main **a3b251bc**: the exact nineteen-file native-v2
+  packet, after its owner exited and all final SHA-256 values matched. Existing published
+  maintenance and planner work was preserved. The research lane is clean after publication.
+- Parent capture checks each ancestry stat row's PID/start ticks and revalidates target,
+  ancestor, ancestry chain, container identity and membership immediately before durable append.
+  Provider/proc/container reads stay outside controller/watchdog locks. Loaded instrument and
+  lifecycle references are immutable, bounded and reopened during current-owner capture/replay.
+  Additional held-cost/scheduled-accounting validator changes remain outside this approval.
+- Main final acceptance: **1,905 passed plus 165 subtests in 26.92s**; independent descendant,
+  expiry and actual-child/reopened ROOT projector probes: **4 passed in 1.16s**. Final source
+  includes separate diagnostic and fixture-scored modes. The latter derives separate request,
+  live-affinity and synthetic overlap facts; it is protocol wiring, not model correctness or
+  measured clean production contention. The real delegated-cgroup fixture proves membership
+  and cleanup of its captured tiny child only, not resource isolation or provider enforcement.
+- Published native schemas now unblock exact dependency consumption for canonical receipts,
+  parent evidence and runtime wiring. Concrete parent witness derivation, runtime/GPU/purpose
+  adapters, broker/provider activation and full standalone/hardware acceptance remain open.
+  No model inference, production kernel modification or real research cleanup was performed.
+- Checklist: **one completed item (AKU-07i), zero new open tasks, zero declines**. Accepted
+  implementation sub-items now **42**; all twelve parent tasks remain open. Per-task wrap-up
+  only, without index pruning, compaction or wiki sweep; README freshness remains clean.
