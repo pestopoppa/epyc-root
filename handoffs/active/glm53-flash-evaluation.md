@@ -178,8 +178,22 @@ Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
 - [ ] T12b — Complete paired Q8 mode comparison and retain or reject the lever.
   The first exact microdiagnostic is negative (0.960x MLA, 0.943x projection);
   treat it as directional. Mode 2 has cleared its separate compiled and
-  paired micro gates (T12c); its full-model screen is running.
+  paired micro gates (T12c); its first full-model pair is correctness-only
+  because the off arm overlapped substantially higher unrelated CPU work.
+- [x] T12d — Run the first full-model mode0/mode2 reachability and correctness
+  screen inside the same UD-Q4_K_XL model. Both arms match the prior 512-token
+  trajectory and MTP counters, with real draft rejection; mode2 reaches its
+  rows=2 branch. The apparent 1.0497x ratio is rejected for attribution because
+  median unrelated load was 8.41 versus 1.82 CPU-equivalents. A clean mode0
+  bracket reaches 9.3046 versus mode2's 9.4659 tokens/s (1.0173x); this remains
+  a single bracket, so the interleaved decision gate stays open. ✅ 2026-09-09
 - [ ] T13 — Measure node-level worker waits and validate a bounded scheduling change.
+- [x] T13a — Complete the node-level worker audit. The mixed MTP target topology
+  exposes 34 recurrent-state copies totaling 11.132 ms (4.36% of sampled wall
+  time); their `ne01=1` partition assigns four snapshots to one worker. This is
+  an opportunity bound, not a speedup. A guarded outer-row partition fix now
+  owns T13's remaining correctness and timing gates.
+  [Audit](../../docs/reference/models/glm53-cpu-worker-audit-20260909.md). ✅ 2026-09-09
 - [ ] T14 — Retest the integrated retained candidate against the preserved baseline.
 
 ## Constraints

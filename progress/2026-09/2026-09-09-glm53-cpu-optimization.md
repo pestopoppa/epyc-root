@@ -181,3 +181,53 @@ The guarded expert and Q8 source/test experiments are committed and pushed as
 This backs up the implemented work; it does not enable either experiment. The
 expert CTest platform guard and ordered microbenchmark sample logging still
 need their final build check. Production remains untouched.
+
+### Q8 projection-kernel full-model screen
+
+This experiment changes exact dense Q8 projection kernels inside the same
+six-shard UD-Q4_K_XL model; it does not switch to a Q8 model. Both arms load
+`GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf` through the pinned manifest
+SHA256 `d3c6c3ccc4cf2aa13ff4294696b345ac7e1f2f8755bc0bbcfd27749ffae2dbec`
+(metadata SHA256 `cec7c7d42b151607954305f5ede2d01d74d4a3b8df92af7e7fa4cc5a931e34bd`,
+1,412-tensor set SHA256
+`08afa6cd3aecc131612384a7a3912bfb059fdb640a60f56c70835eeaecc9375c`).
+Both use server SHA256 `2034495c3f386123990082ad3ede4ea0e38164b22f9996bbe2561db956ccce07`
+and CPU library SHA256
+`e8c93f6c095fa642bef1c72fb156d1ca98a17666fea63dfac702416d3fdcf451`.
+
+Mode0 and mode2 match the prior plain/MTP 512-token SHA256
+`b3ab59a69a821c714357a95e54df03490bee1ba73b404548f6ae88c417fdb576`.
+Each reports 561 drafts/323 accepted tokens and 187 completed verification events,
+including 122 events with rejection and 238 rejected draft tokens. Mode2 emits
+the active rows=2 trace; expert reuse is disabled in both arms. Both owned
+servers exit rc0 and are confirmed absent.
+
+Observed rates are 9.0174 mode0 and 9.4659 mode2, an apparent 1.0497x ratio, but
+the performance comparison is invalid. The mode0 observation overlaps median
+unrelated work of 8.41 CPU-equivalents (maximum 11.16), dominated by 358.55 CPU-s
+from `libuv-worker`; mode2 overlaps 1.82 median CPU-equivalents (maximum 3.48).
+This pair establishes full-model correctness and reachability only. Mode2 stays
+off pending a clean bracketed/interleaved comparison. Evidence is under
+`q8-fullmodel-screen-20260909`.
+
+An immediate second mode0 bracket ran after mode2 with comparable unrelated load
+(1.92 median CPU-equivalents) and produced the same token/MTP/rejection evidence
+at 9.30458 output tokens/s. Against mode2's 9.46585, that clean single bracket is
+1.01733x in mode2's favor. It warrants inclusion in the interleaved short screen,
+but remains insufficient for enablement or a sustained speed claim.
+
+### Graph-worker profiling milestone
+
+The filtered plain capture did not support an independent tiny-op or MLA
+scheduling patch. The MTP target-topology capture exposed a separate copy
+partition defect: 34 recurrent-state CPYs shaped `[1048576,1,4]` consume
+11.132 ms of the 255.442 ms per-node wall sum. Existing code partitions only
+`ne01`, assigning all four 4 MiB snapshots to one worker. The approved
+`GGML_CPY_OUTER_ROWS` experiment distributes complete outer rows, retaining
+the existing path for aliasing storage/rows; it remains default off pending
+byte-exact, rollback/replay, and timing gates.
+
+The capture mixes three prompt graphs with 99 verification graphs; metadata
+comes from the first prompt graph. The 4.36% wall share is an opportunity
+bound, not recoverable speedup. Full digests, denominator distinctions and
+source audit are in `docs/reference/models/glm53-cpu-worker-audit-20260909.md`.
