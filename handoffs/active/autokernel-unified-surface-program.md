@@ -1,10 +1,17 @@
 # AutoKernel Unified-Surface Program — one champion, one accumulator, one runbook for CPU + GPU kernel work
 
-**Status**: ACTIVE DESIGN · opened 2026-09-07 · original campaign owners `ak-rebuild-20260828` (loop)
-and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current documentation iteration:
-`autokernel-plan-20260908` · rider on [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md)
+**Status**: IMPLEMENTATION STARTED · opened 2026-09-07 · original campaign owners `ak-rebuild-20260828` (loop)
+and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current implementation owner:
+`autokernel-unified-20260908` · rider on [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md)
 (R23 series) and [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (FOLD series)
 **Index row**: `inference-research-index.md` → this file. **Domain**: inference research.
+
+> **Implementation authorization, 2026-09-08:** the operator has now directed implementation of this
+> handoff, using **GPT-5.6-sol medium** workers for bounded work and the main thread for coordination,
+> review and integration. This supersedes the earlier documentation-only scope, not protected production
+> freezes, measurement ratification, live-research relaunch or OP-41's explicit ownership/sequencing gate.
+> [§9](#implementation-ledger-20260908) is the current execution ledger. The notebook remains the design
+> contract; old campaign checkboxes are not proof of present implementation or inherited ownership.
 
 > **2026-09-08 planning update — documentation only.** The operator is iterating on a VERY detailed
 > autonomy plan, including IMPLEMENTATION details; this session is explicitly **not implementing it**.
@@ -51,18 +58,20 @@ arms or builds subject to the contention bounds in §3.4. The manual CPU campaig
 NO research relaunch after the fold window; consolidation only; relaunch is a separate operator go.
 The CPU session (INF-70 / `workspace-1c`) received this directly and has parked all lever campaigns.
 
-## Start here (current design iteration)
+## Start here (implementation)
 
 1. Read §8.1 for accepted preferences and authority, §8.16 for final-session findings, and §8.17 for
    implementable contracts. Then use §8.13 to locate each proposal's existing owner/task mapping.
-2. **Current task is PLAN-DOC-2: refine this notebook, not execute P1–P5.** §1–7 retain the original
+2. **Current execution is §9**, in dependency order, with tested bounded slices. §1–7 retain the original
    campaign design/history and other owners' checkboxes. Re-resolve their state by task text before any
    future dispatch. The fold/run-30 process descriptions are historical; neither closed session is revived.
 3. Ratified measurement rules and operator directives outrank every proposal. Within proposed design,
    §8.17 refines §8.16/§8.3–15 and explicitly identifies replacements for §3 pseudocode. It does not
    silently replace current runtime behavior or waive a protocol, release gate, or operator decision.
 4. Research relaunch remains a separate operator go. OP-41 implementation remains operator-owned,
-   after champion finalisation → production promotion → host reboot. This documentation authorizes none.
+   after champion finalisation → production promotion → host reboot. The new instruction authorizes
+   application implementation; its relation to OP-41's narrower broker-code restriction was explicitly
+   asked, not assumed. Work not dependent on that answer continues.
 
 ## 1. The problem in one paragraph
 
@@ -712,7 +721,7 @@ by this audit. Current evidence and corrections are consolidated in §8.16.
 Documentation checklist (only these boxes describe this session's work):
 
 - [x] **PLAN-DOC-1** — capture audit, accepted choices, implementation proposals, tests and provisional defaults in the owning handoff. ✅ 2026-09-08
-- [ ] **PLAN-DOC-2** — iterate §8 with the operator before converting proposals into an implementation queue. Documentation-only; no compute or deployment authorized.
+- [x] **PLAN-DOC-2** — iterate §8 with the operator before converting proposals into an implementation queue. ✅ 2026-09-08: operator authorized implementation; §9 records execution and retained boundaries. No production or live-research authorization inferred.
 - [x] **PLAN-DOC-3** — audit both final September 8 close-outs and refine the notebook with evidence-scoped implementation contracts and tests (§8.16). ✅ 2026-09-08
 - [x] **PLAN-DOC-4** — fresh independent audit; reconcile protocol/cadence contradictions and delineate scheduler, evidence, validation and lifecycle implementation contracts (§8.17). ✅ 2026-09-08
 
@@ -1766,3 +1775,89 @@ acceptance remain §8.14, after their existing authorization gates. Integrate un
 no new dispatch rows. The remaining numerical/objective choices in §8.15 are still iterative design,
 but these failure modes now have explicit data, transition and test contracts. **Friction budget remains
 zero additional routine operator decisions or critic calls for established runtime sweeps.**
+
+<a id="implementation-ledger-20260908"></a>
+
+## 9. Implementation ledger — started 2026-09-08
+
+**Owner:** `autokernel-unified-20260908`. Root lane starts at `088427b0`; research lane starts at
+`1d9733f1`. Shared checkouts, frozen kernel trees and research artifacts are not modified by lane setup.
+Subagent output is proposed until main-thread review and targeted/integration tests accept it. Source
+completion, main-branch publication, deployment and live measurement acceptance remain distinct.
+
+**Current-code reconciliation:** `loop/run.py` still uses one GPU claim, `ExperimentStore` history and
+direct accumulator JSON. Existing Journal, recipes, claim primitives and dashboard are reused, not
+mistaken for a unified service. The four-keep cadence is present and must survive migration. Broad
+historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly adopted as a §9 slice.
+
+### Executable slices and acceptance
+
+- [ ] **AKU-01 — immutable campaign/target enrollment** (AK-AUTO-01/04): versioned CPU/GPU/both request,
+  immutable registry/recipe/model identities, local candidate seeds, idempotent aliases/requests,
+  per-target missing/unsupported state, pinned baseline and no silent reference movement. Pure resolver
+  and dry-run fixtures first; no resource authority inferred from a manifest.
+- [ ] **AKU-02 — resolved runtime recipes and no-build arms** (AK-AUTO-06/07): explicit unsets,
+  effective environment/dispatch witnesses, option compatibility, same-binary arms and canonical CPU
+  adapter; established runtime combinations skip critic calls. Hardware execution follows its gate.
+  - [x] **AKU-02a — explicit environment-unset semantics**: inherited treatment is absent in the
+    control; immutable unset state roundtrips/hashes; legacy no-unset identities remain unchanged.
+    ✅ 2026-09-09 — reviewed `Recipe.explicit_unsets`, real `server_env()` consumer and bidirectional
+    readback fixtures; 89 focused tests and 611 loop tests / 59 subtests pass. This does not yet freeze
+    the full inherited environment or supply the new CPU runtime-arm adapter.
+- [ ] **AKU-03 — native journal and recovery** (AK-AUTO-02): current-loop event schemas, phase boundaries,
+  integration intent/completion, original provenance and replayed projections. Missing/corrupt/stale
+  bundle never silently certifies anchor; interrupted units and schema rollback follow §8.17.
+  - [x] **AKU-03a — durable derived JSON publication**: file fsync, atomic replace and directory fsync;
+    injected pre/post-rename failures preserve the right artifact and never report durable success.
+    ✅ 2026-09-09 — real `status.write_json()` caller hardened; 28 focused tests pass, including
+    descriptor cleanup and post-rename durability failure. This alone is not journal recovery.
+  - [ ] **AKU-03b — journal-backed bundle recovery**: snapshot before projection; replay, explicitly
+    labelled legacy import, fail-closed missing/unsupported/corrupt state and ancestry; preserve cadence
+    while invalidating stale compounded gain after an external tip change.
+- [ ] **AKU-04 — shared ExperimentPlan and evidence-use validator** (AK-AUTO-06/07): phase/category/
+  protocol/use, independent-unit view, immutable stopping plan and applicability checks; A2 discovery
+  never becomes a keep/release claim; calibration provenance, replay and n/unit/interval requirements.
+- [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
+  delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
+  identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
+- [ ] **AKU-06 — bounded scheduler and mechanism routes** (AK-AUTO-07/09): pure accounting/coverage model,
+  bounded seed boost/opportunity, reservations and rejection audits; directed transfer and noncomposable
+  coexistence evidence. Live admission/coexistence waits for AKU-11, not a fake-provider pass.
+- [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
+  launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
+  test worker/provider faults hermetically before attaching real compute.
+- [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
+  before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
+  pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
+- [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
+  commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
+  health, hub registry/probes/freshness; no hub proxy or second dashboard.
+  - [ ] **AKU-09a — stop/join worker heartbeat before terminal publication**: no late `running` state;
+    startup/claim/profile failures publish failure; original errors survive status errors; fake-race tests
+    prove the real run path uses the lifecycle guard.
+- [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
+  invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
+  maintenance and documented validated CLI/config examples.
+- [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
+  finalise → promote → reboot gate. Exact pending choice: whether the operator's new implementation
+  instruction delegates broker-code work now while preserving live activation gates. No answer inferred.
+- [ ] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
+  compute authority; applicable post-BIOS calibration and owning serving protocol. Bounded mixed campaign
+  and eventual soak demonstrate the actual CPU/GPU/candidate paths, not only helpers or fixtures.
+
+### Execution discipline and retained decisions
+
+Use existing classes/functions where their contract is sufficient; new helpers must gain explicit
+consumers before the corresponding parent slice is complete. Unit-tested interfaces alone do not
+complete a service, broker, adapter or measurement gate. No deployment/restart is hidden in publication.
+Defaults not fixed by policy are versioned configuration with dry-run validation; do not invent a
+statistical acceptance threshold, ratification, resource grant or unsupported production capability.
+
+The built-in dispatcher retained completed review threads and refused additional workers. One sol-medium
+worker uses that dispatcher; two bounded workers use the installed `codex exec` with explicit
+`gpt-5.6-sol` and `model_reasoning_effort=medium`. Main owns concurrency, process handles and review;
+workers own disjoint files and do not commit or push. The lane's GitNexus index was rebuilt at the
+research starting commit; low reported impact is supplemented by caller inspection and tests.
+
+Per-task handoff/progress/checklist/publication follows the wrap-up workflow. Index pruning, handoff
+compaction and wiki compilation are not part of this implementation request's routine checkpoints.

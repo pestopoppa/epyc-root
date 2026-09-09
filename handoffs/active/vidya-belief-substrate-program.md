@@ -1589,6 +1589,20 @@ retrofitting the read side is impossible. Source row added to
       Trigger: the next serving-harness arm produced on either surface. Zero compute to file; the adapter is
       ~40 lines of projection.
 
+### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09)
+
+- [ ] **VB-AK-UNIFIED — wire the unified current loop before its first new measurement**
+      (`autokernel-unified-surface-program.md` §9 AKU-08). Emit producer-authored, self-hashed carriers
+      at sealed experiment/arm boundaries with exact immutable model/build/recipe, protocol and metric
+      direction, independent-unit/paired execution membership, raw evidence and during-arm contention,
+      placement and GPU residency witnesses. Reuse SC75 for serving arms and the shared `ClaimTuple`
+      grader. Preserve intended-use/applicability separately from grade; search-only results cannot
+      become bank/release claims through projection. Historical pre-hook rows remain history, never
+      retrofitted warrant. Journal `LOOP_BUNDLE_SAVED` records are operational snapshots, not measurements
+      or a new source class, and produce zero tuples. Add strict reader and replay/outage fixtures,
+      mandatory pre-top-k conflict checks and dependency-generation admission checks. This is source
+      wiring authority only; live research/resource gates remain unchanged.
+
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 
 *Source: the Q.1 mutation audit of `tests/vidya/` run at the end of the Prove2Me wave — 62 mutations
