@@ -1840,6 +1840,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     `serving_gate --tip` consume recovery; dry manual inspection opens only an existing read lock and
     never imports or rewrites. Corrupt history requires restoration, not blind reseeding. Native phase,
     integration/control events and candidate transactions remain AKU-03 work.
+  - [x] **AKU-03c — serialized prospective arm-capture consumer**: native
+    `PLANNED_SERVING_ARM_CAPTURED` events, current campaign/config/supervisor/worker-result fences,
+    byte-verified immutable artifacts, exact-payload retry index and restart/uncertainty handling.
+    ✅ 2026-09-09 — actual planned-serving→store→controller→journal→restart→independent Vidya reader
+    integration passes; main acceptance **278 tests and 15 subtests**. Both comparison identities,
+    process/prompt/request/witness links, selected launch values and aggregate are rederived from
+    frozen/native inputs. Closed unsupported/malformed inputs refuse; genuine unsupported-unit and
+    continuation carriers remain diagnostic. Scoped same-thread/lifetime callbacks serialize lookup,
+    append/fsync and projection under the controller mutex; ambiguous append/index failure poisons
+    that incarnation. Historical retries return the original event without recreating current worker
+    authority. The real lifecycle owner must supply the trusted result fence; none is inferred from
+    JSON, and this slice adds no workers, grants, grading, candidate advancement or scientific clock.
 - [ ] **AKU-04 — shared ExperimentPlan and evidence-use validator** (AK-AUTO-06/07): phase/category/
   protocol/use, independent-unit view, immutable stopping plan and applicability checks; A2 discovery
   never becomes a keep/release claim; calibration provenance, replay and n/unit/interval requirements.

@@ -1606,7 +1606,9 @@ retrofitting the read side is impossible. Source row added to
       strict shared-ladder reader and existing corpus dispatch, including actual raw-byte rederivation
       and same-ID conflicting-carrier quarantine. Supported scalar is serving/process/level/median;
       absent witnesses remain diagnostic. No historical ingestion or warrant backfill occurred.
-      This parent remains open for controller-native events, bounded cursor/feed replay, producer-side
+      AKU-03c additionally wires verified native controller events, exact retry and restart; the actual
+      producer→Journal→reader path passes hermetic integration. No live worker fence is inferred.
+      This parent remains open for bounded cursor/feed replay, producer-side
       planner question bindings and registered current-use consumers. Evaluator identity/lifecycle
       instrumentation remain separately required; a source schema is not a protocol registration.
 

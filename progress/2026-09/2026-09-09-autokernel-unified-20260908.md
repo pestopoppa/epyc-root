@@ -273,6 +273,56 @@ measurement hook. Operational journal snapshots are not claim tuples.
 - README freshness check emitted no warnings. Bus remains unavailable to this non-roster identity;
   no peer identity or coordination file is impersonated.
 
+### Next consumer review boundary
+
+- Root prospective evidence checkpoint **01710e5f**, main merge **5063370c**. Both owned indexes are
+  fresh after normal wrapper runs; research incremental indexing again exited 139 and the wrapper's
+  own full-recovery rebuild succeeded in 78 seconds. No manual metadata deletion occurred.
+- Main's full dashboard-adjacent run found **328 passing tests / 51 subtests and 10 failures**. An
+  isolated clean-HEAD worktree reproduces exactly nine host-artifact/wall-clock-dependent freshness
+  failures; the new DOM-ID contract failure belongs to the dashboard draft. A separate real-page Node
+  probe proves the browser abort timer expires only through headers, not body read. Dashboard acceptance
+  remains held for body-size/deadline coverage, the DOM fix and narrow stable-fixture repairs.
+- New native-controller draft review independently reproduces two mismatches: a rehashed/resealed
+  carrier can change both its aggregate/per-launch values without changing raw units, or change its
+  comparison backend without changing the frozen plan. Both probes are retained for the worker's
+  corrective pass. Sealed bytes alone do not prove correct experimental attribution.
+- Scoped new Vidya files pass Ruff. The separately edited INF70 test has nine existing Ruff warnings;
+  reading its clean-HEAD bytes through Ruff reproduces the same nine. Only the approved three SC69
+  expectations were changed; no unrelated lint rewrite or grader change was made.
+- Five independent first-draft scheduler probes fail on semantics: unused optional K slots stall a
+  production-only campaign; an unavailable frozen frontier blocks another ready frontier; a cheaper
+  new seed jumps FIFO; one oversized optional proposal vetoes valid production; and an exact receipt
+  accepts a different outcome silently. Main's review also requires actual held-resource deficit cost,
+  usable capacity epochs, bounded indexed operation and retained incurred cost on bound violations.
+  No scheduler source is accepted or connected to compute. Static hub metadata/docs are prepared but
+  held with dashboard source pending the response-body correction. Their focused scope passes **208
+  tests and 97 subtests**; this does not supersede the separately recorded dashboard failures.
+
+### Native controller consumer accepted
+
+- Main accepted AKU-03c after **278 tests and 15 subtests**, plus clean scoped Ruff and diff checks.
+  The actual producer emits two process-unit measured carriers; both survive controller Journal replay
+  and project through the independently implemented Vidya reader. Native values are fake test data,
+  not performance evidence. Rehashed scalar/per-launch changes and full comparison-identity mismatch
+  now refuse. Actual producer continuation remains diagnostic, not a fresh-launch measurement.
+- The controller owns one serialized capture transaction: scoped same-thread/lifetime callback,
+  exact-ID index, immutable raw/carrier byte verification, append/fsync/cursor/index update and poison
+  on uncertainty. New capture requires an installed typed current worker-result fence. Replay returns
+  the original exact event without inventing a current worker/grant. No grading or scientific-clock
+  advancement is inferred from structurally valid arm captures.
+- Research source checkpoint **384a8117**, main merge **ff708152**; five exact accepted files only.
+  Frozen scheduler/enrollment/service drafts were excluded. Shared checkout and staging were untouched.
+- Scheduler first draft remains unaccepted. Main stopped its own captured CLI PID after its core-suite
+  checkpoint to prioritize bounded dashboard corrections; PID exit was verified. The later partial
+  optional-adaptation change has one failing expectation and four of five original fairness/receipt
+  probes still fail; FIFO now passes. This draft is frozen pending the prepared corrective review,
+  not published or connected to execution. No foreign process was signaled.
+- The next sol-medium worker owns only the archive/candidate frozen-kernel guard. Exact upstream
+  impacts are LOW; manual review identifies the legacy pool caller despite absent indexed edges.
+  New helper work proceeds while existing-file edits wait for checkpoint/index refresh. All testing
+  remains temporary Git/fake execution; no frozen kernel tree, broker, live service or corpus changes.
+
 The built-in dispatcher retained two completed review threads and exhausted its thread limit; one new
 sol-medium worker uses it and two use supported `codex exec` with explicit model/medium effort. Main
 caps active concurrency at three, owns process handles, reviews proposals and publishes accepted files.
