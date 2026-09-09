@@ -1301,3 +1301,22 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   No fake grading, fallback snapshot, new ledger ladder, production admission or hardware run.
   Server evidence and scheduled model preparation continue separately. One new completed
   sub-item, all twelve parents open. Per-task wrap-up; no index pruning or wiki sweep.
+
+### Original contained server-response checkpoint
+
+- Research 8f582b22 / main 361496f5 publishes the five-file raw server evidence slice
+  and its durable documentation. Exact request/response bytes, ordered warmup/measured
+  slots, intervals and errors survive owned teardown and restart with original source pins.
+- Main corrected-packet acceptance: 2,218 passed, one existing accounting xfailed,
+  83 subtests, no skips in 59.45s; Ruff and diff checks clean. Publication files match
+  frozen hashes. Final patch SHA bdd9890f45316492ebc8ddd77eadc55d0d18649462bdf5aedad615c1a05f70a2.
+- Review eliminated the shared test port and added response-to-descendant PID equality.
+  Test host telemetry remains synthetic; this is not a hardware or correctness result.
+- AKU-07s complete; AKU-07o still owns same-server T0/purpose/contention/GPU witnesses.
+  Existing VB-AK-UNIFIED-PARENT registration now names both raw schemas. Model preparation
+  is separately fixing expiry during artifact publication. Search selection additionally
+  needs an actual unified per-attempt window owner; the older executor's private window
+  cannot supply all-clear attestations to a different attempt. These remain active work.
+- One new completed sub-item; all twelve parents remain open. No installed real-export
+  dry run or hardware loops. README check clean. Bus drain still refuses the unregistered
+  session ID; no other roster identity was impersonated. No index pruning or wiki sweep.

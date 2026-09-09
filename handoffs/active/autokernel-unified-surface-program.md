@@ -2270,6 +2270,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     AKU-07o remains open for actual scheduling, same-server multi-request correctness,
     remaining witnesses and ROOT receipt consumption. Proposed frozen-prompt v2 needs
     explicit seed/token-output fields; its HIGH-impact schema edits await OP-AKU-PROMPT.
+  - [x] **AKU-07s — capture original contained server request/response evidence**:
+    ✅ 2026-09-09 research 8f582b22 / main 361496f5. Actual contained serving retains
+    bounded warmup/measurement bytes, ordered slots, request intervals and failures before
+    teardown. Reopening joins original instrument/source, frame, requests and descendant PID;
+    no retrospective source pin or invented token/seed evidence. Main full suite: 2,218 passed,
+    one existing accounting xfailed, 83 subtests, no skips in 59.45s; Ruff/diff clean.
+    Tiny HTTP integration uses a pre-enrollment ephemeral port and exact response PID checks.
+    This is factual capture only: same-server T0 and remaining scientific witnesses stay
+    open under AKU-07o. See research docs/autokernel-native-server-response.md.
   - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
     add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
     candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,
