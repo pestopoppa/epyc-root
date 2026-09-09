@@ -1923,6 +1923,13 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     branch families refuse. Historical validated state restores provenance without restoring verifier
     authority; new validation still requires registered live callbacks. Offline CLI has no execution or
     promotion authority. Retention, registered row/LOO verifiers and live validation remain required.
+  - [x] **AKU-05d — shared frozen-kernel mutation guard in legacy and candidate paths**:
+    canonical llama/speech worktrees and both protected branch families refuse before mutation;
+    archive rechecks root/branch binding before its ref CAS, and candidate refs reuse the same guard.
+    ✅ 2026-09-09 — main's combined guard/transport acceptance passed **198 tests and 4 subtests**.
+    Symlink aliases and detached canonical roots refuse; experimental linked worktrees sharing the
+    production object database remain allowed. Existing private-index, hook and peer-staging behavior
+    is preserved. Tests use temporary repositories only; no production tree or ref was changed.
 - [ ] **AKU-06 — bounded scheduler and mechanism routes** (AK-AUTO-07/09): pure accounting/coverage model,
   bounded seed boost/opportunity, reservations and rejection audits; directed transfer and noncomposable
   coexistence evidence. Live admission/coexistence waits for AKU-11, not a fake-provider pass.
@@ -1941,7 +1948,8 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Loaded producer identity describes only its enumerated bytecode/constants, not the whole package.
     Dry CLI does not write; management mode grants no compute and launches no workers. Exact trusted
     grant-consumer checks create no grants. Real launch intent/container recovery, worker/protocol/broker
-    integration, dashboard consumer and deployment remain required; AKU-07/09 are not complete.
+    integration and deployment remain required; management-v1 dashboard integration is now AKU-09c.
+    AKU-07/09 are not complete.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
@@ -1966,7 +1974,8 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     measurement ID plus digest; conflicting carriers emit neither and report refusal. Other source
     families retain their existing semantics. Grade remains the shared ladder; protocol/current use
     and raw attestation are separate. Missing witnesses emit no scalar. No corpus was ingested; native
-    controller events, bounded asynchronous feed and registered planner-use consumers remain required.
+    controller events are now AKU-03c; bounded asynchronous feed and registered planner-use consumers
+    remain required.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
@@ -1982,6 +1991,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     ✅ 2026-09-09 — missing/stale/legacy magnitudes remain labelled history; membership/cadence remain
     visible. Stale threshold signals are producer-reported/unverified, not fresh warrant. Main's Node
     DOM harness covers these combinations (69 tests, 5 subtests); this is not a browser or live-soak test.
+  - [x] **AKU-09c — existing hub consumes coherent management-v1 snapshots and direct controls**:
+    explicit campaign/config selection, closed snapshot/ACK validation, monotonic stream fencing,
+    separate producer/activity/science clocks and independently dated evidence cards.
+    ✅ 2026-09-09 — main's full hub acceptance passed **414 tests and 125 subtests**; combined research
+    service/controller/guard acceptance passed **198 tests and 4 subtests**. One lazy bounded health
+    probe owner rejects stale/late/mismatched replies; selected unified health is not vetoed by absent
+    legacy state. Bearer tokens remain in tab memory and commands go directly to the authenticated,
+    exact-origin producer gateway, never through a hub proxy. Browser deadlines cover headers and body;
+    uncertain ACKs retain the exact retry, while double-clicks serialize. The service bounds trickling
+    connections with one owned watchdog and identifies loaded transport code with stable projection.
+    Existing registry/nav/probes/freshness remain the surface; no second page. Legacy fixture repairs
+    retain producer/anchor/authority assertions without hard-coded current-host percentages or age.
+    V1 remains management-only with no active worker or compute authority. Gateway/service deployment,
+    worker-aware v2 integration and unattended live reliability remain separate acceptance work.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.
