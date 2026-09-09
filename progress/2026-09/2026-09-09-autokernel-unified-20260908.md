@@ -8,6 +8,28 @@ source completion, publication, deployment and live acceptance are separate.
 
 ## Accepted first slices
 
+### GLM expected-inventory publication
+
+- Added metadata-only preparation packet at
+  `artifacts/autokernel/glm53-expected-inventory-20260909/`:12 files, approximately52KiB,
+  containing six expected full-file LFS hashes from retained revision
+  `d425e572fb9686125831f476129e51cea34bc5b4` metadata. No model payload read, hash or
+  preparation receipt. Declared model size199,707,321,347 bytes is not measured local data.
+- Original tree bytes lack a trailing newline; base64 retains all14,118 decoded bytes and
+  original SHA4badb4fd6433a833d7ae7525732c865d7d73a7ace347f23e99c56a534e279ba1.
+  Six download metadata copies retain exact source hashes. Manifest byte SHA
+  a9984ae6a18f7b25dd27086abd32b74056264a9cc64ba074067e8a8bb90be626 is separate from normalized
+  expected inventory21d760be3bd473865b31f3b3d9ca28b30a2f7bd12b71660e64191ff02ff11fcc and entry hash.
+- Main matched all12 worker packet hashes, then applied ROOT's import-order formatting to
+  the test only (final SHA910bc5d6dabe7277701876529af294609c2bb43fc45da70c0dc92184c8e93677).
+  Relocated31 tests pass without skips with explicit research3762 checkout; Ruff clean.
+  Owning-validator compatibility uses six tiny synthetic files, never actual GLM shards.
+- Added completed AKU-06p preparation subtask; all12 parents remain open. Real scheduled
+  verification and exact GLM recipe/prompt installation remain part of existing06j/12 scope.
+  Preflight found explicit512 microbatch is required to preserve pinned GLM default;
+  omitted -ub projects2048 but fails final resolution, not an observed wrong hardware run.
+- No hardware inference/perf, production changes, new grading rule, index pruning or wiki sweep.
+
 ### Owned CPU profile producer integration checkpoint
 
 - Post-publication full-suite acceptance on research `3762a517e16adc41916b67b4ca59b1652f26d8c0`

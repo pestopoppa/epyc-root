@@ -2176,6 +2176,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     share, recoverable spin time, bandwidth saturation or measured gains. Add real configuration
     and registered write-side projection; test offline without presenting fixture profiles as
     fresh hardware evidence. Existing GPU/C4 profilers remain separate selected mechanisms.
+  - [x] **AKU-06p — retain exact expected GLM shard inventory without unscheduled model reads**:
+    ✅ 2026-09-09. ROOT `artifacts/autokernel/glm53-expected-inventory-20260909/` contains
+    the existing model_identity.v1 expected manifest, six original download metadata files,
+    lossless encoded source tree, expected-only provenance, task-local author and tests.
+    Manifest SHA256 `a9984ae6a18f7b25dd27086abd32b74056264a9cc64ba074067e8a8bb90be626`;
+    normalized expected inventory `21d760be3bd473865b31f3b3d9ca28b30a2f7bd12b71660e64191ff02ff11fcc`.
+    Main relocated tests:31 passed, no skips. Local model bytes were not read or verified;
+    actual six-shard verification remains resource-accounted preparation under AKU-06j/12.
+    Preserve explicit prospective GLM microbatch512 (pinned kernel default), not the projection's
+    omitted-value2048; omitted -ub currently refuses final resolution. Original token/cache/MTP
+    prompt and explicit logging/UI/speculation flags still require their owning recipe work.
   - [x] **AKU-06o — implement and verify owned full-request CPU profile capture**:
     ✅ 2026-09-09. Research `cpu_profile.py`, installed benchmark entry and the optional
     concrete serving hook retain original request/model/source/process/DSO identities,
