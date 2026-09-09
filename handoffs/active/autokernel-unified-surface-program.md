@@ -15,6 +15,13 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 > settlement defaults to invalid) and is not an accepted replacement. The original
 > feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
 
+- [x] **Actual CPU actor-template failure repaired**: ✅ 2026-09-09.
+  The first live attempts proved target metadata was dropped and CUDA paths forced;
+  actors returned no valid target/empty paths. `ee76b37b` (research main `2059e30e`)
+  delivers original CPU target context and corrects planner/author/critic wording.
+  Main 33 actor checks passed. Stopped the failed run cleanly after two failures and
+  one stopped formation; preserved all five calibration samples/floor for reuse.
+
 - [x] **Separate live trial from retained champion/history readers**: ✅ 2026-09-09.
   Corrected the store-selection regression: live GLM status no longer relocates canonical
   measurements or the 2,397-row historical experiment database. Canonical capability

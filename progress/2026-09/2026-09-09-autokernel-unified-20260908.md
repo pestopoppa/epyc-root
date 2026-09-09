@@ -1,5 +1,16 @@
 # Unified AutoKernel implementation — 2026-09-09
 
+## First live failure and CPU actor repair
+
+All five calibration launches completed. The first two research attempts returned
+empty authored paths: captured actor receipts explicitly identify the contradictory
+CPU request and forced CUDA source schema. This was not a Codex permission failure.
+The owned STOP boundary ended the process cleanly (handle43128 exit0, PID1329820 dead,
+claim released): two planner transients and one stopped formation, no measured changes
+or keeps. Original output/floor remain intact. CPU actor context/template repair
+`ee76b37b` → research main `2059e30e` passed 33 main actor checks. Resume uses the saved
+request-bound floor, not repeat calibration; five valid research iterations remain.
+
 ## Correction: live-store selection hid canonical history
 
 Operator caught a real regression in the preceding dashboard fix: all panels followed
