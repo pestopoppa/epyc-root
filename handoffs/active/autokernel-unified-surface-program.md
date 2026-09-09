@@ -1912,6 +1912,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     cannot recreate a lost published dependency. Controller-native journal wiring is the next consumer.
     Loaded evaluator identity, real lifecycle witnesses and registered policy remain required; no
     measurement, historical backfill or execution authority is claimed by fixture success.
+  - [x] **AKU-04d — generic fixed-member A2 runtime discovery consumer**: exact same-artifact
+    runtime frames produce a sealed three-anchor bank and three candidate-only invocations;
+    cached-bank reuse adds no fresh anchors. ✅ 2026-09-09 — main's clean nine-file release passes
+    **1,512 tests and 83 subtests**; the final focused observation/screen/plan/serving run passes
+    **143 tests and 3 subtests**, with Ruff clean. Full frame identity includes target/prompt,
+    estimator/estimand, required witnesses, policy, evaluator, power/frequency, resource claim and
+    host epoch. Invalid completed units are durably terminal, never silently rerun; uncertain intent
+    requires reconciliation. Serialized replay grants no bank/nomination authority without the exact
+    live verifier. Registered nomination permits only the completed candidate-only advisory view;
+    keep, validation, release and grading remain unavailable. A3 hides stale-epoch magnitudes and
+    refuses mixed current frames. Ordinary load remains recorded noise, not an automatic A2 veto.
+    Source `04d73260`, main `d75bc9ec`; actual controller/native phase adapters and shared Vidya
+    projection remain active work under AKU-04/08 and VB-AK-UNIFIED-DISCOVERY.
 - [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
   delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
   identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
@@ -2038,6 +2051,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Tiny owned fork/IPC fixtures and real-bootstrap containment refusal are separate tests, not live
     grants. Source `61a63c42`, main `8cbcce9f`. Driver-to-bridge execution/settlement, observer authority,
     versioned native attachment and real OP-41 provider/deployment remain required for AKU-07.
+  - [x] **AKU-07d — bounded whole-lifecycle observation producer and serving hooks**: setup/load,
+    placement, health, warmup, measurement and teardown markers enclose each serving unit, with
+    bounded process census, NUMA/affinity/memory/PSI, prepared DSO and explicit target-GPU evidence.
+    ✅ 2026-09-09 — accepted in the same clean release as AKU-04d. Six independent main probes
+    cover loaded code/bound state and shutdown/cost edge cases. Loaded identities include constants,
+    nested code and explicit instance state; unsupported native payload remains unproven. In-window
+    DSO metadata and actual PID-start/boot/container attribution refuse replacement/reuse. Missing
+    trusted foreign/runtime/GPU verifiers stay unknown; no name-based inference classifier or grader
+    is introduced. Cleanup runs on every serving exception. Unjoined readers freeze unknown evidence,
+    retain all incurred reader cost even for dropped samples, and fence successor units; late return
+    cannot mutate the record. Source `04d73260`, main `d75bc9ec`. Native versioned attachment and
+    containing-owner successor enforcement remain assigned AKU-04/07/08 integration work; no live
+    observation, real grant, containment success or deployment is claimed by hermetic tests.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
