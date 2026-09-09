@@ -1,5 +1,16 @@
 # Unified AutoKernel implementation — 2026-09-09
 
+## Live dashboard store repair
+
+The existing dashboard selected stale GPU history. Orchestrator `59782734` (main
+`0ad401dd`) sets only the dashboard's `AUTOKERNEL_LOOP_STORE_ROOT` to the live GLM
+trial store. Dashboard-only reload initially failed because this lane lacked `logs/`;
+creating that directory and retrying succeeded, PID1339228. Main verified the old
+dashboard PID absent, trial PID1329820 still live, and `/api/loop/health` reporting
+fresh CPU-store evidence with no reader error. No inference reload, benchmark bypass,
+or replacement dashboard code. First calibration launch completed; five-loop trial
+is not complete. Automatic future campaign selection remains outside this narrow fix.
+
 ## Existing-loop CPU launch boundary
 
 - Published CPU serving forwarding `1799ade6` → main `12bfe8a3`. The existing
