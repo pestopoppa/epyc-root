@@ -1,5 +1,28 @@
 # Unified AutoKernel implementation — 2026-09-09
 
+## Supervised dashboard configuration and first real measurement traversal
+
+The old dashboard watchdog PID473245 replaced our configured hub after deploy-sync,
+discarding the store environment. Main stopped that exact PID and verified death,
+then re-adopted the existing script as PID1390845 with `EPYC_ROOT` set to the primary
+ROOT lane and `AUTOKERNEL_LOOP_STORE_ROOT` set to the GLM trial store (campaign override
+unset). Its actual restart produced listener PID1399103 retaining the correct live
+store, explicit experimental scope, 2,397 historical attempts and five capabilities.
+No inference reload occurred. Future watchdog adoption must preserve these settings.
+
+The dashboard reload also exposed a guard false positive: benchmark names inside
+Codex author prompts were treated as executable identities. Orchestrator `5e3a9ec7`
+→ main `03ddb449` corrects executable/Python-script classification, preserving real
+benchmark markers and conservative ambiguous wrappers. Main 61 tests passed in0.33s.
+Primary test invocation requires `ORCHESTRATOR_STACK_REEXEC=1 PYTHONPATH=.` to prevent
+the existing stack module's import-time interpreter re-exec; this does not bypass
+benchmark guards. The successful dashboard restart used no guard override.
+
+Resumed trial PID1380863/handle21102 reused calibration. First real CPU proposal was
+authored, reviewed, built, and passed the MUL_MAT CPU gate; it reached paired A/B
+measurement. No completed comparison, qualified gain or five-loop completion is
+claimed at this checkpoint. Production and canonical champion remain unchanged.
+
 ## First live failure and CPU actor repair
 
 All five calibration launches completed. The first two research attempts returned

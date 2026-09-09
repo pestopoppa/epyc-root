@@ -15,6 +15,14 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 > settlement defaults to invalid) and is not an accepted replacement. The original
 > feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
 
+- [x] **Dashboard restart configuration and observed false benchmark detection**:
+  ✅ 2026-09-09. Existing watchdog replaced the configured hub without inheriting its
+  store setting. Re-adopted that same watchdog with explicit primary `EPYC_ROOT` and
+  `AUTOKERNEL_LOOP_STORE_ROOT`; its real replacement hub retained trial/history split.
+  Guard mistook Codex prompt text for benchmark identity: orchestrator `5e3a9ec7`
+  (main `03ddb449`) checks executable/script operands instead. Main 61 focused tests
+  passed; real benchmark identities and placement rules remain enforced.
+
 - [x] **Actual CPU actor-template failure repaired**: ✅ 2026-09-09.
   The first live attempts proved target metadata was dropped and CUDA paths forced;
   actors returned no valid target/empty paths. `ee76b37b` (research main `2059e30e`)
