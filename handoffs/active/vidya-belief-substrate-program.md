@@ -1649,8 +1649,10 @@ retrofitting the read side is impossible. Source row added to
     ROOT direct arm/corpus reopening is implemented under AKU-08j with actual producer and
     malformed-reference tests. Registered feed source closure now captures the final-trial
     helper prospectively (AKU-08k, research bcd32f1d), with actual v3 ingestion/restart and
-    six-file compatibility tests. The separate semantic receipt source/version integration
-    remains AKU-08l; this parent task remains open.
+    six-file compatibility tests. Separate semantic receipt source/version integration and
+    actual historical consumer restart are implemented under AKU-08l (90 independent tests).
+    Diagnostics retain no tuple/grade or scientific permission. Qualified serving-decision
+    consumption remains AKU-08m; this parent task remains open.
   - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
     Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
     three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,

@@ -1420,3 +1420,25 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
 - Completed AKU-08k; all twelve parent tasks remain open. Calibration execution/recovery and
   native retention integration continue. No installed hardware dry run or five-loop GLM trial,
   production mutation, resource activation, index pruning, or wiki compilation was performed.
+
+### AKU-08l — original final-trial semantic receipts and historical consumer restart
+
+- Research source cbb5de2c, pushed and promoted to main 0e4ce89b. The eight applied files
+  match the independently tested frozen packet byte-for-byte.
+- Captured seven-file ROOT projection now feeds a separately versioned canonical receipt with
+  original native producer/finalizer identities. Installed callable/configuration identity is
+  immutable; replay reopens the original artifact graph rather than recreating live issuance.
+- The actual CandidateTransactions/ValidationConsumer path retains an optional CANDIDATE
+  diagnostic and reopens it with fresh controllers, stores, and projection objects. Required
+  OPTIMUM remains pending; forged permission, changed identities, and foreign plans refuse.
+  Diagnostics contain no ClaimTuple or grade. Historical two-file receipt pins remain unchanged.
+- Main independent fresh acceptance: 90 passed in 64.27s, no skips. Worker broader regression:
+  132 passed in 70.71s, no skips/xfails. Tests include actual tiny HTTP child evidence, consumer
+  restart, legacy receipt behavior, and unchanged sampler-exhaustion refusal.
+- Original fixture failure exposed periodic sampling exhausting 64 slots during placement,
+  leaving measurement_end absent. Final issuance correctly refused. The fixture now declares
+  100 ms cadence/256 samples with the unchanged 4 MiB byte cap; production sampling is unchanged.
+- Completed AKU-08l; filed AKU-08m for qualified serving-decision consumption and AKU-07y for
+  bounded lifecycle sampling starvation prevention. All twelve parent tasks remain open.
+  Standalone preparation and retention workers continue; no real-host dry run, live GLM loop,
+  production mutation, resource activation, index pruning, or wiki sweep was performed.
