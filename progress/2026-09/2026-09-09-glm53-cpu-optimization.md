@@ -253,3 +253,18 @@ Main verified library freshness and compiled guard strings. Separate
 Its NOTICE excludes the superseded CPY benchmark helper; the corrected
 benchmark is being built separately. Full-model replay and timing gates
 remain active, with no new default enablement or production change.
+
+### Recurrent-copy paired microbenchmark
+
+The corrected, separately rebuilt copy benchmark passes five AB/BA cycles
+(20 process-isolated arms; 10 exact pairs), each timing 50 graph repetitions
+at canonical 48 workers with explicit affinity, NUMA interleave, and OMP
+settings. Full rounded backing bytes, padding and canaries match; checksum
+`10e46913d1fc2495` is stable. Mean off/on time is 0.464135/0.183828 ms
+(2.524827x), with median ratio 2.430912x. Every pair is positive. This is
+a copy-operation observation, not model throughput or a sustained speed claim.
+
+Evidence: `cpy-outer-rows-micro-20260909T092432Z` under the artifact root,
+including ordered raw samples and actual launch environment. Benchmark-only
+commit `a4ec393a9` is pushed; it changes no serving arithmetic. The bracketed
+model selector uses the immutable `068db793f` serving snapshot.

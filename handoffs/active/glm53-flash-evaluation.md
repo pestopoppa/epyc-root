@@ -200,6 +200,11 @@ Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
   build; serving snapshot is pinned to version 10315 and CPU library
   `f820fe5a`. Model rejection/replay and performance retention remain T13/T14.
   ✅ 2026-09-09
+- [x] T13c — Run the bounded canonical-48 copy microbenchmark: five AB/BA
+  cycles (10 exact pairs, 50 repetitions per arm) preserve full backing bytes
+  and canaries. Mean copy time is 0.464135/0.183828 ms off/on (2.524827x),
+  median ratio 2.430912x. This is copy-only evidence; model retention remains
+  gated by T13/T14. Benchmark-only commit `a4ec393a9` is pushed. ✅ 2026-09-09
 - [ ] T14 — Retest the integrated retained candidate against the preserved baseline.
 
 ## Constraints
