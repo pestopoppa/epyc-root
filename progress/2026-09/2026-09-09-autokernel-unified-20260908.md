@@ -1534,3 +1534,19 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   Expected failures still track native scheduler/provider binding and unfinished held-cost
   recovery. This establishes combined software regression acceptance, not live hardware,
   scientific qualification, dashboard deployment or the five-loop GLM trial.
+
+## Additional shared-validator approval gates
+
+- OP-AKU-ENROLL: original build-enrollment recovery needs a new closed Journal payload;
+  `_validate_native_payload` has HIGH20 upstream impact (durable publication/replay/archive).
+  The worker stopped before this edit and continues installed actor/build execution.
+- OP-AKU-A2: native per-unit intent/permit/invalid terminal semantics reach
+  `a2_execution_state.validate_transition` (HIGH17). Parser-helper widening is the same
+  authority change. Only independent selected-range transport was approved internally;
+  it grants no launch authority and leaves AKU-04f open.
+- Both decisions were requested from the operator together with existing HIGH scopes;
+  no answer has been received. Added decision-queue entries linked to existing AKU-10i/04f,
+  not duplicate implementation tasks. Production freeze and measurement policy stay intact.
+- Main independently ran the intermediate profile suite: 31 passed in 2.64s. Final current-base
+  composition and successful settled-feedback/multi-target coverage remain worker work;
+  this intermediate run is not final profile integration acceptance.
