@@ -335,7 +335,12 @@
       <span id="champ-badge" class="badge absent" style="margin-left:auto">
         <span class="dot"></span><span id="champ-badgetxt">…</span></span>
     </h2>
+    <div id="champ-scope" class="muted"></div>
     <div id="champ"></div>
+    <p class="muted">Retained reports (2026-09-08; original subjects and conditions):
+      <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/champion-max-performance-20260908.md">Champion maximum-performance measurements</a>
+      &middot; <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md">Final champion validation and close-out</a>
+    </p>
   </section>
 
   <section id="sec-tiles">
@@ -419,6 +424,7 @@
       <span id="opgate-badge" class="badge absent" style="margin-left:auto">
         <span class="dot"></span><span id="opgate-badgetxt">…</span></span>
     </h2>
+    <div id="opgate-scope" class="muted"></div>
     <div id="opgate"></div>
   </section>
 
@@ -1588,6 +1594,12 @@ function renderChampion(d){
   const host = document.getElementById("champ");
   const badge = document.getElementById("champ-badge");
   const badgetxt = document.getElementById("champ-badgetxt");
+  document.getElementById("champ-scope").textContent =
+    d.loop?.baseline_scope === "experimental_candidate_not_champion" ||
+    (d.canonical_store_root && d.canonical_store_root !== d.store_root)
+      ? "Canonical champion history — separate from the selected live experiment. " +
+        "The measured commits and anchors below remain the subjects of these measurements."
+      : "";
   const c = d.champion_vs_production || null;
   if(!c){
     // The hub served no champion block at all — a wiring fact about THIS hub,
@@ -1714,7 +1726,8 @@ function renderChampion(d){
     // fault -- the champion-vs-production number refreshes per keep, but between keeps
     // (and before this fix, for the whole accumulation phase) it can lag the tip by days.
     // Say so, and point at the live number: the accumulator card is the progress.
-    const acc = (d.loop && d.loop.accumulator) || null;
+    const sameStore = !d.canonical_store_root || d.canonical_store_root === d.store_root;
+    const acc = sameStore ? (d.loop && d.loop.accumulator) || null : null;
     if (acc && num(acc.n_keeps)) {
       const measurement = accumulatorMeasurement(acc);
       const comp = measurement.comp;
@@ -1810,6 +1823,8 @@ function renderTiles(d){
   const kept = D ? D.kept : 0;
   const negatives = D ? D.negatives : 0;
   const gpu = (D && D.gpu) || {};
+  const separate = L.baseline_scope === "experimental_candidate_not_champion" ||
+    (d.canonical_store_root && d.canonical_store_root !== d.store_root);
   // EVERY figure names what it is a figure OF. A count says of what; a
   // percentage says of what and against what. The unlabelled percentage is the
   // defect this whole revision exists to close, and it does not stop being one
@@ -1821,7 +1836,9 @@ function renderTiles(d){
     tile("Reached a measurement", `${reached}`,
          `of ${done} iterations · ${done - reached} never got to the instrument`,
          reached === 0 && done > 0 ? "bad" : ""),
-    tile("Kept", `${kept}`, `of ${done} iterations · promotions into the champion, not attempts`,
+    tile("Kept", `${kept}`, `of ${done} iterations · ` +
+         (separate ? "keeps in this run, not canonical champion promotions"
+                   : "promotions into the champion, not attempts"),
          kept > 0 ? "good" : "dim"),
     tile("Negatives", `${negatives}`, `of ${done} iterations · every non-keep disposition`,
          negatives > 0 ? "warn" : "dim"),
@@ -1838,9 +1855,8 @@ function renderTiles(d){
 /* ACCUMULATOR (R23-44 two-tier champion). A FOLD of the loop-status
    `accumulator` object — never a new claim. Two graceful empties, deliberately
    distinct: no readable LOOP (see the banner), versus a loop that reports but
-   carries NO serving tier (accumulator === null). Neither is "0% progress": a
-   run with no second tier has no gate to march toward, and saying "0/8.8%" there
-   would fabricate a bundle that does not exist. compounded_bench_pct and
+   carries no accumulator report (accumulator === null). Neither is "0% progress";
+   absence says nothing about whether the run measures serving. compounded_bench_pct and
    fire_threshold_pct are already PERCENTS (not fractions); progress_fraction is
    the 0..1 ratio the producer capped, re-clamped here defensively. */
 function renderAccumulator(d){
@@ -1853,10 +1869,9 @@ function renderAccumulator(d){
   }
   const a = L.accumulator || null;
   if(!a){
-    host.innerHTML = `<div class="empty">This run has <strong>no serving tier</strong>, so ` +
-      `there is no bundle to accumulate. The two-tier champion (R23-44) exists only when the ` +
-      `loop carries a serving recipe; a single-tier run advances on cheap bench alone and its ` +
-      `champion is the headline above. A missing bundle is not “0% to the gate”.</div>`;
+    host.innerHTML = `<div class="empty"><strong>No accumulator reported for this run.</strong> ` +
+      `This does not establish whether the run measures serving or bench. ` +
+      `A missing accumulator is not “0% to the gate”.</div>`;
     return;
   }
   const measurement = accumulatorMeasurement(a);
@@ -2477,6 +2492,11 @@ function gateArms(g){
 
 function renderOperatorGate(d){
   const host = document.getElementById("opgate");
+  document.getElementById("opgate-scope").textContent =
+    d.loop?.baseline_scope === "experimental_candidate_not_champion" ||
+    (d.canonical_store_root && d.canonical_store_root !== d.store_root)
+      ? "Canonical operator-gated measurements — not measurements of the selected live experiment."
+      : "";
   const og = d.operator_gates || {};
   const f = og.freshness || {};
   const state = String(f.state || "absent");
@@ -2658,6 +2678,8 @@ function renderOperatorGate(d){
 
 function renderIdentity(d){
   const L = d.loop;
+  const experimental = L?.baseline_scope === "experimental_candidate_not_champion";
+  const separate = d.canonical_store_root && d.canonical_store_root !== d.store_root;
   const c = d.champion_vs_production || {};
   const rows = [
     ["freshness", `${d.freshness_state}${d.age_s == null ? "" : " · " + age(d.age_s) + " old"}` +
@@ -2673,13 +2695,15 @@ function renderIdentity(d){
           ? "measured" : "NOT measured for this champion"}`],
     ["headline evidence", c.evidence],
   ];
+  if(separate) rows.push(["canonical/history store", d.canonical_store_root]);
   if(L){
     rows.push(
       ["state", L.state],
       ["campaign", L.campaign_id],
       ["epoch", short(L.epoch_sha256)],
       ["anchor commit", short(L.anchor_commit)],
-      ["champion head", short(L.champion_head)],
+      [experimental ? "experimental candidate head" : separate ? "live run head" : "champion head",
+       short(L.champion_head)],
       ["surface", `${L.surface} · ${L.pairs} pairs`],
       ["noise floor", num(L.noise_floor_pct) ? L.noise_floor_pct.toFixed(3) + "%" : "—"],
       ["generated at", L.generated_at]);

@@ -50,11 +50,13 @@ freshness envelope that is the entire point of the envelope.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import sqlite3
+import stat
 import subprocess
 import time
 from typing import Any, Mapping, Optional
@@ -1098,7 +1100,63 @@ def champion_freshness(report: Mapping[str, Any], *,
     }
 
 
-def _champion_capabilities(body: Optional[Mapping[str, Any]]) -> dict:
+def _historical_champion_capabilities(root: Optional[Path],
+                                     champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
+    """Reopen the original retained list; ancestry is not fresh capability verification."""
+    path = (store_root() if root is None else Path(root)) / (CHAMPION_FILENAME + ".pre-reconcile")
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, "rb") as stream:
+            before = os.fstat(stream.fileno())
+            if not stat.S_ISREG(before.st_mode) or before.st_size > 262144:
+                return None
+            raw = stream.read(262145)
+            after = os.fstat(stream.fileno())
+        if len(raw) > 262144 or (before.st_dev, before.st_ino, before.st_size,
+                                before.st_mtime_ns, before.st_ctime_ns) != (
+                after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+            return None
+        record = json.loads(raw)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(record, dict) or record.get("schema") != CHAMPION_SCHEMA:
+        return None
+    source_champion = record.get("champion")
+    measured = source_champion.get("commit") if isinstance(source_champion, dict) else None
+    entries = record.get("capabilities")
+    if not isinstance(measured, str) or not _FULL_SHA.fullmatch(measured) \
+            or _stamp_epoch(record.get("generated_at")) is None \
+            or not isinstance(entries, list) or not 1 <= len(entries) <= 64:
+        return None
+    if any(not isinstance(entry, dict)
+           or any(not isinstance(entry.get(key), str) or not entry[key].strip()
+                  or len(entry[key]) > 8192 for key in ("name", "evidence"))
+           for entry in entries):
+        return None
+    tip = dict(champion) if champion is not None else resolve_champion()
+    if tip.get("resolved") is not True:
+        return None
+    relation = champion_relationship(measured, tree=tip.get("tree"))
+    if relation.get("relation") not in (REL_TIP, REL_ANCESTOR) \
+            or relation.get("current_champion") != tip.get("commit"):
+        return None
+    return {
+        "known": True,
+        "source": (f"Historical capability record {path}, {record['generated_at']}, "
+                   f"measured {measured[:12]}; {relation['relation']} of champion "
+                   f"{str(tip['commit'])[:12]}. Original verification, not a fresh build check."),
+        "items": [{"name": entry["name"], "evidence": entry["evidence"]} for entry in entries],
+        "unknown_reason": None, "would_populate": None,
+        "historical": True, "record_path": str(path),
+        "record_sha256": hashlib.sha256(raw).hexdigest(),
+        "generated_at": record["generated_at"], "measured_commit": measured,
+        "current_champion": tip["commit"], "lineage": relation,
+    }
+
+
+def _champion_capabilities(body: Optional[Mapping[str, Any]], *,
+                           root: Optional[Path] = None,
+                           champion: Optional[Mapping[str, Any]] = None) -> dict:
     """The capability list, or an honest "nobody has said" with the reason.
 
     Entries are the producer's, verbatim: ``{"name", "evidence"}``. Nothing is
@@ -1109,6 +1167,10 @@ def _champion_capabilities(body: Optional[Mapping[str, Any]]) -> dict:
     out = {"known": False, "source": None, "items": [],
            "unknown_reason": CHAMPION_CAPABILITIES_UNKNOWN,
            "would_populate": CHAMPION_CAPABILITIES_WOULD_POPULATE}
+    if body is None or "capabilities" not in body:
+        historical = _historical_champion_capabilities(root, champion)
+        if historical is not None:
+            return historical
     raw = body.get("capabilities") if body is not None else None
     if not isinstance(raw, (list, tuple)):
         if body is not None and raw is not None:
@@ -1315,7 +1377,7 @@ def champion_snapshot(root: Optional[Path] = None, *,
         "pairs": (body or {}).get("pairs"),
         "noise_floor_pct": (body or {}).get("noise_floor_pct"),
         "measurement_evidence": (body or {}).get("evidence"),
-        "capabilities": _champion_capabilities(body),
+        "capabilities": _champion_capabilities(body, root=root, champion=tip),
         "absence_means": CHAMPION_ABSENCE_MEANS,
         "would_populate": _champion_would_populate(path, prod),
         "not_composable": CHAMPION_NOT_COMPOSABLE,
@@ -1964,10 +2026,17 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
     fresh = freshness(report, now=now)
     body = report.get("body")
     campaign = campaign_status.snapshot(now=now)
+    live_root = store_root() if root is None else Path(root)
+    # Selecting a live trial must not redirect the canonical champion or erase
+    # the original memory store. Explicit-root callers remain self-contained.
+    canonical_root = DEFAULT_STORE_ROOT if root is None else Path(root)
+    canonical_body = body if canonical_root == live_root else read(canonical_root).get("body")
     wire = {
         "schema": STATUS_SCHEMA,
         "evidence": report.get("path"),
-        "store_root": str(store_root() if root is None else Path(root)),
+        "store_root": str(live_root),
+        "canonical_store_root": str(canonical_root),
+        "knowledge_store_root": str(canonical_root),
         "artifact_present": bool(report.get("artifact_present")),
         "reader_error": report.get("reader_error"),
         "freshness_state": fresh["state"],
@@ -1984,18 +2053,18 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         "loop": dict(body) if body is not None else None,
         "derived": summarize(body) if body is not None else None,
         # A THIRD producer, and it dates neither of the other two. It is read
-        # here rather than in `server.loop_payload` only so that the loop's own
-        # champion head — which lives in the body read one line above — can be
-        # handed to it without a second read of the status file.
+        # Canonical evidence keeps its original root and original status fallback;
+        # a selected trial head is not the canonical champion.
         "champion_vs_production": champion_snapshot(
-            root, now=now,
-            champion_head=(body or {}).get("champion_head")),
+            canonical_root, now=now,
+            champion_head=(None if (canonical_body or {}).get("baseline_scope") ==
+                           "experimental_candidate_not_champion" else
+                           (canonical_body or {}).get("champion_head"))),
         # A FOURTH producer: the loop's accumulated knowledge, from its own
         # memory store, on its own envelope. It dates none of the other three
-        # and none of them dates it. The status BODY rides along so the
-        # hypothesis ledger joins the store against THIS reading's hotspot
-        # profile and epoch, not a second read a moment later.
-        "knowledge": knowledge_snapshot(root, now=now, status_body=body),
+        # and none of them dates it. Its own original status scopes the ledger;
+        # the live trial's epoch/profile must not reinterpret historical rows.
+        "knowledge": knowledge_snapshot(canonical_root, now=now, status_body=canonical_body),
         # The unified supervisor is an additive, producer-owned full snapshot.
         # With no explicit selection this reports `configured: false` and the
         # historical loop_status.v1 surface remains unchanged/read-only.
