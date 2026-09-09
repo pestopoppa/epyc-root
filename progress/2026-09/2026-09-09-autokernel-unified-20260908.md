@@ -1364,3 +1364,23 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   Calibration preparation and native retained-root catalog work continue independently.
 - No hardware run, new grant, frozen-kernel change, index pruning or wiki sweep. Bus drain
   still refuses this unregistered session ID; no other roster identity was impersonated.
+
+### Same-server evidence and parent-final trial checkpoint
+
+- Research 8f536e0e adds original same-server T0 evidence, candidate-first-safe post-arm pairs,
+  bounded callback-free result reopening and separate parent-final v3 captures. Original unit
+  receipts and failed/rejected facts stay unchanged. Journal grammar accepts only closed v3
+  identities; original provenance is checked outside the controller mutex before current-owner
+  append fencing. Durable duplicates work before/after restart without recreating live authority.
+- Main full composed acceptance: 2,301 passed, one existing accounting xfailed, 83 subtests,
+  no skips in 131.82s. All fourteen published source/test/doc hashes match the frozen tree.
+  Earlier main actual-child/HTTP/final/Journal/restart test: five passed in 42.18s. The composed
+  focused suite passed 87 tests; a legacy-marker fixture was corrected to declare its actual
+  historical capability rather than weakening new-instrument measurement-end requirements.
+- Same-server byte coherence is not token agreement or full seventeen-gate correctness. Missing
+  seed/token/static/dispatch/control/calibration inputs remain unknown; no scientific eligibility
+  is manufactured. ROOT v3 reader and actual finish/search consumer remain under implementation.
+- AKU-07w is one new completed sub-item; AKU-07x records the newly surfaced control-bootstrap
+  circularity and pending operator choice. Existing belief registration/task includes final-v3
+  dependencies. All twelve parents remain open. No real dry run, hardware loops, grants,
+  production changes, index pruning or wiki sweep. README freshness check clean.

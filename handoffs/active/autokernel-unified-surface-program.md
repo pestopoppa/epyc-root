@@ -2307,6 +2307,24 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     2,284 passed, one existing accounting xfailed, 83 subtests, no skips in 68.90s;
     fresh integration subset 56 passed in 8.39s. All 21 published files match accepted hashes.
     Same-server finalization and actual scientific feedback remain AKU-07o/08c.
+  - [x] **AKU-07w — retain same-server owning reports and separate parent-final trial captures**:
+    ✅ 2026-09-09 research 8f536e0e. Original server/anchor observations and complete owning T0
+    reports feed immutable post-arm pairs; candidate-first completion never waits for a future
+    anchor. Finalization requires the full original result/registry/lifecycle set, preserves
+    failed/rejected facts and emits separate v3 carriers. Native prevalidation reopens originals
+    outside the controller mutex; unchanged current-owner fences govern Journal append.
+    Closed v3 Journal grammar and exact restart duplicates are tested. Main full acceptance:
+    2,301 passed, one existing accounting xfailed, 83 subtests, no skips in 131.82s.
+    Byte coherence is not token agreement or a full T0 PASS; missing seed/token/static/dispatch/
+    control/calibration warrants stay unknown. Actual driver finish/search and ROOT reader
+    composition remain AKU-07o/08c. See research docs/autokernel-server-final-trial.md.
+  - [ ] **AKU-07x — resolve first-panel bootstrap without provisional control PASS**:
+    the owning positive-control evaluator requires a rank, while the dispatcher requires an
+    already-passing panel before ranking. Existing live_controls provisional assertions are
+    not authority for unified serving. Operator choice requested: prepare an explicit control-only
+    bootstrap policy for ratification, or require an existing qualified same-frame panel.
+    No policy exception is authorized yet. Raw preparation/solve and discovery continue;
+    no candidate ranking or promotion follows from an unqualified panel. See OP-AKU-CONTROLS.
   - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
     add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
     candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,

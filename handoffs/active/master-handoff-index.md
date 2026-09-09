@@ -48,6 +48,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-AKU-BIND | Approve versioned scheduled-work metadata through native StageRequest, provider admission, lifecycle/recovery and receipt verification (HIGH: 22 upstream, three processes). Fixes missing proposal/backend/stage-class identity; distinct from descendant approval, with no live grants or production changes. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-07k | 2026-09-09 |
 | OP-AKU-STACK | Approve canonical generated-stack repair in the isolated orchestrator lane (HIGH: 66 upstream): lean registry, descriptors, priors, procedure enums and summary; preserve split-instance mode. No compiler edits, service reload or production-kernel change. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-12c | 2026-09-09 |
 | OP-AKU-PROMPT | Approve frozen-prompt v2 with explicit seed and token-output request, preserving v1 exactly (HIGH: 18–22 upstream serialization consumers). Needed for same-server determinism/token evidence; no live execution or policy change. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-07o/07r | 2026-09-09 |
+| OP-AKU-CONTROLS | Choose whether to prepare a narrowly scoped control-only bootstrap policy for ratification, or require an existing qualified same-frame panel. No provisional PASS, candidate ranking or promotion authority is granted by this request; raw preparation and discovery continue. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-07x | 2026-09-09 |
 | OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-13 | Ratify a P2-5j placement amendment or require a full P-BENCH-PLACEMENT-1 composite; the old four-arm design is observation-only | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P2-5j | 2026-08-11 |
 | OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
@@ -80,7 +81,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 58 | 691 | 16 | 2026-07-29 |
+| inference-research | 58 | 692 | 16 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
 | research-evaluation | 44 | 394 | 10 | 2026-07-29 |
 | reviewer-control-plane | 7 | 33 | 11 | 2026-07-29 |
