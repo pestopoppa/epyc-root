@@ -8,6 +8,34 @@ source completion, publication, deployment and live acceptance are separate.
 
 ## Accepted first slices
 
+### Owned CPU profile producer integration checkpoint
+
+- Integrated exact six-file v2 packet on research4657160c; producer SHA256
+  `e626efddf14530a7d4eb3f2ec06b5b86b70a14a2b329a2e59b9054b46cdb20eb`.
+  New installed entry, bounded raw capture/replay and concrete optional serving hook preserve
+  original held ownership, source/model/process/DSO identities and separate counter windows.
+- Main reproduced short-lived reader failure after a 50ms parent delay; the corrected reader
+  retains exact unreaped-child waitid proof, absent unavailable image facts and matching final
+  Popen status. Strict live capture checks remain unchanged. Worker delayed real perf-version
+  check passed3/3 without opening events.
+- Main nine-file composed pytest run21431 completed: **205 passed,14 subtests,36.22s**, no skips.
+  All six final hashes match worker manifest; executable mode0755; diff check clean.
+  Worker current-base broader205/14 passed35.36s. Tests use tiny HTTP/perf fixtures, not GLM.
+- Prior full published research4657160c suite handle34179: **2523 passed,2 strict expected
+  BIND/HELD failures,83 subtests,307.11s**, no skips. This predates the CPU packet and is not
+  a full-suite claim for the new producer.
+- AKU-06o captures completed implementation acceptance; AKU-06j remains open for prospective
+  registered projection, exact GLM configuration and real deployment conformance. Existing
+  VB-AK-UNIFIED-PROFILE source/task updated immediately; adapter/feed worker assigned. No new
+  grading ladder or retroactive claim; receipt integrity is not production validation.
+- GitNexus existing serving hook impact LOW2 reconciled against current callers. Requested
+  wrapper refresh terminated139 during incremental indexing; no metadata deletion or fabricated
+  fresh-index claim. Bus drain still refuses the unregistered session ID; no impersonated bus
+  writes. README freshness check emitted no warnings. No index pruning or wiki sweep.
+- No hardware profile, export dry run, five-loop GLM trial, production build or promotion.
+  Original HIGH-impact approval gates remain unchanged; dashboard aggregates and Vidya wiring
+  continue in separate worker lanes. All12 parent handoff tasks remain open.
+
 - AKU-02a: `Recipe.explicit_unsets` removes inherited treatment values from the actual launched
   environment. Set/unset conflicts, malformed keys and loader-owned overrides refuse. Unset identity
   is immutable, sorted and serialized; empty unset state preserves historical recipe hashes. The
