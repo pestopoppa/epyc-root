@@ -519,3 +519,62 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   frozen production kernels, real resource providers/cgroups, services, research runs and historical
   evidence stores remain unchanged. Bus drain and heartbeat again reject the non-roster session ID;
   no peer identity is impersonated. OP-41, research-relaunch and measurement-ratification gates remain.
+
+### Expanded implementation team and in-progress acceptance review
+
+- At the operator's request, started a separately coordinated CLI team with three explicit
+  `gpt-5.6-sol` / medium workers, in isolated root/research consumer worktrees. The primary team
+  retains driver/controller, contained-worker execution and lifecycle telemetry; the secondary team
+  handles existing-dashboard v3, actor/target-profile preparation and bounded native belief feedback.
+  Each team has disjoint file ownership, and primary review still precedes any publication. This
+  corrects the earlier implication that the primary dispatcher's limit was machine-wide.
+- Main independently ran **264 driver/planner/scheduler/controller/service/planned-serving/Journal
+  tests and 15 subtests**, then **seven additional planner/driver boundary probes**. Review exposed
+  duplicate/conflicting receipt preview deleting committed history, seed promotion not rolling back
+  its queue/state, and old intent materialization rebinding to a new supervisor. The reproducing
+  probes pass after correction. This package is still awaiting its worker-bridge dependency's
+  acceptance; these counts do not claim a published or live autonomous campaign.
+- Additional source review requires actual, bounded telemetry producers rather than fixture-only
+  GPU paths; code-constant/bound-state instrument identity; unconditional observer shutdown; terminal
+  result fencing after durable acceptance; and full held-allocation accounting. The real-bootstrap
+  containment-refusal path and the successful owned-fork protocol fixture remain deliberately
+  separate from any real-provider claim. All test processes are tiny, explicitly owned fixtures.
+- Early secondary-team review identified full Ledger scans per event, rebuilt retrieval indices per
+  request, display-only evidence invalidation, and actor execution outside the existing lifecycle.
+  Corrections are assigned within the existing packages; no new database, grader, process supervisor
+  or resource-authority shortcut is accepted. Runtime sweeps remain actor-free; arm levels do not
+  become improvement effects by joining them on read.
+- Registered two prospective source families immediately in the Vidya source table, with
+  VB-AK-UNIFIED-LIFECYCLE and VB-AK-UNIFIED-DISCOVERY tasks: lifecycle dependency observations and
+  generic fixed-member A2 runtime-screen receipts. Native attachment/readers must be wired before
+  real execution. No historical tuple invention, corpus ingestion or policy amendment occurred.
+- Implementation sub-item count remains **26 accepted** at the prior checkpoint; parent AKU-01–12
+  remain open. New source drafts and the new team's reported test counts are not counted as accepted.
+  Shared checkouts, frozen kernels, real resource providers, running services and research campaigns
+  remain untouched. Bus drain/heartbeat still reject this non-roster ID; no peer identity is used.
+
+### Third team dispatch and boundary wrap-up discipline
+
+- At the operator's further request, launched a third coordinating CLI session in a new isolated
+  research worktree, `autokernel-delivery-research-20260909`, on
+  `lane/autokernel-delivery-20260909` at `bb0c2c38`. Its actual three worker dispatches explicitly
+  use `gpt-5.6-sol`, medium: candidate-validation consumer, versioned legacy migration, and
+  standalone CLI/control/service packaging. These are separate end-to-end contexts, not a split
+  into drafting/testing/review roles, and cannot edit the core or second team's files.
+- The operator reiterated per-boundary wrap-up for every team. Each worker/lead now receives an
+  explicit handback contract: owned docs, exact hashes/tests, real consumer versus fixture scope,
+  remaining tasks and proposed checkbox/progress updates. Primary owns shared documentation and
+  reviewed path-scoped publication, returning commit receipts. A handback awaiting acceptance is
+  not described as a published checkpoint; no pruning, compaction or wiki sweep is triggered.
+- Main independently reproduced **95 dashboard-v3 tests** against the actual in-flight producer
+  and **142 worker/driver/native-capture tests** including current extra boundary probes. Dashboard
+  impact is LOW, five internal consumers. Review still requires the historical-versus-live v3
+  health case, bounded outstanding evidence requests and late provider-return handling before
+  those packages are accepted. Existing owners are correcting them; no live services were changed.
+- A2 review found missing common-frame semantics, unverified replay restoring nomination authority,
+  and invalid-arm terminal/retrieval scope gaps. These are assigned source corrections, not operator
+  blockers or protocol changes. The primary driver worker also owns the new end-to-end execution
+  consumer; team 2 retains actor/feed/retention and team 3 retains validation/migration/CLI.
+- This is an in-progress coordination/source-registration checkpoint. **No new implementation
+  checkbox is marked complete**: the previously accepted count remains 26. The two prospective
+  Vidya wiring tasks remain open; all live hardware, OP-41 and cutover gates are unchanged.

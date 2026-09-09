@@ -2114,11 +2114,28 @@ complete a service, broker, adapter or measurement gate. No deployment/restart i
 Defaults not fixed by policy are versioned configuration with dry-run validation; do not invent a
 statistical acceptance threshold, ratification, resource grant or unsupported production capability.
 
-The built-in dispatcher retained completed review threads and refused additional workers. One sol-medium
-worker uses that dispatcher; two bounded workers use the installed `codex exec` with explicit
-`gpt-5.6-sol` and `model_reasoning_effort=medium`. Main owns concurrency, process handles and review;
-workers own disjoint files and do not commit or push. The lane's GitNexus index was rebuilt at the
-research starting commit; low reported impact is supplemented by caller inspection and tests.
+The primary built-in dispatcher retained completed review threads; its implementation team uses one
+built-in sol-medium worker and two explicitly configured `codex exec` workers. On the operator's
+2026-09-09 request, a separate CLI coordinating session started three additional sol-medium workers
+for dashboard v3, actor/target-profile preparation and the bounded belief feed. Its isolated root and
+research worktrees are `autokernel-consumers-{root,research}-20260909`, on
+`lane/autokernel-consumers-20260909`, starting at root `519acd08` and research `bb0c2c38`.
+The secondary team cannot edit primary-owned controller/Journal/worker files or publish changes;
+the primary owns final review, integration and publication. Exact shared seams are coordinated
+before edits, not merged by assumption. A third coordinating CLI session, also requested by the
+operator on 2026-09-09, started three sol-medium workers for candidate-validation consumption,
+versioned legacy migration, and standalone CLI/service packaging. It owns only the isolated research
+worktree `autokernel-delivery-research-20260909`, branch `lane/autokernel-delivery-20260909`, starting
+at `bb0c2c38`; core and secondary-team files remain read-only. The secondary dashboard worker moved
+to retention after its package was frozen for review. The nine-worker arrangement is scheduling,
+not a claim of completed source, live execution or greater measurement authority.
+GitNexus impact results are supplemented by actual caller inspection and adversarial integration tests.
+
+Every team performs per-package boundary wrap-up: owned documentation, exact validation evidence,
+file hashes, remaining integration tasks, and proposed ledger/progress text. Team leads independently
+review those handbacks and label them `awaiting_primary_acceptance` until the primary applies shared
+handoff/index/progress updates and publishes accepted paths. No team waits for all peers before
+submitting a completed package, and no unreviewed draft becomes a published checkpoint.
 
 Per-task handoff/progress/checklist/publication follows the wrap-up workflow. Index pruning, handoff
 compaction and wiki compilation are not part of this implementation request's routine checkpoints.
