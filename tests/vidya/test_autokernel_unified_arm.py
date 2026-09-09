@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -203,6 +204,122 @@ def carrier_fixture(root: Path, *, status="measurement"):
     return {**body, "carrier_digest": _hash(body)}
 
 
+def v2_carrier_fixture(root: Path, *, instrument_extra: bool = False,
+                       observation_extra: bool = False):
+    """Closed synthetic v2 bytes, independent of the not-yet-published bridge."""
+    carrier = carrier_fixture(root)
+    callable_identity = {"module": "fixture", "qualname": "fixture", "kind": "python",
+                         "implementation_status": "pinned",
+                         "implementation_sha256": "a" * 64,
+                         "configuration_status": "pinned",
+                         "configuration_sha256": "b" * 64}
+    instrument_body = {
+        "schema": "epyc.autokernel.loaded_serving_instrument.v1",
+        "scope": "fixture", "identity_basis": "fixture",
+        "measurement_callable": callable_identity,
+        "clock_callable": dict(callable_identity, qualname="clock"),
+        "supporting_callables": [], "used_constants": {},
+        "dependency_versions": {"python": "fixture"}, "configuration_complete": True,
+    }
+    if instrument_extra:
+        instrument_body["unexpected"] = True
+    instrument = {**instrument_body, "sha256": _hash(instrument_body)}
+    instrument_ref_body = {
+        "schema": "epyc.autokernel.loaded_serving_instrument_reference.v1",
+        "identity_sha256": instrument["sha256"], "configuration_complete": True,
+        "artifact": _write(root, "loaded-instrument.json", instrument),
+    }
+    instrument_ref = {**instrument_ref_body,
+                      "reference_digest": _hash(instrument_ref_body)}
+
+    carrier["schema"] = arm.CAPTURE_SCHEMA_V2
+    carrier["producer"] = arm.PRODUCER_ID_V2
+    plan = carrier["plan"]
+    plan["schema"] = "epyc.autokernel.experiment_plan.v2"
+    plan["loaded_instrument"] = instrument_ref
+    for identity in (plan["anchor_identity"], plan["candidate_identity"]):
+        identity.update({"schema": "epyc.autokernel.serving_arm_identity.v2",
+                         "instrument_identity_sha256": instrument["sha256"],
+                         "instrument_configuration_complete": True})
+    plan_digest = _hash(plan)
+    carrier["loaded_instrument"] = instrument_ref
+    carrier["comparison_identities"] = {
+        "anchor": plan["anchor_identity"], "candidate": plan["candidate_identity"]}
+    carrier["capture_context"]["instrument_id"] = instrument["sha256"]
+    carrier["instrument_id"] = instrument["sha256"]
+
+    native = carrier["raw_artifacts"][0]["document"]
+    attempt = carrier["raw_artifacts"][1]["document"]
+    worker_binding = {"worker_id": "worker-1", "worker_incarnation": 4,
+                      "grant_id": "grant-1", "grant_generation": 5,
+                      "container_identity": {"path": "/fixture", "dev": 1, "ino": 2,
+                                             "uid": 3, "nlink": 1, "mode": 16832}}
+    observation_body = {
+        "schema": "epyc.autokernel.lifecycle_observation.v1",
+        "detector_version": "autokernel-lifecycle-observer-2",
+        "observation_id": "obs-a1", "backend": "cpu",
+        "instrument_identity_digest": instrument["sha256"],
+        "recipe_identity_digest": "c" * 64, "clock_domain": "boot-1",
+        "cadence_s": 0.1, "gap_limit_s": 1.0,
+        "started_monotonic_s": 1.0, "ended_monotonic_s": 2.0,
+        "started_at": "2026-09-09T00:00:00Z", "ended_at": "2026-09-09T00:00:01Z",
+        "boot_id": "boot-1", "worker_binding": worker_binding,
+        "held_claim": {"logical_cpus": [0], "gpu_devices": [], "physical_cpus": [0]},
+        "requested_effective_state": {"logical_cpus": [0], "numa_nodes": [0],
+                                      "thp_mode": "never"},
+        "budgets": {}, "topology": None,
+        "target_binding": {"pid": 123, "start_ticks": 456, "boot_id": "boot-1",
+                           "worker_binding": worker_binding, "binding_ref": "descendant-a1"},
+        "phase_boundaries": [], "load_window": {"start": None, "end": None,
+                                                   "status": "unknown"},
+        "samples": [], "intervals": [], "observer_cost": {},
+        "shutdown": {"status": "resolved", "successor_permitted": True,
+                     "late_writes_accepted": False},
+        "completeness": "unknown", "issues": [], "residency": {},
+        "verdict": {"status": "not_evaluated", "reason": None},
+    }
+    if observation_extra:
+        observation_body["unexpected"] = True
+    observation = {**observation_body, "content_sha256": _hash(observation_body)}
+    reference_body = {
+        "schema": "epyc.autokernel.lifecycle_observation_reference.v1",
+        "observation_id": "obs-a1", "unit_id": "a1",
+        "process_generation_id": "proc-a", "fence_id": "f-a1",
+        "active_claim_ref": "claim-a1", "target_pid": 123,
+        "target_start_ticks": 456, "descendant_binding_ref": "descendant-a1",
+        "worker_id": "worker-1", "worker_generation": 4,
+        "grant_id": "grant-1", "grant_generation": 5,
+        "container_id": "container-1",
+        "instrument_identity_sha256": instrument["sha256"],
+        "observation_content_sha256": observation["content_sha256"],
+        "shutdown_status": "resolved", "successor_permitted": True,
+        "artifact": _write(root, "lifecycle-observation.json", observation),
+    }
+    reference = {**reference_body, "reference_digest": _hash(reference_body)}
+    carrier["lifecycle_observations"] = [reference]
+    for document in (native, attempt):
+        document["schema"] = "epyc.autokernel.planned_serving_artifact.v2"
+        document["plan_digest"] = plan_digest
+        document["comparison_identities"] = carrier["comparison_identities"]
+    native["lifecycle_observation"] = reference
+    attempt["lifecycle_observation_content_sha256"] = observation["content_sha256"]
+    carrier["admissible_view"]["plan_digest"] = plan_digest
+    for row in carrier["admissible_view"]["selected_rows"]:
+        row["plan_digest"] = plan_digest
+    _reseal_raw(root, carrier)
+    carrier["measurement_id"] = _hash({
+        "producer": arm.PRODUCER_ID_V2, "plan_digest": plan_digest,
+        "lineage_id": carrier["lineage_id"], "arm": carrier["arm"],
+        "capture_schema": arm.CAPTURE_SCHEMA_V2,
+        "instrument_identity_sha256": instrument["sha256"],
+    })
+    carrier["arm_locator"] = f"planned-serving:{plan_digest}:lineage-1:anchor"
+    body = dict(carrier)
+    body.pop("carrier_digest")
+    carrier["carrier_digest"] = _hash(body)
+    return carrier
+
+
 def test_exact_carrier_projects_one_tuple_and_shared_ladder(tmp_path):
     carrier = carrier_fixture(tmp_path)
     path = tmp_path / "carrier.json"
@@ -216,6 +333,131 @@ def test_exact_carrier_projects_one_tuple_and_shared_ladder(tmp_path):
     assert projected.unit == "t/s" and projected.extra["independent_unit"] == "process"
     assert projected.extra["applicability"] == "observation_only"
     assert grade(projected)[0] in {"Witnessed", "Verified", "Judged"}
+
+
+def test_v1_fixture_bytes_and_measurement_identity_are_frozen(tmp_path):
+    carrier = carrier_fixture(tmp_path)
+    assert _hash(carrier) == "aa57cd56f0330f9546cdb6fbedf32e6338dad9f38cc52172efec4f0e4446b7b1"
+    assert carrier["measurement_id"] == \
+        "9f9d6721e2396137eec3eac98cdf9da9721cdac7dca3e6806a216ce53f46b872"
+
+
+def test_closed_v2_carrier_projects_without_effect_or_nomination_authority(tmp_path):
+    carrier = v2_carrier_fixture(tmp_path)
+    native = arm.native_rows(carrier, receipt_locator="v2:carrier",
+                             receipt_sha256="a" * 64, attestation_present=True,
+                             corpus_root=tmp_path)[0]
+    projected = arm.project(native)
+    assert projected.value == 10.0
+    assert projected.extra["capture_schema"] == arm.CAPTURE_SCHEMA_V2
+    assert projected.extra["instrument_identity_sha256"] == \
+        carrier["loaded_instrument"]["identity_sha256"]
+    assert projected.extra["lifecycle_observation_references"] == \
+        carrier["lifecycle_observations"]
+    assert projected.extra["applicability"] == "observation_only"
+    assert "effect" not in projected.extra and "nomination" not in projected.extra
+
+
+@pytest.mark.parametrize("fixture_kwargs,label", [
+    ({"instrument_extra": True}, "loaded instrument identity"),
+    ({"observation_extra": True}, "lifecycle observation"),
+])
+def test_v2_reopened_artifacts_are_closed_even_when_rehashed(tmp_path, fixture_kwargs, label):
+    carrier = v2_carrier_fixture(tmp_path, **fixture_kwargs)
+    with pytest.raises(ProjectionError, match=label):
+        arm.native_rows(carrier, receipt_locator="v2:carrier",
+                        receipt_sha256="a" * 64, corpus_root=tmp_path)
+
+
+def test_v2_selected_serving_pid_must_equal_lifecycle_target_pid(tmp_path):
+    carrier = v2_carrier_fixture(tmp_path)
+    native = carrier["raw_artifacts"][0]["document"]
+    native["selected_observation"]["process_pid"] = 124
+    # The selected row is also the terminal member of observations; resealing
+    # proves refusal comes from the cross-artifact PID binding, not a stale hash.
+    assert native["observations"][-1]["process_pid"] == 124
+    _reseal_raw(tmp_path, carrier)
+    with pytest.raises(ProjectionError, match="serving PID differs"):
+        arm.native_rows(carrier, receipt_locator="v2:carrier",
+                        receipt_sha256="a" * 64, corpus_root=tmp_path)
+
+
+@pytest.mark.parametrize("mutation", ["container", "target_worker", "target_boot"])
+def test_v2_lifecycle_artifact_binds_container_worker_and_boot(tmp_path, mutation):
+    carrier = v2_carrier_fixture(tmp_path)
+    reference = carrier["lifecycle_observations"][0]
+    path = tmp_path / reference["artifact"]["locator"]
+    observation = json.loads(path.read_text())
+    if mutation == "container":
+        observation["worker_binding"]["container_identity"]["ino"] += 1
+    elif mutation == "target_worker":
+        observation["target_binding"]["worker_binding"]["worker_id"] = "other"
+    else:
+        observation["target_binding"]["boot_id"] = "other-boot"
+    observation_body = dict(observation)
+    observation_body.pop("content_sha256")
+    observation["content_sha256"] = _hash(observation_body)
+    path.write_text(json.dumps(observation, indent=2, sort_keys=True))
+    reference["artifact"]["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+    reference["observation_content_sha256"] = observation["content_sha256"]
+    reference_body = dict(reference)
+    reference_body.pop("reference_digest")
+    reference["reference_digest"] = _hash(reference_body)
+    carrier["raw_artifacts"][0]["document"]["lifecycle_observation"] = reference
+    carrier["raw_artifacts"][1]["document"][
+        "lifecycle_observation_content_sha256"] = observation["content_sha256"]
+    _reseal_raw(tmp_path, carrier)
+
+    with pytest.raises(ProjectionError, match="ownership mismatch"):
+        arm.native_rows(carrier, receipt_locator="v2:carrier",
+                        receipt_sha256="a" * 64, corpus_root=tmp_path)
+
+
+@pytest.mark.parametrize("mutation", ["identity_metadata", "instrument_reference",
+                                       "lifecycle_reference", "lifecycle_content",
+                                       "attempt_link", "unknown_carrier_field"])
+def test_v2_closed_bindings_refuse_mutation(tmp_path, mutation):
+    carrier = v2_carrier_fixture(tmp_path)
+    if mutation == "identity_metadata":
+        carrier["comparison_identities"]["anchor"][
+            "instrument_configuration_complete"] = False
+    elif mutation == "instrument_reference":
+        carrier["loaded_instrument"]["identity_sha256"] = "0" * 64
+    elif mutation == "lifecycle_reference":
+        carrier["lifecycle_observations"][0]["fence_id"] = "other"
+    elif mutation == "lifecycle_content":
+        carrier["lifecycle_observations"][0]["observation_content_sha256"] = "0" * 64
+    elif mutation == "attempt_link":
+        carrier["raw_artifacts"][1]["document"][
+            "lifecycle_observation_content_sha256"] = "0" * 64
+        _reseal_raw(tmp_path, carrier)
+    else:
+        carrier["unexpected"] = True
+    if mutation != "attempt_link":
+        body = dict(carrier)
+        body.pop("carrier_digest")
+        carrier["carrier_digest"] = _hash(body)
+    with pytest.raises(ProjectionError):
+        arm.native_rows(carrier, receipt_locator="v2:carrier",
+                        receipt_sha256="a" * 64, corpus_root=tmp_path)
+
+
+def test_v2_journal_envelope_uses_same_closed_dispatch(tmp_path):
+    carrier = v2_carrier_fixture(tmp_path)
+    stored = _write(tmp_path, "sealed-v2-carrier.json", carrier)
+    envelope = {"journal_schema": arm.JOURNAL_SCHEMA, "event_id": "event-v2",
+                "kind": arm.JOURNAL_KIND, "seq": 1, "campaign_id": "campaign-1",
+                "record_id": carrier["measurement_id"],
+                "written_at": "2026-09-09T00:00:02Z",
+                "payload": {"schema": arm.CAPTURE_SCHEMA_V2,
+                            "measurement_id": carrier["measurement_id"],
+                            "carrier": carrier, "artifact": stored}}
+    projected = arm.project_journal_event(envelope, corpus_root=tmp_path)
+    assert projected is not None and projected.attestation_verified is True
+    raw = json.dumps(envelope, sort_keys=True).encode()
+    rows = corpus.rows_for_document(tmp_path / "events.jsonl#L1", envelope,
+                                   hashlib.sha256(raw).hexdigest(), corpus_root=tmp_path)
+    assert len(rows) == 1 and arm.project(rows[0]).measurement_id == projected.measurement_id
 
 
 def test_journal_envelope_dispatches_through_real_corpus_path(tmp_path):
@@ -233,6 +475,71 @@ def test_journal_envelope_dispatches_through_real_corpus_path(tmp_path):
     assert len(rows) == 1
     projected = arm.project(rows[0])
     assert projected.measurement_id.startswith("akarm_")
+
+
+def test_incremental_journal_projection_rederives_attestation_bytes(tmp_path):
+    carrier = carrier_fixture(tmp_path)
+    stored = _write(tmp_path, "sealed-carrier.json", carrier)
+    envelope = {"journal_schema": arm.JOURNAL_SCHEMA, "event_id": "event-1",
+                "kind": arm.JOURNAL_KIND, "seq": 1, "campaign_id": "campaign-1",
+                "record_id": carrier["measurement_id"],
+                "written_at": "2026-09-09T00:00:02Z",
+                "payload": {"schema": arm.CAPTURE_SCHEMA,
+                            "measurement_id": carrier["measurement_id"],
+                            "carrier": carrier, "artifact": stored}}
+    projected = arm.project_journal_event(envelope, corpus_root=tmp_path)
+    assert projected is not None
+    assert projected.attestation_verified is True
+    assert grade(projected)[:2] == ("Witnessed", "Attested")
+
+    (tmp_path / "sealed-carrier.json").write_text("{}")
+    with pytest.raises(ProjectionError, match="digest mismatch"):
+        arm.project_journal_event(envelope, corpus_root=tmp_path)
+
+
+def test_incremental_journal_projection_requires_outer_carrier_equality(tmp_path):
+    carrier = carrier_fixture(tmp_path)
+    other = json.loads(json.dumps(carrier))
+    other["capture_context"]["config_digest"] = "b" * 64
+    body = dict(other)
+    body.pop("carrier_digest")
+    other["carrier_digest"] = _hash(body)
+    stored = _write(tmp_path, "other-carrier.json", other)
+    envelope = {"journal_schema": arm.JOURNAL_SCHEMA, "event_id": "event-1",
+                "kind": arm.JOURNAL_KIND, "seq": 1, "campaign_id": "campaign-1",
+                "record_id": carrier["measurement_id"],
+                "written_at": "2026-09-09T00:00:02Z",
+                "payload": {"schema": arm.CAPTURE_SCHEMA,
+                            "measurement_id": carrier["measurement_id"],
+                            "carrier": carrier, "artifact": stored}}
+    with pytest.raises(ProjectionError, match="exact carrier"):
+        arm.project_journal_event(envelope, corpus_root=tmp_path)
+
+
+@pytest.mark.parametrize("mode", ["escape", "symlink"])
+def test_incremental_journal_projection_refuses_outer_artifact_path_tricks(tmp_path, mode):
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    carrier = carrier_fixture(corpus)
+    outside = tmp_path / "outside-carrier.json"
+    outside.write_text(json.dumps(carrier, sort_keys=True))
+    if mode == "escape":
+        locator = "../outside-carrier.json"
+    else:
+        (corpus / "carrier-link.json").symlink_to(outside)
+        locator = "carrier-link.json"
+    stored = {"locator": locator,
+              "sha256": hashlib.sha256(outside.read_bytes()).hexdigest(),
+              "verified": True}
+    envelope = {"journal_schema": arm.JOURNAL_SCHEMA, "event_id": "event-1",
+                "kind": arm.JOURNAL_KIND, "seq": 1, "campaign_id": "campaign-1",
+                "record_id": carrier["measurement_id"],
+                "written_at": "2026-09-09T00:00:02Z",
+                "payload": {"schema": arm.CAPTURE_SCHEMA,
+                            "measurement_id": carrier["measurement_id"],
+                            "carrier": carrier, "artifact": stored}}
+    with pytest.raises(ProjectionError, match="escapes"):
+        arm.project_journal_event(envelope, corpus_root=corpus)
 
 
 def test_corpus_deduplicates_standalone_carrier_and_journal_event(tmp_path):
@@ -421,6 +728,22 @@ def test_artifact_reader_bounds_bytes_and_refuses_invalid_utf8(tmp_path):
     with pytest.raises(ProjectionError, match="not JSON"):
         arm.native_rows(carrier, receipt_locator="x", receipt_sha256="a" * 64,
                         corpus_root=tmp_path)
+
+
+def test_artifact_reader_refuses_fifo_without_blocking(tmp_path):
+    os.mkfifo(tmp_path / "fifo")
+    code = (
+        "from pathlib import Path; "
+        "from adapters import autokernel_unified_arm as arm; "
+        "from claim_tuple import ProjectionError; "
+        "\ntry: arm._artifact_bytes(Path(r'%s'), 'fifo', '0' * 64)"
+        "\nexcept ProjectionError: pass"
+        "\nelse: raise SystemExit('FIFO was accepted')" % tmp_path)
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(ROOT / "scripts" / "vidya")
+    subprocess.run(
+        [sys.executable, "-c", code], env=env, check=True, timeout=1,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     carrier = carrier_fixture(tmp_path)
     stored = carrier["raw_artifacts"][0]["stored"]

@@ -88,7 +88,8 @@ def _schema_map() -> dict[str, Any]:
     mapping: dict[str, Any] = {}
     for module in (*_RECEIPT_ADAPTERS, *_EVENT_ADAPTERS):
         for name in dir(module):
-            if not name.isupper() or not name.endswith("SCHEMA"):
+            if not name.isupper() or not (name.endswith("SCHEMA")
+                                          or "_SCHEMA_V" in name):
                 continue
             value = getattr(module, name)
             # Only source schemas -- never a module's own projection schema, which
@@ -119,8 +120,9 @@ def _dispatch_schema(document: dict) -> str | None:
     if (document.get("journal_schema") == autokernel_unified_arm.JOURNAL_SCHEMA
             and document.get("kind") == autokernel_unified_arm.JOURNAL_KIND
             and isinstance(payload, dict)
-            and payload.get("schema") == autokernel_unified_arm.CAPTURE_SCHEMA):
-        return autokernel_unified_arm.CAPTURE_SCHEMA
+            and payload.get("schema") in {autokernel_unified_arm.CAPTURE_SCHEMA,
+                                          autokernel_unified_arm.CAPTURE_SCHEMA_V2}):
+        return payload["schema"]
     for key in ("schema", "journal_schema"):
         value = document.get(key)
         if isinstance(value, str) and value.startswith("epyc."):
