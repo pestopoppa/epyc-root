@@ -1785,9 +1785,10 @@ zero additional routine operator decisions or critic calls for established runti
 Subagent output is proposed until main-thread review and targeted/integration tests accept it. Source
 completion, main-branch publication, deployment and live measurement acceptance remain distinct.
 
-**Current-code reconciliation:** `loop/run.py` still uses one GPU claim, `ExperimentStore` history and
-direct accumulator JSON. Existing Journal, recipes, claim primitives and dashboard are reused, not
-mistaken for a unified service. The four-keep cadence is present and must survive migration. Broad
+**Current-code reconciliation:** `loop/run.py` still uses one GPU claim and `ExperimentStore` history;
+the reviewed implementation now journals accumulator snapshots before publishing derived JSON.
+Existing Journal, recipes, claim primitives and dashboard are reused, not mistaken for a unified
+service. The four-keep cadence is present and survives recovery. Broad
 historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly adopted as a §9 slice.
 
 ### Executable slices and acceptance
@@ -1796,6 +1797,13 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   immutable registry/recipe/model identities, local candidate seeds, idempotent aliases/requests,
   per-target missing/unsupported state, pinned baseline and no silent reference movement. Pure resolver
   and dry-run fixtures first; no resource authority inferred from a manifest.
+  - [x] **AKU-01a — explicit-snapshot enrollment and offline CLI**: immutable typed CPU/GPU targets,
+    exact artifact/source identities, alias/obligation union, idempotent requests, finite seed marker,
+    pinned explicit/implicit baselines and per-target prerequisite states. ✅ 2026-09-09 — main-reviewed
+    `campaign.py` plus `campaign_cli.py`, 52 focused tests. Optional local file verification reports
+    failures separately without rewriting pins; every output says `admission_ready: false`.
+    `docs/autokernel-unified-campaign.md` contains the tested CLI/schema example. The real production
+    registry selector/adapter, enrollment events and service consumer remain required for AKU-01.
 - [ ] **AKU-02 — resolved runtime recipes and no-build arms** (AK-AUTO-06/07): explicit unsets,
   effective environment/dispatch witnesses, option compatibility, same-binary arms and canonical CPU
   adapter; established runtime combinations skip critic calls. Hardware execution follows its gate.
@@ -1811,9 +1819,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     injected pre/post-rename failures preserve the right artifact and never report durable success.
     ✅ 2026-09-09 — real `status.write_json()` caller hardened; 28 focused tests pass, including
     descriptor cleanup and post-rename durability failure. This alone is not journal recovery.
-  - [ ] **AKU-03b — journal-backed bundle recovery**: snapshot before projection; replay, explicitly
+  - [x] **AKU-03b — journal-backed bundle recovery**: snapshot before projection; replay, explicitly
     labelled legacy import, fail-closed missing/unsupported/corrupt state and ancestry; preserve cadence
     while invalidating stale compounded gain after an external tip change.
+    ✅ 2026-09-09 — `LOOP_BUNDLE_SAVED` is operational state, not a claim. v1 imports preserve original
+    snapshots and default to `unknown_legacy`; current v2 requires validity and makes old readers refuse
+    unsupported state. Journal replay repairs missing/corrupt projections, never invents COR. Tip
+    advance retains historical magnitude but disables its threshold authority. Main run and manual
+    `serving_gate --tip` consume recovery; dry manual inspection opens only an existing read lock and
+    never imports or rewrites. Corrupt history requires restoration, not blind reseeding. Native phase,
+    integration/control events and candidate transactions remain AKU-03 work.
 - [ ] **AKU-04 — shared ExperimentPlan and evidence-use validator** (AK-AUTO-06/07): phase/category/
   protocol/use, independent-unit view, immutable stopping plan and applicability checks; A2 discovery
   never becomes a keep/release claim; calibration provenance, replay and n/unit/interval requirements.
@@ -1832,9 +1847,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
-  - [ ] **AKU-09a — stop/join worker heartbeat before terminal publication**: no late `running` state;
+  - [x] **AKU-09a — stop/join worker heartbeat before terminal publication**: no late `running` state;
     startup/claim/profile failures publish failure; original errors survive status errors; fake-race tests
     prove the real run path uses the lifecycle guard.
+    ✅ 2026-09-09 — one deadline bounds close-lock/write-lock acquisition and thread join. Timeout
+    refuses terminal publication; an arbitrary synchronous filesystem write itself is not claimed
+    time-bounded. Heartbeats retain `starting` until the run advances; final artifact is durable before
+    `complete`, and failure snapshots retain available outcomes. 46 focused lifecycle/status tests pass.
+  - [x] **AKU-09b — current versus historical accumulator rendering**: both existing hub render sites
+    withhold magnitude/progress unless validity is current and the threshold is positive/finite.
+    ✅ 2026-09-09 — missing/stale/legacy magnitudes remain labelled history; membership/cadence remain
+    visible. Stale threshold signals are producer-reported/unverified, not fresh warrant. Main's Node
+    DOM harness covers these combinations (69 tests, 5 subtests); this is not a browser or live-soak test.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.
