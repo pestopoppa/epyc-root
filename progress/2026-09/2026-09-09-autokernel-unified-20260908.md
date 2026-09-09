@@ -8,6 +8,32 @@ source completion, publication, deployment and live acceptance are separate.
 
 ## Accepted first slices
 
+### Prospective CPU profile evidence integration
+
+- ROOT adapter and research feed now join the original accepted worker terminal to its
+  PROFILE_VERIFIED before compact artifact verification. The producer's measurement and
+  receipt-integrity tuples use the existing canonical grader; they do not certify model
+  correctness, scientific eligibility, performance gain or production validation.
+- Durable terminal retention, pair associations, before-ACK writes and restart/retraction
+  survive a one-entry cache. Exact failed settlement releases unjoinable terminal debt;
+  exact consumed publications release quarantined/conflicting profiles. Forged identity
+  joins preserve the pending terminal. Retryable storage faults preserve the source cursor.
+- Main review caught overstrict all-thread sampling equality, malformed nested mappings,
+  a join-extraction NameError and overbroad terminal cleanup. Final adapter accepts sampled
+  TIDs as a subset without fabricating zero periods; focused regressions cover these cases.
+- A worker composition tree had copied pre-aggregate feed files over published270c inputs.
+  Main rejected that proof and applied reviewed hunk packets directly to clean270c/a9ec lanes;
+  original dashboard observation methods/tests remain present. Combined PRIMARY acceptance:
+  89 research tests passed24.94s;65 ROOT adapter/dashboard tests passed3.21s; no skips.
+  All six changed Python files pass Ruff. Earlier WIP failures are not final acceptance.
+- Applied packet hashes: ROOT1a0cf9672e49cdb8f8384b9fa2d86f9fede073aa9eee0836ae2309418848a31a;
+  researchc9bccd5929288387eed5213c6e49f154a53289bed6a1cdd0fa89dcb4db82413c.
+  Added completed AKU-06q and narrow CPU-projection checkbox under VB-AK-UNIFIED-PROFILE.
+  Broader profiler wiring, exact GLM installation and all12 parent tasks remain open.
+- Separate workers now implement diagnostic candidate/resource observations and nondeleting
+  native retained-evidence dependency closure. Existing HIGH authority scopes still await
+  explicit operator reply. No hardware trial, production mutation, index pruning or wiki sweep.
+
 ### Aggregate dashboard integration
 
 - Integrated nine research and five ROOT files for bounded evidence, actor, profile and

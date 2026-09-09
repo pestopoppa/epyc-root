@@ -1667,8 +1667,8 @@ retrofitting the read side is impossible. Source row added to
     `epyc.autokernel.cpu_profile_capture.v1` and two authored mappings in
     `epyc.autokernel.profile_measurement_carrier.v1`, checked by `reopen_capture` before
     output. Producer SHA256 `e626efddf14530a7d4eb3f2ec06b5b86b70a14a2b329a2e59b9054b46cdb20eb`.
-    Registered ROOT projection and durable feed terminal/profile pairing are assigned and
-    not yet implemented. Preserve sampled-period attribution and receipt-integrity-only
+    Registered ROOT projection and durable feed terminal/profile pairing are implemented
+    for this concrete CPU producer under AKU-06q. Preserve sampled-period attribution and receipt-integrity-only
     scope; neither is model correctness, comparable performance or production validation.
     Owner `autokernel-unified-20260908`; implementation assigned to the actor/profile consumer.
     Preserve the selected profiling request and original target/model/quant/recipe, loaded
@@ -1676,6 +1676,10 @@ retrofitting the read side is impossible. Source row added to
     deriving hotspots/opportunities. Reuse an existing profiler source/adapter where applicable;
     configuration metadata cannot substitute for observed profile freshness. Project measured
     findings only through the existing source-class ladder; retain unsupported/unknown states.
+    - [x] CPU producer's prospective measurement/integrity projection and durable pairing:
+      ✅ 2026-09-09. Exact original identity joins, bounded compact capture, before-ACK pair
+      persistence, restart/retraction and capacity-one failed/conflicting attempts verified.
+      Main89 research and65 ROOT combined tests pass; broader selected-profiler wiring remains open.
   - [ ] **VB-AK-UNIFIED-PREPARATION — wire source/build preparation findings at write time.**
     Owner `autokernel-unified-20260908`; bind selected actor advice/assignment, authored immutable
     manifest and patch, actual guarded source commit/tree, derived diff-policy checks and original
