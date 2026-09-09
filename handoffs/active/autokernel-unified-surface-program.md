@@ -2196,13 +2196,24 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     remain explicit. This does not validate subsequent worker edits, real-host export,
     hardware measurements, five-loop GLM acceptance or production promotion.
   - [ ] **AKU-06l — install source/build dispatch and original outcome settlement**:
-    connect the published owner to startup/standalone work-kind dispatch; retain exact selected
+    implement the [proposed multi-child accounting contract](../../docs/design/autokernel-source-build-accounting-v2-proposal.md)
+    only after the existing BIND/HELD high-impact approvals. Original child receipts remain separate;
+    terminal no-launch cancellation is explicit, not a synthetic zero-cost receipt. Preserve
+    exactly-once attempt accounting, ordered admission retries and every durable crash boundary.
+    Connect the published owner to startup/standalone work-kind dispatch; retain exact selected
     request, original actor/build terminal and held-cost references through retries/restart.
     Complete owning scheduler settlement and candidate feedback without synthesizing composite
     receipts or treating enrollment as execution completion. Bind actual source authoring output
     to its original guarded manifest before build; no caller-authored mapping becomes authority.
     Preserve OP-AKU-BIND/HELD and ENROLL approval boundaries and existing native refusals. Prove
     actual startup→profile→actor/source/build→settlement through the same installed entrypoint.
+  - [x] **AKU-06n — specify original multi-child accounting and denial recovery**:
+    ✅ 2026-09-09. Reviewed current scheduler/lifecycle/actor APIs and retained the implementation
+    decision package linked in AKU-06l. It delineates original held-proof/child/settlement append
+    order, empty and charged-prefix admission denials, atomic one-attempt settlement, legitimate
+    partition concurrency, cross-role receipt refusal and occupancy versus elapsed-time budgets.
+    This closes the design audit only; Journal/provider/scheduler changes are not implemented or
+    approved, and AKU-06l plus all parent tasks remain open.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.

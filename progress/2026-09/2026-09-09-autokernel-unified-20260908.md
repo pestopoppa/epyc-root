@@ -1653,6 +1653,26 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   gates remain unchanged; all 12 parent tasks remain open. No live inference, production mutation,
   index pruning or wiki sweep.
 
+## Multi-child accounting decision checkpoint
+
+- Preserved the reviewed worker proposal in
+  `docs/design/autokernel-source-build-accounting-v2-proposal.md`, explicitly proposed and unapproved.
+  Original worker packet SHA-256:
+  `b946738f32d333e044e4b493347119a4ca136869b4e23603a611953145ce4a6a`.
+  Main added the exact-binding requirement preventing one aliased receipt from satisfying two roles.
+- Current scheduler consumes a selection on its first receipt, so three ordinary account calls
+  cannot settle planner/critic/build as one operation. The proposal preserves original provider
+  receipts, adds durable held/child joins and one atomic settlement, and specifies denial/retry,
+  no-launch cancellation, crash recovery, partition overlap and occupancy-time budget tests.
+  Expanded existing OP-AKU-BIND rather than creating a duplicate decision. No HIGH code was edited.
+- Closed design-audit subtask AKU-06n; AKU-06l and all12 parent tasks remain open. Refreshed INF-73's
+  next action. No new open task is needed: implementation remains owned by AKU-06l/BIND/HELD.
+- Dashboard worker-local smoke passed71 tests in3.65s; this is not frozen acceptance. Main also
+  reproduced stale active-worker freshness misclassification and identified CPU launch-readiness,
+  counter-window and natural-EOS handling issues. Corrections/tests remain assigned to their
+  respective implementation owners; this checkpoint does not publish their code.
+- Per-task wrap-up only: no index pruning, wiki sweep, service reload, hardware run or production change.
+
 ## Full regression checkpoint at research 1f38aefb
 
 - Re-polled the original live test handle34837 to terminal exit0; did not restart it.
