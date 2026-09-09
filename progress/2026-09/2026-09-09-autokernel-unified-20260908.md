@@ -8,6 +8,26 @@ source completion, publication, deployment and live acceptance are separate.
 
 ## Accepted first slices
 
+### Feed regression correction
+
+- Full loop/Journal run41861 completed on research0d97fe15/ROOT73e43617:
+  2583 passed,5 failed,15 setup errors,2 existing strict BIND/HELD xfails and83 subtests
+  in329.27s. This was a failed acceptance run, not waived or relabeled green.
+- Three failures were moving-current alias assertions still expecting feed v2; another
+  was a real regression where new profile handlers stopped recording unrelated operational
+  lifecycle/settlement diagnostics. The fifth was the service fixture signaling before
+  observed-frontier capture. All15 errors came from a semantic-receipt fixture using the
+  feed's moving alias rather than that receipt contract's explicit seven-file v2 closure.
+- Corrected production diagnostic fallback and all affected fixtures. Native final/restart
+  coverage now runs both v2 and v3 with separate durable reader IDs; no current-version case
+  or assertion was dropped. The service marker follows the same publisher observation it
+  asserts. Scientific-receipt source acceptance is unchanged, not silently expanded to v3.
+- Main independent22350:110 tests passed118.63s, no skips. Four source hashes were unchanged
+  before/after tests and match PRIMARY application: evidence39449fc6, runtime-test1921c1f3,
+  root-projection-test50944432, final-receipt-test231432ac. Ruff clean. Added completed
+  AKU-06r; fresh full-suite acceptance remains required. All12 parents remain open.
+- No live inference, model reads, production mutation, service reload, index pruning or wiki sweep.
+
 ### Prospective CPU profile evidence integration
 
 - ROOT adapter and research feed now join the original accepted worker terminal to its
