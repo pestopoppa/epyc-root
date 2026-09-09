@@ -1966,6 +1966,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Symlink aliases and detached canonical roots refuse; experimental linked worktrees sharing the
     production object database remain allowed. Existing private-index, hook and peer-staging behavior
     is preserved. Tests use temporary repositories only; no production tree or ref was changed.
+  - [x] **AKU-05e — native validation consumer and replayable exact batch wiring**: due state
+    freezes candidate/comparator/required rows and cadence generations; every submission rejoins
+    the current transaction projection before artifact I/O. Both native arms require one frozen
+    plan/lineage/comparison and exact executable plus full loader-name/content DSO closure.
+    ✅ 2026-09-09 — main's independent clean three-file release passes **246 adjacent/edge tests**
+    and **1,762 loop/Journal/storage tests plus 165 subtests**, with Ruff clean. The sealed row
+    binds batch, row, both manifests and row-set identities; reopen verifies original carrier/raw
+    artifacts, calibration, complete-measurement status and structural eligibility without history
+    scans. CPU success cannot satisfy a required GPU row; optional seed debt stays separate.
+    Source `1ac8393e`, main `deab8f40`. V1's loaded-instrument identity remains unknown for real
+    validation authority; fixture-only transaction tests do not certify a candidate. The assigned
+    semantic consumer must connect native-v2 instrument evidence, canonical ClaimTuple grading,
+    the owning production-validation objective and exact row/LOO verification. No inference,
+    production mutation, new grading rule or promotion authority is added by this slice.
 - [ ] **AKU-06 — bounded scheduler and mechanism routes** (AK-AUTO-07/09): pure accounting/coverage model,
   bounded seed boost/opportunity, reservations and rejection audits; directed transfer and noncomposable
   coexistence evidence. Live admission/coexistence waits for AKU-11, not a fake-provider pass.
@@ -2203,6 +2217,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
   compute authority; applicable post-BIOS calibration and owning serving protocol. Bounded mixed campaign
   and eventual soak demonstrate the actual CPU/GPU/candidate paths, not only helpers or fixtures.
+  - [ ] **AKU-12a — complete standalone dry run**: exercise the installed unified entrypoint,
+    real production export and explicit candidate enrollment, planner prerequisites/budgets,
+    recovery and dashboard/control projections without acquiring compute or inventing grants.
+    Retain the exact command/config, loaded code identities, output and refusal/debt evidence.
+  - [ ] **AKU-12b — five-loop monitored acceptance and bug-fix rerun**: after applicable real
+    resource and operator gates, complete five monitored unified research iterations through the
+    actual CPU/GPU execution path; retain selections, held-resource receipts, lifecycle samples,
+    results, evidence updates, dashboard freshness/control observations and teardown checks.
+    Fix failures and rerun affected acceptance; five mock/helper iterations do not satisfy this
+    operator-requested goal. Keep performance/validation claims within the owning protocol.
 
 ### Execution discipline and retained decisions
 
