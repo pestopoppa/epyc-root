@@ -1843,6 +1843,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-04 — shared ExperimentPlan and evidence-use validator** (AK-AUTO-06/07): phase/category/
   protocol/use, independent-unit view, immutable stopping plan and applicability checks; A2 discovery
   never becomes a keep/release claim; calibration provenance, replay and n/unit/interval requirements.
+  - [x] **AKU-04a — immutable structural plan/unit view and calibration applicability API**: strict
+    record-class/phase identity, declared fixed-N membership/pairing/order, complete prompt/terminal/
+    witness binding, one immutable admissible view, and offline CLI using the real validator.
+    ✅ 2026-09-09 — 72 main-run focused tests. Directly constructed objects and supplied view digests
+    are revalidated; zero/incomplete or invalid paired units cannot become a complete result. Observation
+    cannot become a claim; discovery cannot bank/release; strict-search cannot headline. A2 nomination
+    and claim-bearing uses lack their registered verifier/grader integrations and fail closed. Calibration
+    requires declared unit, n≥24/interval, exact registered-estimator replay and a registered applicability
+    rule; raw replay and plan applicability have separate caches, and transient callback failures are not
+    cached. This is structural validation, not verified independence or a second grading ladder. Actual
+    instrument consumers, native phase/unit events, A2 semantic attestation, power/bounded-null handling
+    and shared ClaimTuple projection remain required for AKU-04.
 - [ ] **AKU-05 — candidate manifests and validation batches** (AK-AUTO-01/10): actual measured versus
   delivery identity, one integration tip and validated pointer, required production rows, frozen batches,
   identifiable LOO, four-keep cadence/debt and cross-repository intent recovery. No frozen-tree writes.
