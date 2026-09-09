@@ -1569,3 +1569,25 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   GLM trial, hardware acceptance or dashboard deployment. All 12 parent tasks remain open.
 - README freshness check returned clean. Per-task wrap-up adds one completed subtask and one
   open follow-up; no index pruning or wiki compilation sweep was performed.
+
+## Profile full acceptance and selected-unit review corrections
+
+- Full loop/Journal suite on clean published research `81b87368` completed:
+  **2,473 passed, two strict expected failures, 83 subtests, no skips in 298.45s**.
+  Explicit AUTOKERNEL_FACTORY_DRY_RUN_TREE names that research primary; EPYC_ROOT_REPO names
+  the owning ROOT lane. Existing native provider binding and held-cost recovery expected failures
+  remain visible. No real-host export dry run, live inference or hardware claim follows.
+- Main independently accepted 55 tests on the original selected-unit proof tree (4.59s), then
+  identified two reproducible defects: a callable object exposing code but lacking Python function
+  internals caused AttributeError in source verification, and the direct producer admitted multiple
+  selected units despite the one-unit native artifact contract. Worker fixes add an explicit
+  function-type guard and pre-admission single-unit enforcement. Rehashed original-result tests
+  now target actual parent reopening for order/process/arm/prompt and full-plan completeness.
+  Corrected packet is being tested on published profile base `81b87368`; not yet integrated.
+- Renewal inspection confirmed the existing actor projection refuses replacement for the same
+  target. Explicit v2 request/publication successor records require HIGH16 shared validator work;
+  added OP-AKU-REFRESH to the operator queue, linked to existing AKU-06i (no duplicate task).
+  Approval was requested asynchronously and has not been received. Hidden v1 nesting is not a
+  workaround. Source/build integration continues independently.
+- This checkpoint strengthens evidence for already completed AKU-06h and documents the gate on
+  existing AKU-06i; zero new task/checkbox flips. All 12 parent tasks remain open.
