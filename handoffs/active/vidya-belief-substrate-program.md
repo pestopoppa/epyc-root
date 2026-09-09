@@ -1621,7 +1621,8 @@ retrofitting the read side is impossible. Source row added to
     relabelled using today's source. Observations alone produce no gain claim, quiet-host rule or
     competing grader. Wire the actual serving/worker consumer before claiming lifecycle completion.
   - [ ] **VB-AK-UNIFIED-PARENT — wire parent per-witness receipts prospectively.** Owner
-    `autokernel-unified-20260908`; new source candidate under review with AKU-07m. Retain exact
+    `autokernel-unified-20260908`; producer/native replay published as research 0a4aada6 with
+    AKU-07m; finish ROOT per-witness consumer, not merely native issuance checks. Retain exact
     native/lifecycle artifacts, loaded source pins, parent-issued worker/grant/container/process/
     unit/phase identities and the finding underlying each non-unknown witness. Carry the sealed
     artifact through closed completion IPC; native capture and the existing ROOT arm reader must

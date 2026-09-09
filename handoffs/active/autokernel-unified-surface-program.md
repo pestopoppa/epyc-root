@@ -2210,7 +2210,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     helper remains unchanged. Native execution/producer acceptance is still AKU-07i/07m, not this
     selection/materialization slice; no hardware performance claim is implied.
     Research source c65af942, main 9eafac1f.
-  - [ ] **AKU-07m — derive parent witnesses from sealed native lifecycle evidence**:
+  - [x] **AKU-07m — derive parent witnesses from sealed native lifecycle evidence**:
     carry the exact sealed native-observation StoredArtifact through closed v2 completion IPC;
     reopen it and its lifecycle reference in the bounded parent evidence producer, joined to the
     parent-issued process/grant/container receipts and frozen plan/recipe/request identities.
@@ -2219,6 +2219,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     correctness, placement or contention. Unsupported purpose/GPU/runtime checks remain unknown
     until their concrete owning adapters are connected. Preserve v1 completion grammar, exact
     retry identity and existing grading/noise policy; configuration injection alone is insufficient.
+    ✅ 2026-09-09 — research `0a4aada6`, main `d51f9de6`. Concrete parent service derives
+    request completeness, placement and supported health readback; original issuance registry
+    and receipt replay precede native capture. Parent-only descendant lookup, deadline-bounded
+    serialized IPC and exact retry handling are exercised by an actual tiny-child/socket flow.
+    Main combined suite: **1,941 passed, one strict accounting xfailed, 83 subtests passed**;
+    after unused-import cleanup, 102 focused tests and Ruff pass. Hermetic observations prove
+    integration only; unknown scientific witnesses and ROOT per-witness consumption remain open.
+  - [ ] **AKU-07o — connect owning scientific and GPU witness verifiers**: use existing
+    correctness, purpose, contention and GPU protocols with original in-window parent evidence.
+    Derive each required witness from the actual held allocation and measured lifecycle; no
+    generic success, late sample, synthetic telemetry or reduced required-witness list may
+    substitute for the owning protocol. Coordinate ROOT per-witness receipt reopening under
+    VB-AK-UNIFIED-PARENT and real standalone wiring before mixed CPU/GPU acceptance.
   - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
     add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
     candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,
@@ -2304,6 +2317,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Old instruments lacking it stay compatibility-only. Connect only its supported provenance
     warrant to typed eligibility under AKU-08c; no new carrier grammar, grading ladder or
     numerical acceptance policy is implied. Lifecycle and semantic owners coordinate one writer.
+    Original write-side capture is published in AKU-08h; finish canonical reopening/eligibility
+    with genuine prospective evidence, retaining every owning protocol's required witness.
+  - [x] **AKU-08h — prospective producer code/configuration capture**: before plan issue,
+    seal selected deferred sink methods, observation seal/reopen and v2 validation methods plus
+    actual configured verifier slots in loaded-instrument used_constants. Capture checks the
+    selected implementation against those original bytes. Exact bounded immutable string-set
+    constants now hash deterministically; other unsupported configurations remain unproven.
+    ✅ 2026-09-09 — research `0a4aada6`, main `d51f9de6`; actual default closure is complete,
+    with cross-hash-seed, changed-implementation/configuration and historical-absence tests.
+    This captures provenance only, not scientific eligibility or retrospective authority.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.

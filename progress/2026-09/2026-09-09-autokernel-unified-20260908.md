@@ -1161,3 +1161,30 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   accepted implementation sub-items, all twelve parent tasks remain open. README freshness is
   clean. Bus drain/heartbeat rejected this non-roster session id; no other identity was used.
   Per-task wrap-up only; no pruning, compaction or wiki sweep.
+
+### Parent-issued native factual evidence and prospective producer capture
+
+- Published research **0a4aada6 / d51f9de6**: nineteen code/test/documentation files add
+  artifact-only v2 completion IPC, live health acknowledgement, parent-issued factual witness
+  receipts, bounded original-issuance registry and deterministic receipt replay before native
+  capture. The existing v1 completion contract remains unchanged; already-journaled duplicates
+  remain idempotent, and lost uncommitted issuance cannot be invented after restart.
+- Main composed on the real Git da7dd5bc base, verified all eighteen frozen source/test hashes,
+  and ran the entire loop plus Journal with no exclusions: **1,941 passed, one strict accounting
+  xfailed, 83 subtests passed in 37.94s**. Removed six unused imports during integration; the
+  actual time import remains. After cleanup the main focused suite passed **102 tests in 6.60s**
+  and Ruff passed. Published cleanup hashes supersede the two corresponding frozen owner hashes.
+- Prospective source closure captures actual selected deferred sink/observation/native-validation
+  methods and configured verifier slots before plan issue. Exact bounded string frozensets hash
+  deterministically across Python hash seeds; unsupported objects remain unproven. Main verified
+  that the actual default closure is complete. This does not retrospectively attest old records.
+- Marked **AKU-07m and AKU-08h complete**, added **AKU-07o** for real owning scientific/GPU
+  witnesses. Native factual receipts do not establish correctness, purpose, contention or residency
+  where owning verifiers are absent. Required witnesses must not be removed to manufacture a
+  production-validation positive. ROOT per-witness reopening, canonical semantic consumption and
+  actual mixed CPU/GPU acceptance remain open; existing Vidya source/task registrations updated.
+- Runtime external handle49858 ended normally; resumed the same team as handle28046 to fix the
+  independently reproduced SIGTERM/DriverRefused race. Feed handle35220 remained live. No duplicate
+  sessions, live grants, hardware benchmarks, service reloads or production-kernel changes.
+- Checklist: **two completed sub-items, one new open task, zero declines**; 48 accepted sub-items,
+  all twelve parent tasks open. Per-task wrap-up only; no pruning, compaction or wiki sweep.
