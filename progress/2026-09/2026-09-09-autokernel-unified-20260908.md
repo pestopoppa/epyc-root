@@ -987,3 +987,31 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   open. No installed standalone dry run or five-loop hardware acceptance is claimed. Per-task
   wrap-up excludes index pruning, compaction and wiki sweep. ROOT code index refreshed successfully;
   bus drain still refuses this non-roster id and no peer identity/outbox was used.
+
+### Public v2 scheduler/materialization connection
+
+- Published research source **c65af942**, main **9eafac1f**: schema-aware expected arm
+  identities in plan_iteration and original-version materialization in the public driver.
+  Startup instrument identity must match the v2 plan's sealed instrument. V1 remains v1;
+  proposal/claim recipe identity and the HIGH-impact shared identity helper are unchanged.
+- Main independently reproduced **57 tests** on both the immutable composition snapshot and
+  PRIMARY; final combined loop/Journal/storage regression passed **1,905 tests plus 165 subtests
+  in 27.01s**. Tests use actual controller commands, scheduler selection and materialization for
+  CPU/GPU v1/v2; no prepared envelope upgrade or private issued-map seed substitutes for planning.
+  An initial isolated fixture needed its artifact-root parent created before instrument sealing;
+  the final patch includes that setup correction. Preliminary acceptance commit 5ac25714 is
+  superseded by the reviewed publication, not a separately deployed version.
+- The nineteen-file native dependency was captured with before/after SHA equality for the
+  composition tests. The native owner is still finalizing its manifest; that packet was excluded
+  from publication. Main's strengthened actual-child/projector plus PID/expiry probes pass
+  **4/4 in 1.11s**; scientific witnesses and production containment remain separate gates.
+- Delivery team finished without publication. Its semantic loader/receipt and partial startup
+  packets are retained for clean acceptance; final canonical pins remain unset/compatibility-only.
+  Audit found no real StartupManifest artifact or non-test factory. Existing --dry-run consumes
+  a prebuilt manifest, not the requested real production export→candidate enrollment→preflight→
+  dashboard chain. New AKU-07n owns the bounded manifest builder and installed-chain verification;
+  generated export repair retains its existing separate operator gate. No fake config is counted.
+- Checklist: **one completed sub-item (AKU-07l), one new open task (AKU-07n), zero declines**.
+  Accepted implementation sub-items now **41**; all twelve parent tasks remain open. No real
+  dry run, five-loop hardware run, provider grant, service activation or production kernel change.
+  Per-task wrap-up only; no pruning, compaction or wiki sweep. README freshness is clean.

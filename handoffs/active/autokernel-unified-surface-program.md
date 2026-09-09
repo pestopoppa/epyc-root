@@ -2188,13 +2188,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Current provider authorize/close APIs receive no typed backend/class binding, so request-ID-only
     changes cannot fix profile settlement. The additional HIGH22/three-process validator scope awaits
     OP-AKU-BIND approval; descendant approval does not cover it. Preserve v1 and old-reader refusal.
-  - [ ] **AKU-07l — select and materialize native-v2 work through the public driver**:
-    plan_iteration currently compares v2 plans against v1-only expected arm identities, and
-    materialize_runtime emits PREPARED_SCHEMA v1. Select the existing schema-appropriate identity
-    builder and loaded-instrument identity without changing proposal recipe identities; preserve
-    explicit v1 compatibility. Test actual public scheduler selection through v2 preparation,
-    without manually upgrading the test's prepared stage. Exact two caller seams were LOW;
-    the shared HIGH-impact serving_arm_identity helper remains unchanged.
+  - [x] **AKU-07l — select and materialize native-v2 work through the public driver**:
+    plan_iteration selects the existing schema-appropriate plan identity builder while preserving
+    proposal recipe identities; materialize_runtime preserves the issued version and checks the
+    v2 loaded-instrument pin against startup execution input. ✅ 2026-09-09
+    Main reproduced 57 public scheduler/materialization tests (CPU/GPU v1/v2, bad instrument pin,
+    wrong recipe identity) and 1,905 combined tests plus 165 subtests. No test upgrades an issued
+    prepared stage. Exact two caller seams were LOW; the shared HIGH-impact serving_arm_identity
+    helper remains unchanged. Native execution/producer acceptance is still AKU-07i/07m, not this
+    selection/materialization slice; no hardware performance claim is implied.
+    Research source c65af942, main 9eafac1f.
   - [ ] **AKU-07m — derive parent witnesses from sealed native lifecycle evidence**:
     carry the exact sealed native-observation StoredArtifact through closed v2 completion IPC;
     reopen it and its lifecycle reference in the bounded parent evidence producer, joined to the
@@ -2204,6 +2207,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     correctness, placement or contention. Unsupported purpose/GPU/runtime checks remain unknown
     until their concrete owning adapters are connected. Preserve v1 completion grammar, exact
     retry identity and existing grading/noise policy; configuration injection alone is insufficient.
+  - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
+    add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
+    candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,
+    plans/execution inputs, evidence and installed provider/verifier identifiers). No real manifest
+    currently exists; the delivery dry-run only validates a prebuilt test-shaped manifest and
+    does not invoke export/enrollment or emit dashboard projection. Reuse canonical recipe and
+    campaign resolution; do not invent profiles, grants or witness receipts. Retain exact real
+    input/output paths and a runnable command; satisfy AKU-12a's full chain after separately gated
+    generated-export repair. Provider absence is reported debt, not permission to fabricate it.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
