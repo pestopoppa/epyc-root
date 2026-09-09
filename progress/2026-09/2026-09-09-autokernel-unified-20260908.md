@@ -863,3 +863,50 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   remain open. **AKU-04f** records the exact next native bridge task; zero declines. Main kept
   the native worker as the sole owner of its changing lifecycle/observation regions. No live
   inference, research artifact deletion, service activation or production-kernel change occurred.
+
+### Review checkpoint: native identity, maintenance and standalone recovery
+
+- No new research implementation packet is published by this checkpoint. Accepted implementation
+  sub-items remain **38**, all twelve AKU parents open. This records a completed review batch,
+  four newly explicit follow-ups (AKU-06d/07j/08c/12c), and two separately pending approval scopes;
+  there are zero completed-task checkbox flips and zero declined follow-ups. Existing 07h/07i/10d
+  tasks now carry current corrective work. No index pruning, compaction or wiki sweep occurred.
+- Main independently tested the moving service/runtime composition: **84 passed in 8.10s**,
+  including the external pipe2 startup-failure probe that previously leaked an entered controller.
+  The service now handles both finite successful recovery statuses, recovered and settled. Actual
+  restart after a completed worker remains fenced because provider-held accounting was memory-only.
+  A read-only source review specified a versioned record before final result publication and
+  accounting-only replay, including crash after held append but before final result. This is a
+  missing implementation connection, not permission to fabricate zero cost or resurrect results.
+- Four external maintenance probes plus its focused suite passed **35 tests in 1.17s** after
+  fixes for acquisition reply loss, invalid aborted settlement, receiptless controller abort and
+  stale receipt use after renewal. The follow-up legacy INTENT test then returned **1 failed,
+  2 passed**: validation inserted abort_receipt into a v1 payload, breaking closed-shape revalidation.
+  The owner is correcting this and preparing a clean six-file packet. All deletion tests use
+  disposable fixtures; real retained-artifact roots/provider readiness remain separate requirements.
+- Native loaded-instrument readers now pass **8 tests in 0.41s**, including the independent
+  changing-file probe. Opens are nonblocking, reads bounded, and before/after identity checked.
+  Main subsequently reproduced an ancestry check accepting a reused target PID with different
+  start ticks (**1 failed**). The approved native worker has the exact probe and review feedback;
+  the complete contained-child/evidence/append/restart acceptance is still outstanding.
+- The canonical ROOT v2 reader's serving-PID/lifecycle-target binding correction passes **56 tests
+  in 0.21s** with explicit current research-root configuration. The cross-repo producer test is
+  still the existing v1 path; v2 fixtures do not prove the final v2 producer. The semantic owner
+  is connecting immutable reprojectable canonical-grade receipts, not a second grader or a
+  permanently unavailable adapter. Feed and actual eligibility consumers remain required.
+- Actor/profile source review requires clean composition on c36411a7 with the actual published
+  driver issuer, public profile authority, real tiny fixture worker and reopen. Main's older-lane
+  focused run returned **54 passed, 1 failed**: the budget-drift test lacked current producer
+  receipt authority after restart and failed before reaching its intended budget assertion.
+  The correction must repair the precondition and test both constraints, not weaken the regex.
+- Real production export refuses `compiled priors are stale for descriptors`. The canonical
+  stack-generation pipeline preserves declared both/full/split topology; bare priors compilation
+  does not. Its generated-file-only repair is pending OP-AKU-STACK approval (HIGH 66 upstream).
+  The extra held-cost event is separately pending OP-AKU-HELD approval (HIGH 22 upstream, three
+  processes). Original descendant approval stays in force. OP-41 broker-code delegation remains
+  unanswered and live finalise/promote/reboot gates stay unchanged; none blocks unrelated source work.
+- Evidence/probes and owner packets are retained under the session's autokernel-implementation-20260908
+  temporary directory; test names and assertions above distinguish failures from source-review
+  concerns. No dry run, five-loop hardware campaign, grant, live service activation or production
+  kernel change is claimed. README freshness check is clean. Bus drain/heartbeat still reject this
+  non-roster session id; no peer roster/outbox was impersonated or modified.

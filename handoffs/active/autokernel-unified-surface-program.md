@@ -2038,6 +2038,13 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Source `61a63c42`, main `8cbcce9f`. One outstanding selection and a management-only default do not
     constitute concurrent CPU/GPU execution. The end-to-end execution/receipt consumer, prepared
     actors, native evidence feedback and real authority remain required under AKU-06/07/08.
+  - [ ] **AKU-06d — connect actual selected actor/profile preparation**: compose the actor owner
+    packet on current published source and test the real UnifiedCampaignDriver-issued selection,
+    public producer registration/reservation, contained fixture execution, exact held cost/stdout,
+    native finish/profile publication and restart. Replace private projection/receipt seeding in
+    acceptance tests; independently test durable budget drift with a valid current producer receipt.
+    Connect proposed advice to the existing private source/build preparation consumer, not dispatch
+    or publication authority. The owner is preparing this current-source acceptance composition.
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
@@ -2134,14 +2141,27 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     retry the retained exact transaction/execution after transient authority or reply loss with
     bounded backoff; preserve unresolved ownership, stop responsiveness and no duplicate child.
     Connect the service-owned run thread and typed process-restart reconstruction of unsettled
-    work. Main reproduced `run()` returning `recovery_required` instead of using an available
-    exact retry; the existing runtime owner is correcting and testing this path.
+    work. Exact autoretry, startup pipe/signal cleanup and finite recovered/settled success handling
+    have working-tree corrections; main reproduced 84 service/runtime/driver tests, including the
+    formerly failing pipe-creation cleanup probe. Finish the actual installed startup materializer
+    and its real inputs; a source-level runtime_factory callback is not standalone acceptance.
   - [ ] **AKU-07i — finish native-v2 actual-descendant binding**: implement the narrowly approved
     lifecycle event/validator with legacy refusal and replay/acquisition/archive tests; verify
     the real contained-child → parent capture → current-owner append path. Bound loaded-builtin
     artifact reads and check before/after identity stability; no FIFO wait or changing artifact
     may fabricate a pinned instrument. The operator approved the specific HIGH-impact validator
     change on 2026-09-09; unrelated trust boundaries and frozen kernels remain unchanged.
+    Main verified eight artifact-reader tests but reproduced a reused-PID ancestry defect:
+    compare each observed start tick/boot identity and recheck target/container membership before
+    durable capture. Verify deadline handling and actual child/restart coverage before acceptance.
+  - [ ] **AKU-07j — persist provider-held cost for process-restart settlement**: add the exact
+    versioned held-receipt lifecycle record after OWNED_TERMINAL and validated provider close,
+    before WORKER_RESULT_ACCEPTED/STALE. Restore separate accounting-only indexes and bind lookup
+    to the original unsettled driver selection. Handle crash after held append but before final
+    result with deterministic stale accounting, one durable stale event and one settlement, no
+    provider reacquisition/duplicate child/current measurement acceptance. The additional HIGH
+    validator event (22 upstream, three processes) awaits its own operator approval, distinct from
+    approved descendant capture; low-risk independent work continues. See OP-AKU-HELD in the router.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
@@ -2168,6 +2188,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     and raw attestation are separate. Missing witnesses emit no scalar. No corpus was ingested; native
     controller events are now AKU-03c; bounded asynchronous feed and registered planner-use consumers
     remain required.
+  - [ ] **AKU-08c — connect canonical v2 grade receipts and bounded live evidence feedback**:
+    retain the registered projector and sole ClaimTuple grader; write immutable receipts from
+    reopened native-v2 artifacts and reproject them at eligibility, discharging only the exact
+    missing-adapter refusal. No actor string/dict supplies grading authority. Complete actual
+    feed/frontier/ACK/invalidation consumers and the final producer-to-projector path. Main's 56
+    projector tests include resealed PID mismatch refusal and existing v1 producer compatibility;
+    they do not establish native-v2 end-to-end acceptance. Keep experimental champion selection
+    separate from deployment authority; always-Unavailable adapters do not complete this task.
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
@@ -2262,9 +2290,12 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     legacy database schema marking remain outside this completed snapshot-reader slice.
   - [ ] **AKU-10d — finish native maintenance ownership and uncertain-provider recovery**:
     integrate reviewed controller exclusion/native roots/real hold accounting, and retain the
-    exclusion on acquisition reply loss or false/misbound aborted-settlement receipts. Main's
-    two disposable probes reproduced erroneous release before any artifact deletion; the same
-    maintenance owner is correcting both and adding controller-replay/gate regressions.
+    exclusion on acquisition reply loss or false/misbound aborted-settlement receipts. The four
+    uncertainty/abort probes now pass with the focused suite (35 tests): receiptless public abort
+    refuses and settlement uses the latest validated renewed receipt. A subsequent legacy INTENT
+    probe fails because validation adds a v2 field while retaining the closed v1 schema; preserve
+    accepted legacy bytes and revalidation/replay, while refusing unproved legacy ABORTED rows.
+    The same owner is correcting and refreezing; real native catalog/provider coverage remains.
 - [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
   finalise → promote → reboot gate. Exact pending choice: whether the operator's new implementation
   instruction delegates broker-code work now while preserving live activation gates. No answer inferred.
@@ -2281,6 +2312,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     results, evidence updates, dashboard freshness/control observations and teardown checks.
     Fix failures and rerun affected acceptance; five mock/helper iterations do not satisfy this
     operator-requested goal. Keep performance/validation claims within the owning protocol.
+  - [ ] **AKU-12c — repair and verify canonical generated export inputs**: real production export
+    currently refuses stale descriptor/compiled-priors provenance. The supported writer is
+    stack_change_pipeline.py update, regenerating lean registry, descriptors, priors, procedure
+    enums and summary while preserving declared full/split instance mode; bare compile_stack_priors
+    would lose the split mode. The isolated generated-file repair awaits explicit approval for its
+    HIGH-impact scope (66 upstream); no compiler logic, service reload or frozen kernel change.
+    Verify reproducibility and exporter closure, then supply exact artifact pins/configs to AKU-12a.
+    See OP-AKU-STACK in the router; no stale digest bypass or fabricated export is permitted.
 
 ### Execution discipline and retained decisions
 
