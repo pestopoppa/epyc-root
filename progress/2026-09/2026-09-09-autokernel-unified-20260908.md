@@ -1,5 +1,34 @@
 # Unified AutoKernel implementation — 2026-09-09
 
+## Operator-directed correction: restore and extend the working loop
+
+- Operator requested stopping failing CI notifications during implementation.
+  GitHub workflow `autokernel guards` (344863017) in
+  `pestopoppa/epyc-inference-research` was disabled and independently listed as
+  `disabled_manually`; Dependabot remains active. This is not a passing CI result.
+
+- Operator rejected speculative framework expansion and directed actual five-loop
+  GLM launch attempts, concrete fixes and retries. Preserve full CPU/GPU/candidate
+  feature scope; keep unpublished dashboard/retention expansion off the launch path.
+- Independent audit: two demonstrated old-loop regressions (fresh-store refusal,
+  disabled pruning); no detected changes to old GPU recipe hashes/argv or core
+  claim/bench/pipeline/champion modules. This is source evidence, not hardware proof.
+  Audit artifact: `/mnt/raid0/llm/worktrees/acceptance/autokernel-friction-audit-20260909/AUDIT.md`.
+- Both regressions repaired/published: `009ef659`→`cdd13df5` and
+  `457f5e37`→`602bdf16`. Main31 recovery tests and actual keep-path regression pass.
+  No actual build deletion was run. Existing corrupt/history lineage refusal remains.
+- GLM exact request transport `002fc0d0`→`bfb86301`; actual topology-prefix fix
+  `20b9621c`→`5038e406`. Main combined50 tests pass; original request fixture preserved.
+- Real primary orchestrator exporter now exits0 after canonical generated-input
+  update. Output `/mnt/raid0/llm/tmp/aku-real-primary-export-20260909`; generated
+  changes remain uncommitted. Global stack guard still reports existing serving-port
+  mismatches; no blanket stack-check success or service reload claimed.
+- Prior corrected full software run completed2607 tests +83 subtests,2 strict
+  expected BIND/HELD failures in358.82s. It does not establish runnable research.
+- No real five-loop run yet. Startup worker continues prospective GLM recipe/config;
+  CPU extension uses existing source/build/serving/search owners, not invalid-only
+  standalone replacement. Production kernels untouched.
+
 Owner: `autokernel-unified-20260908`. Operator authorized implementation of
 `handoffs/active/autokernel-unified-surface-program.md`, using GPT-5.6-sol medium workers for bounded
 execution and main-thread coordination/review. Root lane starts at `088427b0`; research at `1d9733f1`.
