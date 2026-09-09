@@ -1610,3 +1610,26 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   accepts build while planner requires build_recipe. Owning worker is checking exact impact and
   correcting startup with roundtrip tests; this remains within existing AKU-06d implementation,
   not a new duplicate task or a synthetic manifest workaround.
+
+## Discovery routing refusal and final transport regression
+
+- Published transport main `0114da9b` passed the full loop/Journal suite: **2,490 passed,
+  two strict BIND/HELD expected failures, 83 subtests, no skips in 309.68s**. Explicit primary
+  factory-tree and ROOT paths were set. This full run predates the following guard.
+- Found actual discovery declarations could be scheduled as ordinary runtime comparisons.
+  Added inline driver guards before catalog issuance and materialization; other work remains
+  schedulable, old intents remain inspectable and no new execution authority is introduced.
+  Main independently passed 18 final tests (1.76s); worker compatibility passed122 with one
+  existing strict HELD xfail/no skips (38.69s). Exact two-file hashes match tested packet.
+  Startup negative uses actual recovery before tick; initial missing-recovery fixture failure
+  was corrected, not waived. Completed AKU-04j; AKU-04f remains open.
+- Read-only GLM inventory identified profile_phases_512.py and run_glm53_arm.py as reuse sources,
+  but no installed concrete CPU ProfileMechanism producer exists. Added AKU-06j for the actual
+  owned CPU producer and bounded reducer/configuration; scope proposal is assigned. Historical
+  perf report -F tid is invalid; supported perf-script per-TID/period output must be used.
+  No historical profile is reclassified as fresh, no prompt gate or resource policy bypassed.
+- Genuine profile→actor consumer→owned build→verified enrollment fixture now passes on the
+  source/build worker lane. Candidate-cwd Python module shadowing is being closed before final
+  publication. Enrollment alone still does not settle the scheduler transition.
+- Per-task checkpoint adds one completed subtask and one open producer task; all parents stay
+  open. No hardware run, production change, index pruning or wiki sweep.
