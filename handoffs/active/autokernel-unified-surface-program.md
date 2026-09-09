@@ -2093,6 +2093,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     so this connector cannot produce a valid comparison. Observation-v2, A2 native invocation,
     actor/profile/semantic consumers, standalone composition and real provider acceptance remain
     assigned work. No live inference, service, resource grant or frozen kernel was changed.
+  - [x] **AKU-07f — controller-owned authenticated bounded worker output**: exact current
+    request/plan/lineage/stage/worker/generation/result binding exposes bytes, never a path or
+    runtime handle. Terminal-time file identity and bootstrap-recorded length/SHA-256 bind the
+    output; truncation, replacement, same-inode tampering, missing/nonregular files and lock
+    contention refuse. ✅ 2026-09-09 — main's clean release passes **126 focused/adjacent tests**
+    and **1,768 loop/Journal/storage tests plus 165 subtests**, with Ruff clean. Reads and hashing
+    run outside the controller mutex, followed by an exact owner recheck. Optional output-capture
+    failure preserves the durable terminal and provider-held accounting. Source `47ce0677`, main
+    `6fc75192`. This supplies the actor's output consumer, not authority to apply its advice;
+    native actor/profile persistence and actual execution remain assigned under AKU-06/07.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.

@@ -772,3 +772,34 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   pruning, handoff compaction or wiki compilation sweep was run. Bus drain still refuses this
   non-roster session ID; no roster or peer bus file was changed. A continuation log initially
   used the default audit shard; subsequent logging restored the established session/shard IDs.
+
+### Reviewed controller-owned stdout boundary
+
+- Published research source **47ce0677**, main **6fc751920267dd031486df036b6fcf48c0c8aef2**:
+  controller accessor, lifecycle metadata, actual-controller tests and execution documentation.
+  Main applied only the reviewed stdout hunks to its independent acceptance tree, excluding
+  the parallel A2 and observation-v2 changes. Exact clean acceptance passed **126 focused/adjacent
+  tests** and **1,768 loop/Journal/storage tests plus 165 subtests**; Ruff/diff checks passed.
+  The accessor's exact impact is LOW with zero indexed upstream callers.
+- Review corrected blocking shared-lock acquisition, optional secure-open/fstat failures that
+  could erase terminal/accounting publication, and same-inode/same-length output substitution.
+  The accessor now uses nonblocking locking and verifies the original bootstrap-authored stdout
+  length, SHA-256 and truncation state as well as file/worker/result identity. Main moved hashing
+  before the final locked current-owner recheck; neither file reading nor hashing holds that
+  mutex. Tests cover actual temporary child output, exact bytes, wrong result, size ceiling,
+  lock contention, FIFO/directory/missing/replaced files, content tampering, truncation, close
+  during a blocked read, and preserved terminal/held cost on optional identity-capture failure.
+- The primary worker now integrates team 3's corrected CLI/command/shutdown package into a
+  separate clean checkout. The original native-v2 worker is implementing the released actual
+  descendant-capture/controller-token path and supported loaded builtin timing provenance.
+  The A2 owner is correcting bank reuse. Team 2 retains separate actor/profile, feed/projection
+  and maintenance ownership; team 3 retains runtime composition and semantic validation.
+- Registered prospective target-profile and owning validation/LOO finding sources in the adapter
+  table and added **VB-AK-UNIFIED-PROFILE / VB-AK-UNIFIED-VALIDATION** before those new producers
+  execute. Reuse existing profiler/native sources and canonical source-class grading; missing
+  profile observations or decided propositions cannot be fabricated on read. These are source
+  wiring tasks, not new grading rules or live ingestion authority.
+- Per-task wrap-up adds **AKU-07f**: **36 accepted implementation sub-items**, all twelve parent
+  workstreams still open. Two prospective wiring tasks added, zero new declines. No production
+  tree, service, real resource grant or research artifact was changed; only owned temporary test
+  processes ran. README freshness is clean; index pruning/compaction/wiki sweep remain untouched.
