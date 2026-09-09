@@ -1884,6 +1884,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
+  - [x] **AKU-07a — durable management-only campaign controller and service**: full resolved-config
+    identity, lifetime store/named-lock ownership, native fsynced START/control events, strict replay,
+    monotonic incarnation/stream/revision and idempotent pause/resume/drain acknowledgments.
+    ✅ 2026-09-09 — main's 217 focused/adjacent tests and 15 subtests pass, plus a 256-case malformed
+    native-event mutation sweep. Closed/replaced/uncertain writers refuse; accepted-but-unpublished
+    commands recover from the journal. The authenticated loopback service owns initial/periodic full
+    snapshot publication independent of dashboard traffic; health ticks advance no scientific cursor.
+    Slow-client shutdown closes owned sockets and shares one join deadline. Arbitrary blocked filesystem
+    I/O remains unbounded: shutdown refuses and retains ownership instead of claiming a clean handoff.
+    Loaded producer identity describes only its enumerated bytecode/constants, not the whole package.
+    Dry CLI does not write; management mode grants no compute and launches no workers. Exact trusted
+    grant-consumer checks create no grants. Real launch intent/container recovery, worker/protocol/broker
+    integration, dashboard consumer and deployment remain required; AKU-07/09 are not complete.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
