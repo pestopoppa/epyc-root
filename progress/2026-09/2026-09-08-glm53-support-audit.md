@@ -221,3 +221,114 @@ Runner4/4, serve-plan6/6, portable artifact4+one opt-in skip, Python compile
 and diff checks pass. Root index freshness/coverage check passes; GitNexus
 refresh completed after profiling. Profiling server PIDs2787676 and2799034
 exited cleanly. No profile/benchmark process remains scheduled by this session.
+
+
+## Implementation authorized after profiling
+
+The operator requested implementation of all three levers and retesting with
+48 threads, then clarified the canonical CPU recipe and requested a subagent
+review of all Qwen4Next development for low-hanging GLM decode wins. Three
+existing gpt-5.6-sol medium agents now own: Qwen reuse audit plus Q8/decode
+changes; reference-correct MTP changes; and immutable baseline/canonical t48
+validation. Main owns source review, integration, reporting and task boundaries.
+The old benchmark cancellation remains honored; new baseline/final runs are
+explicitly authorized by the implementation request.
+
+### Corrected dispatch and exactness gates
+
+The Qwen reachability audit found the major reusable champion paths already
+active for GLM (MMID slab, fused GDN/indexer/mHC, flash attention). VEC_Q8K
+requires activation formats absent from the dominant GLM weights; whole-model
+Qwen fused decoding is architecture-specific and disabled by the canonical
+recipe. No missing architecture whitelist was identified.
+
+Actual model tracing exposed two shape mistakes in proposed reuse. Q8 MLA
+projections have 64 heads, so the new Q8 prefill gate must use per-matrix
+`ne11`, not total `ggml_nrows`. Expert row-exact dispatch must use the global
+logical token count, not each expert bucket's local Ny: a 26-token prefill
+contains many buckets of 2–16 tokens. Dense tiled GEMM has the analogous tail
+problem; full Ny eligibility is now propagated into its tiles. Default
+ROWEXACT_N=0 remains unchanged. Both temporary trace families were removed.
+
+Final diagnostic-free server SHA256
+`c23fe97c585072496142a7d99eecc2e128841f9d77bd1544d5c69398850748b7`,
+CPU library SHA256
+`1cc8346f94305cde426be3b23e4076586432af3a098fb044c5c994103870d0ae`.
+Q8 backend checks: rows 1/4/31/32/33/40/48 pass reference tolerance at N0
+and N16 (14/14, backend's 192 workers, not a t48 throughput run). Separate
+fresh-process engagement checks prove native below 32 and IQK at/above 32.
+IQK expert numerical comparison also passes.
+
+The t48 real-model known-divergence control at
+`glm53-validation-20260908/runtime/rowexact-logical-control-20260908T224928Z`
+reproduces the original failure with N0. N16 passes all five clean/rejection/
+prior-rollback comparisons with max_abs_diff=0 and preserves original plain
+next token 1246. This is a bounded correctness gate, not yet a sustained MTP
+speed or multi-prompt parity result.
+
+The preserved baseline completed the canonical 24-prompt, max_tokens=200
+workload: 4,797 generated tokens / 613.368069 decode seconds = 7.8207527
+output tokens/s (BASELINE observation, one workload pass, 2026-09-08, no
+promotion attestation on this unrebooted host). All templates retained the
+open thinking prefix despite enable_thinking=false; exact generated IDs and
+both text channels are retained. Evidence: artifact/run/
+`evidence-baseline2346-canonical-t48-20260908T222048Z` beneath the same tmp root.
+Separate existing-scorer five-item quality screen with reasoning_budget_tokens=0
+scores 2/5; one failed response truncates at 256 tokens. This small screen
+supports paired investigation only, not broad quality certification.
+
+### Full-server reference gate exposed checkpoint-tail arithmetic
+
+The first integrated plain run completed canonical24, quality5, and five512
+continuations. It is **not an accepted optimization result**: all five long
+continuations differ from the preserved original at generated index6 despite
+byte-identical requests/rendered prompts. Canonical output equality is3/24;
+quality categorical score remains2/5 (two trajectories change). Candidate
+canonical throughput7.62503 output tokens/s and long median7.62754 are
+CANDIDATE diagnostic observations, not a correct-MTP speed result.
+
+Evidence: artifact/run/evidence-final-combined-plain-20260908T225403Z;
+immutable failing binary/library snapshot: final-failed-c23fe97c under the
+same glm53-validation tmp root. MTP throughput launch is held while the
+correctness failure is repaired.
+
+Main found the server checkpoint boundary in retained logs: the26-token
+prompt is processed as22+4, including with cache_prompt=false. The target-only
+comparator had processed26 together. The final four prefill tokens still meet
+ROWEXACT_N16 even after fixing per-expert/tile eligibility. A row-count cutoff
+cannot distinguish this prompt tail from speculative verification. Exact-byte
+standalone regression checks at48threads pass for covered Q8 native-cutoff,
+64-head, dense40/48, and Q8/Q4 expert cases; those checks do not cover server
+phase semantics.
+
+Approved scoped repair: explicit per-compute CPU row-exact enable/disable,
+zero-safe default preserving old behavior, context setter applied on every
+compute (including reused graphs), and an opt-in LLAMA_SPEC_EXACT=row server
+mode which disables row-exact arithmetic for prefill and enables it only for
+target verification. Prompt and verification rows must not be silently mixed.
+No process-global environment mutation or output-count phase heuristic.
+
+### Committed phase-scoped candidate and sustained validation
+
+Candidate commit `04ffb8ad0f948e46734facfda14241ba63c1662a` implements the
+explicit CPU phase policy. Its clean rebuilt server reports 10310; server SHA256
+`8ce86a370cad067bcc1e9b2bacc7ca74364ab6a94df1d2f3546284c95de3c9fe`,
+CPU library SHA256
+`8c5a352b3b899aed15b2dcb827d9a55bbac53f5baece2ec904c9c9043a3024bf`.
+The preceding `1cc8346f` library is superseded, not the final implementation.
+
+The real-model phase gate passed all six original/split-prefill, reused-context,
+verification and rollback comparisons with max_abs_diff=0. Final short server
+plain64 and MTP64 both match the original stream, including token6=1246;
+MTP traces include actual accepted and rejected drafts. Fresh GLM alias rollback,
+used-MTP-state restoration, pool/chunk and Qwen recurrent regressions pass.
+A cached-plan F32 off/on/off test restores byte-exactly with an actual arithmetic
+difference witness. Synthetic IQK toggle cases restore exactly but did not
+produce a difference witness; no stronger claim is made from those cases.
+
+The committed full plain composite launched at 23:44:38Z under q0-q3 CPU locks
+using canonical48 threads. It queues canonical24, the five-item quality screen,
+five512 original-reference continuations, five2029-token prefill repetitions,
+and two distinct512 prompts; the matched MTP composite follows. Final sustained
+speed and parity conclusions await those outputs. The preserved five-run long
+prefill baseline median is117.5111 prompt tokens/s (BASELINE observation).

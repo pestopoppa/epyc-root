@@ -1683,7 +1683,9 @@ no rate at all. A later session may extend the audit but may not report these fi
   filed before the first run; completed CPU evidence now exists. The 2026-09-08
   profiling extension also preserves perf/tool/event identity, symbols, phase boundaries,
   sample counts and loss/overhead caveats. Profile shares are attribution, not realized
-  optimization speedups; no second grading rule is introduced.
+  optimization speedups; no second grading rule is introduced. The row-exact extension
+  preserves explicit prefill/verification policy, checkpoint chunk boundaries,
+  cached-plan toggle verdicts, and supersession of failed row-count-only runs.
 
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 

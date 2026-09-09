@@ -1,6 +1,6 @@
 # GLM-5.3-Flash Evaluation (glm5next)
 
-**Status**: VALIDATING 2026-09-08 — CPU build and tiny native-MTP/rollback/pool tests pass; CPU native MTP validated with serial verification; t48 is slower than plain; thread screens and high-value prefill/decode profiling complete
+**Status**: IMPLEMENTED / CPU-VALIDATED 2026-09-09 — Q8 prefill and reference-correct parallel MTP pass canonical48 paired checks. Observed +22.6% long prefill, +24.8% repeated512 MTP decode and +41.1% on the24-prompt workload. Qwen reachability audit complete; broader role-fit remains T4.
 **Created**: 2026-08-31 (spun out of the OP-8 KILL ruling; inherits the GLM-MoE-DSA findings)
 **Priority**: MEDIUM — one of the two operator-named novel-under-test models (with qwen3.8-next-flash)
 **Categories**: inference_serving, local_inference, kernel_architecture
@@ -80,8 +80,8 @@ identify the high-value levers in the [profile report](../../docs/reference/mode
   at every rejection position before declaring speculative decoding supported. Trunk-only load
   is an intermediate gate, not completion. Completed for CPU with existing serial
   verification: five exact 512-token trajectories, actual accepted/rejected drafts,
-  and independent rollback/MTP-state fixture tests. Parallel verification fails
-  greedy parity; see the executed validation section in the audit.
+  and independent rollback/MTP-state fixture tests. The initial parallel verifier failed greedy parity; candidate `04ffb8ad0` now
+  passes the paired CPU gates in the [optimization report](../../docs/reference/models/glm53-cpu-optimization-20260908.md).
 - [x] T1 — Load + short-context coherence smoke on the chosen tree (abort on repetition loops),
   CPU-only, canonical env; record `(arch, indexer defaults, kpool)` from the load log.
 - [ ] T2 — DSA-path disposition for glm5next: DENSE-MASK vs sparse (expect DENSE-MASK per finding 1);
@@ -91,9 +91,33 @@ identify the high-value levers in the [profile report](../../docs/reference/mode
 - [ ] T4 — Quality/role fit per the standard suites; GO / WAIT / KILL disposition with the disk-retention
   decision (artifact is in the novel-under-test keep bucket until this verdict).
 
+## Authorized optimization work — 2026-09-08
+
+- [x] T5 — Implement Q8 prefill acceleration with phase-aware dispatch and validate
+  numerical/task quality against the preserved GLM reference.
+- [x] T6 — Implement measured decode projection/synchronization improvements;
+  first audit Qwen4Next/INF-70 development for immediately reusable wins.
+  Achieved through parallel verification amortization; useful champion paths
+  already reach GLM. No new standalone Q8 dot-kernel gain is claimed.
+- [x] T7 — Implement reference-correct parallel MTP; preserve the selected plain
+  reference and validate accepted/rejected drafts, rollback and multiple prompts.
+- [x] T8 — Retest the integrated candidate with the canonical CPU recipe at
+  48 target/draft/batch threads, source-pinned workload and retained raw evidence.
+
+The prior throughput confirmation was stopped as requested. The new runs are
+separately authorized by the operator's implementation request. Baseline binary
+`2346de909` is preserved under `glm53-validation-20260908/baseline-2346de909`;
+source-only helper HEAD `f25c89d52` is the implementation starting point.
+
+Completion evidence: candidate `04ffb8ad0`, [implementation and results](../../docs/reference/models/glm53-cpu-optimization-20260908.md).
+Final plain/MTP agree on all24 workload, five quality, five repeated512 and two
+additional512 responses; repeated512 also preserves the original reference.
+Q8 prefill changes22/24 trajectories versus the old kernel; the bounded quality
+screen is3/5 versus2/5, not broad quality certification. Production is unchanged.
+
 ## Constraints
 
-- Inference is operator-gated per standing policy (region claim; no concurrent-inference assumptions).
+- Authorized experimental inference runs under held physical CPU-region claims; observations on the unrebooted host do not authorize production promotion.
 - Do NOT add a `model_registry.yaml` role without operator approval.
 - Any DSA correctness finding also updates `llama-cpp-dsa-contribution.md` (single owner of the
   generic gates).
