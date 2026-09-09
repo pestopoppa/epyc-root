@@ -15,6 +15,27 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 > settlement defaults to invalid) and is not an accepted replacement. The original
 > feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
 
+- [x] **Existing-loop CPU serving and request-bound calibration**: ✅ 2026-09-09.
+  Published serving forwarding `1799ade6` → main `12bfe8a3` and existing-loop CPU
+  entry route `2f066e53` → main `fbecc61c`. CPU candidates reuse the existing
+  source/build/measurement/keep owners; optional resolved launches and exact frozen
+  requests reach both serving arms. Request-bound floors cannot borrow a legacy floor;
+  uncalibrated measurements remain non-decisive. Main actual child/HTTP checks:4 passed;
+  existing focused serving checks:95 passed plus11 subtests. Legacy GPU defaults retained.
+- [x] **Original experimental CPU anchor identity and unwaived dry run**: ✅ 2026-09-09.
+  Published `863128c1` → main `2032e5be`: the existing CPU entry route verifies the
+  original experimental build identity against source/head and inventory, without
+  inventing promotion provenance or using the unverified-anchor waiver. Main focused
+  identity checks:27 passed plus4 subtests; startup worker's unwaived dry run exited0.
+  This proves startup wiring only, not a qualified result or five-loop completion.
+  Main subsequently verified live PID1329820 at original-request CPU calibration,
+  iterations0/5; observe that existing loop and fix actual failures, not a replacement.
+- [x] **CPU-specific actor instructions and workload-scoped evidence epoch**: ✅ 2026-09-09.
+  Published `3dddec73` → main `99f91479`; main 3 focused tests passed. CPU actors receive
+  explicit selected-target instructions rather than GPU profiling directives; CPU launch
+  and frozen-prompt digests join the evidence epoch. No fabricated CPU hotspots or GPU
+  timing reuse, and no change to ordinary GPU instructions/epochs.
+
 - [x] **Compatibility repair — fresh legacy stores and anchor pruning**: ✅ 2026-09-09.
   Fresh-store initialization restored without resetting populated/corrupt history
   (`009ef659`, main `cdd13df5`; main 31 focused tests). Legacy keep path again uses

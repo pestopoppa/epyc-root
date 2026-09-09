@@ -1,5 +1,44 @@
 # Unified AutoKernel implementation — 2026-09-09
 
+## Existing-loop CPU launch boundary
+
+- Published CPU serving forwarding `1799ade6` → main `12bfe8a3`. The existing
+  comparator/calibrator accepts both original resolved arm launches and exact frozen
+  request bytes. A floor is keyed to those ordered request identities; legacy floor
+  paths/default calls remain unchanged, and uncalibrated results remain non-decisive.
+  Main actual owned child/HTTP tests passed4 in8.25s, checking both arms, received body
+  bytes, calibration/floor reuse and process teardown. Earlier focused legacy checks
+  passed95 plus11 subtests in1.03s. Synthetic HTTP timings are not model measurements.
+- Published existing-loop CPU entry route `2f066e53` → main `fbecc61c`, reusing
+  source/build/serving/search and durable keep owners rather than replacing them with
+  the incomplete standalone runtime. CPU recipe and frozen workload are explicit inputs;
+  existing GPU defaults and owning decision rules remain in place.
+- Original experimental anchor identity support `863128c1` → main `2032e5be`
+  reopens the original build identity, checks selected source/head and file inventory,
+  and preserves existing promotion provenance semantics. Main focused checks passed27
+  plus4 subtests. The startup worker's unwaived dry run exited0: no unverified-anchor
+  waiver or fabricated provenance was needed.
+  Original inputs live under `/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/`:
+  `glm53-c463f601b-cpu-mtp-depth3-b2048-ub512-corrected.recipe.json` and
+  `glm53-fixed2029-depth3.prompt-manifest.json`; isolated store is
+  `/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store`. The request-bound floor is absent;
+  the dry run reported wiring proven/nothing spent, not calibration or a measured gain.
+- CPU instructions/evidence-epoch correction `3dddec73` → main `99f91479` passed
+  3 main focused tests: selected CPU instructions override inapplicable GPU directives,
+  and CPU launch/frozen-prompt digests scope prior-evidence lookup. Missing CPU profiles
+  remain explicitly unavailable; no fabricated hotspots or GPU measurement reuse.
+- Live-start update: main verified PID1329820 with `ps` (worker execution handle43128),
+  CPU claim held, status original-request CPU calibration, iterations0/5, calibration5
+  and pairs5, both actors GPT-5.6-sol medium. This is a live start, not five completed
+  iterations, completed calibration or a qualified performance result. Host uptime exceeds the
+  one-week measurement qualification limit; these timings cannot support qualified
+  performance claims or champion admission without the required host-health remediation.
+  Production kernels and service policies are unchanged.
+- Coordination bus drain refused roster `autokernel-unified-20260908` in both the main
+  ROOT lane and `/workspace`; no alternate identity or successful drain is invented.
+  Prepared three completed handoff items only. README freshness check exited0 with no
+  warnings; no index edits/pruning, wiki sweep or commit by the documentation worker.
+
 ## Operator-directed correction: restore and extend the working loop
 
 - Operator requested stopping failing CI notifications during implementation.
