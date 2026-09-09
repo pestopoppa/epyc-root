@@ -1689,6 +1689,9 @@ no rate at all. A later session may extend the audit but may not report these fi
   The September9 reprofile adds per-output sampled-period normalization, matched
   plain/MTP capture identity, request-local depth controls and parity failures,
   aborted-capture exclusion, and long-prefill bug-fix/negative-control lineage.
+  The authorized three-lever implementation adds bitwise kernel controls, per-node
+  critical-path timing with instrumentation-off controls, individual switch ablations,
+  and matched unprofiled baseline/integrated repetitions. Preserve rejected variants.
 
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 

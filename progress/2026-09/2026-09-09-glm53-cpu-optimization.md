@@ -63,3 +63,42 @@ All owned server PIDs are confirmed absent and q0-q3 claims released.
 [Full report](../../docs/reference/models/glm53-cpu-next-levers-20260909.md).
 Independent audit SHA256:
 `41628e353a153fd33fd34a9fd95d9ba9b5d41e91064a9350d30dc829e6a62fff`.
+
+## Three-lever implementation started
+
+Operator authorized exact expert batching, exact Q8 verification batching, and
+node-level worker-wait measurements followed by bounded scheduling work. Three
+subagents handle independent implementation/measurement tasks; main reviews
+scope, numerical invariants and integration. Preserved c463 source/binary
+baseline lives at `glm53-validation-20260908/baseline-c463f601b`.
+
+The earlier near-11 result is 10.82479 output tokens/s on the 24-prompt workload;
+the five repeated 512-token median is 9.60451. The later 8.8855 profile uses a
+different, long prompt and instrumentation, so it does not establish regression.
+New comparisons retain separate workload identities and unprofiled repeats.
+Implementation and validation are in progress; no new speed gain is claimed.
+
+The compiled expert-kernel gate passes (`lever-build-20260909T081400Z`): Q4_K
+49,152 and Q5_K 98,304 outputs are bit-identical to the serial Ny=1 path, with
+optimized-branch trace witnesses. The binary is newer than the expert source;
+`libggml-cpu.so` SHA256 is
+`a043d602b9f91302e0e54296cda41d2e325d2a01a1656912614977f06ed9b94f`.
+The four-case Q8 test also passed in that build, but Q8 source and its test were
+edited afterward. Rebuild and revalidation are required before attributing that
+gate to the current source.
+
+The first plain-baseline and profiler-off runs are superseded because their
+launches omitted `GGML_IQK_Q8_0=1`, `GGML_IQK_Q8_0_MIN_ROWS=32`,
+`GGML_ROWEXACT_N=16`, `LLAMA_SPEC_EXACT=row`, and reasoning-off request state.
+`GGML_IQK=1` was present. They are diagnostic records, not canonical recipe observations.
+Corrected profiling and final comparisons use explicit launch receipts and
+bracketed/interleaved controls. No new full-model speed gain is claimed yet.
+
+Catch-up publication audit found all six GLM documentation commits through
+`7fcb2e7c` local-only while `origin/main` advanced independently: `aaa83713`,
+`da6390e0`, `7e0f341e`, `3911b462`, `66a7d756`, and `7fcb2e7c`. Publication is
+being reconciled through the isolated `lane/glm53-three-levers-20260909`
+worktree; the shared dirty root clone is not a safe merge or commit surface.
+Committed candidate base `c463f601b` is backed up on private fork branch
+`experimental/glm53-text-mtp-20260908`; the current uncommitted kernel
+experiments are not part of that push, and upstream/production remain untouched.

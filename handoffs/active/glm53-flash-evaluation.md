@@ -133,6 +133,30 @@ The next proposed kernel work is reference-exact multirow expert reuse, then
 exact batched Q8, then measured graph/worker scheduling. Profiling shares are
 not prospective speedups; no performance kernel was developed in this follow-up.
 
+## Three-lever implementation follow-up — 2026-09-09
+
+Operator authorized all three next kernel experiments at canonical 48 threads.
+Starting candidate is `c463f601b`; preserved baseline and instrumented builds
+must remain distinct. Final decision table: each lever's bitwise kernel gate,
+full-model token/rejection/replay gate, and matched unprofiled performance;
+retain only correctness-passing improvements. Use five repeated 512-token
+continuations per arm for short and 2,029-token prompts, plus matched prefill.
+Do not pool these with the earlier 24-prompt workload's 10.82479 tokens/s.
+
+- [ ] T11 — Implement and validate exact multirow Q4_K/Q5_K expert reuse.
+- [x] T11a — Implement the guarded expert-kernel experiment and pass its compiled
+  bitwise operator gate at the real GLM Q4_K/Q5_K dimensions. The test compares
+  mapped multirow buckets with the serial Ny=1 path at 48 threads, including
+  noncontiguous routes, row tails and chunk offsets; Q4_K 49,152/49,152 and
+  Q5_K 98,304/98,304 outputs match exactly, with branch traces. Full-model and
+  performance gates remain T11/T14. ✅ 2026-09-09
+- [ ] T12 — Implement and validate exact batched native Q8 verification.
+- [ ] T12a — Rebuild and repeat the Q8 operator gate after the final source/test
+  corrections; the earlier four-case pass predates those edits and cannot attest
+  the current candidate.
+- [ ] T13 — Measure node-level worker waits and validate a bounded scheduling change.
+- [ ] T14 — Retest the integrated retained candidate against the preserved baseline.
+
 ## Constraints
 
 - Authorized experimental inference runs under held physical CPU-region claims; observations on the unrebooted host do not authorize production promotion.
