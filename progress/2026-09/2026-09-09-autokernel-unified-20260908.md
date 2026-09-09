@@ -1673,6 +1673,23 @@ compaction or wiki compilation sweep is performed by this implementation checkpo
   respective implementation owners; this checkpoint does not publish their code.
 - Per-task wrap-up only: no index pruning, wiki sweep, service reload, hardware run or production change.
 
+## Reusable runtime-factory fix
+
+- CPU profiler integration exposed same-process restart failure after scheduler mutation. Audit
+  proved the public factory reused the already-mutated materializer scheduler; the existing
+  restart test never advanced it, hiding the bug. Standard process restarts were unaffected.
+- The factory now reconstructs original manifest config/state for each invocation, gives one
+  fresh engine to both controller and runtime, and refuses a drifted initial materialized seed.
+  Main review caught and corrected the evidence-feed branch overwriting that fresh engine.
+  Journal replay and provider authority are unchanged.
+- Main primary-tree verification:77 tests passed in5.69s, all five hashes match frozen packet
+  `a5e5d07174ee2623aba0a953b67732be3761df923f90e8a31d7542a87b376177`.
+  Worker77 passed5.86s, four Python paths Ruff-clean. Tests include successful settled reuse,
+  pending-issued replay, fresh exact controller/runtime engine identity and unchanged seed.
+- Research source `f1882475` pushed/promoted as `c1a8da09f62c32e976efb078eda6c0c500bded21`.
+  Completed AKU-07z; all12 parents remain open. No service reload, hardware trial, production
+  mutation, index pruning or wiki sweep. Dashboard/CPU producer packets remain separate work.
+
 ## Full regression checkpoint at research 1f38aefb
 
 - Re-polled the original live test handle34837 to terminal exit0; did not restart it.

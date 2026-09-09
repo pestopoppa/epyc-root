@@ -2468,6 +2468,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     ✅ 2026-09-09 — included in main's 2,024-test combined gate; subprocess factory/driver tests
     use the same composed tree and actual interpreter. No provider, profile, claim or epoch is
     invented. Real generated export repair and installed acceptance remain AKU-12c/12a.
+  - [x] **AKU-07z — restart a reused factory from the original scheduler seed**:
+    ✅ 2026-09-09. Each factory invocation now constructs a fresh scheduler from the immutable
+    manifest, shares that exact instance between controller and runtime (including the feed path),
+    and refuses an initially drifted materialized seed. The prior owner no longer leaks mutated
+    scheduler state into Journal replay. Main **77 tests passed in5.69s**; all five file hashes
+    match the worker packet. Settled same-factory restart, pending-issued replay and feed identity
+    pass without modifying replay authority. Research `f1882475` promoted as `c1a8da09`.
+    This fixes embedded/in-process reuse; standard process restart already rematerialized inputs.
+    Native BIND/HELD recovery and installed live acceptance remain separate open tasks.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
