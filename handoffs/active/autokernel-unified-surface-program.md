@@ -2000,6 +2000,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     grant-consumer checks create no grants. Real launch intent/container recovery, worker/protocol/broker
     integration and deployment remain required; management-v1 dashboard integration is now AKU-09c.
     AKU-07/09 are not complete.
+  - [x] **AKU-07b — owned-worker lifecycle and crash-safe v2 control consumer**: prospective durable
+    acquisition and launch intent, exact grant/container/PID-start/boot identities, isolated pipe-gated
+    bootstrap, bounded stage/teardown lifecycle and accepted-versus-completed pause/drain controls.
+    ✅ 2026-09-09 — main's **307 tests and 15 subtests** pass, including independent descriptor-leak,
+    credential/import-isolation, old-terminal fencing, command-semantic and actual-old-reader probes.
+    Typed denial proves no acquisition; ambiguous provider I/O retains pending ownership for exact
+    recovery. Returned journal errors do not disable owned cleanup, but uncertain durability cannot
+    certify a terminal result. Pause can escalate to drain without a late superseded completion
+    overwriting current control. Indexed replay accepts denied/no-launch generation gaps while
+    refusing rollback; the v2 START fence makes the actual older reader refuse before admission.
+    Snapshot v2 is explicit and management-v1 defaults remain. Provider calls must themselves enforce
+    deadlines: a numerical deadline or fake cgroup test is not live containment proof. The generic
+    parent-side planned-serving guard still refuses until the contained-child bridge is connected.
+    Driver/native-result integration, real authority and deployment remain required for AKU-07.
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
@@ -2055,6 +2069,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     retain producer/anchor/authority assertions without hard-coded current-host percentages or age.
     V1 remains management-only with no active worker or compute authority. Gateway/service deployment,
     worker-aware v2 integration and unattended live reliability remain separate acceptance work.
+  - [x] **AKU-09d — existing hub consumes the actual worker-aware v2 producer**: strict closed
+    snapshot/result versions, monotonic worker/stream identity, lifecycle-aware semantic health and
+    exact accepted-versus-completed controls, retaining v1 as a distinct management-only contract.
+    ✅ 2026-09-09 — main's **296 tests and 79 subtests** pass, including real research-controller
+    snapshots and execution of the actual page JavaScript. Acknowledged incomplete pause can escalate
+    to a distinct drain; failed request construction retains the old pending pause, uncertain ACKs
+    retain exact-ID retry, and late ACKs cannot erase a newer completion. Python/page validators agree
+    on finite result semantics, acquisition-pending identities, permitted null-worker transition
+    windows, protocol-version matching and same-campaign downgrade refusal. Cross-repo fixtures use
+    explicit/standard checkout discovery and a post-release worker barrier; ordinary v2 unit tests
+    remain independent of the optional checkout. The broader dashboard run separately reproduces
+    **15 baseline-proved legacy failures** (11 tests plus four subtests); these are not v2 acceptance.
+    No gateway configuration, service activation, resource grants or live reliability claim is made.
+    Unified planner/resource/evidence projections and unattended deployment remain AKU-09 work.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.
