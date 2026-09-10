@@ -2924,6 +2924,22 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     and the disproven copy route require new evidence before retry. Smaller partitions are distinct
     validated recipes, not automatic full-instance transfer. This CPU focus does not waive broader
     CPU/GPU integration acceptance, cross-model regressions or separate production-promotion gates.
+    - [x] **AKU-12b-CPU-OBS — add bounded factual CPU lifecycle collection to the existing
+      serving path on disk.** ✅ 2026-09-10 — Research packet `499ec92e…` adds process/task
+      affinity and allowed-NUMA-list samples through the original serving lifecycle;
+      main independently verified 43 tests plus 8 subtests. Raw facts/errors/gaps/bounds
+      survive the existing comparison archive. Allowed lists do not establish actual NUMA
+      page placement, clean contention or scientific eligibility; both existing proof labels
+      remain `unproven`. GPU behavior is unchanged. No live PID was restarted or retroactively
+      instrumented; this checkbox does not close AKU-12b or certify a new measured arm.
+      Prospective direct-serving belief wiring is separately filed as
+      [VB-AK-LEGACY-SERVING](vidya-belief-substrate-program.md#vb-ak-legacy-serving--direct-serving-comparison-and-cpu-facts-2026-09-10).
+    - [x] **AKU-12b-TARGET-CLI — connect an explicitly enrolled target to the existing loop
+      CLI.** ✅ 2026-09-10 — Research source `1f2d93aa` / main `195c4ea5` adds
+      `--resolved-campaign` with `--target-id`, preserves original enrollment identity,
+      binds CPU serving workload and retains the legacy GPU-screen label. Main verified
+      68 focused tests. This is not serial all-target dispatch, artifact admission,
+      a live-process restart or completion of the broader acceptance goal.
   - [ ] **AKU-12c — repair and verify canonical generated export inputs**: real production export
     currently refuses stale descriptor/compiled-priors provenance. The supported writer is
     stack_change_pipeline.py update, regenerating lean registry, descriptors, priors, procedure

@@ -1589,6 +1589,29 @@ retrofitting the read side is impossible. Source row added to
       Trigger: the next serving-harness arm produced on either surface. Zero compute to file; the adapter is
       ~40 lines of projection.
 
+### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10)
+
+- [ ] **VB-AK-LEGACY-SERVING — wire the direct legacy serving comparison at write time.**
+  Owner `autokernel-unified-20260908`; producer is research `loop/run.py:cpu_compare`
+  through `ServingComparison.to_dict`, `Outcome.to_attempt`, `archive.record` and
+  `controller/experiments.py:ExperimentStore.record`, not an `evaluation_event` or
+  a unified planned/native arm. The full comparison is retained in the archive,
+  including future per-launch `cpu_lifecycle` facts from the on-disk collector,
+  but this path emits no `belief_capture`/`belief_measurements`. Add a prospective
+  producer-authored carrier and strict consumer using the existing shared ladder;
+  preserve original model/build/recipe/metric direction, request-bound floor,
+  arm/launch membership, PID/TID-start and phase-time evidence, read failures,
+  gaps, bounds and immutable source identity. The independent unit is the original
+  process launch, never an affinity sample, thread or prompt. Allowed CPU/NUMA lists
+  are permissions, not actual NUMA page placement or a contention verdict. Keep
+  `cpu_placement`/`contention=unproven` unless an actual owning verifier supplies
+  more; raw facts confer no qualified measurement or promotion authority. Verify
+  prospective write→archive→reader/replay on the actual direct path, without
+  claiming the existing unified-arm adapter covers a different carrier. Current
+  pre-hook trials remain historical records; never invent their missing identities
+  or in-window observations on read. Source-table row filed with this task;
+  no adapter implementation or live process change is included in this checkpoint.
+
 ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09)
 
 - [ ] **VB-AK-UNIFIED — wire the unified current loop before its first new measurement**
