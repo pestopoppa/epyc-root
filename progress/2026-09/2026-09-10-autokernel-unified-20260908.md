@@ -293,3 +293,17 @@
 - Main primary tests: 26 passed in 10.27s, including actual tiny child completion,
   crash/restart, idempotence, legacy absent-start identity, live-child refusal and
   tampered/missing-result cases. No hardware/reload or unfinished-work recovery claim.
+
+## Preserve interrupted source before lane reset
+
+- Fixed source loss when STOP arrives after authoring but before gate archival.
+  The existing reset callback now archives original HEAD and exact tracked changes,
+  plus bounded untracked kernel-source text, before the unchanged lane reset.
+- Hash-qualified immutable patch names prevent repeated mechanism/lane overwrites;
+  tracked recipe/docs changes and historical archives remain intact. No arbitrary
+  untracked files or build artifacts are retained. Archive failure prevents reset.
+- Main 56 focused tests passed in 5.75s, including actual patch application against
+  original HEAD and exact empty/new/no-final-newline/CRLF file recovery. Existing CPU
+  retry tests pass with new archive names. Build pruning and execution gates unchanged.
+- Publication isolates this completed fix from pending owner/scheduler integration.
+  No live reload, hardware measurement, or automatic interrupted-measurement resume.
