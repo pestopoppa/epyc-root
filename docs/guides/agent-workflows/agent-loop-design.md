@@ -153,6 +153,37 @@ The research repository's `scripts.kernel_rnd.autokernel.loop.serial_run` CLI
 measurements, grading or keep/null history. Ordinary single-target `loop.run`
 arguments remain supported.
 
+For a resolved campaign, research `8f67076c` / main `d5705634` adds automatic roster
+assembly from ready enrolled production/candidate targets plus **one** concise
+owned-target map. It derives the facts already present in enrollment; original
+editable source, branch, anchor and frozen requests remain explicit. The
+[research roster contract and owner-map example](https://github.com/pestopoppa/epyc-inference-research/blob/main/docs/autokernel-serial-roster.md)
+documents the exact fields and optional shared actor settings. No per-target argv
+files are required in this mode:
+
+```bash
+EPYC_ROOT_REPO=/mnt/raid0/llm/worktrees/mains/autokernel-unified-20260908 \
+PYTHONPATH=.:/mnt/raid0/llm/worktrees/mains/autokernel-unified-orchestrator-20260908 \
+python3 -m scripts.kernel_rnd.autokernel.loop.serial_run \
+  --resolved-campaign /absolute/inputs/original-resolved-campaign.json \
+  --owned-targets /absolute/inputs/owned-targets.json \
+  --batch-iterations 5 --rounds 1 \
+  --state-dir /absolute/dedicated-serial-state --dry-run
+```
+
+Run from the research checkout. This dry-run invokes the existing owner's startup
+and workload checks without providers/builds/claims; it still reads original
+startup/workload metadata, so respect the live owner's boundary. Remove `--dry-run`
+only at that owner's authorized start boundary. Unavailable/unowned targets are
+reported explicitly, not treated as complete coverage. The real GLM owner dry-run
+passed on 2026-09-10 (1 ready seed, 17 unavailable), verifying original startup,
+model census and the retained request floor; it was not a live mixed-target rotation
+or a new performance measurement. `EPYC_ROOT_REPO` selects the installed feedback
+reader without requiring an optional common-args file. To retain the current GLM
+trial's **medium** actor effort on its next start, use optional `--common-args`
+with `["--planner-effort", "medium", "--critic-effort", "medium"]`; the generated
+default planner effort is high. This does not change the already-running controller.
+
 From the research repository, the command syntax is:
 
 ```bash
@@ -211,8 +242,14 @@ against a worktree/store whose existing owner is still running.
 ```
 
 The selected model comes from original enrollment. CPU launch and frozen requests
-must match it. GPU selection remains explicitly `legacy_gpu_screen`; selection
-does not turn that screen into exact enrolled serving execution. In particular,
+must match it. The GPU example above remains explicitly `legacy_gpu_screen`;
+selection alone does not turn that screen into exact enrolled serving execution.
+For explicit GPU serving, use `--gpu-serving-launch` with the original canonical
+resolved GPU launch and `--frozen-prompts`; `--gpu-calibrate-serving N` is the
+optional request-bound first-batch calibration. The roster mode derives that
+explicit serving route. An experimental GPU branch is a candidate, not the
+canonical champion; declared host CPUs/build jobs and the supported GPU route are
+checked and used by the existing owners. In particular,
 the retained `build-fold-ef81196d5` directory without original provenance is not
 made ready by this example. Never fabricate provenance or add an anchor waiver.
 

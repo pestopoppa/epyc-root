@@ -2964,6 +2964,29 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       stopped, complete and all-failed sessions remain distinct. Main verified 42 producer
       tests (7.72s) and 18 ROOT tests (2.71s). ROOT publication is combined with this
       checkpoint; no dashboard environment change, process reload or live serial proof.
+    - [x] **AKU-12b-OWNED-ROSTER — derive the existing serial runner's inputs from ready
+      enrolled CPU/GPU/candidate targets.** ✅ 2026-09-10 — Research `8f67076c` / main
+      `d5705634` adds resolved campaign + one concise owned-target map, deriving model,
+      recipe, actor defaults and distinct output/lane roots without per-target argv files.
+      Original source/branch/anchor/request facts remain explicit; aliases execute once,
+      unavailable/unowned targets remain named, and old `--target-args` still works.
+      Generated children are confined with existing `taskset`; original continuation,
+      STOP and no-replay behavior remain. Actual corrected GLM metadata generation selected
+      **1 ready seed and reported 17 unavailable targets** without model/binary hashing or
+      output creation. This is partial coverage, not all-target or live-run acceptance.
+    - [x] **AKU-12b-GPU-SERVING — execute explicitly selected GPU serving workloads and
+      bind declared host resources through existing owners.** ✅ 2026-09-10 — The same
+      research checkpoint adds `--gpu-serving-launch`, original frozen requests and
+      request-bound calibration to the existing serving comparison. Experimental GPU
+      candidates remain separate from canonical COR/accumulator semantics; ordinary GPU
+      cheap screens are unchanged. Shared validation binds model/workload and
+      supported GPU visibility, while declared host CPUs/build jobs govern affinity,
+      builds and existing CPU-region claims alongside the original GPU claim. Main's
+      combined **84 tests passed in 7.34s**, with synthetic hardware/provider boundaries,
+      actual tiny children and dry-run owner validation. Main then ran the real GLM
+      serial `--dry-run`: exit 0 in 0.19s, original c463 startup identity, n_embd=4096
+      census and original request-bound 7.801% floor reopened. No build, resource claim,
+      inference, current live-PID reload or qualified/promotion gate is claimed.
     - [x] **AKU-12b-SERVING-BELIEFS — connect the direct comparison write/read belief path.**
       ✅ 2026-09-10 — Research `86179a8c` / main `0a815338` captures inputs before launch,
       retains original comparison/CPU dependency bytes and exports through the existing archive.

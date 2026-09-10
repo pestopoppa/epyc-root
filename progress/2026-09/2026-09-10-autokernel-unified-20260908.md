@@ -178,3 +178,46 @@
   the existing operating guide and CPU serial-argument example now show it. No
   current live PID was reloaded, no real post-hook hardware/live ingest was proven,
   and no qualified hardware or broader acceptance checkbox was completed.
+
+## Owned target roster and exact GPU serving integrated; live trial unchanged
+
+- Research source `8f67076c` / main `d5705634` connects ready resolved production
+  and candidate targets to the existing serial runner using one ownership map.
+  It derives model/recipe/actor defaults and target-specific store/lane roots;
+  original owned source, branch, anchor and frozen requests remain explicit.
+  Existing `--target-args`, original continuation/COR identities, STOP and completed
+  restart without relaunch remain supported. Missing ownership/artifacts are reported,
+  not silently counted as target coverage.
+- Explicit enrolled GPU serving now uses the original resolved launch and frozen
+  requests through `serving.compare` and request-bound floors. Experimental GPU
+  candidates do not become the canonical champion; canonical COR/accumulator paths
+  and ordinary GPU cheap screens retain their distinct semantics. Shared workload/
+  resource validation binds the supported GPU route, host CPUs and build
+  jobs. Existing CPU-region/GPU claims and declared affinity cover owned work;
+  generated serial children additionally use existing `taskset` confinement.
+- Main independently verified **84 focused tests in 7.34s** and clean diff checks.
+  Tests exercise actual CLI/dry-run/serial children and original restart paths with
+  synthetic hardware/provider boundaries; these are not hardware measurements.
+- Read-only generation against
+  `/mnt/raid0/llm/tmp/aku12a-glm53-roster-inputs-20260910/campaign-resolved.json`
+  (SHA-256 `1300442ea9f96f5a02eaa443aa56823e71aeb49a43d0025a1f8782ea2b3e4c1a`)
+  selected **1 ready GLM seed and explicitly reported 17 unavailable targets**.
+  The seed environment was corrected to the original launch's 14 effective entries,
+  excluding only arm-specific `LD_LIBRARY_PATH`; the original prompts were unchanged.
+  Generation retained the existing trial store/anchor and CPUs 0–95, created no
+  output directories and did not hash model/binary bytes or invoke the real owner.
+- Main subsequently ran the **real PRIMARY serial owner dry-run**, exit **0 in
+  0.19s**, during iteration 4 authoring rather than its measurement window. It used
+  the corrected resolved campaign, original `REAL-GLM-OWNED.json`,
+  `--batch-iterations 1 --rounds 1`, state path
+  `/mnt/raid0/llm/tmp/aku12a-glm53-roster-dry-run-20260910` and PRIMARY `EPYC_ROOT_REPO`.
+  Original c463 startup identity was verified, the actual model census reported
+  n_embd=4096, and the existing request-bound **7.801% floor** reopened as verified.
+  This is startup/input proof, not a new performance result. No builds, resource
+  claims, inference or current live-PID reload occurred. Generated planner effort
+  defaults to high; the next GLM start must retain the original medium actor efforts
+  through the optional common-args override. The current controller was unchanged.
+- [Operating guide](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets)
+  links the research roster contract. Scheduling remains serial round-robin, not
+  mechanism-aware concurrent scheduling; real mixed-target acceptance and qualified
+  correctness/performance/promotion gates remain open in AKU-12b.
