@@ -435,3 +435,22 @@
   not counted). CPU profile source pin926f9cce5fa92598e5120006611be5d97189952907af06c7561f6f5628c3b2ba
   uses the actual autokernel import path; earlier three accepted pins retained. No grading
   rule changed. One completed checkbox; mixed-target execution remains separate active work.
+
+### Real GPU build rebinding
+
+- CPU+GPU dry-run preparation exposed original10125 DSO basenames not existing in retained
+  champion10301. Fixed the existing run._cpu_arm helper, not the production tree: preserve
+  exact existing filenames; on missing version resolve actual original ELF SONAME through
+  candidate build/bin, require containment and matching candidate SONAME, hash actual bytes.
+  Fixed external libraries remain untouched. GitNexus impactLOW, six upstream uses.
+- Main42 actual tiny-ELF/CPU/GPU/serial tests passed7.56s. Actual frozen production GPU
+  recipe rebound to build-fold-ef81196d5 matches the separately pinned candidate launch
+  exactly across16 DSOs. No inference, kernel rebuild, historical result rewrite or
+  artifact provenance invented. One completed checkbox.
+- Prospective mixed dry-run inputs live in
+  `/mnt/raid0/llm/tmp/aku-cpu-gpu-dryrun-inputs-20260910`. They explicitly include CPU184–191
+  for the production GPU recipe alongside GLM CPU0–95 and use new text requests (not GLM
+  token IDs) for GPU. These are dry-run declarations, not a live allocation or performance
+  measurement. Actual roster invocation exposed draft-mtp/self_draft enrollment mismatch;
+  the existing implementation worker owns its correction together with the scheduled-child
+  import bug. Original GLM inputs and historical stores remain unchanged.
