@@ -450,6 +450,13 @@ class Wiring(unittest.TestCase):
 # --------------------------------------------------------------------------- #
 class Derived(_Fixture):
 
+    def test_runtime_observations_are_measured_not_scientific_nulls_or_keeps(self):
+        self.write(body(dispositions={"runtime_observed": 5}))
+        derived = S.loop_payload()["derived"]
+        self.assertEqual(derived["measured"], 5)
+        self.assertEqual(derived["never_measured"], 0)
+        self.assertEqual(derived["kept"], 0)
+
     def test_the_negatives_are_counted_beside_the_keeps(self):
         """A board that shows only wins is how 0 promotions looked like progress
         for a month."""
@@ -598,6 +605,14 @@ class Rendering(_Fixture):
                       "measured_null", "kept"):
             self.assertIn(token, html, f"disposition {token!r} is not on the page")
         self.assertIn("never measured", html)
+
+    def test_runtime_observed_renders_measured_not_kept(self):
+        self.write(body(dispositions={"runtime_observed": 5}))
+        rendered = self._render(S.loop_payload())
+        self.assertEqual(rendered["threw"], [])
+        self.assertIn("runtime_observed", rendered["by_id"]["disp"])
+        self.assertIn("measured, not kept", rendered["by_id"]["disp"])
+        self.assertNotIn("never measured", rendered["by_id"]["disp"])
 
     def test_the_page_shows_what_the_operator_asked_for(self):
         self.write(body())

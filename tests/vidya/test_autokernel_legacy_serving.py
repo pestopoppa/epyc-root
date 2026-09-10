@@ -61,6 +61,24 @@ def test_absent_pre_hook_rows_are_not_reconstructed():
                               receipt_locator="autokernel:/no/source", receipt_sha256="") == []
 
 
+def test_actual_runtime_http_archive_reader_preserves_each_recipe(tmp_path, monkeypatch):
+    research = os.environ.get("EPYC_RESEARCH_ROOT")
+    if not research:
+        pytest.skip("EPYC_RESEARCH_ROOT must select the matching direct-serving producer")
+    monkeypatch.syspath_prepend(str(Path(research) / "scripts/kernel_rnd"))
+    from autokernel.loop.test_runtime_treatment import (
+        test_actual_loop_runtime_http_without_author_build_or_source_commit as execute,
+    )
+    execute(tmp_path)
+    path, = (tmp_path / "memory/serving-beliefs").glob("*.json")
+    tuples = [reader.project(item) for item in _native(path)]
+    assert len(tuples) == 2 and tuples[0].value == tuples[1].value
+    assert tuples[0].extra["recipe_hash"] != tuples[1].extra["recipe_hash"]
+    assert tuples[0].extra["build_path"] == tuples[1].extra["build_path"]
+    assert tuples[0].extra["request_digest"] == tuples[1].extra["request_digest"]
+    assert all(grade(item)[:2] == ("Judged", "Located") for item in tuples)
+
+
 @pytest.mark.parametrize("change", ["moved", "changed", "symlink"])
 def test_missing_or_changed_original_native_source_is_refused(source, change):
     _, _, _, path = source
