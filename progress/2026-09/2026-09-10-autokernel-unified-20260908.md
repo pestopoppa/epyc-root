@@ -473,3 +473,28 @@
   130ba42ffe18405efe4824c3be5de2458189986a3ac88633e1c9f821e098d493.
   One completed checkbox. Runtime admission, automatic reduced-to-full confirmation,
   shared candidate integration and applicable live gates remain active work, not completion.
+
+### All-target startup review and inherited CPU affinity
+
+- Expanded actual prospective inputs to all seven exported production workloads plus GLM
+  under `/mnt/raid0/llm/tmp/aku-full-roster-dryrun-inputs-20260910`. Explicit fullsmt resource
+  declaration includes the eval_batch CPU0-47,96-143 placement; no hardware claim was made.
+  The full serial dry run exposed shared-source-root rejection, assigned to the existing
+  shared-candidate worker. It is not an unavailable model or a successful full-roster run.
+- Individual original-owner preflights exposed worker_fast's inherited-affinity rejection.
+  run now constructs its effective canonical taskset from explicit enrolled CPU resources,
+  retaining original snapshot provenance and unchanged workload/environment/artifact bytes.
+  Existing explicit-affinity paths are unchanged; unscoped standalone input still refuses.
+  Main70 checks passed3.04s, impactLOW1. CPU profile source pin926f9cce... remains unchanged.
+- All8 actual individual preflights now pass. Full command/output:
+  `/mnt/raid0/llm/tmp/aku-full-roster-dryrun-inputs-20260910/individual-preflights.log`, SHA256
+  4c6404ee1174177dac89dab0f017a1d48ee1c6755c2a4360f62a0cc6e2677101.
+  New production request floors remain absent; original GLM7.801 floor unchanged. No model
+  launch, kernel build, source fork or fabricated build receipt. One completed checkbox.
+- Main reviewed the915-line reduced-screen packet and82 composed tests passed10.59s on
+  current50a9. Publication awaits its automatic scheduler/resource join, not more core tests.
+  Review also found production-frontier provenance was lost, allowing finite budget to
+  spend on cheap CPU screens without GPU coverage; lifecycle worker owns the narrow existing
+  coverage-policy connection. Existing historical ControlHarness supports a separate Qwen
+  CPU replay frame, so lack of a GLM-specific historical band is not backend unavailability.
+  Runtime and lifecycle workers are wiring that original runner, not transferring old gains.

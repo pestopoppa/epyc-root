@@ -23,6 +23,14 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Inherited CPU recipes use explicitly declared campaign affinity**: ✅ 2026-09-10.
+  Actual worker_fast production input omitted taskset and was rejected. The original
+  run now makes its inherited affinity explicit from enrolled resources, preserving
+  command, artifacts, environment and original snapshot provenance. Standalone inputs
+  without declared resources still require affinity. Main70 tests pass; all seven
+  production workloads plus GLM pass individual original-owner preflight. Full-roster
+  serial shared-source handling remains active work, not proven by individual checks.
+
 - [x] **Existing serial CPU+GPU owned-roster dry run passes**: ✅ 2026-09-10.
   Actual GLM c463 CPU and canonical ef811 GPU inputs resolve and both original owner
   dry runs exit0 (0.44s), with sol-medium actors and derived scheduler. Fixed production
@@ -2702,13 +2710,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Byte coherence is not token agreement or a full T0 PASS; missing seed/token/static/dispatch/
     control/calibration warrants stay unknown. Actual driver finish/search and ROOT reader
     composition remain AKU-07o/08c. See research docs/autokernel-server-final-trial.md.
-  - [ ] **AKU-07x — resolve first-panel bootstrap without provisional control PASS**:
-    the owning positive-control evaluator requires a rank, while the dispatcher requires an
-    already-passing panel before ranking. Existing live_controls provisional assertions are
-    not authority for unified serving. Operator choice requested: prepare an explicit control-only
-    bootstrap policy for ratification, or require an existing qualified same-frame panel.
-    No policy exception is authorized yet. Raw preparation/solve and discovery continue;
-    no candidate ranking or promotion follows from an unqualified panel. See OP-AKU-CONTROLS.
+  - [ ] **AKU-07x — connect the existing control-only bootstrap to the measured panel**:
+    reuse live_controls' internal cycle-breaking evaluator path solely to compute actual
+    control outcomes; never publish its provisional panel or let it admit a candidate.
+    Main source review on2026-09-10 established that this does not require a new policy
+    exception. Candidate admission must consume the actual measured ControlHarness panel.
+    Historical CPU replay may use its own original Qwen frame and declaration; its band
+    must not be transferred to GLM. Finish original runner/retained-result joins and prove
+    failed controls cannot bank a runtime recipe. The earlier OP-AKU-CONTROLS request is
+    superseded by this reuse path, not a remaining startup prerequisite.
   - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
     add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
     candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,
