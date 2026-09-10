@@ -1,5 +1,22 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Optional last-outcome evidence transport
+
+- Published research3c6750d4, promoted to mainf355a054. Three-file slice preserves
+  cross-worktree changes and original acceptance behavior. Serial continuations
+  carry a bounded pointer to the last completed outcome's existing evidence.
+  Original readers are invoked only by explicit diagnostics, never by restart.
+  Missing optional artifacts cannot invalidate an otherwise valid continuation.
+- Main28 outcome/serial tests passed23.78s, no skips. This is transport, not
+  adaptive scheduling, qualification, or a new hardware acceptance result.
+- Live localhost8100 /api/loop rechecked: GLM5/5 complete; canonical2397 attempts,
+  32 keeps,831 nulls,908 mechanisms. Retained production A/B is+5.633302338%
+  tg128/20pairs on bff30cebee0d, explicitly distinguished from ef81196d5bdd tip.
+  Five historical capabilities retain original provenance. The operator's quoted
+  absent dashboard is not reproduced at this endpoint; exact failing URL requested.
+- One completed handoff checkbox added. GPU supplier and actual shared-source
+  authoring remain assigned work; no expensive GLM rerun performed.
+
 ## Cross-worktree validation and source-key compatibility
 
 - Main applied the worker's four narrow b4 deltas directly over f497, preserving

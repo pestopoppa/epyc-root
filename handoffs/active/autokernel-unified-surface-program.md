@@ -23,6 +23,14 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Last completed outcome retains an optional original-evidence pointer**: ✅ 2026-09-10.
+  Serial continuation carries at most 12KiB of reference metadata to the existing
+  serving receipt/runtime result, not duplicated measurements or a second ledger.
+  Explicit diagnostics use original readers; continuation loading never invokes
+  that expensive read, and missing optional evidence does not block restart.
+  Main28 outcome/serial checks passed23.78s. No scheduler weights, scientific
+  eligibility, thresholds or hardware results change in this slice.
+
 - [x] **Distinct common-Git worktrees receive target-recipe source validation**: ✅ 2026-09-10.
   Preserve target A; prove the source checkout's exact shared-Git commit/tree and
   clean state again under the held build claim; build target-specific B and run
