@@ -519,3 +519,22 @@
   No inference/build launched. Fixtures do not prove hardware transfer or coexistence.
   One completed checkbox added; broader runtime admission/shared-source integration
   remains active. No new operator decision or speculative gate added.
+
+### Shared-source continuation and full-roster startup
+
+- Accepted focused seven-file packet SHA256
+  7fac0953bfa034d346d014fb1868713d840d4f5e8e95a4a298d7ff55ad8039cc on research98da9b22.
+  Main corrected its doc's leftover staging claim: this slice has no fold consumer,
+  receipt scaffolding or canonical promotion. Shared exact worktree/branch is serial;
+  each target keeps its own store, requests and history while using the latest
+  digest-bound source/build continuation. No checkout copy or rebuild just to switch.
+- Main118 integrated checks passed12.72s. Actual-owner fixture executes synthetic
+  A source/build keep, B newer keep, and A startup combining its older personal resume
+  with B's newer exact anchor. Original CPU/GPU and partition-screening paths also pass.
+- Actual full8 serial dry run passed in primary. Original GLM7.801 floor retained;
+  all new production floors absent; canonical GPU hand-built provenance warning remains
+  explicit. No state directory, inference or build created. Command/output retained at
+  /mnt/raid0/llm/tmp/aku-full-roster-dryrun-inputs-20260910/shared-source-primary-dry-run.log,
+  SHA256 b704dc907b9021f267c80e9be5552825581e856df3db2e14f2b3673c712c605a.
+- One completed checkbox. Runtime receipt transport and actual whole-candidate fold
+  remain assigned integration work, not inferred complete from this startup proof.

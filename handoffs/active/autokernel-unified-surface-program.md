@@ -23,6 +23,19 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Shared-source target switching and all-eight-target serial startup**: ✅ 2026-09-10.
+  Targets can serialize one exact experimental worktree/branch while retaining their own
+  request/history. Digest-bound latest-source continuation rebinds the existing build;
+  a target's older personal continuation does not force an obsolete source anchor.
+  Main118 tests pass, including actual-owner synthetic A keep -> B keep -> A startup.
+  Full seven-production-plus-GLM serial dry run exits0 from primary; original GLM floor
+  remains7.801, new production floors remain absent, and the retained GPU build's existing
+  unattested warning remains explicit. No inference/build/state directory created.
+  Log: `/mnt/raid0/llm/tmp/aku-full-roster-dryrun-inputs-20260910/shared-source-primary-dry-run.log`,
+  SHA256 b704dc907b9021f267c80e9be5552825581e856df3db2e14f2b3673c712c605a.
+  Shared candidate folding and runtime-recipe transport remain separate active work;
+  neither is implied by this source-continuation checkpoint.
+
 - [x] **Automatic CPU screening connects selection to same-build full confirmation**: ✅ 2026-09-10.
   The existing serial loop selects quarter/half/full scope from qualitative mechanism
   history before resource selection; both arms share the selected geometry and its own
