@@ -23,6 +23,17 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Automatic CPU screening connects selection to same-build full confirmation**: ✅ 2026-09-10.
+  The existing serial loop selects quarter/half/full scope from qualitative mechanism
+  history before resource selection; both arms share the selected geometry and its own
+  floor. Reduced positives retain the original patch and executable as `keep_candidate`,
+  not champion promotion. Full confirmation reuses that candidate and original requests;
+  only an ordinary full keep promotes. Pending confirmation protects source/build aliases
+  and remains explicit scope debt if unaffordable. Real production frontier IDs now reach
+  the existing coverage policy. Main113 integration checks pass; actual scheduler-selected
+  GLM quarter dry run exits0 with CPU0-23 and no borrowed full-size floor. These checks
+  establish startup and fixture execution, not live transfer or CPU/GPU coexistence.
+
 - [x] **Inherited CPU recipes use explicitly declared campaign affinity**: ✅ 2026-09-10.
   Actual worker_fast production input omitted taskset and was rejected. The original
   run now makes its inherited affinity explicit from enrolled resources, preserving
