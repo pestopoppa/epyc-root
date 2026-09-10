@@ -23,6 +23,14 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Required-target validation aggregate follows the current shared tip**: ✅ 2026-09-10.
+  Serial state now retains an exact aggregate over every production target and every
+  target that authored a keep still present in the ordered lineage. The latest author
+  alone is the intended-gain target; other rows remain non-regression checks. Missing
+  or stale evidence clears/pends the aggregate rather than preserving an old pass.
+  Main27 serial checks passed11.98s. This observation does not yet enforce LOO,
+  rebaseline or COR advancement; those remain the next execution seam.
+
 - [x] **Targets author against the shared source tip, retaining their own baseline/history**: ✅ 2026-09-10.
   Cross-target validation builds the target recipe and records original provenance;
   subsequent authoring uses the source receipt's actual checkout/branch and that

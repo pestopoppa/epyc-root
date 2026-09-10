@@ -1,5 +1,19 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Required-target validation aggregate
+
+- Research daf25a08 promoted to mainaaba202a. Serial state derives the current
+  required set from production enrollment plus every author represented by retained
+  ordered source keeps. The latest author is the only intended-gain row. Exact
+  current-tip validation subject/reference/disposition is retained; absent/stale
+  lineage clears the prior aggregate.
+- Main27 serial tests passed11.98s; focused worker aggregate/pending checks2 passed
+  0.56s. One completed checkbox. This is durable observation only: LOO/rebaseline
+  enforcement and COR advancement are not inferred complete.
+- Post-shared-source full8 standalone dry run exited0 for all eight targets and
+  created no state/compute work. Log SHA256
+  2098dce7ded78805e30dca1c6661d687016ff5c4dbb19523eb01b1be1f083f26.
+
 ## Shared-source authoring integrated
 
 - Four-file slice extends original run/serial owners: target B validates and builds
