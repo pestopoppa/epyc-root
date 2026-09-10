@@ -23,6 +23,18 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Shared-worktree source changes receive original-owner cross-target validation**: ✅ 2026-09-10.
+  Retained original keep receipts identify the whole source, original target baseline,
+  request and recipe. Validation is an explicit charged scheduler stage, not a hidden
+  priority filter. Pending retries require intervening ordinary research; missing
+  evidence remains pending, not a regression or pass. Exact single-keep observations
+  are reused without another calibration/A-B; changed assembled candidates remeasure.
+  Existing serving/FOLD-2 rules decide, and fresh rows use the existing archive/belief
+  export. Reuse preserves original timestamps/bytes. Unused promotion scaffolding was
+  removed. Main70 combined checks,29 boundary follow-ups and35 archive/belief checks
+  passed; all8 primary files match acceptance. Distinct CPU/GPU worktree validation,
+  required-target final aggregation and canonical promotion are NOT completed here.
+
 - [x] **Serial selection learns bounded cost forecasts from original held receipts**: ✅ 2026-09-10.
   Completed matching measured-search batches supply a last8/p75 duration estimate;
   exact recipe/request/source/runtime/scope/accounting identities prevent unrelated
