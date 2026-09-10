@@ -68,6 +68,7 @@
   .badge.stale .dot{background:var(--bad)}.badge.stale{color:var(--bad);border-color:#5c2321}
   .badge.absent .dot{background:var(--muted)}.badge.absent{color:var(--muted)}
   .badge.malformed .dot{background:var(--amber)}.badge.malformed{color:var(--amber);border-color:#5c3a1e}
+  .badge.failed .dot{background:var(--bad)}.badge.failed{color:var(--bad);border-color:#5c2321}
   /* The episodic producer's verdicts (operator-gated card). `relevant` is the
      healthy state and is deliberately NEUTRAL — default border, muted text,
      a calm green dot — never the amber/red of an alarm: age alone is not one. */
@@ -305,6 +306,7 @@
   <span class="sub">AutoKernel loop &middot; <span id="hdr-campaign" class="mono">—</span></span>
   <span id="fresh" class="badge absent"><span class="dot"></span><span id="freshtxt">…</span></span>
   <span id="hdr-state" class="state">—</span>
+  <span id="hdr-step" class="sub mono"></span>
   <span id="actorhealth" class="sub mono" title="planner/critic CLI health from the loop's own status body (R23-52b)"></span>
   <!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. Do not
        hand-add cross-dashboard links here; add a registry row. -->
@@ -1462,8 +1464,9 @@ function renderCampaign(d){
    published on the way out, so it is perfectly fresh and perfectly dead, and a
    freshness-keyed banner draws nothing at all over it.
 
-   Six keys, and `none` draws nothing. The four freshness words still own the
-   BADGE; this is a second, orthogonal axis. */
+   Six keys, and `none` draws nothing. The badge also names declared terminal
+   reports without painting their expected age as an outage; raw freshness
+   remains a separate axis in the API and identity panel. */
 const BANNERS = {
   absent: {
     hd: "ABSENT — no loop has ever published here",
@@ -1499,8 +1502,18 @@ const BANNERS = {
   }
 };
 
-function setFreshBadge(state, ageS){
+function setFreshBadge(state, ageS, notice = null){
   const el = document.getElementById("fresh");
+  // A declared final report ages, but silence after completion is not an outage.
+  // Raw age/freshness remain visible in the identity panel and API. Malformed
+  // and absent reports never acquire terminal standing from an untrusted body.
+  if((state === "fresh" || state === "stale") &&
+      (notice?.kind === "finished" || notice?.kind === "failed")){
+    el.className = "badge " + notice.kind;
+    document.getElementById("freshtxt").textContent =
+      `${notice.kind === "failed" ? "FAILED REPORT" : "FINAL REPORT"} · ${age(ageS)} old`;
+    return;
+  }
   el.className = "badge " + esc(state);
   document.getElementById("freshtxt").textContent =
     state === "fresh" ? `fresh · ${age(ageS)} ago`
@@ -2782,7 +2795,8 @@ function render(d){
   const detail = d.serial
     ? {...d, loop:null, derived:null, ...(d.serial.child || {})}
     : d;
-  setFreshBadge(d.freshness_state, d.age_s);
+  setFreshBadge(d.freshness_state, d.age_s, d.notice);
+  document.getElementById("hdr-step").textContent = detail.display_step || "";
   renderActorHealth(detail.loop);
   document.getElementById("hdr-campaign").textContent = L ? (L.campaign_id || "—") : "—";
   const st = document.getElementById("hdr-state");

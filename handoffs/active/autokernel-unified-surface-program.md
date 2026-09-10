@@ -23,6 +23,12 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Completed dashboard runs no longer look like stalled measurements**: ✅ 2026-09-10.
+  Final reports retain original timestamps/raw steps but display a terminal step and
+  FINAL REPORT/FAILED REPORT badge. Running producers retain heartbeat expiry; future
+  timestamps remain malformed. Main 35 producer/reader/browser tests passed, including
+  a running router with a completed child. Actual GLM artifact reads complete at 5/5.
+
 - [x] **Shared historical mechanisms reach the existing planner automatically**: ✅ 2026-09-10.
   Owned-target rosters supply canonical and sibling stores to read-only recall.
   Bounded selection retains useful keeps/nulls despite transient floods and rotates

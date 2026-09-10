@@ -368,3 +368,15 @@
   38ca85e35b8c214a214d14e1869caa7569f7a0603e8eb6400aabc77872b1f7c7.
   Publication excludes pending resource/scheduler hunks in shared run.py. One completed
   checkbox added; transfer validation, runtime admission and mixed-target gates remain open.
+
+### Dashboard terminal report presentation
+
+- Reproduced complete GLM 5/5 report aging into STALE and retaining a measuring step.
+  Reader now supplies a presentation-only terminal step and explains that a declared
+  completed producer needs no further heartbeat. Page shows FINAL REPORT/FAILED REPORT
+  with original age; raw timestamp, freshness and producer step remain unchanged.
+- Main 35 actual producer/reader/JavaScript tests passed in 1.96s, no skips. Running
+  router/completed child remains running at router level; future timestamps remain
+  malformed. Actual retained GLM artifact reads Run complete — final report, 5/5.
+- Source packet SHA2562c86e349cdd01c689bbf087ccc6c3402f530ff8bfc18356f29076f580ef0b005.
+  No research restart, benchmark or historical-result rewrite. One completed checkbox.
