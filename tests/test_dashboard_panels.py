@@ -1353,6 +1353,35 @@ class FoldTest(unittest.TestCase):
         self.assertEqual(out["status"], panels.STATUS_OK)
         self.assertIsNone(out["status_set_by"])
 
+    def test_a_stopped_partial_kernel_contract_is_loud_but_not_global_health(self):
+        """Terminal optional sections remain visible without implying live loss."""
+        envs = self._all_fine()
+        envs["kernel"] = _env(
+            "kernel", timestamp=_NOW - 30 * _DAY, source="produced_at",
+            populated=True, watermark="ak-terminal:3", producer_idle=True,
+            unreported=("champion", "headroom", "release_package"))
+        out = panels.fold(envs)
+        self.assertEqual(envs["kernel"]["watchdog"]["state"],
+                         panels.WATCHDOG_IDLE)
+        self.assertEqual(panels.panel_verdict(envs["kernel"])[0],
+                         panels.STATUS_ABSENT)
+        self.assertEqual(out["status"], panels.STATUS_OK)
+        self.assertIn("kernel", [entry["panel"] for entry in out["attention"]])
+        self.assertIsNone(out["status_set_by"])
+
+    def test_a_running_partial_kernel_contract_still_gates_global_health(self):
+        """The idle exception must not hide a current producer's missing owner."""
+        envs = self._all_fine()
+        envs["kernel"] = _env(
+            "kernel", timestamp=_NOW - 60, source="produced_at",
+            populated=True, watermark="ak-running:3", producer_idle=False,
+            unreported=("release_package",))
+        out = panels.fold(envs)
+        self.assertEqual(envs["kernel"]["watchdog"]["state"],
+                         panels.WATCHDOG_OK)
+        self.assertEqual(out["status"], panels.STATUS_ABSENT)
+        self.assertEqual(out["status_set_by"]["panel"], "kernel")
+
     def test_an_unwatched_panels_silence_never_gates(self):
         """COMPLIANT-PATH CONTROL: 'this producer is allowed to be quiet' is
         spelled ``watched=False`` (``bus``/``queue``), and that still says

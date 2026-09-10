@@ -13733,7 +13733,17 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                   str(operations_root / "live")),
         silence_budget_s=(activity.get("stall", {}).get("threshold_s")
                           if lock_held else None),
-        producer_idle=bool(state_view and state_view.get("complete") is True),
+        # No held controller lock means there is no live producer expected to
+        # advance this historical deployment.  A normal completed/stopped
+        # activity is therefore idle even when an older controller schema did
+        # not persist ``state.complete``.  Do not infer idle from that bit alone:
+        # terminal-integrity and supervisor failures can retain a complete state
+        # while the validated activity correctly reports ``failed``.
+        producer_idle=bool(
+            not lock_held
+            and activity.get("status") in {"complete", "idle", "stopped"}
+            and not (isinstance(activity.get("failure"), dict)
+                     and activity["failure"].get("detected") is True)),
         unreported=(("telemetry_stream_integrity",)
                     if telemetry_integrity["state"] in {"degraded", "conflict"}
                     else ()))

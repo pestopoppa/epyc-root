@@ -740,7 +740,7 @@ class Rendering(_Fixture):
         self.assertNotIn("+0.00%", card)
         self.assertNotIn("acc-fill", card)
 
-    def test_superseded_champion_note_does_not_turn_stale_gain_into_live_progress(self):
+    def test_separate_live_accumulator_does_not_turn_stale_gain_into_canonical_progress(self):
         acc = accumulator(n_keeps=3, compounded=5.20, since_gate=2)
         acc.update({
             "measurement_validity": "stale_external_tip_advance",
@@ -763,17 +763,18 @@ class Rendering(_Fixture):
             "supersession": {"detail": "loop advanced beyond measured champion"},
             "baseline_supersession": None,
         }
-        note = self._render(payload)["by_id"]["champ"]
-        self.assertIn("ACCUMULATION IN PROGRESS", note)
-        self.assertIn("awaiting remeasurement", note)
-        self.assertIn("mandatory gate cadence 2/4", note)
-        self.assertIn("historical estimate was +5.20%", note)
-        self.assertIn("recorded keep(s) in the bundle", note)
-        self.assertIn("membership and cadence are retained in this snapshot", note)
-        self.assertNotIn("guard-verified keep(s)", note)
-        self.assertNotIn("membership and cadence remain current", note)
-        self.assertNotIn("+0.00% compounded bench", note)
-        self.assertNotIn("of the way to the", note)
+        out = self._render(payload)["by_id"]
+        note = out["champ"]
+        self.assertIn("SUPERSEDED CHAMPION", note)
+        self.assertNotIn("ACCUMULATION IN PROGRESS", note)
+        self.assertNotIn("recorded keep(s) in the bundle", note)
+        accumulator_card = out["accumulator"]
+        self.assertIn("awaiting remeasurement", accumulator_card)
+        self.assertIn("2/4", accumulator_card)
+        self.assertIn("historical estimate (not current): +5.20%",
+                      accumulator_card)
+        self.assertNotIn("+0.00%", accumulator_card)
+        self.assertNotIn("of the way to the", accumulator_card)
 
     def test_stale_threshold_schedule_is_reported_but_not_freshly_warranted(self):
         acc = accumulator(n_keeps=3, compounded=9.10, fires_next=True,
@@ -836,7 +837,7 @@ class Rendering(_Fixture):
                 self.assertNotIn("to serving gate", card)
                 self.assertNotIn("acc-fill", card)
 
-    def test_superseded_champion_note_requires_a_positive_threshold_for_progress(self):
+    def test_separate_live_accumulator_requires_a_positive_threshold_for_progress(self):
         acc = accumulator(n_keeps=2, compounded=5.20)
         acc["fire_threshold_pct"] = 0.0
         acc["progress_fraction"] = 1.0
@@ -855,9 +856,15 @@ class Rendering(_Fixture):
             "supersession": {"detail": "loop advanced beyond measured champion"},
             "baseline_supersession": None,
         }
-        note = self._render(payload)["by_id"]["champ"]
-        self.assertIn("+5.20%", note)
-        self.assertNotIn("of the way to the", note)
+        out = self._render(payload)["by_id"]
+        note = out["champ"]
+        self.assertIn("SUPERSEDED CHAMPION", note)
+        self.assertNotIn("ACCUMULATION IN PROGRESS", note)
+        self.assertNotIn("+5.20%", note)
+        accumulator_card = out["accumulator"]
+        self.assertIn("+5.20%", accumulator_card)
+        self.assertIn("positive threshold unavailable", accumulator_card)
+        self.assertNotIn("of the way to the", accumulator_card)
 
     def test_the_accumulator_card_highlights_when_it_fires_next(self):
         """The mutation half: once the compounded gain clears the threshold the
@@ -919,17 +926,19 @@ class Rendering(_Fixture):
         self.assertIn("-2.18%", card)
         self.assertIn("+5.96%", card)
 
-    def test_a_run_with_no_serving_tier_renders_a_graceful_accumulator_empty(self):
+    def test_a_run_with_no_accumulator_report_renders_a_graceful_empty(self):
         """`accumulator === null` must render nothing measured — not "0% to the
         gate", which would fabricate a bundle. Distinct from an unreadable loop."""
         self.write(body(accumulator=None))
         card = self._render(S.loop_payload())["by_id"]["accumulator"]
-        self.assertIn("no serving tier", card)
+        self.assertIn("No accumulator reported for this run", card)
+        self.assertIn("does not establish whether the run measures serving or bench",
+                      card)
         self.assertNotIn("acc-fill", card, "a null accumulator drew a progress bar")
         self.assertNotIn("to serving gate", card)
 
     def test_an_absent_loop_does_not_claim_no_accumulator(self):
-        """No readable loop is a different fact from a run with no serving tier;
+        """No readable loop is a different fact from a run with no accumulator;
         the card must not conflate the two."""
         self.absent()
         card = self._render(S.loop_payload())["by_id"]["accumulator"]

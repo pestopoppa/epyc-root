@@ -859,14 +859,35 @@
   independently broken by hard-coded live paths and was not treated as evidence against this
   bounded change.
 
-### Final publication and live verification
+### Bounded publication and subsequent completion-audit correction
 
 - Research lane `ee0ee378` was promoted to `origin/main` as merge `0e0a0b416b2d`; ROOT lane
   `40f3b2a5` was promoted as merge `6c9c92fcf6a2`. Both serialized pushes completed successfully.
 - The running hub already loaded the changed reader (PID 2290343 started after the source update),
   so no restart was necessary. `http://127.0.0.1:8100/api/loop` returns `known: true` with seven
   capability items, including DFlash2 GPU serving and Flash-Next/qwen4exp CPU/native MTP.
-- Delivery boundary is closed: final dry run, real five-loop GLM trial, real GPU iteration,
-  required-target/LOO enforcement, fresh CPU instrument selection, capability correction,
-  regression, publication and documentation are complete. Production promotion, ratification and
-  a deliberately contended simultaneous CPU/GPU soak remain separate operator-controlled actions.
+- The bounded code slices were published, but a fresh full-goal audit rejects the earlier completion
+  claim. The five-loop GLM artifact came from the pre-serial controller, used the legacy 7.801% floor
+  and lacks the later scheduler/telemetry/feedback records. The GPU proof is a separate direct run;
+  no final-code serial owner has rotated both backends live. The previously cited all-target dry-run
+  log also predates the matched-floor selection fix.
+- Full current loop regression found 2,787 passes, 81 skips, 2 expected failures, **30 failures and
+  30 setup errors**. The largest shared fault is a speculation-identity mismatch in standalone
+  planner/startup fixtures; gate, maintenance and legacy continuity failures are being repaired.
+  Live `/api/loop` correctly exposes seven capabilities, but global `/api/health` remains degraded.
+  AKU-11/12 and their acceptance children were reopened; the persistent full-handoff goal remains active.
+
+### Dashboard terminal-health correction
+
+- Corrected two stale-producer folds without hiding missing evidence. An unlocked discovery deployment
+  whose validated activity is complete, idle or stopped now reports an idle watchdog; validated failures
+  still alarm. A stopped historical kernel terminal contract may retain missing optional champion,
+  headroom and release-package sections in its panel/attention detail without setting global live health.
+  Active partial contracts, missing artifacts and watchdog defects still gate.
+- Main review found LOW upstream impact for `verdict_gates_status`; the discovery helper was absent from
+  the current graph index, so its focused callers were covered by tests instead. The joined dashboard
+  suite passed **325 tests plus 178 subtests**. The supervisor reloaded from this worktree after the source
+  mtimes; live `http://127.0.0.1:8100/api/health` now returns `status=ok`, with both `kernel` and
+  `kernel_live` explicitly idle and the historical missing sections still visible.
+- This repairs dashboard health reporting only. It does not supply the still-required final serial
+  CPU/GPU hardware run, a fresh GLM floor, or a production-promotion claim.

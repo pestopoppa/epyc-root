@@ -420,7 +420,12 @@ class TestTheRetiredSubsystemDidNotComeAlong(unittest.TestCase):
         self.assertNotIn("gpu-discovery-champion", js,
                          "the retired deployment is named in this page's CODE, not "
                          "just in the prose that explains its retirement")
-        for token in ("STOPPED", "deployment_history", "cmd-pulse"):
+        # STOPPED is now a legitimate terminal state of the serial router on
+        # this page.  The retired controller is excluded by its renderer/name
+        # fingerprints; a page-wide STOPPED ban would reject the live serial
+        # subsystem for sharing an ordinary lifecycle word.
+        self.assertRegex(js, r'stopped\s*:\s*"STOPPED"')
+        for token in ("deployment_history", "cmd-pulse"):
             self.assertNotIn(token, js, token)
 
     def test_the_merged_page_never_fetches_the_retired_surfaces_data(self):
