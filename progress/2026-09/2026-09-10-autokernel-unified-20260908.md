@@ -1,5 +1,20 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Shared-source authoring integrated
+
+- Four-file slice extends original run/serial owners: target B validates and builds
+  its recipe against A's source, then authors descendant changes on the actual shared
+  checkout/branch. B's immutable target identity/history remains separate. Original
+  generated build provenance is retained; no manual-build waiver or branch reset.
+- Main review caught and corrected stale operational checkout, stale branch and
+  same-target B→B resume references. Final A→B→A fixture executes actual original
+  author/build/measure paths with synthetic providers; B self-resume startup also
+  reopens its exact build. Original fixture planner totals remain unchanged.
+- Main31 serial/outcome/validation checks passed23.95s; worker26 serial passed11.56s.
+  Current GPU supplier and optional last-outcome references preserved by narrow patch.
+  One completed checkbox. Required-target aggregate/LOO/rebaseline remains assigned
+  implementation; no live mixed hardware acceptance or canonical promotion claimed.
+
 ## Original GPU control supplier integration
 
 - Research e019bd52 promoted to981d64ac. Six-file packet connects original native

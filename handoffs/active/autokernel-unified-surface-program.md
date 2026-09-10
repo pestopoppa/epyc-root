@@ -23,6 +23,16 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Targets author against the shared source tip, retaining their own baseline/history**: ✅ 2026-09-10.
+  Cross-target validation builds the target recipe and records original provenance;
+  subsequent authoring uses the source receipt's actual checkout/branch and that
+  validated build. Target continuation identity remains separate. Same-target
+  cross-checkout resume reuses its exact retained current build. No branch reset,
+  cherry-pick or copy is used to switch targets. Main31 serial/outcome/validation
+  checks passed23.95s, including A keep→B validation/descendant keep→A real
+  validation/source iteration and B self-resume startup. Aggregate required-target
+  LOO/rebaseline/COR integration remains separate unfinished work.
+
 - [x] **Original GPU positive/historical control supplier is connected**: ✅ 2026-09-10.
   Research e019bd52/main981d64ac retains native benchmark means and original held
   CPU/GPU contexts through existing calibration and T0–T2 evaluators. Failed setup
