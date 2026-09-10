@@ -1717,6 +1717,12 @@ retrofitting the read side is impossible. Source row added to
     an A2 nomination as a keep, validation or release result.
 
   - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.**
+    - [x] **Direct existing-loop CPU observation/corpus and actor read-side connection**:
+      ✅ 2026-09-10. `loop_cpu_profile.v1` binds the producer's original compact capture,
+      actual execution/frozen-request identity and sampled-period measurement. The existing
+      registered measurement projector and canonical grader are reused; there is no direct
+      verifier/`PROFILE_VERIFIED`, model verification or comparable speedup claim. ROOT
+      40-case actual-producer/corpus/old-profile acceptance passed; research 114 cases passed.
     Concrete emitter now exists: research `cpu_profile.run_profile_request`, compact
     `epyc.autokernel.cpu_profile_capture.v1` and two authored mappings in
     `epyc.autokernel.profile_measurement_carrier.v1`, checked by `reopen_capture` before
