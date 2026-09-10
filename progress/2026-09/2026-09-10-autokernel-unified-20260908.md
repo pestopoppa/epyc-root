@@ -317,3 +317,22 @@
 - Main actual producer-to-reader-to-browser-render suite: 26 passed in 3.08s, including
   canonical-history preservation and malformed optional-identity rejection. No inference
   reload or claim that a new hardware serial campaign was run.
+
+## Five-loop GLM CPU trial completed
+
+- Original exec21102 exited0 after248.2minutes: five actual source/build/correctness/
+  serving-A/B iterations, five pairs each, zero keeps. Mechanisms/effects: paired-y
+  +0.950164%, paired-x +1.454288%, r8-vector-transpose +1.181050%, fa-f16-kpack-16x16
+  +1.248272%, q82x4-avx512-quant +0.332447%. All are measured_null against unchanged
+  7.801% floor; experimental anchor remains c463f601bd39, no production promotion.
+- Original loop-run artifact SHA256a489ee01fa6807e202ec69c44d2d59c2ae2c3be28fa766c48ea90d3b099ce408
+  at `/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-output-continuation/loop-run.json`.
+  Original request-bound floor remains SHA256479db985de12b4351f3d614fbd73341d1a97a5c11e2183415750e63e077d3cba.
+- Main verified parent1380863 and final-iteration servers3777944,3784432,3792247,
+  3798760,3805300,3811107,3819986,3825520,3834097,3844014 absent. Dashboard fresh,
+  five measured/zero remaining, original2397 historical attempts still visible.
+- Final worker lane retains rejected iqk_quantize_min.cpp source; not reset or promoted.
+  This old loaded controller predates later continuation/target/telemetry/feedback hooks;
+  missing continuation in its output does not establish a defect in current source.
+- Completed actual five-loop workflow, not qualified performance/placement evidence,
+  mixed CPU/GPU acceptance, or full handoff completion. No experiment rerun initiated.

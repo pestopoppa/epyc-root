@@ -15,13 +15,25 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 > settlement defaults to invalid) and is not an accepted replacement. The original
 > feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
 
-**2026-09-10 checkpoint:** the existing CPU trial completed four measured iterations
-and automatically entered iteration 5. All four are `measured_null`; the fourth
-(`akm-fa-f16-kpack-16x16`) was +1.248272%, below the unchanged 7.801% floor,
-five original pairs, DB attempt `6a537149…`. No keep or qualified gain.
+**2026-09-10 checkpoint:** the existing GLM CPU trial completed all five measured
+iterations and exited 0 after 248.2 minutes. Each used five original A/B pairs;
+all were `measured_null` below the unchanged 7.801% floor. No keep or qualified gain.
 Separately, the serial target wrapper is published and hermetically tested; it has
 not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets).
-The five-iteration trial and broader mixed-target acceptance remain incomplete.
+The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
+and verification of integrations added after that controller started remain incomplete.
+
+- [x] **Five actual GLM CPU research iterations completed unattended**: ✅ 2026-09-10.
+  Original controller PID1380863 / exec21102 exited 0; five source/build/correctness/A-B
+  iterations, no keeps. Effects: +0.950164%, +1.454288%, +1.181050%, +1.248272%,
+  +0.332447%; every comparison retains five samples per arm. Original result:
+  `/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-output-continuation/loop-run.json`, SHA256
+  `a489ee01fa6807e202ec69c44d2d59c2ae2c3be28fa766c48ea90d3b099ce408`.
+  Parent and all ten final-iteration server PIDs are absent; floor SHA479db985… unchanged.
+  Final rejected source remains in its owned worker lane and archive, not promoted.
+  This controller predates newer continuation/telemetry/feedback/scheduler hooks;
+  their absence from its output is not evidence those newer paths were exercised.
+  Observation-grade workflow result only; AKU-12b's broader integration gates remain open.
 
 - [x] **Serial dashboard accepts the restart producer's process identity**: ✅ 2026-09-10.
   Corrected the closed reader contract after the restart producer added original
