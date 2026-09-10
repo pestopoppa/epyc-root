@@ -145,6 +145,107 @@ is a property of having memory, not a mechanism you install.
 
 ---
 
+## Operating the existing loop across targets
+
+The research repository's `scripts.kernel_rnd.autokernel.loop.serial_run` CLI
+(published source `718f4108`, 2026-09-10) launches finite batches of the existing
+`loop.run` as owned children. It does not replace its pool, actors, resource claims,
+measurements, grading or keep/null history. Ordinary single-target `loop.run`
+arguments remain supported.
+
+From the research repository, the command syntax is:
+
+```bash
+python3 -m scripts.kernel_rnd.autokernel.loop.serial_run \
+  --target-args /absolute/inputs/glm-cpu.args.json \
+  --target-args /absolute/inputs/canonical-gpu.args.json \
+  --batch-iterations 1 --rounds 0 \
+  --state-dir /absolute/dedicated-serial-state
+```
+
+Each input is a JSON array of existing `loop.run` arguments, not a new enrollment
+format. These examples are **templates, not installed launch authority**: replace
+`/absolute/...` paths and target IDs with the original owned inputs. Do not launch
+against a worktree/store whose existing owner is still running.
+
+`glm-cpu.args.json`:
+
+```json
+[
+  "--resolved-campaign", "/absolute/inputs/original-resolved-campaign.json",
+  "--target-id", "ORIGINAL_CPU_TARGET_ID",
+  "--worktree", "/mnt/raid0/llm/llama.cpp-experimental-glm53-champion-20260909",
+  "--experimental-branch", "ak/champion-glm53-candidate-20260909",
+  "--anchor-build", "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b",
+  "--cpu-serving-launch", "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-c463f601b-cpu-mtp-depth3-b2048-ub512-corrected.recipe.json",
+  "--frozen-prompts", "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
+  "--store", "/absolute/original-cpu-store",
+  "--worker-root", "/absolute/cpu-worker-worktrees",
+  "--worker-build-root", "/absolute/cpu-worker-builds",
+  "--pairs", "5", "--workers", "1",
+  "--planner-model", "gpt-5.6-sol", "--planner-effort", "medium",
+  "--critic-model", "gpt-5.6-sol", "--critic-effort", "medium"
+]
+```
+
+`canonical-gpu.args.json`:
+
+```json
+[
+  "--resolved-campaign", "/absolute/inputs/original-resolved-campaign.json",
+  "--target-id", "ORIGINAL_GPU_TARGET_ID",
+  "--worktree", "/mnt/raid0/llm/tmp/champ2",
+  "--champion-branch", "ak/champion/llama-cpp-0db32c06e3e5",
+  "--anchor-build", "/absolute/original-verified-current-gpu-build",
+  "--cor-build", "/absolute/original-verified-champion-of-record-build",
+  "--store", "/mnt/raid0/llm/autokernel/loop-memory",
+  "--worker-root", "/absolute/gpu-worker-worktrees",
+  "--worker-build-root", "/absolute/gpu-worker-builds",
+  "--surface", "tg128", "--pairs", "5", "--workers", "1",
+  "--serving-recipe", "/absolute/inputs/original-gpu-serving-recipe.json",
+  "--serving-pairs", "5",
+  "--planner-model", "gpt-5.6-sol", "--planner-effort", "medium",
+  "--critic-model", "gpt-5.6-sol", "--critic-effort", "medium"
+]
+```
+
+The selected model comes from original enrollment. CPU launch and frozen requests
+must match it. GPU selection remains explicitly `legacy_gpu_screen`; selection
+does not turn that screen into exact enrolled serving execution. In particular,
+the retained `build-fold-ef81196d5` directory without original provenance is not
+made ready by this example. Never fabricate provenance or add an anchor waiver.
+
+Use distinct target worktree/store/worker roots and a separate routing state
+directory. The wrapper owns `--iterations`, `--out` and `--resume-run`; do not
+put them in target files. Positive `--rounds N` runs N roster passes; 0 keeps
+rotating but exits if every target fails. Failed targets are not repeatedly relaunched.
+Each batch keeps its own full result and logs; canonical history stays in the
+original GPU store. Router status names the active target and its original store.
+
+For a new CPU workload with no matching floor, the existing optional
+`--cpu-calibrate-serving N` may be supplied for its first batch. Omit it when
+reusing an original matching floor. On later visits the wrapper reopens that floor
+and the actual retained current/COR builds; switching alone does not trigger an
+anchor rebuild or recalibration. Normal hypothesis builds still occur. Original
+recipe/request bytes and the existing provenance checks remain required.
+
+To stop, create `STOP` in the routing state directory, or signal the captured
+wrapper PID with SIGTERM/SIGINT. It signals only its captured child and waits for
+the existing owner to drain. STOP persists across wrapper restarts. Exit 0 without
+the same-target, same-input terminal continuation is not a successful batch.
+An unreconciled active batch refuses automatic relaunch rather than overlapping
+an unknown child. No broad process-name kills are part of this CLI.
+
+A direct single-target restart may pass
+`--resume-run /absolute/prior-batch/loop-continuation.json` with the same original
+inputs; the loop loads and verifies the actual retained current/COR builds. Without
+that file, a restored COR differing from the current anchor requires its original
+`--cor-build`: the current build cannot be relabelled as the old COR.
+
+The published connector has hermetic rotation/keep/resume/STOP coverage, not a live
+CPU/GPU serial-hardware acceptance result. Production promotion and scientific
+qualification remain with the existing owners.
+
 ## Related
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../../../handoffs/active/autokernel-rebuild-program.md) — the program this convention came out of, with the five verified causes.
