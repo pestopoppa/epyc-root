@@ -2131,10 +2131,58 @@ def _runtime_preparation(body, *, now=None):
                 "clock_skew": False, "error": str(exc)}
 
 
+def _serial_control(body: Mapping[str, Any]) -> dict | None:
+    """Original serial-owned command outcomes; never grants from a reader."""
+    row = body.get("serial_control")
+    if row is None:
+        return None
+    fields = {"schema", "config_digest", "owner_id", "revision", "desired_state",
+              "observed_state", "endpoint", "allowed_origin", "active_target",
+              "batch_number", "commands"}
+    if (not isinstance(row, dict) or set(row) != fields
+            or row["schema"] != "epyc.autokernel.serial_control.v1"
+            or len(json.dumps(row)) > 64 * 1024
+            or row["config_digest"] != body.get("epoch_sha256")
+            or not isinstance(row["owner_id"], str) or not row["owner_id"]
+            or type(row["revision"]) is not int or row["revision"] < 0
+            or type(row["batch_number"]) is not int or row["batch_number"] < 0
+            or row["desired_state"] not in {"running", "paused", "drained"}
+            or row["observed_state"] not in {
+                "running", "pausing", "paused", "draining", "drained", "complete", "failed"}
+            or not isinstance(row["commands"], list) or len(row["commands"]) > 64):
+        raise ValueError("malformed serial control identity/state")
+    for key in ("endpoint", "allowed_origin", "active_target"):
+        if row[key] is not None and (not isinstance(row[key], str) or len(row[key]) > 2048):
+            raise ValueError("malformed serial control endpoint/target")
+    active = body.get("target")
+    selected = active.get("selected_id") if isinstance(active, dict) else None
+    routing = body.get("routing")
+    if (not isinstance(routing, dict) or row["active_target"] != selected
+            or row["batch_number"] != routing.get("next_batch")):
+        raise ValueError("serial control report belongs to another batch/target")
+    for command in row["commands"]:
+        if not isinstance(command, dict) or set(command) != {"request", "result"}:
+            raise ValueError("malformed serial command outcome")
+        request, result = command["request"], command["result"]
+        if (not isinstance(request, dict) or not isinstance(result, dict)
+                or request.get("config_digest") != row["config_digest"]
+                or request.get("request_id") != result.get("request_id")
+                or request.get("operation") != result.get("operation")
+                or result.get("operation") not in {"pause", "resume", "drain"}
+                or type(result.get("completed")) is not bool
+                or result.get("outcome") not in {"pending", "completed", "superseded", "failed"}):
+            raise ValueError("malformed serial command outcome identity")
+    return dict(row)
+
+
 def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
     """Routing diagnostics only; neither batch counts nor heartbeats are measurements."""
     result = {"state": body.get("state"), "routing": None, "active": None,
-              "child": None, "reader_error": None}
+              "child": None, "control": None, "control_error": None, "reader_error": None}
+    try:
+        result["control"] = _serial_control(body)
+    except (ValueError, TypeError, AttributeError) as exc:
+        result["control_error"] = str(exc)
     try:
         routing = body.get("routing")
         failures = {}
@@ -2172,6 +2220,10 @@ def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
                                "complete_with_failures" if failures else "complete")
             return result
         active = body.get("target")
+        if (active is None and result["control"] is not None
+                and result["control"]["observed_state"] in {"paused", "draining"}):
+            result["state"] = result["control"]["observed_state"]
+            return result
         if not isinstance(active, dict) or set(active) - {"process_identity"} != {
                 "target_index", "selected_id", "store", "batch_dir", "input_argv_sha256", "pid"}:
             raise ValueError("serial active target identity is missing or malformed")
