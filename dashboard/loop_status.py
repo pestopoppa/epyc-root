@@ -916,6 +916,8 @@ def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
 
 CHAMPION_SCHEMA = "epyc.autokernel.champion_vs_production.v1"
 CHAMPION_FILENAME = "champion-vs-production.json"
+CHAMPION_CAPABILITIES_SCHEMA = "epyc.autokernel.champion_capabilities.v1"
+CHAMPION_CAPABILITIES_FILENAME = "champion-capabilities.json"
 #: A cumulative A/B is a deliberate, expensive act, not a per-iteration beat, so
 #: the envelope is days rather than minutes. The producer still owns the number
 #: inside the same clamps every other contract on this page is held to.
@@ -982,7 +984,8 @@ CHAMPION_CAPABILITIES_UNKNOWN = (
     "directory has no CMakeCache).")
 
 CHAMPION_CAPABILITIES_WOULD_POPULATE = (
-    "a `capabilities` array in the champion-vs-production bundle: one entry per "
+    "a separately attributed champion-capabilities.json record, or a "
+    "`capabilities` array in the champion-vs-production bundle: one entry per "
     "capability, each naming the evidence that establishes it (the commit, the "
     "gate, or the artifact). Typed here by hand it would be a memory, not a "
     "measurement.")
@@ -1121,10 +1124,9 @@ def champion_freshness(report: Mapping[str, Any], *,
     }
 
 
-def _historical_champion_capabilities(root: Optional[Path],
-                                     champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
-    """Reopen the original retained list; ancestry is not fresh capability verification."""
-    path = (store_root() if root is None else Path(root)) / (CHAMPION_FILENAME + ".pre-reconcile")
+def _read_champion_capability_record(path: Path, champion: Optional[Mapping[str, Any]], *,
+                                     schema: str = CHAMPION_SCHEMA) -> Optional[dict]:
+    """Read bounded attributed evidence; lineage never substitutes for a build check."""
     try:
         fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
         with os.fdopen(fd, "rb") as stream:
@@ -1140,7 +1142,11 @@ def _historical_champion_capabilities(root: Optional[Path],
         record = json.loads(raw)
     except (OSError, UnicodeDecodeError, json.JSONDecodeError):
         return None
-    if not isinstance(record, dict) or record.get("schema") != CHAMPION_SCHEMA:
+    if not isinstance(record, dict) or record.get("schema") != schema:
+        return None
+    independent = schema == CHAMPION_CAPABILITIES_SCHEMA
+    if independent and (set(record) != {"schema", "generated_at", "champion", "capabilities"}
+                        or not isinstance(record["generated_at"], str)):
         return None
     source_champion = record.get("champion")
     measured = source_champion.get("commit") if isinstance(source_champion, dict) else None
@@ -1148,6 +1154,10 @@ def _historical_champion_capabilities(root: Optional[Path],
     if not isinstance(measured, str) or not _FULL_SHA.fullmatch(measured) \
             or _stamp_epoch(record.get("generated_at")) is None \
             or not isinstance(entries, list) or not 1 <= len(entries) <= 64:
+        return None
+    if independent and (set(source_champion) != {"commit"}
+                        or _stamp_epoch(record["generated_at"]) >
+                        time.time() + panels.FUTURE_SKEW_TOLERANCE_S):
         return None
     if any(not isinstance(entry, dict)
            or any(not isinstance(entry.get(key), str) or not entry[key].strip()
@@ -1163,19 +1173,50 @@ def _historical_champion_capabilities(root: Optional[Path],
         return None
     return {
         "known": True,
-        "source": (f"Historical capability record {path}, {record['generated_at']}, "
-                   f"measured {measured[:12]}; {relation['relation']} of champion "
+        "source": (f"{'Attributed' if independent else 'Historical'} capability record "
+                   f"{path}, {record['generated_at']}, "
+                   f"{'attributed to' if independent else 'measured'} {measured[:12]}; "
+                   f"{relation['relation']} of champion "
                    f"{str(tip['commit'])[:12]}. Original verification, not a fresh build check."),
         "items": [{"name": entry["name"], "evidence": entry["evidence"]} for entry in entries],
         "unknown_reason": None, "would_populate": None,
         "historical": True, "record_path": str(path),
         "record_sha256": hashlib.sha256(raw).hexdigest(),
-        "generated_at": record["generated_at"], "measured_commit": measured,
+        "generated_at": record["generated_at"],
+        ("attributed_commit" if independent else "measured_commit"): measured,
         "current_champion": tip["commit"], "lineage": relation,
     }
 
 
+def _historical_champion_capabilities(root: Optional[Path],
+                                     champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
+    path = (store_root() if root is None else Path(root)) / (CHAMPION_FILENAME + ".pre-reconcile")
+    return _read_champion_capability_record(path, champion)
+
+
 def _champion_capabilities(body: Optional[Mapping[str, Any]], *,
+                           root: Optional[Path] = None,
+                           champion: Optional[Mapping[str, Any]] = None) -> dict:
+    """Merge independently attributed capabilities without modifying the numeric A/B."""
+    existing = _bundle_capabilities(body, root=root, champion=champion)
+    path = (store_root() if root is None else Path(root)) / CHAMPION_CAPABILITIES_FILENAME
+    declared = _read_champion_capability_record(
+        path, champion, schema=CHAMPION_CAPABILITIES_SCHEMA)
+    if declared is None:
+        return existing
+    records = [declared]
+    if existing["known"]:
+        records.append(existing)
+    # Identical entries need appear only once; differing evidence remains visible.
+    items = {(item["name"], item["evidence"]): item
+             for record in records for item in record["items"]}
+    return {**declared, "items": list(items.values()),
+            "source": "; ".join(record["source"] for record in records),
+            "records": [{key: value for key, value in record.items() if key != "items"}
+                        for record in records]}
+
+
+def _bundle_capabilities(body: Optional[Mapping[str, Any]], *,
                            root: Optional[Path] = None,
                            champion: Optional[Mapping[str, Any]] = None) -> dict:
     """The capability list, or an honest "nobody has said" with the reason.

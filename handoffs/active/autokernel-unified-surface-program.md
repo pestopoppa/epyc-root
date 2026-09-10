@@ -1007,7 +1007,16 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       so nobody syncs it. Do NOT `checkout`/`reset` it (destroys other sessions' uncommitted work) — needs
       an operator-assigned owner or a scheduled sweep session before it grows further.
 - [ ] Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas)
-- [ ] LOO + re-baseline receipts are REQUIRED fields of the promotion record; promote refuses without them
+- [x] LOO + re-baseline receipts are REQUIRED fields before shared-source advancement; the
+      serial controller refuses to treat required-target validation as complete until every
+      enrolled production surface and every keep-author surface has an exact current-tip row,
+      then schedules one real `source_loo.execute_surface` treatment per retained keep plus the
+      required re-baseline under the original held CPU/GPU claims. Continuations bind the target,
+      assembled commit, candidate execution digest, instrument, request digest, pair count and
+      immutable result hashes. Missing or inconclusive rows remain pending; an inconclusive LOO
+      becomes retry-eligible only after one ordinary search opportunity, while failed rows remain
+      failed. No LOO result grants deletion or promotion authority. ✅ 2026-09-10 — research
+      `ee0ee378`; combined existing CPU/GPU/serving/screen/serial/LOO suite 109 passed in 33.22s.
 - [ ] Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
 - [ ] Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
 
@@ -3154,6 +3163,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     instead of claiming every producer defines it against the anchor mean. The retained GLM
     v1 floor is p95 absolute deviation from the median (7.801%, n=5); other floor producers may
     use different estimators. Four focused terminal-render tests pass; no measurement changed.
+  - [x] **AKU-09j — publish separately attributed champion capabilities without rewriting the
+    numeric A/B record**: ✅ 2026-09-10. The existing champion card now merges bounded,
+    schema-checked capability records whose exact commit is the current champion or its proven
+    ancestor. Divergent lineage, malformed timestamps, partial SHAs and oversized records are
+    ignored rather than presented as current capability. The live record adds DFlash2 speculative
+    GPU serving and Flash-Next (`qwen4exp`) CPU/native-MTP support to the five retained historical
+    GPU capabilities, with explicit source commits, artifact hashes and claim limits. The direct
+    champion-vs-production percentage remains untouched. Focused reader tests pass 27/27; the live
+    snapshot resolves seven capabilities from
+    `/mnt/raid0/llm/autokernel/loop-memory/champion-capabilities.json` (SHA-256
+    `264f16ad346634b2a0c7bbe5e7a83faa976db0a7f75162f38f38324393247ea7`).
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.

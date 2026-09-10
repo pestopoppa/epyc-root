@@ -89,3 +89,83 @@ def test_bounded_original_record_read_refuses_unsafe_file(retained, kind):
     elif kind == "oversize":
         path.write_bytes(b" " * 262145)
     assert not ls._champion_capabilities({}, root=root, champion=tip)["known"]
+
+
+def publish_catalog(root, commit):
+    record = {"schema": ls.CHAMPION_CAPABILITIES_SCHEMA,
+              "generated_at": "2026-09-10T00:00:00Z", "champion": {"commit": commit},
+              "capabilities": [{"name": "Separately attributed capability",
+                                "evidence": "Original source and validation artifact"}]}
+    path = root / ls.CHAMPION_CAPABILITIES_FILENAME
+    path.write_text(json.dumps(record))
+    return path, record
+
+
+@pytest.mark.parametrize("relation", [ls.REL_TIP, ls.REL_ANCESTOR])
+def test_independent_tip_or_ancestor_record_is_not_attached_to_numeric_ab(retained, relation):
+    root, _, _, historical, tip = retained
+    commit = tip["commit"] if relation == ls.REL_TIP else historical["champion"]["commit"]
+    path, record = publish_catalog(root, commit)
+    numeric = {"champion": historical["champion"], "effect_fraction": 0.05633}
+    before = copy.deepcopy(numeric)
+    result = ls._champion_capabilities(numeric, root=root, champion=tip)
+    assert result["known"] and result["attributed_commit"] == commit
+    assert result["lineage"]["relation"] == relation
+    assert result["items"] == record["capabilities"] + historical["capabilities"]
+    assert result["record_sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert [r.get("attributed_commit", r.get("measured_commit")) for r in result["records"]] == [
+        commit, historical["champion"]["commit"]]
+    assert "not a fresh build check" in result["source"]
+    assert numeric == before
+
+
+def test_divergent_catalog_refused_without_hiding_historical_list(retained):
+    root, tree, _, historical, tip = retained
+    git(tree, "checkout", "--orphan", "foreign")
+    git(tree, "commit", "--allow-empty", "-qm", "unrelated capability")
+    publish_catalog(root, git(tree, "rev-parse", "HEAD"))
+    git(tree, "checkout", "ak/champion/test")
+    result = ls._champion_capabilities({}, root=root, champion=tip)
+    assert result["items"] == historical["capabilities"]
+    assert "attributed_commit" not in result
+
+
+def test_catalog_merge_deduplicates_only_exact_name_and_evidence(retained):
+    root, _, path, historical, tip = retained
+    _, catalog = publish_catalog(root, tip["commit"])
+    historical["capabilities"] += catalog["capabilities"]
+    path.write_text(json.dumps(historical))
+    result = ls._champion_capabilities({}, root=root, champion=tip)
+    assert result["items"] == catalog["capabilities"] + historical["capabilities"][:1]
+    assert len(result["records"]) == 2
+
+
+@pytest.mark.parametrize("fault", ["schema", "time", "future", "short_sha", "missing_evidence",
+                                   "symlink", "fifo", "oversize"])
+def test_invalid_catalog_preserves_original_capabilities(retained, fault):
+    root, _, _, historical, tip = retained
+    path, record = publish_catalog(root, tip["commit"])
+    if fault == "schema":
+        record["schema"] = ls.CHAMPION_SCHEMA
+    elif fault == "time":
+        record["generated_at"] = "undated"
+    elif fault == "future":
+        record["generated_at"] = "2099-01-01T00:00:00Z"
+    elif fault == "short_sha":
+        record["champion"]["commit"] = tip["commit"][:12]
+    elif fault == "missing_evidence":
+        record["capabilities"][0].pop("evidence")
+    path.write_text(json.dumps(record))
+    if fault in {"symlink", "fifo", "oversize"}:
+        path.unlink()
+        if fault == "symlink":
+            other = root / "other.json"
+            other.write_text(json.dumps(record))
+            path.symlink_to(other)
+        elif fault == "fifo":
+            os.mkfifo(path)
+        else:
+            path.write_bytes(b" " * 262145)
+    result = ls._champion_capabilities({}, root=root, champion=tip)
+    assert result["items"] == historical["capabilities"]
+    assert "attributed_commit" not in result
