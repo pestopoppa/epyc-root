@@ -23,6 +23,23 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Original-owner runtime interruption recovery**: ✅ 2026-09-10.
+  Serial retries only a typed recoverable runtime interruption after original child
+  termination and held-resource accounting; unrelated failed targets remain excluded.
+  Fresh ownership resumes the original pending pair/allocation in a new window, with
+  completed control/results reused and old samples kept separate. Unknown child cleanup
+  aborts before any fallback measurement. Historical completed results reopen even when
+  the caller lost its result reference. Main combined43 checks pass plus the corrected
+  old cleanup-exception fixture1pass; original real-child recovery tests are included.
+  Synthetic measurement edges only; no claim that arbitrary orphan cleanup is automatic.
+
+- [x] **Existing dashboard shows dated runtime preparation and selected recipe**: ✅ 2026-09-10.
+  Original checkpoint callbacks supply phase/counts/pending state; heartbeat cannot
+  refresh the observation timestamp. Existing page renders the human-readable recipe
+  with digests/caveats collapsed. Diagnostics cannot change admission or checkpoint
+  success. Main45 writer/reader/page checks pass; separate producer44 checks passed
+  before recovery composition. Authenticated serial controls remain separate work.
+
 - [x] **Fresh selected CPU/GPU targets prepare their missing source floor automatically**: ✅ 2026-09-10.
   The existing startup calibration now covers full targets as well as reduced screens.
   Only an absent exact recipe/request floor triggers automatic preparation, using the

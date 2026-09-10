@@ -355,6 +355,11 @@
     <div class="tiles" id="tiles"></div>
   </section>
 
+  <section id="sec-runtime-preparation" hidden>
+    <h2>Runtime preparation <span class="count">owner-reported progress</span></h2>
+    <div id="runtime-preparation"></div>
+  </section>
+
   <!-- ACCUMULATOR (R23-44 two-tier champion). The loop banks CHEAP llama-bench
        keeps into a bundle against the last serving-demonstrated champion (the
        "champion of record", what the headline shows). The EXPENSIVE llama-server
@@ -2790,6 +2795,38 @@ function renderSerial(d){
   host.innerHTML = h;
 }
 
+function renderRuntimePreparation(d){
+  const view=d.runtime_preparation, host=document.getElementById("runtime-preparation");
+  document.getElementById("sec-runtime-preparation").hidden = !view;
+  if(!view){host.innerHTML=""; return;}
+  if(view.state !== "reported"){
+    host.innerHTML='<div class="warn">Runtime progress unavailable: '+esc(view.error || "malformed report")+'</div>';
+    return;
+  }
+  const r=view.body, p=r.progress, ref=r.selected_recipe_reference;
+  let h='<div><b>'+esc(r.status)+'</b>'+ (r.reason ? ' · '+esc(r.reason) : '')+'</div>'+
+    '<div>Selected: '+esc(r.selected_recipe)+'</div>';
+  if(p){
+    h += '<div>Owner phase: <b>'+esc(p.operation)+'</b>';
+    if(p.completed_launches != null) h += ' / '+esc(p.phase)+' · '+esc(p.completed_launches)+
+      ' valid launches of '+(p.limit_is_upper_bound?'up to ':'')+esc(p.launch_limit)+
+      ' · '+esc(p.failed_launches)+' retained failed launches';
+    if(p.pending) h += ' · pending '+esc(p.pending.join(' / '));
+    h += '</div><div class="muted">Owner update: '+esc(p.observed_at)+' · '+
+      (view.clock_skew ? 'wall-clock skew; age unknown' :
+       view.progress_age_s == null ? 'age unknown' : esc(age(view.progress_age_s))+' ago')+
+      '.</div>';
+  }else h += '<div class="muted">No runtime launch progress reported.</div>';
+  h += '<details><summary>Preparation plan and original identity</summary>';
+  if(r.calibration_launches != null) h += '<div>'+esc(r.calibration_launches)+
+    ' launches per new anchor calibration frame, plus controls. Source proposals do not require this setup.</div>';
+  h += '<div>Execution: '+esc(r.selected_execution_digest)+'</div>';
+  h += ref ? '<div>Retained selection: '+esc(ref.locator)+' · SHA256 '+esc(ref.sha256)+'</div>' :
+    '<div>No retained runtime selection reported.</div>';
+  h += '<div class="muted">Progress is diagnostic, not a gain or admission claim. Heartbeats do not refresh owner-update time.</div></details>';
+  host.innerHTML=h;
+}
+
 function render(d){
   const L = d.loop;
   const detail = d.serial
@@ -2809,6 +2846,7 @@ function render(d){
   renderChampion(d);
   renderSerial(d);
   renderTiles(detail);
+  renderRuntimePreparation(detail);
   // The accumulator (R23-44) rides the loop-status body; rendered unconditionally
   // and drawing its own graceful empty when the run carries no serving tier.
   renderAccumulator(detail);
@@ -2825,6 +2863,8 @@ function render(d){
 }
 
 function renderFetchFailure(err){
+  document.getElementById("runtime-preparation").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; runtime progress cannot be refreshed.</div>';
   document.getElementById("serial").innerHTML =
     '<div class="warn">UNKNOWN — hub unreachable; routing and child freshness cannot be refreshed.</div>';
   document.getElementById("banner").className = "show malformed";

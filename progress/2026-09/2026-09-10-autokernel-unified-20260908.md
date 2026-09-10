@@ -1,5 +1,23 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Runtime recovery and dated dashboard progress
+
+- Composed recovery c37d38b2 (d577 base) with progress research8a5ef318/root789de25d.
+  Main manually preserved both recovery_reference and on_progress constructor/caller
+  arguments and checkpoint callbacks. Eleven research files match acceptance byte-for-byte.
+- Recovery retains typed interruption, original terminal child and held-cost evidence;
+  only matching pending runtime work becomes eligible again. Completed windows/historical
+  result references reopen; new holders never mix old partial samples. Unknown cleanup
+  raises RunAborted before the observation fallback. Source-only/screen runs remain usable.
+- Main composed43 tests passed75.64s with one obsolete constructor-exception expectation;
+  corrected only that fixture, affected test passed18.42s. Earlier main progress44passed34.16s;
+  ROOT45 actual writer/joined-child/page checks passed2.31s. Worker recovery final21passed36.43s.
+  These include real tiny child/flock/HTTP edges, with synthetic measurement providers.
+- Dashboard phase/counts/selected description use original observation dates, independent
+  of heartbeat. No publisher artifact reads; callback faults do not alter admissions.
+  Two completed checkboxes. No new hardware calibration, gain or production mutation.
+  Whole-candidate required-target completion, serial controls and adaptive selection remain active.
+
 ## Automatic initial serving-floor preparation
 
 - Found actual startup gap: only reduced CPU screens automatically calibrated missing

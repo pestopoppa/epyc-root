@@ -159,8 +159,12 @@ campaigns retain admitted recipes; serial batches carry their references automat
 Historical `aku-*` source campaigns remain source-only. `--calibrate-runtime` is optional:
 ordinary source proposals do not require runtime preparation. Default first-treatment
 setup declares 800 calibration server launches plus controls. The invocation budget
-stops new setup launches and retains completed evidence; interrupted prior-owner windows
-are not yet automatically recoverable.
+stops new setup launches and retains completed evidence. Typed runtime interruptions can
+resume the original pending pair after serial verifies original child termination and
+held-resource accounting. Completed evidence is reused; a fresh holder uses a separate
+window for incomplete work. Unknown child cleanup aborts before any fallback measurement.
+Other failed targets are not automatically retried. The existing dashboard reports runtime
+phase/counts and selected recipe with an observation age independent of heartbeat.
 
 A runtime keep requires a new recipe-bound source floor, not a rebuild. Existing pruning
 protects its original measured build, not every generation. Operational rebinding to a
