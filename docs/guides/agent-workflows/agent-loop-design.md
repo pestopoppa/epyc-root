@@ -167,7 +167,7 @@ not. Existing exact floors are reused, not recalibrated, and malformed/mismatche
 records refuse rather than being overwritten. Dry-run reports preparation but
 launches nothing and does not persist an instrument selection.
 
-CPU runtime treatments use the same executable and existing loop. Prospective `ak-`
+CPU/GPU runtime treatments use the same executable and existing loop. Prospective `ak-`
 campaigns retain admitted recipes; serial batches carry their references automatically.
 Historical `aku-*` source campaigns remain source-only. `--calibrate-runtime` is optional:
 ordinary source proposals do not require runtime preparation. Default first-treatment
@@ -178,6 +178,13 @@ held-resource accounting. Completed evidence is reused; a fresh holder uses a se
 window for incomplete work. Unknown child cleanup aborts before any fallback measurement.
 Other failed targets are not automatically retried. The existing dashboard reports runtime
 phase/counts and selected recipe with an observation age independent of heartbeat.
+
+GPU runtime experiments use the existing CPU-host and ROCm0 claims together. Numeric
+device observations must cover the measured requests, including interior sampling gaps;
+the existing device and duration rules still decide validity. Missing GPU control
+suppliers are reported before calibration collection starts, including an explicit
+`--calibrate-runtime` request. Source research remains available. This backend wiring
+does not itself supply qualified GPU positive/historical controls or authorize a keep.
 
 A runtime keep requires a new recipe-bound source floor, not a rebuild. Existing pruning
 protects its original measured build, not every generation. Operational rebinding to a
