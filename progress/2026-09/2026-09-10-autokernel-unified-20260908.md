@@ -498,3 +498,24 @@
   coverage-policy connection. Existing historical ControlHarness supports a separate Qwen
   CPU replay frame, so lack of a GLM-specific historical band is not backend unavailability.
   Runtime and lifecycle workers are wiring that original runner, not transferring old gains.
+
+### Automatic reduced CPU screening integrated
+
+- Accepted the seven-file packet on research34b900ae after source review and exact hash
+  verification (packet SHA256 b48a23014b6ffbd951561cd6819c8c5e6ef9e6ea7e5c13e5ee6b579d70a9f3c6).
+  Original run/pool/build/promotion remains the owner; no replacement scheduler or ledger.
+  Selection freezes quarter/half/full geometry before scheduling. Both measurement arms
+  use the same scoped recipe and its own calibration. Original full recipe stays separate.
+- Reduced positive retains the exact source patch and candidate build as keep_candidate.
+  Full confirmation uses that build and original requests, reruns the applicable checks,
+  and promotes only on an ordinary full keep. Pending aliases cannot supersede it.
+  Unaffordable confirmation is visible scope debt, not another reduced experiment.
+  Existing production coverage receives actual enrolled frontier identities; finite
+  four-attempt regression proves GPU coverage despite cheaper CPU quarter stages.
+- Main113 tests passed10.64s, including old CPU/GPU runs, scheduler, retained-build and
+  affinity cases. Exact actual GLM --scheduler-selection dry run in primary exited0
+  in0.21s: CPU0-23, quarter recipe, absent request-bound floor, sol-medium actors.
+  Inputs: /mnt/raid0/llm/tmp/aku-cpu-screen-selected-dryrun-20260910/argv.json.
+  No inference/build launched. Fixtures do not prove hardware transfer or coexistence.
+  One completed checkbox added; broader runtime admission/shared-source integration
+  remains active. No new operator decision or speculative gate added.
