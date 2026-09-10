@@ -25,3 +25,53 @@
   the broader CPU/GPU autonomy program or start another run. Documentation preparation
   made no runtime changes, index edits, commits or wiki sweep. README freshness check
   exited0 with no warnings.
+
+## CPU lifecycle facts integrated on disk, not retrofitted into the running trial
+
+- The first retained CPU comparison (`05843e3b…`) had ten launches and GPU-sampler
+  readings, but no CPU-affinity readings. The direct serving path explicitly returned
+  `cpu_placement=unproven`; declared CPU0–95 was launch intent, not an observation.
+- Research PRIMARY received the bounded three-file collector packet based on
+  `2059e30e`: `loop/residency.py`, `loop/serving.py`, and
+  `loop/test_cpu_lifecycle_facts.py`. Packet SHA-256:
+  `499ec92e1e9b5de5762c8446f3eb492369af03cd0b3c58270f88129dc0fb3232`.
+  This is on-disk integration only. No running process was restarted/reloaded, and
+  the already-running trial is not claimed to have loaded the collector.
+- Future direct resolved-CPU launches retain factual `cpu_lifecycle` rows beside
+  each arm's residency record: original attached PID/start ticks, TID/start ticks,
+  CPU and NUMA allowed lists, phase/clock markers, gaps, errors and exhausted bounds.
+  Default cadence is one second with phase-change wakeups; limits are 512 tasks,
+  8,192 samples, 32 MiB sample bytes, 16 KiB per read and 100 ms per sample. Brief
+  changes can still be missed. NUMA allowed lists are permissions, not page placement.
+  Both placement and contention remain `unproven`; no qualified measurement,
+  clean-host witness, resource authority or new grading rule was created. GPU and
+  existing native/profile observation paths are unchanged.
+- Main independently verified **43 passed, 8 subtests passed in 0.54s**; isolated
+  verification was 43 passed/8 subtests in 0.26s, with Ruff and diff checks clean.
+  Tests use synthetic procfs and mocked serving, not inference. A ten-read,
+  one-task self-process check took median 0.0924 ms/max 0.3550 ms per sample;
+  this is not a full-width inference-overhead measurement.
+- Archive coverage is real but belief wiring is not: `ServingComparison.to_dict`
+  preserves the full row through `Outcome.to_attempt` and `archive.record` into
+  `ExperimentStore.record`'s JSON payload. This direct path emits no
+  `belief_capture`/`belief_measurements`. The existing unified-arm reader requires
+  its original planned/native carrier and cannot be asserted to cover these rows.
+  The source-table/task draft files this precise prospective gap as
+  **VB-AK-LEGACY-SERVING**; historical records must not be backfilled with today's
+  observations or identities. AKU-12b remains open for actual monitored acceptance.
+
+## Enrolled-target connector published for the existing loop CLI
+
+- Research source `1f2d93aa` / main `195c4ea5` adds the paired
+  `--resolved-campaign` / `--target-id` options to the existing `loop/run.py` CLI,
+  using `legacy_targets.py`; no replacement runner was introduced. Selection
+  preserves original campaign/request/manifest and target identity in planner
+  context and status, and binds the selected target into epoch identity.
+- The CPU route checks the existing resolved serving workload against that
+  enrolled target. GPU selection is explicitly labelled `legacy_gpu_screen`,
+  not execution of an enrolled serving recipe. Unselected legacy inputs remain
+  supported. Selection confers neither artifact verification nor admission.
+- Main independently verified the focused combined source with **68 passed in
+  1.38s**. This checkpoint is target-to-existing-CLI wiring only: not serial
+  dispatch of all targets, not a restarted live trial and not completion of the
+  unified CPU/GPU research or five-loop acceptance goal.
