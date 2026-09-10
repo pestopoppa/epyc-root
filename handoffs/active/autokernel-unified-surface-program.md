@@ -23,6 +23,17 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Distinct common-Git worktrees receive target-recipe source validation**: ✅ 2026-09-10.
+  Preserve target A; prove the source checkout's exact shared-Git commit/tree and
+  clean state again under the held build claim; build target-specific B and run
+  original correctness/serving comparison. Build failure records debt without
+  rebinding a nonexistent binary. Immutable old validation references reopen after
+  source HEAD advances. Legacy source keys migrate by original references/ancestry;
+  subsequent direct lookup avoids whole-history scanning. Divergent keeps cannot
+  replace the forward shared pointer. Main28 serial/validation/matched checks
+  passed13.08s. No hardware or canonical promotion. This does not yet route every
+  target's source authoring onto one shared tip or execute required-target LOO.
+
 - [x] **Aggregate serving gates feed the original archive and belief consumer**: ✅ 2026-09-10.
   Both promotion and nonpromotion archive the original whole-bundle comparison with
   COR/tip, keep membership and trigger before existing state advancement. Existing

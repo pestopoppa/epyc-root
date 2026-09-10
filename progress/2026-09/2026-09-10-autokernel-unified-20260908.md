@@ -1,5 +1,27 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Cross-worktree validation and source-key compatibility
+
+- Main applied the worker's four narrow b4 deltas directly over f497, preserving
+  matched CPU, GPU runtime and aggregate feedback. Added source-key compatibility
+  from the b651 worker plus main direct-reference fast path; removed arbitrary256
+  pointer refusal and excluded validation-only rows whose target anchor is not the
+  source receipt commit. Existing source entries remain intact.
+- Actual common-Git second-worktree fixture builds target B under original claims,
+  preserves original A, runs oracle/comparison, and records build failure as debt
+  without trying to open absent binaries. Historical validation reopen uses immutable
+  Git objects, not current source HEAD; a divergent keep cannot replace the forward
+  shared pointer. Old worktree/branch keys resolve to the same retained reference.
+- Main final28 serial/validation/matched checks passed13.08s. Initial integration
+  identified three test-shape mismatches: helper now takes cross_worktree, read-only
+  Git Popen must not count as an inference child, and a fixture with no source keep
+  must not invent shared source advancement. Actual source-keep fixture covers that
+  advancement; none of these corrections relaxed measurement assertions.
+- One completed checkbox. One-source authoring, all-required-target aggregation and
+  actual LOO execution remain work: existing plan_loo/seal_loo_evidence are not an
+  executor and the original loop has no LOO producer. No production mutation or
+  hardware inference was performed in this boundary.
+
 ## Aggregate serving feedback repair
 
 - Fixed original run._accumulate_after_keep: successful aggregate gates previously
