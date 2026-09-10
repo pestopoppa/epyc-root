@@ -2868,6 +2868,13 @@ async function serialSend(operation){
   finally{serialBusy=false;if(serialView) renderSerialControls(serialView);}
 }
 
+let serialRetainedTarget = null, serialRetainedView = null;
+function retainedSerialTarget(d){
+  const rows=d.serial?.completed?.items || [];
+  return rows.find(row=>String(row.target_index)===serialRetainedTarget) ||
+    rows.find(row=>row.detail) || rows[0] || null;
+}
+
 function renderSerial(d){
   const host = document.getElementById("serial");
   const section = document.getElementById("sec-serial");
@@ -2894,6 +2901,26 @@ function renderSerial(d){
       failed.map(([key,value])=>`${esc(key)}: ${esc(value)}`).join("; ") + "</div>";
   } else h += `<div class="muted">This older router report did not publish roster/batch totals.</div>`;
   if(s.reader_error) h += `<div class="warn">${esc(s.reader_error)}</div>`;
+  const completed=s.completed, retained=retainedSerialTarget(d);
+  if(completed){
+    h += `<div><b>Retained target results</b> · ${esc(completed.scope)}.</div>`;
+    for(const error of completed.errors || []) h += `<div class="warn">${esc(error)}</div>`;
+    if(retained){
+      h += '<label>Show retained target result <select id="serial-retained-target">' +
+        completed.items.map(row=>`<option value="${esc(row.target_index)}" `+
+          `${row===retained?'selected':''}>${esc(row.target_id || 'target '+row.target_index)}</option>`).join('') +
+        '</select></label>';
+      const summary=retained.summary;
+      if(summary) h += `<div>${esc(summary.terminal)} · ${esc(summary.iterations_completed)} / `+
+        `${esc(summary.iterations_requested)} iterations in this retained batch · `+
+        `${esc(JSON.stringify(summary.outcome_counts))}</div>`;
+      h += `<div class="muted">Original continuation: ${esc(retained.reference?.path || 'unavailable')}.</div>`;
+      if(retained.error) h += `<div class="warn">Retained detail unavailable: ${esc(retained.error)}</div>`;
+      if(retained.detail) h += `<div>Cards below show this completed target batch, not current activity `+
+        `or cumulative serial measurements. Original status: ${esc(retained.detail.evidence)} · `+
+        `${esc(retained.detail.age_s == null ? 'undated' : age(retained.detail.age_s)+' old')}.</div>`;
+    }else h += '<div class="muted">No completed target references retained by this serial owner.</div>';
+  }
   if(a) h += `<div>Declared active target <b>${esc(a.selected_id)}</b> · PID ` +
     `${esc(a.pid == null ? "not launched" : a.pid)} · ${esc(a.batch_dir)}</div>`;
   if(c){
@@ -2914,6 +2941,11 @@ function renderSerial(d){
   h += `<div class="muted">The loop data probe dates routing; the child freshness above ` +
     `is independent. Canonical champion and accumulated history remain below on their own sources.</div>`;
   host.innerHTML = h;
+  serialRetainedView=d;
+  if(retained) document.getElementById("serial-retained-target").onchange = event=>{
+    serialRetainedTarget=event.target.value;
+    render(serialRetainedView);
+  };
 }
 
 function renderRuntimePreparation(d){
@@ -2950,11 +2982,14 @@ function renderRuntimePreparation(d){
 
 function render(d){
   const L = d.loop;
+  const retained=retainedSerialTarget(d);
   const detail = d.serial
-    ? {...d, loop:null, derived:null, ...(d.serial.child || {})}
+    ? {...d, loop:null, derived:null, runtime_preparation:null,
+       ...(d.serial.child || retained?.detail || {})}
     : d;
   setFreshBadge(d.freshness_state, d.age_s, d.notice);
-  document.getElementById("hdr-step").textContent = detail.display_step || "";
+  document.getElementById("hdr-step").textContent =
+    (retained?.detail && !d.serial.child ? "Retained target result · " : "") + (detail.display_step || "");
   renderActorHealth(detail.loop);
   document.getElementById("hdr-campaign").textContent = L ? (L.campaign_id || "—") : "—";
   const st = document.getElementById("hdr-state");

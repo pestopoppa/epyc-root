@@ -2036,22 +2036,27 @@ def payload(root: Optional[Path] = None, *, now: Optional[float] = None) -> dict
     return snapshot(root, now=now)[0]
 
 
-def _serial_child_report(root: Path) -> dict:
+def _serial_bytes(path: Path, *, limit=2 * 1024 * 1024) -> bytes:
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
+    with os.fdopen(fd, "rb") as stream:
+        before = os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= limit:
+            raise ValueError("serial artifact is not a bounded nonempty regular file")
+        raw = stream.read(limit + 1)
+        after = os.fstat(stream.fileno())
+    if len(raw) != before.st_size or (before.st_dev, before.st_ino, before.st_mtime_ns,
+                                     before.st_size) != (
+            after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size):
+        raise ValueError("serial artifact changed while read")
+    return raw
+
+
+def _serial_child_report(root: Path, *, reader=_serial_bytes) -> dict:
     """One bounded, non-recursive read of the declared target's original status."""
     path = root / STATUS_FILENAME
     report = {"artifact_present": True, "body": None, "reader_error": None, "path": str(path)}
     try:
-        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
-        with os.fdopen(fd, "rb") as stream:
-            before = os.fstat(stream.fileno())
-            if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= 2 * 1024 * 1024:
-                raise ValueError("child status is not a bounded nonempty regular file")
-            raw = stream.read(2 * 1024 * 1024 + 1)
-            after = os.fstat(stream.fileno())
-        if len(raw) != before.st_size or (before.st_dev, before.st_ino, before.st_mtime_ns,
-                                         before.st_size) != (
-                after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size):
-            raise ValueError("child status changed while read")
+        raw = reader(path)
         body = json.loads(raw)
         if not isinstance(body, dict) or body.get("schema") != STATUS_SCHEMA:
             raise ValueError("child status does not declare the existing loop status schema")
@@ -2061,6 +2066,104 @@ def _serial_child_report(root: Path) -> dict:
     except (OSError, ValueError, UnicodeError) as exc:
         report["reader_error"] = f"child status unreadable: {exc}"
     return report
+
+
+def _serial_completed(body, root, *, now):
+    """Last retained result per target, not a journal scan or a new live child."""
+    result = {"items": [], "errors": [], "scope": "last retained batch per target; not session totals"}
+    remaining = 8 * 1024 * 1024
+
+    def read_bytes(path):
+        nonlocal remaining
+        raw = _serial_bytes(path, limit=min(2 * 1024 * 1024, remaining))
+        remaining -= len(raw)
+        return raw
+
+    try:
+        root = Path(root).resolve()
+        state = json.loads(read_bytes(root / "serial-state.json"))
+        routing = body["routing"]
+        if (state.get("schema") != "epyc.autokernel.serial_run.v1"
+                or state.get("config_digest") != body["epoch_sha256"]
+                or state.get("active") is not None
+                or state.get("next_batch") != routing["next_batch"]):
+            raise ValueError("retained serial state differs from this terminal router")
+        references = state.get("last_results")
+        if not isinstance(references, dict) or len(references) > min(64, routing["target_count"]):
+            raise ValueError("retained target references are missing or exceed the bounded roster")
+        if any(not isinstance(key, str) or not key.isdecimal() or str(int(key)) != key
+               or not 0 <= int(key) < routing["target_count"] for key in references):
+            raise ValueError("retained target reference index differs")
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        result["errors"].append(str(exc)[:512])
+        return result
+    for key, reference in sorted(references.items(), key=lambda pair: int(pair[0])):
+        item = {"target_index": int(key), "target_id": None, "reference": reference,
+                "summary": None, "detail": None, "error": None}
+        result["items"].append(item)
+        try:
+            if not isinstance(reference, dict) or set(reference) != {"path", "sha256"}:
+                raise ValueError("retained continuation reference is malformed")
+            path = Path(reference["path"])
+            if (not path.is_absolute() or path.name != "loop-continuation.json"
+                    or path.parent.parent != root / "batches"
+                    or not re.fullmatch(r"batch-[0-9]{6,}", path.parent.name)
+                    or path.resolve() != path):
+                raise ValueError("retained continuation is not an original contained batch path")
+            raw = read_bytes(path)
+            if hashlib.sha256(raw).hexdigest() != reference["sha256"]:
+                raise ValueError("retained continuation bytes differ from original reference")
+            row = json.loads(raw)
+            if (row.get("schema") not in {"epyc.autokernel.loop_continuation.v1",
+                                          "epyc.autokernel.loop_continuation.v2"}
+                    or row.get("terminal") not in {"complete", "stopped"}):
+                raise ValueError("retained continuation is not an original terminal result")
+            argv = row["input_argv"]
+            if (not isinstance(argv, list) or not all(isinstance(arg, str) for arg in argv)
+                    or hashlib.sha256(json.dumps(argv, sort_keys=True, separators=(",", ":"),
+                                                allow_nan=False).encode()).hexdigest() != row["input_argv_sha256"]):
+                raise ValueError("retained continuation input identity differs")
+            def option(name):
+                values = [arg[len(name) + 1:] if arg.startswith(name + "=") else argv[i + 1]
+                          for i, arg in enumerate(argv) if arg == name or arg.startswith(name + "=")]
+                return values[-1] if values else None
+            selected = row["selected_target"]
+            if (not isinstance(selected, dict) or not isinstance(selected.get("selected_id"), str)
+                    or selected["selected_id"] != option("--target-id")
+                    or Path(option("--out")).resolve() != path.parent):
+                raise ValueError("retained continuation target/output differs from its inputs")
+            item["target_id"] = selected["selected_id"]
+            counts = row["outcome_counts"]
+            if (type(row["iterations_completed"]) is not int or type(row["iterations_requested"]) is not int
+                    or not 0 <= row["iterations_completed"] <= row["iterations_requested"]
+                    or not isinstance(counts, dict)
+                    or any(not isinstance(k, str) or type(v) is not int or v < 1 for k, v in counts.items())
+                    or sum(counts.values()) != row["iterations_completed"]):
+                raise ValueError("retained continuation iteration counts differ")
+            item["summary"] = {name: row[name] for name in (
+                "terminal", "model", "iterations_completed", "iterations_requested", "outcome_counts")}
+            report = _serial_child_report(Path(option("--store")), reader=read_bytes)
+            child = report["body"]
+            if child is None:
+                raise ValueError(report["reader_error"] or "original target status is absent")
+            if (child.get("state") != RUN_COMPLETE or child.get("campaign_id") != "ak-loop"
+                    or child.get("target") != selected
+                    or child.get("batch", {}).get("output_dir") != str(path.parent)
+                    or child.get("model") != row["model"]
+                    or child.get("anchor_commit") != row["current_anchor"]["commit"]
+                    or child.get("iterations_done") != row["iterations_completed"]
+                    or child.get("iterations_planned") != row["iterations_requested"]
+                    or child.get("dispositions") != counts):
+                raise ValueError("target status is not this retained terminal batch; no current report substituted")
+            fresh = freshness(report, now=now)
+            item["detail"] = {"loop": child, "derived": summarize(child),
+                "evidence": report["path"], "notice": notice(report, fresh),
+                "display_step": display_step(report, fresh),
+                "freshness_state": fresh["state"], "age_s": fresh["age_s"],
+                "runtime_preparation": _runtime_preparation(child, now=now)}
+        except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
+            item["error"] = str(exc)[:512]
+    return result
 
 
 def _runtime_preparation(body, *, now=None):
@@ -2175,7 +2278,7 @@ def _serial_control(body: Mapping[str, Any]) -> dict | None:
     return dict(row)
 
 
-def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
+def _serial_snapshot(body: Mapping[str, Any], *, now: float | None, root=None) -> dict:
     """Routing diagnostics only; neither batch counts nor heartbeats are measurements."""
     result = {"state": body.get("state"), "routing": None, "active": None,
               "child": None, "control": None, "control_error": None, "reader_error": None}
@@ -2218,6 +2321,8 @@ def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
                                "all_failed" if routing and len(failures) == routing["target_count"] else
                                "failed" if state == RUN_FAILED else
                                "complete_with_failures" if failures else "complete")
+            if root is not None and routing is not None:
+                result["completed"] = _serial_completed(body, root, now=now)
             return result
         active = body.get("target")
         if (active is None and result["control"] is not None
@@ -2340,7 +2445,7 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
     }
     if body is not None and body.get("campaign_id") == "legacy-serial" \
             and body.get("surface") == "serial_targets":
-        wire["serial"] = _serial_snapshot(body, now=now)
+        wire["serial"] = _serial_snapshot(body, now=now, root=live_root)
     return wire, campaign_observation(campaign, observation(report, fresh))
 
 
