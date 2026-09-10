@@ -317,6 +317,14 @@ rotating but exits if every target fails. Failed targets are not repeatedly rela
 Each batch keeps its own full result and logs; canonical history stays in the
 original GPU store. Router status names the active target and its original store.
 
+After completed matching measured-search batches, the serial owner forecasts stage
+duration from the original held intervals (empirical p75 of at most8 observations).
+The estimate is scoped to the target, inputs, source, runtime recipe, CPU geometry
+and accounting epoch; absent or incompatible history retains the configured estimate.
+Failed or interrupted attempts still cost budget but do not train a shorter successful
+estimate. This is cost learning, not scientific reward weighting. Existing coverage,
+seed opportunities, accounting and maximum stage bounds remain authoritative.
+
 For a new CPU workload with no matching floor, the existing optional
 `--cpu-calibrate-serving N` may be supplied for its first batch. Omit it when
 reusing an original matching floor. On later visits the wrapper reopens that floor
