@@ -1,5 +1,17 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Dashboard controls connected to original owner
+
+- Applied three-file ROOT packet2e497ef0 on c5a12340; all primary file hashes match
+  acceptance. Main137 tests passed4.80s against published research8c723082, covering
+  writer/reader/browser and coexistence with the existing campaign controls.
+- Main review isolated malformed optional controls from valid measurement cards and
+  fixed the stale-owner uncertain-command trap: retain the old uncertainty notice,
+  never replay its request to a new owner, and allow new commands with new identity.
+  Tokens are tab-memory-only. Existing history/measurement producers are unchanged.
+- One completed checkbox; no live serial listener or command issued. Existing hub
+  supervisor remains responsible for source refresh; deployment verification follows.
+
 ## Original serial controls
 
 - Applied frozen four-file research packet d80e6224ecc0cc4a96ac40ab0c09674e2c06eb1d47419564d29c26a06347274d

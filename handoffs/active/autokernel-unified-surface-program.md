@@ -23,6 +23,15 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Existing dashboard operates the original serial controls**: ✅ 2026-09-10.
+  Pause/resume/drain buttons use the authenticated serial listener and exact owner,
+  revision, batch and target. Tokens remain in tab memory. Lost acknowledgements retry
+  the original ID; a new owner detaches the old uncertainty without replaying it or
+  disabling new commands. Malformed optional controls disable only their own card,
+  not the valid child/measurement/history display. Main137 reader/browser/producer
+  integration tests passed4.80s against published research8c723082. No live command
+  issued; listener configuration remains an explicit next-start option.
+
 - [x] **Original serial owner accepts authenticated pause/resume/drain**: ✅ 2026-09-10.
   Optional loopback listener reuses the existing authenticated HTTP transport. Commands
   bind owner/configuration/revision/batch/target; the serial execution thread persists
@@ -31,7 +40,7 @@ and verification of integrations added after that controller started remain inco
   earns a completed drain. Persisted pause requires a resume channel or explicit STOP.
   Main33 controls/serial/runtime-recovery/progress tests passed74.75s; exact two-child
   receipt accounting remains6 seconds despite acknowledgement retry. No hardware run
-  or live listener started. Dashboard buttons are a separate pending integration.
+  or live listener started. Dashboard integration is recorded in the following checkpoint above.
 
 - [x] **Original-owner runtime interruption recovery**: ✅ 2026-09-10.
   Serial retries only a typed recoverable runtime interruption after original child

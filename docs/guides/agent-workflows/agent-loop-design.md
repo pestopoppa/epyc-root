@@ -338,7 +338,12 @@ Command schema `epyc.autokernel.serial_command.v1` carries `config_digest`, `own
 `request_id`, `operation` (pause/resume/drain), `expected_revision`, `expected_batch`,
 and `expected_target`, taken from the current snapshot. Retry an uncertain request
 with the same ID and payload. Tokens are never written to status. No listener starts
-unless configured. Browser buttons are a separate integration, not required for CLI use.
+unless configured. The existing loop dashboard's serial-routing card exposes the
+buttons when a fresh original owner publishes this listener. Use HTTPS or a localhost
+tunnel, enter the reachable control endpoint and token, and configure the listener's
+exact trusted origin accordingly. Tokens stay only in tab memory. A malformed control
+block disables controls without hiding valid measurements. After an owner restart,
+an old uncertain command is reported but never replayed to the new owner.
 
 Pause completes the current batch and its resource accounting before waiting without
 a child or claims. Resume permits the next selection; drain uses the original stop

@@ -348,6 +348,7 @@
   <section id="sec-serial" hidden>
     <h2>Serial target routing <span class="count">routing is not measurement progress</span></h2>
     <div id="serial"></div>
+    <div id="serial-controls"></div>
   </section>
 
   <section id="sec-tiles">
@@ -2748,13 +2749,133 @@ function renderActorHealth(L){
     : `actors ok · ${a.planner_transient}/${a.recent_attempts} recent calls failed`;
 }
 
+let serialView=null, serialToken="", serialGateway="", serialPending=null;
+let serialLastRequest=null, serialControlMessage="", serialBusy=false;
+let serialDetached=null;
+
+function serialIdentity(c){
+  return c && c.schema==="epyc.autokernel.serial_control.v1" &&
+    typeof c.config_digest==="string" && typeof c.owner_id==="string" &&
+    Number.isInteger(c.revision) && c.revision>=0 &&
+    Number.isInteger(c.batch_number) && c.batch_number>=0 && Array.isArray(c.commands);
+}
+
+function serialSameOwner(a,b){
+  return serialIdentity(a) && serialIdentity(b) && a.config_digest===b.config_digest &&
+    a.owner_id===b.owner_id;
+}
+
+function renderSerialControls(d){
+  const host=document.getElementById("serial-controls"), c=d.serial?.control;
+  serialView=d;
+  if(!serialIdentity(c)){
+    host.innerHTML=d.serial?.control_error ? '<div class="warn">Controls unavailable: '+esc(d.serial.control_error)+'</div>' : "";
+    return;
+  }
+  const requested=serialPending || serialLastRequest;
+  if(requested){
+    const row=c.commands.find(row=>campaignCanonical(row.request)===campaignCanonical(requested));
+    if(row){
+      serialLastRequest=requested;serialPending=null;
+      serialControlMessage=`${row.result.operation}: ${row.result.outcome}`+
+        (row.result.outcome==="pending" ? " — accepted; waiting for the owner boundary" : "");
+    }
+  }
+  if(serialPending && d.freshness_state==="fresh" && !d.serial.reader_error &&
+     (serialPending.owner_id!==c.owner_id || serialPending.config_digest!==c.config_digest)){
+    serialDetached={request:serialPending,result:null};
+    serialPending=null;serialLastRequest=null;serialControlMessage="";
+  }
+  if(serialDetached){
+    const row=c.commands.find(row=>campaignCanonical(row.request)===campaignCanonical(serialDetached.request));
+    if(row) serialDetached.result=row.result;
+  }
+  const fresh=d.freshness_state==="fresh" && !d.serial.reader_error;
+  const live=!['drained','complete','failed'].includes(c.observed_state);
+  const secure=campaignSecure(), ready=fresh && live && secure && !!c.endpoint;
+  let h=`<div><b>Controls: ${esc(c.observed_state)}</b> · pause finishes the current batch; drain stops the tail.</div>`;
+  if(serialControlMessage) h+=`<div class="muted">${esc(serialControlMessage)}</div>`;
+  if(serialDetached) h+=`<div class="muted">Previous owner command ${esc(serialDetached.request.operation)} `+
+    `(${esc(serialDetached.request.request_id)}): ${esc(serialDetached.result?.outcome || "outcome uncertain")}. `+
+    `Not replayed to the new owner.</div>`;
+  if(!ready) h+=`<div class="muted">${!fresh ? "Controls disabled: router report is not current." :
+    !live ? "Serial owner is terminal." : !secure ? "Use a secure browser context (HTTPS or localhost tunnel)." :
+    "No serial control listener configured for this owner."}</div>`;
+  h+='<label>Control endpoint <input id="serial-gateway" type="url" size="36"></label> '+
+     '<label>Bearer token <input id="serial-token" type="password" autocomplete="off"></label> '+
+     '<span class="muted">kept only in this tab</span><div>';
+  for(const [op,label] of [["pause","Pause after batch"],["resume","Resume"],["drain","Drain / STOP"]]){
+    h+=`<button id="serial-${op}" ${!ready || !serialToken || serialBusy || serialPending ? 'disabled' : ''}>${label}</button> `;
+  }
+  if(serialPending) h+=`<button id="serial-retry" ${!ready || !serialToken || serialBusy ? 'disabled' : ''}>Retry exact uncertain command</button>`;
+  host.innerHTML=h+'</div>';
+  const gateway=document.getElementById("serial-gateway"), token=document.getElementById("serial-token");
+  gateway.value=serialGateway || c.endpoint || "";
+  gateway.onchange=()=>{serialGateway=gateway.value;};
+  token.value=serialToken;
+  token.oninput=()=>{serialToken=token.value;
+    for(const op of ["pause","resume","drain","retry"]){
+      const button=document.getElementById("serial-"+op);
+      if(button) button.disabled=!ready || !serialToken || serialBusy || (op!=="retry" && !!serialPending);
+    }};
+  for(const op of ["pause","resume","drain"])
+    document.getElementById("serial-"+op).onclick=()=>serialSend(op);
+  if(serialPending) document.getElementById("serial-retry").onclick=()=>serialSend(null);
+}
+
+async function serialSend(operation){
+  const original=serialView?.serial?.control;
+  if(serialBusy) return;
+  serialBusy=true;
+  try{
+    if(!campaignSecure() || !serialToken || serialView?.freshness_state!=="fresh" ||
+       serialView.serial.reader_error || !serialIdentity(original)) throw new Error("refresh a current serial owner first");
+    const url=new URL(serialGateway || original.endpoint);
+    if(!['http:','https:'].includes(url.protocol) || url.username || url.password ||
+       url.search || url.hash || !['','/'].includes(url.pathname)) throw new Error("control endpoint must be an HTTP(S) origin");
+    const endpoint=url.origin, headers={Authorization:`Bearer ${serialToken}`};
+    const refreshed=await campaignFetch(endpoint+"/snapshot",{cache:"no-store",headers},65536);
+    if(!refreshed.ok) throw new Error(refreshed.body.error || "serial authentication/refresh refused");
+    const current=refreshed.body;
+    if(!serialSameOwner(current,original) || !serialSameOwner(serialView?.serial?.control,original) ||
+       serialView.freshness_state!=="fresh" || current.batch_number!==original.batch_number ||
+       current.active_target!==original.active_target) throw new Error("serial owner/batch/target changed; refresh the page");
+    if(operation){
+      if(serialPending) throw new Error("retry the exact uncertain command before another command");
+      serialPending={schema:"epyc.autokernel.serial_command.v1",config_digest:current.config_digest,
+        owner_id:current.owner_id,request_id:crypto.randomUUID(),operation,
+        expected_revision:current.revision,expected_batch:current.batch_number,expected_target:current.active_target};
+    }
+    if(!serialPending || serialPending.owner_id!==current.owner_id ||
+       serialPending.config_digest!==current.config_digest) throw new Error("uncertain command belongs to another owner");
+    const request=serialPending;
+    const response=await campaignFetch(endpoint+"/commands",{method:"POST",cache:"no-store",
+      headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(request)},16384);
+    if(!response.ok){
+      if(response.status===400) serialPending=null; // Explicit refusal, not a lost ACK.
+      throw new Error(response.body.error || "serial command outcome uncertain; retry exact request");
+    }
+    const ack=response.body;
+    if(ack.request_id!==request.request_id || ack.operation!==request.operation ||
+       ack.revision!==request.expected_revision+1 || typeof ack.completed!=="boolean" ||
+       !['pending','completed','superseded','failed'].includes(ack.outcome))
+      throw new Error("serial ACK identity malformed; retry exact request");
+    serialLastRequest=request;serialPending=null;
+    if(serialDetached && campaignCanonical(serialDetached.request)===campaignCanonical(request))
+      serialDetached.result=ack;
+    serialControlMessage=`${ack.operation}: ${ack.outcome}`+(ack.outcome==="pending" ? " — accepted; waiting for the owner boundary" : "");
+  }catch(error){serialControlMessage=error.message || String(error);}
+  finally{serialBusy=false;if(serialView) renderSerialControls(serialView);}
+}
+
 function renderSerial(d){
   const host = document.getElementById("serial");
   const section = document.getElementById("sec-serial");
   const s = d.serial;
+  renderSerialControls(d);
   section.hidden = !s;
   if(!s){ host.innerHTML = ""; return; }
-  const labels = {starting:"STARTING",running:"RUNNING",complete:"COMPLETE",
+  const labels = {starting:"STARTING",running:"RUNNING",paused:"PAUSED",draining:"DRAINING",complete:"COMPLETE",
     stopped:"STOPPED",all_failed:"ALL TARGETS FAILED",failed:"FAILED",
     complete_with_failures:"COMPLETE WITH FAILED TARGETS",malformed:"MALFORMED"};
   const r = s.routing, a = s.active, c = s.child;
@@ -2863,6 +2984,8 @@ function render(d){
 }
 
 function renderFetchFailure(err){
+  serialView=null;
+  document.getElementById("serial-controls").innerHTML="";
   document.getElementById("runtime-preparation").innerHTML =
     '<div class="warn">UNKNOWN — hub unreachable; runtime progress cannot be refreshed.</div>';
   document.getElementById("serial").innerHTML =
