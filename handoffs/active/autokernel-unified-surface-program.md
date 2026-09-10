@@ -23,6 +23,12 @@ Separately, the serial target wrapper is published and hermetically tested; it h
 not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets).
 The five-iteration trial and broader mixed-target acceptance remain incomplete.
 
+- [x] **Serial dashboard accepts the restart producer's process identity**: ✅ 2026-09-10.
+  Corrected the closed reader contract after the restart producer added original
+  PID/start/boot identity. Old payloads remain supported; optional identity must match
+  the child PID and exact shape. Batch/target joining is unchanged. Main 26 tests passed,
+  including actual serial producer through reader and browser rendering with history intact.
+
 - [x] **Interrupted source survives the existing lane reset**: ✅ 2026-09-10.
   STOP-before-gate and reused dirty lanes now retain original HEAD plus an immutable
   hash-qualified patch before reset. Tracked recipe/docs changes remain included;

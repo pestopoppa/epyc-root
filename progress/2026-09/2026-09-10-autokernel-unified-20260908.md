@@ -307,3 +307,13 @@
   retry tests pass with new archive names. Build pruning and execution gates unchanged.
 - Publication isolates this completed fix from pending owner/scheduler integration.
   No live reload, hardware measurement, or automatic interrupted-measurement resume.
+
+## Serial dashboard producer/reader compatibility repair
+
+- The completed-child restart fix added original process identity to serial active
+  status. ROOT's closed six-key reader rejected that new field. Reader now accepts
+  optional exact PID/start/boot identity matching the declared child PID, while keeping
+  old payloads and exact batch/store/target joining. No scheduler-private fields admitted.
+- Main actual producer-to-reader-to-browser-render suite: 26 passed in 3.08s, including
+  canonical-history preservation and malformed optional-identity rejection. No inference
+  reload or claim that a new hardware serial campaign was run.

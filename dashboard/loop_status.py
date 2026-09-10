@@ -2088,7 +2088,7 @@ def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
                                "complete_with_failures" if failures else "complete")
             return result
         active = body.get("target")
-        if not isinstance(active, dict) or set(active) != {
+        if not isinstance(active, dict) or set(active) - {"process_identity"} != {
                 "target_index", "selected_id", "store", "batch_dir", "input_argv_sha256", "pid"}:
             raise ValueError("serial active target identity is missing or malformed")
         if type(active["target_index"]) is not int or active["target_index"] < 0 \
@@ -2100,6 +2100,15 @@ def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
             raise ValueError("serial target path/ID is invalid")
         if active["pid"] is not None and (type(active["pid"]) is not int or active["pid"] <= 0):
             raise ValueError("serial child PID is invalid")
+        if "process_identity" in active:
+            identity = active["process_identity"]
+            if (not isinstance(identity, dict) or set(identity) != {"pid", "start_ticks", "boot_id"}
+                    or type(identity["pid"]) is not int or identity["pid"] != active["pid"]
+                    or type(identity["start_ticks"]) is not int or identity["start_ticks"] < 0
+                    or not isinstance(identity["boot_id"], str) or not identity["boot_id"]):
+                raise ValueError("serial original process identity is invalid")
+            # Original producer identity, not a dashboard grant or fresh liveness
+            # check. Current detail still requires the exact batch/PID/target join.
         result["active"] = {key: value for key, value in active.items() if key != "input_argv_sha256"}
         report = _serial_child_report(Path(active["store"]))
         child = report.get("body")
