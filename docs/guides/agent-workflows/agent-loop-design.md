@@ -148,11 +148,24 @@ is a property of having memory, not a mechanism you install.
 ## Operating the existing loop across targets
 
 On the first visit to an explicit CPU/GPU serving target, an absent exact recipe/request
-floor is prepared automatically under the existing claim before source research. The
-default launch count is `max(2, --serving-pairs)`; `--cpu-calibrate-serving` or
-`--gpu-calibrate-serving` remains an explicit override. An existing exact floor is reused,
-not recalibrated. Malformed/mismatched records still refuse rather than being overwritten.
-Dry-run reports planned calibration but launches nothing. This uses the original estimator.
+floor is prepared automatically under the existing claim before source research.
+Fresh unified CPU targets without an existing applicable floor select
+`matched_process_v2`: 24 independent A/A pairs (48 server launches) calibrate the
+existing ratio-of-arm-medians estimator at the declared comparison pair count.
+Both calibration and comparisons use randomized, balanced AB/BA process pairs.
+The descriptive floor interval is not a replacement acceptance threshold.
+
+The serial owner persists the instrument choice before its first child starts.
+Existing serial continuations and applicable legacy floors retain `legacy_v1`;
+direct CLI and GPU defaults also remain legacy, with `max(2, --serving-pairs)`
+calibration launches. `--cpu-calibrate-serving` / `--gpu-calibrate-serving` override
+the count; for matched CPU calibration the count means independent pairs and must
+be at least24. An explicit smaller legacy count is refused, not silently multiplied.
+Matched floors have separate filenames and bind instrument, pair count, workload
+and placement. Source-only changes may reuse that frame; runtime recipe changes may
+not. Existing exact floors are reused, not recalibrated, and malformed/mismatched
+records refuse rather than being overwritten. Dry-run reports preparation but
+launches nothing and does not persist an instrument selection.
 
 CPU runtime treatments use the same executable and existing loop. Prospective `ak-`
 campaigns retain admitted recipes; serial batches carry their references automatically.

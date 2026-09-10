@@ -1,5 +1,28 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Matched CPU source measurements
+
+- Accepted research packet c788a33108ed7bc00ed7f8e358ab7d9a79e82f8f63272c6e966aa0919766051c
+  and ROOT packet3e87785bc7c07c43cb2b62266a5f071a92c6f288e812af237956fd9ac259d7e4.
+  All13 primary source/test hashes match the frozen acceptance manifests.
+- Fresh unified CPU targets pin matched_process_v2 before child startup; retained
+  legacy floors/continuations are unchanged. Twenty-four independent A/A pairs
+  calibrate the existing median-ratio estimator at the declared comparison count.
+  Pair order, process membership, floor applicability and invalid-arm resumption
+  are retained; changed runtime placement does not borrow that floor.
+- Main25 matched integration checks passed16.60s. Worker final62 producer checks
+  and29 ROOT checks passed. Main16 ROOT reader/profile checks against the applied
+  primary producer passed14.97s with no skips. Actual tiny HTTP fixture covers process teardown,
+  archive and observation-only reader; no hardware performance claim follows.
+  Exact original source keep reuse skips calibration/comparison; fourth-branch
+  other-target validation consumes v2 through unchanged numerical classifiers.
+- Includes the demonstrated GPU runtime backend predicate fix in serving.compare,
+  coordinated with the GPU worker. The corresponding exact CPU profile source pin
+  is additive; historical pins remain. No evaluator or measurement policy changed.
+- One completed checkbox. No completed GLM measurement rerun, production mutation,
+  wiki compilation sweep or index pruning. Cross-worktree validation and runtime
+  GPU supplier work continue separately.
+
 ## Same-worktree cross-target source validation
 
 - Composed frozen98a426b3 packet on d1164a0f with scheduled-run correction47c6cf42,

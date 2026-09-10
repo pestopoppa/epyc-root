@@ -93,7 +93,8 @@ def test_direct_shape_does_not_issue_an_integrity_row(actual):
 def test_current_exact_source_is_additive_and_retains_original_projection_identity(actual):
     path, record, _ = actual
     row = profile.native_rows(record, corpus_root=path.parent)[0]
-    assert row["capture_source_digest"] == profile.RUNTIME_CPU_SOURCE_DIGEST
+    assert row["capture_source_digest"] == profile.MATCHED_CPU_SOURCE_DIGEST
+    assert profile.RUNTIME_CPU_SOURCE_DIGEST == "95dcf5179f7eb1e26b4f481e790de740577d30baebe27c939a548a1abf9ffe48"
     assert profile.CURRENT_CPU_SOURCE_DIGEST == "926f9cce5fa92598e5120006611be5d97189952907af06c7561f6f5628c3b2ba"
     assert profile.DIRECT_CPU_SOURCE_DIGEST == "6b2f6060df5b5d36980bc9ea7137168bd9ca978959b22038dfba88b12c50b146"
     assert profile.CPU_SOURCE_DIGEST == "c8c1184429e07d8d692f1e698232814169c21beeeeff88f10286f148a38feec5"

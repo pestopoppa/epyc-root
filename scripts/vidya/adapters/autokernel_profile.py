@@ -37,6 +37,9 @@ FACTUAL_CPU_SOURCE_DIGEST = "18a9d42bb35949ce2b9a6752f639957ba70469b851d70e003a5
 CURRENT_CPU_SOURCE_DIGEST = "926f9cce5fa92598e5120006611be5d97189952907af06c7561f6f5628c3b2ba"
 # Same serving profiler with the reviewed direct runtime response recorder.
 RUNTIME_CPU_SOURCE_DIGEST = "95dcf5179f7eb1e26b4f481e790de740577d30baebe27c939a548a1abf9ffe48"
+# Reviewed prospective matched source comparison plus the exact GPU runtime
+# fallback predicate. The CPU profiler's _measure_once implementation is unchanged.
+MATCHED_CPU_SOURCE_DIGEST = "09e804897a555d19e6b3f37ba56cbc493e5c02b57fc7bc09e41bfdf03e345fc7"
 CARRIER_SCHEMA = "epyc.autokernel.profile_measurement_carrier.v1"
 PROFILE_SOURCE_ID = "VB-AK-UNIFIED-PROFILE"
 VALIDATION_SOURCE_ID = "VB-AK-UNIFIED-VALIDATION"
@@ -244,7 +247,7 @@ def _validate_source(value: Any) -> dict:
                     "CPU profile source closure")
     if source["schema"] != CPU_SOURCE_SCHEMA or _digest(source) not in (
             CPU_SOURCE_DIGEST, DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST,
-            FACTUAL_CPU_SOURCE_DIGEST, RUNTIME_CPU_SOURCE_DIGEST):
+            FACTUAL_CPU_SOURCE_DIGEST, RUNTIME_CPU_SOURCE_DIGEST, MATCHED_CPU_SOURCE_DIGEST):
         raise ProjectionError("CPU profile source closure is not the supported producer")
     constants = source["constants"]
     if (not isinstance(constants, dict) or constants.get("mode") != MODE
@@ -459,7 +462,7 @@ def _loop_rows(native: Any, *, corpus_root: Path) -> tuple[dict]:
                                        "source_closure", "budgets"}, "direct capture settings")
     source_digest = _digest(settings["source_closure"])
     if source_digest not in (DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST,
-                            FACTUAL_CPU_SOURCE_DIGEST, RUNTIME_CPU_SOURCE_DIGEST):
+                            FACTUAL_CPU_SOURCE_DIGEST, RUNTIME_CPU_SOURCE_DIGEST, MATCHED_CPU_SOURCE_DIGEST):
         raise ProjectionError("direct CPU profile source closure differs")
     request = _exact(body["request"], {"mode", "execution_digest", "prompt_manifest_digest",
         "producer_pid", "started_monotonic_ns"}, "direct original request identity")
