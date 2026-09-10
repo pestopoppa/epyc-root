@@ -184,6 +184,20 @@ def test_old_router_has_unknown_totals_and_malformed_fields_are_visible(sources)
     assert wire["serial"]["reader_error"]
 
 
+@pytest.mark.parametrize("mutation", ["null", "list", "pid", "pid_bool", "ticks", "ticks_bool", "boot", "extra"])
+def test_malformed_original_process_identity_cannot_hide_child_join(sources, mutation):
+    _canonical, router, _child, active, _routing = sources
+    identity = {"pid": active["pid"], "start_ticks": 123, "boot_id": "original-boot"}
+    values = {"null": None, "list": [], "pid": {**identity, "pid": active["pid"] + 1},
+              "pid_bool": {**identity, "pid": True}, "ticks": {**identity, "start_ticks": -1},
+              "ticks_bool": {**identity, "start_ticks": True}, "boot": {**identity, "boot_id": ""},
+              "extra": {**identity, "unexpected": True}}
+    _rewrite(router / "loop-status.json", lambda body: body["target"].update(process_identity=values[mutation]))
+    row = loop_status.snapshot()[0]["serial"]
+    assert row["state"] == "malformed" and row["child"] is None
+    assert "original process identity" in row["reader_error"]
+
+
 def test_actual_owned_children_switch_and_preserve_original_history(sources, producer, tmp_path, monkeypatch):
     fixture = importlib.import_module("autokernel.loop.test_serial_run")
     sr = importlib.import_module("autokernel.loop.serial_run")
@@ -215,6 +229,10 @@ count = 0 if stopped[0]''')
                 time.sleep(.01)
             assert (directory / "published").exists()
             wire, observation = loop_status.snapshot()
+            identity = kwargs["target"]["process_identity"]
+            assert identity["pid"] == kwargs["target"]["pid"]
+            assert type(identity["start_ticks"]) is int and identity["boot_id"]
+            assert wire["serial"]["active"]["process_identity"] == identity
             assert wire["serial"]["child"]["joined"]
             assert wire["serial"]["child"]["loop"]["batch"]["pid"] == kwargs["target"]["pid"]
             seen.append((wire, observation.watermark))
