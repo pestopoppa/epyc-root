@@ -2956,6 +2956,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       82 focused tests passed (4.55s); the 14 serial tests include real tiny children
       and existing-owner synthetic keep/resume paths. No live hardware serial proof,
       fabricated GPU provenance, new grader or completion of AKU-12b is claimed.
+    - [x] **AKU-12b-SERIAL-DASH — show serial routing and the exact active child without
+      hiding canonical history.** ✅ 2026-09-10 — Research `237d82ec` / main `707639d4`
+      publishes original batch directory/PID and routing totals; integrated ROOT support
+      keeps canonical champion/history roots unchanged. Child detail requires matching
+      target, directory and PID, with freshness independent of the router heartbeat;
+      stopped, complete and all-failed sessions remain distinct. Main verified 42 producer
+      tests (7.72s) and 18 ROOT tests (2.71s). ROOT publication is combined with this
+      checkpoint; no dashboard environment change, process reload or live serial proof.
     - [x] **AKU-12b-SERVING-BELIEFS — connect the direct comparison write/read belief path.**
       ✅ 2026-09-10 — Research `86179a8c` / main `0a815338` captures inputs before launch,
       retains original comparison/CPU dependency bytes and exports through the existing archive.

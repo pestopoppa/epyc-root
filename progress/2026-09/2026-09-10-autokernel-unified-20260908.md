@@ -135,6 +135,23 @@
   published serial wrapper or CPU lifecycle/belief hooks. No restart, new hardware
   run, index edit or publication was performed by documentation preparation.
 
+## Serial dashboard support integrated; live configuration unchanged
+
+- Research source `237d82ec` / main `707639d4` adds optional original child batch
+  directory/PID and serial routing totals. Integrated ROOT support uses the existing
+  `/loop` page and retains canonical champion/history roots. Active child detail
+  requires matching target, output directory and PID; old store reports cannot stand
+  in for the current child. Router and child freshness remain separate, and the batch
+  cursor is explicitly not an iteration or measurement count. STOP, completion and
+  all-failed states are distinct.
+- Main verified **42 producer tests in 7.72s** and **18 ROOT tests in 2.71s**, including
+  tiny owned children and the actual reader/page path. Three broader pre-existing
+  rendering expectations were reproduced on untouched ROOT `6c5f8c75`; those tests
+  were not changed. ROOT code is included in this owning checkpoint publication.
+- No dashboard environment or process reload, current GLM switch, live serial
+  hardware proof or qualified gain is claimed. Broader mixed-target acceptance
+  remains open.
+
 ## Scoped direct-serving planner feedback integrated; live trial unchanged
 
 - Research source `8360d3e1` / main `ba5abca4` connects the existing archive's new

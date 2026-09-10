@@ -343,6 +343,11 @@
     </p>
   </section>
 
+  <section id="sec-serial" hidden>
+    <h2>Serial target routing <span class="count">routing is not measurement progress</span></h2>
+    <div id="serial"></div>
+  </section>
+
   <section id="sec-tiles">
     <h2>Progress <span class="count">producer: the rebuilt loop</span></h2>
     <div class="tiles" id="tiles"></div>
@@ -2725,36 +2730,89 @@ function renderActorHealth(L){
     : `actors ok · ${a.planner_transient}/${a.recent_attempts} recent calls failed`;
 }
 
+function renderSerial(d){
+  const host = document.getElementById("serial");
+  const section = document.getElementById("sec-serial");
+  const s = d.serial;
+  section.hidden = !s;
+  if(!s){ host.innerHTML = ""; return; }
+  const labels = {starting:"STARTING",running:"RUNNING",complete:"COMPLETE",
+    stopped:"STOPPED",all_failed:"ALL TARGETS FAILED",failed:"FAILED",
+    complete_with_failures:"COMPLETE WITH FAILED TARGETS",malformed:"MALFORMED"};
+  const r = s.routing, a = s.active, c = s.child;
+  let h = `<div><b>${esc(labels[s.state] || s.state || "UNKNOWN")}</b> · router ` +
+    `${esc(d.freshness_state)} · ${esc(d.store_root)}</div>`;
+  if(r){
+    h += `<div>Routing cursor ${esc(r.next_batch)} · ${esc(r.target_count)} targets · ` +
+      `${r.rounds === 0 ? "continuous rounds" : esc(r.rounds) + " planned rounds"} · ` +
+      `${esc(r.batch_iterations)} requested iterations per batch.</div>` +
+      `<div class="muted">The cursor includes skipped failed-target positions; it is not ` +
+      `a count of completed iterations or measurements.</div>`;
+    const failed = Object.entries(r.failed_targets || {});
+    if(r.stop_requested) h += `<div class="warn">STOP REQUESTED — no next batch; ` +
+      `the captured child drains before the router exits.</div>`;
+    if(failed.length) h += `<div class="warn">Failed targets: ` +
+      failed.map(([key,value])=>`${esc(key)}: ${esc(value)}`).join("; ") + "</div>";
+  } else h += `<div class="muted">This older router report did not publish roster/batch totals.</div>`;
+  if(s.reader_error) h += `<div class="warn">${esc(s.reader_error)}</div>`;
+  if(a) h += `<div>Declared active target <b>${esc(a.selected_id)}</b> · PID ` +
+    `${esc(a.pid == null ? "not launched" : a.pid)} · ${esc(a.batch_dir)}</div>`;
+  if(c){
+    const problem = c.reader_error || c.join_error;
+    h += `<div class="${problem || c.freshness_state !== "fresh" ? "warn" : "muted"}">` +
+      `Child report: ${esc(c.freshness_state)} · ${esc(c.notice?.run_state || "no declared state")}` +
+      ` · ${esc(c.age_s == null ? "undated" : age(c.age_s) + " old")}.` +
+      ` ${esc(problem || c.detail || "")}</div>` +
+      `<div class="muted">Child evidence: ${esc(c.evidence)}. ` +
+      `The router heartbeat does not refresh or qualify this report.</div>`;
+    if(c.notice?.kind === "failed") h += `<div class="warn">CHILD DECLARED FAILED.</div>`;
+    if(c.joined) h += `<div>Detailed cards below show only this joined batch's ` +
+      `original report, not cumulative serial-session counts.</div>`;
+    else h += `<div class="warn">No joined current-child details. An older target-store ` +
+      `report is not substituted for this batch.</div>`;
+  } else h += `<div class="muted">No active child declared; terminal batch results remain ` +
+    `in their original target stores and batch directories.</div>`;
+  h += `<div class="muted">The loop data probe dates routing; the child freshness above ` +
+    `is independent. Canonical champion and accumulated history remain below on their own sources.</div>`;
+  host.innerHTML = h;
+}
+
 function render(d){
   const L = d.loop;
+  const detail = d.serial
+    ? {...d, loop:null, derived:null, ...(d.serial.child || {})}
+    : d;
   setFreshBadge(d.freshness_state, d.age_s);
-  renderActorHealth(L);
+  renderActorHealth(detail.loop);
   document.getElementById("hdr-campaign").textContent = L ? (L.campaign_id || "—") : "—";
   const st = document.getElementById("hdr-state");
-  st.textContent = L ? (L.state || "—") : d.freshness_state;
+  st.textContent = d.serial ? d.serial.state : L ? (L.state || "—") : d.freshness_state;
   st.className = "state " + esc(L && L.state ? L.state : "");
   renderBanner(d);
   // THE headline first, and unconditionally. It has its own producer and its
   // own envelope: an unreadable LOOP must not take it down, and its own absence
   // — which is the current state — must be drawn rather than hidden.
   renderChampion(d);
-  renderTiles(d);
+  renderSerial(d);
+  renderTiles(detail);
   // The accumulator (R23-44) rides the loop-status body; rendered unconditionally
   // and drawing its own graceful empty when the run carries no serving tier.
-  renderAccumulator(d);
+  renderAccumulator(detail);
   // Third and fourth producers, rendered unconditionally for the same reason.
   // None of the four dates any of the others.
   renderOperatorGate(d);
   renderKnowledge(d);
   renderCampaign(d);
-  renderDispositions(d);
-  renderRecent(d);
-  renderGpu(d);
-  renderHotspots(d);
-  renderIdentity(d);
+  renderDispositions(detail);
+  renderRecent(detail);
+  renderGpu(detail);
+  renderHotspots(detail);
+  renderIdentity(detail);
 }
 
 function renderFetchFailure(err){
+  document.getElementById("serial").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; routing and child freshness cannot be refreshed.</div>';
   document.getElementById("banner").className = "show malformed";
   document.getElementById("banner").innerHTML =
     `<div class="hd">HUB UNREACHABLE</div><div class="bd">${esc(err)}</div>` +

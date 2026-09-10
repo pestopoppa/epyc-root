@@ -436,6 +436,12 @@ def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
         return panels.Observation(
             artifact_present=True, timestamp=None, source=state,
             detail=fresh.get("detail"), evidence=report.get("path"))
+    watermark = (f"{state}|{body.get('iterations_done')}|"
+                 f"{body.get('measurements_reached')}|{body.get('champion_head')}")
+    if body.get("campaign_id") == "legacy-serial" and body.get("surface") == "serial_targets":
+        routing = body.get("routing") if isinstance(body.get("routing"), dict) else {}
+        active = body.get("target") if isinstance(body.get("target"), dict) else {}
+        watermark = f"{state}|{routing.get('next_batch')}|{active.get('pid')}|{active.get('batch_dir')}"
     return panels.Observation(
         artifact_present=True,
         timestamp=timestamp,
@@ -443,8 +449,7 @@ def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
         populated=bool(body.get("iterations_done")),
         detail=fresh.get("detail"),
         evidence=report.get("path"),
-        watermark=(f"{state}|{body.get('iterations_done')}|"
-                   f"{body.get('measurements_reached')}|{body.get('champion_head')}"),
+        watermark=watermark,
         # A loop that has DECLARED it finished is allowed to be silent. A loop
         # that declared it FAILED is not treated as idle here: its silence is
         # expected, but so is an operator being told about it, and the data
@@ -2015,6 +2020,120 @@ def payload(root: Optional[Path] = None, *, now: Optional[float] = None) -> dict
     return snapshot(root, now=now)[0]
 
 
+def _serial_child_report(root: Path) -> dict:
+    """One bounded, non-recursive read of the declared target's original status."""
+    path = root / STATUS_FILENAME
+    report = {"artifact_present": True, "body": None, "reader_error": None, "path": str(path)}
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
+        with os.fdopen(fd, "rb") as stream:
+            before = os.fstat(stream.fileno())
+            if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= 2 * 1024 * 1024:
+                raise ValueError("child status is not a bounded nonempty regular file")
+            raw = stream.read(2 * 1024 * 1024 + 1)
+            after = os.fstat(stream.fileno())
+        if len(raw) != before.st_size or (before.st_dev, before.st_ino, before.st_mtime_ns,
+                                         before.st_size) != (
+                after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size):
+            raise ValueError("child status changed while read")
+        body = json.loads(raw)
+        if not isinstance(body, dict) or body.get("schema") != STATUS_SCHEMA:
+            raise ValueError("child status does not declare the existing loop status schema")
+        report["body"] = body
+    except FileNotFoundError:
+        report["artifact_present"] = False
+    except (OSError, ValueError, UnicodeError) as exc:
+        report["reader_error"] = f"child status unreadable: {exc}"
+    return report
+
+
+def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
+    """Routing diagnostics only; neither batch counts nor heartbeats are measurements."""
+    result = {"state": body.get("state"), "routing": None, "active": None,
+              "child": None, "reader_error": None}
+    try:
+        routing = body.get("routing")
+        failures = {}
+        stopped = False
+        if routing is not None:
+            if not isinstance(routing, dict) or set(routing) != {
+                    "target_count", "rounds", "batch_iterations", "next_batch",
+                    "stop_requested", "failed_targets"}:
+                raise ValueError("malformed serial routing fields")
+            for key, minimum in (("target_count", 1), ("rounds", 0),
+                                 ("batch_iterations", 1), ("next_batch", 0)):
+                if type(routing[key]) is not int or routing[key] < minimum:
+                    raise ValueError(f"invalid routing {key}")
+            failures = routing["failed_targets"]
+            if type(routing["stop_requested"]) is not bool or not isinstance(failures, dict):
+                raise ValueError("invalid routing STOP/failures")
+            if any(not isinstance(key, str) or not key.isdecimal()
+                   or str(int(key)) != key or not 0 <= int(key) < routing["target_count"]
+                   or not isinstance(value, str) or len(value) > 240
+                   for key, value in failures.items()):
+                raise ValueError("invalid routing failed target")
+            stopped = routing["stop_requested"]
+            result["routing"] = dict(routing)
+        elif isinstance(body.get("target"), dict):
+            # Published earlier serial status lacked totals. Do not invent them.
+            stopped = body["target"].get("stop_requested") is True
+            failures = body["target"].get("failed_targets") or {}
+        state = body.get("state")
+        if state not in RUN_STATES:
+            raise ValueError("unknown serial lifecycle state")
+        if state in (RUN_COMPLETE, RUN_FAILED):
+            result["state"] = ("stopped" if stopped else
+                               "all_failed" if routing and len(failures) == routing["target_count"] else
+                               "failed" if state == RUN_FAILED else
+                               "complete_with_failures" if failures else "complete")
+            return result
+        active = body.get("target")
+        if not isinstance(active, dict) or set(active) != {
+                "target_index", "selected_id", "store", "batch_dir", "input_argv_sha256", "pid"}:
+            raise ValueError("serial active target identity is missing or malformed")
+        if type(active["target_index"]) is not int or active["target_index"] < 0 \
+                or (routing is not None and active["target_index"] >= routing["target_count"]):
+            raise ValueError("serial target index is invalid")
+        if not isinstance(active["selected_id"], str) or not active["selected_id"] \
+                or any(not isinstance(active[key], str) or not Path(active[key]).is_absolute()
+                       for key in ("store", "batch_dir")):
+            raise ValueError("serial target path/ID is invalid")
+        if active["pid"] is not None and (type(active["pid"]) is not int or active["pid"] <= 0):
+            raise ValueError("serial child PID is invalid")
+        result["active"] = {key: value for key, value in active.items() if key != "input_argv_sha256"}
+        report = _serial_child_report(Path(active["store"]))
+        child = report.get("body")
+        joined = False
+        join_error = None
+        if child is not None:
+            batch = child.get("batch")
+            selected = child.get("target")
+            joined = (
+                active["pid"] is not None and isinstance(batch, dict)
+                and set(batch) == {"output_dir", "pid"}
+                and type(batch.get("pid")) is int and batch["pid"] == active["pid"]
+                and isinstance(batch.get("output_dir"), str)
+                and batch["output_dir"] == active["batch_dir"]
+                and isinstance(selected, dict) and selected.get("selected_id") == active["selected_id"]
+                and child.get("campaign_id") == "ak-loop")
+            if not joined:
+                join_error = "target store report is not joined to this declared batch/PID/target; not current child evidence"
+        fresh = freshness(report, now=now)
+        result["child"] = {
+            "joined": joined, "evidence": report["path"], "store_root": active["store"],
+            "reader_error": report.get("reader_error"), "join_error": join_error,
+            "freshness_state": fresh["state"], "age_s": fresh["age_s"],
+            "stale_after_s": fresh["stale_after_s"], "detail": fresh["detail"],
+            "generated_at": fresh["generated_at"], "notice": notice(report, fresh),
+            "loop": dict(child) if joined else None,
+            "derived": summarize(child) if joined else None,
+        }
+    except (OSError, ValueError, TypeError) as exc:
+        result["state"] = "malformed"
+        result["reader_error"] = str(exc)
+    return result
+
+
 def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
              ) -> tuple:
     """``(payload, observation)`` from ONE read of the file.
@@ -2070,6 +2189,9 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         # historical loop_status.v1 surface remains unchanged/read-only.
         "campaign": campaign,
     }
+    if body is not None and body.get("campaign_id") == "legacy-serial" \
+            and body.get("surface") == "serial_targets":
+        wire["serial"] = _serial_snapshot(body, now=now)
     return wire, campaign_observation(campaign, observation(report, fresh))
 
 
