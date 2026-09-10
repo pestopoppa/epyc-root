@@ -1,5 +1,22 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Aggregate serving feedback repair
+
+- Fixed original run._accumulate_after_keep: successful aggregate gates previously
+  only wrote a bundle file; divergence used the wrong native comparison field and
+  omitted the serving-export callback. Both now archive the original comparison
+  through the existing feedback consumer before unchanged COR/cadence settlement.
+- Applied the reviewed25-line run delta onto b651, preserving GPU and matched CPU
+  integrations; added original-owner integration test SHA23d6200b31accc281985c7952b0e384319b6694f2168ee3733fc4163da938240.
+  Worker packet668fecf691a57383fb29e87e0bf535c439e8e71db3639ac38c957ab5ffca50a5
+  supplies the same narrow delta. Main21 aggregate/original-GPU checks passed1.23s;
+  worker37 including cadence and serving-beliefs checks passed1.21s.
+- Actual PROMOTE and DIVERGED paths reach archive→ROOT reader→planner render;
+  duplicate archive and restarted reader leave receipts unchanged and do not launch
+  another comparison. New successful gate status is not another source keep.
+  One completed checkbox; existing belief source registration reused, no new grader,
+  hardware run, policy change or historical result reinterpretation.
+
 ## Original GPU runtime execution boundary
 
 - Applied frozen nine-file packet2c621659c7a45fb67521428ea90261c6772bb7bf5cb2c9a4ce87cfd7daeb8d94

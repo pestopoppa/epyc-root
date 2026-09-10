@@ -23,6 +23,15 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Aggregate serving gates feed the original archive and belief consumer**: ✅ 2026-09-10.
+  Both promotion and nonpromotion archive the original whole-bundle comparison with
+  COR/tip, keep membership and trigger before existing state advancement. Existing
+  divergence recall fields remain; a successful aggregate observation is not another
+  source keep. The original export callback reaches the observation-only ROOT reader
+  and planner. Main21 checks passed1.23s; worker37 passed1.21s. Actual PROMOTE and
+  DIVERGED fixtures verify duplicate ingestion/restart preserve receipt bytes and do
+  not repeat measurement. Numerical verdicts, cadence and serving source are unchanged.
+
 - [x] **Original GPU runtime path uses both held contexts and numeric device observations**: ✅ 2026-09-10.
   Planner, runtime fast path, ROCm0 correctness, calibration/window capture and
   recovery now retain the original CPU-host and GPU contexts separately. Device
