@@ -394,3 +394,22 @@
   this option rereads pinned files. No completion claim or duplicate export launched.
 - Prior dashboard fix is live: supervisor restarted hub as PID3894694 after source edit,
   API reports final complete5/5/history2397 and panel healthOK. Source/raw reports unchanged.
+
+### Existing serial scheduling and original resource accounting
+
+- Connected existing pure scheduler to serial selection, continuation and terminal
+  accounting. Original CPU/GPU flock contexts publish actual held intervals after release;
+  unequal CPU/GPU intervals partition resource cost without double-counting the attempt.
+  Failed children retain released-claim evidence; terminal restart accounts before selection.
+- Main review corrected fixed proposal reuse (continuous runs), failed-target starvation,
+  optional-manifest-only setup friction and mutable orchestrator package imports. Derived
+  owned-roster policy is printed by dry run: one iteration per stage, whole-invocation bound
+  build_timeout+4*stage_timeout, finite runs rounds*targets attempts, continuous1000 attempts,
+  corresponding charged-time budget. Memory reservation0 means undeclared, not observed0.
+- Main 101 combined checks passed in 8.69s; actual original GLM roster --dry-run exited0
+  in 0.23s with derived selection and unchanged7.801 request-bound floor. No hardware run.
+- Connector v3 SHA075d02f5bc75dfef95cc27df43ed5677a9433cbf4741a0cbcbba9e1c0b22247a,
+  composed with original held-owner v2 and component accounting. Old continuationv1 retained;
+  v2 carries original resource evidence. Shared recall and bounded build pruning preserved.
+  One completed checkbox; reduced-scope transfer, runtime banking and shared candidate work
+  remain active. Original five-loop controller predates this integration.
