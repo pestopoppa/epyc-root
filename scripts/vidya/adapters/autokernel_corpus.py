@@ -42,6 +42,7 @@ from adapters import (
     autokernel_evaluation_event,
     autokernel_governed_receipt,
     autokernel_gpu_screening,
+    autokernel_legacy_serving,
     autokernel_property,
     autokernel_reward_integrity,
     autokernel_rocm_diagnostic,
@@ -53,6 +54,7 @@ ADAPTER_ID = "vidya.adapters.autokernel_corpus/v1"
 # Call-shape A: strict receipt readers taking a locator, a file digest and an
 # attestation flag.
 _RECEIPT_ADAPTERS = (
+    autokernel_legacy_serving,
     autokernel_gpu_screening,
     autokernel_aux_receipt,
     autokernel_rocm_diagnostic,

@@ -75,3 +75,29 @@
   1.38s**. This checkpoint is target-to-existing-CLI wiring only: not serial
   dispatch of all targets, not a restarted live trial and not completion of the
   unified CPU/GPU research or five-loop acceptance goal.
+
+## Direct serving belief write/read path integrated; live feedback not yet connected
+
+- Research source `86179a8c` / main `0a815338` adds the prospective hook in
+  `serving.compare`, `serving_beliefs.py` and `archive.record`. Original recipe,
+  request and arm inputs are copied before launch; completed native vectors produce
+  two observation rows with reps counted as original server launches. Legacy
+  unresolved builds retain their supplied paths without a fabricated binary attestation.
+- The full comparison/capture stays in `experiments.db`; the existing atomic JSON
+  writer exports a bounded original-source document plus its reference receipt under
+  `serving-beliefs/`. Export failure is visible on stderr after durable archive and
+  does not change the result, undo settlement or relaunch a measurement.
+- ROOT `autokernel_legacy_serving.py` reopens and hashes that original source,
+  rederives vectors and rows, and plugs into the existing `autokernel_corpus`
+  dispatcher/CLI and ClaimTuple ladder. Empty `protocol_id` intentionally yields
+  `Judged/Located`. CPU lifecycle facts are retained dependencies, not independent
+  measurements or placement/contention warrants; no new grader was added.
+- Main independently verified **33 research tests plus 8 subtests in 0.22s** and
+  **15 ROOT tests in 0.38s**, including actual compare→SQLite archive→reader→corpus→
+  Ledger integration with synthetic observations, replay identity, absent pre-hook
+  records, moved/tampered source refusal and non-disruptive capture/export faults.
+- This closes **VB-AK-LEGACY-SERVING write/read integration only**. The current live
+  process was not reloaded, no live corpus ingestion ran and no planner read-feedback
+  consumer was installed by this task. Those next steps are explicit separate tasks;
+  no qualified hardware gate, scientific admission, canonical promotion or broader
+  five-loop/unified acceptance checkbox was completed. No historical backfill occurred.
