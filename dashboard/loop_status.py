@@ -142,9 +142,9 @@ RUN_STATES = (RUN_STARTING, RUN_RUNNING, RUN_COMPLETE, RUN_FAILED)
 #: ``failed`` to degraded explicitly) and the page must not make it either.
 #:
 #: So lifecycle and freshness are folded into ONE banner key here, server-side,
-#: where a test can execute it. The freshness badge keeps the four-valued
-#: vocabulary untouched; this is a second, orthogonal axis, never a fifth
-#: freshness state.
+#: where a test can execute it. Raw freshness keeps its four-valued vocabulary;
+#: the terminal-aware badge presents the declared end beside the retained age,
+#: never a fifth freshness state or a newly fresh heartbeat.
 NOTICE_ABSENT = "absent"
 NOTICE_MALFORMED = "malformed"
 NOTICE_STALE = "stale"
@@ -270,12 +270,15 @@ def freshness(report: Mapping[str, Any], *, now: Optional[float] = None) -> dict
                                "treated as undated rather than as fresh")}
         age = 0.0
     fresh = age <= budget
+    terminal = body.get("state") in (RUN_COMPLETE, RUN_FAILED)
     return {
         "state": STATE_FRESH if fresh else STATE_STALE,
         "age_s": round(age, 1),
         "stale_after_s": budget,
         "generated_at": stamped,
-        "detail": ("current" if fresh else
+        "detail": (f"final report, {age / 60:.1f} min old; the producer declared "
+                   f"state={body['state']}, so no further heartbeat is expected"
+                   if terminal else "current" if fresh else
                    f"last heard from the loop {age / 60:.1f} min ago, past its "
                    f"own {budget / 60:.0f} min envelope — the reading below is "
                    "the loop's LAST report, not its current state"),
@@ -328,6 +331,19 @@ def notice(report: Mapping[str, Any], fresh: Mapping[str, Any]) -> dict:
         return {"kind": NOTICE_STALE, "run_state": run_state,
                 "detail": fresh.get("detail")}
     return {"kind": NOTICE_NONE, "run_state": run_state, "detail": None}
+
+
+def display_step(report: Mapping[str, Any], fresh: Mapping[str, Any]) -> str | None:
+    """Presentation only; retain the producer's original last step in the body."""
+    lifecycle = notice(report, fresh)
+    if lifecycle["kind"] in (NOTICE_ABSENT, NOTICE_MALFORMED):
+        return None
+    if lifecycle["kind"] in (NOTICE_FINISHED, NOTICE_FAILED):
+        return f"Run {lifecycle['run_state']} — final report"
+    step = (report.get("body") or {}).get("step")
+    if not isinstance(step, str) or not step:
+        return None
+    return f"Last reported step: {step}" if fresh["state"] == STATE_STALE else step
 
 
 def _gpu(body: Mapping[str, Any]) -> dict:
@@ -2134,6 +2150,7 @@ def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
             "freshness_state": fresh["state"], "age_s": fresh["age_s"],
             "stale_after_s": fresh["stale_after_s"], "detail": fresh["detail"],
             "generated_at": fresh["generated_at"], "notice": notice(report, fresh),
+            "display_step": display_step(report, fresh) if joined else None,
             "loop": dict(child) if joined else None,
             "derived": summarize(child) if joined else None,
         }
@@ -2178,6 +2195,7 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         # those two disagree. Folded here, not in the page, so a test can
         # EXECUTE it instead of grepping the markup for a branch.
         "notice": notice(report, fresh),
+        "display_step": display_step(report, fresh),
         "loop": dict(body) if body is not None else None,
         "derived": summarize(body) if body is not None else None,
         # A THIRD producer, and it dates neither of the other two. It is read
