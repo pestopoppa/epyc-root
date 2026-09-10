@@ -167,9 +167,20 @@ PYTHONPATH=.:/mnt/raid0/llm/worktrees/mains/autokernel-unified-orchestrator-2026
 python3 -m scripts.kernel_rnd.autokernel.loop.serial_run \
   --resolved-campaign /absolute/inputs/original-resolved-campaign.json \
   --owned-targets /absolute/inputs/owned-targets.json \
-  --batch-iterations 5 --rounds 1 \
+  --batch-iterations 1 --rounds 1 \
   --state-dir /absolute/dedicated-serial-state --dry-run
 ```
+
+Owned-roster mode now derives resource-time scheduling automatically and requires
+one iteration per selected stage. It preserves original CPU/GPU held intervals for
+accounting and selects new stage identities on subsequent passes. Failed targets
+are removed from selection. `--scheduler-manifest` is an optional policy override,
+not required setup. The printed default whole-stage bound is build timeout plus
+four stage timeouts; overruns remain charged and fence successors. `--rounds 0`
+continues until STOP, the derived 1000-attempt cap, or the corresponding charged-time
+budget. Explicit target-argv mode retains its previous round-robin behavior unless
+a scheduler manifest is supplied. A hand-built GPU anchor can explicitly opt into
+the existing `allow_unverified_anchor` owner-map flag; CPU identity rules are unchanged.
 
 Run from the research checkout. This dry-run invokes the existing owner's startup
 and workload checks without providers/builds/claims; it still reads original

@@ -23,6 +23,14 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Existing serial owner selects and accounts original held resources**: ✅ 2026-09-10.
+  Owned rosters derive scheduler inputs without an extra manifest. One iteration per
+  stage; fresh proposal identities support repeated passes, failed targets are excluded,
+  and terminal restart accounts once before new selection. Original claim open/close
+  intervals charge CPU/GPU components; no child-wall-time substitute. Main 101 tests
+  passed and actual GLM auto-scheduled dry run exited0. Continuous defaults stop at
+  1000 attempts, declared budget or STOP; this is not live mixed-target proof.
+
 - [x] **Split-model import preserves the launch entry shard**: ✅ 2026-09-10.
   Singular campaign/launch model slots now select the shard named by argv rather
   than silently retaining the last shard. The original export retains every pin.
