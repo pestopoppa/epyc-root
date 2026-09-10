@@ -32,7 +32,9 @@ LOOP_MODE = "original_serving_requests_observation"
 DIRECT_CPU_SOURCE_DIGEST = "6b2f6060df5b5d36980bc9ea7137168bd9ca978959b22038dfba88b12c50b146"
 # Reviewed current serving implementation, including factual CPU invalid-arm
 # handling. Historical captured bytes keep their original identities above/below.
-CURRENT_CPU_SOURCE_DIGEST = "18a9d42bb35949ce2b9a6752f639957ba70469b851d70e003a526e14b8c012cd"
+FACTUAL_CPU_SOURCE_DIGEST = "18a9d42bb35949ce2b9a6752f639957ba70469b851d70e003a526e14b8c012cd"
+# Production command aliases and the frozen v9 omitted-ubatch default (512).
+CURRENT_CPU_SOURCE_DIGEST = "926f9cce5fa92598e5120006611be5d97189952907af06c7561f6f5628c3b2ba"
 CARRIER_SCHEMA = "epyc.autokernel.profile_measurement_carrier.v1"
 PROFILE_SOURCE_ID = "VB-AK-UNIFIED-PROFILE"
 VALIDATION_SOURCE_ID = "VB-AK-UNIFIED-VALIDATION"
@@ -239,7 +241,8 @@ def _validate_source(value: Any) -> dict:
     source = _exact(value, {"schema", "callables", "files", "python", "constants"},
                     "CPU profile source closure")
     if source["schema"] != CPU_SOURCE_SCHEMA or _digest(source) not in (
-            CPU_SOURCE_DIGEST, DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST):
+            CPU_SOURCE_DIGEST, DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST,
+            FACTUAL_CPU_SOURCE_DIGEST):
         raise ProjectionError("CPU profile source closure is not the supported producer")
     constants = source["constants"]
     if (not isinstance(constants, dict) or constants.get("mode") != MODE
@@ -453,7 +456,8 @@ def _loop_rows(native: Any, *, corpus_root: Path) -> tuple[dict]:
     settings = _exact(body["settings"], {"resolved_recipe", "prompt_manifest", "profiler",
                                        "source_closure", "budgets"}, "direct capture settings")
     source_digest = _digest(settings["source_closure"])
-    if source_digest not in (DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST):
+    if source_digest not in (DIRECT_CPU_SOURCE_DIGEST, CURRENT_CPU_SOURCE_DIGEST,
+                            FACTUAL_CPU_SOURCE_DIGEST):
         raise ProjectionError("direct CPU profile source closure differs")
     request = _exact(body["request"], {"mode", "execution_digest", "prompt_manifest_digest",
         "producer_pid", "started_monotonic_ns"}, "direct original request identity")

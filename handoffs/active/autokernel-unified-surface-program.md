@@ -23,6 +23,15 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Actual production command grammar resolves all seven exported targets**: ✅ 2026-09-10.
+  Preserve emitted draft probability/thread/logging flags and frozen v9's omitted
+  ubatch default512; conflicting aliases and invalid values still refuse. Main112
+  research checks and32 original profile producer/reader checks passed. Profile source
+  pin updated additively; historical captures retain their original accepted identities.
+  Seven actual production recipes resolve with supplemental pinned ROCm DSOs. Original
+  export artifact verification passed; the supplemental export explicitly did not repeat
+  full artifact verification. No hardware launch or mixed-target performance claim.
+
 - [x] **Existing serial owner selects and accounts original held resources**: ✅ 2026-09-10.
   Owned rosters derive scheduler inputs without an extra manifest. One iteration per
   stage; fresh proposal identities support repeated passes, failed targets are excluded,
