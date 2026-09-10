@@ -2962,8 +2962,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       ROOT's strict reader reaches the existing corpus and Ledger; main verified 33 research
       tests plus 8 subtests and 15 ROOT tests. Protocol remains empty (`Judged/Located`);
       no historical backfill or qualified hardware gate is completed. The current live PID was
-      not reloaded; live ingestion and planner read feedback remain separate
+      not reloaded; live ingestion remains unverified and planner feedback follows below in the separate
       [VB-AK-LEGACY-SERVING tasks](vidya-belief-substrate-program.md#vb-ak-legacy-serving--direct-serving-comparison-and-cpu-facts-2026-09-10).
+    - [x] **AKU-12b-SERVING-FEEDBACK — recall original serving observations in the existing
+      planner context.** ✅ 2026-09-10 — Research `8360d3e1` / main `ba5abca4` plus
+      ROOT's original-source/query helper add bounded incremental per-store ingestion
+      and model/recipe/request/epoch/anchor-scoped observations beside unchanged historical
+      recall. Main verified 55 research and 28 ROOT tests, including actual existing-loop
+      keep/rebind/subsequent-null/restart with synthetic providers. No new grader, qualified
+      gain or full-instance transfer; nulls remain worth remembering. Future starts must
+      select the installed ROOT via the documented `--belief-root-repo` option. This is
+      code-path integration only: no current live-PID reload or real post-hook ingestion,
+      and AKU-12b/live hardware acceptance remains open.
   - [ ] **AKU-12c — repair and verify canonical generated export inputs**: real production export
     currently refuses stale descriptor/compiled-priors provenance. The supported writer is
     stack_change_pipeline.py update, regenerating lean registry, descriptors, priors, procedure

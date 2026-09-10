@@ -180,6 +180,7 @@ against a worktree/store whose existing owner is still running.
   "--cpu-serving-launch", "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-c463f601b-cpu-mtp-depth3-b2048-ub512-corrected.recipe.json",
   "--frozen-prompts", "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
   "--store", "/absolute/original-cpu-store",
+  "--belief-root-repo", "/mnt/raid0/llm/worktrees/mains/autokernel-unified-20260908",
   "--worker-root", "/absolute/cpu-worker-worktrees",
   "--worker-build-root", "/absolute/cpu-worker-builds",
   "--pairs", "5", "--workers", "1",
@@ -214,6 +215,20 @@ must match it. GPU selection remains explicitly `legacy_gpu_screen`; selection
 does not turn that screen into exact enrolled serving execution. In particular,
 the retained `build-fold-ef81196d5` directory without original provenance is not
 made ready by this example. Never fabricate provenance or add an anchor waiver.
+
+For a **future** direct CPU start or its serial target argument file, explicitly pass
+`--belief-root-repo /mnt/raid0/llm/worktrees/mains/autokernel-unified-20260908` to load
+the installed serving-observation reader. `EPYC_ROOT_REPO` is the environment fallback;
+the final `/workspace` fallback may be stale on this host and is not proof the reader
+is installed. Wrong/missing reader code is reported as unavailable, not silently connected.
+The loop incrementally ingests exact new receipts into its own store's
+`serving-beliefs/feedback-ledger.jsonl` and joins original source facts to the existing
+fold/query status. Model/recipe/request/epoch/current-anchor scope is mandatory for
+numeric context; an unresolved legacy GPU subject does not acquire that scope by name.
+Historical experiment recall remains available independently, including nulls and
+pre-hook records. Observation status is not a qualified gain or permission to keep.
+This option does not reload an existing PID: the current trial has not been restarted
+to load these hooks, and real post-hook hardware/live-ingest proof is still outstanding.
 
 Use distinct target worktree/store/worker roots and a separate routing state
 directory. The wrapper owns `--iterations`, `--out` and `--resume-run`; do not

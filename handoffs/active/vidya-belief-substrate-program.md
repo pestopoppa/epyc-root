@@ -1615,17 +1615,33 @@ retrofitting the read side is impossible. Source row added to
   actual compare→archive→original-source reader→corpus→Ledger path with synthetic
   observations. Moved/tampered source refuses; export faults remain visible after
   durable archive without changing the experiment result. Pre-hook records emit
-  zero rows. This completes write/read integration only: the live process was not
-  reloaded, no live ingest ran and no planner read-feedback path was connected.
+  zero rows. That write/read checkpoint did not reload the live process or run a
+  live ingest; the subsequent planner feedback checkpoint is recorded below.
 
   - [ ] **VB-AK-LEGACY-SERVING-LIVE — verify a future post-hook direct-serving capture and
     its explicit corpus ingestion at the owning run boundary.** Do not reload the current
     trial or invent historical carriers as a documentation action. Retain the real source
     reference, import report and observation-only grade; this does not qualify hardware gates.
-  - [ ] **VB-AK-LEGACY-SERVING-FEEDBACK — connect original direct-serving observation rows
-    to an appropriate planner read-feedback path.** Preserve model/recipe/request/epoch
-    applicability and missing witnesses; `Judged/Located` observations must not become
-    ranked gains, protocol admission or promotion authority through projection.
+  - [x] **VB-AK-LEGACY-SERVING-FEEDBACK — connect original direct-serving observation rows
+    to an appropriate planner read-feedback path.** ✅ 2026-09-10 — Research source
+    `8360d3e1` / main `ba5abca4` installs one synchronous bridge in the existing loop.
+    A bounded startup receipt scan is followed by exact newly exported receipt IDs,
+    using a private per-store `serving-beliefs/feedback-ledger.jsonl`, not a new service
+    or a full corpus re-ingest per hypothesis. ROOT joins the strict original source
+    to existing claim IDs, then uses the unchanged fold/query gate. Original model
+    descriptor, recipe/request digests, epoch and current anchor identity scope the
+    separate `serving_observations` context; the actual comparison rebind supplies
+    post-keep anchor identity without extra prompt-time binary hashing. Existing
+    `prior_experiments` recall remains unchanged, including historical/pre-hook nulls.
+    `Judged/Located` observation status is not a gain, ranking or promotion warrant.
+    Main verified 28 ROOT tests (0.63s) and 55 research tests (4.17s), including the
+    actual loop→archive→ingest→planner path, post-keep changed bytes/subsequent null,
+    restart without duplicate frames, scope/source refusal and nonfatal reader faults.
+    Providers/measurements in those tests are synthetic. For a future owning start use
+    `--belief-root-repo /mnt/raid0/llm/worktrees/mains/autokernel-unified-20260908`
+    ([operating instructions](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets));
+    the live PID was not reloaded and real post-hook hardware/live ingestion remains
+    the separate open LIVE task, not an achieved qualification gate.
 
 ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09)
 
