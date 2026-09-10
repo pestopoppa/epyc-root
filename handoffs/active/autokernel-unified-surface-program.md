@@ -23,6 +23,13 @@ Separately, the serial target wrapper is published and hermetically tested; it h
 not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets).
 The five-iteration trial and broader mixed-target acceptance remain incomplete.
 
+- [x] **Serial restart reuses a completed child without replay**: ✅ 2026-09-10.
+  Startup reopens the exact retained batch/target/arguments result and checks the
+  original child's kernel identity before advancing once. Live or unreadable children
+  refuse without signals or adoption; STOP persists. Missing/mismatched results retain
+  original state and logs. Main 26 real-child/serial tests passed in 10.27s. This fixes
+  the crash between child completion and router checkpoint, not unfinished-work recovery.
+
 - [x] **Existing-loop CPU factual noise and bounded original-arm recovery**: ✅ 2026-09-10.
   Research `64923e9f` / main `591616c0` records load/swap/PSI and bounded non-target
   CPU activity without turning ordinary builds/pressure into blockers. Original
