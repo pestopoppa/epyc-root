@@ -2063,6 +2063,74 @@ def _serial_child_report(root: Path) -> dict:
     return report
 
 
+def _runtime_preparation(body, *, now=None):
+    """Bounded existing-loop diagnostic view; never opens the referenced evidence."""
+    if not isinstance(body, dict) or "runtime_preparation" not in body:
+        return None
+    try:
+        row = body["runtime_preparation"]
+        if not isinstance(row, dict) or set(row) != {
+                "status", "reason", "calibration_launches", "progress",
+                "selected_execution_digest", "selected_recipe", "selected_recipe_reference"}:
+            raise ValueError("runtime preparation fields differ")
+        if len(json.dumps(row).encode()) > 4096:
+            raise ValueError("runtime preparation exceeds diagnostic bound")
+        if any(not isinstance(row[key], str) or len(row[key]) > 256 for key in ("status", "reason")):
+            raise ValueError("runtime preparation status/reason malformed")
+        def digest(value):
+            return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value)
+        if not isinstance(row["selected_recipe"], str) or len(row["selected_recipe"]) > 512:
+            raise ValueError("runtime selected recipe description malformed")
+        if not digest(row["selected_execution_digest"]):
+            raise ValueError("runtime selected execution identity malformed")
+        planned = row["calibration_launches"]
+        if planned is not None and (type(planned) is not int or planned < 1):
+            raise ValueError("runtime calibration launch count malformed")
+        reference = row["selected_recipe_reference"]
+        if reference is not None and (not isinstance(reference, dict)
+                or set(reference) != {"locator", "sha256", "verified"}
+                or not isinstance(reference["locator"], str) or not reference["locator"]
+                or not digest(reference["sha256"]) or type(reference["verified"]) is not bool):
+            raise ValueError("runtime selected recipe reference malformed")
+        progress = row["progress"]
+        age_s = None
+        clock_skew = False
+        if progress is not None:
+            coarse = {"observed_at", "operation"}
+            detailed = {"phase", "frame_digest", "completed_launches", "launch_limit",
+                        "limit_is_upper_bound", "failed_launches", "pending"}
+            if not isinstance(progress, dict) or set(progress) not in (coarse, coarse | detailed):
+                raise ValueError("runtime progress fields differ")
+            stamped = _stamp_epoch(progress["observed_at"])
+            if stamped is None or not isinstance(progress["operation"], str) \
+                    or not 0 < len(progress["operation"]) <= 128:
+                raise ValueError("runtime progress operation/time malformed")
+            delta = (time.time() if now is None else now) - stamped
+            clock_skew = delta < 0
+            age_s = None if clock_skew else round(delta, 1)
+            if "phase" in progress:
+                if progress["phase"] not in {"calibration", "pair_window"} \
+                        or not digest(progress["frame_digest"]):
+                    raise ValueError("runtime progress phase/frame malformed")
+                for key in ("completed_launches", "launch_limit", "failed_launches"):
+                    if type(progress[key]) is not int or progress[key] < 0:
+                        raise ValueError("runtime launch count malformed")
+                if progress["completed_launches"] > progress["launch_limit"] \
+                        or type(progress["limit_is_upper_bound"]) is not bool:
+                    raise ValueError("runtime launch bounds contradictory")
+                pending = progress["pending"]
+                if pending is not None and (not isinstance(pending, list) or len(pending) != 3
+                        or pending[0] not in {"aa", "neutral", "pair", "anchor_gate"}
+                        or type(pending[1]) is not int or pending[1] < 0
+                        or pending[2] not in {"anchor", "candidate"}):
+                    raise ValueError("runtime pending membership malformed")
+        return {"state": "reported", "body": row, "progress_age_s": age_s,
+                "clock_skew": clock_skew, "error": None}
+    except (TypeError, ValueError, OverflowError) as exc:
+        return {"state": "malformed", "body": None, "progress_age_s": None,
+                "clock_skew": False, "error": str(exc)}
+
+
 def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
     """Routing diagnostics only; neither batch counts nor heartbeats are measurements."""
     result = {"state": body.get("state"), "routing": None, "active": None,
@@ -2153,6 +2221,7 @@ def _serial_snapshot(body: Mapping[str, Any], *, now: float | None) -> dict:
             "display_step": display_step(report, fresh) if joined else None,
             "loop": dict(child) if joined else None,
             "derived": summarize(child) if joined else None,
+            "runtime_preparation": _runtime_preparation(child, now=now) if joined else None,
         }
     except (OSError, ValueError, TypeError) as exc:
         result["state"] = "malformed"
@@ -2198,6 +2267,7 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         "display_step": display_step(report, fresh),
         "loop": dict(body) if body is not None else None,
         "derived": summarize(body) if body is not None else None,
+        "runtime_preparation": _runtime_preparation(body, now=now),
         # A THIRD producer, and it dates neither of the other two. It is read
         # Canonical evidence keeps its original root and original status fallback;
         # a selected trial head is not the canonical champion.
