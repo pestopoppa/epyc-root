@@ -26,6 +26,10 @@ LIFECYCLE_KIND = "WORKER_LIFECYCLE"
 PROFILE_SCHEMA = "epyc.autokernel.target_profile_verified.v1"
 LIFECYCLE_SCHEMA = "epyc.autokernel.worker_lifecycle_event.v1"
 CAPTURE_SCHEMA = "epyc.autokernel.cpu_profile_capture.v1"
+LOOP_PROFILE_SCHEMA = "epyc.autokernel.loop_cpu_profile.v1"
+LOOP_CAPTURE_SCHEMA = "epyc.autokernel.loop_cpu_profile_capture.v1"
+LOOP_MODE = "original_serving_requests_observation"
+DIRECT_CPU_SOURCE_DIGEST = "6b2f6060df5b5d36980bc9ea7137168bd9ca978959b22038dfba88b12c50b146"
 CARRIER_SCHEMA = "epyc.autokernel.profile_measurement_carrier.v1"
 PROFILE_SOURCE_ID = "VB-AK-UNIFIED-PROFILE"
 VALIDATION_SOURCE_ID = "VB-AK-UNIFIED-VALIDATION"
@@ -172,7 +176,7 @@ def _open_directory(path: Path) -> tuple[int, int, str]:
         raise
 
 
-def _artifact(root: Path, reference: Any) -> dict:
+def _artifact(root: Path, reference: Any, *, fields=None) -> dict:
     ref = _exact(reference, {"locator", "sha256", "verified"}, "profile artifact")
     locator = _text(ref["locator"], "profile artifact locator")
     digest = _sha(ref["sha256"], "profile artifact digest")
@@ -225,13 +229,14 @@ def _artifact(root: Path, reference: Any) -> dict:
         body = json.loads(raw, parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)))
     except (json.JSONDecodeError, UnicodeDecodeError, ValueError, RecursionError) as exc:
         raise ProjectionError("profile capture is not strict JSON") from exc
-    return _exact(body, _CAPTURE_FIELDS, "profile capture")
+    return _exact(body, _CAPTURE_FIELDS if fields is None else fields, "profile capture")
 
 
 def _validate_source(value: Any) -> dict:
     source = _exact(value, {"schema", "callables", "files", "python", "constants"},
                     "CPU profile source closure")
-    if source["schema"] != CPU_SOURCE_SCHEMA or _digest(source) != CPU_SOURCE_DIGEST:
+    if source["schema"] != CPU_SOURCE_SCHEMA or _digest(source) not in (
+            CPU_SOURCE_DIGEST, DIRECT_CPU_SOURCE_DIGEST):
         raise ProjectionError("CPU profile source closure is not the supported producer")
     constants = source["constants"]
     if (not isinstance(constants, dict) or constants.get("mode") != MODE
@@ -431,7 +436,85 @@ def _validate_bundle(native: Any, *, corpus_root: Path) -> tuple[dict, dict, dic
     return profile, terminal, capture, profile_tuple, validation_tuple
 
 
-def native_rows(native: Any, *, corpus_root: Path) -> tuple[dict, dict]:
+def _loop_rows(native: Any, *, corpus_root: Path) -> tuple[dict]:
+    record = _exact(native, {"schema", "mode", "capture", "source_id", "run_id",
+                             "profile_claim_tuple"}, "direct loop profile")
+    if (record["schema"] != LOOP_PROFILE_SCHEMA or record["mode"] != LOOP_MODE
+            or record["source_id"] != PROFILE_SOURCE_ID):
+        raise ProjectionError("direct loop profile identity differs")
+    body = _artifact(corpus_root, record["capture"], fields={"schema", "request", "settings",
+        "profiler", "processes", "phases", "completion", "limitations"})
+    if (body["schema"] != LOOP_CAPTURE_SCHEMA or body["completion"] != "complete"
+            or body["limitations"] != list(LIMITATIONS)):
+        raise ProjectionError("direct loop capture identity/scope differs")
+    settings = _exact(body["settings"], {"resolved_recipe", "prompt_manifest", "profiler",
+                                       "source_closure", "budgets"}, "direct capture settings")
+    if _digest(settings["source_closure"]) != DIRECT_CPU_SOURCE_DIGEST:
+        raise ProjectionError("direct CPU profile source closure differs")
+    request = _exact(body["request"], {"mode", "execution_digest", "prompt_manifest_digest",
+        "producer_pid", "started_monotonic_ns"}, "direct original request identity")
+    recipe, prompts = settings["resolved_recipe"], settings["prompt_manifest"]
+    if (not isinstance(recipe, dict) or not isinstance(prompts, dict)
+            or request["mode"] != LOOP_MODE or recipe.get("backend") != "cpu"
+            or request["execution_digest"] != recipe.get("execution_digest")
+            or request["prompt_manifest_digest"] != prompts.get("digest")
+            or prompts.get("digest") != _digest({k: v for k, v in prompts.items() if k != "digest"})):
+        raise ProjectionError("direct original workload identity differs")
+    _integer(request["producer_pid"], "direct producer PID", minimum=1)
+    _integer(request["started_monotonic_ns"], "direct start", minimum=1)
+    members = prompts.get("prompts")
+    phases = body["phases"]
+    if not isinstance(members, list) or len(members) != 1 or not isinstance(phases, list) or len(phases) != 2:
+        raise ProjectionError("direct profile requires one request and two original phases")
+    processes = _exact(body["processes"], {"producer", "ancestor", "server"}, "direct processes")
+    if (processes["producer"].get("pid") != request["producer_pid"]
+            or processes["server"].get("ppid") != request["producer_pid"]):
+        raise ProjectionError("direct original process ownership differs")
+    for value, phase_name in zip(phases, ("warmup", "measurement")):
+        phase = _validate_phase(value, phase_name, 128 * 1024**2)
+        response = phase["response"]
+        try:
+            raw = bytes.fromhex(response["request_hex"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ProjectionError("direct original request bytes malformed") from exc
+        if (response.get("phase") != phase_name or response.get("slot") != 0
+                or response.get("prompt_id") != members[0].get("prompt_id")
+                or hashlib.sha256(raw).hexdigest() != members[0].get("request_digest")
+                or response.get("error") is not None or response.get("response_hex") is None):
+            raise ProjectionError("direct original response/request join differs")
+        if not phase["enabled_interval"][0] <= _finite(response["start"], "request start") <= _finite(
+                response["end"], "request end") <= phase["enabled_interval"][1]:
+            raise ProjectionError("direct original request window differs")
+    run_id = "loop-cpu-profile:" + _digest(request)
+    claim = _exact(record["profile_claim_tuple"], _PROFILE_TUPLE_FIELDS, "direct profile claim")
+    try:
+        date.fromisoformat(claim["date"])
+    except (ValueError, TypeError) as exc:
+        raise ProjectionError("direct profile date malformed") from exc
+    expected = {"date": claim["date"], "category": "CANDIDATE", "protocol_id": "", "reps": 1,
+        "reps_basis": "one completed profiled request; samples are not repetitions",
+        "attestation_locator": record["capture"]["locator"],
+        "attestation_sha256": record["capture"]["sha256"],
+        "attestation_present": True, "attestation_verified": True,
+        "measurement_id": run_id + ":profile", "metric": "request_sampled_period_total",
+        "value": phases[1]["samples"]["sampled_period_total"], "metric_direction": "lower_better",
+        "unit": "sampled user-cycle periods",
+        "claim": "Recorded sampled-period total for this exact full request; estimated attribution, not exact CPU cost",
+        "source_class": "measurement", "extra": {"limitations": list(LIMITATIONS),
+            "mode": LOOP_MODE, "not_performance_comparison": True,
+            "model_inventory_verification": "not performed by direct profiler"}}
+    if record["run_id"] != run_id or claim != expected:
+        raise ProjectionError("direct producer-authored measurement differs")
+    return ({"native": native, "corpus_root": str(Path(corpus_root).absolute()),
+        "projection": "loop_profile", "claim": claim,
+        "capture_source_digest": DIRECT_CPU_SOURCE_DIGEST,
+        "execution_digest": request["execution_digest"],
+        "prompt_manifest_digest": request["prompt_manifest_digest"]},)
+
+
+def native_rows(native: Any, *, corpus_root: Path) -> tuple[dict, ...]:
+    if isinstance(native, dict) and native.get("schema") == LOOP_PROFILE_SCHEMA:
+        return _loop_rows(native, corpus_root=corpus_root)
     profile, terminal, capture, profile_tuple, validation_tuple = _validate_bundle(
         native, corpus_root=corpus_root)
     shared = {"native": native, "corpus_root": str(Path(corpus_root).absolute()),
@@ -455,6 +538,17 @@ def _base_claim(native: Any, expected: str) -> tuple[dict, dict, dict]:
 
 @register("autokernel-unified-profile-measurement")
 def project_profile(native: Any) -> ClaimTuple:
+    if isinstance(native, dict) and native.get("projection") == "loop_profile":
+        rows = _loop_rows(native.get("native"), corpus_root=Path(str(native.get("corpus_root", ""))))
+        if native != rows[0]:
+            raise ProjectionError("direct profile projected row changed")
+        values = dict(native["claim"])
+        values["extra"] = {**values["extra"], "applicability": "profile_observation_only",
+            "not_production_validation": True, "not_profile_verified": True,
+            "execution_digest": native["execution_digest"],
+            "prompt_manifest_digest": native["prompt_manifest_digest"],
+            "capture_source_digest": native["capture_source_digest"]}
+        return ClaimTuple(**values, source_kind="autokernel-unified-profile-measurement")
     claim, event, row = _base_claim(native, "profile")
     extra = {**claim["extra"], "profile_event_digest": row["profile_event_digest"],
              "terminal_result_digest": row["terminal_result_digest"],
@@ -491,6 +585,11 @@ def project_integrity(native: Any) -> ClaimTuple:
 def project_journal_pair(native: Any, *, corpus_root: Path) -> tuple[ClaimTuple, ClaimTuple]:
     rows = native_rows(native, corpus_root=corpus_root)
     return project_profile(rows[0]), project_integrity(rows[1])
+
+
+def project(native: Any) -> ClaimTuple:
+    """Corpus route for the direct measurement only; no new grading or verifier."""
+    return project_profile(native)
 
 
 __all__ = ["ADAPTER_ID", "CAPTURE_SCHEMA", "CARRIER_SCHEMA", "CPU_SOURCE_DIGEST",

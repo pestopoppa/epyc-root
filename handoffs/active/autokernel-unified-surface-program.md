@@ -22,6 +22,15 @@ Separately, the serial target wrapper is published and hermetically tested; it h
 not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets).
 The five-iteration trial and broader mixed-target acceptance remain incomplete.
 
+- [x] **Existing-loop CPU profile observation reaches actor and belief readers**: ✅ 2026-09-10.
+  The current CPU launch and original frozen request feed the existing owned perf capture
+  in a separate observational server run at startup and after a keep, never after a null.
+  Actor prompts receive sampled symbol periods/fractions, original record identity or an
+  unavailable reason; acceptance pairs/floors are unchanged. ROOT uses the existing profile
+  measurement projector/corpus, without a direct integrity or `PROFILE_VERIFIED` row.
+  Focused checks: 114 research and 40 ROOT passed, no skips. Tiny HTTP/synthetic perf only;
+  no hardware profiling, production mutation, qualified gain or live process reload.
+
 - [x] **First actual CPU source-to-measurement iteration and automatic continuation**:
   ✅ 2026-09-10. On research `2059e30e`, `akm-q4k-avx512-paired-y` passed through
   source authoring, build, the existing MUL_MAT correctness gate and five serving pairs.

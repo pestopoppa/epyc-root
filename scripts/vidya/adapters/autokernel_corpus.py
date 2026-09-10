@@ -43,6 +43,7 @@ from adapters import (
     autokernel_governed_receipt,
     autokernel_gpu_screening,
     autokernel_legacy_serving,
+    autokernel_profile,
     autokernel_property,
     autokernel_reward_integrity,
     autokernel_rocm_diagnostic,
@@ -100,6 +101,9 @@ def _schema_map() -> dict[str, Any]:
                     or name.startswith("PROJECTION")):
                 continue
             mapping.setdefault(value, module)
+    # Only the standalone direct observation is a corpus document. Sealed profile
+    # Journal pairs still require their original installed feed's explicit joins.
+    mapping[autokernel_profile.LOOP_PROFILE_SCHEMA] = autokernel_profile
     return mapping
 
 
@@ -172,6 +176,8 @@ def rows_for_document(path: Path, document: dict, digest: str,
     module = SCHEMA_TO_ADAPTER.get(_dispatch_schema(document) or "")
     if module is None:
         return []
+    if module is autokernel_profile:
+        return list(module.native_rows(document, corpus_root=path.parent))
     if module in _RECEIPT_ADAPTERS:
         kwargs = {"receipt_locator": f"autokernel:{path}",
                   "receipt_sha256": digest, "attestation_present": True}

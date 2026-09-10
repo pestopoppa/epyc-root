@@ -221,3 +221,22 @@
   links the research roster contract. Scheduling remains serial round-robin, not
   mechanism-aware concurrent scheduling; real mixed-target acceptance and qualified
   correctness/performance/promotion gates remain open in AKU-12b.
+
+## CPU profile connected to the existing loop and actual actor prompt
+
+- Research `a1cdfe06` / main `203484a1` reuses the existing owned perf capture for
+  the current CPU binary and original frozen request. Profiling runs separately
+  at startup and after a source keep, not after nulls; acceptance A/B and floor
+  semantics are unchanged. Actual actor prompts now receive observed symbol periods,
+  their fractions and the original record, or an explicit unavailable reason.
+- ROOT's existing profile measurement projector and corpus route consume the direct
+  observation without issuing an integrity or PROFILE_VERIFIED row. Historical
+  producer support remains; current exact source identity includes system Python 3.13.
+- Main primary checks: 41 research tests in 7.07s and 40 ROOT tests in 6.41s.
+  Worker broader checks: 114 research and 40 ROOT. Tests use tiny HTTP children and
+  synthetic perf, not hardware profiling. An initial main ROOT run used the older
+  orchestrator Python 3.11 producer and was correctly refused by the exact source
+  identity check (11 failed, 29 passed); rerunning with the actual system producer
+  passed without broadening identity acceptance.
+- Two handoff subtasks completed. No live controller reload, hardware profile,
+  production change, qualified gain or full handoff completion is claimed.
