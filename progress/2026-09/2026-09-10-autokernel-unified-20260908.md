@@ -1,5 +1,23 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Runtime admission integration checkpoint
+
+- Composed frozen runtime packet b365d086, serial transport fb2e4211 and historical
+  control v2 ecade1bf in main-owned acceptance91af, then applied to research primary.
+  Same-owner accepted runtime recipes use original evaluator evidence and survive
+  serial/source continuation without source promotion or borrowed floor. Original
+  measured runtime build alone joins the existing pruning protection list.
+- Main admission/control run:54 passed with one source-only fixture assertion failure;
+  corrected that assertion, then primary continuation/source/screen/promotion run:
+  49 passed10.85s. Removed one preexisting redundant source-string test; actual build
+  target/provenance tests remain. ROOT profile readers:32 passed5.80s, with additive
+  reviewed source fingerprint95dcf517 and all prior fingerprints retained.
+- Actual eight-target serial dry run on composed source exits0; GLM7.801 floor remains,
+  no state directory/build/inference created. Existing five-loop hardware result is
+  unchanged. Interrupted-owner recovery and original-owner cross-target validation
+  remain active implementation tasks, not operator blockers. No new hardware gain.
+
+
 ## First actual CPU iteration completed as a measured null
 
 - Checkpoint source: research `2059e30e`, ROOT `be070987`. The running experimental

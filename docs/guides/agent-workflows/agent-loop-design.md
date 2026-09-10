@@ -147,6 +147,19 @@ is a property of having memory, not a mechanism you install.
 
 ## Operating the existing loop across targets
 
+CPU runtime treatments use the same executable and existing loop. Prospective `ak-`
+campaigns retain admitted recipes; serial batches carry their references automatically.
+Historical `aku-*` source campaigns remain source-only. `--calibrate-runtime` is optional:
+ordinary source proposals do not require runtime preparation. Default first-treatment
+setup declares 800 calibration server launches plus controls. The invocation budget
+stops new setup launches and retains completed evidence; interrupted prior-owner windows
+are not yet automatically recoverable.
+
+A runtime keep requires a new recipe-bound source floor, not a rebuild. Existing pruning
+protects its original measured build, not every generation. Operational rebinding to a
+new source build does not transfer the old gain claim. Changed producer code can refuse
+an old strict frame explicitly; never relabel or delete that original evidence.
+
 The research repository's `scripts.kernel_rnd.autokernel.loop.serial_run` CLI
 (published source `718f4108`, 2026-09-10) launches finite batches of the existing
 `loop.run` as owned children. It does not replace its pool, actors, resource claims,
