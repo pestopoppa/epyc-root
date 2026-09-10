@@ -413,3 +413,25 @@
   v2 carries original resource evidence. Shared recall and bounded build pruning preserved.
   One completed checkbox; reduced-scope transfer, runtime banking and shared candidate work
   remain active. Original five-loop controller predates this integration.
+
+### Actual production recipe compatibility
+
+- Original production export process86402 completed exit0 with artifact verification:
+  seven ready CPU/GPU targets, zero waiting, twelve unsupported. Original export
+  `/mnt/raid0/llm/tmp/aku-production-enrollment-20260910/production-export.json`
+  SHA25641c1380b1664f36de167eea6225fd52a2d9b4a99e1dbeeb6e17770b3e15061d6.
+  The actual resolver then exposed unsupported emitted flags and omitted-ubatch handling.
+- Parser now preserves --draft-p-min, --threads-draft and --log-colors; rejects duplicate
+  probability aliases/nonfinite probabilities/invalid values. Omitted -ub is512 per frozen
+  v9 common.h, not2048; original argv bytes are unchanged. Existing explicit-ub recipes
+  are unchanged. Shared parser impactHIGH was reviewed before the bounded compatibility fix.
+- Actual frozen GPU DSO dependency inspection found eight ROCm runtime libraries absent
+  from the original supplied pins. Supplemental artifact-pins-with-rocm.json and
+  production-export-with-rocm.json retain original files and add measured library hashes;
+  supplemental export uses verification_not_requested, not a second full-model verification.
+  All seven exported production commands now resolve. No inference or builds launched.
+- Main112 parser/enrollment/profile tests passed32.16s and32 ROOT producer/reader tests
+  passed5.71s with EPYC_RESEARCH_ROOT explicitly set (initial wrong variable skipped tests,
+  not counted). CPU profile source pin926f9cce5fa92598e5120006611be5d97189952907af06c7561f6f5628c3b2ba
+  uses the actual autokernel import path; earlier three accepted pins retained. No grading
+  rule changed. One completed checkbox; mixed-target execution remains separate active work.
