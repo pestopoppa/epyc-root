@@ -23,6 +23,14 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Shared historical mechanisms reach the existing planner automatically**: ✅ 2026-09-10.
+  Owned-target rosters supply canonical and sibling stores to read-only recall.
+  Bounded selection retains useful keeps/nulls despite transient floods and rotates
+  across one-iteration child restarts. Original scope/caveats remain separate from
+  local applicability and gains. Main 104 tests passed; actual canonical-store read
+  returned one keep, three measured nulls and one refusal without errors.
+  This is historical suggestion recall, not demonstrated transfer or runtime admission.
+
 - [x] **Production enrollment includes every split-GGUF shard**: ✅ 2026-09-10.
   The existing exporter expands exact numbered model/drafter families and requires
   each supplied artifact pin; missing siblings leave the target waiting. No directory
