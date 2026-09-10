@@ -23,6 +23,11 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Split-model import preserves the launch entry shard**: ✅ 2026-09-10.
+  Singular campaign/launch model slots now select the shard named by argv rather
+  than silently retaining the last shard. The original export retains every pin.
+  Main 21 enrollment tests passed, including split-model launch resolution.
+
 - [x] **Completed dashboard runs no longer look like stalled measurements**: ✅ 2026-09-10.
   Final reports retain original timestamps/raw steps but display a terminal step and
   FINAL REPORT/FAILED REPORT badge. Running producers retain heartbeat expiry; future

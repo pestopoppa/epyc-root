@@ -380,3 +380,17 @@
   malformed. Actual retained GLM artifact reads Run complete — final report, 5/5.
 - Source packet SHA2562c86e349cdd01c689bbf087ccc6c3402f530ff8bfc18356f29076f580ef0b005.
   No research restart, benchmark or historical-result rewrite. One completed checkbox.
+
+### Split-model importer follow-through
+
+- Downstream review of the now-complete shard list found singular campaign and launch
+  artifact projections overwrote the entry shard with the final sibling. Both now
+  choose the exact argv entry when multiple model/drafter pins exist; original exported
+  dependency pins remain intact. Main 21 enrollment tests passed in 0.21s, including
+  actual split-model registry and resolved-launch projections. Impact LOW, two callers.
+- Production export hit stale launch-manifest priors. Canonical compiler regenerated
+  priors in isolated acceptance/autokernel-production-export-826008df-20260910, preserving
+  primary generated-file edits. Actual --verify-artifacts export is running in exec86402;
+  this option rereads pinned files. No completion claim or duplicate export launched.
+- Prior dashboard fix is live: supervisor restarted hub as PID3894694 after source edit,
+  API reports final complete5/5/history2397 and panel healthOK. Source/raw reports unchanged.
