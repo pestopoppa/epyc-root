@@ -23,6 +23,14 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Completed serial campaigns retain selectable target details**: ✅ 2026-09-10.
+  The existing dashboard follows bounded original last-result references, verifies
+  exact terminal target status, and lets the operator select each retained batch.
+  Canonical champion/history remain separate and visible. Missing or superseded
+  target reports show an unavailable reason; no current activity or cumulative
+  totals are invented. Main36 reader/page/terminal checks passed2.52s, including
+  CPU keep and GPU null fixtures. This does not establish a live mixed hardware run.
+
 - [x] **Last completed outcome retains an optional original-evidence pointer**: ✅ 2026-09-10.
   Serial continuation carries at most 12KiB of reference metadata to the existing
   serving receipt/runtime result, not duplicated measurements or a second ledger.

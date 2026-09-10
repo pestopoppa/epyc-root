@@ -1,5 +1,20 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Completed serial dashboard results
+
+- Fixed an observed reader/page gap: terminal serial snapshots returned before
+  loading target detail, and the page cleared detailed cards without an active child.
+  Three-file change follows original last_results references, binds continuation
+  SHA/config/target/batch to original terminal status, and exposes target selection.
+  Reads are bounded to64 targets/8MiB; no journal scan or loop-run payload read.
+  Missing/overwritten reports remain explicit; canonical A/B/history are unchanged.
+- Main36 actual-child/reader/JavaScript/terminal checks passed2.52s, no skips.
+  CPU synthetic keep and GPU measured_null both render through selection changes.
+  Exact three source hashes match worker frozen packet4c0eeb58b538074d00a9399237e445f6f3b456dc134bcd65306f62d63bf08d92.
+- Root index refresh completed in91.4s. A concurrent impact query crashed; manual
+  reader/page call-chain review and worker LOW2 impact bounded the change.
+  One completed handoff checkbox; no new inference or hardware claim.
+
 ## Optional last-outcome evidence transport
 
 - Published research3c6750d4, promoted to mainf355a054. Three-file slice preserves
