@@ -168,7 +168,17 @@ and verification of integrations added after that controller started remain inco
 - [x] **Prevalidated runtime options bypass routine critics**: ✅ 2026-09-10.
   Research `64923e9f` retains deterministic current-anchor/option checks and tail
   ownership/correctness gates; source changes retain review. Main 42 focused tests passed.
-- [ ] **Complete runtime fast-path admission and continuation**: use original applicable calibration/evidence and
+- [x] **Same-owner runtime admission and serial recipe transport**: ✅ 2026-09-10.
+  Original evaluator/calibration/control owners consume the direct loop's retained
+  HTTP evidence. Runtime keeps select a recipe without source promotion; subsequent
+  source comparisons use a recipe-bound floor. Existing bounded pruning protects
+  only the selected admission's original build in addition to COR/current anchors.
+  Serial resumes target-local selection with separate latest-source rebinding.
+  Main54 admission/control checks pass; a fixture-only continuation assertion was
+  corrected separately. Full8 actual dry run exits0 with GLM floor7.801 unchanged;
+  32 profile-reader checks pass. No hardware runtime gain or interrupted-owner
+  recovery is claimed by this checkpoint.
+- [ ] **Complete runtime fast-path admission and continuation**: finish interrupted-owner recovery; use original applicable calibration/evidence and
   retain/select/resume an accepted runtime recipe without a source promotion. Runtime
   observations alone do not complete AK-AUTO-07 or the runtime champion requirement.
 
