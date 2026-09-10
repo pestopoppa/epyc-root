@@ -13,7 +13,9 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import re
+import stat
 import statistics
 import sys
 from pathlib import Path
@@ -26,7 +28,8 @@ from claim_tuple import ClaimTuple, ProjectionError, register
 ADAPTER_ID = "vidya.adapters.autokernel_governed_receipt/v1"
 LIVE_SCHEMA = "epyc.autokernel.live_control_beliefs.v1"
 REPLAY_SCHEMA = "epyc.autokernel.async_prefetch_replay.v1"
-SOURCE_SCHEMAS = frozenset({LIVE_SCHEMA, REPLAY_SCHEMA})
+DIRECT_GPU_SCHEMA = "epyc.autokernel.direct_gpu_control_beliefs.v1"
+SOURCE_SCHEMAS = frozenset({LIVE_SCHEMA, REPLAY_SCHEMA, DIRECT_GPU_SCHEMA})
 LIVE_PROTOCOL = "P-AK-SEARCH-1/v1"
 LIVE_PRODUCER = "autokernel.execution.live_controls/v2"
 LIVE_PRODUCER_PATH = "scripts/kernel_rnd/autokernel/execution/live_controls.py"
@@ -334,6 +337,127 @@ def _validate_live(receipt: dict, rows: list[dict]) -> None:
         raise ProjectionError("live-control native verdict differs from its panel result")
 
 
+def _direct_gpu_sources(basis, locator):
+    """Bounded exact native leaves, never launch/regrade or invent missing rows."""
+    if not locator:
+        raise ProjectionError("direct GPU control requires its original receipt locator")
+    root = Path(locator.removeprefix("autokernel:")).parent
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+    root_fd = os.open(root, flags | os.O_DIRECTORY)
+    cache, remaining = {}, 64 * 1024 * 1024
+    def read(reference, namespace):
+        nonlocal remaining
+        if (not isinstance(reference, dict) or set(reference) != {"locator", "sha256", "verified"}
+                or type(reference["verified"]) is not bool):
+            raise ProjectionError("direct GPU original artifact reference differs")
+        name, digest = reference["locator"], _sha(reference["sha256"], "original SHA")
+        prefix = hashlib.sha256(namespace.encode()).hexdigest() + "-"
+        if (not isinstance(name, str) or not name.startswith(prefix)
+                or "/" in name or len(name) > 256 or not name.endswith(".json")):
+            raise ProjectionError("direct GPU original namespace or leaf differs")
+        key = (name, digest)
+        if key in cache:
+            return cache[key]
+        if len(cache) >= 16384:
+            raise ProjectionError("direct GPU original reference capacity exceeded")
+        fd = os.open(name, flags, dir_fd=root_fd)
+        try:
+            before = os.fstat(fd)
+            if not stat.S_ISREG(before.st_mode) or before.st_size > min(16 * 1024 * 1024, remaining):
+                raise ProjectionError("direct GPU original file exceeds bounded metadata capacity")
+            with os.fdopen(fd, "rb", closefd=False) as stream:
+                raw = stream.read(before.st_size + 1)
+            after = os.fstat(fd)
+            if any(getattr(before, field) != getattr(after, field) for field in (
+                    "st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")):
+                raise ProjectionError("direct GPU original file changed during read")
+        finally:
+            os.close(fd)
+        if len(raw) != before.st_size or hashlib.sha256(raw).hexdigest() != digest:
+            raise ProjectionError("direct GPU original artifact digest differs")
+        remaining -= len(raw)
+        cache[key] = json.loads(raw)
+        if name != prefix + _canonical_sha256(cache[key]) + ".json":
+            raise ProjectionError("direct GPU original namespace/content binding differs")
+        return cache[key]
+    try:
+        declaration = read(basis["declaration"], "direct-gpu-declaration")
+        if (declaration.get("belief_capture_schema") != DIRECT_GPU_SCHEMA
+                or declaration["fixture"]["frame"] != basis["frame"]
+                or declaration["source"] != basis["source"]
+                or declaration["holders"] != basis["held_components"]):
+            raise ProjectionError("direct GPU prospective declaration differs")
+        material = None if basis["material"] is None else read(basis["material"], "direct-gpu-material")
+        checkpoint = None if basis["window"] is None else read(basis["window"], "direct-gpu-window-checkpoint")
+        launches = [] if checkpoint is None else checkpoint["launches"]
+        if basis["completed_launches"] != len(launches) or (material is not None and material["launches"] != launches):
+            raise ProjectionError("direct GPU completed native membership differs")
+        for entry in [*launches, *([] if checkpoint is None else checkpoint["invalid"])]:
+            raw = read(entry["reference"], "direct-gpu-bench-launch")
+            if raw["membership"] != entry["membership"]:
+                raise ProjectionError("direct GPU original launch membership differs")
+            for key in ("claim_open", "claim_close"):
+                read(raw[key], "direct-gpu-held-observation")
+            if material is not None and entry in launches:
+                label, index, arm = entry["membership"]
+                rows = json.loads(raw["stdout"])
+                if (len(rows) != 1 or material["pairs"][label][index][arm + "_samples"] != [rows[0]["avg_ts"]]):
+                    raise ProjectionError("direct GPU native process mean differs from original pair")
+        if material is not None:
+            t0 = read(material["t0"], "direct-gpu-t0")
+            for ref in (*t0["anchor_captures"], *t0["candidate_captures"]):
+                read(ref, "direct-gpu-t0-process")
+            for arm in ("anchor", "candidate"):
+                read(material["identities"][arm]["source"], "direct-gpu-source")
+            for key in ("open", "close"):
+                read(material["boundaries"][key], "direct-gpu-boundary")
+        return declaration, material
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise ProjectionError(f"direct GPU original source cannot be reopened: {exc}") from exc
+    finally:
+        os.close(root_fd)
+
+
+def _validate_direct_gpu(receipt, rows, locator):
+    _receipt_self_hash(receipt)
+    producer = "autokernel.loop.direct_gpu_control/v1"
+    sha = _producer(receipt, expected_id=producer,
+        expected_path="scripts/kernel_rnd/autokernel/loop/direct_gpu_control.py")
+    basis = _mapping(receipt.get("native_basis"), "direct GPU native basis")
+    declaration, material = _direct_gpu_sources(basis, locator)
+    if receipt["campaign_id"] != declaration["control_campaign_id"] or sha != basis["source"]["self"]:
+        raise ProjectionError("direct GPU original producer/campaign differs")
+    ids = ("positive", "historical_win_replay")
+    if len(rows) != 2 or set(basis["observations"]) != set(ids):
+        raise ProjectionError("direct GPU supplier must preserve its two original observations")
+    for control_id, row in zip(ids, rows):
+        _row_self_hash(row)
+        observation = basis["observations"][control_id]
+        stages = basis["tier_evaluations"].get(control_id, [])
+        if type(observation["ran"]) is not bool:
+            raise ProjectionError("direct GPU ran must be an original boolean")
+        if observation["ran"]:
+            if (not stages or material is None or observation["verdict_status"] != stages[-1]["status"]
+                    or observation["abs_effect_count"] != len(material["pairs"][control_id])):
+                raise ProjectionError("direct GPU observation differs from original evaluator result")
+        elif (observation["verdict_status"] is not None or observation["could_not_run_reason"] != basis["error"]
+                or not basis["error"] or observation["abs_effect_count"] != 0):
+            raise ProjectionError("unavailable GPU control cannot become a scientific failure")
+        expected = {"control_id": control_id, "observation": observation, "basis": basis}
+        extra = _mapping(row.get("extra"), "direct GPU row extra")
+        if (extra.get("evidence_basis") != expected or extra.get("evidence_sha256") != _canonical_sha256(expected)
+                or extra.get("producer_id") != producer or extra.get("producer_sha256") != sha
+                or row.get("measurement_id") != "direct_gpu_" + control_id + "_ran"
+                or row.get("metric") != "autokernel_control_execution_observed"
+                or _finite(row.get("value"), "direct GPU value") != float(observation["ran"])
+                or row.get("unit") != "fraction" or row.get("category") != "BASELINE"
+                or row.get("metric_direction") != "higher_better" or row.get("protocol_id") != ""
+                or row.get("reps") != (observation["abs_effect_count"] or None)
+                or row.get("reps_basis") != "observed:original GPU control paired blocks"
+                or row.get("native_verdict") != observation["verdict_status"]):
+            raise ProjectionError("direct GPU producer row does not rederive as observation-only")
+
+
 def native_rows(receipt: dict, *, receipt_locator: str = "",
                 receipt_sha256: str = "",
                 attestation_present: bool | None = None) -> tuple[dict, ...]:
@@ -349,7 +473,9 @@ def native_rows(receipt: dict, *, receipt_locator: str = "",
         raise ProjectionError("belief_measurements must be a non-empty list")
     if receipt.get("status") != "complete":
         raise ProjectionError("only a complete governed receipt may carry belief rows")
-    if receipt["schema"] == LIVE_SCHEMA:
+    if receipt["schema"] == DIRECT_GPU_SCHEMA:
+        _validate_direct_gpu(receipt, measurements, receipt_locator)
+    elif receipt["schema"] == LIVE_SCHEMA:
         _validate_live(receipt, measurements)
     else:
         _validate_replay(receipt, measurements)
@@ -385,7 +511,8 @@ def project(native: Any) -> ClaimTuple:
         claim=_text(measurement.get("claim"), "measurement.claim"),
         metric_direction=_text(
             measurement.get("metric_direction"), "measurement.metric_direction"),
-        protocol_id=_text(measurement.get("protocol_id"), "measurement.protocol_id"),
+        protocol_id=("" if schema == DIRECT_GPU_SCHEMA and measurement.get("protocol_id") == ""
+                     else _text(measurement.get("protocol_id"), "measurement.protocol_id")),
         reps=measurement.get("reps"),
         reps_basis=_text(measurement.get("reps_basis"), "measurement.reps_basis"),
         unit=_text(measurement.get("unit"), "measurement.unit"),

@@ -1087,6 +1087,15 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       tuple. Focused producer tests pass 23/23 and adapter tests 24/24. The 2026-08-12 smoke, controls,
       and GPU replay predate the hook and remain deliberately unprojected; only future receipts may
       enter this source.
+  - [ ] **VB-AK-GPU-CONTROLS — extend the existing governed-control source before its first direct GPU replay.**
+    Producer: research `loop/direct_gpu_control.py:run_or_reopen`; retain `direct-gpu-control`,
+    `direct-gpu-bench-launch` and `direct-gpu-t0` originals. Capture producer-authored native
+    belief rows at write time for completed measurements and explicit failed-setup findings;
+    preserve exact frame/model/build/loader/claim identities, raw repetitions/process-pair basis,
+    actual T0–T2 outcomes and the fixed engineering tolerance. Extend the existing
+    `autokernel_governed_receipt.py` source class/ladder, not a duplicate adapter or grading rule.
+    Independent recall remains observation-only; never invent a tuple on read, qualify a candidate
+    from a control result, or backfill the original September 7 evidence.
 - [x] SC28 **Wire RVP-T0-1 saturation and AK-BH-1 vendor-baseline diagnostics before either runs
       again.** ✅ 2026-08-12 — research `1434ed1a` adds a shared prospective writer used by both
       live runners. RVP-T0-1 emits separate sustained-throughput, nominal-clock-hold, peak-power and
