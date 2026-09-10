@@ -101,3 +101,36 @@
   consumer was installed by this task. Those next steps are explicit separate tasks;
   no qualified hardware gate, scientific admission, canonical promotion or broader
   five-loop/unified acceptance checkbox was completed. No historical backfill occurred.
+
+## Existing-loop serial target routing published
+
+- Research source `718f410899abcaed72563eb64814d1bfa16c6897` / main
+  `d5b3cc96e6fd195b057be633d5ac0b7110bb6bdb` adds `loop.serial_run` around the
+  existing pool/measurement/keep owner. One invocation rotates finite batches across
+  original enrolled-target argument files; rounds 0 continues until persistent STOP
+  or all targets fail. Canonical/per-target history stays in its original store.
+- Each child must produce a terminal, same-input `loop-continuation.json` after its
+  full original result. It carries actual current/COR build identities; switching
+  reuses those verified builds and the original request-bound CPU floor. The normal
+  restart bug that paired an old restored COR commit with the current build now
+  refuses unless the original COR build is supplied. Existing pruning protection
+  and no-copy behavior remain intact. A post-launch status/export failure drains
+  the captured child before another target can run.
+- Main independently verified 14 serial tests (6.87s), then 82 focused tests on
+  integrated PRIMARY (4.55s). Tiny children and synthetic existing-loop providers
+  exercise rotation, STOP, keep/resume, missing/mismatched terminal output and
+  cleanup. These are not live CPU/GPU serial measurements or qualified results.
+  [Operating CLI and argument examples](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets)
+  retain the original GPU-provenance requirement.
+
+## Second CPU iteration completed; iteration 3 started automatically
+
+- The already-running dedicated GLM trial durably recorded attempt `a88eb190…` as
+  `measured_null`: five serving pairs, effect **+1.454288%**, below its unchanged
+  **7.801%** floor. Original request/floor digest remains
+  `b8475457d62a637a58cbe90e9b66864804122ed713ac14562a5f6c400c5154d0`.
+  Worker cleanup returned to `c463f601`; the original loop entered iteration 3
+  automatically. No keep or qualified gain; the five-iteration test is unfinished.
+- This checkpoint does not claim that the running process loaded the newly
+  published serial wrapper or CPU lifecycle/belief hooks. No restart, new hardware
+  run, index edit or publication was performed by documentation preparation.

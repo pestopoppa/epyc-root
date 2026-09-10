@@ -15,6 +15,13 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 > settlement defaults to invalid) and is not an accepted replacement. The original
 > feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
 
+**2026-09-10 checkpoint:** the existing CPU trial completed iteration 2 as another
+`measured_null` (+1.454288%, below the unchanged 7.801% floor, five pairs; DB attempt
+`a88eb190…`) and automatically entered iteration 3. No keep or qualified gain.
+Separately, the serial target wrapper is published and hermetically tested; it has
+not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets).
+The five-iteration trial and broader mixed-target acceptance remain incomplete.
+
 - [x] **First actual CPU source-to-measurement iteration and automatic continuation**:
   ✅ 2026-09-10. On research `2059e30e`, `akm-q4k-avx512-paired-y` passed through
   source authoring, build, the existing MUL_MAT correctness gate and five serving pairs.
@@ -2940,6 +2947,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       binds CPU serving workload and retains the legacy GPU-screen label. Main verified
       68 focused tests. This is not serial all-target dispatch, artifact admission,
       a live-process restart or completion of the broader acceptance goal.
+    - [x] **AKU-12b-SERIAL-CLI — rotate finite enrolled-target batches through the existing
+      loop owner.** ✅ 2026-09-10 — Research `718f4108` / main `d5b3cc96` adds
+      `loop.serial_run`, persistent STOP, distinct batch outputs and actual current/COR
+      continuation. Restart no longer pairs a restored old COR commit with the current
+      build. Switching reuses verified retained anchors and request-bound floors; no
+      copy, forced rebuild or recalibration merely for a switch. Primary verification:
+      82 focused tests passed (4.55s); the 14 serial tests include real tiny children
+      and existing-owner synthetic keep/resume paths. No live hardware serial proof,
+      fabricated GPU provenance, new grader or completion of AKU-12b is claimed.
     - [x] **AKU-12b-SERVING-BELIEFS — connect the direct comparison write/read belief path.**
       ✅ 2026-09-10 — Research `86179a8c` / main `0a815338` captures inputs before launch,
       retains original comparison/CPU dependency bytes and exports through the existing archive.
