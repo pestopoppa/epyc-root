@@ -1,5 +1,25 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Same-worktree cross-target source validation
+
+- Composed frozen98a426b3 packet on d1164a0f with scheduled-run correction47c6cf42,
+  main's safe proposal-None short circuit, and belief-export correction6142b758.
+  All8 primary files match the final acceptance tree byte-for-byte. No production
+  source/build mutation; no new hardware measurement.
+- Main review removed hidden validation priority, prevented pending retries from
+  starving ordinary research, bound reuse to exact target/input/runtime identities,
+  restored exact original keep measurement reuse, and removed unused fold/CandidateState
+  promotion scaffolding. Scheduler-selected validation now reaches original run.main.
+  New comparisons use archive.record and existing serving belief export; reused rows
+  reopen the original receipt without rewriting its timestamp or source bytes.
+- Main70 combined validation/serial/scheduler/recovery/cost/control checks passed44.13s.
+  Scheduled-entrypoint correction plus controls/cost29 passed4.33s; final actual
+  A→B→A/archive/belief35 passed2.17s. No aggregate claim that these counts are unique.
+- One completed checkbox. This is shared-worktree validation only: distinct CPU/GPU
+  worktrees, final required-target aggregation and canonical promotion remain active.
+  Existing legacy-serving belief source/consumer registration covers these original
+  captures; no new grading rule or duplicate adapter was introduced.
+
 ## Original held-cost forecasting and live dashboard verification
 
 - Applied four-file cost packet29c255a6 on research8c723082; every primary hash

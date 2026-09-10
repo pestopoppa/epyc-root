@@ -317,6 +317,15 @@ rotating but exits if every target fails. Failed targets are not repeatedly rela
 Each batch keeps its own full result and logs; canonical history stays in the
 original GPU store. Router status names the active target and its original store.
 
+When targets share an experimental worktree, a retained source keep can schedule an
+explicit validation stage against another target's original baseline. It uses the
+existing scheduler and resource accounting; pending validation permits ordinary
+research before retrying. The original serving/FOLD-2 non-regression rule applies.
+An exact original keep observation can be reused; a different assembled source or
+build is remeasured. Validation records and original belief receipts are retained.
+This path does not yet combine distinct CPU/GPU worktrees or promote a final unified
+canonical champion. Those are separate completion requirements, not inferred passes.
+
 After completed matching measured-search batches, the serial owner forecasts stage
 duration from the original held intervals (empirical p75 of at most8 observations).
 The estimate is scoped to the target, inputs, source, runtime recipe, CPU geometry
