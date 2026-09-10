@@ -183,3 +183,177 @@ def project(native):
                       attestation_locator=native["receipt_locator"],
                       attestation_sha256=native["receipt_sha256"],
                       attestation_present=native["attestation_present"])
+
+
+class PlannerFeedback:
+    """One loop's bounded observation recall, not scientific admission or ranking.
+
+    The loop serializes access. Its private store ledger has one writer; the global
+    belief ledger is never modified. Numeric/scope facts come from original source
+    bytes because ClaimTuple frames intentionally do not carry those fields.
+    """
+
+    MAX_RECEIPTS = 128
+    MAX_LEDGER_BYTES = 8 << 20
+    MAX_LEDGER_FRAMES = 8192
+    MAX_CONTEXT_ROWS = 12
+    MAX_CONTEXT_BYTES = 32 << 10
+    MAX_READ_BYTES = 128 << 20
+
+    def __init__(self, store_root):
+        from ledger import Ledger
+
+        self.root = Path(store_root) / "serving-beliefs"
+        self.ledger = Ledger(self.root / "feedback-ledger.jsonl")
+        self.paths = {}
+        self.notes = []
+        self._records()
+        consumed = 0
+        # One bounded shallow discovery at startup, never a corpus walk per prompt.
+        with os.scandir(self.root) as entries:
+            for index, entry in enumerate(entries):
+                if index >= self.MAX_RECEIPTS + 2:
+                    self.notes.append("startup receipt scan bound reached; history recall is unchanged")
+                    break
+                if not re.fullmatch(r"[0-9a-f]{64}\.json", entry.name):
+                    continue
+                try:
+                    receipt, _ = self._receipt(Path(entry.path))
+                    consumed += receipt["native_reference"]["size"]
+                    if consumed > self.MAX_READ_BYTES:
+                        self.notes.append("startup source byte bound reached")
+                        break
+                    self.ingest(Path(entry.path))
+                except Exception as exc:  # noqa: BLE001 - diagnostic recall never aborts a loop
+                    self.notes.append(f"{entry.name}: {type(exc).__name__}: {exc}")
+        self.notes = self.notes[-12:]
+
+    def _records(self):
+        if not self.ledger.path.exists():
+            return []  # Fresh, not yet created; do not attest an existing empty ledger.
+        if self.ledger.path.exists() and self.ledger.path.stat().st_size > self.MAX_LEDGER_BYTES:
+            raise ProjectionError("serving feedback ledger byte bound reached")
+        records = self.ledger.read_all()
+        if len(records) > self.MAX_LEDGER_FRAMES:
+            raise ProjectionError("serving feedback ledger frame bound reached")
+        if self.ledger.verify():
+            raise ProjectionError("serving feedback ledger integrity failed")
+        return records
+
+    def _receipt(self, path):
+        if path.parent != self.root or not re.fullmatch(r"[0-9a-f]{64}\.json", path.name):
+            raise ProjectionError("serving feedback requires its exact local receipt")
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        try:
+            before = os.fstat(fd)
+            if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= 16384:
+                raise ProjectionError("serving feedback receipt is not a bounded regular file")
+            with os.fdopen(fd, "rb", closefd=False) as stream:
+                raw = stream.read(16385)
+            if os.fstat(fd) != before or len(raw) != before.st_size:
+                raise ProjectionError("serving feedback receipt changed during read")
+        finally:
+            os.close(fd)
+        receipt = json.loads(raw)
+        if receipt.get("schema") != RECEIPT_SCHEMA or path.stem != receipt.get("capture_id"):
+            raise ProjectionError("serving feedback receipt identity differs")
+        return receipt, hashlib.sha256(raw).hexdigest()
+
+    def _read(self, path):
+        receipt, receipt_sha256 = self._receipt(path)
+        source = _source(receipt, f"autokernel:{path}")
+        rows = _rows(source, receipt)
+        return receipt, receipt_sha256, source, rows
+
+    def ingest(self, path):
+        """Ingest only this exported ID; exact frame IDs survive partial append/restart."""
+        from claim_tuple import to_frames
+
+        path = Path(path)
+        receipt, receipt_sha256, source, rows = self._read(path)
+        records = self._records()
+        known = {record.frame.get("frame_id") for record in records}
+        # Original archive time, not each import's wall clock, makes retries identical.
+        stamp = source["recorded_at"]
+        tuples = [ClaimTuple(**row, source_kind="autokernel-legacy-serving",
+                            attestation_locator=f"autokernel:{path}",
+                            attestation_sha256=receipt_sha256, attestation_present=True)
+                  for row in rows]
+        frames = [frame for item in tuples for frame in to_frames(
+            item, as_of=stamp, adapter_id=ADAPTER_ID)]
+        missing = [frame for frame in frames if frame["frame_id"] not in known]
+        if len(records) + len(missing) > self.MAX_LEDGER_FRAMES:
+            raise ProjectionError("serving feedback ledger frame bound reached")
+        current_bytes = self.ledger.path.stat().st_size if self.ledger.path.exists() else 0
+        if current_bytes + sum(len(json.dumps(frame).encode()) + 1024 for frame in missing) > self.MAX_LEDGER_BYTES:
+            raise ProjectionError("serving feedback ledger byte bound reached")
+        for frame in missing:
+            self.ledger.append(frame)
+        self.paths.pop(receipt["capture_id"], None)
+        self.paths[receipt["capture_id"]] = (path, source["recorded_at"])
+        if len(self.paths) > self.MAX_RECEIPTS:
+            self.paths.pop(next(iter(self.paths)))
+        return len(missing)
+
+    def context(self, scope, *, as_of):
+        from fold import fold
+        from gate import UsePolicy, evaluate
+        from lattice import parse_grade
+
+        result = {"status": "observations_only", "rows": [], "errors": list(self.notes),
+                  "scope": scope, "qualified_measurement": False}
+        if not scope or any(scope.get(key) is None for key in (
+                "epoch", "model", "recipe_hash", "request_digest", "anchor_execution_digest", "anchor_build")):
+            result.update(status="scope_unavailable")
+            return result
+        folded = fold([record.frame for record in self._records()], as_of=as_of)
+        policy = UsePolicy(use="planning-observation-recall-not-ranking",
+                           floor=parse_grade("Judged/Located"))
+        consumed = 0
+        for path, _ in sorted(self.paths.values(), key=lambda item: item[1], reverse=True):
+            if len(result["rows"]) >= self.MAX_CONTEXT_ROWS:
+                break
+            try:
+                ref, _ = self._receipt(path)
+                consumed += ref["native_reference"]["size"]
+                if consumed > self.MAX_READ_BYTES:
+                    result["errors"].append("query source byte bound reached")
+                    break
+                receipt, _, source, rows = self._read(path)
+                native = source["comparison"]
+                inputs = native["belief_capture"]["inputs"]
+                arms = inputs["resolved_arms"]
+                if (source.get("epoch") != scope["epoch"]
+                        or native["recipe_hash"] != scope["recipe_hash"]
+                        or native.get("request_digest") != scope["request_digest"]
+                        or any(not isinstance(arm, dict) or arm.get("model") != scope["model"] for arm in arms.values())
+                        or arms["anchor"].get("execution_digest") != scope["anchor_execution_digest"]
+                        or inputs["build_paths"]["anchor"] != scope["anchor_build"]):
+                    continue
+                decisions = [evaluate(f"clm_{row['measurement_id']}", folded, policy).as_dict() for row in rows]
+                entry = {"capture_id": receipt["capture_id"], "source": str(path),
+                         "source_sha256": receipt["native_reference"]["sha256"],
+                         "recorded_at": source["recorded_at"], "mechanism_id": source.get("mechanism_id"),
+                         "epoch": source["epoch"], "belief_status": decisions,
+                         "native_decisive": native["decisive"],
+                         "recipe_hash": native["recipe_hash"], "request_digest": native["request_digest"],
+                         "anchor_execution_digest": arms["anchor"]["execution_digest"],
+                         "candidate_execution_digest": arms["candidate"]["execution_digest"],
+                         "cpu_placement": native.get("cpu_placement", "unproven"),
+                         "contention": native.get("contention", "unproven")}
+                # Even a retracted/conflicted observation remains remembered by the
+                # separate archive path; disputed numeric support is not current.
+                if all(item["result"] == "allow" for item in decisions):
+                    entry.update(anchor_tok_s=native["anchor_tok_s"], candidate_tok_s=native["candidate_tok_s"],
+                                 pairs=native["pairs"], noise_floor_pct=native["noise_floor_pct"])
+                result["rows"].append(entry)
+                if len(json.dumps(result).encode()) > self.MAX_CONTEXT_BYTES:
+                    result["rows"].pop()
+                    result["errors"].append("context byte bound reached")
+                    break
+            except Exception as exc:  # noqa: BLE001 - retain visible refusal beside historical recall
+                result["errors"].append(f"{path.name}: {type(exc).__name__}: {exc}")
+        result["errors"] = [message[:400] for message in result["errors"][-12:]]
+        result["frontier"] = folded.frontier
+        result["as_of"] = as_of
+        return result

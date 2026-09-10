@@ -134,3 +134,30 @@
 - This checkpoint does not claim that the running process loaded the newly
   published serial wrapper or CPU lifecycle/belief hooks. No restart, new hardware
   run, index edit or publication was performed by documentation preparation.
+
+## Scoped direct-serving planner feedback integrated; live trial unchanged
+
+- Research source `8360d3e1` / main `ba5abca4` connects the existing archive's new
+  receipt callback to one synchronous serving-feedback bridge. ROOT uses its strict
+  original-source reader and existing Ledger/fold/query functions; no new service,
+  carrier schema, grader or campaign identity was introduced.
+- A bounded startup scan is followed by newly exported receipt IDs, not a repeated
+  full-corpus ingest. The private ledger is `serving-beliefs/feedback-ledger.jsonl`
+  under the selected original store. Context is limited to 12 rows/32 KiB, source
+  reads to 128 MiB per query and ledger replay to 8 MiB/8192 frames; bounds/errors
+  remain visible rather than claiming complete coverage. Query/export faults do not
+  change durable experiments. A later export can recover transient initialization.
+- Original model descriptor, recipe/request digests, epoch and anchor identity
+  scope numeric observations. A keep reuses the actual comparison's rebound anchor
+  identity, without extra prompt-time hashing. Existing historical recall remains
+  unchanged: a null is worth remembering even without qualified measurement grade.
+  `Judged/Located` is observation status, never a qualified gain or promotion warrant.
+- Main independently verified **28 ROOT tests in 0.63s** and **55 research tests in
+  4.17s**. The actual existing-loop→archive→ingest→context path includes synthetic
+  provider/measurement boundaries, changed post-keep bytes, the subsequent null,
+  restart without duplicate frames, scope/source refusals and nonfatal reader faults.
+- Future owning starts should pass
+  `--belief-root-repo /mnt/raid0/llm/worktrees/mains/autokernel-unified-20260908`;
+  the existing operating guide and CPU serial-argument example now show it. No
+  current live PID was reloaded, no real post-hook hardware/live ingest was proven,
+  and no qualified hardware or broader acceptance checkbox was completed.
