@@ -280,3 +280,16 @@
   does not restore interrupted work after restart. README freshness check exited0 with
   no warnings. Boundary bus drain still refuses the absent `autokernel-unified-20260908`
   roster identity; no substitute identity, index edits or wiki sweep were introduced.
+
+## Serial completed-child restart repair
+
+- Fixed a concrete restart refusal: a child could finish and write its continuation,
+  then the router could crash before clearing active state. Startup now reopens the
+  exact original target/arguments/batch result and verifies original process absence
+  or terminal identity, recording exit-status-unavailable rather than inventing exit0.
+- Reconciles once without rerunning completed work; preserves STOP, refuses live or
+  unreadable child ownership, and retains state/logs when terminal evidence is missing.
+  Existing process identity helper is used read-only; no foreign signals or adoption.
+- Main primary tests: 26 passed in 10.27s, including actual tiny child completion,
+  crash/restart, idempotence, legacy absent-start identity, live-child refusal and
+  tampered/missing-result cases. No hardware/reload or unfinished-work recovery claim.
