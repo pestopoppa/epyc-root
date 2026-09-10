@@ -1,5 +1,24 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Original GPU runtime execution boundary
+
+- Applied frozen nine-file packet2c621659c7a45fb67521428ea90261c6772bb7bf5cb2c9a4ce87cfd7daeb8d94
+  on researche50d0efe; every primary hash matches its manifest. Main26 GPU/original
+  GPU checks passed3.66s; worker43 composed GPU/matched-source checks passed19.45s.
+- Main review caught and rejected an old-file composition that deleted published
+  matched/validation code before any primary application. Corrected run.py contains
+  only the75-line GPU delta. serving.py and its exact CPU profile source pin remain
+  unchanged. Added existing max-gap enforcement for interior GPU telemetry gaps,
+  not a new measurement threshold.
+- GPU runtime uses existing CPU-host/GPU contexts, actual ROCm0 oracle, original
+  device sampler and per-component recovery identity. Missing control suppliers
+  short-circuit before expensive calibration; observation-only/source work remains
+  usable. The prospective historical bootstrap band was not installed because the
+  existing descriptive statistic explicitly forbids readiness use.
+- One completed checkbox; GPU positive/historical control supplier and hardware
+  qualification remain unfinished. No actual inference, production mutation,
+  controller restart or new grader. Existing five-loop GLM results remain retained.
+
 ## Matched CPU source measurements
 
 - Accepted research packet c788a33108ed7bc00ed7f8e358ab7d9a79e82f8f63272c6e966aa0919766051c

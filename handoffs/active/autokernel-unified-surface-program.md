@@ -23,6 +23,18 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Original GPU runtime path uses both held contexts and numeric device observations**: ✅ 2026-09-10.
+  Planner, runtime fast path, ROCm0 correctness, calibration/window capture and
+  recovery now retain the original CPU-host and GPU contexts separately. Device
+  observations cover request endpoints and interior gaps under existing limits.
+  Missing GPU control suppliers refuse setup before calibration, including explicit
+  --calibrate-runtime; observation-only comparison/source research remain available.
+  No CPU control band, policy, threshold or qualified keep is invented. Main26
+  GPU/original-GPU checks passed3.66s; worker43 composed GPU/matched-CPU checks
+  passed19.45s. Nine primary files match the frozen packet. Synthetic HTTP/device
+  fixtures establish execution wiring, not hardware qualification. Actual positive/
+  historical GPU control suppliers and qualified GPU runtime admission remain open.
+
 - [x] **Fresh unified CPU source measurements use matched process-pair calibration**: ✅ 2026-09-10.
   Fresh CPU enrollment selects matched_process_v2 and pins that choice before the
   first child. Original v1 floors/continuations and direct CLI/GPU defaults remain
