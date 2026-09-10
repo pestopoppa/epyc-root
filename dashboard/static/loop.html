@@ -503,7 +503,7 @@ const fmtPct = e => `${e >= 0 ? "+" : ""}${(e * 100).toFixed(2)}%`;
 
 /* Dispositions that mean the candidate actually reached the instrument. Every
    other disposition is a NEGATIVE and is rendered as such, never omitted. */
-const MEASURED = new Set(["kept", "measured_null"]);
+const MEASURED = new Set(["kept", "measured_null", "runtime_observed"]);
 let campaignAccepted = null;
 let campaignPending = null;
 let campaignPendingAck = null;

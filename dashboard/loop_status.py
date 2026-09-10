@@ -104,7 +104,7 @@ ABSENCE_MEANS = (
 #: Dispositions that mean a candidate actually reached the instrument. Mirrors
 #: the producer's ``measurements_reached`` fold; kept here only to split the
 #: rest out as NEGATIVES for the page.
-MEASURED_DISPOSITIONS = ("kept", "measured_null")
+MEASURED_DISPOSITIONS = ("kept", "measured_null", "runtime_observed")
 
 #: The producer's OWN names first, then the shorter spellings this reader also
 #: accepts. Getting this list wrong is not a cosmetic fault: it was wrong from

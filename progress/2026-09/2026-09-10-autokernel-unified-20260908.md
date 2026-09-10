@@ -240,3 +240,20 @@
   passed without broadening identity acceptance.
 - Two handoff subtasks completed. No live controller reload, hardware profile,
   production change, qualified gain or full handoff completion is claimed.
+
+## Existing-loop runtime observation integration
+
+- Integrated CPU same-binary runtime arms into the existing loop and serving owner:
+  source authoring, diff critic, builds and source promotion are bypassed. Actual
+  candidate environment/topology reaches correctness and measurement, while source
+  routes retain their existing behavior. Source-only floors cannot certify a changed
+  runtime recipe.
+- Runtime results are explicitly `runtime_observed`, with original per-arm recipe
+  identities in the existing belief adapter and measured counts on the dashboard.
+  This is observation support, not runtime keeper/admission completion; prevalidated
+  deterministic routing and accepted recipe retention/continuation remain in progress.
+- Primary verification: 72 research tests passed in 4.84s; 10 ROOT legacy-serving
+  reader/runtime-render tests passed in 4.42s. Tiny HTTP fixtures, no hardware run.
+- Live PID1380863 remained running, four completed original five-pair comparisons;
+  iteration4 +1.248272% was another measured null below the unchanged 7.801% floor.
+  Fifth iteration is in flight. No reload, recalibration or production modification.

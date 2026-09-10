@@ -15,12 +15,26 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 > settlement defaults to invalid) and is not an accepted replacement. The original
 > feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
 
-**2026-09-10 checkpoint:** the existing CPU trial completed iteration 2 as another
-`measured_null` (+1.454288%, below the unchanged 7.801% floor, five pairs; DB attempt
-`a88eb190…`) and automatically entered iteration 3. No keep or qualified gain.
+**2026-09-10 checkpoint:** the existing CPU trial completed four measured iterations
+and automatically entered iteration 5. All four are `measured_null`; the fourth
+(`akm-fa-f16-kpack-16x16`) was +1.248272%, below the unchanged 7.801% floor,
+five original pairs, DB attempt `6a537149…`. No keep or qualified gain.
 Separately, the serial target wrapper is published and hermetically tested; it has
 not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets).
 The five-iteration trial and broader mixed-target acceptance remain incomplete.
+
+- [x] **Existing-loop same-binary runtime observation and readers**: ✅ 2026-09-10.
+  Typed CPU runtime treatments skip source authoring, diff review, build and source
+  promotion; existing tail ownership, correctness and serving A/B remain the owners.
+  Each arm retains its actual recipe with identical executable and frozen requests.
+  `runtime_observed` is measured, not a keep or scientific null; the existing belief
+  reader accepts its original per-arm identities without claiming qualified evidence.
+  Main checks: 72 research tests and 10 ROOT reader/render tests passed. HTTP fixtures,
+  not a hardware runtime experiment. The current live controller was not reloaded.
+- [ ] **Complete runtime fast-path admission and continuation**: remove routine critic
+  calls for prevalidated options; use original applicable calibration/evidence and
+  retain/select/resume an accepted runtime recipe without a source promotion. Runtime
+  observations alone do not complete AK-AUTO-07 or the runtime champion requirement.
 
 - [x] **Existing-loop CPU profile observation reaches actor and belief readers**: ✅ 2026-09-10.
   The current CPU launch and original frozen request feed the existing owned perf capture

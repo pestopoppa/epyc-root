@@ -20,6 +20,7 @@ from claim_tuple import ClaimTuple, ProjectionError, register
 ADAPTER_ID = "vidya.adapters.autokernel_legacy_serving/v1"
 RECEIPT_SCHEMA = "epyc.vidya.legacy_serving_receipt.v1"
 _CAPTURE = "epyc.vidya.legacy_serving_capture.v1"
+_RUNTIME_CAPTURE = "epyc.vidya.legacy_serving_capture.v2"
 _MAX_BYTES = 64 << 20
 
 
@@ -76,13 +77,15 @@ def _rows(source, receipt):
     capture = comparison["belief_capture"]
     if (not isinstance(capture, dict)
             or set(capture) != {"schema", "inputs", "capture_id", "native_sha256", "belief_measurements", "capture_sha256"}
-            or capture["schema"] != _CAPTURE
+            or capture["schema"] not in {_CAPTURE, _RUNTIME_CAPTURE}
             or capture["capture_sha256"] != receipt["capture_sha256"]
             or _digest({key: value for key, value in capture.items() if key != "capture_sha256"}) != capture["capture_sha256"]):
         raise ProjectionError("legacy serving prospective capture differs")
     inputs = capture["inputs"]
+    runtime = capture["schema"] == _RUNTIME_CAPTURE
     if (set(inputs) != {"producer", "issued_at", "recipe", "pairs", "resolved_arms", "build_paths", "requests",
-                       "protocol_id", "loaded_instrument_attestation"}
+                       "protocol_id", "loaded_instrument_attestation"} | (
+                           {"candidate_recipe", "runtime_pair"} if runtime else set())
             or inputs["producer"] != "autokernel.loop.serving_beliefs/v1"
             or inputs["protocol_id"] != ""
             or inputs["loaded_instrument_attestation"] != "not_recorded"):
@@ -93,7 +96,8 @@ def _rows(source, receipt):
     native = {key: value for key, value in comparison.items()
               if key not in {"belief_capture", "surface", "baseline_scope"}}
     digest = _digest(native)
-    if (native["schema"] != "epyc.autokernel.serving_ab.v1"
+    if (native["schema"] != ("epyc.autokernel.serving_runtime_ab.v1" if runtime
+                              else "epyc.autokernel.serving_ab.v1")
             or native["metric"] != "aggregate_tok_s"
             or inputs["recipe"]["metric"] != native["metric"]
             or _digest(inputs["recipe"]) != native["recipe_hash"]
@@ -102,6 +106,19 @@ def _rows(source, receipt):
             or capture["capture_id"] != receipt["capture_id"]
             or _digest({"native_sha256": digest, "inputs": inputs}) != capture["capture_id"]):
         raise ProjectionError("legacy serving native/input binding differs")
+    if runtime:
+        pair = inputs["runtime_pair"]
+        if (not isinstance(pair, dict) or set(pair) != {"schema", "dimension", "anchor", "candidate"}
+                or pair["schema"] != "epyc.autokernel.runtime_arm_pair.v1"
+                or native.get("runtime_pair") != pair
+                or pair["anchor"] != inputs["resolved_arms"]["anchor"]
+                or pair["candidate"] != inputs["resolved_arms"]["candidate"]
+                or pair["anchor"]["template"] != inputs["recipe"]
+                or pair["candidate"]["template"] != inputs["candidate_recipe"]
+                or _digest(inputs["candidate_recipe"]) != native.get("candidate_recipe_hash")
+                or native.get("admission") != "observation_only_original_strict_evidence_unavailable"
+                or native["decisive"] is not None or native["noise_floor_pct"] is not None):
+            raise ProjectionError("runtime observation differs from its original unqualified arm inputs")
     pairs = inputs["pairs"]
     if type(pairs) is not int or not 1 <= pairs <= 64 or pairs != native["pairs"]:
         raise ProjectionError("legacy serving original launch count differs")
@@ -147,7 +164,8 @@ def _rows(source, receipt):
                      "extra": {"arm": arm, "capture_id": capture["capture_id"],
                                "native_sha256": digest,
                                "build_path": inputs["build_paths"][arm],
-                               "recipe_hash": native["recipe_hash"],
+                               "recipe_hash": (native["candidate_recipe_hash"]
+                                               if runtime and arm == "candidate" else native["recipe_hash"]),
                                "request_digest": native.get("request_digest"),
                                "resolved_snapshot_digest": None if resolved is None else resolved.get("snapshot_digest"),
                                "execution_digest": None if resolved is None else resolved.get("execution_digest"),
