@@ -2,8 +2,39 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-08 (consolidation close-out and provisional autonomy design; earlier dated findings retained below)
-**Sources**: 121+ documents
+**Last compiled**: 2026-09-10 (unified AutoKernel implementation and hardware acceptance; earlier dated findings retained below)
+**Sources**: 124+ documents
+
+## Compiled Update — 2026-09-10: one existing AutoKernel loop now owns CPU and GPU targets
+
+**Confidence: verified** for installed control flow, retained artifacts, dry-run coverage and the two
+completed hardware runs; no production promotion or compound performance gain is claimed.
+
+The implementation extended the existing source-search loop instead of replacing it. One serial owner
+now resolves explicit production and candidate targets, rotates their original launch/request recipes,
+holds their native CPU/GPU resources, preserves per-target history, and advances one shared source tip.
+Before that tip can advance across targets, every production surface and every keep-author surface must
+validate the exact assembled commit. It then executes one LOO arm per retained keep plus a re-baseline;
+missing/inconclusive work stays pending, failed work stays failed, and no LOO result independently grants
+deletion or promotion authority.
+
+Fresh CPU campaigns always select the paired `matched_process_v2` instrument. A historical request match
+can no longer make a legacy five-launch floor govern a new run; restarts alone preserve an already-pinned
+instrument. This closes the concrete GLM failure in which an old 7.801% dispersion masked five positive
+but sub-threshold observations. The original GLM trial itself completed 5/5 iterations and 25 A/B pairs,
+all honest measured nulls. A separate original GPU source-search iteration completed five pairs and ten
+GPU-resident launches, proving that the extension preserved the working GPU path.
+
+The installed all-target dry run resolved seven production workloads plus the GLM-5.3-Flash candidate
+without launching models or builds. The existing dashboard now reads a separately attributed capability
+catalog and reports seven champion capabilities, including DFlash2 GPU serving and Flash-Next
+(`qwen4exp`) CPU/native-MTP, while leaving the direct champion-vs-production number untouched.
+
+### Source References (2026-09-10 unified implementation)
+
+- [Unified-surface implementation handoff](../handoffs/active/autokernel-unified-surface-program.md) — exact controller, LOO, resource, dry-run and acceptance contracts.
+- [Unified implementation progress](../progress/2026-09/2026-09-10-autokernel-unified-20260908.md) — commits, test totals, hardware outcomes and live dashboard verification.
+- [GLM CPU optimization report](../progress/2026-09/2026-09-09-glm53-cpu-optimization.md) — preliminary GLM kernel lineage, measured rates and admission limits.
 
 ## Compiled Update — 2026-09-08: consolidation complete; autonomy remains a design
 
