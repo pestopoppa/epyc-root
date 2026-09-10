@@ -454,3 +454,22 @@
   measurement. Actual roster invocation exposed draft-mtp/self_draft enrollment mismatch;
   the existing implementation worker owns its correction together with the scheduled-child
   import bug. Original GLM inputs and historical stores remain unchanged.
+
+### Actual CPU+GPU owned-roster dry run passes
+
+- Worker launch packet SHA28bcbb98f4394e627f1ee79c76a6c976fef4892f6217d4542fa3d7bbcc318385
+  fixes production mechanism naming at import (draft-mtp -> self_draft/external_draft,
+  matching existing recipe semantics) and scheduled-child topology import. Both symbols
+  impactLOW; original export/argv retained. Main75 joined tests pass1.47s.
+- Actual dual dry run exited0 in0.44s with original GLM c463 and canonicalGPU ef811 retained
+  source/builds; medium actors; automatically derived scheduler. CPU original floor7.801
+  verified, new prospective GPU request floorabsent and hand-built provenance warning
+  remain explicit. No model process, state directory or GPU store created. The prospective
+  GPU requests use the actual recipe's sampling/decode settings; they do not reuse GLM
+  token IDs or historical GPU measurements. Initial preparation-only JSON float formatting
+  and prompt/template mismatch corrected before the successful run; neither was a loop bug.
+- Full command/output retained at
+  `/mnt/raid0/llm/tmp/aku-cpu-gpu-dryrun-inputs-20260910/dry-run.log`, SHA256
+  130ba42ffe18405efe4824c3be5de2458189986a3ac88633e1c9f821e098d493.
+  One completed checkbox. Runtime admission, automatic reduced-to-full confirmation,
+  shared candidate integration and applicable live gates remain active work, not completion.
