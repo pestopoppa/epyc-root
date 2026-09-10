@@ -1,5 +1,22 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Original held-cost forecasting and live dashboard verification
+
+- Applied four-file cost packet29c255a6 on research8c723082; every primary hash
+  matches composed acceptance. Main60 cost/serial/controls/scheduling checks passed
+  11.93s. Real tiny child uses the original private flock and held receipts; the next
+  selected estimate changes, and crash/restart settles the finished child once.
+- Bounded last8/p75 forecast is operational, not a confidence bound or gain. Exact
+  target/input/source/runtime/CPU-scope/accounting identity controls reuse. Missing
+  history retains the configured estimate. Failed/invalid/stopped work remains charged
+  without training successful duration; original coverage and seed rules are unchanged.
+  Shared scheduling.py is unchanged. Scientific-reward adaptation remains open.
+- Dashboard controls published ROOTaebbf6da/main996ad27a. Existing supervisor replaced
+  hub18885 with74099. Served /loop hashcc0c8380 matches published page. Live /api/loop
+  still reports complete GLM5/5, canonical2397 attempts/32 keeps, retained production
+  comparison and capabilities present. No live serial control command was sent.
+- One additional completed cost checkbox; no hardware measurements or kernel builds.
+
 ## Dashboard controls connected to original owner
 
 - Applied three-file ROOT packet2e497ef0 on c5a12340; all primary file hashes match

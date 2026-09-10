@@ -23,6 +23,15 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Serial selection learns bounded cost forecasts from original held receipts**: ✅ 2026-09-10.
+  Completed matching measured-search batches supply a last8/p75 duration estimate;
+  exact recipe/request/source/runtime/scope/accounting identities prevent unrelated
+  reuse. Failed/invalid attempts remain charged but do not train successful duration.
+  Original selection, coverage, seed opportunity and stage limits remain unchanged.
+  Main60 combined cost/serial/control/scheduling tests passed11.93s, including real
+  private-flock child, changed next estimate and restart with no repeated settlement.
+  Scientific-outcome adaptive reward weights remain incomplete; no new grader added.
+
 - [x] **Existing dashboard operates the original serial controls**: ✅ 2026-09-10.
   Pause/resume/drain buttons use the authenticated serial listener and exact owner,
   revision, batch and target. Tokens remain in tab memory. Lost acknowledgements retry
