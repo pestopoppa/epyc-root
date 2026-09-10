@@ -23,6 +23,13 @@ Separately, the serial target wrapper is published and hermetically tested; it h
 not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets).
 The five-iteration trial and broader mixed-target acceptance remain incomplete.
 
+- [x] **Interrupted source survives the existing lane reset**: ✅ 2026-09-10.
+  STOP-before-gate and reused dirty lanes now retain original HEAD plus an immutable
+  hash-qualified patch before reset. Tracked recipe/docs changes remain included;
+  newly captured untracked files are bounded kernel-source text only. Archive failure
+  prevents reset. Main 56 tests passed, including actual Git round-trip recovery.
+  Build pruning is unchanged; this does not resume unfinished measurements automatically.
+
 - [x] **Serial restart reuses a completed child without replay**: ✅ 2026-09-10.
   Startup reopens the exact retained batch/target/arguments result and checks the
   original child's kernel identity before advancing once. Live or unreadable children
