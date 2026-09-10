@@ -331,6 +331,22 @@ the same-target, same-input terminal continuation is not a successful batch.
 An unreconciled active batch refuses automatic relaunch rather than overlapping
 an unknown child. No broad process-name kills are part of this CLI.
 
+Optional authenticated controls use `--control-listen 127.0.0.1:PORT` and
+`--control-origin http://HOST:8100`, with `AUTOKERNEL_CONTROL_TOKEN` supplied through
+the environment. The existing `/snapshot` and `/commands` HTTP routes are reused.
+Command schema `epyc.autokernel.serial_command.v1` carries `config_digest`, `owner_id`,
+`request_id`, `operation` (pause/resume/drain), `expected_revision`, `expected_batch`,
+and `expected_target`, taken from the current snapshot. Retry an uncertain request
+with the same ID and payload. Tokens are never written to status. No listener starts
+unless configured. Browser buttons are a separate integration, not required for CLI use.
+
+Pause completes the current batch and its resource accounting before waiting without
+a child or claims. Resume permits the next selection; drain uses the original stop
+path above. An accepted command is not necessarily completed: inspect its outcome.
+Failed cleanup cannot report a completed drain. A persisted pause is not cleared by
+restart; configure the listener/token again to resume, or use STOP to finish without
+resuming. Ordinary invocations without controls retain their existing behavior.
+
 A direct single-target restart may pass
 `--resume-run /absolute/prior-batch/loop-continuation.json` with the same original
 inputs; the loop loads and verifies the actual retained current/COR builds. Without

@@ -1,5 +1,22 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Original serial controls
+
+- Applied frozen four-file research packet d80e6224ecc0cc4a96ac40ab0c09674e2c06eb1d47419564d29c26a06347274d
+  on fdb05e0e. All four primary hashes match the independently tested acceptance tree.
+  Existing authenticated transport is reused; only the original serial thread writes
+  command state and acknowledgements. No replacement campaign controller or grants.
+- Pause waits for the current batch and original held accounting. Resume permits the
+  next scheduler selection. Drain signals only the captured child, uses original tail
+  cleanup, and completes only after settlement. Exact-ID retries do not repeat commands.
+  Main review corrected false terminal drain success, unresolved final-batch pause,
+  and a persisted pause with no resume channel. CLI validation errors use normal errors.
+- Main33 combined tests passed74.75s, including actual authenticated HTTP/tiny children,
+  runtime recovery and progress. Accounting proves3 seconds before pause and6 after
+  drain, two unique receipts. Worker25 passed11.37s. Refreshed GitNexus: serial _drive LOW2.
+- Added one completed handoff checkbox and operating instructions. Optional listener is
+  next-start only; none launched on the host. Dashboard buttons remain separately owned.
+
 ## Runtime recovery and dated dashboard progress
 
 - Composed recovery c37d38b2 (d577 base) with progress research8a5ef318/root789de25d.

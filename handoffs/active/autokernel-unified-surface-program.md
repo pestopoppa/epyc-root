@@ -23,6 +23,16 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Original serial owner accepts authenticated pause/resume/drain**: ✅ 2026-09-10.
+  Optional loopback listener reuses the existing authenticated HTTP transport. Commands
+  bind owner/configuration/revision/batch/target; the serial execution thread persists
+  acknowledgements. Pause finishes the batch and accounting, resume permits selection,
+  and drain uses the captured child's original STOP/SIGTERM path. Failed cleanup never
+  earns a completed drain. Persisted pause requires a resume channel or explicit STOP.
+  Main33 controls/serial/runtime-recovery/progress tests passed74.75s; exact two-child
+  receipt accounting remains6 seconds despite acknowledgement retry. No hardware run
+  or live listener started. Dashboard buttons are a separate pending integration.
+
 - [x] **Original-owner runtime interruption recovery**: ✅ 2026-09-10.
   Serial retries only a typed recoverable runtime interruption after original child
   termination and held-resource accounting; unrelated failed targets remain excluded.
