@@ -147,6 +147,13 @@ is a property of having memory, not a mechanism you install.
 
 ## Operating the existing loop across targets
 
+On the first visit to an explicit CPU/GPU serving target, an absent exact recipe/request
+floor is prepared automatically under the existing claim before source research. The
+default launch count is `max(2, --serving-pairs)`; `--cpu-calibrate-serving` or
+`--gpu-calibrate-serving` remains an explicit override. An existing exact floor is reused,
+not recalibrated. Malformed/mismatched records still refuse rather than being overwritten.
+Dry-run reports planned calibration but launches nothing. This uses the original estimator.
+
 CPU runtime treatments use the same executable and existing loop. Prospective `ak-`
 campaigns retain admitted recipes; serial batches carry their references automatically.
 Historical `aku-*` source campaigns remain source-only. `--calibrate-runtime` is optional:

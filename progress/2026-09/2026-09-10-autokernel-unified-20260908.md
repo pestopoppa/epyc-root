@@ -1,5 +1,19 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Automatic initial serving-floor preparation
+
+- Found actual startup gap: only reduced CPU screens automatically calibrated missing
+  source floors. New full CPU/GPU targets could otherwise remain uncalibrated indefinitely.
+  Applied three-file packet1fae7324 on research3b05994c;13-line production change reuses
+  existing calibration/write/load owners under the held claim, with explicit counts preserved.
+- Main primary:69 tests plus3 subtests pass10.48s. Original CPU/GPU execution/keep fixtures
+  prove missing-floor preparation, exact7.801 reuse, new-request separation, explicit override,
+  refusal without corrupt-record overwrite, failed launch and dry-run behavior. Hardware edges
+  are synthetic; no new measurement claim. Actual full8 dryrun exits0: GLM7.801 reused with
+  no planned recalibration, seven production targets each schedule5 original launches.
+- One completed checkbox added. Runtime recovery, original-owner cross-target validation,
+  runtime-progress display and serial dashboard controls remain active implementation work.
+
 ## Runtime admission integration checkpoint
 
 - Composed frozen runtime packet b365d086, serial transport fb2e4211 and historical
