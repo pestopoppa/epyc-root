@@ -1591,26 +1591,41 @@ retrofitting the read side is impossible. Source row added to
 
 ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10)
 
-- [ ] **VB-AK-LEGACY-SERVING — wire the direct legacy serving comparison at write time.**
+- [x] **VB-AK-LEGACY-SERVING — wire the direct legacy serving comparison at write time.** ✅ 2026-09-10
   Owner `autokernel-unified-20260908`; producer is research `loop/run.py:cpu_compare`
   through `ServingComparison.to_dict`, `Outcome.to_attempt`, `archive.record` and
   `controller/experiments.py:ExperimentStore.record`, not an `evaluation_event` or
   a unified planned/native arm. The full comparison is retained in the archive,
-  including future per-launch `cpu_lifecycle` facts from the on-disk collector,
-  but this path emits no `belief_capture`/`belief_measurements`. Add a prospective
-  producer-authored carrier and strict consumer using the existing shared ladder;
-  preserve original model/build/recipe/metric direction, request-bound floor,
+  including future per-launch `cpu_lifecycle` facts from the on-disk collector.
+  Research source `86179a8c` / main `0a815338` now captures original inputs before
+  `serving.compare` launches, then seals two arm observations in `belief_capture` /
+  `belief_measurements`. The strict ROOT `autokernel_legacy_serving.py` reader and
+  existing corpus dispatcher reopen the bounded original source. They preserve
+  original model/build/recipe/metric direction, request-bound floor,
   arm/launch membership, PID/TID-start and phase-time evidence, read failures,
   gaps, bounds and immutable source identity. The independent unit is the original
   process launch, never an affinity sample, thread or prompt. Allowed CPU/NUMA lists
   are permissions, not actual NUMA page placement or a contention verdict. Keep
   `cpu_placement`/`contention=unproven` unless an actual owning verifier supplies
-  more; raw facts confer no qualified measurement or promotion authority. Verify
-  prospective write→archive→reader/replay on the actual direct path, without
-  claiming the existing unified-arm adapter covers a different carrier. Current
-  pre-hook trials remain historical records; never invent their missing identities
-  or in-window observations on read. Source-table row filed with this task;
-  no adapter implementation or live process change is included in this checkpoint.
+  more; raw facts confer no qualified measurement or promotion authority. The
+  capture leaves `protocol_id` empty, so the unchanged shared ladder returns
+  `Judged/Located`, not qualified measurement. Unresolved legacy arm build paths
+  remain paths; missing resolved/loaded identity is not upgraded into a verified binary.
+  Main verified 33 research tests plus 8 subtests and 15 ROOT tests, including the
+  actual compare→archive→original-source reader→corpus→Ledger path with synthetic
+  observations. Moved/tampered source refuses; export faults remain visible after
+  durable archive without changing the experiment result. Pre-hook records emit
+  zero rows. This completes write/read integration only: the live process was not
+  reloaded, no live ingest ran and no planner read-feedback path was connected.
+
+  - [ ] **VB-AK-LEGACY-SERVING-LIVE — verify a future post-hook direct-serving capture and
+    its explicit corpus ingestion at the owning run boundary.** Do not reload the current
+    trial or invent historical carriers as a documentation action. Retain the real source
+    reference, import report and observation-only grade; this does not qualify hardware gates.
+  - [ ] **VB-AK-LEGACY-SERVING-FEEDBACK — connect original direct-serving observation rows
+    to an appropriate planner read-feedback path.** Preserve model/recipe/request/epoch
+    applicability and missing witnesses; `Judged/Located` observations must not become
+    ranked gains, protocol admission or promotion authority through projection.
 
 ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09)
 

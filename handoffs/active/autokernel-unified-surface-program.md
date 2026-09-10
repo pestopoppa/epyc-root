@@ -2940,6 +2940,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       binds CPU serving workload and retains the legacy GPU-screen label. Main verified
       68 focused tests. This is not serial all-target dispatch, artifact admission,
       a live-process restart or completion of the broader acceptance goal.
+    - [x] **AKU-12b-SERVING-BELIEFS — connect the direct comparison write/read belief path.**
+      ✅ 2026-09-10 — Research `86179a8c` / main `0a815338` captures inputs before launch,
+      retains original comparison/CPU dependency bytes and exports through the existing archive.
+      ROOT's strict reader reaches the existing corpus and Ledger; main verified 33 research
+      tests plus 8 subtests and 15 ROOT tests. Protocol remains empty (`Judged/Located`);
+      no historical backfill or qualified hardware gate is completed. The current live PID was
+      not reloaded; live ingestion and planner read feedback remain separate
+      [VB-AK-LEGACY-SERVING tasks](vidya-belief-substrate-program.md#vb-ak-legacy-serving--direct-serving-comparison-and-cpu-facts-2026-09-10).
   - [ ] **AKU-12c — repair and verify canonical generated export inputs**: real production export
     currently refuses stale descriptor/compiled-priors provenance. The supported writer is
     stack_change_pipeline.py update, regenerating lean registry, descriptors, priors, procedure
