@@ -88,3 +88,11 @@ def test_direct_shape_does_not_issue_an_integrity_row(actual):
     row = profile.native_rows(record, corpus_root=path.parent)[0]
     with pytest.raises(ProjectionError):
         profile.project_integrity(row)
+
+
+def test_current_exact_source_is_additive_and_retains_original_projection_identity(actual):
+    path, record, _ = actual
+    row = profile.native_rows(record, corpus_root=path.parent)[0]
+    assert row["capture_source_digest"] == profile.CURRENT_CPU_SOURCE_DIGEST
+    assert profile.DIRECT_CPU_SOURCE_DIGEST == "6b2f6060df5b5d36980bc9ea7137168bd9ca978959b22038dfba88b12c50b146"
+    assert profile.CPU_SOURCE_DIGEST == "c8c1184429e07d8d692f1e698232814169c21beeeeff88f10286f148a38feec5"

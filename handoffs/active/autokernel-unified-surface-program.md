@@ -23,6 +23,18 @@ Separately, the serial target wrapper is published and hermetically tested; it h
 not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets).
 The five-iteration trial and broader mixed-target acceptance remain incomplete.
 
+- [x] **Existing-loop CPU factual noise and bounded original-arm recovery**: ✅ 2026-09-10.
+  Research `64923e9f` / main `591616c0` records load/swap/PSI and bounded non-target
+  CPU activity without turning ordinary builds/pressure into blockers. Original
+  PID/start substitution or two affinity-violation samples for the same TID/start
+  produce durable `measurement_invalid`, not a null. The existing tail archives
+  before one budgeted retry of the same failed server launch, retaining valid arms,
+  hypothesis/patch/build and exact requests. STOP, budget exhaustion, repeated
+  invalidity and unresolved cleanup prevent retry. Main: 39 joined tests and 41 ROOT
+  profile/corpus tests passed; historical source pins remain supported. Hermetic
+  checks only, no live reload or hardware change. In-memory continuation is not
+  restart recovery, and competing-inference classification remains unproven.
+
 - [x] **Existing-loop same-binary runtime observation and readers**: ✅ 2026-09-10.
   Typed CPU runtime treatments skip source authoring, diff review, build and source
   promotion; existing tail ownership, correctness and serving A/B remain the owners.
@@ -31,8 +43,10 @@ The five-iteration trial and broader mixed-target acceptance remain incomplete.
   reader accepts its original per-arm identities without claiming qualified evidence.
   Main checks: 72 research tests and 10 ROOT reader/render tests passed. HTTP fixtures,
   not a hardware runtime experiment. The current live controller was not reloaded.
-- [ ] **Complete runtime fast-path admission and continuation**: remove routine critic
-  calls for prevalidated options; use original applicable calibration/evidence and
+- [x] **Prevalidated runtime options bypass routine critics**: ✅ 2026-09-10.
+  Research `64923e9f` retains deterministic current-anchor/option checks and tail
+  ownership/correctness gates; source changes retain review. Main 42 focused tests passed.
+- [ ] **Complete runtime fast-path admission and continuation**: use original applicable calibration/evidence and
   retain/select/resume an accepted runtime recipe without a source promotion. Runtime
   observations alone do not complete AK-AUTO-07 or the runtime champion requirement.
 
@@ -2925,8 +2939,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     ownership before issuing any disposition. No inferred rejection, caller-label authority,
     historical backfill, temporary duplicate accounting record or deletion-policy change.
 - [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
-  finalise → promote → reboot gate. Exact pending choice: whether the operator's new implementation
-  instruction delegates broker-code work now while preserving live activation gates. No answer inferred.
+  finalise → promote → reboot gate. Implementation is authorized by the operator's instruction
+  to implement this handoff; do not reopen broker-code authorization as a pending choice.
+  Complete resource binding through the existing owners. Production promotion, reboot and
+  other separately gated live activation still require their original authority.
 - [ ] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
   compute authority; applicable post-BIOS calibration and owning serving protocol. Bounded mixed campaign
   and eventual soak demonstrate the actual CPU/GPU/candidate paths, not only helpers or fixtures.

@@ -257,3 +257,26 @@
 - Live PID1380863 remained running, four completed original five-pair comparisons;
   iteration4 +1.248272% was another measured null below the unchanged 7.801% floor.
   Fifth iteration is in flight. No reload, recalibration or production modification.
+
+## CPU factual noise and original invalid-arm reschedule
+
+- Research `64923e9f` / main `591616c0` extends the existing CPU sampler with bounded
+  during-lifecycle CPU/load, swap, memory-PSI and non-target activity facts. Ordinary
+  build/host noise never blocks; no numeric pressure gate or inference-name classifier.
+- Two samples of the same TID/start outside the original CPU list, or an original
+  PID/start substitution, invalidate after owned teardown. The existing experiment
+  store retains `measurement_invalid` with original arm/request/build/lifecycle facts,
+  not a null or an accepted measurement. The existing tail archives first, charges one
+  additional iteration draw, and can retry that exact failed server launch once without
+  resetting, rebuilding, reauthoring, profiling, recalibrating or repeating valid arms.
+  STOP, exhausted budget, repeated invalidity and unresolved cleanup prevent retry.
+- Source and runtime actual-main fixtures prove five budgeted outcomes with one invalid
+  and four measured/exported comparisons. Main verification: 39 joined tests in 6.75s
+  and 41 ROOT profile/corpus tests in 6.51s. Worker final set: 185 tests plus 16 subtests
+  in 6.55s; ROOT 41 in 6.92s. The additive exact current profile source pin preserves
+  both historical closures and original projected identity under system Python 3.13.
+- One completed handoff subtask; no live process reload, hardware run, foreign signal,
+  qualified gain or full contamination/restart recovery claim. In-memory continuation
+  does not restore interrupted work after restart. README freshness check exited0 with
+  no warnings. Boundary bus drain still refuses the absent `autokernel-unified-20260908`
+  roster identity; no substitute identity, index edits or wiki sweep were introduced.
