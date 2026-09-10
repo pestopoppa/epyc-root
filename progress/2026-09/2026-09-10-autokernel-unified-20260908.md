@@ -891,3 +891,28 @@
   `kernel_live` explicitly idle and the historical missing sections still visible.
 - This repairs dashboard health reporting only. It does not supply the still-required final serial
   CPU/GPU hardware run, a fresh GLM floor, or a production-promotion claim.
+
+### Exact-anchor floor refresh, terminal recovery, and final dry run
+
+- Published research lane `377397fa`. Fresh matched-process floors are now immutable under the
+  exact retained anchor execution digest. A source or runtime keep retains its decision against the
+  predecessor floor, advances and guards the new anchor, then blocks the next research comparison
+  until one 24-pair A/A calibration for that new executable/DSO closure writes and reloads. Same-
+  anchor restart reuses the exact artifact; changed identity, contamination and refresh failure do
+  not reuse or overwrite an older bar.
+- The serial compatibility owner now recovers the narrow child-exit window after a durable complete
+  `loop-run.json` but before its routing continuation. Recovery requires the closed result grammar,
+  exact target/held-evidence/outcome agreement, stable no-follow reads and an immutable continuation
+  bound to the full-result SHA. GPU setup failure remains `bench_failed`; malformed or changed
+  results fail visibly, and scheduler failure accounting also closes for rc=0 missing terminals.
+- Main verification: **211** joined existing-loop/floor/serial/gate tests passed; **195 passed, 1
+  skipped** across planner/startup/driver wiring. Independent reviews returned GO after correcting
+  request-digest propagation, post-keep ordering, result closure, digest races and scheduler failure
+  settlement.
+- The exact final-code all-eight standalone dry run exited 0 from `377397fa`: eight target blocks,
+  seven CPU `matched_process_v2` plans, one native GPU plan, and eight no-spend completions. The
+  requested state directory was not created. Retained log:
+  `/mnt/raid0/llm/tmp/aku-final-all8-dryrun-20260910-v2.log`, SHA-256
+  `e0783ef73f31dbae760074aab09419b317e63cc52f8fca8af2b0671d5b36d315`.
+- AKU-12a is complete. No hardware measurement or production-kernel mutation occurred at this
+  boundary; the scheduler-retaining five-GLM/three-GPU live acceptance remains AKU-12b.
