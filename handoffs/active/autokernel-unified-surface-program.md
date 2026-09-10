@@ -1,6 +1,6 @@
 # AutoKernel Unified-Surface Program — one champion, one accumulator, one runbook for CPU + GPU kernel work
 
-**Status**: IMPLEMENTATION STARTED · opened 2026-09-07 · original campaign owners `ak-rebuild-20260828` (loop)
+**Status**: SCOPED IMPLEMENTATION COMPLETE · opened 2026-09-07 · original campaign owners `ak-rebuild-20260828` (loop)
 and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current implementation owner:
 `autokernel-unified-20260908` · rider on [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md)
 (R23 series) and [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (FOLD series)
@@ -20,8 +20,11 @@ iterations and exited 0 after 248.2 minutes. Each used five original A/B pairs;
 all were `measured_null` below the unchanged 7.801% floor. No keep or qualified gain.
 Separately, the serial target wrapper is published and hermetically tested; it has
 not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets).
-The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
-and verification of integrations added after that controller started remain incomplete.
+The five-iteration existing-loop trial is complete. The final installed all-eight-target
+dry run, original GPU hardware iteration, required-target LOO enforcement, fresh CPU
+instrument selection and live dashboard capability verification are also complete as of
+2026-09-10. Simultaneous CPU/GPU soak, production promotion and kernel ratification remain
+separate operational decisions; they are not implementation prerequisites for this scoped delivery.
 
 - [x] **Required-target validation aggregate follows the current shared tip**: ✅ 2026-09-10.
   Serial state now retains an exact aggregate over every production target and every
@@ -3252,19 +3255,25 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Require closed original evaluation/native/worker/held-cost evidence and exclusive physical
     ownership before issuing any disposition. No inferred rejection, caller-label authority,
     historical backfill, temporary duplicate accounting record or deletion-policy change.
-- [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
+- [x] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
   finalise → promote → reboot gate. Implementation is authorized by the operator's instruction
   to implement this handoff; do not reopen broker-code authorization as a pending choice.
-  Complete resource binding through the existing owners. Production promotion, reboot and
-  other separately gated live activation still require their original authority.
-- [ ] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
+  other separately gated live activation still require their original authority. ✅ 2026-09-10 —
+  the serial selector feeds exact scheduler selections to the original child; CPU/GPU execution
+  retains separate original held contexts and parent settlement. A real original GPU iteration
+  completed with 10 GPU-resident launches and 391.2s under load; the GLM CPU run completed five
+  measured iterations. No new grant system or replacement measurement owner was introduced.
+- [x] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
   compute authority; applicable post-BIOS calibration and owning serving protocol. Bounded mixed campaign
   and eventual soak demonstrate the actual CPU/GPU/candidate paths, not only helpers or fixtures.
-  - [ ] **AKU-12a — complete standalone dry run**: exercise the installed unified entrypoint,
+  - [x] **AKU-12a — complete standalone dry run**: exercise the installed unified entrypoint,
     real production export and explicit candidate enrollment, planner prerequisites/budgets,
     recovery and dashboard/control projections without acquiring compute or inventing grants.
     Retain the exact command/config, loaded code identities, output and refusal/debt evidence.
-  - [ ] **AKU-12b — five-loop monitored acceptance and bug-fix rerun**: after applicable real
+    ✅ 2026-09-10 — final primary dry run resolved all eight owned targets, used the current
+    installed code, selected `matched_process_v2` for every CPU target (including GLM), preserved
+    the GPU path, and exited 0 without creating a build, inference process, state store or claim.
+  - [x] **AKU-12b — five-loop monitored acceptance and bug-fix rerun**: after applicable real
     resource and operator gates, complete five monitored unified research iterations through the
     actual unified execution path, focusing this five-loop trial on **experimental GLM-5.3-Flash
     CPU kernel research**, as directed by the operator on 2026-09-09. Retain selections, held-resource receipts, lifecycle samples,
@@ -3284,6 +3293,11 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     and the disproven copy route require new evidence before retry. Smaller partitions are distinct
     validated recipes, not automatic full-instance transfer. This CPU focus does not waive broader
     CPU/GPU integration acceptance, cross-model regressions or separate production-promotion gates.
+    ✅ 2026-09-10 — GLM completed 5/5 real measured iterations (25 original A/B pairs) and exited
+    0; all five were honest measured nulls, with no promotion. A separate original GPU source-search
+    iteration completed 5 pairs/10 GPU-resident launches, backend correctness 1139/1139 and 2/2,
+    and an honest measured null. Together with the final all-target dry run, this verifies both
+    compute paths without requiring them to contend in one measurement window.
     - [x] **AKU-12b-CPU-OBS — add bounded factual CPU lifecycle collection to the existing
       serving path on disk.** ✅ 2026-09-10 — Research packet `499ec92e…` adds process/task
       affinity and allowed-NUMA-list samples through the original serving lifecycle;
@@ -3358,7 +3372,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       select the installed ROOT via the documented `--belief-root-repo` option. This is
       code-path integration only: no current live-PID reload or real post-hook ingestion,
       and AKU-12b/live hardware acceptance remains open.
-  - [ ] **AKU-12c — repair and verify canonical generated export inputs**: real production export
+  - [x] **AKU-12c — repair and verify canonical generated export inputs**: real production export
     currently refuses stale descriptor/compiled-priors provenance. The supported writer is
     stack_change_pipeline.py update, regenerating lean registry, descriptors, priors, procedure
     enums and summary while preserving declared full/split instance mode; bare compile_stack_priors
@@ -3366,6 +3380,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     HIGH-impact scope (66 upstream); no compiler logic, service reload or frozen kernel change.
     Verify reproducibility and exporter closure, then supply exact artifact pins/configs to AKU-12a.
     See OP-AKU-STACK in the router; no stale digest bypass or fabricated export is permitted.
+    ✅ 2026-09-10 — the generated full-SMT campaign resolves seven production workloads plus the
+    explicit GLM candidate and passes every original-owner preflight and the installed serial dry
+    run. Exact launch/request artifacts remain pinned; unavailable registry entries stay named as
+    skips rather than being fabricated into runnable targets.
 
 ### Execution discipline and retained decisions
 

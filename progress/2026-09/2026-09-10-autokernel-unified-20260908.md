@@ -858,3 +858,15 @@
   skips. Direct live snapshot resolves all seven entries. The older broad headline fixture remains
   independently broken by hard-coded live paths and was not treated as evidence against this
   bounded change.
+
+### Final publication and live verification
+
+- Research lane `ee0ee378` was promoted to `origin/main` as merge `0e0a0b416b2d`; ROOT lane
+  `40f3b2a5` was promoted as merge `6c9c92fcf6a2`. Both serialized pushes completed successfully.
+- The running hub already loaded the changed reader (PID 2290343 started after the source update),
+  so no restart was necessary. `http://127.0.0.1:8100/api/loop` returns `known: true` with seven
+  capability items, including DFlash2 GPU serving and Flash-Next/qwen4exp CPU/native MTP.
+- Delivery boundary is closed: final dry run, real five-loop GLM trial, real GPU iteration,
+  required-target/LOO enforcement, fresh CPU instrument selection, capability correction,
+  regression, publication and documentation are complete. Production promotion, ratification and
+  a deliberately contended simultaneous CPU/GPU soak remain separate operator-controlled actions.
