@@ -825,3 +825,36 @@
   ANCHOR”. This matches the GLM producer's p95 deviation from median without assuming all
   instruments share that estimator. Focused terminal renderer tests pass 4/4. Numeric
   measurements and source artifacts are unchanged. One completed checkbox added.
+
+### Required-target LOO enforcement and fresh CPU floor selection
+
+- Published research `ee0ee378`. After exact current-tip validation succeeds for every required
+  target, the serial owner schedules real per-keep LOO arms plus re-baseline through the existing
+  surface executor under the original held resource claims. Immutable continuations carry the
+  exact target/source/execution/instrument/request/pair identities. Missing and inconclusive rows
+  remain pending, bounded retries require an intervening ordinary search, and failed rows remain
+  failed; none authorizes deletion or promotion.
+- Fresh unified CPU rosters now always select `matched_process_v2`. A legacy request-matching floor
+  can no longer select the statistical contract for a new campaign; only an existing serial state
+  may restore its already-pinned instrument. The historical GLM 7.801% file remains unchanged and
+  available as historical evidence, but no longer governs fresh GLM selection.
+- Combined existing CPU, GPU, serving, partition-screen, serial and source-LOO regression suite:
+  109 passed in 33.22s. Final all-eight-target standalone dry-run exited 0; all seven CPU targets,
+  including GLM-5.3-Flash, selected `matched_process_v2`; the GPU target retained its native path.
+  The dry run created no build, inference process, state store or hardware claim.
+
+### Complete attributed champion capability view
+
+- Added a bounded `epyc.autokernel.champion_capabilities.v1` reader alongside the existing numeric
+  champion-vs-production contract. It accepts exact-tip or proven-ancestor records, rejects
+  divergent/malformed attribution, and merges records without changing the measured A/B number.
+- The live catalog now reports seven capabilities: the existing five GPU capabilities plus
+  DFlash2 speculative GPU serving and Flash-Next (`qwen4exp`) CPU inference/native MTP. Each new
+  entry states its source commits, original verification artifacts and limits; neither invents a
+  fresh build check, exact-parity claim or speed ratio. Catalog path
+  `/mnt/raid0/llm/autokernel/loop-memory/champion-capabilities.json`, SHA-256
+  `264f16ad346634b2a0c7bbe5e7a83faa976db0a7f75162f38f38324393247ea7`.
+- Focused capability contract: 27 passed. Terminal dashboard contract: 4 passed, 5 environment
+  skips. Direct live snapshot resolves all seven entries. The older broad headline fixture remains
+  independently broken by hard-coded live paths and was not treated as evidence against this
+  bounded change.
