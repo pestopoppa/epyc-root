@@ -23,6 +23,13 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Build rebinding follows actual ELF loader names across version changes**: ✅ 2026-09-10.
+  Actual frozen10125 -> champion10301 dry-run preparation exposed full-version DSO
+  filename assumptions. Existing exact paths remain unchanged; missing versions resolve
+  through the original SONAME to a contained candidate with matching SONAME. External
+  libraries remain fixed. Main42 checks passed; real16-DSO GPU rebinding matches the
+  independently pinned retained build. No kernel rebuild or inference was needed.
+
 - [x] **Actual production command grammar resolves all seven exported targets**: ✅ 2026-09-10.
   Preserve emitted draft probability/thread/logging flags and frozen v9's omitted
   ubatch default512; conflicting aliases and invalid values still refuse. Main112
