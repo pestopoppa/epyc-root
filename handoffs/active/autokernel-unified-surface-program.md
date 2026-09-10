@@ -23,6 +23,15 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Fresh selected CPU/GPU targets prepare their missing source floor automatically**: ✅ 2026-09-10.
+  The existing startup calibration now covers full targets as well as reduced screens.
+  Only an absent exact recipe/request floor triggers automatic preparation, using the
+  existing serving pair count (minimum2); an explicit calibration count still overrides.
+  Existing GLM7.801 is reused, and malformed/mismatched records still refuse unchanged.
+  Actual full8 dry run exits0: seven fresh production targets schedule5 launches each,
+  GLM schedules none. Original calibration/estimator/claim ownership is unchanged.
+  This is startup/execution wiring, not new hardware calibration or improved precision.
+
 - [x] **Shared-source target switching and all-eight-target serial startup**: ✅ 2026-09-10.
   Targets can serialize one exact experimental worktree/branch while retaining their own
   request/history. Digest-bound latest-source continuation rebinds the existing build;
@@ -53,7 +62,7 @@ and verification of integrations added after that controller started remain inco
   command, artifacts, environment and original snapshot provenance. Standalone inputs
   without declared resources still require affinity. Main70 tests pass; all seven
   production workloads plus GLM pass individual original-owner preflight. Full-roster
-  serial shared-source handling remains active work, not proven by individual checks.
+  serial shared-source handling is proven by the later all-eight-target checkpoint above.
 
 - [x] **Existing serial CPU+GPU owned-roster dry run passes**: ✅ 2026-09-10.
   Actual GLM c463 CPU and canonical ef811 GPU inputs resolve and both original owner
