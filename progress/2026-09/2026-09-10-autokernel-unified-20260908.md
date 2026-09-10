@@ -351,3 +351,20 @@
 - README freshness check clean. Bus drain refused the existing session identifier as
   unregistered; no other session identity was substituted. One completed checkbox added.
   Broader scheduler/runtime/recall integration remains active; no additional hardware run.
+
+### Shared historical mechanism recall integrated
+
+- Existing serial rosters automatically include canonical and sibling target stores;
+  standalone runs can supply repeated --shared-history-root. The existing SQLite store
+  gains a read-only mode without schema writes. Missing/corrupt sources are advisory.
+- Selection reads bounded keep/measured/other pools, avoiding transient-flood starvation,
+  and rotates roots using the original serial batch identity across fresh child processes.
+  Current local recall remains unchanged. Shared suggestions preserve original scope and
+  caveats, redact structured magnitudes, and cannot become local gain/refutation evidence.
+- Main combined verification: 104 tests passed in 2.67s, including held-claim compatibility.
+  Actual canonical DB read returned one keep, three measured nulls, one refusal, no errors.
+  No model process, schema migration or historical evidence backfill was performed.
+- Six-file accepted source packet SHA256
+  38ca85e35b8c214a214d14e1869caa7569f7a0603e8eb6400aabc77872b1f7c7.
+  Publication excludes pending resource/scheduler hunks in shared run.py. One completed
+  checkbox added; transfer validation, runtime admission and mixed-target gates remain open.

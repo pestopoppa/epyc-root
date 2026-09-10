@@ -264,6 +264,14 @@ fold/query status. Model/recipe/request/epoch/current-anchor scope is mandatory 
 numeric context; an unresolved legacy GPU subject does not acquire that scope by name.
 Historical experiment recall remains available independently, including nulls and
 pre-hook records. Observation status is not a qualified gain or permission to keep.
+Owned-target rosters automatically add canonical and sibling stores as read-only
+historical suggestions. Standalone runs may repeat `--shared-history-root PATH`.
+Each context reads at most eight stores and five suggestions per store, rotates
+across serial batches, and reports omitted/unavailable sources. Useful keeps and
+measured outcomes have reserved selection slots, so planner transients cannot bury
+them. Original model/quant/recipe/surface and caveats remain visible; structured
+cross-scope magnitudes are redacted, and these suggestions do not enter the local
+characterised-mechanism pool or establish transfer. Existing records are not rewritten.
 This option does not reload an existing PID: the current trial has not been restarted
 to load these hooks, and real post-hook hardware/live-ingest proof is still outstanding.
 
