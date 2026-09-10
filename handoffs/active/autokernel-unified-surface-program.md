@@ -15,6 +15,14 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 > settlement defaults to invalid) and is not an accepted replacement. The original
 > feature scope remains CPU/GPU/candidate targeting and reliable autonomous operation.
 
+- [x] **First actual CPU source-to-measurement iteration and automatic continuation**:
+  ✅ 2026-09-10. On research `2059e30e`, `akm-q4k-avx512-paired-y` passed through
+  source authoring, build, the existing MUL_MAT correctness gate and five serving pairs.
+  The original loop durably recorded `measured_null`: effect fraction
+  `0.009501638190257289` (+0.95016%) did not clear the 7.801% floor. No keep or qualified
+  gain. Runtime PID1380863 automatically entered iteration 2; this checkpoint is one
+  completed/measured iteration, not completion of the five-iteration test.
+
 - [x] **Dashboard restart configuration and observed false benchmark detection**:
   ✅ 2026-09-09. Existing watchdog replaced the configured hub without inheriting its
   store setting. Re-adopted that same watchdog with explicit primary `EPYC_ROOT` and
