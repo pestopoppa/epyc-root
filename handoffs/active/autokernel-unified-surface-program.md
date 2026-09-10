@@ -23,6 +23,15 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Existing serial CPU+GPU owned-roster dry run passes**: ✅ 2026-09-10.
+  Actual GLM c463 CPU and canonical ef811 GPU inputs resolve and both original owner
+  dry runs exit0 (0.44s), with sol-medium actors and derived scheduler. Fixed production
+  draft-mtp/self_draft import mismatch and the scheduled-child topology import. Main75
+  joined tests pass. Original GLM floor7.801 retained; new GPU requests correctly have no
+  floor and retained hand-built anchor remains explicitly unattested. No inference,
+  state directory or GPU memory store created. Evidence dry-run.log SHA130ba42ffe18405efe4824c3be5de2458189986a3ac88633e1c9f821e098d493
+  under `/mnt/raid0/llm/tmp/aku-cpu-gpu-dryrun-inputs-20260910`. This is not live rotation proof.
+
 - [x] **Build rebinding follows actual ELF loader names across version changes**: ✅ 2026-09-10.
   Actual frozen10125 -> champion10301 dry-run preparation exposed full-version DSO
   filename assumptions. Existing exact paths remain unchanged; missing versions resolve
