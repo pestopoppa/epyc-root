@@ -23,6 +23,16 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Original GPU positive/historical control supplier is connected**: ✅ 2026-09-10.
+  Research e019bd52/main981d64ac retains native benchmark means and original held
+  CPU/GPU contexts through existing calibration and T0–T2 evaluators. Failed setup
+  retains raw observations; same-owner recovery reuses completed arms. The exact
+  historical paired-effect range is an engineering replay tolerance, not a new
+  gain threshold or confidence interval. Original governed adapter captures these
+  observations with empty protocol; no hardware qualification is inferred.
+  Main55 research checks plus8 subtests passed15.23s; ROOT27 passed0.38s without
+  skips. Actual GPU control replay and mixed hardware acceptance remain unverified.
+
 - [x] **Completed serial campaigns retain selectable target details**: ✅ 2026-09-10.
   The existing dashboard follows bounded original last-result references, verifies
   exact terminal target status, and lets the operator select each retained batch.

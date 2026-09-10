@@ -1,5 +1,22 @@
 # Unified AutoKernel implementation — 2026-09-10
 
+## Original GPU control supplier integration
+
+- Research e019bd52 promoted to981d64ac. Six-file packet connects original native
+  benchmark capture, separate acquired CPU/GPU contexts and existing evaluator
+  owners. Failed setup/prefix recovery retains original artifacts without replaying
+  completed arms. No original serving reducer, threshold, build pruning or source
+  continuation changes. Frozen historical range is engineering replay tolerance
+  [0.004831498653230959,0.04435475921984722], not a confidence interval or gain floor.
+- Main55 research checks plus8 subtests passed15.23s. ROOT27 adapter checks passed
+  0.38s with EPYC_RESEARCH_ROOT; earlier wrong environment produced3 skips and is
+  not acceptance evidence. Existing governed adapter projects prospective native
+  observations through the same ladder with empty protocol; source wiring recorded.
+- No GPU calibration or mixed hardware run. Read-only ROCm availability check
+  succeeded with no KFD process at that instant; not evidence of future clean arms.
+  One completed handoff checkbox. Remaining shared-source/aggregate execution
+  remains active; operator reports13% weekly usage remaining, no UI expansion.
+
 ## Completed serial dashboard results
 
 - Fixed an observed reader/page gap: terminal serial snapshots returned before
