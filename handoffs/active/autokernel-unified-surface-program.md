@@ -23,6 +23,12 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Production enrollment includes every split-GGUF shard**: ✅ 2026-09-10.
+  The existing exporter expands exact numbered model/drafter families and requires
+  each supplied artifact pin; missing siblings leave the target waiting. No directory
+  discovery, model mutation or implicit hashing was added. Main 20 enrollment tests
+  passed. This closes artifact association, not the broader mixed-target acceptance gate.
+
 - [x] **Five actual GLM CPU research iterations completed unattended**: ✅ 2026-09-10.
   Original controller PID1380863 / exec21102 exited 0; five source/build/correctness/A-B
   iterations, no keeps. Effects: +0.950164%, +1.454288%, +1.181050%, +1.248272%,

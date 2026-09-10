@@ -336,3 +336,18 @@
   missing continuation in its output does not establish a defect in current source.
 - Completed actual five-loop workflow, not qualified performance/placement evidence,
   mixed CPU/GPU acceptance, or full handoff completion. No experiment rerun initiated.
+
+### Split-GGUF production enrollment association
+
+- Actual production inventory review found `_artifact_rows` associated only the argv
+  shard, even when all sibling pins were verified. The exporter now expands exact
+  five-digit split families for both models and drafters, requiring every sibling.
+  Single-file behavior remains unchanged; no glob, hash pass or production write added.
+- Main verification: 20 enrollment tests passed in 34.50s using the canonical
+  orchestrator Python environment and ORCHESTRATOR_STACK_REEXEC=1. Tests cover complete
+  and missing shards for both uses; existing export tests remain green. Diff check clean.
+- GitNexus impact LOW (three upstream nodes). Requested stale-index refresh exited139;
+  direct caller review remains the evidence, not a claimed successful re-index.
+- README freshness check clean. Bus drain refused the existing session identifier as
+  unregistered; no other session identity was substituted. One completed checkbox added.
+  Broader scheduler/runtime/recall integration remains active; no additional hardware run.
