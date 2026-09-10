@@ -813,3 +813,15 @@
   SHA256 b704dc907b9021f267c80e9be5552825581e856df3db2e14f2b3673c712c605a.
 - One completed checkbox. Runtime receipt transport and actual whole-candidate fold
   remain assigned integration work, not inferred complete from this startup proof.
+
+### Truthful noise-floor labeling
+
+- Audited the dashboard's GLM 7.801% value against the retained request-bound floor. It is
+  the actual five-launch v1 result (5.35504–6.04530 aggregate tok/s, median 5.80816), and no
+  newer applicable GLM calibration exists. The frozen launch envelope requested
+  `GGML_NOHUGEPAGE_PROCESS=1`, but this floor retained no `THP_enabled` readback; the much
+  tighter September 8 observations belong to Qwen3.8-Flash-Next and cannot replace it.
+- Corrected the page subtitle from “of the ANCHOR's mean” to “measured dispersion of the
+  ANCHOR”. This matches the GLM producer's p95 deviation from median without assuming all
+  instruments share that estimator. Focused terminal renderer tests pass 4/4. Numeric
+  measurements and source artifacts are unchanged. One completed checkbox added.

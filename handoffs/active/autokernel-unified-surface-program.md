@@ -3149,6 +3149,11 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Runtime observation alone is not aggregate readiness. Finish existing service configuration,
     health/freshness/control acceptance and monitored reliability under AKU-12; do not create a
     second page or treat transport health as proof of scientific progress.
+  - [x] **AKU-09i — label the displayed noise threshold without inventing its estimator**:
+    ✅ 2026-09-10. The loop page now calls the value the measured dispersion of the anchor,
+    instead of claiming every producer defines it against the anchor mean. The retained GLM
+    v1 floor is p95 absolute deviation from the median (7.801%, n=5); other floor producers may
+    use different estimators. Four focused terminal-render tests pass; no measurement changed.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.
