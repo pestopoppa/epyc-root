@@ -1867,7 +1867,7 @@ function renderTiles(d){
     tile("Negatives", `${negatives}`, `of ${done} iterations · every non-keep disposition`,
          negatives > 0 ? "warn" : "dim"),
     tile("Noise floor", num(L.noise_floor_pct) ? `${L.noise_floor_pct.toFixed(3)}%` : "—",
-         `of the ANCHOR's mean on ${L.surface || "this surface"} · the bar a ` +
+         `measured dispersion of the ANCHOR on ${L.surface || "this surface"} · the bar a ` +
          `candidate must clear, not a gain`),
     tile("GPU busy", gpu.reported ? `${gpu.busy_pct == null ? "—" : gpu.busy_pct + "%"}` : "not reported",
          gpu.reported ? `of claim-held seconds · ${dur(gpu.idle_s)} idle of ${dur(gpu.held_s)} held`
