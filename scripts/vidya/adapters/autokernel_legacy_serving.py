@@ -21,6 +21,7 @@ ADAPTER_ID = "vidya.adapters.autokernel_legacy_serving/v1"
 RECEIPT_SCHEMA = "epyc.vidya.legacy_serving_receipt.v1"
 _CAPTURE = "epyc.vidya.legacy_serving_capture.v1"
 _RUNTIME_CAPTURE = "epyc.vidya.legacy_serving_capture.v2"
+_MATCHED_CAPTURE = "epyc.vidya.legacy_serving_capture.v3"
 _MAX_BYTES = 64 << 20
 
 
@@ -77,15 +78,17 @@ def _rows(source, receipt):
     capture = comparison["belief_capture"]
     if (not isinstance(capture, dict)
             or set(capture) != {"schema", "inputs", "capture_id", "native_sha256", "belief_measurements", "capture_sha256"}
-            or capture["schema"] not in {_CAPTURE, _RUNTIME_CAPTURE}
+            or capture["schema"] not in {_CAPTURE, _RUNTIME_CAPTURE, _MATCHED_CAPTURE}
             or capture["capture_sha256"] != receipt["capture_sha256"]
             or _digest({key: value for key, value in capture.items() if key != "capture_sha256"}) != capture["capture_sha256"]):
         raise ProjectionError("legacy serving prospective capture differs")
     inputs = capture["inputs"]
     runtime = capture["schema"] == _RUNTIME_CAPTURE
+    matched = capture["schema"] == _MATCHED_CAPTURE
     if (set(inputs) != {"producer", "issued_at", "recipe", "pairs", "resolved_arms", "build_paths", "requests",
                        "protocol_id", "loaded_instrument_attestation"} | (
-                           {"candidate_recipe", "runtime_pair"} if runtime else set())
+                           {"candidate_recipe", "runtime_pair"} if runtime else
+                           {"measurement_plan"} if matched else set())
             or inputs["producer"] != "autokernel.loop.serving_beliefs/v1"
             or inputs["protocol_id"] != ""
             or inputs["loaded_instrument_attestation"] != "not_recorded"):
@@ -97,6 +100,7 @@ def _rows(source, receipt):
               if key not in {"belief_capture", "surface", "baseline_scope"}}
     digest = _digest(native)
     if (native["schema"] != ("epyc.autokernel.serving_runtime_ab.v1" if runtime
+                              else "epyc.autokernel.serving_ab.v2" if matched
                               else "epyc.autokernel.serving_ab.v1")
             or native["metric"] != "aggregate_tok_s"
             or inputs["recipe"]["metric"] != native["metric"]
@@ -122,6 +126,30 @@ def _rows(source, receipt):
     pairs = inputs["pairs"]
     if type(pairs) is not int or not 1 <= pairs <= 64 or pairs != native["pairs"]:
         raise ProjectionError("legacy serving original launch count differs")
+    if matched:
+        plan = inputs["measurement_plan"]
+        if (not isinstance(plan, dict) or set(plan) != {"instrument", "estimator", "unit", "pairs",
+                "stopping", "order_algorithm", "seed", "orders"}
+                or plan != native.get("measurement_plan")
+                or plan["instrument"] != "matched_process_v2" or plan["unit"] != "process"
+                or plan["estimator"] != "median(candidate)/median(anchor)-1;paired-bootstrap-p95.v1"
+                or plan["stopping"] != "fixed_pairs" or plan["pairs"] != pairs
+                or plan["order_algorithm"] != "autokernel.evaluator.statistics.OrderSchedule.v1"
+                or not isinstance(plan["seed"], str) or not re.fullmatch("[0-9a-f]{32}", plan["seed"])
+                or not isinstance(plan["orders"], list) or len(plan["orders"]) != pairs
+                or any(order not in [["anchor", "candidate"], ["candidate", "anchor"]]
+                       for order in plan["orders"])
+                or abs(sum(order[0] == "anchor" for order in plan["orders"]) * 2 - pairs) > 1):
+            raise ProjectionError("matched serving original process schedule differs")
+        membership = [{"ordinal": 2 * i + j, "pair_index": i, "arm": arm,
+                       "arm_sample_index": i,
+                       "residency_sha256": _digest([native[f"{arm}_residency"][i]])}
+                      for i, order in enumerate(plan["orders"]) for j, arm in enumerate(order)]
+        if native.get("launch_membership") != membership:
+            raise ProjectionError("matched serving original pair membership differs")
+        effect = median(native["candidate_samples"]) / median(native["anchor_samples"]) - 1
+        if native["effect"] != effect or native["effect_pct"] != effect * 100:
+            raise ProjectionError("matched serving original estimator does not replay")
     if set(inputs["resolved_arms"]) != {"anchor", "candidate"}:
         raise ProjectionError("legacy serving original arm identity differs")
     if (not isinstance(inputs["build_paths"], dict) or set(inputs["build_paths"]) != {"anchor", "candidate"}
@@ -170,6 +198,7 @@ def _rows(source, receipt):
                                "resolved_snapshot_digest": None if resolved is None else resolved.get("snapshot_digest"),
                                "execution_digest": None if resolved is None else resolved.get("execution_digest"),
                                "model_path": inputs["recipe"]["model"],
+                               **({"measurement_plan": inputs["measurement_plan"]} if matched else {}),
                                "applicability": "direct_serving_observation_only",
                                "cpu_facts": "dependency_only_not_placement_or_contention_proof"}})
     if rows != capture["belief_measurements"]:

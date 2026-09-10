@@ -61,6 +61,25 @@ def test_absent_pre_hook_rows_are_not_reconstructed():
                               receipt_locator="autokernel:/no/source", receipt_sha256="") == []
 
 
+def test_matched_original_http_archive_reader_and_existing_grade(tmp_path, monkeypatch):
+    research = os.environ.get("EPYC_RESEARCH_ROOT")
+    if not research:
+        pytest.skip("EPYC_RESEARCH_ROOT must select the matching direct-serving producer")
+    monkeypatch.syspath_prepend(str(Path(research) / "scripts/kernel_rnd"))
+    from autokernel.loop.test_matched_serving import (
+        test_actual_http_counterbalanced_requests_archive_and_teardown as execute,
+    )
+    execute(tmp_path, monkeypatch)
+    path, = (tmp_path / "memory/serving-beliefs").glob("*.json")
+    items = _native(path)
+    tuples = [reader.project(item) for item in items]
+    assert [item.value for item in tuples] == [20.0, 24.0]
+    assert all(grade(item)[:2] == ("Judged", "Located") for item in tuples)
+    assert all(item.protocol_id == "" for item in tuples)
+    assert all(item.extra["measurement_plan"]["instrument"] == "matched_process_v2" for item in tuples)
+    assert all(item.extra["measurement_plan"]["unit"] == "process" for item in tuples)
+
+
 def test_actual_runtime_http_archive_reader_preserves_each_recipe(tmp_path, monkeypatch):
     research = os.environ.get("EPYC_RESEARCH_ROOT")
     if not research:

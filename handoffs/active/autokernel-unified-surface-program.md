@@ -23,6 +23,19 @@ not run a live CPU/GPU rotation. See the [operating CLI](../../docs/guides/agent
 The five-iteration existing-loop trial is complete. Broader mixed-target acceptance
 and verification of integrations added after that controller started remain incomplete.
 
+- [x] **Fresh unified CPU source measurements use matched process-pair calibration**: ✅ 2026-09-10.
+  Fresh CPU enrollment selects matched_process_v2 and pins that choice before the
+  first child. Original v1 floors/continuations and direct CLI/GPU defaults remain
+  unchanged. New calibration uses24 independent A/A pairs (48 launches), randomized
+  balanced AB/BA, and the existing ratio-of-arm-medians reducer at the comparison's
+  pair count. Separate versioned floors bind workload/placement; source-treatment
+  reuse remains allowed. The descriptive interval does not replace the scalar gate.
+  All four source comparison paths, cross-target validation, archive/belief capture
+  and exact CPU profile source pin are connected. Reused original validation does
+  not rerun calibration/A-B. Main25 matched checks passed16.60s; worker62 producer
+  and29 ROOT checks passed. Existing GLM results are not regraded or rerun. This is
+  source measurement, not full strict runtime qualification or hardware transfer.
+
 - [x] **Shared-worktree source changes receive original-owner cross-target validation**: ✅ 2026-09-10.
   Retained original keep receipts identify the whole source, original target baseline,
   request and recipe. Validation is an explicit charged scheduler stage, not a hidden
