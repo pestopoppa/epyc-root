@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from dashboard import campaign_status, loop_status
+from dashboard import campaign_status, loop_status, server
 from tests.test_dashboard_champion_headline import (
     champion_bundle,
     make_production_repo,
@@ -98,6 +98,34 @@ def test_original_writer_reader_page_keeps_canonical_history(sources, tmp_path):
     wire["serial"]["routing"]["stop_requested"] = True
     stopping = _run(_page_js(), wire, tmp_path, ["renderSerial"])
     assert "STOP REQUESTED" in stopping["by_id"]["serial"]
+
+
+def test_serial_router_is_the_selected_health_producer(sources):
+    _canonical, _router, _child, _active, _routing = sources
+    with server._watchdog_lock:
+        server._watchdog_state.clear()
+
+    code, health = server.loop_data_health()
+
+    assert code == 200 and health["status"] == "ok"
+    assert health["selected_producer"] == "serial_router"
+    assert health["serial_state"] == health["loop_state"] == "running"
+    assert health["campaign_state"] == "legacy"
+
+
+def test_malformed_serial_router_degrades_its_health(sources):
+    _canonical, router, _child, _active, _routing = sources
+    _rewrite(router / "loop-status.json", lambda body:
+             body["routing"].__setitem__("next_batch", "wrong"))
+    with server._watchdog_lock:
+        server._watchdog_state.clear()
+
+    code, health = server.loop_data_health()
+
+    assert code == 503 and health["status"] == "degraded"
+    assert health["selected_producer"] == "serial_router"
+    assert health["serial_state"] == "malformed"
+    assert health["declared_failure"]
 
 
 @pytest.mark.parametrize("changed", ["missing_batch", "pid", "output_dir", "target_id"])

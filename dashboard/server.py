@@ -13733,17 +13733,7 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                   str(operations_root / "live")),
         silence_budget_s=(activity.get("stall", {}).get("threshold_s")
                           if lock_held else None),
-        # No held controller lock means there is no live producer expected to
-        # advance this historical deployment.  A normal completed/stopped
-        # activity is therefore idle even when an older controller schema did
-        # not persist ``state.complete``.  Do not infer idle from that bit alone:
-        # terminal-integrity and supervisor failures can retain a complete state
-        # while the validated activity correctly reports ``failed``.
-        producer_idle=bool(
-            not lock_held
-            and activity.get("status") in {"complete", "idle", "stopped"}
-            and not (isinstance(activity.get("failure"), dict)
-                     and activity["failure"].get("detected") is True)),
+        producer_idle=bool(state_view and state_view.get("complete") is True),
         unreported=(("telemetry_stream_integrity",)
                     if telemetry_integrity["state"] in {"degraded", "conflict"}
                     else ()))
@@ -14582,6 +14572,8 @@ def loop_data_health() -> tuple[int, dict]:
     legacy_state = body.get("state")
     campaign = payload.get("campaign") or {"configured": False}
     selected_campaign = bool(campaign.get("configured"))
+    serial = payload.get("serial")
+    selected_serial = isinstance(serial, dict)
     declared_failure = None
     if not selected_campaign:
         if payload["freshness_state"] == loop_status.STATE_ABSENT:
@@ -14594,8 +14586,14 @@ def loop_data_health() -> tuple[int, dict]:
         if legacy_state == "failed":
             _raise(panels.STATUS_DEGRADED)
             declared_failure = (
-                "the legacy loop DECLARED state=failed; it remains visible history "
-                "but is the selected producer only when no unified campaign is configured.")
+                f"the {'serial router' if selected_serial else 'legacy loop'} DECLARED "
+                "state=failed; it remains visible history but is the selected producer "
+                "only when no unified campaign is configured.")
+        if selected_serial and (serial.get("reader_error") is not None
+                                or serial.get("state") in {"malformed", "failed", "all_failed"}):
+            _raise(panels.STATUS_DEGRADED)
+            declared_failure = serial.get("reader_error") or (
+                f"the serial router DECLARED state={serial.get('state')}")
     campaign_attention = None
     if selected_campaign:
         campaign_state = campaign.get("state")
@@ -14620,6 +14618,13 @@ def loop_data_health() -> tuple[int, dict]:
         selected_error = campaign.get("error") or campaign_attention
         selected_loop_state = campaign_body.get("observed_state")
         selected_stale_after = campaign_status.HEARTBEAT_STALE_AFTER_S
+    elif selected_serial:
+        selected_state = payload["freshness_state"]
+        selected_age = payload["age_s"]
+        selected_evidence = payload["evidence"]
+        selected_error = serial.get("reader_error") or payload["reader_error"]
+        selected_loop_state = serial.get("state")
+        selected_stale_after = payload["stale_after_s"]
     else:
         selected_state = payload["freshness_state"]
         selected_age = payload["age_s"]
@@ -14642,7 +14647,8 @@ def loop_data_health() -> tuple[int, dict]:
         # They answer different questions — "is this report current?" versus "is
         # this panel healthy?" — and printing one under the other's name is how
         # an operator reads the wrong offender.
-        "selected_producer": "campaign" if selected_campaign else "legacy_loop",
+        "selected_producer": ("campaign" if selected_campaign else
+                              "serial_router" if selected_serial else "legacy_loop"),
         "freshness_state": selected_state,
         "age_s": selected_age,
         "stale_after_s": selected_stale_after,
@@ -14651,6 +14657,7 @@ def loop_data_health() -> tuple[int, dict]:
         "loop_state": selected_loop_state,
         "declared_failure": declared_failure,
         "campaign_state": campaign.get("state"),
+        "serial_state": serial.get("state") if selected_serial else None,
         "campaign_attention": campaign_attention,
         "legacy_history": {"freshness_state": payload["freshness_state"],
                            "state": legacy_state, "evidence": payload["evidence"]},
