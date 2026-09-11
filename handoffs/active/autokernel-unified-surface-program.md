@@ -1,6 +1,6 @@
 # AutoKernel Unified-Surface Program — one champion, one accumulator, one runbook for CPU + GPU kernel work
 
-**Status**: IMPLEMENTATION IN PROGRESS · opened 2026-09-07 · original campaign owners `ak-rebuild-20260828` (loop)
+**Status**: SCOPED UNIFIED-LOOP IMPLEMENTATION COMPLETE · opened 2026-09-07 · original campaign owners `ak-rebuild-20260828` (loop)
 and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current implementation owner:
 `autokernel-unified-20260908` · rider on [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md)
 (R23 series) and [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (FOLD series)
@@ -26,6 +26,31 @@ code path, fresh CPU instrument selection and live dashboard capability verifica
 also complete as of 2026-09-10. They do not prove one final-code serial owner rotated live
 CPU and GPU work: the GLM run predates those hooks and used the legacy 7.801% floor. Full
 acceptance therefore remains open until the final owner runs the required hardware path.
+
+**2026-09-11 scoped completion:** the final owner ran that hardware path. The installed
+serial loop completed six alternating target batches in one process across the selected
+GLM-5.3-Flash CPU target and production GPU serving target. State closed with
+`next_batch=6`, `active=null`, no failed targets, no outstanding issued selections and ten
+accounted held-resource receipts. Four GLM batches in this campaign plus the valid earlier
+v4 GLM batch complete the requested five-loop GLM trial. Three reached measurement:
+`+0.186%`, `-3.360%` and `-2.152%`; all were measured nulls under their applicable matched
+floor. The remaining two GLM attempts were refused during hypothesis formation. GPU batches
+also settled cleanly (`refused_at_formation`, then `planner_transient`) without a fabricated
+measurement. There was no keep, promotion or production-kernel mutation.
+
+The only execution defect exposed by the run was corrected at research commit `3aa79c89`:
+resumed champion-of-record verification now forwards the explicit unverified-anchor policy,
+and a known pre-claim identity failure settles its issued scheduler selection. The exact v6
+dry run and hardware run are retained at
+`/mnt/raid0/llm/tmp/aku-final-glm-gpu-20260911-v6-dry-run.log` (SHA-256
+`731a45f7b8c350a01820ebe5a6d2461cbbdb0ed58d60c778dae51dccc5e615f1`) and
+`/mnt/raid0/llm/tmp/aku-final-glm-gpu-20260911-v6.log` (SHA-256
+`1a820aa9c433f79be32d80ae06223b3aa3c92a6195d03377091df451753f99eb`).
+The live dashboard was reloaded against that v6 store and verified to report
+`selected_producer=serial_router`, `serial_state=complete`, both retained targets and the
+attributed DFlash2/Qwen4Next capabilities. ROOT commit `2e1dd002` fixes terminal serial
+campaign classification. Broader replacement-architecture tasks retained below are not
+launch dependencies and are outside this scoped extension of the working loop.
 
 - [x] **Required-target validation aggregate follows the current shared tip**: ✅ 2026-09-10.
   Serial state now retains an exact aggregate over every production target and every
@@ -3260,8 +3285,9 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   finalise → promote → reboot gate. Implementation is authorized by the operator's instruction
   to implement this handoff; do not reopen broker-code authorization as a pending choice.
   other separately gated live activation still require their original authority. The serial selector
-  now transports exact selections and the separate direct CPU/GPU runs prove their original owners,
-  but no one final-code serial process has yet demonstrated provider-bound cross-backend rotation.
+  now transports exact selections and the final v6 owner demonstrated live CPU/GPU rotation with
+  exact held-resource settlement. The remaining broad finalise/promote/reboot scope is separate from
+  the completed unified-loop trial and did not authorize production mutation.
 - [ ] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
   compute authority; applicable post-BIOS calibration and owning serving protocol. Bounded mixed campaign
   and eventual soak demonstrate the actual CPU/GPU/candidate paths, not only helpers or fixtures.
@@ -3275,7 +3301,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     native GPU five-launch plan; its requested state directory remains absent. Retained output:
     `/mnt/raid0/llm/tmp/aku-final-all8-dryrun-20260910-v2.log`, SHA-256
     `e0783ef73f31dbae760074aab09419b317e63cc52f8fca8af2b0671d5b36d315`.
-  - [ ] **AKU-12b — five-loop monitored acceptance and bug-fix rerun**: after applicable real
+  - [x] **AKU-12b — five-loop monitored acceptance and bug-fix rerun**: ✅ 2026-09-11 — after applicable real
     resource and operator gates, complete five monitored unified research iterations through the
     actual unified execution path, focusing this five-loop trial on **experimental GLM-5.3-Flash
     CPU kernel research**, as directed by the operator on 2026-09-09. Retain selections, held-resource receipts, lifecycle samples,
@@ -3296,9 +3322,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     validated recipes, not automatic full-instance transfer. This CPU focus does not waive broader
     CPU/GPU integration acceptance, cross-model regressions or separate production-promotion gates.
     The pre-serial GLM controller completed 5/5 real measured iterations and a separate original GPU
-    iteration completed 5 pairs/10 resident launches. These remain useful hardware evidence but do
-    not satisfy this checkbox: rerun through the final unified serial owner with the corrected fresh
-    matched floor and current telemetry/resource/feedback hooks.
+    iteration completed 5 pairs/10 resident launches. Final acceptance then used one v6 serial owner
+    for six alternating CPU/GPU batches. It completed without failed targets or unsettled selections;
+    four v6 GLM attempts plus the valid v4 GLM attempt form the requested five-loop trial. The three
+    measured effects were +0.186%, -3.360% and -2.152%, all below their applicable matched floor; two
+    hypotheses refused formation. GPU work settled as refusal/transient rather than inventing a
+    measurement. Research `3aa79c89` fixes the one observed resume/settlement fault and 136 relevant
+    tests plus 3 subtests pass. Exact v6 state: `/mnt/raid0/llm/tmp/aku-final-glm-gpu-state-20260911-v6`
+    (`serial-state.json` SHA-256 `40a1fa32ccf75ffef9e7f2056ef1d676df445b5acd2f12b042b6b81c26475265`).
     - [x] **AKU-12b-CPU-OBS — add bounded factual CPU lifecycle collection to the existing
       serving path on disk.** ✅ 2026-09-10 — Research packet `499ec92e…` adds process/task
       affinity and allowed-NUMA-list samples through the original serving lifecycle;
