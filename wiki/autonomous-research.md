@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-10 (unified AutoKernel implementation and hardware acceptance; earlier dated findings retained below)
+**Last compiled**: 2026-09-11 (unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below)
 **Sources**: 124+ documents
 
 ## Compiled Update — 2026-09-10: one existing AutoKernel loop now owns CPU and GPU targets
@@ -30,10 +30,22 @@ without launching models or builds. The existing dashboard now reads a separatel
 catalog and reports seven champion capabilities, including DFlash2 GPU serving and Flash-Next
 (`qwen4exp`) CPU/native-MTP, while leaving the direct champion-vs-production number untouched.
 
+The final 2026-09-11 acceptance then exercised both selected backends under one installed serial owner.
+Six batches completed with ten accounted held-resource receipts, no failed target, no active child and no
+unsettled scheduler selection. Four GLM attempts in that run plus the valid earlier v4 attempt complete the
+requested five-loop GLM trial. Three reached measurement (+0.186%, -3.360% and -2.152%) and were honest
+nulls below their applicable matched floor; two hypotheses refused formation. The two GPU batches settled
+as formation refusal and planner transient rather than manufacturing a measurement. No keep or promotion
+occurred. The only defect exposed by recovery was a missed forwarding of the explicit unverified-anchor
+policy during restored champion verification; research commit `3aa79c89` fixes it and ensures the associated
+pre-claim scheduler selection settles. The live dashboard now reads the completed serial store directly and
+classifies it as `serial_router` / `complete`.
+
 ### Source References (2026-09-10 unified implementation)
 
 - [Unified-surface implementation handoff](../handoffs/active/autokernel-unified-surface-program.md) — exact controller, LOO, resource, dry-run and acceptance contracts.
 - [Unified implementation progress](../progress/2026-09/2026-09-10-autokernel-unified-20260908.md) — commits, test totals, hardware outcomes and live dashboard verification.
+- [Final mixed-campaign progress](../progress/2026-09/2026-09-11-autokernel-unified-20260908.md) — exact v6 state, outcomes, artifact hashes, recovery repair and live dashboard closure.
 - [GLM CPU optimization report](../progress/2026-09/2026-09-09-glm53-cpu-optimization.md) — preliminary GLM kernel lineage, measured rates and admission limits.
 
 ## Compiled Update — 2026-09-08: consolidation complete; autonomy remains a design

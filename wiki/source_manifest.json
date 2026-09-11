@@ -4,15 +4,15 @@
     "handoff-active": 171,
     "handoff-blocked": 2,
     "handoff-completed": 189,
-    "progress": 370,
+    "progress": 371,
     "research": 139
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-10T09:29:57Z",
+  "last_compile": "2026-09-11T02:20:40Z",
   "mode": "touch",
-  "scan_time": "2026-09-10T09:29:57Z",
+  "scan_time": "2026-09-11T02:20:40Z",
   "schema_version": 1,
-  "source_set_hash": "0bbe4fffa9f0c107a5997e267978e4eafb6979674b0b4a7884087fe446f4d5bb",
+  "source_set_hash": "b5a73f31cceb93e52386549c8a398f7df7e99a5ee2111ff3a3ac7c625d7d477c",
   "sources": [
     {
       "content_hash": "78d85eb43bfb442f5800bcdfb61e75ae587647787f8c0974f9f687139d4b9dff",
@@ -111,10 +111,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "906db9568c63da2f1778f2d7c6a0c2621be2d4e78843ce8d5567c530467fe714",
-      "modified": "2026-09-10T09:27:59Z",
+      "content_hash": "54990036d912ab57fe74064f058342dae0fee8fa785b66fd272bea0a80bdd12b",
+      "modified": "2026-09-11T02:18:30Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 305700,
+      "size": 308220,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
@@ -6975,11 +6975,19 @@
       "type": "progress"
     },
     {
-      "content_hash": "a7975596e524803d06570abaf3f4b55e882176e5f8a8da4876d6d7555d961663",
-      "modified": "2026-09-10T09:27:59Z",
+      "content_hash": "8508634e6a181230e8b074b57344141d883ddca2b64905218ac5bb1e168b43c8",
+      "modified": "2026-09-10T10:33:57Z",
       "path": "progress/2026-09/2026-09-10-autokernel-unified-20260908.md",
-      "size": 62959,
+      "size": 66748,
       "title": "Unified AutoKernel implementation \u2014 2026-09-10",
+      "type": "progress"
+    },
+    {
+      "content_hash": "7a1a52ad196214284d9000d60ec16ff9802238e47769971ea933b88d7ddadb6b",
+      "modified": "2026-09-11T02:18:50Z",
+      "path": "progress/2026-09/2026-09-11-autokernel-unified-20260908.md",
+      "size": 3394,
+      "title": "Unified AutoKernel scoped completion \u2014 2026-09-11",
       "type": "progress"
     },
     {
@@ -7743,7 +7751,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 966,
+  "total_new": 967,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

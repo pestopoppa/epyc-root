@@ -1099,6 +1099,16 @@ def verdict_gates_status(env: Mapping, panel: str,
     wd_state = (env.get("watchdog") or {}).get("state")
     if wd_state in WATCHDOG_ALARMS or wd_state in WATCHDOG_DEFECTS:
         return True
+    if (panel == "kernel" and wd_state == WATCHDOG_IDLE
+            and env.get("unreported")):
+        # The terminal-contract producer explicitly declares both facts: this
+        # campaign has stopped, and some optional owners never reported (for
+        # example the one-candidate driver does not mint a champion or release
+        # package).  Keep that incompleteness loud in ``attention`` and in the
+        # panel verdict, but do not let historical optional sections colour
+        # current GLOBAL producer health after the producer has declared idle.
+        # A running partial contract still gates, as does any watchdog defect.
+        return False
     if not env.get("gates_health"):
         return False
     if (env.get("reporting") == REPORTING_ABSENT and panel in registry

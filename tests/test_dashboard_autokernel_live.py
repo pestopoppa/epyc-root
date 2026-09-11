@@ -599,6 +599,21 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
             self.assertEqual(payload["_freshness"]["reporting"], "observed")
             self.assertEqual(payload["_freshness"]["staleness_class"], "fresh")
 
+    def test_unlaunched_idle_deployment_does_not_alarm_global_health(self) -> None:
+        """An old sealed config is history, not a producer expected to pulse."""
+        config_path = self.bundle / "config/deployment.json"
+        now = config_path.stat().st_mtime + 10 * 60
+        with mock.patch("dashboard.server.time.time", return_value=now):
+            health = server.health_payload()
+
+        envelope = health["panels"]["kernel_live"]
+        self.assertFalse(server.discovery_live_payload()["active"])
+        self.assertEqual(envelope["watchdog"]["state"], "idle")
+        self.assertFalse(any(
+            entry["panel"] == "kernel_live"
+            and entry["verdict"] == "degraded"
+            for entry in health["attention"]))
+
     def test_active_planner_uses_its_stage_budget_in_health_envelope(self) -> None:
         """v14: a healthy bounded planner call is not silent at 329 seconds."""
         started_at = (datetime.now(timezone.utc) - timedelta(seconds=329))
@@ -1583,6 +1598,13 @@ class TestAutoKernelLiveDashboard(unittest.TestCase):
                          "campaign-a")
         self.assertEqual(payload["deployment_history"][0]["disposition"],
                          "historical")
+        health = server.health_payload()
+        live = health["panels"]["kernel_live"]
+        self.assertEqual(live["watchdog"]["state"], "stopped_reporting")
+        self.assertTrue(any(
+            entry["panel"] == "kernel_live"
+            and entry["verdict"] == "degraded"
+            for entry in health["attention"]))
 
     def test_touched_old_launched_config_cannot_outrank_newer_producer(self) -> None:
         old_runtime = self._write_supervisor_graph_mismatch(
