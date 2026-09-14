@@ -52,6 +52,26 @@ attributed DFlash2/Qwen4Next capabilities. ROOT commit `2e1dd002` fixes terminal
 campaign classification. Broader replacement-architecture tasks retained below are not
 launch dependencies and are outside this scoped extension of the working loop.
 
+**2026-09-14 continuous GLM acceptance:** the repaired existing loop completed the requested
+50-loop monitored GLM-5.3-Flash CPU window across retained supervisor states v2, v3, v4 and v7:
+2 + 20 + 3 + 25 terminal continuations, respectively. All 50 are real measured candidate
+paths (`42 measured_null`, `8 kept`); the digest over the ordered continuation-file digest
+listing is `b89c41aa4b2d68be096671d6962f37a200f7990bf193c6dd292005398b7e7ff6`.
+The final loop retained `akm-q4k-pairrow-zmm-accumulate` at marginal `+0.182%`, clean-built
+anchor `dc3798db10a6654721f2a1fa6a162be2e5fdf95f`, and passed its anchor A/A guard with
+`+0.0773869451%` drift. Its direct current-snapshot comparison measures the 23 accumulated
+keeps at **+0.8303809823%** versus champion-of-record `c463f601bd39`; this is a direct matched
+A/B, not a sum of marginal estimates. The final continuation is
+`/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/batches/batch-000024/loop-continuation.json`
+(SHA-256 `41da2b2c8c493ebed97844e3840793067d0d233fac835e95683d6f06531d0c7e`), and the accumulator
+bundle SHA-256 is `e3df3b43bad0afdc75aad5cd3ad9d09d64e12985671c11e90c649c99c23445b5`.
+The same final loop produced a complete original-request CPU profile at
+`cpu-profiles/1f6aad10b59842b36b05d9162024f9cf3c829f17dbdce68fc9ef5585e8d73bdb-10f423d4b766f7420a10d34737cff7dbb02945361600a7d31f2fe870810b895c.json`
+(SHA-256 `b67e9b4a254eb8ac00decd8ea3d2bf0867f286f61c1423dbbf9c5f96ade9b950`). After loop 50
+settled, the continuous supervisor automatically launched batch 25; it was stopped at the
+requested monitoring boundary and is excluded from the 50-loop evidence. No production kernel
+was changed or promoted.
+
 - [x] **Required-target validation aggregate follows the current shared tip**: ✅ 2026-09-10.
   Serial state now retains an exact aggregate over every production target and every
   target that authored a keep still present in the ordered lineage. The latest author
@@ -3404,6 +3424,21 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       select the installed ROOT via the documented `--belief-root-repo` option. This is
       code-path integration only: no current live-PID reload or real post-hook ingestion,
       and AKU-12b/live hardware acceptance remains open.
+  - [x] **AKU-12d — continuous 50-loop GLM health acceptance**: ✅ 2026-09-14 — run the
+    existing GLM CPU AutoKernel continuously, repair observed execution faults, preserve and
+    reuse valid prior results, and monitor 50 terminal measured candidate loops. The retained
+    v2/v3/v4/v7 states prove 50/50 completions (`42 measured_null`, `8 kept`) with observed
+    original-request CPU profiles, real planner/author/build/gate/A-B paths, automatic batch
+    transitions and clean keep settlement. The final tip `dc3798db10a6` contains 23 accumulated
+    keeps and directly measures `+0.8303809823%` against COR `c463f601bd39`; it remains
+    experimental and was not promoted to production. The operator-requested monitor stopped
+    after loop 50; the automatically started post-boundary batch 25 is not evidence and is
+    recoverable runtime state, not a completed attempt.
+  - [ ] **AKU-12e — validate the accumulated GLM tip across required targets**: run the
+    existing required-target validation and exact GLM correctness gates against experimental
+    tip `dc3798db10a6`; publish the aggregate disposition before any champion admission proposal.
+    This is a separate candidate-validation task, not part of the completed 50-loop health proof,
+    and it authorizes neither production mutation nor promotion.
   - [ ] **AKU-12c — repair and verify canonical generated export inputs**: real production export
     currently refuses stale descriptor/compiled-priors provenance. The supported writer is
     stack_change_pipeline.py update, regenerating lean registry, descriptors, priors, procedure
