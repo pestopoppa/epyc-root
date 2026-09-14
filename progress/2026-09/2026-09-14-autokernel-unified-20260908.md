@@ -166,3 +166,30 @@ keyboard interaction. It passed with counts 28/4/18/23 and zero page errors. The
 direct measurement but no independently recorded retained change, so no keep marker is invented.
 The final trajectory/static-JS suite passed 21 tests; the retired-summary test migration passed
 32 tests plus five subtests. Prior DOM-only completion claims are superseded by this browser check.
+
+## GLM planner/critic formation-payoff deadlock
+
+The continuous GLM campaign remained alive but stopped producing useful experiments: batches 27–34
+made 24 first-pass critic calls and reached zero authoring, builds or measurements. The sampled CPU
+profile supplied source-route attribution, while proposals named exact eligible-call census,
+request-wall exposure and isolated local-speedup checks as falsifiers. The critic incorrectly made
+those ordinary post-authoring payoff checks mandatory formation evidence. The planner could only
+return another hypothesis, not collect the requested trace, so three revisions exhausted every
+batch. Historical Qwen GPU work suffered formation refusals too, but exact device-kernel timing and
+larger remaining headroom masked the control-contract defect.
+
+Research commit `5ac7b7e4` makes the narrow correction in `loop/actors.py`: the planner must not
+promise unsupported prerequisite traces, and the CPU critic must allow a bounded, source-consistent
+candidate to reach the existing correctness and matched A/B pipeline when only its payoff is
+unknown. Review remains strict for already measured/present mechanisms, wrong or incomplete source
+routes, invented evidence, absent falsifiers and correctness/safety risks the existing gates cannot
+contain. Two focused contract regressions were added; planner/critic plus loop validation passed
+**74 tests**.
+
+The retained store also contained an inbox directive that demanded the unavailable wall-time and
+local-speedup proof before authoring. It was corrected operationally in place while preserving its
+diminishing-returns and abstraction-escape guidance. No experiment row, retained bundle member or
+one of the 23 accumulated GLM keeps was removed or rewritten. Batch 41 had imported the old Python
+module before publication and completed under the superseded contract. Continuous batch 42 started
+afterward and its process command proves the corrected planner text is loaded. The campaign remains
+continuous; this checkpoint makes no claim about batch 42's still-pending scientific disposition.

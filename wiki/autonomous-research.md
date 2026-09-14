@@ -2572,3 +2572,30 @@ protocol; it is not silently promoted into either a clean result or a universal 
   final-session audit and the corrections that preceded implementation.
 - [`2026-09-09-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-09-autokernel-unified-20260908.md) —
   accepted source slices, reproduced test counts, publication identities and remaining live-system gaps.
+
+## Compiled Update — 2026-09-14: payoff uncertainty belongs in the experiment, not its formation gate
+
+The GLM CPU campaign exposed a planner/critic deadlock that GPU campaigns could obscure with richer
+kernel timing. A planner proposed a bounded source mechanism and named matched measurement as its
+falsifier; the critic then demanded that the mechanism's exact eligible-call fraction, request-wall
+exposure and isolated local speedup already be measured before allowing authoring. Because the actor
+contract could propose only a hypothesis—not execute a new trace—the rejection produced another
+hypothesis with the same unavailable prerequisite. Eight batches spent 24 first-pass reviews without
+reaching authoring, a build or a measurement.
+
+The corrected boundary distinguishes evidence needed to establish that an experiment is safe and
+observable from evidence that the experiment exists to discover. Formation still rejects an absent or
+already-tested mechanism, an incorrect or incomplete source route, invented evidence, a missing
+falsifier, and correctness or safety risks outside the existing gates. It does not require a bounded,
+source-consistent candidate to prove its payoff in advance when the existing correctness and matched
+A/B pipeline can test that payoff directly. Diminishing-returns guidance remains useful, but must not
+name an unavailable diagnostic as mandatory admission evidence.
+
+### Source References (2026-09-14 AutoKernel formation correction)
+
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+  AKU-12f root cause, retained safety grounds, implementation identity and live deployment boundary.
+- [`2026-09-14-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md) —
+  observed batch sequence, Qwen comparison, validation result and operational campaign correction.
+- [`autokernel-actor-preparation.md`](../docs/autokernel-actor-preparation.md) — actor preparation,
+  context and refusal-feedback boundary that the live planner/critic contract implements.

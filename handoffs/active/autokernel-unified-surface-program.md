@@ -3472,6 +3472,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     experimental and was not promoted to production. The operator-requested monitor stopped
     after loop 50; the automatically started post-boundary batch 25 is not evidence and is
     recoverable runtime state, not a completed attempt.
+  - [x] **AKU-12f — remove the GLM formation-payoff deadlock without weakening safety review**:
+    ✅ 2026-09-14 — Research `5ac7b7e4` corrects the CPU planner/critic contract after retained
+    batches 27–34 spent 24 pass-one critic calls on eight proposals without reaching authoring.
+    The critic had promoted post-authoring payoff falsifiers (exact eligible-call census,
+    request-wall exposure and isolated local speedup) into mandatory pre-authoring evidence even
+    though the loop could not acquire those traces. Source-consistent bounded candidates now
+    proceed to the existing correctness and matched A/B pipeline; duplicate mechanisms, wrong or
+    incomplete source routes, unsupported claimed facts, and uncontained correctness/safety risks
+    remain formation refusals. The live store's contradictory stagnation inbox instruction was
+    corrected in place without changing its journal or 23 accumulated keeps. Focused planner,
+    critic and loop validation passed 74 tests. Continuous batch 42, started after publication,
+    loaded the corrected planner contract; its scientific outcome remains live campaign work and
+    is not claimed by this implementation checkpoint.
   - [ ] **AKU-12e — validate the accumulated GLM tip across required targets**: run the
     existing required-target validation and exact GLM correctness gates against experimental
     tip `dc3798db10a6`; publish the aggregate disposition before any champion admission proposal.
