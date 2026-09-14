@@ -2,8 +2,90 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Last compiled**: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
 primary sources with the staleness caveat demonstrated; edit-format rules from hashline/aider/Cursor
+
+## Compiled Update — 2026-09-14: code that feeds an edit should be sliced, never summarised, and a compression A/B that logs only completion cannot see its cost
+
+**Confidence: verified** for orchestrator code facts (file:line as recorded against `epyc-orchestrator@5a9442d3`
+in the handoffs) and for the defect fixes, which were merged with tests to orchestrator main `35b05fde` and
+pushed to origin 2026-09-14. External results come from dive-verified intake records and are
+**priors, not gates**.
+
+**Three external sources point the same way on code-bearing context.** Each has its own limits:
+
+- On behavioural questions about real classes, ~180-token summaries answered 4/45 whether written by a
+  frontier or a 3B model. Signature+docstring answered 6/45, and source answered 27/45. Cells moved by up to
+  3 between runs.
+- Once the edit site was given (oracle localization, one cloud model, Python), rendering the rest of the
+  edited files as skeletons/signatures did no better than name-only placeholders (23/70 vs 25/70, exact
+  McNemar p = 0.754, 10 discordant pairs).
+- A learned segment keep/drop compressor that keeps selected AST segments verbatim and replaces the rest
+  with "N lines omitted" gained **+2.0 to +4.6 pp absolute** at ~6x compression (the paper's "+5.0–9.2%" is
+  relative). That was a single run with unpaired p ≈ 0.14–0.52. Token-level compression (LLMLingua-2, ~3x)
+  ranged from −7 to +6 instances against full context, and no fine-tuned weights were released.
+
+The durable reading is a **representation rule**, not an effect size. It is now standing policy in the
+tool-output-compression handoff: never LLM-summarise code-bearing tool output that feeds an edit; slice or
+mask verbatim instead. DCP-11 applies the rule to the delegation packer. Today a file holding ColGREP hit
+line-ranges can be downgraded to `codemap_only` under the 2000-token seed budget, which renders the edit site
+itself as signatures, the worst-rated representation above. The planned change keeps hit segments verbatim
+with omitted-line placeholders, or excludes the file with a "missing evidence" manifest entry. It is to be
+validated as a DCP-6 arm only after the DCP-12 flip floor is measured.
+
+**Compression's cost shows up in re-fetches, not in completion.** A synthetic 24-turn planning environment
+had state that could be re-queried. There, compression raised retrieval tool calls in all 6 model×regime
+cells (5 significant after Holm) while completion changes were non-significant in every cell. Execution calls
+stayed flat, so the extra calls were reacquisition. At an equal 5x budget, a fact-preserving extractive
+digest kept tool calls near full context (39.0 vs 37.4), while sliding deletion roughly doubled them (71.4).
+In ALFWorld, where state is re-observable, no surge appeared, so the magnitudes do not generalise. **The
+instrument is what transfers.** The CF-3c compaction A/B now requires a per-task re-fetch count as a
+co-metric. The trajectory-artifact schema must carry `spill_pointer_follows` and a retrieval-vs-execution
+split. Our spill/peek path records no re-fetch counter today, though one is derivable from checkpointed
+`peek` events.
+
+**Corrections to earlier statements on this page and in its sources:**
+
+- **Spill pointers were not followable as written.** The 2026-08-12 section below is right that the live
+  `peek`/`grep` is the file-capable pair. But the spill footer emitted `peek("{path}")` / `grep("{path}",
+  pattern)` against signatures `_peek(n, file_path)` / `_grep(pattern, file_path)`, so the pointer never
+  read the file. `1e2a6315` fixed the footer and the matching `suggestions.py` hint templates. Its test
+  executes the emitted calls against a real spill (TOC-SP-1).
+- **`_REPL_OUTPUT_RE` never matched.** It looked for `<<<\/TOOL_OUTPUT>>>`, but the real end marker is
+  `<<<END_TOOL_OUTPUT>>>`, and a `">>>" in content` fallback masked the miss. `090c63d9` builds the regex
+  from the `types.py` constants. This changes `classify_tool_output` inside the default-off
+  `context_compression` path (CF-RX-1).
+- **"Keep-latest-8" overstates retention.** `context_compression.py` stubs **all** middle-zone tool outputs
+  once ≥8 of them sit in the middle zone.
+- **"No LLM summariser" holds only for `ContextCompressor` / `openai_compat.py`.** The graph compaction index
+  (`graph/compaction.py`) and the REPL spill summary do invoke an LLM.
+- **DCP's "explicit budget bands" are manifest-only.** Only `output_reserve` is honoured in code, the live
+  seed call passes no bands, and `codemap_only` is a greedy downgrade rung.
+- **The P4e observation window is not accruing.** The compressor monitor JSONL does not exist on disk, and
+  the "True in production" default for `output_spill_to_file` must be re-verified.
+
+**Patterns to port from SoL-Pi, not numbers.** Several patterns fit our REPL layer. For spilled output
+(TOC-SP-2): content-hashed spill files with exact offset-paged recall and a head+tail excerpt. Today `peek`
+reads from byte 0, the spill is head-only, and spill names overwrite. For log summaries (TOC-SP-3): a
+receipt gate that byte-verifies quotes against the full log, requires exit-status agreement and failure
+evidence inside quote content, and fails open to head/tail. Today's spill summary reads only the last 4,000
+characters and is accepted unverified. For compaction (CF-PB-1): a plan-boundary trigger priced by
+break-even. On llama.cpp the price of rewriting history is re-prefill of every later token, so SoL-Pi's
+12.5 cache ratio does not port. Our `len(state.context) > 12000` OR-trigger already dominates the 0.75
+ratio, and step progress must be passed into the summary request, the very defect SoL-Pi's own open issue
+#42 describes. Its mechanisms are not production-hardened: the relevant fixes sit in unmerged PRs, and its
+receipt shows quotes exist, not that nothing was omitted. Never enable its hosted reducer route.
+
+### Source References (2026-09-14 code-context and compression)
+
+- [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — the standing no-LLM-summary rule, TOC-SP-1/2/3, TOC-RD-1, anchor corrections and the absent P4e sink.
+- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — CF-PB-1, CF-RX-1, the CF-3c re-fetch co-metric and the in-place corrections.
+- [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — the DCP-2 band correction, DCP-7 priors and DCP-11 packer rendering.
+- [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — defect-fix commits and merged-tree test totals.
+- intake-1357#01 and intake-1357#03 — skeleton-vs-placeholder null and the 4/45 vs 27/45 behavioural probe.
+- intake-1365#01 and intake-1365#02 — segment keep/drop absolute gain and token-level compression results.
+- intake-1359#00 and intake-1359#02 — re-fetch surge with flat completion; extractive digest vs sliding deletion.
+- intake-1350#02, intake-1350#03 and intake-1350#04 — ObservationPack, the evidence-preserving reducer and the break-even compaction trigger.
 
 ## Compiled Update — 2026-08-13: prefix-stable rendering landed default-off; its current A/B is not faithful
 
@@ -24,6 +106,8 @@ Repair must therefore precede compute: use live builder/state/execution semantic
 ## Compiled Update — 2026-08-12: spill pointers are followable today, and the hazard is a flag away
 
 **Confidence: verified** — read from the committed REPL module chain and the feature registry.
+
+> **Corrected 2026-09-14:** the implementation finding stands (the live `peek` is file-capable), but the pointer the spill footer actually *emitted* passed its arguments in the wrong order and never read the file until `1e2a6315` (TOC-SP-1). See the 2026-09-14 section above.
 
 The verbatim-trajectory-log program was gated on an audit question: *which `peek`/`grep` implementation is actually live?* Two exist — a **file-capable** pair that accepts a `file_path`, and a **context-only** pair that does not. If the context-only pair were live, every `peek(…, file_path=…)` pointer emitted by the truncation-spill path would be **unfollowable**, and the spill machinery would be writing pointers into nothing.
 

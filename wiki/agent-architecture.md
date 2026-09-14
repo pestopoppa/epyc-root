@@ -2,8 +2,95 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Last compiled**: 2026-09-14 (incremental: harness rank tracks model class, not benchmark — Spearman −0.05 between a 744B MoE and a 26B MoE on one grid, +0.76 between the 26B and a 30B dense on a different benchmark — and thinking mode alone can remove ~2/3 of a harness's score; a delegation hand-off the architect cannot follow is a silent confident-wrong path, and user-facing delegation returns now carry the full report; `earendil-works/pi` and `badlogic/pi-mono` are one repository; hand-written procedural guidance hurt until a validation gate repaired it); earlier: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
 **Sources**: 100+ documents
+
+## Compiled Update — 2026-09-14: harness rank tracks model class, and a hand-off the architect cannot follow is a silent confident-wrong path
+
+**Confidence: verified** for source-level harness facts at pinned SHAs and orchestrator code facts. External
+rankings are OBSERVATION-grade: they shape what a local bake-off must measure and **never gate HS-4**
+(MEASUREMENT.md).
+
+**Which harness wins depends on the model class.** One author's ten-harness SWE-bench Pro grid (250 held-out
+tasks, one rollout, about ±6 pp per cell) found two things. First, holding the model fixed and changing
+only the harness moved pass@1 from 23.2% to 52.4% on GLM-5.2-744B and from 15.2% to 36.0% on
+Gemma-4-26B. Second, the ranking did not carry across those two models (Spearman −0.05). Vendor harnesses
+fell on the small model and model-agnostic ones rose. A later Terminal-Bench 2.1 grid by the same author
+used a 30B dense model (Muse-Glimmer, 50 tasks × 3 trials). Its order **matches** the Gemma-4 grid
+(ρ +0.76 on 8 shared harnesses, one-sided exact p = 0.018) and does not match GLM-5.2 (−0.21), even though
+the benchmark changed. So "harness rankings do not transfer" is too strong. Rank looks tied to model class,
+with benchmark a secondary factor. All of this comes from one author, and that model cannot be served on v9.
+On the 30B, opencode (41.3%), qwen-code (40.0%), mini-swe-agent (39.3%) and pi (37.3%) form a top cluster at
+least 10.7 pp above the rest. Gaps within the cluster (≤4 pp) are not resolved. Even so, hermes, near the
+bottom there (24.7%), beat opencode on GLM-5.2 (39.6 vs 28.0).
+
+**Thinking mode alone can reorder harnesses.** In a partial thinking-off arm on Gemma-4 (uneven n = 86–191,
+non-randomly censored), crush, opencode and pi lost ~2/3 of their score while claude_code did not move.
+Our production roles run `enable_thinking=false`, so thinking-on external rankings do not transfer to them.
+
+**Harness cost on our hardware is prefill, not decode.** Per attempt, harnesses re-sent 1.78M–5.12M input
+tokens against 17k–36k output, a ~2.8x spread in re-sent context, and 96–98% of input was cached where
+cache data exists. HS-14 therefore sets the local bake-off columns: pass@1, input tokens per attempt,
+prefix-cache hit share, and prefill tokens per solved task, all on served models at production
+`enable_thinking`.
+
+**"pi" is one repository, not two siblings.** `earendil-works/pi` is `badlogic/pi-mono` renamed: same
+GitHub repository id, and the old API path returns 301. oh-my-pi is a detached fork of it at about
+upstream 0.50. The harness-selection passages calling them sibling forks are corrected in place. HS-6's
+capability wording survives unchanged. It asks for config-declarable arbitrary top-level body keys on the
+call verb the harness actually uses, because two lineages grew that primitive under different names. A
+source-level score of pi (HS-1f, no live request yet) found the following:
+
+- It uses the simple call verb everywhere, including CLI compaction, so a `models.json` `samplingParams`
+  lever reaches the request body. Wire-level confirmation is HS-1f.1.
+- Its built-in llama.cpp provider requires llama-server **router mode** and throws otherwise. Our topology
+  needs a custom `models.json` provider carrying the built-in llama compat flags, with `maxTokens ≤ 32768`.
+- It has no MCP, ACP or permission system, so it must be containerised.
+- `compaction.enabled=false` disables both threshold and overflow folding.
+- It has an install ping and a separately controlled update check (`PI_OFFLINE=1` covers startup).
+- If an efficiency extension's log reducer is ever used, route it to a local llama-server, never the
+  hosted default.
+
+**Delegation hand-off fidelity (DCP-13).** An external repository-QA study compared a ReAct agent with a
+pre-built index (65.2% pass) against a planner that delegated grep/read exploration to a sub-agent (46.2%).
+Hand-off breakdown caused 41.8% (414/990) of the delegated arm's failures, and ~91% of those still produced
+a fluent, confident answer. It is a **bundle** comparison (no index and delegation changed together), and
+one cloud model supplies 65% of the pooled gap (19.0 pp → 8.7 pp without it). It is not evidence that
+summarising sub-agent reports causes wrong answers. What it prompted was a code audit, and the code facts
+stand on their own:
+
+- The architect decision loop breaks on turn 0 in every branch, so the advertised `fetch_report` was
+  unreachable.
+- D|Approved and the timeout early return could hand the user handle+summary text.
+- `worker_summarize` ran on rescued reports whose summary was then discarded.
+
+All three are fixed (`2bffb45b`, `57ceb7d5`, `a2af42ad`; detail in
+[Tool Implementation](tool-implementation.md)). Handle text and cache hits remain as DCP-13a/b. The
+inference-gated follow-up is labelling confident-wrong outcomes where the stored raw report held the
+evidence.
+
+**Hand-written procedure can hurt until a gate repairs it.** A procedural-graph method (triplets with
+condition/guidance/pitfalls, a separate guidance LLM steering each step) placed first or joint-first in
+21 of 24 settings. Every per-setting confidence interval overlaps the best baseline (24/24), though, and
+per-step guidance costs +33–85% tokens, a direct decode tax on CPU. The durable caution comes from one
+model on a 56-item split with no CIs: a hand-written expert graph cut success from 49/56 to 33/56, and gated
+online evolution from that graph recovered it to 52/56. For AutoPilot, rejected-proposal feedback already
+exists (failure blacklist, last-invalid action with repeat counts, a 12-trial journal summary), so that is
+not new work. The AP-53 note instead asks, with zero compute, how often a concrete config that
+safety-failed or was dominated gets re-proposed without ever reaching the blacklist, since the journal
+summary carries only species/action type.
+
+### Source References (2026-09-14 harness selection and hand-off fidelity)
+
+- [`harness-selection-and-integration.md`](../handoffs/active/harness-selection-and-integration.md) — HS-14 external evidence rows and bake-off columns, HS-1f source-level pi score and HS-1f.1, the pi-lineage and HS-6 corrections.
+- [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — DCP-13 code facts, fixes and residuals.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — AP-53 measurement note.
+- [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — stage record and the rank-tracks-model-class finding.
+- intake-1352#record and intake-1352#02 — the ten-harness grid, rank non-transfer and the thinking-off arm.
+- intake-1363#record, intake-1363#02 and intake-1363#04 — the Muse-Glimmer TB2.1 grid, input-token cost claims and the derived cross-grid rank correlation.
+- intake-1360#00 and intake-1360#record — the pi/pi-mono identity and source-level cooperation facts.
+- intake-1358#record — the hand-off breakdown result and why it is a bundle comparison.
+- intake-1348#record — procedural-graph evidence strength and the existing autopilot rejection feedback.
 
 ## Compiled Update — 2026-09-08: manifest preservation is not end-to-end wrap-up proof
 
