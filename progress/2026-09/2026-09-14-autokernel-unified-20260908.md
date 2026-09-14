@@ -68,8 +68,8 @@ registry, production kernel, or supervisor file changed.
 The first production-only projection was incomplete: legacy GPU receipts lacked model identity,
 CPU whole-candidate checkpoints lived outside the loop store, the current global accumulator hid
 the active GLM campaign, and a single production axis could imply continuity across incompatible
-recipes or future production releases. RESEARCH `323bcf2c` adds the bounded normalizer
-`historical_trajectory.py`; it fails closed when its exact receipt/doc literals change and emits
+recipes or future production releases. RESEARCH `323bcf2c` plus exact-effect follow-up `3a4be85d`
+adds the bounded normalizer `historical_trajectory.py`; it fails closed when its exact receipt/doc literals change and emits
 source hashes, model/surface/recipe/era identities, baseline identities, conflict states, and the
 active campaign locator. ROOT `ebb98492` consumes that bootstrap together with current producer
 receipts and the retained accumulator promotion chain.

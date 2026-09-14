@@ -3224,8 +3224,8 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     `/mnt/raid0/llm/autokernel/loop-memory/champion-capabilities.json` (SHA-256
     `264f16ad346634b2a0c7bbe5e7a83faa976db0a7f75162f38f38324393247ea7`).
   - [x] **AKU-09k — headline the measured champion trajectory against frozen production**:
-    ✅ 2026-09-14. ROOT `ebb98492` + RESEARCH `323bcf2c` supersede the initial trajectory
-    projection. A compact subsystem-owned normalizer validates source literals and digests, then
+    ✅ 2026-09-14. ROOT `ebb98492` + RESEARCH `323bcf2c`/`3a4be85d` supersede the initial
+    trajectory projection. A compact subsystem-owned normalizer validates source literals and digests, then
     publishes 21 historical whole-candidate checkpoints. The page separates every model, surface,
     recipe and baseline epoch: DeepSeek-1.5B, Qwen3.8-27B, Gemma, and Flash-Next CPU plain/MTP
     evidence no longer share a curve. Production releases are explicit zero-percent epoch markers;
