@@ -385,7 +385,7 @@ The current state of the art for our stack is not speculative decoding at all --
 
 ### New Findings (2026-07-16 — `ngram-mod` composes with MTP, but quality gates stay task-level)
 
-- **The v7 worker launch now uses one combined speculative stack (`ngram-mod,draft-mtp`) instead of redundant worker lanes.** Upstream/common speculative code tries n-gram drafting first and falls back to the MTP drafter when no prompt-matching draft is available, so the conservative deployment is one server configuration rather than separate `ngram` and `MTP` pools. This keeps the mechanism invisible to AutoPilot for now: planners do not tune per-request `ngram` switches until the combined lane has task-level acceptance evidence. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
+- **SUPERSEDED 2026-07-31 (`a126e43d`) — production launches `draft-mtp` ALONE; see `speculative_decoding_policy` in the master registry.** (Re-verified 2026-09-14 under SW-4: every `spec_type` in `derived/stack_priors.yaml` is `draft-mtp`, `none` or `baseline`, and `orchestrator_stack.py:407` emits that value verbatim.) Historical text retained: **The v7 worker launch now uses one combined speculative stack (`ngram-mod,draft-mtp`) instead of redundant worker lanes.** Upstream/common speculative code tries n-gram drafting first and falls back to the MTP drafter when no prompt-matching draft is available, so the conservative deployment is one server configuration rather than separate `ngram` and `MTP` pools. This keeps the mechanism invisible to AutoPilot for now: planners do not tune per-request `ngram` switches until the combined lane has task-level acceptance evidence. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
 - **The `ngram-mod` speed signal is workload-dependent and not quality-clean enough for default-on claims by itself.** The MI210 quiet-card retest showed Qwen2.5-Coder-0.5B repetitive JSON edit `292.5 -> 347.7 t/s` (+18.9%) and Gemma-4-26B-A4B Q4 with `--reasoning off` `85.7 -> 129.1 t/s` (+50.6%), but Gemma JSON/key correctness was not clean and outputs were not token-identical. Treat this as a speed lever that must be admitted through task acceptance, not a universal speculation win. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md).
 - **K5 quality evidence closes the immediate v7 speculation-risk gate for the refreshed candidate.** The corrected chat-endpoint K5 harness measured v6 and v7 candidate `8e5c555ab` identically on MMLU-Pro (`73/200=36.5%`) and GPQA (`50/195=25.6%`), with `0` query errors and comparator `PASS` at the `-5pp` threshold. The invalid raw `/v1/completions` attempt is explicitly discarded as a protocol error. Sources: [gemma-challenge-kernel-techniques-v7.md](../handoffs/active/gemma-challenge-kernel-techniques-v7.md), [progress 2026-07-16.md](../progress/2026-07/2026-07-16.md), `/mnt/raid0/llm/tmp/v7-quality-20260716-chat/v7_quality_gate_report.md`.
 
@@ -1893,11 +1893,21 @@ so correctness is checkable only through the gate-skip control (worker at `B = n
 bit-exactly, 3/3). The registry change is **proposed, not applied** (`architect_critic` →
 `moe_spec_budget: 128`, frontdoor and worker stay 0), gated behind the E8-reseed / OP-19 decision.
 
-### Two contemporaneous numbers do not conflict — and one arm was a null by design
+### Two contemporaneous numbers do not conflict — because only one of them measures the mechanism
 
 The same week produced an apparently contradictory result: Qwen3.8-27B-Q8_0 pp512 at `budget=32` on the GPU
-champion measured **−2.92%**, a regression. These do not disagree — a CPU verifier batch and a GPU
-`llama-bench` champion sweep are different serving surfaces. But the champion's paired `tg128` row (−0.06%,
+champion measured **−2.92%**, reported as a regression. **Premise corrected 2026-09-14 (INF-40): they do not
+disagree because the GPU row is not a measurement of MoE-Spec at all — not because CPU and GPU are different
+surfaces.** That arm ran on Qwen3.8-27B-Q8_0, a **dense** model (`general.architecture qwen35`, **0 of 866**
+tensors matching `*exps*`/`ffn_gate_inp`, no `*.expert_count` key in the GGUF), while `--moe-spec-budget`
+masks inside `build_moe_ffn` (`src/llama-graph.cpp:1985`, champion `c7c37a0d9`) — a subgraph a dense graph
+never builds — so **both** GPU arms executed identical code. The figure is also non-significant on its own six
+samples (medians 768.83 → 746.38 = −2.92%, but means 758.63 ± 27.80 → 745.37 ± 25.07 = −1.75%, Welch
+t = −0.87, ranges fully overlapping), so it is usable only as a ±3.7% same-window noise reading for that GPU
+surface. **There is no countervailing surface**: the one live objection to the CPU +10.7% is its own thinness
+(n=3, Δ ≈ 2.9σ, below the ≥5-rep bar for a ≥5% claim). The surface-dependence lesson below still holds on its
+own evidence (heavy DRAM-bound role wins, light roles negative, measured on the same CPU run) — it is simply
+not what this pair of numbers shows. The champion's paired `tg128` row (−0.06%,
 reported as "no regression") is **uninformative by construction rather than by measurement**: batch-1 decode
 never reaches `--moe-spec-min-batch 4`, so that arm executes the *identical code path* as B=0. Reporting it
 as a clean decode result mistakes a design gate for an empirical finding.
@@ -1919,8 +1929,9 @@ executed 2026-08-27 and returned a scoped negative on our CPU path; see
   2026-08-27 B-sweep table with its three caveats, the surface-reconciliation table, and the proposed
   registry patch (`registry_patch_proposal.yaml`).
 - [`autokernel-champion-aggregate.md`](../handoffs/active/autokernel-champion-aggregate.md) — CH-4
-  (`c7c37a0d9`): the −2.92% pp512 regression and the `tg128` uninformative-by-construction finding
-  (2026-08-28).
+  (`c7c37a0d9`): the −2.92% pp512 row — **annotated VOID as MoE-Spec evidence 2026-09-14 (INF-40): dense
+  model, the flag's subgraph is absent, and NS at n=6** — and the `tg128` uninformative-by-construction
+  finding (2026-08-28).
 - `epyc-inference-research/data/moe-spec-bsweep-2026-08-25/` — `findings.md`, `summary.json` and
   `summary_receipt.json`: the canonical run receipts and the pinned binary identity.
 

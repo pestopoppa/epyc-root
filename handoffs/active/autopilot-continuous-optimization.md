@@ -1724,16 +1724,26 @@ First full smoke run of the trial loop. Four defects, three silent.
       recommends A (capacity-qualified replacement map), and defaults to **D — defer**. Nobody chose, so
       it defaulted, and five `--execute` attempts across 2026-07-26→29 all left `.staging-` bundles the
       runner forbids reusing. **This is the true critical path to quality promotion.**
-- [ ] **Operational alternative to the ratification-grade reseed — needs an operator go/no-go.**
-      `autopilot.py calibrate-baseline --tier 1` produces fresh same-era T1 quality, per-suite scores and
-      per-suite counts in ~100 questions. It is *not* sufficient on its own: `_apply_calibrated_baseline_result`
-      (`autopilot.py:9546`) writes `baselines_by_tier` / `per_suite_quality_by_tier` /
-      `per_suite_counts_by_tier` but **never touches `eval_quality_era`**, so the hold survives. The gap is
-      a circular dependency — `update_baseline()` refuses quality promotion while the baseline era differs
-      from the active era, and the era only updates inside a successful promotion. Breaking it requires
-      writing a fresh baseline already stamped `E8`, which is the human-amendment boundary
-      (`required_next_action: "human-only E8 baseline value reseed"`). Trade-off: an operational baseline
-      for config search, not a ratified publication-grade number.
+- [x] **Operational alternative to the ratification-grade reseed — the code defect is fixed; the gate it
+      cited is retired.** ✅ 2026-09-14 (`epyc-orchestrator` `d03218fc`) — two corrections. (1) The
+      human-amendment boundary this row leaned on (`required_next_action: "human-only E8 baseline value
+      reseed"`) was RETIRED by `artifacts/operator/ruling_op19_e8_chain_20260827.json` ("E8 chain:
+      RETIRED"; the hold itself closed `closed_operational_e15` on 2026-08-08), so there is no operator
+      go/no-go left to request here. (2) The code defect the row names survives the ruling and is now
+      fixed: `_apply_calibrated_baseline_result` (`autopilot.py:10753` on origin/main) wrote every
+      baseline value and never `eval_quality_era`, so `calibrate-baseline` left the hold in place. It now
+      stamps the era of the INSTRUMENT THAT PRODUCED THE RESULT — carried on the result by
+      `eval_tower._stamp_eval_instrument` from the human-owned `orchestration/instrument_eras.yaml`, with
+      `active`/`unfenced`/`unresolved` as explicit statuses — and REFUSES an unstamped or unresolved
+      result before writing anything, rather than guessing the era current at write time (those differ
+      across exactly the boundary the fence detects). Trust boundary checked, not assumed: both stamps
+      land only in `orchestration/autopilot_state.json` (`Baseline.to_state_dict()`), which
+      `coordination/session-bus/human_only_paths.yaml:45-49` does not list; the era registry is read-only
+      and the human-only YAML seed can never receive an era field (`_write_baseline_yaml_tiers` writes
+      tier tables only; `Baseline.save()` has no callers). `operator_seed_e8_operational_baseline.py`
+      remains the preferred deliberate-reseed path for its pre-write safety battery; its header was
+      corrected. Evidence: `tests/unit/test_era_stamp_reachability.py`; selection 1674 -> 1696 passed,
+      20 pre-existing failures unchanged.
 - [ ] **Run the canonical 79-question judge suite on Qwen3.6-27B-MTP-Q8_0.** Inherited from the three
       `accepted_gaps.yaml` waivers removed 2026-08-03: the gap they waived (missing overall quality prior)
       is closed because quality now compiles per-axis with recorded basis, but their stated closing action
@@ -1777,20 +1787,28 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
 
 ### Reported fixed, but the fix cannot run
 
-- [ ] **Speed-era stamp is unreachable — the throughput floor is now permanently demoted.**
-      `update_baseline()` returns early on `quality_rebaseline_required` (`safety_gate.py:2144-2156`);
-      the new speed-era stamp sits at `:2324-2328`, ~170 lines later. In production's current state
-      the early return always fires, so the stamp never executes and the hold can never close in
-      code. Net live effect: a cross-era throughput violation is demoted to a warning **indefinitely
-      with no in-code path to re-arm it**. The claim "a reseed closes the hold naturally" is false as
-      delivered. No test constructs a gate with BOTH eras active and calls `update_baseline`.
-- [ ] **`assigned_role` still 0 / 59,337 — production takes the branch that drops it.**
+- [x] **Speed-era stamp is unreachable — the throughput floor is now permanently demoted.** ✅ 2026-09-14
+      (`epyc-orchestrator` `d03218fc`) — CONFIRMED and FIXED. `update_baseline()` returned early on
+      `quality_rebaseline_required` (origin/main `safety_gate.py:2465`) ~220 lines before the speed-era
+      stamp (`:2683`), so with both eras active the stamp was unreachable code and the throughput hold
+      could never close. The two fences are different instruments with different eras and must clear
+      independently: new `SafetyGate._reseed_speed_axis_if_held()` re-anchors `frontdoor_speed` +
+      `autopilot_speed_era` from the same in-era measurement on the quality-hold refusal path, gated on
+      exactly the conditions under which `update_tier()` would itself have re-measured `frontdoor_speed`
+      (frontier tier, `speed > 0`, eligibility already certified) so no era is stamped onto an
+      un-measured speed. The quality refusal is unchanged and still fail-closed (no quality value,
+      per-suite entry, tier revision or `eval_quality_era` is written);
+      `BaselineUpdateResult.speed_reseeded` surfaces the write and it no longer logs as "skipped". The
+      gap the row named — "no test constructs a gate with BOTH eras active and calls `update_baseline`" —
+      is closed by `tests/unit/test_era_stamp_reachability.py` (23 tests; 18 red before the fix), which
+      pins the deadlock state and the four negative cases where no stamp is allowed.
+- [x] **`assigned_role` still 0 / 59,337 — production takes the branch that drops it.** ✅ 2026-09-14 — commit `d65a4e93`: new `EpisodicStore.merge_row_metadata()` carries the field onto the row taken by the UPDATE path, called from all four update branches (`q_scorer.py` pre-linked `memory_id` + `Q_TD_WRITE` find-or-update, routing and escalation). MERGE semantics: fills only when NULL/empty, never overwrites a first observation. Tests force `Q_TD_WRITE` on — the reason the old create-only tests passed for the bug's lifetime: `test_q_scorer_update_path_preserves_work.py` (5 tests, `test_update_path_backfills_assigned_role_and_work`, `test_update_path_merges_and_never_overwrites`).
       `orchestrator_stack.py:2117` sets `ORCHESTRATOR_Q_TD_WRITE=1`, so production runs the
       find-or-update branch at `q_scorer.py:1388-1406`, which calls `update_q_value` and returns
       before ever reaching `store()`. That branch fires ~11x more often than create
       (`SUM(update_count)=668,070` vs 59,337 rows). The new tests only cover the legacy create path,
       because `Q_TD_WRITE` is read at import time and is 0 under pytest.
-- [ ] **`work` payload: 0 rows carry a top-level `work` key.** Same update-branch hole, plus two
+- [x] **`work` payload: 0 rows carry a top-level `work` key.** ✅ 2026-09-14 — all three named holes closed. (a) Update-branch hole: same `merge_row_metadata()` as above, merging `work` sub-keys only where absent and preserving every other `context` key (commit `d65a4e93`). (b) Double sanitize: the policy is now idempotent (commit `b69bda61`) — measured lies fixed, a 32,500-char answer had reported `total was 32049`, and a 50-entry elision had reported `_elided_entries: 1` while silently dropping the first retained entry; `test_memory_record.py::TestSanitizeIsIdempotent` (5 tests). (c) Process-global invocation log: `stages.py`, `chat_delegation.py`, `chat.py` and `stream_adapter.py` now read the request-local `repl._invoked_tools` instead of the shared `tool_registry.get_invocation_log()`, which is bounded to a diagnostic ring (`deque(maxlen=1000)`, `ORCHESTRATOR_TOOL_INVOCATION_LOG_MAX`) so it can no longer grow for the process lifetime; an `ast` guard forbids any request-scoped module from calling it. `test_invocation_log_request_scope.py` (15 tests). Scoped per request rather than by clearing the shared log — a global clear is the same defect with a narrower race window. Suite: 1131 → 1146 passed. Same update-branch hole, plus two
       more: the sanitize policy runs twice (pipeline + `build_memory_record`) and is **not**
       idempotent despite its docstring, so the row's size/elision provenance actively lies; and
       `chat_pipeline/stages.py:288` feeds the **process-global, never-cleared**

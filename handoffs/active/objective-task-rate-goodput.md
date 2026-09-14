@@ -112,6 +112,25 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
     a banked axis, and the 231 absent-quality rows are a DATA defect that a metric change would
     silently paper over — `or 0.0` should distinguish absent from zero regardless of which option
     is chosen, or the same 231 rows will re-enter under goodput scored as zero goodput.
+
+    **Independent half DONE ✅ 2026-09-14 (RTG-23, `epyc-orchestrator` `fb16d860`, zero inference).**
+    `or 0.0` no longer scores absence as a measurement on ANY axis: `quality_from{,_row}` return
+    `None` for absence (matching the `seq_task_rate_qph` convention), `_row_axis` reads a bare 0.0 on
+    a row whose eval never ran as absence, the row builders return None and the live builder raises
+    `UnmeasuredObjectiveError` when any declared axis is unmeasured, and `objectives_measurable` now
+    delegates to the builder it gates (it checked the rate only). Consumers report absence as absence
+    (dashboard `task_rate_status="quality_unmeasured"`, null goodput; planner evidence `n/a`).
+    Replay over BOTH journal shards (1,372 trial rows, journals unmodified): builder-refused rows
+    0 → 225, T0 audit entries 318 → 233, frontier sizes UNCHANGED (legacy 11/4/1, rate 13/8), and
+    zero-quality frontier points 0 before and 0 after. The 231 falsy-quality rows are 225 rows whose
+    eval never ran (224 T0 sentinel + 1 bug-corrupted T1) plus 6 genuine measured zeros — so the
+    objection's DATA half is closed and its frontier half was never realised on current data. The
+    DOMINANCE hole (a max-rate point cannot be dominated however bad its quality) is untouched and
+    still needs option (a), (b) or (c). Downstream consumers carry the distinction: `551d0e48` stops
+    `eval_batch_serving_evaltower_window.py` and `run_real_suite_v1_evaltower_window.py` defaulting
+    `goodput_qph` to 0.0. Tests: `tests/unit/test_objective_absent_quality.py` (12) plus one per
+    window script; `pytest tests -k "tier_spec or pareto or frontier or objective"` 155 passed /
+    0 failed (143 on origin/main, same 0 failures).
 - [ ] **W3e — retire the tier-cost axis from dominance** (deferred out of W3). The original
       W3 scope included dropping `-cost`; that is what made the vector 3-D and is blocked by
       the positional consumers above. Doing it means fixing `safety_gate.py:2303` and

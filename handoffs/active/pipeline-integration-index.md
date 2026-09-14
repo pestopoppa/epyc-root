@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| PIP-01 | colbert reranker web research | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | S5: Implement reranker — HOLD as of 2026-06-12 gate analysis. Add reranking to research.py, gated behind web_research_rerank flag, only if… | — |
+| PIP-01 | colbert reranker web research | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | PREFIX-1 web half landed f876d989; KB re-embed is OP-24 — next G14 re-export (py3.10–3.12 venv), then S5 A/B | — |
 | PIP-02 | document parser table bench | [document-parser-table-bench.md](document-parser-table-bench.md) | Resolve PP-DocLayoutV3 weights and record cache path + size — a separate download from the GGUF | — |
 | PIP-03 | ernie image turbo evaluation | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs | — |
 | PIP-04 | internal kb rag | [internal-kb-rag.md](internal-kb-rag.md) | K8 (LOW priority, defer): wikilink learning-loop scorer (NEW 2026-04-28, from intake-492). Flywheel's auto-wikilink suggestion uses an acce… | — |

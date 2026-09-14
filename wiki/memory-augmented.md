@@ -48,16 +48,29 @@ human-amendment-only). Rows are compute-gated: filed, never run.
   55.7% BEAM fold at 100K) is a **sanity floor** — far below it means a configuration bug, not a
   finding; it is NOT a target (that run discarded assistant turns and capped answers at 512 tokens).
 
-### M-12e — two scorer defects must be fixed BEFORE any arm, zero compute, and they flag this page's own quoted numbers
+### M-12e — DONE 2026-09-14: THREE scorer defects, fixed, and this page's quoted numbers refreshed
 
-In `score_tulving_run.py`: (i) the unconditional `simple_inputs.append(scored)` (**verified at :121
-this session; the dive ledger recorded :120**) must fire only when `get_style == "all"`, so Simple
-Recall is computed over recall questions as the paper defines it; (ii) `chronological_tau` (def at
-**:51**) must return 0.0 unless the matched set covers the FULL ground truth. The scorer reads
-stored responses — no model loads — so the existing run artifacts can be **re-scored offline**, and
-the paragraphs quoting SRS 0.5530 / CAS 0.1593 refreshed afterwards. That refresh order covers the
-2026-06-20 Tulving baseline numbers compiled on this page: they stand as measured until the M-12e
-re-score, and must not be re-quoted as settled after the scorer fix without the refresh.
+**Done 2026-09-14** (research `dcb769c1`). There were **three** defects, not two, and all three were
+settled by counting against the benchmark authors' own shipped artifacts rather than by reading prose.
+In `score_tulving_run.py`: (i) the unconditional `simple_inputs.append(scored)` (at `:121`) now fires
+only when `get_style == "all"`, so Simple Recall is computed over the 366 recall questions as the paper
+defines it — the subset is settled by counting (`result_lenient_all_book_200.csv` has 548 rows; the
+196-chapter `df_qa.parquet` has 548 `get=="all"` rows of 686); (ii) `chronological_tau` (def at `:51`)
+now returns 0.0 unless the matched set covers the FULL ground truth, with
+`chronological_tau_detail()` reporting coverage, the uncovered `tau_raw` as a diagnostic, and a
+per-question status. (iii) **Found in the same scope**: the five Simple Recall bins keyed on
+ground-truth ITEM count, but the paper bins on matching EVENTS — reproducing the authors'
+`bins_items_correct_answer` column matches 686/686 on `n_chapters_correct_answer` and only 629/686 on
+`n_items_correct_answer`; `nb_events` now rides in the prompt metadata and the `nb_gt` fallback is
+reported, never silent. The scorer reads stored responses — no model loads — so run `20260619_141212`
+was **re-scored offline** to
+`benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`, leaving the original
+`tulving_score.json` untouched. **SRS 0.5530 → 0.5684** (subset fix alone 0.5755, bin fix alone
+0.5402); **CAS 0.1593 → 0.1593**, unchanged only because no partial-coverage question on this run
+matched ≥2 items — so the tau defect is real and **latent**, not harmless. The paragraphs on this page
+and in [benchmark-methodology.md](benchmark-methodology.md) / [context-management.md](context-management.md)
+that quoted SRS 0.5530 have been refreshed accordingly, and `SCORER_VERSION = 2` now rides in every
+scored artifact so a v1 and a v2 figure cannot be compared by accident.
 
 ### CME-1..4 (EVL-50) — the two adapters M-12 needs are filed with their harness defects attached
 
@@ -328,7 +341,7 @@ The connection between memory and the autopilot is especially significant. Befor
 
 ### New Finding (2026-06-20) — K-MEM Tulving baseline corrected to mixed recall with weak chronology
 
-- **The Tulving episodic-memory benchmark is complete for the first `ingest_long_context` baseline, but it is not a memory-routing promotion signal.** Research run `20260619_141212` used production/default GGUF expert settings (`--skip-moe-reduction`); raw artifacts were packaged in `epyc-inference-research` commit `b6edc64`, and corrected score artifacts landed in `9e63af0` after fixing Tulving ground-truth parsing. The corrected scorer covered `456/456` questions with no missing ground truth, avg F1 `0.4309`, Simple Recall `0.5530`, Chronological Awareness `0.1593`, and avg decode `17.27 t/s`; the benchmark log ended `448 completed, 8 skipped, 0 errors` because the corrected resume reused the first 8 rows. Failure shape: lexical entity/time/location recall is usable, event-content/full-detail retrieval and chronology are weak, and zero-answer hallucination checks fail. This clears the throughput-sensitive K-MEM lane and creates a targeted follow-up task, not a change to episodic retrieval/write behavior. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md).
+- **The Tulving episodic-memory benchmark is complete for the first `ingest_long_context` baseline, but it is not a memory-routing promotion signal.** Research run `20260619_141212` used production/default GGUF expert settings (`--skip-moe-reduction`); raw artifacts were packaged in `epyc-inference-research` commit `b6edc64`, and corrected score artifacts landed in `9e63af0` after fixing Tulving ground-truth parsing. The corrected scorer covered `456/456` questions with no missing ground truth, avg F1 `0.4309`, Simple Recall **`0.5684`** (scorer v2, over the 366 `get=="all"` questions; the `0.5530` figure was v1, computed over all 456), Chronological Awareness `0.1593` — kept, with the caveat that 37/45 tau questions now fail closed for partial coverage and 30/45 carry <2 ground-truth items — and avg decode `17.27 t/s`; the benchmark log ended `448 completed, 8 skipped, 0 errors` because the corrected resume reused the first 8 rows. Failure shape: lexical entity/time/location recall is usable, event-content/full-detail retrieval and chronology are weak, and zero-answer hallucination checks fail. This clears the throughput-sensitive K-MEM lane and creates a targeted follow-up task, not a change to episodic retrieval/write behavior. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md). **M-12e re-score 2026-09-14** — research `dcb769c1`, artifact `benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`; the original `tulving_score.json` is untouched, and `SCORER_VERSION = 2` now rides in every scored artifact so v1 and v2 figures cannot be compared by accident.
 
 ### New Finding (2026-06-28) — Sequential evidence is cutover-ready but still default-off
 

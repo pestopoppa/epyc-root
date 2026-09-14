@@ -398,15 +398,29 @@ failure caught in amber.
         specified) is a **sanity floor** — far below it means a configuration bug, not a finding.
         It is NOT a target: that run discarded assistant turns and capped answers at 512 tokens
         (intake-1337#record).
-  - [ ] **M-12e — scorer prerequisites, ZERO COMPUTE, do before any arm runs** (intake-408#record).
-        In `epyc-inference-research/scripts/benchmark/score_tulving_run.py`: (i) the unconditional
-        `simple_inputs.append(scored)` (**verified at :121 this session; the dive ledger recorded
-        :120**) must append only when `get_style == "all"`, so Simple Recall is computed over
-        recall questions as the paper defines it; (ii) `chronological_tau` (def at **:51**, returns
-        `_kendall_tau(matched_indices)` at **:80**) must return 0.0 unless the matched set covers
-        the FULL ground truth. Then re-score the existing run artifacts offline — the scorer reads
-        stored responses, no model is loaded — and refresh the four wiki paragraphs quoting
-        SRS 0.5530 / CAS 0.1593.
+  - [x] **M-12e — scorer prerequisites, ZERO COMPUTE, do before any arm runs** (intake-408#record).
+        ✅ 2026-09-14, research `dcb769c1`. THREE defects, not two. (i) the unconditional
+        `simple_inputs.append(scored)` at :121 now fires only for `get_style == "all"`; the subset is
+        settled by counting, not prose — the authors' `result_lenient_all_book_200.csv` has 548 rows
+        and the 196ch `df_qa.parquet` has 548 `get=="all"` rows of 686. (ii) `chronological_tau` fails
+        closed at 0.0 unless the matched set covers the FULL ground truth; `chronological_tau_detail()`
+        reports coverage, the uncovered `tau_raw` as a diagnostic, and a per-question status.
+        (iii) FOUND IN THE SAME SCOPE: the five bins keyed on ground-truth ITEM count, but the paper
+        bins on matching EVENTS — reproducing the authors' `bins_items_correct_answer` matches 686/686
+        on `n_chapters_correct_answer` and 629/686 on `n_items_correct_answer`; `nb_events` now rides
+        in the prompt metadata and the `nb_gt` fallback is reported, never silent. Re-scored
+        `20260619_141212` offline (stored responses; no model loads, verified by reading the import
+        graph) to `benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json` —
+        the original `tulving_score.json` is untouched. **SRS 0.5530 → 0.5684** (over 366 questions,
+        not 456; subset fix alone 0.5755, bin fix alone 0.5402), **CAS 0.1593 → 0.1593** — unchanged
+        only because no partial-coverage question here matched ≥2 items, so the tau defect is real and
+        LATENT; 37 of 45 chronological questions are now labelled partial, and 30 of those 45 have
+        <2 ground-truth items so two thirds of the tau leg is structurally 0.0. `avg_f1`,
+        `by_retrieval_type` and 17.27 t/s unchanged. `SCORER_VERSION = 2` now rides in the summary and
+        the markdown so v1 and v2 figures cannot be compared by accident. Tests 85 → 108 in
+        `scripts/benchmark/test_score_tulving_run.py` + `test_tulving_episodic_adapter.py`. The four
+        wiki paragraphs quoting SRS 0.5530 / CAS 0.1593 were refreshed in the same wrap-up; draft
+        at `wiki/drafts/tulving-subset-scoring-and-tau-coverage.md`.
 
 ## Why the reseed is necessary (and what it will NOT fix)
 

@@ -176,16 +176,5 @@ correct purely because the orchestrator API was down), explicitly naming
       crashes more gets a smaller denominator and is not penalized for it.** The external convention
       says the agent-caused half should score 0 (with the baseline paying the same tax) while only the
       platform-caused half is dropped. Decide deliberately; do not inherit current behaviour by default.
-- [ ] **ETR-2 — `quality_measured` is computed and never read (latent defect).** Placeholder results
-      are constructed with `quality=0.0` and `quality_measured=False`, each commented "`quality=0` is a
-      placeholder, not a measurement" — but `quality_measured` appears **zero** times in
-      `autopilot.py` and `experiment_journal.py`, and only at its own declaration in `safety_gate.py`.
-      Neither `check()` nor `update_baseline()` reads it, so a placeholder enters the gate as a literal
-      0.0 candidate score; what actually saves it is an **independent** guard, the REL-1 reliability
-      floor. Either read the flag or delete it — a guard that is computed, documented and never
-      consulted is exactly the shape our own verification rules warn about.
-- [ ] **ETR-3 — Close the narrow silent-scoring hole.** An unrecognized failure carrying a non-empty
-      error string becomes `task_failed` (misclassified — charged to the model rather than the
-      platform), which is defensible. The genuine fail-open is narrower: a **non-blank garbage answer
-      with no error field and no structural signal** returns `None` from `infra_failure_reason` and is
-      scored as an ordinary wrong answer.
+- [x] **ETR-2 — `quality_measured` is computed and never read (latent defect).** ✅ 2026-09-14 — the flag is now READ, and the producers made truthful. `SafetyGate.check()` fails closed on `quality_measured=False` with its own `quality_not_measured` category (a placeholder is no longer charged as a `quality_floor`/`regression` violation, and does not arm the auto-rollback), `update_baseline()` refuses the write with `ineligible_reason="quality_not_measured"`, the eleven `EvalResult(quality=0)` placeholders in `eval_tower.py` plus the consult-gate probe in `actions.py` now declare `quality_measured=False` with a named reason, and `_eval_details_from_result()` carries the distinction onto every journal row. A MEASURED 0.0 is still gated as a measurement. `epyc-orchestrator` `250a5d13`; 16 tests in `tests/unit/test_safety_gate_quality_measured.py` + `tests/unit/test_quality_measured_producers.py` (incl. an AST guard so a new placeholder cannot reintroduce the defect).
+- [x] **ETR-3 — Close the narrow silent-scoring hole.** ✅ 2026-09-14 — closed with the structural fact already on the wire: a non-blank answer whose response reports ZERO generated tokens did not come out of a decode, so `infra_failure_reason` now returns the new reason `answer_without_generation` (the `empty_response` sibling whose blank-answer requirement let this shape through). Opt-in via `require_generation_evidence`, set on the MEASUREMENT paths only (`eval_tower`, `seeding_scoring._classify_error`, `seeding_eval`) and deliberately OFF for the live-serving reward path, so a genuine wrong answer keeps earning its negative reward; mock-mode replies and legacy rows with no token counter are unchanged. The residue is named: a non-blank answer WITH a real token count is a real generation, so garbage there stays scored WRONG. `epyc-orchestrator` `250a5d13`; 10 tests in `tests/unit/test_answer_without_generation.py`.

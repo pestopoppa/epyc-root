@@ -694,21 +694,35 @@ documented in this file's 2026-06-23 EV-9 section via `feedback_per_suite_gate_r
       (compare-to-ghost is now impossible). 11 new tests
       (`tests/unit/test_safety_gate_ev14c_reference_pin.py`) + 262 orchestrator suite tests pass.
       EV-14a can now measure a band against a pinned reference that cannot silently move.
-- [ ] **EV-14d — Assert expected case count before scoring.** A short draw currently scores a subset
-      and reports it as a complete result: the sampler logs a shortfall into provenance and returns
-      short, then `n_questions` is defined as `len(results)`. Three narrow paths already fail closed
-      (promotion-eval min-n, math re-baseline, designed-core missing ids); generalize that. External
-      precedent: `intake-1141`, where a half-vendored suite "passes config validation and then scores
-      a subset of the benchmark without saying so."
-- [ ] **EV-14e — Record the baseline pin INSIDE the trial record, beside the delta.** Today the
-      incumbent value reaches the journal at write time only as **free prose** in `failure_analysis`
-      ("… vs baseline 1.524 …"), and we already parse it back out with a regex
-      (`experiment_journal.py:99` `_BASELINE_QUALITY_RE`) — which exists because corrupt baselines
-      embedded in prose had to be scrubbed after the fact. `JournalEntry` has no `baseline_quality`,
-      no `delta`, no `previous_quality` field at all. Adopt `intake-1141`'s pattern: write the pin
-      into the run's own result so the delta is self-contained rather than joined by hand or
-      re-folded. Their own postmortem is ours in another costume — their pins went stale because
-      "nothing recorded the dependency."
+- [x] **EV-14d — Assert expected case count before scoring.** ✅ 2026-09-14 — `epyc-orchestrator`
+      `4555677e`. `_eval_batch` returns `[r for r in results if r is not None]` and can come back
+      SHORT (abandoned lane, cancelled future, serial wall-budget `break`), so the four writers that
+      defined `n_questions = len(results)` (`eval_tower.py:6637`/`6747`/`6872`/`6971` on origin/main
+      — calibration, math_rebaseline, question_subset, resume_incomplete) renamed the shortfall as
+      the denominator: 40 of 50 scored was indistinguishable from a complete draw of 40. All four now
+      emit `n_questions` = the REQUESTED count plus `n_questions_completed` /
+      `n_questions_missing` / `completeness_ratio` / `draw_complete`, each mode report carries a
+      top-level `draw_complete` + `incomplete_roles` fold, and the window runner's
+      `_arm_decision_blocker` / `_verifier_result_blocker` block on a recorded requested/completed
+      gap. `draw_is_complete()` is fail-closed (no counts ≠ complete); `draw_shortfall()` is silent
+      on pre-EV-14d artifacts so old reports are not retroactively failed. 14 tests
+      (`tests/unit/test_ev14d_short_draw_completeness.py`), including the real
+      `eval_question_subset` call site returning 7 of 10 and the gate consumer refusing it.
+- [x] **EV-14e — Record the baseline pin INSIDE the trial record, beside the delta.** ✅ 2026-09-14 —
+      `epyc-orchestrator` `4555677e`. `JournalEntry.baseline_pin` now records tier, reference
+      quality, the EV-14c `tier_revision`, `eval_quality_era` / `autopilot_speed_era`, the per-suite
+      reference map + its counts, the baseline path, and the `delta` / `relative_delta` the trial
+      actually measured — so the comparison is self-contained instead of joined by hand.
+      `baseline_pin_for()` prefers the structured field and falls back to `_BASELINE_QUALITY_RE`
+      (`experiment_journal.py:99`) ONLY for pre-2026-09-14 rows, marking the read
+      `source="legacy_failure_analysis_regex"` and logging it once per trial; a corrupt 0-3-scale
+      prose baseline is reported suspect with `baseline_quality=None` rather than handed back.
+      autopilot captures the pin via `Baseline.pin_tier(register=False)` BEFORE
+      `gate.update_baseline()` can move the reference (the write-time read would have been the
+      POST-promotion value), mirrors the rebaseline hold as `suppressed_by`, and cannot fail a trial.
+      Schema is additive: the field defaults to `{}`, legacy shards load unchanged, no journal file
+      was rewritten or back-filled. 14 tests (`tests/unit/test_ev14e_baseline_pin_record.py`).
+      Zero edits to `safety_gate.py`.
 - [ ] **EV-14f — Known-null corpus: run the optimizer against inputs with NO failures and assert it
       proposes nothing.** Our eval tower measures whether a change HELPS, never whether a proposed fix
       ANSWERS a real observed failure. Method: `intake-1129`'s Counterfactual Fabrication Lab, whose
