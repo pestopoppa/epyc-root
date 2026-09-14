@@ -44,3 +44,21 @@ and `stop_requested: true`. Batch 25 has no terminal continuation and is exclude
 - Experimental source: `/mnt/raid0/llm/tmp/glm53-recovered-accumulator-20260912`
 - Published experimental branch: `pestopoppa/llama.cpp` branch
   `ak/glm53-recovered-accumulator-20260912`, tip `dc3798db10a6654721f2a1fa6a162be2e5fdf95f`
+
+## Production-anchored dashboard trajectory
+
+Corrected the new AutoKernel trajectory headline so its primary axis is the champion's directly
+measured gain against frozen production, not campaign-local CoR accumulation. Commit `262b22d3`
+adds an exact bounded join across producer raw receipts, full champion identities in kept rows,
+and `champion_vs_production` ledger rows. Curves are grouped by recorded model and surface;
+unlabelled or unjoinable evidence remains explicit, and unrelated marginal effects are never
+composed. The prior CoR plot remains available only as a secondary drill-down.
+
+Live `/mnt/raid0/llm/autokernel/loop-memory` projection resolves production-v9
+`0db32c06e3e5`, explicit Qwen3.8 `tg128` (`bff30cebee0d`, `+5.633302%`) and `dec-b4`
+(`b0eb4fab4729`, `+22.442869%`) curves, two model-unrecorded legacy surface curves, and two
+unjoinable gaps. The GLM store has no production-anchored checkpoint, so its 23-keep
+`+0.830381%` bench comparison and two inconclusive serving checks remain CoR-only. Validation:
+79 focused tests plus 5 executable browser subtests passed; focused Ruff, Python compilation,
+and diff checks passed. GitNexus reports LOW upstream risk. No process reload, runtime state,
+registry, production kernel, or supervisor file changed.

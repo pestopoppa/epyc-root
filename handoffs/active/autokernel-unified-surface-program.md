@@ -3223,6 +3223,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     snapshot resolves seven capabilities from
     `/mnt/raid0/llm/autokernel/loop-memory/champion-capabilities.json` (SHA-256
     `264f16ad346634b2a0c7bbe5e7a83faa976db0a7f75162f38f38324393247ea7`).
+  - [x] **AKU-09k — headline the measured champion trajectory against frozen production**:
+    ✅ 2026-09-14. The existing `/loop` page now draws one curve per recorded model/surface from
+    direct champion-vs-production checkpoints only. Historical points require an exact join of
+    the raw receipt filename, full champion identity in the keep row, and the producer's frozen-
+    production refresh row; unjoinable/manual records remain counted gaps. Campaign-local CoR
+    accumulation is a secondary drill-down and is never spliced into the headline. Live GPU
+    evidence yields explicit Qwen3.8 `tg128` and `dec-b4` curves plus two honestly model-unrecorded
+    legacy curves; GLM's 23-keep `+0.830381%` remains CoR-only because no production-anchored GLM
+    checkpoint exists. ROOT `262b22d3`; 79 focused tests plus 5 browser subtests passed. Existing
+    registry, semantic health and freshness remain unchanged; AKU-09g/AKU-12 remain open.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.
