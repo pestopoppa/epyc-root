@@ -3246,14 +3246,21 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       corrects the initial scatter: exactly one selectable headline trajectory exists per model.
       Each model chooses the longest exact surface history (plain wins ties); secondary surfaces are
       selectable detail, never blended. Recipe/harness/baseline changes are Autopilot-style instrument
-      bands and dashed discontinuity connectors within the same model row. Only promoted checkpoints
-      are dots; nulls, regressions, refusals and invalid/setup attempts remain in the collapsed ledger.
+      bands and dashed discontinuity connectors within the same model row. The subsequent browser
+      correction makes actual kept ledger rows and retained-bundle members drive dots: A/B
+      checkpoints alone cannot assert keeps. Nulls, regressions, refusals, invalid/setup attempts,
+      and disposition counters remain in the collapsed ledger.
       Accessible keep markers open a persistent side panel and expose only recorded evidence, using
       explicit unknowns otherwise. Trajectory rendering occurs first behind its own visible failure
       boundary. Live default Flash-Next plain spans `6f032c48` → `9c4f73e2` → `ef81196d`; MTP exposes
       the same commit order via the surface selector. Five model IDs produce five headline trajectories,
-      with three keep-only dots and two instrument connectors visible by default. Final focused
-      validation: 85 passed, 33 skipped, 5 browser subtests.
+      with two instrument connectors. The original three-dot result omitted keep history and the
+      original panel vanished on refresh; both claims were corrected using real Chromium.
+      GLM exposes all 23 retained keeps, including explicitly undated bundle recoveries; hover,
+      click, refresh persistence, Escape, and keyboard reopening pass against the served page.
+      Browser regression: `tests/js/trajectory_browser_check.cjs`. The preceding focused suite
+      passed 85 tests, 33 skips, and five subtests; the interaction fix additionally passed the
+      75-test static-JS/loop suite and live Chromium exercise.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.

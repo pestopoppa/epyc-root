@@ -127,3 +127,30 @@ one SVG, two dashed instrument connectors, three keep-only dots, zero non-keep d
 recipe legend, a persistent evidence side panel, and no render exceptions.
 GitNexus reports LOW upstream risk (three dependants) for `improvement_trajectory`; the inline JS
 renderer is not indexed. No campaign state, registry, supervisor files, or production kernels changed.
+
+## Keep-history and browser-interaction correction
+
+The preceding DOM-only verification was insufficient: real Chromium reproduced the detail panel
+opening and then disappearing at the next 20-second refresh. The renderer now preserves its DOM
+when its trajectory data is unchanged, restores the selected keep when data changes, and provides
+an immediate visible hover card. Close/Escape and keyboard activation restore focus correctly.
+
+The prior dots represented A/B checkpoints, not all keeps. A dedicated keep query now selects
+kept rows before applying a bound and merges active retained-bundle membership. Actual keeps drive
+markers; measurement checkpoints alone do not assert a keep. A keep without a cumulative checkpoint
+uses a timestamped keep rail; a retained member without its original timestamp is explicitly undated.
+Disposition counts are inside the default-collapsed knowledge accordion.
+
+`tests/js/trajectory_browser_check.cjs` exercises the served page in Chromium: select GLM, verify
+23 keep markers and zero non-keep markers, hover, click, refresh, wait through a natural poll,
+verify panel persistence, close with Escape, and reopen with Enter. The live check passed with zero
+page errors; screenshot: `/mnt/raid0/llm/tmp/autokernel-keep-panel.png`. Existing static-JS and loop
+surface tests passed (75 plus five subtests). Browser dependencies were extracted into the research
+cache without installing system packages. GitNexus was attempted; index recovery failed, and the
+inline renderer is unindexed. Direct caller inspection and the real browser check cover this edit.
+
+Operator follow-ups clarified that markers below 0% looked like losses and that the old +5.6%
+summary still occupied the first card. The keep timeline is now outside the percentage axis,
+and the old champion summary/Progress tiles and their unused renderers were removed entirely.
+The champion renderer retains only the capabilities card. Historical A/B evidence remains in the
+trajectory; the current task does not reclassify any measurement or modify the running campaign.
