@@ -295,6 +295,44 @@ class Freshness(_Fixture):
 # --------------------------------------------------------------------------- #
 # The health probe — the /api/health KIND, not the /health kind
 # --------------------------------------------------------------------------- #
+class SerialChildLiveness(unittest.TestCase):
+    """A long inner measurement advances independently of its router batch."""
+
+    @staticmethod
+    def report() -> dict:
+        return {"artifact_present": True, "path": "/tmp/serial/loop-status.json",
+                "body": {"generated_at": "2026-09-14T20:00:00Z",
+                         "state": "running", "campaign_id": "legacy-serial",
+                         "surface": "serial_targets", "iterations_done": 45,
+                         "measurements_reached": 34, "champion_head": "abc",
+                         "stale_after_s": 180,
+                         "routing": {"next_batch": 45},
+                         "target": {"pid": 1234, "batch_dir": "/tmp/batch-45"}}}
+
+    def test_verified_fresh_child_heartbeat_advances_router_watermark(self):
+        report = self.report()
+        serial = {"child": {"joined": True, "freshness_state": "fresh",
+                            "generated_at": "2026-09-14T20:02:30Z"}}
+        got = loop_status.observation(report, {"detail": "fresh"}, serial)
+        self.assertEqual(
+            got.watermark,
+            "running|45|1234|/tmp/batch-45|child:2026-09-14T20:02:30Z")
+
+    def test_unverified_or_stale_child_cannot_manufacture_progress(self):
+        report = self.report()
+        expected = "running|45|1234|/tmp/batch-45"
+        for child in (
+                {"joined": False, "freshness_state": "fresh",
+                 "generated_at": "2026-09-14T20:02:30Z"},
+                {"joined": True, "freshness_state": "stale",
+                 "generated_at": "2026-09-14T20:02:30Z"},
+                {"joined": True, "freshness_state": "fresh", "generated_at": None}):
+            with self.subTest(child=child):
+                got = loop_status.observation(
+                    report, {"detail": "fresh"}, {"child": child})
+                self.assertEqual(got.watermark, expected)
+
+
 class Probe(_Fixture):
 
     def test_fresh_is_ok_and_200(self):

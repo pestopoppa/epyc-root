@@ -429,8 +429,8 @@ def summarize(body: Mapping[str, Any]) -> dict:
     }
 
 
-def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
-                ) -> panels.Observation:
+def observation(report: Mapping[str, Any], fresh: Mapping[str, Any],
+                serial: Mapping[str, Any] | None = None) -> panels.Observation:
     """The panel-registry observation for this reading.
 
     ``silence_budget_s`` hands the PRODUCER'S declared cadence to the envelope,
@@ -458,6 +458,17 @@ def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
         routing = body.get("routing") if isinstance(body.get("routing"), dict) else {}
         active = body.get("target") if isinstance(body.get("target"), dict) else {}
         watermark = f"{state}|{routing.get('next_batch')}|{active.get('pid')}|{active.get('batch_dir')}"
+        # A serial batch can spend much longer than the watchdog envelope inside
+        # one measurement.  The router identity quite correctly remains fixed
+        # for that whole interval, so using it alone reports "not advancing"
+        # over a healthy child.  Admit the child's producer heartbeat only after
+        # `_serial_snapshot` has proved the exact target/batch/PID join.  A stale,
+        # malformed, or merely same-store report must not manufacture progress.
+        child = serial.get("child") if isinstance(serial, Mapping) else None
+        if (isinstance(child, Mapping) and child.get("joined") is True
+                and child.get("freshness_state") == STATE_FRESH
+                and isinstance(child.get("generated_at"), str)):
+            watermark += f"|child:{child['generated_at']}"
     return panels.Observation(
         artifact_present=True,
         timestamp=timestamp,
@@ -3334,10 +3345,12 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         # historical loop_status.v1 surface remains unchanged/read-only.
         "campaign": campaign,
     }
+    serial = None
     if body is not None and body.get("campaign_id") == "legacy-serial" \
             and body.get("surface") == "serial_targets":
-        wire["serial"] = _serial_snapshot(body, now=now, root=live_root)
-    return wire, campaign_observation(campaign, observation(report, fresh))
+        serial = _serial_snapshot(body, now=now, root=live_root)
+        wire["serial"] = serial
+    return wire, campaign_observation(campaign, observation(report, fresh, serial))
 
 
 __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
