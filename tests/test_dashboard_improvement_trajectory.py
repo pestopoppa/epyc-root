@@ -134,6 +134,130 @@ def test_backend_projects_bounded_experiment_events_without_comparison_samples(t
     assert "anchor_samples" not in json.dumps(keep)
 
 
+def test_keep_history_filters_before_bound_and_preserves_exact_count(tmp_path: Path) -> None:
+    _store(tmp_path)
+    con = sqlite3.connect(tmp_path / "experiments.db")
+    rows = []
+    for index in range(600):
+        rows.append((f"null-{index}", f"2026-09-02T00:{index // 60:02d}:{index % 60:02d}Z",
+                     "ak-loop", None, "e" * 64, None, f"null-{index}", "tg128",
+                     "kernel", "null", "falsifier", "measured_null", None, None,
+                     None, None, None, "{}"))
+    con.executemany("INSERT INTO experiments VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows)
+    con.commit()
+    con.close()
+    _insert(tmp_path, "keep-old-1", "2026-09-01T00:00:01Z", "keep-one", "kept",
+            {"champion_head": "1" * 40, "comparison": _comparison(1.0)})
+    _insert(tmp_path, "keep-old-2", "2026-09-01T00:00:02Z", "keep-two", "kept",
+            {"champion_head": "2" * 40, "comparison": _comparison(2.0)})
+
+    history = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)["keep_history"]
+    global_source = next(source for source in history["sources"] if source["id"] == "global")
+    assert global_source["available_count"] == global_source["returned_count"] == 2
+    db_events = [event for event in history["events"]
+                 if event["membership_source"] == "experiment_store"]
+    assert [event["attempt_id"] for event in db_events] == ["keep-old-1", "keep-old-2"]
+    assert history["per_model_counts"]["Qwen3.8-27B-Q8_0"] == 2
+
+
+def test_keep_history_recovers_bounded_active_identity_and_bundle_order(tmp_path: Path) -> None:
+    global_root, active_root = tmp_path / "global", tmp_path / "active"
+    global_root.mkdir()
+    active_root.mkdir()
+    _store(global_root)
+    _store(active_root)
+    head = "a" * 40
+    large_payload = '{"champion_head": "' + head + '", "comparison": {"samples": "' \
+                    + ("x" * (loop_status.TRAJECTORY_RAW_MAX_BYTES + 8)) + '"}}'
+    con = sqlite3.connect(active_root / "experiments.db")
+    con.execute("INSERT INTO experiments VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
+        "active-keep", "2026-09-10T00:00:00Z", "glm", None, "e" * 64, None,
+        "mechanism-one", "decode", "kernel", "bounded hypothesis", "falsifier",
+        "kept", .004, None, None, None, "r" * 64, large_payload))
+    con.commit()
+    con.close()
+    (active_root / "accumulator-bundle.json").write_text(json.dumps({
+        "schema": "epyc.autokernel.accumulator_bundle.v2",
+        "keeps": ["mechanism-one", "mechanism-two"]}))
+    (active_root / "recovery").mkdir()
+    (active_root / "recovery/recovered-accumulator-state.json").write_text(json.dumps({
+        "schema": "epyc.autokernel.accumulator_recovery.v1",
+        "keeps": [{"mechanism_id": "mechanism-one", "commit": head},
+                  {"mechanism_id": "mechanism-two", "commit": "b" * 40}]}))
+    active = {"id": "glm", "model": "GLM-5.3-Flash", "store": str(active_root)}
+
+    history = loop_status._retained_keep_history(global_root, {"curves": []}, active)
+    assert history["per_model_counts"]["GLM-5.3-Flash"] == 2
+    glm_events = [event for event in history["events"] if event["model"] == "GLM-5.3-Flash"]
+    assert [event["bundle_order"] for event in glm_events] == [1, 2]
+    assert glm_events[0]["commit"] == head
+    assert glm_events[0]["hypothesis"] == "bounded hypothesis"
+    assert glm_events[1]["recorded_at"] is None
+    assert glm_events[1]["effect_pct"] is None
+
+
+def test_keep_history_refuses_ambiguous_checkpoint_commit_model(tmp_path: Path) -> None:
+    _store(tmp_path)
+    head = "a" * 40
+    _insert(tmp_path, "ambiguous", "2026-09-01T00:00:01Z", "shared", "kept",
+            {"champion_head": head})
+    headline = {"curves": [
+        {"model": "Qwen", "surface_series": [{"points": [{"commit": head}]}]},
+        {"model": "Gemma", "surface_series": [{"points": [{"commit": head}]}]},
+    ]}
+
+    event = loop_status._retained_keep_history(tmp_path, headline, None)["events"][0]
+    assert event["model"] is None
+    assert event["model_attribution"] == "ambiguous_normalized_checkpoint_commit"
+
+
+def test_keep_history_uses_exact_legacy_campaign_join(tmp_path: Path) -> None:
+    _store(tmp_path)
+    head = "61d007867c43cc80ff9c54290a5a45b06b3fa900"
+    _insert(tmp_path, "legacy", "2026-08-29T08:56:09Z", "legacy-keep", "kept",
+            {"champion_head": head})
+
+    event = next(event for event in loop_status._retained_keep_history(
+        tmp_path, {"curves": []}, None)["events"] if event["attempt_id"] == "legacy")
+    assert event["model"] == "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M"
+    assert event["model_attribution"] == "campaign_join"
+    assert event["evidence"][-1] == {
+        "label": "campaign_model_join", "value": "/mnt/raid0/llm/tmp/run21.log:2"}
+
+
+def test_keep_history_preserves_active_db_truncation(tmp_path: Path,
+                                                     monkeypatch: pytest.MonkeyPatch) -> None:
+    global_root, active_root = tmp_path / "global", tmp_path / "active"
+    global_root.mkdir()
+    active_root.mkdir()
+    _store(global_root)
+    _store(active_root)
+    for index in range(2):
+        _insert(active_root, f"keep-{index}", f"2026-09-10T00:00:0{index}Z",
+                f"mechanism-{index}", "kept", {"champion_head": str(index + 1) * 40})
+    (active_root / "accumulator-bundle.json").write_text(json.dumps({
+        "schema": "epyc.autokernel.accumulator_bundle.v2", "keeps": ["mechanism-0"]}))
+    monkeypatch.setattr(loop_status, "TRAJECTORY_KEEP_MAX", 1)
+
+    history = loop_status._retained_keep_history(global_root, {"curves": []}, {
+        "id": "glm", "model": "GLM-5.3-Flash", "store": str(active_root)})
+    active_source = next(source for source in history["sources"]
+                         if source["id"] == "active_campaign")
+    assert active_source["db_available_count"] == 2
+    assert active_source["truncated"] is True
+    assert active_source["available_count"] is None
+    assert history["available_count"] is None and history["truncated"] is True
+
+
+def test_manual_fold_inventory_is_retained_not_sql_status() -> None:
+    manual = json.loads(loop_status.MANUAL_KEEP_HISTORY.read_text())
+    assert len(manual["records"]) == 16
+    assert all(record["original_disposition"] == "unavailable" for record in manual["records"])
+    assert all(record["retention_class"] and record["source_references"]
+               for record in manual["records"])
+    assert not any("rowexact" in record["mechanism_id"] for record in manual["records"])
+
+
 @pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
 def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) -> None:
     payload = {"knowledge": {"improvement_trajectory": {
@@ -159,11 +283,20 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
                             {"commit": "b" * 40, "recorded_at": "2026-09-02T00:00:00Z",
                              "gain_pct": 7.2, "pairs": 20, "recipe": "gpu-direct",
                              "era": "gpu-era", "baseline": {"commit": "d" * 40, "label": "production-consolidated-v9"}}]}]},
-        "campaign_drilldown": {"state": "available", "keeps": [{}, {}, {}],
-                               "bench_checkpoints": [{"gain_pct": .83}],
-                               "serving_checks": [{"keep_count": 2, "gain_pct": .33,
-                                                   "evidence_state": "serving_inconclusive"}]},
-        "experiment_events": {"counts": {"kept": 1, "formation_refusal": 1},
+            "campaign_drilldown": {"state": "available", "keeps": [{}, {}, {}],
+                                   "bench_checkpoints": [{"gain_pct": .83}],
+                                   "serving_checks": [{"keep_count": 2, "gain_pct": .33,
+                                                       "evidence_state": "serving_inconclusive"}]},
+            "keep_history": {"state": "available", "available_count": 1,
+                "returned_count": 1, "truncated": False, "events": [{
+                    "recorded_at": "2026-09-02T00:00:00Z", "mechanism_id": "akm-kept",
+                    "disposition": "kept", "effect_pct": 1.2, "floor_pct": .6,
+                    "decisive": True, "commit": "b" * 40,
+                    "model": "Qwen3.8-27B-Q8_0.gguf", "surface": "tg128",
+                    "profile_target": "kernel", "hypothesis": "faster",
+                    "critic_rationale": None, "comparison": {"pairs": 20},
+                    "evidence": [], "transfer_applicability": None, "identifiers": {}}]},
+            "experiment_events": {"counts": {"kept": 1, "formation_refusal": 1},
             "events": [{"recorded_at": "2026-09-01T12:00:00Z", "mechanism_id": "akm-kept",
                         "disposition": "kept", "producer_status": "kept", "effect_pct": 1.2,
                         "floor_pct": .6, "commit": "a" * 40, "epoch": "c" * 64,

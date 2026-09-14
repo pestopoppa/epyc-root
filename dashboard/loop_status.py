@@ -1478,6 +1478,33 @@ HISTORICAL_TRAJECTORY_SCHEMA = "epyc.autokernel.historical_trajectory.v1"
 HISTORICAL_TRAJECTORY_FILENAME = "historical-trajectory.json"
 TRAJECTORY_MAX_POINTS = 128
 TRAJECTORY_RAW_MAX_BYTES = 256 * 1024
+TRAJECTORY_KEEP_MAX = 1024
+MANUAL_KEEP_HISTORY = Path(__file__).with_name("data") / "autokernel-manual-retained-history.v1.json"
+# The original tg128 campaign predates model identity in experiment payloads.
+# Its exact retained commit set is joined to the contemporaneous run record,
+# rather than guessed from a later checkpoint that happens to share a commit.
+_LEGACY_DEEPSEEK_KEEP_COMMITS = frozenset({
+    "61d007867c43cc80ff9c54290a5a45b06b3fa900",
+    "5582ebccfc0cd901e69209277a0c004ae52150d4",
+    "042cb2e41e3886f5498d761d21e6de22064142f8",
+    "bbbce33c8b92d5889d14000b8970c8d6968c0e2d",
+    "2a52f805f0e6234bce0a9ebb21d9bfbee7eb7192",
+    "b04fad244cd69da363c6e5267f145fd0fe3e14cc",
+    "b65e4c524102ef8efb9f0c1c5f8fe5c0f3953e7a",
+    "432e501ff8631efb2f0684ae06285eb658ab8cbd",
+    "63e15dfb99e1b0f8855540106bf19e6c4f1f8f18",
+    "5c68bf1261ca499771c69b488472c1954f3bf6cf",
+    "f972b93b803501eb2f0a02f4a3a501dce0aed1e4",
+    "80f399b706111b9af6079c812aaffdf92b4794d3",
+    "9a115b947292755d2fadd46535762597f0526514",
+    "6e231b07c58d4716fa65d4ac7c8505b36b410ba1",
+    "55101b7e354786f4f26192acdf115bc828016573",
+    "5ad3e36dfb3acc9eda3dd3d5e137dce69a629cdd",
+    "dd161d519d07c0012ab95be6627f1ff63f9383cf",
+    "4925b2084accf03776dddc4931957f06b3d32a77",
+})
+_LEGACY_DEEPSEEK_MODEL = "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M"
+_LEGACY_DEEPSEEK_RUN_EVIDENCE = "/mnt/raid0/llm/tmp/run21.log:2"
 _PRODUCTION_REFRESH_REASON = re.compile(
     r"^champion (?P<champion>[0-9a-f]{12}) measures "
     r"(?P<effect>[+-][0-9]+(?:\.[0-9]+)?)% against frozen production "
@@ -2135,6 +2162,301 @@ def _model_trajectory_curves(points: Iterable[Mapping[str, Any]]) -> list[dict]:
     return curves
 
 
+def _retained_keep_source(root: Path) -> dict:
+    """Read keeps with the disposition predicate applied before the bound."""
+    path = Path(root) / KNOWLEDGE_DB_FILENAME
+    if not path.is_file():
+        return {"state": "absent", "evidence": str(path), "available_count": 0,
+                "returned_count": 0, "truncated": False, "rows": [],
+                "error": "no experiment store"}
+    try:
+        con = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5.0)
+        try:
+            available = int(con.execute(
+                "SELECT COUNT(*) FROM experiments WHERE status = 'kept'").fetchone()[0])
+            rows = [{"attempt_id": r[0], "recorded_at": r[1], "campaign_id": r[2],
+                "epoch_sha256": r[3], "hypothesis_id": r[4], "mechanism_id": r[5],
+                "target_surface": r[6], "target_symbol": r[7], "statement": r[8],
+                "effect_fraction": r[9], "result_sha256": r[10], "payload": r[11],
+                "payload_bytes": r[12]}
+                for r in con.execute(
+                    "SELECT attempt_id, recorded_at, campaign_id, epoch_sha256, hypothesis_id, "
+                    "mechanism_id, target_surface, target_symbol, substr(statement, 1, 2001), "
+                    "effect_fraction, result_sha256, substr(payload, 1, ?), length(payload) "
+                    "FROM experiments WHERE status = 'kept' ORDER BY recorded_at ASC LIMIT ?",
+                    (TRAJECTORY_RAW_MAX_BYTES + 1, TRAJECTORY_KEEP_MAX)).fetchall()]
+        finally:
+            con.close()
+    except (OSError, sqlite3.Error) as exc:
+        return {"state": "malformed", "evidence": str(path), "available_count": None,
+                "returned_count": 0, "truncated": None, "rows": [], "error": str(exc)[:256]}
+    return {"state": "available", "evidence": str(path), "available_count": available,
+            "returned_count": len(rows), "truncated": available > len(rows), "rows": rows,
+            "error": None}
+
+
+def _retained_keep_history(root: Path, headline: Mapping[str, Any],
+                           active: Optional[Mapping[str, Any]]) -> dict:
+    """Merge exact global keeps with the active campaign's retained bundle."""
+    commit_models = {}
+    for curve in headline.get("curves") or []:
+        for series in curve.get("surface_series") or [curve]:
+            for point in series.get("points") or []:
+                commit_models.setdefault(point.get("commit"), []).append({
+                    "model": curve.get("model"), "surface": point.get("surface"),
+                    "recorded_at": point.get("recorded_at")})
+
+    def event(row: Mapping[str, Any], source_id: str,
+              default_model: Optional[str] = None) -> dict:
+        payload = {}
+        if int(row.get("payload_bytes") or 0) <= TRAJECTORY_RAW_MAX_BYTES:
+            try:
+                candidate = json.loads(row.get("payload") or "{}")
+                payload = candidate if isinstance(candidate, dict) else {}
+            except (TypeError, json.JSONDecodeError):
+                pass
+        # Large measurement payloads place the compact champion identity before
+        # multi-megabyte telemetry. Recover only that complete JSON scalar from
+        # the bounded prefix; never treat a partial payload as parsed JSON.
+        if not payload and isinstance(row.get("payload"), str):
+            match = re.search(
+                r'"champion_head"\s*:\s*("(?:\\.|[^"\\])*")', row["payload"])
+            if match:
+                try:
+                    champion_head = json.loads(match.group(1))
+                    if isinstance(champion_head, str) and _FULL_SHA.fullmatch(champion_head):
+                        payload["champion_head"] = champion_head
+                except json.JSONDecodeError:
+                    pass
+        comparison = payload.get("comparison")
+        comparison = comparison if isinstance(comparison, dict) else {}
+        commit = payload.get("champion_head") or payload.get("at_commit")
+        recorded_model = comparison.get("model") or payload.get("model")
+        model = Path(recorded_model).name if isinstance(recorded_model, str) else None
+        if isinstance(model, str):
+            model = model.removesuffix(".gguf")
+        evidence = [{"label": "experiment_store", "value": source_id}]
+        attribution = "producer_record"
+        if model is None and isinstance(commit, str) and commit in commit_models:
+            candidates = commit_models[commit]
+            same_surface = [item for item in candidates
+                            if item.get("surface") == comparison.get("surface")]
+            candidates = same_surface or candidates
+            candidate_models = {item.get("model") for item in candidates
+                                if item.get("model")}
+            chosen = candidates[0] if len(candidate_models) == 1 else None
+            if chosen is not None:
+                model, attribution = chosen.get("model"), "unique_normalized_checkpoint_commit"
+            elif len(candidate_models) > 1:
+                attribution = "ambiguous_normalized_checkpoint_commit"
+        if model is None and commit in _LEGACY_DEEPSEEK_KEEP_COMMITS:
+            model, attribution = _LEGACY_DEEPSEEK_MODEL, "campaign_join"
+            evidence.append({"label": "campaign_model_join",
+                             "value": _LEGACY_DEEPSEEK_RUN_EVIDENCE})
+        if model is None and default_model is not None:
+            model, attribution = default_model, "active_campaign_store"
+        for key in ("evidence", "belief_export_receipt", "patch_path", "patch_metadata_path"):
+            value = payload.get(key) or comparison.get(key)
+            if isinstance(value, str) and value:
+                evidence.append({"label": key, "value": value})
+        effect = row.get("effect_fraction")
+        return {"disposition": "kept", "membership_source": "experiment_store",
+            "source_id": source_id, "attempt_id": row.get("attempt_id"),
+            "recorded_at": row.get("recorded_at"), "campaign_id": row.get("campaign_id"),
+            "hypothesis_id": row.get("hypothesis_id"), "mechanism_id": row.get("mechanism_id"),
+            "commit": commit if isinstance(commit, str) else None,
+            "model": model, "model_recorded": recorded_model,
+            "model_attribution": attribution if attribution.startswith("ambiguous_")
+                                 else attribution if model is not None else "unavailable",
+            "surface": comparison.get("surface") or payload.get("surface") or row.get("target_surface"),
+            "epoch": row.get("epoch_sha256"), "profile_target": row.get("target_symbol"),
+            "hypothesis": row.get("statement") or payload.get("statement"),
+            "effect_fraction": float(effect) if _finite_number(effect) else None,
+            "effect_pct": float(effect) * 100.0 if _finite_number(effect) else None,
+            "floor_pct": (float(comparison["noise_floor_pct"])
+                           if _finite_number(comparison.get("noise_floor_pct")) else None),
+            "decisive": comparison.get("decisive") if type(comparison.get("decisive")) is bool else None,
+            "comparison": ({"pairs": comparison.get("pairs"),
+                            "drifting": comparison.get("drifting"),
+                            "calibrated": comparison.get("calibrated")}
+                           if comparison else None),
+            "critic_rationale": None, "transfer_applicability": payload.get("research_scope"),
+            "result_sha256": row.get("result_sha256"), "evidence": evidence,
+            "identifiers": {"patch_path": payload.get("patch_path"),
+                            "patch_metadata_path": payload.get("patch_metadata_path")}}
+
+    sources, events = [], []
+    global_source = _retained_keep_source(root)
+    global_events = [event(row, global_source["evidence"])
+                     for row in global_source.pop("rows")]
+    global_source.update({"id": "global", "returned_count": len(global_events),
+                          "bundle_available_count": None, "bundle_recovered_count": 0})
+    sources.append(global_source)
+    events.extend(global_events)
+
+    try:
+        manual = _trajectory_json(MANUAL_KEEP_HISTORY)
+        records = manual.get("records")
+        if (manual.get("schema") != "epyc.autokernel.manual_retained_history.v1"
+                or not isinstance(records, list) or len(records) > TRAJECTORY_KEEP_MAX):
+            raise ValueError("unsupported manual retained-history shape")
+        manual_events = []
+        for record in records:
+            if (not isinstance(record, dict)
+                    or not isinstance(record.get("mechanism_id"), str)
+                    or not isinstance(record.get("commit"), str)
+                    or not _FULL_SHA.fullmatch(record["commit"])
+                    or not isinstance(record.get("model"), str)
+                    or not isinstance(record.get("retention_class"), str)
+                    or not isinstance(record.get("source_references"), list)):
+                raise ValueError("manual retained-history record failed validation")
+            manual_events.append({"disposition": "kept",
+                "membership_source": "manual_fold_inventory",
+                "source_id": str(MANUAL_KEEP_HISTORY), "attempt_id": record.get("id"),
+                "recorded_at": record.get("recorded_at"), "campaign_id": record.get("campaign_id"),
+                "hypothesis_id": None, "mechanism_id": record["mechanism_id"],
+                "commit": record["commit"], "model": record["model"],
+                "model_recorded": record["model"], "model_attribution": "manual_fold_inventory",
+                "surface": record.get("surface"), "epoch": record.get("epoch"),
+                "profile_target": record.get("profile_target"),
+                "hypothesis": record.get("description"), "effect_fraction": None,
+                "effect_pct": None, "floor_pct": None, "decisive": None,
+                "comparison": None, "critic_rationale": None,
+                "transfer_applicability": record.get("applicability"),
+                "result_sha256": None,
+                "original_disposition": record.get("original_disposition"),
+                "retention_class": record["retention_class"],
+                "evidence": [{"label": "manual_fold_inventory", "value": value}
+                             for value in record["source_references"]],
+                "identifiers": {"component_commits": record.get("component_commits"),
+                                "patch_path": None, "patch_metadata_path": None}})
+        sources.append({"id": "manual_fold_inventory", "state": "available",
+                        "evidence": str(MANUAL_KEEP_HISTORY),
+                        "available_count": len(manual_events),
+                        "returned_count": len(manual_events), "truncated": False,
+                        "bundle_available_count": None, "bundle_recovered_count": 0,
+                        "error": None})
+        events.extend(manual_events)
+    except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        sources.append({"id": "manual_fold_inventory", "state": "malformed",
+                        "evidence": str(MANUAL_KEEP_HISTORY), "available_count": None,
+                        "returned_count": 0, "truncated": None,
+                        "bundle_available_count": None, "bundle_recovered_count": 0,
+                        "error": str(exc)[:256]})
+
+    campaign_root = Path(active["store"]) if isinstance(active, Mapping) \
+        and isinstance(active.get("store"), str) else None
+    if campaign_root is not None and campaign_root.resolve() != Path(root).resolve():
+        active_source = _retained_keep_source(campaign_root)
+        db_available_count = active_source.get("available_count")
+        db_events = [event(row, active_source["evidence"], str(active.get("model")))
+                     for row in active_source.pop("rows")]
+        by_mechanism = {}
+        for item in db_events:
+            by_mechanism.setdefault(item.get("mechanism_id"), []).append(item)
+        bundle_members, bundle_error = [], None
+        try:
+            bundle = _trajectory_json(campaign_root / "accumulator-bundle.json")
+            members = bundle.get("keeps")
+            if (bundle.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
+                    or not isinstance(members, list) or len(members) > TRAJECTORY_KEEP_MAX
+                    or len(set(members)) != len(members)
+                    or not all(isinstance(item, str) and item for item in members)):
+                raise ValueError("active retained bundle has an unsupported keep list")
+            bundle_members = members
+        except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            bundle_error = str(exc)[:256]
+        recovery_path = campaign_root / "recovery" / "recovered-accumulator-state.json"
+        recovery_by_mechanism, recovery_error = {}, None
+        try:
+            recovery = _trajectory_json(recovery_path)
+            recovered_keeps = recovery.get("keeps")
+            if (recovery.get("schema") != "epyc.autokernel.accumulator_recovery.v1"
+                    or not isinstance(recovered_keeps, list)
+                    or len(recovered_keeps) > TRAJECTORY_KEEP_MAX
+                    or not all(isinstance(item, dict)
+                               and isinstance(item.get("mechanism_id"), str)
+                               and isinstance(item.get("commit"), str)
+                               and _FULL_SHA.fullmatch(item["commit"])
+                               for item in recovered_keeps)
+                    or bundle_members[:len(recovered_keeps)] !=
+                       [item["mechanism_id"] for item in recovered_keeps]):
+                raise ValueError("recovery receipt does not match the retained bundle prefix")
+            recovery_by_mechanism = {item["mechanism_id"]: item for item in recovered_keeps}
+        except FileNotFoundError:
+            pass
+        except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            recovery_error = str(exc)[:256]
+        active_events = []
+        used_attempts = set()
+        recovered = 0
+        for position, mechanism in enumerate(bundle_members, 1):
+            matches = by_mechanism.get(mechanism) or []
+            if matches:
+                item = matches[-1]
+                used_attempts.add(item.get("attempt_id"))
+                item["retained_position"] = position
+                item["bundle_order"] = position
+                item["membership_source"] = "experiment_store+accumulator_bundle"
+            else:
+                recovered += 1
+                recovery_item = recovery_by_mechanism.get(mechanism) or {}
+                recovered_commit = recovery_item.get("commit")
+                item = {"disposition": "kept", "membership_source": "accumulator_bundle",
+                    "source_id": str(campaign_root / "accumulator-bundle.json"),
+                    "attempt_id": None, "recorded_at": None, "campaign_id": active.get("id"),
+                    "hypothesis_id": None, "mechanism_id": mechanism,
+                    "commit": recovered_commit,
+                    "model": active.get("model"), "model_recorded": None,
+                    "model_attribution": "active_campaign_retained_bundle",
+                    "surface": None, "epoch": None, "profile_target": None,
+                    "hypothesis": None, "effect_fraction": None, "effect_pct": None,
+                    "floor_pct": None, "decisive": None, "comparison": None,
+                    "critic_rationale": None, "transfer_applicability": None,
+                    "result_sha256": None,
+                    "evidence": [{"label": "accumulator_bundle",
+                                  "value": str(campaign_root / "accumulator-bundle.json")}] +
+                                ([{"label": "accumulator_recovery",
+                                   "value": str(recovery_path)}] if recovered_commit else []),
+                    "identifiers": {"patch_path": None, "patch_metadata_path": None},
+                    "retained_position": position, "bundle_order": position}
+                if recovered_commit:
+                    item["membership_source"] = "accumulator_bundle+recovery_receipt"
+                    item["model_attribution"] = "active_campaign_recovery_receipt"
+            active_events.append(item)
+        active_events.extend(item for item in db_events
+                             if item.get("attempt_id") not in used_attempts)
+        db_truncated = bool(active_source.get("truncated"))
+        active_available = None if db_truncated else len(bundle_members) + sum(
+            item.get("attempt_id") not in used_attempts for item in db_events)
+        active_source.update({"id": "active_campaign", "available_count": active_available,
+            "returned_count": len(active_events), "truncated": db_truncated,
+            "db_available_count": db_available_count,
+            "bundle_available_count": len(bundle_members) if not bundle_error else None,
+            "bundle_recovered_count": recovered, "bundle_error": bundle_error,
+            "recovery_available_count": len(recovery_by_mechanism),
+            "recovery_error": recovery_error, "recovery_evidence": str(recovery_path),
+            "bundle_evidence": str(campaign_root / "accumulator-bundle.json")})
+        sources.append(active_source)
+        events.extend(active_events)
+
+    model_counts = {}
+    for item in events:
+        label = item.get("model") or "model attribution unavailable"
+        model_counts[label] = model_counts.get(label, 0) + 1
+    complete = all(source.get("state") == "available"
+                   and source.get("available_count") == source.get("returned_count")
+                   for source in sources)
+    available = (sum(source["available_count"] for source in sources)
+                 if all(source.get("available_count") is not None for source in sources)
+                 else None)
+    return {"state": "available" if events and complete else "partial" if events else "absent",
+            "available_count": available, "returned_count": len(events),
+            "truncated": not complete, "limit_per_store": TRAJECTORY_KEEP_MAX,
+            "sources": sources, "per_model_counts": model_counts, "events": events,
+            "detail": "only producer-kept rows and exact active retained-bundle membership; no measurement checkpoint is promoted by this fold"}
+
+
 def _live_production_history(root: Path, rows: list[Mapping[str, Any]],
                              production: Optional[Mapping[str, Any]] = None) -> dict:
     """Join producer receipts into direct, never-composed production curves."""
@@ -2527,6 +2849,7 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
     events.sort(key=lambda event: str(event.get("recorded_at") or ""))
     return {"schema": TRAJECTORY_SCHEMA, "production_headline": headline,
             "campaign_drilldown": local,
+            "keep_history": _retained_keep_history(root, headline, active),
             "experiment_events": {"events": events, "counts": disposition_counts,
                 "bounded": len(rows) > 256, "limit": 256,
                 "detail": "experiment markers are a separate event strip, never curve checkpoints"}}
