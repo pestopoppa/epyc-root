@@ -1,8 +1,42 @@
 # Intra-Process Tensor-Parallel Decode - Completion Ledger
 
-> Historical completion ledger only.
-> Current work lives in [intra-process-tensor-parallel-decode.md](../active/intra-process-tensor-parallel-decode.md).
-> This file preserves pre-compaction CPU1 evidence and methodology; active tasks, gates, and indices are authoritative in the active handoff.
+> Historical completion ledger only. **There is no longer an active handoff** — the reopen gate that
+> used to live at `handoffs/active/intra-process-tensor-parallel-decode.md` was closed to
+> [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) in this
+> directory on **2026-09-14**, and its reopen checklist is reproduced below so this ledger is
+> self-sufficient. This file preserves the pre-compaction CPU1 evidence and methodology.
+>
+> ## ⚠ REOPEN CHECKLIST — the standing gate on CPU1 tensor-parallel decode
+>
+> **CPU1 tensor-parallel decode is revalidation-gated, not merely idle.** Do **not** restart Phase 1.3
+> v2 or any CPU1 tensor-parallel work unless a new trigger is explicitly stated and CPU20-compliant
+> profiling proves locality/barrier dominance *again*. The steps below are a **per-reopen procedure**,
+> not a task list — they carry no completion state outside an actual reopen, which is exactly why they
+> were never ticked (auditor note 2026-07-29) and why they are written as numbered prose here:
+>
+> 1. **State the new trigger** — 2-socket hardware, an NPS/L3aaN topology change, a multi-tenant
+>    workload, prefill-heavy serving, or another concrete reason single-session saturation matters again.
+> 2. **Apply the `/workspace/MEASUREMENT.md` P-BENCH protocols** before making any throughput claim
+>    (historical CPU20 record: [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md)).
+> 3. **Reproduce the current canonical baseline** for the target model and topology.
+> 4. **Prove the bottleneck is locality/barrier dominated** — not DRAM-channel dominated and not
+>    model-architecture limited.
+> 5. **Choose the smallest next action**: archive, a profiling probe, Phase 1.3 v2 warm-up/page-locality
+>    work, or a redesigned TP path.
+>
+> **Dependency forks.** No new trigger → stay dormant. CPU20 profile shows a DRAM-channel or
+> architecture ceiling → do **not** implement TP; redirect to the relevant CPU/kernel or
+> workload-shaping handoff. CPU20 profile shows locality/barrier dominance → open a *narrow*
+> implementation task and copy only the needed evidence from this ledger. New hardware/topology
+> invalidates the prior NPS4 findings → re-run the canonical baseline before any code change.
+>
+> **Why it closed.** No topology or workload trigger was established between compaction (2026-05-28)
+> and archival (2026-09-14); the index row's `Next action` had read "reopen only if tensor-parallel
+> decode is reconsidered" unchanged since the 2026-07-26 staleness review. A dormant reopen gate is not
+> an outstanding TODO, so it does not belong in the active queue. Current CPU decode work is
+> [`cpu-decode-roofline-program.md`](../active/cpu-decode-roofline-program.md) (INF-70), which reached
+> the same conclusion from the other direction: CPU decode on this host is barrier/op-count bound and
+> the per-CCD levers are measured out.
 
 # Intra-Process Tensor-Parallel Decode Across CCDs (Single-Instance Saturation)
 

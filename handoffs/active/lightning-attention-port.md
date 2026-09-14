@@ -72,7 +72,7 @@ Do not restart the Lightning Attention port. The historical ledger preserves the
 - `/mnt/raid0/llm/epyc-inference-research/` for model/eval artifacts
 - [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md)
 - [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md)
-- [qwen36-27b-cpu-feasibility.md](qwen36-27b-cpu-feasibility.md)
+- [qwen36-27b-cpu-feasibility.md](../archived/qwen36-27b-cpu-feasibility.md)
 - [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md)
 - `research/deep-dives/ling-linear-lightning-attention-hybrid.md`
 

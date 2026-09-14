@@ -1814,6 +1814,31 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `chat_pipeline/stages.py:288` feeds the **process-global, never-cleared**
       `tool_registry.get_invocation_log()` into the durable record, so one request persists another
       request's tool calls. `clear_invocation_log` has zero callers in `src/`.
+- [ ] **AP-57 — journal the speed-axis reseed** (option B of RTG-02's prepared decision package, the
+      recommended one): `_append_baseline_promotion_event()` returns early for `updated=False`, so a
+      speed-axis reseed — a real state write — is journaled nowhere (`scripts/autopilot/autopilot.py:10365-10375`)
+      (found 2026-09-14, noninf sweep).
+- [ ] **AP-58 — decide whether to reseed the speed axis on ANY eligible in-era frontier measurement**, since
+      the same unreachability shape survives on the other early-return paths (`seq_inputs_unavailable`,
+      `seq_not_confirmed`, the monotonic skip and the new `quality_not_measured`), so the speed fence stays
+      open if quality never improves again after a speed-era boundary — a design decision, not a defect fix
+      (`scripts/autopilot/safety_gate.py`) (found 2026-09-14, noninf sweep).
+- [ ] **AP-59 — decide whether the E8 quality-baseline reseed row closes as SUPERSEDED rather than done**, as
+      it is superseded by `ruling_op19_e8_chain_20260827.json` and not by RTG-02's work
+      (`handoffs/active/autopilot-continuous-optimization.md:1714`) (found 2026-09-14, noninf sweep).
+- [ ] **AP-60 — remove the import-time `Q_TD_WRITE` test trap** with a fixture or a config-object read, since
+      `Q_TD_WRITE = os.environ.get(...)` is evaluated at import so the branch production actually runs is
+      `False` under pytest unless a test monkeypatches the module attribute — the standing coverage hazard for
+      that whole write path, and why the pre-existing create-only tests passed for the bug's entire lifetime
+      (`orchestration/repl_memory/q_scorer.py:52`) (found 2026-09-14, noninf sweep).
+- [ ] **AP-61 — stop hand-maintaining the invocation-log guard's module list**, since it covers five modules
+      and will not notice a new route file reading the shared `get_invocation_log()`;
+      `src/api/routes/openai_compat.py:285` already reads `repl._invoked_tools` correctly but sits outside the
+      guarded set (found 2026-09-14, noninf sweep).
+- [ ] **AP-62 — document the shared invocation ring's synchronisation contract**: `invoke()` appends from
+      whatever thread is dispatching and the bound holds only because `deque.append` is atomic under CPython,
+      which a future free-threaded or non-CPython build would not guarantee
+      (`src/registry/tool_registry.py`) (found 2026-09-14, noninf sweep).
 - [x] **Vision task-detail renderer now displays captured path-backed inputs.** ✅ 2026-08-05 —
       task detail extracts the image reference already captured on `routing_decision`, serves
       allowlisted raster files through a task-scoped no-store/nosniff endpoint, and renders a

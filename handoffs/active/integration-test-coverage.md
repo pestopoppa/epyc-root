@@ -73,3 +73,20 @@ The integration scaffolding and earlier coverage tranches are historical. Do not
 ## Reporting Instructions
 
 After each coverage slice, update this file with the changed test files, command output summary, test count, coverage delta if measured, and any skipped inference gates. Update [master-handoff-index.md](master-handoff-index.md) only when priority, blocker state, or active scope changes.
+
+### Follow-ups from the 2026-09-14 zero-inference sweep
+
+These are real tasks (not standing rules) and are dispatchable; they landed here because no other active
+handoff owns the shared red-test baseline.
+
+- [ ] **Record the `epyc-orchestrator` `origin/main` red-test baseline so sessions stop reading it as their own
+      breakage** — `pytest tests/unit` at `35b05fde` is **29 failed / 12,667 passed**, with named members in
+      `test_infra_failed_disposition.py`, `test_offline_reward_pairwise_holdout_expansion_plan.py`,
+      `test_e8_quality_baseline_reseed.py` (9), the `safety_gate|era|baseline|calibrat` selection (20), the
+      dashboard/journal/planner sweep (5), plus two reproduced on a clean detached worktree
+      (`test_legacy_source_change_after_preflight_blocks_scorer_replay`,
+      `test_generation_tail_replaces_only_target_response_and_sidecar_bytes`) that no dispatch had claimed as
+      pre-existing (found 2026-09-14, noninf sweep).
+- [ ] **Give `test_recent_eval_qids_excludes_only_rows_inside_recency_window` a frozen or relative clock** — it
+      fails with the calendar because its hardcoded `2026-07-01T00:00:00Z` row is 75 days old against the
+      test's own 60-day window (`tests/unit/test_autopilot_actions.py:1332`) (found 2026-09-14, noninf sweep).

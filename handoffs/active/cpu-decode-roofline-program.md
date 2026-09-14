@@ -2518,6 +2518,25 @@ They are filed here rather than described in prose so the dashboard can see them
       configuration nobody ever executed), and **`23.16 t/s` / `1.876×` is a build-10221 number quoted as a
       champion-3 number**. Sweep the handoff, the wiki and the progress record; the third finding (B12's
       PROD-1 dependency is discharged) is closed by this wrap-up.
+- [ ] **WRAP-13 — relabel the campaign headline's champion arm so its two-commit instrumentation delta is
+      stated rather than inherited**, since every downstream quotation of 43.281 t/s / 2.1857× / ≥117% / ≥81%
+      currently rests on a record whose arm is `bin-r1 (10303)` while its header says baseline `ef81196d5`
+      (`/mnt/raid0/llm/tmp/inf70/agents/retest1/CHAMPION-FINAL.md:45`) (found 2026-09-14, noninf sweep).
+- [ ] **WRAP-14 — get `scripts/lib/test_canonical_recipe.py` into `PYTEST_SMOKE` and make its collection
+      work**, which needs the `requests` import in `scripts/lib/__init__.py` dealt with first
+      (`epyc-inference-research` `Makefile:19-102`) (found 2026-09-14, noninf sweep).
+- [ ] **WRAP-15 — guard `assert_artifact_digests()` against being called from `preflight()`**, because it
+      reads ~95 GB and is one edit away from being wired into the preflight path
+      (`scripts/lib/qwen38_flash_next_recipe.py`) (found 2026-09-14, noninf sweep).
+
+*Declined 2026-09-14: preserve-or-push the scratch-only binary behind the campaign headline
+(`/mnt/raid0/llm/tmp/inf70/agents/retest1/bin-r1` + `/mnt/raid0/llm/tmp/inf70/retest1wt`) — not filed because
+it is branch `inf70/retest1-fix1`, one of the 21 unique-work branches already owned by the open **WRAP-11**
+box whose push command is pending with the operator.*
+
+*Declined 2026-09-14: `epyc-inference-research` `scripts/lib/__init__.py` imports `requests`, so a bare
+`python3 -m pytest scripts/lib/...` fails at collection rather than in any test (`make test` / `uv run` is the
+contract) — not filed because it is the same blocker already named inside the new **WRAP-14** box above.*
 
 **Explicitly declined at the 2026-09-07 operator wrap-up (decisions, not drops):**
 - **Editing the 19 unlocked INF-70 scratch build scripts** — one-shot artifacts, mostly spent. The value is

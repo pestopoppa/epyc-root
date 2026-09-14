@@ -75,6 +75,26 @@ so this is a **new active stub, not a reopen**.
       **more** absolute calls. The completed file's pointer to
       `handoffs/active/meta-harness-optimization.md` is DANGLING — that file does not exist — which is
       why this stub, not a reopen, is the right shape. `intake-1317#03`. Zero compute.
+- [ ] **MHS-7 — force the isolated mutation path.** `apply_code_mutation` writes the live tree directly
+      (git-checkpointed) and the isolated `apply_code_mutation_in_context` exists but nothing requires its use
+      (`scripts/autopilot/species/prompt_forge.py:~1440`) (found 2026-09-14, noninf sweep).
+- [ ] **MHS-8 — tighten the apply gate to "only screened effects apply"**, since only `MutationEffect.UNSAFE`
+      is refused today so `UNKNOWN` — the default on a hand-constructed `CodeMutation` — still applies; needs
+      an audit of every construction site (`scripts/autopilot/species/prompt_forge.py`, apply gate)
+      (found 2026-09-14, noninf sweep).
+- [ ] **MHS-9 — narrow `revert_code_mutation`'s new-file revert from `git add -A <path>` to an explicit
+      pathspec**, the idiom the project's hygiene rules warn about
+      (`scripts/autopilot/species/prompt_forge.py:~1478`) (found 2026-09-14, noninf sweep).
+- [ ] **MHS-10 — land a standalone formatting commit for `prompt_forge.py`**, which is format-dirty on
+      `origin/main` (`ruff format --check` fails on a pristine clone), so future diffs stay readable
+      (`scripts/autopilot/species/prompt_forge.py`) (found 2026-09-14, noninf sweep).
+- [ ] **MHS-11 — replace the operator guide's `prompt_forge.py` line-number citations with symbol names**,
+      since `line 575` / `line 594` / `line 509` are already stale by hundreds of lines
+      (`docs/guides/meta-harness-operator-guide.md`) (found 2026-09-14, noninf sweep).
+
+*Declined 2026-09-14: repoint the dangling pointer at `handoffs/completed/meta-harness-optimization.md:3` —
+not filed because it is already recorded as the **Housekeeping rider (E0, owned elsewhere)** in this file's
+Notes and named inside the open **MHS-6** box.*
 
 **Cost yardstick (DERIVED-FROM-CONFIG, never a measurement)**: *"one engineer update ≈ one full sweep
 of your eval suite"* — a reusable rule of thumb for pricing ANY outcome-grounded editor loop. It kills

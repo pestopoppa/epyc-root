@@ -35,10 +35,10 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 |---|---:|---:|---|---|
 | [cpu-shape-specialized-gemv-decode](cpu-shape-specialized-gemv-decode.md) | 38 | 2 | MIXED | re-anchor — kernel LANDED 2026-04-24, SIMD Phase 0–5 deprioritized; box only the 2 live graph-fusion tasks |
 | [gemma-challenge-kernel-techniques-v7](gemma-challenge-kernel-techniques-v7.md) | 9 | 6 | LIVE | keep — split K28 out (owned in mi210 roadmap); correctly NOT board-flagged |
-| [llamacpp-v6-consolidation](llamacpp-v6-consolidation.md) | 6 | 1 | SUPERSEDED | close → completed (v6 cutover shipped 2026-06-26); re-anchor 5 items to v7 |
+| [llamacpp-v6-consolidation](../archived/llamacpp-v6-consolidation.md) | 6 | 1 | SUPERSEDED | close → completed (v6 cutover shipped 2026-06-26); re-anchor 5 items to v7 |
 | [llama-cpp-dsa-contribution](llama-cpp-dsa-contribution.md) | 4 | 4 | **LIVE** | **add `Lifecycle: live` override** — board over-flags it "superseded" (only the *original* objective was); D2/D3 re-anchored + live. GLM-5.2 box co-owned by glm51-reap |
-| [qwen36-27b-cpu-feasibility](qwen36-27b-cpu-feasibility.md) | 4 | 0 | PARKED | keep parked (CPU foreclosed) **+ cross-link the MI210 GPU campaign** (see callout) so it doesn't read as "dead model"; consider close |
-| [gpu-drafter-mi200-investigation](gpu-drafter-mi200-investigation.md) | 1 | 0 | LIVE | re-anchor — Stage 4 box blocked on Stages 1–3 (failed economics 2026-07-17); add drafter-redesign task |
+| [qwen36-27b-cpu-feasibility](../archived/qwen36-27b-cpu-feasibility.md) | 4 | 0 | PARKED | keep parked (CPU foreclosed) **+ cross-link the MI210 GPU campaign** (see callout) so it doesn't read as "dead model"; consider close |
+| [gpu-drafter-mi200-investigation](../archived/gpu-drafter-mi200-investigation.md) | 1 | 0 | LIVE | re-anchor — Stage 4 box blocked on Stages 1–3 (failed economics 2026-07-17); add drafter-redesign task |
 | [sarathi-serve-cpu-evaluation](sarathi-serve-cpu-evaluation.md) | 1 | 0 | PARKED | **reactivate** — multi-tenant trigger may have fired via batched-decode E1/E2 (active) |
 | [agent-file-prose-compression](agent-file-prose-compression.md) | 1 | 1 | LIVE | keep — single operator rollout decision pending |
 

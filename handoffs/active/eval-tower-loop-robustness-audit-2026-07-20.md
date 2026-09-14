@@ -178,3 +178,16 @@ correct purely because the orchestrator API was down), explicitly naming
       platform-caused half is dropped. Decide deliberately; do not inherit current behaviour by default.
 - [x] **ETR-2 — `quality_measured` is computed and never read (latent defect).** ✅ 2026-09-14 — the flag is now READ, and the producers made truthful. `SafetyGate.check()` fails closed on `quality_measured=False` with its own `quality_not_measured` category (a placeholder is no longer charged as a `quality_floor`/`regression` violation, and does not arm the auto-rollback), `update_baseline()` refuses the write with `ineligible_reason="quality_not_measured"`, the eleven `EvalResult(quality=0)` placeholders in `eval_tower.py` plus the consult-gate probe in `actions.py` now declare `quality_measured=False` with a named reason, and `_eval_details_from_result()` carries the distinction onto every journal row. A MEASURED 0.0 is still gated as a measurement. `epyc-orchestrator` `250a5d13`; 16 tests in `tests/unit/test_safety_gate_quality_measured.py` + `tests/unit/test_quality_measured_producers.py` (incl. an AST guard so a new placeholder cannot reintroduce the defect).
 - [x] **ETR-3 — Close the narrow silent-scoring hole.** ✅ 2026-09-14 — closed with the structural fact already on the wire: a non-blank answer whose response reports ZERO generated tokens did not come out of a decode, so `infra_failure_reason` now returns the new reason `answer_without_generation` (the `empty_response` sibling whose blank-answer requirement let this shape through). Opt-in via `require_generation_evidence`, set on the MEASUREMENT paths only (`eval_tower`, `seeding_scoring._classify_error`, `seeding_eval`) and deliberately OFF for the live-serving reward path, so a genuine wrong answer keeps earning its negative reward; mock-mode replies and legacy rows with no token counter are unchanged. The residue is named: a non-blank answer WITH a real token count is a real generation, so garbage there stays scored WRONG. `epyc-orchestrator` `250a5d13`; 10 tests in `tests/unit/test_answer_without_generation.py`.
+- [ ] **ETR-4 — guard the unguarded `r.rubric_threshold_source` read** in `_compact_question_result`, which
+      breaks the documented duck-typed-row contract and is a real defect for any legacy or foreign row;
+      one-line `getattr` (`scripts/autopilot/eval_tower.py:1413`) (found 2026-09-14, noninf sweep).
+- [ ] **ETR-5 — expose ETR-2's state as the first-class `SafetyVerdict.reliability_blocked` field** instead of
+      only as the `quality_not_measured` category string, so a downstream consumer can branch on it
+      (`scripts/autopilot/safety_gate.py`) (found 2026-09-14, noninf sweep).
+- [ ] **ETR-6 — make the two "no decode" cases serialize identically**: mock-mode `ChatResponse` omits
+      `tokens_generated` entirely while `vision_stage.py:194` sets it to `0`, an inconsistent wire contract for
+      any future structural check (`src/api/routes/chat_pipeline/stages.py:115`) (found 2026-09-14, noninf
+      sweep).
+- [ ] **ETR-7 — delete the unused `INBAND_ERROR_PREFIX` imports (pre-existing `ruff F401`), or state the
+      re-export intent**, one line in each of `scripts/autopilot/eval_tower.py:1142` and
+      `scripts/benchmark/seeding_scoring.py:133` (found 2026-09-14, noninf sweep).

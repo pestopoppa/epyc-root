@@ -15,7 +15,7 @@
 **Related**:
 - [`log-linear-gated-deltanet-readiness.md`](../active/log-linear-gated-deltanet-readiness.md) — sibling architecture (different lineage: log-linear-state vs fixed-decay-state); both are CPU-friendly intermediate paths
 - [`multiscreen-attention-evaluation.md`](../active/multiscreen-attention-evaluation.md) — sub-quadratic attention survey, intake-503 documented under same-day-expansion sub-section
-- [`qwen36-27b-cpu-feasibility.md`](../active/qwen36-27b-cpu-feasibility.md) — sizing comparison anchor for Ring-mini
+- [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasibility.md) — sizing comparison anchor for Ring-mini
 - [`llama-cpp-dsa-contribution.md`](../active/llama-cpp-dsa-contribution.md) — sibling architectural-port handoff (DSA / V3.2)
 - intake-503 (Ling-Linear-2.0 paper, arxiv:2510.19338)
 - [Lightning Attention deep-dive](../../research/deep-dives/ling-linear-lightning-attention-hybrid.md) — full architecture analysis + corrected effort estimate

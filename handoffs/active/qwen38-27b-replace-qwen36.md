@@ -34,6 +34,30 @@ vacated to `architect_critic` 2026-07-31). Qwen3.8 was released 2026-08-14.
 
 Destination: `/mnt/raid0/llm/models/`. Download log: `/tmp/opencode/dl_qwen38.outerr`.
 
+## Inherited findings — from INF-32's predecessor `qwen36-27b-cpu-feasibility.md`, archived 2026-09-14
+
+The predecessor model's handoff was archived 2026-09-14 (premise gone: Qwen3.8-27B *is* the 27B role
+candidate now). Three of its findings are about the **architecture class**, not the specific weights,
+so they survive the model swap — Qwen3.8-27B reports the same `qwen35` arch identifier:
+
+- [x] **MI210 dense-Q8 +37% is the inherited GPU baseline for this class** — Qwen3.6-27B went
+      **29.5 → 40.4 t/s** on the MI210 via the embedded-NEXTN MTP head plus the MMVQ→MMQ
+      verify-dispatch fix (`de447119f`). That is the banked "dense-Q8 +37%" v7 win, and it is the
+      lineage of this handoff's own `draft-mtp` numbers. EAGLE-3 was tested → no-go; GDN-MFMA was
+      profiled → killed. Record: [`mi210-speed-campaign-summary.md`](../completed/mi210-speed-campaign-summary.md).
+- [x] **CPU speculative decoding stays architecturally foreclosed for this family** — Gated-DeltaNet +
+      Gated-Attention (3:1) makes draft verification non-equivalent under CPU serial decode; the GDN
+      verification wall costs more than acceptance gains. Do not re-run CPU spec-dec probes on
+      Qwen3.8-27B either. (This is a CPU-only foreclosure; the GPU numbers above are the proof it is
+      not a statement about the model.)
+- [x] **Cross-version DFlash drafter portability is real but lossy** — a Qwen3.5-27B-DFlash drafter
+      loads unchanged on a 3.6-class target (identical `Qwen35` identifier, layer/head dims) at
+      acceptance length 5.05 vs 9.18 same-version (intake-501#record). Relevant to the open **DFlash2
+      selection decision** below: expect a same-family-but-not-same-version drafter to lose roughly
+      half its acceptance length.
+
+Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasibility.md).
+
 ## Steps
 
 - [x] **Verify the download** ✅ 2026-08-14 — both files at full declared size (29,047,086,048 B /

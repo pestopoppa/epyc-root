@@ -58,7 +58,7 @@ The strategy works on the architectures where it's expected to. Phase 3.1 dispat
 **Workstream**: Inference Acceleration → CPU Optimization
 **Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md)
 **Related**:
-- [`intra-process-tensor-parallel-decode.md`](../active/intra-process-tensor-parallel-decode.md) (CPU1 — Phase 1.4 substrate reused in Phase 0; Phase 1.2 per-CCD work distribution is the direct substrate for intra-process EP)
+- [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) (CPU1 — Phase 1.4 substrate reused in Phase 0; Phase 1.2 per-CCD work distribution is the direct substrate for intra-process EP)
 - [`cpu-shape-specialized-gemv-decode.md`](../active/cpu-shape-specialized-gemv-decode.md) (CPU2 — Q8_0 AVX-512BW ukernel + auto-mbind stack with EP for Q8 experts)
 - [`cpu-benchmark-rigor-and-revalidation.md`](../active/cpu-benchmark-rigor-and-revalidation.md) (CPU20 — mandatory quality gate before closure claims)
 - [`cpu-uncore-fabric-attribution.md`](../completed/cpu-uncore-fabric-attribution.md) (CPU24 — required to close >150B root cause)

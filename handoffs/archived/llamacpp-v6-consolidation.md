@@ -1,5 +1,48 @@
 # llama.cpp v6 Consolidation — production-consolidated-v6
 
+> # ⛔ ARCHIVED 2026-09-14 — SUPERSEDED BY `production-consolidated-v9`. HISTORICAL LEDGER ONLY.
+>
+> **Reason.** This page consolidates a kernel line — `production-consolidated-v6` — that has been
+> superseded four times over (v6 → v7 → v8 → v9). Production is FROZEN at
+> `production-consolidated-v9` @ `0db32c06e3e550065b78311a6031ef3dd2c4f27c` (binary `10125`), and
+> all kernel work now aggregates on the ONE champion off that tree
+> (`ak/champion/llama-cpp-0db32c06e3e5`, consolidated at `ef81196d5` 2026-09-08). Nothing on this
+> page is executable: the v6 worktree, its branch and its build dir are not the production tree, and
+> the four-step experimental workflow starts from the *current* production tip, never from here.
+>
+> **Where the live work went.** Kernel feature folding →
+> [`autokernel-champion-aggregate.md`](../active/autokernel-champion-aggregate.md) (INF-65);
+> CPU decode levers → [`cpu-decode-roofline-program.md`](../active/cpu-decode-roofline-program.md)
+> (INF-70); per-request speculative params →
+> [`v9-kernel-per-request-speculative-params.md`](../active/v9-kernel-per-request-speculative-params.md).
+> The v6 cutover record itself is [`v6-iqk-promotion.md`](../completed/v6-iqk-promotion.md).
+>
+> ## Verdicts carried forward (the two decisions this page closed against v9)
+>
+> Both were verified read-only against the frozen v9 tree on **2026-08-12**; both resolve to **DROP**.
+> They are restated here because the sections below are the only record of them.
+>
+> 1. **SWA slot-reuse fixes `d1c72d7fc` / `603702769` — DROP.** Neither commit is an ancestor of v6,
+>    v7, v8 or v9 (`git branch --contains` puts both only on the v4/v5 lineage), so "verify before
+>    drop" was retrospective — they had been out of production for four consecutive kernel versions.
+>    **Nothing was lost; the opposite.** They do not *add* SWA slot reuse (upstream already had it) —
+>    they **replace** upstream's per-sequence check with a per-sequence-**blind** one, so carrying them
+>    forward would be a correctness regression, not a feature port. See
+>    [§ SWA slot-reuse verification — 2026-08-12](#swa-slot-reuse-verification--2026-08-12).
+> 2. **`--moe-n-expert` Hard-Mask CLI tool `86901388a` — DROP; v9 already does this with a stock
+>    flag:** `--override-kv <arch>.expert_used_count=int:N`. `86901388a1246311` is not an ancestor of
+>    v9. Keep the commit's **findings** (the expert-count quality cliff); drop the code. See
+>    [§ `--moe-n-expert` verification — 2026-08-12](#--moe-n-expert-verification--2026-08-12).
+>
+> ## Residual items relocated (not dropped)
+>
+> The three unresolved `NEEDS-OPERATOR-REVIEW` rows below moved to
+> [`autokernel-champion-aggregate.md`](../active/autokernel-champion-aggregate.md)
+> §*Inherited v6-fork candidates* as un-triaged candidates: Differential-Transformer-V2 arch
+> (`36ceed44d` / `23973ea66`), streaming-KV context-shift controls (`632ce0f92`), and paged-attn
+> upstream-overlap (branch `f1-paged-attn` @ `112022a0b`). They are **candidates, not queued folds**,
+> and are subject to the operator's standing gate on new kernel research.
+
 > **Historical / superseded 2026-07-29:** production is frozen on
 > `production-consolidated-v8`; do not modify or build this v6 branch. Any future
 > kernel work starts from fresh v8 in `llama.cpp-experimental`. The remaining F1

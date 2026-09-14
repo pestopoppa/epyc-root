@@ -561,6 +561,13 @@ Zero were bulk-acked. What survived as live work:
   **latent**, reachable only under a held region, i.e. only mid-bench. Both fixed with paired
   enforcement tests. Already-correct: `pytest_worker_scan` (C21 fixed this first, 2026-07-29) and the
   two scanners importing from it; the `file_path`-only guards; the precommit and context hooks.
+- [ ] **`positional_and_flags()` misreads shell redirection tokens as pathspecs — strip `>` / `>>` / `2>&1` /
+  `|` before computing positionals**, so `git commit --file=<msg> 2>&1 | tail` stops being blocked as a
+  "pathspec commit" (`positionals[0] == "2>&1"`); `git commit -F -` / `-F <file>` is refused for the same
+  reason while `--file=<path>` passes, it is the same family as the quoted-`-m` false positive its own
+  docstring documents, it cost four agents a retry, and a guard that fires spuriously is how a real block
+  eventually gets bypassed (`epyc-orchestrator` `scripts/hooks/check_commit_hygiene.py:282-310`; raised
+  independently by 7 agents) (found 2026-09-14, noninf sweep).
 - [x] **One shared implementation instead of four.** ✅ 2026-08-18 (`2f5a0c63`). `shell_scan.py` now
   owns `SEPARATORS`/`strip_quoted`/`strip_heredocs`/`strip_comments`/`segments()`; four scanners
   import it. −73/+17, `strip_comments` de-triplicated (one copy substituted `""` where the others
