@@ -59,7 +59,7 @@ import sqlite3
 import stat
 import subprocess
 import time
-from typing import Any, Mapping, Optional
+from typing import Any, Iterable, Mapping, Optional
 
 from dashboard import campaign_status, panels
 
@@ -1470,6 +1470,51 @@ KNOWLEDGE_STALE_AFTER_S = 86400.0
 #: How many of the most recent keeps are named on the card, with their effects.
 KNOWLEDGE_RECENT_KEPT = 5
 
+#: Production-relative history is admitted only by joining the loop's raw
+#: direct-A/B receipt to both ledger rows emitted by the same refresh.  The
+#: reason grammar is producer-owned (`loop.production.Refresh.to_attempt`).
+TRAJECTORY_SCHEMA = "epyc.dashboard.autokernel_improvement_trajectory.v3"
+HISTORICAL_TRAJECTORY_SCHEMA = "epyc.autokernel.historical_trajectory.v1"
+HISTORICAL_TRAJECTORY_FILENAME = "historical-trajectory.json"
+TRAJECTORY_MAX_POINTS = 128
+TRAJECTORY_RAW_MAX_BYTES = 256 * 1024
+TRAJECTORY_KEEP_MAX = 1024
+MANUAL_KEEP_HISTORY = Path(__file__).with_name("data") / "autokernel-manual-retained-history.v1.json"
+# The original tg128 campaign predates model identity in experiment payloads.
+# Its exact retained commit set is joined to the contemporaneous run record,
+# rather than guessed from a later checkpoint that happens to share a commit.
+_LEGACY_DEEPSEEK_KEEP_COMMITS = frozenset({
+    "61d007867c43cc80ff9c54290a5a45b06b3fa900",
+    "5582ebccfc0cd901e69209277a0c004ae52150d4",
+    "042cb2e41e3886f5498d761d21e6de22064142f8",
+    "bbbce33c8b92d5889d14000b8970c8d6968c0e2d",
+    "2a52f805f0e6234bce0a9ebb21d9bfbee7eb7192",
+    "b04fad244cd69da363c6e5267f145fd0fe3e14cc",
+    "b65e4c524102ef8efb9f0c1c5f8fe5c0f3953e7a",
+    "432e501ff8631efb2f0684ae06285eb658ab8cbd",
+    "63e15dfb99e1b0f8855540106bf19e6c4f1f8f18",
+    "5c68bf1261ca499771c69b488472c1954f3bf6cf",
+    "f972b93b803501eb2f0a02f4a3a501dce0aed1e4",
+    "80f399b706111b9af6079c812aaffdf92b4794d3",
+    "9a115b947292755d2fadd46535762597f0526514",
+    "6e231b07c58d4716fa65d4ac7c8505b36b410ba1",
+    "55101b7e354786f4f26192acdf115bc828016573",
+    "5ad3e36dfb3acc9eda3dd3d5e137dce69a629cdd",
+    "dd161d519d07c0012ab95be6627f1ff63f9383cf",
+    "4925b2084accf03776dddc4931957f06b3d32a77",
+    "732389d6d9d08338fe2ad2457bf8f44205914a7f",
+})
+_LEGACY_DEEPSEEK_MODEL = "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M"
+_LEGACY_DEEPSEEK_RUN_EVIDENCE = "/mnt/raid0/llm/tmp/run21.log:2"
+_LEGACY_DEEPSEEK_CONFLICT_EVIDENCE = \
+    "/workspace/progress/2026-09/2026-09-02-ak-rebuild-20260828.md:75"
+_PRODUCTION_REFRESH_REASON = re.compile(
+    r"^champion (?P<champion>[0-9a-f]{12}) measures "
+    r"(?P<effect>[+-][0-9]+(?:\.[0-9]+)?)% against frozen production "
+    r"(?P<baseline>[0-9a-f]{12}) \((?P<label>production-consolidated-[^)]+)\) "
+    r"over (?P<pairs>[1-9][0-9]*) (?P<surface>[A-Za-z0-9_-]+) pairs, "
+    r"floor (?P<floor>[0-9]+(?:\.[0-9]+)?)%$")
+
 #: The dispositions the card names first-class. Everything ELSE in the store is
 #: folded into a no-scientific-verdict bucket that ENUMERATES its members —
 #: never dropped, never silently merged into a named one.
@@ -1945,6 +1990,21 @@ def _read_knowledge_once(path: Path) -> dict:
                     f"substr(refusal_reason, 1, {KNOWLEDGE_REASON_CAP + 200}), "
                     "recorded_at, epoch_sha256 FROM experiments "
                     "ORDER BY recorded_at DESC").fetchall()]
+            # Private input to the trajectory fold. These bounded payloads do
+            # not ride the API response; they prove joins to raw receipts.
+            trajectory_rows = [
+                {"mechanism_id": r[0], "status": r[1],
+                 "refusal_reason": r[2], "recorded_at": r[3],
+                 "payload": r[4], "payload_bytes": r[5],
+                 "target_symbol": r[6], "target_surface": r[7],
+                 "statement": r[8], "epoch_sha256": r[9],
+                 "effect_fraction": r[10], "attempt_id": r[11]}
+                for r in cur.execute(
+                    "SELECT mechanism_id, status, refusal_reason, recorded_at, "
+                    "substr(payload, 1, ?), length(payload), target_symbol, target_surface, "
+                    "substr(statement, 1, 2001), epoch_sha256, effect_fraction, attempt_id FROM experiments "
+                    "ORDER BY recorded_at DESC LIMIT 512",
+                    (TRAJECTORY_RAW_MAX_BYTES + 1,)).fetchall()]
         finally:
             con.close()
     except sqlite3.OperationalError:
@@ -1970,6 +2030,7 @@ def _read_knowledge_once(path: Path) -> dict:
         # Internal to the snapshot fold — the ledger consumes these and the
         # wire carries the FOLDED ledger, never 1000 raw rows.
         "rows": ledger_rows,
+        "trajectory_rows": trajectory_rows,
     }
     return {"artifact_present": True, "body": body, "reader_error": None,
             "path": str(path), "mtime": mtime}
@@ -2028,6 +2089,780 @@ def knowledge_freshness(report: Mapping[str, Any], *,
     }
 
 
+def _finite_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) \
+        and float("-inf") < float(value) < float("inf")
+
+
+def _trajectory_json(path: Path) -> Mapping[str, Any]:
+    body = json.loads(_serial_bytes(path, limit=TRAJECTORY_RAW_MAX_BYTES))
+    if not isinstance(body, dict):
+        raise TypeError("trajectory receipt is not a JSON object")
+    return body
+
+
+def _serving_summary(path: Path) -> Mapping[str, Any]:
+    """Read a compact receipt or its identity-checked final 256-KiB summary."""
+    try:
+        return _trajectory_json(path)
+    except ValueError as exc:
+        if "bounded nonempty regular file" not in str(exc):
+            raise
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    with os.fdopen(fd, "rb") as stream:
+        before = os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or before.st_size <= TRAJECTORY_RAW_MAX_BYTES:
+            raise ValueError("serving receipt is not a large regular file")
+        stream.seek(-TRAJECTORY_RAW_MAX_BYTES, os.SEEK_END)
+        tail = stream.read(TRAJECTORY_RAW_MAX_BYTES)
+        after = os.fstat(stream.fileno())
+    if ((before.st_dev, before.st_ino, before.st_mtime_ns, before.st_size) !=
+            (after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size)):
+        raise ValueError("serving receipt changed while its tail was read")
+    marker = tail.rfind(b'\n  "decisive":')
+    if marker < 0 or not tail.rstrip().endswith(b"}"):
+        raise ValueError("serving receipt has no bounded top-level summary tail")
+    body = json.loads(b"{" + tail[marker + 1:])
+    if not isinstance(body, dict):
+        raise TypeError("serving receipt summary tail is not an object")
+    return body
+
+
+def _model_trajectory_curves(points: Iterable[Mapping[str, Any]]) -> list[dict]:
+    """One model trajectory with selectable non-composed surface variants."""
+    by_model: dict[str, dict[tuple, list[dict]]] = {}
+    for raw in sorted(points, key=lambda p: str(p.get("recorded_at") or "")):
+        point = dict(raw)
+        model = point.get("model") or "model unrecorded"
+        metric = point.get("metric") or point["surface"]
+        backend = point.get("backend") or "backend unrecorded"
+        variant_key = (point["surface"], metric, backend)
+        by_model.setdefault(model, {}).setdefault(variant_key, []).append(point)
+    curves = []
+    for model, variants in sorted(by_model.items()):
+        surfaces = []
+        for (surface, metric, backend), variant_points in sorted(variants.items()):
+            instrument_epochs = []
+            for point in variant_points:
+                baseline = point.get("baseline") or {}
+                identity = (point.get("recipe"), point.get("era"), baseline.get("commit"))
+                if not instrument_epochs or instrument_epochs[-1]["identity"] != identity:
+                    instrument_epochs.append({"identity": identity, "recipe": point.get("recipe"),
+                        "era": point.get("era"), "baseline": baseline,
+                        "starts_at": point.get("recorded_at"), "starts_commit": point["commit"]})
+            for epoch in instrument_epochs:
+                epoch.pop("identity", None)
+            surfaces.append({"id": f"{surface}::{metric}::{backend}", "surface": surface,
+                "metric": metric, "backend": backend, "points": variant_points,
+                "instrument_epochs": instrument_epochs})
+        surfaces.sort(key=lambda item: (-len(item["points"]),
+            0 if item["surface"] == "plain-decode" else 1, item["surface"]))
+        primary = surfaces[0]
+        curves.append({"id": model, "model": model, "primary_surface": primary["surface"],
+            "surface": primary["surface"], "metric": primary["metric"],
+            "backend": primary["backend"], "points": primary["points"],
+            "instrument_epochs": primary["instrument_epochs"], "surface_series": surfaces})
+    return curves
+
+
+def _retained_keep_source(root: Path) -> dict:
+    """Read keeps with the disposition predicate applied before the bound."""
+    path = Path(root) / KNOWLEDGE_DB_FILENAME
+    if not path.is_file():
+        return {"state": "absent", "evidence": str(path), "available_count": 0,
+                "returned_count": 0, "truncated": False, "rows": [],
+                "error": "no experiment store"}
+    try:
+        con = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5.0)
+        try:
+            available = int(con.execute(
+                "SELECT COUNT(*) FROM experiments WHERE status = 'kept'").fetchone()[0])
+            rows = [{"attempt_id": r[0], "recorded_at": r[1], "campaign_id": r[2],
+                "epoch_sha256": r[3], "hypothesis_id": r[4], "mechanism_id": r[5],
+                "target_surface": r[6], "target_symbol": r[7], "statement": r[8],
+                "effect_fraction": r[9], "result_sha256": r[10], "payload": r[11],
+                "payload_bytes": r[12]}
+                for r in con.execute(
+                    "SELECT attempt_id, recorded_at, campaign_id, epoch_sha256, hypothesis_id, "
+                    "mechanism_id, target_surface, target_symbol, substr(statement, 1, 2001), "
+                    "effect_fraction, result_sha256, substr(payload, 1, ?), length(payload) "
+                    "FROM experiments WHERE status = 'kept' ORDER BY recorded_at ASC LIMIT ?",
+                    (TRAJECTORY_RAW_MAX_BYTES + 1, TRAJECTORY_KEEP_MAX)).fetchall()]
+        finally:
+            con.close()
+    except (OSError, sqlite3.Error) as exc:
+        return {"state": "malformed", "evidence": str(path), "available_count": None,
+                "returned_count": 0, "truncated": None, "rows": [], "error": str(exc)[:256]}
+    return {"state": "available", "evidence": str(path), "available_count": available,
+            "returned_count": len(rows), "truncated": available > len(rows), "rows": rows,
+            "error": None}
+
+
+def _retained_keep_history(root: Path, headline: Mapping[str, Any],
+                           active: Optional[Mapping[str, Any]]) -> dict:
+    """Merge exact global keeps with the active campaign's retained bundle."""
+    commit_models = {}
+    for curve in headline.get("curves") or []:
+        for series in curve.get("surface_series") or [curve]:
+            for point in series.get("points") or []:
+                commit_models.setdefault(point.get("commit"), []).append({
+                    "model": curve.get("model"), "surface": point.get("surface"),
+                    "recorded_at": point.get("recorded_at")})
+
+    def event(row: Mapping[str, Any], source_id: str,
+              default_model: Optional[str] = None) -> dict:
+        payload = {}
+        if int(row.get("payload_bytes") or 0) <= TRAJECTORY_RAW_MAX_BYTES:
+            try:
+                candidate = json.loads(row.get("payload") or "{}")
+                payload = candidate if isinstance(candidate, dict) else {}
+            except (TypeError, json.JSONDecodeError):
+                pass
+        # Large measurement payloads place the compact champion identity before
+        # multi-megabyte telemetry. Recover only that complete JSON scalar from
+        # the bounded prefix; never treat a partial payload as parsed JSON.
+        if not payload and isinstance(row.get("payload"), str):
+            match = re.search(
+                r'"champion_head"\s*:\s*("(?:\\.|[^"\\])*")', row["payload"])
+            if match:
+                try:
+                    champion_head = json.loads(match.group(1))
+                    if isinstance(champion_head, str) and _FULL_SHA.fullmatch(champion_head):
+                        payload["champion_head"] = champion_head
+                except json.JSONDecodeError:
+                    pass
+        comparison = payload.get("comparison")
+        comparison = comparison if isinstance(comparison, dict) else {}
+        commit = payload.get("champion_head") or payload.get("at_commit")
+        recorded_model = comparison.get("model") or payload.get("model")
+        model = Path(recorded_model).name if isinstance(recorded_model, str) else None
+        if isinstance(model, str):
+            model = model.removesuffix(".gguf")
+        evidence = [{"label": "experiment_store", "value": source_id}]
+        attribution = "producer_record"
+        if model is None and isinstance(commit, str) and commit in commit_models:
+            candidates = commit_models[commit]
+            same_surface = [item for item in candidates
+                            if item.get("surface") == comparison.get("surface")]
+            candidates = same_surface or candidates
+            candidate_models = {item.get("model") for item in candidates
+                                if item.get("model")}
+            chosen = candidates[0] if len(candidate_models) == 1 else None
+            if chosen is not None:
+                model, attribution = chosen.get("model"), "unique_normalized_checkpoint_commit"
+            elif len(candidate_models) > 1:
+                attribution = "ambiguous_normalized_checkpoint_commit"
+        if model is None and commit in _LEGACY_DEEPSEEK_KEEP_COMMITS:
+            model, attribution = _LEGACY_DEEPSEEK_MODEL, "campaign_join"
+            evidence.append({"label": "campaign_model_join",
+                             "value": _LEGACY_DEEPSEEK_RUN_EVIDENCE})
+            if commit.startswith("732389d6"):
+                evidence.append({"label": "overwritten_comparison_model_audit",
+                                 "value": _LEGACY_DEEPSEEK_CONFLICT_EVIDENCE})
+        if model is None and default_model is not None:
+            model, attribution = default_model, "active_campaign_store"
+        for key in ("evidence", "belief_export_receipt", "patch_path", "patch_metadata_path"):
+            value = payload.get(key) or comparison.get(key)
+            if isinstance(value, str) and value:
+                evidence.append({"label": key, "value": value})
+        effect = row.get("effect_fraction")
+        return {"disposition": "kept", "membership_source": "experiment_store",
+            "source_id": source_id, "attempt_id": row.get("attempt_id"),
+            "recorded_at": row.get("recorded_at"), "campaign_id": row.get("campaign_id"),
+            "hypothesis_id": row.get("hypothesis_id"), "mechanism_id": row.get("mechanism_id"),
+            "commit": commit if isinstance(commit, str) else None,
+            "model": model, "model_recorded": recorded_model,
+            "model_attribution": attribution if attribution.startswith("ambiguous_")
+                                 else attribution if model is not None else "unavailable",
+            "surface": comparison.get("surface") or payload.get("surface") or row.get("target_surface"),
+            "epoch": row.get("epoch_sha256"), "profile_target": row.get("target_symbol"),
+            "hypothesis": row.get("statement") or payload.get("statement"),
+            "effect_fraction": float(effect) if _finite_number(effect) else None,
+            "effect_pct": float(effect) * 100.0 if _finite_number(effect) else None,
+            "floor_pct": (float(comparison["noise_floor_pct"])
+                           if _finite_number(comparison.get("noise_floor_pct")) else None),
+            "decisive": comparison.get("decisive") if type(comparison.get("decisive")) is bool else None,
+            "comparison": ({"pairs": comparison.get("pairs"),
+                            "drifting": comparison.get("drifting"),
+                            "calibrated": comparison.get("calibrated")}
+                           if comparison else None),
+            "critic_rationale": None, "transfer_applicability": payload.get("research_scope"),
+            "result_sha256": row.get("result_sha256"), "evidence": evidence,
+            "identifiers": {"patch_path": payload.get("patch_path"),
+                            "patch_metadata_path": payload.get("patch_metadata_path")}}
+
+    sources, events = [], []
+    global_source = _retained_keep_source(root)
+    global_events = [event(row, global_source["evidence"])
+                     for row in global_source.pop("rows")]
+    global_source.update({"id": "global", "returned_count": len(global_events),
+                          "bundle_available_count": None, "bundle_recovered_count": 0})
+    sources.append(global_source)
+    events.extend(global_events)
+
+    try:
+        manual = _trajectory_json(MANUAL_KEEP_HISTORY)
+        records = manual.get("records")
+        if (manual.get("schema") != "epyc.autokernel.manual_retained_history.v1"
+                or not isinstance(records, list) or len(records) > TRAJECTORY_KEEP_MAX):
+            raise ValueError("unsupported manual retained-history shape")
+        manual_events = []
+        for record in records:
+            if (not isinstance(record, dict)
+                    or not isinstance(record.get("mechanism_id"), str)
+                    or (record.get("commit") is not None
+                        and (not isinstance(record.get("commit"), str)
+                             or not _FULL_SHA.fullmatch(record["commit"])))
+                    or not isinstance(record.get("model"), str)
+                    or not isinstance(record.get("retention_class"), str)
+                    or not isinstance(record.get("source_references"), list)):
+                raise ValueError("manual retained-history record failed validation")
+            manual_events.append({"disposition": "kept",
+                "membership_source": "manual_fold_inventory",
+                "source_id": str(MANUAL_KEEP_HISTORY), "attempt_id": record.get("id"),
+                "recorded_at": record.get("recorded_at"), "campaign_id": record.get("campaign_id"),
+                "hypothesis_id": None, "mechanism_id": record["mechanism_id"],
+                "commit": record.get("commit"), "model": record["model"],
+                "model_recorded": record["model"], "model_attribution": "manual_fold_inventory",
+                "surface": record.get("surface"), "epoch": record.get("epoch"),
+                "profile_target": record.get("profile_target"),
+                "hypothesis": record.get("description"), "effect_fraction": None,
+                "effect_pct": None, "floor_pct": None, "decisive": None,
+                "comparison": None, "critic_rationale": None,
+                "transfer_applicability": record.get("applicability"),
+                "result_sha256": None,
+                "original_disposition": record.get("original_disposition"),
+                "retention_class": record["retention_class"],
+                "evidence": [{"label": "manual_fold_inventory", "value": value}
+                             for value in record["source_references"]],
+                "identifiers": {"component_commits": record.get("component_commits"),
+                                "artifact_sha256": record.get("artifact_sha256"),
+                                "patch_path": None, "patch_metadata_path": None}})
+        sources.append({"id": "manual_fold_inventory", "state": "available",
+                        "evidence": str(MANUAL_KEEP_HISTORY),
+                        "available_count": len(manual_events),
+                        "returned_count": len(manual_events), "truncated": False,
+                        "bundle_available_count": None, "bundle_recovered_count": 0,
+                        "error": None})
+        events.extend(manual_events)
+    except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        sources.append({"id": "manual_fold_inventory", "state": "malformed",
+                        "evidence": str(MANUAL_KEEP_HISTORY), "available_count": None,
+                        "returned_count": 0, "truncated": None,
+                        "bundle_available_count": None, "bundle_recovered_count": 0,
+                        "error": str(exc)[:256]})
+
+    campaign_root = Path(active["store"]) if isinstance(active, Mapping) \
+        and isinstance(active.get("store"), str) else None
+    if campaign_root is not None and campaign_root.resolve() != Path(root).resolve():
+        active_source = _retained_keep_source(campaign_root)
+        db_available_count = active_source.get("available_count")
+        db_events = [event(row, active_source["evidence"], str(active.get("model")))
+                     for row in active_source.pop("rows")]
+        by_mechanism = {}
+        for item in db_events:
+            by_mechanism.setdefault(item.get("mechanism_id"), []).append(item)
+        bundle_members, bundle_error = [], None
+        try:
+            bundle = _trajectory_json(campaign_root / "accumulator-bundle.json")
+            members = bundle.get("keeps")
+            if (bundle.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
+                    or not isinstance(members, list) or len(members) > TRAJECTORY_KEEP_MAX
+                    or len(set(members)) != len(members)
+                    or not all(isinstance(item, str) and item for item in members)):
+                raise ValueError("active retained bundle has an unsupported keep list")
+            bundle_members = members
+        except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            bundle_error = str(exc)[:256]
+        recovery_path = campaign_root / "recovery" / "recovered-accumulator-state.json"
+        recovery_by_mechanism, recovery_error = {}, None
+        try:
+            recovery = _trajectory_json(recovery_path)
+            recovered_keeps = recovery.get("keeps")
+            if (recovery.get("schema") != "epyc.autokernel.accumulator_recovery.v1"
+                    or not isinstance(recovered_keeps, list)
+                    or len(recovered_keeps) > TRAJECTORY_KEEP_MAX
+                    or not all(isinstance(item, dict)
+                               and isinstance(item.get("mechanism_id"), str)
+                               and isinstance(item.get("commit"), str)
+                               and _FULL_SHA.fullmatch(item["commit"])
+                               for item in recovered_keeps)
+                    or bundle_members[:len(recovered_keeps)] !=
+                       [item["mechanism_id"] for item in recovered_keeps]):
+                raise ValueError("recovery receipt does not match the retained bundle prefix")
+            recovery_by_mechanism = {item["mechanism_id"]: item for item in recovered_keeps}
+        except FileNotFoundError:
+            pass
+        except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            recovery_error = str(exc)[:256]
+        active_events = []
+        used_attempts = set()
+        recovered = 0
+        for position, mechanism in enumerate(bundle_members, 1):
+            matches = by_mechanism.get(mechanism) or []
+            if matches:
+                item = matches[-1]
+                used_attempts.add(item.get("attempt_id"))
+                item["retained_position"] = position
+                item["bundle_order"] = position
+                item["membership_source"] = "experiment_store+accumulator_bundle"
+            else:
+                recovered += 1
+                recovery_item = recovery_by_mechanism.get(mechanism) or {}
+                recovered_commit = recovery_item.get("commit")
+                item = {"disposition": "kept", "membership_source": "accumulator_bundle",
+                    "source_id": str(campaign_root / "accumulator-bundle.json"),
+                    "attempt_id": None, "recorded_at": None, "campaign_id": active.get("id"),
+                    "hypothesis_id": None, "mechanism_id": mechanism,
+                    "commit": recovered_commit,
+                    "model": active.get("model"), "model_recorded": None,
+                    "model_attribution": "active_campaign_retained_bundle",
+                    "surface": None, "epoch": None, "profile_target": None,
+                    "hypothesis": None, "effect_fraction": None, "effect_pct": None,
+                    "floor_pct": None, "decisive": None, "comparison": None,
+                    "critic_rationale": None, "transfer_applicability": None,
+                    "result_sha256": None,
+                    "evidence": [{"label": "accumulator_bundle",
+                                  "value": str(campaign_root / "accumulator-bundle.json")}] +
+                                ([{"label": "accumulator_recovery",
+                                   "value": str(recovery_path)}] if recovered_commit else []),
+                    "identifiers": {"patch_path": None, "patch_metadata_path": None},
+                    "retained_position": position, "bundle_order": position}
+                if recovered_commit:
+                    item["membership_source"] = "accumulator_bundle+recovery_receipt"
+                    item["model_attribution"] = "active_campaign_recovery_receipt"
+            active_events.append(item)
+        active_events.extend(item for item in db_events
+                             if item.get("attempt_id") not in used_attempts)
+        db_truncated = bool(active_source.get("truncated"))
+        active_available = None if db_truncated else len(bundle_members) + sum(
+            item.get("attempt_id") not in used_attempts for item in db_events)
+        active_source.update({"id": "active_campaign", "available_count": active_available,
+            "returned_count": len(active_events), "truncated": db_truncated,
+            "db_available_count": db_available_count,
+            "bundle_available_count": len(bundle_members) if not bundle_error else None,
+            "bundle_recovered_count": recovered, "bundle_error": bundle_error,
+            "recovery_available_count": len(recovery_by_mechanism),
+            "recovery_error": recovery_error, "recovery_evidence": str(recovery_path),
+            "bundle_evidence": str(campaign_root / "accumulator-bundle.json")})
+        sources.append(active_source)
+        events.extend(active_events)
+
+    model_counts = {}
+    for item in events:
+        label = item.get("model") or "model attribution unavailable"
+        model_counts[label] = model_counts.get(label, 0) + 1
+    complete = all(source.get("state") == "available"
+                   and source.get("available_count") == source.get("returned_count")
+                   for source in sources)
+    available = (sum(source["available_count"] for source in sources)
+                 if all(source.get("available_count") is not None for source in sources)
+                 else None)
+    return {"state": "available" if events and complete else "partial" if events else "absent",
+            "available_count": available, "returned_count": len(events),
+            "truncated": not complete, "limit_per_store": TRAJECTORY_KEEP_MAX,
+            "sources": sources, "per_model_counts": model_counts, "events": events,
+            "detail": "only producer-kept rows and exact active retained-bundle membership; no measurement checkpoint is promoted by this fold"}
+
+
+def _live_production_history(root: Path, rows: list[Mapping[str, Any]],
+                             production: Optional[Mapping[str, Any]] = None) -> dict:
+    """Join producer receipts into direct, never-composed production curves."""
+    prod = dict(production) if production is not None else resolve_production()
+    baseline = prod.get("commit") if prod.get("resolved") else None
+    label = prod.get("label") if prod.get("resolved") else None
+    out = {"state": "unavailable", "basis": "gain_pct_vs_frozen_production",
+           "baseline": {"commit": baseline, "label": label}, "curves": [],
+           "evidence_errors": [],
+           "detail": "no identity-complete direct production checkpoints are available"}
+    if not isinstance(baseline, str) or not _FULL_SHA.fullmatch(baseline):
+        out["detail"] = "the current frozen production identity is unresolved"
+        return out
+
+    refreshes, keeps = {}, {}
+    for row in rows:
+        if row.get("payload_bytes", 0) > TRAJECTORY_RAW_MAX_BYTES:
+            continue
+        try:
+            payload = json.loads(row.get("payload") or "")
+        except (TypeError, json.JSONDecodeError):
+            continue
+        if not isinstance(payload, dict):
+            continue
+        if (row.get("mechanism_id") == "champion-vs-production"
+                and row.get("status") == "champion_vs_production"):
+            match = _PRODUCTION_REFRESH_REASON.fullmatch(
+                str(row.get("refusal_reason") or payload.get("reason") or ""))
+            if match and match["baseline"] == baseline[:12] and match["label"] == label:
+                refreshes[match["champion"]] = {"match": match,
+                                                  "recorded_at": row.get("recorded_at")}
+        if row.get("status") == "kept":
+            head, comparison = payload.get("champion_head"), payload.get("comparison")
+            if isinstance(head, str) and _FULL_SHA.fullmatch(head) \
+                    and isinstance(comparison, dict):
+                keeps[head[:12]] = {"commit": head, "comparison": comparison}
+
+    points = []
+    try:
+        paths = sorted(root.glob("champion-vs-production.*.json"))
+    except OSError:
+        paths = []
+    for path in paths[:TRAJECTORY_MAX_POINTS]:
+        match_name = re.fullmatch(r"champion-vs-production\.([0-9a-f]{12})\.json", path.name)
+        if not match_name:
+            out["evidence_errors"].append({"evidence": str(path),
+                                             "reason": "archive lacks the exact producer identity join"})
+            continue
+        short_sha = match_name[1]
+        try:
+            raw = _trajectory_json(path)
+            refresh, keep = refreshes[short_sha], keeps[short_sha]
+            reason = refresh["match"]
+            effect = raw.get("effect_pct")
+            floor = raw.get("noise_floor_pct")
+            pairs = raw.get("pairs")
+            surface = raw.get("surface")
+            if (not _finite_number(effect) or not _finite_number(floor)
+                    or not isinstance(pairs, int) or isinstance(pairs, bool) or pairs < 1
+                    or not isinstance(surface, str)
+                    or surface != reason["surface"] or pairs != int(reason["pairs"])
+                    or round(float(effect), 3) != float(reason["effect"])
+                    or float(floor) != float(reason["floor"])):
+                raise ValueError("raw receipt disagrees with the production-refresh ledger row")
+            model = raw.get("model")
+            model = Path(model).name if isinstance(model, str) and model else None
+            points.append({"commit": keep["commit"], "recorded_at": refresh["recorded_at"],
+                           "gain_pct": float(effect), "surface": surface, "model": model,
+                           "pairs": pairs, "noise_floor_pct": float(floor),
+                           "evidence": str(path), "evidence_state": "direct_measurement"})
+        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            out["evidence_errors"].append({"evidence": str(path), "reason": str(exc)[:256]})
+
+    # The normalized current slot is independently identity-complete and may
+    # add the latest point even when its raw archive predates the ledger join.
+    report = read_champion(root)
+    body = report.get("body")
+    if isinstance(body, dict):
+        measured = body.get("champion") if isinstance(body.get("champion"), dict) else {}
+        anchored = body.get("baseline") if isinstance(body.get("baseline"), dict) else {}
+        effect = body.get("effect_fraction")
+        if (anchored.get("commit") == baseline and anchored.get("label") == label
+                and isinstance(measured.get("commit"), str)
+                and _FULL_SHA.fullmatch(measured["commit"])
+                and _finite_number(effect) and float(effect) > -1
+                and body.get("metric_direction") == "higher_better"
+                and isinstance(body.get("surface"), str)):
+            model = body.get("model")
+            model = Path(model).name if isinstance(model, str) and model else None
+            points.append({"commit": measured["commit"], "recorded_at": body.get("generated_at"),
+                           "gain_pct": float(effect) * 100.0, "surface": body["surface"],
+                           "model": model, "pairs": body.get("pairs"),
+                           "noise_floor_pct": body.get("noise_floor_pct"),
+                           "evidence": report.get("path"),
+                           "evidence_state": "direct_measurement"})
+
+    unique = {}
+    for point in points:
+        key = (point["commit"], point["model"], point["surface"], point["gain_pct"])
+        unique.setdefault(key, point)
+    out["curves"] = _model_trajectory_curves(unique.values())
+    if out["curves"]:
+        out["state"] = "available"
+        out["detail"] = ("each point is a direct matched A/B against the resolved frozen "
+                         "production kernel; campaign marginals are never composed")
+    return out
+
+
+def _production_history(root: Path, rows: list[Mapping[str, Any]],
+                        production: Optional[Mapping[str, Any]] = None) -> dict:
+    """Join normalized history with current producer receipts, without composition."""
+    live = _live_production_history(root, rows, production)
+    try:
+        history = _trajectory_json(root / HISTORICAL_TRAJECTORY_FILENAME)
+        points = history.get("points")
+        missing = history.get("missing_checkpoints")
+        epochs = history.get("baseline_epochs")
+        if (history.get("schema") != HISTORICAL_TRAJECTORY_SCHEMA
+                or not isinstance(points, list) or len(points) > TRAJECTORY_MAX_POINTS
+                or not isinstance(missing, list) or len(missing) > 32
+                or not isinstance(epochs, list) or len(epochs) > 16):
+            raise ValueError("historical trajectory has an unsupported shape")
+        for epoch in epochs:
+            if (not isinstance(epoch, dict) or not isinstance(epoch.get("commit"), str)
+                    or not _FULL_SHA.fullmatch(epoch["commit"])
+                    or not isinstance(epoch.get("label"), str)
+                    or _stamp_epoch(epoch.get("effective_at")) is None):
+                raise ValueError("production baseline epoch lacks exact identity or date")
+        admitted, exceptions = [], []
+        for point in points:
+            if not isinstance(point, dict):
+                raise ValueError("historical point is not an object")
+            baseline = point.get("baseline")
+            source = point.get("evidence")
+            required = ("commit", "recorded_at", "model", "surface", "recipe",
+                        "era", "gain_pct", "evidence_state")
+            if (not all(key in point for key in required)
+                    or not isinstance(point["commit"], str)
+                    or not _FULL_SHA.fullmatch(point["commit"])
+                    or not isinstance(baseline, dict)
+                    or not isinstance(baseline.get("commit"), str)
+                    or not _FULL_SHA.fullmatch(baseline["commit"])
+                    or not isinstance(source, dict)
+                    or not re.fullmatch(r"[0-9a-f]{64}", str(source.get("sha256") or ""))
+                    or not _finite_number(point["gain_pct"])):
+                raise ValueError("historical point lacks exact identity or finite gain")
+            clean = dict(point)
+            if point["evidence_state"] == "overwritten_conflicting_producer_record":
+                exceptions.append(clean)
+            else:
+                admitted.append(clean)
+        for marker in missing:
+            if not isinstance(marker, dict) or marker.get("evidence_state") != "missing_production_ab":
+                raise ValueError("historical missing checkpoint is malformed")
+            exceptions.append(dict(marker))
+
+        # Live receipts remain first-class. They can add a newly published point
+        # after the historical normalizer last ran, but cannot replace a curated
+        # point with the same exact identity.
+        curated_identities = {(point["commit"], point["surface"]) for point in admitted}
+        for curve in live.get("curves") or []:
+            for point in curve.get("points") or []:
+                if (point["commit"], point["surface"]) in curated_identities:
+                    continue
+                live_model = point.get("model")
+                if isinstance(live_model, str):
+                    live_model = live_model.removesuffix(".gguf")
+                admitted.append({**point, "recipe": "gpu-production-model-direct-ab",
+                                 "model": live_model, "era": "live-producer",
+                                 "baseline": live["baseline"]})
+        unique = {}
+        for point in admitted:
+            key = (point["commit"], point.get("model"), point["surface"],
+                   point.get("recipe"), point["baseline"]["commit"], point["gain_pct"])
+            unique.setdefault(key, point)
+        curves = _model_trajectory_curves(unique.values())
+        return {"state": "available" if curves else "unavailable",
+                "basis": "gain_pct_vs_each_curve_declared_baseline", "curves": curves,
+                "exceptions": exceptions,
+                "evidence_errors": live.get("evidence_errors") or [],
+                "baseline_epochs": epochs,
+                "baseline": live.get("baseline"),
+                "detail": ("one headline trajectory per model; its canonical primary surface is "
+                           "the longest measured series (plain preferred on ties). Other surfaces "
+                           "are selectable; recipes, harnesses and baselines are instrument epochs"),
+                "active_campaign": history.get("active_campaign")}
+    except FileNotFoundError:
+        return live
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        live.setdefault("evidence_errors", []).append({
+            "evidence": str(root / HISTORICAL_TRAJECTORY_FILENAME), "reason": str(exc)[:256]})
+        return live
+
+
+def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
+                           production: Optional[Mapping[str, Any]] = None) -> dict:
+    """Headline production history plus secondary campaign-local drill-down."""
+    root = Path(root)
+    headline = _production_history(root, rows, production)
+    active = headline.get("active_campaign")
+    campaign_root = root
+    if isinstance(active, Mapping) and isinstance(active.get("store"), str):
+        campaign_root = Path(active["store"])
+    local = {"state": "absent", "basis": "gain_pct_vs_campaign_cor", "keeps": [],
+             "bench_checkpoints": [], "serving_checks": [], "evidence_errors": [],
+             "detail": "no retained accumulator bundle is available"}
+    try:
+        bundle = _trajectory_json(campaign_root / "accumulator-bundle.json")
+        keeps = bundle.get("keeps")
+        if (bundle.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
+                or not isinstance(keeps, list) or not keeps or len(keeps) > 128
+                or len(set(keeps)) != len(keeps)
+                or not all(isinstance(item, str) and item for item in keeps)):
+            raise ValueError("retained accumulator bundle has an unsupported shape")
+        local.update({"state": "available", "champion_of_record": bundle.get("champion_of_record"),
+                      "tip": bundle.get("tip"),
+                      "keeps": [{"index": i, "mechanism_id": item}
+                                for i, item in enumerate(keeps, 1)],
+                      "detail": "campaign-local CoR evidence; not production-relative"})
+        if _finite_number(bundle.get("compounded_bench_pct")):
+            local["bench_checkpoints"].append({"keep_count": len(keeps),
+                                                 "gain_pct": float(bundle["compounded_bench_pct"]),
+                                                 "evidence_state": "cheap_screen_estimate"})
+        for path in sorted((campaign_root / "serving").glob("bundle-*.json"))[-32:]:
+            try:
+                body = _serving_summary(path)
+                planner = body.get("planner_evidence")
+                members = body.get("bundled_keeps") if isinstance(body.get("bundled_keeps"), list) \
+                    else planner.get("bundled_keeps") if isinstance(planner, dict) else None
+                if (not isinstance(planner, dict) or not isinstance(members, list)
+                        or members != keeps[:len(members)]
+                        or planner.get("bundled_keeps") != members
+                        or not _finite_number(body.get("effect_pct"))
+                        or not _finite_number(planner.get("compounded_bench_pct"))
+                        or type(body.get("decisive")) is not bool):
+                    raise ValueError("serving receipt identity or fields are malformed")
+                local["serving_checks"].append({"keep_count": len(members),
+                                                  "gain_pct": float(body["effect_pct"]),
+                                                  "bench_gain_pct": float(planner["compounded_bench_pct"]),
+                                                  "evidence_state": ("serving_verified" if body["decisive"]
+                                                                     else "serving_inconclusive"),
+                                                  "outcome": body.get("outcome")})
+            except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+                local["evidence_errors"].append({"evidence": str(path), "reason": str(exc)[:256]})
+        local["serving_checks"].sort(key=lambda p: (p["keep_count"], p["gain_pct"]))
+    except FileNotFoundError:
+        pass
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        local.update({"state": "malformed", "detail": str(exc)[:256]})
+
+    # The retained accumulator is the producer's promotion chain. Unlike the
+    # bootstrap history it advances on every Bundle.save(), so a newly promoted
+    # tip appears without editing either repository. Admit only an exact,
+    # internally consistent model/surface/recipe/metric/era tuple; otherwise the
+    # chain is broken and annotated, never guessed across.
+    if isinstance(active, Mapping):
+        try:
+            chain = _trajectory_json(campaign_root / "accumulator-bundle.json")
+            live_status = _trajectory_json(campaign_root / STATUS_FILENAME)
+            tip = chain.get("tip")
+            cor = active.get("champion_of_record")
+            model = active.get("model")
+            surface = live_status.get("surface")
+            live_model = Path(str(live_status.get("model") or "")).name
+            gain = chain.get("compounded_bench_pct")
+            if (chain.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
+                    or chain.get("measurement_validity") != "current_snapshot"
+                    or not isinstance(tip, str) or not _FULL_SHA.fullmatch(tip)
+                    or live_status.get("schema") != STATUS_SCHEMA
+                    or live_status.get("champion_head") != tip
+                    or not isinstance(cor, str) or not _FULL_SHA.fullmatch(cor)
+                    or not str(chain.get("champion_of_record") or "").startswith(cor[:12])
+                    or not isinstance(model, str) or model not in live_model
+                    or not isinstance(surface, str) or not surface
+                    or not _finite_number(gain)):
+                raise ValueError("promotion chain model/surface/recipe/metric/era identity mismatch")
+            recipe = surface
+            baseline = {"commit": cor, "label": f"campaign-CoR-{cor[:12]}"}
+            provisional = {"commit": tip, "recorded_at": live_status.get("generated_at"),
+                "model": model, "surface": surface, "recipe": recipe,
+                "era": active.get("id"), "gain_pct": float(gain), "baseline": baseline,
+                "evidence_state": "accumulated_chained_provisional",
+                "keep_count": len(chain.get("keeps") or []),
+                "evidence": str(campaign_root / "accumulator-bundle.json")}
+            direct = next((point for curve in headline.get("curves") or []
+                           for series in curve.get("surface_series") or [curve]
+                           for point in series.get("points") or []
+                           if point.get("commit") == tip and point.get("model") == model
+                           and point.get("surface") == surface
+                           and point.get("recipe") == recipe
+                           and (point.get("baseline") or {}).get("commit") == cor
+                           and "direct" in str(point.get("evidence_state"))), None)
+            if direct is not None:
+                direct["provisional_relation"] = "supersedes_compatible_accumulated_chain"
+            else:
+                variant = {"id": f"{surface}::{surface}::backend unrecorded",
+                    "surface": surface, "metric": surface, "backend": "backend unrecorded",
+                    "points": [provisional], "instrument_epochs": [{"recipe": recipe,
+                        "era": active.get("id"), "baseline": baseline,
+                        "starts_at": provisional["recorded_at"], "starts_commit": tip}]}
+                same_model = next((curve for curve in headline.get("curves") or []
+                                   if curve.get("model") == model), None)
+                if same_model is None:
+                    headline.setdefault("curves", []).append({"id": model, "model": model,
+                        "primary_surface": surface, "surface": surface, "metric": surface,
+                        "backend": "backend unrecorded", "points": [provisional],
+                        "instrument_epochs": variant["instrument_epochs"],
+                        "surface_series": [variant]})
+                else:
+                    same_model.setdefault("surface_series", []).append(variant)
+                headline["curves"].sort(key=lambda curve: str(curve.get("id")))
+                headline["state"] = "available"
+        except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            headline.setdefault("exceptions", []).append({
+                "commit": active.get("champion_of_record"),
+                "evidence_state": "broken_promotion_chain", "note": str(exc)[:256]})
+    if local["state"] == "available" and isinstance(active, Mapping):
+        local["campaign_id"] = active.get("id")
+        local["model"] = active.get("model")
+        expected_keeps = active.get("expected_keep_count")
+        expected_gain = active.get("expected_gain_pct_vs_cor")
+        if expected_keeps != len(local["keeps"]):
+            local["evidence_errors"].append({"evidence": str(campaign_root),
+                "reason": f"active campaign keep count changed: expected {expected_keeps}, read {len(local['keeps'])}"})
+        if expected_gain is not None and (not local["bench_checkpoints"] or
+                abs(local["bench_checkpoints"][-1]["gain_pct"] - float(expected_gain)) > 1e-9):
+            local["evidence_errors"].append({"evidence": str(campaign_root),
+                "reason": "active campaign gain no longer matches normalized identity"})
+    events = []
+    disposition_counts: dict[str, int] = {}
+    for row in rows[:256]:
+        try:
+            payload = json.loads(row.get("payload") or "{}")
+        except (TypeError, json.JSONDecodeError):
+            payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
+        comparison = payload.get("comparison")
+        comparison = comparison if isinstance(comparison, dict) else {}
+        status_name = str(row.get("status") or "other")
+        effect = comparison.get("effect_pct")
+        if not _finite_number(effect) and _finite_number(row.get("effect_fraction")):
+            effect = float(row["effect_fraction"]) * 100.0
+        if status_name == "kept":
+            disposition = "kept"
+        elif status_name == "measured_null":
+            disposition = "measured_null"
+        elif (_finite_number(effect) and float(effect) < 0) or "regress" in status_name:
+            disposition = "regression"
+        elif status_name == "refused_at_formation":
+            disposition = "formation_refusal"
+        elif status_name in {"measurement_invalid", "bench_failed", "planner_transient",
+                             "anchor_invalid", "runtime_refused"}:
+            disposition = "invalid_or_setup"
+        else:
+            disposition = "other"
+        commit = payload.get("champion_head") or payload.get("at_commit")
+        model = comparison.get("model") or payload.get("model")
+        if isinstance(model, str):
+            model = Path(model).name
+        surface = comparison.get("surface") or payload.get("surface") or row.get("target_surface")
+        evidence = []
+        for key in ("evidence", "belief_export_receipt", "patch_path", "patch_metadata_path"):
+            value = payload.get(key) or comparison.get(key)
+            if isinstance(value, str) and value:
+                evidence.append({"label": key, "value": value})
+        event = {"recorded_at": row.get("recorded_at"), "mechanism_id": row.get("mechanism_id"),
+            "disposition": disposition, "producer_status": status_name,
+            "effect_pct": float(effect) if _finite_number(effect) else None,
+            "floor_pct": (float(comparison["noise_floor_pct"])
+                           if _finite_number(comparison.get("noise_floor_pct")) else None),
+            "decisive": comparison.get("decisive") if type(comparison.get("decisive")) is bool else None,
+            "commit": commit if isinstance(commit, str) else None,
+            "model": model, "surface": surface if isinstance(surface, str) else None,
+            "epoch": row.get("epoch_sha256"), "profile_target": row.get("target_symbol"),
+            "hypothesis": row.get("statement") or payload.get("statement"),
+            "critic_rationale": row.get("refusal_reason") or payload.get("reason"),
+            "comparison": ({"pairs": comparison.get("pairs"), "drifting": comparison.get("drifting"),
+                            "calibrated": comparison.get("calibrated")}
+                           if comparison else None),
+            "evidence": evidence,
+            "transfer_applicability": payload.get("research_scope"),
+            "identifiers": {"attempt_id": row.get("attempt_id"),
+                            "campaign_id": payload.get("campaign_id"),
+                            "hypothesis_id": payload.get("hypothesis_id"),
+                            "patch_path": payload.get("patch_path"),
+                            "patch_metadata_path": payload.get("patch_metadata_path")}}
+        events.append(event)
+        disposition_counts[disposition] = disposition_counts.get(disposition, 0) + 1
+    events.sort(key=lambda event: str(event.get("recorded_at") or ""))
+    return {"schema": TRAJECTORY_SCHEMA, "production_headline": headline,
+            "campaign_drilldown": local,
+            "keep_history": _retained_keep_history(root, headline, active),
+            "experiment_events": {"events": events, "counts": disposition_counts,
+                "bounded": len(rows) > 256, "limit": 256,
+                "detail": "experiment markers are a separate event strip, never curve checkpoints"}}
+
+
 def knowledge_snapshot(root: Optional[Path] = None, *,
                        now: Optional[float] = None,
                        status_body: Any = "unread") -> dict:
@@ -2048,6 +2883,7 @@ def knowledge_snapshot(root: Optional[Path] = None, *,
     body = report.get("body")
     if status_body == "unread":
         status_body = read(root).get("body")
+    canonical_root = store_root() if root is None else Path(root)
     return {
         "source": "the loop's own memory store (sqlite, read-only)",
         "evidence": report.get("path"),
@@ -2060,6 +2896,9 @@ def knowledge_snapshot(root: Optional[Path] = None, *,
         "groups": _knowledge_groups(body["dispositions"]) if body else None,
         "recent_kept": body["recent_kept"] if body else None,
         "recorded_window": body["recorded_window"] if body else None,
+        "improvement_trajectory": (
+            improvement_trajectory(canonical_root, body.get("trajectory_rows") or [])
+            if body else None),
         # None — never an empty walk — when the store is unreadable: a ledger
         # of zero levers over a missing store would claim the planner has
         # thought about nothing.

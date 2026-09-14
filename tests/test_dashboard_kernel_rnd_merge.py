@@ -483,8 +483,8 @@ class TestThePageOpensWithTheHeadline(unittest.TestCase):
         main = html.split("<main>", 1)[1]
         first_section = re.search(r'<section[^>]*id="([A-Za-z0-9_-]+)"', main)
         self.assertIsNotNone(first_section)
-        self.assertEqual(first_section.group(1), "sec-champion",
-                         "the page no longer opens with the champion headline")
+        self.assertEqual(first_section.group(1), "sec-trajectory",
+                         "the page no longer opens with the unified champion trajectory")
         # Nothing VISIBLE sits between the (empty-by-default) freshness banner
         # and the headline section.
         between = main.split('id="banner"', 1)[1].split("<section", 1)[0]

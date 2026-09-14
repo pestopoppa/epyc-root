@@ -3223,6 +3223,44 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     snapshot resolves seven capabilities from
     `/mnt/raid0/llm/autokernel/loop-memory/champion-capabilities.json` (SHA-256
     `264f16ad346634b2a0c7bbe5e7a83faa976db0a7f75162f38f38324393247ea7`).
+  - [x] **AKU-09k — headline the measured champion trajectory against frozen production**:
+    ✅ 2026-09-14. ROOT `ebb98492` + RESEARCH `323bcf2c`/`3a4be85d` supersede the initial
+    trajectory projection. A compact subsystem-owned normalizer validates source literals and digests, then
+    publishes 21 historical whole-candidate checkpoints. The page separates every model, surface,
+    recipe and baseline epoch: DeepSeek-1.5B, Qwen3.8-27B, Gemma, and Flash-Next CPU plain/MTP
+    evidence no longer share a curve. Production releases are explicit zero-percent epoch markers;
+    no line crosses a production, recipe or harness-era boundary without direct dual-baseline
+    evidence. The overwritten Qwen `732389d6` `+27.363%` ledger value, its retained direct
+    `-1.414%` receipt, and the current `ef81196d` missing production A/B remain visibly distinct.
+    Live retained accumulator state supplies an automatically advancing provisional promotion-chain
+    checkpoint; compatible direct A/B evidence supersedes it, while identity mismatch breaks the
+    chain. The active GLM-5.3 store resolves 23 keeps and `+0.830381%` versus CoR, never the global
+    accumulator. Live `/api/loop` serves schema v3 with 12 curves and two explicit exceptions.
+    Validation: 81 focused tests, 33 skips and 5 browser subtests passed; existing registry health
+    and freshness wiring remains unchanged; AKU-09g/AKU-12 remain open.
+    - [x] **AKU-09k-v3 layout and accumulated-knowledge overlay**: ✅ 2026-09-14. ROOT
+      `a3cf6d0a` makes the trajectory the first dashboard surface and folds champion identity,
+      active progress, retained-gain context and production epochs into it. Separate responsive
+      Capabilities and Accumulator cards follow; the redundant Champion and Progress sections are
+      gone, while the full knowledge ledger is collapsed by default. Follow-up ROOT `ab1a34c5`
+      corrects the initial scatter: exactly one selectable headline trajectory exists per model.
+      Each model chooses the longest exact surface history (plain wins ties); secondary surfaces are
+      selectable detail, never blended. Recipe/harness/baseline changes are Autopilot-style instrument
+      bands and dashed discontinuity connectors within the same model row. The subsequent browser
+      correction makes actual kept ledger rows and retained-bundle members drive dots: A/B
+      checkpoints alone cannot assert keeps. Nulls, regressions, refusals, invalid/setup attempts,
+      and disposition counters remain in the collapsed ledger.
+      Accessible keep markers open a persistent side panel and expose only recorded evidence, using
+      explicit unknowns otherwise. Trajectory rendering occurs first behind its own visible failure
+      boundary. Live default Flash-Next plain spans `6f032c48` → `9c4f73e2` → `ef81196d`; MTP exposes
+      the same commit order via the surface selector. Five model IDs produce five headline trajectories,
+      with two instrument connectors. The original three-dot result omitted keep history and the
+      original panel vanished on refresh; both claims were corrected using real Chromium.
+      GLM exposes all 23 retained keeps, including explicitly undated bundle recoveries; hover,
+      click, refresh persistence, Escape, and keyboard reopening pass against the served page.
+      Browser regression: `tests/js/trajectory_browser_check.cjs`. The preceding focused suite
+      passed 85 tests, 33 skips, and five subtests; the interaction fix additionally passed the
+      75-test static-JS/loop suite and live Chromium exercise.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.
@@ -3434,6 +3472,19 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     experimental and was not promoted to production. The operator-requested monitor stopped
     after loop 50; the automatically started post-boundary batch 25 is not evidence and is
     recoverable runtime state, not a completed attempt.
+  - [x] **AKU-12f — remove the GLM formation-payoff deadlock without weakening safety review**:
+    ✅ 2026-09-14 — Research `5ac7b7e4` corrects the CPU planner/critic contract after retained
+    batches 27–34 spent 24 pass-one critic calls on eight proposals without reaching authoring.
+    The critic had promoted post-authoring payoff falsifiers (exact eligible-call census,
+    request-wall exposure and isolated local speedup) into mandatory pre-authoring evidence even
+    though the loop could not acquire those traces. Source-consistent bounded candidates now
+    proceed to the existing correctness and matched A/B pipeline; duplicate mechanisms, wrong or
+    incomplete source routes, unsupported claimed facts, and uncontained correctness/safety risks
+    remain formation refusals. The live store's contradictory stagnation inbox instruction was
+    corrected in place without changing its journal or 23 accumulated keeps. Focused planner,
+    critic and loop validation passed 74 tests. Continuous batch 42, started after publication,
+    loaded the corrected planner contract; its scientific outcome remains live campaign work and
+    is not claimed by this implementation checkpoint.
   - [ ] **AKU-12e — validate the accumulated GLM tip across required targets**: run the
     existing required-target validation and exact GLM correctness gates against experimental
     tip `dc3798db10a6`; publish the aggregate disposition before any champion admission proposal.
