@@ -1473,7 +1473,9 @@ KNOWLEDGE_RECENT_KEPT = 5
 #: Production-relative history is admitted only by joining the loop's raw
 #: direct-A/B receipt to both ledger rows emitted by the same refresh.  The
 #: reason grammar is producer-owned (`loop.production.Refresh.to_attempt`).
-TRAJECTORY_SCHEMA = "epyc.dashboard.autokernel_improvement_trajectory.v2"
+TRAJECTORY_SCHEMA = "epyc.dashboard.autokernel_improvement_trajectory.v3"
+HISTORICAL_TRAJECTORY_SCHEMA = "epyc.autokernel.historical_trajectory.v1"
+HISTORICAL_TRAJECTORY_FILENAME = "historical-trajectory.json"
 TRAJECTORY_MAX_POINTS = 128
 TRAJECTORY_RAW_MAX_BYTES = 256 * 1024
 _PRODUCTION_REFRESH_REASON = re.compile(
@@ -2093,8 +2095,8 @@ def _serving_summary(path: Path) -> Mapping[str, Any]:
     return body
 
 
-def _production_history(root: Path, rows: list[Mapping[str, Any]],
-                        production: Optional[Mapping[str, Any]] = None) -> dict:
+def _live_production_history(root: Path, rows: list[Mapping[str, Any]],
+                             production: Optional[Mapping[str, Any]] = None) -> dict:
     """Join producer receipts into direct, never-composed production curves."""
     prod = dict(production) if production is not None else resolve_production()
     baseline = prod.get("commit") if prod.get("resolved") else None
@@ -2208,16 +2210,115 @@ def _production_history(root: Path, rows: list[Mapping[str, Any]],
     return out
 
 
+def _production_history(root: Path, rows: list[Mapping[str, Any]],
+                        production: Optional[Mapping[str, Any]] = None) -> dict:
+    """Join normalized history with current producer receipts, without composition."""
+    live = _live_production_history(root, rows, production)
+    try:
+        history = _trajectory_json(root / HISTORICAL_TRAJECTORY_FILENAME)
+        points = history.get("points")
+        missing = history.get("missing_checkpoints")
+        epochs = history.get("baseline_epochs")
+        if (history.get("schema") != HISTORICAL_TRAJECTORY_SCHEMA
+                or not isinstance(points, list) or len(points) > TRAJECTORY_MAX_POINTS
+                or not isinstance(missing, list) or len(missing) > 32
+                or not isinstance(epochs, list) or len(epochs) > 16):
+            raise ValueError("historical trajectory has an unsupported shape")
+        for epoch in epochs:
+            if (not isinstance(epoch, dict) or not isinstance(epoch.get("commit"), str)
+                    or not _FULL_SHA.fullmatch(epoch["commit"])
+                    or not isinstance(epoch.get("label"), str)
+                    or _stamp_epoch(epoch.get("effective_at")) is None):
+                raise ValueError("production baseline epoch lacks exact identity or date")
+        admitted, exceptions = [], []
+        for point in points:
+            if not isinstance(point, dict):
+                raise ValueError("historical point is not an object")
+            baseline = point.get("baseline")
+            source = point.get("evidence")
+            required = ("commit", "recorded_at", "model", "surface", "recipe",
+                        "era", "gain_pct", "evidence_state")
+            if (not all(key in point for key in required)
+                    or not isinstance(point["commit"], str)
+                    or not _FULL_SHA.fullmatch(point["commit"])
+                    or not isinstance(baseline, dict)
+                    or not isinstance(baseline.get("commit"), str)
+                    or not _FULL_SHA.fullmatch(baseline["commit"])
+                    or not isinstance(source, dict)
+                    or not re.fullmatch(r"[0-9a-f]{64}", str(source.get("sha256") or ""))
+                    or not _finite_number(point["gain_pct"])):
+                raise ValueError("historical point lacks exact identity or finite gain")
+            clean = dict(point)
+            if point["evidence_state"] == "overwritten_conflicting_producer_record":
+                exceptions.append(clean)
+            else:
+                admitted.append(clean)
+        for marker in missing:
+            if not isinstance(marker, dict) or marker.get("evidence_state") != "missing_production_ab":
+                raise ValueError("historical missing checkpoint is malformed")
+            exceptions.append(dict(marker))
+
+        # Live receipts remain first-class. They can add a newly published point
+        # after the historical normalizer last ran, but cannot replace a curated
+        # point with the same exact identity.
+        curated_identities = {(point["commit"], point["surface"]) for point in admitted}
+        for curve in live.get("curves") or []:
+            for point in curve.get("points") or []:
+                if (point["commit"], point["surface"]) in curated_identities:
+                    continue
+                live_model = point.get("model")
+                if isinstance(live_model, str):
+                    live_model = live_model.removesuffix(".gguf")
+                admitted.append({**point, "recipe": "gpu-production-model-direct-ab",
+                                 "model": live_model, "era": "live-producer",
+                                 "baseline": live["baseline"]})
+        unique = {}
+        for point in admitted:
+            key = (point["commit"], point.get("model"), point["surface"],
+                   point.get("recipe"), point["baseline"]["commit"], point["gain_pct"])
+            unique.setdefault(key, point)
+        grouped = {}
+        for point in sorted(unique.values(), key=lambda p: str(p.get("recorded_at") or "")):
+            key = (point.get("model"), point["surface"], point.get("recipe"),
+                   point["baseline"]["commit"])
+            grouped.setdefault(key, []).append(point)
+        curves = []
+        for (model, surface, recipe, baseline_sha), curve in sorted(grouped.items(), key=lambda item: str(item[0])):
+            base = curve[0]["baseline"]
+            curves.append({"id": f"{model}::{surface}::{recipe}::{baseline_sha[:12]}",
+                           "model": model, "surface": surface, "recipe": recipe,
+                           "baseline": base, "points": curve})
+        return {"state": "available" if curves else "unavailable",
+                "basis": "gain_pct_vs_each_curve_declared_baseline", "curves": curves,
+                "exceptions": exceptions,
+                "evidence_errors": live.get("evidence_errors") or [],
+                "baseline_epochs": epochs,
+                "baseline": live.get("baseline"),
+                "detail": ("direct whole-candidate checkpoints grouped by exact model, surface, "
+                           "recipe and baseline; lines never cross an era or compose marginals"),
+                "active_campaign": history.get("active_campaign")}
+    except FileNotFoundError:
+        return live
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        live.setdefault("evidence_errors", []).append({
+            "evidence": str(root / HISTORICAL_TRAJECTORY_FILENAME), "reason": str(exc)[:256]})
+        return live
+
+
 def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
                            production: Optional[Mapping[str, Any]] = None) -> dict:
     """Headline production history plus secondary campaign-local drill-down."""
     root = Path(root)
     headline = _production_history(root, rows, production)
+    active = headline.get("active_campaign")
+    campaign_root = root
+    if isinstance(active, Mapping) and isinstance(active.get("store"), str):
+        campaign_root = Path(active["store"])
     local = {"state": "absent", "basis": "gain_pct_vs_campaign_cor", "keeps": [],
              "bench_checkpoints": [], "serving_checks": [], "evidence_errors": [],
              "detail": "no retained accumulator bundle is available"}
     try:
-        bundle = _trajectory_json(root / "accumulator-bundle.json")
+        bundle = _trajectory_json(campaign_root / "accumulator-bundle.json")
         keeps = bundle.get("keeps")
         if (bundle.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
                 or not isinstance(keeps, list) or not keeps or len(keeps) > 128
@@ -2233,7 +2334,7 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
             local["bench_checkpoints"].append({"keep_count": len(keeps),
                                                  "gain_pct": float(bundle["compounded_bench_pct"]),
                                                  "evidence_state": "cheap_screen_estimate"})
-        for path in sorted((root / "serving").glob("bundle-*.json"))[-32:]:
+        for path in sorted((campaign_root / "serving").glob("bundle-*.json"))[-32:]:
             try:
                 body = _serving_summary(path)
                 planner = body.get("planner_evidence")
@@ -2259,6 +2360,73 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
         pass
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
         local.update({"state": "malformed", "detail": str(exc)[:256]})
+
+    # The retained accumulator is the producer's promotion chain. Unlike the
+    # bootstrap history it advances on every Bundle.save(), so a newly promoted
+    # tip appears without editing either repository. Admit only an exact,
+    # internally consistent model/surface/recipe/metric/era tuple; otherwise the
+    # chain is broken and annotated, never guessed across.
+    if isinstance(active, Mapping):
+        try:
+            chain = _trajectory_json(campaign_root / "accumulator-bundle.json")
+            live_status = _trajectory_json(campaign_root / STATUS_FILENAME)
+            tip = chain.get("tip")
+            cor = active.get("champion_of_record")
+            model = active.get("model")
+            surface = live_status.get("surface")
+            live_model = Path(str(live_status.get("model") or "")).name
+            gain = chain.get("compounded_bench_pct")
+            if (chain.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
+                    or chain.get("measurement_validity") != "current_snapshot"
+                    or not isinstance(tip, str) or not _FULL_SHA.fullmatch(tip)
+                    or live_status.get("schema") != STATUS_SCHEMA
+                    or live_status.get("champion_head") != tip
+                    or not isinstance(cor, str) or not _FULL_SHA.fullmatch(cor)
+                    or not str(chain.get("champion_of_record") or "").startswith(cor[:12])
+                    or not isinstance(model, str) or model not in live_model
+                    or not isinstance(surface, str) or not surface
+                    or not _finite_number(gain)):
+                raise ValueError("promotion chain model/surface/recipe/metric/era identity mismatch")
+            recipe = surface
+            baseline = {"commit": cor, "label": f"campaign-CoR-{cor[:12]}"}
+            provisional = {"commit": tip, "recorded_at": live_status.get("generated_at"),
+                "model": model, "surface": surface, "recipe": recipe,
+                "era": active.get("id"), "gain_pct": float(gain), "baseline": baseline,
+                "evidence_state": "accumulated_chained_provisional",
+                "keep_count": len(chain.get("keeps") or []),
+                "evidence": str(campaign_root / "accumulator-bundle.json")}
+            direct = next((point for curve in headline.get("curves") or []
+                           for point in curve.get("points") or []
+                           if point.get("commit") == tip and point.get("model") == model
+                           and point.get("surface") == surface
+                           and point.get("recipe") == recipe
+                           and (point.get("baseline") or {}).get("commit") == cor
+                           and "direct" in str(point.get("evidence_state"))), None)
+            if direct is not None:
+                direct["provisional_relation"] = "supersedes_compatible_accumulated_chain"
+            else:
+                headline.setdefault("curves", []).append({
+                    "id": f"{model}::{surface}::{recipe}::{cor[:12]}", "model": model,
+                    "surface": surface, "recipe": recipe, "baseline": baseline,
+                    "points": [provisional]})
+                headline["curves"].sort(key=lambda curve: str(curve.get("id")))
+                headline["state"] = "available"
+        except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            headline.setdefault("exceptions", []).append({
+                "commit": active.get("champion_of_record"),
+                "evidence_state": "broken_promotion_chain", "note": str(exc)[:256]})
+    if local["state"] == "available" and isinstance(active, Mapping):
+        local["campaign_id"] = active.get("id")
+        local["model"] = active.get("model")
+        expected_keeps = active.get("expected_keep_count")
+        expected_gain = active.get("expected_gain_pct_vs_cor")
+        if expected_keeps != len(local["keeps"]):
+            local["evidence_errors"].append({"evidence": str(campaign_root),
+                "reason": f"active campaign keep count changed: expected {expected_keeps}, read {len(local['keeps'])}"})
+        if expected_gain is not None and (not local["bench_checkpoints"] or
+                abs(local["bench_checkpoints"][-1]["gain_pct"] - float(expected_gain)) > 1e-9):
+            local["evidence_errors"].append({"evidence": str(campaign_root),
+                "reason": "active campaign gain no longer matches normalized identity"})
     return {"schema": TRAJECTORY_SCHEMA, "production_headline": headline,
             "campaign_drilldown": local}
 

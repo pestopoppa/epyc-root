@@ -114,12 +114,18 @@ def test_backend_distinguishes_absent_and_malformed_local_evidence(tmp_path: Pat
 def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) -> None:
     payload = {"knowledge": {"improvement_trajectory": {
         "schema": loop_status.TRAJECTORY_SCHEMA,
-        "production_headline": {
-            "state": "available", "detail": "direct only",
-            "baseline": {"commit": "d" * 40, "label": "production-consolidated-v9"},
-            "evidence_errors": [{"evidence": "broken.json", "reason": "unjoined"}],
-            "curves": [{"id": "qwen::tg128", "model": "Qwen3.8-27B-Q8_0.gguf",
-                        "surface": "tg128", "points": [
+            "production_headline": {
+                "state": "available", "detail": "direct only",
+                "baseline": {"commit": "d" * 40, "label": "production-consolidated-v9"},
+                "baseline_epochs": [{"commit": "d" * 40,
+                    "label": "production-consolidated-v9", "effective_at": "2026-08-11T00:00:00Z"}],
+                "evidence_errors": [{"evidence": "broken.json", "reason": "unjoined"}],
+                "exceptions": [{"commit": "e" * 40, "evidence_state": "missing_production_ab",
+                                "note": "current champion has no direct production A/B"}],
+                "curves": [{"id": "qwen::tg128", "model": "Qwen3.8-27B-Q8_0.gguf",
+                            "surface": "tg128", "recipe": "gpu-direct",
+                            "baseline": {"commit": "d" * 40,
+                                         "label": "production-consolidated-v9"}, "points": [
                             {"commit": "a" * 40, "recorded_at": "2026-09-01T00:00:00Z",
                              "gain_pct": 5.6, "pairs": 20},
                             {"commit": "b" * 40, "recorded_at": "2026-09-02T00:00:00Z",
@@ -138,9 +144,76 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
                            "renderImprovementTrajectory"], capture_output=True,
                           text=True, timeout=30, check=True)
     card = json.loads(proc.stdout)["by_id"]["trajectory"]
-    assert "frozen production 0%" in card
+    assert "each curve's declared baseline 0%" in card
+    assert "production-consolidated-v9 release" in card
     assert "Qwen3.8-27B-Q8_0.gguf" in card
-    assert "+7.200% vs frozen production" in card
+    assert "+7.200% vs production-consolidated-v9" in card
     assert "Campaign-local CoR drill-down" in card
     assert "not production-relative" in card
     assert "1 unjoinable production receipt" in card
+    assert "missing_production_ab" in card
+
+
+def _history(root: Path, *, active: dict | None = None,
+             points: list | None = None, epochs: list | None = None) -> None:
+    (root / loop_status.HISTORICAL_TRAJECTORY_FILENAME).write_text(json.dumps({
+        "schema": loop_status.HISTORICAL_TRAJECTORY_SCHEMA,
+        "generated_at": "2026-09-14T00:00:00Z", "points": points or [],
+        "missing_checkpoints": [], "baseline_epochs": epochs or [{
+            "commit": "d" * 40, "label": "production-consolidated-v9",
+            "effective_at": "2026-08-11T00:00:00Z"}],
+        **({"active_campaign": active} if active else {}),
+    }))
+
+
+def test_new_retained_promotion_auto_appears_as_compatible_provisional(tmp_path: Path) -> None:
+    _store(tmp_path)
+    cor, tip1, tip2 = "c" * 40, "1" * 40, "2" * 40
+    active = {"id": "campaign-era", "model": "GLM-5.3-Flash",
+              "store": str(tmp_path), "champion_of_record": cor}
+    _history(tmp_path, active=active)
+
+    def publish(tip: str, keeps: list[str], gain: float) -> None:
+        (tmp_path / "accumulator-bundle.json").write_text(json.dumps({
+            "schema": "epyc.autokernel.accumulator_bundle.v2",
+            "champion_of_record": cor[:12], "tip": tip, "keeps": keeps,
+            "measurement_validity": "current_snapshot", "compounded_bench_pct": gain}))
+        (tmp_path / loop_status.STATUS_FILENAME).write_text(json.dumps({
+            "schema": loop_status.STATUS_SCHEMA, "generated_at": "2026-09-14T01:00:00Z",
+            "champion_head": tip, "model": "/models/GLM-5.3-Flash.gguf",
+            "surface": "serving:glm53-cpu-mtp-recipe"}))
+
+    publish(tip1, ["keep-1"], .4)
+    first = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)
+    provisional = [p for c in first["production_headline"]["curves"] for p in c["points"]
+                   if p["evidence_state"] == "accumulated_chained_provisional"]
+    assert [(p["commit"], p["gain_pct"], p["keep_count"]) for p in provisional] == [(tip1, .4, 1)]
+
+    publish(tip2, ["keep-1", "keep-2"], .83)
+    second = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)
+    provisional = [p for c in second["production_headline"]["curves"] for p in c["points"]
+                   if p["evidence_state"] == "accumulated_chained_provisional"]
+    assert [(p["commit"], p["gain_pct"], p["keep_count"]) for p in provisional] == [(tip2, .83, 2)]
+
+
+def test_baseline_epochs_break_v9_v10_and_admit_model_first_seen_in_v10(tmp_path: Path) -> None:
+    _store(tmp_path)
+    v9, v10, sha = "d" * 40, "e" * 40, "a" * 64
+    def point(commit: str, model: str, baseline: str, label: str, at: str) -> dict:
+        return {"commit": commit, "recorded_at": at, "model": model, "surface": "tg128",
+                "recipe": "recipe", "era": label, "gain_pct": 5.0,
+                "baseline": {"commit": baseline, "label": label},
+                "evidence_state": "serving_verified_direct",
+                "evidence": {"path": "receipt", "sha256": sha}}
+    _history(tmp_path, points=[
+        point("1" * 40, "legacy-model", v9, "production-consolidated-v9", "2026-09-01T00:00:00Z"),
+        point("2" * 40, "legacy-model", v10, "production-consolidated-v10", "2026-10-01T00:00:00Z"),
+        point("3" * 40, "new-model", v10, "production-consolidated-v10", "2026-10-02T00:00:00Z")],
+        epochs=[{"commit": v9, "label": "production-consolidated-v9", "effective_at": "2026-08-11T00:00:00Z"},
+                {"commit": v10, "label": "production-consolidated-v10", "effective_at": "2026-10-01T00:00:00Z"}])
+    result = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)["production_headline"]
+    assert [e["label"] for e in result["baseline_epochs"]] == ["production-consolidated-v9", "production-consolidated-v10"]
+    legacy = [c for c in result["curves"] if c["model"] == "legacy-model"]
+    assert len(legacy) == 2 and legacy[0]["baseline"]["commit"] != legacy[1]["baseline"]["commit"]
+    new = [c for c in result["curves"] if c["model"] == "new-model"]
+    assert len(new) == 1 and new[0]["baseline"]["label"] == "production-consolidated-v10"
