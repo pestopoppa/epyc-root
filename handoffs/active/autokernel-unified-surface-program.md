@@ -1,5 +1,9 @@
 # AutoKernel Unified-Surface Program — one champion, one accumulator, one runbook for CPU + GPU kernel work
 
+> **Proposed concurrency follow-up (2026-09-14):** [model-independent concurrent target coordination](autokernel-concurrent-target-coordination.md)
+> captures the remaining stage-claim/supervisor work and the distinction between cold GPU loading and resident inference.
+> It is for operator review only; no new implementation or launch is authorized by that handoff.
+
 **Status**: SCOPED UNIFIED-LOOP IMPLEMENTATION COMPLETE · opened 2026-09-07 · original campaign owners `ak-rebuild-20260828` (loop)
 and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current implementation owner:
 `autokernel-unified-20260908` · rider on [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md)
