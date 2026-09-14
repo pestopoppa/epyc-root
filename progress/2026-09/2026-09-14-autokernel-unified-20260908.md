@@ -193,3 +193,6 @@ one of the 23 accumulated GLM keeps was removed or rewritten. Batch 41 had impor
 module before publication and completed under the superseded contract. Continuous batch 42 started
 afterward and its process command proves the corrected planner text is loaded. The campaign remains
 continuous; this checkpoint makes no claim about batch 42's still-pending scientific disposition.
+No separate typed diagnostic-action framework was filed: it is unnecessary to clear this observed
+defect, and adding it now would reintroduce speculative control-plane friction rather than improve
+the working source-author/build/measure loop.
