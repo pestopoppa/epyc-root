@@ -42,3 +42,5 @@ and `stop_requested: true`. Batch 25 has no terminal continuation and is exclude
 - Final continuation:
   `/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/batches/batch-000024/loop-continuation.json`
 - Experimental source: `/mnt/raid0/llm/tmp/glm53-recovered-accumulator-20260912`
+- Published experimental branch: `pestopoppa/llama.cpp` branch
+  `ak/glm53-recovered-accumulator-20260912`, tip `dc3798db10a6654721f2a1fa6a162be2e5fdf95f`
