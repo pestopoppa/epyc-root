@@ -425,10 +425,6 @@ def test_new_retained_promotion_auto_appears_as_compatible_provisional(tmp_path:
             "schema": "epyc.autokernel.accumulator_bundle.v2",
             "champion_of_record": cor[:12], "tip": tip, "keeps": keeps,
             "measurement_validity": "current_snapshot", "compounded_bench_pct": gain}))
-        (tmp_path / loop_status.STATUS_FILENAME).write_text(json.dumps({
-            "schema": loop_status.STATUS_SCHEMA, "generated_at": "2026-09-14T01:00:00Z",
-            "champion_head": tip, "model": "/models/GLM-5.3-Flash.gguf",
-            "surface": "serving:glm53-cpu-mtp-recipe"}))
 
     publish(tip1, ["keep-1"], .4)
     first = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)
@@ -441,6 +437,33 @@ def test_new_retained_promotion_auto_appears_as_compatible_provisional(tmp_path:
     provisional = [p for c in second["production_headline"]["curves"] for p in c["points"]
                    if p["evidence_state"] == "accumulated_chained_provisional"]
     assert [(p["commit"], p["gain_pct"], p["keep_count"]) for p in provisional] == [(tip2, .83, 2)]
+
+
+def test_active_trajectory_ignores_oversized_or_lagging_operational_status(tmp_path: Path) -> None:
+    _store(tmp_path)
+    cor, old_tip, new_tip = "c" * 40, "1" * 40, "2" * 40
+    _history(tmp_path, active={"id": "campaign-era", "model": "GLM-5.3-Flash",
+        "store": str(tmp_path), "champion_of_record": cor,
+        "surface": "serving:glm53-cpu-mtp", "metric": "tg128_tok_s", "backend": "cpu"})
+    (tmp_path / "accumulator-bundle.json").write_text(json.dumps({
+        "schema": "epyc.autokernel.accumulator_bundle.v2",
+        "champion_of_record": cor[:12], "tip": new_tip, "keeps": ["keep-1"],
+        "measurement_validity": "current_snapshot", "compounded_bench_pct": .67}))
+    # Status is an operational/debug carrier, not trajectory input.  It can be
+    # far larger than the compact receipt and lag one publication boundary.
+    (tmp_path / loop_status.STATUS_FILENAME).write_text(json.dumps({
+        "schema": loop_status.STATUS_SCHEMA, "champion_head": old_tip,
+        "telemetry": "x" * (loop_status.TRAJECTORY_RAW_MAX_BYTES + 1)}))
+
+    result = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)["production_headline"]
+    glm = next(curve for curve in result["curves"] if curve["model"] == "GLM-5.3-Flash")
+    point = glm["points"][0]
+    assert point["commit"] == new_tip
+    assert point["gain_pct"] == .67
+    assert point["surface"] == "serving:glm53-cpu-mtp"
+    assert point["metric"] == "tg128_tok_s"
+    assert not any(row.get("evidence_state") == "broken_promotion_chain"
+                   for row in result["exceptions"])
 
 
 def test_baseline_epochs_break_v9_v10_and_admit_model_first_seen_in_v10(tmp_path: Path) -> None:

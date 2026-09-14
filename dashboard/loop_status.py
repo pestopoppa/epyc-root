@@ -2717,34 +2717,45 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
 
     # The retained accumulator is the producer's promotion chain. Unlike the
     # bootstrap history it advances on every Bundle.save(), so a newly promoted
-    # tip appears without editing either repository. Admit only an exact,
-    # internally consistent model/surface/recipe/metric/era tuple; otherwise the
-    # chain is broken and annotated, never guessed across.
+    # tip appears without editing either repository. Model and baseline identity
+    # are required. New normalized campaign projections may also name their
+    # surface/recipe/metric/backend; older projections receive explicit generic
+    # labels rather than forcing this reader into the raw operational status.
     if isinstance(active, Mapping):
         try:
             chain = _trajectory_json(campaign_root / "accumulator-bundle.json")
-            live_status = _trajectory_json(campaign_root / STATUS_FILENAME)
             tip = chain.get("tip")
             cor = active.get("champion_of_record")
             model = active.get("model")
-            surface = live_status.get("surface")
-            live_model = Path(str(live_status.get("model") or "")).name
+            # This headline consumes the compact campaign projection plus the
+            # compact accumulator, never the live operational status.  The
+            # latter may legitimately contain large lifecycle telemetry and
+            # may briefly report the previous tip while a newly retained keep
+            # is being published.  Neither condition invalidates the
+            # accumulator's own atomic promotion-chain snapshot.
+            surface = active.get("surface") or "campaign-accumulator"
+            metric = active.get("metric") or "compounded_bench_pct"
+            backend = active.get("backend") or "backend unrecorded"
             gain = chain.get("compounded_bench_pct")
             if (chain.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
                     or chain.get("measurement_validity") != "current_snapshot"
                     or not isinstance(tip, str) or not _FULL_SHA.fullmatch(tip)
-                    or live_status.get("schema") != STATUS_SCHEMA
-                    or live_status.get("champion_head") != tip
                     or not isinstance(cor, str) or not _FULL_SHA.fullmatch(cor)
                     or not str(chain.get("champion_of_record") or "").startswith(cor[:12])
-                    or not isinstance(model, str) or model not in live_model
+                    or not isinstance(model, str) or not model
                     or not isinstance(surface, str) or not surface
+                    or not isinstance(metric, str) or not metric
+                    or not isinstance(backend, str) or not backend
                     or not _finite_number(gain)):
                 raise ValueError("promotion chain model/surface/recipe/metric/era identity mismatch")
-            recipe = surface
+            recipe = active.get("recipe") or surface
             baseline = {"commit": cor, "label": f"campaign-CoR-{cor[:12]}"}
-            provisional = {"commit": tip, "recorded_at": live_status.get("generated_at"),
+            recorded_at = datetime.fromtimestamp(
+                (campaign_root / "accumulator-bundle.json").stat().st_mtime,
+                timezone.utc).isoformat().replace("+00:00", "Z")
+            provisional = {"commit": tip, "recorded_at": recorded_at,
                 "model": model, "surface": surface, "recipe": recipe,
+                "metric": metric, "backend": backend,
                 "era": active.get("id"), "gain_pct": float(gain), "baseline": baseline,
                 "evidence_state": "accumulated_chained_provisional",
                 "keep_count": len(chain.get("keeps") or []),
@@ -2760,8 +2771,8 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
             if direct is not None:
                 direct["provisional_relation"] = "supersedes_compatible_accumulated_chain"
             else:
-                variant = {"id": f"{surface}::{surface}::backend unrecorded",
-                    "surface": surface, "metric": surface, "backend": "backend unrecorded",
+                variant = {"id": f"{surface}::{metric}::{backend}",
+                    "surface": surface, "metric": metric, "backend": backend,
                     "points": [provisional], "instrument_epochs": [{"recipe": recipe,
                         "era": active.get("id"), "baseline": baseline,
                         "starts_at": provisional["recorded_at"], "starts_commit": tip}]}
@@ -2769,8 +2780,8 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
                                    if curve.get("model") == model), None)
                 if same_model is None:
                     headline.setdefault("curves", []).append({"id": model, "model": model,
-                        "primary_surface": surface, "surface": surface, "metric": surface,
-                        "backend": "backend unrecorded", "points": [provisional],
+                        "primary_surface": surface, "surface": surface, "metric": metric,
+                        "backend": backend, "points": [provisional],
                         "instrument_epochs": variant["instrument_epochs"],
                         "surface_series": [variant]})
                 else:
