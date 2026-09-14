@@ -2,8 +2,53 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-11 (unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below)
-**Sources**: 124+ documents
+**Last compiled**: 2026-09-14 (GLM-5.3-Flash continuous 50-loop AutoKernel acceptance; earlier: 2026-09-11 unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below)
+**Sources**: 127+ documents
+
+## Compiled Update — 2026-09-14: the GLM AutoKernel ran 50 monitored measured loops, and its 23-keep accumulator is a direct +0.83% that is still not a champion
+
+**Confidence: verified** for the loop count, outcome classes, artifact digests, boundary handling and
+non-promotion. The +0.83% figure is one direct matched-process comparison. It is not a serving claim or a
+production claim, and the sources record no dispersion floor for that comparison.
+
+**The acceptance tested whether the loop stays healthy, not whether it finds speed.** The operator asked the
+existing GLM-5.3-Flash CPU loop to prove four things: an observed original-request CPU profile, a real
+measured candidate path, continuous automatic operation, and 50 monitored terminal loops. When a genuine
+fault appeared, the loop was to halt, get fixed and relaunch. All four held. The 50 terminal continuations
+come from four retained supervisor states (v2/v3/v4/v7 contributed 2 + 20 + 3 + 25). Every one reached
+a real measurement. Their outcomes were 42 `measured_null` and 8 `kept`. The count is audit-ready. A single
+SHA-256 covers the ordered listing of per-continuation digests. Counting across retained states also means
+a relaunch after a repair did not reset the tally.
+
+**Accumulated effect is measured directly, never summed.** The experimental tip `dc3798db10a6` carries
+23 retained keeps. It is published on the fork branch `ak/glm53-recovered-accumulator-20260912`. A
+current-snapshot matched A/B of that tip against champion-of-record `c463f601bd39` measured +0.830%. This
+follows the 2026-08-30 lesson below: a fixed anchor turns every effect cumulative, so a stack must be
+compared as a whole. The final keep (`akm-q4k-pairrow-zmm-accumulate`) measured +0.182% marginally over
+five pairs. Its clean-rebuilt anchor showed +0.077% five-pair A/A drift. The keep is about 2.4x its own
+anchor drift, which puts it at the small end of what the loop retains.
+
+**Bench and serving diverged again.** Loop 49's cadence gate measured the preceding 22-keep stack at +0.540%
+on the bench comparison and +0.335% on the serving surface. The serving effect was not decisive. The loop
+recorded a surface divergence and did not promote, which is the rule the 2026-09-04 serving
+re-architecture installed.
+
+**A run past the boundary is not evidence.** After loop 50 settled, the supervisor launched batch 25 on its
+own. That showed boundary-to-boundary continuation works. The exact supervisor and child PIDs were then
+stopped, with a `STOP` sentinel and `stop_requested: true` and no name-pattern matching. Batch 25 has no
+terminal continuation, so it is excluded from the 50 and treated as recoverable runtime state.
+
+**What remains open.** AKU-12e must run required-target validation and the exact GLM correctness gates on
+`dc3798db10a6` before anyone proposes champion admission. The 50-loop proof does not include that step.
+Production `production-consolidated-v9` was not touched, and it predates `glm5next` support.
+
+### Source References (2026-09-14 GLM continuous acceptance)
+
+- [Unified-surface program handoff](../handoffs/active/autokernel-unified-surface-program.md) — the 2026-09-14 acceptance paragraph, AKU-12d (done) and AKU-12e (open).
+- [2026-09-14 AutoKernel progress](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md) — per-state composition, digests, final mechanism, the loop-49 cadence gate and runtime disposition.
+- [GLM-5.3 AutoKernel reference](../docs/reference/models/glm53-autokernel-handoff.md) — the continuous result section, the published accumulator branch and the non-admission statement.
+- [2026-09-11 AutoKernel progress](../progress/2026-09/2026-09-11-autokernel-unified-20260908.md) — the preceding five-loop GLM trial this run extends.
+- [Benchmark Methodology](benchmark-methodology.md) — anchor drift, unit-bearing floors and bench-vs-serving rules the result is read against.
 
 ## Compiled Update — 2026-09-10: one existing AutoKernel loop now owns CPU and GPU targets
 

@@ -3191,9 +3191,31 @@ Four rows, all zero-compute to write; one carries a compute-gated arm that is fi
       `{target, mutation_type, unified diff, per-suite deltas, rejecting gate, timestamp}` on
       **every** reject path in `actions.py`, and feed it into `_build_mutation_prompt`.
       **Harness-written, never LLM-written.** `intake-1317#01`. Zero compute.
+      2026-09-14: first measure (zero compute) how often dispatched actions re-propose a concrete config
+      that previously safety-failed or was dominated but never reached the blacklist — the journal
+      summary carries only `[species/action_type]` + metrics over a 12-trial window
+      (`experiment_journal.py:1028`, `autopilot.py:318`). Rejected-proposal feedback already exists via
+      blacklist / last-invalid / journal (`autopilot.py:5593-5603, 4483-4547, 9297-9305, 4999-5061`).
+      `intake-1348#record`.
 - [ ] **AP-54 — Asymmetric-access rule, executor half.** Answer **zero-compute first**: does the agent
       under evaluation read our compiled wiki during the same rollouts that feed the mutation
       proposer? If yes, this is a context-assembly fix. Only an ambiguous answer becomes a
       compute-gated A/B (filed, not run). Cross-referenced from EV-10a in
       [`eval-tower-verification.md`](eval-tower-verification.md). `intake-1317#02`. Zero compute for
       the question.
+
+## Research Intake Update — 2026-09-14 (intake-1346…1366)
+
+Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake-1348 (dive-verified, AP-53 note above).
+
+- [ ] **AP-55 — Measurement gate for code-mutation / harness-search promotion.** (a) per-unit infra
+      fingerprint (orchestrator commit, evaluator digest, model/server identity); (b) mandatory seed
+      re-run inside the same infra regime before any candidate comparison; (c) homogeneity test across
+      the candidate batch before naming a winner; (d) explicit NON_COMPARABLE marking. Evidence: a public
+      28-candidate GPT-OSS-20B OpenCode search was homogeneous within regime (χ² p=0.24, p=0.50), its
+      only clear pooled shift (3.85% → 9.6%) coincided with provider rate limits disappearing, and
+      same-commit re-runs fell 12.1% → 8.7%. Zero compute. Relates to AP-52. `intake-1362#record`.
+- [ ] **AP-56 — Determinism certification before N=1 promotion.** llama-server fixed seed and fixed
+      slot count; replay the baseline action chain and require identical trajectories before trusting a
+      single-run verdict. External, descriptive: promotion rate 7.9% (1,223 decisions) → 25.2% (131)
+      after determinism. Inference-gated; measure the local signal change first. `intake-1355#01`.

@@ -81,7 +81,7 @@ After any CF task, update this active handoff with command, dataset/log source, 
   - Caveats: BrowseComp is a 100-sample split (a 4.4pp gap ≈ 4 questions — our per-suite gate-resolution caveat applies); the model-dependence claim is n=2; the 98.7% judge-agreement figure lacks chance correction (see intake-876); live-web contamination may account for up to 4pp (intake-877). All numbers are OBSERVATIONS under MEASUREMENT.md.
   - Usable asset: the harness talks OpenAI-compatible endpoints and its **local-search arm (BrowseComp-Plus + embedding retrieval) is self-hostable against our BGE servers** — the cheapest path to re-measuring under our own protocol.
 
-- [x] CF-3c design input: frame the compaction A/B around the seven-policy ablation, prioritizing observation-dropping and treating summarization as the marginal arm to be justified, not the default. ✅ 2026-07-29 — **corrected to match the live path:** `ContextCompressor` performs deterministic type-aware stubbing only; `openai_compat.py` consumes that result directly and no caller invokes an LLM summarizer. The first runnable comparison is therefore `no compaction` versus protected-zone deterministic stubbing, with the threshold pre-registered; an LLM-summary arm is a separate future feature, not a currently available control. [intake-869, intake-274]
+- [x] CF-3c design input: frame the compaction A/B around the seven-policy ablation, prioritizing observation-dropping and treating summarization as the marginal arm to be justified, not the default. ✅ 2026-07-29 — **corrected to match the live path:** `ContextCompressor` performs deterministic type-aware stubbing only; `openai_compat.py` consumes that result directly and no caller invokes an LLM summarizer. The first runnable comparison is therefore `no compaction` versus protected-zone deterministic stubbing, with the threshold pre-registered; an LLM-summary arm is a separate future feature, not a currently available control. [intake-869, intake-274] **[2026-09-14 correction]** an LLM IS invoked on other compaction-adjacent paths: `src/graph/compaction.py:176-189` (worker-generated compaction index) and `src/repl_environment/environment.py:~679` (spill summary). The statement above holds only for `ContextCompressor`/`openai_compat.py`. `intake-1350#record`.
 
 #### CF-3c A/B frame (2026-07-29)
 
@@ -98,7 +98,8 @@ Run only after the monitor is persisted and the operator's shadow-telemetry enab
 Hold the workload, model, prompt construction and turn cap fixed. Record reference-loss, give-up,
 and no-answer/max-turns rates together; a lower apparent rot rate paired with more unfinished
 trajectories is a loss. This changes no runtime configuration and authorizes no inference while E5
-holds the host.
+holds the host. [2026-09-14] Also record per-task re-fetch/retrieval-call count as a required co-metric:
+a threshold that holds quality but raises re-queries is not equivalent. `intake-1359#record`.
 - [ ] CF candidate: add give-up-rate and uncertain-incorrect-rate as compaction-quality dimensions alongside reference misses. [intake-869]
 - [ ] CF candidate: the `keep_k_latest_wo_reasoning` arm is a direct cheap test for the retain-historical-thinking-blocks question owned by [reasoning-compression.md](reasoning-compression.md). [intake-869]
 
@@ -121,7 +122,7 @@ Supersedes the ordering in the 2026-07-21 intake section above. A deep dive on i
 - `keep_k_latest` is **not** pure trimming — it falls back to summary-restart on overflow. The real contrast is "summarize on overflow" vs "summarize proactively at 32K".
 - Cost framing was backwards: the expensive arms are pure threshold-triggered summarization (21.7→53-69 tool calls); the trim+summarize hybrid is barely above trim alone. Its real cost is **unfinished trajectories, not tokens** — so summarization must justify itself against `repl_max_turns` rate, not token spend.
 
-**6. Our stack is already past the paper's baseline.** `build_granular_summary` retains a **60-character** output preview per turn — we never keep raw observations. And `src/context_compression.py` already implements a keep-latest-8-with-summary hybrid (`TOOL_OUTPUT_AGE_THRESHOLD = 8`, `summarize_tool_output()` stubbing file reads/REPL while keeping errors verbatim, protected-zone first-3/last-5). A seven-policy bake-off would mostly re-derive a design we have already committed to.
+**6. Our stack is already past the paper's baseline.** `build_granular_summary` retains a **60-character** output preview per turn — we never keep raw observations. And `src/context_compression.py` already implements a keep-latest-8-with-summary hybrid (`TOOL_OUTPUT_AGE_THRESHOLD = 8`, `summarize_tool_output()` stubbing file reads/REPL while keeping errors verbatim, protected-zone first-3/last-5). A seven-policy bake-off would mostly re-derive a design we have already committed to. [2026-09-14: the code stubs ALL middle-zone tool outputs once ≥8 tool messages sit in the middle zone (`context_compression.py:334`) — "keep-latest-8" overstates retention.]
 
 - [x] **Fix the inverted detector (one line, highest value here) ✅ 2026-07-29**: implemented by epyc-orchestrator `921f71d1` in `src/graph/session_summary.py`, with regression coverage in `tests/unit/test_session_summary.py`; the completed duplicate is recorded below.
 - [ ] Persist `CompactionQualityMonitor` (add to the state projection at `graph/langgraph/state.py:207` + a writer) — currently dies with the session.
@@ -213,3 +214,9 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
   `max_related_cards 8`. Cross-links AP-ME-1 in
   [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) — the planner-context
   half of the same idea. Offline-first: measure current per-operator context size before changing it.
+
+## Research Intake Update — 2026-09-14 (intake-1346…1366)
+_Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: intake-1350 SoL-Pi, intake-1359 compression interaction costs — dive-verified._
+
+- [ ] **CF-PB-1 — Plan-boundary compaction trigger priced by local break-even.** Price a rewrite as re-prefill tokens (llama.cpp prefix-cache invalidation) vs per-request savings; SoL-Pi's formula structure ports, its 12.5 cache ratio does not. Note the `len(state.context) > 12000` OR-trigger (`graph/compaction.py:130`) dominates the 0.75 ratio today. If adopted, pass step progress INTO the summary request (SoL-Pi's own open #42 defect is exactly dropping it). Inference-gated. `intake-1350#04`.
+- [x] **CF-RX-1 — `_REPL_OUTPUT_RE` never matches.** ✅ 2026-09-14 — merged to epyc-orchestrator main `35b05fde` (pushed to origin 2026-09-14) (commit `090c63d9`). `context_compression.py:188` looks for `<<<\/TOOL_OUTPUT>>>`; the real end marker is `<<<END_TOOL_OUTPUT>>>` (`repl_environment/types.py:18`); the `">>>" in content` fallback (`:205`) masks it. Fixed by building the regex from the `types.py` constants with `re.escape` (no import cycle; loading `context_compression` now also imports the `repl_environment` package). Note: it changes `classify_tool_output` results for delimited REPL output inside the default-off `context_compression` path. `intake-1350#record`.
