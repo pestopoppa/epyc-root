@@ -3238,6 +3238,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     accumulator. Live `/api/loop` serves schema v3 with 12 curves and two explicit exceptions.
     Validation: 81 focused tests, 33 skips and 5 browser subtests passed; existing registry health
     and freshness wiring remains unchanged; AKU-09g/AKU-12 remain open.
+    - [x] **AKU-09k-v3 layout and accumulated-knowledge overlay**: ✅ 2026-09-14. ROOT
+      `a3cf6d0a` makes the trajectory the first dashboard surface and folds champion identity,
+      active progress, retained-gain context and production epochs into it. Separate responsive
+      Capabilities and Accumulator cards follow; the redundant Champion and Progress sections are
+      gone, while the full knowledge ledger is collapsed by default. Autopilot-style epoch bands,
+      dashed release boundaries and explicit discontinuities preserve baseline identity. A bounded
+      256-event strip classifies keeps, measured nulls, regressions, formation refusals,
+      invalid/setup outcomes and other records without treating them as gain checkpoints; filters,
+      accessible marker controls and an Escape/focus-restoring evidence drawer expose only recorded
+      fields, using explicit unknowns otherwise. Trajectory rendering occurs first behind its own
+      visible failure boundary, so a later renderer cannot leave the plot blank. Live proof: one SVG,
+      12 curves, one epoch band/boundary and 256 event buttons; 15 focused layout/render tests pass.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.

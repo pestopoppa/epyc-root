@@ -91,3 +91,30 @@ exceptions, GLM campaign `aku12a-glm53-five-loop`, 23 keeps, and `+0.83038098231
 The hub process was already refreshed by its supervisor. `/api/health` remains degraded because
 of unrelated stale/absent producers; no runtime campaign state, production kernel, registry,
 supervisor PID, or supervisor log was changed.
+
+## Unified headline layout, epoch grammar, and experiment overlay
+
+ROOT `a3cf6d0a` makes the champion trajectory the first Kernel R&D surface. It absorbs champion
+identity and direct comparison, active/iteration tiles, production-baseline epochs, and the
+experiment-event layer. The old standalone Champion and Progress sections are absent. A responsive
+two-column row immediately below retains Champion Capabilities and the Accumulator, including
+retained keeps, cumulative-estimate validity, serving-gate cadence/status, and the producer's
+noise-floor wording and identity. The full knowledge ledger is a default-collapsed accordion;
+controls remain in their operational sections.
+
+The v3 SVG adopts the Autopilot instrument-era grammar without coupling the dashboards: low-opacity
+epoch bands, dashed colored release boundaries, staggered labels, full title metadata, and line
+breaks across baseline/model/surface/recipe/metric/era changes. A separate time-aligned strip renders
+the latest 256 authoritative experiment records with accessible shapes/colors for kept,
+measured-null, regression, formation-refusal, invalid/setup, and other dispositions. Filters and a
+keyboard-operable evidence drawer expose only recorded fields and say unknown otherwise. These
+markers are explicitly not production-relative checkpoints.
+
+The trajectory mounts first through an isolated error boundary; sibling renderer failures cannot
+prevent its SVG from appearing. Focused validation passed 15/15, Python compilation and diff checks.
+The broader loop selection passed 114 tests and 33 skips; 11 knowledge-card failures were unrelated
+fixture contamination from resolving the shared global store. Live `:8100` proof showed transport
+health OK, schema v3, 12 curves, one epoch band/boundary, 256 bounded event buttons, no render
+exceptions, populated Capabilities/Accumulator hosts, and no redundant Champion/Progress sections.
+GitNexus reports LOW upstream risk (three dependants) for `improvement_trajectory`; the inline JS
+renderer is not indexed. No campaign state, registry, supervisor files, or production kernels changed.
