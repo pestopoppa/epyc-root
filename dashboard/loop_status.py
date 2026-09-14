@@ -59,7 +59,7 @@ import sqlite3
 import stat
 import subprocess
 import time
-from typing import Any, Mapping, Optional
+from typing import Any, Iterable, Mapping, Optional
 
 from dashboard import campaign_status, panels
 
@@ -1968,11 +1968,11 @@ def _read_knowledge_once(path: Path) -> dict:
                  "payload": r[4], "payload_bytes": r[5],
                  "target_symbol": r[6], "target_surface": r[7],
                  "statement": r[8], "epoch_sha256": r[9],
-                 "effect_fraction": r[10]}
+                 "effect_fraction": r[10], "attempt_id": r[11]}
                 for r in cur.execute(
                     "SELECT mechanism_id, status, refusal_reason, recorded_at, "
                     "substr(payload, 1, ?), length(payload), target_symbol, target_surface, "
-                    "substr(statement, 1, 2001), epoch_sha256, effect_fraction FROM experiments "
+                    "substr(statement, 1, 2001), epoch_sha256, effect_fraction, attempt_id FROM experiments "
                     "ORDER BY recorded_at DESC LIMIT 512",
                     (TRAJECTORY_RAW_MAX_BYTES + 1,)).fetchall()]
         finally:
@@ -2098,6 +2098,43 @@ def _serving_summary(path: Path) -> Mapping[str, Any]:
     return body
 
 
+def _model_trajectory_curves(points: Iterable[Mapping[str, Any]]) -> list[dict]:
+    """One model trajectory with selectable non-composed surface variants."""
+    by_model: dict[str, dict[tuple, list[dict]]] = {}
+    for raw in sorted(points, key=lambda p: str(p.get("recorded_at") or "")):
+        point = dict(raw)
+        model = point.get("model") or "model unrecorded"
+        metric = point.get("metric") or point["surface"]
+        backend = point.get("backend") or "backend unrecorded"
+        variant_key = (point["surface"], metric, backend)
+        by_model.setdefault(model, {}).setdefault(variant_key, []).append(point)
+    curves = []
+    for model, variants in sorted(by_model.items()):
+        surfaces = []
+        for (surface, metric, backend), variant_points in sorted(variants.items()):
+            instrument_epochs = []
+            for point in variant_points:
+                baseline = point.get("baseline") or {}
+                identity = (point.get("recipe"), point.get("era"), baseline.get("commit"))
+                if not instrument_epochs or instrument_epochs[-1]["identity"] != identity:
+                    instrument_epochs.append({"identity": identity, "recipe": point.get("recipe"),
+                        "era": point.get("era"), "baseline": baseline,
+                        "starts_at": point.get("recorded_at"), "starts_commit": point["commit"]})
+            for epoch in instrument_epochs:
+                epoch.pop("identity", None)
+            surfaces.append({"id": f"{surface}::{metric}::{backend}", "surface": surface,
+                "metric": metric, "backend": backend, "points": variant_points,
+                "instrument_epochs": instrument_epochs})
+        surfaces.sort(key=lambda item: (-len(item["points"]),
+            0 if item["surface"] == "plain-decode" else 1, item["surface"]))
+        primary = surfaces[0]
+        curves.append({"id": model, "model": model, "primary_surface": primary["surface"],
+            "surface": primary["surface"], "metric": primary["metric"],
+            "backend": primary["backend"], "points": primary["points"],
+            "instrument_epochs": primary["instrument_epochs"], "surface_series": surfaces})
+    return curves
+
+
 def _live_production_history(root: Path, rows: list[Mapping[str, Any]],
                              production: Optional[Mapping[str, Any]] = None) -> dict:
     """Join producer receipts into direct, never-composed production curves."""
@@ -2198,14 +2235,7 @@ def _live_production_history(root: Path, rows: list[Mapping[str, Any]],
     for point in points:
         key = (point["commit"], point["model"], point["surface"], point["gain_pct"])
         unique.setdefault(key, point)
-    grouped = {}
-    for point in sorted(unique.values(), key=lambda p: str(p.get("recorded_at") or "")):
-        key = (point["model"], point["surface"])
-        grouped.setdefault(key, []).append(point)
-    out["curves"] = [{"id": f"{model or 'model-unrecorded'}::{surface}",
-                       "model": model, "surface": surface, "points": curve}
-                      for (model, surface), curve in sorted(grouped.items(),
-                                                            key=lambda item: str(item[0]))]
+    out["curves"] = _model_trajectory_curves(unique.values())
     if out["curves"]:
         out["state"] = "available"
         out["detail"] = ("each point is a direct matched A/B against the resolved frozen "
@@ -2280,25 +2310,16 @@ def _production_history(root: Path, rows: list[Mapping[str, Any]],
             key = (point["commit"], point.get("model"), point["surface"],
                    point.get("recipe"), point["baseline"]["commit"], point["gain_pct"])
             unique.setdefault(key, point)
-        grouped = {}
-        for point in sorted(unique.values(), key=lambda p: str(p.get("recorded_at") or "")):
-            key = (point.get("model"), point["surface"], point.get("recipe"),
-                   point["baseline"]["commit"])
-            grouped.setdefault(key, []).append(point)
-        curves = []
-        for (model, surface, recipe, baseline_sha), curve in sorted(grouped.items(), key=lambda item: str(item[0])):
-            base = curve[0]["baseline"]
-            curves.append({"id": f"{model}::{surface}::{recipe}::{baseline_sha[:12]}",
-                           "model": model, "surface": surface, "recipe": recipe,
-                           "baseline": base, "points": curve})
+        curves = _model_trajectory_curves(unique.values())
         return {"state": "available" if curves else "unavailable",
                 "basis": "gain_pct_vs_each_curve_declared_baseline", "curves": curves,
                 "exceptions": exceptions,
                 "evidence_errors": live.get("evidence_errors") or [],
                 "baseline_epochs": epochs,
                 "baseline": live.get("baseline"),
-                "detail": ("direct whole-candidate checkpoints grouped by exact model, surface, "
-                           "recipe and baseline; lines never cross an era or compose marginals"),
+                "detail": ("one headline trajectory per model; its canonical primary surface is "
+                           "the longest measured series (plain preferred on ties). Other surfaces "
+                           "are selectable; recipes, harnesses and baselines are instrument epochs"),
                 "active_campaign": history.get("active_campaign")}
     except FileNotFoundError:
         return live
@@ -2399,7 +2420,8 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
                 "keep_count": len(chain.get("keeps") or []),
                 "evidence": str(campaign_root / "accumulator-bundle.json")}
             direct = next((point for curve in headline.get("curves") or []
-                           for point in curve.get("points") or []
+                           for series in curve.get("surface_series") or [curve]
+                           for point in series.get("points") or []
                            if point.get("commit") == tip and point.get("model") == model
                            and point.get("surface") == surface
                            and point.get("recipe") == recipe
@@ -2408,10 +2430,21 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
             if direct is not None:
                 direct["provisional_relation"] = "supersedes_compatible_accumulated_chain"
             else:
-                headline.setdefault("curves", []).append({
-                    "id": f"{model}::{surface}::{recipe}::{cor[:12]}", "model": model,
-                    "surface": surface, "recipe": recipe, "baseline": baseline,
-                    "points": [provisional]})
+                variant = {"id": f"{surface}::{surface}::backend unrecorded",
+                    "surface": surface, "metric": surface, "backend": "backend unrecorded",
+                    "points": [provisional], "instrument_epochs": [{"recipe": recipe,
+                        "era": active.get("id"), "baseline": baseline,
+                        "starts_at": provisional["recorded_at"], "starts_commit": tip}]}
+                same_model = next((curve for curve in headline.get("curves") or []
+                                   if curve.get("model") == model), None)
+                if same_model is None:
+                    headline.setdefault("curves", []).append({"id": model, "model": model,
+                        "primary_surface": surface, "surface": surface, "metric": surface,
+                        "backend": "backend unrecorded", "points": [provisional],
+                        "instrument_epochs": variant["instrument_epochs"],
+                        "surface_series": [variant]})
+                else:
+                    same_model.setdefault("surface_series", []).append(variant)
                 headline["curves"].sort(key=lambda curve: str(curve.get("id")))
                 headline["state"] = "available"
         except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
@@ -2484,8 +2517,11 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
                            if comparison else None),
             "evidence": evidence,
             "transfer_applicability": payload.get("research_scope"),
-            "identifiers": {"campaign_id": payload.get("campaign_id"),
-                            "hypothesis_id": payload.get("hypothesis_id")}}
+            "identifiers": {"attempt_id": row.get("attempt_id"),
+                            "campaign_id": payload.get("campaign_id"),
+                            "hypothesis_id": payload.get("hypothesis_id"),
+                            "patch_path": payload.get("patch_path"),
+                            "patch_metadata_path": payload.get("patch_metadata_path")}}
         events.append(event)
         disposition_counts[disposition] = disposition_counts.get(disposition, 0) + 1
     events.sort(key=lambda event: str(event.get("recorded_at") or ""))

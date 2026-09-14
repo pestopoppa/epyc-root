@@ -75,7 +75,9 @@ def test_backend_admits_only_exact_three_way_production_history_join(tmp_path: P
     result = loop_status.improvement_trajectory(tmp_path, rows, PRODUCTION)
     headline = result["production_headline"]
     assert headline["state"] == "available"
-    assert headline["curves"][0]["id"] == "Qwen3.8-27B-Q8_0.gguf::tg128"
+    assert headline["curves"][0]["id"] == "Qwen3.8-27B-Q8_0.gguf"
+    assert headline["curves"][0]["primary_surface"] == "tg128"
+    assert len(headline["curves"][0]["surface_series"]) == 1
     assert headline["curves"][0]["points"][0]["gain_pct"] == 12.5
     assert "comparison" not in headline["curves"][0]["points"][0]
 
@@ -144,14 +146,19 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
                 "evidence_errors": [{"evidence": "broken.json", "reason": "unjoined"}],
                 "exceptions": [{"commit": "e" * 40, "evidence_state": "missing_production_ab",
                                 "note": "current champion has no direct production A/B"}],
-                "curves": [{"id": "qwen::tg128", "model": "Qwen3.8-27B-Q8_0.gguf",
-                            "surface": "tg128", "recipe": "gpu-direct",
-                            "baseline": {"commit": "d" * 40,
-                                         "label": "production-consolidated-v9"}, "points": [
+                "curves": [{"id": "qwen", "model": "Qwen3.8-27B-Q8_0.gguf",
+                            "surface": "tg128", "primary_surface": "tg128",
+                            "metric": "tg128", "backend": "gpu", "instrument_epochs": [{
+                                "recipe": "gpu-direct", "era": "gpu-era",
+                                "baseline": {"commit": "d" * 40, "label": "production-consolidated-v9"},
+                                "starts_at": "2026-09-01T00:00:00Z", "starts_commit": "a" * 40}],
+                            "points": [
                             {"commit": "a" * 40, "recorded_at": "2026-09-01T00:00:00Z",
-                             "gain_pct": 5.6, "pairs": 20},
+                             "gain_pct": 5.6, "pairs": 20, "recipe": "gpu-direct",
+                             "era": "gpu-era", "baseline": {"commit": "d" * 40, "label": "production-consolidated-v9"}},
                             {"commit": "b" * 40, "recorded_at": "2026-09-02T00:00:00Z",
-                             "gain_pct": 7.2, "pairs": 20}]}]},
+                             "gain_pct": 7.2, "pairs": 20, "recipe": "gpu-direct",
+                             "era": "gpu-era", "baseline": {"commit": "d" * 40, "label": "production-consolidated-v9"}}]}]},
         "campaign_drilldown": {"state": "available", "keeps": [{}, {}, {}],
                                "bench_checkpoints": [{"gain_pct": .83}],
                                "serving_checks": [{"keep_count": 2, "gain_pct": .33,
@@ -179,18 +186,27 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
                            "renderImprovementTrajectory"], capture_output=True,
                           text=True, timeout=30, check=True)
     card = json.loads(proc.stdout)["by_id"]["trajectory"]
-    assert "each curve's declared baseline 0%" in card
-    assert "production-consolidated-v9 release" in card
+    assert "declared baseline 0%" in card
     assert "epoch-band" in card and "epoch-boundary" in card
     assert "Qwen3.8-27B-Q8_0.gguf" in card
-    assert "+7.200% vs production-consolidated-v9" in card
+    assert "data-point-count=\"2\"" in card
+    assert "cumulative +7.200%" in card
     assert "Campaign-local CoR drill-down" in card
     assert "not production-relative" in card
     assert "1 unjoinable production receipt" in card
     assert "missing_production_ab" in card
-    assert "recorded experiments · separate disposition strip" in card
     assert 'tabindex="0" role="button"' in card
     assert "trajectory-event-drawer" in card
+    assert "trajectory-picker" in card
+    assert "trajectory-legend" not in card
+    segments = [tuple(map(float, pair)) for pair in re.findall(
+        r'd="M([0-9.]+),[0-9.]+ L([0-9.]+),', card)]
+    assert segments and all(end > start for start, end in segments)
+    assert max(end for _, end in segments) - min(start for start, _ in segments) > 500
+    dispositions = re.findall(r'class="point trajectory-event"[^>]+data-disposition="([^"]+)"', card)
+    assert dispositions and set(dispositions) == {"kept"}
+    for forbidden in ("measured_null", "formation_refusal", "invalid_or_setup", "data-event-filter"):
+        assert forbidden not in card
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
@@ -293,6 +309,37 @@ def test_baseline_epochs_break_v9_v10_and_admit_model_first_seen_in_v10(tmp_path
     result = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)["production_headline"]
     assert [e["label"] for e in result["baseline_epochs"]] == ["production-consolidated-v9", "production-consolidated-v10"]
     legacy = [c for c in result["curves"] if c["model"] == "legacy-model"]
-    assert len(legacy) == 2 and legacy[0]["baseline"]["commit"] != legacy[1]["baseline"]["commit"]
+    assert len(legacy) == 1
+    assert [p["baseline"]["commit"] for p in legacy[0]["points"]] == [v9, v10]
+    assert len(legacy[0]["instrument_epochs"]) == 2
     new = [c for c in result["curves"] if c["model"] == "new-model"]
-    assert len(new) == 1 and new[0]["baseline"]["label"] == "production-consolidated-v10"
+    assert len(new) == 1 and new[0]["points"][0]["baseline"]["label"] == "production-consolidated-v10"
+
+
+def test_one_headline_trajectory_per_model_with_surface_details(tmp_path: Path) -> None:
+    _store(tmp_path)
+    base, sha = "d" * 40, "a" * 64
+    def p(commit: str, at: str, surface: str, recipe: str, gain: float) -> dict:
+        return {"commit": commit, "recorded_at": at, "model": "Qwen3.8-Flash-Next",
+                "surface": surface, "recipe": recipe, "era": ("old" if commit[0] != "e" else "hot"),
+                "gain_pct": gain, "baseline": {"commit": base, "label": "pristine"},
+                "evidence_state": "serving_verified_direct",
+                "evidence": {"path": "receipt", "sha256": sha}}
+    points=[]
+    for commit, at, recipe, plain, mtp in (
+        ("6" * 40, "2026-09-06T22:18:06Z", "old-harness-defaults", 69.34, 48.34),
+        ("9" * 40, "2026-09-07T13:01:06Z", "old-harness-shim-off", 71.51, 51.49),
+        ("e" * 40, "2026-09-08T08:53:12Z", "canonical-hot-process-thp-disable", 118.57, 82.55)):
+        points.extend((p(commit, at, "plain-decode", recipe, plain),
+                       p(commit, at, "mtp-decode", recipe, mtp)))
+    _history(tmp_path, points=points)
+    headline=loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)["production_headline"]
+    assert [c["id"] for c in headline["curves"]] == ["Qwen3.8-Flash-Next"]
+    assert len({c["id"] for c in headline["curves"]}) == len(headline["curves"])
+    model=headline["curves"][0]
+    assert model["primary_surface"] == "plain-decode"
+    assert {s["surface"] for s in model["surface_series"]} == {"plain-decode", "mtp-decode"}
+    for surface in model["surface_series"]:
+        assert [p["commit"][0] for p in surface["points"]] == ["6", "9", "e"]
+        assert [p["recorded_at"] for p in surface["points"]] == [
+            "2026-09-06T22:18:06Z", "2026-09-07T13:01:06Z", "2026-09-08T08:53:12Z"]
