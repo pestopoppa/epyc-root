@@ -9,6 +9,22 @@ Commit `c463f601b` is the clean integration core: it is 12 commits ahead of cham
 Do not start from an ephemeral benchmark binary or mutate the current champion or production kernel: production `production-consolidated-v9` is frozen and predates `glm5next` support. Fetch the private fork, check out the chosen exact commit above, and create a new experimental AutoKernel worktree/branch. The local reference tree at `/mnt/raid0/llm/llama.cpp-experimental-glm53-20260908` is clean at `f8e2668b6`, and `git ls-remote fork refs/heads/experimental/glm53-text-mtp-20260908` resolves to that SHA. No champion mutation or production promotion has been performed.
 
 
+## Continuous AutoKernel result (2026-09-14)
+
+The existing CPU loop completed a 50-loop monitored continuous acceptance window with real
+GLM-5.3-Flash candidate measurements: 42 measured nulls and 8 keeps. The current experimental
+tip is `dc3798db10a6654721f2a1fa6a162be2e5fdf95f` on
+`ak/glm53-recovered-accumulator-20260912`. Its 23 retained keeps directly measure
+**+0.8303809823%** against champion-of-record `c463f601bd39` in the current matched-process
+snapshot. The final keep, `akm-q4k-pairrow-zmm-accumulate`, measured `+0.182%` marginally;
+its clean rebuilt anchor passed the A/A guard with `+0.0773869451%` drift.
+
+This is an experimental accumulated CPU result, not production admission. The prior 22-keep
+cadence gate measured `+0.3349231781%` on the serving surface but was not decisive, so neither
+that stack nor the final 23-keep tip was promoted. The final terminal continuation is
+`/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/batches/batch-000024/loop-continuation.json`
+(SHA-256 `41da2b2c8c493ebed97844e3840793067d0d233fac835e95683d6f06531d0c7e`).
+
 See the [verified AutoKernel memory receipt](glm53-autokernel-memory-seed-20260909.md) for the four retrievable experiment records, copied evidence and inbox entry.
 
 ## Integration acceptance hold (2026-09-09)
