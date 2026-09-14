@@ -72,6 +72,43 @@ and in [benchmark-methodology.md](benchmark-methodology.md) / [context-managemen
 that quoted SRS 0.5530 have been refreshed accordingly, and `SCORER_VERSION = 2` now rides in every
 scored artifact so a v1 and a v2 figure cannot be compared by accident.
 
+### M-12e rider — the scorer version is a write-hook gate, and CAS stays a diagnostic (2026-09-14, noninf sweep)
+
+**Confidence: verified** — offline re-score of stored responses plus the benchmark authors' shipped
+artifacts; the scorer loads no model and opens no socket, so nothing here consumed an inference
+window. Three durable consequences of M-12e that the numbers above do not carry on their own:
+
+- **`SCORER_VERSION` is enforced, not advisory.** A v1 and a v2 Tulving figure are different
+  quantities under one name, so the belief-kernel write hook (`tulving_episodic_capture.py`, SC67)
+  **refuses** any row with `scorer_version < 2`. Re-scoring an old run does not promote it either:
+  run `20260619_141212` never recorded which arm it was (memory-off / retrieved / full book), so it
+  stays pre-hook and emits zero claim rows. The corrected numbers are compiled knowledge on this
+  page; they are deliberately *not* belief-kernel claims.
+- **Chronological Awareness is a diagnostic, not a headline, and the reason is construction rather
+  than model quality.** Beyond the 37 of 45 chronological questions now labelled `partial` (which is
+  why CAS `0.1593` is unchanged — the tau defect is latent on this run, not harmless), **30 of the 45
+  have fewer than two ground-truth items** (15 have zero), so ordering is undefined for them and they
+  contribute 0.0 to the tau leg by construction. Two thirds of that leg is structurally zero. CAS is
+  reported as a diagnostic until the metric's own construction is settled; the 200-chapter set, with
+  ground-truth lists up to 9 items, is where the latent defect will actually bite.
+- **Why the attribution split above is load-bearing rather than bookkeeping**: the two fixes move the
+  headline in *opposite* directions on run `20260619_141212` (20 chapters / 456 QA) — the subset fix
+  raises SRS, the bin-basis fix lowers it — so quoting either one in isolation, or reporting only the
+  net, misstates the correction. avg F1 stays a diagnostic over all 456 questions and is unaffected by
+  either.
+
+The underlying **defect class** — a composite metric folded over the wrong population, invisible in
+every per-question artifact because each row's `f1` was correct — is compiled on
+[benchmark-methodology.md](benchmark-methodology.md); it is not restated here.
+
+Sources: [`episodic-memory-integrity.md`](../handoffs/active/episodic-memory-integrity.md) — EVL-10
+M-12e, the three scorer defects and the SC67 write-hook refusal;
+[`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) —
+the re-score entry with the attribution split and the CAS-validity count;
+`epyc-inference-research` `dcb769c1` — `SCORER_VERSION = 2`, `chronological_tau_detail()` and the
+`20260619_141212` rescored artifact; [intake-408#record](../research/intake_index.yaml) — the Tulving
+benchmark record whose shipped per-question results settled the subset by counting.
+
 ### CME-1..4 (EVL-50) — the two adapters M-12 needs are filed with their harness defects attached
 
 The EVL-50 stub owns the instrument work: a BEAM 128K/100K adapter and a `context_mode` axis on the
@@ -464,6 +501,9 @@ The connection between memory and the autopilot is especially significant. Befor
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- current-state banner for the live AutoPilot PID, W8 blocker, and exact FAISS diagnostic summary
 - [rao-redel-substrate-spike.md](../handoffs/active/rao-redel-substrate-spike.md) -- the episodic store's 5-sub-decision labelling axis (landed 2026-05-19, column/index/backfill/29 tests, zero producers per the 2026-08-03 audit) and the SkyRL rollout-tree accounting design (scoped 2026-07-29, independent review required, no code change)
 - [2026-05-19-rao-rlm-cluster.md](../research/deep-dives/2026-05-19-rao-rlm-cluster.md) -- the intake-548 stopping-decision gap / 5-sub-decision taxonomy, the intake-547#01 model-dependent depth caveat, ReDel substrate viability
+- [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md) -- RTG-15 EPD-3: the canonical `MemoryRecord.embedding_text()` with no live callers, the three drifted production writers, the corpus-pinned golden plus delegation guard (EPD-3-R2/R3), and the inference-gated `priority` drop (EPD-3-R1). Landed as `epyc-orchestrator` `9096a600`
+- [progress/2026-09/2026-09-14-noninf-backlog.md](../progress/2026-09/2026-09-14-noninf-backlog.md) -- the noninf sweep: the per-writer embedding-drift table, the M-12e Tulving re-score attribution split (subset-only 0.5755 / bin-only 0.5402 / both 0.5684), and the CAS-validity counts (37/45 partial, 30/45 with <2 ground-truth items)
+- [intake-408#record](../research/intake_index.yaml) -- the Tulving episodic-memory benchmark record; its shipped per-question results file settled the Simple Recall subset by counting rather than by reading the paper prose. Scorer fixes and `SCORER_VERSION = 2` in `epyc-inference-research` `dcb769c1`
 
 
 ## Updates — 2026-04-28
@@ -646,6 +686,58 @@ Sources: [episodic-memory integrity handoff](../handoffs/active/episodic-memory-
 [`dry-run.log`](../artifacts/episodic-memory-reseed-20260727/dry-run.log),
 [`apply.log`](../artifacts/episodic-memory-reseed-20260727/apply.log), and
 [`cosine-acceptance.log`](../artifacts/episodic-memory-reseed-20260727/cosine-acceptance.log).
+
+### The canonical embedding builder had no live callers (2026-09-14, noninf sweep)
+
+**Confidence: verified** — local code read plus unit tests against `origin/main`; no inference, no
+benchmark.
+
+The reseed above put the whole corpus on one convention, `MemoryRecord.embedding_text()`, and that
+held for exactly as long as nothing wrote to the store. The 2026-07-27 audit's finding was that the
+episodic vector encoded *which writer produced the row* (writer-path ROW-AUC 0.906–0.940) across at
+least four conventions; the remedy was the canonical builder plus the corpus reseed. What the remedy
+never acquired was a caller. `embedding_text()` was reached only by the reseed tool and the
+degeneracy guard — both offline — while all three production writers re-spelled the convention in
+their own words and had each already drifted from it:
+
+| Writer | Drift on `origin/main` |
+|---|---|
+| `embedder.TaskEmbedder._serialize_task_ir:243` | keys on field **presence**, not truthiness (`priority: None` emits the literal `priority:None`); no `.strip()`, no 2000-char cap, extra `constraints:` / `input_types:` segments |
+| `scripts/benchmark/seeding_injection._precompute_embedding:65` | hard-codes `type:chat` for every suite, so a `math`/`coder`/`hotpotqa` row's vector describes a convention its own stored context contradicts |
+| `orchestration/repl_memory/seed_loader.py:470` | embeds the raw task string with no prefix at all — the shape all 94 post-reseed `seed` rows carry |
+
+So the published format was correct only between a reseed and the next write, and the *next* reseed
+would have re-published the drift as the new canonical corpus. This is the same shape as the
+desync above with the polarity flipped: there the artifact was wrong, here the artifact is right and
+the path that was supposed to produce it is bypassed.
+
+**Why the existing convention test could not see it.** `tests/unit/test_memory_record.py:89` compares
+two `MemoryRecord`s with identical fields — a property of the builder, which every writer that
+bypasses the builder satisfies trivially. The same hole had already appeared one box earlier
+(EPD-3-R4): the standing integrity gate hand-built `type:{t} | objective:{o}` for its self-match
+probe, and so spent its margin cosine-ing stored vectors against a string that was never embedded.
+
+**Two enforcement layers, and the second is the one that lasts.** (1) A golden pinned to the
+**corpus**, not the code: build each writer's text from a row lifted verbatim out of the live store
+and assert equality with `record_from_legacy_context(stored_context).embedding_text()` — a golden
+captured from the builder alone proves the writers agree with each other, not with what was
+published. (2) A **delegation guard**: monkeypatch the canonical builder and assert each writer entry
+point *calls* it. Output equality is necessary and not sufficient, because a re-spelling that happens
+to agree today passes every golden and drifts on the next edit. Assert about the call, not the
+string.
+
+**The query-path corollary is the expensive half.** `_serialize_task_ir` is both a write and a
+**query** serializer, so drift there does not merely mislabel new rows — live queries search a
+different convention than the corpus was published in, costing recall with no error anywhere.
+Dropping `priority` from the canonical text (still present, still leaking the writer path on 45.4%
+of rows) is EPD-3-R1 and is gated on an inference window: the recipe change and the re-embed must
+flip together, or live queries mismatch 100% of the store instead of today's 45.4%.
+
+Sources: [`learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md) — RTG-15
+EPD-3-R2/R3 (the delegation guard and corpus-pinned golden) and EPD-3-R1 (the `priority` drop, still
+inference-gated); [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md)
+— the sweep entry with the per-writer drift table; `epyc-orchestrator` `9096a600` — the canonical
+builder's enforcement layers as landed.
 
 ## Compiled Update — 2026-07-29: agent-experience memory — store shape, budget-conditional retrieval, and the curve nobody has measured
 

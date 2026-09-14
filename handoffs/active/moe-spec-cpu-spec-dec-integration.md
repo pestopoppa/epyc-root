@@ -422,6 +422,20 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
       (B-sweep ✅ 2026-08-27, gate met). This has no checkbox of its own, so it was invisible to the
       dashboard and screened as a prune candidate on 2026-08-28 — filed here rather than archived.
       **Do not integrate on the +10.7% alone: see the countervailing surface below.**
+- [ ] **Refresh `wiki/INDEX.md`'s uninformative-`tg128` framing**, which repeats the "paired `tg128` row is
+      uninformative by construction" line without the `pp512` half and goes stale now that the four downstream
+      corrections have landed (`wiki/INDEX.md:3`) (found 2026-09-14, noninf sweep).
+- [ ] **PREPARE the belief-kernel write-side wiring for the two MoE-Spec record sets** — neither carries a
+      protocol-id, so no MoE-Spec number is a claim under `MEASUREMENT.md`, and neither
+      `data/moe-spec-bsweep-2026-08-25/` nor `artifacts-df25/champion_anchor_*/` has a write-side hook:
+      draft a source row for `scripts/vidya/adapters/README.md` plus a task for
+      `handoffs/active/vidya-belief-substrate-program.md` (preparation only; the owning session applies)
+      (found 2026-09-14, noninf sweep).
+- [ ] **Carry the reconstructed-substitute caveat onto every downstream quotation of the +10.7%**, including
+      this handoff's own table: `plan.json` records that the "live verification batches" were reconstructed
+      substitutes because the 2026-07-03 prompts were never persisted — documented honestly in the artifact
+      and absent everywhere else (`data/moe-spec-bsweep-2026-08-25/plan.json`) (found 2026-09-14, noninf
+      sweep).
 - [ ] **Operator decision prepared, awaiting ruling — the reconciliation is done and the GPU row is
       void.** Reconciled 2026-09-14 (INF-40, zero-inference, structural): the **−2.92%** row was
       measured on **Qwen3.8-27B-Q8_0, a DENSE model** — `general.architecture qwen35`, **0 of 866**

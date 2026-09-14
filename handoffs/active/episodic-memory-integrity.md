@@ -421,6 +421,29 @@ failure caught in amber.
         `scripts/benchmark/test_score_tulving_run.py` + `test_tulving_episodic_adapter.py`. The four
         wiki paragraphs quoting SRS 0.5530 / CAS 0.1593 were refreshed in the same wrap-up; draft
         at `wiki/drafts/tulving-subset-scoring-and-tau-coverage.md`.
+  - [ ] **M-12f — decide whether the paper's Chronological Order score excludes single-item questions before
+        CAS is ever a headline**, since 30 of the 45 `chronological` questions in the 20ch set have fewer than
+        two ground-truth items (15 have zero) so ordering is undefined and two thirds of the tau leg is
+        structurally 0.0 — a CAS construction question, not a scorer bug
+        (`scripts/benchmark/tulving_episodic_adapter.py:325` `compute_chronological_awareness_score`) (found
+        2026-09-14, noninf sweep).
+  - [ ] **M-12g — stop comparing SRS across book sizes until the bin sets match**: bin `6+` is empty in the
+        20ch set, so the 20ch SRS averages over four bins while the 200ch figure averages over five
+        (`scripts/benchmark/tulving_episodic_adapter.py` `compute_simple_recall_score`) (found 2026-09-14,
+        noninf sweep).
+  - [ ] **M-12h — close the judge-path tau trap before any LLM judge is wired**: `_llm_judge_fallback_hook` is
+        dead in the deterministic path but `compute_f1_for_result` still branches on it and returns
+        `matched_gt_items: []` when a judge fires, silently giving every judged question zero tau coverage
+        (`scripts/benchmark/tulving_episodic_adapter.py:685-710`) (found 2026-09-14, noninf sweep).
+  - [ ] **M-12i — codify an offline re-scoring protocol before any decision cites the corrected SRS/CAS**,
+        since the 2026-09-14 re-score artifact is deliberately not an admissible claim and emits no belief
+        rows, so the path is a protocol and never a back-filled tuple
+        (`benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`) (found 2026-09-14,
+        noninf sweep).
+  - [ ] **M-12j — sync the repo venv or correct the dependency claim**: neither repo's `.venv` has
+        `pandas`/`pyarrow` even though `epyc-inference-research/pyproject.toml` pins both, so
+        `score_tulving_run.py` cannot run out of the repo venv as checked out
+        (`epyc-inference-research/pyproject.toml`) (found 2026-09-14, noninf sweep).
 
 ## Why the reseed is necessary (and what it will NOT fix)
 

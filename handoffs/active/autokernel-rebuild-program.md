@@ -2131,6 +2131,29 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           R23-58 is closed. Extend `serving.write_floor` so the floor file carries `n` and a CI next to the
           percentage; a floor that cannot state its `n` must not gate.
 
+      - [ ] **R23-66 — give the unit vocabulary a leaf module so `FLOOR_UNIT` stops repeating the `"process"`
+        literal**, which it does only because `serving` → `loop` → `bench` is a real import cycle (hence
+        `bench.py`'s lazy in-function `serving` imports); a test pins the two together for now
+        (`scripts/kernel_rnd/autokernel/loop/bench.py:44`) (found 2026-09-14, noninf sweep).
+      - [ ] **R23-67 — state the `unit` in the D8 instrument-characterisation artifact behind
+        `MEASURED_FLOOR_PCT`**, which carries none: the built-in table is now labelled in code
+        (`bench.FLOOR_UNIT`, `MEASURED_FLOOR_N = 20`) but the artifact's field is only derivable from its
+        single-writer schema (`artifacts/autokernel-aa-noise-floor/aa-noise-floor.json`) (found 2026-09-14,
+        noninf sweep).
+      - [ ] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite**:
+        `pytest scripts/kernel_rnd/autokernel/loop -q` at `origin/main` `7ea556f4` reads **176 failed / 201
+        errors / 2509 passed**, the remainder environmental on this host (HTTP-child fixtures, live-store and
+        port-bound tests, the `test_campaign_footprint.py` / `test_program_md.py` set) with
+        `test_matched_serving.py`'s two matched-keep tests failing identically on `origin/main` and unrelated
+        to floors — and `/tmp` is blocked here, so pytest needs `TMPDIR` inside `/mnt/raid0/llm/tmp` or its
+        basetemp mass-fails (found 2026-09-14, noninf sweep).
+
+      *Declined 2026-09-14: "every serving floor on disk predates R23-55, so every one loads as `legacy` and
+      refuses to gate (`FloorReading.gate_floor` fails closed by design), and the next serving gate cannot run
+      until the floor is recalibrated at n ≥ 24" — not filed because that recalibration IS the open
+      **R23-61a** box directly above; the sweep confirms it is the binding live blocker rather than adding a
+      new action.*
+
       - [ ] **★ R23-64 — RE-SWEEP THE CPU DECODE THREAD COUNT ON THE CHAMPION (t48 / t64 / t96).
         ★ GATED: MUST NOT RUN UNTIL AFTER THE OPERATOR'S PLANNED HOST REBOOT + BIOS SESSION.**
         Filed 2026-09-08 out of the MEAS-4 correction in

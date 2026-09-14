@@ -2,8 +2,8 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-09-14 (incremental: harness rank tracks model class, not benchmark — Spearman −0.05 between a 744B MoE and a 26B MoE on one grid, +0.76 between the 26B and a 30B dense on a different benchmark — and thinking mode alone can remove ~2/3 of a harness's score; a delegation hand-off the architect cannot follow is a silent confident-wrong path, and user-facing delegation returns now carry the full report; `earendil-works/pi` and `badlogic/pi-mono` are one repository; hand-written procedural guidance hurt until a validation gate repaired it); earlier: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
-**Sources**: 100+ documents
+**Last compiled**: 2026-09-14 (incremental, noninf sweep: process-global mutable state read as if it were per-request — one `ToolRegistry` per API process whose shared `_invocation_log` four request-scoped readers mistook for their own, so a durable episodic row recorded another request's tools and two SSE emitters streamed another request's tool events; scoping is structural (`REPLEnvironment._invoked_tools`) rather than temporal, because clearing a shared log is the same defect with a narrower race window; plus the paired write half — a find-or-update path that returns before the only site that writes `assigned_role`/`work`, an import-time flag that makes the production branch untestable by default, and a self-annotating bounding function that was not idempotent and so destroyed its own provenance); earlier: 2026-09-14 (incremental: harness rank tracks model class, not benchmark — Spearman −0.05 between a 744B MoE and a 26B MoE on one grid, +0.76 between the 26B and a 30B dense on a different benchmark — and thinking mode alone can remove ~2/3 of a harness's score; a delegation hand-off the architect cannot follow is a silent confident-wrong path, and user-facing delegation returns now carry the full report; `earendil-works/pi` and `badlogic/pi-mono` are one repository; hand-written procedural guidance hurt until a validation gate repaired it); earlier: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Sources**: 100+ documents (added 2026-09-14 noninf sweep: RTG-02 per-request telemetry scope, the dropped find-or-update metadata write, and the non-idempotent work sanitizer — `epyc-orchestrator` `d65a4e93` + `b69bda61`)
 
 ## Compiled Update — 2026-09-14: harness rank tracks model class, and a hand-off the architect cannot follow is a silent confident-wrong path
 
@@ -91,6 +91,104 @@ summary carries only species/action type.
 - intake-1360#00 and intake-1360#record — the pi/pi-mono identity and source-level cooperation facts.
 - intake-1358#record — the hand-off breakdown result and why it is a bundle comparison.
 - intake-1348#record — procedural-graph evidence strength and the existing autopilot rejection feedback.
+
+## Compiled Update — process-global mutable state read as if it were per-request (2026-09-14, noninf sweep)
+
+**Confidence: verified** — local code read plus 25 new unit tests against `epyc-orchestrator` `origin/main`
+`35b05fde`; fixed in `d65a4e93` and `b69bda61`. Zero inference, no performance claim.
+
+### Tool-telemetry capture: one registry per process, four readers that thought it was theirs
+
+The orchestrator builds exactly one `ToolRegistry` per API process (`src/api/__init__.py` sets a single
+`state.tool_registry`), and `invoke()` appended every call to its `_invocation_log`. Four **request-scoped**
+readers built per-request telemetry out of that shared log: the ReAct durable episodic record
+(`chat_pipeline/stages.py`), the specialist delegation phase (`chat_delegation.py`), and two streaming
+tool-event emitters (`chat.py`, `stream_adapter.py`). Nothing about the log is per-request, so under uvicorn
+concurrency it interleaved every in-flight request's calls — request A's durable memory row recorded request
+B's tools, and A's SSE stream emitted B's tool events to A's client. The log was also a plain `list` that
+nothing ever cleared; `clear_invocation_log()` had zero callers anywhere in `src/`, so it grew for the
+lifetime of the process.
+
+**The defect is not "the log was never cleared" — it is that shared state was read as scoped state.** That
+distinction decides the fix, because clearing per request is the *same* defect with a narrower race window:
+
+    request A finishes → A clears the log → B's tool call lands → A reads → A records B's call
+
+Per-request telemetry now comes from `REPLEnvironment._invoked_tools`, captured at the single `_invoke_tool`
+chokepoint (`src/repl_environment/context.py`) — one list per REPL, one REPL per request. Scoping
+structurally rather than temporally buys four properties no amount of clearing can: **exactness** (the buffer
+cannot contain another request's call, so there is no window at all), **lock-free** (no contended structure,
+no contextvar, no request-id stamp to filter on), **cleanup on every path including exceptions** (the buffer
+is owned by the request's object graph, so there is no `finally` to forget), and **boundedness for free** (a
+per-request buffer is bounded by the request, not by uptime). The existing chokepoint already had the right
+scope; nothing new had to be introduced.
+
+**A cursor into shared state is the same bug wearing a hat.** Both streaming emitters kept a
+`prev_tool_count` and sliced `log[prev_tool_count:]` — correct only if nothing else appends, which is exactly
+what does not hold. Bounding the shared log would have broken the idiom a *second* way, since eviction shifts
+indices and the cursor then silently reads the wrong entries. The shared log survives as an explicitly
+labelled diagnostic ring (`deque(maxlen=1000)`, override `ORCHESTRATOR_TOOL_INVOCATION_LOG_MAX`, `<= 0`
+disables) with `clear_invocation_log()` kept for tests and interactive use and a docstring saying it is not a
+per-request mechanism: dead API is worse than no API, but so is API whose only documented use is the wrong
+one. The registry-side half of the contract is summarised in
+[Tool Implementation](tool-implementation.md). The guard is structural rather than a comment — an `ast` test
+asserts that no request-scoped module *calls* `get_invocation_log()`, parsed rather than grepped so the prose
+explaining the rule does not trip it; run against `origin/main` it flags all four pre-fix sites.
+
+### The paired write half: a find-or-update path that drops what the create path writes
+
+The same handoff box named a second defect with the same signature — available data discarded at a boundary.
+`EpisodicStore.store()` was the only site that ever wrote `assigned_role` (TR-3.2) or the `work` payload
+(M-11a2b), and every UPDATE branch in `QScorer` called `update_q_value()` and returned *before* reaching it.
+Because the find-or-update branch fires roughly 11x more often than create (`SUM(update_count)` 668,070
+against 59,337 rows), both columns were effectively never populated: the values were read off entries already
+in hand, then dropped on the floor. Two rules worth carrying:
+
+1. **A find-or-update path must carry everything the create path writes**, or the field only exists on first
+   observation. A test that exercises only create passes for the bug's entire lifetime — and here it did,
+   because `Q_TD_WRITE` is read at *import time* and is `0` under pytest while production sets it to `1`.
+   **A flag read at import time makes the production branch untestable by default**, which is a testability
+   defect in its own right, independent of the bug it hid.
+2. **Backfill MERGES, never overwrites.** The new `merge_row_metadata()` fills `assigned_role` only when
+   NULL, fills `work` sub-keys only where absent, and preserves every other `context` key byte-for-byte. A
+   later, richer observation may close a gap a first observation left, but must never blank out captured
+   work.
+
+### Non-idempotent sanitization makes a record lie about itself
+
+The subtlest hole in the same box: the size/redaction policy is applied **twice** on the live create path —
+once by `chat_pipeline.telemetry.work_completion_meta` heading into the progress JSONL, then again by
+`build_memory_record` heading into `memories.context`. Its docstring claimed idempotence; the code did not
+have it, and the consequences were measured rather than inferred. An already-truncated string is `max_chars`
+**plus** its truncation marker long, so pass two re-truncated and appended a second marker: a 32,500-char
+answer was stored reporting `total was 32049`. An already-bounded list is `max_items` **plus** the
+`_elided_entries` sentinel, so pass two saw `max_items + 1`, dropped the front entry — which, being at the
+front, *was the sentinel itself* — and inserted a fresh `_elided_entries: 1`. A row that elided 50 entries
+claimed 1, and lost the real first retained entry too.
+
+**A bounding function that annotates its own output must be idempotent, or the annotation becomes the first
+thing it destroys.** Both now recognise their own marker at their own cap and no-op, and the sentinel is
+lifted before counting with its count carried into the total. The general form: a function whose output lies
+in its own input domain will be composed with itself sooner or later, usually by a caller who cannot see the
+other one — so idempotence is a correctness property, not a nicety, and it needs a test rather than a
+docstring.
+
+### Checklist for any per-request field
+
+- Is the state it reads owned by the request, or by the process?
+- If per-request scoping is achieved by *clearing* something shared, name the window. There is one.
+- Does the cleanup run when the request raises?
+- Is it bounded by the request, or by process uptime?
+- Does the UPDATE path write every field the CREATE path writes?
+- Is the sanitizer idempotent, and is there a test that composes it with itself?
+
+### Source References (2026-09-14 per-request scope, noninf sweep)
+
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — RTG-02: the paired boxes at `:1787` (`assigned_role` still 0 / 59,337) and `:1793` (0 rows carry a top-level `work` key), the latter naming all three holes including the double sanitize.
+- [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) — session record: the four pre-fix reader sites, the measured 11x update-to-create ratio, and the non-vacuity checks.
+- `epyc-orchestrator` `d65a4e93` — per-request tool telemetry via `REPLEnvironment._invoked_tools`, the bounded diagnostic ring, the `ast` guard, and `merge_row_metadata()` called from all four update branches. [confidence: verified — code + `test_invocation_log_request_scope.py` (15 tests), `test_q_scorer_update_path_preserves_work.py` (5 tests)]
+- `epyc-orchestrator` `b69bda61` — idempotent `sanitize_work_text` / `sanitize_work_items`. [confidence: verified — `test_memory_record.py::TestSanitizeIsIdempotent` (5 tests)]
+- [Tool Implementation](tool-implementation.md) — the `ToolRegistry` `_invocation_log` / diagnostic-ring contract from the registry side.
 
 ## Compiled Update — 2026-09-08: manifest preservation is not end-to-end wrap-up proof
 
@@ -1738,9 +1836,9 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ## 2026-07-19 Update — reviewer control plane is additive and release-decoupled
 
-- The reviewer control plane now has a concrete typed-decision integration path: reviewer false-accept/false-reject and decision-latency axes are optional additive evaluation dimensions, and the autopilot critic loop emits schema-valid `ReviewDecision` records without changing planner content or control flow. Sources: [autopilot control-plane integration](../handoffs/active/autopilot-control-plane-integration.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md).
+- The reviewer control plane now has a concrete typed-decision integration path: reviewer false-accept/false-reject and decision-latency axes are optional additive evaluation dimensions, and the autopilot critic loop emits schema-valid `ReviewDecision` records without changing planner content or control flow. Sources: [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md).
 - The evaluation contract is representation-scoped. Exact-answer, patch-diff, code-prefix, and judge-preference tasks need separate corpora/scorers; a mixed "balanced" slice can create misleading calibration and must be rejected by the runner. Sources: [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [reviewer model ablations](../handoffs/active/reviewer-model-ablations.md), [model-probe scoreboard](../docs/reference/model-probe-scoreboard.md).
-- The current architecture separates production orchestration from reviewer experimentation. GLM and the fast RM-2 slate are not admitted as production patch reviewers, while v7 production promotion proceeds on independent inference gates; future reviewer admission requires a new repair hypothesis or screened candidate, not unchanged reruns. Sources: [v7 promotion](../handoffs/completed/v7-promotion.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [autopilot control-plane integration](../handoffs/active/autopilot-control-plane-integration.md).
+- The current architecture separates production orchestration from reviewer experimentation. GLM and the fast RM-2 slate are not admitted as production patch reviewers, while v7 production promotion proceeds on independent inference gates; future reviewer admission requires a new repair hypothesis or screened candidate, not unchanged reruns. Sources: [v7 promotion](../handoffs/completed/v7-promotion.md), [GLM reviewer capability gates](../handoffs/active/glm52-reviewer-capability-gates.md), [autopilot control-plane integration](../handoffs/completed/autopilot-control-plane-integration.md).
 
 ## Key Findings
 
@@ -2082,6 +2180,9 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md) — budget-bounded proactive context assembly for delegation (intake-605); DCP-1..5 built, DCP-4 advisory attach wired default-off; first live J7 A/B self-classified `hold` (`dcp_j7_decision.v1`: tokens 352→247.3 avg but p50 latency 20.2s→32.6s, quality unscored); attestation now surfaces DCP/J7 status read-only (`c3b2514e`); DCP-5 non-prescriptive discovery prompt landed `b7ba6265`.
 - [minddr-deep-research-mode.md](../handoffs/active/minddr-deep-research-mode.md) — three-agent Planning/DeepSearch/Report `deep_research_mode` (intake-438, Li Auto MindDR); Phase-1 scaffold complete 2026-04-22 (`src/graph/minddr/`, flag, classifier, prompts, 20-query sentinel suite), parked at inference-gated MD-9 A/B with a ≥+5pp / no-regression / ≤2×-tool-calls promotion rule; Phase 2 RL GPU-gated (DGX wording stale post-MI210); MindDR Bench treated as deployment, not generalization, evidence.
 - [progress 2026-07-04](../progress/2026-07/2026-07-04.md) / [progress 2026-07-05](../progress/2026-07/2026-07-05.md) — IIL P2 scaffold + bake readouts; consult/BEP/DCP-prompt wiring commits; AutoPilot `LocalPlannerProvider` (`7036630c`, local_ingest primary / Codex critic); tool-call batching investigation (parallel read-only REPL path exists, near-zero live tool use); self-running lab active-safe vs quiet-window job split (`0f7252bb`, `4829028d`).
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) — RTG-02 (2026-09-14 noninf sweep): the paired `:1787`/`:1793` boxes on process-global tool telemetry read as per-request state, the find-or-update path that dropped `assigned_role`/`work`, and the non-idempotent work sanitizer.
+- [progress 2026-09-14 (noninf backlog)](../progress/2026-09/2026-09-14-noninf-backlog.md) — session record for RTG-02: four pre-fix reader sites, the 11x update-to-create ratio (668,070 updates vs 59,337 rows), and the neutered-fix non-vacuity check.
+- `epyc-orchestrator` `d65a4e93` and `b69bda61` — request-scoped `_invoked_tools` telemetry with a bounded `get_invocation_log()` diagnostic ring plus an `ast` guard against request-scoped callers; `merge_row_metadata()` on all four update branches; idempotent work sanitization. [confidence: verified — code + 25 new unit tests, assigned suite 1131 → 1146 passed]
 
 ## 2026-06-13 Update — Fable 5 Strategic Spine
 

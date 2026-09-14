@@ -675,6 +675,28 @@ the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's
       FULLY consolidated champion* — is **satisfied**. Loop relaunch remains a **separate operator go**;
       nothing on this page launches or schedules it.
 
+#### Inherited v6-fork candidates — from INF-32, archived 2026-09-14
+
+`llamacpp-v6-consolidation.md` (INF-32) was archived 2026-09-14 as superseded by v9. Its three
+unresolved `NEEDS-OPERATOR-REVIEW` rows are relocated here so they do not vanish with the page. They
+are **un-triaged candidates, NOT queued folds** — nothing here is scheduled, and each is subject to the
+operator's standing gate on new kernel research. Full context:
+[`llamacpp-v6-consolidation.md`](../archived/llamacpp-v6-consolidation.md). The other two rows on that
+page are closed: SWA slot-reuse (`d1c72d7fc`/`603702769`) and `--moe-n-expert` (`86901388a`) both
+verified **DROP** 2026-08-12 — the SWA pair is a per-sequence-blind regression, and v9 already covers
+expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
+
+- [ ] **V6R-1 — Differential-Transformer-V2 arch (`36ceed44d` / `23973ea66`)**: eval-gated, not in the
+      deployed registry. Triage question is whether any registry model wants the arch at all before any
+      port cost is spent.
+- [ ] **V6R-2 — streaming KV context-shift controls (`632ce0f92`)**: check first whether v9/upstream
+      already ships equivalent context-shift controls (the `--moe-n-expert` outcome is the precedent —
+      the stock flag had arrived).
+- [ ] **V6R-3 — paged-attn upstream-overlap**: the v6 work was resolved and runtime-verified on branch
+      `f1-paged-attn` @ `112022a0b` (iswa graph block-table wiring `ea50522a7`; opt-in, off-by-default,
+      bit-exact on plain Qwen3.6-35B and SWA gemma-4-31B) but was never folded. It is build-10079-era
+      against a 10241-class champion, so folding means a re-base and a re-measure at the current floor.
+
 #### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
 
 | branch @ commit | disposition | why | condition if ever folded |

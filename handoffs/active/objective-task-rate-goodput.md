@@ -222,6 +222,24 @@ instrument's composition load-bearing in a way it never was under tokens/second.
   for this.
 - [x] **W4 — telemetry + doc truth** (~half day): `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are journaled; `scripts/autopilot/program.md` now states that EvalTower `speed` remains the current Pareto speed axis/host-throttle diagnostic, task-rate fields are shadow policy telemetry, and `tokens_per_solved_task` is the bloat diagnostic. The stale wall-occupancy `sum(tokens_generated[role] / throughput_tps[role])` proxy is explicitly marked as not computed/not live. `rg` found no other live system-card copy of that stale text.
 - [x] **W5 — policy decision** (2026-06-13, zero inference): keep `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` as shadow telemetry; leave live Pareto dominance on the current objective until preconditions below are met.
+- [ ] **W7 — rename one of the two boxes both called W3d**, the hold record and the 2026-07-27 panel-activation
+      record, so the id collision stops (`handoffs/active/objective-task-rate-goodput.md:73` and `:207`; `:188`
+      as of origin/main `35b05fde`) (found 2026-09-14, noninf sweep).
+- [ ] **W8 — annotate or replace the `0.0`-for-unavailable sentinel in `task_rate_qph_from{,_row}`**, kept
+      deliberately because they feed archived `eval_details.goodput_qph` history but guaranteed to bite whoever
+      next reads them as measurements (`src/autopilot_core/tier_specs.py`) (found 2026-09-14, noninf sweep).
+- [ ] **W9 — do the same for `_float()`, which returns `0.0` for absence** and is used for other journal
+      fields — the same sentinel class, left as a follow-up by coordinator ruling
+      (`src/autopilot_core/planner_evidence.py:521`) (found 2026-09-14, noninf sweep).
+- [ ] **W10 — find out why the live `pareto_archive` is empty** (`state["pareto_archive"]` has no keys), so
+      every count in RTG-23's table is journal replay rather than the live frontier: either expected
+      post-flip epoch fencing or a silent loss (`orchestration/autopilot_state.json`) (found 2026-09-14,
+      noninf sweep).
+
+*Declined 2026-09-14: "no quality floor / admission gate exists anywhere in `src/autopilot_core/`" (`quality_floor`
+/ `min_quality` grep returns only the replay report's local `QUALITY_FLOOR = 1.0`) — not filed because creating one
+IS option (b) of the still-open **OPERATOR DECISION — goodput vs raw rate on axis 1** box above; it is the decision,
+not a defect.*
 
 ## 2026-06-13 Policy Decision
 

@@ -113,6 +113,90 @@ gain measured under conditions our deployment does not reproduce. The relative A
 (the defect hits both arms), but the absolute gain is unproven here; resolve PREFIX-1 before
 treating any BEIR delta as a production forecast.
 
+### PREFIX-1 closed — but the web reranker was never migrated onto the shared encoder (2026-09-14, noninf sweep)
+
+**Confidence: verified** — local code read plus unit tests on `origin/main`; the perturbation figures
+are the first-party reference-model measurement quoted above, with no ONNX and no inference window.
+
+`src/retrieval/colbert_encoder.py` was extracted in 2026-08 explicitly so that **two** consumers —
+the web-snippet reranker and the internal KB-RAG index — would share one model load, one tokenizer
+and one encoding convention. Its own docstring and `src/retrieval/__init__.py` both name
+`src.tools.web.colbert_reranker` as consumer number one. It never was: the extraction created the
+shared module and migrated only the KB side, while the web reranker kept the private `_encode` it
+already had. For a month the two paths then diverged **in one direction only**, because every fix
+above landed in the shared module that the web path does not call:
+
+| Fix in the shared encoder | The web reranker's private copy (`colbert_reranker.py:153-196`) |
+|---|---|
+| `[Q]`/`[D]` trained role prefix, keyword-only `role=` required (`fe55b228`) | no role parameter at all — both sides off-distribution |
+| feed exactly the inputs `session.get_inputs()` declares (K1, `4e5e84c0`) | hardcoded two-input feed → `None` for every text on any graph declaring `token_type_ids` |
+| honour `do_lower_case` (K8) | absent |
+| encode-round-trip prefix probe rather than `token_to_id` (K6) | absent |
+| load failures at WARNING, not DEBUG (K7) | `logger.debug` — a total encoding failure presented as an ordinary miss |
+
+**Nothing served wrong answers, because the feature flag was off — what was lost is the ability to
+measure.** The PREFIX-1 perturbation is the scale here: dropping the prefix moves MaxSim by max |Δ|
+1.63e-01 and flips top-1 on 37.5% of queries, roughly 25× the INT8 perturbation this pipeline already
+accepts. The A/B this handoff exists to run would have compared two candidate models *through a
+broken encoder* and attributed the difference to the models.
+
+**An extracted library with an unmigrated consumer is not ordinary duplication.** Duplicated code
+drifts in both directions and someone eventually notices both copies; here drift is one-directional
+and the direction looks like progress — the shared module accumulates fixes, the import graph and the
+module docstring both assert the consumer is served by it, and the stale copy is never touched, so
+nothing about it looks recently wrong. Grep is a weak detector: the KB-side commits were searched for
+`[Q]`, `token_type_ids` and friends and the web copy hit **none** of those patterns, because the
+defect is their *absence*. The reliable question is not which files mention the convention but which
+files build the model's inputs at all — `grep -rln "enable_padding\|InferenceSession"`.
+
+Three rules, the same shape as the encoder-guard rules above:
+
+1. **An extraction is not complete until the old private path is DELETED.** Leaving the previous
+   implementation in place did not remove a code path, it created a fork.
+2. **Guard statically, on absence.** A behavioural test cannot catch the *reappearance* of a parallel
+   path, because the parallel path passes its own tests. Assert the consumer module has no `_encode`,
+   no `_session`/`_tokenizer` singleton and no model-plumbing import at all
+   (`tests/unit/test_colbert_reranker.py::TestNoDuplicatedEncoder`).
+3. **Mock the shared library in the consumer's tests.** The consumer's contract is *which* call it
+   makes with *which* arguments — role per call, cap per call — not the numbers that come back. As a
+   side effect the reranker suite stopped loading a real 144 MB ONNX graph: 26.5 s → 7.4 s.
+
+**Model-declared parameters are data, not constants.** A second, independent trap in the same file:
+`_MAX_QUERY_TOKENS = 48` was GTE's number, hardcoded in a module whose own docstring advertises a
+`LATEON_MODEL_PATH` override — so activating the primary slot would silently have fed a 32-token
+model 48-token queries.
+
+| Slot | `query_length` | `document_length` |
+|---|---|---|
+| GTE-ModernColBERT-v1 (default) | 48 | 300 |
+| LateOn (primary candidate) | **32** | 300 |
+| Reason-mxbai-32M (fallback) | **256** | 2048 |
+
+Anything the checkpoint declares must be *read* from the checkpoint
+(`colbert_encoder.max_query_tokens()` / `max_document_tokens()`), because a slot swap is an env var
+and must not require a code edit to stay correct. The direction is not symmetric: spending **fewer**
+tokens than declared is a legitimate caller budget — web snippets are two sentences and the encoder
+pads to `max_tokens`, so obeying `document_length: 300` would pad ten snippets to 300 tokens for no
+content, hence `min(declared, 64)` — whereas **exceeding** the declared cap is off-distribution and
+never a budget choice.
+
+Sources:
+
+- [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) —
+  PREFIX-1: the role-prefix landing, the unmigrated-consumer finding, the absence guard and the
+  declared-cap reads.
+- [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md)
+  — the sweep entry with the divergence table and the suite-time drop.
+- [`epyc-orchestrator` `f876d989`](/mnt/raid0/llm/epyc-orchestrator) — the web reranker migrated onto
+  `colbert_encoder`, private `_encode` deleted, `TestNoDuplicatedEncoder`, and the declared-cap
+  accessors; builds on the KB-side `fe55b228` (`[Q]`/`[D]` role prefix, keyword-only `role=`) and
+  `4e5e84c0` (graph-declared inputs, `do_lower_case`, encode-round-trip prefix probe, load failures
+  at WARNING).
+- Same defect class as the canonical-builder case on
+  [Memory-Augmented Systems](memory-augmented.md) — the artifact was correct and the path meant to
+  reach it was bypassed; both remedies assert about the *call* and pin the guard to absence rather
+  than to output.
+
 ### GrepSeek (intake-1239): the zero-index challenge to the ColBERT index, filed as a four-arm A/B on our own corpus
 
 A trained shell-command search agent (GrepSeek, UMass CIIR, arXiv:2605.29307v1) beats the best
@@ -286,6 +370,9 @@ Research intake evaluated two page-scraping tools complementary to SearXNG (whic
 
 - [ColBERT-Zero research integration](/workspace/handoffs/completed/colbert-zero-research-integration.md) -- Track 1 (GTE-ModernColBERT upgrade), Track 2 (MemRL distillation design), A/B results, implementation details
 - [ColBERT reranker handoff](/workspace/handoffs/active/colbert-reranker-web-research.md) -- ColBERT-Zero snippet reranker for web_research pipeline, ready for implementation
+- [ColBERT reranker handoff, PREFIX-1](../handoffs/active/colbert-reranker-web-research.md) -- 2026-09-14: the shared `colbert_encoder` extraction had one unmigrated consumer (the web reranker kept its private `_encode` for a month), the one-directional drift table, the `TestNoDuplicatedEncoder` absence guard, and reading `query_length`/`document_length` from the checkpoint instead of the hardcoded `_MAX_QUERY_TOKENS = 48`
+- [progress/2026-09/2026-09-14-noninf-backlog.md](../progress/2026-09/2026-09-14-noninf-backlog.md) -- the noninf sweep entry for the reranker migration, including the reranker suite dropping from 26.5 s to 7.4 s once the 144 MB ONNX graph stopped loading
+- [`epyc-orchestrator` `f876d989`](/mnt/raid0/llm/epyc-orchestrator) -- web reranker migrated onto the shared encoder with the private path deleted; builds on the KB-side `fe55b228` (`[Q]`/`[D]` role prefix, keyword-only `role=`) and `4e5e84c0` (graph-declared ONNX inputs, `do_lower_case`, encode-round-trip prefix probe, load failures at WARNING)
 - [Ch.07 MemRL System](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/07-memrl-system.md) -- Episodic memory architecture, FAISS backend, two-phase retrieval
 - [NextPLAID handoff](/workspace/handoffs/archived/nextplaid-code-retrieval.md) -- NextPLAID multi-vector code and document retrieval architecture
 - [intake-174](https://huggingface.co/lightonai/Reason-ModernColBERT) Reason-ModernColBERT -- Late-interaction retriever (eliminated: CC-BY-NC-4.0 license; replaced by ColBERT-Zero)

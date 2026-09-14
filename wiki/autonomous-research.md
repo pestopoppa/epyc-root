@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-14 (GLM-5.3-Flash continuous 50-loop AutoKernel acceptance; earlier: 2026-09-11 unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below)
+**Last compiled**: 2026-09-14 (GLM-5.3-Flash continuous 50-loop AutoKernel acceptance, plus the planner/critic formation-payoff deadlock: 8 batches and 24 first-pass critic calls reached zero authoring because payoff evidence was required at formation — a gate whose evidence cannot be produced at the stage it gates is a latch; earlier: 2026-09-11 unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below)
 **Sources**: 127+ documents
 
 ## Compiled Update — 2026-09-14: the GLM AutoKernel ran 50 monitored measured loops, and its 23-keep accumulator is a direct +0.83% that is still not a champion
@@ -41,6 +41,35 @@ terminal continuation, so it is excluded from the 50 and treated as recoverable 
 **What remains open.** AKU-12e must run required-target validation and the exact GLM correctness gates on
 `dc3798db10a6` before anyone proposes champion admission. The 50-loop proof does not include that step.
 Production `production-consolidated-v9` was not touched, and it predates `glm5next` support.
+
+### A critic that demands proof of PAYOFF before authoring can livelock a loop without failing anything (2026-09-14, noninf sweep)
+
+**Confidence: verified** from the campaign's own retained batch records and the narrowing commit. The
+sharpest failure mode this campaign surfaced is not a wrong keep — it is **eight consecutive batches that
+produced nothing while every guard reported correctly**. Batches 27–34 made **24 first-pass critic calls and
+reached zero authoring, zero builds and zero measurements**: three revisions exhausted every batch because
+the critic had promoted ordinary *post-authoring payoff* checks — an eligible-call census, request-wall
+exposure, isolated local speedup — to **mandatory formation evidence**, which the planner had no instrument
+to collect. Nothing errored, nothing went red, and the loop's own health signals stayed green while its
+science rate was zero.
+
+**The remedy is a contract split, not a looser critic.** Payoff is a property the existing matched-A/B
+pipeline measures *after* authoring; formation only requires a **bounded, source-consistent candidate with a
+falsifier**. `loop/actors.py` was narrowed accordingly (research `5ac7b7e4`, 74 tests), so a candidate whose
+only unknown is its payoff now reaches the correctness plus matched-A/B path. Strictness is retained exactly
+where it buys something: an already-measured mechanism, a wrong source route, invented evidence, and
+uncontainable correctness risk are still refused at formation.
+
+Two generalisations worth carrying. **A gate whose evidence requirement cannot be satisfied at the stage it
+gates is a latch, not a gate** — the same shape as the mutually blocking provenance fences recorded on
+[Benchmark Methodology](benchmark-methodology.md). And **headroom masks this defect**: the earlier Qwen GPU
+loop carried the same critic contract, hidden by exact device-kernel timing and a larger available margin, so
+the deadlock only became visible on a surface where candidate payoff is genuinely hard to predict in advance.
+
+Sources: [2026-09-14 AutoKernel progress](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md)
+(§ *GLM planner/critic formation-payoff deadlock*),
+[Unified-surface program handoff](../handoffs/active/autokernel-unified-surface-program.md), and
+`epyc-inference-research` `5ac7b7e4`.
 
 ### Source References (2026-09-14 GLM continuous acceptance)
 

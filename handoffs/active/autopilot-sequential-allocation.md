@@ -268,6 +268,21 @@ outcome.
       distinguished from "the comparator lags a host that got faster". Main residual anti-conservative
       risk.
 
+- [ ] SEQ-B3 — Delete `_axis_refuted_factory` together with whichever test binds it, now that it has no caller
+      in `main()` and is kept only in case the existing test module binds it
+      (`scripts/analysis/readjudicate_sequential_candidates.py:85-89`) (found 2026-09-14, noninf sweep).
+- [ ] SEQ-B4 — Decide explicitly whether the refutation record should carry `k_rate` alongside the QUALITY
+      axis's `k`, which it currently reuses for both axes (matching the journal's single `k` and the reader)
+      even though the two can differ when the rate axis was skipped on earlier trials
+      (`scripts/autopilot/safety_gate.py:1780`) (found 2026-09-14, noninf sweep).
+
+*Declined 2026-09-14: "the rate-axis comparator still has no era fence of its own" (`handoffs/active/autopilot-sequential-allocation.md:265`)
+— not filed because it IS the open **Rate-axis comparator has no era fence of its own** box at that line.*
+
+*Declined 2026-09-14: "no live journal row will carry a `refutation` record while the sequential path stays
+default-off (`AUTOPILOT_SEQ_VERDICT=0`)" — not filed because re-arming is the open **Decide whether to re-arm the
+sequential gate** box at `:249`, an operator decision, and the observation adds no separate action.*
+
 - [ ] SEQ-A — Sticky `refuted` label (above).
 - [ ] SEQ-B — Frozen baseline-promotion gate (above).
 - [x] SEQ-4 — Re-examine the 9 candidates whose refutation does not survive the relaxed budget. ✅ 2026-07-29 — deterministic re-adjudication in [`readjudicate_sequential_20260728.json`](../../epyc-orchestrator/orchestration/reports/readjudicate_sequential_20260728.json) confirms all nine under the same era-fenced `core_v1` evidence; none reaches `confirm_e=20.0`.

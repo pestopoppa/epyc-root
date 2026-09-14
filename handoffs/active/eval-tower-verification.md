@@ -732,6 +732,16 @@ documented in this file's 2026-06-23 EV-9 section via `feedback_per_suite_gate_r
       proposer of five, and the trigger was a board-game genre prior whose analogue in
       kernel/routing/benchmark harnesses is untested — a null result here is informative, not
       exculpatory.
+- [ ] **EV-14g — decide whether `EvalResult` carries a completed count beside `n_questions`.** It has none
+      today (set from `total_count` at `:5580` on origin/main), so EV-14d's requested/completed split stops at
+      the four per-role mode reports; if the pair belongs on `EvalResult` it also lands in `eval_details`, the
+      journal and `tier_specs._task_rate_inputs_from_row` (`scripts/autopilot/eval_tower.py`) (found
+      2026-09-14, noninf sweep).
+
+*Declined 2026-09-14: the `"vs baseline {q:.3f}"` prose still emitted at `scripts/autopilot/safety_gate.py:1949`
+— not filed because it is a deliberate keep recorded in EV-14e's scope (it remains the human-facing line, and
+deleting it would change `has_legacy_scale_failure_analysis` behaviour), i.e. a decision already taken, not an
+open action.*
 
 **Reuse, do not rebuild**: `core_v2_calibrate.py --repeats` (repeat scoring, spread retained);
 `paired_stats.py` (McNemar — exact binomial, continuity-corrected normal, verdict surface,

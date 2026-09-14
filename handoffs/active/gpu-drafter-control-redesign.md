@@ -2,7 +2,7 @@
 
 **Status**: NEW / SCOPING (opened 2026-07-18 from the v7 lever audit). Design + α-measurement
 only — **no serving bench without operator approval** (`feedback_no_concurrent_inference`).
-**Owner handoff**: this file. **Parents**: [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md),
+**Owner handoff**: this file. **Parents**: [gpu-drafter-mi200-investigation.md](../archived/gpu-drafter-mi200-investigation.md),
 [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) (Axis-B).
 
 ## Thesis
@@ -34,6 +34,35 @@ drafting."* This track owns that redesign so it doesn't fall between handoffs.
 CPU quality* + GPU-drafted speed — same-model IQ2 (~124 GB) / IQ1 (~74 GB) don't fit 64 GB
 HBM, so **REAP + IQ1 (~56 GB)** is *required* for a same-model GPU drafter, or a smaller
 same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
+
+## Inherited evidence — from the parent INF-21, archived 2026-09-14
+
+[`gpu-drafter-mi200-investigation.md`](../archived/gpu-drafter-mi200-investigation.md) was archived
+2026-09-14: its Stages 1–2 were executed and **failed the ≥1.3× kill-gate**, and the redesign those
+failures called for is *this* handoff. The measured results are recorded here as evidence so this page
+does not depend on an archived parent:
+
+- [x] **Stage 1 — CPU frontdoor + MI210 external Qwen3.5-0.8B drafter: FAILED the ≥1.3× kill-gate**
+      ✅ 2026-07-17. Acceptance was perfect (`508/508` draft tokens at the 256-token gate) and the
+      throughput was still **0.915× decode / 0.911× wall** vs no-spec — the drafter overhead is not
+      repaid even at α≈1. Artifact:
+      `epyc-inference-research/data/specdec_frontdoor_alpha/stage1_mi210_gpu_drafter_20260717T0518Z_drafttreeunifiedkv/summary.json`.
+      Two real v7 bugs were found and fixed getting there: `common/speculative.cpp` loaded
+      `params.model.path` instead of the `-md` draft path, and `draft-tree` widened `n_seq_max` to 32
+      without unified KV, slicing the draft context to `8192/32 = 256` tokens (HTTP 500 at
+      `n_tokens=257`). Server `10079 (96986f5e9)`.
+- [x] **Stage 2 — frontdoor + drafter CO-RESIDENT on the MI210: FAILED, worse** ✅ 2026-07-17.
+      Against `gpu_no_spec` at **101.64 t/s**: native MTP **0.948×**, external drafter **0.355×**.
+      Artifact: `data/specdec_frontdoor_alpha/stage2_mi210_gpu_residency_20260717T0510Z/summary.json`.
+      This is the measurement behind this page's thesis that separate-drafter schemes lose to the
+      near-free embedded MTP head every production target already ships.
+- [x] **N5 α evidence (the alignment gate, not an economics result)** ✅ 2026-07-16:
+      `positive_mtp` 355/401 (α `0.8853`, Wilson 95% `[0.8504, 0.9129]`), `spec_off` 0/0,
+      `n5_spec_on` 376/376 (α `1.0000`, `[0.9899, 1.0000]`), 8 prompts / 768 completion tokens per arm.
+      Speed/load numbers from that run are observations only (GLM-5.2 was downloading).
+- [x] **Stage 4 (MTP head split for the gemma4 `worker_general`) is retired, not inherited** ✅ 2026-09-14
+      — it was gated on Stages 1–3 succeeding. Re-propose it as new scope if the redesign ever produces a
+      drafter lane that clears the gate.
 
 ## First actions
 
@@ -145,7 +174,7 @@ same-family drafter (35B/122B qwen35 at Q8) trading α for fit.
 
 ## Cross-links
 
-- α-alignment baseline (N5) + Stage-1/2 negatives: [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md),
+- α-alignment baseline (N5) + Stage-1/2 negatives: [gpu-drafter-mi200-investigation.md](../archived/gpu-drafter-mi200-investigation.md),
   [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md) Axis-B.
 - Teleport transport: AXA-2 in the mi210 roadmap.
 - Dead lanes (do not revive as-is): tree-draft/DySpec, external-drafter Stage-1/2

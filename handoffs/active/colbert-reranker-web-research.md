@@ -532,6 +532,26 @@ quality tradeoff.
   arms — but it does mean the absolute gain is unproven here. Resolve PREFIX-1 before treating any BEIR
   delta as a production forecast.
 
+- [ ] **PREFIX-3 — re-run the banked ONNX↔PyLate parity through `colbert_encoder.encode(role=ROLE_DOCUMENT)`
+  before S3b's 8.24e-03 or S3c's 2.72e-03 is cited again**, because `_encode_onnx` fed raw text (no `[D]`,
+  hardcoded two-input feed, no `do_lower_case`) while `_encode_pylate` inserted `[D]`, so both figures are
+  prefix-free-vs-prefixed rather than like-for-like and mean pooling (`_pooled_vec:462`) plus reference
+  truncation (`:519`) were forgiving enough to pass it; needs the ONNX encoder, so not zero-inference
+  (`scripts/benchmark/colbert/export_lateon_onnx_int8.py:465-494`) (found 2026-09-14, noninf sweep).
+- [ ] **S9 — give the `colbert_encoder` module singleton a locking contract** before the reranker is ever
+  enabled concurrently with KB-RAG, since `_MODEL_DIR` is import-time state that `kb_rag` stamps into
+  `index_meta` and a KB query in flight during a `refresh_model_dir()` re-point would see `_session is None`
+  and return an ordinary miss (`src/retrieval/colbert_encoder.py`) (found 2026-09-14, noninf sweep).
+
+*Declined 2026-09-14: the hardcoded `_QUERY_MAX_TOKENS = 48` / `_DOC_MAX_TOKENS = 256` in `src/retrieval/kb_rag.py:66-67`
+(48 is GTE's number while LateOn declares 32) — not filed because both are stamped into `index_meta` (`:236-237`),
+so changing them alters retrieval against every stored index and the change belongs to the open **PREFIX-1** box's
+OP-24 re-embed decision, where the stamp makes it detectable.*
+
+*Declined 2026-09-14: `src/retrieval/cross_encoder.py:188-189` handles `token_type_ids` correctly and is a
+cross-encoder, so `[Q]`/`[D]` roles do not apply — not filed because it is a recorded no-defect observation with no
+action, kept here only so it is not re-investigated.*
+
 ### Expand — Local fine-tune (newly unblocked)
 
 LightOn released the full 665M curated pre-training corpus + 1.69M fine-tuning corpus under Apache 2.0. Previously blocked by Reason-ModernColBERT's CC-BY-NC-4.0 license; this release makes an EPYC-domain-specialized reranker a ~1-day experiment once primary adoption is stable.

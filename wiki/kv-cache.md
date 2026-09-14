@@ -25,7 +25,7 @@ The old premise for capping context provisioning — that a large `-c` costs at 
 
 ### Source References (2026-08-12)
 
-- [`llamacpp-v6-consolidation.md`](../handoffs/active/llamacpp-v6-consolidation.md) — the SWA slot-reuse DROP verdict and the deleted per-sequence check.
+- [`llamacpp-v6-consolidation.md`](../handoffs/archived/llamacpp-v6-consolidation.md) — the SWA slot-reuse DROP verdict and the deleted per-sequence check.
 - [`numa-placement-defect-20260730.md`](../handoffs/active/numa-placement-defect-20260730.md) — the T12 lazy-KV decision package and the uncomputed concurrent-load worst case.
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the KVQuant parity/headroom numbers and the dominated-q8 finding.
 

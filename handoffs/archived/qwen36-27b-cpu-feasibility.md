@@ -1,15 +1,54 @@
 # Qwen3.6-27B Dense — CPU Feasibility Evaluation
 
-**Status**: stub — **PARKED 2026-07-14 (monitor)**
+> # ⛔ ARCHIVED 2026-09-14 — THE PREMISE IS GONE. HISTORICAL LEDGER ONLY.
+>
+> **Reason.** The reopen trigger written into this page was *"reopen only if the 27B becomes a real
+> role candidate."* It did — and **the model that became one is Qwen3.8-27B, not Qwen3.6-27B.**
+> Qwen3.8-27B replaced `Qwen3.6-27B-MTP-Q8_0` on `architect_general` + `coder_escalation` (master
+> registry `b376dadd`, stack template `1cff5162`, compile chain ratified 2026-08-21, `live == config`
+> verified 2026-08-21 22:00Z). Qwen3.6-27B is no longer in the deployed lineup, so its CPU-candidacy
+> question (P1) and its coder A/B (P2) can never be answered *about a candidate* — they would be
+> measurements of a retired model. Both are retired unrun, not deferred.
+>
+> **Where the live work went.** [`qwen38-27b-replace-qwen36.md`](../active/qwen38-27b-replace-qwen36.md)
+> (the replacement and its measured numbers) and
+> [`gpu-candidates-surface-qwen38-update.md`](../active/gpu-candidates-surface-qwen38-update.md)
+> (bench surface). GPU-side spec-dec bookmarks for the dense-hybrid family live in
+> [`gpu-acceleration-path.md`](../active/gpu-acceleration-path.md).
+>
+> ## Findings carried forward (still true, and still about this architecture class)
+>
+> 1. **CPU speculative decoding is architecturally foreclosed for the Qwen3.x dense-FFN hybrid
+>    family** (Gated-DeltaNet + Gated-Attention, 3:1; 64 layers = 48 GDN + 16 Gated-Attn). The GDN
+>    verification wall makes draft verification non-equivalent under CPU serial decode, so
+>    verification cost exceeds acceptance gain. This was P3 and it is a **standing don't-do**, not a
+>    result about one model. The intake-455 (RTX 4090, 5.9×) and intake-501 (RTX 3090 DFlash,
+>    207.6 tok/s Q4_K_M / 5.46×) speedups are GPU-native (DDTree + tree-aware SSM state rollback) and
+>    do not port to EPYC CPU decode.
+> 2. **MI210 dense-Q8 +37% — the banked v7 win IS this model.** Qwen3.6-27B on the MI210 went from
+>    plain Q8 **29.5 → 40.4 t/s (+37%)** via the embedded-NEXTN MTP head plus the MMVQ→MMQ
+>    verify-dispatch fix (`de447119f`). EAGLE-3 was tested and is a no-go; GDN-MFMA was profiled and
+>    killed. Campaign record:
+>    [`mi210-speed-campaign-summary.md`](../completed/mi210-speed-campaign-summary.md) +
+>    [`progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md`](../../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md).
+>    Carried into the successor handoff as an `Inherited findings` line.
+> 3. **Cross-version drafter portability within the family** (intake-501): a Qwen3.5-27B-DFlash
+>    drafter loads on Qwen3.6-27B unchanged (identical `Qwen35` identifier, layer/head dims), at a
+>    cost — acceptance length 5.05 cross-version vs 9.18 same-version.
+>
+> **"PARKED" here was always a CPU foreclosure, never a dead model** — the GPU characterization above
+> is the proof. Do not read this archive as evidence against the dense-hybrid class on GPU.
+
+**Status**: stub — **PARKED 2026-07-14 (monitor)** · **ARCHIVED 2026-09-14**
 
 > **2026-07-14 audit note — PARKED to monitor**: P1 throughput probe and P2 coder A/B are parked with an explicit reopen trigger — **reopen only if the 27B becomes a real role candidate**. Premise weakened: Qwen3.6-35B-A3B already serves frontdoor/coder_escalation; community data (intake-455) projects ~7.5–9 t/s single-instance (below role thresholds); CPU spec-dec is a recorded no-go (P3). P1/P2 task lines retained below, gated.
 **Created**: 2026-04-24 (via research intake deep-dive — intake-455)
 **Categories**: local_inference, hardware_optimization, benchmark_methodology
 **Priority**: MEDIUM (potential coder/worker model candidate, not yet validated)
-**Parent index**: [`inference-research-index.md`](inference-research-index.md)
+**Parent index**: [`inference-research-index.md`](../active/inference-research-index.md)
 **Distinct from**: [`qwen36-production-upgrade.md`](../completed/qwen36-production-upgrade.md) (35B-A3B MoE, not this 27B dense-FFN hybrid)
-**Related**: [`gpu-acceleration-path.md`](gpu-acceleration-path.md) (where 4090 spec-dec numbers from intake-455 are bookmarked)
-**GPU status (2026-07-18 audit cross-ref)**: "parked" here is a **CPU** foreclosure only — do NOT read it as a dead model. The **same model was characterized extensively on the MI210** (GPU-only): plain Q8 29.5 → **40.4 t/s (+37%)** via embedded-NEXTN MTP + the MMVQ→MMQ verify-dispatch fix (`de447119f`); EAGLE-3 tested (no-go), GDN-MFMA profiled + killed. The banked "dense-Q8 +37%" v7 win **is this model**. Full campaign: [`mi210-speed-campaign-summary.md`](../completed/mi210-speed-campaign-summary.md) + [`progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md`](../../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md). Cross-linked per [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md) finding #2 (fragmentation).
+**Related**: [`gpu-acceleration-path.md`](../active/gpu-acceleration-path.md) (where 4090 spec-dec numbers from intake-455 are bookmarked)
+**GPU status (2026-07-18 audit cross-ref)**: "parked" here is a **CPU** foreclosure only — do NOT read it as a dead model. The **same model was characterized extensively on the MI210** (GPU-only): plain Q8 29.5 → **40.4 t/s (+37%)** via embedded-NEXTN MTP + the MMVQ→MMQ verify-dispatch fix (`de447119f`); EAGLE-3 tested (no-go), GDN-MFMA profiled + killed. The banked "dense-Q8 +37%" v7 win **is this model**. Full campaign: [`mi210-speed-campaign-summary.md`](../completed/mi210-speed-campaign-summary.md) + [`progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md`](../../progress/2026-07/2026-07-03-mi210-qwen36-27b-speed-campaign.md). Cross-linked per [`stale-open-audit-2026-07-18.md`](../active/stale-open-audit-2026-07-18.md) finding #2 (fragmentation).
 
 ## Objective
 

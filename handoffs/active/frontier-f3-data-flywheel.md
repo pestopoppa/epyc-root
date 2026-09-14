@@ -4,7 +4,7 @@
 **Created**: 2026-06-12
 **Priority**: MED — W1/W2 capture+curation now, W3 training HW-GATED with the MI210 portfolio per operator instruction
 **Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F3 — read it before claiming any waypoint
-**Related**: [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) (W3 tuples are this frontier's gold data); [fable5-findings-01c-sequential-verdict-spec.md](../completed/fable5-findings-01c-sequential-verdict-spec.md) (outcome labels); [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md) (drafter training); [retrain-routing-models.md](retrain-routing-models.md) (routing-classifier stack reuse); [../completed/frontier-f7-economic-ledger.md](../completed/frontier-f7-economic-ledger.md) (planner-distill economic justification)
+**Related**: [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) (W3 tuples are this frontier's gold data); [fable5-findings-01c-sequential-verdict-spec.md](../completed/fable5-findings-01c-sequential-verdict-spec.md) (outcome labels); [gpu-drafter-mi200-investigation.md](../archived/gpu-drafter-mi200-investigation.md) (drafter training); [retrain-routing-models.md](retrain-routing-models.md) (routing-classifier stack reuse); [../completed/frontier-f7-economic-ledger.md](../completed/frontier-f7-economic-ledger.md) (planner-distill economic justification)
 
 ## Why
 

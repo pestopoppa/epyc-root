@@ -2,7 +2,7 @@
 
 **Status**: researched (literature survey complete 2026-04-14, RX 7900 XTX + hybrid MoE path prioritized)
 **Created**: 2026-04-10 (via research intake deep-dive)
-**Updated**: 2026-04-21 (no GPU acquired; vLLM DDTree+Dflash plan still current) — **MI210 INSTALLED 2026-07-02: HIP build verified on gfx90a, first GPU benchmarks in (see [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md) § 2026-07-02 Advancement + [../../progress/2026-07/2026-07-02-mi210.md](../../progress/2026-07/2026-07-02-mi210.md))**
+**Updated**: 2026-04-21 (no GPU acquired; vLLM DDTree+Dflash plan still current) — **MI210 INSTALLED 2026-07-02: HIP build verified on gfx90a, first GPU benchmarks in (see [gpu-drafter-mi200-investigation.md](../archived/gpu-drafter-mi200-investigation.md) § 2026-07-02 Advancement + [../../progress/2026-07/2026-07-02-mi210.md](../../progress/2026-07/2026-07-02-mi210.md))**
 **Categories**: hardware_optimization, inference_serving, moe_optimization, speculative_decoding
 **Priority**: ACTIVE (MI210 installed 2026-07-02 — the acquisition trigger fired; GPU work is no longer gated). Sequencing per fable5-window2-findings-02 (fleet placement): frontdoor residency + eval-engine (one migration) → embedder/vision host → op-offload prefill → drafter farm.
 **Workstream**: Future
