@@ -341,7 +341,7 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
     assert "epoch-band" in card and "epoch-boundary" in card
     assert "Qwen3.8-27B-Q8_0.gguf" in card
     assert "data-point-count=\"2\"" in card
-    assert "cumulative +7.200%" in card
+    assert "cumulative: +7.200%" in card
     assert "Campaign-local CoR drill-down" in card
     assert "not production-relative" in card
     assert "1 unjoinable production receipt" in card
@@ -394,8 +394,9 @@ def test_trajectory_is_first_surface_and_absorbs_redundant_panels() -> None:
     assert main.index('id="sec-capabilities"') < main.index('id="sec-accumulator"')
     assert main.index('id="sec-accumulator"') < main.index('id="sec-serial"')
     trajectory = main[main.index('id="sec-trajectory"'):main.index('</section>')]
-    for retained_host in ('id="champ"', 'id="champ-badge"', 'id="tiles"', 'id="trajectory"'):
-        assert retained_host in trajectory
+    assert 'id="trajectory"' in trajectory
+    for retired_host in ('id="champ"', 'id="champ-badge"', 'id="tiles"'):
+        assert retired_host not in main
     knowledge = main[main.index('id="sec-knowledge"'):]
     assert knowledge.index("<details>") < knowledge.index('id="know"')
 

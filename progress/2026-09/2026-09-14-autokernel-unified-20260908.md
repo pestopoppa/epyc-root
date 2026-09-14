@@ -154,3 +154,15 @@ summary still occupied the first card. The keep timeline is now outside the perc
 and the old champion summary/Progress tiles and their unused renderers were removed entirely.
 The champion renderer retains only the capabilities card. Historical A/B evidence remains in the
 trajectory; the current task does not reclassify any measurement or modify the running campaign.
+
+Final all-model recovery (`a0f3daee`, `154bfee6`) exposes 73/73 retained changes without truncation:
+DeepSeek screen 28, Qwen3.8-27B 4, Flash-Next CPU 18, GLM 23; none are unassigned. Manual records
+carry fold-inventory provenance and recovered GLM entries carry bundle provenance. Sixteen original
+timestamps, two commits, fourteen hypotheses, thirty-two marginal effects, and forty-one
+floor/comparison records remain unavailable; the UI does not create values for them.
+The real Chromium check now compares every model's rendered marker count with the dedicated
+history feed and exercises hover/click for every nonempty model, then GLM refresh persistence and
+keyboard interaction. It passed with counts 28/4/18/23 and zero page errors. The Gemma curve has a
+direct measurement but no independently recorded retained change, so no keep marker is invented.
+The final trajectory/static-JS suite passed 21 tests; the retired-summary test migration passed
+32 tests plus five subtests. Prior DOM-only completion claims are superseded by this browser check.

@@ -24,6 +24,14 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
       const expected = counts[curve.model] || 0;
       assert.equal(await page.locator('.trajectory-event').count(), expected,
         `${curve.model}: every attributed keep must be rendered`);
+      if (expected) {
+        const marker = page.locator('.trajectory-event').first();
+        await marker.hover();
+        await page.locator('#trajectory-keep-tooltip').waitFor({state: 'visible'});
+        await marker.click();
+        await page.locator('#trajectory-event-drawer').waitFor({state: 'visible'});
+        await page.locator('#trajectory-event-close').click();
+      }
       checkedModels[curve.model] = expected;
     }
     const model = process.env.TRAJECTORY_MODEL || 'GLM-5.3-Flash';
