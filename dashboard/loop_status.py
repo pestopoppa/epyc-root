@@ -1470,14 +1470,18 @@ KNOWLEDGE_STALE_AFTER_S = 86400.0
 #: How many of the most recent keeps are named on the card, with their effects.
 KNOWLEDGE_RECENT_KEPT = 5
 
-#: The headline trajectory is deliberately bounded.  It reads only the
-#: producer's retained bundle/check receipts; it never scans batch logs and it
-#: never composes marginal iteration effects into a cumulative claim.
-TRAJECTORY_MAX_KEEPS = 128
-TRAJECTORY_MAX_CHECKS = 32
-TRAJECTORY_ACCUMULATOR_FILENAME = "accumulator-bundle.json"
-TRAJECTORY_SERVING_DIRNAME = "serving"
-TRAJECTORY_SCHEMA = "epyc.dashboard.autokernel_improvement_trajectory.v1"
+#: Production-relative history is admitted only by joining the loop's raw
+#: direct-A/B receipt to both ledger rows emitted by the same refresh.  The
+#: reason grammar is producer-owned (`loop.production.Refresh.to_attempt`).
+TRAJECTORY_SCHEMA = "epyc.dashboard.autokernel_improvement_trajectory.v2"
+TRAJECTORY_MAX_POINTS = 128
+TRAJECTORY_RAW_MAX_BYTES = 256 * 1024
+_PRODUCTION_REFRESH_REASON = re.compile(
+    r"^champion (?P<champion>[0-9a-f]{12}) measures "
+    r"(?P<effect>[+-][0-9]+(?:\.[0-9]+)?)% against frozen production "
+    r"(?P<baseline>[0-9a-f]{12}) \((?P<label>production-consolidated-[^)]+)\) "
+    r"over (?P<pairs>[1-9][0-9]*) (?P<surface>[A-Za-z0-9_-]+) pairs, "
+    r"floor (?P<floor>[0-9]+(?:\.[0-9]+)?)%$")
 
 #: The dispositions the card names first-class. Everything ELSE in the store is
 #: folded into a no-scientific-verdict bucket that ENUMERATES its members —
@@ -1954,6 +1958,18 @@ def _read_knowledge_once(path: Path) -> dict:
                     f"substr(refusal_reason, 1, {KNOWLEDGE_REASON_CAP + 200}), "
                     "recorded_at, epoch_sha256 FROM experiments "
                     "ORDER BY recorded_at DESC").fetchall()]
+            # Private input to the trajectory fold. These bounded payloads do
+            # not ride the API response; they prove joins to raw receipts.
+            trajectory_rows = [
+                {"mechanism_id": r[0], "status": r[1],
+                 "refusal_reason": r[2], "recorded_at": r[3],
+                 "payload": r[4], "payload_bytes": r[5]}
+                for r in cur.execute(
+                    "SELECT mechanism_id, status, refusal_reason, recorded_at, "
+                    "substr(payload, 1, ?), length(payload) FROM experiments "
+                    "WHERE status = 'kept' OR mechanism_id = 'champion-vs-production' "
+                    "ORDER BY recorded_at DESC LIMIT 512",
+                    (TRAJECTORY_RAW_MAX_BYTES + 1,)).fetchall()]
         finally:
             con.close()
     except sqlite3.OperationalError:
@@ -1979,6 +1995,7 @@ def _read_knowledge_once(path: Path) -> dict:
         # Internal to the snapshot fold — the ledger consumes these and the
         # wire carries the FOLDED ledger, never 1000 raw rows.
         "rows": ledger_rows,
+        "trajectory_rows": trajectory_rows,
     }
     return {"artifact_present": True, "body": body, "reader_error": None,
             "path": str(path), "mtime": mtime}
@@ -2043,24 +2060,14 @@ def _finite_number(value: Any) -> bool:
 
 
 def _trajectory_json(path: Path) -> Mapping[str, Any]:
-    """Read one bounded producer receipt without following a symlink."""
-    body = json.loads(_serial_bytes(path, limit=256 * 1024))
+    body = json.loads(_serial_bytes(path, limit=TRAJECTORY_RAW_MAX_BYTES))
     if not isinstance(body, dict):
         raise TypeError("trajectory receipt is not a JSON object")
     return body
 
 
-def _trajectory_serving_json(path: Path) -> Mapping[str, Any]:
-    """Read a compact receipt, or a bounded authoritative top-level tail.
-
-    CPU lifecycle samples can make a serving receipt ~100 MiB.  The producer's
-    pretty-printed top-level fields from ``decisive`` through the terminal
-    ``schema`` are retained in the final 256 KiB, including planner evidence.
-    Parse that complete JSON object suffix rather than reading the giant sample
-    arrays on every dashboard refresh.  The exact two-space top-level boundary,
-    terminal brace, schema, membership and numeric fields are all validated by
-    the caller; a changed serialization becomes explicit broken evidence.
-    """
+def _serving_summary(path: Path) -> Mapping[str, Any]:
+    """Read a compact receipt or its identity-checked final 256-KiB summary."""
     try:
         return _trajectory_json(path)
     except ValueError as exc:
@@ -2069,10 +2076,10 @@ def _trajectory_serving_json(path: Path) -> Mapping[str, Any]:
     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
     with os.fdopen(fd, "rb") as stream:
         before = os.fstat(stream.fileno())
-        if not stat.S_ISREG(before.st_mode) or before.st_size <= 256 * 1024:
+        if not stat.S_ISREG(before.st_mode) or before.st_size <= TRAJECTORY_RAW_MAX_BYTES:
             raise ValueError("serving receipt is not a large regular file")
-        stream.seek(-256 * 1024, os.SEEK_END)
-        tail = stream.read(256 * 1024)
+        stream.seek(-TRAJECTORY_RAW_MAX_BYTES, os.SEEK_END)
+        tail = stream.read(TRAJECTORY_RAW_MAX_BYTES)
         after = os.fstat(stream.fileno())
     if ((before.st_dev, before.st_ino, before.st_mtime_ns, before.st_size) !=
             (after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size)):
@@ -2086,143 +2093,174 @@ def _trajectory_serving_json(path: Path) -> Mapping[str, Any]:
     return body
 
 
-def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]]) -> dict:
-    """Project retained-tip progress without manufacturing a cumulative gain.
+def _production_history(root: Path, rows: list[Mapping[str, Any]],
+                        production: Optional[Mapping[str, Any]] = None) -> dict:
+    """Join producer receipts into direct, never-composed production curves."""
+    prod = dict(production) if production is not None else resolve_production()
+    baseline = prod.get("commit") if prod.get("resolved") else None
+    label = prod.get("label") if prod.get("resolved") else None
+    out = {"state": "unavailable", "basis": "gain_pct_vs_frozen_production",
+           "baseline": {"commit": baseline, "label": label}, "curves": [],
+           "evidence_errors": [],
+           "detail": "no identity-complete direct production checkpoints are available"}
+    if not isinstance(baseline, str) or not _FULL_SHA.fullmatch(baseline):
+        out["detail"] = "the current frozen production identity is unresolved"
+        return out
 
-    The accumulator and serving receipts already contain cumulative measurements
-    of the exact retained bundle.  Those are the only magnitudes plotted.  The
-    experiment ledger supplies keep timestamps/names, not arithmetic inputs.
-    Missing checkpoints therefore remain visible gaps rather than a product of
-    marginal effects from changing surfaces and anchors.
-    """
-    root = Path(root)
-    evidence = str(root / TRAJECTORY_ACCUMULATOR_FILENAME)
-    unavailable = {
-        "schema": TRAJECTORY_SCHEMA, "state": "absent", "detail":
-        "no retained accumulator bundle is available; cumulative improvement is unknown",
-        "evidence": evidence, "basis": "gain_pct_vs_champion_of_record",
-        "champion_of_record": None, "tip": None, "keeps": [],
-        "bench_checkpoints": [], "serving_checks": [],
-        "serving_evidence_errors": [],
-        "references": {"champion_of_record_pct": 0.0,
-                       "production_pct": None,
-                       "production_state": "unavailable",
-                       "production_detail": "no CoR-matched direct production receipt is available"},
-    }
+    refreshes, keeps = {}, {}
+    for row in rows:
+        if row.get("payload_bytes", 0) > TRAJECTORY_RAW_MAX_BYTES:
+            continue
+        try:
+            payload = json.loads(row.get("payload") or "")
+        except (TypeError, json.JSONDecodeError):
+            continue
+        if not isinstance(payload, dict):
+            continue
+        if (row.get("mechanism_id") == "champion-vs-production"
+                and row.get("status") == "champion_vs_production"):
+            match = _PRODUCTION_REFRESH_REASON.fullmatch(
+                str(row.get("refusal_reason") or payload.get("reason") or ""))
+            if match and match["baseline"] == baseline[:12] and match["label"] == label:
+                refreshes[match["champion"]] = {"match": match,
+                                                  "recorded_at": row.get("recorded_at")}
+        if row.get("status") == "kept":
+            head, comparison = payload.get("champion_head"), payload.get("comparison")
+            if isinstance(head, str) and _FULL_SHA.fullmatch(head) \
+                    and isinstance(comparison, dict):
+                keeps[head[:12]] = {"commit": head, "comparison": comparison}
+
+    points = []
     try:
-        bundle = _trajectory_json(root / TRAJECTORY_ACCUMULATOR_FILENAME)
+        paths = sorted(root.glob("champion-vs-production.*.json"))
+    except OSError:
+        paths = []
+    for path in paths[:TRAJECTORY_MAX_POINTS]:
+        match_name = re.fullmatch(r"champion-vs-production\.([0-9a-f]{12})\.json", path.name)
+        if not match_name:
+            out["evidence_errors"].append({"evidence": str(path),
+                                             "reason": "archive lacks the exact producer identity join"})
+            continue
+        short_sha = match_name[1]
+        try:
+            raw = _trajectory_json(path)
+            refresh, keep = refreshes[short_sha], keeps[short_sha]
+            reason = refresh["match"]
+            effect = raw.get("effect_pct")
+            floor = raw.get("noise_floor_pct")
+            pairs = raw.get("pairs")
+            surface = raw.get("surface")
+            if (not _finite_number(effect) or not _finite_number(floor)
+                    or not isinstance(pairs, int) or isinstance(pairs, bool) or pairs < 1
+                    or not isinstance(surface, str)
+                    or surface != reason["surface"] or pairs != int(reason["pairs"])
+                    or round(float(effect), 3) != float(reason["effect"])
+                    or float(floor) != float(reason["floor"])):
+                raise ValueError("raw receipt disagrees with the production-refresh ledger row")
+            model = raw.get("model")
+            model = Path(model).name if isinstance(model, str) and model else None
+            points.append({"commit": keep["commit"], "recorded_at": refresh["recorded_at"],
+                           "gain_pct": float(effect), "surface": surface, "model": model,
+                           "pairs": pairs, "noise_floor_pct": float(floor),
+                           "evidence": str(path), "evidence_state": "direct_measurement"})
+        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            out["evidence_errors"].append({"evidence": str(path), "reason": str(exc)[:256]})
+
+    # The normalized current slot is independently identity-complete and may
+    # add the latest point even when its raw archive predates the ledger join.
+    report = read_champion(root)
+    body = report.get("body")
+    if isinstance(body, dict):
+        measured = body.get("champion") if isinstance(body.get("champion"), dict) else {}
+        anchored = body.get("baseline") if isinstance(body.get("baseline"), dict) else {}
+        effect = body.get("effect_fraction")
+        if (anchored.get("commit") == baseline and anchored.get("label") == label
+                and isinstance(measured.get("commit"), str)
+                and _FULL_SHA.fullmatch(measured["commit"])
+                and _finite_number(effect) and float(effect) > -1
+                and body.get("metric_direction") == "higher_better"
+                and isinstance(body.get("surface"), str)):
+            model = body.get("model")
+            model = Path(model).name if isinstance(model, str) and model else None
+            points.append({"commit": measured["commit"], "recorded_at": body.get("generated_at"),
+                           "gain_pct": float(effect) * 100.0, "surface": body["surface"],
+                           "model": model, "pairs": body.get("pairs"),
+                           "noise_floor_pct": body.get("noise_floor_pct"),
+                           "evidence": report.get("path"),
+                           "evidence_state": "direct_measurement"})
+
+    unique = {}
+    for point in points:
+        key = (point["commit"], point["model"], point["surface"], point["gain_pct"])
+        unique.setdefault(key, point)
+    grouped = {}
+    for point in sorted(unique.values(), key=lambda p: str(p.get("recorded_at") or "")):
+        key = (point["model"], point["surface"])
+        grouped.setdefault(key, []).append(point)
+    out["curves"] = [{"id": f"{model or 'model-unrecorded'}::{surface}",
+                       "model": model, "surface": surface, "points": curve}
+                      for (model, surface), curve in sorted(grouped.items(),
+                                                            key=lambda item: str(item[0]))]
+    if out["curves"]:
+        out["state"] = "available"
+        out["detail"] = ("each point is a direct matched A/B against the resolved frozen "
+                         "production kernel; campaign marginals are never composed")
+    return out
+
+
+def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
+                           production: Optional[Mapping[str, Any]] = None) -> dict:
+    """Headline production history plus secondary campaign-local drill-down."""
+    root = Path(root)
+    headline = _production_history(root, rows, production)
+    local = {"state": "absent", "basis": "gain_pct_vs_campaign_cor", "keeps": [],
+             "bench_checkpoints": [], "serving_checks": [], "evidence_errors": [],
+             "detail": "no retained accumulator bundle is available"}
+    try:
+        bundle = _trajectory_json(root / "accumulator-bundle.json")
         keeps = bundle.get("keeps")
         if (bundle.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
-                or not isinstance(keeps, list) or not keeps
-                or len(keeps) > TRAJECTORY_MAX_KEEPS
+                or not isinstance(keeps, list) or not keeps or len(keeps) > 128
                 or len(set(keeps)) != len(keeps)
                 or not all(isinstance(item, str) and item for item in keeps)):
             raise ValueError("retained accumulator bundle has an unsupported shape")
-        cor, tip = bundle.get("champion_of_record"), bundle.get("tip")
-        if not all(isinstance(value, str) and 7 <= len(value) <= 40
-                   for value in (cor, tip)):
-            raise ValueError("retained accumulator identity is malformed")
+        local.update({"state": "available", "champion_of_record": bundle.get("champion_of_record"),
+                      "tip": bundle.get("tip"),
+                      "keeps": [{"index": i, "mechanism_id": item}
+                                for i, item in enumerate(keeps, 1)],
+                      "detail": "campaign-local CoR evidence; not production-relative"})
+        if _finite_number(bundle.get("compounded_bench_pct")):
+            local["bench_checkpoints"].append({"keep_count": len(keeps),
+                                                 "gain_pct": float(bundle["compounded_bench_pct"]),
+                                                 "evidence_state": "cheap_screen_estimate"})
+        for path in sorted((root / "serving").glob("bundle-*.json"))[-32:]:
+            try:
+                body = _serving_summary(path)
+                planner = body.get("planner_evidence")
+                members = body.get("bundled_keeps") if isinstance(body.get("bundled_keeps"), list) \
+                    else planner.get("bundled_keeps") if isinstance(planner, dict) else None
+                if (not isinstance(planner, dict) or not isinstance(members, list)
+                        or members != keeps[:len(members)]
+                        or planner.get("bundled_keeps") != members
+                        or not _finite_number(body.get("effect_pct"))
+                        or not _finite_number(planner.get("compounded_bench_pct"))
+                        or type(body.get("decisive")) is not bool):
+                    raise ValueError("serving receipt identity or fields are malformed")
+                local["serving_checks"].append({"keep_count": len(members),
+                                                  "gain_pct": float(body["effect_pct"]),
+                                                  "bench_gain_pct": float(planner["compounded_bench_pct"]),
+                                                  "evidence_state": ("serving_verified" if body["decisive"]
+                                                                     else "serving_inconclusive"),
+                                                  "outcome": body.get("outcome")})
+            except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+                local["evidence_errors"].append({"evidence": str(path), "reason": str(exc)[:256]})
+        local["serving_checks"].sort(key=lambda p: (p["keep_count"], p["gain_pct"]))
     except FileNotFoundError:
-        return unavailable
-    except (OSError, TypeError, ValueError, UnicodeError, json.JSONDecodeError) as exc:
-        return {**unavailable, "state": "malformed",
-                "detail": f"retained trajectory evidence is unreadable: {exc}"}
-
-    recorded = {}
-    for row in rows:
-        mechanism = row.get("mechanism_id")
-        if (row.get("status") == "kept" and mechanism in keeps
-                and mechanism not in recorded):
-            recorded[mechanism] = row.get("recorded_at")
-    keep_rows = [{"index": index, "mechanism_id": mechanism,
-                  "recorded_at": recorded.get(mechanism)}
-                 for index, mechanism in enumerate(keeps, 1)]
-
-    checks, check_errors = [], []
-    serving_root = root / TRAJECTORY_SERVING_DIRNAME
-    try:
-        paths = sorted(serving_root.glob("bundle-*.json"))
-    except OSError:
-        paths = []
-    for path in paths[-TRAJECTORY_MAX_CHECKS:]:
-        try:
-            body = _trajectory_serving_json(path)
-            if body.get("schema") not in {"epyc.autokernel.serving_ab.v1",
-                                           "epyc.autokernel.serving_ab.v2"}:
-                raise ValueError("serving receipt schema is unsupported")
-            planner = body.get("planner_evidence")
-            members = (body.get("bundled_keeps") if isinstance(body.get("bundled_keeps"), list)
-                       else planner.get("bundled_keeps") if isinstance(planner, dict) else None)
-            if (not isinstance(members, list) or not members
-                    or members != keeps[:len(members)] or not isinstance(planner, dict)
-                    or planner.get("bundled_keeps") != members
-                    or not _finite_number(planner.get("compounded_bench_pct"))
-                    or not _finite_number(body.get("effect_pct"))
-                    or type(body.get("decisive")) is not bool):
-                raise ValueError("serving receipt summary identity or fields are malformed")
-            checks.append({
-                "keep_count": len(members),
-                "bench_gain_pct": float(planner["compounded_bench_pct"]),
-                "serving_gain_pct": float(body["effect_pct"]),
-                "serving_floor_pct": (float(planner["serving_floor_pct"])
-                                      if _finite_number(planner.get("serving_floor_pct")) else None),
-                "decisive": body["decisive"], "outcome": body.get("outcome"),
-                "evidence": str(path),
-            })
-        except (OSError, TypeError, ValueError, UnicodeError, json.JSONDecodeError) as exc:
-            # A malformed optional check cannot erase a readable accumulator,
-            # but neither may it disappear.  Count/name the bounded failure so
-            # the plot distinguishes no check from a broken check receipt.
-            check_errors.append({"evidence": str(path), "reason": str(exc)[:256]})
-    # Two paths can retain byte-equivalent/re-exported checks.  Plot the
-    # scientific point once while retaining distinct repeated measurements.
-    unique_checks = {}
-    for row in checks:
-        key = (row["keep_count"], row["bench_gain_pct"], row["serving_gain_pct"],
-               row["serving_floor_pct"], row["decisive"], row["outcome"])
-        unique_checks.setdefault(key, row)
-    checks = sorted(unique_checks.values(), key=lambda row: (
-        row["keep_count"], row["serving_gain_pct"], row["evidence"]))
-    bench = [{"keep_count": row["keep_count"], "gain_pct": row["bench_gain_pct"],
-              "evidence_state": "cheap_screen_estimate", "evidence": row["evidence"]}
-             for row in checks]
-    if _finite_number(bundle.get("compounded_bench_pct")):
-        final = {"keep_count": len(keeps),
-                 "gain_pct": float(bundle["compounded_bench_pct"]),
-                 "evidence_state": ("cheap_screen_estimate"
-                                    if bundle.get("measurement_validity") == "current_snapshot"
-                                    else "stale_estimate"),
-                 "evidence": evidence}
-        bench = [row for row in bench if row["keep_count"] != len(keeps)] + [final]
-        bench.sort(key=lambda row: row["keep_count"])
-
-    references = unavailable["references"].copy()
-    champion = read_champion(root).get("body")
-    if isinstance(champion, dict):
-        measured = (champion.get("champion") or {}).get("commit")
-        effect = champion.get("effect_fraction")
-        if (isinstance(measured, str) and (measured.startswith(cor) or cor.startswith(measured))
-                and _finite_number(effect) and float(effect) > -1.0
-                and champion.get("metric_direction") == "higher_better"):
-            references.update({
-                "production_pct": (1.0 / (1.0 + float(effect)) - 1.0) * 100.0,
-                "production_state": "direct_measurement",
-                "production_detail": "derived only from the exact CoR-vs-production direct A/B",
-            })
-
-    return {
-        "schema": TRAJECTORY_SCHEMA, "state": "available",
-        "detail": ("cumulative points are producer-measured retained-bundle checkpoints; "
-                   "gaps are not filled by multiplying marginal keeps"),
-        "evidence": evidence, "basis": "gain_pct_vs_champion_of_record",
-        "champion_of_record": cor, "tip": tip, "keeps": keep_rows,
-        "bench_checkpoints": bench,
-        "serving_checks": [{**row, "evidence_state":
-                            ("serving_verified" if row["decisive"]
-                             else "serving_inconclusive")} for row in checks],
-        "serving_evidence_errors": check_errors,
-        "references": references,
-    }
+        pass
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        local.update({"state": "malformed", "detail": str(exc)[:256]})
+    return {"schema": TRAJECTORY_SCHEMA, "production_headline": headline,
+            "campaign_drilldown": local}
 
 
 def knowledge_snapshot(root: Optional[Path] = None, *,
@@ -2258,8 +2296,9 @@ def knowledge_snapshot(root: Optional[Path] = None, *,
         "groups": _knowledge_groups(body["dispositions"]) if body else None,
         "recent_kept": body["recent_kept"] if body else None,
         "recorded_window": body["recorded_window"] if body else None,
-        "improvement_trajectory": (improvement_trajectory(canonical_root, body.get("rows") or [])
-                                   if body else None),
+        "improvement_trajectory": (
+            improvement_trajectory(canonical_root, body.get("trajectory_rows") or [])
+            if body else None),
         # None — never an empty walk — when the store is unreadable: a ledger
         # of zero levers over a missing store would claim the planner has
         # thought about nothing.
