@@ -1,0 +1,234 @@
+diff --git a/MEASUREMENT.md b/MEASUREMENT.md
+--- a/MEASUREMENT.md
++++ b/MEASUREMENT.md
+@@ -111,6 +111,19 @@
+   spec none is optimal) [P-BENCH-1, n=5, 2026-07-31, attest …]`
+   ❌ `frontdoor decode 24.92 tok/s, spec-dec off` (no category; reads as a headline,
+   is a BASELINE)
++- **Instrument class (required)**: every reported measurement declares exactly one of
++  `instrument_class=serving` · `instrument_class=bench`. An **absolute** number — a headline, a
++  rate, an operating-point or a capacity claim — may be quoted only from the `serving` class, the
++  instrument running the role's registered production recipe. A `bench` number is admissible for
++  build-vs-build A/B **on its own surface** and is **inadmissible as an absolute headline**. A
++  comparison whose two sides carry different classes is **REFUSED, not caveated**. Normative text
++  and evidence: **INSTRUMENT-CLASS-1** (appendix).
++  ❌ `champion single-stream GPU decode 31.0 tok/s` — a `tg128` bench figure quoted as a rate; the
++  production recipe measured 79.25 tok/s on the same build the same day (2.5× understatement)
++- **Null declarations (required)**: *"no effect"* unqualified is not a permitted claim. A negative
++  result states the effect sizes its power excludes AND cites a positive control, asserted in both
++  directions, proving the mechanism reached the system under test. Lacking either, the result is
++  recorded as `untested` and is not a negative. Normative text: **BOUNDED-NULL-1** (appendix).
+ - Per-protocol grammar extensions (e.g. `P-PAIRED` verdict rows, `P-SHED-1` f/stress fields)
+   are defined in each protocol's annex entry.
+ 
+@@ -124,6 +137,14 @@
+ | Host-throttle signature | multi-day uptime −60%+; drop_caches+rewarm restores | `feedback_host_throttle_check` |
+ | Practical BW anchor | 460 GB/s aggregate; 4.79 GB/s/thread | roofline findings.md |
+ | Tool-use sentinel resolution | 0.2 (n=5); advisory band −0.2..−2.9; hard-fail ≤ −3.0 | safety_gate.py `TOOL_USE_CATASTROPHIC_REGRESSION` |
++| Serving `p95_dev` floor, GPU `qwen3.8-27b-q8-gpu-dflash2-np4`, **unit = process launch** | 6.596% (n=24); n=10 bootstrap spans 4.200–7.821% | `data/ak-r2358-shim-serving-2026-09-08/` |
++| Dispersion by unit, one host one day: within-session (**arm**) / between-session (**process launch**) | sd 0.501% / 2.793% — floor ~13× coarser | `data/inf70-retest1-2026-09-08/` |
++| Between-launch `p95_dev` vs concurrency, np = 1 / 2 / 4 / 8 | 0.44% / 1.60% / 3.33% / 1.82% | `data/ak-champion-maxperf-2026-09-08/` |
++
++**Every row here names its `unit`, or it is not a gate input** (FLOOR-UNIT-1). The six pre-2026-09-08
++rows do not yet carry one: they are retained exactly as written and MUST NOT be substituted for a
++floor at a different unit until each is re-derived with its unit recorded. Re-deriving them is
++measurement debt, not a licence to guess which unit was meant.
+ 
+ ## 5. Governance
+ 
+@@ -255,6 +276,16 @@
+ 
+ ## CHANGELOG
+ 
++- **2026-09-08 (v2.x)** — AMENDMENT: three appendix blocks ratified as ONE decision out of the
++  2026-09-08 champion / R23-58 / INF-70 campaign — **INSTRUMENT-CLASS-1** (a bench-surface number is
++  never a serving number), **FLOOR-UNIT-1** (a floor carries its unit; n=10 on a tail statistic cannot
++  gate), **BOUNDED-NULL-1** (a null states its power and proves its knob fired). §3 gains two required
++  declarations (`instrument_class`, and the two fields a null must carry); §4 gains three measured rows
++  and the rule that a floor row without a `unit` is not a gate input. INSTRUMENT-CLASS-1 **extends**
++  the §5 promotion clause — which already held that an instrument unable to run the production recipe
++  MUST NOT block promotion — with its converse: such a cell MUST NOT headline either. No existing
++  ratified block is superseded, and no threshold or gate behaviour changes.
++
+ - **2026-08-23 (v2.x)** — AMENDMENT: **Annex D**
+   (`measurement/protocols/determinism-parity.md`) created as a **sixth** annex, filed by instrument
+   class, holding `P-PARITY-1` (greedy-output parity between two decode configurations) and
+@@ -413,3 +444,126 @@
+ they exist to document. The `VERIFIED`/`ASSERTED` column is what makes the drift visible rather than
+ silent.
+ 
++
++## INSTRUMENT-CLASS-1 — a bench-surface number is never a serving number (RATIFIED 2026-09-08)
++
++**Rule.** Every measurement declares exactly one `instrument_class`:
++
++- **`serving`** — the instrument runs the role's registered production recipe: its drafter, its
++  batching, its concurrency, its pinning. **Absolute numbers come from this class and no other** —
++  headlines, rates, operating-point choices, capacity claims.
++- **`bench`** — a kernel A/B surface (`llama-bench` and its kin). Admissible for build-vs-build
++  comparison **on its own surface**, where the absent production machinery cancels between arms.
++  **Inadmissible as an absolute headline, as a rate, and in any cross-surface ratio.**
++
++**A comparison whose two sides carry different classes is REFUSED, not caveated.** No footnote
++repairs it: the two surfaces are not measuring the same system.
++
++**What it cost, measured 2026-09-08** — champion `ef81196d5`, Qwen3.8-27B-Q8_0, MI210. Asked for the
++model's decode rate, this project answered with `llama-bench` `tg128`: **31.0 tok/s**. The
++production-recipe answer, same build, same day, is **79.25 tok/s** — a **2.5× understatement of our
++own system, stated confidently.** The cause is structural rather than a tuning gap: **`llama-bench`
++cannot do speculative decoding at all**, so on a served path with a drafter in it `tg128` was never
++measuring the served configuration. Receipts:
++`epyc-inference-research/data/ak-champion-maxperf-2026-09-08/` (research main `7020bb94`); design
++record `docs/design/champion-max-performance-20260908.md`.
++
++**The A/B is not retracted; its promotion to a rate is.** That same pair (production 29.4 / champion
++31.0, **+5.63%**) remains a valid kernel-vs-kernel comparison inside the `bench` class.
++
++**The class gap is not a constant, so it cannot be corrected away.** On the same day the serving gate
++fired for the first time, over the same six keeps: the `tg128` proxy read **+5.958%** while the
++serving instrument returned *"cannot tell, probably slightly negative"* — **−2.18% at n=10, not
++decisive**. An **11-point** proxy-vs-truth gap that disagrees in **sign** as well as magnitude. A
++calibration factor between the classes would have to be fitted per keep, which is to say there is
++none. Receipt: `epyc-inference-research/data/ak-r2358-shim-serving-2026-09-08/`
++(research main `7020bb94`).
++
++**Relation to §5.** §5 already rules that where an instrument cannot exercise the registered
++production recipe its cells are RECORDED and MUST NOT by themselves block promotion. This block
++supplies the converse and completes that clause: such cells MUST NOT headline either. §5 is
++**extended, not superseded** — a bench cell still records, still reports alongside, and still cannot
++gate.
++
++
++## FLOOR-UNIT-1 — a floor carries its unit, and n=10 on a tail statistic cannot gate (RATIFIED 2026-09-08)
++
++**Rule 1 — `unit` is a required field.** Every floor record writes `unit ∈ {arm, session, process}`
++alongside harness, n, contention model and host state. **A floor with no unit is inadmissible as a
++gate input.** A gate asked to compare an effect against a floor of a different unit **REFUSES** — it
++does not warn, and it does not caveat.
++
++**Rule 2 — a floor intended to gate is calibrated at n ≥ 24, and records `n` and an interval, not a
++point.** `p95` is an extreme order statistic; at n=10 its own sampling distribution is wide enough
++that the point estimate carries no useful precision, and every gate built on it inherits that.
++
++**Why the unit is worth three orders of magnitude.** Measured on one host in one day (INF-70,
++2026-09-08):
++
++| scope of variation | sd | consequence |
++|---|---|---|
++| within-session (**arm**-scoped knob) | **0.501%** | — |
++| between-session (**process launch**-scoped knob) | **2.793%** | floor ~**13× coarser** |
++
++A process-scoped knob faces a floor ~13× coarser than an arm-scoped one. Substituting the arm floor
++for the launch floor sized a transparent-hugepage A/B at **4 sessions per side**; the correct
++session-unit answer is **4,780** — a **1200-fold** error, and one that would have been spent as real
++host hours before the design failed to converge. Receipt:
++`epyc-inference-research/data/inf70-retest1-2026-09-08/` (research `1780fa7b`).
++
++**Why n=10 is not a tight condition.** The standing serving floor for
++`qwen3.8-27b-q8-gpu-dflash2-np4` is recorded as **4.581% at n=10** (it recomputes to **4.494%** from
++its own inputs — a second, smaller reason that record is not load-bearing). The same configuration
++over **n=24** measures **6.596%**, **1.47× wider**. Bootstrap, 20,000 draws of n=10 from those 24:
++median **6.258%**, 5th–95th percentile **4.200%–7.821%**, and only **9.0%** of draws land at or below
++the standing value. Receipt: `epyc-inference-research/data/ak-r2358-shim-serving-2026-09-08/`
++(research main `7020bb94`).
++
++**Scope limit, binding.** Two conditions differ between those two calibrations (build and window), so
++**the 1.47× is NOT a measured degradation of the host** and must never be reported as one. What is
++established is the instability of the *estimator*, which is a property of n=10 and holds whichever of
++the two conditions moved.
++
++**Grade.** This block adds two required fields and a calibration size. It changes no threshold and
++re-verdicts nothing already decided: floors already in force are re-derived under it as measurement
++debt, not invalidated retroactively.
++
++
++## BOUNDED-NULL-1 — a null needs its power and its fired-knob control (RATIFIED 2026-09-08)
++
++**Rule.** *"No effect"* unqualified is not a permitted claim. A negative result states **both**:
++
++1. **Its power** — which effect sizes the design excludes, and at what n. The admissible sentence has
++   the shape *"a large effect is excluded; a small one is not."*
++2. **A positive control proving the mechanism reached the system under test**, asserted in **BOTH
++   directions** — the control must fire where it should and *not* fire where it should not, so that a
++   mislabelled arm cannot pass the check.
++
++**A result missing either is recorded as `untested`. It is not a negative result.**
++
++**The worked case (R23-58, 2026-09-08).** 48 launches, 24 per arm, none discarded; both claims
++returned null (dispersion ratio OFF/ON **0.713**, p = 0.3159; sd(log) ratio 0.918, p = 0.5854). It is
++a *finding* rather than an absence because of two things the design carried:
++
++- **Bound.** At n=24/arm the primary permutation test had **~0.97 power against a 3× dispersion ratio
++  and ~0.69 against 2×**. Unqualified "no effect" was forbidden in writing by the pre-registration,
++  frozen before the first launch.
++- **Control.** All **48** positive-control readbacks fired in both directions: the kernel
++  `THP_enabled` flag read back correct **every time**, with AnonHugePages at **~53% of RSS** in the
++  control arm and **0.0%** in the treatment arm on every one of 24 launches. **The mechanism
++  demonstrably ran and produced nothing.**
++
++Receipt: `epyc-inference-research/data/ak-r2358-shim-serving-2026-09-08/` (research main `7020bb94`) —
++pre-registration, `FROZEN-AT-LAUNCH.sha256`, `launches.jsonl`, `thp_proof.txt`.
++
++**The counterexample is from the same campaign.** INF-70's SYNC-18 was untestable as built: its knob
++only reached a function that no longer gates execution, so *"no effect"* and *"the knob never fired"*
++were indistinguishable in its result table — and they are indistinguishable in **every** result table.
++Only the control separates them. Receipt:
++`epyc-inference-research/data/inf70-retest1-2026-09-08/` (research `1780fa7b`).
++
++**Choose the statistic from the hypothesis' shape.** R23-58 ran as two interleaved, order-balanced
++A/A calibrations rather than a paired A/B, because the available comparator varies the *build* (so a
++same-build environment arm is inexpressible) and its median-contrast statistic is exactly what misses
++a compressed downside tail — the shape the effect under test would have had. A means-only comparator
++can return a null on a real effect, and such a null satisfies neither clause above.
+diff --git a/agents/shared/MEASUREMENT_POLICY.md b/agents/shared/MEASUREMENT_POLICY.md
+--- a/agents/shared/MEASUREMENT_POLICY.md
++++ b/agents/shared/MEASUREMENT_POLICY.md
+@@ -7,6 +7,7 @@
+ ## The claim rule
+ 
+ A decision-gating number = `(metric, protocol-id, n/reps, date, attestation ref)`. A number without a protocol citation is an **observation**: usable for hypotheses, never for keep/revert/deploy/promote/buy/close decisions.
++It also declares its **instrument class** (`bench` | `serving`), and if it is a null it declares its power and its fired-knob control — see *Instrument class, floor unit, and bounded nulls* below.
+ 
+ ## Category — declare one, always
+ 
+@@ -83,6 +84,40 @@
+   folder while the headline sat in the README, and the producers' own `limitations.md` was written,
+   fed to the doc generator, and withheld from publication.
+ 
++## Instrument class, floor unit, and bounded nulls (ratified 2026-09-08)
++
++Three rules, one origin: the 2026-09-08 champion / R23-58 / INF-70 campaign, where each was paid for
++in our own measurements rather than someone else's. Normative text and receipts are the appendix
++blocks **INSTRUMENT-CLASS-1**, **FLOOR-UNIT-1** and **BOUNDED-NULL-1** in `MEASUREMENT.md`; the
++required declarations are in its §3 and the measured rows in its §4. This is the digest.
++
++- **A bench-surface number is never a serving number** (`INSTRUMENT-CLASS-1`). Declare
++  `instrument_class` = `serving` (the registered production recipe — its drafter, batching,
++  concurrency, pinning) or `bench` (a kernel A/B surface). **Absolute numbers come only from
++  `serving`**; a `bench` number is a valid build-vs-build A/B on its own surface and is inadmissible
++  as a headline or a rate. **A cross-class comparison is REFUSED, not caveated.** What learning this
++  cost: asked for the champion's decode rate we quoted `llama-bench` tg128 at **31.0 tok/s** where the
++  production recipe measures **79.25** — a 2.5× understatement of our own system, because
++  `llama-bench` cannot do speculative decoding at all. Nor is the gap a constant to correct for: the
++  same day, the tg128 proxy read **+5.958%** over six keeps while the serving gate returned "cannot
++  tell, probably slightly negative" (**−2.18%, n=10**) — 11 points, and the wrong sign.
++- **A floor carries its `unit`, and n=10 cannot gate** (`FLOOR-UNIT-1`). Every floor record writes
++  `unit ∈ {arm, session, process}` next to harness, n, contention model and host state; a floor with
++  no unit is not a gate input, and a gate facing a cross-unit comparison **refuses**. Measured: arm sd
++  **0.501%** against process-launch sd **2.793%**, so a process-scoped knob faces a ~**13×** coarser
++  floor — and using the arm floor for a launch-scoped knob sized a test at **4 sessions/side** when
++  the answer was **4,780**. Separately, `p95` from n=10 is an extreme order statistic: the standing
++  serving floor (**4.581%**, n=10) measures **6.596%** at n=24, and only **9.0%** of 20,000 bootstrap
++  n=10 draws land at or below the standing value. **Calibrate a gating floor at n ≥ 24, and record
++  `n` and an interval rather than a point.**
++- **A null needs its power AND its fired-knob control** (`BOUNDED-NULL-1`). State the effect sizes
++  your power excludes, and cite a positive control proving the mechanism reached the system under
++  test — asserted in **both** directions, so a mislabelled arm cannot pass. Missing either, the result
++  is `untested`, not a negative. Worked case: R23-58's bounded null carried ~0.97 power against a 3×
++  dispersion ratio, and all 48 positive-control readbacks fired both ways (AnonHugePages ~53% of RSS
++  in the control arm, **0.0%** in the treatment arm). Counter-case from the same campaign: INF-70's
++  SYNC-18, where "no effect" and "the knob never fired" were indistinguishable.
++
+ ## Deterministic replay before regeneration (operator-ratified 2026-07-27)
+ 
+ **If a result can be obtained without running inference — by deterministically rescoring or

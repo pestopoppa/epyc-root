@@ -552,7 +552,7 @@ Tasks:
   8102 (autopilot checkpoints showed the lane returning 0 tokens). Now selects
   from live stack priors (worker_summarize-first) and `[ERROR`-prefixed
   responses fall back to the deterministic summary. Found by the 2026-07-23
-  stack-lineup archaeology ([stack-lineup-dossier-2026-07-23.md](stack-lineup-dossier-2026-07-23.md) §3).
+  stack-lineup archaeology ([stack-lineup-dossier-2026-07-23.md](../archived/stack-lineup-dossier-2026-07-23.md) §3).
 - DONE in `cc401c0`: parallel step executor same-wave burst eligibility now
   reads live warm `worker_*` roles from stack priors, defaults unknown role
   reporting to `worker_general`, and fails closed to sequential execution when

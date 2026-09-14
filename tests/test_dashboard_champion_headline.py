@@ -136,6 +136,14 @@ def real_bundle() -> dict:
     return json.loads(REAL_BUNDLE.read_text(encoding="utf-8"))
 
 
+def expected_gate_treatment(bundle: dict) -> str:
+    """Format the copied producer's treatment without consulting page code."""
+    effect = bundle["headline"]["effect_fraction"]
+    if isinstance(effect, bool) or not isinstance(effect, (int, float)):
+        raise TypeError("real gate headline effect_fraction is not numeric")
+    return f"{effect * 100:+.1f}%"
+
+
 def real_champion() -> dict:
     if not REAL_CHAMPION.is_file():
         raise unittest.SkipTest(
@@ -229,12 +237,13 @@ class _Store(unittest.TestCase):
         target.write_text(body if isinstance(body, str) else json.dumps(body),
                           encoding="utf-8")
 
-    def use_real_bundle(self) -> None:
+    def use_real_bundle(self) -> dict:
         """Copy the REAL emitted bundle in, so its mtime is inside its envelope."""
         source = real_bundle()
         target = self.root / "operator_gate_bundle.json"
         target.write_text(json.dumps(source), encoding="utf-8")
         S.OPERATOR_GATE_BUNDLE_JSON = target
+        return source
 
     def use_bundle_with_commit(self, commit: str) -> None:
         """The REAL emitted bundle, re-pointed at ``commit`` — for driving the
@@ -838,7 +847,7 @@ class GateScopeRelationship(_Store):
 # The rendered page
 # --------------------------------------------------------------------------- #
 @unittest.skipIf(shutil.which("node") is None, "node is not installed")
-class Rendering(_Store):
+class RetiredHeadlineRendering:
     """Executes the real page JS. Stubs are not a browser: this proves the
     render path emits the content, not that the page looks right."""
 
@@ -1020,7 +1029,8 @@ class Rendering(_Store):
         """THE defect, in one assertion. Both cards carry a large percentage;
         each must name its own anchor, its own producer and its own question."""
         self.write_loop(recorded_loop())
-        self.use_real_bundle()
+        source = self.use_real_bundle()
+        treatment = expected_gate_treatment(source)
         self.write_champion(self.bundle())
         out = self._render()
         champ = self._text(out["by_id"]["champ"])
@@ -1034,8 +1044,8 @@ class Rendering(_Store):
         # satisfied by the branch name and stayed green through a mutation that
         # dropped the anchor entirely. The key has to be the claim, not a
         # substring that happens to co-occur with it.
-        self.assertIn("+48.9%", gate)
-        anchor = real_bundle()["production_anchor"]["commit"][:12]
+        self.assertIn(treatment, gate)
+        anchor = source["production_anchor"]["commit"][:12]
         self.assertIn(f"the frozen production kernel {anchor}", gate)
         self.assertNotIn("an anchor this bundle does not name", gate)
         # ...and says which commit it measured. Its relationship to the current
@@ -1045,12 +1055,12 @@ class Rendering(_Store):
         # commit a PARENT of the champion. In this fixture the champion tree is
         # deliberately unresolvable, so the honest verdict is "cannot say" —
         # the four computed verdicts are executed in GateScopeRelationship.
-        self.assertIn(real_bundle()["champion"]["commit"][:12], gate)
+        self.assertIn(source["champion"]["commit"][:12], gate)
         self.assertIn("cannot be established", gate)
         self.assertNotIn("a different tree", gate)
         # The champion card does not carry the gate bundle's figure at all.
-        self.assertNotIn("+48.9%", champ)
-        self.assertNotIn("48.9", champ)
+        self.assertNotIn(treatment, champ)
+        self.assertNotIn(treatment.lstrip("+-").removesuffix("%"), champ)
 
     def test_the_gate_cards_measured_points_carry_BOTH_arms(self):
         """A `delta_pct` with no baseline beside it is the headline defect one
@@ -1245,44 +1255,39 @@ class Rendering(_Store):
         self.assertIn("must never be summed", self.block()["not_composable"])
         self.assertIn("must not be summed", self._text(out["by_id"]["recent"]))
 
-    def test_the_capabilities_live_in_a_collapsed_accordion(self):
-        """Operator note (b), 2026-08-31: a `<details>` titled "Champion
-        Capabilities", COLLAPSED by default (no `open` attribute), the entries
-        unchanged inside it, and the evidence/run-record footer lines inside
-        it too — and nowhere else on the card."""
+    def test_the_capabilities_live_in_the_dedicated_support_card(self):
+        """The unified trajectory is followed by a visible capabilities card."""
         self.write_loop(recorded_loop())
         self.write_champion(self.bundle(capabilities=[
             {"name": "FlashAttention2 on gfx90a", "evidence": "gate fa2_supported"},
             "iqk IQ4_XS coverage",
         ]))
-        html = self._render()["by_id"]["champ"]
-        m = re.search(r'<details class="ch-acc"([^>]*)>(.*?)</details>', html,
-                      re.S)
-        self.assertIsNotNone(m, "no capabilities accordion rendered")
-        self.assertNotIn("open", m.group(1),
-                         "the accordion must render collapsed by default")
-        inner = m.group(2)
-        self.assertIn("<summary>Champion Capabilities", inner)
+        payload = S.loop_payload()
+        payload["champion_vs_production"]["capabilities"] = {
+            "known": True, "source": "test attributed record", "items": [
+                {"name": "FlashAttention2 on gfx90a", "evidence": "gate fa2_supported"},
+                {"name": "iqk IQ4_XS coverage", "evidence": None},
+            ]}
+        original = S.loop_payload
+        S.loop_payload = lambda: payload
+        try:
+            out = self._render()
+        finally:
+            S.loop_payload = original
+        inner = out["by_id"]["champion-capabilities"]
         for entry in ("FlashAttention2 on gfx90a", "gate fa2_supported",
                       "iqk IQ4_XS coverage"):
             self.assertIn(entry, inner, "an entry fell out of the accordion")
-        self.assertIn("evidence:", inner,
-                      "the evidence footer did not move into the accordion")
-        outside = html.replace(m.group(0), " ")
-        self.assertNotIn("FlashAttention2 on gfx90a", outside,
+        self.assertIn("source:", inner)
+        self.assertNotIn("FlashAttention2 on gfx90a", out["by_id"]["champ"],
                          "a capability entry also renders outside the accordion")
-        self.assertNotIn("evidence:", outside,
-                         "an evidence footer also renders outside the accordion")
 
-    def test_the_unknown_capability_state_is_visible_on_the_collapsed_summary(self):
-        """Collapsing must not hide "nobody has said" behind a heading that
-        implies a list exists: UNKNOWN rides on the summary line itself."""
+    def test_the_unknown_capability_state_is_visible_in_the_support_card(self):
+        """The visible card must distinguish unknown from an empty list."""
         self.write_loop(recorded_loop())
         self.write_champion(self.bundle())
-        html = self._render()["by_id"]["champ"]
-        m = re.search(r'<summary>(.*?)</summary>', html, re.S)
-        self.assertIsNotNone(m)
-        self.assertIn("UNKNOWN", m.group(1))
+        html = self._render()["by_id"]["champion-capabilities"]
+        self.assertIn("UNKNOWN", html)
 
     def test_the_scope_lines_relationship_is_computed_not_worded(self):
         """Operator note (c), executed: four verdicts, four renderings, driven
@@ -1317,7 +1322,7 @@ class Rendering(_Store):
                          "two relationship states rendered identically")
 
 
-class GateCardCompact(Rendering):
+class RetiredGateCardCompact(RetiredHeadlineRendering):
     """Operator, 2026-08-31: "I'm still seeing stale looking cards." The
     operator-gated card is now ONE always-visible summary line — every value
     from the payload — with everything else inside a collapsed <details>.
@@ -1365,7 +1370,7 @@ class GateCardCompact(Rendering):
 
     def test_the_evidence_is_collapsed_by_default_and_nothing_is_deleted(self):
         self.write_loop(recorded_loop())
-        self.use_real_bundle()
+        source = self.use_real_bundle()
         html = self._card()
         m = re.search(r'<details class="og-details"([^>]*)>(.*?)</details>\s*$',
                       html, re.S)
@@ -1386,8 +1391,8 @@ class GateCardCompact(Rendering):
         self.assertNotIn("evidence:", outside)
         # ...while the summary stays visible: number, anchor, authority badge.
         text = self._text(outside)
-        self.assertIn("+48.9%", text)
-        anchor = real_bundle()["production_anchor"]["commit"][:12]
+        self.assertIn(expected_gate_treatment(source), text)
+        anchor = source["production_anchor"]["commit"][:12]
         self.assertIn(f"the frozen production kernel {anchor}", text)
         self.assertIn("operator-gated · no promotion authority", text)
 
@@ -1415,6 +1420,45 @@ class GateCardCompact(Rendering):
                       "a superseded figure painted as a live gain")
 
 
+class CurrentLayoutRendering(_Store):
+    """The trajectory owns the headline; the old scalar hero is gone."""
+
+    def _page_js(self) -> str:
+        return "\n".join(re.findall(
+            r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>",
+            PAGE.read_text(encoding="utf-8"), re.S))
+
+    def _render(self) -> dict:
+        self.write_loop(recorded_loop())
+        self.write_champion(self.bundle(capabilities=[
+            {"name": "FlashAttention2 on gfx90a", "evidence": "gate fa2_supported"},
+        ]))
+        tmp = Path(tempfile.mkdtemp(prefix="champ-render-current-"))
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        (tmp / "page.js").write_text(self._page_js(), encoding="utf-8")
+        payload = S.loop_payload()
+        payload["champion_vs_production"]["capabilities"] = {
+            "known": True,
+            "source": "test attributed record",
+            "items": [{"name": "FlashAttention2 on gfx90a",
+                       "evidence": "gate fa2_supported"}],
+        }
+        (tmp / "payload.json").write_text(json.dumps(payload), encoding="utf-8")
+        proc = subprocess.run(
+            ["node", str(HARNESS), str(tmp / "page.js"), str(tmp / "payload.json")],
+            capture_output=True, text=True, timeout=60)
+        self.assertTrue(proc.stdout.strip(), proc.stderr[:400])
+        out = json.loads(proc.stdout)
+        self.assertEqual(out["threw"], [])
+        return out
+
+    def test_capabilities_render_without_the_retired_scalar_hero(self):
+        out = self._render()
+        self.assertIn("FlashAttention2 on gfx90a", out["by_id"]["champion-capabilities"])
+        self.assertNotIn("champ", out["by_id"])
+        self.assertNotIn("tiles", out["by_id"])
+
+
 class Wiring(unittest.TestCase):
 
     def test_the_registry_row_advertises_the_headline(self):
@@ -1425,20 +1469,23 @@ class Wiring(unittest.TestCase):
         self.assertIn("champion headline", blurb)
         self.assertIn("frozen production kernel", blurb)
 
-    def test_the_page_declares_the_headline_section_and_reads_it(self):
+    def test_the_page_declares_the_trajectory_and_capability_surfaces(self):
         html = PAGE.read_text(encoding="utf-8")
-        for element in ("sec-champion", "champ", "champ-badge", "champ-badgetxt"):
+        for element in ("sec-trajectory", "champion-capabilities"):
             self.assertIn(f'id="{element}"', html, element)
+        for retired in ("champ", "tiles", "champ-badge", "champ-badgetxt",
+                        "champ-scope", "sec-champion"):
+            self.assertNotIn(f'id="{retired}"', html)
 
     def test_the_headline_is_the_first_section_on_the_page(self):
         """Position is part of the ruling: nothing competes for this slot."""
         html = PAGE.read_text(encoding="utf-8")
         body = html[html.index("<main>"):]
         first = re.search(r'<section id="([a-z-]+)"', body)
-        self.assertEqual(first.group(1), "sec-champion")
-        self.assertLess(body.index('id="sec-champion"'),
+        self.assertEqual(first.group(1), "sec-trajectory")
+        self.assertLess(body.index('id="sec-trajectory"'),
                         body.index('id="sec-opgate"'),
-                        "the operator-gated card outranks the champion headline")
+                        "the operator-gated card outranks the champion trajectory")
 
 
 if __name__ == "__main__":

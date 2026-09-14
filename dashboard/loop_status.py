@@ -50,16 +50,18 @@ freshness envelope that is the entire point of the envelope.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
 import re
 import sqlite3
+import stat
 import subprocess
 import time
-from typing import Any, Mapping, Optional
+from typing import Any, Iterable, Mapping, Optional
 
-from dashboard import panels
+from dashboard import campaign_status, panels
 
 #: The producer's schema string. A body carrying anything else is not this
 #: contract and is refused as malformed rather than rendered on a page whose
@@ -102,7 +104,7 @@ ABSENCE_MEANS = (
 #: Dispositions that mean a candidate actually reached the instrument. Mirrors
 #: the producer's ``measurements_reached`` fold; kept here only to split the
 #: rest out as NEGATIVES for the page.
-MEASURED_DISPOSITIONS = ("kept", "measured_null")
+MEASURED_DISPOSITIONS = ("kept", "measured_null", "runtime_observed")
 
 #: The producer's OWN names first, then the shorter spellings this reader also
 #: accepts. Getting this list wrong is not a cosmetic fault: it was wrong from
@@ -140,9 +142,9 @@ RUN_STATES = (RUN_STARTING, RUN_RUNNING, RUN_COMPLETE, RUN_FAILED)
 #: ``failed`` to degraded explicitly) and the page must not make it either.
 #:
 #: So lifecycle and freshness are folded into ONE banner key here, server-side,
-#: where a test can execute it. The freshness badge keeps the four-valued
-#: vocabulary untouched; this is a second, orthogonal axis, never a fifth
-#: freshness state.
+#: where a test can execute it. Raw freshness keeps its four-valued vocabulary;
+#: the terminal-aware badge presents the declared end beside the retained age,
+#: never a fifth freshness state or a newly fresh heartbeat.
 NOTICE_ABSENT = "absent"
 NOTICE_MALFORMED = "malformed"
 NOTICE_STALE = "stale"
@@ -268,12 +270,15 @@ def freshness(report: Mapping[str, Any], *, now: Optional[float] = None) -> dict
                                "treated as undated rather than as fresh")}
         age = 0.0
     fresh = age <= budget
+    terminal = body.get("state") in (RUN_COMPLETE, RUN_FAILED)
     return {
         "state": STATE_FRESH if fresh else STATE_STALE,
         "age_s": round(age, 1),
         "stale_after_s": budget,
         "generated_at": stamped,
-        "detail": ("current" if fresh else
+        "detail": (f"final report, {age / 60:.1f} min old; the producer declared "
+                   f"state={body['state']}, so no further heartbeat is expected"
+                   if terminal else "current" if fresh else
                    f"last heard from the loop {age / 60:.1f} min ago, past its "
                    f"own {budget / 60:.0f} min envelope — the reading below is "
                    "the loop's LAST report, not its current state"),
@@ -326,6 +331,19 @@ def notice(report: Mapping[str, Any], fresh: Mapping[str, Any]) -> dict:
         return {"kind": NOTICE_STALE, "run_state": run_state,
                 "detail": fresh.get("detail")}
     return {"kind": NOTICE_NONE, "run_state": run_state, "detail": None}
+
+
+def display_step(report: Mapping[str, Any], fresh: Mapping[str, Any]) -> str | None:
+    """Presentation only; retain the producer's original last step in the body."""
+    lifecycle = notice(report, fresh)
+    if lifecycle["kind"] in (NOTICE_ABSENT, NOTICE_MALFORMED):
+        return None
+    if lifecycle["kind"] in (NOTICE_FINISHED, NOTICE_FAILED):
+        return f"Run {lifecycle['run_state']} — final report"
+    step = (report.get("body") or {}).get("step")
+    if not isinstance(step, str) or not step:
+        return None
+    return f"Last reported step: {step}" if fresh["state"] == STATE_STALE else step
 
 
 def _gpu(body: Mapping[str, Any]) -> dict:
@@ -434,6 +452,12 @@ def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
         return panels.Observation(
             artifact_present=True, timestamp=None, source=state,
             detail=fresh.get("detail"), evidence=report.get("path"))
+    watermark = (f"{state}|{body.get('iterations_done')}|"
+                 f"{body.get('measurements_reached')}|{body.get('champion_head')}")
+    if body.get("campaign_id") == "legacy-serial" and body.get("surface") == "serial_targets":
+        routing = body.get("routing") if isinstance(body.get("routing"), dict) else {}
+        active = body.get("target") if isinstance(body.get("target"), dict) else {}
+        watermark = f"{state}|{routing.get('next_batch')}|{active.get('pid')}|{active.get('batch_dir')}"
     return panels.Observation(
         artifact_present=True,
         timestamp=timestamp,
@@ -441,8 +465,7 @@ def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
         populated=bool(body.get("iterations_done")),
         detail=fresh.get("detail"),
         evidence=report.get("path"),
-        watermark=(f"{state}|{body.get('iterations_done')}|"
-                   f"{body.get('measurements_reached')}|{body.get('champion_head')}"),
+        watermark=watermark,
         # A loop that has DECLARED it finished is allowed to be silent. A loop
         # that declared it FAILED is not treated as idle here: its silence is
         # expected, but so is an operator being told about it, and the data
@@ -450,6 +473,44 @@ def observation(report: Mapping[str, Any], fresh: Mapping[str, Any]
         producer_idle=(state == "complete"),
         silence_budget_s=_budget(body),
     )
+
+
+def campaign_observation(campaign: Mapping[str, Any],
+                         legacy: panels.Observation) -> panels.Observation:
+    """Use the configured unified producer for health; otherwise retain legacy."""
+    if not campaign.get("configured"):
+        return legacy
+    body = campaign.get("campaign")
+    if body is None:
+        if campaign.get("state") == "absent":
+            return panels.absent(
+                panels.source("autokernel_loop"),
+                "an explicitly configured unified campaign has no snapshot")
+        return panels.Observation(
+            artifact_present=True, timestamp=None, source="campaign-malformed",
+            detail=campaign.get("error"), evidence=campaign.get("evidence"))
+    state = campaign.get("state")
+    runtime_detail = (campaign.get("runtime_freshness") or {}).get("reason")
+    if state not in {"live", "history"}:
+        return panels.Observation(
+            artifact_present=True, timestamp=None, source=f"campaign-{state}",
+            detail=runtime_detail or (campaign.get("health") or {}).get("reason"),
+            evidence=campaign.get("evidence"))
+    terminal = body.get("observed_state") == "drained"
+    if state == "history" and not terminal:
+        return panels.Observation(
+            artifact_present=True, timestamp=None, source="campaign-history",
+            detail="campaign snapshot is history without a live matching producer",
+            evidence=campaign.get("evidence"))
+    heartbeat = _stamp_epoch(body.get("producer_heartbeat_at"))
+    return panels.Observation(
+        artifact_present=True, timestamp=heartbeat,
+        source=f"campaign-{body.get('observed_state')}", populated=True,
+        detail=(campaign.get("health") or {}).get("reason"),
+        evidence=campaign.get("evidence"),
+        watermark=(f"{body.get('stream_epoch')}|{body.get('sequence')}|"
+                   f"{body.get('journal_cursor')}|{body.get('control_revision')}"),
+        producer_idle=terminal, silence_budget_s=180.0)
 
 
 # --------------------------------------------------------------------------- #
@@ -855,6 +916,8 @@ def opgate_subject_verdict(measured: Optional[str], anchor: Optional[str],
 
 CHAMPION_SCHEMA = "epyc.autokernel.champion_vs_production.v1"
 CHAMPION_FILENAME = "champion-vs-production.json"
+CHAMPION_CAPABILITIES_SCHEMA = "epyc.autokernel.champion_capabilities.v1"
+CHAMPION_CAPABILITIES_FILENAME = "champion-capabilities.json"
 #: A cumulative A/B is a deliberate, expensive act, not a per-iteration beat, so
 #: the envelope is days rather than minutes. The producer still owns the number
 #: inside the same clamps every other contract on this page is held to.
@@ -921,7 +984,8 @@ CHAMPION_CAPABILITIES_UNKNOWN = (
     "directory has no CMakeCache).")
 
 CHAMPION_CAPABILITIES_WOULD_POPULATE = (
-    "a `capabilities` array in the champion-vs-production bundle: one entry per "
+    "a separately attributed champion-capabilities.json record, or a "
+    "`capabilities` array in the champion-vs-production bundle: one entry per "
     "capability, each naming the evidence that establishes it (the commit, the "
     "gate, or the artifact). Typed here by hand it would be a memory, not a "
     "measurement.")
@@ -1060,7 +1124,101 @@ def champion_freshness(report: Mapping[str, Any], *,
     }
 
 
-def _champion_capabilities(body: Optional[Mapping[str, Any]]) -> dict:
+def _read_champion_capability_record(path: Path, champion: Optional[Mapping[str, Any]], *,
+                                     schema: str = CHAMPION_SCHEMA) -> Optional[dict]:
+    """Read bounded attributed evidence; lineage never substitutes for a build check."""
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, "rb") as stream:
+            before = os.fstat(stream.fileno())
+            if not stat.S_ISREG(before.st_mode) or before.st_size > 262144:
+                return None
+            raw = stream.read(262145)
+            after = os.fstat(stream.fileno())
+        if len(raw) > 262144 or (before.st_dev, before.st_ino, before.st_size,
+                                before.st_mtime_ns, before.st_ctime_ns) != (
+                after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+            return None
+        record = json.loads(raw)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(record, dict) or record.get("schema") != schema:
+        return None
+    independent = schema == CHAMPION_CAPABILITIES_SCHEMA
+    if independent and (set(record) != {"schema", "generated_at", "champion", "capabilities"}
+                        or not isinstance(record["generated_at"], str)):
+        return None
+    source_champion = record.get("champion")
+    measured = source_champion.get("commit") if isinstance(source_champion, dict) else None
+    entries = record.get("capabilities")
+    if not isinstance(measured, str) or not _FULL_SHA.fullmatch(measured) \
+            or _stamp_epoch(record.get("generated_at")) is None \
+            or not isinstance(entries, list) or not 1 <= len(entries) <= 64:
+        return None
+    if independent and (set(source_champion) != {"commit"}
+                        or _stamp_epoch(record["generated_at"]) >
+                        time.time() + panels.FUTURE_SKEW_TOLERANCE_S):
+        return None
+    if any(not isinstance(entry, dict)
+           or any(not isinstance(entry.get(key), str) or not entry[key].strip()
+                  or len(entry[key]) > 8192 for key in ("name", "evidence"))
+           for entry in entries):
+        return None
+    tip = dict(champion) if champion is not None else resolve_champion()
+    if tip.get("resolved") is not True:
+        return None
+    relation = champion_relationship(measured, tree=tip.get("tree"))
+    if relation.get("relation") not in (REL_TIP, REL_ANCESTOR) \
+            or relation.get("current_champion") != tip.get("commit"):
+        return None
+    return {
+        "known": True,
+        "source": (f"{'Attributed' if independent else 'Historical'} capability record "
+                   f"{path}, {record['generated_at']}, "
+                   f"{'attributed to' if independent else 'measured'} {measured[:12]}; "
+                   f"{relation['relation']} of champion "
+                   f"{str(tip['commit'])[:12]}. Original verification, not a fresh build check."),
+        "items": [{"name": entry["name"], "evidence": entry["evidence"]} for entry in entries],
+        "unknown_reason": None, "would_populate": None,
+        "historical": True, "record_path": str(path),
+        "record_sha256": hashlib.sha256(raw).hexdigest(),
+        "generated_at": record["generated_at"],
+        ("attributed_commit" if independent else "measured_commit"): measured,
+        "current_champion": tip["commit"], "lineage": relation,
+    }
+
+
+def _historical_champion_capabilities(root: Optional[Path],
+                                     champion: Optional[Mapping[str, Any]]) -> Optional[dict]:
+    path = (store_root() if root is None else Path(root)) / (CHAMPION_FILENAME + ".pre-reconcile")
+    return _read_champion_capability_record(path, champion)
+
+
+def _champion_capabilities(body: Optional[Mapping[str, Any]], *,
+                           root: Optional[Path] = None,
+                           champion: Optional[Mapping[str, Any]] = None) -> dict:
+    """Merge independently attributed capabilities without modifying the numeric A/B."""
+    existing = _bundle_capabilities(body, root=root, champion=champion)
+    path = (store_root() if root is None else Path(root)) / CHAMPION_CAPABILITIES_FILENAME
+    declared = _read_champion_capability_record(
+        path, champion, schema=CHAMPION_CAPABILITIES_SCHEMA)
+    if declared is None:
+        return existing
+    records = [declared]
+    if existing["known"]:
+        records.append(existing)
+    # Identical entries need appear only once; differing evidence remains visible.
+    items = {(item["name"], item["evidence"]): item
+             for record in records for item in record["items"]}
+    return {**declared, "items": list(items.values()),
+            "source": "; ".join(record["source"] for record in records),
+            "records": [{key: value for key, value in record.items() if key != "items"}
+                        for record in records]}
+
+
+def _bundle_capabilities(body: Optional[Mapping[str, Any]], *,
+                           root: Optional[Path] = None,
+                           champion: Optional[Mapping[str, Any]] = None) -> dict:
     """The capability list, or an honest "nobody has said" with the reason.
 
     Entries are the producer's, verbatim: ``{"name", "evidence"}``. Nothing is
@@ -1071,6 +1229,10 @@ def _champion_capabilities(body: Optional[Mapping[str, Any]]) -> dict:
     out = {"known": False, "source": None, "items": [],
            "unknown_reason": CHAMPION_CAPABILITIES_UNKNOWN,
            "would_populate": CHAMPION_CAPABILITIES_WOULD_POPULATE}
+    if body is None or "capabilities" not in body:
+        historical = _historical_champion_capabilities(root, champion)
+        if historical is not None:
+            return historical
     raw = body.get("capabilities") if body is not None else None
     if not isinstance(raw, (list, tuple)):
         if body is not None and raw is not None:
@@ -1277,7 +1439,7 @@ def champion_snapshot(root: Optional[Path] = None, *,
         "pairs": (body or {}).get("pairs"),
         "noise_floor_pct": (body or {}).get("noise_floor_pct"),
         "measurement_evidence": (body or {}).get("evidence"),
-        "capabilities": _champion_capabilities(body),
+        "capabilities": _champion_capabilities(body, root=root, champion=tip),
         "absence_means": CHAMPION_ABSENCE_MEANS,
         "would_populate": _champion_would_populate(path, prod),
         "not_composable": CHAMPION_NOT_COMPOSABLE,
@@ -1307,6 +1469,51 @@ KNOWLEDGE_STALE_AFTER_S = 86400.0
 
 #: How many of the most recent keeps are named on the card, with their effects.
 KNOWLEDGE_RECENT_KEPT = 5
+
+#: Production-relative history is admitted only by joining the loop's raw
+#: direct-A/B receipt to both ledger rows emitted by the same refresh.  The
+#: reason grammar is producer-owned (`loop.production.Refresh.to_attempt`).
+TRAJECTORY_SCHEMA = "epyc.dashboard.autokernel_improvement_trajectory.v3"
+HISTORICAL_TRAJECTORY_SCHEMA = "epyc.autokernel.historical_trajectory.v1"
+HISTORICAL_TRAJECTORY_FILENAME = "historical-trajectory.json"
+TRAJECTORY_MAX_POINTS = 128
+TRAJECTORY_RAW_MAX_BYTES = 256 * 1024
+TRAJECTORY_KEEP_MAX = 1024
+MANUAL_KEEP_HISTORY = Path(__file__).with_name("data") / "autokernel-manual-retained-history.v1.json"
+# The original tg128 campaign predates model identity in experiment payloads.
+# Its exact retained commit set is joined to the contemporaneous run record,
+# rather than guessed from a later checkpoint that happens to share a commit.
+_LEGACY_DEEPSEEK_KEEP_COMMITS = frozenset({
+    "61d007867c43cc80ff9c54290a5a45b06b3fa900",
+    "5582ebccfc0cd901e69209277a0c004ae52150d4",
+    "042cb2e41e3886f5498d761d21e6de22064142f8",
+    "bbbce33c8b92d5889d14000b8970c8d6968c0e2d",
+    "2a52f805f0e6234bce0a9ebb21d9bfbee7eb7192",
+    "b04fad244cd69da363c6e5267f145fd0fe3e14cc",
+    "b65e4c524102ef8efb9f0c1c5f8fe5c0f3953e7a",
+    "432e501ff8631efb2f0684ae06285eb658ab8cbd",
+    "63e15dfb99e1b0f8855540106bf19e6c4f1f8f18",
+    "5c68bf1261ca499771c69b488472c1954f3bf6cf",
+    "f972b93b803501eb2f0a02f4a3a501dce0aed1e4",
+    "80f399b706111b9af6079c812aaffdf92b4794d3",
+    "9a115b947292755d2fadd46535762597f0526514",
+    "6e231b07c58d4716fa65d4ac7c8505b36b410ba1",
+    "55101b7e354786f4f26192acdf115bc828016573",
+    "5ad3e36dfb3acc9eda3dd3d5e137dce69a629cdd",
+    "dd161d519d07c0012ab95be6627f1ff63f9383cf",
+    "4925b2084accf03776dddc4931957f06b3d32a77",
+    "732389d6d9d08338fe2ad2457bf8f44205914a7f",
+})
+_LEGACY_DEEPSEEK_MODEL = "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M"
+_LEGACY_DEEPSEEK_RUN_EVIDENCE = "/mnt/raid0/llm/tmp/run21.log:2"
+_LEGACY_DEEPSEEK_CONFLICT_EVIDENCE = \
+    "/workspace/progress/2026-09/2026-09-02-ak-rebuild-20260828.md:75"
+_PRODUCTION_REFRESH_REASON = re.compile(
+    r"^champion (?P<champion>[0-9a-f]{12}) measures "
+    r"(?P<effect>[+-][0-9]+(?:\.[0-9]+)?)% against frozen production "
+    r"(?P<baseline>[0-9a-f]{12}) \((?P<label>production-consolidated-[^)]+)\) "
+    r"over (?P<pairs>[1-9][0-9]*) (?P<surface>[A-Za-z0-9_-]+) pairs, "
+    r"floor (?P<floor>[0-9]+(?:\.[0-9]+)?)%$")
 
 #: The dispositions the card names first-class. Everything ELSE in the store is
 #: folded into a no-scientific-verdict bucket that ENUMERATES its members —
@@ -1783,6 +1990,21 @@ def _read_knowledge_once(path: Path) -> dict:
                     f"substr(refusal_reason, 1, {KNOWLEDGE_REASON_CAP + 200}), "
                     "recorded_at, epoch_sha256 FROM experiments "
                     "ORDER BY recorded_at DESC").fetchall()]
+            # Private input to the trajectory fold. These bounded payloads do
+            # not ride the API response; they prove joins to raw receipts.
+            trajectory_rows = [
+                {"mechanism_id": r[0], "status": r[1],
+                 "refusal_reason": r[2], "recorded_at": r[3],
+                 "payload": r[4], "payload_bytes": r[5],
+                 "target_symbol": r[6], "target_surface": r[7],
+                 "statement": r[8], "epoch_sha256": r[9],
+                 "effect_fraction": r[10], "attempt_id": r[11]}
+                for r in cur.execute(
+                    "SELECT mechanism_id, status, refusal_reason, recorded_at, "
+                    "substr(payload, 1, ?), length(payload), target_symbol, target_surface, "
+                    "substr(statement, 1, 2001), epoch_sha256, effect_fraction, attempt_id FROM experiments "
+                    "ORDER BY recorded_at DESC LIMIT 512",
+                    (TRAJECTORY_RAW_MAX_BYTES + 1,)).fetchall()]
         finally:
             con.close()
     except sqlite3.OperationalError:
@@ -1808,6 +2030,7 @@ def _read_knowledge_once(path: Path) -> dict:
         # Internal to the snapshot fold — the ledger consumes these and the
         # wire carries the FOLDED ledger, never 1000 raw rows.
         "rows": ledger_rows,
+        "trajectory_rows": trajectory_rows,
     }
     return {"artifact_present": True, "body": body, "reader_error": None,
             "path": str(path), "mtime": mtime}
@@ -1866,6 +2089,780 @@ def knowledge_freshness(report: Mapping[str, Any], *,
     }
 
 
+def _finite_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) \
+        and float("-inf") < float(value) < float("inf")
+
+
+def _trajectory_json(path: Path) -> Mapping[str, Any]:
+    body = json.loads(_serial_bytes(path, limit=TRAJECTORY_RAW_MAX_BYTES))
+    if not isinstance(body, dict):
+        raise TypeError("trajectory receipt is not a JSON object")
+    return body
+
+
+def _serving_summary(path: Path) -> Mapping[str, Any]:
+    """Read a compact receipt or its identity-checked final 256-KiB summary."""
+    try:
+        return _trajectory_json(path)
+    except ValueError as exc:
+        if "bounded nonempty regular file" not in str(exc):
+            raise
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    with os.fdopen(fd, "rb") as stream:
+        before = os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or before.st_size <= TRAJECTORY_RAW_MAX_BYTES:
+            raise ValueError("serving receipt is not a large regular file")
+        stream.seek(-TRAJECTORY_RAW_MAX_BYTES, os.SEEK_END)
+        tail = stream.read(TRAJECTORY_RAW_MAX_BYTES)
+        after = os.fstat(stream.fileno())
+    if ((before.st_dev, before.st_ino, before.st_mtime_ns, before.st_size) !=
+            (after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size)):
+        raise ValueError("serving receipt changed while its tail was read")
+    marker = tail.rfind(b'\n  "decisive":')
+    if marker < 0 or not tail.rstrip().endswith(b"}"):
+        raise ValueError("serving receipt has no bounded top-level summary tail")
+    body = json.loads(b"{" + tail[marker + 1:])
+    if not isinstance(body, dict):
+        raise TypeError("serving receipt summary tail is not an object")
+    return body
+
+
+def _model_trajectory_curves(points: Iterable[Mapping[str, Any]]) -> list[dict]:
+    """One model trajectory with selectable non-composed surface variants."""
+    by_model: dict[str, dict[tuple, list[dict]]] = {}
+    for raw in sorted(points, key=lambda p: str(p.get("recorded_at") or "")):
+        point = dict(raw)
+        model = point.get("model") or "model unrecorded"
+        metric = point.get("metric") or point["surface"]
+        backend = point.get("backend") or "backend unrecorded"
+        variant_key = (point["surface"], metric, backend)
+        by_model.setdefault(model, {}).setdefault(variant_key, []).append(point)
+    curves = []
+    for model, variants in sorted(by_model.items()):
+        surfaces = []
+        for (surface, metric, backend), variant_points in sorted(variants.items()):
+            instrument_epochs = []
+            for point in variant_points:
+                baseline = point.get("baseline") or {}
+                identity = (point.get("recipe"), point.get("era"), baseline.get("commit"))
+                if not instrument_epochs or instrument_epochs[-1]["identity"] != identity:
+                    instrument_epochs.append({"identity": identity, "recipe": point.get("recipe"),
+                        "era": point.get("era"), "baseline": baseline,
+                        "starts_at": point.get("recorded_at"), "starts_commit": point["commit"]})
+            for epoch in instrument_epochs:
+                epoch.pop("identity", None)
+            surfaces.append({"id": f"{surface}::{metric}::{backend}", "surface": surface,
+                "metric": metric, "backend": backend, "points": variant_points,
+                "instrument_epochs": instrument_epochs})
+        surfaces.sort(key=lambda item: (-len(item["points"]),
+            0 if item["surface"] == "plain-decode" else 1, item["surface"]))
+        primary = surfaces[0]
+        curves.append({"id": model, "model": model, "primary_surface": primary["surface"],
+            "surface": primary["surface"], "metric": primary["metric"],
+            "backend": primary["backend"], "points": primary["points"],
+            "instrument_epochs": primary["instrument_epochs"], "surface_series": surfaces})
+    return curves
+
+
+def _retained_keep_source(root: Path) -> dict:
+    """Read keeps with the disposition predicate applied before the bound."""
+    path = Path(root) / KNOWLEDGE_DB_FILENAME
+    if not path.is_file():
+        return {"state": "absent", "evidence": str(path), "available_count": 0,
+                "returned_count": 0, "truncated": False, "rows": [],
+                "error": "no experiment store"}
+    try:
+        con = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5.0)
+        try:
+            available = int(con.execute(
+                "SELECT COUNT(*) FROM experiments WHERE status = 'kept'").fetchone()[0])
+            rows = [{"attempt_id": r[0], "recorded_at": r[1], "campaign_id": r[2],
+                "epoch_sha256": r[3], "hypothesis_id": r[4], "mechanism_id": r[5],
+                "target_surface": r[6], "target_symbol": r[7], "statement": r[8],
+                "effect_fraction": r[9], "result_sha256": r[10], "payload": r[11],
+                "payload_bytes": r[12]}
+                for r in con.execute(
+                    "SELECT attempt_id, recorded_at, campaign_id, epoch_sha256, hypothesis_id, "
+                    "mechanism_id, target_surface, target_symbol, substr(statement, 1, 2001), "
+                    "effect_fraction, result_sha256, substr(payload, 1, ?), length(payload) "
+                    "FROM experiments WHERE status = 'kept' ORDER BY recorded_at ASC LIMIT ?",
+                    (TRAJECTORY_RAW_MAX_BYTES + 1, TRAJECTORY_KEEP_MAX)).fetchall()]
+        finally:
+            con.close()
+    except (OSError, sqlite3.Error) as exc:
+        return {"state": "malformed", "evidence": str(path), "available_count": None,
+                "returned_count": 0, "truncated": None, "rows": [], "error": str(exc)[:256]}
+    return {"state": "available", "evidence": str(path), "available_count": available,
+            "returned_count": len(rows), "truncated": available > len(rows), "rows": rows,
+            "error": None}
+
+
+def _retained_keep_history(root: Path, headline: Mapping[str, Any],
+                           active: Optional[Mapping[str, Any]]) -> dict:
+    """Merge exact global keeps with the active campaign's retained bundle."""
+    commit_models = {}
+    for curve in headline.get("curves") or []:
+        for series in curve.get("surface_series") or [curve]:
+            for point in series.get("points") or []:
+                commit_models.setdefault(point.get("commit"), []).append({
+                    "model": curve.get("model"), "surface": point.get("surface"),
+                    "recorded_at": point.get("recorded_at")})
+
+    def event(row: Mapping[str, Any], source_id: str,
+              default_model: Optional[str] = None) -> dict:
+        payload = {}
+        if int(row.get("payload_bytes") or 0) <= TRAJECTORY_RAW_MAX_BYTES:
+            try:
+                candidate = json.loads(row.get("payload") or "{}")
+                payload = candidate if isinstance(candidate, dict) else {}
+            except (TypeError, json.JSONDecodeError):
+                pass
+        # Large measurement payloads place the compact champion identity before
+        # multi-megabyte telemetry. Recover only that complete JSON scalar from
+        # the bounded prefix; never treat a partial payload as parsed JSON.
+        if not payload and isinstance(row.get("payload"), str):
+            match = re.search(
+                r'"champion_head"\s*:\s*("(?:\\.|[^"\\])*")', row["payload"])
+            if match:
+                try:
+                    champion_head = json.loads(match.group(1))
+                    if isinstance(champion_head, str) and _FULL_SHA.fullmatch(champion_head):
+                        payload["champion_head"] = champion_head
+                except json.JSONDecodeError:
+                    pass
+        comparison = payload.get("comparison")
+        comparison = comparison if isinstance(comparison, dict) else {}
+        commit = payload.get("champion_head") or payload.get("at_commit")
+        recorded_model = comparison.get("model") or payload.get("model")
+        model = Path(recorded_model).name if isinstance(recorded_model, str) else None
+        if isinstance(model, str):
+            model = model.removesuffix(".gguf")
+        evidence = [{"label": "experiment_store", "value": source_id}]
+        attribution = "producer_record"
+        if model is None and isinstance(commit, str) and commit in commit_models:
+            candidates = commit_models[commit]
+            same_surface = [item for item in candidates
+                            if item.get("surface") == comparison.get("surface")]
+            candidates = same_surface or candidates
+            candidate_models = {item.get("model") for item in candidates
+                                if item.get("model")}
+            chosen = candidates[0] if len(candidate_models) == 1 else None
+            if chosen is not None:
+                model, attribution = chosen.get("model"), "unique_normalized_checkpoint_commit"
+            elif len(candidate_models) > 1:
+                attribution = "ambiguous_normalized_checkpoint_commit"
+        if model is None and commit in _LEGACY_DEEPSEEK_KEEP_COMMITS:
+            model, attribution = _LEGACY_DEEPSEEK_MODEL, "campaign_join"
+            evidence.append({"label": "campaign_model_join",
+                             "value": _LEGACY_DEEPSEEK_RUN_EVIDENCE})
+            if commit.startswith("732389d6"):
+                evidence.append({"label": "overwritten_comparison_model_audit",
+                                 "value": _LEGACY_DEEPSEEK_CONFLICT_EVIDENCE})
+        if model is None and default_model is not None:
+            model, attribution = default_model, "active_campaign_store"
+        for key in ("evidence", "belief_export_receipt", "patch_path", "patch_metadata_path"):
+            value = payload.get(key) or comparison.get(key)
+            if isinstance(value, str) and value:
+                evidence.append({"label": key, "value": value})
+        effect = row.get("effect_fraction")
+        return {"disposition": "kept", "membership_source": "experiment_store",
+            "source_id": source_id, "attempt_id": row.get("attempt_id"),
+            "recorded_at": row.get("recorded_at"), "campaign_id": row.get("campaign_id"),
+            "hypothesis_id": row.get("hypothesis_id"), "mechanism_id": row.get("mechanism_id"),
+            "commit": commit if isinstance(commit, str) else None,
+            "model": model, "model_recorded": recorded_model,
+            "model_attribution": attribution if attribution.startswith("ambiguous_")
+                                 else attribution if model is not None else "unavailable",
+            "surface": comparison.get("surface") or payload.get("surface") or row.get("target_surface"),
+            "epoch": row.get("epoch_sha256"), "profile_target": row.get("target_symbol"),
+            "hypothesis": row.get("statement") or payload.get("statement"),
+            "effect_fraction": float(effect) if _finite_number(effect) else None,
+            "effect_pct": float(effect) * 100.0 if _finite_number(effect) else None,
+            "floor_pct": (float(comparison["noise_floor_pct"])
+                           if _finite_number(comparison.get("noise_floor_pct")) else None),
+            "decisive": comparison.get("decisive") if type(comparison.get("decisive")) is bool else None,
+            "comparison": ({"pairs": comparison.get("pairs"),
+                            "drifting": comparison.get("drifting"),
+                            "calibrated": comparison.get("calibrated")}
+                           if comparison else None),
+            "critic_rationale": None, "transfer_applicability": payload.get("research_scope"),
+            "result_sha256": row.get("result_sha256"), "evidence": evidence,
+            "identifiers": {"patch_path": payload.get("patch_path"),
+                            "patch_metadata_path": payload.get("patch_metadata_path")}}
+
+    sources, events = [], []
+    global_source = _retained_keep_source(root)
+    global_events = [event(row, global_source["evidence"])
+                     for row in global_source.pop("rows")]
+    global_source.update({"id": "global", "returned_count": len(global_events),
+                          "bundle_available_count": None, "bundle_recovered_count": 0})
+    sources.append(global_source)
+    events.extend(global_events)
+
+    try:
+        manual = _trajectory_json(MANUAL_KEEP_HISTORY)
+        records = manual.get("records")
+        if (manual.get("schema") != "epyc.autokernel.manual_retained_history.v1"
+                or not isinstance(records, list) or len(records) > TRAJECTORY_KEEP_MAX):
+            raise ValueError("unsupported manual retained-history shape")
+        manual_events = []
+        for record in records:
+            if (not isinstance(record, dict)
+                    or not isinstance(record.get("mechanism_id"), str)
+                    or (record.get("commit") is not None
+                        and (not isinstance(record.get("commit"), str)
+                             or not _FULL_SHA.fullmatch(record["commit"])))
+                    or not isinstance(record.get("model"), str)
+                    or not isinstance(record.get("retention_class"), str)
+                    or not isinstance(record.get("source_references"), list)):
+                raise ValueError("manual retained-history record failed validation")
+            manual_events.append({"disposition": "kept",
+                "membership_source": "manual_fold_inventory",
+                "source_id": str(MANUAL_KEEP_HISTORY), "attempt_id": record.get("id"),
+                "recorded_at": record.get("recorded_at"), "campaign_id": record.get("campaign_id"),
+                "hypothesis_id": None, "mechanism_id": record["mechanism_id"],
+                "commit": record.get("commit"), "model": record["model"],
+                "model_recorded": record["model"], "model_attribution": "manual_fold_inventory",
+                "surface": record.get("surface"), "epoch": record.get("epoch"),
+                "profile_target": record.get("profile_target"),
+                "hypothesis": record.get("description"), "effect_fraction": None,
+                "effect_pct": None, "floor_pct": None, "decisive": None,
+                "comparison": None, "critic_rationale": None,
+                "transfer_applicability": record.get("applicability"),
+                "result_sha256": None,
+                "original_disposition": record.get("original_disposition"),
+                "retention_class": record["retention_class"],
+                "evidence": [{"label": "manual_fold_inventory", "value": value}
+                             for value in record["source_references"]],
+                "identifiers": {"component_commits": record.get("component_commits"),
+                                "artifact_sha256": record.get("artifact_sha256"),
+                                "patch_path": None, "patch_metadata_path": None}})
+        sources.append({"id": "manual_fold_inventory", "state": "available",
+                        "evidence": str(MANUAL_KEEP_HISTORY),
+                        "available_count": len(manual_events),
+                        "returned_count": len(manual_events), "truncated": False,
+                        "bundle_available_count": None, "bundle_recovered_count": 0,
+                        "error": None})
+        events.extend(manual_events)
+    except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        sources.append({"id": "manual_fold_inventory", "state": "malformed",
+                        "evidence": str(MANUAL_KEEP_HISTORY), "available_count": None,
+                        "returned_count": 0, "truncated": None,
+                        "bundle_available_count": None, "bundle_recovered_count": 0,
+                        "error": str(exc)[:256]})
+
+    campaign_root = Path(active["store"]) if isinstance(active, Mapping) \
+        and isinstance(active.get("store"), str) else None
+    if campaign_root is not None and campaign_root.resolve() != Path(root).resolve():
+        active_source = _retained_keep_source(campaign_root)
+        db_available_count = active_source.get("available_count")
+        db_events = [event(row, active_source["evidence"], str(active.get("model")))
+                     for row in active_source.pop("rows")]
+        by_mechanism = {}
+        for item in db_events:
+            by_mechanism.setdefault(item.get("mechanism_id"), []).append(item)
+        bundle_members, bundle_error = [], None
+        try:
+            bundle = _trajectory_json(campaign_root / "accumulator-bundle.json")
+            members = bundle.get("keeps")
+            if (bundle.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
+                    or not isinstance(members, list) or len(members) > TRAJECTORY_KEEP_MAX
+                    or len(set(members)) != len(members)
+                    or not all(isinstance(item, str) and item for item in members)):
+                raise ValueError("active retained bundle has an unsupported keep list")
+            bundle_members = members
+        except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            bundle_error = str(exc)[:256]
+        recovery_path = campaign_root / "recovery" / "recovered-accumulator-state.json"
+        recovery_by_mechanism, recovery_error = {}, None
+        try:
+            recovery = _trajectory_json(recovery_path)
+            recovered_keeps = recovery.get("keeps")
+            if (recovery.get("schema") != "epyc.autokernel.accumulator_recovery.v1"
+                    or not isinstance(recovered_keeps, list)
+                    or len(recovered_keeps) > TRAJECTORY_KEEP_MAX
+                    or not all(isinstance(item, dict)
+                               and isinstance(item.get("mechanism_id"), str)
+                               and isinstance(item.get("commit"), str)
+                               and _FULL_SHA.fullmatch(item["commit"])
+                               for item in recovered_keeps)
+                    or bundle_members[:len(recovered_keeps)] !=
+                       [item["mechanism_id"] for item in recovered_keeps]):
+                raise ValueError("recovery receipt does not match the retained bundle prefix")
+            recovery_by_mechanism = {item["mechanism_id"]: item for item in recovered_keeps}
+        except FileNotFoundError:
+            pass
+        except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            recovery_error = str(exc)[:256]
+        active_events = []
+        used_attempts = set()
+        recovered = 0
+        for position, mechanism in enumerate(bundle_members, 1):
+            matches = by_mechanism.get(mechanism) or []
+            if matches:
+                item = matches[-1]
+                used_attempts.add(item.get("attempt_id"))
+                item["retained_position"] = position
+                item["bundle_order"] = position
+                item["membership_source"] = "experiment_store+accumulator_bundle"
+            else:
+                recovered += 1
+                recovery_item = recovery_by_mechanism.get(mechanism) or {}
+                recovered_commit = recovery_item.get("commit")
+                item = {"disposition": "kept", "membership_source": "accumulator_bundle",
+                    "source_id": str(campaign_root / "accumulator-bundle.json"),
+                    "attempt_id": None, "recorded_at": None, "campaign_id": active.get("id"),
+                    "hypothesis_id": None, "mechanism_id": mechanism,
+                    "commit": recovered_commit,
+                    "model": active.get("model"), "model_recorded": None,
+                    "model_attribution": "active_campaign_retained_bundle",
+                    "surface": None, "epoch": None, "profile_target": None,
+                    "hypothesis": None, "effect_fraction": None, "effect_pct": None,
+                    "floor_pct": None, "decisive": None, "comparison": None,
+                    "critic_rationale": None, "transfer_applicability": None,
+                    "result_sha256": None,
+                    "evidence": [{"label": "accumulator_bundle",
+                                  "value": str(campaign_root / "accumulator-bundle.json")}] +
+                                ([{"label": "accumulator_recovery",
+                                   "value": str(recovery_path)}] if recovered_commit else []),
+                    "identifiers": {"patch_path": None, "patch_metadata_path": None},
+                    "retained_position": position, "bundle_order": position}
+                if recovered_commit:
+                    item["membership_source"] = "accumulator_bundle+recovery_receipt"
+                    item["model_attribution"] = "active_campaign_recovery_receipt"
+            active_events.append(item)
+        active_events.extend(item for item in db_events
+                             if item.get("attempt_id") not in used_attempts)
+        db_truncated = bool(active_source.get("truncated"))
+        active_available = None if db_truncated else len(bundle_members) + sum(
+            item.get("attempt_id") not in used_attempts for item in db_events)
+        active_source.update({"id": "active_campaign", "available_count": active_available,
+            "returned_count": len(active_events), "truncated": db_truncated,
+            "db_available_count": db_available_count,
+            "bundle_available_count": len(bundle_members) if not bundle_error else None,
+            "bundle_recovered_count": recovered, "bundle_error": bundle_error,
+            "recovery_available_count": len(recovery_by_mechanism),
+            "recovery_error": recovery_error, "recovery_evidence": str(recovery_path),
+            "bundle_evidence": str(campaign_root / "accumulator-bundle.json")})
+        sources.append(active_source)
+        events.extend(active_events)
+
+    model_counts = {}
+    for item in events:
+        label = item.get("model") or "model attribution unavailable"
+        model_counts[label] = model_counts.get(label, 0) + 1
+    complete = all(source.get("state") == "available"
+                   and source.get("available_count") == source.get("returned_count")
+                   for source in sources)
+    available = (sum(source["available_count"] for source in sources)
+                 if all(source.get("available_count") is not None for source in sources)
+                 else None)
+    return {"state": "available" if events and complete else "partial" if events else "absent",
+            "available_count": available, "returned_count": len(events),
+            "truncated": not complete, "limit_per_store": TRAJECTORY_KEEP_MAX,
+            "sources": sources, "per_model_counts": model_counts, "events": events,
+            "detail": "only producer-kept rows and exact active retained-bundle membership; no measurement checkpoint is promoted by this fold"}
+
+
+def _live_production_history(root: Path, rows: list[Mapping[str, Any]],
+                             production: Optional[Mapping[str, Any]] = None) -> dict:
+    """Join producer receipts into direct, never-composed production curves."""
+    prod = dict(production) if production is not None else resolve_production()
+    baseline = prod.get("commit") if prod.get("resolved") else None
+    label = prod.get("label") if prod.get("resolved") else None
+    out = {"state": "unavailable", "basis": "gain_pct_vs_frozen_production",
+           "baseline": {"commit": baseline, "label": label}, "curves": [],
+           "evidence_errors": [],
+           "detail": "no identity-complete direct production checkpoints are available"}
+    if not isinstance(baseline, str) or not _FULL_SHA.fullmatch(baseline):
+        out["detail"] = "the current frozen production identity is unresolved"
+        return out
+
+    refreshes, keeps = {}, {}
+    for row in rows:
+        if row.get("payload_bytes", 0) > TRAJECTORY_RAW_MAX_BYTES:
+            continue
+        try:
+            payload = json.loads(row.get("payload") or "")
+        except (TypeError, json.JSONDecodeError):
+            continue
+        if not isinstance(payload, dict):
+            continue
+        if (row.get("mechanism_id") == "champion-vs-production"
+                and row.get("status") == "champion_vs_production"):
+            match = _PRODUCTION_REFRESH_REASON.fullmatch(
+                str(row.get("refusal_reason") or payload.get("reason") or ""))
+            if match and match["baseline"] == baseline[:12] and match["label"] == label:
+                refreshes[match["champion"]] = {"match": match,
+                                                  "recorded_at": row.get("recorded_at")}
+        if row.get("status") == "kept":
+            head, comparison = payload.get("champion_head"), payload.get("comparison")
+            if isinstance(head, str) and _FULL_SHA.fullmatch(head) \
+                    and isinstance(comparison, dict):
+                keeps[head[:12]] = {"commit": head, "comparison": comparison}
+
+    points = []
+    try:
+        paths = sorted(root.glob("champion-vs-production.*.json"))
+    except OSError:
+        paths = []
+    for path in paths[:TRAJECTORY_MAX_POINTS]:
+        match_name = re.fullmatch(r"champion-vs-production\.([0-9a-f]{12})\.json", path.name)
+        if not match_name:
+            out["evidence_errors"].append({"evidence": str(path),
+                                             "reason": "archive lacks the exact producer identity join"})
+            continue
+        short_sha = match_name[1]
+        try:
+            raw = _trajectory_json(path)
+            refresh, keep = refreshes[short_sha], keeps[short_sha]
+            reason = refresh["match"]
+            effect = raw.get("effect_pct")
+            floor = raw.get("noise_floor_pct")
+            pairs = raw.get("pairs")
+            surface = raw.get("surface")
+            if (not _finite_number(effect) or not _finite_number(floor)
+                    or not isinstance(pairs, int) or isinstance(pairs, bool) or pairs < 1
+                    or not isinstance(surface, str)
+                    or surface != reason["surface"] or pairs != int(reason["pairs"])
+                    or round(float(effect), 3) != float(reason["effect"])
+                    or float(floor) != float(reason["floor"])):
+                raise ValueError("raw receipt disagrees with the production-refresh ledger row")
+            model = raw.get("model")
+            model = Path(model).name if isinstance(model, str) and model else None
+            points.append({"commit": keep["commit"], "recorded_at": refresh["recorded_at"],
+                           "gain_pct": float(effect), "surface": surface, "model": model,
+                           "pairs": pairs, "noise_floor_pct": float(floor),
+                           "evidence": str(path), "evidence_state": "direct_measurement"})
+        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            out["evidence_errors"].append({"evidence": str(path), "reason": str(exc)[:256]})
+
+    # The normalized current slot is independently identity-complete and may
+    # add the latest point even when its raw archive predates the ledger join.
+    report = read_champion(root)
+    body = report.get("body")
+    if isinstance(body, dict):
+        measured = body.get("champion") if isinstance(body.get("champion"), dict) else {}
+        anchored = body.get("baseline") if isinstance(body.get("baseline"), dict) else {}
+        effect = body.get("effect_fraction")
+        if (anchored.get("commit") == baseline and anchored.get("label") == label
+                and isinstance(measured.get("commit"), str)
+                and _FULL_SHA.fullmatch(measured["commit"])
+                and _finite_number(effect) and float(effect) > -1
+                and body.get("metric_direction") == "higher_better"
+                and isinstance(body.get("surface"), str)):
+            model = body.get("model")
+            model = Path(model).name if isinstance(model, str) and model else None
+            points.append({"commit": measured["commit"], "recorded_at": body.get("generated_at"),
+                           "gain_pct": float(effect) * 100.0, "surface": body["surface"],
+                           "model": model, "pairs": body.get("pairs"),
+                           "noise_floor_pct": body.get("noise_floor_pct"),
+                           "evidence": report.get("path"),
+                           "evidence_state": "direct_measurement"})
+
+    unique = {}
+    for point in points:
+        key = (point["commit"], point["model"], point["surface"], point["gain_pct"])
+        unique.setdefault(key, point)
+    out["curves"] = _model_trajectory_curves(unique.values())
+    if out["curves"]:
+        out["state"] = "available"
+        out["detail"] = ("each point is a direct matched A/B against the resolved frozen "
+                         "production kernel; campaign marginals are never composed")
+    return out
+
+
+def _production_history(root: Path, rows: list[Mapping[str, Any]],
+                        production: Optional[Mapping[str, Any]] = None) -> dict:
+    """Join normalized history with current producer receipts, without composition."""
+    live = _live_production_history(root, rows, production)
+    try:
+        history = _trajectory_json(root / HISTORICAL_TRAJECTORY_FILENAME)
+        points = history.get("points")
+        missing = history.get("missing_checkpoints")
+        epochs = history.get("baseline_epochs")
+        if (history.get("schema") != HISTORICAL_TRAJECTORY_SCHEMA
+                or not isinstance(points, list) or len(points) > TRAJECTORY_MAX_POINTS
+                or not isinstance(missing, list) or len(missing) > 32
+                or not isinstance(epochs, list) or len(epochs) > 16):
+            raise ValueError("historical trajectory has an unsupported shape")
+        for epoch in epochs:
+            if (not isinstance(epoch, dict) or not isinstance(epoch.get("commit"), str)
+                    or not _FULL_SHA.fullmatch(epoch["commit"])
+                    or not isinstance(epoch.get("label"), str)
+                    or _stamp_epoch(epoch.get("effective_at")) is None):
+                raise ValueError("production baseline epoch lacks exact identity or date")
+        admitted, exceptions = [], []
+        for point in points:
+            if not isinstance(point, dict):
+                raise ValueError("historical point is not an object")
+            baseline = point.get("baseline")
+            source = point.get("evidence")
+            required = ("commit", "recorded_at", "model", "surface", "recipe",
+                        "era", "gain_pct", "evidence_state")
+            if (not all(key in point for key in required)
+                    or not isinstance(point["commit"], str)
+                    or not _FULL_SHA.fullmatch(point["commit"])
+                    or not isinstance(baseline, dict)
+                    or not isinstance(baseline.get("commit"), str)
+                    or not _FULL_SHA.fullmatch(baseline["commit"])
+                    or not isinstance(source, dict)
+                    or not re.fullmatch(r"[0-9a-f]{64}", str(source.get("sha256") or ""))
+                    or not _finite_number(point["gain_pct"])):
+                raise ValueError("historical point lacks exact identity or finite gain")
+            clean = dict(point)
+            if point["evidence_state"] == "overwritten_conflicting_producer_record":
+                exceptions.append(clean)
+            else:
+                admitted.append(clean)
+        for marker in missing:
+            if not isinstance(marker, dict) or marker.get("evidence_state") != "missing_production_ab":
+                raise ValueError("historical missing checkpoint is malformed")
+            exceptions.append(dict(marker))
+
+        # Live receipts remain first-class. They can add a newly published point
+        # after the historical normalizer last ran, but cannot replace a curated
+        # point with the same exact identity.
+        curated_identities = {(point["commit"], point["surface"]) for point in admitted}
+        for curve in live.get("curves") or []:
+            for point in curve.get("points") or []:
+                if (point["commit"], point["surface"]) in curated_identities:
+                    continue
+                live_model = point.get("model")
+                if isinstance(live_model, str):
+                    live_model = live_model.removesuffix(".gguf")
+                admitted.append({**point, "recipe": "gpu-production-model-direct-ab",
+                                 "model": live_model, "era": "live-producer",
+                                 "baseline": live["baseline"]})
+        unique = {}
+        for point in admitted:
+            key = (point["commit"], point.get("model"), point["surface"],
+                   point.get("recipe"), point["baseline"]["commit"], point["gain_pct"])
+            unique.setdefault(key, point)
+        curves = _model_trajectory_curves(unique.values())
+        return {"state": "available" if curves else "unavailable",
+                "basis": "gain_pct_vs_each_curve_declared_baseline", "curves": curves,
+                "exceptions": exceptions,
+                "evidence_errors": live.get("evidence_errors") or [],
+                "baseline_epochs": epochs,
+                "baseline": live.get("baseline"),
+                "detail": ("one headline trajectory per model; its canonical primary surface is "
+                           "the longest measured series (plain preferred on ties). Other surfaces "
+                           "are selectable; recipes, harnesses and baselines are instrument epochs"),
+                "active_campaign": history.get("active_campaign")}
+    except FileNotFoundError:
+        return live
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        live.setdefault("evidence_errors", []).append({
+            "evidence": str(root / HISTORICAL_TRAJECTORY_FILENAME), "reason": str(exc)[:256]})
+        return live
+
+
+def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
+                           production: Optional[Mapping[str, Any]] = None) -> dict:
+    """Headline production history plus secondary campaign-local drill-down."""
+    root = Path(root)
+    headline = _production_history(root, rows, production)
+    active = headline.get("active_campaign")
+    campaign_root = root
+    if isinstance(active, Mapping) and isinstance(active.get("store"), str):
+        campaign_root = Path(active["store"])
+    local = {"state": "absent", "basis": "gain_pct_vs_campaign_cor", "keeps": [],
+             "bench_checkpoints": [], "serving_checks": [], "evidence_errors": [],
+             "detail": "no retained accumulator bundle is available"}
+    try:
+        bundle = _trajectory_json(campaign_root / "accumulator-bundle.json")
+        keeps = bundle.get("keeps")
+        if (bundle.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
+                or not isinstance(keeps, list) or not keeps or len(keeps) > 128
+                or len(set(keeps)) != len(keeps)
+                or not all(isinstance(item, str) and item for item in keeps)):
+            raise ValueError("retained accumulator bundle has an unsupported shape")
+        local.update({"state": "available", "champion_of_record": bundle.get("champion_of_record"),
+                      "tip": bundle.get("tip"),
+                      "keeps": [{"index": i, "mechanism_id": item}
+                                for i, item in enumerate(keeps, 1)],
+                      "detail": "campaign-local CoR evidence; not production-relative"})
+        if _finite_number(bundle.get("compounded_bench_pct")):
+            local["bench_checkpoints"].append({"keep_count": len(keeps),
+                                                 "gain_pct": float(bundle["compounded_bench_pct"]),
+                                                 "evidence_state": "cheap_screen_estimate"})
+        for path in sorted((campaign_root / "serving").glob("bundle-*.json"))[-32:]:
+            try:
+                body = _serving_summary(path)
+                planner = body.get("planner_evidence")
+                members = body.get("bundled_keeps") if isinstance(body.get("bundled_keeps"), list) \
+                    else planner.get("bundled_keeps") if isinstance(planner, dict) else None
+                if (not isinstance(planner, dict) or not isinstance(members, list)
+                        or members != keeps[:len(members)]
+                        or planner.get("bundled_keeps") != members
+                        or not _finite_number(body.get("effect_pct"))
+                        or not _finite_number(planner.get("compounded_bench_pct"))
+                        or type(body.get("decisive")) is not bool):
+                    raise ValueError("serving receipt identity or fields are malformed")
+                local["serving_checks"].append({"keep_count": len(members),
+                                                  "gain_pct": float(body["effect_pct"]),
+                                                  "bench_gain_pct": float(planner["compounded_bench_pct"]),
+                                                  "evidence_state": ("serving_verified" if body["decisive"]
+                                                                     else "serving_inconclusive"),
+                                                  "outcome": body.get("outcome")})
+            except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+                local["evidence_errors"].append({"evidence": str(path), "reason": str(exc)[:256]})
+        local["serving_checks"].sort(key=lambda p: (p["keep_count"], p["gain_pct"]))
+    except FileNotFoundError:
+        pass
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        local.update({"state": "malformed", "detail": str(exc)[:256]})
+
+    # The retained accumulator is the producer's promotion chain. Unlike the
+    # bootstrap history it advances on every Bundle.save(), so a newly promoted
+    # tip appears without editing either repository. Admit only an exact,
+    # internally consistent model/surface/recipe/metric/era tuple; otherwise the
+    # chain is broken and annotated, never guessed across.
+    if isinstance(active, Mapping):
+        try:
+            chain = _trajectory_json(campaign_root / "accumulator-bundle.json")
+            live_status = _trajectory_json(campaign_root / STATUS_FILENAME)
+            tip = chain.get("tip")
+            cor = active.get("champion_of_record")
+            model = active.get("model")
+            surface = live_status.get("surface")
+            live_model = Path(str(live_status.get("model") or "")).name
+            gain = chain.get("compounded_bench_pct")
+            if (chain.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
+                    or chain.get("measurement_validity") != "current_snapshot"
+                    or not isinstance(tip, str) or not _FULL_SHA.fullmatch(tip)
+                    or live_status.get("schema") != STATUS_SCHEMA
+                    or live_status.get("champion_head") != tip
+                    or not isinstance(cor, str) or not _FULL_SHA.fullmatch(cor)
+                    or not str(chain.get("champion_of_record") or "").startswith(cor[:12])
+                    or not isinstance(model, str) or model not in live_model
+                    or not isinstance(surface, str) or not surface
+                    or not _finite_number(gain)):
+                raise ValueError("promotion chain model/surface/recipe/metric/era identity mismatch")
+            recipe = surface
+            baseline = {"commit": cor, "label": f"campaign-CoR-{cor[:12]}"}
+            provisional = {"commit": tip, "recorded_at": live_status.get("generated_at"),
+                "model": model, "surface": surface, "recipe": recipe,
+                "era": active.get("id"), "gain_pct": float(gain), "baseline": baseline,
+                "evidence_state": "accumulated_chained_provisional",
+                "keep_count": len(chain.get("keeps") or []),
+                "evidence": str(campaign_root / "accumulator-bundle.json")}
+            direct = next((point for curve in headline.get("curves") or []
+                           for series in curve.get("surface_series") or [curve]
+                           for point in series.get("points") or []
+                           if point.get("commit") == tip and point.get("model") == model
+                           and point.get("surface") == surface
+                           and point.get("recipe") == recipe
+                           and (point.get("baseline") or {}).get("commit") == cor
+                           and "direct" in str(point.get("evidence_state"))), None)
+            if direct is not None:
+                direct["provisional_relation"] = "supersedes_compatible_accumulated_chain"
+            else:
+                variant = {"id": f"{surface}::{surface}::backend unrecorded",
+                    "surface": surface, "metric": surface, "backend": "backend unrecorded",
+                    "points": [provisional], "instrument_epochs": [{"recipe": recipe,
+                        "era": active.get("id"), "baseline": baseline,
+                        "starts_at": provisional["recorded_at"], "starts_commit": tip}]}
+                same_model = next((curve for curve in headline.get("curves") or []
+                                   if curve.get("model") == model), None)
+                if same_model is None:
+                    headline.setdefault("curves", []).append({"id": model, "model": model,
+                        "primary_surface": surface, "surface": surface, "metric": surface,
+                        "backend": "backend unrecorded", "points": [provisional],
+                        "instrument_epochs": variant["instrument_epochs"],
+                        "surface_series": [variant]})
+                else:
+                    same_model.setdefault("surface_series", []).append(variant)
+                headline["curves"].sort(key=lambda curve: str(curve.get("id")))
+                headline["state"] = "available"
+        except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            headline.setdefault("exceptions", []).append({
+                "commit": active.get("champion_of_record"),
+                "evidence_state": "broken_promotion_chain", "note": str(exc)[:256]})
+    if local["state"] == "available" and isinstance(active, Mapping):
+        local["campaign_id"] = active.get("id")
+        local["model"] = active.get("model")
+        expected_keeps = active.get("expected_keep_count")
+        expected_gain = active.get("expected_gain_pct_vs_cor")
+        if expected_keeps != len(local["keeps"]):
+            local["evidence_errors"].append({"evidence": str(campaign_root),
+                "reason": f"active campaign keep count changed: expected {expected_keeps}, read {len(local['keeps'])}"})
+        if expected_gain is not None and (not local["bench_checkpoints"] or
+                abs(local["bench_checkpoints"][-1]["gain_pct"] - float(expected_gain)) > 1e-9):
+            local["evidence_errors"].append({"evidence": str(campaign_root),
+                "reason": "active campaign gain no longer matches normalized identity"})
+    events = []
+    disposition_counts: dict[str, int] = {}
+    for row in rows[:256]:
+        try:
+            payload = json.loads(row.get("payload") or "{}")
+        except (TypeError, json.JSONDecodeError):
+            payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
+        comparison = payload.get("comparison")
+        comparison = comparison if isinstance(comparison, dict) else {}
+        status_name = str(row.get("status") or "other")
+        effect = comparison.get("effect_pct")
+        if not _finite_number(effect) and _finite_number(row.get("effect_fraction")):
+            effect = float(row["effect_fraction"]) * 100.0
+        if status_name == "kept":
+            disposition = "kept"
+        elif status_name == "measured_null":
+            disposition = "measured_null"
+        elif (_finite_number(effect) and float(effect) < 0) or "regress" in status_name:
+            disposition = "regression"
+        elif status_name == "refused_at_formation":
+            disposition = "formation_refusal"
+        elif status_name in {"measurement_invalid", "bench_failed", "planner_transient",
+                             "anchor_invalid", "runtime_refused"}:
+            disposition = "invalid_or_setup"
+        else:
+            disposition = "other"
+        commit = payload.get("champion_head") or payload.get("at_commit")
+        model = comparison.get("model") or payload.get("model")
+        if isinstance(model, str):
+            model = Path(model).name
+        surface = comparison.get("surface") or payload.get("surface") or row.get("target_surface")
+        evidence = []
+        for key in ("evidence", "belief_export_receipt", "patch_path", "patch_metadata_path"):
+            value = payload.get(key) or comparison.get(key)
+            if isinstance(value, str) and value:
+                evidence.append({"label": key, "value": value})
+        event = {"recorded_at": row.get("recorded_at"), "mechanism_id": row.get("mechanism_id"),
+            "disposition": disposition, "producer_status": status_name,
+            "effect_pct": float(effect) if _finite_number(effect) else None,
+            "floor_pct": (float(comparison["noise_floor_pct"])
+                           if _finite_number(comparison.get("noise_floor_pct")) else None),
+            "decisive": comparison.get("decisive") if type(comparison.get("decisive")) is bool else None,
+            "commit": commit if isinstance(commit, str) else None,
+            "model": model, "surface": surface if isinstance(surface, str) else None,
+            "epoch": row.get("epoch_sha256"), "profile_target": row.get("target_symbol"),
+            "hypothesis": row.get("statement") or payload.get("statement"),
+            "critic_rationale": row.get("refusal_reason") or payload.get("reason"),
+            "comparison": ({"pairs": comparison.get("pairs"), "drifting": comparison.get("drifting"),
+                            "calibrated": comparison.get("calibrated")}
+                           if comparison else None),
+            "evidence": evidence,
+            "transfer_applicability": payload.get("research_scope"),
+            "identifiers": {"attempt_id": row.get("attempt_id"),
+                            "campaign_id": payload.get("campaign_id"),
+                            "hypothesis_id": payload.get("hypothesis_id"),
+                            "patch_path": payload.get("patch_path"),
+                            "patch_metadata_path": payload.get("patch_metadata_path")}}
+        events.append(event)
+        disposition_counts[disposition] = disposition_counts.get(disposition, 0) + 1
+    events.sort(key=lambda event: str(event.get("recorded_at") or ""))
+    return {"schema": TRAJECTORY_SCHEMA, "production_headline": headline,
+            "campaign_drilldown": local,
+            "keep_history": _retained_keep_history(root, headline, active),
+            "experiment_events": {"events": events, "counts": disposition_counts,
+                "bounded": len(rows) > 256, "limit": 256,
+                "detail": "experiment markers are a separate event strip, never curve checkpoints"}}
+
+
 def knowledge_snapshot(root: Optional[Path] = None, *,
                        now: Optional[float] = None,
                        status_body: Any = "unread") -> dict:
@@ -1886,6 +2883,7 @@ def knowledge_snapshot(root: Optional[Path] = None, *,
     body = report.get("body")
     if status_body == "unread":
         status_body = read(root).get("body")
+    canonical_root = store_root() if root is None else Path(root)
     return {
         "source": "the loop's own memory store (sqlite, read-only)",
         "evidence": report.get("path"),
@@ -1898,6 +2896,9 @@ def knowledge_snapshot(root: Optional[Path] = None, *,
         "groups": _knowledge_groups(body["dispositions"]) if body else None,
         "recent_kept": body["recent_kept"] if body else None,
         "recorded_window": body["recorded_window"] if body else None,
+        "improvement_trajectory": (
+            improvement_trajectory(canonical_root, body.get("trajectory_rows") or [])
+            if body else None),
         # None — never an empty walk — when the store is unreadable: a ledger
         # of zero levers over a missing store would claim the planner has
         # thought about nothing.
@@ -1915,6 +2916,356 @@ def payload(root: Optional[Path] = None, *, now: Optional[float] = None) -> dict
     return snapshot(root, now=now)[0]
 
 
+def _serial_bytes(path: Path, *, limit=2 * 1024 * 1024) -> bytes:
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
+    with os.fdopen(fd, "rb") as stream:
+        before = os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= limit:
+            raise ValueError("serial artifact is not a bounded nonempty regular file")
+        raw = stream.read(limit + 1)
+        after = os.fstat(stream.fileno())
+    if len(raw) != before.st_size or (before.st_dev, before.st_ino, before.st_mtime_ns,
+                                     before.st_size) != (
+            after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size):
+        raise ValueError("serial artifact changed while read")
+    return raw
+
+
+def _serial_child_report(root: Path, *, reader=_serial_bytes) -> dict:
+    """One bounded, non-recursive read of the declared target's original status."""
+    path = root / STATUS_FILENAME
+    report = {"artifact_present": True, "body": None, "reader_error": None, "path": str(path)}
+    try:
+        raw = reader(path)
+        body = json.loads(raw)
+        if not isinstance(body, dict) or body.get("schema") != STATUS_SCHEMA:
+            raise ValueError("child status does not declare the existing loop status schema")
+        report["body"] = body
+    except FileNotFoundError:
+        report["artifact_present"] = False
+    except (OSError, ValueError, UnicodeError) as exc:
+        report["reader_error"] = f"child status unreadable: {exc}"
+    return report
+
+
+def _serial_completed(body, root, *, now):
+    """Last retained result per target, not a journal scan or a new live child."""
+    result = {"items": [], "errors": [], "scope": "last retained batch per target; not session totals"}
+    remaining = 8 * 1024 * 1024
+
+    def read_bytes(path):
+        nonlocal remaining
+        raw = _serial_bytes(path, limit=min(2 * 1024 * 1024, remaining))
+        remaining -= len(raw)
+        return raw
+
+    try:
+        root = Path(root).resolve()
+        state = json.loads(read_bytes(root / "serial-state.json"))
+        routing = body["routing"]
+        if (state.get("schema") != "epyc.autokernel.serial_run.v1"
+                or state.get("config_digest") != body["epoch_sha256"]
+                or state.get("active") is not None
+                or state.get("next_batch") != routing["next_batch"]):
+            raise ValueError("retained serial state differs from this terminal router")
+        references = state.get("last_results")
+        if not isinstance(references, dict) or len(references) > min(64, routing["target_count"]):
+            raise ValueError("retained target references are missing or exceed the bounded roster")
+        if any(not isinstance(key, str) or not key.isdecimal() or str(int(key)) != key
+               or not 0 <= int(key) < routing["target_count"] for key in references):
+            raise ValueError("retained target reference index differs")
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        result["errors"].append(str(exc)[:512])
+        return result
+    for key, reference in sorted(references.items(), key=lambda pair: int(pair[0])):
+        item = {"target_index": int(key), "target_id": None, "reference": reference,
+                "summary": None, "detail": None, "error": None}
+        result["items"].append(item)
+        try:
+            if not isinstance(reference, dict) or set(reference) != {"path", "sha256"}:
+                raise ValueError("retained continuation reference is malformed")
+            path = Path(reference["path"])
+            if (not path.is_absolute() or path.name != "loop-continuation.json"
+                    or path.parent.parent != root / "batches"
+                    or not re.fullmatch(r"batch-[0-9]{6,}", path.parent.name)
+                    or path.resolve() != path):
+                raise ValueError("retained continuation is not an original contained batch path")
+            raw = read_bytes(path)
+            if hashlib.sha256(raw).hexdigest() != reference["sha256"]:
+                raise ValueError("retained continuation bytes differ from original reference")
+            row = json.loads(raw)
+            if (row.get("schema") not in {"epyc.autokernel.loop_continuation.v1",
+                                          "epyc.autokernel.loop_continuation.v2"}
+                    or row.get("terminal") not in {"complete", "stopped"}):
+                raise ValueError("retained continuation is not an original terminal result")
+            argv = row["input_argv"]
+            if (not isinstance(argv, list) or not all(isinstance(arg, str) for arg in argv)
+                    or hashlib.sha256(json.dumps(argv, sort_keys=True, separators=(",", ":"),
+                                                allow_nan=False).encode()).hexdigest() != row["input_argv_sha256"]):
+                raise ValueError("retained continuation input identity differs")
+            def option(name):
+                values = [arg[len(name) + 1:] if arg.startswith(name + "=") else argv[i + 1]
+                          for i, arg in enumerate(argv) if arg == name or arg.startswith(name + "=")]
+                return values[-1] if values else None
+            selected = row["selected_target"]
+            if (not isinstance(selected, dict) or not isinstance(selected.get("selected_id"), str)
+                    or selected["selected_id"] != option("--target-id")
+                    or Path(option("--out")).resolve() != path.parent):
+                raise ValueError("retained continuation target/output differs from its inputs")
+            item["target_id"] = selected["selected_id"]
+            counts = row["outcome_counts"]
+            if (type(row["iterations_completed"]) is not int or type(row["iterations_requested"]) is not int
+                    or not 0 <= row["iterations_completed"] <= row["iterations_requested"]
+                    or not isinstance(counts, dict)
+                    or any(not isinstance(k, str) or type(v) is not int or v < 1 for k, v in counts.items())
+                    or sum(counts.values()) != row["iterations_completed"]):
+                raise ValueError("retained continuation iteration counts differ")
+            item["summary"] = {name: row[name] for name in (
+                "terminal", "model", "iterations_completed", "iterations_requested", "outcome_counts")}
+            report = _serial_child_report(Path(option("--store")), reader=read_bytes)
+            child = report["body"]
+            if child is None:
+                raise ValueError(report["reader_error"] or "original target status is absent")
+            if (child.get("state") != RUN_COMPLETE or child.get("campaign_id") != "ak-loop"
+                    or child.get("target") != selected
+                    or child.get("batch", {}).get("output_dir") != str(path.parent)
+                    or child.get("model") != row["model"]
+                    or child.get("anchor_commit") != row["current_anchor"]["commit"]
+                    or child.get("iterations_done") != row["iterations_completed"]
+                    or child.get("iterations_planned") != row["iterations_requested"]
+                    or child.get("dispositions") != counts):
+                raise ValueError("target status is not this retained terminal batch; no current report substituted")
+            fresh = freshness(report, now=now)
+            item["detail"] = {"loop": child, "derived": summarize(child),
+                "evidence": report["path"], "notice": notice(report, fresh),
+                "display_step": display_step(report, fresh),
+                "freshness_state": fresh["state"], "age_s": fresh["age_s"],
+                "runtime_preparation": _runtime_preparation(child, now=now)}
+        except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError) as exc:
+            item["error"] = str(exc)[:512]
+    return result
+
+
+def _runtime_preparation(body, *, now=None):
+    """Bounded existing-loop diagnostic view; never opens the referenced evidence."""
+    if not isinstance(body, dict) or "runtime_preparation" not in body:
+        return None
+    try:
+        row = body["runtime_preparation"]
+        if not isinstance(row, dict) or set(row) != {
+                "status", "reason", "calibration_launches", "progress",
+                "selected_execution_digest", "selected_recipe", "selected_recipe_reference"}:
+            raise ValueError("runtime preparation fields differ")
+        if len(json.dumps(row).encode()) > 4096:
+            raise ValueError("runtime preparation exceeds diagnostic bound")
+        if any(not isinstance(row[key], str) or len(row[key]) > 256 for key in ("status", "reason")):
+            raise ValueError("runtime preparation status/reason malformed")
+        def digest(value):
+            return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value)
+        if not isinstance(row["selected_recipe"], str) or len(row["selected_recipe"]) > 512:
+            raise ValueError("runtime selected recipe description malformed")
+        if not digest(row["selected_execution_digest"]):
+            raise ValueError("runtime selected execution identity malformed")
+        planned = row["calibration_launches"]
+        if planned is not None and (type(planned) is not int or planned < 1):
+            raise ValueError("runtime calibration launch count malformed")
+        reference = row["selected_recipe_reference"]
+        if reference is not None and (not isinstance(reference, dict)
+                or set(reference) != {"locator", "sha256", "verified"}
+                or not isinstance(reference["locator"], str) or not reference["locator"]
+                or not digest(reference["sha256"]) or type(reference["verified"]) is not bool):
+            raise ValueError("runtime selected recipe reference malformed")
+        progress = row["progress"]
+        age_s = None
+        clock_skew = False
+        if progress is not None:
+            coarse = {"observed_at", "operation"}
+            detailed = {"phase", "frame_digest", "completed_launches", "launch_limit",
+                        "limit_is_upper_bound", "failed_launches", "pending"}
+            if not isinstance(progress, dict) or set(progress) not in (coarse, coarse | detailed):
+                raise ValueError("runtime progress fields differ")
+            stamped = _stamp_epoch(progress["observed_at"])
+            if stamped is None or not isinstance(progress["operation"], str) \
+                    or not 0 < len(progress["operation"]) <= 128:
+                raise ValueError("runtime progress operation/time malformed")
+            delta = (time.time() if now is None else now) - stamped
+            clock_skew = delta < 0
+            age_s = None if clock_skew else round(delta, 1)
+            if "phase" in progress:
+                if progress["phase"] not in {"calibration", "pair_window"} \
+                        or not digest(progress["frame_digest"]):
+                    raise ValueError("runtime progress phase/frame malformed")
+                for key in ("completed_launches", "launch_limit", "failed_launches"):
+                    if type(progress[key]) is not int or progress[key] < 0:
+                        raise ValueError("runtime launch count malformed")
+                if progress["completed_launches"] > progress["launch_limit"] \
+                        or type(progress["limit_is_upper_bound"]) is not bool:
+                    raise ValueError("runtime launch bounds contradictory")
+                pending = progress["pending"]
+                if pending is not None and (not isinstance(pending, list) or len(pending) != 3
+                        or pending[0] not in {"aa", "neutral", "pair", "anchor_gate"}
+                        or type(pending[1]) is not int or pending[1] < 0
+                        or pending[2] not in {"anchor", "candidate"}):
+                    raise ValueError("runtime pending membership malformed")
+        return {"state": "reported", "body": row, "progress_age_s": age_s,
+                "clock_skew": clock_skew, "error": None}
+    except (TypeError, ValueError, OverflowError) as exc:
+        return {"state": "malformed", "body": None, "progress_age_s": None,
+                "clock_skew": False, "error": str(exc)}
+
+
+def _serial_control(body: Mapping[str, Any]) -> dict | None:
+    """Original serial-owned command outcomes; never grants from a reader."""
+    row = body.get("serial_control")
+    if row is None:
+        return None
+    fields = {"schema", "config_digest", "owner_id", "revision", "desired_state",
+              "observed_state", "endpoint", "allowed_origin", "active_target",
+              "batch_number", "commands"}
+    if (not isinstance(row, dict) or set(row) != fields
+            or row["schema"] != "epyc.autokernel.serial_control.v1"
+            or len(json.dumps(row)) > 64 * 1024
+            or row["config_digest"] != body.get("epoch_sha256")
+            or not isinstance(row["owner_id"], str) or not row["owner_id"]
+            or type(row["revision"]) is not int or row["revision"] < 0
+            or type(row["batch_number"]) is not int or row["batch_number"] < 0
+            or row["desired_state"] not in {"running", "paused", "drained"}
+            or row["observed_state"] not in {
+                "running", "pausing", "paused", "draining", "drained", "complete", "failed"}
+            or not isinstance(row["commands"], list) or len(row["commands"]) > 64):
+        raise ValueError("malformed serial control identity/state")
+    for key in ("endpoint", "allowed_origin", "active_target"):
+        if row[key] is not None and (not isinstance(row[key], str) or len(row[key]) > 2048):
+            raise ValueError("malformed serial control endpoint/target")
+    active = body.get("target")
+    selected = active.get("selected_id") if isinstance(active, dict) else None
+    routing = body.get("routing")
+    if (not isinstance(routing, dict) or row["active_target"] != selected
+            or row["batch_number"] != routing.get("next_batch")):
+        raise ValueError("serial control report belongs to another batch/target")
+    for command in row["commands"]:
+        if not isinstance(command, dict) or set(command) != {"request", "result"}:
+            raise ValueError("malformed serial command outcome")
+        request, result = command["request"], command["result"]
+        if (not isinstance(request, dict) or not isinstance(result, dict)
+                or request.get("config_digest") != row["config_digest"]
+                or request.get("request_id") != result.get("request_id")
+                or request.get("operation") != result.get("operation")
+                or result.get("operation") not in {"pause", "resume", "drain"}
+                or type(result.get("completed")) is not bool
+                or result.get("outcome") not in {"pending", "completed", "superseded", "failed"}):
+            raise ValueError("malformed serial command outcome identity")
+    return dict(row)
+
+
+def _serial_snapshot(body: Mapping[str, Any], *, now: float | None, root=None) -> dict:
+    """Routing diagnostics only; neither batch counts nor heartbeats are measurements."""
+    result = {"state": body.get("state"), "routing": None, "active": None,
+              "child": None, "control": None, "control_error": None, "reader_error": None}
+    try:
+        result["control"] = _serial_control(body)
+    except (ValueError, TypeError, AttributeError) as exc:
+        result["control_error"] = str(exc)
+    try:
+        routing = body.get("routing")
+        failures = {}
+        stopped = False
+        if routing is not None:
+            if not isinstance(routing, dict) or set(routing) != {
+                    "target_count", "rounds", "batch_iterations", "next_batch",
+                    "stop_requested", "failed_targets"}:
+                raise ValueError("malformed serial routing fields")
+            for key, minimum in (("target_count", 1), ("rounds", 0),
+                                 ("batch_iterations", 1), ("next_batch", 0)):
+                if type(routing[key]) is not int or routing[key] < minimum:
+                    raise ValueError(f"invalid routing {key}")
+            failures = routing["failed_targets"]
+            if type(routing["stop_requested"]) is not bool or not isinstance(failures, dict):
+                raise ValueError("invalid routing STOP/failures")
+            if any(not isinstance(key, str) or not key.isdecimal()
+                   or str(int(key)) != key or not 0 <= int(key) < routing["target_count"]
+                   or not isinstance(value, str) or len(value) > 240
+                   for key, value in failures.items()):
+                raise ValueError("invalid routing failed target")
+            stopped = routing["stop_requested"]
+            result["routing"] = dict(routing)
+        elif isinstance(body.get("target"), dict):
+            # Published earlier serial status lacked totals. Do not invent them.
+            stopped = body["target"].get("stop_requested") is True
+            failures = body["target"].get("failed_targets") or {}
+        state = body.get("state")
+        if state not in RUN_STATES:
+            raise ValueError("unknown serial lifecycle state")
+        if state in (RUN_COMPLETE, RUN_FAILED):
+            result["state"] = ("stopped" if stopped else
+                               "all_failed" if routing and len(failures) == routing["target_count"] else
+                               "failed" if state == RUN_FAILED else
+                               "complete_with_failures" if failures else "complete")
+            if root is not None and routing is not None:
+                result["completed"] = _serial_completed(body, root, now=now)
+            return result
+        active = body.get("target")
+        if (active is None and result["control"] is not None
+                and result["control"]["observed_state"] in {"paused", "draining"}):
+            result["state"] = result["control"]["observed_state"]
+            return result
+        if not isinstance(active, dict) or set(active) - {"process_identity"} != {
+                "target_index", "selected_id", "store", "batch_dir", "input_argv_sha256", "pid"}:
+            raise ValueError("serial active target identity is missing or malformed")
+        if type(active["target_index"]) is not int or active["target_index"] < 0 \
+                or (routing is not None and active["target_index"] >= routing["target_count"]):
+            raise ValueError("serial target index is invalid")
+        if not isinstance(active["selected_id"], str) or not active["selected_id"] \
+                or any(not isinstance(active[key], str) or not Path(active[key]).is_absolute()
+                       for key in ("store", "batch_dir")):
+            raise ValueError("serial target path/ID is invalid")
+        if active["pid"] is not None and (type(active["pid"]) is not int or active["pid"] <= 0):
+            raise ValueError("serial child PID is invalid")
+        if "process_identity" in active:
+            identity = active["process_identity"]
+            if (not isinstance(identity, dict) or set(identity) != {"pid", "start_ticks", "boot_id"}
+                    or type(identity["pid"]) is not int or identity["pid"] != active["pid"]
+                    or type(identity["start_ticks"]) is not int or identity["start_ticks"] < 0
+                    or not isinstance(identity["boot_id"], str) or not identity["boot_id"]):
+                raise ValueError("serial original process identity is invalid")
+            # Original producer identity, not a dashboard grant or fresh liveness
+            # check. Current detail still requires the exact batch/PID/target join.
+        result["active"] = {key: value for key, value in active.items() if key != "input_argv_sha256"}
+        report = _serial_child_report(Path(active["store"]))
+        child = report.get("body")
+        joined = False
+        join_error = None
+        if child is not None:
+            batch = child.get("batch")
+            selected = child.get("target")
+            joined = (
+                active["pid"] is not None and isinstance(batch, dict)
+                and set(batch) == {"output_dir", "pid"}
+                and type(batch.get("pid")) is int and batch["pid"] == active["pid"]
+                and isinstance(batch.get("output_dir"), str)
+                and batch["output_dir"] == active["batch_dir"]
+                and isinstance(selected, dict) and selected.get("selected_id") == active["selected_id"]
+                and child.get("campaign_id") == "ak-loop")
+            if not joined:
+                join_error = "target store report is not joined to this declared batch/PID/target; not current child evidence"
+        fresh = freshness(report, now=now)
+        result["child"] = {
+            "joined": joined, "evidence": report["path"], "store_root": active["store"],
+            "reader_error": report.get("reader_error"), "join_error": join_error,
+            "freshness_state": fresh["state"], "age_s": fresh["age_s"],
+            "stale_after_s": fresh["stale_after_s"], "detail": fresh["detail"],
+            "generated_at": fresh["generated_at"], "notice": notice(report, fresh),
+            "display_step": display_step(report, fresh) if joined else None,
+            "loop": dict(child) if joined else None,
+            "derived": summarize(child) if joined else None,
+            "runtime_preparation": _runtime_preparation(child, now=now) if joined else None,
+        }
+    except (OSError, ValueError, TypeError) as exc:
+        result["state"] = "malformed"
+        result["reader_error"] = str(exc)
+    return result
+
+
 def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
              ) -> tuple:
     """``(payload, observation)`` from ONE read of the file.
@@ -1925,10 +3276,18 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
     report = read(root)
     fresh = freshness(report, now=now)
     body = report.get("body")
+    campaign = campaign_status.snapshot(now=now)
+    live_root = store_root() if root is None else Path(root)
+    # Selecting a live trial must not redirect the canonical champion or erase
+    # the original memory store. Explicit-root callers remain self-contained.
+    canonical_root = DEFAULT_STORE_ROOT if root is None else Path(root)
+    canonical_body = body if canonical_root == live_root else read(canonical_root).get("body")
     wire = {
         "schema": STATUS_SCHEMA,
         "evidence": report.get("path"),
-        "store_root": str(store_root() if root is None else Path(root)),
+        "store_root": str(live_root),
+        "canonical_store_root": str(canonical_root),
+        "knowledge_store_root": str(canonical_root),
         "artifact_present": bool(report.get("artifact_present")),
         "reader_error": report.get("reader_error"),
         "freshness_state": fresh["state"],
@@ -1942,23 +3301,32 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         # those two disagree. Folded here, not in the page, so a test can
         # EXECUTE it instead of grepping the markup for a branch.
         "notice": notice(report, fresh),
+        "display_step": display_step(report, fresh),
         "loop": dict(body) if body is not None else None,
         "derived": summarize(body) if body is not None else None,
+        "runtime_preparation": _runtime_preparation(body, now=now),
         # A THIRD producer, and it dates neither of the other two. It is read
-        # here rather than in `server.loop_payload` only so that the loop's own
-        # champion head — which lives in the body read one line above — can be
-        # handed to it without a second read of the status file.
+        # Canonical evidence keeps its original root and original status fallback;
+        # a selected trial head is not the canonical champion.
         "champion_vs_production": champion_snapshot(
-            root, now=now,
-            champion_head=(body or {}).get("champion_head")),
+            canonical_root, now=now,
+            champion_head=(None if (canonical_body or {}).get("baseline_scope") ==
+                           "experimental_candidate_not_champion" else
+                           (canonical_body or {}).get("champion_head"))),
         # A FOURTH producer: the loop's accumulated knowledge, from its own
         # memory store, on its own envelope. It dates none of the other three
-        # and none of them dates it. The status BODY rides along so the
-        # hypothesis ledger joins the store against THIS reading's hotspot
-        # profile and epoch, not a second read a moment later.
-        "knowledge": knowledge_snapshot(root, now=now, status_body=body),
+        # and none of them dates it. Its own original status scopes the ledger;
+        # the live trial's epoch/profile must not reinterpret historical rows.
+        "knowledge": knowledge_snapshot(canonical_root, now=now, status_body=canonical_body),
+        # The unified supervisor is an additive, producer-owned full snapshot.
+        # With no explicit selection this reports `configured: false` and the
+        # historical loop_status.v1 surface remains unchanged/read-only.
+        "campaign": campaign,
     }
-    return wire, observation(report, fresh)
+    if body is not None and body.get("campaign_id") == "legacy-serial" \
+            and body.get("surface") == "serial_targets":
+        wire["serial"] = _serial_snapshot(body, now=now, root=live_root)
+    return wire, campaign_observation(campaign, observation(report, fresh))
 
 
 __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
@@ -1987,6 +3355,7 @@ __all__ = ["ABSENCE_MEANS", "BUSY_KEYS", "CHAMPION_ABSENCE_MEANS",
            "STATUS_FILENAME", "STATUS_SCHEMA", "STORE_ROOT_ENV",
            "champion_freshness", "champion_path", "champion_relationship",
            "champion_snapshot",
+           "campaign_observation",
            "freshness", "frozen_tree", "knowledge_freshness", "knowledge_inbox",
            "knowledge_ledger", "knowledge_path",
            "knowledge_snapshot", "notice",

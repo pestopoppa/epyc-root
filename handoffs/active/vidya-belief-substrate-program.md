@@ -1087,6 +1087,15 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       tuple. Focused producer tests pass 23/23 and adapter tests 24/24. The 2026-08-12 smoke, controls,
       and GPU replay predate the hook and remain deliberately unprojected; only future receipts may
       enter this source.
+  - [ ] **VB-AK-GPU-CONTROLS — extend the existing governed-control source before its first direct GPU replay.**
+    Producer: research `loop/direct_gpu_control.py:run_or_reopen`; retain `direct-gpu-control`,
+    `direct-gpu-bench-launch` and `direct-gpu-t0` originals. Capture producer-authored native
+    belief rows at write time for completed measurements and explicit failed-setup findings;
+    preserve exact frame/model/build/loader/claim identities, raw repetitions/process-pair basis,
+    actual T0–T2 outcomes and the fixed engineering tolerance. Extend the existing
+    `autokernel_governed_receipt.py` source class/ladder, not a duplicate adapter or grading rule.
+    Independent recall remains observation-only; never invent a tuple on read, qualify a candidate
+    from a control result, or backfill the original September 7 evidence.
 - [x] SC28 **Wire RVP-T0-1 saturation and AK-BH-1 vendor-baseline diagnostics before either runs
       again.** ✅ 2026-08-12 — research `1434ed1a` adds a shared prospective writer used by both
       live runners. RVP-T0-1 emits separate sustained-throughput, nominal-clock-hold, peak-power and
@@ -1589,6 +1598,174 @@ retrofitting the read side is impossible. Source row added to
       Trigger: the next serving-harness arm produced on either surface. Zero compute to file; the adapter is
       ~40 lines of projection.
 
+### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10)
+
+- [x] **VB-AK-LEGACY-SERVING — wire the direct legacy serving comparison at write time.** ✅ 2026-09-10
+  Owner `autokernel-unified-20260908`; producer is research `loop/run.py:cpu_compare`
+  through `ServingComparison.to_dict`, `Outcome.to_attempt`, `archive.record` and
+  `controller/experiments.py:ExperimentStore.record`, not an `evaluation_event` or
+  a unified planned/native arm. The full comparison is retained in the archive,
+  including future per-launch `cpu_lifecycle` facts from the on-disk collector.
+  Research source `86179a8c` / main `0a815338` now captures original inputs before
+  `serving.compare` launches, then seals two arm observations in `belief_capture` /
+  `belief_measurements`. The strict ROOT `autokernel_legacy_serving.py` reader and
+  existing corpus dispatcher reopen the bounded original source. They preserve
+  original model/build/recipe/metric direction, request-bound floor,
+  arm/launch membership, PID/TID-start and phase-time evidence, read failures,
+  gaps, bounds and immutable source identity. The independent unit is the original
+  process launch, never an affinity sample, thread or prompt. Allowed CPU/NUMA lists
+  are permissions, not actual NUMA page placement or a contention verdict. Keep
+  `cpu_placement`/`contention=unproven` unless an actual owning verifier supplies
+  more; raw facts confer no qualified measurement or promotion authority. The
+  capture leaves `protocol_id` empty, so the unchanged shared ladder returns
+  `Judged/Located`, not qualified measurement. Unresolved legacy arm build paths
+  remain paths; missing resolved/loaded identity is not upgraded into a verified binary.
+  Main verified 33 research tests plus 8 subtests and 15 ROOT tests, including the
+  actual compare→archive→original-source reader→corpus→Ledger path with synthetic
+  observations. Moved/tampered source refuses; export faults remain visible after
+  durable archive without changing the experiment result. Pre-hook records emit
+  zero rows. That write/read checkpoint did not reload the live process or run a
+  live ingest; the subsequent planner feedback checkpoint is recorded below.
+
+  - [ ] **VB-AK-LEGACY-SERVING-LIVE — verify a future post-hook direct-serving capture and
+    its explicit corpus ingestion at the owning run boundary.** Do not reload the current
+    trial or invent historical carriers as a documentation action. Retain the real source
+    reference, import report and observation-only grade; this does not qualify hardware gates.
+  - [x] **VB-AK-LEGACY-SERVING-FEEDBACK — connect original direct-serving observation rows
+    to an appropriate planner read-feedback path.** ✅ 2026-09-10 — Research source
+    `8360d3e1` / main `ba5abca4` installs one synchronous bridge in the existing loop.
+    A bounded startup receipt scan is followed by exact newly exported receipt IDs,
+    using a private per-store `serving-beliefs/feedback-ledger.jsonl`, not a new service
+    or a full corpus re-ingest per hypothesis. ROOT joins the strict original source
+    to existing claim IDs, then uses the unchanged fold/query gate. Original model
+    descriptor, recipe/request digests, epoch and current anchor identity scope the
+    separate `serving_observations` context; the actual comparison rebind supplies
+    post-keep anchor identity without extra prompt-time binary hashing. Existing
+    `prior_experiments` recall remains unchanged, including historical/pre-hook nulls.
+    `Judged/Located` observation status is not a gain, ranking or promotion warrant.
+    Main verified 28 ROOT tests (0.63s) and 55 research tests (4.17s), including the
+    actual loop→archive→ingest→planner path, post-keep changed bytes/subsequent null,
+    restart without duplicate frames, scope/source refusal and nonfatal reader faults.
+    Providers/measurements in those tests are synthetic. For a future owning start use
+    `--belief-root-repo /mnt/raid0/llm/worktrees/mains/autokernel-unified-20260908`
+    ([operating instructions](../../docs/guides/agent-workflows/agent-loop-design.md#operating-the-existing-loop-across-targets));
+    the live PID was not reloaded and real post-hook hardware/live ingestion remains
+    the separate open LIVE task, not an achieved qualification gate.
+
+### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09)
+
+- [ ] **VB-AK-UNIFIED — wire the unified current loop before its first new measurement**
+      (`autokernel-unified-surface-program.md` §9 AKU-08). Emit producer-authored, self-hashed carriers
+      at sealed experiment/arm boundaries with exact immutable model/build/recipe, protocol and metric
+      direction, independent-unit/paired execution membership, raw evidence and during-arm contention,
+      placement and GPU residency witnesses. Reuse SC75 for serving arms and the shared `ClaimTuple`
+      grader. Preserve intended-use/applicability separately from grade; search-only results cannot
+      become bank/release claims through projection. Historical pre-hook rows remain history, never
+      retrofitted warrant. Journal `LOOP_BUNDLE_SAVED` records are operational snapshots, not measurements
+      or a new source class, and produce zero tuples. Add strict reader and replay/outage fixtures,
+      mandatory pre-top-k conflict checks and dependency-generation admission checks. This is source
+      wiring authority only; live research/resource gates remain unchanged.
+      **2026-09-09 source checkpoint:** AKU-04c/08b implements the prospective sealed-arm producer,
+      strict shared-ladder reader and existing corpus dispatch, including actual raw-byte rederivation
+      and same-ID conflicting-carrier quarantine. Supported scalar is serving/process/level/median;
+      absent witnesses remain diagnostic. No historical ingestion or warrant backfill occurred.
+      AKU-03c additionally wires verified native controller events, exact retry and restart; the actual
+      producer→Journal→reader path passes hermetic integration. No live worker fence is inferred.
+      This parent remains open for bounded cursor/feed replay, producer-side
+      planner question bindings and registered current-use consumers. Evaluator identity/lifecycle
+      instrumentation remain separately required; a source schema is not a protocol registration.
+
+  - [ ] **VB-AK-UNIFIED-LIFECYCLE — bind prospective whole-lifecycle observations and loaded
+    instrument identity to native arm evidence.** Owner `autokernel-unified-20260908`; source work
+    under review. Reuse the existing immutable ArtifactStore and native Journal, with exact
+    worker/grant/container/PID-start and actual probe intervals. Missing attribution, exceeded
+    observation budgets, incomplete shutdown and unproven loaded code stay explicit unknowns.
+    Native attachment and strict reader must agree on the versioned identity; old records are never
+    relabelled using today's source. Observations alone produce no gain claim, quiet-host rule or
+    competing grader. Wire the actual serving/worker consumer before claiming lifecycle completion.
+  - [ ] **VB-AK-UNIFIED-PARENT — wire parent per-witness receipts prospectively.** Owner
+    `autokernel-unified-20260908`; producer/native replay published as research 0a4aada6 with
+    AKU-07m; finish ROOT per-witness consumer, not merely native issuance checks. Retain exact
+    native/lifecycle artifacts, loaded source pins, parent-issued worker/grant/container/process/
+    unit/phase identities and the finding underlying each non-unknown witness. Carry the sealed
+    artifact through closed completion IPC; native capture and the existing ROOT arm reader must
+    reopen the same receipt and reject mismatched witness/finding references. Unsupported purpose,
+    correctness/contention/GPU warrants stay unknown. Reuse the existing source-class grading;
+    these supporting receipts are not an independent performance claim or a second ladder.
+    Include prospective original T0 issuance/full-report/raw-capture receipts and complete model
+    inventory receipts (separate inventory and native entry-file digests). Native deterministic
+    reducer replay is not independent reparsing or fresh observation. Also register same-server
+    raw request/response/token evidence before any real run; missing seed/token contracts cannot
+    establish determinism. These supporting records use this existing task and source ladder.
+    Research 8f582b22 now writes `epyc.autokernel.native_server_response.v1` leaves and
+    `epyc.autokernel.native_server_response_unit.v1` ordered units in the actual contained
+    serving lifecycle. Original instrument pins and exact request/response bytes are retained;
+    ROOT per-witness consumption remains required, and raw capture alone grants no grade.
+    Research 9e2125b1 / main 625348f8 additionally retains same-attempt raw window receipts:
+    original marker bounds, host/claim/storage samples and lifecycle interval joins with
+    prospective source/configuration identity. Extend this same consumer to reopen those
+    dependencies; raw factual coverage is not a quiet-window or calibration/control verdict.
+    Research 8f536e0e additionally emits separate parent-final trial/pair records and native
+    unified-arm capture v3 referencing unchanged original v2 carriers. The ROOT reader must
+    verify original/final/source joins and preserve diagnostic unknowns under the existing
+    source class/ladder; never relabel the child v2 producer closure as a parent v3 writer.
+    ROOT direct arm/corpus reopening is implemented under AKU-08j with actual producer and
+    malformed-reference tests. Registered feed source closure now captures the final-trial
+    helper prospectively (AKU-08k, research bcd32f1d), with actual v3 ingestion/restart and
+    six-file compatibility tests. Separate semantic receipt source/version integration and
+    actual historical consumer restart are implemented under AKU-08l (90 independent tests).
+    Diagnostics retain no tuple/grade or scientific permission. Qualified serving-decision
+    consumption remains AKU-08m; this parent task remains open.
+  - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.**
+    Owner `autokernel-unified-20260908`; source work under review. Preserve fixed three-anchor-bank /
+    three-candidate-only membership and zero fresh anchors on reuse, exact single-factor semantics,
+    prospective effect question and original raw/phase provenance. The bounded feed consumes the
+    sealed receipt rather than inventing an improvement by joining independently emitted arm levels.
+    Strict reader and the shared ClaimTuple ladder remain separate from registered nomination/use
+    eligibility. Do not change historical GGML_IQK bank semantics, backfill missing claims, or treat
+    an A2 nomination as a keep, validation or release result.
+
+  - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.**
+    - [x] **Direct existing-loop CPU observation/corpus and actor read-side connection**:
+      ✅ 2026-09-10. `loop_cpu_profile.v1` binds the producer's original compact capture,
+      actual execution/frozen-request identity and sampled-period measurement. The existing
+      registered measurement projector and canonical grader are reused; there is no direct
+      verifier/`PROFILE_VERIFIED`, model verification or comparable speedup claim. ROOT
+      40-case actual-producer/corpus/old-profile acceptance passed; research 114 cases passed.
+    Concrete emitter now exists: research `cpu_profile.run_profile_request`, compact
+    `epyc.autokernel.cpu_profile_capture.v1` and two authored mappings in
+    `epyc.autokernel.profile_measurement_carrier.v1`, checked by `reopen_capture` before
+    output. Producer SHA256 `e626efddf14530a7d4eb3f2ec06b5b86b70a14a2b329a2e59b9054b46cdb20eb`.
+    Registered ROOT projection and durable feed terminal/profile pairing are implemented
+    for this concrete CPU producer under AKU-06q. Preserve sampled-period attribution and receipt-integrity-only
+    scope; neither is model correctness, comparable performance or production validation.
+    Owner `autokernel-unified-20260908`; implementation assigned to the actor/profile consumer.
+    Preserve the selected profiling request and original target/model/quant/recipe, loaded
+    profiler identity, actual owned worker result, raw artifacts and observation intervals when
+    deriving hotspots/opportunities. Reuse an existing profiler source/adapter where applicable;
+    configuration metadata cannot substitute for observed profile freshness. Project measured
+    findings only through the existing source-class ladder; retain unsupported/unknown states.
+    - [x] CPU producer's prospective measurement/integrity projection and durable pairing:
+      ✅ 2026-09-09. Exact original identity joins, bounded compact capture, before-ACK pair
+      persistence, restart/retraction and capacity-one failed/conflicting attempts verified.
+      Main89 research and65 ROOT combined tests pass; broader selected-profiler wiring remains open.
+  - [ ] **VB-AK-UNIFIED-PREPARATION — wire source/build preparation findings at write time.**
+    Owner `autokernel-unified-20260908`; bind selected actor advice/assignment, authored immutable
+    manifest and patch, actual guarded source commit/tree, derived diff-policy checks and original
+    mutation receipt before the first live preparation. Persist through the owning native artifact
+    transaction; strict reopening projects only the proposition actually verified. Build findings
+    additionally require the actual owning build identity and inputs, never a runner return label.
+    Reuse the canonical verifier-class ladder; no new grading rule, retrospective warrant,
+    model-correctness claim or performance inference from successful source application.
+  - [ ] **VB-AK-UNIFIED-VALIDATION — wire owning objective and LOO decisions at write time.**
+    Owner `autokernel-unified-20260908`; implementation assigned to the semantic consumer.
+    Preserve the exact proposition decided by the existing production-validation protocol,
+    objective identity, batch/row/manifests and native measurement/calibration evidence, decision
+    and immutable artifact references. Reopen through the concrete row/LOO verifier without a
+    history scan. Reuse canonical verifier-class grading and proposition-binding rules; do not
+    manufacture a scientific policy, combine measurement grades into a new ladder, or reconstruct
+    a missing decided proposition on read. Source quality and permitted scientific use stay separate.
+
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 
 *Source: the Q.1 mutation audit of `tests/vidya/` run at the end of the Prove2Me wave — 62 mutations
@@ -1689,6 +1866,9 @@ no rate at all. A later session may extend the audit but may not report these fi
   The September9 reprofile adds per-output sampled-period normalization, matched
   plain/MTP capture identity, request-local depth controls and parity failures,
   aborted-capture exclusion, and long-prefill bug-fix/negative-control lineage.
+  The authorized three-lever implementation adds bitwise kernel controls, per-node
+  critical-path timing with instrumentation-off controls, individual switch ablations,
+  and matched unprofiled baseline/integrated repetitions. Preserve rejected variants.
 
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 

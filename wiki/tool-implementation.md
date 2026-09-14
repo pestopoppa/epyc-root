@@ -2,7 +2,7 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-08-24 (the hub wrong-checkout incident: a dashboard process launched from a frozen worktree checkout certifies its own staleness, the watchdog cannot see it, and /proc cwd comparison is an unreliable probe here); previously 2026-08-23 (evening tier-1 pass: the two-valued-health-check family gets its enforcement pass — OBS-3/4/5/7 all converted to three-state checks where unobservable ≠ clear: an unreadable MemAvailable now fails the inference guard instead of degrading to all-clear, `autopilot_running()` is three-valued via the singleton flock with only a confirmed `stopped` licensing a shadow launch, the bench preflight's `unobservable` FAILS in strict and advisory modes, and the committed `sudo pkill -f claude` in emergency_cleanup.sh is DELETED; earlier 2026-08-13 note: a research-intake round on agent-fleet failure grading found an Apache-2.0 trace-annotation tool (AdaMAST) that runs against our own Claude Code / Codex transcripts with no success/failure oracle required, superseding an unlicensed predecessor (MAST) — see below; earlier 2026-08-12 note (the plane rule gets its first enforcement pass and a matching failure mode: a **two-valued health check cannot say "I cannot tell"**, and three separate supervisors were found resolving that ambiguity into a confident restart, a confident kill, or a confident green. Plus a registry probe moved from transport to semantics, and a stale-source check wired only into the mode nobody runs — see below; earlier 2026-08-10 note: the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
+**Last compiled**: 2026-09-14 (the silent-contract-mismatch family: six REPL/tool paths emitted an instruction, pointer or argument that another component of the same runtime rejected, ignored or ran without — `FINAL('done')`, `{}` tool arguments, spill-footer argument order, a never-matching output regex, an unreachable `fetch_report`, an unredacted compressor — fixed with executing tests; plus measure-first rows for verify-before-stop, announced-action nudges and reasoning runaway); previously 2026-08-24 (the hub wrong-checkout incident: a dashboard process launched from a frozen worktree checkout certifies its own staleness, the watchdog cannot see it, and /proc cwd comparison is an unreliable probe here); previously 2026-08-23 (evening tier-1 pass: the two-valued-health-check family gets its enforcement pass — OBS-3/4/5/7 all converted to three-state checks where unobservable ≠ clear: an unreadable MemAvailable now fails the inference guard instead of degrading to all-clear, `autopilot_running()` is three-valued via the singleton flock with only a confirmed `stopped` licensing a shadow launch, the bench preflight's `unobservable` FAILS in strict and advisory modes, and the committed `sudo pkill -f claude` in emergency_cleanup.sh is DELETED; earlier 2026-08-13 note: a research-intake round on agent-fleet failure grading found an Apache-2.0 trace-annotation tool (AdaMAST) that runs against our own Claude Code / Codex transcripts with no success/failure oracle required, superseding an unlicensed predecessor (MAST) — see below; earlier 2026-08-12 note (the plane rule gets its first enforcement pass and a matching failure mode: a **two-valued health check cannot say "I cannot tell"**, and three separate supervisors were found resolving that ambiguity into a confident restart, a confident kill, or a confident green. Plus a registry probe moved from transport to semantics, and a stale-source check wired only into the mode nobody runs — see below; earlier 2026-08-10 note: the dashboard plane rule — data contracts with their subsystem, pages/nav/registry with the hub — **supersedes** the 2026-07-05 transport-rule boundary recorded below; plus the shared nav registry, the absence-is-loud rendering discipline, and the one-assembly-path rule)
 **Sources**: 40 documents (2026-07-06 focused pass: AutoPilot dashboard regions-lock coherence and local planner provider hardening; 2026-07-05 full pass: project dashboard hub :8100 + recency/Blocked-routing fixes, AutoPilot dashboard live-tps repair, loops-and-dashboards audit, repo-readiness portfolio-L5 milestone + passive pickup launcher wiring, and 2026-07-04 tool-sentinel activation telemetry; prior 2026-07-03 corpus-augmented prompt lookup revalidation and AutoPilot planner-turn tool-use hint rendering, 2026-06-22 DCP context-assembler and stack-change guard cross-refs, 2026-06-20 OpenRouter subagent/Fusion server-tool contract patterns)
 
 ## Summary
@@ -111,6 +111,76 @@ A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered con
 - **The model-stack single-source update pipeline is itself a tool surface: structured truth is compiled into generated contracts that every consumer reads, and launch/AutoPilot-resume/benchmark interpretation fail-closed on drift.** Stack-specific facts (shared models, HOT/WARM status, memory footprints, context windows, launch ports, q_scorer costs, role labels) are edited once in structured truth, compiled into generated model descriptors + `orchestration/derived/stack_priors.yaml`, then projected to ~13 consumer surfaces (27 scanner rules). The canonical entry point is `scripts/registry/stack_change_pipeline.py check [--run-promotion-gate]`; consumers keep generated priors primary with explicit, manifest-owned degraded fallbacks. Notable hardening: AutoPilot system-card rendering now **fails closed** (it refuses to fall back to a checked-in stale `system_card.md`, instead marking live role/port/tier/throughput facts unavailable and forbidding historical docs/memories/logs as stack truth) — the tooling enforces the measurement-trust-boundary rule that stale numbers must not gate decisions. [confidence: verified — stack_change_pipeline.py, validator commits 471a4d2/523cb02] [model-stack-single-source-update-pipeline.md, standardized-stack-update-pipeline-finalization.md]
 
 - **Magika (intake-398, ICSE 2025, Apache 2.0) is a 1 MB byte-embedding MLP that outperforms libmagic on text-format discrimination, but is not_applicable to EPYC's pipeline.** Contrary to reviews describing it as a CNN, the model is a shallow MLP: three fixed 512-byte windows (beginning, middle, end) are embedded at the byte level into 128-dim vectors, reshaped, passed through two 256-d Dense+GELU layers, global max-pooled for size invariance, and classified over 200+ content types with per-class thresholds calibrated for 99% precision. Training set grew from 24 M to ~100 M samples (GitHub + VirusTotal). The threshold mechanism causes abstention (falls back to `txt`/`unknown`) when confidence is below per-class calibration point — this is how the paper reports 99% F1 without claiming that accuracy on all inputs. Cold-start on the EPYC host measured 225 ms (onnxruntime init dominates); amortized per-file latency is 2.8 ms (better than the paper's 5.77 ms, consistent with the hardware). libmagic is 5-8x faster per file and has <1 ms cold-start, but struggles with text-format discrimination (Python vs Ruby vs JS). **Not applicable to EPYC**: the orchestrator's document-ingestion corpus is a five-format, already-labeled set (arXiv PDF, GitHub MD, HTML, HuggingFace MD, user-uploaded PDF) where format is declared by URL pattern, HTTP Content-Type header, or file extension. No pipeline stage (`pdf_router.py`, `document_preprocessor.py`, `fetch.py`, `research.py`) requires generic filetype detection. A trivial extension-plus-4-byte-magic check has essentially zero false-positive rate on this corpus. Live measurement confirmed the JSON/JSONL confusion documented in external reviews: Magika classified a `.json` file as `jsonl` (JSONL is line-delimited JSON, a distinct format). Integration cost would be ~80 MB of transitive dependencies (onnxruntime) and 225 ms cold-start with no accuracy gain. Reconsider only if the pipeline begins ingesting truly arbitrary binary corpora (malware, forensic dumps, archives with unknown extensions). [confidence: verified — magika-filetype-detection.md deep dive, 2026-04-17]
+
+## Compiled Update — 2026-09-14: the runtime told the model to do things the runtime itself would not accept
+
+**Confidence: verified.** The code facts are file:line records from a dive against `epyc-orchestrator@5a9442d3`.
+The fixes are nine commits merged to orchestrator main `35b05fde` (pushed to origin
+2026-09-14), and the merged tree passed 1,856 tests with 52 skipped. External failure rates are OBSERVATION-grade
+and only motivate local measurement.
+
+A research-intake audit of external harness-search write-ups turned up one defect **family** in our own REPL
+and tool layer. One component emits an instruction, pointer or argument. A second component of the same
+runtime rejects it, ignores it, or runs without it, and nothing errors. Each instance looked correct from
+either end alone:
+
+| Path | Emitter said | Receiver did | Fix |
+|---|---|---|---|
+| Finish instruction (MF-FIN-1) | loop-guard HALT and interleaved-edit rider: finish with `FINAL('done')` | status-message guard rejects `"done"`, burning nudges toward `MAX_CONSECUTIVE_NUDGES` | `0b261dde`: a turn-local sanction flag, set only where that rider/HALT was injected; every other status phrase and normal mode still rejected |
+| Tool-call arguments (TU-TC-1) | model emits malformed JSON `arguments` | parser substitutes `{}` and **runs the tool with no arguments**; tagged payloads failing `json.loads` silently skipped | `b32f683c`: deterministic repair only when `json.loads` fails, else a visible `[ERROR: tool call … NOT executed]` result plus repair counters |
+| Spill footer (TOC-SP-1) | `peek("{path}")`, `grep("{path}", pattern)` | signatures are `_peek(n, file_path)`, `_grep(pattern, file_path)`; the file was never read | `1e2a6315`: keyword arguments, same fix in `suggestions.py`; the test **executes** the emitted calls on a real spill |
+| Output classifier (CF-RX-1) | REPL wraps output in `<<<END_TOOL_OUTPUT>>>` | regex looked for `<<<\/TOOL_OUTPUT>>>`; a `">>>"` fallback hid the miss | `090c63d9`: regex built from the `types.py` delimiter constants |
+| Report handle (DCP-13) | synthesis prompt advertises `fetch_report` | the architect decision loop breaks on turn 0 in every branch, so the tool is unreachable; D\|Approved and timeout returns could hand the user handle+summary text | `2bffb45b` removes the advertisement; `57ceb7d5` returns full reports on user-facing returns; `a2af42ad` skips `worker_summarize` on rescued reports |
+| MCP bash compressor (TOC-RD-1) | compressor returns output to the client | no redaction ran | `118b65e5`: redact before and after compression; PEM rule also covers truncated keys |
+
+A related coverage gap was closed alongside (DCP-10a, `982ca87c`): the task-root discovery whitelist had no
+`.c/.cc/.cpp/.h/.hpp/.go/.rs/.java`.
+
+**The lesson is about tests.** A test that checks the emitter's string, or the guard's rejection, in
+isolation cannot see a mismatch between them. The regression tests that close this family run the emitted
+artifact through the real receiver. This is the same trap as the HS-1g "silent no-op" check for harness
+levers: establish which code path actually consumes a field before trusting the field.
+
+**Residuals, filed rather than claimed:**
+
+- TU-TC-1a: a refusal's raw echo could contain `FINAL(` / `file_write_safe` text and count as loop-guard
+  progress.
+- DCP-13a: handle text still says "Use fetch_report(…)".
+- DCP-13b: delegation-cache hits on non-rescued runs still return the short form.
+- TOC-RD-1a: the root PII pre-commit hook misses `OPENSSH`/`ED25519` headers and blocks any edit to the
+  credential-fixture test file. Widening the pattern and adding a reviewed fixture allow-list together is
+  an operator decision.
+
+**Repair is hygiene, not a solve-rate lever, and the next rows measure before they build:**
+
+- **Tool-call repair.** Never running a tool with `{}` is a correctness property whatever it does to scores.
+  But externally, stock OpenCode on GPT-OSS-20B at low reasoning logged 0 malformed-call rejections in
+  1,798 tool calls. On a model with ~98% first-try-valid calls, four repair commits produced 0 net solves.
+  Rank any further repair work by our own telemetry.
+- **MF-VBS-1, verify-before-stop.** Measure how often FINAL follows `file_write_safe` with no later
+  execution, including the "delegates execution to the user" variant. The external prior: 110 of 248
+  voluntary stops (44%) came right after an unexecuted edit.
+- **MF-NDG-1, announced action.** The empty/comment-only nudge says "Call FINAL now", which steers a
+  prose-announced action toward stopping. Measure how often empty-code turns announce an action before
+  rewording the nudge to "execute it".
+- **MF-RR-1, reasoning runaway.** When a turn hits the token cap without code, retry with thinking off and
+  a single-concise-action prompt. Externally this was the largest single promoted step (+5 of 38 tasks) in
+  a determinism-gated search. That was a single run with train/eval overlap, so measure the local
+  cutoff-without-code rate first.
+
+### Source References (2026-09-14 silent contract mismatches)
+
+- [`tool-use-eval-contract.md`](../handoffs/active/tool-use-eval-contract.md) — TU-TC-1 fix detail and TU-TC-1a residual, TU-LED-1 ledger.
+- [`multi-file-coding-completion-capability.md`](../handoffs/active/multi-file-coding-completion-capability.md) — MF-FIN-1 fix, MF-VBS-1, MF-NDG-1, MF-RR-1.
+- [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — TOC-SP-1 and TOC-RD-1 fixes, TOC-RD-1a hook gaps.
+- [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — DCP-13 hand-off fixes, DCP-13a/b residuals, DCP-10a.
+- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — CF-RX-1.
+- [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — the nine commits, merged branch and test totals.
+- intake-1351#record — the failure taxonomy (verify-before-stop, announced actions, malformed calls) and the two defects its code audit found.
+- intake-1362#04 — stock failure base rates: 110/248 stop-after-unexecuted-edit, 0/1,798 malformed-call rejections.
+- intake-1352#record — the gated JSON-repair pattern and its scope (provider-corrupted arguments).
+- intake-1355#02 — promoted mechanisms incl. reasoning-runaway repair and net-0 tool-call repairs.
+- intake-1358#record — the hand-off failure class that prompted the `fetch_report` reachability audit.
 
 ## Compiled Update — 2026-08-24: a healthy-looking dashboard can serve a frozen checkout — and the watchdog cannot see it
 

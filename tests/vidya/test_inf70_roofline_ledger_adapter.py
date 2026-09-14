@@ -75,11 +75,11 @@ def test_arm_projection_carries_the_whole_measurement():
     assert recipe["numactl_policy"] == "--interleave=all"
     assert recipe["mmap"] == "0"
     assert recipe["env"]["GGML_IQK"] == "1"
-    # the ladder decides, not this adapter. The fixture is IN this repo tree, so
-    # the honest answer is Attested; the real corpus lives under /mnt/raid0 and
-    # answers Anchored (pinned below).
+    # The adapter carries a recorded digest/presence claim but does not reread the
+    # artifact. Only the corpus dispatcher may carry an actual SC69 verification.
     q, t, reasons = ct.grade(tup)
-    assert (q, t) == ("Witnessed", "Attested"), reasons
+    assert (q, t) == ("Witnessed", "Anchored"), reasons
+    assert any("never verified against the artifact's bytes" in reason for reason in reasons)
 
 
 def test_readbw_projection_keeps_the_counting_convention():
@@ -93,7 +93,8 @@ def test_readbw_projection_keeps_the_counting_convention():
     assert "read+write counted" in tup.extra["counting_convention"]
     assert "read+write counted" in tup.claim
     q, t, reasons = ct.grade(tup)
-    assert (q, t) == ("Witnessed", "Attested"), reasons
+    assert (q, t) == ("Witnessed", "Anchored"), reasons
+    assert any("never verified against the artifact's bytes" in reason for reason in reasons)
 
 
 def test_barrier_direction_is_recorded_not_inferred():
@@ -277,11 +278,13 @@ def test_placement_proof_does_not_move_the_grade():
 
 # --- attestation honesty -----------------------------------------------------
 
-def test_in_tree_run_is_attested():
+def test_in_tree_run_is_anchored_without_actual_byte_verification():
     tup = _tuple_for("arm", arm="c5-t1", threads=1)
     assert tup.attestation_path == "tests/vidya/fixtures/inf70_run/bench-c5-t1.log"
     assert tup.attestation_present is True
-    assert ct.grade(tup)[:2] == ("Witnessed", "Attested")
+    grade = ct.grade(tup)
+    assert grade[:2] == ("Witnessed", "Anchored")
+    assert any("never verified against the artifact's bytes" in reason for reason in grade[2])
 
 
 def test_out_of_tree_run_is_anchored_not_attested(tmp_path):

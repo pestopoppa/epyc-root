@@ -85,6 +85,7 @@ def accumulator(*, n_keeps: int = 2, compounded: float = 5.20,
         "accumulator_tip": "e" * 40,
         "keeps": keeps,
         "n_keeps": n_keeps,
+        "measurement_validity": "current_snapshot",
         "compounded_bench_pct": compounded,
         "serving_floor_pct": 3.536,
         "fire_multiple": 2.5,
@@ -99,6 +100,13 @@ def accumulator(*, n_keeps: int = 2, compounded: float = 5.20,
         "fires_next": fires_next,
         "last_serving_gate": last_serving_gate,
     }
+
+
+def legacy_accumulator(**kwargs) -> dict:
+    """Readable pre-validity producer fixture; its magnitude is not current."""
+    value = accumulator(**kwargs)
+    value.pop("measurement_validity")
+    return value
 
 
 def body(*, age_s: float = 45.0, state: str = "running",
@@ -442,6 +450,13 @@ class Wiring(unittest.TestCase):
 # --------------------------------------------------------------------------- #
 class Derived(_Fixture):
 
+    def test_runtime_observations_are_measured_not_scientific_nulls_or_keeps(self):
+        self.write(body(dispositions={"runtime_observed": 5}))
+        derived = S.loop_payload()["derived"]
+        self.assertEqual(derived["measured"], 5)
+        self.assertEqual(derived["never_measured"], 0)
+        self.assertEqual(derived["kept"], 0)
+
     def test_the_negatives_are_counted_beside_the_keeps(self):
         """A board that shows only wins is how 0 promotions looked like progress
         for a month."""
@@ -591,11 +606,18 @@ class Rendering(_Fixture):
             self.assertIn(token, html, f"disposition {token!r} is not on the page")
         self.assertIn("never measured", html)
 
+    def test_runtime_observed_renders_measured_not_kept(self):
+        self.write(body(dispositions={"runtime_observed": 5}))
+        rendered = self._render(S.loop_payload())
+        self.assertEqual(rendered["threw"], [])
+        self.assertIn("runtime_observed", rendered["by_id"]["disp"])
+        self.assertIn("measured, not kept", rendered["by_id"]["disp"])
+        self.assertNotIn("never measured", rendered["by_id"]["disp"])
+
     def test_the_page_shows_what_the_operator_asked_for(self):
         self.write(body())
         html = self._render(S.loop_payload())["html"]
-        for token in ("6 / 10",          # iterations done/planned
-                      "0.973%",          # the noise floor it gates on
+        for token in ("0.973%",          # the noise floor it gates on
                       "cccccccccccc",    # champion head (truncated)
                       "4.6%",            # GPU busy share
                       "+3.100%",         # a kept candidate's effect
@@ -609,7 +631,6 @@ class Rendering(_Fixture):
         self.write(body(gpu={}))
         out = self._render(S.loop_payload())
         gpu = out["by_id"]["gpu"]
-        self.assertIn("not reported", out["by_id"]["tiles"])
         self.assertIn("reports <strong>nothing</strong>", gpu)
         # STRUCTURAL, not a substring sweep: the panel's prose legitimately
         # mentions percentages ("rather than 0% busy", "95.4% idle") while
@@ -641,7 +662,7 @@ class Rendering(_Fixture):
         self.assertIn("var(--good)", gpu,
                       "the GPU meter is dark on the producer's own body")
         self.assertNotIn("reports <strong>nothing</strong>", gpu)
-        self.assertNotIn("not reported", out["by_id"]["tiles"])
+        self.assertNotIn("reports <strong>nothing</strong>", gpu)
 
     def test_an_unknown_gpu_dialect_names_the_READER_on_the_page(self):
         """And the mutation half of THAT: the panel must still go dark — while
@@ -672,6 +693,168 @@ class Rendering(_Fixture):
         self.assertIn("acc-fill", card)
         self.assertNotIn("acc-fill hot", card)
         self.assertNotIn("Fires next iteration", card)
+
+    def test_noncurrent_and_legacy_measurements_await_remeasurement(self):
+        fixtures = {
+            "stale": {
+                **accumulator(n_keeps=3, compounded=5.20, since_gate=2),
+                "measurement_validity": "stale_external_tip_advance",
+                "compounded_bench_pct": None,
+                "progress_fraction": None,
+                "historical_compounded_bench_pct": 5.20,
+            },
+            "unknown": {
+                **accumulator(n_keeps=3, compounded=5.20, since_gate=2),
+                "measurement_validity": "unknown_legacy",
+                "compounded_bench_pct": None,
+                "progress_fraction": None,
+                "historical_compounded_bench_pct": 5.20,
+            },
+            "missing-validity-legacy": legacy_accumulator(
+                n_keeps=3, compounded=5.20, since_gate=2),
+        }
+        for name, acc in fixtures.items():
+            with self.subTest(name=name):
+                self.write(body(accumulator=acc))
+                card = self._render(S.loop_payload())["by_id"]["accumulator"]
+                self.assertIn("awaiting remeasurement", card)
+                self.assertIn("2/4", card, "cadence disappeared with stale magnitude")
+                self.assertNotIn("acc-fill", card)
+                self.assertNotIn("+0.00%", card)
+                self.assertNotIn("5.2% / 8.8%", card)
+                if name != "missing-validity-legacy":
+                    self.assertIn(
+                        "historical estimate (not current): +5.20%", card)
+
+    def test_current_validity_without_a_finite_magnitude_is_not_zero(self):
+        acc = accumulator(n_keeps=3, compounded=5.20, since_gate=3)
+        acc["compounded_bench_pct"] = None
+        acc["progress_fraction"] = None
+        self.write(body(accumulator=acc))
+        card = self._render(S.loop_payload())["by_id"]["accumulator"]
+        self.assertIn("current snapshot has no finite compounded magnitude", card)
+        self.assertIn("awaiting remeasurement", card)
+        self.assertIn("3/4", card)
+        self.assertNotIn("+0.00%", card)
+        self.assertNotIn("acc-fill", card)
+
+    def test_separate_live_accumulator_does_not_turn_stale_gain_into_canonical_progress(self):
+        acc = accumulator(n_keeps=3, compounded=5.20, since_gate=2)
+        acc.update({
+            "measurement_validity": "stale_external_tip_advance",
+            "compounded_bench_pct": None,
+            "progress_fraction": None,
+            "historical_compounded_bench_pct": 5.20,
+        })
+        self.write(body(accumulator=acc))
+        payload = S.loop_payload()
+        payload["champion_vs_production"] = {
+            "freshness": {"state": "fresh", "age_s": 10},
+            "measured": True,
+            "production": {"resolved": True},
+            "baseline": {"kind": "production kernel", "label": "v9",
+                         "commit": "a" * 40},
+            "champion": {"measured_commit": "b" * 40,
+                         "loop_champion_head": "c" * 40},
+            "baseline_check": "current",
+            "effect_fraction": 0.05,
+            "supersession": {"detail": "loop advanced beyond measured champion"},
+            "baseline_supersession": None,
+        }
+        out = self._render(payload)["by_id"]
+        accumulator_card = out["accumulator"]
+        self.assertIn("awaiting remeasurement", accumulator_card)
+        self.assertIn("2/4", accumulator_card)
+        self.assertIn("historical estimate (not current): +5.20%",
+                      accumulator_card)
+        self.assertNotIn("+0.00%", accumulator_card)
+        self.assertNotIn("of the way to the", accumulator_card)
+
+    def test_stale_threshold_schedule_is_reported_but_not_freshly_warranted(self):
+        acc = accumulator(n_keeps=3, compounded=9.10, fires_next=True,
+                          since_gate=2, next_trigger="threshold")
+        acc.update({
+            "measurement_validity": "stale_external_tip_advance",
+            "compounded_bench_pct": None,
+            "progress_fraction": None,
+            "historical_compounded_bench_pct": 9.10,
+        })
+        self.write(body(accumulator=acc))
+        card = self._render(S.loop_payload())["by_id"]["accumulator"]
+        self.assertIn("PRODUCER-REPORTED SCHEDULING — UNVERIFIED", card)
+        self.assertIn("no current finite magnitude and positive threshold", card)
+        self.assertNotIn("Fires next iteration — trigger", card)
+        self.assertNotIn("acc-fill", card)
+
+    def test_stale_both_schedule_keeps_due_cadence_but_not_threshold_warrant(self):
+        acc = accumulator(n_keeps=4, compounded=9.10, fires_next=True,
+                          since_gate=4, next_trigger="both")
+        acc.update({
+            "measurement_validity": "unknown_legacy",
+            "compounded_bench_pct": None,
+            "progress_fraction": None,
+            "historical_compounded_bench_pct": 9.10,
+        })
+        self.write(body(accumulator=acc))
+        card = self._render(S.loop_payload())["by_id"]["accumulator"]
+        self.assertIn("PRODUCER-REPORTED SCHEDULING — UNVERIFIED", card)
+        self.assertIn("retained 4/4 cadence is due", card)
+        self.assertIn("both", card)
+        self.assertNotIn("estimate cleared the threshold", card)
+
+    def test_stale_cadence_only_schedule_remains_a_valid_cadence_display(self):
+        acc = accumulator(n_keeps=4, compounded=2.10, fires_next=True,
+                          since_gate=4, next_trigger="cadence")
+        acc.update({
+            "measurement_validity": "stale_external_tip_advance",
+            "compounded_bench_pct": None,
+            "progress_fraction": None,
+            "historical_compounded_bench_pct": 2.10,
+        })
+        self.write(body(accumulator=acc))
+        card = self._render(S.loop_payload())["by_id"]["accumulator"]
+        self.assertIn("Fires next iteration — trigger", card)
+        self.assertIn("cadence", card)
+        self.assertIn("4/4", card)
+        self.assertNotIn("PRODUCER-REPORTED SCHEDULING — UNVERIFIED", card)
+        self.assertNotIn("acc-fill", card)
+
+    def test_nonpositive_threshold_never_draws_or_describes_threshold_progress(self):
+        for threshold in (0.0, -1.0):
+            with self.subTest(threshold=threshold):
+                acc = accumulator(n_keeps=2, compounded=5.20)
+                acc["fire_threshold_pct"] = threshold
+                acc["progress_fraction"] = 1.0
+                self.write(body(accumulator=acc))
+                card = self._render(S.loop_payload())["by_id"]["accumulator"]
+                self.assertIn("positive threshold unavailable", card)
+                self.assertNotIn("to serving gate", card)
+                self.assertNotIn("acc-fill", card)
+
+    def test_separate_live_accumulator_requires_a_positive_threshold_for_progress(self):
+        acc = accumulator(n_keeps=2, compounded=5.20)
+        acc["fire_threshold_pct"] = 0.0
+        acc["progress_fraction"] = 1.0
+        self.write(body(accumulator=acc))
+        payload = S.loop_payload()
+        payload["champion_vs_production"] = {
+            "freshness": {"state": "fresh", "age_s": 10},
+            "measured": True,
+            "production": {"resolved": True},
+            "baseline": {"kind": "production kernel", "label": "v9",
+                         "commit": "a" * 40},
+            "champion": {"measured_commit": "b" * 40,
+                         "loop_champion_head": "c" * 40},
+            "baseline_check": "current",
+            "effect_fraction": 0.05,
+            "supersession": {"detail": "loop advanced beyond measured champion"},
+            "baseline_supersession": None,
+        }
+        out = self._render(payload)["by_id"]
+        accumulator_card = out["accumulator"]
+        self.assertIn("+5.20%", accumulator_card)
+        self.assertIn("positive threshold unavailable", accumulator_card)
+        self.assertNotIn("of the way to the", accumulator_card)
 
     def test_the_accumulator_card_highlights_when_it_fires_next(self):
         """The mutation half: once the compounded gain clears the threshold the
@@ -733,17 +916,19 @@ class Rendering(_Fixture):
         self.assertIn("-2.18%", card)
         self.assertIn("+5.96%", card)
 
-    def test_a_run_with_no_serving_tier_renders_a_graceful_accumulator_empty(self):
+    def test_a_run_with_no_accumulator_report_renders_a_graceful_empty(self):
         """`accumulator === null` must render nothing measured — not "0% to the
         gate", which would fabricate a bundle. Distinct from an unreadable loop."""
         self.write(body(accumulator=None))
         card = self._render(S.loop_payload())["by_id"]["accumulator"]
-        self.assertIn("no serving tier", card)
+        self.assertIn("No accumulator reported for this run", card)
+        self.assertIn("does not establish whether the run measures serving or bench",
+                      card)
         self.assertNotIn("acc-fill", card, "a null accumulator drew a progress bar")
         self.assertNotIn("to serving gate", card)
 
     def test_an_absent_loop_does_not_claim_no_accumulator(self):
-        """No readable loop is a different fact from a run with no serving tier;
+        """No readable loop is a different fact from a run with no accumulator;
         the card must not conflate the two."""
         self.absent()
         card = self._render(S.loop_payload())["by_id"]["accumulator"]

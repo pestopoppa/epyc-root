@@ -1,6 +1,64 @@
+> **ARCHIVED 2026-09-08 — RETIRED AS STALE BY OPERATOR RULING. DO NOT EXECUTE THIS RUNBOOK.**
+> Operator ruling 2026-09-08: *"yes, they seem old/stale items if I understood correctly. Just close them."*
+> Retired with its index rows deleted (`RTG-44` in `../active/routing-and-optimization-index.md`; `OP-45`
+> in the master-index operator-decision queue). Kept for lineage only.
+>
+> **Every executable premise in this document expired between 2026-07-30 and 2026-08-12 — one to three
+> weeks after it was written — and it was never revisited.** Verified against the live orchestrator tree
+> on 2026-09-08:
+>
+> 1. **The "quarters-only stack" premise INVERTED (2026-07-31, orchestrator `982adb0c` "topology: retire
+>    quarters, deploy 1 full + 2 halves").** This runbook's core safety argument was *"the halves/fulls
+>    8070 / 8085 / 8072 are NOT launched, so no llama-server needs restarting."* Those three ports are now
+>    exactly the **primary live fleet**. Every quarterable role declares FULL + HALF_A + HALF_B
+>    (`orchestration/stack_topology.yaml:111-137, 252-280, 289-341`), and since the 2026-08-01 W1 cutover
+>    **no role declares a quarter at all** (`scripts/server/stack_numa.py:126-128`). The low-blast-radius
+>    argument is inverted: the instances this document calls unlaunched are the ones now serving.
+> 2. **Both §1 diffs are unappliable — `NUMA_CONFIG` is no longer a Python literal in the file they patch.**
+>    It is loaded at runtime from `orchestration/stack_topology.yaml` (`scripts/server/stack_numa.py:322,472`,
+>    `_load_numa_config`). `scripts/server/stack_numa.py` today contains zero occurrences of
+>    `ingest_long_context` or `worker_math`.
+> 3. **The symbols WP-9's diff edits were DELETED on 2026-08-11 (`f4230b22`), as "a shape that could not be
+>    used".** `NUMA_NODE0` / `NUMA_NODE1` paired a 48-physical-core cpuset with 96 threads — precisely what
+>    `_assert_instance_invariants` fatals on. Per the deletion note at `stack_numa.py:140-152`, *"the only
+>    reachable effect of a role ever declaring one was an import-time AssertionError."* **The WP-9 hunk in §1
+>    would therefore have crashed the launcher at import even on the day it was written** — the "one-line
+>    cpuset edit, low blast radius" headline was never true.
+> 4. **All three topology hashes are void.** The baseline `8c8cfcbb13d2611d` has **zero** occurrences in the
+>    live worktree; the canonical matrix now reads `topology_hash: "171f86f9188211e9"`
+>    (`orchestration/contention_matrix.yaml:10`, `measured_at: 2026-08-01`). The §3d pin sweep was already
+>    performed against that hash on 2026-08-12 (`b92845c2`), now 72 pins. Neither precomputed target
+>    (`de208a54c09f9a17`, `13617d67910fd34a`) was ever stamped, and neither is reachable from current config.
+>
+> **WP-9's design goal is structurally superseded, not merely unappliable.** It asked to statically re-pin
+> ingest's single half to the other NUMA half so frontdoor and ingest could be core-disjoint. Under the
+> current topology each role declares **both** halves and `placement_policy: burst_prefer_split` selects
+> between them at dispatch time — disjoint concurrent placement is now a runtime property of the placement
+> state machine, not a static cpuset assignment. There is nothing left to re-pin.
+>
+> **WP-10's defect is FIXED, and applying this runbook today would REINTRODUCE it.** WP-10 reported that
+> `worker_math` holds no region locks because it has no `NUMA_CONFIG` entry. Since the 2026-08-01 W1 cutover
+> `worker_math` is an explicit topology alias — `_RUNTIME_SELECTED_ROLE_ALIASES["worker_math"] =
+> "worker_general"` (`src/config/models.py:348-359`) gives it byte-identical URLs, so
+> `_infer_topology_role_for_urls` (`src/llm_primitives/backend.py:104-127`) resolves it to `worker_general`,
+> and `lock_role = topology_role or role` (`src/llm_primitives/inference.py:229`) looks its regions up under
+> `worker_general`. A `worker_math` decode acquires `worker_general`'s region locks today. This is precisely
+> the *"cleaner-but-code alternative"* §1 of this document describes and then sets aside as out of scope; it
+> shipped anyway via WP-12's fleet layer (landed 2026-07-23, flag live). **Critically, the config mirror this
+> runbook recommends would now be actively harmful:** adding `worker_math` to `stack_topology.yaml` puts it
+> into `topology_roles`, so `_infer_topology_role_for_urls` takes its `if role in topology_roles: return role`
+> early exit, restoring the separate lock namespace the alias was introduced to eliminate — and growing the
+> contention matrix for a role that is physically identical to `worker_general`.
+>
+> **Nothing was lost by archiving.** The WP-9 and WP-10 tasks are owned by
+> [`../active/within-role-placement-state-machine.md`](../active/within-role-placement-state-machine.md)
+> (lines ~403-404), which remains active; those two rows were annotated on 2026-09-08 with the findings
+> above so no future session dispatches against this void prep. Their checkbox state was deliberately left
+> to the owning session (`agents/shared/INVARIANTS.md` — never tick another agent's checkbox).
+
 # WP-9 + WP-10 Lineup / Recert Event — Turnkey Operator Procedure (PREP ONLY)
 
-**Status:** PREPARED, NOT EXECUTED. This document is a ready-to-run runbook. No config was
+**Status:** PREPARED, NOT EXECUTED — **AND NOW VOID; SEE THE ARCHIVE BANNER ABOVE.** This document is a ready-to-run runbook. No config was
 edited, nothing was committed, no server was restarted, no inference was run while preparing it.
 **Owner of execution:** operator (this is a measured-role NUMA change → §H recert cascade → human-gated bench).
 **Created:** 2026-07-21 · **Prep author:** read-only investigation session.

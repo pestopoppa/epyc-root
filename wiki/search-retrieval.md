@@ -2,8 +2,84 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
+**Last compiled**: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
 (measured 25× more perturbing than INT8 quantization, 62.5% top-1 agreement, OP-24 decision), the (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
+
+## Compiled Update — 2026-09-14: code-context discovery gets a zero-decode instrument, and graph neighbours attach to lexical hits instead of forming a stage
+
+**Confidence: verified** for the dataset and scorer facts, which dives re-derived from released data and
+code at pinned SHAs, and for the DCP code facts. The external accuracies are agentic cloud-model numbers
+and are **not local targets**.
+
+**Why ContextBench is the primary DCP-10 instrument.** DCP's discovery step (`discover_candidates`) emits a
+set of files with line ranges, and so does its packer. ContextBench's gold is the same shape: file +
+line-span contexts traced from the gold patch through call, inheritance and data-flow dependencies,
+including the **non-edited** context a pre-assembled bundle must carry. It therefore scores precision, which
+is the budget question, and not only edit-site hit rate. Scoring needs no decoding: one JSONL row per
+instance with `pred_files` / `pred_spans`, and one checkout per (repo, `base_commit`), 1,136 in all. Those
+checkouts go under `CONTEXTBENCH_TMP_ROOT` on raid, never system tmp. The data is 26 MB, and the run starts with Lite Python (266) plus all C/C++ (128).
+
+**The shipped scorer must be wrapped before any aggregate is trusted.** It micro-averages, excludes errored
+or empty predictions, scores empty gold or empty prediction as a vacuous 1.0, and falls back to the gold
+patch for EditLoc. It also parses `.h` as C and mangles dot-paths with `lstrip("./")`. The wrapper
+macro-averages per task and counts errored or empty predictions as recall 0. It excludes the 3 empty-gold
+tasks and the 42 tasks whose gold contains solver scratch files. It flags the third-party-audit-reported
+88 unresolvable-path tasks (mechanism confirmed, count not re-verified), prefix-strips paths, drops EditLoc,
+and omits Symbol granularity for C/C++. Two scope limits apply. Gold median is 254 lines per task, so under
+the live 2000-token seed budget recall is **budget-capped** and must be reported at a fixed budget (live, 2x,
+4x), with post-pack spans kept separate from discovery spans. And the benchmark's C++ repos are header-only
+libraries, not representative of ggml-style code. The paper's "simple scaffolds win" reading rests on one
+closed-model run per scaffold scoring agent-*declared* contexts; do not carry it over.
+
+**Loc-Bench V1 is the secondary Python ranking cross-check (DCP-10b).** It supplies file Acc@5/@10 and
+Function Acc@10 via the shipped `eval_metric`. It has 560 issues from **165** repos (one paper that re-ran
+it misstates this as 5). Only the 242 bug issues postdate the model cutoff, so bug-only and all-category
+scores are reported separately. Ten instances are independently flagged invalid. Rows stay in scratch and are never
+vendored or committed. The published headline accuracies are cloud-agent numbers:
+an independent GPT-5.2 re-run got file Acc@5 65.3.
+
+**Graph expansion: attach, score, don't assume.** Two findings bound the design:
+
+- **The cleanest evidence is a matched toggle.** One CLI agent with and without deterministic,
+  confidence-filtered graph neighbours appended to its grep output gained +5.4 to +8.1 File Recall@5
+  (2 cloud backbones × 2 benchmarks, Python, no CIs) and ran faster. The paper's stronger claim, that graph
+  evidence helps *only* when embedded in the lexical loop, is a cross-system inference; no same-agent
+  separate-tool arm exists.
+- **A confounded fine-tuned 7B ablation leans the same way.** Removing entity search or BM25 cost more than
+  removing graph traversal. The defensible prior is lexical entry first and graph second.
+
+For DCP this means attaching 1-hop GitNexus edges (confidence ≥ 0.9) to lexical hits in the **same single
+pass**; DCP has no agent loop to host a separate stage. The result is scored against lexical-only at a
+**fixed candidate budget**. Expansion is not assumed to dominate. The paper's recall-dominance argument
+needs a non-evicting context, and DCP's packer evicts, so appended neighbours displace lexical hits. Today
+GitNexus neighbourhoods are design intent only: `context_discovery.py` discovery is ColGREP/lexical-only.
+DCP-10 fixes `max_files` and runs five arms: task-root lexical, ColGREP, ColGREP plus appended edges, edges
+as re-rank only, and a pinned-SHA `ripwire --for/--pack-task`.
+
+**The C/C++ arm needed a code fix first (DCP-10a, `982ca87c`).** The task-root whitelist had no
+`.c/.cc/.cpp/.h/.hpp/.go/.rs/.java`. Codemaps stay `.py`-only, so the C/C++ arm scores discovery, not
+codemaps.
+
+**A self-reported tool head-to-head is not evidence about our GitNexus rule.** ripwire, a deterministic
+tree-sitter call-graph CLI ranked by personalised PageRank seeded from lexical anchors, reports 27W/7L/14T
+against GitNexus. That tally came from a single judge on the ripwire project, on 48 project-authored
+questions, with no committed questions, outputs or scores. The opposing arm was a CLI-only GitNexus 1.6.9
+with MCP verbs, embeddings and hooks off and a 512 KB file cap. We run 1.6.8. Its LocBench "held-out" slice
+was partly train-side after a rename re-salted the split. The CLAUDE.md GitNexus-before-edit rule is
+unchanged; it is a human-only path. The fair comparison is DCP-10c: frozen questions weighted to
+callers/impact, GitNexus run with its intended impact/context workflow, raw outputs committed, and a judge
+outside both projects.
+
+### Source References (2026-09-14 discovery instrument)
+
+- [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — DCP-10 arms and scorer-wrapping rules, DCP-10a/b/c, the GitNexus-neighbourhood design note.
+- [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — instrument selection (ContextBench primary, Loc-Bench secondary) and the C/C++ whitelist commit.
+- intake-1366#03 and intake-1366#04 — zero-decode scoring contract, scorer divergences and gold-data defects.
+- intake-1366#record — why ContextBench is the primary instrument and its C++ / budget-cap scope limits.
+- intake-1356#record — Loc-Bench V1 construction, contamination scope and the confounded ablation.
+- intake-1364#03 — the matched on/off graph-neighbour toggle (+5.4 to +8.1 File Recall@5).
+- intake-1364#record — why expansion is not assumed to dominate under an evicting packer.
+- intake-1346#03 — the self-reported ripwire vs GitNexus tally and its arm configuration.
 
 ## Compiled Update — 2026-08-25: the encoder never applies its trained prefixes, and a zero-index agent questions whether the index earns its keep
 

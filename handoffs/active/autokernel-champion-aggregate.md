@@ -823,10 +823,12 @@ vacuous-pass guard**: the guard is not a fold-window one-off, it is the shape ev
 
 ---
 
-## CHAMPION MAXIMUM-PERFORMANCE HEADLINE — 2026-09-08 (the postable numbers)
+## CHAMPION MAXIMUM-PERFORMANCE HEADLINES — 2026-09-08, TWO MODELS (the postable numbers)
 
 **Canonical, citable artifact: [`docs/design/champion-max-performance-20260908.md`](../../docs/design/champion-max-performance-20260908.md).**
 Quote from there; do not re-derive from this summary and do not re-type the recipe.
+
+### First headline model — Qwen3.8-27B-Q8_0 (dense, DFlash2 drafter)
 
 Champion `ef81196d5` (everything folded), Qwen3.8-27B-Q8_0, MI210 gfx90a, DFlash2 drafter, canonical serving
 recipe `qwen3.8-27b-q8-gpu-dflash2-np4` with **only `np` varied**, 3 launches per point, **residency `proven` on
@@ -852,6 +854,72 @@ commit `48a6f6f2`.
 
 - [x] **HEAD-1 — file the maximum-performance sweep as a canonical citable artifact** ✅ 2026-09-08
       (`docs/design/champion-max-performance-20260908.md`; referenced from this page).
+
+### SECOND HEADLINE MODEL — Qwen3.6-35B-A3B-MTP-Q8_0, same champion, same GPU (2026-09-08 19:37:30-20:14:00Z)
+
+Recipe `qwen3.6-35b-a3b-q8-gpu-mtp` (**new**, research `c3e362a1`), **MTP self-drafting — no separate
+drafter**, `draft_n_max=4`, only `np` varied. 24 launches, **residency `proven` 24/24**, 2,952 samples,
+sclk flat 1700 MHz at *every* point. Unit: **LAUNCH**. Details and per-point `recipe_hash`:
+`docs/design/champion-max-performance-20260908.md` §6.
+
+| slots (`np`) | aggregate tok/s | per slot | p95 dev | peak VRAM | launches |
+|---:|---:|---:|---:|---:|---:|
+| **1** | **112.68** | 112.68 | **2.70%** | 36.61 GiB | **6** |
+| 2 | 130.54 | 65.27 | 1.38% | 36.90 GiB | 3 |
+| 4 | 189.57 | 47.39 | 1.13% | 37.50 GiB | 3 |
+| 8 | 242.75 | 30.34 | 1.23% | 38.78 GiB | 3 |
+| 12 | 268.12 | 22.34 | 1.88% | 40.16 GiB | 3 |
+| **16** | **310.96** | 19.43 | 2.53% | 41.37 GiB | 3 |
+
+> **112.68 tok/s single user · 310.96 tok/s aggregate at 16 slots — and 16 slots is the HIGHEST MEASURED
+> POINT, NOT the ceiling.**
+
+- **IT HAS NOT SATURATED.** Marginal aggregate gain per step: +15.85% (1→2), +45.22% (2→4), **+28.05%**
+  (4→8), +10.45% (8→12), **+15.98%** (12→16). The last step is the *second largest* — the decay is not even
+  monotonic. Peak VRAM at np=16 is **41.4 of 64 GiB**, growing ~1.2 GiB per doubling: memory is not the
+  constraint either. 24 and 32 slots were offered and the operator declined (*"lets stop here"*). Filed as
+  **HEAD-3** so the unfinished curve is a recorded decision, not a gap.
+- **IT BEATS THE 27B AT BOTH ENDS — and this is ARCHITECTURE, NOT A KERNEL RESULT.** +42.2% single-user
+  (112.68 vs 79.25) and +73.6% peak aggregate (310.96 vs 179.12), despite being the larger file on disk
+  (35.21 GiB vs 27.05 GiB, or 28.97 GiB counting the 27B's DFlash2 drafter). **Same binary on both runs.**
+  The 27B is `qwen35`, dense, 65 blocks, d=5120, FFN 17408 — every token reads essentially all of it. The 35B
+  is `qwen35moe`, 41 blocks, d=2048, **8 of 256 experts routed per token** plus one shared expert of width
+  512. Decode is weight-bandwidth-bound, so the rate tracks bytes *read per token*, not bytes on disk.
+  **Anyone who reads "35B > 27B" as a kernel result concludes the champion scales with model size, which is
+  the opposite of true.**
+- **THE TWO MODELS GET DIFFERENT OPERATING-POINT ADVICE, structurally.** The 27B curve turns over at 4→8
+  (+6.8% aggregate for ~half the per-user rate) → **np=4**, 93.7% of peak, ~42 tok/s per user. The 35B is
+  still climbing at 16 → **np=16** of what was measured, 311 aggregate, ~19 tok/s per user. A dense model
+  saturates the memory system early; an MoE at low batch does not, because extra concurrent tokens route
+  into expert reads that are already being paid for.
+- **THE np=1 SPREAD IS A PROPERTY OF THIS MODEL, NOT A SMALL SAMPLE.** Doubling n did not tighten it:
+  2.350% p95 dev at n=3 → **2.696% at n=6** (slightly *wider*). Against the 27B's **0.44%** at the same slot
+  count on the same GPU in the same window — a **6.1×** difference. **Every single-user headline for the 35B
+  must carry that ~2.7% between-launch dispersion**; a 27B-grade ±0.5% precision is not available on this
+  model at np=1 and implying one is a `FLOOR-UNIT-1` violation.
+
+- [x] **HEAD-2 — Qwen3.6-35B-A3B GPU concurrency sweep measured and filed** ✅ 2026-09-08
+      (24 launches, residency proven 24/24; recipe `qwen3.6-35b-a3b-q8-gpu-mtp` committed at research
+      `c3e362a1`; numbers in `docs/design/champion-max-performance-20260908.md` §6).
+- [ ] **HEAD-3 — the 35B concurrency ceiling is UNMEASURED above np=16.** The curve had not saturated
+      (+15.98% on the last step, the second-largest of the six) and VRAM stood at 41.4 of 64 GiB. `np=24`
+      and `np=32` were offered on 2026-09-08 and the operator said *"lets stop here"* — so this is a
+      **recorded decision, not an oversight**. Reopening costs ~2 launches × 2 points ≈ 12 min of exclusive
+      GPU. Blocked on nothing but an operator go for the host. Until it is run, **never quote 310.96 tok/s
+      as a maximum** — it is the highest measured point.
+- [ ] **HEAD-4 — promote the 35B sweep out of scratch into the research repo `data/`.** The 27B sweep was
+      promoted at `48a6f6f2`; the 35B raw JSON/logs are still only in
+      `/mnt/raid0/llm/tmp/maxperf-35b-20260908/`, which is not evidence anybody else can reach. Same
+      treatment, same commit shape. Blocked on nothing.
+- [ ] **MTP-27B-1 — the 27B is ALSO MTP-capable, and that is the missing PROD-BASE-1 denominator.** The
+      Qwen3.8-27B GGUF carries the MTP head (`blk.64.nextn.eh_proj/.enorm/.hnorm/.shared_head_norm`,
+      `qwen35.nextn_predict_layers = 1`) — the same shape the 35B has at `blk.40`. It could not be expressed
+      as a recipe until `c3e362a1` made `spec_decode.drafter` optional, so it has never been measured through
+      the loop. **MTP self-draft is exactly what frozen production supports for this model** (v9 cannot load
+      the DFlash2 GGUF at all), so a `qwen3.8-27b-q8-gpu-mtp` recipe is the denominator PROD-BASE-1 needs.
+      Write the recipe, sweep `np`, and the champion-vs-production comparison becomes measurable on a lane
+      production actually has. Depends on PROD-BASE-1 for the production-side arm; the champion-side arm is
+      runnable today. Blocked on nothing but host time.
 
 ## ⚠ THERE IS NO CHAMPION-VS-PRODUCTION RATIO FOR THIS CONFIGURATION, AND THERE NEVER WAS ONE
 
@@ -911,3 +979,16 @@ surface. What is retracted is its use as a **rate**. Compiled into the wiki with
 
 - [x] **METH-BENCH-1 — the bench-vs-serving distinction is recorded where headlines are formed** ✅ 2026-09-08
       (this page, `docs/design/champion-max-performance-20260908.md`, and the wiki compile).
+
+**RATIFIED INTO THE CONSTITUTION BY THE OPERATOR, 2026-09-08 — this rule is no longer campaign-local.**
+The operator ran `scripts/operator/ratify_measurement_bench_vs_serving_20260908.sh --apply`; committed as
+`b05c4433` (154 additions to `MEASUREMENT.md`, 35 to the agent digest, zero deletions, no code, no threshold,
+no gate behaviour changed). This caution is now **`INSTRUMENT-CLASS-1`** in `MEASUREMENT.md`, alongside
+**`FLOOR-UNIT-1`** (a floor carries its `unit`, is calibrated at n≥24, and records `n` and an interval) and
+**`BOUNDED-NULL-1`** (a null states the effect sizes its power excludes and cites a both-directions positive
+control). `autokernel-rebuild-program.md` → **RATIFY-MEAS-1** is closed.
+
+**The open successor is `RATIFY-MEAS-2`** (`autokernel-rebuild-program.md`): there is **no `P-SERVE-*`
+protocol row in the registry**, so every serving number this campaign quotes — including both headlines above —
+formally cites no protocol. That is the next amendment, and it was deliberately left out of RATIFY-MEAS-1
+rather than smuggled in.

@@ -2,7 +2,7 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
+**Last compiled**: 2026-09-08 (late): **a long-unruled operator-queue row goes bad in two different ways — STALE and MISFILED — and the screen is "what state changes when the operator answers this?", never "is this old?"**; one row retired and archived with every executable premise expired (and executing it would have re-introduced a fixed defect), its sibling row DELETED as misfiled while its document stayed active (~80% live premises, 12 present-tense citations, maintained the day before) because the question it posed was unanswerable; plus the general rule that **a record's correction carries more information than the original claim** — keep the superseded framing beside it, name the heuristic that produced the error, and give every closed item its re-open condition; earlier: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
 **Sources**: 55+ documents
 
 ## Compiled Update — 2026-09-08: the watermark saga closed as a fix — selection is content-hash against the tracked manifest, mtime never consulted
@@ -2395,3 +2395,87 @@ successor should advance.
 - [`progress/2026-09/2026-09-02-adhoc-audit.md`](../progress/2026-09/2026-09-02-adhoc-audit.md) § 6 — the
   write-side half found one day earlier: `--touch` run inside a throwaway worktree, and the
   "the wiki compile step is not worktree-safe" rule quoted above.
+
+## Two ways a long-unruled queue row goes bad — STALE and MISFILED — and the screen that tells them apart (2026-09-08)
+
+**Confidence: verified** — both dispositions below were executed the same afternoon on two rows of
+the same operator decision queue, each against file-level evidence, and they came out opposite ways.
+
+### The screen
+
+A queue row that has sat unruled for weeks invites one question and answers a different one. The
+useful screen is **not** "is this old?" — age is a prompt to look, never evidence that a decision is
+pending. It is:
+
+> **What state changes when the operator answers this?**
+
+If a specific state changes, the row is live (however old). If **nothing** changes — if there is no
+answer the operator could give that moves anything — the row is **misfiled**, and the remedy is to
+delete the *row*, never to archive the *document* it points at.
+
+### STALE — every executable premise expired (OP-45, retired and archived)
+
+A turnkey operator procedure prepared 2026-07-21 was retired because each premise it stood on had
+expired between 2026-07-30 and 2026-08-12:
+
+- its **safety argument inverted** — the three ports it called idle became the primary live fleet
+  when quarters were retired fleet-wide;
+- both of its **diffs no longer apply** — the config it patched moved files, and the two constants
+  it edited were **deleted** in August as a shape that paired a 48-core cpuset with 96 threads, i.e.
+  applying the prep would have raised an import-time assertion in the launcher;
+- all three of its **precomputed topology hashes are void**;
+- and **executing it would have re-introduced a defect already fixed** in August by a different
+  mechanism, while its design goal had been *superseded* — the property it hard-coded as a static
+  cpuset is now a dispatch-time policy.
+
+Disposition: archive the document, delete both index rows, and **annotate — never tick — the two
+real tasks in the handoff that actually owns them**. Superseded is not the same as done, and only
+the owning session may flip its own checkboxes.
+
+### MISFILED — the question was not answerable (OP-44, row deleted, document KEPT active)
+
+The sibling row asked the operator to rule on **203 items** in a document that **was never a task
+list and was never meant to carry checkboxes**; the dispatchable work it describes already lives,
+with real checkboxes, in the owning handoffs. There was no ruling that would have changed any state.
+
+And it was emphatically **not** stale: ~**80 %** of its premises are still live, **12 files** cite it
+in the present tense, and it was last maintained **the day before the screen**. So the document
+stayed in `active/`, its domain-index row was **kept** (deleting it would have orphaned the file)
+with the `Next action` rewritten to say what the file actually is — **a cited reference snapshot** —
+and only the operator-queue row was deleted.
+
+**The recorded defect is the author's own**: the row had been surfaced into the operator queue on a
+*six-weeks-unruled* heuristic, without first checking whether the question it posed was answerable.
+An age-based surfacing rule with no answerability check manufactures work for the one person whose
+time the queue exists to protect.
+
+### Why the correction is worth more than the claim it replaced
+
+Both entries above, and the same day's correction of a measurement's "why" framing, share a shape
+worth naming: **a record's correction carries strictly more information than the original claim
+did.** The original asserts one thing; the correction asserts the right thing **plus** the reason
+the wrong thing was believable — which is the only part that generalizes to the next reader. Three
+practices follow, all applied here:
+
+1. **Write the superseded framing next to the correction**, not over it. A correction that silently
+   overwrites teaches nothing; the reader cannot tell which trap they were about to fall into.
+2. **Name the author of the error, including yourself.** The OP-44 entry is only useful because it
+   records *which heuristic* produced the misfiling.
+3. **A closed item should carry its re-open condition** — the same day's thread-count optimum was
+   detectable as expired only because its closure had stated the condition under which it stopped
+   being true.
+
+### Source References (2026-09-08, queue triage)
+
+- [`progress/2026-09/2026-09-08-ak-rebuild-20260828.md`](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md)
+  — § *"Operator-queue triage: OP-45 retired as stale, OP-44 deleted as MISFILED"*, with the
+  premise-by-premise table and the named defect.
+- [`handoffs/active/within-role-placement-state-machine.md`](../handoffs/active/within-role-placement-state-machine.md)
+  — the handoff that owns the two real tasks, annotated with the retirement evidence and
+  deliberately left un-ticked.
+- [`handoffs/active/design-backlog-triage-2026-07-23.md`](../handoffs/active/design-backlog-triage-2026-07-23.md)
+  — the misfiled row's target: a zero-checkbox reference snapshot, still live, still cited.
+- [`handoffs/archived/wp9-wp10-lineup-event-prep.md`](../handoffs/archived/wp9-wp10-lineup-event-prep.md)
+  — the archived procedure, carrying its expired premises in the archival banner.
+- [`handoffs/active/cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md)
+  — `D4`, the worked example of a closed item whose stated re-open condition later fired.

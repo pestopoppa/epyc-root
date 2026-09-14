@@ -68,6 +68,7 @@
   .badge.stale .dot{background:var(--bad)}.badge.stale{color:var(--bad);border-color:#5c2321}
   .badge.absent .dot{background:var(--muted)}.badge.absent{color:var(--muted)}
   .badge.malformed .dot{background:var(--amber)}.badge.malformed{color:var(--amber);border-color:#5c3a1e}
+  .badge.failed .dot{background:var(--bad)}.badge.failed{color:var(--bad);border-color:#5c2321}
   /* The episodic producer's verdicts (operator-gated card). `relevant` is the
      healthy state and is deliberately NEUTRAL — default border, muted text,
      a calm green dot — never the amber/red of an alarm: age alone is not one. */
@@ -89,6 +90,23 @@
   .empty{padding:18px 16px;color:var(--muted);font-size:13px}
   .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:13px;margin:0}
   .kv dt{color:var(--muted)} .kv dd{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+  .campaign-controls{padding:12px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .campaign-controls input{background:var(--bg);color:var(--text);border:1px solid var(--border);padding:6px 8px}
+  .campaign-controls button{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:6px 10px;border-radius:5px}
+  .campaign-controls button:disabled{opacity:.45}
+  .trajectory{padding:14px 16px}.trajectory svg{display:block;width:100%;height:auto;min-height:260px;overflow:visible}
+  .trajectory .grid{stroke:var(--border);stroke-width:1}.trajectory .axis{fill:var(--muted);font-size:11px}
+  .trajectory .production{stroke:var(--text);stroke-width:1.5}.trajectory .curve{fill:none;stroke-width:3}
+  .trajectory .point{stroke:var(--panel);stroke-width:2}.trajectory .local{stroke:#f59e0b;fill:none;stroke-dasharray:6 5}
+  .trajectory .keep-tick{stroke:#38bdf8;stroke-width:2}.trajectory .serving-unknown{fill:var(--panel);stroke:#f59e0b;stroke-width:3}
+  .trajectory .conflict{fill:var(--panel);stroke:#ef4444;stroke-width:3}.trajectory .missing{fill:var(--panel);stroke:#f59e0b;stroke-width:3;stroke-dasharray:2 2}
+  .trajectory .epoch-boundary{stroke-width:1.5;stroke-dasharray:4 3}.trajectory .superseded{opacity:.5}
+  .trajectory-drawer{margin-top:10px;padding:12px;border:1px solid var(--border);border-left:4px solid var(--accent);background:var(--panel2);border-radius:6px}
+  .trajectory-drawer[hidden]{display:none}.trajectory-drawer h3{margin:0 0 7px;font-size:13px}.trajectory-drawer dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 10px;font-size:11px}.trajectory-drawer dt{color:var(--muted)}.trajectory-drawer dd{margin:0;overflow-wrap:anywhere}
+  .trajectory-picker{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.trajectory-picker label{font-size:12px;color:var(--muted)}.trajectory-picker select{margin-left:5px;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:5px 8px;max-width:420px}
+  .trajectory-stage{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.trajectory-stage.drawer-open{grid-template-columns:minmax(0,1fr) minmax(300px,34%)}.trajectory-stage .trajectory-drawer{margin:0;max-height:520px;overflow:auto}.trajectory .instrument-bridge{stroke-dasharray:5 6;opacity:.8}
+  .trajectory-overview{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:14px;margin-bottom:12px}.trajectory-support{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.trajectory-support section{margin-bottom:16px}@media(max-width:980px){.trajectory-overview,.trajectory-support{grid-template-columns:1fr}}
+  .subgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:var(--border)}
   footer{padding:8px 20px 28px;color:var(--muted);font-size:12px;max-width:1400px;margin:0 auto}
 
   /* The freshness banner. Loud on purpose: this is the one control that stops a
@@ -300,6 +318,7 @@
   <span class="sub">AutoKernel loop &middot; <span id="hdr-campaign" class="mono">—</span></span>
   <span id="fresh" class="badge absent"><span class="dot"></span><span id="freshtxt">…</span></span>
   <span id="hdr-state" class="state">—</span>
+  <span id="hdr-step" class="sub mono"></span>
   <span id="actorhealth" class="sub mono" title="planner/critic CLI health from the loop's own status body (R23-52b)"></span>
   <!-- RTG-47: the ONE shared nav, rendered from dashboard/registry.json. Do not
        hand-add cross-dashboard links here; add a registry row. -->
@@ -324,18 +343,39 @@
        the per-iteration effects further down are marginals against an
        advancing anchor, and composing them would manufacture a measurement no
        run ever took. An empty slot that says why beats a number nobody took. -->
-  <section id="sec-champion">
-    <h2>Champion vs frozen production kernel
-      <span class="count">one number &middot; one named anchor</span>
-      <span id="champ-badge" class="badge absent" style="margin-left:auto">
-        <span class="dot"></span><span id="champ-badgetxt">…</span></span>
+  <section id="sec-trajectory">
+    <h2>Champion performance trajectory
+      <span class="count">identity · active progress · retained gain · production epochs · experiment events</span>
     </h2>
-    <div id="champ"></div>
+    <div id="trajectory"></div>
+    <p class="muted">Retained reports:
+      <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/champion-max-performance-20260908.md">maximum-performance measurements</a>
+      &middot; <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md">validation and close-out</a>
+    </p>
   </section>
 
-  <section id="sec-tiles">
-    <h2>Progress <span class="count">producer: the rebuilt loop</span></h2>
-    <div class="tiles" id="tiles"></div>
+  <div class="trajectory-support">
+    <section id="sec-capabilities"><h2>Champion Capabilities
+      <span class="count">attributed to the champion lineage</span></h2>
+      <div id="champion-capabilities"></div>
+    </section>
+    <section id="sec-accumulator">
+      <h2>Accumulator &mdash; compound-then-gate
+        <span class="count">retained keeps · cumulative estimate · serving gate</span>
+      </h2>
+      <div id="accumulator"></div>
+    </section>
+  </div>
+
+  <section id="sec-serial" hidden>
+    <h2>Serial target routing <span class="count">routing is not measurement progress</span></h2>
+    <div id="serial"></div>
+    <div id="serial-controls"></div>
+  </section>
+
+  <section id="sec-runtime-preparation" hidden>
+    <h2>Runtime preparation <span class="count">owner-reported progress</span></h2>
+    <div id="runtime-preparation"></div>
   </section>
 
   <!-- ACCUMULATOR (R23-44 two-tier champion). The loop banks CHEAP llama-bench
@@ -351,18 +391,6 @@
        once it will fire next iteration. Rides the loop-status contract's
        `accumulator` object; null (and this card says so) on a run with no serving
        tier. -->
-  <section id="sec-accumulator">
-    <h2>Accumulator &mdash; compound-then-gate
-      <span class="count">R23-44/R23-54 &middot; bench keeps batch; the gate also fires every 4</span>
-    </h2>
-    <div id="accumulator"></div>
-  </section>
-
-  <section id="sec-disp">
-    <h2>Dispositions <span class="count" id="disp-count"></span></h2>
-    <div id="disp"></div>
-  </section>
-
   <!-- A FOURTH producer (2026-08-31): the loop's accumulated knowledge, read
        from its own memory store (experiments.db, sqlite, opened read-only).
        ALL RUNS, not this run: the Dispositions card above is one run's report;
@@ -371,12 +399,18 @@
        from the store's mtime; a missing store renders ABSENT with the standard
        wording, never as zeros — a missing count is not a zero. -->
   <section id="sec-knowledge">
-    <h2>Accumulated knowledge
-      <span class="count">all runs &middot; producer: the loop's memory store</span>
-      <span id="know-badge" class="badge absent" style="margin-left:auto">
-        <span class="dot"></span><span id="know-badgetxt">…</span></span>
-    </h2>
-    <div id="know"></div>
+    <details>
+      <summary><strong>Accumulated knowledge</strong>
+        <span class="count">all runs &middot; producer: the loop's memory store &middot; expand for full ledger</span>
+        <span id="know-badge" class="badge absent" style="margin-left:auto">
+          <span class="dot"></span><span id="know-badgetxt">…</span></span>
+      </summary>
+      <section id="sec-disp">
+        <h2>Dispositions <span class="count" id="disp-count"></span></h2>
+        <div id="disp"></div>
+      </section>
+      <div id="know"></div>
+    </details>
   </section>
 
   <section id="sec-recent">
@@ -414,7 +448,18 @@
       <span id="opgate-badge" class="badge absent" style="margin-left:auto">
         <span class="dot"></span><span id="opgate-badgetxt">…</span></span>
     </h2>
+    <div id="opgate-scope" class="muted"></div>
     <div id="opgate"></div>
+  </section>
+
+  <section id="sec-campaign">
+    <h2>Unified campaign supervisor
+      <span class="count">management projection only &middot; execution_authorized:false</span>
+      <span id="campaign-badge" class="badge absent" style="margin-left:auto">
+        <span class="dot"></span><span id="campaign-badgetxt">…</span></span>
+    </h2>
+    <div id="campaign"></div>
+    <div id="campaign-controls" class="campaign-controls"></div>
   </section>
 
   <section id="sec-ident">
@@ -424,7 +469,8 @@
 </main>
 
 <footer>
-  Read-only view, and <strong>four producers</strong> — none dates another.
+  Observation is read-only at the hub; optional management commands go directly to the selected
+  campaign gateway. Producer clocks remain independent.
   The hub owns no contract here: <code>epyc.autokernel.loop_status.v1</code> is
   written by <code>autokernel.loop.status.write</code> in
   <code>epyc-inference-research</code>;
@@ -439,8 +485,9 @@
   (<code>experiments.db</code>, sqlite, opened read-only) and is dated by that
   file's mtime; its hypothesis ledger joins those rows against the loop
   status's hotspot profile and the store's <code>inbox/</code> seed files
-  (both read-only) — a join, not a fifth producer. All are read at request time — never cached, so no value can
-  outlive its freshness envelope. Data probe:
+  (both read-only) — a join, not another measurement authority. Campaign transport health uses a
+  bounded, expiring single-owner cache; evidence payloads are read at request time and no cached health
+  result can outlive its freshness envelope. Data probe:
   <a href="/api/loop/health"><code>/api/loop/health</code></a> (three-valued: is
   what this page shows still true?) — it answers for the <em>loop</em> producer;
   the other three envelopes travel in the bodies they date, on their cards
@@ -475,7 +522,952 @@ const fmtPct = e => `${e >= 0 ? "+" : ""}${(e * 100).toFixed(2)}%`;
 
 /* Dispositions that mean the candidate actually reached the instrument. Every
    other disposition is a NEGATIVE and is rendered as such, never omitted. */
-const MEASURED = new Set(["kept", "measured_null"]);
+const MEASURED = new Set(["kept", "measured_null", "runtime_observed"]);
+let campaignAccepted = null;
+let campaignPending = null;
+let campaignPendingAck = null;
+let campaignEscalatedPause = null;
+let campaignToken = "";
+let campaignStreamError = "";
+let campaignAcceptedEnvelope = null;
+let campaignInFlight = false;
+let campaignControlsAvailable = false;
+const CAMPAIGN_FETCH_TIMEOUT_MS = 3000;
+const CAMPAIGN_SNAPSHOT_MAX_BYTES = 262144;
+const CAMPAIGN_ACK_MAX_BYTES = 65536;
+const CAMPAIGN_BUTTON_IDS = Object.freeze({
+  pause:"campaign-pause", resume:"campaign-resume", drain:"campaign-drain"
+});
+
+const campaignIdentity = s => s ?
+  `${s.campaign_id}|${s.config_generation}|${s.config_digest}` : "";
+const campaignStreamKey = s => [s.stream_epoch, s.sequence];
+function campaignCanonical(value){
+  if(Array.isArray(value)) return `[${value.map(campaignCanonical).join(",")}]`;
+  if(value && typeof value === "object") return "{" + Object.keys(value).sort()
+    .map(key => `${JSON.stringify(key)}:${campaignCanonical(value[key])}`).join(",") + "}";
+  return JSON.stringify(value);
+}
+
+function campaignExact(value, fields, label){
+  if(!value || typeof value !== "object" || Array.isArray(value) ||
+     Object.keys(value).sort().join("|") !== [...fields].sort().join("|"))
+    throw new Error(`${label} has unsupported fields`);
+}
+const campaignText = value => typeof value === "string" && value.length > 0;
+const campaignDigestValue = value => typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+const campaignInteger = (value,min) => Number.isSafeInteger(value) && value >= min;
+const campaignTimestamp = value => typeof value === "string" &&
+  /(Z|[+-]\d\d:\d\d)$/.test(value) && Number.isFinite(Date.parse(value));
+
+function campaignValidateBuild(value,label){
+  campaignExact(value,["schema","scope","module","identity_basis","included_symbols",
+    "excluded_scope","sha256"],label);
+  if(value.schema !== "epyc.autokernel.loaded_producer_build.v1" ||
+     !campaignText(value.scope) || !campaignText(value.module) ||
+     !campaignText(value.identity_basis) || !campaignDigestValue(value.sha256) ||
+     !Array.isArray(value.included_symbols) || !Array.isArray(value.excluded_scope) ||
+     !value.included_symbols.every(campaignText) || !value.excluded_scope.every(campaignText) ||
+     new Set(value.included_symbols).size !== value.included_symbols.length ||
+     new Set(value.excluded_scope).size !== value.excluded_scope.length)
+    throw new Error(`${label} is malformed`);
+}
+
+function campaignValidateAck(value,pending=null,expectedV2=null){
+  const v2=value && value.schema==="epyc.autokernel.campaign_command_result.v2";
+  campaignExact(value,v2 ? ["schema","request_id","operation","payload_digest","accepted",
+    "accepted_at","completed","completed_at","completion_reason","control_revision",
+    "desired_state","observed_state","prerequisite_reason"] :
+    ["request_id","operation","payload_digest","accepted","completed","control_revision",
+    "desired_state","observed_state","prerequisite_reason"],"campaign command result");
+  const expected={pause:"paused",resume:"running",drain:"drained"};
+  if(!campaignText(value.request_id) ||
+     !Object.prototype.hasOwnProperty.call(expected,value.operation) ||
+     !campaignDigestValue(value.payload_digest) || value.accepted !== true ||
+     typeof value.completed !== "boolean" || !campaignInteger(value.control_revision,1) ||
+     (!v2 && value.desired_state !== expected[value.operation]) ||
+     !(value.prerequisite_reason === null || campaignText(value.prerequisite_reason)))
+    throw new Error("campaign command acknowledgment is malformed");
+  if(expectedV2!==null && v2!==expectedV2)
+    throw new Error("command acknowledgment protocol does not match the pending snapshot");
+  if(v2){
+    const states=["paused","running","drained","pausing","draining",
+      "waiting_prerequisite","ownership_unresolved"];
+    if(!campaignTimestamp(value.accepted_at) || !["paused","running","drained"].includes(value.desired_state) ||
+       !states.includes(value.observed_state) ||
+       (value.completed ? (!campaignTimestamp(value.completed_at) || !campaignText(value.completion_reason)) :
+        (value.completed_at!==null || value.completion_reason!==null)))
+      throw new Error("campaign v2 command acknowledgment is malformed");
+    if(value.completed && Date.parse(value.completed_at)<Date.parse(value.accepted_at))
+      throw new Error("campaign v2 command completion timestamp is contradictory");
+    const quiescent=["already quiescent","owned workers quiesced and claims released"];
+    let semantic=false;
+    if(value.operation==="resume") semantic=value.completed && value.desired_state==="running" &&
+      ((value.observed_state==="running" && value.completion_reason==="running" &&
+        value.prerequisite_reason===null) ||
+       (value.observed_state==="waiting_prerequisite" &&
+        value.completion_reason==="waiting on named prerequisite" &&
+        campaignText(value.prerequisite_reason)));
+    else if(value.operation==="pause" && value.desired_state==="drained")
+      semantic=value.completed && value.observed_state==="draining" &&
+        value.completion_reason==="superseded by a later accepted drain" &&
+        value.prerequisite_reason===null;
+    else{
+      const desired=value.operation==="pause"?"paused":"drained";
+      const settling=value.operation==="pause"?"pausing":"draining";
+      semantic=value.desired_state===desired && value.prerequisite_reason===null &&
+        (value.completed ? (value.observed_state===desired &&
+          quiescent.includes(value.completion_reason)) : value.observed_state===settling);
+    }
+    if(!semantic) throw new Error("campaign v2 command semantics are contradictory");
+  }else if(value.operation === "resume"){
+    if(value.completed ? (value.observed_state !== "running" || value.prerequisite_reason !== null) :
+       (value.observed_state !== "waiting_prerequisite" || !campaignText(value.prerequisite_reason)))
+      throw new Error("campaign resume acknowledgment is contradictory");
+  }else if(!value.completed || value.observed_state !== value.desired_state ||
+           value.prerequisite_reason !== null)
+    throw new Error("campaign management acknowledgment is contradictory");
+  if(pending && (value.request_id !== pending.request_id ||
+      value.payload_digest !== pending.payload_digest || value.operation !== pending.operation ||
+      value.control_revision !== pending.expected_control_revision + 1))
+    throw new Error("command acknowledgment does not match the pending request");
+  return value;
+}
+
+function campaignValidateWorker(value){
+  campaignExact(value,["worker_id","worker_generation","request_id","plan_digest","lineage_id",
+    "stage_id","state","grant_id","grant_generation","container_id","provider_deadline",
+    "deadline_clock_domain","control_revision","started_at","activity_at","termination_deadline",
+    "unresolved_reason"],"campaign active worker");
+  const textFields=["worker_id","request_id","lineage_id","stage_id","grant_id","container_id",
+    "deadline_clock_domain"];
+  const states=["intent","container_created","child_captured","exec_release_intent","executing",
+    "result_retained","tearing_down","teardown_failed","unresolved"];
+  if(textFields.some(name=>!campaignText(value[name])) || !campaignDigestValue(value.plan_digest) ||
+     !states.includes(value.state) || !campaignInteger(value.worker_generation,1) ||
+     !campaignInteger(value.grant_generation,1) || !campaignInteger(value.control_revision,0) ||
+     !campaignTimestamp(value.started_at) ||
+     !(value.activity_at===null || campaignTimestamp(value.activity_at)) ||
+     !(value.unresolved_reason===null || campaignText(value.unresolved_reason)) ||
+     !([value.provider_deadline,value.termination_deadline].every(v=>v===null ||
+       (typeof v==="number" && Number.isFinite(v)))))
+    throw new Error("campaign active worker is malformed");
+  return value;
+}
+
+function campaignNonnegative(value){
+  return typeof value==="number" && Number.isFinite(value) && value>=0;
+}
+
+function campaignValidateNumberMap(value,label){
+  if(!value || typeof value!=="object" || Array.isArray(value) ||
+     Object.keys(value).some(key=>!campaignText(key) || !campaignNonnegative(value[key])))
+    throw new Error(`${label} is malformed`);
+}
+
+function campaignValidateRuntime(value){
+  campaignExact(value,["status","reason","reason_truncated","observed_at","observation_sequence",
+    "retry_after_seconds","work_kind","target_revision","transition_id","settlement_outcome",
+    "installed_work_kinds","publication_error"],"runtime observation");
+  const statuses=["not_reported","recovered","waiting","settled","stopped","recovery_required"];
+  const kinds=["runtime_comparison","actor_preparation","profile_preparation","calibration_preparation"];
+  const missing=value.status==="not_reported",selected=value.work_kind!==null;
+  if(!statuses.includes(value.status) || !campaignText(value.reason) || [...value.reason].length>4096 ||
+     !(value.publication_error===null || campaignText(value.publication_error) && [...value.publication_error].length<=4096) ||
+     typeof value.reason_truncated!=="boolean" || !campaignInteger(value.observation_sequence,0) ||
+     !campaignNonnegative(value.retry_after_seconds) ||
+     !(value.observed_at===null || campaignTimestamp(value.observed_at)) ||
+     missing!==(value.observed_at===null) || (!missing && value.observation_sequence===0) ||
+     (missing && value.observation_sequence>0 && value.publication_error===null) ||
+     !Array.isArray(value.installed_work_kinds) ||
+     !value.installed_work_kinds.every(kind=>kinds.includes(kind)) ||
+     new Set(value.installed_work_kinds).size!==value.installed_work_kinds.length ||
+     (selected && !kinds.includes(value.work_kind)) ||
+     ![value.target_revision,value.transition_id].every(item=>selected ? campaignDigestValue(item) : item===null) ||
+     (missing && (selected || value.retry_after_seconds!==0 || value.reason_truncated)) ||
+     !(value.settlement_outcome===null || ["valid_comparison","invalid","failed","prerequisite",
+       "calibration","validation","reject_audit","maintenance"].includes(value.settlement_outcome)) ||
+     (value.status==="settled")!==(value.settlement_outcome!==null) ||
+     (value.status==="settled" && !selected)) throw new Error("runtime observation is malformed");
+  return value;
+}
+
+const campaignAggregateSchema="epyc.autokernel.unified_campaign_projection.v3";
+const campaignAggregateRows=u=>({evidence:u.evidence,actor:u.actors.actor,profile:u.actors.profile,calibration:u.actors.calibration});
+function campaignValidateAggregates(u){
+  const text=(v,nullable=false,max=512)=>nullable&&v===null || typeof v==="string"&&[...v].length>0&&[...v].length<=max;
+  const number=(v,integer=false,nullable=false)=>nullable&&v===null || typeof v==="number"&&Number.isFinite(v)&&v>=0&&v<=2**63-1&&(!integer||Number.isInteger(v));
+  const date=v=>v===null || text(v,false,64)&&/(Z|[+-]\d\d:\d\d)$/.test(v)&&Number.isFinite(Date.parse(v));
+  const scalar=(k,v)=>k.endsWith("_at")?date(v):
+    k.endsWith("_count")||k.endsWith("_frontier")||["items_total","lag_events"].includes(k)?number(v,true,true):
+    k.endsWith("seconds")?number(v,false,true):
+    k.endsWith("_digest")||k.endsWith("_revision")||["transition_id","projection_checksum"].includes(k)?v===null||campaignDigestValue(v):
+    ["ready","proof_pending","items_truncated","ranking_authorized","executor_installed","available_at_planning","settled","clock_known","consumed_request_debt"].includes(k)?
+      typeof v==="boolean"||k==="consumed_request_debt"&&v===null:text(v,true);
+  const fields={evidence:"reader_id epoch owner_state ready readiness source_frontier cursor_frontier projection_frontier admission_frontier last_admitted_frontier projection_checksum proof_pending lag_events lag_seconds quarantine_count cached_finding_count",
+    profile:"configured_count usable_count mechanism_count debt_count planning_observed_at items items_total items_truncated",
+    calibration:"request_count pending_count collected_count exhausted_count failed_count contaminated_count qualification ranking_authorized items items_total items_truncated",
+    actor:"pending_count finished_count backend_count event_count executor_installed reserved spent items items_total items_truncated"};
+  const items={profile:"target_revision profile_digest transition_id available_at_planning settled remaining_seconds clock_known consumed_request_debt",
+    calibration:"request_digest chunk_digest outcome",
+    actor:"request_digest target_revision transition_id phase settlement_outcome retry_remaining_seconds clock_known"};
+  const fail=()=>{throw new Error("campaign aggregate shape/semantics differ")};
+  campaignExact(u.actors,["schema","status","reason","actor","profile","calibration"],"preparation aggregate");
+  if(u.actors.schema!=="epyc.autokernel.unified_actor_status.v2"||!["available","unknown"].includes(u.actors.status)||!text(u.actors.reason))fail();
+  const rows=campaignAggregateRows(u);let count=0;
+  for(const [kind,row] of Object.entries(rows)){
+    campaignExact(row,["schema","status","reason","observed_at","attempted_at","generation","error","data"],"aggregate");
+    if(row.schema!==`epyc.autokernel.${kind}_observation.v1`||!["available","unknown","not_connected"].includes(row.status)||
+       !text(row.reason)||!text(row.error,true)||!date(row.observed_at)||!date(row.attempted_at)||!number(row.generation,true)||
+       row.error!==null&&row.status!=="unknown"||row.observed_at&&row.attempted_at&&Date.parse(row.observed_at)>Date.parse(row.attempted_at))fail();
+    const d=row.data;if(d===null){if(row.status==="available"||row.observed_at!==null)fail();continue;}
+    campaignExact(d,fields[kind].split(" "),"aggregate data");if(row.observed_at===null)fail();
+    for(const [key,value] of Object.entries(d)){
+      if(key==="items"){
+        if(!Array.isArray(value)||value.length>{actor:16,profile:24,calibration:24}[kind])fail();count+=value.length;
+        for(const item of value){campaignExact(item,items[kind].split(" "),"aggregate item");
+          if(!Object.entries(item).every(([k,v])=>scalar(k,v)))fail();}
+      }else if(["reserved","spent"].includes(key)){
+        campaignExact(value,"actor_calls_per_target patch_repairs_per_target provider_seconds_per_target resource_failures_per_target contamination_events_per_target actor_calls_per_campaign".split(" "),"aggregate budgets");
+        if(!Object.values(value).every(v=>number(v)))fail();
+      }else if(!scalar(key,value))fail();
+    }
+    if(d.items&&(!number(d.items_total,true)||d.items_total<d.items.length||d.items_truncated!==(d.items_total>d.items.length)))fail();
+    if(kind==="calibration"&&(d.qualification!=="unavailable"||d.ranking_authorized))fail();
+    if(kind==="evidence"&&(d.lag_seconds!==null||!["ready","pending","failed","closed"].includes(d.owner_state)||
+       !["unknown","projected","outage"].includes(d.readiness)||d.ready!==(d.owner_state==="ready")||row.status==="available"&&!d.ready))fail();
+    if(kind==="profile"&&d.planning_observed_at!==row.observed_at)fail();
+    for(const item of d.items||[]){
+      if(kind==="calibration"&&![null,"calibration","invalid","failed"].includes(item.outcome))fail();
+      if(kind==="actor"&&(!["pending","settled","finished_unsettled"].includes(item.phase)||
+         ![null,"prerequisite","failed","invalid"].includes(item.settlement_outcome)||(item.phase==="settled")!==(item.settlement_outcome!==null)))fail();
+      if(["actor","profile"].includes(kind)&&!item.clock_known&&item[kind==="profile"?"remaining_seconds":"retry_remaining_seconds"]!==null)fail();
+    }
+  }
+  if(u.actors.status!==(["actor","profile","calibration"].some(k=>rows[k].status==="unknown")?"unknown":"available")||
+     count>64||new TextEncoder().encode(JSON.stringify(rows)).length>32768)fail();
+}
+function campaignValidateUnified(value){
+  if(value?.schema===campaignAggregateSchema){
+    campaignExact(value,["schema","scheduler","resources","actors","evidence","candidate","targets","runtime","worker_timing"],"aggregate unified projection");
+    campaignValidateAggregates(value);
+    campaignValidateUnified({...value,schema:"epyc.autokernel.unified_campaign_projection.v2",
+      actors:{schema:"epyc.autokernel.unified_actor_status.v1",status:"not_connected",reason:"legacy shape check",clock_semantics:"UTC wall-clock projection; runtime fences remain monotonic",items:[]},
+      evidence:{schema:"epyc.autokernel.unified_evidence_status.v1",status:"not_connected",reason:"legacy shape check",frontier_digest:null,lag_seconds:null}});
+    return value;
+  }
+  const runtimeAware=value && value.schema==="epyc.autokernel.unified_campaign_projection.v2";
+  campaignExact(value,["schema","scheduler","resources","actors","evidence","candidate","targets",
+    ...(runtimeAware?["runtime","worker_timing"]:[])],
+    "campaign unified projection");
+  if(!["epyc.autokernel.unified_campaign_projection.v1","epyc.autokernel.unified_campaign_projection.v2"].includes(value.schema))
+    throw new Error("campaign unified projection schema is unsupported");
+  if(runtimeAware) campaignValidateRuntime(value.runtime);
+  const s=value.scheduler;
+  campaignExact(s,["schema","projection_digest","config_digest","policy_digest","round_number",
+    "accounting_epoch","capacity","pending_selection_digest","status","reason","campaign_attempts",
+    "campaign_charged_seconds","accounting","coverage_debt_count"],"campaign unified scheduler");
+  const statuses=["available","unknown","not_connected"];
+  if(s.schema!=="epyc.autokernel.unified_scheduler_projection.v1" ||
+     ![s.projection_digest,s.config_digest,s.policy_digest].every(campaignDigestValue) ||
+     ![s.round_number,s.accounting_epoch,s.campaign_attempts,s.coverage_debt_count].every(
+       value=>campaignInteger(value,0)) || !campaignNonnegative(s.campaign_charged_seconds) ||
+     !(s.pending_selection_digest===null || campaignDigestValue(s.pending_selection_digest)) ||
+     !statuses.includes(s.status) || !campaignText(s.reason))
+    throw new Error("campaign unified scheduler is malformed");
+  campaignExact(s.capacity,["schema","physical_region_fraction","gpu_devices",
+    "memory_reservation_bytes"],"campaign unified scheduler capacity");
+  if(s.capacity.schema!=="epyc.autokernel.resource_vector.v1" ||
+     !campaignNonnegative(s.capacity.physical_region_fraction) ||
+     s.capacity.physical_region_fraction>1 || !Array.isArray(s.capacity.gpu_devices) ||
+     !s.capacity.gpu_devices.every(campaignText) ||
+     new Set(s.capacity.gpu_devices).size!==s.capacity.gpu_devices.length ||
+     !campaignInteger(s.capacity.memory_reservation_bytes,0) ||
+     (s.capacity.gpu_devices.length && s.capacity.physical_region_fraction<=0))
+    throw new Error("campaign unified scheduler capacity is malformed");
+  const a=s.accounting;
+  campaignExact(a,["schema","receipt_count","held_seconds","physical_region_seconds",
+    "gpu_device_seconds","memory_byte_seconds","beneficiary_seconds","view_digest"],
+    "campaign unified scheduler accounting");
+  if(a.schema!=="epyc.autokernel.accounting_view.v1" || !campaignInteger(a.receipt_count,0) ||
+     ![a.held_seconds,a.physical_region_seconds,a.memory_byte_seconds].every(campaignNonnegative) ||
+     !campaignDigestValue(a.view_digest))
+    throw new Error("campaign unified scheduler accounting is malformed");
+  campaignValidateNumberMap(a.gpu_device_seconds,"campaign GPU accounting");
+  campaignValidateNumberMap(a.beneficiary_seconds,"campaign beneficiary accounting");
+  const fields={resources:["schema","status","reason","requested","granted","held","used"],
+    actors:["schema","status","reason","clock_semantics","items"],
+    evidence:["schema","status","reason","frontier_digest","lag_seconds"],
+    candidate:["schema","status","reason","accumulated_identity","validated_identity",
+      "frozen_production_identity","validation_debt"],
+    targets:["schema","status","reason","total","ready","prerequisite","production_enrolled",
+      "seed_enrolled","items_page_ref"]};
+  const schemas={resources:"epyc.autokernel.unified_resource_status.v1",
+    actors:"epyc.autokernel.unified_actor_status.v1",
+    evidence:"epyc.autokernel.unified_evidence_status.v1",
+    candidate:"epyc.autokernel.unified_candidate_status.v1",
+    targets:"epyc.autokernel.unified_target_status.v1"};
+  Object.keys(fields).forEach(name=>{
+    campaignExact(value[name],fields[name],`campaign unified ${name}`);
+    if(value[name].schema!==schemas[name] || !statuses.includes(value[name].status) ||
+       !campaignText(value[name].reason)) throw new Error(`campaign unified ${name} is malformed`);
+  });
+  for(const name of ["resources","actors","evidence","candidate"])
+    if(value[name].status!=="not_connected")
+      throw new Error(`campaign unified ${name} v1 supports only not_connected`);
+  if([value.resources.requested,value.resources.granted,value.resources.held,value.resources.used]
+       .some(item=>item!==null) ||
+     value.actors.clock_semantics!=="UTC wall-clock projection; runtime fences remain monotonic" ||
+     !Array.isArray(value.actors.items) || value.actors.items.length ||
+     value.evidence.frontier_digest!==null || value.evidence.lag_seconds!==null ||
+     [value.candidate.accumulated_identity,value.candidate.validated_identity,
+      value.candidate.frozen_production_identity,value.candidate.validation_debt]
+       .some(item=>item!==null))
+    throw new Error("campaign disconnected unified values must remain null/empty");
+  const t=value.targets;
+  if(![t.total,t.ready,t.prerequisite,t.production_enrolled,t.seed_enrolled].every(
+       item=>campaignInteger(item,0)) || t.ready+t.prerequisite!==t.total ||
+     t.production_enrolled>t.total || t.seed_enrolled>t.total || t.items_page_ref!==null)
+    throw new Error("campaign unified target counts are malformed");
+  return value;
+}
+
+function campaignValidateSnapshot(value){
+  const v2=value && value.schema==="epyc.autokernel.campaign_snapshot.v2";
+  const v3=value && value.schema==="epyc.autokernel.campaign_snapshot.v3";
+  const workerAware=v2||v3;
+  campaignExact(value,["schema","producer_build","producer_schema","campaign_id",
+    "config_generation","config_digest","requested_manifest_digest","supervisor_incarnation",
+    "stream_epoch","sequence","journal_cursor","control_revision","generated_at",
+    "desired_state","observed_state","command_results","active_worker",
+    "producer_heartbeat_at","last_scientific_result_at","worker_activity_at",
+    "execution_authorized",...(workerAware?["execution_capability_available","worker_lifecycle_revision"]:[]),
+    ...(v3?["unified"]:[]),
+    "prerequisite_reason"],"campaign snapshot");
+  if(!["epyc.autokernel.campaign_snapshot.v1","epyc.autokernel.campaign_snapshot.v2",
+       "epyc.autokernel.campaign_snapshot.v3"].includes(value.schema) ||
+     value.producer_schema !== value.schema ||
+     !campaignText(value.campaign_id) || !campaignDigestValue(value.config_digest) ||
+     !campaignDigestValue(value.requested_manifest_digest) || !campaignTimestamp(value.generated_at) ||
+     !campaignTimestamp(value.producer_heartbeat_at) ||
+     !(value.last_scientific_result_at === null || campaignTimestamp(value.last_scientific_result_at)) ||
+     !(value.worker_activity_at === null || campaignTimestamp(value.worker_activity_at)))
+    throw new Error("campaign snapshot identity or timestamps are malformed");
+  for(const [name,min] of [["config_generation",1],["supervisor_incarnation",1],
+       ["stream_epoch",1],["sequence",1],["journal_cursor",workerAware?0:1],["control_revision",0]])
+    if(!campaignInteger(value[name],min)) throw new Error(`campaign snapshot ${name} is malformed`);
+  const generatedMs=Date.parse(value.generated_at);
+  for(const name of ["producer_heartbeat_at","last_scientific_result_at","worker_activity_at"]){
+    if(value[name]!==null && Date.parse(value[name]) > generatedMs + 5000)
+      throw new Error(`campaign snapshot ${name} exceeds generated_at observation window`);
+  }
+  campaignValidateBuild(value.producer_build,"campaign producer build");
+  const allowed=workerAware ? {paused:["paused","pausing","ownership_unresolved"],
+    running:["running","waiting_prerequisite","ownership_unresolved"],
+    drained:["drained","draining","ownership_unresolved"]} :
+    {paused:["paused"],running:["running","waiting_prerequisite"],drained:["drained"]};
+  if(!Object.prototype.hasOwnProperty.call(allowed,value.desired_state) ||
+     !allowed[value.desired_state].includes(value.observed_state) ||
+     value.execution_authorized !== false || (!workerAware && value.active_worker !== null) ||
+     !(value.prerequisite_reason === null || campaignText(value.prerequisite_reason)) ||
+     !Array.isArray(value.command_results))
+    throw new Error("campaign snapshot management boundary is malformed");
+  if((value.observed_state==="waiting_prerequisite" && !campaignText(value.prerequisite_reason)) ||
+     (["running","drained"].includes(value.observed_state) && value.prerequisite_reason!==null))
+    throw new Error("campaign snapshot prerequisite state is contradictory");
+  if(workerAware){
+    if(typeof value.execution_capability_available!=="boolean" ||
+       !campaignInteger(value.worker_lifecycle_revision,0))
+      throw new Error("campaign v2 lifecycle projection is malformed");
+    if(value.active_worker!==null){
+      campaignValidateWorker(value.active_worker);
+      if(value.worker_activity_at!==value.active_worker.activity_at ||
+         value.active_worker.control_revision>value.control_revision)
+        throw new Error("campaign v2 worker projection is contradictory");
+      for(const name of ["started_at","activity_at"])
+        if(value.active_worker[name]!==null &&
+           Date.parse(value.active_worker[name])>generatedMs+5000)
+          throw new Error(`campaign active worker ${name} exceeds generated_at observation window`);
+      if(["paused","drained","waiting_prerequisite"].includes(value.observed_state))
+        throw new Error("campaign v2 quiescent snapshot carries an active worker");
+      if(["teardown_failed","unresolved"].includes(value.active_worker.state) &&
+         (value.observed_state!=="ownership_unresolved" || !campaignText(value.prerequisite_reason)))
+        throw new Error("campaign v2 unresolved worker lacks unresolved ownership state");
+    }else if(value.worker_activity_at!==null)
+      throw new Error("campaign v2 has worker activity without a worker");
+    if(value.active_worker===null && value.observed_state==="ownership_unresolved" &&
+       !(campaignText(value.prerequisite_reason) &&
+         value.prerequisite_reason.startsWith("worker_acquisition_pending:") &&
+         value.prerequisite_reason.slice("worker_acquisition_pending:".length).trim()))
+      throw new Error("campaign v2 pending acquisition identity is missing");
+  }
+  const requestIds=new Set();let priorRevision=0;
+  value.command_results.forEach(row=>{
+    if(workerAware !== !!(row && row.schema==="epyc.autokernel.campaign_command_result.v2"))
+      throw new Error("campaign command result protocol does not match its snapshot");
+    campaignValidateAck(row);
+    if(requestIds.has(row.request_id) || row.control_revision<=priorRevision ||
+       row.control_revision>value.control_revision)
+      throw new Error("campaign command result ordering is malformed");
+    if(workerAware && (Date.parse(row.accepted_at)>generatedMs+5000 ||
+       (row.completed && Date.parse(row.completed_at)>generatedMs+5000)))
+      throw new Error("campaign command result exceeds generated_at observation window");
+    requestIds.add(row.request_id);priorRevision=row.control_revision;
+  });
+  if(workerAware && value.active_worker===null && ["pausing","draining"].includes(value.observed_state)){
+    const operation=value.observed_state==="pausing"?"pause":"drain";
+    const basis=value.command_results.some(row=>row.operation===operation &&
+      row.desired_state===value.desired_state && row.observed_state===value.observed_state &&
+      row.completed===false);
+    if(!basis)
+      throw new Error("campaign v2 settling snapshot lacks an active worker or accepted command basis");
+  }
+  if(v3){
+    campaignValidateUnified(value.unified);
+    if(value.unified.schema===campaignAggregateSchema)
+      for(const row of Object.values(campaignAggregateRows(value.unified)))
+        for(const field of ["observed_at","attempted_at"])
+          if(row[field]!==null&&Date.parse(row[field])>Date.parse(value.generated_at))
+            throw new Error("aggregate timestamp is newer than snapshot");
+    if(value.unified.runtime){
+      const worker=value.active_worker,timing=value.unified.worker_timing;
+      if(!worker){if(timing!==null)throw new Error("runtime timing has no original worker");}
+      else{
+        campaignExact(timing,["worker_id","worker_generation","lifecycle_revision","checked_at",
+          "state","remaining_seconds"],"runtime worker timing");
+        if(timing.worker_id!==worker.worker_id || timing.worker_generation!==worker.worker_generation ||
+           timing.lifecycle_revision!==value.worker_lifecycle_revision || timing.checked_at!==value.generated_at ||
+           !["within_deadline","deadline_elapsed","clock_unavailable"].includes(timing.state) ||
+           (timing.state==="clock_unavailable" ? timing.remaining_seconds!==null :
+            !campaignNonnegative(timing.remaining_seconds) ||
+            ((timing.remaining_seconds>0)!==(timing.state==="within_deadline"))))
+          throw new Error("runtime worker timing differs");
+      }
+    }
+    const stamp=value.unified.runtime && value.unified.runtime.observed_at;
+    if(stamp!==undefined && stamp!==null && Date.parse(stamp)>Date.parse(value.generated_at))
+      throw new Error("runtime observation is newer than snapshot");
+  }
+  return value;
+}
+
+function campaignAcceptSnapshot(next, explicitSwitch=false){
+  try{ campaignValidateSnapshot(next); }
+  catch(err){ campaignStreamError = String(err.message || err); throw err; }
+  if(campaignAccepted && campaignIdentity(next) !== campaignIdentity(campaignAccepted)){
+    if(!explicitSwitch){
+      campaignStreamError = "campaign identity changed without explicit selection";
+      throw new Error(campaignStreamError);
+    }
+    campaignPending = null;
+    campaignPendingAck = null;
+    campaignEscalatedPause = null;
+  }
+  if(campaignAccepted && campaignIdentity(next) === campaignIdentity(campaignAccepted)){
+    const rank={"epyc.autokernel.campaign_snapshot.v1":1,
+      "epyc.autokernel.campaign_snapshot.v2":2,"epyc.autokernel.campaign_snapshot.v3":3};
+    if(rank[next.schema] < rank[campaignAccepted.schema]){
+      campaignStreamError="same campaign cannot downgrade snapshot protocol";
+      throw new Error(campaignStreamError);
+    }
+    const oldKey = campaignStreamKey(campaignAccepted), newKey = campaignStreamKey(next);
+    if(newKey[0] < oldKey[0] || (newKey[0] === oldKey[0] && newKey[1] < oldKey[1])){
+      campaignStreamError = "ignored an older campaign snapshot; retained view is historical";
+      return false;
+    }
+    if(newKey[0] === oldKey[0] && newKey[1] === oldKey[1]){
+      if(campaignCanonical(next) !== campaignCanonical(campaignAccepted)){
+        campaignStreamError = "same campaign stream key returned different content";
+        throw new Error(campaignStreamError);
+      }
+      return false;
+    }
+    if(next.control_revision < campaignAccepted.control_revision ||
+       next.journal_cursor < campaignAccepted.journal_cursor){
+      campaignStreamError = "newer campaign snapshot rolled back control or cursor";
+      throw new Error(campaignStreamError);
+    }
+    if((newKey[0] === oldKey[0] &&
+        next.supervisor_incarnation !== campaignAccepted.supervisor_incarnation) ||
+       (newKey[0] > oldKey[0] &&
+        next.supervisor_incarnation <= campaignAccepted.supervisor_incarnation))
+      {campaignStreamError = "campaign stream epoch/incarnation relationship is invalid";
+       throw new Error(campaignStreamError);}
+    const oldRuntime=campaignAccepted.unified?.runtime,newRuntime=next.unified?.runtime;
+    if(campaignAccepted.unified?.schema===campaignAggregateSchema){
+      if(next.unified?.schema!==campaignAggregateSchema)throw new Error("same campaign cannot downgrade aggregate projection");
+      if(next.supervisor_incarnation===campaignAccepted.supervisor_incarnation){
+        const before=campaignAggregateRows(campaignAccepted.unified),after=campaignAggregateRows(next.unified);
+        for(const kind of Object.keys(before)){
+          if(after[kind].generation<before[kind].generation)throw new Error("aggregate source generation rolled back");
+          for(const field of ["observed_at","attempted_at"])
+            if(before[kind][field]!==null&&(after[kind][field]===null||Date.parse(after[kind][field])<Date.parse(before[kind][field])))
+              throw new Error("aggregate source/attempt time rolled back");
+        }
+      }
+    }
+    if(oldRuntime){
+      if(!newRuntime){
+        campaignStreamError="same campaign cannot downgrade runtime projection";
+        throw new Error(campaignStreamError);
+      }
+      if(next.supervisor_incarnation===campaignAccepted.supervisor_incarnation &&
+         (newRuntime.observation_sequence<oldRuntime.observation_sequence ||
+          (newRuntime.observation_sequence===oldRuntime.observation_sequence &&
+           campaignCanonical(newRuntime)!==campaignCanonical(oldRuntime)) ||
+          (oldRuntime.observed_at!==null && (newRuntime.observed_at===null ||
+           Date.parse(newRuntime.observed_at)<Date.parse(oldRuntime.observed_at))))){
+        campaignStreamError="runtime observation sequence or time rolled back or changed";
+        throw new Error(campaignStreamError);
+      }
+    }
+    if(rank[next.schema]>=2 && rank[campaignAccepted.schema]>=2){
+      if(next.worker_lifecycle_revision<campaignAccepted.worker_lifecycle_revision){
+        campaignStreamError="newer campaign snapshot rolled back worker lifecycle revision";
+        throw new Error(campaignStreamError);
+      }
+      if(next.worker_lifecycle_revision===campaignAccepted.worker_lifecycle_revision &&
+         campaignCanonical(next.active_worker)!==campaignCanonical(campaignAccepted.active_worker)){
+        campaignStreamError="worker changed without a worker lifecycle revision";
+        throw new Error(campaignStreamError);
+      }
+      const oldWorker=campaignAccepted.active_worker,newWorker=next.active_worker;
+      if(oldWorker && newWorker && oldWorker.worker_id!==newWorker.worker_id &&
+         newWorker.worker_generation<=oldWorker.worker_generation){
+        campaignStreamError="new worker did not advance worker generation";
+        throw new Error(campaignStreamError);
+      }
+    }
+  }
+  campaignReconcileEscalatedPause(next);
+  campaignAccepted = next;
+  campaignStreamError = "";
+  return true;
+}
+
+function campaignSecure(){
+  return !!(window.isSecureContext && globalThis.crypto && crypto.randomUUID &&
+            crypto.subtle && globalThis.TextEncoder);
+}
+
+async function campaignReadJson(response,maxBytes,setReader){
+  const declared=response.headers && response.headers.get ?
+    Number(response.headers.get("content-length")) : NaN;
+  if(Number.isFinite(declared) && declared > maxBytes)
+    throw new Error("campaign response body is oversized");
+  let text;
+  if(response.body && typeof response.body.getReader === "function"){
+    const reader=response.body.getReader();setReader(reader);
+    const chunks=[];let total=0;
+    try{
+      while(true){
+        const part=await reader.read();
+        if(part.done) break;
+        if(!(part.value instanceof Uint8Array))
+          throw new Error("campaign response body chunk is malformed");
+        total+=part.value.byteLength;
+        if(total>maxBytes) throw new Error("campaign response body is oversized");
+        chunks.push(part.value);
+      }
+    }catch(err){
+      try{await reader.cancel(err);}catch(_ignored){}
+      throw err;
+    }finally{setReader(null);}
+    const joined=new Uint8Array(total);let offset=0;
+    chunks.forEach(chunk=>{joined.set(chunk,offset);offset+=chunk.byteLength;});
+    text=new TextDecoder("utf-8",{fatal:true}).decode(joined);
+  }else if(typeof response.text === "function"){
+    text=await response.text();
+    if(new TextEncoder().encode(text).byteLength>maxBytes)
+      throw new Error("campaign response body is oversized");
+  }else if(typeof response.json === "function"){
+    const value=await response.json();
+    if(new TextEncoder().encode(JSON.stringify(value)).byteLength>maxBytes)
+      throw new Error("campaign response body is oversized");
+    return value;
+  }else throw new Error("campaign response has no readable body");
+  try{return JSON.parse(text);}
+  catch(_err){throw new Error("campaign response body is malformed JSON");}
+}
+
+async function campaignFetch(url,options,maxBytes){
+  const controller = new AbortController();
+  let reader=null,timer;
+  const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{
+    const error=new Error("campaign request timed out");
+    controller.abort();
+    if(reader) Promise.resolve(reader.cancel(error)).catch(()=>{});
+    reject(error);
+  },CAMPAIGN_FETCH_TIMEOUT_MS);});
+  const operation=(async()=>{
+    const response=await fetch(url,{...options,signal:controller.signal});
+    const body=await campaignReadJson(response,maxBytes,value=>{reader=value;});
+    return {ok:response.ok,status:response.status,body};
+  })();
+  try{return await Promise.race([operation,deadline]);}
+  finally{clearTimeout(timer);}
+}
+
+async function campaignDigest(operation, snapshot){
+  const semantic = campaignCanonical({campaign_id:snapshot.campaign_id,
+    config_generation:snapshot.config_generation,operation:operation,payload:{}});
+  const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(semantic));
+  return Array.from(new Uint8Array(bytes)).map(v=>v.toString(16).padStart(2,"0")).join("");
+}
+
+async function campaignRefreshAuthenticated(config){
+  if(!campaignToken) throw new Error("enter the bearer token in this tab first");
+  const response = await campaignFetch(config.controls.gateway_url.replace(/\/$/, "") + "/snapshot", {
+    cache:"no-store", headers:{Authorization:`Bearer ${campaignToken}`}},
+    CAMPAIGN_SNAPSHOT_MAX_BYTES);
+  if(!response.ok) throw new Error(`producer snapshot refresh responded ${response.status}`);
+  const snapshot = response.body;
+  if(campaignIdentity(snapshot) !== campaignIdentity(config.campaign))
+    throw new Error("producer snapshot identity differs from the explicitly selected campaign");
+  const accepted = campaignAcceptSnapshot(snapshot, false);
+  if(!accepted && campaignStreamKey(snapshot).join("|") !==
+      campaignStreamKey(campaignAccepted).join("|"))
+    throw new Error(campaignStreamError || "producer snapshot refresh is older than the retained view");
+  return campaignAccepted;
+}
+
+function campaignCommandStatus(result){
+  const reason=result.completed ? result.completion_reason : result.prerequisite_reason;
+  return `accepted revision ${result.control_revision}; ` +
+    (result.completed ? `completed${reason ? `: ${reason}` : ""}` :
+     `not completed${reason ? `: ${reason}` : " — awaiting the same request/revision"}`);
+}
+
+function campaignRecordedResult(request){
+  return campaignAccepted && (campaignAccepted.command_results||[]).find(row=>
+    row.request_id===request.request_id && row.operation===request.operation &&
+    row.payload_digest===request.payload_digest &&
+    row.control_revision===request.expected_control_revision+1);
+}
+
+function campaignReconcileEscalatedPause(snapshot){
+  if(!campaignEscalatedPause) return;
+  const request=campaignEscalatedPause.request;
+  const result=(snapshot.command_results||[]).find(row=>row.request_id===request.request_id);
+  if(!result && snapshot.control_revision>=request.expected_control_revision+1)
+    throw new Error("escalated pause identity disappeared from the campaign snapshot");
+  if(!result) return;
+  campaignValidateAck(result,request,true);
+  campaignEscalatedPause.result=result;
+  if(result.completed) campaignEscalatedPause=null;
+}
+
+function campaignUpdateCommandButtons(){
+  const mayEscalate=!!(campaignPending && campaignPendingAck &&
+    !campaignPendingAck.completed && campaignPending.operation==="pause");
+  for(const op of ["pause","resume","drain"]){
+    const button=document.getElementById(CAMPAIGN_BUTTON_IDS[op]);
+    if(button) button.disabled=!campaignControlsAvailable || campaignInFlight ||
+      (!!campaignPending && !(mayEscalate && op==="drain"));
+  }
+  const retry=document.getElementById("campaign-retry");
+  if(retry) retry.disabled=!campaignControlsAvailable || campaignInFlight ||
+    !campaignPending || !!campaignPendingAck;
+}
+
+async function campaignSend(operation, config, retry=false){
+  const status = document.getElementById("campaign-command-status");
+  if(campaignInFlight){status.textContent="another campaign request is still in flight";return;}
+  if(campaignPending && !retry){
+    const mayEscalate=operation==="drain" && campaignPending.operation==="pause" &&
+      campaignPendingAck && !campaignPendingAck.completed;
+    if(!mayEscalate){
+      status.textContent=campaignPendingAck ?
+        `${campaignPending.operation} is accepted but incomplete; only drain escalation is permitted` :
+        `${campaignPending.operation} has an uncertain acknowledgment; use Retry before requesting ${operation}`;
+      campaignUpdateCommandButtons();return;
+    }
+  }
+  if(retry && !campaignPending){status.textContent="there is no uncertain command to retry";return;}
+  campaignInFlight=true; campaignUpdateCommandButtons();
+  try{
+    if(!campaignSecure()) throw new Error(
+      "controls require a secure browser context (use an authenticated HTTPS tunnel)");
+    const fresh = await campaignRefreshAuthenticated(config);
+    let escalationSource=null;
+    if(campaignPending){
+      const recorded=(fresh.command_results||[]).find(row=>row.request_id===campaignPending.request_id);
+      if(recorded){
+        campaignValidateAck(recorded,campaignPending,campaignPending._resultV2);
+        status.textContent=campaignCommandStatus(recorded);
+        campaignPendingAck=recorded;
+        if(recorded.completed){campaignPending=null;campaignPendingAck=null;
+          if(retry) return;
+        }else if(operation==="drain" && !retry && campaignPending.operation==="pause"){
+          escalationSource={request:campaignPending,result:recorded};
+        }else return;
+      }
+      if(!recorded && campaignPendingAck)
+        throw new Error("accepted command is absent from the authenticated snapshot");
+    }
+    if(escalationSource){
+      const payloadDigest = await campaignDigest(operation, fresh);
+      const nextRequest={schema:"epyc.autokernel.campaign_command.v1",
+        campaign_id:fresh.campaign_id,config_generation:fresh.config_generation,
+        request_id:crypto.randomUUID(),operation:operation,payload:{},
+        payload_digest:payloadDigest,expected_control_revision:fresh.control_revision};
+      Object.defineProperty(nextRequest,"_resultV2",{value:true});
+      campaignEscalatedPause=escalationSource;
+      campaignPending=nextRequest;
+      campaignPendingAck=null;
+    }else if(!campaignPending){
+      const payloadDigest = await campaignDigest(operation, fresh);
+      campaignPending = {schema:"epyc.autokernel.campaign_command.v1",
+        campaign_id:fresh.campaign_id,config_generation:fresh.config_generation,
+        request_id:crypto.randomUUID(),operation:operation,payload:{},
+        payload_digest:payloadDigest,expected_control_revision:fresh.control_revision};
+      Object.defineProperty(campaignPending,"_resultV2",{
+        value:fresh.schema!=="epyc.autokernel.campaign_snapshot.v1"});
+    }
+    const request=campaignPending;
+    const response = await campaignFetch(config.controls.gateway_url.replace(/\/$/, "") + "/commands", {
+      method:"POST",cache:"no-store",
+      headers:{Authorization:`Bearer ${campaignToken}`,"Content-Type":"application/json"},
+      body:JSON.stringify(request)},CAMPAIGN_ACK_MAX_BYTES);
+    const result = response.body;
+    if(!response.ok) throw new Error((result && result.error) || `command responded ${response.status}`);
+    campaignValidateAck(result,request,request._resultV2);
+    const recorded=campaignRecordedResult(request);
+    const effective=(recorded && recorded.completed) ? recorded : result;
+    status.textContent=campaignCommandStatus(effective);
+    if(campaignPending===request){
+      if(effective.completed){campaignPending=null;campaignPendingAck=null;}
+      else campaignPendingAck=effective;
+    }
+  }catch(err){
+    status.textContent = `${err.message || err}. ` +
+      (campaignPending && !campaignPendingAck ?
+       "Retry keeps the same request ID and payload." :
+       campaignPendingAck ? "The accepted command remains pending." : "No command was sent.");
+  }finally{
+    campaignInFlight=false;campaignUpdateCommandButtons();
+  }
+}
+
+function campaignRenderAggregates(u,clocks){
+  const unknown=v=>v===null||v===undefined?"unknown":String(v);
+  let html="";
+  for(const [kind,row] of Object.entries(campaignAggregateRows(u))){
+    const d=row.data,clock=clocks?.[kind];
+    html+=`<div class="pad"><h4>${esc(kind)} observation · ${esc(row.status)}</h4><div class="muted">${esc(row.reason)}</div><dl class="kv">`+
+      `<dt>source observation / last attempt</dt><dd>${esc(row.observed_at||"not observed")} / ${esc(row.attempted_at||"not attempted")}</dd>`+
+      `<dt>source generation (not publisher sequence)</dt><dd>${esc(row.generation)}</dd>`+
+      `<dt>freshness / publication error</dt><dd>${esc(clock?clock.state+": "+clock.reason:"unknown; no matching envelope")} / ${esc(row.error||"none reported")}</dd>`;
+    if(d){
+      if(kind==="evidence")html+=`<dt>source / cursor / projection frontier</dt><dd>${esc(unknown(d.source_frontier))} / ${esc(unknown(d.cursor_frontier))} / ${esc(unknown(d.projection_frontier))}</dd>`+
+        `<dt>captured admission / last admitted frontier</dt><dd>${esc(unknown(d.admission_frontier))} / ${esc(unknown(d.last_admitted_frontier))}</dd>`+
+        `<dt>owner / admission ready / proof pending</dt><dd>${esc(d.owner_state)} / ${esc(d.ready)} / ${esc(d.proof_pending)}</dd>`+
+        `<dt>event lag / time lag</dt><dd>${esc(unknown(d.lag_events))} / unknown (not derived from event count)</dd>`+
+        `<dt>quarantine / cached findings (not total corpus)</dt><dd>${esc(unknown(d.quarantine_count))} / ${esc(unknown(d.cached_finding_count))}</dd>`+
+        `<dt>epoch / projection checksum</dt><dd>${esc(d.epoch)} / ${esc(unknown(d.projection_checksum))}</dd>`+
+        `<dt>support</dt><dd>per-query only; projected evidence is not scientific validity</dd>`;
+      if(kind==="profile")html+=`<dt>configured / usable at original planning observation</dt><dd>${esc(unknown(d.configured_count))} / ${esc(unknown(d.usable_count))}</dd>`+
+        `<dt>installed mechanisms / original refresh debt</dt><dd>${esc(unknown(d.mechanism_count))} / ${esc(unknown(d.debt_count))}</dd>`+
+        `<dt>current usable total</dt><dd>unknown; no eligibility recalculation in dashboard</dd>`+
+        `<dt>expired / unknown validity in shown sample</dt><dd>${esc(unknown(clock?.expired_sample_count))} / ${esc(unknown(clock?.unknown_validity_sample_count))}</dd>`;
+      if(kind==="calibration")html+=`<dt>predeclared attempts / pending / collected original chunks</dt><dd>${esc(unknown(d.request_count))} / ${esc(unknown(d.pending_count))} / ${esc(unknown(d.collected_count))}</dd>`+
+        `<dt>exhausted chunks / failed / contaminated attempts</dt><dd>${esc(unknown(d.exhausted_count))} / ${esc(unknown(d.failed_count))} / ${esc(unknown(d.contaminated_count))}</dd>`+
+        `<dt>controls qualification / ranking authority</dt><dd>unavailable / false; numeric collection is not qualification</dd>`;
+      if(kind==="actor")html+=`<dt>pending / finished actor records / installed backends</dt><dd>${esc(unknown(d.pending_count))} / ${esc(unknown(d.finished_count))} / ${esc(unknown(d.backend_count))}</dd>`+
+        `<dt>source/build executor installed (not authority)</dt><dd>${esc(d.executor_installed)}</dd>`+
+        `<dt>global scheduler-settled actor total</dt><dd>unknown; settlement labels are sampled only; FINISH is not settlement</dd>`+
+        `<dt>original reserved / spent budgets</dt><dd>${esc(JSON.stringify(d.reserved))} / ${esc(JSON.stringify(d.spent))}</dd>`;
+      if(d.items){
+        html+=`<dt>bounded details / original total / truncated</dt><dd>${d.items.length} / ${esc(unknown(d.items_total))} / ${esc(d.items_truncated)}</dd>`;
+        for(const item of d.items)html+=`<dt>sampled ${esc(kind)} record</dt><dd class="mono">${esc(JSON.stringify(item))}</dd>`;
+      }
+    }
+    html+="</dl></div>";
+  }
+  return html;
+}
+function campaignRenderUnified(snapshot,runtimeClock=null,aggregateClocks=null){
+  if(snapshot.schema!=="epyc.autokernel.campaign_snapshot.v3") return "";
+  const u=snapshot.unified,s=u.scheduler,c=s.capacity,a=s.accounting,t=u.targets;
+  const unknown=value=>value===null ? "unknown / not connected" : String(value);
+  const section=(name,row,detail)=>`<div class="pad"><h4>${esc(name)} · ${esc(row.status)}</h4>`+
+    `<div class="muted">${esc(row.reason)}</div><dl class="kv">${detail}</dl></div>`;
+  const runtime=u.runtime;
+  const runtimeCard=!runtime ? "" : section("runtime observation",runtime,
+    `<dt>observed at (not publisher heartbeat)</dt><dd>${esc(runtime.observed_at || "not reported")}</dd>`+
+    `<dt>observation / declared retry delay</dt><dd>${esc(runtime.observation_sequence)} / ${esc(runtime.retry_after_seconds)} s</dd>`+
+    `<dt>installed execution kinds (not grants)</dt><dd>${esc(runtime.installed_work_kinds.join(", ") || "none")}</dd>`+
+    `<dt>last selected work / target</dt><dd>${esc(runtime.work_kind || "none")} / ${esc(runtime.target_revision || "none")}</dd>`+
+    `<dt>transition / durable operational outcome</dt><dd>${esc(runtime.transition_id || "none")} / ${esc(runtime.settlement_outcome || "none")}</dd>`+
+    `<dt>observation publication error</dt><dd>${esc(runtime.publication_error || "none reported")}</dd>`+
+    (runtimeClock ? `<dt>runtime freshness (separate from transport)</dt><dd>${esc(runtimeClock.state)}: ${esc(runtimeClock.reason)}</dd>`+
+      `<dt>last observation / owned stage activity age</dt><dd>${esc(runtimeClock.age_s ?? "unknown")} / ${esc(runtimeClock.activity_age_s ?? "unknown")} s</dd>`+
+      `<dt>stage activity silence</dt><dd>${runtimeClock.activity_silent ? "no recent stage event; ongoing work is not proof of progress" : "none indicated"}</dd>` : "")+
+    `<dt>scientific authority</dt><dd>none inferred; calibration collection is not qualification</dd>`+
+    (runtime.reason_truncated ? `<dt>reason</dt><dd>bounded prefix shown</dd>` : ""));
+  return `<div class="subgrid">`+runtimeCard+
+    section("scheduler",s,
+      `<dt>round / accounting epoch</dt><dd>${esc(s.round_number)} / ${esc(s.accounting_epoch)}</dd>`+
+      `<dt>pending selection</dt><dd>${esc(unknown(s.pending_selection_digest))}</dd>`+
+      `<dt>campaign attempts / charged seconds</dt><dd>${esc(s.campaign_attempts)} / `+
+        `${esc(s.campaign_charged_seconds)}</dd>`+
+      `<dt>coverage debt count</dt><dd>${esc(s.coverage_debt_count)}</dd>`+
+      `<dt>declared scheduling capacity (not a grant)</dt><dd>CPU fraction `+
+        `${esc(c.physical_region_fraction)}; GPUs ${esc(c.gpu_devices.length?c.gpu_devices.join(", "):"none")}; `+
+        `memory ${esc(c.memory_reservation_bytes)} bytes</dd>`+
+      `<dt>compact accounting</dt><dd>held ${esc(a.held_seconds)} s; CPU-region `+
+        `${esc(a.physical_region_seconds)} s; memory-byte ${esc(a.memory_byte_seconds)} s</dd>`+
+      `<dt>projection / config / policy digests</dt><dd class="mono">${esc(s.projection_digest)} / `+
+        `${esc(s.config_digest)} / ${esc(s.policy_digest)}</dd>`)+
+    section("resources",u.resources,
+      `<dt>requested / granted / held / used</dt><dd>${esc(unknown(u.resources.requested))} / `+
+        `${esc(unknown(u.resources.granted))} / ${esc(unknown(u.resources.held))} / `+
+        `${esc(unknown(u.resources.used))}</dd>`)+
+    (u.schema===campaignAggregateSchema?campaignRenderAggregates(u,aggregateClocks):section("actors",u.actors,
+      `<dt>actor items</dt><dd>${u.actors.items.length ? esc(u.actors.items.length) : "none reported"}</dd>`+
+      `<dt>clock semantics</dt><dd>${esc(u.actors.clock_semantics)}</dd>`)+
+    section("evidence",u.evidence,
+      `<dt>frontier / projection lag</dt><dd>${esc(unknown(u.evidence.frontier_digest))} / `+
+        `${esc(unknown(u.evidence.lag_seconds))}</dd>`))+
+    section("candidate",u.candidate,
+      `<dt>accumulated</dt><dd>${esc(unknown(u.candidate.accumulated_identity))}</dd>`+
+      `<dt>validated</dt><dd>${esc(unknown(u.candidate.validated_identity))}</dd>`+
+      `<dt>frozen production</dt><dd>${esc(unknown(u.candidate.frozen_production_identity))}</dd>`+
+      `<dt>validation debt</dt><dd>${esc(unknown(u.candidate.validation_debt))}</dd>`)+
+    section("targets",t,
+      `<dt>enrollment ready / prerequisite / total (not execution readiness)</dt><dd>${esc(t.ready)} / ${esc(t.prerequisite)} / `+
+        `${esc(t.total)}</dd><dt>production / seed enrolled</dt><dd>${esc(t.production_enrolled)} / `+
+        `${esc(t.seed_enrolled)}</dd><dt>items endpoint</dt><dd>`+
+        `${t.items_page_ref===null ? "none promised" : esc(t.items_page_ref)}</dd>`)+
+    `</div>`;
+}
+
+function renderCampaign(d){
+  const view = d.campaign || {configured:false,state:"legacy",campaign:null,controls:{}};
+  const host = document.getElementById("campaign");
+  const controls = document.getElementById("campaign-controls");
+  const badge = document.getElementById("campaign-badge");
+  if(!view.configured){
+    campaignControlsAvailable=false;
+    host.innerHTML = `<div class="empty">No unified campaign is configured; the historical ` +
+      `<code>loop_status.v1</code> view remains available.</div>`;
+    controls.innerHTML = "";
+    campaignAccepted = null; campaignAcceptedEnvelope = null;
+    campaignPending = null; campaignPendingAck = null; campaignEscalatedPause = null;
+    campaignToken = "";
+    return;
+  }
+  let s = view.campaign;
+  let envelope = view;
+  let rejected = false;
+  if(!s){
+    campaignStreamError=view.error||"no trustworthy campaign snapshot";
+    if(!campaignAccepted){
+      campaignControlsAvailable=false;
+      badge.className="badge malformed";
+      document.getElementById("campaign-badgetxt").textContent="MALFORMED";
+      host.innerHTML=`<div class="empty"><strong>MALFORMED</strong>: ${esc(campaignStreamError)}. `+
+        `Legacy state is not used as a healthy fallback.</div>`;
+      controls.innerHTML="";
+      return;
+    }
+    rejected=true;s=campaignAccepted;
+    envelope=campaignAcceptedEnvelope||{clocks:{},controls:{}};
+  }else{
+    try{
+      const changed=(!campaignAccepted||campaignIdentity(s)!==campaignIdentity(campaignAccepted)) ?
+        campaignAcceptSnapshot(s,true) : campaignAcceptSnapshot(s,false);
+      if(changed || campaignCanonical(s)===campaignCanonical(campaignAccepted)){
+        campaignAcceptedEnvelope=view;
+      }else rejected=true;
+    }catch(_err){
+      if(!campaignAccepted) throw _err;
+      rejected=true;
+    }
+    s=campaignAccepted;
+    if(rejected) envelope=campaignAcceptedEnvelope||{clocks:{},controls:{}};
+  }
+  const state=rejected ? "history" : (envelope.state||"malformed");
+  badge.className="badge "+(state==="live" ? "fresh" : state==="history" ? "absent" : "malformed");
+  document.getElementById("campaign-badgetxt").textContent=
+    (rejected ? "UNKNOWN / HISTORY" : state.toUpperCase());
+  const clock = name => s[name] || "unknown";
+  const last = (s.command_results || []).slice(-1)[0];
+  const worker=s.active_worker;
+  const workerText=worker ? `${esc(worker.state)}; generation ${esc(worker.worker_generation)}; `+
+    `deadline ${esc(worker.provider_deadline==null?"unknown":worker.provider_deadline)} `+
+    `(${esc(worker.deadline_clock_domain)})` :
+    (s.observed_state==="ownership_unresolved" ?
+      `ACQUISITION UNRESOLVED — ${esc(s.prerequisite_reason||"unknown reason")}` : "none reported");
+  host.innerHTML = `<div class="pad"><dl class="kv">` +
+    `<dt>campaign / generation</dt><dd>${esc(s.campaign_id)} / ${esc(s.config_generation)}</dd>` +
+    `<dt>supervisor / stream</dt><dd>${esc(s.supervisor_incarnation)} / ` +
+      `${esc(s.stream_epoch)}:${esc(s.sequence)}</dd>` +
+    `<dt>desired / observed</dt><dd>${esc(s.desired_state)} / ${esc(s.observed_state)}</dd>` +
+    `<dt>journal / control revision</dt><dd>${esc(s.journal_cursor)} / ${esc(s.control_revision)}</dd>` +
+    `<dt>supervisor heartbeat</dt><dd>${esc(clock("producer_heartbeat_at"))}</dd>` +
+    `<dt>stage activity</dt><dd>${esc(clock("worker_activity_at"))}</dd>` +
+    `<dt>last scientific result</dt><dd>${esc(clock("last_scientific_result_at"))}</dd>` +
+    `<dt>worker</dt><dd>${workerText}</dd>` +
+    (s.schema!=="epyc.autokernel.campaign_snapshot.v1" ?
+      `<dt>worker lifecycle revision</dt><dd>${esc(s.worker_lifecycle_revision)}</dd>`+
+      `<dt>execution capability / current authority</dt><dd>${esc(s.execution_capability_available)} / `+
+      `${esc(s.execution_authorized)}</dd>` :
+      `<dt>execution authority</dt><dd>${s.execution_authorized === false ? "false" : "INVALID"}</dd>`) +
+    `<dt>last command</dt><dd>${last ? `accepted=${esc(last.accepted)}; completed=` +
+      `${esc(last.completed)}; ${esc(last.prerequisite_reason || "no reason")}` : "none"}</dd>` +
+    `</dl>${campaignStreamError ? `<div class="warn">${esc(campaignStreamError)}</div>` : ""}</div>`+
+    campaignRenderUnified(s,envelope.runtime_freshness,envelope.aggregate_freshness);
+  const secure = campaignSecure();
+  const available = !!(!rejected && envelope.controls && envelope.controls.available && secure);
+  let pendingResult=null;
+  if(campaignPending){
+    pendingResult=campaignRecordedResult(campaignPending)||null;
+    if(pendingResult){
+      try{campaignValidateAck(pendingResult,campaignPending,campaignPending._resultV2);}
+      catch(err){campaignStreamError=String(err.message||err);pendingResult=null;}
+      if(pendingResult){
+        campaignPendingAck=pendingResult;
+        if(pendingResult.completed){campaignPending=null;campaignPendingAck=null;}
+      }
+    }
+  }
+  campaignControlsAvailable=available;
+  controls.innerHTML = `<label>Bearer token (memory only) <input id="campaign-token" ` +
+    `type="password" autocomplete="off"></label>` +
+    ["pause","resume","drain"].map(op => `<button id="campaign-${op}" ` +
+      `${available ? "" : "disabled"}>${op}</button>`).join("") +
+    `<button id="campaign-retry" ${available && campaignPending && !campaignPendingAck ? "" : "disabled"}>`+
+      `Retry ${esc(campaignPending ? campaignPending.operation : "pending")}</button>`+
+    `<span id="campaign-command-status" class="muted">${esc(pendingResult ?
+      campaignCommandStatus(pendingResult) : available ?
+      (campaignPending ? (campaignPendingAck && campaignPending.operation==="pause" ?
+       "pause is accepted but incomplete; drain escalation is available" :
+       campaignPendingAck ? "accepted command is still incomplete" :
+       "command acknowledgment is uncertain; Retry keeps the same request/revision") :
+       "refreshes the authenticated producer before every command") :
+      (!secure ? "controls unavailable: secure context/Web Crypto required" :
+       ((envelope.controls||{}).reason || "controls unavailable")))}</span>`;
+  const input = document.getElementById("campaign-token");
+  if(!input._campaignBound){
+    input._campaignBound = true;
+    input.addEventListener("input", event => { campaignToken = event.target.value || ""; });
+  }
+  ["pause","resume","drain"].forEach(op => {
+    const button = document.getElementById(CAMPAIGN_BUTTON_IDS[op]);
+    if(!button._campaignBound){
+      button._campaignBound = true;
+      button.addEventListener("click", () => campaignSend(op, view));
+    }
+  });
+  const retry=document.getElementById("campaign-retry");
+  if(!retry._campaignBound){
+    retry._campaignBound=true;
+    retry.addEventListener("click",()=>campaignSend(
+      campaignPending ? campaignPending.operation : "pause",envelope,true));
+  }
+  campaignUpdateCommandButtons();
+}
 
 /* The banner is keyed on `payload.notice.kind`, which is freshness AND the run's
    DECLARED lifecycle folded together server-side (`loop_status.notice`), not on
@@ -489,8 +1481,9 @@ const MEASURED = new Set(["kept", "measured_null"]);
    published on the way out, so it is perfectly fresh and perfectly dead, and a
    freshness-keyed banner draws nothing at all over it.
 
-   Six keys, and `none` draws nothing. The four freshness words still own the
-   BADGE; this is a second, orthogonal axis. */
+   Six keys, and `none` draws nothing. The badge also names declared terminal
+   reports without painting their expected age as an outage; raw freshness
+   remains a separate axis in the API and identity panel. */
 const BANNERS = {
   absent: {
     hd: "ABSENT — no loop has ever published here",
@@ -526,8 +1519,18 @@ const BANNERS = {
   }
 };
 
-function setFreshBadge(state, ageS){
+function setFreshBadge(state, ageS, notice = null){
   const el = document.getElementById("fresh");
+  // A declared final report ages, but silence after completion is not an outage.
+  // Raw age/freshness remain visible in the identity panel and API. Malformed
+  // and absent reports never acquire terminal standing from an untrusted body.
+  if((state === "fresh" || state === "stale") &&
+      (notice?.kind === "finished" || notice?.kind === "failed")){
+    el.className = "badge " + notice.kind;
+    document.getElementById("freshtxt").textContent =
+      `${notice.kind === "failed" ? "FAILED REPORT" : "FINAL REPORT"} · ${age(ageS)} old`;
+    return;
+  }
   el.className = "badge " + esc(state);
   document.getElementById("freshtxt").textContent =
     state === "fresh" ? `fresh · ${age(ageS)} ago`
@@ -601,253 +1604,51 @@ const CH_BANNERS = {
                     "refused bundle."}
 };
 
+/* The accumulator's magnitude is authoritative only for the exact measured tip.
+   Old producers have no validity field: keep them readable, but never upgrade
+   their number to a current claim merely because it exists. */
+function accumulatorMeasurement(a){
+  const reported = (a && typeof a.measurement_validity === "string")
+    ? a.measurement_validity : "unknown_legacy";
+  const current = reported === "current_snapshot";
+  const comp = current && num(a.compounded_bench_pct)
+    ? a.compounded_bench_pct : null;
+  const historical = !current && num(a.historical_compounded_bench_pct)
+    ? a.historical_compounded_bench_pct : null;
+  const detail = current
+    ? (comp == null ? "current snapshot has no finite compounded magnitude" : "current snapshot")
+    : reported === "stale_external_tip_advance"
+      ? "tip advanced after the retained measurement"
+      : reported === "unknown_legacy"
+        ? "legacy snapshot did not establish measurement validity"
+        : `unrecognized measurement validity ${reported}`;
+  return {reported, current, comp, historical, detail};
+}
+
 function renderChampion(d){
-  const host = document.getElementById("champ");
-  const badge = document.getElementById("champ-badge");
-  const badgetxt = document.getElementById("champ-badgetxt");
-  const c = d.champion_vs_production || null;
-  if(!c){
-    // The hub served no champion block at all — a wiring fact about THIS hub,
-    // and it must not be rendered as "the measurement is absent".
-    badge.className = "badge malformed";
-    badgetxt.textContent = "UNKNOWN";
-    host.innerHTML = `<div class="ch-verdict malformed"><b>UNKNOWN — this hub ` +
-      `served no champion block</b><div class="muted" style="margin-top:5px">` +
-      `<code>/api/loop</code> carried no <code>champion_vs_production</code>. ` +
-      `That is a fact about this hub's version, not about whether the champion ` +
-      `has been measured.</div></div>`;
-    return;
-  }
-  const f = c.freshness || {};
-  const state = String(f.state || "absent");
-  const measured = !!c.measured;
-  const prod = c.production || {};
-  const prodResolved = !!prod.resolved;
-  // SUPERSESSION OUTRANKS FRESHNESS IN THE BADGE, and this order is the whole
-  // point. `state` answers "how old is this FILE"; supersession answers "does it
-  // describe the champion we have". A bundle written an hour ago for a champion
-  // the loop has since advanced past twice is `fresh` and is also NOT ABOUT THE
-  // CURRENT TREE -- and a badge reading "fresh · 11.0h ago" beside +8.5% was read,
-  // correctly, as a claim about the current champion. It was a claim about a
-  // superseded one. The supersession block further down was already rendered and
-  // was not enough: nobody reads the body to decide whether to trust the header.
-  //
-  // TWO supersessions now, ORTHOGONAL and both outranking freshness: the
-  // champion one ("the measured tree has moved on") and the baseline one ("the
-  // production anchor has been PROMOTED past what this bundle measured
-  // against"). Both, either, or neither — and the badge says which, because
-  // "SUPERSEDED" alone sends an investigator to the wrong side of the A/B.
-  // Above them all: a production anchor that did not RESOLVE. With no resolved
-  // anchor neither supersession can even be computed, and a badge keyed on
-  // freshness alone would read "fresh" over a comparison nobody can verify.
-  const supC = !!c.supersession;
-  const supB = !!c.baseline_supersession;
-  const superseded = supC || supB;
-  badge.className = "badge " +
-    (!prodResolved ? "malformed" : superseded ? "stale" : esc(state));
-  badgetxt.textContent =
-    !prodResolved ? "PRODUCTION UNRESOLVED"
-    : (supB && supC) ? `SUPERSEDED BASELINE+CHAMPION · measured ${age(f.age_s)} ago`
-    : supB ? `SUPERSEDED BASELINE · measured ${age(f.age_s)} ago`
-    : supC ? `SUPERSEDED CHAMPION · measured ${age(f.age_s)} ago`
-    : state === "fresh" ? `fresh · ${age(f.age_s)} ago`
-    : state === "stale" ? `STALE · ${age(f.age_s)} ago`
-    : state === "malformed" ? "MALFORMED" : "ABSENT";
-
-  const base = c.baseline || {};
-  const champ = c.champion || {};
-  // The anchor beside the number is the bundle's OWN declared anchor — what
-  // was measured, even when superseded — and it earns the "current" tag only
-  // by matching the live-resolved production HEAD on THIS reading.
-  const anchorTxt = `${esc(base.kind || "production kernel")} ` +
-    `<span class="anchor">${esc(base.label || "—")} ${esc(short(base.commit))}</span>` +
-    (c.baseline_check === "current"
-      ? ` <span class="muted">(current production — resolved live)</span>` : "");
-
-  let h = "";
-  if(!prodResolved){
-    // ITS OWN EXPLICIT STATE, never a silent fallback: the hub resolves the
-    // frozen production kernel live from the canonical tree on every reading,
-    // and when it cannot, it says so and why — a remembered sha here would be
-    // exactly right until the first promotion and exactly wrong after it.
-    h += `<div class="ch-verdict malformed"><b>CANNOT RESOLVE THE FROZEN ` +
-         `PRODUCTION KERNEL</b>` +
-         `<div style="margin-top:5px">${esc(prod.error || "the hub served no resolver detail")}</div>` +
-         `<div class="muted" style="margin-top:5px">${esc(c.production_unresolved_means || "")} ` +
-         `Resolved from <span class="anchor">${esc(prod.tree || "the frozen tree")}</span> ` +
-         `at request time. Until it resolves, nothing below can be verified ` +
-         `current against production.</div></div>`;
-  }
-  const spec = CH_BANNERS[state] || CH_BANNERS.absent;
-  if(state !== "fresh"){
-    h += `<div class="ch-verdict ${esc(state)}"><b>${esc(spec.hd)}</b>` +
-         `<div style="margin-top:5px">${esc(f.detail || c.reader_error || "")}</div>` +
-         `<div class="muted" style="margin-top:5px">${esc(spec.note)}</div></div>`;
-  }
-
-  const e = c.effect_fraction;
-  const showNum = measured && num(e);
-  // The three no-number cases read differently on purpose. "refused" is a fact
-  // about a bundle that exists and was rejected; "not yet measured" is a fact
-  // about a measurement nobody took. Printing the second over the first would
-  // send an investigator looking for a run instead of for the emitter's writer.
-  const pct = showNum
-    ? `${e >= 0 ? "+" : ""}${(e * 100).toFixed(1)}%`
-    : state === "malformed" ? "refused" : "not yet measured";
-  const ncls = !showNum ? "unmeasured"
-    : (state !== "fresh" || supC || supB || !prodResolved) ? "dated"
-    : (e > 0 ? "pos" : e < 0 ? "neg" : "");
-  // THE NUMBER AND ITS ANCHOR ARE ONE ELEMENT. They are rendered together or
-  // not at all; there is no code path that emits the figure without the "vs".
-  h += `<div class="ch-head">` +
-    `<span class="ch-num ${ncls}">${esc(pct)}</span>` +
-    `<span class="ch-vs">` +
-      `<b>vs the ${anchorTxt}</b><br>` +
-      (showNum
-        ? `cumulative gain of champion <span class="anchor">` +
-          `${esc(short(champ.measured_commit))}</span>` +
-          (c.metric ? ` · metric <span class="anchor">${esc(c.metric)}</span>` +
-             (c.metric_direction ? ` (${esc(c.metric_direction)})` : "") : "") +
-          (c.surface ? ` · surface <span class="anchor">${esc(c.surface)}</span>` : "") +
-          (num(c.pairs) ? ` · ${esc(c.pairs)} pairs` : "") +
-          (num(c.noise_floor_pct)
-            ? ` · noise floor ${esc(c.noise_floor_pct.toFixed(3))}% of the anchor` : "")
-        : `the loop's champion is <span class="anchor">` +
-          `${esc(short(champ.loop_champion_head))}</span> and no A/B against ` +
-          `this anchor has been published for it`) +
-    `</span></div>`;
-
-  if(c.baseline_supersession){
-    // The ANCHOR side: production has been promoted past what this bundle
-    // measured against. The number is honest and stands — visibly dated, both
-    // commits named — it just no longer answers "gain over CURRENT production".
-    h += `<div class="ch-sup"><b>SUPERSEDED BASELINE</b> — ` +
-         `${esc(c.baseline_supersession.detail)}</div>`;
-  }
-  if(c.supersession){
-    h += `<div class="ch-sup"><b>SUPERSEDED CHAMPION</b> — ` +
-         `${esc(c.supersession.detail)}</div>`;
-    // 2026-09-07: a superseded headline during ACCUMULATION is the expected state, not a
-    // fault -- the champion-vs-production number refreshes per keep, but between keeps
-    // (and before this fix, for the whole accumulation phase) it can lag the tip by days.
-    // Say so, and point at the live number: the accumulator card is the progress.
-    const acc = (d.loop && d.loop.accumulator) || null;
-    if (acc && num(acc.n_keeps)) {
-      const comp = num(acc.compounded_bench_pct) ? acc.compounded_bench_pct : 0;
-      const thr  = num(acc.fire_threshold_pct) ? acc.fire_threshold_pct : null;
-      h += `<div class="ch-sup"><b>ACCUMULATION IN PROGRESS</b> — the current champion ` +
-        `<span class="mono">${esc(short(acc.accumulator_tip))}</span> carries ` +
-        `<b>${esc(acc.n_keeps)}</b> guard-verified keep(s) in the live bundle, ` +
-        `<b>+${comp.toFixed(2)}%</b> compounded bench vs the champion of record ` +
-        `<span class="mono">${esc(short(acc.champion_of_record))}</span>` +
-        (thr != null ? ` — ${(100*Math.min(1, comp/thr)).toFixed(0)}% of the way to the ` +
-                       `${thr.toFixed(2)}% serving gate` : ``) +
-        `. That is the live progress (Accumulator card below); this headline is the last ` +
-        `tip-vs-production A/B and refreshes on the next keep.</div>`;
-    }
-  }
-
-  if(!showNum){
-    h += `<div class="ch-note"><b>What would produce this number:</b> ` +
-         `${esc(c.would_populate || "—")}</div>`;
-  }
-  // The not-composable rationale stays a SERVER-SIDE fact (`c.not_composable`,
-  // pinned by tests) but is no longer rendered on this card (operator note,
-  // 2026-08-31): the marginals it warns about live in the Recent-iterations
-  // table, and that table carries its own must-not-be-summed caption.
-
-  // The capabilities list, in an accordion COLLAPSED by default (operator
-  // note, 2026-08-31 — the list was long). Entries unchanged inside; the
-  // evidence / run-record footer lines live inside it too. The UNKNOWN state
-  // is surfaced on the summary line so collapsing cannot hide "nobody has
-  // said" behind a heading that implies a list exists.
+  const capsHost=document.getElementById("champion-capabilities");
+  const c=d.champion_vs_production||{};
   const caps = c.capabilities || {};
-  const capCount = (caps.known && (caps.items || []).length)
-    ? ` (${caps.items.length})` : caps.known ? " (declared empty)" : "";
-  h += `<details class="ch-acc"><summary>Champion Capabilities${esc(capCount)}` +
-       (!caps.known ? ` <span class="unk">UNKNOWN</span>` : "") + `</summary>`;
-  h += `<div class="ch-caps">`;
+  let capHtml = `<div class="ch-caps">`;
   if(caps.known && (caps.items || []).length){
-    h += `<span class="muted">(source: ${esc(caps.source || "—")})</span><ul>` +
+    capHtml += `<span class="muted">${esc((caps.items || []).length)} capabilities · source: ${esc(caps.source || "—")}</span><ul>` +
       caps.items.map(it => `<li>${esc(it.name)}` +
         (it.evidence ? ` <span class="ev">${esc(it.evidence)}</span>` : "") +
         `</li>`).join("") + `</ul>`;
   } else if(caps.known){
-    h += `<div>The producer published the list and it is ` +
+    capHtml += `<div>The producer published the list and it is ` +
          `<strong>empty</strong>. That is a statement, and a different one from ` +
          `never having been asked.</div>`;
   } else {
-    h += `<div class="muted">${esc(caps.unknown_reason || "—")}</div>` +
+    capHtml += `<div><span class="unk">UNKNOWN</span> <span class="muted">${esc(caps.unknown_reason || "—")}</span></div>` +
          (caps.would_populate
            ? `<div class="muted" style="margin-top:5px"><b>What would populate it:</b> ` +
              `${esc(caps.would_populate)}</div>` : "");
   }
-  h += `</div>`;
-
-  h += `<div class="ch-note muted">evidence: <span class="anchor">` +
-       `${esc(c.evidence || "—")}</span>` +
-       (f.generated_at ? ` · measured ${esc(f.generated_at)}` : "") +
-       (c.measurement_evidence
-         ? `<br>run record: <span class="anchor">${esc(c.measurement_evidence)}</span>` : "") +
-       `</div>`;
-  h += `</details>`;
-  host.innerHTML = h;
+  capHtml += `</div>`;
+  capsHost.innerHTML = capHtml;
 }
 
-function tile(lab, val, sub, cls){
-  return `<div class="tile"><div class="lab">${esc(lab)}</div>` +
-         `<div class="val ${cls || ""}">${esc(val)}</div>` +
-         `<div class="sub">${esc(sub || "")}</div></div>`;
-}
-
-function renderTiles(d){
-  const L = d.loop, D = d.derived;
-  const host = document.getElementById("tiles");
-  if(!L){
-    host.innerHTML = `<div class="tile"><div class="lab">nothing to show</div>` +
-      `<div class="val dim">—</div><div class="sub">no readable report; see the ` +
-      `banner above</div></div>`;
-    return;
-  }
-  const done = num(L.iterations_done) ? L.iterations_done : 0;
-  const planned = num(L.iterations_planned) ? L.iterations_planned : null;
-  const reached = num(L.measurements_reached) ? L.measurements_reached : 0;
-  const kept = D ? D.kept : 0;
-  const negatives = D ? D.negatives : 0;
-  const gpu = (D && D.gpu) || {};
-  // EVERY figure names what it is a figure OF. A count says of what; a
-  // percentage says of what and against what. The unlabelled percentage is the
-  // defect this whole revision exists to close, and it does not stop being one
-  // because the tile is small.
-  host.innerHTML = [
-    tile("Iterations", planned == null ? String(done) : `${done} / ${planned}`,
-         planned == null ? "candidates drawn; planned count not reported"
-                         : `${D && D.iterations_remaining != null ? D.iterations_remaining : "—"} of the planned count remaining`),
-    tile("Reached a measurement", `${reached}`,
-         `of ${done} iterations · ${done - reached} never got to the instrument`,
-         reached === 0 && done > 0 ? "bad" : ""),
-    tile("Kept", `${kept}`, `of ${done} iterations · promotions into the champion, not attempts`,
-         kept > 0 ? "good" : "dim"),
-    tile("Negatives", `${negatives}`, `of ${done} iterations · every non-keep disposition`,
-         negatives > 0 ? "warn" : "dim"),
-    tile("Noise floor", num(L.noise_floor_pct) ? `${L.noise_floor_pct.toFixed(3)}%` : "—",
-         `of the ANCHOR's mean on ${L.surface || "this surface"} · the bar a ` +
-         `candidate must clear, not a gain`),
-    tile("GPU busy", gpu.reported ? `${gpu.busy_pct == null ? "—" : gpu.busy_pct + "%"}` : "not reported",
-         gpu.reported ? `of claim-held seconds · ${dur(gpu.idle_s)} idle of ${dur(gpu.held_s)} held`
-                      : (gpu.unreported_reason || "no held/busy seconds available"),
-         gpu.reported ? (num(gpu.busy_pct) && gpu.busy_pct < 25 ? "bad" : "") : "dim"),
-  ].join("");
-}
-
-/* ACCUMULATOR (R23-44 two-tier champion). A FOLD of the loop-status
-   `accumulator` object — never a new claim. Two graceful empties, deliberately
-   distinct: no readable LOOP (see the banner), versus a loop that reports but
-   carries NO serving tier (accumulator === null). Neither is "0% progress": a
-   run with no second tier has no gate to march toward, and saying "0/8.8%" there
-   would fabricate a bundle that does not exist. compounded_bench_pct and
-   fire_threshold_pct are already PERCENTS (not fractions); progress_fraction is
-   the 0..1 ratio the producer capped, re-clamped here defensively. */
 function renderAccumulator(d){
   const host = document.getElementById("accumulator");
   const L = d.loop;
@@ -858,21 +1659,22 @@ function renderAccumulator(d){
   }
   const a = L.accumulator || null;
   if(!a){
-    host.innerHTML = `<div class="empty">This run has <strong>no serving tier</strong>, so ` +
-      `there is no bundle to accumulate. The two-tier champion (R23-44) exists only when the ` +
-      `loop carries a serving recipe; a single-tier run advances on cheap bench alone and its ` +
-      `champion is the headline above. A missing bundle is not “0% to the gate”.</div>`;
+    host.innerHTML = `<div class="empty"><strong>No accumulator reported for this run.</strong> ` +
+      `This does not establish whether the run measures serving or bench. ` +
+      `A missing accumulator is not “0% to the gate”.</div>`;
     return;
   }
-  const comp = num(a.compounded_bench_pct) ? a.compounded_bench_pct : 0;
-  const thr  = num(a.fire_threshold_pct) ? a.fire_threshold_pct : null;
+  const measurement = accumulatorMeasurement(a);
+  const comp = measurement.comp;
+  const thr  = num(a.fire_threshold_pct) && a.fire_threshold_pct > 0
+    ? a.fire_threshold_pct : null;
   const floor = num(a.serving_floor_pct) ? a.serving_floor_pct : null;
   const mult = num(a.fire_multiple) ? a.fire_multiple : null;
   const keeps = Array.isArray(a.keeps) ? a.keeps : [];
   const nKeeps = num(a.n_keeps) ? a.n_keeps : keeps.length;
   const fires = a.fires_next === true;
-  let frac = num(a.progress_fraction) ? a.progress_fraction : 0;
-  frac = Math.max(0, Math.min(1, frac));
+  const hasProgress = comp != null && num(a.progress_fraction) && thr != null;
+  const frac = hasProgress ? Math.max(0, Math.min(1, a.progress_fraction)) : null;
   /* R23-54 (operator 2026-09-08): the gate ALSO fires every `gate_every_keeps` keeps
      regardless of the compounded estimate — the 2026-09-08 firing measured the bench
      proxy (+5.958%) disagreeing with serving (-2.18%), so the estimate no longer
@@ -882,6 +1684,10 @@ function renderAccumulator(d){
   const since = num(a.keeps_since_serving_gate) ? a.keeps_since_serving_gate : null;
   const cadence = (since != null && every != null) ? `${since}/${every}` : "—";
   const trig = typeof a.next_trigger === "string" ? a.next_trigger : null;
+  const cadenceDue = since != null && every != null && every > 0 && since >= every;
+  const thresholdNamed = trig === "threshold" || trig === "both" || trig == null;
+  const thresholdSupported = measurement.current && comp != null && thr != null;
+  const unverifiedThresholdSchedule = fires && thresholdNamed && !thresholdSupported;
   const last = (a.last_serving_gate && typeof a.last_serving_gate === "object")
     ? a.last_serving_gate : null;
   const why = {threshold: "the compounded bench estimate cleared the threshold",
@@ -893,11 +1699,23 @@ function renderAccumulator(d){
     ? keeps.map(k => `<span class="acc-keep">${esc(k)}</span>`).join("")
     : `<span class="muted">none yet — the bundle is empty; the champion of record still stands</span>`;
 
-  const label = `${comp.toFixed(1)}% / ${thr != null ? thr.toFixed(1) : "—"}% to serving gate`;
+  const label = comp != null
+    ? (thr != null
+      ? `${comp.toFixed(1)}% / ${thr.toFixed(1)}% to serving gate`
+      : `${comp.toFixed(1)}% current compounded bench; positive threshold unavailable`)
+    : "awaiting remeasurement — no current compounded magnitude";
 
   host.innerHTML =
     `<div class="acc ${fires ? "fires" : ""}">` +
-      (fires
+      (unverifiedThresholdSchedule
+        ? `<div class="acc-fire"><strong>PRODUCER-REPORTED SCHEDULING — UNVERIFIED</strong> — ` +
+          (trig === "both" && cadenceDue
+            ? `the retained ${esc(cadence)} cadence is due, but the producer's ` +
+              `<strong>both</strong> flag also relies on threshold evidence that is not current`
+            : `the producer reported <strong>${esc(trig || "threshold")}</strong>, but no ` +
+              `current finite magnitude and positive threshold support that threshold firing`) +
+          `. Await remeasurement before treating it as threshold warrant.</div>`
+        : fires
         ? `<div class="acc-fire">Fires next iteration — trigger: ` +
           `<strong>${esc(trig || "threshold")}</strong>` +
           `${trig && why[trig] ? ` (${esc(why[trig])})` : ""}; the expensive llama-server ` +
@@ -914,8 +1732,17 @@ function renderAccumulator(d){
           `<div class="v">${esc(nKeeps)}</div>` +
           `<div class="sub">cheap llama-bench keeps batched</div></div>` +
         `<div class="acc-stat"><div class="k">compounded bench</div>` +
-          `<div class="v ${comp > 0 ? "pos" : ""}">+${comp.toFixed(2)}%</div>` +
-          `<div class="sub">of the bundle vs champion of record</div></div>` +
+          (comp != null
+            ? `<div class="v ${comp > 0 ? "pos" : ""}">` +
+              `${comp >= 0 ? "+" : ""}${comp.toFixed(2)}%</div>` +
+              `<div class="sub">current measurement of the bundle vs champion of record</div>`
+            : `<div class="v">awaiting remeasurement</div>` +
+              `<div class="sub">${esc(measurement.detail)}; validity ` +
+              `<span class="mono">${esc(measurement.reported)}</span></div>` +
+              (measurement.historical != null
+                ? `<div class="sub">historical estimate (not current): ` +
+                  `${measurement.historical >= 0 ? "+" : ""}` +
+                  `${measurement.historical.toFixed(2)}%</div>` : ``)) + `</div>` +
         `<div class="acc-stat"><div class="k">keeps to mandatory gate</div>` +
           `<div class="v">${esc(cadence)}</div>` +
           `<div class="sub">R23-54: the gate fires on this cadence whatever the bench ` +
@@ -938,10 +1765,81 @@ function renderAccumulator(d){
         `<div class="acc-prlabel"><span>${esc(label)}</span>` +
           `<span class="muted">gate = ${mult != null ? mult.toFixed(1) : "—"}&times; serving floor` +
             `${floor != null ? ` (${floor.toFixed(2)}%)` : ""}</span></div>` +
-        `<div class="acc-track"><div class="acc-fill ${fires ? "hot" : ""}" ` +
-          `style="width:${(frac * 100).toFixed(1)}%"></div></div>` +
+        (hasProgress
+          ? `<div class="acc-track"><div class="acc-fill ${fires ? "hot" : ""}" ` +
+            `style="width:${(frac * 100).toFixed(1)}%"></div></div>`
+          : `<div class="muted">No threshold progress is shown until this exact tip is ` +
+            `remeasured. Mandatory keep cadence remains visible above.</div>`) +
       `</div>` +
     `</div>`;
+}
+
+let trajectoryModelSelection=null, trajectorySurfaceSelection=null;
+let trajectoryRenderSignature=null, trajectoryOpenKeep=null;
+function renderImprovementTrajectory(d){
+  const host=document.getElementById("trajectory"),t=d.knowledge&&d.knowledge.improvement_trajectory;
+  if(!t){host.innerHTML='<div class="empty">No readable trajectory evidence. Missing is not 0%.</div>';return;}
+  const h=t.production_headline||{},models=Array.isArray(h.curves)?h.curves:[],exceptions=Array.isArray(h.exceptions)?h.exceptions:[],releases=Array.isArray(h.baseline_epochs)?h.baseline_epochs:[],errors=Array.isArray(h.evidence_errors)?h.evidence_errors:[];
+  if(h.state!=='available'||!models.length){host.innerHTML=`<div class="empty"><strong>PRODUCTION-RELATIVE TRAJECTORY UNAVAILABLE</strong> — ${esc(h.detail||'no direct checkpoints')}</div>`;return;}
+  const useful=models.filter(m=>(m.points||[]).length>=2).sort((a,b)=>Date.parse((b.points||[]).at(-1)?.recorded_at)-Date.parse((a.points||[]).at(-1)?.recorded_at));
+  if(!models.some(m=>m.id===trajectoryModelSelection))trajectoryModelSelection=(useful[0]||models[0]).id;
+  const selected=models.find(m=>m.id===trajectoryModelSelection)||models[0],surfaceSeries=selected.surface_series||[selected];
+  if(!surfaceSeries.some(s=>s.id===trajectorySurfaceSelection))trajectorySurfaceSelection=(surfaceSeries.find(s=>s.surface===selected.primary_surface)||surfaceSeries[0]).id;
+  const series=surfaceSeries.find(s=>s.id===trajectorySurfaceSelection)||surfaceSeries[0],points=series.points||[],instrumentEpochs=series.instrument_epochs||[];
+  const sameModel=(a,b)=>String(a||'').replace(/\.gguf$/,'').toLowerCase()===String(b||'').replace(/\.gguf$/,'').toLowerCase();
+  const keepSource=t.keep_history||t.experiment_events||{};
+  const kept=(keepSource.events||[]).filter(e=>e.disposition==='kept'&&sameModel(e.model,selected.model));
+  const signature=JSON.stringify([selected.id,series,kept,releases,exceptions,errors]);
+  if(signature===trajectoryRenderSignature&&host.querySelector('svg'))return;
+  trajectoryRenderSignature=signature;
+  const times=[...points,...kept].map(p=>Date.parse(p.recorded_at)).filter(Number.isFinite),t0=Math.min(...times),t1=Math.max(...times),span=Math.max(1,t1-t0);
+  const vals=[0,...points.map(p=>p.gain_pct)],lo0=Math.min(...vals),hi0=Math.max(...vals),spread=Math.max(2,hi0-lo0),lo=lo0-spread*.14,hi=hi0+spread*.14;
+  const W=980,H=350,L=64,R=24,T=34,B=50,x=p=>L+(W-L-R)*((Date.parse(p.recorded_at)-t0)/span),y=v=>T+(H-T-B)*(hi-v)/(hi-lo),epochColors=['#ef4444','#fb923c','#facc15','#4ade80','#22d3ee','#60a5fa','#e879f9'];
+  const grid=[];for(let i=0;i<5;i++){const v=lo+(hi-lo)*i/4,yy=y(v);grid.push(`<line class="grid" x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}"/><text class="axis" x="${L-8}" y="${yy+4}" text-anchor="end">${v>=0?'+':''}${v.toFixed(1)}%</text>`);}
+  const epochBands=instrumentEpochs.map((e,i)=>{const start=Math.max(t0,Date.parse(e.starts_at)),end=i+1<instrumentEpochs.length?Math.min(t1,Date.parse(instrumentEpochs[i+1].starts_at)):t1;if(end<start)return '';const xx=L+(W-L-R)*((start-t0)/span),xe=L+(W-L-R)*((end-t0)/span),color=epochColors[i%epochColors.length],label=e.recipe||e.era||'instrument unknown';return `<rect class="epoch-band" x="${xx}" y="${T}" width="${Math.max(2,xe-xx)}" height="${H-T-B}" fill="${color}" opacity="0.08"><title>instrument epoch · ${esc(label)} · era ${esc(e.era||'unknown')} · baseline ${esc((e.baseline||{}).label||'unknown')} · starts ${esc(e.starts_at)}</title></rect><line class="epoch-boundary" x1="${xx}" y1="${T}" x2="${xx}" y2="${H-B}" stroke="${color}"><title>instrument boundary · ${esc(label)} · ${short(e.starts_commit)}</title></line><text class="axis" x="${xx+4}" y="${T+12+(i%2)*11}" fill="${color}">${esc(label.length>24?label.slice(0,22)+'…':label)}</text>`}).join('');
+  const releaseMarks=releases.filter(e=>Date.parse(e.effective_at)<=t1).map(e=>{const stamp=Date.parse(e.effective_at),xx=stamp<=t0?L+2:L+(W-L-R)*((stamp-t0)/span);return `<line class="production-release" x1="${xx}" y1="${T}" x2="${xx}" y2="${H-B}" stroke="#f8fafc" stroke-dasharray="2 4"><title>${esc(e.label)} release · ${short(e.commit)} · new production baseline epoch${stamp<t0?' · predates displayed checkpoints':''}</title></line>`}).join('');
+  const details=kept.map(k=>{const checkpoint=points.find(p=>p.commit&&k.commit&&(p.commit===k.commit||p.commit.startsWith(k.commit)||k.commit.startsWith(p.commit))&&(!k.surface||k.surface===series.surface));return {point:checkpoint||{commit:k.commit,recorded_at:k.recorded_at,gain_pct:null},keep:k,instrument:instrumentEpochs.slice().reverse().find(e=>Date.parse(e.starts_at)<=Date.parse(k.recorded_at))||null}});
+  let connectors='';for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i],compatible=a.recipe===b.recipe&&a.era===b.era&&(a.baseline||{}).commit===(b.baseline||{}).commit;connectors+=`<path class="curve${compatible?'':' instrument-bridge'}" data-point-count="2" stroke="#38bdf8" d="M${x(a)},${y(a.gain_pct)} L${x(b)},${y(b.gain_pct)}"><title>${compatible?'continuous checkpoint interval':'broken instrument connector — direct endpoints retained; no interpolation across recipe/harness/era change'}</title></path>`;}
+  const keepKey=k=>k.attempt_id||(k.identifiers||{}).attempt_id||[k.commit,k.mechanism_id,k.recorded_at].join(':');
+  const percent=v=>Number.isFinite(v)?`${v>=0?'+':''}${v.toFixed(3)}%`:'not recorded';
+  const summary=d=>`KEEP · ${d.keep.mechanism_id||'mechanism not recorded'}\nMarginal: ${percent(d.keep.effect_pct)} · cumulative: ${percent(d.point.gain_pct)}\nNoise floor: ${percent(d.keep.floor_pct)} · ${d.keep.decisive==null?'confidence not recorded':d.keep.decisive?'decisive':'inconclusive'}\n${short(d.keep.commit)} · ${d.keep.recorded_at}\nInstrument: ${d.instrument?.recipe||d.keep.epoch||'not recorded'}`;
+  const marks=details.map((d,i)=>{const p=d.point,k=d.keep,label=summary(d);if(!Number.isFinite(Date.parse(k.recorded_at))||!Number.isFinite(p.gain_pct))return '';const yy=y(p.gain_pct);return `<circle class="point trajectory-event" data-event-index="${i}" data-disposition="kept" fill="#38bdf8" cx="${x(k)}" cy="${yy}" r="7" tabindex="0" role="button" aria-label="${esc(label)}" style="cursor:pointer;pointer-events:all;stroke-width:10;stroke:transparent;paint-order:stroke fill"><title>${esc(label)}</title></circle>`}).join('');
+  const timelineMarks=details.map((d,i)=>Number.isFinite(Date.parse(d.keep.recorded_at))&&!Number.isFinite(d.point.gain_pct)?`<circle class="trajectory-event" data-event-index="${i}" data-disposition="kept" cx="${x(d.keep)}" cy="22" r="7" fill="#38bdf8" role="button" tabindex="0" aria-label="${esc(summary(d))}" style="cursor:pointer;stroke:transparent;stroke-width:10;paint-order:stroke fill"/>`:'').join('');
+  const keepTimeline=timelineMarks?`<div class="keep-timeline" style="border-top:1px solid var(--border);padding-top:12px"><strong>Kept improvements</strong><div class="muted">Chronological markers · cumulative gain not measured at these commits</div><svg viewBox="0 0 ${W} 48" style="min-height:0;height:48px" role="group" aria-label="Keep timeline without a percentage axis">${timelineMarks}</svg></div>`:'';
+  const modelOptions=models.map(m=>`<option value="${esc(m.id)}" ${m.id===selected.id?'selected':''}>${esc(m.model)} (${esc((m.points||[]).length)} checkpoints)</option>`).join(''),surfaceOptions=surfaceSeries.map(s=>`<option value="${esc(s.id)}" ${s.id===series.id?'selected':''}>${esc(s.surface)} · ${esc(s.metric)} (${esc((s.points||[]).length)})</option>`).join('');
+  const milestone=points.length===1?'<span class="muted">singleton milestone — not represented as a trajectory curve</span>':'',exceptionText=exceptions.length?`<div class="warn"><strong>${exceptions.length} explicit evidence exception${exceptions.length===1?'':'s'}:</strong> ${exceptions.map(p=>`${esc(p.evidence_state)} ${short(p.commit)}${Number.isFinite(p.gain_pct)?` ${(p.gain_pct>=0?'+':'')+p.gain_pct.toFixed(3)}%`:''} — ${esc(p.note||'no measurement')}`).join(' · ')}</div>`:'';
+  const local=t.campaign_drilldown||{},bench=Array.isArray(local.bench_checkpoints)?local.bench_checkpoints:[],checks=Array.isArray(local.serving_checks)?local.serving_checks:[],localText=local.state==='available'?`<details><summary>Campaign-local CoR drill-down · ${esc(local.model||'model unrecorded')} · ${esc(local.keeps.length)} keeps · not production-relative</summary><div class="muted">Campaign ${esc(local.campaign_id||'unrecorded')}. Latest cheap screen: ${bench.length?(bench.at(-1).gain_pct>=0?'+':'')+bench.at(-1).gain_pct.toFixed(3)+'%':'missing'} vs campaign CoR. Serving checks: ${checks.length?checks.map(p=>`${p.keep_count} keeps ${(p.gain_pct>=0?'+':'')+p.gain_pct.toFixed(3)}% ${p.evidence_state}`).join(' · '):'missing'}.</div></details>`:'';
+  host.innerHTML=`<div class="trajectory"><div class="trajectory-picker"><label>Model <select id="trajectory-model">${modelOptions}</select></label><label>Surface detail <select id="trajectory-surface">${surfaceOptions}</select></label>${milestone}</div><div id="trajectory-stage" class="trajectory-stage"><div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative retained champion trajectory for ${esc(selected.model)} on ${esc(series.surface)}">${epochBands}${grid.join('')}<line class="production" x1="${L}" y1="${y(0)}" x2="${W-R}" y2="${y(0)}"/><text class="axis" x="${W-R}" y="${y(0)-5}" text-anchor="end">declared baseline 0%</text>${releaseMarks}${connectors}${marks}<text class="axis" x="${L}" y="${H-10}">${esc(new Date(t0).toISOString().slice(0,10))}</text><text class="axis" x="${W-R}" y="${H-10}" text-anchor="end">${esc(new Date(t1).toISOString().slice(0,10))}</text></svg>${keepTimeline}<div class="muted"><strong>${esc(selected.model)}</strong> · ${esc(series.surface)} · ${esc(series.metric)} · ${esc(series.backend)}. Solid intervals share an instrument epoch; dashed intervals retain direct endpoints but explicitly break continuity.</div></div><aside id="trajectory-event-drawer" class="trajectory-drawer" role="complementary" aria-labelledby="trajectory-event-title" hidden><button id="trajectory-event-close" type="button" aria-label="Close keep details">Close</button><div id="trajectory-event-detail"></div></aside></div><div class="muted">${esc(surfaceSeries.length-1)} secondary surface${surfaceSeries.length===2?'':'s'} available · ${esc(kept.length)} keeps · ${esc(points.length)} retained checkpoint${points.length===1?'':'s'} shown. ${esc(h.detail||'')}</div>${exceptionText}${errors.length?`<div class="warn"><strong>${errors.length} unjoinable production receipt${errors.length===1?'':'s'}</strong> — explicit gaps.</div>`:''}${localText}</div>`;
+  const undated=details.map((d,i)=>!Number.isFinite(Date.parse(d.keep.recorded_at))?`<button type="button" class="trajectory-event" data-event-index="${i}" data-disposition="kept" aria-label="${esc(summary(d))}" style="border:0;border-radius:50%;background:#38bdf8;width:16px;height:16px;cursor:pointer"></button>`:'').join('');
+  if(undated)host.querySelector('.trajectory-picker').insertAdjacentHTML('afterend',`<div class="undated-keeps" style="padding:12px 0"><div class="muted">Additional retained keeps · original timestamps unavailable</div><div style="display:flex;gap:9px;flex-wrap:wrap;padding:8px 0">${undated}</div></div>`);
+  const drawer=document.getElementById('trajectory-event-drawer'),detail=document.getElementById('trajectory-event-detail'),close=document.getElementById('trajectory-event-close'),stage=document.getElementById('trajectory-stage');let priorFocus=null;
+  const unknown=v=>v===null||v===undefined||v===''?'unknown / not recorded':String(v);
+  const openPoint=(event,index)=>{priorFocus=event.currentTarget;const d=details[index];trajectoryOpenKeep=keepKey(d.keep);const p=d.point,k=d.keep||{},ids=k.identifiers||{},ev=(k.evidence||[]).length?k.evidence.map(x=>`<li><strong>${esc(x.label)}</strong>: <code>${esc(x.value)}</code></li>`).join(''):`<li><code>${esc(typeof p.evidence==='string'?p.evidence:(p.evidence||{}).path||'unknown / not recorded')}</code></li>`;detail.innerHTML=`<h3 id="trajectory-event-title">${esc(k.mechanism_id||'Promoted checkpoint · mechanism unknown')}</h3><dl><dt>disposition</dt><dd>kept / promoted checkpoint</dd><dt>timestamp</dt><dd>${esc(unknown(p.recorded_at))}</dd><dt>cumulative model gain</dt><dd>${esc(percent(p.gain_pct))} vs ${esc((p.baseline||{}).label||'unknown')}</dd><dt>measured marginal effect</dt><dd>${esc(k.effect_pct==null?'unknown / not recorded':k.effect_pct+'%')}</dd><dt>noise floor / confidence</dt><dd>${esc(k.floor_pct==null?'unknown / not recorded':k.floor_pct+'%')} / ${esc(k.decisive==null?'unknown / not recorded':k.decisive?'decisive':'inconclusive')}</dd><dt>instrument epoch</dt><dd>${esc((d.instrument||{}).recipe||p.recipe||'unknown')} · ${esc((d.instrument||{}).era||p.era||'unknown')}</dd><dt>surface / metric / backend</dt><dd>${esc(series.surface)} / ${esc(series.metric)} / ${esc(series.backend)}</dd><dt>patch + commit</dt><dd>${esc(unknown(ids.patch_path))} / ${esc(unknown(p.commit))}</dd><dt>hypothesis</dt><dd>${esc(unknown(k.hypothesis))}</dd><dt>profile / hotspot rationale</dt><dd>${esc(unknown(k.profile_target))}</dd><dt>candidate vs anchor measurement</dt><dd>${esc(k.comparison?JSON.stringify(k.comparison):'unknown / not recorded')}</dd><dt>critic decision</dt><dd>${esc(unknown(k.critic_rationale))}</dd><dt>applicability / transfer</dt><dd>${esc(k.transfer_applicability?JSON.stringify(k.transfer_applicability):'unknown / not recorded')}</dd><dt>identifiers</dt><dd>${esc(JSON.stringify(ids))}</dd><dt>evidence links</dt><dd><ul>${ev}</ul></dd></dl>`;drawer.hidden=false;stage.classList.add('drawer-open');if(event.type!=='restore')close.focus()};
+  const tooltip=document.createElement('div');
+  tooltip.id='trajectory-keep-tooltip';tooltip.setAttribute('role','tooltip');tooltip.hidden=true;
+  tooltip.style.cssText='position:fixed;z-index:1000;pointer-events:none;white-space:pre-line;max-width:420px;padding:12px;border:1px solid #38bdf8;border-radius:6px;background:#101827;color:#eef5ff;box-shadow:0 4px 20px #0008;font:12px/1.6 system-ui';
+  host.appendChild(tooltip);
+  host.querySelectorAll('.trajectory-event').forEach(el=>{
+    const index=Number(el.dataset.eventIndex),open=e=>{tooltip.hidden=true;openPoint(e,index)};
+    const hover=()=>{const box=el.getBoundingClientRect();tooltip.textContent=summary(details[index]);tooltip.hidden=false;tooltip.style.left=Math.max(8,Math.min(box.left,window.innerWidth-440))+'px';tooltip.style.top=Math.max(8,Math.min(box.bottom+10,window.innerHeight-tooltip.offsetHeight-12))+'px';};
+    el.addEventListener('mouseenter',hover);el.addEventListener('focus',hover);
+    el.addEventListener('mouseleave',()=>tooltip.hidden=true);el.addEventListener('blur',()=>tooltip.hidden=true);
+    el.addEventListener('click',open);
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(e)}});
+  });
+  const shut=()=>{trajectoryOpenKeep=null;drawer.hidden=true;stage.classList.remove('drawer-open');if(priorFocus&&priorFocus.focus)priorFocus.focus()};
+  close.addEventListener('click',shut);drawer.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();shut()}});
+  const retainedIndex=details.findIndex(d=>keepKey(d.keep)===trajectoryOpenKeep);
+  if(retainedIndex>=0)openPoint({type:'restore',currentTarget:host.querySelector('[data-event-index="'+retainedIndex+'"]')},retainedIndex);
+  document.getElementById('trajectory-model').addEventListener('change',e=>{trajectoryModelSelection=e.target.value;trajectorySurfaceSelection=null;renderImprovementTrajectorySafely(d)});
+  document.getElementById('trajectory-surface').addEventListener('change',e=>{trajectorySurfaceSelection=e.target.value;renderImprovementTrajectorySafely(d)});
+}
+
+function renderImprovementTrajectorySafely(d){
+  try{renderImprovementTrajectory(d)}catch(err){
+    const host=document.getElementById("trajectory");
+    host.innerHTML=`<div class="warn"><strong>TRAJECTORY RENDER FAILED</strong> — ${esc(err&&err.message?err.message:String(err))}. The rest of the page cannot hide this panel failure.</div>`;
+  }
 }
 
 function renderDispositions(d){
@@ -1452,6 +2350,11 @@ function gateArms(g){
 
 function renderOperatorGate(d){
   const host = document.getElementById("opgate");
+  document.getElementById("opgate-scope").textContent =
+    d.loop?.baseline_scope === "experimental_candidate_not_champion" ||
+    (d.canonical_store_root && d.canonical_store_root !== d.store_root)
+      ? "Canonical operator-gated measurements — not measurements of the selected live experiment."
+      : "";
   const og = d.operator_gates || {};
   const f = og.freshness || {};
   const state = String(f.state || "absent");
@@ -1633,6 +2536,8 @@ function renderOperatorGate(d){
 
 function renderIdentity(d){
   const L = d.loop;
+  const experimental = L?.baseline_scope === "experimental_candidate_not_champion";
+  const separate = d.canonical_store_root && d.canonical_store_root !== d.store_root;
   const c = d.champion_vs_production || {};
   const rows = [
     ["freshness", `${d.freshness_state}${d.age_s == null ? "" : " · " + age(d.age_s) + " old"}` +
@@ -1648,13 +2553,15 @@ function renderIdentity(d){
           ? "measured" : "NOT measured for this champion"}`],
     ["headline evidence", c.evidence],
   ];
+  if(separate) rows.push(["canonical/history store", d.canonical_store_root]);
   if(L){
     rows.push(
       ["state", L.state],
       ["campaign", L.campaign_id],
       ["epoch", short(L.epoch_sha256)],
       ["anchor commit", short(L.anchor_commit)],
-      ["champion head", short(L.champion_head)],
+      [experimental ? "experimental candidate head" : separate ? "live run head" : "champion head",
+       short(L.champion_head)],
       ["surface", `${L.surface} · ${L.pairs} pairs`],
       ["noise floor", num(L.noise_floor_pct) ? L.noise_floor_pct.toFixed(3) + "%" : "—"],
       ["generated at", L.generated_at]);
@@ -1676,35 +2583,291 @@ function renderActorHealth(L){
     : `actors ok · ${a.planner_transient}/${a.recent_attempts} recent calls failed`;
 }
 
+let serialView=null, serialToken="", serialGateway="", serialPending=null;
+let serialLastRequest=null, serialControlMessage="", serialBusy=false;
+let serialDetached=null;
+
+function serialIdentity(c){
+  return c && c.schema==="epyc.autokernel.serial_control.v1" &&
+    typeof c.config_digest==="string" && typeof c.owner_id==="string" &&
+    Number.isInteger(c.revision) && c.revision>=0 &&
+    Number.isInteger(c.batch_number) && c.batch_number>=0 && Array.isArray(c.commands);
+}
+
+function serialSameOwner(a,b){
+  return serialIdentity(a) && serialIdentity(b) && a.config_digest===b.config_digest &&
+    a.owner_id===b.owner_id;
+}
+
+function renderSerialControls(d){
+  const host=document.getElementById("serial-controls"), c=d.serial?.control;
+  serialView=d;
+  if(!serialIdentity(c)){
+    host.innerHTML=d.serial?.control_error ? '<div class="warn">Controls unavailable: '+esc(d.serial.control_error)+'</div>' : "";
+    return;
+  }
+  const requested=serialPending || serialLastRequest;
+  if(requested){
+    const row=c.commands.find(row=>campaignCanonical(row.request)===campaignCanonical(requested));
+    if(row){
+      serialLastRequest=requested;serialPending=null;
+      serialControlMessage=`${row.result.operation}: ${row.result.outcome}`+
+        (row.result.outcome==="pending" ? " — accepted; waiting for the owner boundary" : "");
+    }
+  }
+  if(serialPending && d.freshness_state==="fresh" && !d.serial.reader_error &&
+     (serialPending.owner_id!==c.owner_id || serialPending.config_digest!==c.config_digest)){
+    serialDetached={request:serialPending,result:null};
+    serialPending=null;serialLastRequest=null;serialControlMessage="";
+  }
+  if(serialDetached){
+    const row=c.commands.find(row=>campaignCanonical(row.request)===campaignCanonical(serialDetached.request));
+    if(row) serialDetached.result=row.result;
+  }
+  const fresh=d.freshness_state==="fresh" && !d.serial.reader_error;
+  const live=!['drained','complete','failed'].includes(c.observed_state);
+  const secure=campaignSecure(), ready=fresh && live && secure && !!c.endpoint;
+  let h=`<div><b>Controls: ${esc(c.observed_state)}</b> · pause finishes the current batch; drain stops the tail.</div>`;
+  if(serialControlMessage) h+=`<div class="muted">${esc(serialControlMessage)}</div>`;
+  if(serialDetached) h+=`<div class="muted">Previous owner command ${esc(serialDetached.request.operation)} `+
+    `(${esc(serialDetached.request.request_id)}): ${esc(serialDetached.result?.outcome || "outcome uncertain")}. `+
+    `Not replayed to the new owner.</div>`;
+  if(!ready) h+=`<div class="muted">${!fresh ? "Controls disabled: router report is not current." :
+    !live ? "Serial owner is terminal." : !secure ? "Use a secure browser context (HTTPS or localhost tunnel)." :
+    "No serial control listener configured for this owner."}</div>`;
+  h+='<label>Control endpoint <input id="serial-gateway" type="url" size="36"></label> '+
+     '<label>Bearer token <input id="serial-token" type="password" autocomplete="off"></label> '+
+     '<span class="muted">kept only in this tab</span><div>';
+  for(const [op,label] of [["pause","Pause after batch"],["resume","Resume"],["drain","Drain / STOP"]]){
+    h+=`<button id="serial-${op}" ${!ready || !serialToken || serialBusy || serialPending ? 'disabled' : ''}>${label}</button> `;
+  }
+  if(serialPending) h+=`<button id="serial-retry" ${!ready || !serialToken || serialBusy ? 'disabled' : ''}>Retry exact uncertain command</button>`;
+  host.innerHTML=h+'</div>';
+  const gateway=document.getElementById("serial-gateway"), token=document.getElementById("serial-token");
+  gateway.value=serialGateway || c.endpoint || "";
+  gateway.onchange=()=>{serialGateway=gateway.value;};
+  token.value=serialToken;
+  token.oninput=()=>{serialToken=token.value;
+    for(const op of ["pause","resume","drain","retry"]){
+      const button=document.getElementById("serial-"+op);
+      if(button) button.disabled=!ready || !serialToken || serialBusy || (op!=="retry" && !!serialPending);
+    }};
+  for(const op of ["pause","resume","drain"])
+    document.getElementById("serial-"+op).onclick=()=>serialSend(op);
+  if(serialPending) document.getElementById("serial-retry").onclick=()=>serialSend(null);
+}
+
+async function serialSend(operation){
+  const original=serialView?.serial?.control;
+  if(serialBusy) return;
+  serialBusy=true;
+  try{
+    if(!campaignSecure() || !serialToken || serialView?.freshness_state!=="fresh" ||
+       serialView.serial.reader_error || !serialIdentity(original)) throw new Error("refresh a current serial owner first");
+    const url=new URL(serialGateway || original.endpoint);
+    if(!['http:','https:'].includes(url.protocol) || url.username || url.password ||
+       url.search || url.hash || !['','/'].includes(url.pathname)) throw new Error("control endpoint must be an HTTP(S) origin");
+    const endpoint=url.origin, headers={Authorization:`Bearer ${serialToken}`};
+    const refreshed=await campaignFetch(endpoint+"/snapshot",{cache:"no-store",headers},65536);
+    if(!refreshed.ok) throw new Error(refreshed.body.error || "serial authentication/refresh refused");
+    const current=refreshed.body;
+    if(!serialSameOwner(current,original) || !serialSameOwner(serialView?.serial?.control,original) ||
+       serialView.freshness_state!=="fresh" || current.batch_number!==original.batch_number ||
+       current.active_target!==original.active_target) throw new Error("serial owner/batch/target changed; refresh the page");
+    if(operation){
+      if(serialPending) throw new Error("retry the exact uncertain command before another command");
+      serialPending={schema:"epyc.autokernel.serial_command.v1",config_digest:current.config_digest,
+        owner_id:current.owner_id,request_id:crypto.randomUUID(),operation,
+        expected_revision:current.revision,expected_batch:current.batch_number,expected_target:current.active_target};
+    }
+    if(!serialPending || serialPending.owner_id!==current.owner_id ||
+       serialPending.config_digest!==current.config_digest) throw new Error("uncertain command belongs to another owner");
+    const request=serialPending;
+    const response=await campaignFetch(endpoint+"/commands",{method:"POST",cache:"no-store",
+      headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(request)},16384);
+    if(!response.ok){
+      if(response.status===400) serialPending=null; // Explicit refusal, not a lost ACK.
+      throw new Error(response.body.error || "serial command outcome uncertain; retry exact request");
+    }
+    const ack=response.body;
+    if(ack.request_id!==request.request_id || ack.operation!==request.operation ||
+       ack.revision!==request.expected_revision+1 || typeof ack.completed!=="boolean" ||
+       !['pending','completed','superseded','failed'].includes(ack.outcome))
+      throw new Error("serial ACK identity malformed; retry exact request");
+    serialLastRequest=request;serialPending=null;
+    if(serialDetached && campaignCanonical(serialDetached.request)===campaignCanonical(request))
+      serialDetached.result=ack;
+    serialControlMessage=`${ack.operation}: ${ack.outcome}`+(ack.outcome==="pending" ? " — accepted; waiting for the owner boundary" : "");
+  }catch(error){serialControlMessage=error.message || String(error);}
+  finally{serialBusy=false;if(serialView) renderSerialControls(serialView);}
+}
+
+let serialRetainedTarget = null, serialRetainedView = null;
+function retainedSerialTarget(d){
+  const rows=d.serial?.completed?.items || [];
+  return rows.find(row=>String(row.target_index)===serialRetainedTarget) ||
+    rows.find(row=>row.detail) || rows[0] || null;
+}
+
+function renderSerial(d){
+  const host = document.getElementById("serial");
+  const section = document.getElementById("sec-serial");
+  const s = d.serial;
+  renderSerialControls(d);
+  section.hidden = !s;
+  if(!s){ host.innerHTML = ""; return; }
+  const labels = {starting:"STARTING",running:"RUNNING",paused:"PAUSED",draining:"DRAINING",complete:"COMPLETE",
+    stopped:"STOPPED",all_failed:"ALL TARGETS FAILED",failed:"FAILED",
+    complete_with_failures:"COMPLETE WITH FAILED TARGETS",malformed:"MALFORMED"};
+  const r = s.routing, a = s.active, c = s.child;
+  let h = `<div><b>${esc(labels[s.state] || s.state || "UNKNOWN")}</b> · router ` +
+    `${esc(d.freshness_state)} · ${esc(d.store_root)}</div>`;
+  if(r){
+    h += `<div>Routing cursor ${esc(r.next_batch)} · ${esc(r.target_count)} targets · ` +
+      `${r.rounds === 0 ? "continuous rounds" : esc(r.rounds) + " planned rounds"} · ` +
+      `${esc(r.batch_iterations)} requested iterations per batch.</div>` +
+      `<div class="muted">The cursor includes skipped failed-target positions; it is not ` +
+      `a count of completed iterations or measurements.</div>`;
+    const failed = Object.entries(r.failed_targets || {});
+    if(r.stop_requested) h += `<div class="warn">STOP REQUESTED — no next batch; ` +
+      `the captured child drains before the router exits.</div>`;
+    if(failed.length) h += `<div class="warn">Failed targets: ` +
+      failed.map(([key,value])=>`${esc(key)}: ${esc(value)}`).join("; ") + "</div>";
+  } else h += `<div class="muted">This older router report did not publish roster/batch totals.</div>`;
+  if(s.reader_error) h += `<div class="warn">${esc(s.reader_error)}</div>`;
+  const completed=s.completed, retained=retainedSerialTarget(d);
+  if(completed){
+    h += `<div><b>Retained target results</b> · ${esc(completed.scope)}.</div>`;
+    for(const error of completed.errors || []) h += `<div class="warn">${esc(error)}</div>`;
+    if(retained){
+      h += '<label>Show retained target result <select id="serial-retained-target">' +
+        completed.items.map(row=>`<option value="${esc(row.target_index)}" `+
+          `${row===retained?'selected':''}>${esc(row.target_id || 'target '+row.target_index)}</option>`).join('') +
+        '</select></label>';
+      const summary=retained.summary;
+      if(summary) h += `<div>${esc(summary.terminal)} · ${esc(summary.iterations_completed)} / `+
+        `${esc(summary.iterations_requested)} iterations in this retained batch · `+
+        `${esc(JSON.stringify(summary.outcome_counts))}</div>`;
+      h += `<div class="muted">Original continuation: ${esc(retained.reference?.path || 'unavailable')}.</div>`;
+      if(retained.error) h += `<div class="warn">Retained detail unavailable: ${esc(retained.error)}</div>`;
+      if(retained.detail) h += `<div>Cards below show this completed target batch, not current activity `+
+        `or cumulative serial measurements. Original status: ${esc(retained.detail.evidence)} · `+
+        `${esc(retained.detail.age_s == null ? 'undated' : age(retained.detail.age_s)+' old')}.</div>`;
+    }else h += '<div class="muted">No completed target references retained by this serial owner.</div>';
+  }
+  if(a) h += `<div>Declared active target <b>${esc(a.selected_id)}</b> · PID ` +
+    `${esc(a.pid == null ? "not launched" : a.pid)} · ${esc(a.batch_dir)}</div>`;
+  if(c){
+    const problem = c.reader_error || c.join_error;
+    h += `<div class="${problem || c.freshness_state !== "fresh" ? "warn" : "muted"}">` +
+      `Child report: ${esc(c.freshness_state)} · ${esc(c.notice?.run_state || "no declared state")}` +
+      ` · ${esc(c.age_s == null ? "undated" : age(c.age_s) + " old")}.` +
+      ` ${esc(problem || c.detail || "")}</div>` +
+      `<div class="muted">Child evidence: ${esc(c.evidence)}. ` +
+      `The router heartbeat does not refresh or qualify this report.</div>`;
+    if(c.notice?.kind === "failed") h += `<div class="warn">CHILD DECLARED FAILED.</div>`;
+    if(c.joined) h += `<div>Detailed cards below show only this joined batch's ` +
+      `original report, not cumulative serial-session counts.</div>`;
+    else h += `<div class="warn">No joined current-child details. An older target-store ` +
+      `report is not substituted for this batch.</div>`;
+  } else h += `<div class="muted">No active child declared; terminal batch results remain ` +
+    `in their original target stores and batch directories.</div>`;
+  h += `<div class="muted">The loop data probe dates routing; the child freshness above ` +
+    `is independent. Canonical champion and accumulated history remain below on their own sources.</div>`;
+  host.innerHTML = h;
+  serialRetainedView=d;
+  if(retained) document.getElementById("serial-retained-target").onchange = event=>{
+    serialRetainedTarget=event.target.value;
+    render(serialRetainedView);
+  };
+}
+
+function renderRuntimePreparation(d){
+  const view=d.runtime_preparation, host=document.getElementById("runtime-preparation");
+  document.getElementById("sec-runtime-preparation").hidden = !view;
+  if(!view){host.innerHTML=""; return;}
+  if(view.state !== "reported"){
+    host.innerHTML='<div class="warn">Runtime progress unavailable: '+esc(view.error || "malformed report")+'</div>';
+    return;
+  }
+  const r=view.body, p=r.progress, ref=r.selected_recipe_reference;
+  let h='<div><b>'+esc(r.status)+'</b>'+ (r.reason ? ' · '+esc(r.reason) : '')+'</div>'+
+    '<div>Selected: '+esc(r.selected_recipe)+'</div>';
+  if(p){
+    h += '<div>Owner phase: <b>'+esc(p.operation)+'</b>';
+    if(p.completed_launches != null) h += ' / '+esc(p.phase)+' · '+esc(p.completed_launches)+
+      ' valid launches of '+(p.limit_is_upper_bound?'up to ':'')+esc(p.launch_limit)+
+      ' · '+esc(p.failed_launches)+' retained failed launches';
+    if(p.pending) h += ' · pending '+esc(p.pending.join(' / '));
+    h += '</div><div class="muted">Owner update: '+esc(p.observed_at)+' · '+
+      (view.clock_skew ? 'wall-clock skew; age unknown' :
+       view.progress_age_s == null ? 'age unknown' : esc(age(view.progress_age_s))+' ago')+
+      '.</div>';
+  }else h += '<div class="muted">No runtime launch progress reported.</div>';
+  h += '<details><summary>Preparation plan and original identity</summary>';
+  if(r.calibration_launches != null) h += '<div>'+esc(r.calibration_launches)+
+    ' launches per new anchor calibration frame, plus controls. Source proposals do not require this setup.</div>';
+  h += '<div>Execution: '+esc(r.selected_execution_digest)+'</div>';
+  h += ref ? '<div>Retained selection: '+esc(ref.locator)+' · SHA256 '+esc(ref.sha256)+'</div>' :
+    '<div>No retained runtime selection reported.</div>';
+  h += '<div class="muted">Progress is diagnostic, not a gain or admission claim. Heartbeats do not refresh owner-update time.</div></details>';
+  host.innerHTML=h;
+}
+
 function render(d){
   const L = d.loop;
-  setFreshBadge(d.freshness_state, d.age_s);
-  renderActorHealth(L);
+  const retained=retainedSerialTarget(d);
+  const detail = d.serial
+    ? {...d, loop:null, derived:null, runtime_preparation:null,
+       ...(d.serial.child || retained?.detail || {})}
+    : d;
+  // Independent first surface: sibling renderers cannot leave the headline
+  // plot blank, and champion/progress faults report inside their own relocated
+  // hosts rather than aborting the rest of the page.
+  renderImprovementTrajectorySafely(d);
+  try{renderChampion(d)}catch(err){document.getElementById("champion-capabilities").innerHTML=`<div class="warn">Capabilities unavailable: ${esc(err&&err.message?err.message:String(err))}</div>`}
+  setFreshBadge(d.freshness_state, d.age_s, d.notice);
+  document.getElementById("hdr-step").textContent =
+    (retained?.detail && !d.serial.child ? "Retained target result · " : "") + (detail.display_step || "");
+  renderActorHealth(detail.loop);
   document.getElementById("hdr-campaign").textContent = L ? (L.campaign_id || "—") : "—";
   const st = document.getElementById("hdr-state");
-  st.textContent = L ? (L.state || "—") : d.freshness_state;
+  st.textContent = d.serial ? d.serial.state : L ? (L.state || "—") : d.freshness_state;
   st.className = "state " + esc(L && L.state ? L.state : "");
   renderBanner(d);
   // THE headline first, and unconditionally. It has its own producer and its
   // own envelope: an unreadable LOOP must not take it down, and its own absence
   // — which is the current state — must be drawn rather than hidden.
-  renderChampion(d);
-  renderTiles(d);
+  renderSerial(d);
+  renderRuntimePreparation(detail);
   // The accumulator (R23-44) rides the loop-status body; rendered unconditionally
   // and drawing its own graceful empty when the run carries no serving tier.
-  renderAccumulator(d);
+  renderAccumulator(detail);
   // Third and fourth producers, rendered unconditionally for the same reason.
   // None of the four dates any of the others.
   renderOperatorGate(d);
   renderKnowledge(d);
-  renderDispositions(d);
-  renderRecent(d);
-  renderGpu(d);
-  renderHotspots(d);
-  renderIdentity(d);
+  renderCampaign(d);
+  renderDispositions(detail);
+  renderRecent(detail);
+  renderGpu(detail);
+  renderHotspots(detail);
+  renderIdentity(detail);
 }
 
 function renderFetchFailure(err){
+  serialView=null;
+  document.getElementById("trajectory").innerHTML =
+    '<div class="warn"><strong>TRAJECTORY UNKNOWN</strong> — hub unreachable; the last plotted evidence was cleared.</div>';
+  document.getElementById("champion-capabilities").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; champion capabilities cannot be refreshed.</div>';
+  document.getElementById("accumulator").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; retained keeps and gate status cannot be refreshed.</div>';
+  document.getElementById("serial-controls").innerHTML="";
+  document.getElementById("runtime-preparation").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; runtime progress cannot be refreshed.</div>';
+  document.getElementById("serial").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; routing and child freshness cannot be refreshed.</div>';
   document.getElementById("banner").className = "show malformed";
   document.getElementById("banner").innerHTML =
     `<div class="hd">HUB UNREACHABLE</div><div class="bd">${esc(err)}</div>` +
@@ -1715,14 +2878,6 @@ function renderFetchFailure(err){
   // successful champion render on screen under an unreachable hub would present
   // an arbitrarily old reading as the current one — the same defect this page
   // was built to end, one refresh cycle later.
-  document.getElementById("champ-badge").className = "badge malformed";
-  document.getElementById("champ-badgetxt").textContent = "UNKNOWN";
-  document.getElementById("champ").innerHTML =
-    `<div class="ch-verdict malformed"><b>UNKNOWN — the hub could not be reached` +
-    `</b><div class="muted" style="margin-top:5px">This says nothing about ` +
-    `whether the champion has been measured against the frozen production ` +
-    `kernel. The last reading is cleared rather than left on screen: an undated ` +
-    `headline is exactly what this panel exists to prevent.</div></div>`;
   document.getElementById("opgate-badge").className = "badge malformed";
   document.getElementById("opgate-badgetxt").textContent = "UNKNOWN";
   document.getElementById("opgate").innerHTML =
@@ -1738,6 +2893,16 @@ function renderFetchFailure(err){
     `</b><div class="muted" style="margin-top:5px">This says nothing about the ` +
     `memory store. The last reading is cleared rather than left on screen — an ` +
     `undated count is a missing count, and a missing count is not a zero.</div></div>`;
+  document.getElementById("campaign-badge").className = "badge malformed";
+  document.getElementById("campaign-badgetxt").textContent = "UNKNOWN";
+  document.getElementById("campaign").innerHTML =
+    `<div class="empty">The hub is unreachable; the last campaign reading and ` +
+    `all visible command authority were cleared. Any uncertain command remains available for `+
+    `exact retry after a trustworthy refresh.</div>`;
+  document.getElementById("campaign-controls").innerHTML = "";
+  campaignControlsAvailable=false;
+  campaignAccepted = null; campaignAcceptedEnvelope = null;
+  campaignStreamError = "hub unreachable; retained command outcome is uncertain";
 }
 
 async function tick(){

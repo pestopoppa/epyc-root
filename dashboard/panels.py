@@ -395,7 +395,7 @@ PANELS: Mapping[str, PanelSource] = _index((
         route="/api/loop",
         health_route="/api/loop/health",
         health_func="loop_data_health",
-        producer="autokernel.loop.status.write (the rebuilt AutoKernel loop)",
+        producer="selected AutoKernel campaign controller, otherwise legacy loop.status.write",
         producer_repo="epyc-inference-research",
         evidence="/mnt/raid0/llm/autokernel/loop-memory/loop-status.json",
         timestamp_field="generated_at",
@@ -423,11 +423,12 @@ PANELS: Mapping[str, PanelSource] = _index((
         # /api/loop/health reports `absent` with HTTP 503 — nothing is hidden;
         # the cold start just does not cry wolf.
         absence_is_anomalous=False,
-        notes="Deliberately NOT part of the Kernel-R&D surface: that surface pins "
-              "29 cross-repo source paths and 47 content digests and is slated for "
-              "wholesale rewrite. One contract, one panel, no shared blast radius. "
-              "A loop that DECLARES state=complete reads `idle`; state=failed is "
-              "never laundered into idle — loop_data_health raises it to degraded.",
+        notes="The existing /loop surface selects an explicitly configured unified campaign "
+              "or the legacy loop. The evidence path above is the legacy fallback; unified "
+              "observations carry their selected campaign-snapshot.json path. A durable snapshot "
+              "alone is history: matching transport identity and producer heartbeat establish "
+              "liveness. Legacy complete reads idle; failed never becomes idle. Other evidence "
+              "cards retain their own envelopes and cannot certify this producer.",
     ),
     PanelSource(
         panel="bus",
@@ -1098,6 +1099,16 @@ def verdict_gates_status(env: Mapping, panel: str,
     wd_state = (env.get("watchdog") or {}).get("state")
     if wd_state in WATCHDOG_ALARMS or wd_state in WATCHDOG_DEFECTS:
         return True
+    if (panel == "kernel" and wd_state == WATCHDOG_IDLE
+            and env.get("unreported")):
+        # The terminal-contract producer explicitly declares both facts: this
+        # campaign has stopped, and some optional owners never reported (for
+        # example the one-candidate driver does not mint a champion or release
+        # package).  Keep that incompleteness loud in ``attention`` and in the
+        # panel verdict, but do not let historical optional sections colour
+        # current GLOBAL producer health after the producer has declared idle.
+        # A running partial contract still gates, as does any watchdog defect.
+        return False
     if not env.get("gates_health"):
         return False
     if (env.get("reporting") == REPORTING_ABSENT and panel in registry

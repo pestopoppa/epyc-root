@@ -9,8 +9,9 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 
-from adapters import autokernel_corpus as corpus  # noqa: E402
-from adapters import autokernel_gpu_screening as gpu  # noqa: E402
+from adapters import autokernel_corpus as corpus
+from adapters import autokernel_gpu_screening as gpu
+from adapters import autokernel_unified_arm as unified
 
 
 class _Ledger:
@@ -24,6 +25,7 @@ class _Ledger:
 def test_schema_map_routes_to_the_owning_adapter():
     assert corpus.SCHEMA_TO_ADAPTER[gpu.BANK_SCHEMA] is gpu
     assert corpus.SCHEMA_TO_ADAPTER[gpu.RESULT_SCHEMA] is gpu
+    assert corpus.SCHEMA_TO_ADAPTER[unified.CAPTURE_SCHEMA] is unified
 
 
 def test_projection_schemas_are_never_routed():
@@ -41,6 +43,9 @@ def test_journal_envelopes_dispatch_on_journal_schema():
     assert corpus._dispatch_schema({"journal_schema": "epyc.b"}) == "epyc.b"
     assert corpus._dispatch_schema({"kind": "STOP_STATE"}) is None
     assert corpus._dispatch_schema({"schema": "not-an-epyc-id"}) is None
+    assert corpus._dispatch_schema({
+        "journal_schema": unified.JOURNAL_SCHEMA, "kind": unified.JOURNAL_KIND,
+        "payload": {"schema": unified.CAPTURE_SCHEMA}}) == unified.CAPTURE_SCHEMA
 
 
 def test_iter_documents_reads_both_json_and_jsonl(tmp_path):

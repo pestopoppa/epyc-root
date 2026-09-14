@@ -2034,3 +2034,37 @@ weight read across accepted tokens — not raising GB/s.
 - `/mnt/raid0/llm/tmp/inf70/agents/b10/REPORT.md` — the L3 measurement, coverage analysis, break-even correction
 - `/mnt/raid0/llm/tmp/inf70/agents/b10-survey/REPORT.md` — FR-Spec, VocabTrim, NanoSpec, EAGLE-3, llama.cpp #25187
 - `progress/2026-09/2026-09-05-inf70-audit.md`
+
+## Compiled Update — 2026-09-09: Qwen3.8 community submissions preserve the DFlash2 scope and expose an `np`-sweep confound
+
+Two community follow-ups were submitted without rerunning inference. PR #75 adds the existing MI210
+Qwen3.8-27B DFlash2 concurrency sweep as a supplementary section rather than a main-table row, because
+the repository's main table uses a different client instrument, speculative path and kernel identity.
+The submitted values are 79.2, 109.4, 167.8 and 179.1 aggregate tokens/s at `np=1/2/4/8`; aggregate here
+means the sum of per-slot server-reported rates and excludes client-side scheduling tail. The submission
+also records context 16,384, warmup/sampling details, the unstable-clock launch at `np=8`, and that
+dispersion is not monotone: `np=4`, rather than `np=8`, was the least stable measured point.
+
+A source audit found that `calibrate_floor` changes the prompt set when `np` changes: it maps one distinct
+prompt to each slot, so `np=1` sees prompt 1 while `np=8` sees all eight. Fixed-`np` kernel A/Bs remain
+properly prompt-matched because both arms receive the same set. A sweep whose independent variable is
+`np` cannot separate concurrency from prompt mix. The observed 4-to-8 turnover is consistent across its
+three launches, but the causal concurrency claim stays bounded until a prompt-matched sweep is authorized.
+No live run or pending process was created by this follow-up.
+
+PR #76 adds a quantization column and sorts the community table by bits per weight. Footnote review
+resolved 66 of 68 rows; the two unresolved early rows remain marked unknown. A mechanical multiset check
+preserved every pre-existing Baseline, With-flag, n-max, Acceptance and Contributor cell through the
+reorder. The resulting distribution shows that 45 of 68 rows are in the 4-bit tier, including 22
+UD-Q4_K_XL and 17 Q4_K_M rows. Both PR outcomes remain pending external maintainer review. A future
+prompt-matched `np` sweep and a separate MTP-path concurrency sweep require a GPU measurement window and
+explicit authorization; neither is represented as completed work.
+
+### Source References (2026-09-09 community follow-up)
+
+- [`2026-09-09-adhoc-qwen38mtp.md`](../progress/2026-09/2026-09-09-adhoc-qwen38mtp.md) — source audit,
+  submitted values, integrity checks, scope limits and pending follow-ups.
+- [sudoingX/qwen38-mtp PR #75](https://github.com/sudoingX/qwen38-mtp/pull/75) — supplementary MI210
+  DFlash2 concurrency section.
+- [sudoingX/qwen38-mtp PR #76](https://github.com/sudoingX/qwen38-mtp/pull/76) — quantization column and
+  quant-ordered table.

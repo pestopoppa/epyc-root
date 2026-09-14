@@ -7,10 +7,11 @@ Run: ``python3 -m unittest tests.test_dashboard_activity``
 import json
 import tempfile
 import unittest
+from unittest import mock
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from dashboard import server
+from dashboard import panels, server
 
 
 def _iso(dt: datetime) -> str:
@@ -366,7 +367,15 @@ class HealthPayloadTests(unittest.TestCase):
                 server.TIMELINE_PATH = Path(d) / "missing_timeline.json"
                 server.AUTOKERNEL_DEPLOYMENTS_ROOT = Path(d) / "deployments"
                 server.AUTOKERNEL_SUPERVISORS_ROOT = Path(d) / "supervisors"
-                return server.health_payload()
+                # This fixture exercises the outcome fold.  The unified-loop
+                # panel reads a separate, host-global store; letting that real
+                # snapshot into this temp-root test makes an unrelated stale
+                # campaign set the result before ``outcome`` is evaluated.
+                with mock.patch(
+                        "dashboard.server.loop_status.snapshot",
+                        return_value=({}, panels.Observation(
+                            False, detail="no loop report in outcome fixture"))):
+                    return server.health_payload()
             finally:
                 server.AUTOPILOT_OUTCOME_JSON = orig_oc
                 server.KERNEL_DASHBOARD_JSON = orig_kn

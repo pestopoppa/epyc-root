@@ -1,0 +1,1984 @@
+# Unified AutoKernel implementation — 2026-09-09
+
+## Supervised dashboard configuration and first real measurement traversal
+
+The old dashboard watchdog PID473245 replaced our configured hub after deploy-sync,
+discarding the store environment. Main stopped that exact PID and verified death,
+then re-adopted the existing script as PID1390845 with `EPYC_ROOT` set to the primary
+ROOT lane and `AUTOKERNEL_LOOP_STORE_ROOT` set to the GLM trial store (campaign override
+unset). Its actual restart produced listener PID1399103 retaining the correct live
+store, explicit experimental scope, 2,397 historical attempts and five capabilities.
+No inference reload occurred. Future watchdog adoption must preserve these settings.
+
+The dashboard reload also exposed a guard false positive: benchmark names inside
+Codex author prompts were treated as executable identities. Orchestrator `5e3a9ec7`
+→ main `03ddb449` corrects executable/Python-script classification, preserving real
+benchmark markers and conservative ambiguous wrappers. Main 61 tests passed in0.33s.
+Primary test invocation requires `ORCHESTRATOR_STACK_REEXEC=1 PYTHONPATH=.` to prevent
+the existing stack module's import-time interpreter re-exec; this does not bypass
+benchmark guards. The successful dashboard restart used no guard override.
+
+Resumed trial PID1380863/handle21102 reused calibration. First real CPU proposal was
+authored, reviewed, built, and passed the MUL_MAT CPU gate; it reached paired A/B
+measurement. No completed comparison, qualified gain or five-loop completion is
+claimed at this checkpoint. Production and canonical champion remain unchanged.
+
+## First live failure and CPU actor repair
+
+All five calibration launches completed. The first two research attempts returned
+empty authored paths: captured actor receipts explicitly identify the contradictory
+CPU request and forced CUDA source schema. This was not a Codex permission failure.
+The owned STOP boundary ended the process cleanly (handle43128 exit0, PID1329820 dead,
+claim released): two planner transients and one stopped formation, no measured changes
+or keeps. Original output/floor remain intact. CPU actor context/template repair
+`ee76b37b` → research main `2059e30e` passed 33 main actor checks. Resume uses the saved
+request-bound floor, not repeat calibration; five valid research iterations remain.
+
+## Correction: live-store selection hid canonical history
+
+Operator caught a real regression in the preceding dashboard fix: all panels followed
+the fresh CPU store, hiding existing champion evidence, capabilities and historical
+attempts. Reader roots are now separate; live API verification restored original
+`loop-memory/experiments.db` (2,397 attempts, 32 keeps) and original production comparison
+(bff30c measured, ef811 canonical tip, not a fabricated direct ef811 ratio). Five
+capabilities survive in `champion-vs-production.json.pre-reconcile`; the reader reopens
+them with source identity, original timestamp and verified ancestry, explicitly historical.
+Main combined targeted checks:19 passed. Future CPU status explicitly identifies the
+experimental scope (`51abc7a3` → research main `e2a01699`), without restarting this trial.
+Dashboard deployment now uses the reviewed primary ROOT lane instead of stale shared
+source. Yesterday's final records remain in `docs/design/champion-max-performance-20260908.md`
+and `docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md`; the latter's pristine CPU
+baseline is not frozen v9, and its instrument-to-delivery mapping must stay explicit.
+
+## Live dashboard store repair
+
+The existing dashboard selected stale GPU history. Orchestrator `59782734` (main
+`0ad401dd`) sets only the dashboard's `AUTOKERNEL_LOOP_STORE_ROOT` to the live GLM
+trial store. Dashboard-only reload initially failed because this lane lacked `logs/`;
+creating that directory and retrying succeeded, PID1339228. Main verified the old
+dashboard PID absent, trial PID1329820 still live, and `/api/loop/health` reporting
+fresh CPU-store evidence with no reader error. No inference reload, benchmark bypass,
+or replacement dashboard code. First calibration launch completed; five-loop trial
+is not complete. Automatic future campaign selection remains outside this narrow fix.
+
+## Existing-loop CPU launch boundary
+
+- Published CPU serving forwarding `1799ade6` → main `12bfe8a3`. The existing
+  comparator/calibrator accepts both original resolved arm launches and exact frozen
+  request bytes. A floor is keyed to those ordered request identities; legacy floor
+  paths/default calls remain unchanged, and uncalibrated results remain non-decisive.
+  Main actual owned child/HTTP tests passed4 in8.25s, checking both arms, received body
+  bytes, calibration/floor reuse and process teardown. Earlier focused legacy checks
+  passed95 plus11 subtests in1.03s. Synthetic HTTP timings are not model measurements.
+- Published existing-loop CPU entry route `2f066e53` → main `fbecc61c`, reusing
+  source/build/serving/search and durable keep owners rather than replacing them with
+  the incomplete standalone runtime. CPU recipe and frozen workload are explicit inputs;
+  existing GPU defaults and owning decision rules remain in place.
+- Original experimental anchor identity support `863128c1` → main `2032e5be`
+  reopens the original build identity, checks selected source/head and file inventory,
+  and preserves existing promotion provenance semantics. Main focused checks passed27
+  plus4 subtests. The startup worker's unwaived dry run exited0: no unverified-anchor
+  waiver or fabricated provenance was needed.
+  Original inputs live under `/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/`:
+  `glm53-c463f601b-cpu-mtp-depth3-b2048-ub512-corrected.recipe.json` and
+  `glm53-fixed2029-depth3.prompt-manifest.json`; isolated store is
+  `/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store`. The request-bound floor is absent;
+  the dry run reported wiring proven/nothing spent, not calibration or a measured gain.
+- CPU instructions/evidence-epoch correction `3dddec73` → main `99f91479` passed
+  3 main focused tests: selected CPU instructions override inapplicable GPU directives,
+  and CPU launch/frozen-prompt digests scope prior-evidence lookup. Missing CPU profiles
+  remain explicitly unavailable; no fabricated hotspots or GPU measurement reuse.
+- Live-start update: main verified PID1329820 with `ps` (worker execution handle43128),
+  CPU claim held, status original-request CPU calibration, iterations0/5, calibration5
+  and pairs5, both actors GPT-5.6-sol medium. This is a live start, not five completed
+  iterations, completed calibration or a qualified performance result. Host uptime exceeds the
+  one-week measurement qualification limit; these timings cannot support qualified
+  performance claims or champion admission without the required host-health remediation.
+  Production kernels and service policies are unchanged.
+- Coordination bus drain refused roster `autokernel-unified-20260908` in both the main
+  ROOT lane and `/workspace`; no alternate identity or successful drain is invented.
+  Prepared three completed handoff items only. README freshness check exited0 with no
+  warnings; no index edits/pruning, wiki sweep or commit by the documentation worker.
+
+## Operator-directed correction: restore and extend the working loop
+
+- Operator requested stopping failing CI notifications during implementation.
+  GitHub workflow `autokernel guards` (344863017) in
+  `pestopoppa/epyc-inference-research` was disabled and independently listed as
+  `disabled_manually`; Dependabot remains active. This is not a passing CI result.
+
+- Operator rejected speculative framework expansion and directed actual five-loop
+  GLM launch attempts, concrete fixes and retries. Preserve full CPU/GPU/candidate
+  feature scope; keep unpublished dashboard/retention expansion off the launch path.
+- Independent audit: two demonstrated old-loop regressions (fresh-store refusal,
+  disabled pruning); no detected changes to old GPU recipe hashes/argv or core
+  claim/bench/pipeline/champion modules. This is source evidence, not hardware proof.
+  Audit artifact: `/mnt/raid0/llm/worktrees/acceptance/autokernel-friction-audit-20260909/AUDIT.md`.
+- Both regressions repaired/published: `009ef659`→`cdd13df5` and
+  `457f5e37`→`602bdf16`. Main31 recovery tests and actual keep-path regression pass.
+  No actual build deletion was run. Existing corrupt/history lineage refusal remains.
+- GLM exact request transport `002fc0d0`→`bfb86301`; actual topology-prefix fix
+  `20b9621c`→`5038e406`. Main combined50 tests pass; original request fixture preserved.
+- Real primary orchestrator exporter now exits0 after canonical generated-input
+  update. Output `/mnt/raid0/llm/tmp/aku-real-primary-export-20260909`; generated
+  changes remain uncommitted. Global stack guard still reports existing serving-port
+  mismatches; no blanket stack-check success or service reload claimed.
+- Prior corrected full software run completed2607 tests +83 subtests,2 strict
+  expected BIND/HELD failures in358.82s. It does not establish runnable research.
+- No real five-loop run yet. Startup worker continues prospective GLM recipe/config;
+  CPU extension uses existing source/build/serving/search owners, not invalid-only
+  standalone replacement. Production kernels untouched.
+
+Owner: `autokernel-unified-20260908`. Operator authorized implementation of
+`handoffs/active/autokernel-unified-surface-program.md`, using GPT-5.6-sol medium workers for bounded
+execution and main-thread coordination/review. Root lane starts at `088427b0`; research at `1d9733f1`.
+Shared/divergent checkouts and frozen kernels were not changed. Implementation is tracked in §9;
+source completion, publication, deployment and live acceptance are separate.
+
+## Accepted first slices
+
+### Feed regression correction
+
+- Full loop/Journal run41861 completed on research0d97fe15/ROOT73e43617:
+  2583 passed,5 failed,15 setup errors,2 existing strict BIND/HELD xfails and83 subtests
+  in329.27s. This was a failed acceptance run, not waived or relabeled green.
+- Three failures were moving-current alias assertions still expecting feed v2; another
+  was a real regression where new profile handlers stopped recording unrelated operational
+  lifecycle/settlement diagnostics. The fifth was the service fixture signaling before
+  observed-frontier capture. All15 errors came from a semantic-receipt fixture using the
+  feed's moving alias rather than that receipt contract's explicit seven-file v2 closure.
+- Corrected production diagnostic fallback and all affected fixtures. Native final/restart
+  coverage now runs both v2 and v3 with separate durable reader IDs; no current-version case
+  or assertion was dropped. The service marker follows the same publisher observation it
+  asserts. Scientific-receipt source acceptance is unchanged, not silently expanded to v3.
+- Main independent22350:110 tests passed118.63s, no skips. Four source hashes were unchanged
+  before/after tests and match PRIMARY application: evidence39449fc6, runtime-test1921c1f3,
+  root-projection-test50944432, final-receipt-test231432ac. Ruff clean. Added completed
+  AKU-06r; fresh full-suite acceptance remains required. All12 parents remain open.
+- No live inference, model reads, production mutation, service reload, index pruning or wiki sweep.
+
+### Prospective CPU profile evidence integration
+
+- ROOT adapter and research feed now join the original accepted worker terminal to its
+  PROFILE_VERIFIED before compact artifact verification. The producer's measurement and
+  receipt-integrity tuples use the existing canonical grader; they do not certify model
+  correctness, scientific eligibility, performance gain or production validation.
+- Durable terminal retention, pair associations, before-ACK writes and restart/retraction
+  survive a one-entry cache. Exact failed settlement releases unjoinable terminal debt;
+  exact consumed publications release quarantined/conflicting profiles. Forged identity
+  joins preserve the pending terminal. Retryable storage faults preserve the source cursor.
+- Main review caught overstrict all-thread sampling equality, malformed nested mappings,
+  a join-extraction NameError and overbroad terminal cleanup. Final adapter accepts sampled
+  TIDs as a subset without fabricating zero periods; focused regressions cover these cases.
+- A worker composition tree had copied pre-aggregate feed files over published270c inputs.
+  Main rejected that proof and applied reviewed hunk packets directly to clean270c/a9ec lanes;
+  original dashboard observation methods/tests remain present. Combined PRIMARY acceptance:
+  89 research tests passed24.94s;65 ROOT adapter/dashboard tests passed3.21s; no skips.
+  All six changed Python files pass Ruff. Earlier WIP failures are not final acceptance.
+- Applied packet hashes: ROOT1a0cf9672e49cdb8f8384b9fa2d86f9fede073aa9eee0836ae2309418848a31a;
+  researchc9bccd5929288387eed5213c6e49f154a53289bed6a1cdd0fa89dcb4db82413c.
+  Added completed AKU-06q and narrow CPU-projection checkbox under VB-AK-UNIFIED-PROFILE.
+  Broader profiler wiring, exact GLM installation and all12 parent tasks remain open.
+- Separate workers now implement diagnostic candidate/resource observations and nondeleting
+  native retained-evidence dependency closure. Existing HIGH authority scopes still await
+  explicit operator reply. No hardware trial, production mutation, index pruning or wiki sweep.
+
+### Aggregate dashboard integration
+
+- Integrated nine research and five ROOT files for bounded evidence, actor, profile and
+  calibration observations in the existing snapshot/page. The original owner computes reductions;
+  the publisher reads cached values only. Original observation timestamps, failed attempt dates
+  and heartbeat remain separate; resource/candidate sections still explicitly lack producers.
+- Final review reproduced a future diagnostic timestamp poisoning later snapshots and close.
+  The setter now rejects it before replacing cache. Regression proves preserved prior observation,
+  exactly one settlement despite a malformed actor report, and safe runtime close.
+- Main current-tree acceptance:165 research tests passed, two strict BIND/HELD xfails, no skips,
+  in81.65s;41 ROOT dashboard tests passed in0.51s. Changed research Python Ruff/diff checks pass.
+  Earlier pre-compaction test results were unavailable; process inspection proved no pytest was
+  live before this new run. These results cover the corrected integrated tree, not a hardware run.
+- Added completed AKU-09h. AKU-09g still owns resource/candidate connection and live acceptance;
+  all12 parents remain open. Profile Vidya projection is separate and still under review.
+  No production mutation, service reload, hardware trial, index pruning or wiki sweep.
+
+### GLM expected-inventory publication
+
+- Added metadata-only preparation packet at
+  `artifacts/autokernel/glm53-expected-inventory-20260909/`:12 files, approximately52KiB,
+  containing six expected full-file LFS hashes from retained revision
+  `d425e572fb9686125831f476129e51cea34bc5b4` metadata. No model payload read, hash or
+  preparation receipt. Declared model size199,707,321,347 bytes is not measured local data.
+- Original tree bytes lack a trailing newline; base64 retains all14,118 decoded bytes and
+  original SHA4badb4fd6433a833d7ae7525732c865d7d73a7ace347f23e99c56a534e279ba1.
+  Six download metadata copies retain exact source hashes. Manifest byte SHA
+  a9984ae6a18f7b25dd27086abd32b74056264a9cc64ba074067e8a8bb90be626 is separate from normalized
+  expected inventory21d760be3bd473865b31f3b3d9ca28b30a2f7bd12b71660e64191ff02ff11fcc and entry hash.
+- Main matched all12 worker packet hashes, then applied ROOT's import-order formatting to
+  the test only (final SHA910bc5d6dabe7277701876529af294609c2bb43fc45da70c0dc92184c8e93677).
+  Relocated31 tests pass without skips with explicit research3762 checkout; Ruff clean.
+  Owning-validator compatibility uses six tiny synthetic files, never actual GLM shards.
+- Added completed AKU-06p preparation subtask; all12 parents remain open. Real scheduled
+  verification and exact GLM recipe/prompt installation remain part of existing06j/12 scope.
+  Preflight found explicit512 microbatch is required to preserve pinned GLM default;
+  omitted -ub projects2048 but fails final resolution, not an observed wrong hardware run.
+- No hardware inference/perf, production changes, new grading rule, index pruning or wiki sweep.
+
+### Owned CPU profile producer integration checkpoint
+
+- Post-publication full-suite acceptance on research `3762a517e16adc41916b67b4ca59b1652f26d8c0`
+  with ROOT409fee28: original handle20212 completed0, **2577 passed,2 strict xfailed,
+  83 subtests,332.81s**, no skips. Command: `python3 -B -m pytest -q
+  scripts/kernel_rnd/autokernel/loop scripts/kernel_rnd/autokernel/test_journal.py`,
+  with RAID TMPDIR, primary research factory-dry-run tree, primary ROOT and
+  `PYTHONPATH=.:scripts/kernel_rnd`. Strict xfails still demonstrate missing original
+  selected-work binding and interrupted held-cost durability; neither is waived.
+  This is software acceptance, not a hardware dry run or GLM trial.
+
+- Integrated exact six-file v2 packet on research4657160c; producer SHA256
+  `e626efddf14530a7d4eb3f2ec06b5b86b70a14a2b329a2e59b9054b46cdb20eb`.
+  New installed entry, bounded raw capture/replay and concrete optional serving hook preserve
+  original held ownership, source/model/process/DSO identities and separate counter windows.
+- Main reproduced short-lived reader failure after a 50ms parent delay; the corrected reader
+  retains exact unreaped-child waitid proof, absent unavailable image facts and matching final
+  Popen status. Strict live capture checks remain unchanged. Worker delayed real perf-version
+  check passed3/3 without opening events.
+- Main nine-file composed pytest run21431 completed: **205 passed,14 subtests,36.22s**, no skips.
+  All six final hashes match worker manifest; executable mode0755; diff check clean.
+  Worker current-base broader205/14 passed35.36s. Tests use tiny HTTP/perf fixtures, not GLM.
+- Prior full published research4657160c suite handle34179: **2523 passed,2 strict expected
+  BIND/HELD failures,83 subtests,307.11s**, no skips. This predates the CPU packet and is not
+  a full-suite claim for the new producer.
+- AKU-06o captures completed implementation acceptance; AKU-06j remains open for prospective
+  registered projection, exact GLM configuration and real deployment conformance. Existing
+  VB-AK-UNIFIED-PROFILE source/task updated immediately; adapter/feed worker assigned. No new
+  grading ladder or retroactive claim; receipt integrity is not production validation.
+- GitNexus existing serving hook impact LOW2 reconciled against current callers. Requested
+  wrapper refresh terminated139 during incremental indexing; no metadata deletion or fabricated
+  fresh-index claim. Bus drain still refuses the unregistered session ID; no impersonated bus
+  writes. README freshness check emitted no warnings. No index pruning or wiki sweep.
+- No hardware profile, export dry run, five-loop GLM trial, production build or promotion.
+  Original HIGH-impact approval gates remain unchanged; dashboard aggregates and Vidya wiring
+  continue in separate worker lanes. All12 parent handoff tasks remain open.
+
+- AKU-02a: `Recipe.explicit_unsets` removes inherited treatment values from the actual launched
+  environment. Set/unset conflicts, malformed keys and loader-owned overrides refuse. Unset identity
+  is immutable, sorted and serialized; empty unset state preserves historical recipe hashes. The
+  existing readback path tests both control and treatment. Main reviewed the diff and integration tests.
+- AKU-03a: `status.write_json()` now file-syncs, replaces atomically and syncs the containing directory.
+  It cleans only its own unpublished temporary file, closes descriptors on failure and propagates
+  post-publication durability failures without deleting the new target. Main reviewed implementation
+  and injected-failure fixtures; 28 focused tests pass.
+- Full current-loop suite after both patches: **611 passed, 59 subtests passed**, 6.88s. These are
+  hermetic source tests, not inference measurements or proof of CPU/GPU performance/soak readiness.
+
+## In progress and boundaries
+
+### Enrollment, recovery and worker-status checkpoint
+
+- AKU-01a: immutable explicit-snapshot campaign resolver and offline CLI, with CPU/GPU targets, seed
+  alias deduplication, pinned baselines, source identities and independent prerequisite states. Optional
+  artifact verification does not grant admission or rewrite identities. Main's focused run: 52 passed.
+- AKU-03b: authoritative `LOOP_BUNDLE_SAVED` before derived JSON; v1 import retains the original parsed
+  snapshot/provenance, v2 requires validity, missing/corrupt history refuses. External tip movement
+  preserves COR/keeps/cadence and labels prior magnitude stale. The current loop and manual serving gate
+  use recovery; dry mode cannot create locks or state. Native snapshots confer zero ClaimTuples.
+- AKU-09a/b: bounded heartbeat stop/join/lock waits before terminal publication, durable final artifact,
+  preserved original exceptions and latest outcomes; both hub render sites distinguish current from
+  historical magnitude and unverified threshold signals. 46 focused lifecycle/status tests and 69 root
+  render tests / 5 subtests pass. No full browser or live producer was exercised.
+- Main integration run after these slices: **707 passed, 59 subtests passed** in the loop suite.
+  The changed unified handoff/progress citation check is clean. A separate repository-wide scan flags
+  pre-existing citations in other documents (including citation-syntax examples); no claim in this
+  implementation checkpoint relies on those entries.
+
+Main rejected and corrected: silently repinned implicit baselines, legacy-as-current validity, stale
+magnitude replaced with zero, v1 schema allowing unsafe old-reader fallback, ancestry checked after
+import, dry inspection creating locks, an unbounded heartbeat shutdown lock wait, and historical values
+labelled measured/current. Those corrections are in accepted code, not deferred recommendations.
+
+First source checkpoint was published as research `93ce4bad` / main merge `585aef6f`, root `ca9a6fb7` /
+main merge `8bf6f108`. Publication did not move shared worktrees or restart live processes.
+The enrollment/recovery/heartbeat source checkpoint is research `6682e4af`, main merge `f5941fd0`.
+Its root dashboard/handoff checkpoint is `971f91fe`, main merge `3eaca1cb`.
+
+### Accepted source-commit isolation
+
+- AKU-05a: `archive.keep()` uses a captured-parent private index and exact accepted paths. Peer staging
+  and working bytes are retained; selected paths use the accepted working version rather than a peer's
+  differently staged version. Hooks run against the private index; unexpected staged paths refuse.
+- Branch/repository identity checks, expected-parent CAS, tracked deletion and post-commit notification
+  failure have hermetic tests. Main run: **83 passed, 7 subtests passed** (26 focused cases included).
+  The ref update is atomic against its old commit; HEAD binding is immediately rechecked, not claimed
+  as an atomic symref-plus-ref transaction. The existing single integration owner remains required.
+- A source commit is not proof of build or measurement; module documentation now makes that distinction.
+  Cross-repository integration intent, manifests and validation debt are separate upcoming work.
+
+### Accepted resolved recipe consumer
+
+- AKU-02b: immutable snapshot and normalized execution identity, exact injected artifacts/DSO load names,
+  effective allowlisted environment and absences, derived CPU/GPU/speculation capability, and real serving
+  launcher consumption. The old template hash is preserved. CPU zero VRAM is not a GPU veto; missing
+  CPU placement/contention and runtime-set/master-off witness samplers remain explicitly unproven.
+- Main review required duplicate argv values, port/path normalization without erasing DSO load names,
+  effective inherited readbacks, cross-field capability checks, unknown/mixed GPU-draft refusal and
+  pre-launch template/environment integrity. **31 focused tests passed**, followed by **150 adjacent
+  tests and 28 subtests**. No real server was launched.
+- The loader now actually removes inherited `HSA_OVERRIDE_GFX_VERSION`, as its prior contract required.
+  The floor writer uses `status.write_json`. Serving metric documentation now says sum of each slot's
+  reported rate; the estimator, legacy identities and acceptance thresholds did not change.
+
+These source/recipe slices are published as research `1b44675d`, main merge `d1611123`; publication
+does not deploy the loop or move the shared checkout. Evidence-plan drafts remain unpublished pending
+main-requested authority, pairing and calibration-cache corrections; candidate manifests and durable
+management controls are the next disjoint assignments.
+
+### Accepted ExperimentPlan structural boundary
+
+- AKU-04a: the requested corrections are now reviewed and **72 focused tests pass** in main's run.
+  The shared immutable plan freezes class/phase, identities, unit/prompt membership, pairing, order,
+  fixed-N stopping and intended use. Invalid/partial pairs are excluded together and empty input is
+  incomplete. Direct dataclass inputs and forged/foreign unit views are revalidated.
+- Observation-to-release laundering, strict-search headlines, and BASELINE production/certificate uses
+  refuse. Nomination remains policy-undefined until the exact A2 semantic attestation adapter exists;
+  claim-bearing uses require the unimplemented shared-grade/registered-protocol adapters. Structural
+  completeness is not measurement/independence warrant; every offline output denies execution authority.
+- Calibration has exact registered replay and treatment-aware applicability seams, n/unit/interval
+  structure, separate raw-replay versus plan/rule caches, and no cached transient callback failures.
+  No estimator, acceptance threshold, statistical power classifier or bounded-null rule was invented.
+- The source/recipe root checkpoint is `59d86f76`, main merge `fb70d74e`. Service/control drafts are
+  still unpublished: main reproduced a closed incarnation accepting a command while its replacement
+  held the lock in a disposable test store, and required lifetime fencing, validated event-order replay,
+  complete resolved-config identity, append-fault recovery and bounded HTTP shutdown corrections.
+  Candidate manifests and scoped retrieval/transfer are the other disjoint sol-medium assignments.
+- ExperimentPlan source is published as research `93e049f1`, main merge `027e9ec7`. Only the five
+  reviewed plan/CLI/test/documentation files were included; service and candidate drafts remain outside
+  this checkpoint. Publication is not activation or scientific validation.
+- Its root handoff/progress checkpoint is `2712b6ae`, main merge `f2d125a2`.
+
+### Candidate contract accepted; control/evidence review in progress
+
+- AKU-05b is now accepted: 28 focused tests within **159 adjacent tests** pass in main's run. Candidate
+  source/build sets and per-target exact execution identities are separate, both candidate/comparator
+  rows bind precisely, and complete carried production obligations/LOO cannot be bypassed with loaded
+  state. Actual registered evidence verification remains required and is not supplied by JSON labels.
+- Main required and reviewed monotonic gain-trigger generations, exact duplicate batch starts,
+  preservation of keeps integrated after a batch was frozen, typed verifier failures, and optional
+  seed rows remaining pending without blocking required production rows. Validation debt persists
+  until trusted advancement; a completed gate's cadence reset is not validation. These are pure offline
+  transitions and CLI validation, not journal transactions, live measurements or promotion authority.
+- Candidate source is published as research `378fdc9c`, main merge `bf08bc25`; its five reviewed files
+  are frozen. That worker is now implementing the optional planned-serving consumer using the actual
+  launcher with fake processes/providers; the other two workers retain control/evidence ownership.
+- The control draft fixes the reproduced closed-writer bug, normalizes the whole resolved campaign,
+  validates replay order and poisons uncertain append failures until recovery. Main requested a final
+  pass on named-lock replacement, nested store identity, slow-client shutdown and observer-independent
+  producer heartbeat. A socket's per-read timeout is not a total service-shutdown deadline.
+- Scoped retrieval/transfer is the third isolated draft. Main review requires local quarantine/outage
+  fences to invalidate cached certificates, unknown generations to stay unknown, mandatory applicable
+  conflicts before ranking, and complete retrieval to remain distinct from positive use authority.
+  No draft is published merely because its happy-path fixtures pass.
+
+### Accepted management service; native consumers continue
+
+- The preceding candidate root checkpoint is `bfe58955`, main merge `52bf582f`.
+- AKU-07a now has a real opt-in controller/HTTP/CLI consumer over the existing journal: full resolved
+  config binding, persistent supervisor incarnation/stream, strict control replay and idempotent
+  durable acceptance, one pinned store/named lock, in-process serialization, closed-writer fencing and
+  poisoned uncertain writes. Resume without a trusted prerequisite remains waiting, not executable.
+- The service owns initial/periodic snapshot publication without observer traffic. Public transport
+  health performs no journal read or fsync; snapshot/commands require authentication. Slow-client
+  teardown closes captured sockets and shares a bounded join deadline. A blocked synchronous filesystem
+  call cannot be forcibly bounded: stop refuses and retains ownership when its threads remain.
+- Main's final test run passed **217 tests and 15 subtests**, with **69 focused control/service tests**
+  included. A separate 256-case nested-field mutation sweep returned no uncaught validator exceptions.
+  Main caught resume-state list/dict exceptions after the worker's first malformed-input fixtures; these
+  are now regression-tested. Producer identity uses stable loaded bytecode projections, not adaptive
+  marshal bytes or changing on-disk mtimes, and honestly excludes unmeasured package dependencies.
+- Scoped-evidence review reproduced another cache failure: a newly added refutation left a previously
+  supported cached decision eligible because only explicit invalidation events advanced its local
+  fences. The worker must bind relevant evidence-set changes and broader-support dependencies without
+  global cache churn. This draft is not accepted. Planned serving is addressing exact continuation
+  membership/order and preserving partial slot observations before any completion callback.
+- Root GitNexus is refreshed at `52bf582f`; research was refreshed at `bf08bc25`. The existing dashboard
+  loop snapshot has one reported upstream consumer (LOW), and `_measure_once` has comparison/calibration
+  callers (LOW); manually reviewed injected callbacks are additional edges the graph does not capture.
+- The accepted management source is published as research `30316f05`, main merge `babf5b9b`. Only its
+  six reviewed files were included; evidence/serving drafts stayed outside the checkpoint. That worker
+  now owns durable candidate transactions and the narrow serialized controller/journal seam; the other
+  two workers retain scoped evidence and planned serving. No service was deployed or activated.
+
+### Frozen planned-serving consumer accepted
+
+- The management root checkpoint is `94b8b93a`, main merge `40cfe499`.
+- AKU-04b now connects immutable plan/recipes/prompts to the existing `_measure_once` path without
+  rebuilding for runtime arms. Main's **117 tests and 3 subtests** pass across serving, resolved recipe,
+  ExperimentPlan and planned consumer. Focused worker coverage is 26 tests plus 3 subtests; ruff and
+  diff checks pass. The concurrently changing evidence draft prevented a clean full-loop worker run;
+  those constructor mismatches were not suppressed or attributed to serving.
+- Raw artifacts are retained before provider completion. No failed/missing/nonfinite timing becomes
+  zero; native slot errors and warmup are preserved without increasing independent-unit N. Main
+  required exact request count/digests before admission, previous-unit membership/prefix validation,
+  prior-lineage binding, distinct typed witnesses, and stopping after an invalid unit. Legacy estimator
+  and defaults remain unchanged. This is a real launcher consumer tested with fake processes/providers,
+  not proof of a deployed enclosing guard or valid live CPU/GPU measurement.
+- Research publication: `1d7de099`, main merge `b4d7db7b`; only its five reviewed files were included.
+  That worker now owns prospective measurement capture and the root Vidya reader/corpus consumer.
+  Candidate transactions retain exclusive journal/controller ownership; the native-kind delta must be
+  reviewed/integrated by main, not concurrent worker writes. Existing source registration is reused.
+- Production enrollment audit found that canonical command construction itself creates slot-save
+  directories, and startup adds environment, placement and pre-eviction behavior beyond argv. A future
+  canonical export must be genuinely non-mutating and pin these lifecycle declarations. Nothing was
+  imported/launched/pre-evicted or changed in the orchestrator; only source was inspected.
+
+### Scoped evidence boundary accepted
+
+- Planned-serving root checkpoint: `c92af8a4`, main merge `45740647`.
+- AKU-08a is accepted after main's **173 tests** pass, including **57 focused evidence tests**. Mandatory
+  applicable conflicts precede top-k; raw grades, retrieval completeness and actual support remain
+  distinct. Transfer is directed/nontransitive, coexistence victim-directed and noncomposable, and
+  reject audits have explicit target-confirmation budgets. No new measurement ladder or execution
+  authority is created. The offline CLI uses the real projection and remains non-executing.
+- Main reproduced and required fixes for missing generation maps, malformed invalidation quarantine,
+  new same-generation findings, new broader refutations, dropped older findings with unchanged maximum
+  event number, epoch/rule changes and missing semantic bucket data. Relevant content and semantic
+  fences now invalidate cached decisions without global re-query; explicit empty is not missing.
+  Serialized state re-derives all fences but restores no trusted Python callback authority. V1 candidate
+  lookup limits are explicit; registered verifiers cannot certify an unsupported candidate universe.
+- Root index refresh succeeded; research incremental indexing crashed with exit 139. The normal wrapper
+  then detected interrupted state and completed its recovery rebuild in 76.9 seconds. No metadata was
+  manually deleted. Existing research consumer edits paused during recovery; new-file work continued.
+- Prepared a clean orchestrator lane at `5a9442d31b716f64d408ed4a3908fc4bc22c69b1` for future canonical
+  enrollment; no application files changed. Default Python3.13 lacked FastAPI; the existing project
+  Python3.11 environment ran 23 registry/environment baseline tests successfully (one unrelated
+  opentelemetry deprecation warning), so no dependencies were installed. Its index is fresh; canonical
+  builder impacts are LOW/4, including live startup/autopilot. Export must preserve default behavior.
+- Scoped source is published as research `77e536aa`, main merge `b6cf5f92`. Its worker now owns the
+  existing dashboard campaign reader/control consumer and the narrow service transport seams; the
+  native capture and candidate transaction workers retain their disjoint ownership. Publication does
+  not activate the control service, evidence policy or any inference research.
+
+The next consumer integrations are prospective native evidence, durable candidate transactions and the
+existing dashboard's campaign surface. A helper is not a completed parent slice until real consumers
+and integration acceptance exist. The Vidya source table/task registers the prospective current-loop
+measurement hook. Operational journal snapshots are not claim tuples.
+
+### Candidate/native/dashboard review in progress
+
+- Scoped-evidence root checkpoint published as `8ff376cd`, main merge `c2c56571`. Both owned root and
+  research indexes refreshed successfully after that publication; dashboard existing-consumer edits
+  were released only after the refresh. No shared checkout was fast-forwarded or restaged.
+- Main's isolated candidate regression fixtures reproduced two draft defects: an exact retry of an
+  old initialization request rewrites the derived pointer over a newer keep, and a callback can pass
+  its active append capability to another thread outside the controller's mutex ownership. Candidate
+  acceptance is held for corrections and permanent tests. No real source refs or kernels were touched.
+- Review also covers torn immutable-object publication, recoverable partially prepared transactions,
+  historical validation reconstruction versus present eligibility, and avoiding whole-history Git/file
+  replay on every operation. Native capture is checked against real frozen requests, unit/pair
+  membership, lifecycle timestamps and exact raw artifacts before any prospective projection.
+- Dashboard review is checking malformed-input totality, clock skew, identity-matched liveness,
+  bounded network probes, stale response ordering and memory-only authenticated controls. These are
+  ongoing review requirements, not accepted implementations or evidence of live service reliability.
+- The four original candidate probes now pass: old-request retries preserve the latest projection,
+  cross-thread append capabilities refuse, arbitrary non-owned refs refuse, and frozen llama checkouts
+  refuse. Remaining review covers full-history copying on the hot path, speech-tree freeze coverage
+  and use of the shared crash-safe artifact store. The transaction slice is not yet accepted.
+- Main accepted the **ArtifactStore component for reuse** after **126 tests**, including partial-stage
+  crash recovery, two descriptor-leak regressions and same-instance thread exclusion. Cooperative
+  directory locks alone did not exclude threads sharing one descriptor; the corrected store also has
+  an in-process nested lock. Noncreating verification, exact-inode quarantine/recovery, same-descriptor
+  read/fsync, parent durability and pre-publication finite-JSON checks are covered. Native producer,
+  adapter and controller-journal integration remain separate review boundaries.
+- Three additional root adapter probes exposed native process-identity mismatch, substitution of a
+  different manifest prompt, and an uncaught malformed diagnostic payload. Positive fixtures also
+  needed the complete producer plan/observation contract. The worker is correcting these plus exact
+  interval/unit derivation and conflicting-carrier deduplication; no real corpus was ingested.
+- Main independently reproduced the three preexisting INF70 adapter-test failures: stale expectations
+  equated recorded hash/presence with verified attestation despite SC69. The historical adapter, grader
+  and tests were unchanged from the lane base. A narrowly scoped expectation correction is assigned;
+  no historical in-window witness or stronger measurement warrant will be invented.
+
+### Candidate transactions and prospective evidence accepted
+
+- Main accepted AKU-04c/05c after **382 tests and 15 subtests**, including Journal/recovery, the real
+  planned-serving consumer, six candidate/cache adversarial probes and four artifact-store probes.
+  Public cache aliases/setters no longer mutate authoritative state. The new shared store provides
+  no-overwrite, byte-verified, fsynced immutable publication and recoverable partial staging. Candidate
+  phases are durable INTENT/PREPARED/COMMITTED; exact retries preserve the latest projection, and
+  historical state does not restore trusted verifier authority. All frozen kernel paths/branches refuse.
+- Research source checkpoint **82ec8a11**, main merge **54c1f0fd**. No shared checkout, kernel, service
+  or live research was changed. The next candidate worker task is actual controller-native arm capture;
+  existing journal/controller edits wait for publication/index refresh, while new helper work proceeds.
+- Main accepted AKU-08b after **90 focused tests**, including actual producer→reader conformance and
+  three independently reproduced tamper/malformed cases. Full Vidya: **1,044 passed, 2 skipped** under
+  default fixture configuration; the skipped research conformance case passed in the explicit-root run.
+  The other skip requires an orchestrator repo location not present in that test's default context.
+  Strict reader/corpus rederive complete closed native inputs and stored bytes; conflicting carriers
+  sharing one full measurement ID emit neither. Only this native family deduplicates. Three stale
+  INF70 expectations now reflect SC69's actual-byte-verification requirement; no grader or historical
+  evidence was changed. No real corpus was ingested.
+- Producer supports serving/process/level/median only and keeps unknown environment/placement or absent
+  GPU residency diagnostic. Loaded evaluator identity, actual lifecycle samplers, native journal feed
+  and registered current-use policy remain required. Source/schema success is not measured performance.
+- The enrollment worker now owns the prepared orchestrator lane and a bounded non-mutating canonical
+  exporter→research resolver task. The default launcher remains unchanged; no imported process manager,
+  pre-eviction, build or inference is authorized. Dashboard final corrections remain separately reviewed.
+- README freshness check emitted no warnings. Bus remains unavailable to this non-roster identity;
+  no peer identity or coordination file is impersonated.
+
+### Next consumer review boundary
+
+- Root prospective evidence checkpoint **01710e5f**, main merge **5063370c**. Both owned indexes are
+  fresh after normal wrapper runs; research incremental indexing again exited 139 and the wrapper's
+  own full-recovery rebuild succeeded in 78 seconds. No manual metadata deletion occurred.
+- Main's full dashboard-adjacent run found **328 passing tests / 51 subtests and 10 failures**. An
+  isolated clean-HEAD worktree reproduces exactly nine host-artifact/wall-clock-dependent freshness
+  failures; the new DOM-ID contract failure belongs to the dashboard draft. A separate real-page Node
+  probe proves the browser abort timer expires only through headers, not body read. Dashboard acceptance
+  remains held for body-size/deadline coverage, the DOM fix and narrow stable-fixture repairs.
+- New native-controller draft review independently reproduces two mismatches: a rehashed/resealed
+  carrier can change both its aggregate/per-launch values without changing raw units, or change its
+  comparison backend without changing the frozen plan. Both probes are retained for the worker's
+  corrective pass. Sealed bytes alone do not prove correct experimental attribution.
+- Scoped new Vidya files pass Ruff. The separately edited INF70 test has nine existing Ruff warnings;
+  reading its clean-HEAD bytes through Ruff reproduces the same nine. Only the approved three SC69
+  expectations were changed; no unrelated lint rewrite or grader change was made.
+- Five independent first-draft scheduler probes fail on semantics: unused optional K slots stall a
+  production-only campaign; an unavailable frozen frontier blocks another ready frontier; a cheaper
+  new seed jumps FIFO; one oversized optional proposal vetoes valid production; and an exact receipt
+  accepts a different outcome silently. Main's review also requires actual held-resource deficit cost,
+  usable capacity epochs, bounded indexed operation and retained incurred cost on bound violations.
+  No scheduler source is accepted or connected to compute. Static hub metadata/docs are prepared but
+  held with dashboard source pending the response-body correction. Their focused scope passes **208
+  tests and 97 subtests**; this does not supersede the separately recorded dashboard failures.
+
+### Native controller consumer accepted
+
+- Main accepted AKU-03c after **278 tests and 15 subtests**, plus clean scoped Ruff and diff checks.
+  The actual producer emits two process-unit measured carriers; both survive controller Journal replay
+  and project through the independently implemented Vidya reader. Native values are fake test data,
+  not performance evidence. Rehashed scalar/per-launch changes and full comparison-identity mismatch
+  now refuse. Actual producer continuation remains diagnostic, not a fresh-launch measurement.
+- The controller owns one serialized capture transaction: scoped same-thread/lifetime callback,
+  exact-ID index, immutable raw/carrier byte verification, append/fsync/cursor/index update and poison
+  on uncertainty. New capture requires an installed typed current worker-result fence. Replay returns
+  the original exact event without inventing a current worker/grant. No grading or scientific-clock
+  advancement is inferred from structurally valid arm captures.
+- Research source checkpoint **384a8117**, main merge **ff708152**; five exact accepted files only.
+  Frozen scheduler/enrollment/service drafts were excluded. Shared checkout and staging were untouched.
+- Scheduler first draft remains unaccepted. Main stopped its own captured CLI PID after its core-suite
+  checkpoint to prioritize bounded dashboard corrections; PID exit was verified. The later partial
+  optional-adaptation change has one failing expectation and four of five original fairness/receipt
+  probes still fail; FIFO now passes. This draft is frozen pending the prepared corrective review,
+  not published or connected to execution. No foreign process was signaled.
+- The next sol-medium worker owns only the archive/candidate frozen-kernel guard. Exact upstream
+  impacts are LOW; manual review identifies the legacy pool caller despite absent indexed edges.
+  New helper work proceeds while existing-file edits wait for checkpoint/index refresh. All testing
+  remains temporary Git/fake execution; no frozen kernel tree, broker, live service or corpus changes.
+
+### Freeze safety and management dashboard accepted
+
+- AKU-05d closes the legacy archive freeze hole using the same dependency-light root/branch guard
+  as candidate ref transactions. The canonical llama/whisper/qwentts roots, aliases, detached canonical
+  checkouts and both production branch families refuse. Pre-CAS root/branch checks remain in place;
+  experimental linked worktrees may share production objects. Main reviewed the exact six-file diff
+  and ran **198 tests and 4 subtests** across guard/archive/candidate/controller/service consumers.
+- Research source checkpoint **3ed96a9d**, main merge **1552744b**, publishes that guard and the
+  previously held authenticated management transport: exact-origin CORS, loaded transport identity,
+  no-I/O health probe, one owned connection-deadline watchdog and bounded close. Publication touched
+  nine exact accepted files, excluding canonical enrollment and scheduler drafts. No live activation.
+- AKU-09c now has a passing full hub acceptance: **414 tests and 125 subtests**, including actual page
+  JavaScript timeout/body-stall, malformed/uncertain ACK, double-click, monotonic-stream, DOM, selected
+  unified-versus-legacy health, registry/navigation, separate evidence clocks and existing headline
+  behavior. New native reader/test files pass Ruff; all diffs pass whitespace checks.
+- The expanded run found three additional old headline fixture failures, independently reproduced
+  on clean baseline (**80 passed, 3 failed, 23 subtests**). The test-only fix derives its expected
+  treatment/anchor from the exact copied producer record, preserving disambiguation, authority and
+  collapsed-evidence checks. The helper's indexed impact was MEDIUM over six test callers and zero
+  production processes; its full file now passes **83 tests and 23 subtests**. Main also restored the
+  registry's explicit champion-headline/frozen-production wording after its wiring test caught an
+  omission. No recorded measurements or renderer semantics were changed to make tests pass.
+- Explicit selected campaign/config identity gates management-v1 snapshots and direct authenticated
+  controls. Token and uncertain request remain tab-memory only; no hub command proxy, new page or
+  deployment was added. V1 has no active worker/compute authority. Terminal history is not a live
+  producer. Actual gateway/service deployment and unattended reliability remain untested here.
+- Scheduler corrections are dispatched (fixed v1 weights, indexed hot path, fair coverage/FIFO,
+  receipt/campaign binding, scoped outages and honest overruns). The next worker owns opt-in worker
+  lifecycle only and must propose/obtain approval for a closed v2 contract before controller/schema
+  edits; new helper work may proceed. Tiny owned fixture children are permitted, not kernel/model/
+  compiler jobs, real cgroup mutation, broker implementation or live research.
+- Research incremental indexing exited139 again after the source checkpoint. The supported wrapper's
+  full `--force` rebuild is running under the canonical lock; no metadata is manually removed and
+  existing lifecycle edits remain held until the index/interface releases.
+
+### Scheduler accounting accepted; enrollment/lifecycle integration continues
+
+- Main accepted the five-file scheduler/accounting slice after **138 passing tests** across scheduler,
+  CLI, campaign and scoped-evidence consumers; all four Python files pass Ruff. Nine independent main
+  probes exposed/fixed unused-slot stalls, ineligible-frontier stalls, non-FIFO seeds, oversized optional
+  work blocking production, receipt outcome mutation, unavailable coverage hiding seeds, and full-region
+  backfill incorrectly skipping a reserved seed. Coverage debt records unserved work without pretending
+  it was measured. Required reservations survive; repeated optional arrivals cannot erase them.
+- CLI state binds the complete resolved campaign, not only its name. Alias groups bind the actual
+  workload signature and share seed history. Typed prerequisites are distinct from serving-ready work.
+  Indexed receipt/seed maps and per-backend FIFO heaps remove historical scans from operational updates.
+  Actual held resources remain charged after invalid results/overruns; fixed-v1 weights are explicitly
+  non-adaptive. No allocation, concurrency certificate, measurement grade or live execution is implied.
+- Scheduler worker proceeds to narrowly scoped retention/legacy prune safety. Main retains publication
+  ownership. Real Journal/provider wiring and the unified runner remain implementation work.
+- Production enrollment passed **114 research tests** plus **19 orchestrator/cross-repository tests**
+  before final readiness review. Sealed per-target recipe artifacts prevent full/partition identity
+  collapse; true aliases still merge. A further main probe found that sealed bytes could erase exported
+  unsupported/waiting status in the Campaign projection; the worker is correcting that before acceptance.
+  Future-model seeds are explicit local pins, not downloads or proof of executable model compatibility.
+- Worker lifecycle/controller v2 seams are approved under the existing provider boundary (Journal impact
+  MEDIUM, controller LOW). Main is reviewing exact deadlines, partial-create/spawn crash cuts, current
+  result fences and asynchronous control completion before accepting worker-aware dashboard integration.
+  Tiny owned fixture children only; no live cgroup/provider/broker or inference activation.
+- Earlier research forced indexing completed successfully (**76.1 seconds**, fresh at `1552744b`), and
+  root refresh completed (**86.5 seconds**, fresh at `dc3d28e6`). Dashboard source `7868b919` and its main
+  merge `dc3d28e6` are published. New source checkpoints will refresh affected indexes again.
+
+### Production enrollment and canonical serving adapter accepted
+
+- The readiness correction is main-verified: sealed unsupported rows remain `unsupported_capability`;
+  sealed rows waiting on any artifact, including DSOs, remain unresolved/missing. Byte identity never
+  creates capability readiness. The complete research acceptance now passes **118 tests**, including
+  nine main probes; orchestrator exporter/cross-repository **19** plus adjacent command/thread/runtime/
+  environment/NUMA **109** tests pass (**128 total**). New Python files and all research edits pass Ruff.
+- The exporter derives the actual production roster, verifies loaded configuration against pinned
+  source bytes, refuses stale prior dependency closure, and creates no runtime directories. Only
+  explicit `--out` publishes owned, immutable, fsynced recipe sidecars and the bundle. Read-only
+  consumers verify actual sidecar bytes and their correspondence to the exported launch. Hashes differ
+  for full/partition recipes; cosmetic aliases preserve identity. No global-export hash stands in for
+  all target recipes. Retry after interrupted publication and sidecar tamper are covered.
+- A closed canonical recipe adapter preserves exact CPU/GPU launcher argv/environment while rederiving
+  every semantic field; unknown/ambiguous NUMA/flag forms and secret-bearing environment refuse. The
+  cross-repository fixture now resolves Campaign and fake serving from the SAME sealed export, rather
+  than comparing independent pre/post-seal identities. Ordinary production builder defaults remain.
+- Optional local seeds reuse existing TargetSpec/artifact contracts and pin their comparator. No
+  production-ref override or opposite-backend production build/recipe reuse is allowed. These are
+  prospective local model enrollments, not downloads or proof that the new model can execute. Speech
+  and other unsupported rows remain explicit in the production-only dry-resolution v2 envelope.
+- Scheduler source `e3a7a073` and main merge `fb42601f` are published. Enrollment/canonical source is
+  published as research `bed678d2` / main `8ea1e10e` and orchestrator `ee304926` / main `3b77bc5a`.
+  Main owns root ledger/index changes; workers now own planner, lifecycle and
+  retention scopes. No production kernel, live stack, research run or historical corpus was changed.
+
+### Retention safety accepted; worker/planner consumer review continues
+
+- Research source **3c273f7b**, main merge **5b1cf412**, publishes the six-file retention/legacy cleanup
+  slice. Main ran **174 tests and 13 subtests** across retention, pipeline, anchor, gates and six
+  independent graph probes. Ruff passes for changed production/new files; the legacy test file keeps
+  only its independently identified pre-existing F841 exclusion. Whitespace checks pass.
+- Deterministic closure is rederived at the maintenance boundary. Rehashing a forged plan cannot move
+  a retained artifact into the expiry set. Permanent classifications retain dependencies, and distinct
+  artifact IDs with equal/ancestor/descendant paths retain their overlapping bytes and dependency closure
+  to a fixed point. Missing references/uncertain scopes withhold all expiry. The helper previews through
+  existing storage policy; it creates no new expiry/grading authority.
+- Legacy pruning captures/open-verifies parent identity before descriptor-based discovery, moves the
+  exact target into an owned private 0700 quarantine, and deletes relative to its descriptor. Mutation
+  fixtures cover store, generation and quarantine substitution. Discovery/finalization I/O failures close
+  all owned descriptors. Replacement public paths are not mislabeled as recoverable owned artifacts;
+  only remaining owned content gets a descriptor-derived recovery location. Byte reclamation is unknown.
+- The current run-path cleanup now visibly returns `retention_unknown` instead of guessing that an old
+  generation is unused. Even complete supplied JSON cannot enable unified deletion: current native root
+  projection, generation recheck, existing storage tombstone expiry and native maintenance result wiring
+  are still required. No live artifact cleanup or kernel/model/build work was performed.
+- Planner review found target/recipe hashes supplied beside unmatched objects, source/build actors able
+  to assert a final-plan hash, mutable dispatch carriers, and unnecessary canonical env-sweep refusal.
+  Corrections are being tested against actual sealed CPU/GPU enrollment, exact prospective intent and
+  persistent scheduler bindings; this draft is not accepted or published yet.
+- Worker/control review passes the initial control/escalation/generation probes. A new prospective
+  acquisition intent is approved before provider I/O, with typed denial versus unresolved recovery and
+  stable v2 snapshot shape. Remaining review covers pipe cleanup, trusted bootstrap import origin and
+  owned teardown despite returned Journal errors. The root worker-aware v2 consumer is now dispatched;
+  neither lifecycle nor dashboard-v2 source is accepted or deployed by this checkpoint.
+
+### Planner accepted; standalone consumer integration dispatched
+
+- Research source **26171408**, main merge **1e5b766a**, publishes the scoped planner and its tests/docs.
+  Main independently reran **228 tests** across planning, persistent scheduling/CLI, scoped evidence,
+  canonical recipes, enrollment and experiment plans; Ruff and whitespace checks pass.
+- Prepared runtime anchors validate unique exports/policies once, retain actual full/partition recipe
+  provenance, and bind the complete resolved campaign. Repeated iterations read no export files. Typed
+  runtime dimensions rederive actual launch semantics and require a matching full ExperimentPlan.
+  Source/build actors cannot assert final-plan identity. Immutable dispatch records bind the exact
+  proposal, ClaimKey and effect question; arm levels are not reported as gain evidence.
+- Main's corrections cover mismatched target/model identity, hash labels beside unmatched recipes,
+  mutable carriers, environment-sweep templates, cross-epoch ranking and stale same-manifest resolved
+  artifacts. Startup validation is cached without promising that backing files cannot change before
+  launch; execution-time checks remain required.
+- The planner worker now owns a design-first standalone driver integration. It must select/budget
+  expensive preparation before actor calls, persist prospective native intent, account actual held
+  receipts and connect local seed profiling/runtime preparation. Existing lifecycle/controller files
+  remain with their current worker until release. No isolated helper is labeled a completed service.
+- Lifecycle and matching dashboard-v2 source remain under final review. Recovery, trusted bootstrap
+  origin, teardown despite returned journal errors and accepted-versus-completed controls are tested
+  with temporary fixtures only. No live service, provider, production kernel or research run changed.
+
+The built-in dispatcher retained two completed review threads and exhausted its thread limit; one new
+sol-medium worker uses it and two use supported `codex exec` with explicit model/medium effort. Main
+caps active concurrency at three, owns process handles, reviews proposals and publishes accepted files.
+Research GitNexus was rebuilt at the starting commit. Recipe/status changes reported LOW impact;
+heartbeat publication has MEDIUM scoped impact and needs race/consumer tests.
+
+Retained gates: frozen production kernel set; no live research relaunch/soak without separate go and
+held resources; no measurement-policy amendments; post-BIOS calibration/owning serving protocol.
+OP-41 reserves real admission-control implementation to the operator after finalise → promote → reboot.
+Main asked whether the new instruction delegates broker-code work now while retaining live gates;
+no answer is inferred, and independent implementation continues.
+
+Bus drain rejected this non-roster session ID. No peer identity or coordination file was impersonated.
+Per-task wrap-up is being used for checklist/progress/index/publication. No index pruning, handoff
+compaction or wiki compilation sweep is performed by this implementation checkpoint.
+
+### Owned-worker lifecycle and existing dashboard v2 accepted
+
+- Research source **865c1e62**, main merge **bb0c2c38**, publishes eight reviewed lifecycle/control
+  files. Main independently ran **307 tests and 15 subtests**, including 21 extra boundary probes;
+  submitted file digests were confirmed before publication. The dashboard companion passed main's
+  **296 tests and 79 subtests** across ten affected/adjacent files. Ruff, whitespace and README
+  freshness checks pass. These are hermetic source/integration results, not live hardware evidence.
+- Acquisition intent is durable before provider I/O, and launch intent precedes spawn. Typed denial
+  proves no allocation; ambiguous authorization/inspection retains exact pending ownership. Recovery
+  binds campaign, request, worker/grant generations, container inode, PID-start and boot identities.
+  The isolated pipe-gated bootstrap excludes experimental import paths and inherited credentials.
+  Stage/setup/native-I/O/teardown share one budget; provider methods still need their own enforced
+  I/O deadlines. A returned journal error cannot disable exact owned cleanup, but uncertain durability
+  cannot certify a terminal result or authorize a successor. Descriptor failure paths are covered.
+- V2 separates accepted controls from actual quiescence. Pause-to-drain escalation retains the prior
+  identity and cannot be overwritten by a superseded completion. Denied/no-launch worker generation
+  gaps replay correctly. V2 START uses an explicit recognized version fence: an actual old reader is
+  tested refusing before admission, not merely a current reader configured in a legacy mode.
+- The existing hub consumes real producer snapshots and executes the actual page JavaScript in its
+  tests. It rejects mixed result versions and same-campaign protocol downgrade; capability is not
+  current grant authority. Pending acquisitions and failed teardown degrade semantic health even
+  while transport/heartbeat are live. Failed digest/UUID construction retains an acknowledged pending
+  pause; uncertain ACK retry keeps the same ID; newer completion wins over late HTTP responses.
+- A fixture race was corrected with a deterministic post-release WORKER_STAGE barrier: observing an
+  intent alone did not prove stage admission. Optional cross-repo tests locate explicit/standard
+  checkouts, while ordinary v2 unit tests remain portable. The broader dashboard run's **15 legacy
+  failures** (11 tests plus four subtests) reproduce at unchanged root HEAD `5ad7cbfd`; they are
+  separately scoped ambient operator-gate/legacy v26 fixture failures, not attributed to this slice.
+- Main accepted AKU-07b and AKU-09d only; their parent tasks remain open. The driver must still connect
+  selected preparations, native intent, actual held accounting and evidence feedback. Its per-tick
+  transition cannot copy receipt or retired-seed history, and caller-rehashed after-state is not
+  scheduler authority. A contained planned-serving bridge now owns child-side execution/deferred
+  artifact sealing and parent-only current-result ingestion. A third worker is implementing whole-
+  lifecycle observation separately from protocol verdicts. No independent helper is labeled a
+  complete autonomous campaign, and the generic parent-side serving guard still honestly refuses.
+- Publication uses exact accepted paths/private indices and isolated main merges. Shared checkouts,
+  frozen production kernels, real resource providers/cgroups, services, research runs and historical
+  evidence stores remain unchanged. Bus drain and heartbeat again reject the non-roster session ID;
+  no peer identity is impersonated. OP-41, research-relaunch and measurement-ratification gates remain.
+
+### Expanded implementation team and in-progress acceptance review
+
+- At the operator's request, started a separately coordinated CLI team with three explicit
+  `gpt-5.6-sol` / medium workers, in isolated root/research consumer worktrees. The primary team
+  retains driver/controller, contained-worker execution and lifecycle telemetry; the secondary team
+  handles existing-dashboard v3, actor/target-profile preparation and bounded native belief feedback.
+  Each team has disjoint file ownership, and primary review still precedes any publication. This
+  corrects the earlier implication that the primary dispatcher's limit was machine-wide.
+- Main independently ran **264 driver/planner/scheduler/controller/service/planned-serving/Journal
+  tests and 15 subtests**, then **seven additional planner/driver boundary probes**. Review exposed
+  duplicate/conflicting receipt preview deleting committed history, seed promotion not rolling back
+  its queue/state, and old intent materialization rebinding to a new supervisor. The reproducing
+  probes pass after correction. This package is still awaiting its worker-bridge dependency's
+  acceptance; these counts do not claim a published or live autonomous campaign.
+- Additional source review requires actual, bounded telemetry producers rather than fixture-only
+  GPU paths; code-constant/bound-state instrument identity; unconditional observer shutdown; terminal
+  result fencing after durable acceptance; and full held-allocation accounting. The real-bootstrap
+  containment-refusal path and the successful owned-fork protocol fixture remain deliberately
+  separate from any real-provider claim. All test processes are tiny, explicitly owned fixtures.
+- Early secondary-team review identified full Ledger scans per event, rebuilt retrieval indices per
+  request, display-only evidence invalidation, and actor execution outside the existing lifecycle.
+  Corrections are assigned within the existing packages; no new database, grader, process supervisor
+  or resource-authority shortcut is accepted. Runtime sweeps remain actor-free; arm levels do not
+  become improvement effects by joining them on read.
+- Registered two prospective source families immediately in the Vidya source table, with
+  VB-AK-UNIFIED-LIFECYCLE and VB-AK-UNIFIED-DISCOVERY tasks: lifecycle dependency observations and
+  generic fixed-member A2 runtime-screen receipts. Native attachment/readers must be wired before
+  real execution. No historical tuple invention, corpus ingestion or policy amendment occurred.
+- Implementation sub-item count remains **26 accepted** at the prior checkpoint; parent AKU-01–12
+  remain open. New source drafts and the new team's reported test counts are not counted as accepted.
+  Shared checkouts, frozen kernels, real resource providers, running services and research campaigns
+  remain untouched. Bus drain/heartbeat still reject this non-roster ID; no peer identity is used.
+
+### Third team dispatch and boundary wrap-up discipline
+
+- At the operator's further request, launched a third coordinating CLI session in a new isolated
+  research worktree, `autokernel-delivery-research-20260909`, on
+  `lane/autokernel-delivery-20260909` at `bb0c2c38`. Its actual three worker dispatches explicitly
+  use `gpt-5.6-sol`, medium: candidate-validation consumer, versioned legacy migration, and
+  standalone CLI/control/service packaging. These are separate end-to-end contexts, not a split
+  into drafting/testing/review roles, and cannot edit the core or second team's files.
+- The operator reiterated per-boundary wrap-up for every team. Each worker/lead now receives an
+  explicit handback contract: owned docs, exact hashes/tests, real consumer versus fixture scope,
+  remaining tasks and proposed checkbox/progress updates. Primary owns shared documentation and
+  reviewed path-scoped publication, returning commit receipts. A handback awaiting acceptance is
+  not described as a published checkpoint; no pruning, compaction or wiki sweep is triggered.
+- Main independently reproduced **95 dashboard-v3 tests** against the actual in-flight producer
+  and **142 worker/driver/native-capture tests** including current extra boundary probes. Dashboard
+  impact is LOW, five internal consumers. Review still requires the historical-versus-live v3
+  health case, bounded outstanding evidence requests and late provider-return handling before
+  those packages are accepted. Existing owners are correcting them; no live services were changed.
+- A2 review found missing common-frame semantics, unverified replay restoring nomination authority,
+  and invalid-arm terminal/retrieval scope gaps. These are assigned source corrections, not operator
+  blockers or protocol changes. The primary driver worker also owns the new end-to-end execution
+  consumer; team 2 retains actor/feed/retention and team 3 retains validation/migration/CLI.
+- This is an in-progress coordination/source-registration checkpoint. **No new implementation
+  checkbox is marked complete**: the previously accepted count remains 26. The two prospective
+  Vidya wiring tasks remain open; all live hardware, OP-41 and cutover gates are unchanged.
+
+### Reviewed driver/worker foundation and dashboard-v3 boundary
+
+- Published research source **61a63c42**, promoted to main **8cbcce9f**: 17 reviewed files connect
+  durable unified driver issuance/settlement and the contained planned-worker/parent-native boundary.
+  An independent clean checkout containing only those release files passed **1,444 tests and
+  83 subtests**, twice; five main-owned boundary-probe files passed **20 tests**. After removing two
+  unused imports, the final focused run passed **42 tests** and all 15 Python files passed Ruff.
+  Draft A2, lifecycle-observation and end-to-end driver-execution files were excluded from publication.
+- The driver binds current catalog, complete arm identity and supervisor before materialization;
+  duplicate/conflicting preview cannot delete receipt history, and rollback preserves seed queues.
+  Issuance and settlement are native/fsynced before state application. Indexed totals keep the
+  operational projection independent of historical receipt length. The accepted v3 protocol fences
+  old readers and reports genuinely disconnected consumers instead of inventing readiness.
+- The worker bridge proves current child/process/container membership before releasing its payload,
+  bounds IPC and pending parent-evidence requests, validates all sealed captures before the first
+  native measurement callback, and fences terminal results only after durable acceptance. Late
+  provider returns retain actual held cost but cannot preserve scientific freshness. Real-bootstrap
+  cgroup2 refusal and tiny explicitly owned fork fixtures do not imply real-provider containment.
+- Accepted and integrated the secondary team's exact four-file dashboard-v3 packet. Main independently
+  reproduced **96 tests** against the published producer, including actual page JavaScript, and
+  confirmed every submitted SHA-256. Refreshed GitNexus reports LOW impact, five internal consumers.
+  The existing page preserves v1/v2 controls and downgrade fencing, rederives accounting identity in
+  Python, and keeps disconnected values null. A live disconnected producer is degraded; an offline
+  drained snapshot remains history. No route, proxy, registry or running service was changed.
+- Per-task wrap-up now marks **AKU-06c, AKU-07c and AKU-09e** complete: **three new accepted sub-items**,
+  **29 total accepted implementation sub-items**. All twelve parent tasks remain open. The actual
+  driver-to-worker execution/held-settlement connection is still a separate assigned package; actor,
+  evidence, retention, validation, migration and standalone packaging remain under their owners.
+  Whole-lifecycle telemetry and A2 drafts still require main acceptance. These are active source
+  implementation tasks, not operator blockers or unattended/live-completion claims.
+- Teams received publication receipts and retain per-package wrap-up obligations. Main owns shared
+  handoff/progress/index application and reviewed publication. Bus drain/heartbeat again refused the
+  non-roster session ID; no peer identity was used. Frozen kernels, real grants, services, research
+  runs and historical stores remain untouched; OP-41 and measurement/cutover gates remain intact.
+
+### Reviewed lifecycle-observation and advisory runtime-screen boundary
+
+- Published research source **04d73260**, main **d75bc9ec**: nine exact reviewed files add the
+  bounded lifecycle observer/serving hooks and generic A2 runtime screens. Main prepared an independent
+  checkout from published `8cbcce9f`, copied only those nine files, checked every SHA-256 against the
+  final packets, and ran **1,512 tests plus 83 subtests**. Final focused validation passed **143 tests
+  plus 3 subtests**, all seven Python files passed Ruff, and scoped diff checks passed. Driver-execution
+  drafts and other teams' packages were excluded. Fresh GitNexus impact was LOW (serving: two callers;
+  eligibility: zero indexed upstream callers).
+- Observer acceptance includes six independent main regressions: loaded constants/nested code, mixed
+  dict/slot configuration, unsupported hidden native payload, dropped-sample cost accounting and an
+  unjoined reader between probes. The actual finish path now preserves unknown reader cost even when
+  no read is active. Frozen records cannot accept late samples/callbacks; serving cleanup cannot be
+  skipped by observation/export errors. GPU attribution requires explicit trusted target evidence,
+  not a fabricated proc path or global VRAM; missing purpose/runtime verification stays unknown.
+- A2 screens bind complete same-artifact runtime/policy/host frames. They seal three anchor samples,
+  run three candidate-only samples and require a live registered verifier for cache/nomination
+  authority. Invalid terminal results are retained; ambiguous launch intent requires reconciliation.
+  Actual different-epoch plans exercise A3 stale-history handling: conclusions survive, magnitudes
+  are null. Mixed current frames cannot be ranked. Ordinary build/agent/filesystem load remains
+  diagnostic noise; only the owning protocol's verified overlapping inference can veto an A2 arm.
+- Per-task wrap-up adds **AKU-04d and AKU-07d**, bringing the accepted implementation sub-item count
+  to **31**. All twelve parent tasks remain open. The two already-registered prospective Vidya tasks
+  remain open until actual native attachment/phase projection is connected; no historical claims are
+  invented. No extra task/decline is needed for these residuals: they are already owned by AKU-04/07/08.
+- Main review also found the driver and actor connectors bypassing the actual controller-owned
+  worker engine. Corrections now require the real Journal sink, admission/drain gates and active
+  projection, with narrow public execution/terminal seams. These are active assigned implementation
+  fixes, not operator blockers. Other teams retain separate file ownership and per-package wrap-ups.
+  Bus drain/heartbeat again rejected the non-roster session ID; no roster/peer identity was changed.
+  No frozen kernel, live service, real grant, inference run, corpus or historical artifact was touched.
+
+### Reviewed retention and historical-migration boundary
+
+- Published research source **1be3cf79**, main **e678a2e2**: the exact four-file team-2 retention
+  packet and seven-file team-3 migration packet were reviewed and integrated. Migration's older
+  measurement-capture module was not copied wholesale: only its public `ArtifactStore.exclusive()`
+  method and focused tests were added, preserving the published native bridge/read APIs. All eleven
+  resulting hashes matched the independent clean acceptance checkout. Main reproduced **250 tests
+  plus 82 subtests** for retention and **110 tests** for migration; the combined clean release passed
+  **1,750 tests plus 165 subtests**, final primary-tree focused checks **68 tests**, and Ruff/diff gates.
+- The first combined run correctly refused fixture storage beneath the scratch directory used for
+  the clean checkout (68 failed, 1,690 passed, 150 subtests passed). Main moved only its disposable
+  checkout to the worktree area and reran the identical code successfully. No policy was relaxed.
+  GitNexus refresh initially exited 139; the repository wrapper's next full recovery succeeded at
+  `d75bc9ec` without deleting metadata. Fresh impacts were LOW: store exclusion nine upstream
+  dependants, retention dry-selection helper zero indexed callers.
+- Retention now exercises actual candidate/store/native-Journal reopen recovery, validates one
+  bounded exact tombstone index per held operation, and requires matching descriptor, preconditions,
+  source/path/content and prepared policy. Sequential replay is not called concurrency. Its actual
+  maintenance-owner connection remains assigned: separate exclusion must survive slow provider/disk
+  I/O without holding the health/control mutex or fabricating release/accounting. Only explicitly
+  disposable fixture bytes were removed; these tests touched no research artifacts.
+- Migration uses safely escaped read-only SQLite URIs, strict integer/record/byte bounds, and its own
+  installed closed v1 reader before creating the destination snapshot. Public verified reentrant
+  exclusion covers dedicated-destination checks and publication, with thread/process tests. Unknown
+  legacy measurement authority remains unknown; import does not initialize candidate state or grant
+  serving/validation rights. No real migration, cleanup, provider, service, or frozen tree was used.
+- Per-task wrap-up adds **AKU-10b and AKU-10c**: **33 accepted implementation sub-items**, all twelve
+  parents still open. No separate new source family or grader is introduced. Remaining native owner,
+  evidence and live-cutover work is already tracked; no new task/decline is needed for this boundary.
+  Teams receive publication receipts and keep the operator's per-package wrap-up discipline.
+- Main's further validation review reproduced five sealed-row replay identity gaps (batch, row,
+  candidate, comparator and row-set); that owner is correcting them before acceptance. Actual A2
+  native persistence and versioned lifecycle attachment are also actively assigned, with disjoint
+  controller/Journal ownership. Bus drain/heartbeat still reject the non-roster session ID; no peer
+  file, roster entry, service ownership or live authority was changed.
+
+### Reviewed controller-owned runtime execution boundary
+
+- Published research source **59eb3f30**, main **6f869803fb49fb8afc334cebd55ed1cdfd328fa9**.
+  Main built an independent six-file acceptance tree from `e678a2e2`, excluded the other owners'
+  in-flight A2/observation/stdout hunks, and reproduced **136 focused/adjacent tests** plus
+  **1,729 loop/Journal/storage tests and 165 subtests**. All five Python files passed Ruff and
+  scoped diff checks. Publication staged exact accepted blobs through a private index; pending
+  same-file worker/controller hunks remained untouched and unpublished. Fresh run-worker impact
+  was LOW, zero indexed upstream callers; actual caller and failure-path review supplemented it.
+- Selected runtime execution now uses the actual controller-owned engine, durable acquisition and
+  lifecycle Journal, native result validation, provider-held costs and exact scheduler settlement.
+  A positive current-lifetime pre-engine refusal or exact durable provider denial permits retry;
+  empty active projections, unseen requests, old incarnations and ambiguous acquisition do not.
+  Duplicate execution and execute/close are serialized. Failed work is charged once without
+  granting a scientific comparison or rewriting immutable lifecycle results.
+- Main independently reproduced a successful-child/producer-shutdown-error bug: accounting committed,
+  then the receipt rejected its own accepted terminal. The corrected path retains the exact result
+  diagnostically and returns an idempotent failed settlement with no scientific native admission.
+  Further review caught lost ownership when close swallowed an unjoined producer and cleared its
+  handle. Real finite blocked-thread tests now cover both post-terminal and partial-start cleanup;
+  handles remain retained, new work is fenced, exact settlement retries remain possible, and close
+  refuses/retries until the producer joins. The default evidence evaluator remains unknown.
+- An initially overbroad historical test run encountered failures and was stopped. Main identified
+  its exact owned pytest PID **160697** by command, start time and acceptance-tree cwd, sent SIGINT
+  then SIGTERM, and verified the PID absent (exit 143); no name-pattern or foreign process signal was
+  used. Subsequent `--maxfail=1` runs on unchanged `e678a2e2` and the six-file candidate produced the
+  identical first failure: `ArenaAdapterTest.test_c5_reference_seed_is_bound_into_the_priced_task_context`,
+  **365 passed, 58 subtests passed, one failed** on each. The C5 registry pins mutable
+  `/workspace/handoffs/active/agentic-rocm-kernel-authoring.md`; its `ev-gfx90a-sol-bound-quality-20260815`
+  digest differs. No all-historical-suite pass is claimed. Explicit decline: do not refresh or bypass
+  this pre-existing external evidence pin in the unified-execution package; changing its warrant is
+  outside this source slice. No new backlog row is filed for that deliberate non-change.
+- Per-task wrap-up adds **AKU-07e**: **34 accepted implementation sub-items**, all twelve parent
+  workstreams still open. Main separately reproduced the current actor (**71**) and feed (**88**)
+  focused tests; these drafts remain unaccepted until their real owner connections are complete.
+  The actor stdout accessor, versioned observation attachment, A2 native persistence/invocation,
+  validation, standalone shutdown/composition and maintenance exclusion remain actively assigned.
+- The precise Journal durable-reader/ACK and maintenance native-exclusion seams were released to
+  separate secondary-team workers. A proposed shared Vidya `Ledger.append` modification returned
+  **CRITICAL** impact (**25 upstream, 16 workflows**); main warned the operator and stopped that
+  mutation. Feed implementation continues against the existing single-writer contract without
+  private-cache authority or a new grader. Journal append/lock impacts were MEDIUM (17/15), cursor
+  LOW (0). No shared Ledger writer or measurement trust-boundary change was made.
+- Standalone composition now has the published execution dependency and a narrow driver-discriminator
+  release. Unavailable actor/profile work must remain visible before issuance while other executable
+  runtime work proceeds; shutdown retains unresolved ownership. Main's two additional controller-only
+  probes found already-drained and management-v1 SIGTERM bugs; the CLI owner is fixing both. These
+  are active source fixes, not operator-deferred work. ROOT/research GitNexus wrappers refreshed
+  successfully; README freshness is clean. No live inference, service activation, real grant, corpus
+  ingestion, production kernel or historical research artifact changed.
+
+### Reviewed native validation consumer boundary
+
+- Published research source **1ac8393e**, main **deab8f40a0a6e1bb96d17e4fa4f6d0097bc541d7**:
+  exactly the three frozen validation-consumer files from team 3. Main reproduced their hashes in
+  an independent checkout at `6f869803`, with **246 adjacent/edge tests** and the combined
+  **1,762 loop/Journal/storage tests plus 165 subtests**, Ruff and scoped diff checks passing.
+  The primary worker separately reproduced 252 tests in the in-flight primary tree; the clean
+  release is the publication evidence, not an assertion that unrelated drafts are accepted.
+- The consumer binds each submission to the current due frozen batch, both manifests, required
+  row set, plan/lineage and full executable/loader-name/DSO identities. A sealed row retains and
+  reopens exact carrier/raw/calibration bytes and repeats complete-measurement and structural-use
+  checks. Main's earlier receipt substitution regressions and team 3's diagnostic/ineligible-pair
+  corrections are included. Required CPU and GPU rows remain independent; optional seed debt
+  cannot silently substitute for production coverage.
+- Real semantic authority remains explicitly unavailable for v1's unproven loaded instrument.
+  The same team-3 owner is now implementing the actual native-v2/ClaimTuple/owning-objective and
+  row/LOO semantic consumer. This is assigned source work, not an operator-deferred proposal.
+  No competing grading ladder or retrospective claim reconstruction was introduced. This
+  package is a consumer of the already registered native arm source, not a new measurement source.
+- Fresh research indexing initially exited 139 during incremental analysis; the wrapper's
+  subsequent full recovery succeeded without metadata deletion (88,643 nodes, 152,016 edges).
+  Exact `record_native_row` and `reopen_row` impacts are LOW with zero indexed upstream callers.
+  Three-file publication preserves all in-flight A2, observation-v2 and stdout hunks.
+- Additional review reproduced a controller-backed cached-bank regression: a second logical
+  discovery screen could not use a verified sealed bank without creating a new anchor phase.
+  The original A2 owner is correcting durable bank-reference/restart handling before acceptance.
+  Stdout review found blocking lock acquisition and same-inode/same-size replacement exposure;
+  its owner is binding reads to the bootstrap's recorded bytes/hash/truncation fields and
+  preserving terminal/held-cost evidence on optional output failure. Both fixes remain assigned.
+- Main released precise actor/profile native-owner hooks to team 2, independently of its
+  disjoint feed and maintenance work. Existing Journal/ClaimTuple authorities remain reused.
+  The user goal explicitly includes the complete dry run and five-loop monitored test;
+  **AKU-12a/12b** now make those acceptance requirements discoverable, without treating mock
+  loops as live acceptance or widening production/resource trust boundaries.
+- Per-task wrap-up adds **AKU-05e**: **35 accepted implementation sub-items**, all twelve
+  parents still open. Two explicit acceptance tasks were added; zero new declines. No index
+  pruning, handoff compaction or wiki compilation sweep was run. Bus drain still refuses this
+  non-roster session ID; no roster or peer bus file was changed. A continuation log initially
+  used the default audit shard; subsequent logging restored the established session/shard IDs.
+
+### Reviewed controller-owned stdout boundary
+
+- Published research source **47ce0677**, main **6fc751920267dd031486df036b6fcf48c0c8aef2**:
+  controller accessor, lifecycle metadata, actual-controller tests and execution documentation.
+  Main applied only the reviewed stdout hunks to its independent acceptance tree, excluding
+  the parallel A2 and observation-v2 changes. Exact clean acceptance passed **126 focused/adjacent
+  tests** and **1,768 loop/Journal/storage tests plus 165 subtests**; Ruff/diff checks passed.
+  The accessor's exact impact is LOW with zero indexed upstream callers.
+- Review corrected blocking shared-lock acquisition, optional secure-open/fstat failures that
+  could erase terminal/accounting publication, and same-inode/same-length output substitution.
+  The accessor now uses nonblocking locking and verifies the original bootstrap-authored stdout
+  length, SHA-256 and truncation state as well as file/worker/result identity. Main moved hashing
+  before the final locked current-owner recheck; neither file reading nor hashing holds that
+  mutex. Tests cover actual temporary child output, exact bytes, wrong result, size ceiling,
+  lock contention, FIFO/directory/missing/replaced files, content tampering, truncation, close
+  during a blocked read, and preserved terminal/held cost on optional identity-capture failure.
+- The primary worker now integrates team 3's corrected CLI/command/shutdown package into a
+  separate clean checkout. The original native-v2 worker is implementing the released actual
+  descendant-capture/controller-token path and supported loaded builtin timing provenance.
+  The A2 owner is correcting bank reuse. Team 2 retains separate actor/profile, feed/projection
+  and maintenance ownership; team 3 retains runtime composition and semantic validation.
+- Registered prospective target-profile and owning validation/LOO finding sources in the adapter
+  table and added **VB-AK-UNIFIED-PROFILE / VB-AK-UNIFIED-VALIDATION** before those new producers
+  execute. Reuse existing profiler/native sources and canonical source-class grading; missing
+  profile observations or decided propositions cannot be fabricated on read. These are source
+  wiring tasks, not new grading rules or live ingestion authority.
+- Per-task wrap-up adds **AKU-07f**: **36 accepted implementation sub-items**, all twelve parent
+  workstreams still open. Two prospective wiring tasks added, zero new declines. No production
+  tree, service, real resource grant or research artifact was changed; only owned temporary test
+  processes ran. README freshness is clean; index pruning/compaction/wiki sweep remain untouched.
+
+### Reviewed standalone controls, restart retry and shutdown
+
+- Published research source **29b8120b**, main **1fea54a57e377cfb86b27decffb09ca7ddd246f1**.
+  Eleven reviewed CLI/control/service/test/template files were staged from a clean acceptance
+  checkout through a private index. Moving A2 and native-observation hunks were preserved in the
+  primary working tree and excluded from publication. The control method's exact indexed impact
+  is LOW, two upstream callers; research index was current at `6fc75192` before integration.
+- Main independently reproduced **331 tests plus 15 subtests** (8.64 s) and **1,810 complete
+  loop/Journal/storage tests plus 165 subtests** (31.52 s). The integrated primary's targeted
+  smoke run passed **88 tests**. Main's extra real-service restart probe first failed: the CLI
+  rejected an original supervisor pin before the journal could answer an exact accepted retry.
+  The correction permits a newer coherent authenticated supervisor only for control submission,
+  preserving original command bytes. Status stays exact-pinned; new old-incarnation commands
+  still fail at the server. No silent repinning or duplicate application was introduced.
+- Versioned controls bind campaign/config/supervisor/request/revision semantics. SIGTERM writes
+  or reuses one durable drain; repeated signals and already-drained restart do not invent new
+  commands. Status remains available and resume is fenced while ownership is unresolved. The
+  source-only service template was neither installed nor enabled. These tests are not the
+  required standalone dry run or five-loop mixed research acceptance.
+- Additional independent probes changed the next implementation actions: standalone `run()`
+  stopped after a transient authority refusal despite having an exact retry; maintenance cleared
+  its exclusion after acquisition reply loss or a false aborted-settlement result. The original
+  runtime and maintenance owners are correcting these paths, with three failed probes retained
+  in the session's temporary evidence directory. Both maintenance tests failed before deletion
+  and verified that their disposable artifact remained. Feed startup-lease cleanup and expired
+  ACK deadline probes passed (2 tests). Cached A2 bank reuse passed 21 focused clean-tree tests;
+  its separate full acceptance remains in progress.
+- User approval was recorded for the precise HIGH-impact actual-descendant lifecycle validator
+  change, not unrelated HIGH/CRITICAL code, production kernels or measurement policy. Its owner
+  remains active on the native integration; loaded-builtin artifact bounds/stability are also
+  under review. Main retained single ownership rather than launching a concurrent second writer.
+- Per-task wrap-up adds **AKU-07g**: **37 accepted implementation sub-items**, all twelve parents
+  remain open. Three newly explicit implementation tasks (AKU-07h/07i/10d), zero declines. The
+  index next action is refreshed; no index pruning, compaction or wiki sweep is performed.
+
+### Reviewed A2 phase persistence and original-bank reuse
+
+- Published research source **6b5d5fda**, main **c36411a7b1ec8a386c161f30c4c1b4d9f649dc0b**.
+  Main reviewed the eight-file persistence packet in an isolated acceptance worktree, composed
+  the just-published CLI/control delta, and independently ran **1,831 loop/Journal/storage tests
+  plus 165 subtests** (32.93 s), including the previously failing cached-bank probe. Ruff and
+  diff checks pass. `append_a2_runtime_transition` has LOW exact indexed impact, zero upstream.
+  Publication excludes the moving native-observation/worker changes through a private index.
+- Root cause: generic bank verification did not supply a durable source in a second logical
+  controller-backed screen. The corrected reuse adds a separately closed original-bank reference
+  before candidate phases, preserving seven source anchor events and Journal IDs, plan/frame,
+  seal and bank identities. Restart recomputes the reference from indexed original history;
+  foreign stores, missing or ambiguous sources, changed frames and forged references refuse.
+  It runs zero replacement anchors and exactly three candidate invocations in the fixture.
+- The actual phase bound remains fourteen, plus at most one bank reference. In-flight INTENT
+  replay remains fenced. The next assigned bridge must use one selected unit of the unchanged
+  full plan and an opaque fresh-current-owner reservation; unknown after restart cannot become
+  proof that acquisition never happened. No native launch, claim, grading or production authority
+  was added by persistence tests. The prospective discovery source registration already exists;
+  its native evidence/ClaimTuple consumer remains required rather than invented on read.
+- Per-task wrap-up adds **AKU-04e**: **38 accepted implementation sub-items**, all twelve parents
+  remain open. **AKU-04f** records the exact next native bridge task; zero declines. Main kept
+  the native worker as the sole owner of its changing lifecycle/observation regions. No live
+  inference, research artifact deletion, service activation or production-kernel change occurred.
+
+### Review checkpoint: native identity, maintenance and standalone recovery
+
+- No new research implementation packet is published by this checkpoint. Accepted implementation
+  sub-items remain **38**, all twelve AKU parents open. This records a completed review batch,
+  four newly explicit follow-ups (AKU-06d/07j/08c/12c), and two separately pending approval scopes;
+  there are zero completed-task checkbox flips and zero declined follow-ups. Existing 07h/07i/10d
+  tasks now carry current corrective work. No index pruning, compaction or wiki sweep occurred.
+- Main independently tested the moving service/runtime composition: **84 passed in 8.10s**,
+  including the external pipe2 startup-failure probe that previously leaked an entered controller.
+  The service now handles both finite successful recovery statuses, recovered and settled. Actual
+  restart after a completed worker remains fenced because provider-held accounting was memory-only.
+  A read-only source review specified a versioned record before final result publication and
+  accounting-only replay, including crash after held append but before final result. This is a
+  missing implementation connection, not permission to fabricate zero cost or resurrect results.
+- Four external maintenance probes plus its focused suite passed **35 tests in 1.17s** after
+  fixes for acquisition reply loss, invalid aborted settlement, receiptless controller abort and
+  stale receipt use after renewal. The follow-up legacy INTENT test then returned **1 failed,
+  2 passed**: validation inserted abort_receipt into a v1 payload, breaking closed-shape revalidation.
+  The owner is correcting this and preparing a clean six-file packet. All deletion tests use
+  disposable fixtures; real retained-artifact roots/provider readiness remain separate requirements.
+- Native loaded-instrument readers now pass **8 tests in 0.41s**, including the independent
+  changing-file probe. Opens are nonblocking, reads bounded, and before/after identity checked.
+  Main subsequently reproduced an ancestry check accepting a reused target PID with different
+  start ticks (**1 failed**). The approved native worker has the exact probe and review feedback;
+  the complete contained-child/evidence/append/restart acceptance is still outstanding.
+- The canonical ROOT v2 reader's serving-PID/lifecycle-target binding correction passes **56 tests
+  in 0.21s** with explicit current research-root configuration. The cross-repo producer test is
+  still the existing v1 path; v2 fixtures do not prove the final v2 producer. The semantic owner
+  is connecting immutable reprojectable canonical-grade receipts, not a second grader or a
+  permanently unavailable adapter. Feed and actual eligibility consumers remain required.
+- Actor/profile source review requires clean composition on c36411a7 with the actual published
+  driver issuer, public profile authority, real tiny fixture worker and reopen. Main's older-lane
+  focused run returned **54 passed, 1 failed**: the budget-drift test lacked current producer
+  receipt authority after restart and failed before reaching its intended budget assertion.
+  The correction must repair the precondition and test both constraints, not weaken the regex.
+- Real production export refuses `compiled priors are stale for descriptors`. The canonical
+  stack-generation pipeline preserves declared both/full/split topology; bare priors compilation
+  does not. Its generated-file-only repair is pending OP-AKU-STACK approval (HIGH 66 upstream).
+  The extra held-cost event is separately pending OP-AKU-HELD approval (HIGH 22 upstream, three
+  processes). Original descendant approval stays in force. OP-41 broker-code delegation remains
+  unanswered and live finalise/promote/reboot gates stay unchanged; none blocks unrelated source work.
+- Evidence/probes and owner packets are retained under the session's autokernel-implementation-20260908
+  temporary directory; test names and assertions above distinguish failures from source-review
+  concerns. No dry run, five-loop hardware campaign, grant, live service activation or production
+  kernel change is claimed. README freshness check is clean. Bus drain/heartbeat still reject this
+  non-roster session id; no peer roster/outbox was impersonated or modified.
+
+### Public selected-profile materialization and integration-review checkpoint
+
+- Published research source **c3303474**, main **1accc7f2**: public
+  UnifiedCampaignDriver.materialize_profile and immutable SelectedProfileWork bind the exact
+  issued catalog/transition/selection/profile request/plan/current controller. Public native
+  controller tests require no private issued-state seeding. The advice grants no execution.
+  Main reproduced **24 focused tests**, then **1,834 passed plus 165 subtests in 24.47s** on
+  clean c36411a7 composition. Only unified_driver.py, its new focused test and test_storage.py
+  are published; moving native/actor/service/maintenance hunks remain excluded.
+- Broad acceptance initially returned 1 failure, 1,833 passes and 165 subtests: the unchanged
+  storage boundary fixture sampled live free space twice while other sessions wrote files.
+  The deterministic test now mocks one fixed statvfs observation; exact equality stays OK and
+  a higher floor reports pressure. Production storage.py is untouched. Main's storage/profile
+  focused rerun passed **183 tests and 82 subtests**; the final broad result above is green.
+- Actual profile → scheduler E2E with --runxfail independently fails because provider receipt
+  identity does not match selected proposal/backend/class. Source audit confirms those typed
+  fields never reach provider authorize/close in current StageRequest. New AKU-07k and router
+  OP-AKU-BIND request the exact additional HIGH22/three-process versioned contract extension.
+  No request-ID-only workaround, argv classification or rewritten provider receipt is accepted.
+  Independent selected admission and authenticated-output hardening remain assigned under 06d.
+- Main native regression pass: **254 tests and 15 subtests in 12.59s**. The actual bootstrap,
+  worker, four serving descendants, v2 artifact append and restart fixture also passes alone.
+  Cross-repository replay through the actual team-2 projector returns None for both arms with
+  **diagnostic:zero scored independent launches**. This is correct diagnostic refusal, not a
+  scored-v2 integration success; synthetic containment/telemetry remain explicitly fixture-only.
+  Separate PID-incarnation and expired-owner publication probes still fail pending owner fixes.
+- New AKU-08d records a reproduced canonical-loader defect: verified new source SHA can still
+  execute old timestamp/size-valid .pyc. The semantic owner must compile the exact bytes verified
+  and test failure/concurrency cleanup. The existing 08c receipt/feed task remains open.
+- OpenAI Docs/local CLI inspection identified an existing-session message queue. Main queued
+  direct review nudges to all three exact live owner threads without starting duplicate owners.
+  Queue acceptance is not acknowledgement; owners must still read, correct and refreeze. The
+  control-socket proxy was unavailable and no daemon was started. Delivery evidence stays in
+  tasktmp/owner-review-message-delivery.md.
+- Checklist sync adds **one completed sub-item (AKU-06e)**, bringing accepted implementation
+  sub-items to **39**; all twelve parents remain open. Two new open tasks (07k/08d), zero declines.
+  No standalone dry run, five-loop hardware acceptance, grant, service activation, kernel change
+  or real artifact deletion occurred. Per-task wrap-up only: no pruning, compaction or wiki sweep.
+  README freshness is clean; lane identity passed. Bus drain/heartbeat again refused this
+  non-roster ID; no other session's identity or outbox was used.
+
+### Durable maintenance ownership and replay integration
+
+- Published research source **c5525fb8**, main **b77215bb**: six-file maintenance ownership,
+  native Journal replay, candidate/worker/publication fences, shutdown guards and focused tests.
+  Exact accepted blobs came from a clean 1accc7f2-based acceptance tree through a private
+  index; main composed only the additive hunks into moving native journal/controller files.
+  Native nineteen-file work remains unpublished and was not swept into this commit.
+- Final review reproduced five malformed replay cases: first misbound hold accepted, prior
+  terminal hold/cost carried into a fresh job, changed completed cost, arbitrary accounting digest,
+  and invalid fresh/recovery token chains. Corrections bind every hold, reconstruct exact completed
+  accounting, preserve IO_COMPLETE cost, and reset state only under a valid distinct intent.
+  A sixth active same-token/nonidentical-intent regression also refuses rather than losing a hold.
+  Valid legacy non-abort rows retain their closed schema; unproved legacy abort remains refused.
+- Clean acceptance: **1,873 passed plus 165 subtests**. Main's composition with the current native
+  packet: **1,899 passed plus 165 subtests in 26.49s**. Main separately reproduced **39 maintenance
+  tests** and **six independent shutdown/abort/uncertainty probes**. Unresolved ownership prevents
+  close/drain completion; exact settlement wakes command waiters without holding locks across I/O.
+- Fresh cleanup remains unavailable: candidate manifests alone do not establish the complete
+  worker/evidence/DSO/RUNPATH/physical artifact catalog, and no concrete broker maintenance hold
+  provider is installed. These requirements remain explicit in AKU-10d/10f/10g. No retained research
+  artifact was deleted, and no live provider grant or service activation occurred.
+- Native review advanced: main PID/expiry probes **3 passed**, broader lifecycle/driver/observation
+  **67 passed**, and actual child/reopened ROOT projector **1 passed**. The cgroup fixture verifies
+  real tiny-child membership and cleanup only; synthetic scored witnesses establish schema wiring,
+  not correctness/contention/placement evidence. The canonical source-loader stale-bytecode and
+  FIFO probes both pass in the delivery working tree (**2 passed**), pending its publication.
+- New AKU-07l records public planner/materializer v2 routing, which the existing fixture bypassed
+  by manually upgrading its prepared envelope. New AKU-07m records sealed-artifact completion IPC
+  and concrete parent witness derivation; source configuration callbacks alone do not supply these
+  facts. Both independent implementation slices are assigned without widening HIGH shared helpers.
+- Checklist synchronization adds **one completed sub-item (AKU-10e)**, bringing the accepted count
+  to **40**, and **four open tasks (07l/07m/10f/10g)**; zero declines. All twelve parent tasks remain
+  open. No installed standalone dry run or five-loop hardware acceptance is claimed. Per-task
+  wrap-up excludes index pruning, compaction and wiki sweep. ROOT code index refreshed successfully;
+  bus drain still refuses this non-roster id and no peer identity/outbox was used.
+
+### Public v2 scheduler/materialization connection
+
+- Published research source **c65af942**, main **9eafac1f**: schema-aware expected arm
+  identities in plan_iteration and original-version materialization in the public driver.
+  Startup instrument identity must match the v2 plan's sealed instrument. V1 remains v1;
+  proposal/claim recipe identity and the HIGH-impact shared identity helper are unchanged.
+- Main independently reproduced **57 tests** on both the immutable composition snapshot and
+  PRIMARY; final combined loop/Journal/storage regression passed **1,905 tests plus 165 subtests
+  in 27.01s**. Tests use actual controller commands, scheduler selection and materialization for
+  CPU/GPU v1/v2; no prepared envelope upgrade or private issued-map seed substitutes for planning.
+  An initial isolated fixture needed its artifact-root parent created before instrument sealing;
+  the final patch includes that setup correction. Preliminary acceptance commit 5ac25714 is
+  superseded by the reviewed publication, not a separately deployed version.
+- The nineteen-file native dependency was captured with before/after SHA equality for the
+  composition tests. The native owner is still finalizing its manifest; that packet was excluded
+  from publication. Main's strengthened actual-child/projector plus PID/expiry probes pass
+  **4/4 in 1.11s**; scientific witnesses and production containment remain separate gates.
+- Delivery team finished without publication. Its semantic loader/receipt and partial startup
+  packets are retained for clean acceptance; final canonical pins remain unset/compatibility-only.
+  Audit found no real StartupManifest artifact or non-test factory. Existing --dry-run consumes
+  a prebuilt manifest, not the requested real production export→candidate enrollment→preflight→
+  dashboard chain. New AKU-07n owns the bounded manifest builder and installed-chain verification;
+  generated export repair retains its existing separate operator gate. No fake config is counted.
+- Checklist: **one completed sub-item (AKU-07l), one new open task (AKU-07n), zero declines**.
+  Accepted implementation sub-items now **41**; all twelve parent tasks remain open. No real
+  dry run, five-loop hardware run, provider grant, service activation or production kernel change.
+  Per-task wrap-up only; no pruning, compaction or wiki sweep. README freshness is clean.
+
+### Approved native descendant/lifecycle publication
+
+- Published research source **3df1192b**, main **a3b251bc**: the exact nineteen-file native-v2
+  packet, after its owner exited and all final SHA-256 values matched. Existing published
+  maintenance and planner work was preserved. The research lane is clean after publication.
+- Parent capture checks each ancestry stat row's PID/start ticks and revalidates target,
+  ancestor, ancestry chain, container identity and membership immediately before durable append.
+  Provider/proc/container reads stay outside controller/watchdog locks. Loaded instrument and
+  lifecycle references are immutable, bounded and reopened during current-owner capture/replay.
+  Additional held-cost/scheduled-accounting validator changes remain outside this approval.
+- Main final acceptance: **1,905 passed plus 165 subtests in 26.92s**; independent descendant,
+  expiry and actual-child/reopened ROOT projector probes: **4 passed in 1.16s**. Final source
+  includes separate diagnostic and fixture-scored modes. The latter derives separate request,
+  live-affinity and synthetic overlap facts; it is protocol wiring, not model correctness or
+  measured clean production contention. The real delegated-cgroup fixture proves membership
+  and cleanup of its captured tiny child only, not resource isolation or provider enforcement.
+- Published native schemas now unblock exact dependency consumption for canonical receipts,
+  parent evidence and runtime wiring. Concrete parent witness derivation, runtime/GPU/purpose
+  adapters, broker/provider activation and full standalone/hardware acceptance remain open.
+  No model inference, production kernel modification or real research cleanup was performed.
+- Checklist: **one completed item (AKU-07i), zero new open tasks, zero declines**. Accepted
+  implementation sub-items now **42**; all twelve parent tasks remain open. Per-task wrap-up
+  only, without index pruning, compaction or wiki sweep; README freshness remains clean.
+
+### Exact-source canonical validation receipt bridge
+
+- Published research source **dc580b75**, main **ad86b9e3**: seven-file canonical receipt,
+  readiness/LOO provenance and exact public row replay bridge. Native producer dependency is the
+  published a3b251bc tree. Canonical grading remains ROOT's sole ClaimTuple ladder; all six final
+  producer/projector pins remain unset, so receipts explicitly retain compatibility-only scope.
+  Advisory readiness is not turned into production permission; v1 LOO closure stays fixture-only.
+- The loader verifies one stable bounded regular-file byte sequence and compiles that sequence,
+  without a second source read or timestamp-based bytecode reuse. Nonblocking open rejects FIFO
+  input, BaseException restores module state, and one reentrant lock serializes registration.
+  Main independently reproduced **13 tests**, including its stale-bytecode and subprocess-FIFO
+  probes. Clean acceptance on published native-v2: **1,916 passed plus 165 subtests in 28.40s**;
+  focused plus independent edge/reopen probes: **19 passed**. No policy/eligibility bypass added.
+- Parent factual evidence candidate has 33 focused tests and remains under integration review.
+  Added its prospective supporting-evidence source row immediately, plus **VB-AK-UNIFIED-PARENT**
+  under the existing substrate handoff. Native capture and the ROOT reader must reopen each exact
+  per-witness receipt; correctness/contention/purpose/GPU unknowns cannot pass by receipt presence.
+  No independent measurement source class or second grading ladder is introduced.
+- Next canonical gate is the registered ROOT v2 projector publication, then exact final source
+  pins/default construction and actual eligibility/decision/feed consumption (AKU-08c remains open).
+  Its frozen source is being composed separately against published native-v2; no live ingestion.
+- Checklist: **one completed item (AKU-08d), one new open wiring task, zero declines**. Accepted
+  implementation sub-items now **43**; all twelve parent tasks remain open. No installed full
+  dry run, five-loop hardware acceptance, grant, service activation or production kernel change.
+  Per-task wrap-up only; no pruning, compaction or wiki sweep. README freshness check is clean.
+
+### Registered native-v2 projector and artifact-reader corrections
+
+- Accepted the three-file ROOT projector/corpus/test packet against the published native-v2
+  research producer. Shared source-class ID and ClaimTuple grading remain unchanged; v1 keeps
+  its original interpretation. Native-v2 loaded instrument, lifecycle and exact process ownership
+  now rederive through the existing corpus and single-event consumer. No live corpus ingestion.
+- Main reproduced **133 tests** with the real research-root conformance fixture enabled, and
+  **one actual owned-child v2 → ROOT projector test in 1.08s**. This uses fixture telemetry,
+  not real hardware isolation evidence. Initial main test invocation named a nonexistent generic
+  ledger test; corrected to the two actual ledger regression files before recording these passes.
+- Main review found a FIFO-open hang; worker reproduced the pre-fix timeout (exit124) and
+  fixed the leaf open before fstat using O_NONBLOCK. Container shape/types, target worker binding
+  and boot equality now have resealed mismatch regressions. Existing-symbol impact was LOW:
+  artifact reader 5 upstream, native_rows 2, validation 4; new helper unindexed, directly reviewed.
+  Exact adapter SHA-256: ad87bdec7afc4d07f04fe48375adf4fe476a20423481b2be662e776a2b590192.
+- Final semantic pins/default construction and actual typed eligibility/decision consumers remain
+  AKU-08c. Per-witness parent receipt authentication remains AKU-07m and its registered substrate
+  task; the projector does not manufacture absent purpose, contention or correctness evidence.
+- Startup review corrected mandatory candidate enrollment: explicit empty candidate lists must
+  support production-only campaigns. Parent-evidence review corrected positive-but-wrong output
+  token counts and targetless/cross-phase placement samples; those packets remain under integration,
+  not published by this checkpoint. Actor/profile main acceptance reproduced 61 passes and one
+  expected selected-accounting failure, still governed by OP-AKU-BIND.
+- The completed delivery team is running a new isolated current-base runtime/inputs/recovery
+  composition; no duplicate parent-evidence or startup-factory ownership was assigned.
+- Checklist: **one newly completed item (AKU-08e), zero new open tasks, zero declines**; 44
+  accepted implementation sub-items, all twelve parent tasks remain open. No installed full dry
+  run, five-loop acceptance, live grant, service activation or production kernel modification.
+  Per-task wrap-up only; no index pruning, compaction or wiki sweep.
+
+### Canonical default loader and prospective producer provenance
+
+- Published research **9ed6fc35 / b83b1027**: ordinary PinnedRootProjection construction now
+  uses the published ROOT source 2010b713 and exact corrected adapter ad87bdec. Explicit legacy
+  pins remain available. Main reproduced **19 focused tests and source-loader/reopen probes in
+  1.28s**; initial subprocess probe lacked PYTHONPATH and was rerun with the exact acceptance
+  package root. All three accepted file hashes match the frozen owner packet.
+- Review distinguished installed verifier identity from original producer identity. Existing
+  native-v2 records do not capture the two producer implementations represented by configured
+  hashes, so current verifier pins cannot upgrade their authority retrospectively. Receipts
+  remain compatibility_only and receipt-pair consumption checks that scope independently.
+  Added **AKU-08g** for prospective loaded producer closure and linked the ongoing typed consumer.
+  This extends the existing native/lifecycle source, not the shared grading policy.
+- The startup factory passed **29 main-run tests** and independent module-CLI generation to
+  `tmp/autokernel-implementation-20260908/startup-factory-independent-review-bundle` under
+  `/mnt/raid0/llm`. Its emitted frozen-driver command returned exit0 with unavailable/false
+  execution authority and exact provider/evidence/profile debt. Synthetic inputs and an older
+  isolated runner do not satisfy installed AKU-12a. Publication waits current runtime composition.
+- Actor/profile review reproduced unsafe cancellation after actual terminal but before held-cost
+  access, mutable caller configurations and nonfinite budgets; scoped fixes are released in its
+  isolated acceptance. Feed review identified a possible deadline-before-checkpoint/next-retry-ACK
+  ordering fault, assigned to the restarted feed owner for reproduction and correction. These are
+  active fixes under AKU-06/07/08, not completed acceptance claims.
+- Rechecked the real orchestrator exporter at 3b77bc5a using both-instance mode: exit2,
+  `compiled priors are stale for descriptors`. OP-AKU-STACK remains necessary. The initial uv
+  invocation unexpectedly created the isolated lane's ignored .venv and installed151 packages;
+  tracked status remains clean, no generated stack files or services changed. Use the existing
+  interpreter for subsequent checks; no environment deletion was performed.
+- Checklist: **one newly completed item (AKU-08f), one new open task (AKU-08g), zero declines**;
+  45 accepted implementation sub-items, all twelve parent tasks remain open. No full installed
+  dry run, five hardware loops, live grants, deployment or production kernel change. Per-task
+  wrap-up only; no pruning, compaction or wiki sweep.
+
+### Contained actor/profile preparation publication
+
+- Published research **a9ce9d88 / da7dd5bc**: thirteen exact reviewed files implement
+  controller-owned actor/profile execution and native preparation state. Main reproduced
+  **1,839 passed, one strict xfailed, 83 subtests passed in 28.80s** on the integration
+  checkout; focused actor/profile checks passed 85 tests plus the same strict expected failure.
+  The failure remains the genuine selected proposal/backend/stage-class accounting gap under
+  OP-AKU-BIND, not a mocked success or completed campaign claim.
+- Main review corrected cancellation after actual terminal but before first held-cost lookup,
+  and cancellation racing provider admission. Owner-maintained prelaunch/attempting phases and
+  exact cancellation tombstones order those transitions under the existing mutex. These are
+  current-owner safeguards, not durable restart evidence. FIFO/oversize executable checks reuse
+  the bounded regular-file reader; budgets reject nonfinite values; configuration and nested
+  profile receipts are immutable. The resulting shallow-serialization test failure was fixed
+  using detached canonical receipt serialization, then the full suite passed.
+- Existing VB-AK-UNIFIED-PROFILE/VALIDATION source registrations remain required; native carrier
+  labels do not attest measured profiles or create a new grading ladder. Actor advice still
+  needs its actual private source/build preparation consumer, being reviewed under AKU-06d.
+- Independently composed the eleven-file runtime packet and three-file startup factory on a
+  clean b83b checkout. Runtime focused gate: **302 passed in 16.30s**. Factory gate: **29 passed
+  in 0.77s** after the test selected its actual interpreter rather than assuming a checkout-local
+  .venv. The combined run reproduced a SIGTERM/DriverRefused race, assigned for correction before
+  runtime publication. This is not an installed dry run or five-loop hardware acceptance.
+- Native producer/source integration: main reproduced **80 tests in 5.00s** with explicit package
+  root. Default actual producer closure is now complete; a subprocess-test import assumption is
+  corrected by its owner. Exact measurement/view receipt joins and the existing serving-rule
+  consumer remain under integration, not published here. Historical native records remain
+  compatibility-only. No numerical policy, live service, grant or production kernel changed.
+- Checklist: **one newly completed item (AKU-06f), zero new open tasks, zero declines**; 46
+  accepted implementation sub-items, all twelve parent tasks remain open. README freshness is
+  clean. Bus drain/heartbeat rejected this non-roster session id; no other identity was used.
+  Per-task wrap-up only; no pruning, compaction or wiki sweep.
+
+### Parent-issued native factual evidence and prospective producer capture
+
+- Published research **0a4aada6 / d51f9de6**: nineteen code/test/documentation files add
+  artifact-only v2 completion IPC, live health acknowledgement, parent-issued factual witness
+  receipts, bounded original-issuance registry and deterministic receipt replay before native
+  capture. The existing v1 completion contract remains unchanged; already-journaled duplicates
+  remain idempotent, and lost uncommitted issuance cannot be invented after restart.
+- Main composed on the real Git da7dd5bc base, verified all eighteen frozen source/test hashes,
+  and ran the entire loop plus Journal with no exclusions: **1,941 passed, one strict accounting
+  xfailed, 83 subtests passed in 37.94s**. Removed six unused imports during integration; the
+  actual time import remains. After cleanup the main focused suite passed **102 tests in 6.60s**
+  and Ruff passed. Published cleanup hashes supersede the two corresponding frozen owner hashes.
+- Prospective source closure captures actual selected deferred sink/observation/native-validation
+  methods and configured verifier slots before plan issue. Exact bounded string frozensets hash
+  deterministically across Python hash seeds; unsupported objects remain unproven. Main verified
+  that the actual default closure is complete. This does not retrospectively attest old records.
+- Marked **AKU-07m and AKU-08h complete**, added **AKU-07o** for real owning scientific/GPU
+  witnesses. Native factual receipts do not establish correctness, purpose, contention or residency
+  where owning verifiers are absent. Required witnesses must not be removed to manufacture a
+  production-validation positive. ROOT per-witness reopening, canonical semantic consumption and
+  actual mixed CPU/GPU acceptance remain open; existing Vidya source/task registrations updated.
+- Runtime external handle49858 ended normally; resumed the same team as handle28046 to fix the
+  independently reproduced SIGTERM/DriverRefused race. Feed handle35220 remained live. No duplicate
+  sessions, live grants, hardware benchmarks, service reloads or production-kernel changes.
+- Checklist: **two completed sub-items, one new open task, zero declines**; 48 accepted sub-items,
+  all twelve parent tasks open. Per-task wrap-up only; no pruning, compaction or wiki sweep.
+
+### Standalone runtime/startup composition and GLM trial target
+
+- Published research **38b29326 / 2c7762dc**: fifteen code/test/docs paths connect exact
+  issued-intent recovery, bounded retries, typed startup materialization, offline enrollment
+  factory and the service-owned execution thread. Replay precedes listener admission; shutdown
+  retains ownership until actual cleanup. No installed provider or scientific authority is invented.
+- Main composed the runtime/factory packet with published actor/native evidence on d51f9de6,
+  preserving their existing controller/driver hunks. The complete loop plus Journal suite passed
+  **2,024 tests, one strict expected accounting failure and 83 subtests in 45.26s**. The factory's
+  subprocess dry-run used this same composition. Ruff and diff checks passed; the first
+  `python3 -m ruff` invocation lacked that module, so the installed `/usr/local/bin/ruff` was used.
+- Fixed a reproduced planning/drain race: controller admission closure now has an exact typed
+  refusal interpreted as stop/wait, while unrelated errors still fail. Historical logical-attempt
+  membership is indexed at four existing replay/append points; the regression refuses iteration
+  and preserves cross-incarnation denial fencing. No event schema changed in this correction.
+- Source/runtime and offline factory slices are **AKU-07p/07q complete**. AKU-07h/07n remain
+  open for installed bindings, all work-kind dispatch, durable held-cost recovery, scientific
+  adapter configuration and real export-backed acceptance. These tests do not satisfy AKU-12a/b.
+- Operator's five-loop target is now explicitly experimental GLM-5.3-Flash CPU research in
+  AKU-12b. Read final GLM progress/source handoff, verified exact local core c463f601b and reference
+  f8e2668b6 commits and primary evidence/ingestion receipt existence. Preserve canonical model,
+  MTP and placement identities and existing four measured_null seeds. GLM comparisons require an
+  experimental GLM control; champion is only the cross-model baseline. The historical Flash-Next
+  CPU signal is unresolved, not a causal estimate or admission. No duplicate ingestion or kernel
+  changes occurred. Broader CPU/GPU acceptance and production gates remain required.
+- External feed team exited normally with an isolated frozen packet; main review still identifies
+  deadline-expiry/retry ACK-before-checkpoint risk. Assigned the exact evidence_feed/test correction
+  to the available semantic worker in a separate tree. Team also disclosed accidental Journal
+  restoration in its original source tree: bytecode-equivalent reconstruction does not restore
+  the prior textual SHA. That tree is not an integration source; PRIMARY was unaffected.
+- Concrete parent T0 witness implementation and source/build preparation continue in isolated
+  worker trees. HIGH held-cost/binding/generated-export and OP-41 choices remain separate operator
+  gates, not inferred from the GLM direction. No services, grants, builds or inference were launched.
+- Checklist: **two newly completed sub-items, zero new open tasks, zero declines**; 50 accepted
+  sub-items, all twelve parents open. README freshness clean. Bus drain and heartbeat again refused
+  this non-roster identity; no peer identity was used. Per-task wrap-up; no pruning or wiki sweep.
+
+### Selected source/build input consumption; feed and semantic boundary review
+
+- Published research **de4396ca / ba0644e7**: public SelectedActorWork/materialize_actor and
+  source_build_preparation bind actual selected advice to immutable native source manifests and
+  explicit BuildPlans. Consumption reopens the issued catalog rather than trusting caller-supplied
+  matching IDs. The source path delegates to the existing guarded Worktree; the build path checks
+  exact clean detached snapshot, CPU/job/deadline bounds and forwards original owning arguments.
+  No new launcher, grant, build identity, scientific policy or promotion authority is created.
+- Main combined on published runtime2c7762dc, preserving all runtime/actor/native driver hunks:
+  **2,061 passed, one strict expected accounting failure, 83 subtests in 47.29s**; Ruff/diff clean.
+  Worker frozen four-file packet additionally passed 1,978 tests and 83 subtests. Tests exercise
+  real guarded application/commit on a disposable tiny fixture; no CMake or model inference.
+- Marked AKU-06g complete; AKU-06d remains open for actual contained patch authoring under a new
+  reservation, native result persistence, real build ownership and verified planner feedback.
+  Registered VB-AK-UNIFIED-PREPARATION and its source-table row immediately for source-policy
+  findings/artifact dependencies. A source mutation receipt is not model correctness or speed.
+- Corrected feed packet composed with runtime in a separate acceptance tree: **2,077 passed,
+  one expected failure, 83 subtests in 50.01s**. Publication remains held: main independently
+  reproduced both new journal probes failing (0.36s): bounded reads eagerly enumerate all pending
+  shards, and ordinary acknowledged-shard growth followed by rotation incorrectly refuses the
+  next poll. Assigned lazy traversal plus exact sealed retired-shard read/ACK validation and
+  tamper/no-prefix-scan tests. Frozen sources and PRIMARY remain untouched by that correction.
+- Semantic review found shallow receipt immutability and a stronger view-substitution case:
+  comparing against a caller's pair.admissible_view_digest is insufficient if both the view and
+  pair field change. Assigned reopening the actual native carrier/view and concrete-verifier
+  refusal tests. No permissive grading or reduced witness list is accepted.
+- Continuous feed proposal must create/recover/drain/close SQLite on the actual service execution
+  thread, not create on main then cross SQLite's thread boundary. One mutable EvidenceIndex feeds
+  planning; no background mutation thread or check_same_thread=False shortcut. Scientific owner
+  is investigating same-instrument serving correctness: CLI T0 cannot attest a server binary.
+- Checklist: **one completed sub-item, one new open Vidya task, zero declines**; 51 accepted
+  implementation sub-items, all twelve parents open. README freshness clean; bus identity still
+  refused without roster mutation/impersonation. Per-task wrap-up; no pruning or wiki sweep.
+
+### Original native T0/model issuance checkpoint
+
+- Research f6e0cfe1 / main e495de82 publishes the closed parent scientific registry,
+  original ordered T0 captures/full owning reports, model inventory preparation and
+  prospective configured source closure v2. Lost issuance remains unknown; reducer replay
+  is not independent reparsing. Full-model hashing occurs once under preparation ownership,
+  not during each unit. Ordinary T0 subprocess collection is not contained server execution.
+- Main composition on ba0644e7 passed 2,004 loop tests with one existing expected failure
+  and 68 subtests in 49.39s; Journal separately passed 85 tests/15 subtests in 0.30s.
+  Ruff on all ten source/test files and diff checks passed. Corrected patch packaging
+  SHA 9218f94c9c6ff7f3a6c36c990171eba093ba64b9f723b83afe34731205c2e767;
+  malformed initial context failed atomically without changing the acceptance tree.
+- AKU-07r complete; AKU-07o remains open. Extended existing VB-AK-UNIFIED-PARENT
+  source/task to original T0/model and prospective same-server supporting records;
+  no competing ladder or fabricated eligibility. HIGH frozen-prompt v2 serialization
+  work paused for OP-AKU-PROMPT; independent raw server-response capture continues.
+- Journal worker frozen after bounded metadata/proof/retired-shard checks and safe append
+  corrections; main independently passed 33 owner tests. Feed worker integrating exact
+  owned ACK, captured-frontier readiness and actual service-thread lifecycle. Service test
+  failure was resume after terminal SIGTERM drain; preserve terminal rule, split test cases.
+- One newly completed implementation sub-item; all twelve parent tasks remain open.
+  No real installed dry run, model builds/inference, grants or production changes.
+
+### Continuous evidence and bounded native journal checkpoint
+
+- Research 50b0d23f connects explicit startup/factory v2 feed configuration to the actual
+  runtime execution thread and planner. Exact source-byte loading, stable index facade,
+  coherent retrieval/snapshot, relevant eviction incompleteness and finite admission frontier
+  prevent stale or incomplete evidence from silently restoring support. V1 stays supported.
+- Durable projection now precedes the sole owned ACK. Journal v2 fences old readers, caps
+  metadata at 64 KiB, bounds shared seal/data traversal, persists proof/empty-shard progress,
+  validates retired descriptors and permits verified active append. Review corrections covered
+  deadline/ACK ordering, FIFO reads, post-proof mutation, rotation, restart and archive resealing.
+- Main on published native e495de82: 2,185 passed, one existing accounting xfailed, 83 subtests,
+  no skips in 55.30s. Focused feed/runtime/owner: 95 passed in 4.10s. Ruff fourteen paths clean;
+  all sixteen publication files byte-equal tested composition. Frozen full patch SHA:
+  23d9ca0beaeb900776f0f34892dff41a34e18c4ea75e14c9100e6853db50fdb7.
+- AKU-08i complete; AKU-08c remains open for real effect/use and semantic decision consumers.
+  No fake grading, fallback snapshot, new ledger ladder, production admission or hardware run.
+  Server evidence and scheduled model preparation continue separately. One new completed
+  sub-item, all twelve parents open. Per-task wrap-up; no index pruning or wiki sweep.
+
+### Original contained server-response checkpoint
+
+- Research 8f582b22 / main 361496f5 publishes the five-file raw server evidence slice
+  and its durable documentation. Exact request/response bytes, ordered warmup/measured
+  slots, intervals and errors survive owned teardown and restart with original source pins.
+- Main corrected-packet acceptance: 2,218 passed, one existing accounting xfailed,
+  83 subtests, no skips in 59.45s; Ruff and diff checks clean. Publication files match
+  frozen hashes. Final patch SHA bdd9890f45316492ebc8ddd77eadc55d0d18649462bdf5aedad615c1a05f70a2.
+- Review eliminated the shared test port and added response-to-descendant PID equality.
+  Test host telemetry remains synthetic; this is not a hardware or correctness result.
+- AKU-07s complete; AKU-07o still owns same-server T0/purpose/contention/GPU witnesses.
+  Existing VB-AK-UNIFIED-PARENT registration now names both raw schemas. Model preparation
+  is separately fixing expiry during artifact publication. Search selection additionally
+  needs an actual unified per-attempt window owner; the older executor's private window
+  cannot supply all-clear attestations to a different attempt. These remain active work.
+- One new completed sub-item; all twelve parents remain open. No installed real-export
+  dry run or hardware loops. README check clean. Bus drain still refuses the unregistered
+  session ID; no other roster identity was impersonated. No index pruning or wiki sweep.
+
+### Selected complete-model preparation checkpoint
+
+- Research b9d2151e / main f7e65365 connects the selected native service to original
+  full-inventory model verification before releasing the child's observation binding.
+  Closed preparation inputs bind target revision, recipe execution, entry digest and full
+  inventory identity. Exact live claim checks cover publication of both receipt artifacts.
+- Main found and fixed two expiry windows: after model receipt write before private issuance,
+  and after selected preparation binding write before observation authorization. Expiry leaves
+  diagnostic CAS bytes only and no measurement authorization. Filesystem I/O is synchronous;
+  no cancellation guarantee or implicit deadline extension is claimed.
+- Main exact nine-file composition on published server-response code: 2,229 passed,
+  one existing accounting xfailed, 83 subtests, no skips in 66.47s. Focused preparation/driver
+  tests: 29 passed in 8.01s. Ruff eight code/test files and diff checks clean. Final files
+  match the worker's frozen hashes.
+- Test review replaced a source-changing validator wrapper with profiler observation, and
+  strengthened the child's pre-spawn check from any receipt to its exact selected recipe and
+  model path/SHA receipt. One full validator invocation is observed across both recipes.
+- AKU-07t complete (one new completed sub-item); all twelve parent tasks remain open.
+  Standalone native configuration is next, including per-target recipe mapping so shared
+  recipes cannot overwrite another target's preparation. Window collection and same-server
+  scientific evidence continue independently. No hardware run, new grant or production change.
+
+### Native startup and same-attempt raw-window checkpoint
+
+- Research source 9e2125b1 promoted to main 625348f846fd23d24f6bde4326847e632de5bc8b.
+  Closed startup v3 installs target/recipe-specific model preparation, original adapter identity,
+  explicit telemetry configuration and prospective instrument publication before scheduling.
+- Raw windows open after model preparation, sample on the parent evidence thread, retain exact
+  phase bounds and join original lifecycle observations. Cross-phase or insufficient samples
+  stay unknown. No scientific all-clear, calibration/control receipt or grade is manufactured.
+- Main combined acceptance: 2,284 passed, one existing accounting xfailed, 83 subtests, no skips
+  in 68.90s. Fresh frozen subset: 56 passed in 8.39s. All 21 published file hashes match the
+  accepted tree; apply-patch packet added trailing blank lines to six new files, corrected
+  before publication. Ruff and diff checks clean; README freshness check clean.
+- Startup-owner construction and genuine-child receipt seal/reopen are separate hermetic
+  integration paths, not an uninterrupted installed real-export dry run. Generic T0 selection
+  does not prove same-server correctness. AKU-07u/07v are two new completed sub-items; all
+  twelve parent tasks remain open. Existing belief source/task now includes raw windows.
+- Parent-final trial work separately passes main's five actual-child/HTTP/Journal/restart tests
+  in 42.18s, but remains unpublished pending full composition and ROOT reader wiring.
+  Calibration preparation and native retained-root catalog work continue independently.
+- No hardware run, new grant, frozen-kernel change, index pruning or wiki sweep. Bus drain
+  still refuses this unregistered session ID; no other roster identity was impersonated.
+
+### Same-server evidence and parent-final trial checkpoint
+
+- Research 8f536e0e adds original same-server T0 evidence, candidate-first-safe post-arm pairs,
+  bounded callback-free result reopening and separate parent-final v3 captures. Original unit
+  receipts and failed/rejected facts stay unchanged. Journal grammar accepts only closed v3
+  identities; original provenance is checked outside the controller mutex before current-owner
+  append fencing. Durable duplicates work before/after restart without recreating live authority.
+- Main full composed acceptance: 2,301 passed, one existing accounting xfailed, 83 subtests,
+  no skips in 131.82s. All fourteen published source/test/doc hashes match the frozen tree.
+  Earlier main actual-child/HTTP/final/Journal/restart test: five passed in 42.18s. The composed
+  focused suite passed 87 tests; a legacy-marker fixture was corrected to declare its actual
+  historical capability rather than weakening new-instrument measurement-end requirements.
+- Same-server byte coherence is not token agreement or full seventeen-gate correctness. Missing
+  seed/token/static/dispatch/control/calibration inputs remain unknown; no scientific eligibility
+  is manufactured. ROOT v3 reader and actual finish/search consumer remain under implementation.
+- AKU-07w is one new completed sub-item; AKU-07x records the newly surfaced control-bootstrap
+  circularity and pending operator choice. Existing belief registration/task includes final-v3
+  dependencies. All twelve parents remain open. No real dry run, hardware loops, grants,
+  production changes, index pruning or wiki sweep. README freshness check clean.
+
+### ROOT parent-final reader checkpoint
+
+- Four-file native-v3 arm/corpus integration reopens the original final/pair/native/result/
+  lifecycle/source closure under bounded reads and the existing source class/ClaimTuple ladder.
+  Original v2 carrier identity is checked before recursive dispatch; unknown reference shapes,
+  changed gate membership and same-unit foreign lifecycle/capture refs refuse.
+- Actual producer conformance exposed a carrier-versus-envelope mismatch in the reader; fixed
+  to compare the stored carrier and exact payload artifact reference. Both actual original v3
+  arms remain diagnostic and produce no measurement tuple. A test expected tuple instead of
+  the corpus API's empty list; its assertion was corrected without changing production semantics.
+- Main fresh acceptance using published research f8fee017: 91 tests in 46.05s, including real
+  child HTTP, original T0, final capture and Journal/restart. Claim-tuple/ledger regression:
+  65 tests in 0.09s. Four primary files match frozen accepted hashes; Ruff/diff checks clean.
+- One completed sub-item AKU-08j and one new open AKU-08k: the registered verifier must capture
+  the new helper's source identity before installed semantic use. No historical closure is
+  upgraded. Calibration recovery and retention catalog work continue; all twelve parents remain
+  open. No hardware runs, live grants, production changes, index pruning or wiki sweep.
+
+## Registered final-trial feed source closure
+
+- Integrated the exact three-file research loader/test/contract patch from frozen f8fee017
+  acceptance. Current installation pins seven ROOT files, while explicit historical six-file
+  pins remain unchanged and cannot borrow the missing v3 helper from ambient Python modules.
+  Caller mappings are snapshotted before validation; all source hashes precede execution.
+- Main independent acceptance: 42 passed in 46.76s, no skips, including actual tiny HTTP child
+  results, installed feed ingestion and idempotent restart. Four native captures remain
+  diagnostic; twenty operational Journal events also count as diagnostics. Corrected the test
+  expectation, not the production counter. No measurement tuple or finding is manufactured.
+- Worker combined run: 88 passed and four semantic-loader failures; untouched PRIMARY f8fee017
+  reproduces those same four failures (plus eight passes). The separate historical two-file
+  semantic loader expects an older adapter digest. Filed AKU-08l for explicit source/receipt
+  versioning, rather than changing historical pins to make tests green.
+- Completed AKU-08k; all twelve parent tasks remain open. Calibration execution/recovery and
+  native retention integration continue. No installed hardware dry run or five-loop GLM trial,
+  production mutation, resource activation, index pruning, or wiki compilation was performed.
+
+### AKU-08l — original final-trial semantic receipts and historical consumer restart
+
+- Research source cbb5de2c, pushed and promoted to main 0e4ce89b. The eight applied files
+  match the independently tested frozen packet byte-for-byte.
+- Captured seven-file ROOT projection now feeds a separately versioned canonical receipt with
+  original native producer/finalizer identities. Installed callable/configuration identity is
+  immutable; replay reopens the original artifact graph rather than recreating live issuance.
+- The actual CandidateTransactions/ValidationConsumer path retains an optional CANDIDATE
+  diagnostic and reopens it with fresh controllers, stores, and projection objects. Required
+  OPTIMUM remains pending; forged permission, changed identities, and foreign plans refuse.
+  Diagnostics contain no ClaimTuple or grade. Historical two-file receipt pins remain unchanged.
+- Main independent fresh acceptance: 90 passed in 64.27s, no skips. Worker broader regression:
+  132 passed in 70.71s, no skips/xfails. Tests include actual tiny HTTP child evidence, consumer
+  restart, legacy receipt behavior, and unchanged sampler-exhaustion refusal.
+- Original fixture failure exposed periodic sampling exhausting 64 slots during placement,
+  leaving measurement_end absent. Final issuance correctly refused. The fixture now declares
+  100 ms cadence/256 samples with the unchanged 4 MiB byte cap; production sampling is unchanged.
+- Completed AKU-08l; filed AKU-08m for qualified serving-decision consumption and AKU-07y for
+  bounded lifecycle sampling starvation prevention. All twelve parent tasks remain open.
+  Standalone preparation and retention workers continue; no real-host dry run, live GLM loop,
+  production mutation, resource activation, index pruning, or wiki sweep was performed.
+
+### AKU-10h — installed native retained-artifact catalog
+
+- Research source 3a3d87fa was pushed and promoted to main c6c49c0b.
+- Applied the reviewed ten-file packet against research 0e4ce89b, preserving the newer
+  final-v3 Journal/controller paths. Every composed file matches its frozen SHA-256 manifest.
+  Actual standalone v3 now derives and installs the owner catalog before runtime composition;
+  old readers refuse the new native event and restart checks the original exact seed.
+- Protects declared physical roots, exact model inventory/shards, both recipe snapshots for
+  equivalent executable aliases, native/candidate evidence and current driver/worker/acquisition
+  dependencies. Filesystem work occurs outside the controller mutex; exact frontiers and selected
+  maintenance policy/artifact identities are rechecked before admission.
+- Main independent composed acceptance: 155 passed in 6.02s, no skips. After primary application:
+  104 Journal/catalog/installed-startup tests and 15 subtests passed in 7.50s.
+  Separately, the preceding published 0e4ce89b full loop/Journal baseline passed 2,334 tests,
+  one expected failure and 83 subtests in 272.13s; that is not a full-suite claim for this new patch.
+- Completed AKU-10h; filed AKU-10i for original source/build/evaluation expiry authority.
+  The catalog itself emits no expiry descriptors and cannot authorize destructive maintenance.
+  Actual source/build owner integration remains implementation work, not an external blocker.
+  Provider-held crash recovery still requires the pending OP-AKU-HELD scope approval; no late
+  checkpoint is substituted for the missing original durable provider receipt.
+- No real-host dry run, GLM loop, provider activation, production mutation, live deletion,
+  index pruning or wiki compilation occurred. All twelve parent tasks remain open.
+
+### AKU-07y — bounded native sampler admission and phase races
+
+- Research source 40b22fae was pushed and promoted to main 6efcfe24. Post-application
+  lifecycle/binding acceptance passed 74 tests in 1.23s on the primary tree.
+- Native serving checks ceil((max_stage_seconds+teardown_seconds)/cadence)+9 against the
+  configured sample budget before producer thread creation, resource acquisition or launch.
+  It reuses existing enforced time limits, rejects invalid/nonfinite arithmetic and does not
+  enlarge a budget, slow sampling, reserve markers or change evidence thresholds.
+- The observer preserves a monotonic due time through empty early wakes and rechecks phase,
+  pending markers and stop after unlocked clock reads. This prevents extra early samples,
+  indefinite postponement and stale-phase periodic samples behind newer boundaries.
+- Main independent acceptance: 123 passed in 49.85s, followed by final lifecycle 56 passed
+  in 0.47s. The added deterministic boundary tests exercise 100 periodic deadlines plus all
+  nine hooks: capacity 109 preserves measurement_end/teardown; capacity 108 explicitly refuses
+  teardown. Tests use synthetic clocks/probes, not hardware measurements. Existing unknown,
+  missing-marker, gap, byte, queue and shutdown refusals remain unchanged.
+- All seven applied files match the frozen current-c6 composition hashes. Prospective source
+  identities include the sampler/admission helpers; historical identities are not rewritten.
+  Completed AKU-07y; profile preparation, source/build execution and qualified evidence remain
+  active work. No live GLM trial, grants, production mutation, index pruning or wiki sweep.
+
+## Installed serving-calibration preparation — AKU-04g
+
+- Published research source `097c5be8` to main `ebb5e9fa`; all 19 primary files matched
+  the frozen acceptance manifest before publication. Main independently ran 144 tests,
+  one strict OP-AKU-HELD expected failure, no skips (39.04s). Worker full prior-c6 suite:
+  2,398 passed, two strict expected failures, 83 subtests; final sampler-composed focus:
+  117 passed, one strict expected failure. These scopes are not a current full-suite claim.
+- Startup v4 and Prepared v3 use the existing scheduler/controller/native worker for original
+  A/A and neutral-copy calibration. Original seeds, statistical rules, independent-process
+  membership and finite retries are fixed before selection. Exact durable settlement alone
+  admits original chunks to the existing numeric owner. Settled restart reopens original
+  chunks/results without a new launch, reseeding or repeated accounting.
+- Public driver enrollment independently checks metric/direction, prompt manifest, selected
+  per-unit prompt count, instrument and time limits. Neutral copies preserve separate physical
+  retention roots while sharing execution identity only after compatible native settings checks.
+  Published sampler admission/source pins remain intact; new fixture sample capacity is derived
+  prospectively from unchanged durations/cadence, never widened after observing a run.
+- Actual startup/child tests use synthetic bytes, observations and a fixture provider that
+  authors calibration metadata. They do not prove native provider binding, live host readiness,
+  or scientific qualification. OP-AKU-BIND, OP-AKU-HELD and original qualified controls/windows
+  remain unresolved; pre-settlement restart refuses safely. Every solve stays diagnostic-only.
+- Added completed AKU-04g; all 12 parent items remain open. Existing tasks own remaining gates;
+  no new open tasks, production writes, live measurements, index pruning or wiki sweep.
+
+## Full-suite startup-fixture admission repair — AKU-04h
+
+- Full published ebb5e9fa loop/Journal suite: 2,435 passed, two strict expected failures,
+  83 subtests, one unexpected startup fixture failure (290.33s). The failing case also
+  reproduced alone in 1.03s, ruling out test-order dependence.
+- Production admission correctly rejected 64 samples for a 32-second/10ms window requiring
+  3,209. Only that test's budget is now prospectively derived before instrument sealing;
+  exact prepared/configuration capacity is asserted. No production source or duration,
+  cadence, gap, byte-budget, witness or acceptance threshold changed.
+- Main independently passed all six file tests (1.73s), verified identical acceptance/primary
+  SHA256 663f674897230ada5aed552ffd26a4be0cc6892cb5c394d9d5d6559b96d733d3,
+  then passed 80 primary startup/binding/lifecycle tests (3.10s). Full-suite rerun remains
+  necessary; these focused results do not turn the earlier failing full run into a pass.
+- Added completed AKU-04h; existing BIND/HELD gates and all parent milestones stay open.
+- Final full loop/Journal rerun on repaired research main `b9cc11af` completed with
+  **2,436 passed, two strict expected failures, 83 subtests, no skips** in 299.83s.
+  The fixture fix is source `0c446f36`; runtime source is unchanged from `ebb5e9fa`.
+  Command used explicit AUTOKERNEL_FACTORY_DRY_RUN_TREE at the research primary and
+  EPYC_ROOT_REPO at the ROOT primary, PYTHONPATH=.:scripts/kernel_rnd, python3 -B -m pytest -q
+  scripts/kernel_rnd/autokernel/loop scripts/kernel_rnd/autokernel/test_journal.py.
+  Expected failures still track native scheduler/provider binding and unfinished held-cost
+  recovery. This establishes combined software regression acceptance, not live hardware,
+  scientific qualification, dashboard deployment or the five-loop GLM trial.
+
+## Additional shared-validator approval gates
+
+- OP-AKU-ENROLL: original build-enrollment recovery needs a new closed Journal payload;
+  `_validate_native_payload` has HIGH20 upstream impact (durable publication/replay/archive).
+  The worker stopped before this edit and continues installed actor/build execution.
+- OP-AKU-A2: native per-unit intent/permit/invalid terminal semantics reach
+  `a2_execution_state.validate_transition` (HIGH17). Parser-helper widening is the same
+  authority change. Only independent selected-range transport was approved internally;
+  it grants no launch authority and leaves AKU-04f open.
+- Both decisions were requested from the operator together with existing HIGH scopes;
+  no answer has been received. Added decision-queue entries linked to existing AKU-10i/04f,
+  not duplicate implementation tasks. Production freeze and measurement policy stay intact.
+- Main independently ran the intermediate profile suite: 31 passed in 2.64s. Final current-base
+  composition and successful settled-feedback/multi-target coverage remain worker work;
+  this intermediate run is not final profile integration acceptance.
+
+## Installed profile connector integration
+
+- Applied the frozen nine-file b9cc-based profile connector packet; all nine publication hashes
+  match. Main independently reproduced 85 passing tests with two existing strict BIND/HELD
+  expected failures and no skips (32.94s), then 37 focused tests on primary (3.46s).
+- Installed typed mechanisms now run actual owned profiling children; original verified output
+  feeds the planner only after exact original prerequisite settlement. Source/default mutation,
+  mismatched retry identity and malformed output fail closed without losing incurred cost.
+  Same-boot replay never invents held authority or extends original validity.
+- Added completed AKU-06h and open AKU-06i. Automatic bounded refresh generations are active
+  worker work: fixed consumed-request debt is an interim safety boundary, not full autonomy.
+  Source/build worker may compose this exact frozen dependency for the genuine actor-consumer
+  integration test; selected-unit transport remains separately under review.
+- Successful settlement fixtures explicitly author correct synthetic provider metadata; native
+  BIND/HELD gates, production freeze and measurement constitution remain unchanged. No live
+  GLM trial, hardware acceptance or dashboard deployment. All 12 parent tasks remain open.
+- README freshness check returned clean. Per-task wrap-up adds one completed subtask and one
+  open follow-up; no index pruning or wiki compilation sweep was performed.
+
+## Profile full acceptance and selected-unit review corrections
+
+- Full loop/Journal suite on clean published research `81b87368` completed:
+  **2,473 passed, two strict expected failures, 83 subtests, no skips in 298.45s**.
+  Explicit AUTOKERNEL_FACTORY_DRY_RUN_TREE names that research primary; EPYC_ROOT_REPO names
+  the owning ROOT lane. Existing native provider binding and held-cost recovery expected failures
+  remain visible. No real-host export dry run, live inference or hardware claim follows.
+- Main independently accepted 55 tests on the original selected-unit proof tree (4.59s), then
+  identified two reproducible defects: a callable object exposing code but lacking Python function
+  internals caused AttributeError in source verification, and the direct producer admitted multiple
+  selected units despite the one-unit native artifact contract. Worker fixes add an explicit
+  function-type guard and pre-admission single-unit enforcement. Rehashed original-result tests
+  now target actual parent reopening for order/process/arm/prompt and full-plan completeness.
+  Corrected packet is being tested on published profile base `81b87368`; not yet integrated.
+- Renewal inspection confirmed the existing actor projection refuses replacement for the same
+  target. Explicit v2 request/publication successor records require HIGH16 shared validator work;
+  added OP-AKU-REFRESH to the operator queue, linked to existing AKU-06i (no duplicate task).
+  Approval was requested asynchronously and has not been received. Hidden v1 nesting is not a
+  workaround. Source/build integration continues independently.
+- This checkpoint strengthens evidence for already completed AKU-06h and documents the gate on
+  existing AKU-06i; zero new task/checkbox flips. All 12 parent tasks remain open.
+
+## Corrected selected-unit transport integration
+
+- Applied exact eight-file packet on research `81b87368`; all file hashes match its final
+  manifest. Packet SHA-256 `fb5cb9e3ba5bdd7e10c6eeaca721e4778b6949e5c1ab7e8bf62e65968f48c495`.
+  Main independent final tests: **46 passed in 4.02s**, including explicit factory-tree startup.
+  Worker final composition: **238 passed, one strict HELD xfailed, no skips in 52.03s**.
+- Native parent and child execute exactly one original full-plan unit, preserving absolute
+  order and process membership. Additive versions preserve legacy closure; selected completion
+  never relabels incomplete scientific evidence. Fixed both reproduced admission/source crashes.
+  Adversarial reopening tests rehash result/reference and replace supplied terminal result digest
+  while retaining the actual fence; these are refusal tests, not positive recovery authority.
+- Added completed AKU-04i; AKU-04f's original durable first-issue permit/installed discovery work
+  remains open and HIGH-gated. No new source class, grader, live resource grant, inference or
+  kernel modification. Parent checkboxes remain open. No pruning/wiki sweep.
+- Source/build actual startup integration exposed an independent actor-kind mismatch: manifest
+  accepts build while planner requires build_recipe. Owning worker is checking exact impact and
+  correcting startup with roundtrip tests; this remains within existing AKU-06d implementation,
+  not a new duplicate task or a synthetic manifest workaround.
+
+## Discovery routing refusal and final transport regression
+
+- Published transport main `0114da9b` passed the full loop/Journal suite: **2,490 passed,
+  two strict BIND/HELD expected failures, 83 subtests, no skips in 309.68s**. Explicit primary
+  factory-tree and ROOT paths were set. This full run predates the following guard.
+- Found actual discovery declarations could be scheduled as ordinary runtime comparisons.
+  Added inline driver guards before catalog issuance and materialization; other work remains
+  schedulable, old intents remain inspectable and no new execution authority is introduced.
+  Main independently passed 18 final tests (1.76s); worker compatibility passed122 with one
+  existing strict HELD xfail/no skips (38.69s). Exact two-file hashes match tested packet.
+  Startup negative uses actual recovery before tick; initial missing-recovery fixture failure
+  was corrected, not waived. Completed AKU-04j; AKU-04f remains open.
+- Read-only GLM inventory identified profile_phases_512.py and run_glm53_arm.py as reuse sources,
+  but no installed concrete CPU ProfileMechanism producer exists. Added AKU-06j for the actual
+  owned CPU producer and bounded reducer/configuration; scope proposal is assigned. Historical
+  perf report -F tid is invalid; supported perf-script per-TID/period output must be used.
+  No historical profile is reclassified as fresh, no prompt gate or resource policy bypassed.
+- Genuine profile→actor consumer→owned build→verified enrollment fixture now passes on the
+  source/build worker lane. Candidate-cwd Python module shadowing is being closed before final
+  publication. Enrollment alone still does not settle the scheduler transition.
+- Per-task checkpoint adds one completed subtask and one open producer task; all parents stay
+  open. No hardware run, production change, index pruning or wiki sweep.
+
+## Owned source/build integration checkpoint
+
+- Applied the exact eight-file source/build packet on published research ee99f549; all eight
+  hashes match the frozen handback and current-base proof. Packet SHA-256
+  `1f55a3b42cb126870f42e1043a9d60aefa920056776e19d417fb5904a574cb5b`.
+  Main independently passed60 source/preparation/discovery-guard tests in4.57s; worker current-base
+  source/preparation/startup passed62 in5.32s. Earlier full focused composition passed129 in7.58s.
+- The real profile→ActorPreparationConsumer→two actor children→owned tiny CMake build→verified
+  enrollment path passes. Original pre-issuance campaign namespace and recipe options are exact;
+  neither selected requests nor actor output were rewritten to make the test pass.
+- Fixed actual startup build/build_recipe mismatch, bounded original log reopening, and candidate
+  source-cwd import shadowing with Python safe-path launch. The genuine test commits an adversarial
+  autokernel entrypoint into the source tree and proves it never executes. Source capabilities are
+  identity-keyed native issuances, not serializable or copyable authority.
+- Added completed AKU-06k and explicit next AKU-06l for installed source/build dispatch and original
+  scheduler settlement. Enrollment is not settlement or durable expiry permission. BIND/HELD/ENROLL
+  gates remain unchanged; all 12 parent tasks remain open. No live inference, production mutation,
+  index pruning or wiki sweep.
+
+## Multi-child accounting decision checkpoint
+
+- Preserved the reviewed worker proposal in
+  `docs/design/autokernel-source-build-accounting-v2-proposal.md`, explicitly proposed and unapproved.
+  Original worker packet SHA-256:
+  `b946738f32d333e044e4b493347119a4ca136869b4e23603a611953145ce4a6a`.
+  Main added the exact-binding requirement preventing one aliased receipt from satisfying two roles.
+- Current scheduler consumes a selection on its first receipt, so three ordinary account calls
+  cannot settle planner/critic/build as one operation. The proposal preserves original provider
+  receipts, adds durable held/child joins and one atomic settlement, and specifies denial/retry,
+  no-launch cancellation, crash recovery, partition overlap and occupancy-time budget tests.
+  Expanded existing OP-AKU-BIND rather than creating a duplicate decision. No HIGH code was edited.
+- Closed design-audit subtask AKU-06n; AKU-06l and all12 parent tasks remain open. Refreshed INF-73's
+  next action. No new open task is needed: implementation remains owned by AKU-06l/BIND/HELD.
+- Dashboard worker-local smoke passed71 tests in3.65s; this is not frozen acceptance. Main also
+  reproduced stale active-worker freshness misclassification and identified CPU launch-readiness,
+  counter-window and natural-EOS handling issues. Corrections/tests remain assigned to their
+  respective implementation owners; this checkpoint does not publish their code.
+- Per-task wrap-up only: no index pruning, wiki sweep, service reload, hardware run or production change.
+
+## Reusable runtime-factory fix
+
+- CPU profiler integration exposed same-process restart failure after scheduler mutation. Audit
+  proved the public factory reused the already-mutated materializer scheduler; the existing
+  restart test never advanced it, hiding the bug. Standard process restarts were unaffected.
+- The factory now reconstructs original manifest config/state for each invocation, gives one
+  fresh engine to both controller and runtime, and refuses a drifted initial materialized seed.
+  Main review caught and corrected the evidence-feed branch overwriting that fresh engine.
+  Journal replay and provider authority are unchanged.
+- Main primary-tree verification:77 tests passed in5.69s, all five hashes match frozen packet
+  `a5e5d07174ee2623aba0a953b67732be3761df923f90e8a31d7542a87b376177`.
+  Worker77 passed5.86s, four Python paths Ruff-clean. Tests include successful settled reuse,
+  pending-issued replay, fresh exact controller/runtime engine identity and unchanged seed.
+- Research source `f1882475` pushed/promoted as `c1a8da09f62c32e976efb078eda6c0c500bded21`.
+  Completed AKU-07z; all12 parents remain open. No service reload, hardware trial, production
+  mutation, index pruning or wiki sweep. Dashboard/CPU producer packets remain separate work.
+
+## Runtime observation dashboard integration
+
+- Applied frozen research7-file and ROOT4-file packets. Existing unified projection-v1 remains
+  exact; projection-v2 adds original runtime status/reasons, selected work and settlement,
+  diagnostic publication failures and producer-owned relative worker deadline observations.
+  Snapshot-v3 remains the carrier; no new endpoint or daemon.
+- Main review fixed publication exceptions contaminating execution retries, undated first-failure
+  reporting, stale-active-worker freshness, and rejected incoming browser freshness leaking into
+  the retained accepted card. Actual profile/calibration/discovery paths retain their original
+  outcome or wait/debt; calibration collection is not scientific qualification.
+- Main primary combined factory+dashboard research suite:181 passed, one strict HELD xfail,
+  no skips,33.09s. ROOT actual producer/page suite:113 passed2.37s, no skips. Worker broader ROOT
+  suite327 passed plus51 subtests15.14s. Changed Python clean except exactly52 baseline loop_status
+  lint findings, unchanged by code/message comparison. No blanket clean-lint claim.
+- All ten non-overlapping files match frozen manifests; standalone-runtime.md intentionally
+  differs only by the six-line already-published factory-reuse paragraph. No factory fix was lost.
+  Packet SHA-256 research `5e17296a02b461fe5378ac28cfe24bd01e154e07686883097a88ab76e0c098ce`;
+  ROOT `a12f4b29a92dcb75d81cdd288c68b0d27d21e65b21873045d00dd13eec2c1ae2`.
+- Completed AKU-09f; added AKU-09g for actual aggregate producer connections and live dashboard
+  acceptance. Evidence/preparation projection proposal assigned. All12 parent tasks remain open;
+  no service activation, hardware run, production mutation, index pruning or wiki sweep.
+
+## Full regression checkpoint at research 1f38aefb
+
+- Re-polled the original live test handle34837 to terminal exit0; did not restart it.
+  Published research `1f38aefb122b73bd6001ba2b54ea11d66546fa3d` passes2,513 tests,
+  two strict expected BIND/HELD failures, and83 subtests in307.84s, with no skips.
+  Command: `python3 -B -m pytest -q scripts/kernel_rnd/autokernel/loop scripts/kernel_rnd/autokernel/test_journal.py`;
+  `PYTHONPATH=.:scripts/kernel_rnd`, `PYTHONDONTWRITEBYTECODE=1`, RAID TMPDIR,
+  `AUTOKERNEL_FACTORY_DRY_RUN_TREE` points to the primary research lane and
+  `EPYC_ROOT_REPO` to the primary ROOT lane at0d999909. No production or model build.
+- Added completed AKU-06m for this exact software acceptance checkpoint; all12 parent tasks
+  remain open. CPU profiling and runtime-dashboard changes are still worker-local and are
+  not covered by this result. No real-host export dry-run or five-loop GLM run has occurred.
+- Main review requested that dashboard observation faults cannot turn an already durable
+  settlement into an execution retry, and that observation snapshots avoid mutable runtime
+  reads under the controller lock. These remain within the assigned dashboard implementation.
+- Multi-child accounting review confirms single-receipt settlement cannot charge planner,
+  critic and build as one attempt. AKU-06l remains open under existing BIND/HELD approval;
+  proposal refinement covers prelaunch denial, partial prefixes, durable append ordering,
+  legitimate partition overlap and resource-time versus elapsed-time accounting.
