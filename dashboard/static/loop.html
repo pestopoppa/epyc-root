@@ -100,8 +100,14 @@
   .trajectory .point{stroke:var(--panel);stroke-width:2}.trajectory .local{stroke:#f59e0b;fill:none;stroke-dasharray:6 5}
   .trajectory .keep-tick{stroke:#38bdf8;stroke-width:2}.trajectory .serving-unknown{fill:var(--panel);stroke:#f59e0b;stroke-width:3}
   .trajectory .conflict{fill:var(--panel);stroke:#ef4444;stroke-width:3}.trajectory .missing{fill:var(--panel);stroke:#f59e0b;stroke-width:3;stroke-dasharray:2 2}
+  .trajectory .epoch-boundary{stroke-width:1.5;stroke-dasharray:4 3}.trajectory .superseded{opacity:.5}
   .trajectory-legend{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0;font-size:12px;color:var(--muted)}
   .trajectory-key:before{content:"";display:inline-block;width:18px;height:3px;margin-right:6px;vertical-align:middle;background:var(--key)}
+  .trajectory-filters{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 8px;font-size:11px;color:var(--muted)}
+  .trajectory-filters label{display:inline-flex;gap:4px;align-items:center}.trajectory .event-strip{fill:rgba(13,17,23,.65)}
+  .trajectory-drawer{margin-top:10px;padding:12px;border:1px solid var(--border);border-left:4px solid var(--accent);background:var(--panel2);border-radius:6px}
+  .trajectory-drawer[hidden]{display:none}.trajectory-drawer h3{margin:0 0 7px;font-size:13px}.trajectory-drawer dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 10px;font-size:11px}.trajectory-drawer dt{color:var(--muted)}.trajectory-drawer dd{margin:0;overflow-wrap:anywhere}
+  .trajectory-overview{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:14px;margin-bottom:12px}.trajectory-support{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.trajectory-support section{margin-bottom:16px}@media(max-width:980px){.trajectory-overview,.trajectory-support{grid-template-columns:1fr}}
   .subgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:var(--border)}
   footer{padding:8px 20px 28px;color:var(--muted);font-size:12px;max-width:1400px;margin:0 auto}
 
@@ -339,36 +345,38 @@
        the per-iteration effects further down are marginals against an
        advancing anchor, and composing them would manufacture a measurement no
        run ever took. An empty slot that says why beats a number nobody took. -->
-  <section id="sec-champion">
-    <h2>Champion vs frozen production kernel
-      <span class="count">one number &middot; one named anchor</span>
+  <section id="sec-trajectory">
+    <h2>Champion performance trajectory
+      <span class="count">identity · active progress · retained gain · production epochs · experiment events</span>
       <span id="champ-badge" class="badge absent" style="margin-left:auto">
         <span class="dot"></span><span id="champ-badgetxt">…</span></span>
     </h2>
     <div id="champ-scope" class="muted"></div>
-    <div id="champ"></div>
-    <p class="muted">Retained reports (2026-09-08; original subjects and conditions):
-      <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/champion-max-performance-20260908.md">Champion maximum-performance measurements</a>
-      &middot; <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md">Final champion validation and close-out</a>
+    <div class="trajectory-overview"><div id="champ"></div><div class="tiles" id="tiles"></div></div>
+    <div id="trajectory"></div>
+    <p class="muted">Retained reports:
+      <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/champion-max-performance-20260908.md">maximum-performance measurements</a>
+      &middot; <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md">validation and close-out</a>
     </p>
   </section>
 
-  <section id="sec-trajectory">
-    <h2>Champion improvement over frozen production
-      <span class="count">direct composition checkpoints · one curve per model/surface</span>
-    </h2>
-    <div id="trajectory"></div>
-  </section>
+  <div class="trajectory-support">
+    <section id="sec-capabilities"><h2>Champion Capabilities
+      <span class="count">attributed to the champion lineage</span></h2>
+      <div id="champion-capabilities"></div>
+    </section>
+    <section id="sec-accumulator">
+      <h2>Accumulator &mdash; compound-then-gate
+        <span class="count">retained keeps · cumulative estimate · serving gate</span>
+      </h2>
+      <div id="accumulator"></div>
+    </section>
+  </div>
 
   <section id="sec-serial" hidden>
     <h2>Serial target routing <span class="count">routing is not measurement progress</span></h2>
     <div id="serial"></div>
     <div id="serial-controls"></div>
-  </section>
-
-  <section id="sec-tiles">
-    <h2>Progress <span class="count">producer: the rebuilt loop</span></h2>
-    <div class="tiles" id="tiles"></div>
   </section>
 
   <section id="sec-runtime-preparation" hidden>
@@ -389,13 +397,6 @@
        once it will fire next iteration. Rides the loop-status contract's
        `accumulator` object; null (and this card says so) on a run with no serving
        tier. -->
-  <section id="sec-accumulator">
-    <h2>Accumulator &mdash; compound-then-gate
-      <span class="count">R23-44/R23-54 &middot; bench keeps batch; the gate also fires every 4</span>
-    </h2>
-    <div id="accumulator"></div>
-  </section>
-
   <section id="sec-disp">
     <h2>Dispositions <span class="count" id="disp-count"></span></h2>
     <div id="disp"></div>
@@ -409,12 +410,14 @@
        from the store's mtime; a missing store renders ABSENT with the standard
        wording, never as zeros — a missing count is not a zero. -->
   <section id="sec-knowledge">
-    <h2>Accumulated knowledge
-      <span class="count">all runs &middot; producer: the loop's memory store</span>
-      <span id="know-badge" class="badge absent" style="margin-left:auto">
-        <span class="dot"></span><span id="know-badgetxt">…</span></span>
-    </h2>
-    <div id="know"></div>
+    <details>
+      <summary><strong>Accumulated knowledge</strong>
+        <span class="count">all runs &middot; producer: the loop's memory store &middot; expand for full ledger</span>
+        <span id="know-badge" class="badge absent" style="margin-left:auto">
+          <span class="dot"></span><span id="know-badgetxt">…</span></span>
+      </summary>
+      <div id="know"></div>
+    </details>
   </section>
 
   <section id="sec-recent">
@@ -1631,6 +1634,7 @@ function accumulatorMeasurement(a){
 
 function renderChampion(d){
   const host = document.getElementById("champ");
+  const capsHost = document.getElementById("champion-capabilities");
   const badge = document.getElementById("champ-badge");
   const badgetxt = document.getElementById("champ-badgetxt");
   document.getElementById("champ-scope").textContent =
@@ -1650,6 +1654,7 @@ function renderChampion(d){
       `<code>/api/loop</code> carried no <code>champion_vs_production</code>. ` +
       `That is a fact about this hub's version, not about whether the champion ` +
       `has been measured.</div></div>`;
+    capsHost.innerHTML = `<div class="empty"><strong>UNKNOWN</strong> — this hub served no champion capability block.</div>`;
     return;
   }
   const f = c.freshness || {};
@@ -1803,33 +1808,27 @@ function renderChampion(d){
   // 2026-08-31): the marginals it warns about live in the Recent-iterations
   // table, and that table carries its own must-not-be-summed caption.
 
-  // The capabilities list, in an accordion COLLAPSED by default (operator
-  // note, 2026-08-31 — the list was long). Entries unchanged inside; the
-  // evidence / run-record footer lines live inside it too. The UNKNOWN state
-  // is surfaced on the summary line so collapsing cannot hide "nobody has
-  // said" behind a heading that implies a list exists.
+  // Capabilities now occupy the left support card directly below the plot.
+  // Their producer and unknown semantics are unchanged; only placement moved.
   const caps = c.capabilities || {};
-  const capCount = (caps.known && (caps.items || []).length)
-    ? ` (${caps.items.length})` : caps.known ? " (declared empty)" : "";
-  h += `<details class="ch-acc"><summary>Champion Capabilities${esc(capCount)}` +
-       (!caps.known ? ` <span class="unk">UNKNOWN</span>` : "") + `</summary>`;
-  h += `<div class="ch-caps">`;
+  let capHtml = `<div class="ch-caps">`;
   if(caps.known && (caps.items || []).length){
-    h += `<span class="muted">(source: ${esc(caps.source || "—")})</span><ul>` +
+    capHtml += `<span class="muted">${esc((caps.items || []).length)} capabilities · source: ${esc(caps.source || "—")}</span><ul>` +
       caps.items.map(it => `<li>${esc(it.name)}` +
         (it.evidence ? ` <span class="ev">${esc(it.evidence)}</span>` : "") +
         `</li>`).join("") + `</ul>`;
   } else if(caps.known){
-    h += `<div>The producer published the list and it is ` +
+    capHtml += `<div>The producer published the list and it is ` +
          `<strong>empty</strong>. That is a statement, and a different one from ` +
          `never having been asked.</div>`;
   } else {
-    h += `<div class="muted">${esc(caps.unknown_reason || "—")}</div>` +
+    capHtml += `<div><span class="unk">UNKNOWN</span> <span class="muted">${esc(caps.unknown_reason || "—")}</span></div>` +
          (caps.would_populate
            ? `<div class="muted" style="margin-top:5px"><b>What would populate it:</b> ` +
              `${esc(caps.would_populate)}</div>` : "");
   }
-  h += `</div>`;
+  capHtml += `</div>`;
+  capsHost.innerHTML = capHtml;
 
   h += `<div class="ch-note muted">evidence: <span class="anchor">` +
        `${esc(c.evidence || "—")}</span>` +
@@ -1837,7 +1836,6 @@ function renderChampion(d){
        (c.measurement_evidence
          ? `<br>run record: <span class="anchor">${esc(c.measurement_evidence)}</span>` : "") +
        `</div>`;
-  h += `</details>`;
   host.innerHTML = h;
 }
 
@@ -2029,24 +2027,46 @@ function renderImprovementTrajectory(d){
   if(!t){host.innerHTML='<div class="empty">No readable trajectory evidence. Missing is not 0%.</div>';return;}
   const h=t.production_headline||{}, curves=Array.isArray(h.curves)?h.curves:[], exceptions=Array.isArray(h.exceptions)?h.exceptions:[], epochs=Array.isArray(h.baseline_epochs)?h.baseline_epochs:[];
   const points=curves.flatMap(c=>Array.isArray(c.points)?c.points:[]);
+  const eventBlock=t.experiment_events||{},events=Array.isArray(eventBlock.events)?eventBlock.events:[];
   const errors=Array.isArray(h.evidence_errors)?h.evidence_errors:[];
   let headline='';
   if(h.state==='available'&&points.length){
-    const times=[...points.map(p=>Date.parse(p.recorded_at)),...epochs.map(e=>Date.parse(e.effective_at))].filter(Number.isFinite);
+    const times=[...points.map(p=>Date.parse(p.recorded_at)),...epochs.map(e=>Date.parse(e.effective_at)),...events.map(e=>Date.parse(e.recorded_at))].filter(Number.isFinite);
     const t0=Math.min(...times),t1=Math.max(...times),span=Math.max(1,t1-t0);
     const vals=[0,...points.map(p=>p.gain_pct)],lo0=Math.min(...vals),hi0=Math.max(...vals);
     const spread=Math.max(2,hi0-lo0),lo=lo0-spread*.14,hi=hi0+spread*.14;
-    const W=980,H=330,L=64,R=24,T=22,B=52,x=p=>L+(W-L-R)*((Date.parse(p.recorded_at)-t0)/span),y=v=>T+(H-T-B)*(hi-v)/(hi-lo);
+    const W=980,H=390,L=64,R=24,T=22,B=105,x=p=>L+(W-L-R)*((Date.parse(p.recorded_at)-t0)/span),y=v=>T+(H-T-B)*(hi-v)/(hi-lo);
     const colors=['#22c55e','#38bdf8','#a78bfa','#f97316','#e879f9','#14b8a6'];
+    const epochColors=['#ef4444','#fb923c','#facc15','#4ade80','#22d3ee','#60a5fa','#e879f9'];
     const grid=[];for(let i=0;i<5;i++){const v=lo+(hi-lo)*i/4,yy=y(v);grid.push(`<line class="grid" x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}"/><text class="axis" x="${L-8}" y="${yy+4}" text-anchor="end">${v>=0?'+':''}${v.toFixed(1)}%</text>`);}
-    let marks='',legend='';curves.forEach((c,ci)=>{const ps=c.points||[],color=colors[ci%colors.length];const path=ps.map((p,i)=>(i?'L':'M')+x(p)+','+y(p.gain_pct)).join(' ');if(ps.length>1)marks+=`<path class="curve" stroke="${color}" d="${path}"/>`;marks+=ps.map(p=>`<circle class="point" fill="${color}" cx="${x(p)}" cy="${y(p.gain_pct)}" r="6"><title>${esc(c.model||'model unrecorded')} · ${esc(c.surface)} · ${esc(c.recipe||'recipe unrecorded')} · ${short(p.commit)} · ${p.gain_pct>=0?'+':''}${p.gain_pct.toFixed(3)}% vs ${esc((c.baseline&&c.baseline.label)||'declared baseline')} · ${esc(p.evidence_state)} · ${esc(p.era)}</title></circle>`).join('');legend+=`<span class="trajectory-key" style="--key:${color}">${esc(c.model||'model unrecorded')} · ${esc(c.surface)} · ${esc(c.recipe||'recipe unrecorded')} · vs ${esc((c.baseline&&c.baseline.label)||'baseline')}</span>`;});
-    const releases=epochs.map(e=>{const xx=L+(W-L-R)*((Date.parse(e.effective_at)-t0)/span);return `<line class="keep-tick" x1="${xx}" y1="${T}" x2="${xx}" y2="${H-B}"/><circle class="point" fill="var(--panel)" cx="${xx}" cy="${y(0)}" r="5"><title>${esc(e.label)} release · ${short(e.commit)} · new 0% baseline epoch; prior curves do not bridge without direct dual-baseline evidence</title></circle><text class="axis" x="${xx+4}" y="${T+12}">${esc(e.label)}</text>`}).join('');
-    headline=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Direct whole-candidate improvement checkpoints by declared baseline">${grid.join('')}<line class="production" x1="${L}" y1="${y(0)}" x2="${W-R}" y2="${y(0)}"/><text class="axis" x="${W-R}" y="${y(0)-5}" text-anchor="end">each curve's declared baseline 0%</text>${releases}${marks}<text class="axis" x="${L}" y="${H-10}">${esc(new Date(t0).toISOString().slice(0,10))}</text><text class="axis" x="${W-R}" y="${H-10}" text-anchor="end">${esc(new Date(t1).toISOString().slice(0,10))}</text></svg><div class="trajectory-legend">${legend}</div>`;
+    const orderedEpochs=epochs.slice().sort((a,b)=>Date.parse(a.effective_at)-Date.parse(b.effective_at));
+    const epochBands=orderedEpochs.map((e,i)=>{const start=Math.max(t0,Date.parse(e.effective_at)),end=i+1<orderedEpochs.length?Math.min(t1,Date.parse(orderedEpochs[i+1].effective_at)):t1;if(end<start)return '';const xx=L+(W-L-R)*((start-t0)/span),xe=L+(W-L-R)*((end-t0)/span),color=epochColors[i%epochColors.length];return `<rect class="epoch-band" x="${xx}" y="${T}" width="${Math.max(0,xe-xx)}" height="${H-T-B}" fill="${color}" opacity="0.08"><title>${esc(e.label)} epoch · ${short(e.commit)} · effective ${esc(e.effective_at)} · only checkpoints declaring this baseline belong in this band</title></rect>`}).join('');
+    let marks='',legend='';curves.forEach((c,ci)=>{const ps=c.points||[],color=colors[ci%colors.length];const path=ps.map((p,i)=>(i?'L':'M')+x(p)+','+y(p.gain_pct)).join(' ');if(ps.length>1)marks+=`<path class="curve" stroke="${color}" d="${path}"/>`;marks+=ps.map(p=>{const provisional=p.evidence_state==='accumulated_chained_provisional',superseded=String(p.evidence_state||'').startsWith('superseded');return `<circle class="point${provisional?' serving-unknown':''}${superseded?' superseded':''}" fill="${provisional?'var(--panel)':color}" stroke="${provisional?'#f59e0b':'var(--panel)'}" cx="${x(p)}" cy="${y(p.gain_pct)}" r="6"><title>${esc(c.model||'model unrecorded')} · ${esc(c.surface)} · ${esc(c.recipe||'recipe unrecorded')} · ${short(p.commit)} · ${p.gain_pct>=0?'+':''}${p.gain_pct.toFixed(3)}% vs ${esc((c.baseline&&c.baseline.label)||'declared baseline')} · ${esc(p.evidence_state)} · era ${esc(p.era)}${p.keep_count!=null?' · '+esc(p.keep_count)+' retained keeps':''}</title></circle>`}).join('');legend+=`<span class="trajectory-key" style="--key:${color}">${esc(c.model||'model unrecorded')} · ${esc(c.surface)} · ${esc(c.recipe||'recipe unrecorded')} · vs ${esc((c.baseline&&c.baseline.label)||'baseline')}</span>`;});
+    const releases=orderedEpochs.map((e,i)=>{const xx=L+(W-L-R)*((Date.parse(e.effective_at)-t0)/span),color=epochColors[i%epochColors.length];return `<line class="epoch-boundary" x1="${xx}" y1="${T}" x2="${xx}" y2="${H-B}" stroke="${color}" stroke-opacity="0.6"><title>${esc(e.label)} boundary · ${short(e.commit)} · ${esc(e.effective_at)} · explicit discontinuity: no numerical bridge without direct measurements on both baselines</title></line><circle class="point" fill="var(--panel)" stroke="${color}" cx="${xx}" cy="${y(0)}" r="5"><title>${esc(e.label)} release · ${short(e.commit)} · new 0% baseline epoch; prior curves do not bridge without direct dual-baseline evidence</title></circle><text class="axis" x="${xx+4}" y="${T+12+(i%2)*11}" fill="${color}">${esc(e.label.replace('production-consolidated-',''))}</text>`}).join('');
+    const eventY=H-B+28,eventColors={kept:'#22c55e',measured_null:'#94a3b8',regression:'#ef4444',formation_refusal:'#f59e0b',invalid_or_setup:'#a78bfa',other:'#38bdf8'};
+    const eventShape=(e,i)=>{const xx=x(e),color=eventColors[e.disposition]||eventColors.other,title=`${e.disposition} · ${e.mechanism_id||'mechanism unknown'} · ${e.effect_pct==null?'effect unknown':(e.effect_pct>=0?'+':'')+e.effect_pct.toFixed(3)+'%'} · floor ${e.floor_pct==null?'unknown':e.floor_pct+'%'} · ${short(e.commit)} · ${e.producer_status}`;let shape,close;if(e.disposition==='measured_null'){shape=`<rect x="${xx-4}" y="${eventY-4}" width="8" height="8"`;close='</rect>'}else if(e.disposition==='regression'){shape=`<polygon points="${xx},${eventY-5} ${xx-5},${eventY+4} ${xx+5},${eventY+4}"`;close='</polygon>'}else if(e.disposition==='formation_refusal'){shape=`<polygon points="${xx},${eventY-5} ${xx-5},${eventY} ${xx},${eventY+5} ${xx+5},${eventY}"`;close='</polygon>'}else if(e.disposition==='invalid_or_setup'){shape=`<path d="M${xx-4},${eventY-4}L${xx+4},${eventY+4}M${xx+4},${eventY-4}L${xx-4},${eventY+4}" fill="none"`;close='</path>'}else{shape=`<circle cx="${xx}" cy="${eventY}" r="${e.disposition==='kept'?5:3.5}"`;close='</circle>'}return `${shape} class="trajectory-event" data-event-index="${i}" data-disposition="${esc(e.disposition)}" fill="${color}" stroke="${color}" stroke-width="2" tabindex="0" role="button" aria-label="${esc(title)}"><title>${esc(title)} · activate for recorded evidence details</title>${close}`};
+    const eventMarks=events.filter(e=>Number.isFinite(Date.parse(e.recorded_at))).map(eventShape).join('');
+    const kinds=['kept','measured_null','regression','formation_refusal','invalid_or_setup','other'];
+    const filters=`<div class="trajectory-filters" aria-label="Experiment marker filters">${kinds.map(k=>`<label><input type="checkbox" data-event-filter="${k}" checked> ${k.replaceAll('_',' ')} (${esc((eventBlock.counts||{})[k]||0)})</label>`).join('')}</div>`;
+    headline=filters+`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Direct whole-candidate improvement checkpoints with a separate experiment event strip">${epochBands}${grid.join('')}<line class="production" x1="${L}" y1="${y(0)}" x2="${W-R}" y2="${y(0)}"/><text class="axis" x="${W-R}" y="${y(0)-5}" text-anchor="end">each curve's declared baseline 0%</text>${releases}${marks}<rect class="event-strip" x="${L}" y="${H-B+12}" width="${W-L-R}" height="32"/><text class="axis" x="${L}" y="${eventY+21}">recorded experiments · separate disposition strip (not gain points)</text>${eventMarks}<text class="axis" x="${L}" y="${H-10}">${esc(new Date(t0).toISOString().slice(0,10))}</text><text class="axis" x="${W-R}" y="${H-10}" text-anchor="end">${esc(new Date(t1).toISOString().slice(0,10))}</text></svg><div class="trajectory-legend">${legend}<span class="muted">background = production epoch · dashed boundary = discontinuity · amber hollow = chained provisional</span></div>`;
   }else headline=`<div class="empty"><strong>PRODUCTION-RELATIVE TRAJECTORY UNAVAILABLE</strong> — ${esc(h.detail||'no direct checkpoints')}</div>`;
   const exceptionText=exceptions.length?`<div class="warn"><strong>${exceptions.length} explicit evidence exception${exceptions.length===1?'':'s'}:</strong> ${exceptions.map(p=>`${esc(p.evidence_state)} ${short(p.commit)}${Number.isFinite(p.gain_pct)?` ${(p.gain_pct>=0?'+':'')+p.gain_pct.toFixed(3)}%`:''} — ${esc(p.note||'no measurement')}`).join(' · ')}</div>`:'';
   const local=t.campaign_drilldown||{}, bench=Array.isArray(local.bench_checkpoints)?local.bench_checkpoints:[], checks=Array.isArray(local.serving_checks)?local.serving_checks:[];
   const localText=local.state==='available'?`<details><summary>Campaign-local CoR drill-down · ${esc(local.model||'model unrecorded')} · ${esc(local.keeps.length)} keeps · not production-relative</summary><div class="muted">Campaign ${esc(local.campaign_id||'unrecorded')}. Latest cheap screen: ${bench.length?(bench[bench.length-1].gain_pct>=0?'+':'')+bench[bench.length-1].gain_pct.toFixed(3)+'%':'missing'} vs campaign CoR. Serving checks: ${checks.length?checks.map(p=>`${p.keep_count} keeps ${(p.gain_pct>=0?'+':'')+p.gain_pct.toFixed(3)}% ${p.evidence_state}`).join(' · '):'missing'}. These values are not joined onto the headline.</div></details>`:`<div class="muted">Campaign-local drill-down: ${esc(local.state||'absent')} — ${esc(local.detail||'no evidence')}.</div>`;
-  host.innerHTML=`<div class="trajectory">${headline}<div class="muted">${esc(h.detail||'')}</div>${exceptionText}`+(errors.length?`<div class="warn"><strong>${errors.length} unjoinable production receipt${errors.length===1?'':'s'}</strong> — explicit gaps, never composed or hidden.</div>`:'')+localText+`</div>`;
+  host.innerHTML=`<div class="trajectory">${headline}<div class="muted">${esc(h.detail||'')}</div>${exceptionText}`+(errors.length?`<div class="warn"><strong>${errors.length} unjoinable production receipt${errors.length===1?'':'s'}</strong> — explicit gaps, never composed or hidden.</div>`:'')+localText+`<aside id="trajectory-event-drawer" class="trajectory-drawer" role="dialog" aria-modal="false" aria-labelledby="trajectory-event-title" hidden><button id="trajectory-event-close" type="button" aria-label="Close experiment details">Close</button><div id="trajectory-event-detail"></div></aside></div>`;
+  const drawer=document.getElementById('trajectory-event-drawer'),detail=document.getElementById('trajectory-event-detail'),close=document.getElementById('trajectory-event-close');let priorFocus=null;
+  const unknown=v=>v===null||v===undefined||v===''?'unknown / not recorded':String(v);
+  const openEvent=(event,index)=>{priorFocus=event.currentTarget;const e=events[index],evidence=(e.evidence||[]).length?(e.evidence||[]).map(x=>`<li><strong>${esc(x.label)}</strong>: <code>${esc(x.value)}</code></li>`).join(''):'<li>unknown / not recorded</li>';detail.innerHTML=`<h3 id="trajectory-event-title">${esc(e.mechanism_id||'Mechanism unknown')}</h3><dl><dt>disposition</dt><dd>${esc(e.disposition)} (${esc(e.producer_status)})</dd><dt>recorded</dt><dd>${esc(unknown(e.recorded_at))}</dd><dt>effect / floor</dt><dd>${esc(e.effect_pct==null?'unknown':e.effect_pct+'%')} / ${esc(e.floor_pct==null?'unknown':e.floor_pct+'%')} · decisive ${esc(unknown(e.decisive))}</dd><dt>commit / epoch</dt><dd>${esc(unknown(e.commit))} / ${esc(unknown(e.epoch))}</dd><dt>model / surface</dt><dd>${esc(unknown(e.model))} / ${esc(unknown(e.surface))}</dd><dt>profile target</dt><dd>${esc(unknown(e.profile_target))}</dd><dt>hypothesis</dt><dd>${esc(unknown(e.hypothesis))}</dd><dt>critic rationale</dt><dd>${esc(unknown(e.critic_rationale))}</dd><dt>measurement</dt><dd>${esc(e.comparison?JSON.stringify(e.comparison):'unknown / not recorded')}</dd><dt>transfer / applicability</dt><dd>${esc(e.transfer_applicability?JSON.stringify(e.transfer_applicability):'unknown / not recorded')}</dd><dt>identifiers</dt><dd>${esc(JSON.stringify(e.identifiers||{}))}</dd><dt>evidence</dt><dd><ul>${evidence}</ul></dd></dl>`;drawer.hidden=false;close.focus()};
+  host.querySelectorAll('.trajectory-event').forEach(el=>{const open=e=>openEvent(e,Number(el.dataset.eventIndex));el.addEventListener('click',open);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(e)}})});
+  host.querySelectorAll('[data-event-filter]').forEach(el=>el.addEventListener('change',()=>host.querySelectorAll(`.trajectory-event[data-disposition="${el.dataset.eventFilter}"]`).forEach(mark=>mark.style.display=el.checked?'':'none')));
+  const shut=()=>{drawer.hidden=true;if(priorFocus&&priorFocus.focus)priorFocus.focus()};close.addEventListener('click',shut);drawer.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();shut()}});
+}
+
+function renderImprovementTrajectorySafely(d){
+  try{renderImprovementTrajectory(d)}catch(err){
+    const host=document.getElementById("trajectory");
+    host.innerHTML=`<div class="warn"><strong>TRAJECTORY RENDER FAILED</strong> — ${esc(err&&err.message?err.message:String(err))}. The rest of the page cannot hide this panel failure.</div>`;
+  }
 }
 
 function renderDispositions(d){
@@ -3028,6 +3048,12 @@ function render(d){
     ? {...d, loop:null, derived:null, runtime_preparation:null,
        ...(d.serial.child || retained?.detail || {})}
     : d;
+  // Independent first surface: sibling renderers cannot leave the headline
+  // plot blank, and champion/progress faults report inside their own relocated
+  // hosts rather than aborting the rest of the page.
+  renderImprovementTrajectorySafely(d);
+  try{renderChampion(d)}catch(err){document.getElementById("champ").innerHTML=`<div class="warn">Champion summary render failed: ${esc(err&&err.message?err.message:String(err))}</div>`}
+  try{renderTiles(detail)}catch(err){document.getElementById("tiles").innerHTML=`<div class="warn">Progress summary render failed: ${esc(err&&err.message?err.message:String(err))}</div>`}
   setFreshBadge(d.freshness_state, d.age_s, d.notice);
   document.getElementById("hdr-step").textContent =
     (retained?.detail && !d.serial.child ? "Retained target result · " : "") + (detail.display_step || "");
@@ -3040,10 +3066,7 @@ function render(d){
   // THE headline first, and unconditionally. It has its own producer and its
   // own envelope: an unreadable LOOP must not take it down, and its own absence
   // — which is the current state — must be drawn rather than hidden.
-  renderChampion(d);
-  renderImprovementTrajectory(d);
   renderSerial(d);
-  renderTiles(detail);
   renderRuntimePreparation(detail);
   // The accumulator (R23-44) rides the loop-status body; rendered unconditionally
   // and drawing its own graceful empty when the run carries no serving tier.
@@ -3062,6 +3085,14 @@ function render(d){
 
 function renderFetchFailure(err){
   serialView=null;
+  document.getElementById("trajectory").innerHTML =
+    '<div class="warn"><strong>TRAJECTORY UNKNOWN</strong> — hub unreachable; the last plotted evidence was cleared.</div>';
+  document.getElementById("champion-capabilities").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; champion capabilities cannot be refreshed.</div>';
+  document.getElementById("tiles").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; active progress cannot be refreshed.</div>';
+  document.getElementById("accumulator").innerHTML =
+    '<div class="warn">UNKNOWN — hub unreachable; retained keeps and gate status cannot be refreshed.</div>';
   document.getElementById("serial-controls").innerHTML="";
   document.getElementById("runtime-preparation").innerHTML =
     '<div class="warn">UNKNOWN — hub unreachable; runtime progress cannot be refreshed.</div>';

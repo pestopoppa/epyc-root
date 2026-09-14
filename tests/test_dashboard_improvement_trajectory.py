@@ -110,6 +110,28 @@ def test_backend_distinguishes_absent_and_malformed_local_evidence(tmp_path: Pat
     assert result["campaign_drilldown"]["state"] == "malformed"
 
 
+def test_backend_projects_bounded_experiment_events_without_comparison_samples(tmp_path: Path) -> None:
+    _store(tmp_path)
+    _insert(tmp_path, "kept", "2026-09-01T00:00:01Z", "akm-keep", "kept",
+            {"champion_head": "a" * 40, "comparison": {**_comparison(1.5),
+                "anchor_samples": list(range(20)), "decisive": True}})
+    _insert(tmp_path, "null", "2026-09-01T00:00:02Z", "akm-null", "measured_null",
+            {"comparison": {**_comparison(.1), "decisive": False}})
+    _insert(tmp_path, "reg", "2026-09-01T00:00:03Z", "akm-reg", "measured_regression",
+            {"comparison": {**_comparison(-2.0), "decisive": True}})
+    _insert(tmp_path, "ref", "2026-09-01T00:00:04Z", "akm-ref", "refused_at_formation",
+            {"reason": "critic refused"}, "critic refused")
+    _insert(tmp_path, "bad", "2026-09-01T00:00:05Z", "akm-bad", "measurement_invalid", {})
+    body = loop_status.read_knowledge(tmp_path)["body"]
+    result = loop_status.improvement_trajectory(tmp_path, body["trajectory_rows"], PRODUCTION)
+    events = result["experiment_events"]
+    assert events["counts"] == {"kept": 1, "measured_null": 1, "regression": 1,
+                                 "formation_refusal": 1, "invalid_or_setup": 1}
+    keep = next(e for e in events["events"] if e["disposition"] == "kept")
+    assert keep["effect_pct"] == 1.5 and keep["floor_pct"] == 1.0
+    assert "anchor_samples" not in json.dumps(keep)
+
+
 @pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
 def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) -> None:
     payload = {"knowledge": {"improvement_trajectory": {
@@ -134,6 +156,19 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
                                "bench_checkpoints": [{"gain_pct": .83}],
                                "serving_checks": [{"keep_count": 2, "gain_pct": .33,
                                                    "evidence_state": "serving_inconclusive"}]},
+        "experiment_events": {"counts": {"kept": 1, "formation_refusal": 1},
+            "events": [{"recorded_at": "2026-09-01T12:00:00Z", "mechanism_id": "akm-kept",
+                        "disposition": "kept", "producer_status": "kept", "effect_pct": 1.2,
+                        "floor_pct": .6, "commit": "a" * 40, "epoch": "c" * 64,
+                        "model": "Qwen", "surface": "tg128", "profile_target": "kernel",
+                        "hypothesis": "faster", "critic_rationale": None, "comparison": {"pairs": 20},
+                        "evidence": [], "transfer_applicability": None, "identifiers": {}},
+                       {"recorded_at": "2026-09-01T13:00:00Z", "mechanism_id": "akm-refused",
+                        "disposition": "formation_refusal", "producer_status": "refused_at_formation",
+                        "effect_pct": None, "floor_pct": None, "commit": None, "epoch": "c" * 64,
+                        "model": None, "surface": "tg128", "profile_target": "kernel",
+                        "hypothesis": "unsafe", "critic_rationale": "critic refused", "comparison": None,
+                        "evidence": [], "transfer_applicability": None, "identifiers": {}}]},
     }}}
     blocks = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>",
                         PAGE.read_text(), re.DOTALL)
@@ -146,12 +181,56 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
     card = json.loads(proc.stdout)["by_id"]["trajectory"]
     assert "each curve's declared baseline 0%" in card
     assert "production-consolidated-v9 release" in card
+    assert "epoch-band" in card and "epoch-boundary" in card
     assert "Qwen3.8-27B-Q8_0.gguf" in card
     assert "+7.200% vs production-consolidated-v9" in card
     assert "Campaign-local CoR drill-down" in card
     assert "not production-relative" in card
     assert "1 unjoinable production receipt" in card
     assert "missing_production_ab" in card
+    assert "recorded experiments · separate disposition strip" in card
+    assert 'tabindex="0" role="button"' in card
+    assert "trajectory-event-drawer" in card
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
+def test_whole_page_sibling_failure_cannot_prevent_trajectory_mount(tmp_path: Path) -> None:
+    payload = {"knowledge": {"improvement_trajectory": {
+        "schema": loop_status.TRAJECTORY_SCHEMA,
+        "production_headline": {"state": "available", "detail": "direct",
+            "evidence_errors": [], "exceptions": [], "baseline_epochs": [],
+            "curves": [{"id": "curve", "model": "model", "surface": "tg128",
+                        "recipe": "recipe", "baseline": {"commit": "d" * 40, "label": "v9"},
+                        "points": [{"commit": "a" * 40, "recorded_at": "2026-09-01T00:00:00Z",
+                                    "gain_pct": 1.0, "evidence_state": "serving_verified_direct",
+                                    "era": "era"}]}]},
+        "campaign_drilldown": {"state": "absent"},
+        "experiment_events": {"events": [], "counts": {}}}}}
+    blocks = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", PAGE.read_text(), re.DOTALL)
+    source = "\n".join(blocks).replace(
+        "renderSerial(d);", 'throw new Error("synthetic sibling renderer");', 1)
+    page_js, data = tmp_path / "page.js", tmp_path / "payload.json"
+    page_js.write_text(source); data.write_text(json.dumps(payload))
+    proc = subprocess.run(["node", str(HARNESS), str(page_js), str(data), "render"],
+                          capture_output=True, text=True, timeout=30, check=True)
+    result = json.loads(proc.stdout)
+    assert result["threw"] == ["render: synthetic sibling renderer"]
+    assert "<svg" in result["by_id"]["trajectory"]
+
+
+def test_trajectory_is_first_surface_and_absorbs_redundant_panels() -> None:
+    page = PAGE.read_text()
+    main = page.split("<main>", 1)[1]
+    assert '<section id="sec-champion"' not in main
+    assert '<section id="sec-tiles"' not in main
+    assert main.index('id="sec-trajectory"') < main.index('id="sec-capabilities"')
+    assert main.index('id="sec-capabilities"') < main.index('id="sec-accumulator"')
+    assert main.index('id="sec-accumulator"') < main.index('id="sec-serial"')
+    trajectory = main[main.index('id="sec-trajectory"'):main.index('</section>')]
+    for retained_host in ('id="champ"', 'id="champ-badge"', 'id="tiles"', 'id="trajectory"'):
+        assert retained_host in trajectory
+    knowledge = main[main.index('id="sec-knowledge"'):]
+    assert knowledge.index("<details>") < knowledge.index('id="know"')
 
 
 def _history(root: Path, *, active: dict | None = None,

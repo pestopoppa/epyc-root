@@ -1965,11 +1965,14 @@ def _read_knowledge_once(path: Path) -> dict:
             trajectory_rows = [
                 {"mechanism_id": r[0], "status": r[1],
                  "refusal_reason": r[2], "recorded_at": r[3],
-                 "payload": r[4], "payload_bytes": r[5]}
+                 "payload": r[4], "payload_bytes": r[5],
+                 "target_symbol": r[6], "target_surface": r[7],
+                 "statement": r[8], "epoch_sha256": r[9],
+                 "effect_fraction": r[10]}
                 for r in cur.execute(
                     "SELECT mechanism_id, status, refusal_reason, recorded_at, "
-                    "substr(payload, 1, ?), length(payload) FROM experiments "
-                    "WHERE status = 'kept' OR mechanism_id = 'champion-vs-production' "
+                    "substr(payload, 1, ?), length(payload), target_symbol, target_surface, "
+                    "substr(statement, 1, 2001), epoch_sha256, effect_fraction FROM experiments "
                     "ORDER BY recorded_at DESC LIMIT 512",
                     (TRAJECTORY_RAW_MAX_BYTES + 1,)).fetchall()]
         finally:
@@ -2427,8 +2430,70 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
                 abs(local["bench_checkpoints"][-1]["gain_pct"] - float(expected_gain)) > 1e-9):
             local["evidence_errors"].append({"evidence": str(campaign_root),
                 "reason": "active campaign gain no longer matches normalized identity"})
+    events = []
+    disposition_counts: dict[str, int] = {}
+    for row in rows[:256]:
+        try:
+            payload = json.loads(row.get("payload") or "{}")
+        except (TypeError, json.JSONDecodeError):
+            payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
+        comparison = payload.get("comparison")
+        comparison = comparison if isinstance(comparison, dict) else {}
+        status_name = str(row.get("status") or "other")
+        effect = comparison.get("effect_pct")
+        if not _finite_number(effect) and _finite_number(row.get("effect_fraction")):
+            effect = float(row["effect_fraction"]) * 100.0
+        if status_name == "kept":
+            disposition = "kept"
+        elif status_name == "measured_null":
+            disposition = "measured_null"
+        elif (_finite_number(effect) and float(effect) < 0) or "regress" in status_name:
+            disposition = "regression"
+        elif status_name == "refused_at_formation":
+            disposition = "formation_refusal"
+        elif status_name in {"measurement_invalid", "bench_failed", "planner_transient",
+                             "anchor_invalid", "runtime_refused"}:
+            disposition = "invalid_or_setup"
+        else:
+            disposition = "other"
+        commit = payload.get("champion_head") or payload.get("at_commit")
+        model = comparison.get("model") or payload.get("model")
+        if isinstance(model, str):
+            model = Path(model).name
+        surface = comparison.get("surface") or payload.get("surface") or row.get("target_surface")
+        evidence = []
+        for key in ("evidence", "belief_export_receipt", "patch_path", "patch_metadata_path"):
+            value = payload.get(key) or comparison.get(key)
+            if isinstance(value, str) and value:
+                evidence.append({"label": key, "value": value})
+        event = {"recorded_at": row.get("recorded_at"), "mechanism_id": row.get("mechanism_id"),
+            "disposition": disposition, "producer_status": status_name,
+            "effect_pct": float(effect) if _finite_number(effect) else None,
+            "floor_pct": (float(comparison["noise_floor_pct"])
+                           if _finite_number(comparison.get("noise_floor_pct")) else None),
+            "decisive": comparison.get("decisive") if type(comparison.get("decisive")) is bool else None,
+            "commit": commit if isinstance(commit, str) else None,
+            "model": model, "surface": surface if isinstance(surface, str) else None,
+            "epoch": row.get("epoch_sha256"), "profile_target": row.get("target_symbol"),
+            "hypothesis": row.get("statement") or payload.get("statement"),
+            "critic_rationale": row.get("refusal_reason") or payload.get("reason"),
+            "comparison": ({"pairs": comparison.get("pairs"), "drifting": comparison.get("drifting"),
+                            "calibrated": comparison.get("calibrated")}
+                           if comparison else None),
+            "evidence": evidence,
+            "transfer_applicability": payload.get("research_scope"),
+            "identifiers": {"campaign_id": payload.get("campaign_id"),
+                            "hypothesis_id": payload.get("hypothesis_id")}}
+        events.append(event)
+        disposition_counts[disposition] = disposition_counts.get(disposition, 0) + 1
+    events.sort(key=lambda event: str(event.get("recorded_at") or ""))
     return {"schema": TRAJECTORY_SCHEMA, "production_headline": headline,
-            "campaign_drilldown": local}
+            "campaign_drilldown": local,
+            "experiment_events": {"events": events, "counts": disposition_counts,
+                "bounded": len(rows) > 256, "limit": 256,
+                "detail": "experiment markers are a separate event strip, never curve checkpoints"}}
 
 
 def knowledge_snapshot(root: Optional[Path] = None, *,
