@@ -103,18 +103,27 @@ noise-floor wording and identity. The full knowledge ledger is a default-collaps
 controls remain in their operational sections.
 
 The v3 SVG adopts the Autopilot instrument-era grammar without coupling the dashboards: low-opacity
-epoch bands, dashed colored release boundaries, staggered labels, full title metadata, and line
-breaks across baseline/model/surface/recipe/metric/era changes. A separate time-aligned strip renders
-the latest 256 authoritative experiment records with accessible shapes/colors for kept,
-measured-null, regression, formation-refusal, invalid/setup, and other dispositions. Filters and a
-keyboard-operable evidence drawer expose only recorded fields and say unknown otherwise. These
-markers are explicitly not production-relative checkpoints.
+epoch bands, dashed colored release boundaries, concise labels, full title metadata, and explicit
+instrument discontinuities. ROOT `ab1a34c5` replaces the initial multi-recipe scatter with exactly
+one headline trajectory per model. Each model selects its longest exact surface history (plain wins
+ties); secondary surfaces remain selectable and their percentages are never blended. Recipe,
+harness, backend, metric and baseline identities are checkpoint/epoch metadata rather than legend
+categories. Singleton models are labelled milestones, not curves.
+
+Only retained/promoted checkpoints render as dots. Nulls, regressions, formation refusals,
+invalid/setup outcomes and other attempts remain in the default-collapsed knowledge ledger and do
+not appear in the SVG. Each keyboard-selectable keep shows mechanism, marginal and cumulative
+effects, floor/confidence, commit, timestamp and instrument epoch on hover, then opens a persistent
+side panel with recorded hypothesis/profile, patch/commit, comparison, critic, applicability,
+identifiers and evidence fields; absent producer fields render explicit unknowns.
 
 The trajectory mounts first through an isolated error boundary; sibling renderer failures cannot
 prevent its SVG from appearing. Focused validation passed 15/15, Python compilation and diff checks.
-The broader loop selection passed 114 tests and 33 skips; 11 knowledge-card failures were unrelated
-fixture contamination from resolving the shared global store. Live `:8100` proof showed transport
-health OK, schema v3, 12 curves, one epoch band/boundary, 256 bounded event buttons, no render
-exceptions, populated Capabilities/Accumulator hosts, and no redundant Champion/Progress sections.
+The final broader loop selection passed 85 tests, 33 skips and 5 browser subtests. Live `:8100`
+proof showed transport health OK, schema v3, five unique model IDs and five headline trajectories.
+The default is Flash-Next plain with exact geometry x=`64 → 443.565 → 956` across commits
+`6f032c48 → 9c4f73e2 → ef81196d`; the MTP selector shows the same commit/date order. The DOM has
+one SVG, two dashed instrument connectors, three keep-only dots, zero non-keep dots, no filters or
+recipe legend, a persistent evidence side panel, and no render exceptions.
 GitNexus reports LOW upstream risk (three dependants) for `improvement_trajectory`; the inline JS
 renderer is not indexed. No campaign state, registry, supervisor files, or production kernels changed.

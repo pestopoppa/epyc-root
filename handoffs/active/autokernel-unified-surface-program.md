@@ -3242,14 +3242,18 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       `a3cf6d0a` makes the trajectory the first dashboard surface and folds champion identity,
       active progress, retained-gain context and production epochs into it. Separate responsive
       Capabilities and Accumulator cards follow; the redundant Champion and Progress sections are
-      gone, while the full knowledge ledger is collapsed by default. Autopilot-style epoch bands,
-      dashed release boundaries and explicit discontinuities preserve baseline identity. A bounded
-      256-event strip classifies keeps, measured nulls, regressions, formation refusals,
-      invalid/setup outcomes and other records without treating them as gain checkpoints; filters,
-      accessible marker controls and an Escape/focus-restoring evidence drawer expose only recorded
-      fields, using explicit unknowns otherwise. Trajectory rendering occurs first behind its own
-      visible failure boundary, so a later renderer cannot leave the plot blank. Live proof: one SVG,
-      12 curves, one epoch band/boundary and 256 event buttons; 15 focused layout/render tests pass.
+      gone, while the full knowledge ledger is collapsed by default. Follow-up ROOT `ab1a34c5`
+      corrects the initial scatter: exactly one selectable headline trajectory exists per model.
+      Each model chooses the longest exact surface history (plain wins ties); secondary surfaces are
+      selectable detail, never blended. Recipe/harness/baseline changes are Autopilot-style instrument
+      bands and dashed discontinuity connectors within the same model row. Only promoted checkpoints
+      are dots; nulls, regressions, refusals and invalid/setup attempts remain in the collapsed ledger.
+      Accessible keep markers open a persistent side panel and expose only recorded evidence, using
+      explicit unknowns otherwise. Trajectory rendering occurs first behind its own visible failure
+      boundary. Live default Flash-Next plain spans `6f032c48` → `9c4f73e2` → `ef81196d`; MTP exposes
+      the same commit order via the surface selector. Five model IDs produce five headline trajectories,
+      with three keep-only dots and two instrument connectors visible by default. Final focused
+      validation: 85 passed, 33 skipped, 5 browser subtests.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.
