@@ -361,6 +361,43 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
+def test_browser_marks_negative_accumulator_estimate_unresolved_not_regression(tmp_path: Path) -> None:
+    stamp = "2026-09-14T20:09:49Z"
+    payload = {"knowledge": {"improvement_trajectory": {
+        "production_headline": {"state": "available", "detail": "normalized history",
+            "baseline_epochs": [], "evidence_errors": [], "exceptions": [],
+            "curves": [{"id": "glm", "model": "GLM-5.3-Flash",
+                "surface": "campaign-accumulator", "primary_surface": "campaign-accumulator",
+                "metric": "compounded_bench_pct", "backend": "cpu",
+                "instrument_epochs": [], "points": [{"commit": "b" * 40,
+                    "recorded_at": stamp, "gain_pct": -1.2676,
+                    "evidence_state": "accumulated_chained_provisional",
+                    "baseline": {"commit": "c" * 40, "label": "campaign CoR"}}]}],
+        }, "campaign_drilldown": {"state": "available", "model": "GLM-5.3-Flash",
+            "campaign_id": "glm", "keeps": [{}],
+            "bench_checkpoints": [{"gain_pct": -1.2676}], "serving_checks": []},
+        "keep_history": {"events": [{"attempt_id": "keep-1", "recorded_at": stamp,
+            "mechanism_id": "akm-one", "disposition": "kept", "effect_pct": .67,
+            "commit": "b" * 40, "model": "GLM-5.3-Flash",
+            "surface": "campaign-accumulator", "evidence": [], "identifiers": {}}]}
+    }}}
+    blocks = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>",
+                        PAGE.read_text(), re.DOTALL)
+    page_js, data = tmp_path / "page.js", tmp_path / "payload.json"
+    page_js.write_text("\n".join(blocks)); data.write_text(json.dumps(payload))
+    proc = subprocess.run(["node", str(HARNESS), str(page_js), str(data),
+                           "renderImprovementTrajectory"], capture_output=True,
+                          text=True, timeout=30, check=True)
+    card = json.loads(proc.stdout)["by_id"]["trajectory"]
+    assert "UNRESOLVED ACCUMULATOR ESTIMATE" in card
+    assert "not a verified champion improvement or regression" in card
+    assert "provisional-checkpoint" in card
+    assert "-1.268%" in card
+    assert "keep-timeline" in card
+    assert 'class="point trajectory-event"' not in card
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
 def test_whole_page_sibling_failure_cannot_prevent_trajectory_mount(tmp_path: Path) -> None:
     payload = {"knowledge": {"improvement_trajectory": {
         "schema": loop_status.TRAJECTORY_SCHEMA,
