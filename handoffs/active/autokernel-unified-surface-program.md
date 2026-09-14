@@ -3224,15 +3224,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     `/mnt/raid0/llm/autokernel/loop-memory/champion-capabilities.json` (SHA-256
     `264f16ad346634b2a0c7bbe5e7a83faa976db0a7f75162f38f38324393247ea7`).
   - [x] **AKU-09k — headline the measured champion trajectory against frozen production**:
-    ✅ 2026-09-14. The existing `/loop` page now draws one curve per recorded model/surface from
-    direct champion-vs-production checkpoints only. Historical points require an exact join of
-    the raw receipt filename, full champion identity in the keep row, and the producer's frozen-
-    production refresh row; unjoinable/manual records remain counted gaps. Campaign-local CoR
-    accumulation is a secondary drill-down and is never spliced into the headline. Live GPU
-    evidence yields explicit Qwen3.8 `tg128` and `dec-b4` curves plus two honestly model-unrecorded
-    legacy curves; GLM's 23-keep `+0.830381%` remains CoR-only because no production-anchored GLM
-    checkpoint exists. ROOT `262b22d3`; 79 focused tests plus 5 browser subtests passed. Existing
-    registry, semantic health and freshness remain unchanged; AKU-09g/AKU-12 remain open.
+    ✅ 2026-09-14. ROOT `ebb98492` + RESEARCH `323bcf2c` supersede the initial trajectory
+    projection. A compact subsystem-owned normalizer validates source literals and digests, then
+    publishes 21 historical whole-candidate checkpoints. The page separates every model, surface,
+    recipe and baseline epoch: DeepSeek-1.5B, Qwen3.8-27B, Gemma, and Flash-Next CPU plain/MTP
+    evidence no longer share a curve. Production releases are explicit zero-percent epoch markers;
+    no line crosses a production, recipe or harness-era boundary without direct dual-baseline
+    evidence. The overwritten Qwen `732389d6` `+27.363%` ledger value, its retained direct
+    `-1.414%` receipt, and the current `ef81196d` missing production A/B remain visibly distinct.
+    Live retained accumulator state supplies an automatically advancing provisional promotion-chain
+    checkpoint; compatible direct A/B evidence supersedes it, while identity mismatch breaks the
+    chain. The active GLM-5.3 store resolves 23 keeps and `+0.830381%` versus CoR, never the global
+    accumulator. Live `/api/loop` serves schema v3 with 12 curves and two explicit exceptions.
+    Validation: 81 focused tests, 33 skips and 5 browser subtests passed; existing registry health
+    and freshness wiring remains unchanged; AKU-09g/AKU-12 remain open.
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.

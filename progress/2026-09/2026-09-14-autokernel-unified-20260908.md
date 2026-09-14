@@ -62,3 +62,32 @@ unjoinable gaps. The GLM store has no production-anchored checkpoint, so its 23-
 79 focused tests plus 5 executable browser subtests passed; focused Ruff, Python compilation,
 and diff checks passed. GitNexus reports LOW upstream risk. No process reload, runtime state,
 registry, production kernel, or supervisor file changed.
+
+### Trajectory correction: normalized history, live promotion chain, and baseline epochs
+
+The first production-only projection was incomplete: legacy GPU receipts lacked model identity,
+CPU whole-candidate checkpoints lived outside the loop store, the current global accumulator hid
+the active GLM campaign, and a single production axis could imply continuity across incompatible
+recipes or future production releases. RESEARCH `323bcf2c` adds the bounded normalizer
+`historical_trajectory.py`; it fails closed when its exact receipt/doc literals change and emits
+source hashes, model/surface/recipe/era identities, baseline identities, conflict states, and the
+active campaign locator. ROOT `ebb98492` consumes that bootstrap together with current producer
+receipts and the retained accumulator promotion chain.
+
+The live v3 payload now contains 12 isolated curves: DeepSeek-R1-Distill-Qwen-1.5B `tg128` and
+`dec-b4` (including `a2728701` `+12.618%`), Qwen3.8-27B `dec-b4` `-1.414%` / `+22.443%` and
+`tg128` `+5.633%`, Gemma `+7.206%`, six Flash-Next CPU plain/MTP recipe-era curves against
+pristine `c51e4dabf`, and the active GLM-5.3 23-keep `+0.830381%` provisional chain against its
+CoR. It explicitly marks the overwritten/conflicting Qwen `+27.363%` record and missing current
+`ef81196d` production A/B. Production-v9 is a dated vertical zero-percent release epoch; synthetic
+v10 tests prove the old segment is preserved, a new segment starts, and a model first covered in
+v10 is not backfilled onto v9. A simulated retained-bundle promotion test proves a new tip appears
+without editing static history or dashboard code.
+
+Verification: research normalizer 2/2 tests; dashboard loop surface 81 passed, 33 skipped, and 5
+browser subtests passed. Live `http://127.0.0.1:8100/api/loop` serves schema
+`epyc.dashboard.autokernel_improvement_trajectory.v3`, one v9 release marker, two explicit
+exceptions, GLM campaign `aku12a-glm53-five-loop`, 23 keeps, and `+0.8303809823155373%`.
+The hub process was already refreshed by its supervisor. `/api/health` remains degraded because
+of unrelated stale/absent producers; no runtime campaign state, production kernel, registry,
+supervisor PID, or supervisor log was changed.
