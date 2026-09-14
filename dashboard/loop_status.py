@@ -1502,9 +1502,12 @@ _LEGACY_DEEPSEEK_KEEP_COMMITS = frozenset({
     "5ad3e36dfb3acc9eda3dd3d5e137dce69a629cdd",
     "dd161d519d07c0012ab95be6627f1ff63f9383cf",
     "4925b2084accf03776dddc4931957f06b3d32a77",
+    "732389d6d9d08338fe2ad2457bf8f44205914a7f",
 })
 _LEGACY_DEEPSEEK_MODEL = "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M"
 _LEGACY_DEEPSEEK_RUN_EVIDENCE = "/mnt/raid0/llm/tmp/run21.log:2"
+_LEGACY_DEEPSEEK_CONFLICT_EVIDENCE = \
+    "/workspace/progress/2026-09/2026-09-02-ak-rebuild-20260828.md:75"
 _PRODUCTION_REFRESH_REASON = re.compile(
     r"^champion (?P<champion>[0-9a-f]{12}) measures "
     r"(?P<effect>[+-][0-9]+(?:\.[0-9]+)?)% against frozen production "
@@ -2253,6 +2256,9 @@ def _retained_keep_history(root: Path, headline: Mapping[str, Any],
             model, attribution = _LEGACY_DEEPSEEK_MODEL, "campaign_join"
             evidence.append({"label": "campaign_model_join",
                              "value": _LEGACY_DEEPSEEK_RUN_EVIDENCE})
+            if commit.startswith("732389d6"):
+                evidence.append({"label": "overwritten_comparison_model_audit",
+                                 "value": _LEGACY_DEEPSEEK_CONFLICT_EVIDENCE})
         if model is None and default_model is not None:
             model, attribution = default_model, "active_campaign_store"
         for key in ("evidence", "belief_export_receipt", "patch_path", "patch_metadata_path"):
@@ -2304,8 +2310,9 @@ def _retained_keep_history(root: Path, headline: Mapping[str, Any],
         for record in records:
             if (not isinstance(record, dict)
                     or not isinstance(record.get("mechanism_id"), str)
-                    or not isinstance(record.get("commit"), str)
-                    or not _FULL_SHA.fullmatch(record["commit"])
+                    or (record.get("commit") is not None
+                        and (not isinstance(record.get("commit"), str)
+                             or not _FULL_SHA.fullmatch(record["commit"])))
                     or not isinstance(record.get("model"), str)
                     or not isinstance(record.get("retention_class"), str)
                     or not isinstance(record.get("source_references"), list)):
@@ -2315,7 +2322,7 @@ def _retained_keep_history(root: Path, headline: Mapping[str, Any],
                 "source_id": str(MANUAL_KEEP_HISTORY), "attempt_id": record.get("id"),
                 "recorded_at": record.get("recorded_at"), "campaign_id": record.get("campaign_id"),
                 "hypothesis_id": None, "mechanism_id": record["mechanism_id"],
-                "commit": record["commit"], "model": record["model"],
+                "commit": record.get("commit"), "model": record["model"],
                 "model_recorded": record["model"], "model_attribution": "manual_fold_inventory",
                 "surface": record.get("surface"), "epoch": record.get("epoch"),
                 "profile_target": record.get("profile_target"),
@@ -2329,6 +2336,7 @@ def _retained_keep_history(root: Path, headline: Mapping[str, Any],
                 "evidence": [{"label": "manual_fold_inventory", "value": value}
                              for value in record["source_references"]],
                 "identifiers": {"component_commits": record.get("component_commits"),
+                                "artifact_sha256": record.get("artifact_sha256"),
                                 "patch_path": None, "patch_metadata_path": None}})
         sources.append({"id": "manual_fold_inventory", "state": "available",
                         "evidence": str(MANUAL_KEEP_HISTORY),

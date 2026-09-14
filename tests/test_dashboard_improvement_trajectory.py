@@ -221,8 +221,26 @@ def test_keep_history_uses_exact_legacy_campaign_join(tmp_path: Path) -> None:
         tmp_path, {"curves": []}, None)["events"] if event["attempt_id"] == "legacy")
     assert event["model"] == "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M"
     assert event["model_attribution"] == "campaign_join"
-    assert event["evidence"][-1] == {
-        "label": "campaign_model_join", "value": "/mnt/raid0/llm/tmp/run21.log:2"}
+    assert ({"label": "campaign_model_join",
+             "value": "/mnt/raid0/llm/tmp/run21.log:2"} in event["evidence"])
+
+
+def test_keep_history_resolves_overwritten_shared_commit_from_original_campaign(tmp_path: Path) -> None:
+    _store(tmp_path)
+    head = "732389d6d9d08338fe2ad2457bf8f44205914a7f"
+    _insert(tmp_path, "screen-keep", "2026-09-01T20:03:14Z", "q4k-b4", "kept",
+            {"champion_head": head})
+    headline = {"curves": [
+        {"model": "Qwen", "surface_series": [{"points": [{"commit": head}]}]},
+        {"model": "Gemma", "surface_series": [{"points": [{"commit": head}]}]},
+    ]}
+
+    event = next(event for event in loop_status._retained_keep_history(
+        tmp_path, headline, None)["events"] if event["attempt_id"] == "screen-keep")
+    assert event["model"] == "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M"
+    assert event["model_attribution"] == "campaign_join"
+    assert any(item["label"] == "overwritten_comparison_model_audit"
+               for item in event["evidence"])
 
 
 def test_keep_history_preserves_active_db_truncation(tmp_path: Path,
@@ -251,7 +269,7 @@ def test_keep_history_preserves_active_db_truncation(tmp_path: Path,
 
 def test_manual_fold_inventory_is_retained_not_sql_status() -> None:
     manual = json.loads(loop_status.MANUAL_KEEP_HISTORY.read_text())
-    assert len(manual["records"]) == 16
+    assert len(manual["records"]) == 18
     assert all(record["original_disposition"] == "unavailable" for record in manual["records"])
     assert all(record["retention_class"] and record["source_references"]
                for record in manual["records"])
