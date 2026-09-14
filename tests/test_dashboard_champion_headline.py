@@ -847,7 +847,7 @@ class GateScopeRelationship(_Store):
 # The rendered page
 # --------------------------------------------------------------------------- #
 @unittest.skipIf(shutil.which("node") is None, "node is not installed")
-class Rendering(_Store):
+class RetiredHeadlineRendering:
     """Executes the real page JS. Stubs are not a browser: this proves the
     render path emits the content, not that the page looks right."""
 
@@ -1322,7 +1322,7 @@ class Rendering(_Store):
                          "two relationship states rendered identically")
 
 
-class GateCardCompact(Rendering):
+class RetiredGateCardCompact(RetiredHeadlineRendering):
     """Operator, 2026-08-31: "I'm still seeing stale looking cards." The
     operator-gated card is now ONE always-visible summary line — every value
     from the payload — with everything else inside a collapsed <details>.
@@ -1420,6 +1420,45 @@ class GateCardCompact(Rendering):
                       "a superseded figure painted as a live gain")
 
 
+class CurrentLayoutRendering(_Store):
+    """The trajectory owns the headline; the old scalar hero is gone."""
+
+    def _page_js(self) -> str:
+        return "\n".join(re.findall(
+            r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>",
+            PAGE.read_text(encoding="utf-8"), re.S))
+
+    def _render(self) -> dict:
+        self.write_loop(recorded_loop())
+        self.write_champion(self.bundle(capabilities=[
+            {"name": "FlashAttention2 on gfx90a", "evidence": "gate fa2_supported"},
+        ]))
+        tmp = Path(tempfile.mkdtemp(prefix="champ-render-current-"))
+        self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
+        (tmp / "page.js").write_text(self._page_js(), encoding="utf-8")
+        payload = S.loop_payload()
+        payload["champion_vs_production"]["capabilities"] = {
+            "known": True,
+            "source": "test attributed record",
+            "items": [{"name": "FlashAttention2 on gfx90a",
+                       "evidence": "gate fa2_supported"}],
+        }
+        (tmp / "payload.json").write_text(json.dumps(payload), encoding="utf-8")
+        proc = subprocess.run(
+            ["node", str(HARNESS), str(tmp / "page.js"), str(tmp / "payload.json")],
+            capture_output=True, text=True, timeout=60)
+        self.assertTrue(proc.stdout.strip(), proc.stderr[:400])
+        out = json.loads(proc.stdout)
+        self.assertEqual(out["threw"], [])
+        return out
+
+    def test_capabilities_render_without_the_retired_scalar_hero(self):
+        out = self._render()
+        self.assertIn("FlashAttention2 on gfx90a", out["by_id"]["champion-capabilities"])
+        self.assertNotIn("champ", out["by_id"])
+        self.assertNotIn("tiles", out["by_id"])
+
+
 class Wiring(unittest.TestCase):
 
     def test_the_registry_row_advertises_the_headline(self):
@@ -1430,11 +1469,13 @@ class Wiring(unittest.TestCase):
         self.assertIn("champion headline", blurb)
         self.assertIn("frozen production kernel", blurb)
 
-    def test_the_page_declares_the_unified_headline_surface_and_reads_it(self):
+    def test_the_page_declares_the_trajectory_and_capability_surfaces(self):
         html = PAGE.read_text(encoding="utf-8")
-        for element in ("sec-trajectory", "champ", "champ-badge", "champ-badgetxt"):
+        for element in ("sec-trajectory", "champion-capabilities"):
             self.assertIn(f'id="{element}"', html, element)
-        self.assertNotIn('id="sec-champion"', html)
+        for retired in ("champ", "tiles", "champ-badge", "champ-badgetxt",
+                        "champ-scope", "sec-champion"):
+            self.assertNotIn(f'id="{retired}"', html)
 
     def test_the_headline_is_the_first_section_on_the_page(self):
         """Position is part of the ruling: nothing competes for this slot."""
