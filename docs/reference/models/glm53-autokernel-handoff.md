@@ -14,7 +14,8 @@ Do not start from an ephemeral benchmark binary or mutate the current champion o
 The existing CPU loop completed a 50-loop monitored continuous acceptance window with real
 GLM-5.3-Flash candidate measurements: 42 measured nulls and 8 keeps. The current experimental
 tip is `dc3798db10a6654721f2a1fa6a162be2e5fdf95f` on
-`ak/glm53-recovered-accumulator-20260912`. Its 23 retained keeps directly measure
+[`ak/glm53-recovered-accumulator-20260912`](https://github.com/pestopoppa/llama.cpp/tree/ak/glm53-recovered-accumulator-20260912),
+published to the fork. Its 23 retained keeps directly measure
 **+0.8303809823%** against champion-of-record `c463f601bd39` in the current matched-process
 snapshot. The final keep, `akm-q4k-pairrow-zmm-accumulate`, measured `+0.182%` marginally;
 its clean rebuilt anchor passed the A/A guard with `+0.0773869451%` drift.
