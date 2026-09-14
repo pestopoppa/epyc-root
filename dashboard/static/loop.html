@@ -94,6 +94,17 @@
   .campaign-controls input{background:var(--bg);color:var(--text);border:1px solid var(--border);padding:6px 8px}
   .campaign-controls button{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:6px 10px;border-radius:5px}
   .campaign-controls button:disabled{opacity:.45}
+  .trajectory{padding:14px 16px}.trajectory-head{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+  .trajectory-stat{min-width:150px}.trajectory-stat .v{font-size:22px;font-weight:700}
+  .trajectory svg{display:block;width:100%;height:auto;min-height:240px;overflow:visible}
+  .trajectory .grid{stroke:var(--border);stroke-width:1}.trajectory .axis{fill:var(--muted);font-size:11px}
+  .trajectory .cor{stroke:var(--text);stroke-width:1.5}.trajectory .production{stroke:#a78bfa;stroke-width:1.5;stroke-dasharray:7 5}
+  .trajectory .bench-line{fill:none;stroke:#f59e0b;stroke-width:3;stroke-dasharray:6 5}
+  .trajectory .bench-dot{fill:#f59e0b;stroke:var(--panel);stroke-width:2}.trajectory .stale-dot{fill:#94a3b8}
+  .trajectory .keep-tick{stroke:#38bdf8;stroke-width:2}.trajectory .check-link{stroke:#94a3b8;stroke-dasharray:2 3}
+  .trajectory .serving-ok{fill:#22c55e;stroke:#dcfce7;stroke-width:2}.trajectory .serving-unknown{fill:var(--panel);stroke:#f59e0b;stroke-width:3}
+  .trajectory-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)}
+  .trajectory-key:before{content:"";display:inline-block;width:18px;height:3px;margin-right:6px;vertical-align:middle;background:var(--key)}
   .subgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:var(--border)}
   footer{padding:8px 20px 28px;color:var(--muted);font-size:12px;max-width:1400px;margin:0 auto}
 
@@ -343,6 +354,13 @@
       <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/champion-max-performance-20260908.md">Champion maximum-performance measurements</a>
       &middot; <a href="https://github.com/pestopoppa/epyc-root/blob/main/docs/design/inf70-close-out-20260908/CHAMPION-FINAL.md">Final champion validation and close-out</a>
     </p>
+  </section>
+
+  <section id="sec-trajectory">
+    <h2>Retained-tip improvement trajectory
+      <span class="count">measured checkpoints only &middot; missing evidence stays missing</span>
+    </h2>
+    <div id="trajectory"></div>
   </section>
 
   <section id="sec-serial" hidden>
@@ -2008,6 +2026,48 @@ function renderAccumulator(d){
     `</div>`;
 }
 
+/* A Yukon-inspired cumulative-improvement view, drawn from retained producer
+   receipts rather than marginal arithmetic.  The orange series is explicitly a
+   cheap-screen estimate.  Serving diamonds occupy their own measured values;
+   hollow diamonds are inconclusive.  A missing checkpoint is a dashed gap, not
+   an interpolated or multiplied claim. */
+function renderImprovementTrajectory(d){
+  const host=document.getElementById("trajectory");
+  const t=d.knowledge && d.knowledge.improvement_trajectory;
+  if(!t){host.innerHTML='<div class="empty">No readable memory-store trajectory. Missing evidence is not 0% improvement.</div>';return;}
+  if(t.state!=="available"){
+    host.innerHTML=`<div class="empty"><strong>${esc(String(t.state||"unavailable").toUpperCase())}</strong> — ${esc(t.detail||"cumulative evidence unavailable")}<br><span class="mono">${esc(t.evidence||"")}</span></div>`;
+    return;
+  }
+  const bench=Array.isArray(t.bench_checkpoints)?t.bench_checkpoints.filter(p=>num(p.keep_count)&&num(p.gain_pct)):[];
+  const checks=Array.isArray(t.serving_checks)?t.serving_checks.filter(p=>num(p.keep_count)&&num(p.serving_gain_pct)):[];
+  const keeps=Array.isArray(t.keeps)?t.keeps:[];
+  const ref=t.references||{}; const n=Math.max(1,keeps.length,...bench.map(p=>p.keep_count),...checks.map(p=>p.keep_count));
+  const values=[0,...bench.map(p=>p.gain_pct),...checks.map(p=>p.serving_gain_pct)];
+  if(num(ref.production_pct)) values.push(ref.production_pct);
+  let lo=Math.min(...values),hi=Math.max(...values); if(hi-lo<2){lo-=1;hi+=1;} const pad=(hi-lo)*.16;lo-=pad;hi+=pad;
+  const W=980,H=310,L=62,R=22,T=18,B=48, x=i=>L+(W-L-R)*(i/n), y=v=>T+(H-T-B)*(hi-v)/(hi-lo);
+  const grid=[];for(let i=0;i<5;i++){const v=lo+(hi-lo)*i/4,yy=y(v);grid.push(`<line class="grid" x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}"/><text class="axis" x="${L-8}" y="${yy+4}" text-anchor="end">${v>=0?"+":""}${v.toFixed(1)}%</text>`);}
+  const benchPath=bench.map((p,i)=>(i?'L':'M')+x(p.keep_count)+','+y(p.gain_pct)).join(' ');
+  const keepTicks=keeps.map(k=>`<line class="keep-tick" x1="${x(k.index)}" y1="${H-B+5}" x2="${x(k.index)}" y2="${H-B+13}"><title>keep ${k.index}: ${esc(k.mechanism_id)}</title></line>`).join('');
+  const benchDots=bench.map(p=>`<circle class="bench-dot ${p.evidence_state==='stale_estimate'?'stale-dot':''}" cx="${x(p.keep_count)}" cy="${y(p.gain_pct)}" r="5"><title>${esc(p.evidence_state)} at ${p.keep_count} keeps: ${p.gain_pct>=0?'+':''}${p.gain_pct.toFixed(3)}%</title></circle>`).join('');
+  const serving=checks.map(p=>{const xx=x(p.keep_count),yy=y(p.serving_gain_pct),s=7,cls=p.evidence_state==='serving_verified'?'serving-ok':'serving-unknown';return `<line class="check-link" x1="${xx}" y1="${y(p.bench_gain_pct)}" x2="${xx}" y2="${yy}"/><path class="${cls}" d="M ${xx} ${yy-s} L ${xx+s} ${yy} L ${xx} ${yy+s} L ${xx-s} ${yy} Z"><title>${esc(p.evidence_state)} at ${p.keep_count} keeps: ${p.serving_gain_pct>=0?'+':''}${p.serving_gain_pct.toFixed(3)}% · ${esc(p.outcome||'unknown')}</title></path>`}).join('');
+  const production=num(ref.production_pct)?`<line class="production" x1="${L}" y1="${y(ref.production_pct)}" x2="${W-R}" y2="${y(ref.production_pct)}"/><text class="axis" x="${W-R}" y="${y(ref.production_pct)-5}" text-anchor="end">production ${ref.production_pct>=0?'+':''}${ref.production_pct.toFixed(1)}%</text>`:'';
+  const latest=bench.length?bench[bench.length-1]:null, lastCheck=checks.length?checks[checks.length-1]:null;
+  const checkErrors=Array.isArray(t.serving_evidence_errors)?t.serving_evidence_errors:[];
+  host.innerHTML=`<div class="trajectory"><div class="trajectory-head">`+
+    `<div class="trajectory-stat"><div class="k">retained tip</div><div class="v mono">${esc(short(t.tip))}</div><div class="sub">${esc(keeps.length)} keeps over CoR ${esc(short(t.champion_of_record))}</div></div>`+
+    `<div class="trajectory-stat"><div class="k">latest cheap screen</div><div class="v">${latest?(latest.gain_pct>=0?'+':'')+latest.gain_pct.toFixed(2)+'%':'unknown'}</div><div class="sub">${latest?esc(latest.evidence_state):'missing'} · not serving-verified</div></div>`+
+    `<div class="trajectory-stat"><div class="k">latest serving check</div><div class="v">${lastCheck?(lastCheck.serving_gain_pct>=0?'+':'')+lastCheck.serving_gain_pct.toFixed(2)+'%':'missing'}</div><div class="sub">${lastCheck?esc(lastCheck.evidence_state):'no retained check receipt'}</div></div>`+
+    `</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative retained-tip gain checkpoints versus champion of record">${grid.join('')}`+
+    `<line class="cor" x1="${L}" y1="${y(0)}" x2="${W-R}" y2="${y(0)}"/><text class="axis" x="${W-R}" y="${y(0)-5}" text-anchor="end">CoR 0%</text>${production}`+
+    (benchPath?`<path class="bench-line" d="${benchPath}"/>`:'')+benchDots+serving+keepTicks+
+    `<text class="axis" x="${L}" y="${H-8}">0 keeps</text><text class="axis" x="${W-R}" y="${H-8}" text-anchor="end">${n} keeps</text></svg>`+
+    `<div class="trajectory-legend"><span class="trajectory-key" style="--key:#f59e0b">cheap-screen cumulative estimate</span><span class="trajectory-key" style="--key:#94a3b8">stale estimate</span><span class="trajectory-key" style="--key:#22c55e">serving-verified</span><span class="trajectory-key" style="--key:#94a3b8">hollow = inconclusive</span><span class="trajectory-key" style="--key:#38bdf8">retained keep</span></div>`+
+    `<div class="muted">${esc(t.detail)} Production reference: ${esc(ref.production_state||'unavailable')} — ${esc(ref.production_detail||'no evidence')}.</div>`+
+    (checkErrors.length?`<div class="warn"><strong>${checkErrors.length} broken serving-check receipt${checkErrors.length===1?'':'s'}</strong> — omitted from the plotted values, not counted as no check. ${checkErrors.map(e=>esc(e.evidence)).join(', ')}</div>`:'')+`</div>`;
+}
+
 function renderDispositions(d){
   const host = document.getElementById("disp");
   const counts = (d.loop && d.loop.dispositions) || null;
@@ -3006,6 +3066,7 @@ function render(d){
   // The accumulator (R23-44) rides the loop-status body; rendered unconditionally
   // and drawing its own graceful empty when the run carries no serving tier.
   renderAccumulator(detail);
+  renderImprovementTrajectory(d);
   // Third and fourth producers, rendered unconditionally for the same reason.
   // None of the four dates any of the others.
   renderOperatorGate(d);

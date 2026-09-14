@@ -1470,6 +1470,15 @@ KNOWLEDGE_STALE_AFTER_S = 86400.0
 #: How many of the most recent keeps are named on the card, with their effects.
 KNOWLEDGE_RECENT_KEPT = 5
 
+#: The headline trajectory is deliberately bounded.  It reads only the
+#: producer's retained bundle/check receipts; it never scans batch logs and it
+#: never composes marginal iteration effects into a cumulative claim.
+TRAJECTORY_MAX_KEEPS = 128
+TRAJECTORY_MAX_CHECKS = 32
+TRAJECTORY_ACCUMULATOR_FILENAME = "accumulator-bundle.json"
+TRAJECTORY_SERVING_DIRNAME = "serving"
+TRAJECTORY_SCHEMA = "epyc.dashboard.autokernel_improvement_trajectory.v1"
+
 #: The dispositions the card names first-class. Everything ELSE in the store is
 #: folded into a no-scientific-verdict bucket that ENUMERATES its members —
 #: never dropped, never silently merged into a named one.
@@ -2028,6 +2037,194 @@ def knowledge_freshness(report: Mapping[str, Any], *,
     }
 
 
+def _finite_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) \
+        and float("-inf") < float(value) < float("inf")
+
+
+def _trajectory_json(path: Path) -> Mapping[str, Any]:
+    """Read one bounded producer receipt without following a symlink."""
+    body = json.loads(_serial_bytes(path, limit=256 * 1024))
+    if not isinstance(body, dict):
+        raise TypeError("trajectory receipt is not a JSON object")
+    return body
+
+
+def _trajectory_serving_json(path: Path) -> Mapping[str, Any]:
+    """Read a compact receipt, or a bounded authoritative top-level tail.
+
+    CPU lifecycle samples can make a serving receipt ~100 MiB.  The producer's
+    pretty-printed top-level fields from ``decisive`` through the terminal
+    ``schema`` are retained in the final 256 KiB, including planner evidence.
+    Parse that complete JSON object suffix rather than reading the giant sample
+    arrays on every dashboard refresh.  The exact two-space top-level boundary,
+    terminal brace, schema, membership and numeric fields are all validated by
+    the caller; a changed serialization becomes explicit broken evidence.
+    """
+    try:
+        return _trajectory_json(path)
+    except ValueError as exc:
+        if "bounded nonempty regular file" not in str(exc):
+            raise
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    with os.fdopen(fd, "rb") as stream:
+        before = os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or before.st_size <= 256 * 1024:
+            raise ValueError("serving receipt is not a large regular file")
+        stream.seek(-256 * 1024, os.SEEK_END)
+        tail = stream.read(256 * 1024)
+        after = os.fstat(stream.fileno())
+    if ((before.st_dev, before.st_ino, before.st_mtime_ns, before.st_size) !=
+            (after.st_dev, after.st_ino, after.st_mtime_ns, after.st_size)):
+        raise ValueError("serving receipt changed while its tail was read")
+    marker = tail.rfind(b'\n  "decisive":')
+    if marker < 0 or not tail.rstrip().endswith(b"}"):
+        raise ValueError("serving receipt has no bounded top-level summary tail")
+    body = json.loads(b"{" + tail[marker + 1:])
+    if not isinstance(body, dict):
+        raise TypeError("serving receipt summary tail is not an object")
+    return body
+
+
+def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]]) -> dict:
+    """Project retained-tip progress without manufacturing a cumulative gain.
+
+    The accumulator and serving receipts already contain cumulative measurements
+    of the exact retained bundle.  Those are the only magnitudes plotted.  The
+    experiment ledger supplies keep timestamps/names, not arithmetic inputs.
+    Missing checkpoints therefore remain visible gaps rather than a product of
+    marginal effects from changing surfaces and anchors.
+    """
+    root = Path(root)
+    evidence = str(root / TRAJECTORY_ACCUMULATOR_FILENAME)
+    unavailable = {
+        "schema": TRAJECTORY_SCHEMA, "state": "absent", "detail":
+        "no retained accumulator bundle is available; cumulative improvement is unknown",
+        "evidence": evidence, "basis": "gain_pct_vs_champion_of_record",
+        "champion_of_record": None, "tip": None, "keeps": [],
+        "bench_checkpoints": [], "serving_checks": [],
+        "serving_evidence_errors": [],
+        "references": {"champion_of_record_pct": 0.0,
+                       "production_pct": None,
+                       "production_state": "unavailable",
+                       "production_detail": "no CoR-matched direct production receipt is available"},
+    }
+    try:
+        bundle = _trajectory_json(root / TRAJECTORY_ACCUMULATOR_FILENAME)
+        keeps = bundle.get("keeps")
+        if (bundle.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
+                or not isinstance(keeps, list) or not keeps
+                or len(keeps) > TRAJECTORY_MAX_KEEPS
+                or len(set(keeps)) != len(keeps)
+                or not all(isinstance(item, str) and item for item in keeps)):
+            raise ValueError("retained accumulator bundle has an unsupported shape")
+        cor, tip = bundle.get("champion_of_record"), bundle.get("tip")
+        if not all(isinstance(value, str) and 7 <= len(value) <= 40
+                   for value in (cor, tip)):
+            raise ValueError("retained accumulator identity is malformed")
+    except FileNotFoundError:
+        return unavailable
+    except (OSError, TypeError, ValueError, UnicodeError, json.JSONDecodeError) as exc:
+        return {**unavailable, "state": "malformed",
+                "detail": f"retained trajectory evidence is unreadable: {exc}"}
+
+    recorded = {}
+    for row in rows:
+        mechanism = row.get("mechanism_id")
+        if (row.get("status") == "kept" and mechanism in keeps
+                and mechanism not in recorded):
+            recorded[mechanism] = row.get("recorded_at")
+    keep_rows = [{"index": index, "mechanism_id": mechanism,
+                  "recorded_at": recorded.get(mechanism)}
+                 for index, mechanism in enumerate(keeps, 1)]
+
+    checks, check_errors = [], []
+    serving_root = root / TRAJECTORY_SERVING_DIRNAME
+    try:
+        paths = sorted(serving_root.glob("bundle-*.json"))
+    except OSError:
+        paths = []
+    for path in paths[-TRAJECTORY_MAX_CHECKS:]:
+        try:
+            body = _trajectory_serving_json(path)
+            if body.get("schema") not in {"epyc.autokernel.serving_ab.v1",
+                                           "epyc.autokernel.serving_ab.v2"}:
+                raise ValueError("serving receipt schema is unsupported")
+            planner = body.get("planner_evidence")
+            members = (body.get("bundled_keeps") if isinstance(body.get("bundled_keeps"), list)
+                       else planner.get("bundled_keeps") if isinstance(planner, dict) else None)
+            if (not isinstance(members, list) or not members
+                    or members != keeps[:len(members)] or not isinstance(planner, dict)
+                    or planner.get("bundled_keeps") != members
+                    or not _finite_number(planner.get("compounded_bench_pct"))
+                    or not _finite_number(body.get("effect_pct"))
+                    or type(body.get("decisive")) is not bool):
+                raise ValueError("serving receipt summary identity or fields are malformed")
+            checks.append({
+                "keep_count": len(members),
+                "bench_gain_pct": float(planner["compounded_bench_pct"]),
+                "serving_gain_pct": float(body["effect_pct"]),
+                "serving_floor_pct": (float(planner["serving_floor_pct"])
+                                      if _finite_number(planner.get("serving_floor_pct")) else None),
+                "decisive": body["decisive"], "outcome": body.get("outcome"),
+                "evidence": str(path),
+            })
+        except (OSError, TypeError, ValueError, UnicodeError, json.JSONDecodeError) as exc:
+            # A malformed optional check cannot erase a readable accumulator,
+            # but neither may it disappear.  Count/name the bounded failure so
+            # the plot distinguishes no check from a broken check receipt.
+            check_errors.append({"evidence": str(path), "reason": str(exc)[:256]})
+    # Two paths can retain byte-equivalent/re-exported checks.  Plot the
+    # scientific point once while retaining distinct repeated measurements.
+    unique_checks = {}
+    for row in checks:
+        key = (row["keep_count"], row["bench_gain_pct"], row["serving_gain_pct"],
+               row["serving_floor_pct"], row["decisive"], row["outcome"])
+        unique_checks.setdefault(key, row)
+    checks = sorted(unique_checks.values(), key=lambda row: (
+        row["keep_count"], row["serving_gain_pct"], row["evidence"]))
+    bench = [{"keep_count": row["keep_count"], "gain_pct": row["bench_gain_pct"],
+              "evidence_state": "cheap_screen_estimate", "evidence": row["evidence"]}
+             for row in checks]
+    if _finite_number(bundle.get("compounded_bench_pct")):
+        final = {"keep_count": len(keeps),
+                 "gain_pct": float(bundle["compounded_bench_pct"]),
+                 "evidence_state": ("cheap_screen_estimate"
+                                    if bundle.get("measurement_validity") == "current_snapshot"
+                                    else "stale_estimate"),
+                 "evidence": evidence}
+        bench = [row for row in bench if row["keep_count"] != len(keeps)] + [final]
+        bench.sort(key=lambda row: row["keep_count"])
+
+    references = unavailable["references"].copy()
+    champion = read_champion(root).get("body")
+    if isinstance(champion, dict):
+        measured = (champion.get("champion") or {}).get("commit")
+        effect = champion.get("effect_fraction")
+        if (isinstance(measured, str) and (measured.startswith(cor) or cor.startswith(measured))
+                and _finite_number(effect) and float(effect) > -1.0
+                and champion.get("metric_direction") == "higher_better"):
+            references.update({
+                "production_pct": (1.0 / (1.0 + float(effect)) - 1.0) * 100.0,
+                "production_state": "direct_measurement",
+                "production_detail": "derived only from the exact CoR-vs-production direct A/B",
+            })
+
+    return {
+        "schema": TRAJECTORY_SCHEMA, "state": "available",
+        "detail": ("cumulative points are producer-measured retained-bundle checkpoints; "
+                   "gaps are not filled by multiplying marginal keeps"),
+        "evidence": evidence, "basis": "gain_pct_vs_champion_of_record",
+        "champion_of_record": cor, "tip": tip, "keeps": keep_rows,
+        "bench_checkpoints": bench,
+        "serving_checks": [{**row, "evidence_state":
+                            ("serving_verified" if row["decisive"]
+                             else "serving_inconclusive")} for row in checks],
+        "serving_evidence_errors": check_errors,
+        "references": references,
+    }
+
+
 def knowledge_snapshot(root: Optional[Path] = None, *,
                        now: Optional[float] = None,
                        status_body: Any = "unread") -> dict:
@@ -2048,6 +2245,7 @@ def knowledge_snapshot(root: Optional[Path] = None, *,
     body = report.get("body")
     if status_body == "unread":
         status_body = read(root).get("body")
+    canonical_root = store_root() if root is None else Path(root)
     return {
         "source": "the loop's own memory store (sqlite, read-only)",
         "evidence": report.get("path"),
@@ -2060,6 +2258,8 @@ def knowledge_snapshot(root: Optional[Path] = None, *,
         "groups": _knowledge_groups(body["dispositions"]) if body else None,
         "recent_kept": body["recent_kept"] if body else None,
         "recorded_window": body["recorded_window"] if body else None,
+        "improvement_trajectory": (improvement_trajectory(canonical_root, body.get("rows") or [])
+                                   if body else None),
         # None — never an empty walk — when the store is unreadable: a ledger
         # of zero levers over a missing store would claim the planner has
         # thought about nothing.
