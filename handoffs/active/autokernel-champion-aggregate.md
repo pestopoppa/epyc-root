@@ -186,6 +186,23 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   `MEASUREMENT_POLICY.md:37`'s ≥5 reps for a ≥5% claim with the 5-rep confirm declined. MoE-Spec
   stays in the champion as a **capability defaulting to 0**, enabled nowhere. Re-open only with a
   surface and budget where it demonstrably wins.
+
+  **⚠ ANNOTATED 2026-09-14 (INF-40) — the −2.92% pp512 row is VOID as evidence about MoE-Spec, and
+  "fail[ed] to reproduce it on the surface that matters" was structurally impossible.** The arm was
+  measured on **Qwen3.8-27B-Q8_0, a DENSE model**: `general.architecture qwen35`, **0 of 866** tensors
+  match `*exps*`/`ffn_gate_inp`, and the GGUF carries **no `*.expert_count` key**
+  (`model_registry.yaml:1596,1707` also say "dense"). `--moe-spec-budget` masks inside `build_moe_ffn`
+  (`src/llama-graph.cpp:1985`, champion `c7c37a0d9`), a subgraph a dense graph never builds, so **both**
+  GPU arms ran identical code — the same reasoning that voids `tg128` voids `pp512`, for a *stronger*
+  reason (model class, not batch shape). It is also not significant on its own six samples: medians
+  768.83 → 746.38 (−2.92%) but means 758.63 ± 27.80 → 745.37 ± 25.07 (**−1.75%, Welch t = −0.87**,
+  ranges fully overlapping), so it is usable only as a ±3.7% same-window noise reading for that GPU
+  surface. The paired champion-vs-anchor default-path rows (pp512 +2.74%, tg128 −0.02%) remain a valid
+  no-regression check on the composed champion diff. The conclusion **MoE-Spec stays at default 0**
+  survives; its stated reason does not — the live objection to the CPU +10.7% is its own thinness
+  (n=3, Δ ≈ 2.9σ), not a countervailing surface. CH-4 is closed, so this is an annotation, not a
+  re-litigation; the operator decision package lives in
+  [`moe-spec-cpu-spec-dec-integration.md`](moe-spec-cpu-spec-dec-integration.md).
 - [x] **CH-5 — Run DF2-5 (np=8 concurrency) and DF2-6 (exact greedy parity), then admit DFlash2 as
   a parallel spec-decode capability.** Approved by the operator 2026-08-27. ✅ 2026-08-28 — both
   gates run against the champion. Full detail in

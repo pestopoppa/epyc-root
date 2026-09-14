@@ -1008,23 +1008,13 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       control that caught SYNC-16's build artefact** and the long-stream identity harness. **It looks exactly
       like spent scratch and is not** — the last sweep removed 185 GB, and this is the class of thing that
       sweep would have taken. Carry this row until the dependency is vendored somewhere durable.
-- [ ] **★ MEAS-2 — ADOPT `build_locked.sh` AS THE STANDING BUILD IDIOM, AND PROMOTE IT OUT OF SCRATCH.**
-      Filed 2026-09-07. **The build bypass is SYSTEMIC, not one script.** Audit of every INF-70 build script:
-      **19 of 21 take no region lock at all** — only `harness1/build.sh` and `b7-ple/build.sh` do.
-      `champion3/build3.sh` was merely the one we happened to catch, so patching that single script would have
-      fixed nothing and manufactured a false sense of closure. **This is a CONVENTION gap, not a slip.**
-      **The fix is written**: `/mnt/raid0/llm/tmp/inf70/build_locked.sh` — a wrapper running `cmake --build`
-      under `region-lock` with `--role build --timeout-s 0` (fair queue, **never polls**).
-      **Verified to actually exclude rather than merely appear to**: the lock module's occupancy registry
-      computes blockers from **region overlap regardless of role** (`cpu_region_lock.py`, the `overlaps` set);
-      role is attribution only, and only a `shared=True` same-role request can join a cohort — so `role=build`
-      genuinely queues behind `role=bench`. Checked deliberately, because the CLI help calls it a "per-role
-      lock" and the lock FILES are per-role (`cpu_region.{role}.{region}.lock`), which would have made a
-      role-labelled wrapper **vacuous** had the cross-role mutex not existed.
-      **Task**: adopt it as the campaign's standing build idiom, and **promote it into the research repo
-      alongside PROD-1's recipe module** so it outlives scratch and PROD-1 can import it.
-      **Explicit decline recorded, not a drop: do NOT edit the 19 scratch build scripts** — they are one-shot
-      artifacts and mostly spent; the value is in the convention and in PROD-1 importing it.
+- [x] **★ MEAS-2 — ADOPTED AND OUT OF SCRATCH 2026-09-14.** ✅ `scripts/lib/build_locked.sh` in
+      `epyc-inference-research` `fc8c44de`, landed with WRAP-10 so the two conventions arrived together.
+      `region-lock` is no longer one hardcoded clone root: resolved from `$REGION_LOCK` →
+      `/workspace/repos/epyc-orchestrator` → `/mnt/raid0/llm/epyc-orchestrator` → repo-sibling, and
+      **fail-closed** (no lock tool ⇒ exit 2, never an unlocked build); resolution verified from a
+      worktree. `bash -n` clean. The explicit decline stands: the 19 one-shot scratch build scripts are
+      NOT retrofitted.
 - [x] **★★★ MEAS-6 — MEASURED 2026-09-08: TWO CPU/GPU CAMPAIGNS CANNOT BE MEASURED CONCURRENTLY ON
       THIS HOST. PINNING CONTROLS PLACEMENT, NOT CONTENTION.** ✅ 2026-09-08 (measurement complete)
       **⚠ MEASURED ≠ RULED. The DECISION it feeds — OP-40, jointly with autokernel OP-41 — is STILL
@@ -2495,26 +2485,29 @@ They are filed here rather than described in prose so the dashboard can see them
       from comparable rounds; (b) the pristine multiplier computed on 0 s rounds only is **1.5149×**, not
       1.4993× — the champion table has been annotated but every downstream quotation still carries the old
       figure. **Do NOT pool arms when regressing eviction cost against throughput — the pooled sign inverts.**
-- [ ] **WRAP-10 — land PROD-1's recipe module in `epyc-inference-research`. ★ ADVANCED 2026-09-08:
-      the module now CARRIES THE ADOPTED THP KNOB; it is still PREPARED, NOT APPLIED.**
-      The draft was corrected this wrap-up so it cannot ship the retired state: `CHAMPION_GGML_ENV`
-      now exports **`GGML_NOHUGEPAGE_PROCESS=1`**; the knob moved from *("off","leave unset")* to
-      *("1","export")*; a `THP_SHIM` record carries **unit = SESSION**, the exact **α = 0.0430**
-      (enumerated, not union-bounded), `magnitude_claimed = False`, and the 1200-fold-error warning;
-      a `FLOORS` table gives **every floor its unit**; and `PRECONDITIONS["thp_readback"]` — which
-      used **AnonHugePages/Rss, a discriminator the fold record proves INVALID** (0.06% at load, ~6%
-      minutes later on the same process) — was replaced by a fail-closed **`THP_enabled` in
-      `/proc/PID/status`, read once per LAUNCH**. **41/41 tests green** (was 38/38; the 3 new ones are
-      guards: the two THP knobs must not collapse into one entry, the shim must not be verified by the
-      invalid discriminator, and every floor must carry its unit). Diff prepared at
-      `/mnt/raid0/llm/tmp/inf70/wrapup-20260908/PROD1-THP.diff`; the draft still lives in scratch
-      (`/mnt/raid0/llm/tmp/inf70/agents/prod1/draft/`) **and is lost with it**.
-      *Original task:* Three new files
-      (`scripts/lib/qwen38_flash_next_recipe.py`, `scripts/lib/test_qwen38_flash_next_recipe.py`,
-      `scripts/benchmark/serve_qwen38_flash_next.sh`) plus **one line** adding the test to the Makefile's
-      `PYTEST_SMOKE` list. Drafts are validated and 38/38 green but **PREPARED, NOT APPLIED**; they live in
-      scratch (`/mnt/raid0/llm/tmp/inf70/agents/prod1/draft/`) and are lost with it. Land MEAS-2's
-      `build_locked.sh` in the same pass so the two conventions arrive together.
+- [x] **WRAP-10 — LANDED IN GIT 2026-09-14.** ✅ `epyc-inference-research` `fc8c44de` + `932bf5c4` +
+      `45d6ecce` on `fix/noninf-wrap10` (not pushed): `scripts/lib/qwen38_flash_next_recipe.py`,
+      `scripts/lib/test_qwen38_flash_next_recipe.py`, `scripts/benchmark/serve_qwen38_flash_next.sh`,
+      plus one `PYTEST_SMOKE` line. **55/55 green** (was 41/41): +4 per-surface guards
+      (`TestTheRecipeIsPerSurface`), +5 pin-provenance guards
+      (`test_the_champion_pin_is_labelled_as_a_pin_not_as_the_champion`,
+      `test_the_current_champion_names_the_consolidated_branch`,
+      `test_the_pin_refuses_to_certify_the_current_champion`,
+      `test_measured_numbers_keep_the_commit_they_were_measured_at`,
+      `test_the_full_sha_is_recorded_and_the_short_form_is_its_prefix`), +2 build-record guards
+      (`test_both_surfaces_have_a_digested_build_labelled_by_surface`,
+      `test_the_gap_names_the_measurement_not_a_missing_digest`), +1 headline-binary guard
+      (`test_the_headline_binary_is_identified_and_matches_the_headline`). ruff clean.
+      **Champion reconciled** against `CURRENT-CAMPAIGN.md`: branch `inf70/fold-candidate-20260908` →
+      `ak/champion/llama-cpp-0db32c06e3e5`, full sha `ef81196d5bdd4190b46dff4ae7eecc333a46c8ce` recorded.
+      `CHAMPION_COMMIT` stays `9c4f73e29` but is now LABELLED the measurement pin — **no measured number
+      relabelled**. Both digested `ef81196d5` builds recorded per surface (both build 10301), **and the
+      canonical headline's own binary captured out of scratch before collection**: `HEADLINE_BINARY` =
+      build 10303, `2516c9807b8a92d472c8e75a0a1ce8558d2e34a7` on `inf70/retest1-fix1`, 5 object digests,
+      4 of 5 reproducing `retest1/binaries.sha256`; it descends from `ef81196d5` by exactly two
+      instrumentation commits, so the headline's label is an unstated delta, not a wrong lineage.
+      `CHAMPION_PIN_RESOLVED` stays False with the loud refusal the gap text demanded — closing it needs a
+      MEASUREMENT on a digested `ef81196d5` CPU build, not another digest.
 - [ ] **WRAP-11 — decide the fate of the 21 branches carrying unique work.** `inf70/champion3` is pushed to
       the `fork` remote as **`experimental-inf70-champion3`**. Of 44 branches, **22 are fully contained in
       champion-3** and need no push; **21 carry unique work** and a push command for them is **pending with

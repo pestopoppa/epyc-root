@@ -422,15 +422,56 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
       (B-sweep ✅ 2026-08-27, gate met). This has no checkbox of its own, so it was invisible to the
       dashboard and screened as a prune candidate on 2026-08-28 — filed here rather than archived.
       **Do not integrate on the +10.7% alone: see the countervailing surface below.**
-- [ ] **Reconcile the two MoE-Spec measurements before enabling it anywhere.** They do not conflict;
-      they bound where the win lives, and only one of them is on a production-serving surface.
+- [ ] **Operator decision prepared, awaiting ruling — the reconciliation is done and the GPU row is
+      void.** Reconciled 2026-09-14 (INF-40, zero-inference, structural): the **−2.92%** row was
+      measured on **Qwen3.8-27B-Q8_0, a DENSE model** — `general.architecture qwen35`, **0 of 866**
+      tensors match `*exps*`/`ffn_gate_inp`, and the GGUF carries **no `*.expert_count` key**
+      (`model_registry.yaml:1596,1707` also say "dense"). `--moe-spec-budget` masks inside
+      `build_moe_ffn` (`src/llama-graph.cpp:1985`, champion `c7c37a0d9`), which a dense graph never
+      builds, so **both** GPU arms ran identical code. `tg128` was already flagged uninformative by
+      construction (batch-1 misses `min_batch 4`); `pp512` fails the stronger model-class
+      precondition. It is also not significant on its own samples: medians 768.83 → 746.38 (−2.92%)
+      but means 758.63 ± 27.80 → 745.37 ± 25.07 (**−1.75%, Welch t = −0.87**, n=6, ranges overlap).
+      **There is no countervailing surface.** The one live objection to the CPU **+10.7%** is its own
+      thinness: n=3/cell, Δ ≈ 2.9σ, below `MEASUREMENT_POLICY.md`'s ≥5 reps for a ≥5% claim, 5-rep
+      confirm declined; both numbers are OBSERVATIONS (no protocol-id). Decision package below.
 
-      | surface | posture | result |
-      |---|---|---|
-      | architect, live MTP verification batches, B=n_expert/2 | CPU verifier | **+10.7%** (2026-08-27, gate met) |
-      | Qwen3.8-27B-Q8_0 pp512, `budget=32` | GPU champion, llama-bench | **−2.92%** (2026-08-28, CH-4) |
+      | surface | posture | result | what it is evidence of |
+      |---|---|---|---|
+      | architect (122B Q4_K_M, n_expert=256), live MTP verification batches, B=128 | CPU verifier, n=3, era E9 | **+10.7%** (10.84 → 12.00 t/s, α −2.4pp) | MoE-Spec on a 256-expert MoE CPU verifier at B=n_expert/2 — thin (n=3), OBSERVATION |
+      | Qwen3.8-27B-Q8_0 pp512, `budget=32` | GPU `llama-bench`, n=6, 2026-08-28 CH-4 | **−2.92%** median / −1.75% mean, NS | **nothing about MoE-Spec** — dense model, flag's subgraph absent; usable only as a ±3.7% noise reading for that GPU surface |
 
-      The GPU `tg128` arm is uninformative **by construction** and must not be quoted as a null:
-      batch-1 decode never reaches `--moe-spec-min-batch 4`, so that arm executed identical code.
-      MoE-Spec is in the aggregate champion as a **capability defaulting to 0** and is enabled
-      nowhere; see [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) CH-4.
+      **OPERATOR DECISION — INF-40: enable `moe_spec_budget: 128` on `architect_critic`?**
+
+      **Context.** The prepared registry patch (`data/moe-spec-bsweep-2026-08-25/registry_patch_proposal.yaml`)
+      adds `moe_spec_budget: 128` to `architect_critic` (122B Q4_K_M, CPU :8074) on a single E9 run:
+      +10.7% end-to-end t/s (10.84 → 12.00, n=3, Δ ≈ 2.9σ), acceptance 0.487 → 0.463 (−2.4pp). The
+      GPU counter-row is void (dense model, see above), so the fork is purely evidence-weight vs
+      compute: registry writes are gated by the standing E8-reseed / OP-19 ruling, and a ≥5% claim
+      needs ≥5 reps (`MEASUREMENT_POLICY.md`) — the offered 5-rep confirm was declined on 2026-08-27.
+
+      **Option A — Confirm first, then apply (5-rep A/B/A/B, ~1 inference window).** Re-run B ∈ {0,128}
+      on the same model/binary/posture, ≥5 reps alternated, declared noise floor in t/s *and* % of
+      mean, gate-skip mechanism-fire control retained, protocol-id registered so the result is a claim.
+      Cost: one region-locked window on the 122B (a slow model: ~1.5–2 h). Risk: lowest. Reversibility:
+      n/a. Buys: a decision-grade number plus the α re-measure the quality question actually needs.
+      **Option B — Apply now on the n=3 observation, with a declared revert trigger.** Patch the
+      registry + launcher env-pass, and revert if the role's live speed telemetry does not show the
+      gain or if acceptance drops below a named floor. Cost: ~0 compute. Risk: deploying a 2.9σ effect
+      whose α cost (−2.4pp) is measured and whose end-to-end quality cost is not; the verifier keeps
+      target-greedy, so the failure mode is speed/acceptance, not corruption. Reversibility: high
+      (delete one key → default 0). Violates the ≥5-rep claim bar for a ≥5% deploy decision.
+      **Option C — Leave at 0 and close the integration line.** Keep MoE-Spec as a capability enabled
+      nowhere; retire the proposal, keep the mechanism documented. Cost: 0. Risk: discards the only
+      positive MoE-Spec result ever measured on a live production serving path. Reversibility: the
+      patch text stays in the artifact dir.
+
+      **Recommendation: Option A.** The blocker was never the GPU row; it is that a +10.7% deploy
+      decision rests on n=3 while the project's own claim grammar demands ≥5. One window converts the
+      project's single live-path MoE-Spec win from an observation into a claim — and if it holds,
+      Option B's risk disappears rather than being accepted. Tie-breaker fact, if compute is the
+      binding constraint: the 5-rep confirm is the *same* run that re-measures α, so Option B would
+      have to buy that window anyway to monitor its own revert trigger.
+
+      **Default if no ruling: status quo — `moe_spec_budget` stays 0 everywhere**, the patch stays
+      prepared-not-applied, and INF-40 stays open on this box. No autonomous registry write.

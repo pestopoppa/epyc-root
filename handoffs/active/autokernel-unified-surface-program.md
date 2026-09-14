@@ -1024,9 +1024,8 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] `Bundle.surface`; per-surface store filenames; `load_bundle()` per surface; shared cor invariant test
 - [ ] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) — the CPU session's canonical recipe codified
 - [ ] CPU A/A calibration: screen floor + serving floor, unit and host-state hash recorded; gating-floor calibration n≥24 with interval (FLOOR-UNIT-1 supersedes the earlier n=20 proposal)
-- [ ] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model
-      and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES (INF-70 RETEST-1,
-      2026-09-08: arm sd 0.501% vs process-launch sd 2.793%; the 1200-fold THP sizing error). See R23-55.
+- [x] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES ✅ 2026-09-14 — research `eb8a88de`: `unit` + `n` are required fields of `serving_floor.v1`/`.v2` and of the bench `surface_calibration.v1` writer; `FloorReading.gate_floor` / `serving.check_unit` are the single admission rule and raise `FloorUnitMismatch` (a `ServingFloorMismatch`, so every gate already exits REFUSED) naming both units; legacy unit-less serving floors load but cannot gate, and nothing on disk was rewritten. See R23-55. (Original refs: INF-70 RETEST-1,
+      2026-09-08: arm sd 0.501% vs process-launch sd 2.793%; the 1200-fold THP sizing error.)
 - [ ] **Headline admissibility: ≥N independent launches with a session-unit CI**, N sized from the
       between-session sd (2.793%), not the arm sd; a single-session headline is refused (R23-57)
 - [ ] **Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP

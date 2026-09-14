@@ -513,6 +513,17 @@ quality tradeoff.
   strictly worse. Correct adoption requires **re-embedding the entire KB corpus**, which is why this is
   an operator decision (OP-24) and not a code fix.
 
+  **WEB HALF CLOSED 2026-09-14** — `epyc-orchestrator` `f876d989`. The KB side gained the role
+  plumbing in `fe55b228`/`4e5e84c0` but `src/tools/web/colbert_reranker.py` kept its own prefix-less
+  `_encode` (`:153-196`), so no KB-side fix ever reached the web path: no `[Q]`/`[D]`, a two-input
+  feed that returned `None` on any graph declaring `token_type_ids`, no `do_lower_case`, and
+  `_MAX_QUERY_TOKENS = 48` against LateOn's declared `query_length: 32`. It now routes through
+  `colbert_encoder.encode(role=...)` with model-declared caps (`max_query_tokens()` /
+  `max_document_tokens()`); **no re-embed was required — there is no stored web index**, so both sides
+  move together. Tests 51 → 74 passed, encoder mocked, four guards mutation-tested
+  (`TestRoleContract`, `TestTokenCaps`, `TestNoDuplicatedEncoder`). **Still open**: the KB corpus
+  re-embed (OP-24) — this changes nothing about that decision.
+
 - [ ] **PREFIX-2 — confirm whether the published BEIR deltas transfer before banking any model swap.**
   The BEIR figures on this page (GTE 54.67, ColBERT-Zero 55.43, and the LateOn delta) are **published
   vendor scores**, measured with the models used as designed, i.e. **with** the prefixes. Production runs
