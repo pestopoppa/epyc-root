@@ -1710,6 +1710,29 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         runner + receipts, and for MoE a B×Q route-pinned cell before attributing KLD to the codec.
         **Human-amendment-only trust boundary → operator decision package (`ratify_*.sh`), not a session
         edit.** Cross-cutting: INF-70's Flash-Next KLD 0.0649@37.9σ on a MoE has no route control.
+        *Evidence 2026-09-15 — package PREPARED, ratification PENDING (not ticked):* branch
+        `sub/op38-pkld-package` carries the annex `artifacts/operator/staged/p-kld-annex-20260915.md`
+        (Annex V, `P-KLD-1`, sha256 `094c6c19…5136f`), the ratifier
+        `artifacts/operator/ratify_p_kld_divergence_protocol_20260915.sh` (it pins the annex plus the
+        MEASUREMENT.md pre-state `45c7e3a3…`; only `bash -n` has been run) and the decision package
+        `artifacts/operator/op38-pkld-decision-20260915.md`.
+        - **Source.** The README was re-fetched at the intake's pinned commit `44e817b` (sha256
+          `b1501772…`).
+        - **Instrument facts read from frozen v9 `0db32c06e` `tools/perplexity/perplexity.cpp`:**
+          - `--kl-divergence` stores the reference as a lossy `uint16` window 16 nats wide (`:79-106`);
+          - it drops reference entries below −16 nats from the sum (`:221-231`);
+          - its `±` is a per-token SE (`:1769-1776`).
+
+          So "37.9σ" is not an interval under the annex.
+        - **Correction to this row.** The 0.0649 is **B7's PLE IQ4_NL→Q8_0 swap measured against the
+          IQ4_XS-uniform anchor**, not a codec-vs-reference KLD
+          (`cpu-decode-roofline-program.md:4553-4561`).
+        - **Survey.** Only two real KLD runs exist (B7, B4), both INF-70's. Autokernel quotes none of
+          its own. Eight claims or gate definitions would demote; the list is in the package §1.
+        - **ID clash.** OP-38 was first the D9 hook fix (resolved 2026-09-05) and was re-minted for
+          this item. Proposed fix: renumber this item to OP-46.
+
+        Tick this box only after the operator's `--commit` lands.
       - [ ] **R23-49 — CPU CO-TENANCY: our builds, not our bench, are the contention (INF-70 relay 2026-09-07)**.
         INF-70 flagged `bench.py:34 CPU_LIST="184-191"` (8 GPU host threads) as contending with their 0-95
         bench region. Verified true but it is the SMALLEST of three. Kernel-verified sibling map
