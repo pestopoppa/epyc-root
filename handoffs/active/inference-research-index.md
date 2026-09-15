@@ -63,7 +63,7 @@
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
 | INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap DONE; run stack_change_pipeline regen + stack-change checklist to verify live==config on next start | — |
 | INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | SWE closed on both protocols; re-collect the 24-cell grid at the measured n-max 8 optimum when GPU frees | INF-60 |
-| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Validate the 23-keep GLM tip across required targets; keep broker and production-promotion gates separate | INF-66, INF-65, INF-70 |
+| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Monitor through 20 healthy loops; then validate 26-keep GLM tip across required targets; keep broker/production gates separate | INF-66, INF-65, INF-70 |
 | INF-74 | autokernel concurrent targets | [autokernel-concurrent-target-coordination.md](autokernel-concurrent-target-coordination.md) | Review CTC-REVIEW: model-independent stage coordination and resident GPU overlap; implementation requires approval | INF-73 |
 ## Cross-domain
 
