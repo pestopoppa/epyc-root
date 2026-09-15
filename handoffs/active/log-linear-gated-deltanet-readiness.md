@@ -460,7 +460,8 @@ What is new here, and what determines what G16 must actually add, is the 50-case
       document, comparing first-sampled-token id and full output bytes.
       **Gate:** NMSE under the **unrelaxed** 1e-7 at every shape **or** byte-identical greedy output at
       every length. **A relaxed threshold is not a pass.** The third-party gfx90a validation already
-      reports 2.97e-7 / 3.70e-7 against a 2e-7 gate, and the shape that fails is the **longest** one
+      reports 2.97e-7 / 3.70e-7 against a 2e-7 gate (that was PR #26001 + a third-party patch under the
+      relaxed gate, not #24561 — intake-1434#record), and the shape that fails is the **longest** one
       (T=2048) — exactly where reassociation error is expected to grow, since the chunked form is
       algebraically equivalent to the per-token recurrence in exact arithmetic but not in floating
       point (intake-1290#record). Relaxing the threshold deletes the only signal this row carries.
@@ -468,6 +469,21 @@ What is new here, and what determines what G16 must actually add, is the 50-case
       [mi210-big-model-and-acceleration-roadmap.md](mi210-big-model-and-acceleration-roadmap.md);
       neither may proceed on a chunked kernel this row has not cleared.
       Both compute planes were held by other sessions through this wave — **filed, not run**.
+- [ ] **G16a — make G16 fire the chunked kernel on MI210, or it is vacuous.** The H=32/d=128 long-prompt eval
+      cases in `719a8529d` use `n_seqs=1`. That gives 256 blocks, below 3×nsm = 312, so on MI210 they assert the
+      RECURRENT kernel against CPU. Fix it either way:
+      - add `n_seqs=2` variants of the 2048/4096/8192 cases (512 blocks, which fire unmodified); or
+      - run a test build with `-DGGML_CUDA_DELTANET_MIN_BLOCKS_PER_SM=2`. It is a compile-time macro
+        (`gated_delta_net.cu:608-610`), so setting it as an env var does nothing.
+      Require `GGML_CUDA_DELTANET_CHUNKED_DEBUG=1` stderr showing `[gdn] chunked dispatch` for every long case in the
+      run log. A G16 pass without that trace clears nothing. Source: intake-1434#record.
+- [ ] **G16b — diagnostic arm if a dispatch-proven G16 fails 1e-7.** Rerun the failing shapes on a test build that
+      forces the chunked kernel's scalar f32 path: `FGDN_TILE_MMA` undefined, with the host arch gate still admitting
+      it (`gated_delta_net.cu:252-267, 305-321, 406-416`). This separates f16-operand GEMM error from pure
+      chunk-reassociation error, and it must happen BEFORE anyone relaxes the gate or declines the kernel.
+      No reference implementation sets a precedent for our gate: FLA validates at RMS-relative 0.005 (≈ NMSE 2.5e-5,
+      about 250× looser). The recorded 2.97e-7/3.70e-7 T=2048 miss was PR #26001 plus a patch, not #24561, whose
+      longest eval was 520 tokens. Source: intake-1434#record.
 - [ ] **B9 (B) — GDN-2 zero-loss retrofit initialization, and the β ∈ [0,2] control the paper
       omitted.** Filed as **tracked-not-scheduled**, in two halves with different upstreams.
       **(a) Retrofit initialization.** Broadcast each head's scalar β and α across channels to recover

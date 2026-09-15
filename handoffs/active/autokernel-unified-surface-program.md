@@ -1059,6 +1059,23 @@ Source of truth for the classification of all 31 `fork/rescued-*` refs:
       `ggml/src/ggml-cuda/gated_delta_net.cu` +527, `tests/test-backend-ops.cpp` +34). Surface: GPU PREFILL on GDN
       models (qwen35 / qwen35moe / qwen3next); the champion still carries `//TODO: Add chunked kernel for even faster
       pre-fill`. **Largest unrecovered GPU lever.** Gate: GPU prefill A/B on a GDN model **plus** `test-backend-ops`.
+      - [ ] **Named next variant if the dispatch-PROVEN A/B is neutral: reference-restoring prepass, two tiers.**
+        The trigger is a dispatch-proven neutral result, not "neutral at H=32": at defaults that measures the
+        recurrent kernel twice.
+        **Why it is a restoration:** the paper (arXiv 2406.06484 Listing 8) and FLA compute state-independent chunk
+        terms once per (chunk, head), parallel across chunks. Our port recomputes Phases 1-5 per column block, 8× per
+        v-head, as a documented gfx90a tradeoff (`gated_delta_net.cu:603-607`).
+        **Tier 1:** one launch over (seq, v-head, chunk) computes Glog, D=expf(Glog_t−Glog_s), L=D·β_s·KKᵀ
+        (strict-lower) and M=tril(D·β_s·QKᵀ). Blocks load L/M (2·C² floats per chunk) instead of recomputing Phases
+        2-5; Phases 6-9 are unchanged.
+        **Tier 2, only if tier 1 wins:** the FLA W/U form. The prepass forms (I+L)⁻¹ by forward substitution and applies
+        it to K and V; blocks do v_new = U − W@S.
+        **Constraint:** gating stays log-difference throughout, never 1/G.
+        **Gate:** G16 dispatch-proven at the unrelaxed 1e-7, plus a GPU prefill A/B on `llama.cpp-experimental`.
+        **Expected effect (derived, unmeasured):** tier 1 removes ~35 % of per-block GEMM multiplies, but K/Q HBM loads
+        are unchanged, so this is an A/B candidate, not a claim. The hoist is also the principled way to lower
+        `MIN_BLOCKS_PER_SM`.
+        Sources: intake-1434#record (supersedes intake-1430#record's hoist line), intake-1430#record.
 - [ ] **Quantize reciprocal — `rescued-ak-discovery-7e8da8ea-attempt1` @ `9f85ba2fb`** (`ggml/src/ggml-cuda/quantize.cu`
       +4/−1: reciprocal-multiply + `__shfl_sync` broadcast replacing per-lane `roundf(xi/d)`; the champion still does
       `roundf(xi / d)`). Gate: tg128, 20 pairs vs anchor.
