@@ -583,7 +583,7 @@ each other through DRAM bandwidth — see the admission-control bullet at the to
 |---|---|---|
 | calibrated per-surface floors (tg128 0.638% @20 pairs; dec-b4; serving 3.536%) | `loop-memory/calibration/`, `serving-floor.*.json` | GPU surfaces only |
 | paired alternating A/B + residency + drift | `loop/bench.py`, `loop/residency.py` | GPU |
-| **build-recipe arm (cmake defines as a champion arm)** | D3, shipped 2026-08-30 | exists — **runtime-config arm does not** |
+| **sealed build recipe (`cmake_defines`) carried in candidate identity** | D3, shipped 2026-08-30 | representable and identity-bound, but **not a planner-selectable per-arm BUILD_RECIPE A/B**; both A/B builds consume the same sealed defines |
 | durable bundle + validated reload | `loop/accumulate.py` (2026-09-07) | single-surface |
 | anchor guard by OBJECT digest + incremental build | `controller/anchor_integrity.py`, `loop/anchor.py` | GPU objects; works for CPU objects unchanged |
 | leave-one-out per accumulated keep on PROMOTE | R23-48 | designed, not built |
@@ -704,7 +704,9 @@ class as pre-hook seeding. Per-surface cor was considered and rejected — it re
 branch; if the re-baseline arm ever proves too expensive, revisit that choice explicitly rather than skip the arm.
 
 ### 3.3 Track U3 — RUNTIME_CONFIG arm type
-D3 gave us build-recipe arms (cmake defines). Most CPU wins are *runtime*: placement, NUMA mode, thread
+D3 made build recipes representable and identity-bound (`cmake_defines`), but did not add a
+planner-selectable per-arm `BUILD_RECIPE` A/B: both candidate and anchor builds consume the same sealed
+defines. Source pragmas already travel through the ordinary `SOURCE` arm. Most CPU wins are *runtime*: placement, NUMA mode, thread
 topology, env knobs, launch flags. A RUNTIME_CONFIG hypothesis mutates a **codified recipe**, needs no
 build, and is measured by the same paired A/B (two launches of one binary). A keep commits the recipe
 change (recipes are code, in git) and the recipe hash becomes part of the epoch. Guard: a knob whose
@@ -1081,12 +1083,15 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] CPU A/A calibration: screen floor + serving floor, unit and host-state hash recorded; gating-floor calibration n≥24 with interval (FLOOR-UNIT-1 supersedes the earlier n=20 proposal)
 - [x] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES ✅ 2026-09-14 — research `eb8a88de`: `unit` + `n` are required fields of `serving_floor.v1`/`.v2` and of the bench `surface_calibration.v1` writer; `FloorReading.gate_floor` / `serving.check_unit` are the single admission rule and raise `FloorUnitMismatch` (a `ServingFloorMismatch`, so every gate already exits REFUSED) naming both units; legacy unit-less serving floors load but cannot gate, and nothing on disk was rewritten. See R23-55. (Original refs: INF-70 RETEST-1,
       2026-09-08: arm sd 0.501% vs process-launch sd 2.793%; the 1200-fold THP sizing error.)
-- [ ] **Headline admissibility: ≥N independent launches with a session-unit CI**, N sized from the
+- [x] **Headline admissibility: ≥N independent launches with a session-unit CI**, N sized from the
       between-session sd (2.793%), not the arm sd; a single-session headline is refused (R23-57) **Give N a
       number now** (2026-09-15, intake-1367#record): solve N from the recorded between-session sd for a
       stated minimum detectable effect, write N into the floor/headline record schema, and make a headline
       computation with fewer than N launches REFUSE (not warn), per the unit-mismatch precedent
-      (FloorUnitMismatch, R23-55).
+      (FloorUnitMismatch, R23-55). ✅ 2026-09-15 — research `d15997d6`: with MDE 3.0%, recorded
+      between-launch SD 2.793%, two-sided alpha 0.05 and power 0.80, the minimum is 14 independent
+      launches per arm (28 total). The record carries those design inputs and a bootstrap 95% CI;
+      headline computation below N refuses rather than warning.
 - [ ] **Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP
       state, HIP graph capture, allocator) — ~12% spread on an identical config, pristine control stable (R23-57)
 - [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
@@ -3634,12 +3639,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       it. Example defect: R23-35's recorded MMQ→MMVQ reroute mechanism beside an A/B-validated effect
       nothing tested. Wiki/planner consumers must not compound on hypothesis-status mechanisms.
       intake-1374#03.
-- [ ] **S3-AKU-10 — retrospective process metrics over existing autokernel stores (do first).**
+- [x] **S3-AKU-10 — retrospective process metrics over existing autokernel stores (do first).**
       First-improvement step, AUC-over-steps of best-so-far effect, valid-step ratio (measured / (measured +
       refused_at_formation + planner_transient + bench_failed)), and critic-pass-1 rejection rate vs
       eventual measured_null rate of hypotheses accepted after a rejection vs on first pass. If critic
       rejections do not predict fewer measured_nulls, the two critic passes are unvalidated cost.
-      intake-1375#04.
+      intake-1375#04. ✅ 2026-09-15 — research `e794b402`: the read-only streaming producer evaluated
+      four genuine stores (2,577 attempts) without rewriting them and published first-improvement step,
+      best-so-far AUC and valid-step ratio. The requested critic cohort comparison is explicitly
+      unavailable—not zero—because historical rows do not persist pass-1 lineage; this records the
+      evidence gap rather than inventing an association.
 - [ ] **S3-AKU-11 — costed design (no launch) for a strategy-only ablation on one frozen champion.** Arm A:
       production planner+critic. Arm B: same planner with an accept-all Critic. Optional arm C: a catalog
       Planner.propose drawing uniformly from do_not_repeat mechanism tokens not yet measured on the target.
@@ -3654,7 +3663,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       hypothesis/patch round and whether the prompt carried prior-rejection text. Once the op-coverage
       oracle extension (P3) lands, report op-coverage changes and env-gated fall-through findings by round.
       intake-1379#record (violation severity rose with each round of error feedback).
-- [ ] **S3-AKU-15 — diff-scope equality and oracle/bench-source immutability, before critic pass 2 (binding
+- [x] **S3-AKU-15 — diff-scope equality and oracle/bench-source immutability, before critic pass 2 (binding
       together with S3-AKU-16).** After planner.author, take the lane worktree's full git status --porcelain
       --untracked-files=all and refuse the patch (no build) if: (a) the dirty set is not exactly the
       declared paths; (b) any dirty path is outside a kernel-source allowlist (ggml/src/**, src/**); or (c)
@@ -3669,8 +3678,11 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       test-backend-ops). The planner is gpt-5.6-sol (OpenAI family), whose residual is special-casing /
       operator overloading / state recording, so S3-AKU-16 binds on the same day. (intake-1387#record;
       intake-1396#record; intake-1395#record.) This row IS INF-75's AKX-P2-PRE precondition; tick both
-      together.
-- [ ] **S3-AKU-16 — special-casing screen on keeps, binding together with S3-AKU-15.** Per kept patch,
+      together. ✅ 2026-09-15 — research `bada71c2`: `loop/integrity.py` validates the complete porcelain
+      dirty set before critic pass 2/build, enforces the source allowlist and protected oracle/bench paths,
+      journals typed refusals, and binds the measured tree to keep promotion. Zero-compute fixtures cover
+      undeclared and declared `tests/test-backend-ops.cpp` edits plus measured/kept tree drift.
+- [x] **S3-AKU-16 — special-casing screen on keeps, binding together with S3-AKU-15.** Per kept patch,
       record every ADDED branch predicate comparing tensor dims/types/op ids against literals, crossed with
       the oracle's exercised shapes (test-backend-ops -o MUL_MAT) and the A/B bench shape, plus any ADDED
       static/global mutable state read on the hot path (the state-recording class). A keep whose speedup
@@ -3681,13 +3693,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       Outcome. **Regression fixture (zero compute):** a recorded patch whose fast path is gated on a literal
       predicate matching the A/B bench shape must be flagged. (intake-1387#record; intake-1396#record,
       residual 39-58% for GPT-5 under read-only tests; intake-1395#record, Table 2 held-out gap separates
-      hacks from honest runs.)
+      hacks from honest runs.) ✅ 2026-09-15 — research `bada71c2`: added-diff screening covers ggml's
+      indexed and flattened tensor dimensions (including reversed literal comparisons), type/op literals,
+      and hot-path mutable state; candidate evidence crosses public oracle/bench identities, forces an
+      unseen confirmation for suspicious keeps, and persists the public-to-held-out speedup gap.
 - [ ] **S3-AKU-17 — objective ledger for autokernel campaigns (design item).** A structured record per
       campaign/target: the aims a keep must satisfy (serving throughput per surface, correctness oracle,
       variance), the evidence for each, the trade-offs among them, and the decision rule used when the loop
       proceeds despite an unresolved conflict. Seed it from the §8 per-surface evidence matrix and
       floors-with-units; do not add implementation authority. intake-1367#record (remedy R1).
-- [ ] **S3-AKU-18 (AK-RH-3) — first-class planner abstain.** Accept {"abstain": "<reason>"} as a valid reply
+- [x] **S3-AKU-18 (AK-RH-3) — first-class planner abstain.** Accept {"abstain": "<reason>"} as a valid reply
       to Planner.propose and Planner.author, and record Outcome("abstained", hypothesis, [reason]) as a
       science outcome: it feeds the Characterised context, not the transient streak. Stop booking an empty
       author path list as ProviderTransient (loop/actors.py raise ProviderTransient("authoring returned no
@@ -3697,7 +3712,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       per run beside S3-AKU-14's rejection-round telemetry. Evidence: ImpossibleBench §5.3, where an abort
       option cut GPT-5 cheating 54% -> 9% and extra feedback rounds raised cheating 33% -> 38%. The planner
       is gpt-5.6-sol with PATCH_ROUNDS = 2 rounds of verbatim critic rejections, and today a truthful
-      "cannot implement" is booked as a provider failure. intake-1396#record.
+      "cannot implement" is booked as a provider failure. intake-1396#record. ✅ 2026-09-15 — research
+      `bada71c2`: proposal and author replies accept reasoned abstention, legacy empty author paths map to
+      abstention, the author prompt names it as a correct science result, `Outcome("abstained", ...)` skips
+      judges and re-enters characterised context without incrementing transient streaks, and run status
+      publishes `abstain_rate`.
+- [ ] **S3-AKU-19 — conditional on AK-QL-7 retaining a throughput win: make BUILD_RECIPE a
+      planner-selectable per-arm A/B.** Do not implement or activate this arm before that tripwire.
+      Split the currently sealed
+      `Recipe.cmake_defines()` input into explicit anchor and candidate build recipes, include both in exact
+      attempt/epoch identity, expose only an allowlisted compiler-flag/define delta to proposal and authoring,
+      and prove with a zero-GPU fixture that the two compile commands differ while an undeclared flag refuses.
+      A source pragma remains a `SOURCE` arm and does not depend on this task. This is the missing execution
+      surface for AK-QL-8's conditional compiler-flag search; representation of `CMAKE_HIP_FLAGS` alone does
+      not close it.
 
 ### Execution discipline and retained decisions
 

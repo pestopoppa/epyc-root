@@ -547,7 +547,7 @@ Global constraints:
 
 ### P0 — census tooling (from existing mechanisms)
 
-- [ ] **AKX-P0a — generalize the G4 dispatch probe into a per-workload census producer.**
+- [x] **AKX-P0a — generalize the G4 dispatch probe into a per-workload census producer.**
   - Lift `fold2_gates.run_dispatch_probe`/`parse_scheduler_graph` into `loop/census.py`, keeping the vacuous-pass guard.
   - Iterate the recipe's shape envelope (prefill ubatch, decode, np/draft verify width).
   - Emit `workload_census.v1`, with the `weights` layer from `workload_contract.read_census`.
@@ -555,6 +555,9 @@ Global constraints:
   - Hermetic tests: recorded 27B log fixture (`test_fold2_gates.py:89`); an ANSI-mangled vacuous log refuses.
   - **Acceptance:** fixture census matches 27,516 nodes / SSM_SCAN=0 / 12 CPU GET_ROWS; stale-key and zero-node cases return UNKNOWN.
   - Compute: zero for the tests; correctness-surface for live runs.
+  - ✅ 2026-09-15 — research `e5c0d798`: `loop/census.py` owns the shape-envelope producer,
+    workload-census-v1 schema, atomic storage and vacuous guards; the retained fixture proves 27,516 nodes,
+    SSM_SCAN=0 and 12 CPU GET_ROWS, while stale, zero-node and ANSI-corrupted evidence stays UNKNOWN.
 - [ ] **AKX-P0b — HIP route layer.**
   - Parse `GGML_CUDA_LOG_MMVQ_ROUTE=2` into `hip_matmul_routes`.
   - **Acceptance:** on a recorded W1 decode log, the route multiset is stable across two runs of the same build (A/A structural identity).
@@ -571,11 +574,15 @@ Global constraints:
 
 ### P1 — footprint and screen, observe-only, historical replay (acceptance test)
 
-- [ ] **AKX-P1a — footprint extractor.**
+- [x] **AKX-P1a — footprint extractor.**
   - Give `evaluator/surface.derive_affected_surface` a producer (depfile + `compile_commands.json` + hunk classifier).
   - Emit `patch_footprint.v1` using `CompositionEvidence` field names.
   - **Acceptance:** on `7d2ea88b`, `732389d6` and `db18f393` the predicted discriminators are recorded, `732389d6`/`7d2ea88b` show `GGML_TYPE_Q4_K` terms, and `2516c9807`'s env-knob default flips are detected.
   - Compute: zero.
+  - ✅ 2026-09-15 — research `a6d0464d`: the git-diff/compile-commands/depfile producer emits
+    `patch_footprint.v1`, maps exact CompositionEvidence fields, fails closed on opaque touched files and
+    detects the required historical Q4_K, HIP/CDNA2/shape and default-ON knob discriminators. The focused
+    footprint/surface suite passed 223 tests plus 52 subtests.
 - [ ] **AKX-P1b — replay 732389d6 (THE acceptance test).**
   - Workloads: W1 (27B Q8_0 ROCm0), W2 (VL-30B Q4_K_M ROCm0), W4 (gemma Q4_K_M, **both** its production CPU recipe and the recorded GPU dec-b4 surface).
   - Screen each keep in `0db32c06e..732389d6` against its parent, and the whole range against production v9 source built in an experimental checkout.
@@ -605,7 +612,7 @@ Global constraints:
 
 ### P2 — gate in refuse mode
 
-- [ ] **AKX-P2-PRE — AK-RH-1 landed** (§7.1 integrity precondition): the author step verifies the full dirty set, refuses oracle/bench paths, and the kept commit equals the measured tree. P2 refuse-mode rows are untrusted until this is ticked.
+- [x] **AKX-P2-PRE — AK-RH-1 landed** (§7.1 integrity precondition): the author step verifies the full dirty set, refuses oracle/bench paths, and the kept commit equals the measured tree. P2 refuse-mode rows are untrusted until this is ticked. ✅ 2026-09-15 — research `bada71c2`; the S3-AKU-15 implementation and zero-compute regression fixtures prove all three preconditions before build/keep.
 - [ ] **AKX-P2a — upgrade `surface_validation.classify` for non-author rows** from `ab_verdict` to §8.1 (interim floor form, then e-process per §13 Q2). INERT rows are excused only with a `blast_radius_row` witness.
   - **Acceptance:** fixtures cover −0.9% @ 0.949% floor, which today passes and must now refuse at k_δ=1 (interim); a cross-unit floor refuses; a missing floor stays pending.
   - Compute: zero (fixtures).

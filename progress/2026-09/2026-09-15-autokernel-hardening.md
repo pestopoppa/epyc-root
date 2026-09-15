@@ -1,0 +1,28 @@
+# AutoKernel hardening — 2026-09-15
+
+## Integrity, abstention and dispatch checkpoint
+
+Reviewed the AutoKernel hardening series through research `bada71c2` against the exact acceptance text
+in the active handoffs. A zero-compute targeted run passed 171 tests with the repository root and
+`scripts/kernel_rnd` on `PYTHONPATH` and `TMPDIR` on `/mnt/raid0`.
+
+- Closed S3-AKU-15 and its mirrored AKX-P2-PRE: full dirty-set validation, protected oracle/bench paths,
+  typed pre-build refusal, and measured-tree/kept-commit identity are wired and tested.
+- Closed S3-AKU-16: literal tensor-shape/type/op predicates and mutable hot-path state are screened;
+  suspicious keeps require an unseen confirmation and retain the public-to-held-out speedup gap.
+- Closed S3-AKU-18: proposal/author abstention is a science outcome, feeds future context, does not count
+  as a transient, and contributes to the published per-run abstain rate.
+- Closed R23-69 after adding canonical regime matching, changed-diff/new-epoch reopening and a
+  content-addressed operator-unblock path, with ambiguous or corrupt state refusing closed.
+- Closed S3-AKU-03 with a declared 3.0% MDE and 14 independent launches per arm (28 total), plus a
+  session-unit bootstrap CI and a hard under-N refusal.
+- Closed S3-AKU-10 with streaming retrospective metrics over four genuine stores and an explicit finding
+  that historical rows cannot support the requested critic-cohort comparison because they lack pass-1 lineage.
+- Closed AKX-P0a and AKX-P1a's zero-compute portions: per-workload census production and the static
+  diff/compile-closure footprint producer now have their historical acceptance fixtures.
+- Corrected the D3 capability statement: build flags are representable but both builds share sealed defines,
+  so planner-selectable per-arm BUILD_RECIPE A/B is still missing. Added S3-AKU-19 for that implementation;
+  source pragmas already use the SOURCE arm. AK-QL-8 remains a completed decision/specification row.
+
+No index row, benchmark, production tree, or measurement authority was changed. The GLM loop was stopped
+cleanly at a completed batch boundary before this hardening wave; its valid store and continuation remain intact.
