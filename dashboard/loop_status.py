@@ -2209,6 +2209,42 @@ def _retained_keep_source(root: Path) -> dict:
             "error": None}
 
 
+def _bundle_member_rows(root: Path, mechanisms: Iterable[str]) -> dict[str, dict]:
+    """Recover metadata for retained members irrespective of their legacy status.
+
+    Membership still comes exclusively from the accumulator bundle.  This lookup only
+    repairs metadata for early accumulator keeps which the pre-recovery loop journaled
+    as ``measured_null`` before their bundle membership was reconstructed.
+    """
+    wanted = list(dict.fromkeys(str(item) for item in mechanisms if item))
+    if not wanted:
+        return {}
+    path = Path(root) / KNOWLEDGE_DB_FILENAME
+    placeholders = ",".join("?" for _ in wanted)
+    try:
+        con = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5.0)
+        try:
+            rows = con.execute(
+                "SELECT attempt_id, recorded_at, campaign_id, epoch_sha256, hypothesis_id, "
+                "mechanism_id, target_surface, target_symbol, substr(statement, 1, 2001), "
+                "effect_fraction, result_sha256, substr(payload, 1, ?), length(payload), status "
+                f"FROM experiments WHERE mechanism_id IN ({placeholders}) "
+                "ORDER BY recorded_at ASC",
+                (TRAJECTORY_RAW_MAX_BYTES + 1, *wanted)).fetchall()
+        finally:
+            con.close()
+    except (OSError, sqlite3.Error):
+        return {}
+    out = {}
+    for row in rows:
+        out[row[5]] = {"attempt_id": row[0], "recorded_at": row[1],
+            "campaign_id": row[2], "epoch_sha256": row[3], "hypothesis_id": row[4],
+            "mechanism_id": row[5], "target_surface": row[6], "target_symbol": row[7],
+            "statement": row[8], "effect_fraction": row[9], "result_sha256": row[10],
+            "payload": row[11], "payload_bytes": row[12], "status": row[13]}
+    return out
+
+
 def _retained_keep_history(root: Path, headline: Mapping[str, Any],
                            active: Optional[Mapping[str, Any]]) -> dict:
     """Merge exact global keeps with the active campaign's retained bundle."""
@@ -2409,6 +2445,7 @@ def _retained_keep_history(root: Path, headline: Mapping[str, Any],
         active_events = []
         used_attempts = set()
         recovered = 0
+        member_rows = _bundle_member_rows(campaign_root, bundle_members)
         for position, mechanism in enumerate(bundle_members, 1):
             matches = by_mechanism.get(mechanism) or []
             if matches:
@@ -2421,7 +2458,10 @@ def _retained_keep_history(root: Path, headline: Mapping[str, Any],
                 recovered += 1
                 recovery_item = recovery_by_mechanism.get(mechanism) or {}
                 recovered_commit = recovery_item.get("commit")
-                item = {"disposition": "kept", "membership_source": "accumulator_bundle",
+                legacy_row = member_rows.get(mechanism)
+                item = (event(legacy_row, active_source["evidence"],
+                              str(active.get("model"))) if legacy_row else {
+                    "disposition": "kept", "membership_source": "accumulator_bundle",
                     "source_id": str(campaign_root / "accumulator-bundle.json"),
                     "attempt_id": None, "recorded_at": None, "campaign_id": active.get("id"),
                     "hypothesis_id": None, "mechanism_id": mechanism,
@@ -2438,9 +2478,19 @@ def _retained_keep_history(root: Path, headline: Mapping[str, Any],
                                 ([{"label": "accumulator_recovery",
                                    "value": str(recovery_path)}] if recovered_commit else []),
                     "identifiers": {"patch_path": None, "patch_metadata_path": None},
-                    "retained_position": position, "bundle_order": position}
+                    "retained_position": position, "bundle_order": position})
+                item["disposition"] = "kept"
+                item["original_disposition"] = (legacy_row.get("status")
+                                                 if legacy_row else None)
+                item["membership_source"] = "accumulator_bundle+journal_metadata"
+                item["retained_position"] = position
+                item["bundle_order"] = position
                 if recovered_commit:
-                    item["membership_source"] = "accumulator_bundle+recovery_receipt"
+                    item["commit"] = recovered_commit
+                    item.setdefault("evidence", []).append({
+                        "label": "accumulator_recovery", "value": str(recovery_path)})
+                if recovered_commit:
+                    item["membership_source"] += "+recovery_receipt"
                     item["model_attribution"] = "active_campaign_recovery_receipt"
             active_events.append(item)
         active_events.extend(item for item in db_events
@@ -2652,10 +2702,18 @@ def _production_history(root: Path, rows: list[Mapping[str, Any]],
                    point.get("recipe"), point["baseline"]["commit"], point["gain_pct"])
             unique.setdefault(key, point)
         curves = _model_trajectory_curves(unique.values())
+        # A curated point has already passed its source digest and identity checks.
+        # Do not repeat the live ledger join's expected pre-contract failure as a
+        # global warning beneath every model on the page.
+        curated_paths = {str((point.get("evidence") or {}).get("path"))
+                         for point in admitted
+                         if isinstance(point.get("evidence"), Mapping)}
+        live_errors = [error for error in (live.get("evidence_errors") or [])
+                       if str(error.get("evidence")) not in curated_paths]
         return {"state": "available" if curves else "unavailable",
                 "basis": "gain_pct_vs_each_curve_declared_baseline", "curves": curves,
                 "exceptions": exceptions,
-                "evidence_errors": live.get("evidence_errors") or [],
+                "evidence_errors": live_errors,
                 "baseline_epochs": epochs,
                 "baseline": live.get("baseline"),
                 "detail": ("one headline trajectory per model; its canonical primary surface is "
@@ -2698,7 +2756,28 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
         if _finite_number(bundle.get("compounded_bench_pct")):
             local["bench_checkpoints"].append({"keep_count": len(keeps),
                                                  "gain_pct": float(bundle["compounded_bench_pct"]),
-                                                 "evidence_state": "cheap_screen_estimate"})
+                                                 "evidence_state": "cheap_screen_estimate",
+                                                 "recorded_at": datetime.fromtimestamp(
+                                                     (campaign_root / "accumulator-bundle.json").stat().st_mtime,
+                                                     timezone.utc).isoformat().replace("+00:00", "Z"),
+                                                 "commit": bundle.get("tip"),
+                                                 "evidence": str(campaign_root / "accumulator-bundle.json")})
+        recovery_path = campaign_root / "recovery" / "recovered-accumulator-state.json"
+        try:
+            recovery = _trajectory_json(recovery_path)
+            recovered = recovery.get("keeps")
+            if (recovery.get("schema") == "epyc.autokernel.accumulator_recovery.v1"
+                    and isinstance(recovered, list) and recovered
+                    and _finite_number(recovery.get("effect_pct"))
+                    and isinstance(recovery.get("recovered_at"), str)):
+                local["serving_checks"].append({"keep_count": len(recovered),
+                    "gain_pct": float(recovery["effect_pct"]),
+                    "bench_gain_pct": None, "evidence_state": "recovered_whole_bundle",
+                    "outcome": recovery.get("gate_outcome"),
+                    "recorded_at": recovery["recovered_at"],
+                    "commit": recovery.get("tip"), "evidence": str(recovery_path)})
+        except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError):
+            pass
         for path in sorted((campaign_root / "serving").glob("bundle-*.json"))[-32:]:
             try:
                 body = _serving_summary(path)
@@ -2717,92 +2796,40 @@ def improvement_trajectory(root: Path, rows: list[Mapping[str, Any]],
                                                   "bench_gain_pct": float(planner["compounded_bench_pct"]),
                                                   "evidence_state": ("serving_verified" if body["decisive"]
                                                                      else "serving_inconclusive"),
-                                                  "outcome": body.get("outcome")})
+                                                  "outcome": body.get("outcome"),
+                                                  "recorded_at": datetime.fromtimestamp(
+                                                      path.stat().st_mtime, timezone.utc
+                                                  ).isoformat().replace("+00:00", "Z"),
+                                                  "commit": (path.name.removeprefix("bundle-")
+                                                             .removesuffix(".json")),
+                                                  "evidence": str(path)})
             except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
                 local["evidence_errors"].append({"evidence": str(path), "reason": str(exc)[:256]})
-        local["serving_checks"].sort(key=lambda p: (p["keep_count"], p["gain_pct"]))
+        local["serving_checks"].sort(key=lambda p: (p["keep_count"], p["recorded_at"]))
     except FileNotFoundError:
         pass
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
         local.update({"state": "malformed", "detail": str(exc)[:256]})
 
-    # The retained accumulator is the producer's promotion chain. Unlike the
-    # bootstrap history it advances on every Bundle.save(), so a newly promoted
-    # tip appears without editing either repository. Model and baseline identity
-    # are required. New normalized campaign projections may also name their
-    # surface/recipe/metric/backend; older projections receive explicit generic
-    # labels rather than forcing this reader into the raw operational status.
-    if isinstance(active, Mapping):
-        try:
-            chain = _trajectory_json(campaign_root / "accumulator-bundle.json")
-            tip = chain.get("tip")
-            cor = active.get("champion_of_record")
-            model = active.get("model")
-            # This headline consumes the compact campaign projection plus the
-            # compact accumulator, never the live operational status.  The
-            # latter may legitimately contain large lifecycle telemetry and
-            # may briefly report the previous tip while a newly retained keep
-            # is being published.  Neither condition invalidates the
-            # accumulator's own atomic promotion-chain snapshot.
-            surface = active.get("surface") or "campaign-accumulator"
-            metric = active.get("metric") or "compounded_bench_pct"
-            backend = active.get("backend") or "backend unrecorded"
-            gain = chain.get("compounded_bench_pct")
-            if (chain.get("schema") != "epyc.autokernel.accumulator_bundle.v2"
-                    or chain.get("measurement_validity") != "current_snapshot"
-                    or not isinstance(tip, str) or not _FULL_SHA.fullmatch(tip)
-                    or not isinstance(cor, str) or not _FULL_SHA.fullmatch(cor)
-                    or not str(chain.get("champion_of_record") or "").startswith(cor[:12])
-                    or not isinstance(model, str) or not model
-                    or not isinstance(surface, str) or not surface
-                    or not isinstance(metric, str) or not metric
-                    or not isinstance(backend, str) or not backend
-                    or not _finite_number(gain)):
-                raise ValueError("promotion chain model/surface/recipe/metric/era identity mismatch")
-            recipe = active.get("recipe") or surface
-            baseline = {"commit": cor, "label": f"campaign-CoR-{cor[:12]}"}
-            recorded_at = datetime.fromtimestamp(
-                (campaign_root / "accumulator-bundle.json").stat().st_mtime,
-                timezone.utc).isoformat().replace("+00:00", "Z")
-            provisional = {"commit": tip, "recorded_at": recorded_at,
-                "model": model, "surface": surface, "recipe": recipe,
-                "metric": metric, "backend": backend,
-                "era": active.get("id"), "gain_pct": float(gain), "baseline": baseline,
-                "evidence_state": "accumulated_chained_provisional",
-                "keep_count": len(chain.get("keeps") or []),
-                "evidence": str(campaign_root / "accumulator-bundle.json")}
-            direct = next((point for curve in headline.get("curves") or []
-                           for series in curve.get("surface_series") or [curve]
-                           for point in series.get("points") or []
-                           if point.get("commit") == tip and point.get("model") == model
-                           and point.get("surface") == surface
-                           and point.get("recipe") == recipe
-                           and (point.get("baseline") or {}).get("commit") == cor
-                           and "direct" in str(point.get("evidence_state"))), None)
-            if direct is not None:
-                direct["provisional_relation"] = "supersedes_compatible_accumulated_chain"
-            else:
-                variant = {"id": f"{surface}::{metric}::{backend}",
-                    "surface": surface, "metric": metric, "backend": backend,
-                    "points": [provisional], "instrument_epochs": [{"recipe": recipe,
-                        "era": active.get("id"), "baseline": baseline,
-                        "starts_at": provisional["recorded_at"], "starts_commit": tip}]}
-                same_model = next((curve for curve in headline.get("curves") or []
-                                   if curve.get("model") == model), None)
-                if same_model is None:
-                    headline.setdefault("curves", []).append({"id": model, "model": model,
-                        "primary_surface": surface, "surface": surface, "metric": metric,
-                        "backend": backend, "points": [provisional],
-                        "instrument_epochs": variant["instrument_epochs"],
-                        "surface_series": [variant]})
-                else:
-                    same_model.setdefault("surface_series", []).append(variant)
-                headline["curves"].sort(key=lambda curve: str(curve.get("id")))
-                headline["state"] = "available"
-        except (FileNotFoundError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
-            headline.setdefault("exceptions", []).append({
-                "commit": active.get("champion_of_record"),
-                "evidence_state": "broken_promotion_chain", "note": str(exc)[:256]})
+    # Campaign-CoR observations are deliberately separate from the production
+    # headline.  They become one honest local curve from whole-bundle measurements;
+    # per-keep marginals are annotations, never multiplied into invented progress.
+    if local["state"] == "available" and isinstance(active, Mapping):
+        cor = active.get("champion_of_record")
+        checkpoints = [*local["serving_checks"], *local["bench_checkpoints"]]
+        checkpoints.sort(key=lambda point: str(point.get("recorded_at") or ""))
+        local["curve"] = {"id": f"campaign::{active.get('id')}",
+            "model": active.get("model"), "scope": "campaign_cor",
+            "surface": active.get("surface") or "campaign-accumulator",
+            "metric": active.get("metric") or "whole_bundle_gain_pct",
+            "backend": active.get("backend") or "cpu", "points": [{
+                **point, "baseline": {"commit": cor, "label": f"campaign-CoR-{str(cor)[:12]}"},
+                "recipe": active.get("recipe") or "matched-process",
+                "era": active.get("id"), "model": active.get("model"),
+                "surface": active.get("surface") or "campaign-accumulator",
+                "metric": active.get("metric") or "whole_bundle_gain_pct",
+                "backend": active.get("backend") or "cpu",
+            } for point in checkpoints]}
     if local["state"] == "available" and isinstance(active, Mapping):
         local["campaign_id"] = active.get("id")
         local["model"] = active.get("model")
