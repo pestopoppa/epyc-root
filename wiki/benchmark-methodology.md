@@ -165,8 +165,9 @@ decision subset, a loader abort that never asks a question — had no guard at a
 fire the trial was charged a **quality-floor regression violation**: a fabricated regression written into
 planner-visible `failure_analysis` out of a measurement that never happened.
 
-**A guard is not deployed until something reads it.** "Computed, documented, never consulted" is the
-symmetric twin of fail-open concealment: the comment asserts the invariant, the code never enforces it,
+**A guard is not deployed until something reads it.** The general test: *"Adding an external checker
+is insufficient if its output does not gate the loop"* (intake-1367#02). "Computed, documented, never
+consulted" is the symmetric twin of fail-open concealment: the comment asserts the invariant, the code never enforces it,
 and a reader auditing the source concludes the system is safe. Only one half of the repair is
 retrofittable:
 

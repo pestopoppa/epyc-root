@@ -116,6 +116,12 @@ For each URL:
    deliberate or incidental, the effect is the same: **the check was passed by deleting what it
    inspects.** `validate_intake.py` now warns on the shape.
 
+2d. **Follow redirects before deciding "absent".** For repo and blog URLs, resolve the final URL
+   (curl -sIL, record the Location chain) and dedup against BOTH the submitted and the resolved URL.
+   A renamed repo defeats normalized-url matching: github.com/alphaXiv/openresearch-cli (intake-883)
+   301-redirects to github.com/alphaXiv/OpenResearch, and only the redirect check caught it
+   (2026-09-14).
+
 3. **Companion artifacts are DISTINCT sources.** A repo, weights collection, dataset card, or project
    page is **not** a duplicate of the paper it accompanies. `novelty: duplicate` requires an **exact
    `arxiv_id` or `url` collision**. Being *referenced in another entry's notes* is not a collision.
@@ -164,7 +170,14 @@ For each URL:
 
 ### Phase 3 — Literature Expansion + cheap contradiction pass
 
-Expand only from entries with `relevance >= medium`. **Max 10 new entries per run. Max depth 2 hops.**
+Expand only from entries with `relevance >= medium`. **Budget by difficulty, not a flat cap.**
+Estimate difficulty 1–10 per expansion seed: 1–3 → 0 extra search rounds, 4–7 → 1, 8–10 → 2; the
+run-level ceiling of 10 new entries and depth 2 still holds
+(**Max 10 new entries per run. Max depth 2 hops.**). Degrade rounds beyond the budget to shallow, and
+**REFUSE** further expansion with a recorded refusal state (expansion_refused: <reason>) instead of
+stopping silently. **Drop-unobserved-IDs post-filter:** before persisting, drop any arxiv_id / URL that did not appear in
+a captured search or fetch result from THIS run. Never persist a recalled identifier; refuse the
+entry rather than hedge it. (intake-883#record)
 
 - **Tier 1 — Reference chasing**: extract arXiv IDs from the references, dedup, queue unseen relevant ones.
 - **Tier 2 — Targeted search**: `"{technique}" {category} 2025 2026`; check the top 5.
@@ -221,6 +234,16 @@ one-line reason. A silent drop is a defect.
    index on 2026-07-25 — a paper ablation that does not exist (also cross-pasted into an *unrelated*
    entry) and a four-step tool behaviour found nowhere in its source. Both came from Stage-1
    summariser agents and both survived until a dive read the primary source.
+
+3b. **Canonicalize URLs at WRITE time**, one form per source class (arXiv →
+   https://arxiv.org/abs/<id> with arxiv_id set; GitHub → https://github.com/<owner>/<repo> at the
+   post-redirect canonical owner/name; HF → https://huggingface.co/<org>/<name>). Normalization for
+   comparison stays; this adds canonical storage.
+
+3c. **Resolve identifiers on write.** For every arxiv_id and referenced_arxiv_ids entry, fetch
+   arxiv.org/abs/<id> and require the normalized page title to match the title the entry attaches.
+   Otherwise record "id unverified" in notes and keep it out of both fields. A recalled id resolves
+   to a real paper, so a link check alone passes.
 
 4. **Cross-contamination check.** Before persisting, verify each entry's `reported_results` and
    `key_claims` mention only *its own* source. A figure belonging to a different entry is a defect.
@@ -300,6 +323,24 @@ Begins only when the operator names the intakes. Never self-trigger.
 - **Sub-agents**: give each the external-content quarantine rules, the relevant repo context (frozen
   gates, hardware constraints, MEASUREMENT.md status of any number it will cite), and an instruction
   to report `CONFIRMED / OVERTURNED / PARTIAL / NOT-FOUND-IN-SOURCE` per claim with evidence.
+- **Pass the lane worktree path and forbid the shared clone.** Every dive brief names the lane
+  worktree as the only repo root to read handoffs/wiki/index from, and requires citing lane line
+  numbers. Both 2026-09-14 dives read /workspace @d372c953 and produced "entry does not exist" and
+  stale-line artifacts (and one stale premise, AK-VAL-2 residency, already landed as R23-60).
+- **Write-side evidence check before quoting OUR runs.** Before a dive quotes a number from one of
+  OUR runs, verify the run command emits a compact end-of-log summary and an echo of its effective
+  config. If it does not, the finding is "not judgeable", not a number. Two named rules: **never
+  write a metric you have not read out of a run's own output**, and **truncated output is not
+  evidence of absence**. (orx-evidence pattern, intake-883#record; the intake-side expression of the
+  belief-kernel write-side rule.)
+- **Per-claim second reader.** A different agent re-checks each claim_anchor (mechanical quote
+  re-find, SC76) and answers one bounded question per claim: does this quote support this key_claim
+  — yes/no/partial. Disagreements go to the operator in the Stage-3 plan; they never auto-overturn.
+  (intake-1377#record; in-house: two Stage-2 dives stamped findings from a stale clone that only a
+  clerk pass caught.)
+- **Dive artifacts:** figures/data a dive produces live under /mnt/raid0/llm/tmp/dive-<id>/ grouped
+  by topic, each figure with its generating script beside it. The REPORT ends with an artifact audit
+  line whose only passing value is clean; anything else is a defect to fix, not a warning to note.
 
 **Writes permitted in Stage 2** (intake index only):
 
@@ -340,6 +381,10 @@ Begins only when the operator names the intakes. Never self-trigger.
   **681**, most of which no dive ever disputed. intake-896 had four claims, one fabricated, and all
   four were marked wrong. Recording `unaffected` on the siblings you checked is the whole point —
   it is the difference between "examined and cleared" and "nobody looked".
+- Optional setup_scope (what was actually tested, e.g. "downscaled 2-GPU reproduction") and
+  cost_note on a claim_anchor or claim_corrections row, so "inconclusive under this setup" is
+  expressible without weakening CONFIRMED/OVERTURNED/PARTIAL/NOT-FOUND-IN-SOURCE.
+  (intake-883#record)
 - **Record `depends_on` for every claim of this entry that rests on another entry's claim.**
   Apply the counterfactual test to each cross-reference the dive touched: *if that entry's claim
   were retracted tomorrow, would a claim in this entry have to change?* Yes → `depends_on`; no →
@@ -352,6 +397,10 @@ Begins only when the operator names the intakes. Never self-trigger.
   dependency is worse than a missing one — it propagates invalidation into work that never
   depended on anything. Two mechanical shortcuts were tried and both failed (precision 0.50 at
   recall 0.09 and 0.27). Nothing recovers this after the dive closes.
+- **Resolve identifiers on write.** For every arxiv_id and referenced_arxiv_ids entry, fetch
+  arxiv.org/abs/<id> and require the normalized page title to match the title the entry attaches.
+  Otherwise record "id unverified" in notes and keep it out of both fields. A recalled id resolves
+  to a real paper, so a link check alone passes.
 - Correct fabricated or cross-contaminated content immediately — do not carry it to Stage 3.
 - Persist the **Stage-2b** entries (below) as new index rows, already `dive-verified`/`dive-overturned`.
 
@@ -429,6 +478,10 @@ ledger, then build ONE plan covering:
 4. **Explicit declines** — every ledger item not being filed, with its reason.
 5. **Intake-entry updates** — which entries get `handoffs_updated`/`handoffs_created` filled, and
    what `dive_corrections` land.
+   - Fill handoffs_updated / handoffs_created **and integration_disposition + disposition_evidence**
+     (enum and rules: references/intake-schema.md; enforced by validate_intake.py) on every affected
+     entry. An entry whose every ledger row is a decline gets knowledge_only or declined, never
+     silence.
 
 **Plan-completeness gates — the plan may not be presented until all pass:**
 
@@ -478,7 +531,9 @@ domain/master-index write happens before approval.**
 Apply exactly what was approved. Additions discovered mid-execution go **back to the operator**, not
 silently into the diff. Then:
 
-- Fill `handoffs_updated` / `handoffs_created` on the affected intake entries.
+- Fill handoffs_updated / handoffs_created **and integration_disposition + disposition_evidence**
+  (enum and rules: references/intake-schema.md; enforced by validate_intake.py) on every affected
+  entry. An entry whose every ledger row is a decline gets knowledge_only or declined, never silence.
 - Run `bash scripts/validate/validate_intake.sh` → exit **0**.
 - Honor checkbox discipline: every appended task is `- [ ]`; anything already done is
   `- [x] … ✅ YYYY-MM-DD`.
@@ -517,6 +572,11 @@ context_management, inference_serving, memory_augmented, training_distillation, 
 routing_intelligence, hardware_optimization, ssm_hybrid, autonomous_research, swarm_techniques,
 document_processing, knowledge_management, rag_alternatives, tool_implementation, local_inference,
 search_retrieval.
+
+**Agreement on LLM-assigned labels.** Any LLM-assigned label EPYC aggregates as evidence
+(novelty/relevance/credibility grades, rubric-coded audits) carries a small operator-sampled
+human-agreement check with a chance-corrected statistic (PABAK or kappa), stratified by producer
+model when the coder shares its family. (intake-1374#record)
 
 ---
 
@@ -582,7 +642,7 @@ no cross-contaminated figures; `validate_intake.sh` exit 0; `git status handoffs
 **Stage 2** — only operator-named intakes dived; each claim reported CONFIRMED/OVERTURNED/PARTIAL/
 NOT-FOUND with evidence; each dive ends with a derived-actionables ledger where every row has a
 disposition **and a dive-surfaced sources list**; the consolidated dive-surfaced list presented to the
-operator with a per-item recommendation; every selected item dived in a Stage-2b pass (≤5) and
+operator with a per-item recommendation; every selected item dived in a Stage-2b pass and
 persisted `dive-verified`/`dive-overturned`, every declined item named in `dive_corrections`;
 verification fields promoted; fabrications corrected in-index immediately; `git status handoffs/`
 still clean.

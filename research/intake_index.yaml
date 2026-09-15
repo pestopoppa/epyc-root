@@ -49887,7 +49887,12 @@
   handoffs_updated:
   - autopilot-continuous-optimization.md
   - agent-collab-rnd-harness.md
+  - autokernel-unified-surface-program.md
+  - autokernel-rebuild-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-01, S3-AKU-02 -> handoffs/active/autokernel-unified-surface-program.md; S3-AKR-01 -> handoffs/active/autokernel-rebuild-program.md; S3-AP-01 -> handoffs/active/autopilot-continuous-optimization.md; S3-ACH-01, S3-ACH-02 -> handoffs/active/agent-collab-rnd-harness.md; S3-RI-01, S3-RI-02, S3-RI-03, S3-RI-04, S3-RI-05, S3-RI-11 -> .claude/skills/research-intake/SKILL.md (S3-RI-03/S3-RI-05 also .claude/skills/research-intake/references/intake-schema.md); S3-IDX-05 -> this entry dive_corrections. Declines D-01..D-04. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'RETIRED 2026-09-14 (dive): NO LICENSE: GitHub license field is null, no LICENSE file (raw 404), so despite public source it is all-rights-reserved by default - collides with EPYC''s opensource-only-for-deploy policy (blocks adopt_component; patterns still mineable).'
   - Drives models through a coding-agent harness, not a direct OpenAI-compatible endpoint, so it can reach EPYC's self-hosted llama.cpp only INDIRECTLY via a harness (OpenCode/Cursor) - not a clean local-endpoint component. Does NOT hard-require alphaXiv SaaS for the core loop (dashboard local/loopback, compute BYO, paper search no-login).
@@ -50115,6 +50120,7 @@
   - '2026-09-15 STAGE-2b ROUND-2 (intake-1384): controller/do_not_repeat.py (mechanism facets + regime identity) exists but no module in loop/ imports it. Verified by the main thread 2026-09-15: its importers are campaign.py, hypothesis_portfolio.py, least_commitment_capture.py, schemas.py and controller/* only. A correct structural guard is wired to one path and not the loop path - see AK-DA3-2.'
   - '2026-09-15 STAGE-2b ROUND-2 (intake-1382 pueue, intake-1383 task-spooler): neither can model CPU sets, cores or NUMA regions either. Three off-the-shelf single-machine queues checked (gflow intake-1369, pueue, task-spooler), none can be the lane arbiter; DA-2 precondition (b) waits only on OP-41.'
   - '2026-09-15 ROUND-2 SURFACED-SOURCE DECLINES (Stage-3 gate record): operator-declined at the round-2 gate (selection: all recommended = rows 1,3,10,19,22,32). ROUND2-SURFACED.md rows surfaced by this entry''s dive: [row 5] molab.marimo.io Molab hosted notebooks (Stage-2 row 2) - low-priority report-carrier question, changes no drafted task; [row 6] Google Antigravity coding-agent harness (orx issues #223, #332; Stage-2 row 3) - low-priority harness-class question, changes no drafted task.'
+  - '2026-09-15 STAGE-3 CLERK NOTE (S3-IDX-05): DA-1 row locator - the section 8.12 state set is at lane autokernel-unified-surface-program.md :1550-1551, and transition-validator changes are gated by OP-AKU-A2.'
   depends_on: []
   dive_actionables_ledger:
   - direction: 'DA-1 Typed trial lifecycle with legality-checked transitions, terminal states absorbing, and the persistence
@@ -148511,8 +148517,16 @@
     intake_entry_notes:
     - 'intake-883 (orx / OpenResearch - the auto-research harness this critique bears on; found while running the Tier-2b contradiction search for it)'
     - 'intake-1368 (PseudoBench - the empirical sibling: measures acceptance/validation collapse adversarially)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - autokernel-rebuild-program.md
+  - autopilot-continuous-optimization.md
+  - eval-tower-verification.md
+  - vidya-belief-substrate-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-03, S3-AKU-04, S3-AKU-05, S3-AKU-17 -> handoffs/active/autokernel-unified-surface-program.md; S3-AKR-02 -> handoffs/active/autokernel-rebuild-program.md; S3-AP-02, S3-AP-03 -> handoffs/active/autopilot-continuous-optimization.md; S3-EV-01 -> handoffs/active/eval-tower-verification.md; S3-VID-02, S3-VID-03 -> handoffs/active/vidya-belief-substrate-program.md; S3-RI-06, S3-RI-07 -> .claude/skills/research-intake/SKILL.md; S3-WIKI-01 -> wiki/benchmark-methodology.md; S3-WIKI-02 -> wiki/autonomous-research.md; S3-OP-01 -> handoffs/active/master-handoff-index.md operator decision queue (OP-20); S3-IDX-01, S3-IDX-04 -> this entry dive_corrections. Declines D-05..D-09, D-81. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'Stage-1 caveat: position/survey paper with no experiments of its own; the "21 systems" audit rubric and the >100-paper survey are unverified from the abstract; arXiv v1, no venue, authors unaffiliated in the HTML metadata read.'
   notes: 'Found 2026-09-14 by the bounded Tier-2b search run for the intake-883 re-encounter (query: alphaXiv OpenResearch orx autoresearch limitations criticism). Fetched arxiv.org/html/2605.26200 (v1; sha256 3f6ba3bace12edbf...); abstract + section titles only read at Stage 1. Why it is here: the operator dive framing for intake-883 is "what does orx do in the propose -> run -> judge -> refill cycle that autokernel/autopilot do not" - this paper is the critique of exactly that judge step, and its validation-collapse term names the failure class EPYC already guards against structurally (sealed measurements, oracle-first correctness, promotion gates at the boundary, human-only MEASUREMENT.md). A dive should check whether its remedy list contains anything the R23 controller and the autopilot lane arbiter lack, and whether "acceptance collapse" describes the wiki-compiled formation-payoff deadlock (wiki/autonomous-research.md, 2026-09-14).'
@@ -148873,6 +148887,8 @@
   - '2026-09-14 STAGE-2b DECLINE, surfaced row 16: arXiv 2605.18661 (Kong et al., AI for Auto-Research roadmap & user guide) - taxonomy, no measurement. Operator-declined 2026-09-14 at the Stage-2 close-out gate (selection: all recommended).'
   - '2026-09-14 STAGE-2b DECLINE, surfaced row 18: Robin (Ghareeb et al.), AI Co-Scientist (Gottweis et al., Nature 2026), AlphaEvolve (arXiv 2506.13131), FunSearch (Nature 625:468), Coscientist (Nature 624:570) - wet-lab or otherwise no transfer to a kernel loop. Operator-declined 2026-09-14 at the Stage-2 close-out gate (selection: all recommended).'
   - '2026-09-14 STAGE-2b DECLINE, surfaced row 20: the 21 audited system repositories (GEPA intake-240 and Fortytwo intake-615 already present) - templates whose designs the audit already tabulates. Operator-declined 2026-09-14 at the Stage-2 close-out gate (selection: all recommended).'
+  - '2026-09-15 STAGE-3 CLERK NOTE (S3-IDX-01, from intake-1385#L2): arXiv 2605.08956 (intake-1385) is a same-group restatement of intake-1374, not independent corroboration of claim 1; counterfactual depends_on from 1367 fails.'
+  - '2026-09-15 STAGE-3 CLERK CORRECTIONS (S3-IDX-04) to three of this entry''s ledger rows (text only, no verdict change): (1) AK-VAL-2: residency half landed R23-60 ✅ 2026-09-08 before the dive (stale-tree premise); (2) A0 "ruling already written down" → it is an auditor recommendation (master-handoff-index.md :58); (3) RI-ANCHOR-1 "normalization defined nowhere" → canonical.py:116-141 (already noted on intake-1386, not on 1367).'
   depends_on:
   - entry: intake-1370
     claim_index: 2
@@ -149148,8 +149164,13 @@
       that it might BE the missing lane arbiter)'
     - 'intake-1367 (Workflow Closure Is Not Scientific Closure - sibling from the same Stage-2 round; not a dependency, cited
       only for the gating-not-presence test applied here to gflow admission)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - autopilot-continuous-optimization.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-06 (design-input note) -> handoffs/active/autokernel-unified-surface-program.md; S3-AP-01 -> handoffs/active/autopilot-continuous-optimization.md. Declines D-10..D-13. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'Source-internal: docs job-submission.md says --memory "limits host RAM", but no rlimit, cgroup, systemd-run or MemoryMax
     call exists in the executor; memory_limit_mb is only subtracted from a detected-total pool in the scheduler. Declared,
@@ -149495,8 +149516,13 @@
       - 'intake-883 (orx: the propose-run-judge-refill comparison; ERA''s flat tree that can expand any historical node is closer to orx''s experiment tree than to autokernel''s champion-tip accumulation)'
       - 'intake-661 (CUDA Agent: an executable speed metric was hacked by 82/250 RL solutions, the counter-example to treating an executable score as self-validating)'
       - 'intake-1379 (Pan: a score-refined LLM loop drives side effects the score does not see; ERA reports no side-effect metric)'
-  handoffs_updated: []
-  handoffs_created: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  handoffs_created:
+  - autokernel-cross-workload-keep-gate.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-07, S3-AKX-04 (UD-5 RULED row) -> handoffs/active/autokernel-unified-surface-program.md; S3-AKX-00 created handoffs/active/autokernel-cross-workload-keep-gate.md (cites intake-1370#record; steering seq 5-7 ERA thread). Declines D-14, D-15. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'External leaderboards are REPORTING anchors, not in-loop gates: retention inside ERA is argmax of the task score on author-built train/validation splits, and the holdout / leaderboard comparison is done afterwards by the authors (except Kaggle, scored by direct public-leaderboard submission). By intake-1367''s own B.2 rule (a validator must be a binding in-loop condition) this is post-hoc external comparison, not in-loop external validation.'
     - 'COVID-19 retrospective uses 2025-05-01 data for the entire season, so the comparison to real-time CovidHub submissions is not like-for-like (authors'' own caveat); the 14-strategy result rests on 3 reference dates.'
@@ -149794,8 +149820,12 @@
       the opposite)'
     - 'intake-883 (orx; Orze is a different system - github.com/warlockee/orze - whose dispatch-time dedup bears on DA-3)'
     - 'intake-1372 (sibling expansion; opposite-regime study where classical HPO wins on a fixed numeric box)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-rebuild-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKR-01 (fold) -> handoffs/active/autokernel-rebuild-program.md. Declines D-16..D-18. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'Internal inconsistencies, unreconciled in v1: (a) champion AP 0.9245 (Table 1, abstract) vs AP@50 0.9852 / AP@500 0.9901
     / asymptote 0.994 for the LLM policy on the same campaign (Table 2, abstract "AP = 0.985"); (b) "VJepa2-only experiments
@@ -150164,8 +150194,14 @@
     - 'intake-148 (karpathy/autoresearch: the testbed and the Karpathy Agent (Code) arm)'
     - 'intake-1371 (sibling expansion from the same 1367 paragraph; opposite-regime study: combinatorial architecture space
       where LLM proposals dominate)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-unified-surface-program.md
+  - autokernel-rebuild-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AP-04, S3-AP-05, S3-AP-06 -> handoffs/active/autopilot-continuous-optimization.md; S3-AKU-08 (U3-PROPOSER) -> handoffs/active/autokernel-unified-surface-program.md; S3-AKR-01 (fold) -> handoffs/active/autokernel-rebuild-program.md. Declines D-19, D-20. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'The authors'' own n=8 update (repo blog, 2026-06-20) weakens three paper statements: "code editing does not close the
     gap" (KA-Code-Opus 4.6 ties TPE at n=8), "classical beats LLM in the fixed space" (KA-14HPs-Opus 4.7 is second overall,
@@ -150658,8 +150694,13 @@
     - 'intake-780 (The AI Scientist, Nature 2026 - one of the systems whose paper-generation premise this study stress-tests)'
     - 'intake-875 (self-play reward hacking of reference-free judges - mechanism for manuscript-only review over-crediting
       plausible framing)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - vidya-belief-substrate-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AP-07 -> handoffs/active/autopilot-continuous-optimization.md; S3-VID-02 (fold) -> handoffs/active/vidya-belief-substrate-program.md; S3-WIKI-03 -> wiki/autonomous-research.md. Declines D-21. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'The ''0/117 reach a top-tier bar'' headline is lens-dependent: under SAR (the paper''s own Section 4.1) Claude Code has
     8/39 papers at SAR >= 6 (the paper''s stated ICLR acceptance threshold for SAR) and 41% manually-labelled SAR accepts.
@@ -150961,8 +151002,12 @@
       misses process failures)'
     - 'intake-1377 (REFLECT - judges are weakest exactly on evidence/faithfulness failures, the class this paper finds most
       common)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-09 -> handoffs/active/autokernel-unified-surface-program.md; S3-RI-08 -> .claude/skills/research-intake/SKILL.md. Declines D-22. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'The abstract attributes 41.4% to ''the base model''; the body attributes it to IRT-estimated REASONING ABILITY per model-environment
     pair (a latent from a separate QA battery), with environment-scope interaction a further 30.1%. ''Base model 41.4% vs
@@ -151251,8 +151296,13 @@
       - 'intake-977 (MLE-bench) and intake-1072 (RE-Bench) - the two prior benchmarks FML-bench positions against; neither isolates the code editor'
       - 'intake-679 (AgentKernelArena) - the task substrate of EPYC INF-03, our own whole-agent controller comparison'
       - 'intake-677 (GEAK-OpenEvolve) - the MAP-Elites/OpenEvolve family FML-bench evaluates as its evolutionary arm'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - agentic-rocm-kernel-authoring.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-10, S3-AKU-11, S3-AKU-12 -> handoffs/active/autokernel-unified-surface-program.md; S3-INF03-01 -> handoffs/active/agentic-rocm-kernel-authoring.md. Declines D-23, D-24. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'No independent replication or critique found (3 bounded searches, 2026-09-14): results are the paper plus restatement aggregators (awesomepapers.io, pith.science, benchmarklist.com).'
     - 'The AdaptiveSearch result is weak evidence: +0.015 mean over TAS v2 with per-agent cross-task sd ~0.24, n=18 tasks, no significance test; its Phase-2 thresholds use a per-task constant taken from the 324 evaluation runs, and the dense/sparse partition is defined from the same agents'' runs (circular partition).'
@@ -151478,8 +151528,12 @@
       - 'intake-1367 (bearing entry; dive-1367 Tier B described this benchmark as scoring faithful citation, honest result reporting and claim attribution - see dive_corrections, only the middle one is true)'
       - 'intake-1368 (PseudoBench - sibling adversarial benchmark: premise resistance rather than infeasibility honesty)'
       - 'intake-883 (orx - the auto-research harness class these failure modes apply to)'
-  handoffs_updated: []
+  handoffs_updated:
+  - vidya-belief-substrate-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-VID-04 -> handoffs/active/vidya-belief-substrate-program.md. Declines D-25..D-27. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'Single-run main evaluation at temperature 0 with 3 scenarios per category: per-model and per-category rates rest on n=3 or n=21 cells; the paper itself names limited statistical power.'
     - 'Human labels with no inter-annotator agreement, applied by the authors; the abstract''s all-seven-models-synthesize statement is not supported per run by Table 3 (36/63).'
@@ -151710,8 +151764,12 @@
     - 'intake-1164 (judge scores look good but best-of-N fails; 67% ties under coarse pointwise scoring - independent corroboration
       of REFLECT''s Best-of-N gap)'
     - 'intake-876 (agreement metrics for LLM-as-judge - REFLECT replaces agreement with by-construction labels)'
-  handoffs_updated: []
+  handoffs_updated:
+  - eval-tower-verification.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-EV-01, S3-EV-02 -> handoffs/active/eval-tower-verification.md; S3-RI-09 -> .claude/skills/research-intake/SKILL.md; S3-WIKI-03 -> wiki/autonomous-research.md. Declines D-28. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'The headline ''below 55%'' is NOT referenced to a 50% coin flip. Scalar judging uses strict S(ref) > S(perturbed) with
     epsilon 0 on integer 1-5 / 1-10 scales, so a judge that returns equal scores scores 0%. No tie rate is reported, so near-zero
@@ -151994,8 +152052,13 @@
       - 'intake-1167 (Gao et al. scaling laws for reward-model overoptimisation: the LLM-scale empirical Goodhart curve this paper explicitly contrasts itself with)'
       - 'intake-1379 (Pan: the LLM in-context mechanism for the same proxy-vs-true divergence, with no weight updates)'
       - 'intake-875 (self-play reward hacking of reference-free LLM judges: adversarial exploitation, outside this paper''s non-adversarial geometry)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-unified-surface-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AP-08 (and S3-AP-03 pointer) -> handoffs/active/autopilot-continuous-optimization.md; S3-AKU-13 -> handoffs/active/autokernel-unified-surface-program.md. Declines D-29, D-30. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'All experiments are small tabular MDPs solved by value iteration with a scalar optimisation-pressure knob; no deep RL, no LLMs, no discrete accept/reject search. The guarantee requires the proxy reward vector, occupancy measures and a valid angle bound, none of which exist for autokernel''s keep gate or autopilot''s Pareto archive.'
     - 'Covers only non-adversarial (geometric) Goodharting; regressional Goodhart from selecting the maximum of noisy measurements - the dominant risk for a keep gate near its noise floor - is not modelled.'
@@ -152186,8 +152249,14 @@
       - 'intake-874 (reward hacking in rubric-based RL: aggregate benchmarks can stay flat while in-domain capability degrades)'
       - 'intake-661 (CUDA Agent: fake timing speedups, the executable-metric analogue for autokernel)'
       - 'intake-240 (GEPA: the reflective prompt-evolution method inside PromptForge, a policy-refinement loop by this paper''s definition)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-unified-surface-program.md
+  - promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AP-09 -> handoffs/active/autopilot-continuous-optimization.md; S3-AKU-14 -> handoffs/active/autokernel-unified-surface-program.md; S3-MHS-01 -> handoffs/active/promptforge-mutation-safety-contract.md. Declines D-31..D-33. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'Results are reported as figures with no effect sizes in the text and no named statistical test (the "statistically detectable only after multiple cycles" statement gives no test or threshold).'
     - 'Both proxy and side effect are themselves model judgments in most experiments (GPT-3.5 engagement judge, GPT-4 helpfulness and violation-severity judges), and the environments are simulated; the authors state the conclusions are hard to transfer to real-world environments.'
@@ -152423,8 +152492,12 @@
       - 'intake-1367 (bearing entry; dive-1367 Tier D asked whether this is the numerical-kernel analogue of autokernel and whether its acceptance criterion is Mitigated)'
       - 'intake-666 (EvoEngineer) and intake-677 (GEAK-OpenEvolve) - the LLM-evolutionary kernel-search family that IS architecturally analogous to autokernel; GRAFT-ATHENA is method selection over solver configurations, not kernel code evolution'
       - 'intake-1375 (FML-bench - same Stage-2b round; its no-negative-evidence contrast with greedy keep-on-improvement)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): All task rows declined (D-34..D-36); L4 is a citation-only corroboration folded into S3-AKU-05 -> handoffs/active/autokernel-unified-surface-program.md, no new row.'
   contradicting_evidence:
     - 'The autonomy framing is contradicted by the paper''s own run records: user-selected regularizer (Section 2.7), user override of the ranker and interactive stage-by-stage driving with a user-locked budget (Section 2.8, Appendix B.3-B.4).'
     - 'Table 1 mixes recomputed (ATHENA) and as-published baselines on different grids, so only the ATHENA comparison is methodology-matched; no seeds or repeat runs are reported for any benchmark.'
@@ -152672,8 +152745,13 @@
       TPE/CMA-ES/LLM arm)'
     - 'intake-1096 (its dive flags arXiv 2607.20468 InferenceBench, whose agents launch a median of one non-default vLLM arg
       set; the LLM-proposer side of the same serving-config question, not covered here)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - autopilot-continuous-optimization.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-08 (amendment) -> handoffs/active/autokernel-unified-surface-program.md; S3-AP-04 (amendment) -> handoffs/active/autopilot-continuous-optimization.md. Declines D-37..D-39. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'Paper-vs-release contradictions found by this dive: (a) "filters invalid measurements" vs 88.4% failure rows retained
     in SGLang; (b) vLLM/SGLang hyperparameter tables (Tables 6-7) do not match the released CSV columns; (c) Figure 6(c) is
@@ -153038,8 +153116,13 @@
       - 'intake-1369 (gflow - the bearing entry; its dive rejected gflow as lane arbiter and named pueue/task-spooler as the remaining bounded check that would close "is there any off-the-shelf fit")'
       - 'intake-883 (orx - DA-2 lane-arbiter precondition; this entry feeds the AP-ARB-1 amendment drafted by 1369)'
       - 'intake-1383 (task-spooler - sibling bounded check from the same round; not a dependency)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - autopilot-continuous-optimization.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-06 (design-input note) -> handoffs/active/autokernel-unified-surface-program.md; S3-AP-01 -> handoffs/active/autopilot-continuous-optimization.md. Declines D-40, D-41. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'None against the source. Against the round''s premise: issue #97 shows the one CPU idiom users build on pueue (group per core, parallel_tasks=1, taskset in the command) and the maintainer declining affinity, so pueue is a CPU-set arbiter neither in code nor in intent.'
   notes: 'Pinned at main 193ed2264338bd30a06e347b48183a8800bd178b (2026-09-09); latest tag v4.0.4; 2,036 commits. GitHub API 2026-09-15: 6,334 stars, 162 forks, 20 open issues, created 2015-09-04, pushed 2026-09-09; Apache-2.0/MIT; README declares the project feature-complete. Bounded grep (src, docs, README; patterns cpuset|taskset|affinity|numa|sched_setaffinity|cgroup|exclusive|isolcpu|--cpus|nvml|rlimit|MemoryMax|memory) found only licence text and comments about buffer memory: NOT-FOUND for every resource term. GitHub issue search: "affinity" and "taskset" each return only #97 (closed 2020); "numa" returns 0. Non-wait pause sends a stop signal to running processes (SIGSTOP-style); for our host that is not a usable time-slicing primitive for a bench, because a stopped process keeps its memory and page-cache placement and a paused A/B arm is a contaminated arm. EPYC comparison: our cpu_region_lock (epyc-orchestrator src/runtime/cpu_region_lock.py @34e27fdf; the brief''s scripts/ path does not exist) already does more than pueue: logical-CPU region geometry, all-or-nothing multi-region acquisition, and a timeout that names blocker roles; it shares the 50 ms polling and the absence of FIFO tickets.'
@@ -153229,8 +153312,13 @@
       - 'intake-1369 (gflow - bearing entry; named task-spooler as part of the remaining bounded off-the-shelf check)'
       - 'intake-883 (orx - DA-2 lane-arbiter precondition)'
       - 'intake-1382 (pueue - sibling bounded check; the OP41-IN-1a and AP-ARB-1a ledger rows are shared and recorded there, not duplicated)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - autopilot-continuous-optimization.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-06 (design-input note, fold) -> handoffs/active/autokernel-unified-surface-program.md; S3-AP-01 (fold) -> handoffs/active/autopilot-continuous-optimization.md. Declines D-42. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'The justanhduc fork describes itself as "A scheduler for GPU/CPU tasks"; its CPU support is the upstream slot count, not a CPU resource model (grep NOT-FOUND for affinity/cpuset/numa in the fork).'
   notes: 'Canonical-upstream choice: the ORIGINAL ts by Lluis Batlle i Rossell (https://viric.name/soft/ts/, redirected from vicerveza.homeunix.net/~viric/soft/ts/; hg repository linked from the page) is the maintained line - v1.0.4 released 2025-06-30 (Changelog: fix crash with TS_ONFINISH=0, gcc 15 fixes; v1.0.3 buffer-overrun fix; v1.0.2 server-start race), packaged in Debian as task-spooler (binary tsp). The justanhduc/task-spooler GPU fork @1522ab0fa22a3d45f425a3d1fab59774af031e7c (HEAD commit 2024-01-19, last push 2024-03-06, v2.0.0 2023-03-15; 441 stars, 43 forks, 37 open issues; GPL-2.0) is unmaintained for 18 months and its only addition is NVIDIA GPU allocation, which is inert on our AMD MI210 (no NVML). Both were read; claims 0-5 anchor on the upstream tarball ts-1.0.4.tar.gz (sha256 b1ab3db52dca36af3699178b8d0e936a30107f8d5c86a974163c580823b01790), claim 6 on the fork. The upstream git URL at the old host returns 404; the tarball is the pinned revision. Bounded grep over both trees (cpuset|taskset|affinity|numa|sched_setaffinity|cgroup|exclusive|--cpus|MemoryMax|memory): only getrlimit(RLIMIT_NOFILE) and allocation messages - NOT-FOUND for every CPU/NUMA/memory resource term. Fork issue search "affinity": 0 results; "cpu": 18, none requesting CPU sets (e.g. #60 cpu jobs independent of gpu jobs, #66 jobs per GPU). The fork''s unmerged "global" branch (2021-11) adds per-user slots and a shutdown permission check, i.e. the multi-user direction was never released. Upstream web page, "How it works" (quarantined excerpt in the report): the client waits for the server message to start, then forks and runs the command itself, so ulimits, environment and pwd apply.'
@@ -153378,8 +153466,12 @@
       - 'intake-1371 (X. Li, Auto Researching not hyperparameter tuning - the paper Orze ran; its dive proposed Orze''s "near-duplicate refusal at dispatch by fingerprint" as the DA-3 shape; this entry narrows that: exact identity, and near-duplicate matching is not in public code)'
       - 'intake-883 (orx - DA-3 freeze rule "answered => closed"; this entry supplies the code-level shape for that row)'
       - 'intake-1367 (Workflow Closure Is Not Scientific Closure - context for the closure question; not a dependency)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-rebuild-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKR-01 -> handoffs/active/autokernel-rebuild-program.md. Declines D-43..D-45. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'Source vs paper: arXiv 2603.15916 Appendix B says the scheduler deduplicates near-identical proposals by Jaccard >0.9; no public Orze revision implements similarity dedup, and the first public config-hash dedup commit (9d476ec, 2026-03-16) postdates the February 2026 campaign. The paper''s mechanism is unverifiable from public code (it may live in private orze-pro / orze_substrate).'
     - 'Fail-open inside Orze: the orze_substrate exec_hash pre-check and the method-validator block are wrapped in except-Exception handlers that log at debug or pass and then LAUNCH, so a missing private module or a validator crash silently disables those refusals; only execution_identity is fail-closed.'
@@ -153627,6 +153719,9 @@
       - 'intake-1373 (Zhang et al., artifact-aware review: the independent measured L2 evidence this paper does not add to)'
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): Verdict already_integrated; all rows declined (D-46, D-47, D-48 training-time remedies, operator may overrule). L2 prepared note applied as S3-IDX-01 on intake-1367 dive_corrections. No handoff route.'
   contradicting_evidence:
     - 'Not independent of intake-1374: two of five authors (Krishnan, Jablonka) are authors of Rios-Garcia et al., and every agent-behaviour statistic here is that papers, including the "base model 41.4%" gloss that the intake-1374 dive already reattributed to IRT-estimated reasoning ability.'
     - 'The hivemind experiment does not test its stated mechanism: there is no base-vs-preference-optimised arm, no human baseline, no numeric similarity in the text and no statistical test, so it cannot "validate" that preference optimisation compresses diversity (Conclusion wording).'
@@ -153808,8 +153903,12 @@
       - 'intake-1376 (SciIntegrity-Bench: cites this paper but has no citation task; its RI-FIX-1 honest-non-claim fixtures are extended here with citation classes)'
       - 'intake-1367 (bearing chain: dive-1367 surfaced RI-ANCHOR-1/2, quote_sha256 never re-verified and Attested graded from field presence)'
       - 'intake-1374 (quote-grounded LLM coding with a mechanical quote-presence check: the pattern the fixtures should enforce)'
-  handoffs_updated: []
+  handoffs_updated:
+  - vidya-belief-substrate-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-VID-05, S3-VID-06 (and S3-VID-02 normalization note) -> handoffs/active/vidya-belief-substrate-program.md; S3-RI-10 -> .claude/skills/research-intake/SKILL.md. Declines D-49, D-50. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'The "100% compound failure" headline is a product of the coding procedure, not a finding: Section 2.3 assigns every citation a primary AND a secondary code, so a 100% secondary-code rate is guaranteed by construction.'
     - 'Internal inconsistency: the Figure 3 caption calls TF-primary-with-SH-secondary "63% of all citations" while Section 3.8 counts 50 of 66 (50% of all citations); 63% is the SH secondary rate across all primaries.'
@@ -154057,8 +154156,13 @@
       - 'intake-661 (CUDA-L1: fake timing speedups, the executable-metric hacking precedent for autokernel)'
       - 'intake-980 (Meerkat trace-level cheating audit; its companion audit covers ImpossibleBench)'
       - 'intake-1367 (L2: a detector the loop does not gate on is an annotation)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-15, S3-AKU-16 -> handoffs/active/autokernel-unified-surface-program.md; S3-MHS-01, S3-MHS-02 -> handoffs/active/promptforge-mutation-safety-contract.md. Declines D-51, D-52. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'Small positives: 12 confirmed reward hacks across 308 proprietary-agent runs, and only 9 ambiguous problems, so per-model rates carry wide uncertainty; no confidence intervals are given.'
     - 'Internal inconsistency on Gemini test deletions: Section 4.2 says "six cases", Appendix E says "five instances", and 3.4% of 145 is 5.'
@@ -154324,6 +154428,9 @@
       - 'intake-875 (self-play reward hacking of reference-free judges)'
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): MONITOR (operator 2026-09-15, steering seq 9): D-53, no task. Trigger: any EPYC training, fine-tune or distill on loop trajectories (screen trajectory training data first). D-54 declined (grader-choice affordance architecturally absent).'
   contradicting_evidence:
     - 'It does NOT measure how often deployed coding agents edit tests or harnesses: the only coding behaviour is single-turn hardcoding that the training data demonstrates, and hacking is induced by fine-tuning, so its rates are not base rates for any EPYC actor.'
     - 'Most open-ended scores (misalignment, shutdown resistance) come from a GPT-4o judge with a threshold; several figures numbers are only in charts; Section 2 counts 35 tasks in the Figure 2 caption against 40 task descriptions in Appendix B.1 (possibly pre-filter).'
@@ -154526,8 +154633,13 @@
     intake_entry_notes:
     - 'intake-1381 (bearing: surfaced this as the multi-objective comparison LLMSYS-HPOBench omits; here MOBO does beat random/Sobol at 50 evaluations, but on a 7-knob space dominated by a 4-way LLM choice with 10x cost spread, with no repeats and figure-only results)'
     - 'intake-1372 (U3-PROPOSER and AP-NUM-FAIL rows; this paper tests neither NSGA-II nor failure handling, but its qLogNEHVI arm is the natural third arm for the AP-NUM-FAIL offline replay)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - autokernel-unified-surface-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AP-04 (amendment) -> handoffs/active/autopilot-continuous-optimization.md; S3-AKU-08 (amendment) -> handoffs/active/autokernel-unified-surface-program.md. Declines D-55, D-56. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'intake-1381 (LLMSYS-HPOBench): on its vLLM and LightRAG tables, default SMAC/HEBO/BOHB/HB did not beat random search. The two settings differ (single- vs multi-objective, tabular lookup vs live evaluation, 21 vs 7 knobs), so this is a tension, not a refutation.'
   - 'intake-1391 (CDS4RAG) holdout Table 6: uniform Random (0.502) ties or beats vanilla joint HEBO (0.500), BO (0.462) and TPE (0.482) on HotpotQA/Llama at a 1 h budget; joint model-based search on RAG does not reliably beat random there.'
@@ -154726,8 +154838,13 @@
     intake_entry_notes:
     - 'intake-1381 (bearing: same lab. 1381 found LLMSYS-HPOBench snaps off-table configs with UNNORMALISED L1; this earlier study used MinMax-normalised distance for the same snap and states the snap flattens the landscape. It does not measure lookup bias itself, but its Finding 2 and landscape analysis show that swapping the system for any stand-in changes which tuner wins, which further weakens 1381s "no sampler beat random" as evidence)'
     - 'intake-1372 (U3-PROPOSER replay gate and AP-NUM-FAIL table replay both evaluate proposers against a stand-in; this paper supplies the acceptance conditions such a replay needs)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - autopilot-continuous-optimization.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-08 (amendment) -> handoffs/active/autokernel-unified-surface-program.md; S3-AP-04 (amendment) -> handoffs/active/autopilot-continuous-optimization.md. Declines D-57. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'intake-1381 (LLMSYS-HPOBench, same lab): default SMAC/HEBO/BOHB/HB did not beat random search on vLLM at ~80-330 evaluations, whereas Finding 1 here has sequential model-based tuners winning 16/29 at 129-416. Differences: software systems vs LLM serving, averaged noise-free table values vs single-repeat rows, normalised vs unnormalised snap.'
   - 'No independent replication found; a follow-up by overlapping authors (TOSEM, doi 10.1145/3844143, fitness-landscape perspective) extends rather than corroborates independently.'
@@ -154962,8 +155079,12 @@
     - 'intake-1389 (Barker et al.: joint MOBO over a 7-knob RAG space; CDS4RAG cites it as a monolithic baseline design but does not run it)'
     - 'intake-1390 (same lab; not a dependency - no CDS4RAG claim rests on it)'
     - 'intake-1372 (U3-PROPOSER: a staged proposer is only valid when its stage proxy tracks the final objective)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-08 (amendment) -> handoffs/active/autokernel-unified-surface-program.md. Declines D-58, D-59. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'arXiv 2510.01600 (Comparison of Independent and Joint Fine-tuning Strategies for RAG): independent, joint and two-phase fine-tuning come out about equally effective. That is weight tuning, not HPO, so it bears only indirectly on "staged beats joint" (abstract-level, not dived).'
   - 'This papers own holdout Tables 5-6: 3 of 12 joint-vs-staged cells go to joint, and Random is level with the joint optimizers on HotpotQA/Llama.'
@@ -155207,8 +155328,14 @@
     - 'intake-1379 (in-context reward hacking; this entry supplies measured serving-benchmark exploits and the harness-side defenses)'
     - 'intake-883 (dive-883 DA-3 re-proposal pathology; the analogue here is identical-argument crash relaunch, 81% of restarts)'
     - 'intake-105 (PostTrainBench, same group; cited as the contrast where rankings track raw capability)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - autokernel-rebuild-program.md
+  - autopilot-continuous-optimization.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-08 (amendment) -> handoffs/active/autokernel-unified-surface-program.md; S3-AKR-01 -> handoffs/active/autokernel-rebuild-program.md; S3-AP-10 -> handoffs/active/autopilot-continuous-optimization.md. Declines D-60, D-61. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'Internal count inconsistency: Table 15 labels 9/180 runs (5.0%) as "multi-variable edits", defined as a launch log with >=3 distinct non-default argument sets and a gate failure, but Table 16 says only 2% of runs (about 4) launch three or more distinct sets. Either the two tables count differently or one is wrong; the "median one config" statistic depends on the same launch-log parser, and ad-hoc launches outside start_server.sh would be undercounted.'
   - 'The "not a capability ceiling" argument compares a per-scenario MAX over 15 agents x 3 seeds of best-seen intermediate configs (12.34x) with the best per-cell MEAN of search (14.30x). An order statistic over 45 runs against a 3-seed mean favours the agents; "exceeds search on A and B" does not show that any single agent reliably finds such configs.'
@@ -155582,8 +155709,12 @@
     - 'intake-1381 (bearing: the LLMSYS-HPOBench SGLang offline replay is still the only way to test the FAIL-vs-constraint encoding; SLO-Guard supplies no crash data)'
     - 'intake-1390 (replay must answer exact-match arms only; applies unchanged to the AP-NUM-FAIL replay)'
     - 'intake-1392 (InferenceBench; surfaced this source; its harness tells failures as a 1e-6 score, a third encoding)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AP-04 (encoding + third replay arm) -> handoffs/active/autopilot-continuous-optimization.md. D-82 confirms S3-AKR-01 (c) with no change; declines D-83. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'Headline evidence contains no crashes: 0/300 crashed and 0/300 infeasible in the released JSONL, so "treats crashes as first-class observations" is implemented but not measured.'
   - 'SLO thresholds as run are not verifiable: the paper states TTFT p99 <= 500 ms and ITL p99 <= 100 ms, but scripts/run_multiseed.py defaults are 2000/200 ms, the published reproduction command passes no SLO flags, and the JSONL records carry no TTFT/ITL (the replay path sets only request_latency_p99_ms against a 30000 ms default cap). Slow-cluster trials at ~2100-2500 ms average latency are all logged feasible.'
@@ -155901,8 +156032,12 @@
     - 'intake-1390 (same lab; surfaced this source; Finding 2, choosing what to deploy from a stand-in loses, is consistent with MFTune keeping final selection at perfect fidelity)'
     - 'intake-1381 (U3-PROPOSER draft owner)'
     - 'intake-883 (dive-883 autokernel loop mechanics; screen-to-confirm rung routing)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-08 clause (iv) -> handoffs/active/autokernel-unified-surface-program.md. Declines D-84, D-85. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'The only numeric admission rule (rho > 0.39) exists in code, not in the paper, with no stated derivation; on l=10 paired configurations a Spearman of 0.39 is well below the conventional 5% significance critical value (about 0.56 one-sided, 0.65 two-sided), so the floor is a heuristic, not a test.'
   - 'Random imperfect fidelity (MFTune-I) matches or beats the discovered one on both database systems, so the value of fidelity discovery is not established where the fidelity space is largest (11,200 settings).'
@@ -156196,8 +156331,13 @@
       - 'intake-148 (karpathy/autoresearch: the agent loop BAITBENCH instruments)'
       - 'intake-105 (PostTrainBench, used in BAITBENCH Appendix A)'
       - 'intake-1396 (ImpossibleBench: evaluator-machinery exploits, the complementary class)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
+  - promptforge-mutation-safety-contract.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-15, S3-AKU-16 (fixture half; S3-AKU-16 confirm step) -> handoffs/active/autokernel-unified-surface-program.md; S3-MHS-01 -> handoffs/active/promptforge-mutation-safety-contract.md. Declines D-86, D-87. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'Prompt-mitigation strength disagrees with ImpossibleBench (intake-1396), where prompt strictness moved GPT-5 from >85% to 1% on Conflicting-LiveCodeBench; BAITBENCH finds a 6.2 pp pooled effect. Consistent with task construction mattering (explicit spec-vs-test conflict vs an optional statistical shortcut).'
     - 'Internal inconsistency: Appendix E.3 reports Claude Opus 4.6 prompt reduction 5.6 pp with 95% CI [0.6, 10.6] (excludes zero) but p=0.087, and Section 4.1 counts Opus among the four models with no significant change; different tests (bootstrap CI vs sign-flip) disagree.'
@@ -156443,8 +156583,12 @@
       - 'intake-980 (Meerkat trace-level cheating audit, whose audited set includes ImpossibleBench)'
       - 'intake-1367 (L2: an LLM detector that misses 35-58% at repository scale is an annotation, not a gate)'
       - 'intake-1395 (BAITBENCH: data-shortcut class; disagrees on prompt-mitigation strength)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): S3-AKU-15, S3-AKU-16, S3-AKU-18 (AK-RH-3, new) -> handoffs/active/autokernel-unified-surface-program.md. Declines D-88 (confirms D-51), D-89. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
     - 'Section 5.3 text credits the abort effect to o3 (49% -> 12%), while Figure 8 plots GPT-5, o4-mini and Opus 4.1, with o4-mini at 49% -> 12%; model attribution of that number is inconsistent between text and figure.'
     - 'BAITBENCH (intake-1395) finds prompt mitigation small (-6.2 pp pooled) where ImpossibleBench finds prompt strictness decisive on LiveCodeBench (>85% -> 1% for GPT-5); EvilGenie (intake-1387) reports higher LiveCodeBench hacking on ambiguous problems. All three agree the behaviour exists; rates depend on task construction.'
@@ -156729,8 +156873,12 @@
     - 'intake-1382 (surfaced this mechanism as the only way to constrain non-lock-callers; this entry settles the guarantee boundary: cores and mem-node placement yes, DRAM bandwidth no)'
     - 'intake-1383 (deferred to it; nothing in 1383 is changed)'
     - 'intake-1369 (gflow rejected as lane arbiter partly for having no cpuset/NUMA/bandwidth model; this entry is the kernel-side mechanism such an arbiter would need, and it still lacks bandwidth)'
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-unified-surface-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4 (research-intake noninf-20260914; S3-RI-06 practice, clerk s4-idx): Design input only: S3-AKU-06 design-input note input (x), no checkbox -> handoffs/active/autokernel-unified-surface-program.md. Declines D-90..D-93. Integrated = durable handoff routing, not a deployment claim.'
   contradicting_evidence:
   - 'systemd 261 CPUSetPartition= text calls "isolated" "full CPU isolation ... without interference from other processes"; the kernel v6.14 doc guarantees only CPU exclusivity, no load balancing and exclusion from unbound workqueues. Per-CPU kernel threads, IRQs, shared L3 cache and memory bandwidth are not covered by any cpuset statement.'
   - 'Absence claims (no bandwidth, LLC, IRQ or per-CPU-kthread guarantee) rest on NOT-FOUND in the cpuset section plus host observation, not on an explicit disclaimer in the docs.'
