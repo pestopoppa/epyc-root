@@ -2007,6 +2007,16 @@ replacing it"* **binds the whole family**, so no successor needs them. Recipe ve
 **Still retained deliberately, and why**: `IQ4_XS-uniform` (era anchor), `-gateup-r16` (Axis B artifact, **not
 yet re-measured on the champion**), `-r16` (B4's GO), `UD-IQ4_XS` (the served file), `MTP/` (in the serving
 config). None of these is a closed NO-GO.
+**RECLAIM-2 — 2026-09-15 (operator ruling; resolves OP-37).** KEEP `UD-IQ4_XS` (the artifact the INF-67 CPU
+fused-decoder megakernel was developed and benched on, and the source of the uniform requant) and KEEP
+`IQ4_XS-uniform` (recipe-pinned champion/era anchor, sha256 `4bfb9849…c9f8957`, re-hashed OK 2026-09-15; not
+published on HF, so not re-downloadable). DELETED, operator-directed: `IQ4_XS-uniform-gateup-r16` (98,267,079,776 B)
+and `IQ4_XS-uniform-r16` (98,267,083,136 B), both regenerable from `IQ4_XS-uniform` via fork
+`experimental-inf70-b3` `dd27ec3bb` + `-b4` `49a1255` / `-b4r2` `a0907a8bc`; plus the recipe-REJECTED
+self-contained head `MTP/mtp-Qwen3.8-Flash-Next-Q8_0.gguf` (4,137,429,120 B, on HF). Pre-checks: zero mmaps/fds,
+not in any recipe, launcher or AutoKernel lane. This supersedes the retention of both r16 artifacts above.
+Open correction: the PROD-1 recipe comment attributes B4's +1.69% MTP / +0.63% plain to `-gateup-r16`;
+those were measured on `-uniform-r16`.
 
 # ★★ 2026-09-08 — FINDINGS THAT OUTLIVE THE LEVERS (SYNC-19/20 + HARNESS-1)
 
