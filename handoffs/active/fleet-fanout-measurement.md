@@ -1,6 +1,6 @@
 # Fleet Fan-Out Measurement — per-subagent timing collector + failure grading
 
-**Status**: stub — no code landed yet.
+**Status**: active — FM-1 (2026-08-23), FM-5 and FM-6 (2026-09-07) landed; FM-2/FM-3/FM-4 open. ✅ 2026-09-15
 **Created**: 2026-08-13 (via `/research-intake` Stage 3, operator-approved plan; source round intake-1105…intake-1127, PARL/Kimi-agent-swarm sweep)
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
 **Categories**: swarm_techniques, agent_architecture, benchmark_methodology, autonomous_research

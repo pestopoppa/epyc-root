@@ -20,6 +20,15 @@
       "blurb": "autopilot loop: phase, log, Pareto/GEPA, optimization (data: :8000 API)"
     },
     {
+      "id": "cockpit",
+      "title": "Cockpit",
+      "port": 8100,
+      "path": "/cockpit",
+      "owner_repo": "epyc-root",
+      "health_path": "/health",
+      "blurb": "AP-50 decision cockpit: what optimizes the orchestrator, per measurement era: current trial + falsifier, incumbent-vs-candidate deltas (n, SE, replication), proposed/executed/valid/kept/promoted/live funnel with rejection reasons, journal+study lever scoreboard, provenance drill-down (data: :8000/dashboard/api/decision_cockpit; data probe :8000/dashboard/api/decision_cockpit/health — /health here is transport-only)"
+    },
+    {
       "id": "handoffs",
       "title": "Handoffs",
       "port": 8100,

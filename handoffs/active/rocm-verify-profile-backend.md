@@ -1331,6 +1331,17 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       **65 of 100** L1 tasks against plain `torch.compile`. Pair it with the existing index datapoint showing
       the same system at **0.777x** geomean against PRODUCTION baselines: same system, different denominator,
       win becomes slowdown.
+- [ ] **RVP-C6-26 — close the within-pair content-memo hole in the hardened bench (rider on RVP-C6-8).**
+      The hole: `a4cb04ca8` ranks the SECOND execution of identical content (llama-bench.cpp:2705-2723). A content-keyed
+      memo populated by the ordinary run makes that ranked replicate faster with bitwise-equal outputs. The only timing
+      screen is one-sided: `microbench.py:215, 1859-1860` flags a slower twin, never a faster one.
+      Fix it one of three ways:
+      - rank the first, unique-content execution and keep the replicate for invariance only;
+      - randomise member order per rep;
+      - make the twin-gap screen two-sided.
+      Also add a planted content-hash-memo C kernel to `reward_hack_corpus`. The `_POINTER_MEMO` lexical detector matches
+      C++ idioms, not a C-style `(uintptr_t)src->data` key. Source: intake-1426#record. Experimental-branch llama-bench
+      rebuild only.
 
 ### C4 — extensions to a CLOSED component (the taxonomy stays closed; these are additive)
 

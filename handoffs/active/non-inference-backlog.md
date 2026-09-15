@@ -234,12 +234,17 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   a live AutoPilot.** ✅ 2026-08-23 — `active_autopilot()` replaced by three-state `autopilot_state()`: missing `pgrep` → `unobservable`; an empty pgrep result is never trusted alone (a negative requires the flock to be provably free too — the drifted daemon still holds it); `unobservable` FAILS the preflight in both strict and advisory modes. 15-case truth table tested. Half-right already — a `pgrep` returncode outside `(0,1)` is treated as "could
   not inspect" — but an EMPTY result is read as a positive "no AutoPilot", and a missing `pgrep`
   binary raises `FileNotFoundError` out of `run()` before that handling is ever reached.
-- [ ] **OBS-6** (LOW): **`scripts/session/health_check.sh` reports unreadable as failing.** `pgrep -f
-  "claude"` is a bare substring matching any argv containing "claude", including its own caller;
-  `pgrep -f "monitor_storage"` makes a renamed monitor read as permanently absent so the check
-  permanently recommends starting a second one; and several probes use `|| echo "unknown"` then
-  COMPARE `"unknown"` against the expected value and report **FAIL** — an unreadable `/sys` node in
-  a container is scored as a misconfiguration. Report-only, but it gates session start.
+- [x] **OBS-6** (LOW): **`scripts/session/health_check.sh` reports unreadable as failing.** ✅
+  2026-09-15 — `pgrep -f "claude"` and `pgrep -f "monitor_storage"` are DELETED (neither process
+  publishes a pid/heartbeat this script could check instead); both now report a distinct UNKNOWN
+  verdict, tallied separately, never scored PASS/WARN/FAIL. The `cat ... || echo "unknown"` probes
+  that then COMPARED that string against the expected value are replaced by `sysfs_value`/
+  `sysfs_bracketed`, returning the sentinel `__UNREADABLE__` (a string the kernel could never itself
+  publish) and folded by `check_sysfs_eq` into UNKNOWN — never FAIL — while a readable-but-wrong
+  value still FAILs. Body restructured behind a `main()` gated by the BASH_SOURCE guard so
+  `scripts/session/tests/test_health_check.sh` can source the file for its helpers without running
+  the live checks; 13-case shim battery. Registry row flipped to `exempt` (one-shot report script,
+  not a daemon watchdog — no `observe` entrypoint applies).
 - [x] **OBS-7** (MED): **`scripts/session/emergency_cleanup.sh:26` is a committed
   `sudo pkill -f claude`.** ✅ 2026-08-23 — the `sudo pkill -f claude` and its `pgrep -f claude` are DELETED; the section now refuses to guess and prints the operator steps for killing only PIDs they verified themselves. Follow-on safety: umount failure reports loudly instead of aborting under `set -e`, and the delete prompt warns that a live bind mount makes `rm -rf` reach `/mnt/raid0/llm/tmp/claude`. Registry row migrated to `exempt` with the review as the reason. The exact idiom CLAUDE.md and INC-20260731-broad-process-pattern-kills
   forbid, on a documented shared host, behind nothing but an interactive prompt. The PreToolUse
@@ -286,13 +291,18 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   `scripts/clone-repos.sh` farm array and this worktree has no farm → INFO skip, never ERROR; farm
   present or non-farm paths keep ERROR. 11 new tests; scratch proof: lane-vs-main `--touch`
   produces identical per-file hashes.
-- [ ] **OBS-8** (LOW): **`scripts/session/start_orchestrator_test.sh`'s port gate is vacuous on this
-  host.** `netstat` is not installed and `2>/dev/null` swallows the "command not found", so the kill
-  loop silently iterates zero times and the availability check prints `[✓] Ports 8000 and 8080
-  available` unconditionally — then launches a second `llama-server` on `:8080` and a second uvicorn
-  on `:8000`. Not hypothetical and not undiscovered: `bus_supervisor.sh` already names this file by
-  name as the cautionary example of assuming a tool is installed. Probe with `command -v` first and
-  fail loud when neither `ss` nor `netstat` nor `lsof` is available.
+- [x] **OBS-8** (LOW): **`scripts/session/start_orchestrator_test.sh`'s port gate is vacuous on this
+  host.** ✅ 2026-09-15 — `osp_probe_tool` now probes with `command -v`, preferring `ss`, then
+  `netstat`, then `lsof`; when none is on PATH the gate refuses to launch (non-zero exit, loud
+  "CANNOT OBSERVE" message) instead of printing a false all-clear. An occupied port also refuses.
+  The kill loop that stopped port-derived PIDs the script never started is DELETED — CLAUDE.md
+  "kill only PIDs you captured yourself" — replaced by a refusal that prints each occupant pid
+  (`ps -p ... -o pid,etime,cmd`) and the operator's own `kill`/`ps -p` verification steps. Port-probe
+  functions extracted so `main`'s launch logic (llama-server + uvicorn) is never reached by a test;
+  15-case shim battery in `scripts/session/tests/test_start_orchestrator_test.sh` covers no-tool
+  (refuse), fallback ordering (ss→netstat→lsof), occupied (refuse), and free (pass). Not registered
+  in `observer_registry.json`: it identifies by listening PORT, not by process name/argv, so Rule A's
+  discovery pattern does not match it.
 - [ ] **OBS-9** (LOW): **`"esc to interrupt"` is a liveness oracle in FOUR files with no shared
   constant** — `scripts/coordination/idle_supervisor.sh`, `scripts/coordination/idle_watch.sh`,
   `scripts/coordination/session_bus_coordinator.py`, and (added 2026-08-12)
@@ -324,11 +334,14 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
 `git worktree remove` (138 worktrees, never `prune`), 111G → 371G free. Details:
 `progress/2026-08/2026-08-23-disk-reclaim.md`.
 
-- [ ] **NIB2-64** (MED): **autokernel/worktrees 165G — 144/146 one-shot session worktrees from
+- [x] **NIB2-64** (MED): **autokernel/worktrees 165G — 144/146 one-shot session worktrees from
   08-11→08-14 are unreferenced by active handoffs.** Two are referenced and must stay:
   `inf37-fancy-simd-v9-20260811`, `promote-kernel-rnd-dashboard-20260812`. Registered in
   epyc-inference-research; remove per-worktree (`git worktree remove --force`), NEVER `prune`.
-  Operator decision needed only if any session claims them — none does today.
+  Operator decision needed only if any session claims them — none does today. ✅ 2026-09-15 —
+  verified: `/mnt/raid0/llm/autokernel/worktrees` is now `402M` (`du -sh`) and `ls` shows only the
+  two kept trees, `inf37-fancy-simd-v9-20260811` and `promote-kernel-rnd-dashboard-20260812`; the
+  144 unreferenced one-shot worktrees are gone.
 - [ ] **NIB2-65** (MED): **model duplicates/orphans ~25G in `/mnt/raid0/llm/models/`** — safe set
   from the 2026-08-23 census: `bge-m3-f16.gguf`, `multilingual-e5-base-f16.gguf`,
   `granite-embedding-97m-multilingual-r2-Q4_K_M.gguf`, `Qwen3-TTS-12Hz-0.6B-Talker-Q8_0.gguf`,
@@ -337,10 +350,16 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
   `DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf`, `Qwen3-4B-Thinking-2507-GGUF` (4G, only in
   deprecated benchmarks). Judgment calls (research-only refs, keep unless operator says otherwise):
   `Qwen3-ASR-1.7B-GGUF`, `gemma-4-e2b/e4b-it-Q8_0`, seal-concise set.
+  2026-09-15 PARTIAL: the 7 files + 5 husks deleted (~4.3 G), each ledgered in orchestrator `model_registry.yaml`
+  `deprecated_models` (branch `sub/nib2-65-ledger` `8e1bd269`). HELD: `Qwen3-4B-Thinking-2507-GGUF`, because the rationale above is
+  wrong — `gpu-cot-scaffold-sidecar.md` (active) uses it as a control-arm generator. Operator call.
 - [ ] **NIB2-66** (LOW): **stale kernel trees ~18G** — `llama.cpp-experimental-preserved-20260724T135832Z`
   (14G, superseded), `llama.cpp-v6-iqk` (1.9G, iqk shipped in v9), `llama.cpp-v7-sanitize-audit`
   (1.6G), `llama.cpp-k28-prototype-20260720` (0.9G). Keep `llama.cpp-dflash2-qwen38-20260820`
   (active handoff `dflash2-block-drafter-experimental-build.md`).
+  2026-09-15 PARTIAL: `llama.cpp-v6-iqk` and `llama.cpp-v7-sanitize-audit` removed (clean, fully pushed, `git worktree remove`).
+  HELD: `llama.cpp-k28-prototype-20260720` (dirty: uncommitted GDN `.cu` edit + doc — commit/push or discard first);
+  `llama.cpp-experimental-preserved-*` (dirty worktree of the production clone, operator-owned).
 - [ ] **NIB2-67** (LOW): **`cache/huggingface` 127G** — re-downloadable HF cache, all files touched
   <30d ago (in active use by sessions). Reclaim only when disk pressure returns; `pip`/`uv`/`dflash`
   caches also live under `cache/`.
@@ -380,11 +399,18 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
 Found by the INF-70 `c7-finish` agent while merging the NUMA pre-evict enable (orchestrator `5f20e23c`); none
 attributable to C7 — reproduced identically on the pristine pre-merge base `510f5048`.
 
-- [ ] **NIB2-69** (MED): **orchestrator `origin/main` carries 39 launch-manifest/port-guard errors and 33
+- [x] **NIB2-69** (MED): **orchestrator `origin/main` carries 39 launch-manifest/port-guard errors and 33
       pre-existing unit failures** (49 manifest errors before the C7 priors regen reduced them to 39; the 33 unit
       failures are identical on `510f5048`, plus 1 flaky on both bases). Triage by reason (not a bare count), fix
       or explicitly retire each, and make `stack_change_pipeline.py check` gate on zero manifest errors so the
       next merge cannot inherit them silently. Evidence: `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`.
+      ✅ 2026-09-15 — orchestrator `sub/nib2-69-strict-gate` (`218c0591`, `4055dba0`, `89b30eb5`). The 39 = 13 half-port errors ×
+      3 guard steps, a CHECK-MODE ARTIFACT: priors compiled for declared `both`, guard launch view fell to fleet→env→`full`.
+      `check` now resolves ONE mode (`--numa-mode` > `stack_topology.yaml`, ambient env ignored + warned), records it as step
+      `numa_mode`, threads it to compile and every guard step; manifest/port errors are hard in all guard steps. Also fixed 3
+      stale priors pins and a lean check that judged a gitignored cache key. Unit: 33 base failures → 0 (2 real bugs, 1 order
+      leak, 1 aged fixture, 17 made hermetic, 12 E8 tests `skipif` on deleted sealed staging bundles — coverage lost until
+      restored). Residual: standalone `stack_change_guard.py` still uses fleet→env mode resolution.
 
 ## 2026-09-08 supplement — shared research clone dirty-state rescue
 

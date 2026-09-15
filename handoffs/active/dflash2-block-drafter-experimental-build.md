@@ -47,6 +47,20 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       feature gen + light head training), pending the exact DFlash2 recipe/data volume — which this scoping
       pass must nail. Weigh against: (a) the native MTP already gives 1.5× for free; (b) GPU contention — the
       one MI210 also runs AutoKernel/serving, so training days compete with everything else on the card.
+      **Scoping evidence 2026-09-15 (scoping done; decision NOT made — box stays open)** →
+      [`docs/design/df2-qwopus-scoping-20260915.md`](../../docs/design/df2-qwopus-scoping-20260915.md).
+      No training card-days until K1 passes.
+      **Premise correction:** Qwopus3.8 holds **no registry role** (0 matches in `model_registry.yaml`).
+      The 09-05 "0.356 does not transfer" figure is **1 prompt / 160 tokens, n=1**, and that MTP arm ran at
+      **n-max 4** (`/mnt/raid0/llm/tmp/mtp_qwopus.sh`).
+      **K1 (next GPU window, ≤4 GPU-h):** run the DF2-4 12-prompt protocol on Qwopus with three arms
+      (none / MTP n-max {2,4,6,8} / base DFlash2 n8), plus a role-suite quality A/B vs Qwen3.8-27B at
+      no-think. KILL if Qwopus loses the role A/B, or if base-DFlash2 acceptance is ≥0.55 (ship the base
+      drafter instead).
+      **K2 (only if K1 passes, ~0.5–1 card-day):** warm-start the Qwen3.8 DFlash2 head on 1.5M
+      Qwopus-generated tokens (one rolling ~77 GB shard). GO at weighted acceptance ≥0.50; KILL below 0.45.
+      **From scratch is REJECTED:** ~93 card-days of response generation, and the 41+ TB feature cache
+      cannot fit in the 157 GB free.
 - [ ] **SL-1 (rtx6kpro intake 2026-09-07) — `--spec-draft-n-max` sweep {4,6,7,8} × `--spec-draft-p-min` {0,0.5}**
       under the canonical np4 recipe, 1/2/4/8 in-flight, >=5 alternating pairs, temp 0.6/seed 42; report
       `aggregate_tok_s` AND verifier steps/s. External per-position acceptance decay says positions 6–8

@@ -1710,6 +1710,29 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         runner + receipts, and for MoE a B×Q route-pinned cell before attributing KLD to the codec.
         **Human-amendment-only trust boundary → operator decision package (`ratify_*.sh`), not a session
         edit.** Cross-cutting: INF-70's Flash-Next KLD 0.0649@37.9σ on a MoE has no route control.
+        *Evidence 2026-09-15 — package PREPARED, ratification PENDING (not ticked):* branch
+        `sub/op38-pkld-package` carries the annex `artifacts/operator/staged/p-kld-annex-20260915.md`
+        (Annex V, `P-KLD-1`, sha256 `094c6c19…5136f`), the ratifier
+        `artifacts/operator/ratify_p_kld_divergence_protocol_20260915.sh` (it pins the annex plus the
+        MEASUREMENT.md pre-state `45c7e3a3…`; only `bash -n` has been run) and the decision package
+        `artifacts/operator/op38-pkld-decision-20260915.md`.
+        - **Source.** The README was re-fetched at the intake's pinned commit `44e817b` (sha256
+          `b1501772…`).
+        - **Instrument facts read from frozen v9 `0db32c06e` `tools/perplexity/perplexity.cpp`:**
+          - `--kl-divergence` stores the reference as a lossy `uint16` window 16 nats wide (`:79-106`);
+          - it drops reference entries below −16 nats from the sum (`:221-231`);
+          - its `±` is a per-token SE (`:1769-1776`).
+
+          So "37.9σ" is not an interval under the annex.
+        - **Correction to this row.** The 0.0649 is **B7's PLE IQ4_NL→Q8_0 swap measured against the
+          IQ4_XS-uniform anchor**, not a codec-vs-reference KLD
+          (`cpu-decode-roofline-program.md:4553-4561`).
+        - **Survey.** Only two real KLD runs exist (B7, B4), both INF-70's. Autokernel quotes none of
+          its own. Eight claims or gate definitions would demote; the list is in the package §1.
+        - **ID clash.** OP-38 was first the D9 hook fix (resolved 2026-09-05) and was re-minted for
+          this item. Proposed fix: renumber this item to OP-46.
+
+        Tick this box only after the operator's `--commit` lands.
       - [ ] **R23-49 — CPU CO-TENANCY: our builds, not our bench, are the contention (INF-70 relay 2026-09-07)**.
         INF-70 flagged `bench.py:34 CPU_LIST="184-191"` (8 GPU host threads) as contending with their 0-95
         bench region. Verified true but it is the SMALLEST of three. Kernel-verified sibling map
@@ -2125,7 +2148,18 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         floor without its `n` is the same defect class as a floor without its `unit` (R23-55) — a field a
         measurement must carry to be admissible.
 
-        - [ ] **R23-61a — RUN THE RECALIBRATION at n >= 24 and write `n` + a CI into the floor record.**
+        - [x] **R23-61a — RUN THE RECALIBRATION at n >= 24 and write `n` + a CI into the floor record.**
+          ✅ 2026-09-15 — option (b), **PRE-BIOS floor**: p95_dev **7.897%**, unit `process`, n=24 (24/24 valid),
+          95% bootstrap CI [5.520, 11.322]% (descriptive), median 160.18 tok/s, `recipe_hash 29fbffc56cd7`, provenance
+          verified, residency proven 24/24 (peak VRAM 40.44 GB, KFD 1), build `build-fold-ef81196d5`, shim not set.
+          Written to `autokernel/loop-memory/serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json` (sha `0fdf07c0…`), gates
+          via `run._gate_floor`; prior record kept as `.pre-r2361a-20260915.json.bak`. CI code: research branch
+          `sub/r23-61a-floor-n-ci` `a25aaf1f`. The standing 4.581%/n=10 lies below the CI; R23-58's 6.596% lies inside.
+          Window, harness and build differ from the old floor, so this is NOT a measured degradation.
+        - [ ] **R23-61b — POST-BIOS floor repeat.** After the operator reboot + BIOS session (and C8 verification):
+          `recal_serving_floor --apply --samples 24 --require-cpu-list` on the unchanged `ef81196d5` build + recipe
+          (hash `29fbffc56cd7`), host-state "POST-BIOS". Compare p95_dev + CI against the pre-BIOS 7.897%
+          [5.520, 11.322] n=24. Non-overlapping CIs = BIOS moved the variance.
           `recal_serving_floor --apply` under the recipe now in force (so the record carries a `recipe_hash` and
           stops being `unverified`). Needs the host, ~30 min, **nothing is blocking it** — the GPU is idle and
           R23-58 is closed. Extend `serving.write_floor` so the floor file carries `n` and a CI next to the
@@ -2585,6 +2619,142 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       boundary-step; if loop code, it rides the regrowth budget conversation.
       **✅ 2026-09-04 — SUBSUMED BY R23-43** (`[x]`, BUILT + committed): *"subsumes R23-18 (DFlash2 regression
       guard) and R23-26 (headline surface)"*. The serving gate now owns the DFlash2 surface.
+
+---
+
+## R24 — MLSys26 contest-loop intake: unwired guards and the missing drought reflex (2026-09-15)
+
+Source: research-intake 2026-09-15 (intake-1425#record, intake-1426#record, intake-1427#record, intake-1431#record, intake-1432#record, intake-1433#record;
+synthesis in [`research/deep-dives/mlsys26-contest-loops-vs-autokernel.md`](../../research/deep-dives/mlsys26-contest-loops-vs-autokernel.md)).
+All rows land at an operator-gated run boundary, never mid-run. The loop LOC budget (R21-7, P7.4) is binding, so
+R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citations are @ epyc-inference-research `ae8e5ef9`.
+
+### Open (R24)
+
+- [ ] **R24-1 — wire the existing hardened bench into the live loop.** `loop/bench.py:219-221` runs plain
+      `llama-bench`. `--autokernel-harden <per-candidate seed>` (llama.cpp `a4cb04ca8`, RVP-C6-8) and
+      `microbench._check_autokernel_hardening` (research `execution/microbench.py:1765-1880`) exist, but nothing
+      invokes them. `run_once` should pass the flag and admit a `Comparison` only when the hardening receipt check
+      returns no reasons. **Why now:** the FlashInfer contest harness timed the SAME tensor objects its correctness pass
+      had just used, and a placed team shipped a `data_ptr`-keyed output memo. llama.cpp graph reuse
+      (`llama-context.cpp:1370-1383`) presents identical pointers with different content on every rep. The hazard is
+      observed practice on a surface shaped like ours (intake-1426#record, intake-1431#record). Zero compute beyond the
+      bench already run.
+- [ ] **R24-2 — measure with a TRUSTED instrument and review the WHOLE tree.**
+      (i) Build both arms' `llama-bench` from a pinned instrument commit; today `loop/run.py:414-415` builds it from the
+      candidate's own tree.
+      (ii) Critic pass 2 diffs only actor-declared paths (`loop/actors.py:493-495`). Hash `git status --porcelain` plus
+      the full `git diff`, and refuse any candidate whose worktree diff touches undeclared paths or anything outside
+      `ggml/src/` (especially `tools/` and the instrument frame).
+      (iii) Run `execution/reward_hack_scan.py` over the whole diff; its flags withhold ranking.
+      Source: intake-1426#record.
+- [ ] **R24-3 — the critic must not be able to edit the candidate.** `actors.py:84-87` runs the Claude critic with
+      `--dangerously-skip-permissions` in the lane worktree. The shared `_CLAUDE_SANDBOX_NOTE` (`:55-61`) tells it
+      *"If the task asks for an edit, make it directly"*. `review_patch` takes its diff BEFORE the call, and nothing
+      re-hashes the tree before `gate()`.
+      (i) Run the critic role read-only: drop the flag and the edit clause for the critic, or point it at a read-only
+      checkout.
+      (ii) Hash the tree immediately before critic pass 2 and again before `gate()`; any delta is a hard candidate
+      failure.
+      (iii) Render planner-authored hypothesis text and diff in the critic prompt as a delimited data block with a
+      do-not-follow clause.
+      (iv) Pin it with a test in which a critic stub that edits a file fails the candidate.
+      Warrant: HAN Lab's writer instructed its edit-capable verifier to implement its work through the review prompt
+      (intake-1433#record). Zero compute.
+- [ ] **R24-4 — wire the no-fallback dispatch proof into the correctness gate.** Two checks exist:
+      `evaluator/correctness.py:3047` `check_no_fallback_dispatch_proof`, and `loop/fold2_gates.py` G4
+      (`GGML_SCHED_DEBUG=2`, target ops must sit on `ROCm0`). `loop/run.py:31-33` imports neither. `gates.py` runs only
+      `test-backend-ops`, and `residency.Sampler` proves whole-process VRAM residency, not per-op placement. Capture the
+      scheduler assignment for the candidate's affected ops once per candidate, piggybacked on an existing bench
+      invocation, and fail closed on any CPU-assigned target op. Warrant: the GDN Full-Agent contest winner shipped a
+      decode kernel with a silent host-CPU fallback, and its harness's output check passes it (intake-1432#record).
+      Spec §12 (`autokernel-research-loop.md:2617`) already demands this check. GPU: one debug capture per candidate.
+- [ ] **R24-5 — fix or delete `gates.deterministic`.** `loop/gates.py:127-150` adds each run's RETURN CODE to a set
+      and never compares outputs. It has no caller, yet it is exported (`:177`) as if it worked. Either delete it or
+      compare hashed logits across runs through the hardened path (R24-1). This is the vacuous-verification class. Zero
+      compute.
+- [ ] **R24-6 — anti-gaming clause in the planner/author prompt.** Neither `actors.py:407-422` nor `program.md`
+      carries one. The clause should forbid:
+      - input-identity or pointer-keyed caching of outputs;
+      - cross-rep buffer reuse;
+      - workload-specific shortcuts.
+      Any deployable cache must be DECLARED, with its cold and warm effects reported separately. This is an advisory
+      complement to R24-1/2, never a substitute (intake-1426#record). Zero compute.
+- [ ] **R24-7 — keep-drought trigger → clean-context diagnostician (advisory, never a gate).**
+      **Trigger:** K consecutive measured candidates fail to keep (K pre-registered), or the window-best effect stays
+      inside the floor.
+      **Action:** ONE stateless actor call. It reads only `experiments.md`/db, hotspots, `program.md`, the champion
+      diff, gate-parameter history and (when landed) AK-PM-17 records. It writes a plan artifact into
+      `hypotheses/inbox/` containing:
+      - a diagnosis against the checklist {repetition, wrong bottleneck, instrument/anchor broken, surface
+        anti-correlated with production, exhausted rung};
+      - ranked actions;
+      - do-not-try entries with experiment ids.
+      **Exit criterion before any build:** retrodict it from `experiments.db` on run 18 (post-11:03 segment: 122
+      unkeepable candidates, unnoticed for 6 h, :99-113) and run 24 (116 measurements, 0 keeps, :1432-1438). It must
+      fire within the first 20 non-keeps and name the anchor defect or the surface anti-correlation, or it is not built.
+      **Warrant:** the auto-gpu-kernel loop's research agent fired on exactly these conditions and produced 4 of its
+      largest late wins. That evidence is uncontrolled: 6/19 keeps is about the base rate (intake-1425#record).
+      Zero compute.
+- [ ] **R24-8 — no-measurement streak alarm and keep-rate alarm, beside `MAX_CONSECUTIVE_ERRORS`.** The pool
+      breaker (`pipeline.py:70-76`) counts only errored iterations; refusals and nulls are excluded by design. That is
+      how run 9 spent 10 iterations / 149 min with zero measurements (:250-252).
+      - **No-measurement alarm:** count pool iterations that end with no `Comparison` (excluding
+        `STOPPED_MID_FORMATION`). At N (pre-register, e.g. 10) raise `operator_attention` with the refusal-reason
+        histogram. Do not abort.
+      - **Keep-rate alarm:** when N consecutive measured candidates sit below zero, or no keep lands within a window,
+        raise `operator_attention` and add a planner-visible evidence line.
+      Retrodict both on runs 5-9 and 18. Sources: intake-1425#record, intake-1426#record. Zero compute.
+- [ ] **R24-9 — same-code re-measurement tripwire (rider on R22-3 (2)).** When a candidate's code-section hash
+      (`.text`+`.hip_fatbin`, the R22-3 basis) equals an already-measured one, log the new effect beside the old.
+      Divergence beyond floor is an evaluator/session excursion, never a keep. Warrant: in LoongFlow's traces,
+      byte-identical GDN-decode code scored 97 → 777 across a 7-day pause and was written up as a mechanism
+      (intake-1427#record). Zero compute; journal logic only.
+- [ ] **R24-10 — randomized multi-draw arm for near-tie ops (rider on R22-5).** For selection and near-tie ops
+      (ARGMAX, TOP_K, sampler paths), run N ≥ 100 fresh input draws per boundary case instead of one fixed input, and
+      record a mismatch rate. A 3-draw oracle misses a p=0.015 failure 95.6 % of the time. LLM-CUDA's agent-assisted
+      top-k passed its 3-trial check and then failed 2 workloads in the contest's own evaluation (intake-1427#record).
+      This is the same defect class as our `-funsafe-math` greedy-argmax flip (:1021-1023). Cost: test-backend-ops scale.
+- [ ] **R24-11 — production dispatch-shape census rendered to the planner.** Fold this into R23-13 / R23-43; do not
+      open a new program. R23-13 already produces production dispatch tables.
+      1. Check whether those tables carry (op, quant, ne11 bucket, n_embd, call share); if not, extend them.
+      2. Render the table into the planner bundle next to hotspots.
+      3. Give critic pass 1 a rejection ground: *"the mechanism specialises a shape with < X % production call share."*
+      Warrant: our ne11=1 / n_embd=1536 keeps never fired in production (:1069-1083, R23-5). GEMM People's per-class
+      regression guard caught a −8.5 % cross-class regression on a change that was flat on its target
+      (intake-1431#record). The census stays optional planner input, because the zero-profiler arm is mandatory
+      (`agentic-rocm-kernel-authoring.md:5-7`). GPU only if the tables need regenerating.
+
+### Declined 2026-09-15 — from the same intake, deliberately NOT filed
+
+- **Evolutionary population DB / island sampling** (intake-1427#record): the agents routed around it, and there is no
+  ablation. The single-champion invariant stands (:120-122).
+- **Synthesizer role merging unmeasured partial candidates** (intake-1426#record): narrative only, and it would reproduce our
+  cumulative-attribution defect (:93-97, R23-48).
+- **Stall-triggered web researcher** (intake-1426#record): its own authors say agents still under-searched. R21-5 owns
+  intake→inbox.
+- **Session-resumed actor context** (intake-1432#record): no evidence for it. Stateless actors plus separated narrative are
+  the defence intake-1427#record documented.
+- **Tiered quick/stride/full benchmarking** (intake-1425#record): we already hold an equivalent structure, and the "largest
+  gain" claim is unmeasured.
+- **Clean-context LESSONS pruning** (intake-1425#record): zero archived instances. AK-PM-17 owns the lessons record.
+- **Log-only recovery turn** (intake-1425#record): our loop owns logging.
+- **Prompt-level 5-iteration stall rule** (intake-1431#record): subsumed by R24-7.
+- **Various loop add-ons** (intake-1427#record, intake-1431#record, intake-1432#record, intake-1433#record): narrative only or anti-patterns.
+  - SPIN/Promela model-checking tier
+  - periodic cleanup gate
+  - KernelWiki analogue
+  - LLM-judged stagnation STOP
+  - plateau model switching
+  - Modal sharding
+  - cached reference denominator
+  - ncu-style sectioned profiler tool
+  - two-phase language ladder
+  - BitLesson memory
+- **Critic ground against exploiting oracle tolerance** (intake-1425#record): no instance observed. File it only if a
+  hypothesis ever cites tolerance.
+- **Any NVIDIA/B200 kernel technique or Triton/CUDA language ranking**: `agentic-rocm-kernel-authoring.md:5-7` forbids
+  importing NVIDIA strategies, and the language claims have no artifacts behind them.
 
 ---
 
