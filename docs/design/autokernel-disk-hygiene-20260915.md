@@ -1,6 +1,8 @@
 # AutoKernel Disk Hygiene: a design review
 
-**Status:** recommendation. Nothing is implemented in the loop, and nothing was removed.
+**Status:** recommendation. The agent-operated acceptance-worktree lifecycle in §4.1 is now
+implemented by `scripts/system/acceptance_worktree.py`; loop-owned `source_loo` and state-dir
+retention remain recommendations. Nothing was removed by this implementation.
 **Date:** 2026-09-15
 **Audience:** the AutoKernel lane owner (bus id `inference`, task `autokernel-hardening-20260915`,
 currently a Codex session) and the operator.
@@ -249,6 +251,39 @@ build binary a later confirmation needs.
   `prune_anchor_generations` already takes).
 - Dirty trees are never reaped. That forces the commit-or-discard discipline, which also makes
   the acceptance record reproducible, which is a quality *gain*.
+
+#### Agent acceptance helper (implemented 2026-09-15)
+
+Future manually created acceptance trees use `scripts/system/acceptance_worktree.py`. The helper
+owns only trees it created under `/mnt/raid0/llm/worktrees/acceptance`; it does not discover or
+adopt pre-existing trees by name.
+
+```bash
+python3 scripts/system/acceptance_worktree.py create \
+  --repo /workspace \
+  --path /mnt/raid0/llm/worktrees/acceptance/<name> \
+  --branch accept/<name> --base origin/main \
+  --owner <bus-or-session-id> --task <task-id> --purpose '<why>'
+
+# Accepted packet: commit it, push the exact acceptance branch, then close.
+python3 scripts/system/acceptance_worktree.py close \
+  --receipt /mnt/raid0/llm/autokernel/acceptance-worktree-receipts/<id>.json \
+  --owner <same-id> --outcome commit-push --remote origin
+
+# No packet retained: first restore a completely clean base tree, then close explicitly.
+python3 scripts/system/acceptance_worktree.py close \
+  --receipt /mnt/raid0/llm/autokernel/acceptance-worktree-receipts/<id>.json \
+  --owner <same-id> --outcome discard
+```
+
+The receipt and append-only event ledger live outside the sweepable worktree. `close` refuses a
+dirty tree (including ignored files), any live process holding its cwd/executable/fd, an unpushed
+commit, a local-path remote, a changed repository identity, or a mismatched owner/branch/path.
+`commit-push` requires the exact network remote-tracking branch to equal HEAD. `discard` requires
+HEAD to equal the recorded base; it never deletes an unpushed commit. A durable
+`remove_authorized` event is fsynced before the helper runs exactly
+`git -C <repo> worktree remove <path>`. There is no `--force`, prune, reset, clean, wildcard, or
+pre-existing-tree deletion path. Refusals write a durable `retained` event naming the reason.
 
 ### 4.2 ccache or a shared build-object cache across lanes
 
