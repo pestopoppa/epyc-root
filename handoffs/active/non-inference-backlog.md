@@ -324,11 +324,14 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
 `git worktree remove` (138 worktrees, never `prune`), 111G → 371G free. Details:
 `progress/2026-08/2026-08-23-disk-reclaim.md`.
 
-- [ ] **NIB2-64** (MED): **autokernel/worktrees 165G — 144/146 one-shot session worktrees from
+- [x] **NIB2-64** (MED): **autokernel/worktrees 165G — 144/146 one-shot session worktrees from
   08-11→08-14 are unreferenced by active handoffs.** Two are referenced and must stay:
   `inf37-fancy-simd-v9-20260811`, `promote-kernel-rnd-dashboard-20260812`. Registered in
   epyc-inference-research; remove per-worktree (`git worktree remove --force`), NEVER `prune`.
-  Operator decision needed only if any session claims them — none does today.
+  Operator decision needed only if any session claims them — none does today. ✅ 2026-09-15 —
+  verified: `/mnt/raid0/llm/autokernel/worktrees` is now `402M` (`du -sh`) and `ls` shows only the
+  two kept trees, `inf37-fancy-simd-v9-20260811` and `promote-kernel-rnd-dashboard-20260812`; the
+  144 unreferenced one-shot worktrees are gone.
 - [ ] **NIB2-65** (MED): **model duplicates/orphans ~25G in `/mnt/raid0/llm/models/`** — safe set
   from the 2026-08-23 census: `bge-m3-f16.gguf`, `multilingual-e5-base-f16.gguf`,
   `granite-embedding-97m-multilingual-r2-Q4_K_M.gguf`, `Qwen3-TTS-12Hz-0.6B-Talker-Q8_0.gguf`,
