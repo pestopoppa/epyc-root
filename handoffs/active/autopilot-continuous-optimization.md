@@ -3011,7 +3011,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       151.8 rows/s. Atomic run `20260809T160329Z` published 63,786/63,786 vectors with desync 0 and zero
       bad pointers. The independent semantic gate passed with 0/60 below 0.9, mean cosine 0.9999, median
       1.0000, and minimum 0.9924. Temporary ports 18090–18095 were then shut down and verified absent.
-- [ ] **AP-50 — Turn “what optimizes the orchestrator” into a decision cockpit.** Default to the current
+- [x] **AP-50 — Turn “what optimizes the orchestrator” into a decision cockpit.** Default to the current
       measurement era and distinguish proposed, executed, valid, kept, promoted, and currently-live
       states; “applied” alone is operationally ambiguous. Add current trial/intervention/falsifier,
       incumbent-vs-candidate objective deltas with n/uncertainty/replication, an experiment funnel with
@@ -3019,7 +3019,16 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       periodically generated digest. Retain the provenance graph as a drill-down, but lay it out
       left-to-right as hypothesis → experiment → evidence → verdict → runtime state, with era/status
       filters and explicit edge semantics.
-      _Evidence 2026-09-15 (code landed on branches, not yet deployed):_ orchestrator branch
+      _DEPLOYED 2026-09-15 (operator-directed, option A — cockpit only, nothing else disturbed):_ merged to
+      origin/main (root `50ee3656`, orchestrator `2fe8f50a`, then revert `92bbeb06`), shared orchestrator clone
+      fast-forwarded, `stack_change_pipeline.py check` green end-to-end (incl. `runtime_attestation`), API started
+      with `orchestrator_stack.py reload orchestrator` (pid 2096743, `/health` 200; AutoPilot left STOPPED, no model
+      servers started). Data endpoints live: `/dashboard/api/decision_cockpit?era=E16` 200 and its `/health` 200
+      (`health.status=ok`). Page served from a SECOND hub on :8101 out of a fresh origin/main checkout
+      (`/cockpit` 200, title "EPYC — Decision cockpit"), because :8100 belongs to the autokernel-unified lane
+      session and `hub_supervisor.sh` (OP-9) is not running to redeploy it — that hub was left untouched and still
+      answers `/health` 200. Residual: :8100 will not serve `/cockpit` until its own source tree is synced.
+      _Evidence 2026-09-15 (code):_ orchestrator branch
       `sub/ap-50-decision-cockpit` adds `scripts/autopilot/decision_cockpit.py`
       (contract `epyc.autopilot.decision_cockpit.v1`: all journal shards + supersessions, era-matched
       Optuna studies, state, `production_best` meta; per-era buckets defaulting to the active era; the six
