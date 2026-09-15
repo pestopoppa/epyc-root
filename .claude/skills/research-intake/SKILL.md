@@ -174,8 +174,9 @@ Expand only from entries with `relevance >= medium`. **Budget by difficulty, not
 Estimate difficulty 1–10 per expansion seed: 1–3 → 0 extra search rounds, 4–7 → 1, 8–10 → 2; the
 run-level ceiling of 10 new entries and depth 2 still holds
 (**Max 10 new entries per run. Max depth 2 hops.**). Degrade rounds beyond the budget to shallow, and
-**REFUSE** further expansion with a recorded refusal state (expansion_refused: <reason>) instead of
-stopping silently. **Drop-unobserved-IDs post-filter:** before persisting, drop any arxiv_id / URL that did not appear in
+**REFUSE** further expansion with a recorded refusal state instead of stopping silently: write
+`expansion_refused: {seed: <intake-id>, reason: <why>}` into `.research-session.json` (a list under
+the run's session record) and name it in the Stage-1 report's Literature Expansion section. **Drop-unobserved-IDs post-filter:** before persisting, drop any arxiv_id / URL that did not appear in
 a captured search or fetch result from THIS run. Never persist a recalled identifier; refuse the
 entry rather than hedge it. (intake-883#record)
 
@@ -437,8 +438,9 @@ deflated the dived entry's central claim — had no home at Stage 2, were carrie
 operator decision item, and were bolted on as a post-hoc "Tier 4" after tiers 0–3 were already
 written. The plan was internally stale the day it was approved.
 
-**Stage 2 still makes NO handoff, stub, or domain/master-index edits** — its only file is
-`research/intake_index.yaml`.
+**Stage 2 still makes NO handoff, stub, or domain/master-index edits** — its only repo file is
+`research/intake_index.yaml`. Dive scratch artifacts (fetched sources, figures, generating scripts,
+reports) live OUTSIDE the repo under `/mnt/raid0/llm/tmp/dive-<id>/` and are not repo writes.
 
 **A Stage-2b round that runs AFTER Stage 4 does not inherit the earlier plan's approval — its
 actionables need their own Stage-3 gate.** Ratified by the operator 2026-08-21 ("research-intakes
@@ -610,7 +612,8 @@ require global coordination and run after collection).
 
 - Do NOT modify chapter files directly — propose the change in the Stage-3 plan.
 - **Stage 1 writes ONLY `research/intake_index.yaml` and `.research-session.json`.**
-- **Stage 2 writes ONLY intake-entry verification/correction fields, plus the Stage-2b entries.**
+- **Stage 2 writes ONLY intake-entry verification/correction fields, plus the Stage-2b entries** (repo
+  files; out-of-repo dive scratch under `/mnt/raid0/llm/tmp/dive-<id>/` is permitted).
 - **Stage 3 writes ONLY the plan file.**
 - **Stage 4 writes what the approved plan names — nothing more.**
 - **Stage 4 must end with `python3 scripts/handoffs/index_state.py` then `--check` exiting 0.**
