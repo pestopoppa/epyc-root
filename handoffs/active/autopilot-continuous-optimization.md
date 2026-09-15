@@ -3283,7 +3283,7 @@ Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake
       "PRE-EXISTING: eval_tower and the seeding path DISAGREE" row.
 - [ ] **AP-65 (S3-AP-03) — decide whether _proxy_check binds.** It is the only leg built to catch a
       candidate whose entire gain is one easy suite, and it returns warnings, never violations ("an
-      external checker whose output does not gate the loop", intake-1367#02). Either make it a
+      external checker whose output does not gate the loop", intake-1367#01). Either make it a
       violation at a stated threshold or record why a warning is the right strength. S3-AP-08's
       rotation-drop data is the empirical basis for any threshold.
 - [ ] **AP-66 (S3-AP-04) — NumericSwarm must tell INFEASIBLE configs to the sampler, not hide

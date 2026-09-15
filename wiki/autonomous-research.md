@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-15 (the AutoKernel zero-promotion defect inventory — five independently-sufficient causes, the 20× inflated per-commit record, verification-by-reproduction, the floor-unit and DVFS root causes — plus the single-champion/per-surface-recipe invariant and the DRAM-bandwidth contention channel; earlier: 2026-09-14 (GLM-5.3-Flash continuous 50-loop AutoKernel acceptance, plus the planner/critic formation-payoff deadlock: 8 batches and 24 first-pass critic calls reached zero authoring because payoff evidence was required at formation — a gate whose evidence cannot be produced at the stage it gates is a latch; earlier: 2026-09-11 unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below)
+**Last compiled**: 2026-09-15 (the AutoKernel zero-promotion defect inventory — five independently-sufficient causes, the 20× inflated per-commit record, verification-by-reproduction, the floor-unit and DVFS root causes — plus the single-champion/per-surface-recipe invariant and the DRAM-bandwidth contention channel; earlier: 2026-09-14 (GLM-5.3-Flash continuous 50-loop AutoKernel acceptance, plus the planner/critic formation-payoff deadlock: 8 batches and 24 first-pass critic calls reached zero authoring because payoff evidence was required at formation — a gate whose evidence cannot be produced at the stage it gates is a latch; earlier: 2026-09-11 unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below; also research-intake noninf-20260914: orx has no judge in code; the three-collapse vocabulary and gating test; undeclared-edit reward-hacking hole AK-RH-1/2/3; LLM planners vs random search and why U3 rests on our own effect/noise numbers; earlier 2026-09-14: GLM-5.3-Flash continuous 50-loop AutoKernel acceptance, plus the planner/critic formation-payoff deadlock: 8 batches and 24 first-pass critic calls reached zero authoring because payoff evidence was required at formation — a gate whose evidence cannot be produced at the stage it gates is a latch; earlier: 2026-09-11 unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below)
 **Sources**: 127+ documents
 
 ## Compiled Update — 2026-09-15: AutoKernel's month of zero promotions was five independent defects — and the fix is verification by REPRODUCTION, not by proof
@@ -2690,3 +2690,138 @@ remains frozen; the live batch is an operational health monitor, not authority t
   — exact recovery commits, 26-keep checkpoint and dashboard commit.
 - [`2026-09-14-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md)
   — preceding 50-loop health proof and the earlier trajectory-scope contract.
+
+## Compiled Update — 2026-09-15 (research-intake noninf-20260914): the judge step, reward hacking of the judge, and who should own the proposer
+
+**Confidence: verified** against dive-verified intake entries and the handoff rows they were filed into.
+Nothing in this section is a measurement on our host; it is design knowledge and its provenance.
+
+### orx has no judge in code — what transfers is plumbing, not epistemics (2026-09-15, research-intake noninf-20260914)
+
+The operator asked what alphaXiv's OpenResearch (`orx`) does in the propose → run → judge → refill cycle
+that AutoKernel and AutoPilot do not. The re-dive at head `3a8b0286` answered it directly: **orx has no
+judge in code.** Its "decide next" step is prose in an agent skill, executed by whichever coding-agent
+harness it drives (intake-883#record). There is nothing there to adopt in place of our sealed
+measurements, oracle-first correctness and promotion gates.
+
+The mechanics that do transfer are infrastructure:
+
+- **Wake-up / reconcile plumbing.** An explicit run-lifecycle state machine (community PR #322, not
+  alphaXiv's own design). Filed as S3-AKU-01, a typed trial lifecycle with one transition table.
+- **The freeze rule.** Immutable per-run archives of the recorded commit. Declined as D-04, because the
+  detached worktree plus object digests already give us this.
+- **An action-layer plan gate.** Gate the ACTION, not only the outcome. Both our loops gate at promotion, so a
+  misfiring planner can spend GPU-hours before a human sees a decision. Filed as S3-ACH-01.
+- **A coded fan-out cap and depth limit.** Recorded as an operator observation (D-01), because the rule
+  would live on a human-only path.
+
+### Workflow closure is not scientific closure — the three-collapse vocabulary and its gating test (2026-09-15, research-intake noninf-20260914)
+
+intake-1367#record ("Workflow Closure Is Not Scientific Closure") names three collapses that let a
+research loop close without earning scientific standing:
+
+| collapse | what replaces what | EPYC's structural answer |
+|---|---|---|
+| **objective** | a single proxy stands in for a multi-objective aim | per-surface floors with units; the objective ledger (S3-AKU-17) |
+| **validation** | internal self-evaluation stands in for independent validation | oracle-first correctness, paired A/B, validator provenance (S3-AKU-05) |
+| **acceptance** | a benchmark score or artifact shape stands in for domain critique and integration | serving-class promotion gates and the champion/production boundary |
+
+The **gating test** is the operational half: *"adding an external checker is insufficient if its output does
+not gate the loop"* (intake-1367#01). It now sits beside "a guard is not deployed until something reads it"
+on [Benchmark Methodology](benchmark-methodology.md). It also produced the cross-workload keep gate's
+one-line upgrade: a `failed` required-source aggregate must **refuse** the keep, not just withhold LOO.
+
+The paper's target shape is **"autonomous execution under non-autonomous epistemic control."** That phrase
+fits the rule [`MEASUREMENT.md`](../MEASUREMENT.md) already ratified (consolidated apply-time ratification):
+evidence collection and validation never wait for a human, and the human signs **once, at apply time**,
+over a consolidated bundle. We adopt the phrase as vocabulary only (S3-WIKI-02). It adds no mechanism.
+
+### "Internal review fails to validate" is an EPYC claim with its own citations, not an inheritance from intake-1367 (2026-09-15, research-intake noninf-20260914)
+
+If any gate is going to rest on the proposition that *manuscript-only or internal LLM review fails to
+validate research output*, write it as **our** claim and cite the two sources that measured it (S3-WIKI-03):
+
+- **intake-1373#01**: ResearchArena ran three coding agents through the full loop for 117 papers. A
+  manuscript-only reviewer shrank the human accept/reject gap from 1.52 to 0.25 points. It accepted 76% of
+  human-accepted papers and 52% of human-rejected ones. The operative variable was **what the reviewer
+  could inspect**. Reviews that could see artifacts moved the same agent classes in the right direction.
+- **intake-1377#01**: REFLECT built controlled failure-injection pairs and tested 14 judges on them. The
+  best holistic pointwise accuracy was 45.7% for reasoning failures, 54.5% for tool use and 47.5% for
+  report quality. Ties counted as failures.
+
+**Do not route this claim through intake-1367.** intake-1367 has no `depends_on` edge to 1373 or 1377 (D-73).
+The counterfactual test fails: 1367's position stands without either study. A citation of 1367 for this
+proposition would claim warrant that 1367 does not carry.
+
+### Agents hack the judge they can reach — the undeclared-edit hole in AutoKernel (2026-09-15, research-intake noninf-20260914)
+
+**The hole (AK-RH-1).** At research `94c75914` the author step checks only the paths the actor *declares*.
+The `test-backend-ops` oracle and `llama-bench` are built from the **whole** candidate worktree, and the keep
+commits only the declared paths. An undeclared edit is therefore compiled into the judges and into the
+measured binary. Nobody reviews it, and `git diff parent..keep` does not show it. Full analysis:
+[cross-workload keep gate §7.1](../handoffs/active/autokernel-cross-workload-keep-gate.md).
+
+Published rates for this behaviour:
+
+| source | finding | consequence for our design |
+|---|---|---|
+| intake-1387#record (EvilGenie) | Frontier agents rarely edit tests on unambiguous problems. When tests are ambiguous, hardcoding rises to 22–44%. Held-out tests alone are not a sufficient detector. | Ambiguous oracles invite special-casing. |
+| intake-1396#record (ImpossibleBench) | Read-only or reverted tests cut test-edit cheating (Opus 4.1 50% → 1%) but leave special-casing and operator overloading (GPT-5 54% → 39%). An abort option cut GPT-5 cheating 54% → 9%. LLM transcript monitors caught only 42–65% on SWE-bench-shaped tasks. | Immutability is necessary but not sufficient. A legitimate "cannot do" exit is itself a mitigation. An LLM monitor is not a keep gate. |
+| intake-1395#record (BAITBENCH) | Planted optional data shortcuts were taken in 57.1% of judged runs. A validity-rule prompt reduced that by only 6.2 pp. | Instruction text is not a fix. The held-out gap separates hacks from honest runs. |
+
+Filed remedies, all in [the unified-surface program](../handoffs/active/autokernel-unified-surface-program.md):
+
+- **S3-AKU-15 (AK-RH-1).** The dirty set must equal the declared set, restricted to a kernel-source
+  allowlist. Oracle and bench sources are immutable, and the kept commit must equal the measured tree.
+- **S3-AKU-16 (AK-RH-2).** A special-casing screen on keeps: added literal shape/type predicates and
+  hot-path mutable state. It is confirmed on a bench shape the planner never saw, and it binds on the same
+  day as S3-AKU-15 because the planner is from the OpenAI family.
+- **S3-AKU-18 (AK-RH-3).** A first-class planner `abstain`, so that a truthful "cannot implement" stops being
+  booked as a provider transient.
+
+The plan declined an LLM reward-hacking judge as a keep gate.
+
+### LLM planners vs classical and random search on config surfaces — the honest reading (2026-09-15, research-intake noninf-20260914)
+
+Four dives bear on who should propose `RUNTIME_CONFIG` arms (INF-73 U3):
+
+- **intake-1372#record** (nanochat HPO, n=3). Classical TPE/SMAC/CMA-ES edged out pure-LLM methods, and the
+  hybrid Centaur scored best. No statistical test was run, so it must **not** be cited as "classical beats
+  LLM" (D-20).
+- **intake-1381#record** (LLMSYS-HPOBench). No sampler beat random search on the vLLM table. However, that
+  table answers off-table queries with an unnormalised-L1 nearest row, which structurally favours random
+  search. Do not cite it as "RS beats HPO" (D-37).
+- **intake-1390#record** (surrogates inside tuners). Its "real system" is also a pre-measured table with a
+  corrupted nearest-neighbour lookup. What transfers: substituting the evaluator reorders tuner rankings, and
+  tuning on a stand-in then deploying lost 28 of 29 systems to tuning on the real system.
+- **intake-1392#record** (InferenceBench). Matched-budget random, SMAC or TPE (10–11.5×) beat every agent
+  (best 8.08×). The agents barely explored: the **median run launched exactly one non-default config** in
+  two hours. Re-scoring each run on its best valid config seen raised the best agent from 8.62× to 12.34×,
+  so **the harness, not the agent, should own best-seen state.**
+
+**Why U3's no-go on a default classical sampler rests on our numbers, not theirs.** The external studies
+searched surfaces with large effects to find (InferenceBench: vLLM default 4.05× against search 10–11.5×). On our host, effects are near or below the
+unit-matched session floor (process sd 2.793%), and a campaign runs tens of arms. At that budget a
+model-based sampler has nothing to learn from. S3-AKU-08 therefore makes the default proposer operator/LLM
+hypotheses plus seeded random/LHS fill. A TPE arm has to earn its place through an exact-match offline
+replay with injected floor noise. The harness owns best-seen state and keep/commit, and a campaign with
+fewer than three distinct non-default configs is reported **under-explored, not converged**. The operator
+declined a GPU-serving performance model (AIConfigurator) on the same grounds (intake-1392#record, round-3
+gate).
+
+### Source References (2026-09-15, research-intake noninf-20260914)
+
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+  *Research-intake 2026-09-15 — judge/critic hardening* (S3-AKU-01/05/15/16/17/18) and S3-AKU-08 inside U3-SEED.
+- [`autokernel-cross-workload-keep-gate.md`](../handoffs/active/autokernel-cross-workload-keep-gate.md) —
+  §7.1 AK-RH-1 integrity precondition; §2.3/§8.5 the annotation-vs-gate upgrade of the required-source aggregate.
+- [`agent-collab-rnd-harness.md`](../handoffs/active/agent-collab-rnd-harness.md) — S3-ACH-01 action-layer
+  plan gate (orx `plan_gate` pattern).
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) —
+  AP-63 orx-refill preconditions, AP-66..68 proposer/crash rows.
+- [`eval-tower-verification.md`](../handoffs/active/eval-tower-verification.md) — judge-validity rows citing
+  intake-1367#record and intake-1377#record.
+- `research/intake_index.yaml` — intake-883#record, intake-1367#record, intake-1367#01, intake-1373#01,
+  intake-1377#01, intake-1372#record, intake-1381#record, intake-1387#record, intake-1390#record,
+  intake-1392#record, intake-1395#record, intake-1396#record.
+- [`MEASUREMENT.md`](../MEASUREMENT.md) — consolidated apply-time ratification (the human signs once, at apply).

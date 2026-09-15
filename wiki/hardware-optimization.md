@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-09-15 (gfx90a kernel authoring: GEAK v4 ships gfx90a ISA knowledge but publishes zero gfx90a numbers, the LDS bank topology is `retune_required` from CDNA3, the program retargeted to the fp16 rung, and the profiler is a multiplier not a prerequisite; earlier: 2026-09-08 (late): **`-t 48` is a MEASURED optimum, not a comparability convention** (t48 10.09 / t64 9.69 / t96 9.67 t/s, C5) — and its measurement EXPIRED when the decode floor moved 2.76x while graph nodes fell only 13%, so the re-sweep is filed as R23-64 behind the operator's BIOS reboot; the 48 threads spread 4-per-CCD across all 12 CCDs and all 4 NUMA nodes, so the CORES are half idle while the REGIONS are 100% used and two of three "reclaim the idle half" remedies recover nothing; decode is NOT bandwidth-bound (27% of achieved, 9% of theoretical, against a >70% gate) and the binding term is the ~7,906 graph-nodes/token dispatch floor; earlier: 2026-09-08 (pm, R23-58): the THP process shim is CPU-DECODE-ONLY — it returned a bounded null on the GPU serving path (p95_dev ratio 0.713, p=0.3159, ON arm slightly wider) with the mechanism proven to have fired, so ONE champion commit now carries TWO different launch recipes and a champion record keyed by a single recipe is under-specified by construction; earlier: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× — RETIRED 2026-09-08 (INF-70 close-out); the champion is now `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch, plain 2.1857× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
+**Last compiled**: 2026-09-15 (gfx90a kernel authoring: GEAK v4 ships gfx90a ISA knowledge but publishes zero gfx90a numbers, the LDS bank topology is `retune_required` from CDNA3, the program retargeted to the fp16 rung, and the profiler is a multiplier not a prerequisite; earlier: 2026-09-08 (late): **`-t 48` is a MEASURED optimum, not a comparability convention** (t48 10.09 / t64 9.69 / t96 9.67 t/s, C5) — and its measurement EXPIRED when the decode floor moved 2.76x while graph nodes fell only 13%, so the re-sweep is filed as R23-64 behind the operator's BIOS reboot; the 48 threads spread 4-per-CCD across all 12 CCDs and all 4 NUMA nodes, so the CORES are half idle while the REGIONS are 100% used and two of three "reclaim the idle half" remedies recover nothing; decode is NOT bandwidth-bound (27% of achieved, 9% of theoretical, against a >70% gate) and the binding term is the ~7,906 graph-nodes/token dispatch floor; earlier: 2026-09-08 (pm, R23-58): the THP process shim is CPU-DECODE-ONLY — it returned a bounded null on the GPU serving path (p95_dev ratio 0.713, p=0.3159, ON arm slightly wider) with the mechanism proven to have fired, so ONE champion commit now carries TWO different launch recipes and a champion record keyed by a single recipe is under-specified by construction; earlier: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× — RETIRED 2026-09-08 (INF-70 close-out); the champion is now `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch, plain 2.1857× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below; also research-intake noninf-20260914: cgroup-v2 cpuset partitions confine cores but not DRAM bandwidth/L3/IRQs/kthreads, resctrl MBA the only bandwidth mechanism, the devcontainer cannot build partitions; gflow/pueue/task-spooler model counts, not cores/NUMA); earlier 2026-09-08 (late): **`-t 48` is a MEASURED optimum, not a comparability convention** (t48 10.09 / t64 9.69 / t96 9.67 t/s, C5) — and its measurement EXPIRED when the decode floor moved 2.76x while graph nodes fell only 13%, so the re-sweep is filed as R23-64 behind the operator's BIOS reboot; the 48 threads spread 4-per-CCD across all 12 CCDs and all 4 NUMA nodes, so the CORES are half idle while the REGIONS are 100% used and two of three "reclaim the idle half" remedies recover nothing; decode is NOT bandwidth-bound (27% of achieved, 9% of theoretical, against a >70% gate) and the binding term is the ~7,906 graph-nodes/token dispatch floor; earlier: 2026-09-08 (pm, R23-58): the THP process shim is CPU-DECODE-ONLY — it returned a bounded null on the GPU serving path (p95_dev ratio 0.713, p=0.3159, ON arm slightly wider) with the mechanism proven to have fired, so ONE champion commit now carries TWO different launch recipes and a champion record keyed by a single recipe is under-specified by construction; earlier: 2026-09-08 pm (the CPU champion's throughput varies ~12% between process launches while pristine reproduces to +2.2% — cause UNEXPLAINED, suspects are page-cache/NUMA placement, THP state, HIP graph capture, allocator; THP itself is under a running session-unit sign test; the 12:05Z orchestrator-API stop measured a non-event, 47.89-48.26 busy cores across the boundary; earlier: 2026-09-08 (the AutoKernel unified-surface program — one champion/accumulator/runbook across CPU+GPU, the RUNTIME_CONFIG arm and resource-broker tracks, the fold at run 30's boundary, and the 09-08 rebuild state (heartbeat/actor-health, event-store reaper, R23-53 headline-vs-product-of-solos); the INF-70 09-07 audit outcome — champion-3's corrected 1.5149× — RETIRED 2026-09-08 (INF-70 close-out); the champion is now `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` at launch, plain 2.1857× with a provisional magnitude, four upstream defects still present on master, PROD-1 recipe-as-data, INF-71 (EXL3) NO-GO with the four record corrections, MEAS-1/MEAS-2 contention decisions; the rtx6kpro intake record — steal candidates, contradictions and non-transferables; earlier 2026-09-07 note: a capability probe that asks the wrong runtime can only answer NO — the host-pointer capability contract (demonstrated mapped device pointer, probe with the consumer's allocator, fail closed, never silently no-op) and the probe-failure pattern (a `libcuda.so` `dlsym` probe on a ROCm host, a fallback unvalidated under graph capture, a health guard on the wrong branch); earlier 2026-08-27 note: incremental: INF-42 full-instance recovery, achieved-vs-declared NUMA placement witness, and timing-claim boundary; earlier compiled findings remain below)
 **Sources**: 110+ documents
 
 ## Compiled Update — 2026-09-15: gfx90a kernel authoring — the vendor ISA knowledge exists, the vendor numbers do not, and a profiler is a multiplier not a prerequisite
@@ -5158,3 +5158,80 @@ operator. The companion **R23-65** recalibrates every floor after that reboot.
   27 %-vs-36 % discrepancy.
 - `docs/design/inf70-close-out-20260908/qwen38_flash_next_recipe.py.draft:447` — the codified
   `THREADS = 48` constant and its inline justification.
+
+## Compiled Update — 2026-09-15 (research-intake noninf-20260914): kernel confinement fences cores, not bandwidth — and no off-the-shelf queue models either
+
+**Confidence: verified** from kernel v6.14 `cgroup-v2.rst`, systemd 255/261 man pages, pinned source reads,
+and read-only host observation made from inside the devcontainer. Nothing was created or modified on the
+host. This section extends *The channel was DRAM bandwidth* above: that section said admission control,
+not screening, is the remedy. This one records what the available mechanisms can and cannot enforce.
+
+### cgroup-v2 cpuset partitions confine CPUs; they cannot confine the MEAS-6 channel (2026-09-15, research-intake noninf-20260914)
+
+**What a cpuset buys.** Every userspace task outside the root cgroup is kernel-bound to its cgroup's CPU and
+memory-node sets, and a child can never widen its parent's sets. That includes containers and host sessions
+that never call `cpu_region_lock`. A **partition root** (`cpuset.cpus.partition = root|isolated`) adds
+sibling-proof CPU exclusivity: no cgroup outside the partition can use its exclusive CPUs. `isolated` adds
+only two things: no load balancing across the partition, and exclusion from unbound workqueues. systemd 255
+exposes `AllowedCPUs=`/`AllowedMemoryNodes=`. The unit directive for the partition flag (`CPUSetPartition=`)
+exists only from systemd 261 (intake-1397#record).
+
+**What it does not buy.** Several contention channels stay open:
+
+- **DRAM bandwidth.** This is the channel that cost our CPU floor 0.80% → 7.2% (MEAS-6).
+- **Shared L3 per CCD.**
+- **SMT siblings,** unless both siblings are reserved.
+- **IRQs.** `default_smp_affinity` is all-ones over 192 CPUs, with no `isolcpus`/`nohz_full`.
+- **Per-CPU kernel threads.** 1,561 of 1,812 kthreads are bound to single CPUs.
+
+Memory nodes have **no exclusive/partition counterpart** at all. The kernel also never leaves outsiders
+with zero CPUs, so a full-host recipe gains nothing. **resctrl MBM/MBA is the only kernel mechanism on
+the bandwidth channel.** The CPU advertises `rdt_a`, `mba`, `cqm_mbm_total/local` and `cat_l3`, but resctrl
+is not mounted, and its effect on this host is unmeasured and would need its own A/A.
+
+**Host facts that bound any design.**
+
+- **The devcontainer cannot build partitions.** The session runs in a private cgroup namespace whose root
+  holds ~126 processes. The no-internal-process rule blocks enabling cpuset for children there, and
+  `cpuset.cpus.partition` is parent-owned and not delegatable.
+- **Agent processes are spread across five sibling cgroups.** They sit in the namespace root, three other
+  `docker-*.scope`s and the host `user.slice`. Delegation containment means no single container can
+  confine the others.
+- **Confinement must be applied from the host root.** Only host-root systemd slices can do it.
+
+The handoff lists options A–E (static complementary slices, a partition root on a bench slice, per-window
+`set-property --runtime`, resctrl MBA, status quo) as **design input for the operator's OP-41 broker**,
+with no decision taken.
+
+### Off-the-shelf job queues model counts, not cores, NUMA or bandwidth (2026-09-15, research-intake noninf-20260914)
+
+Three single-host queues were read at pinned revisions:
+
+- **gflow** @598fa6e0 (intake-1369#record). Its GPU scheduling is NVML-only, so it would see zero GPU slots
+  on the MI210. Host memory is admission *accounting*, and the per-job model has no CPU-set, NUMA or
+  bandwidth resource.
+- **pueue** @193ed226 (intake-1382#record). A per-group count of running tasks. The maintainer declined CPU
+  affinity as out of scope, and non-wait pause SIGSTOPs work that keeps its memory placement.
+- **task-spooler** ts-1.0.4 (intake-1383#record). A global slot *number* that never identifies which cores.
+
+All three **backfill** past a head job that does not fit, so an exclusive whole-host window can be starved
+indefinitely unless the queue reserves head-of-line. None of them is adopted. The transferable patterns
+recorded for the broker design are:
+
+- typed waiting reasons on queued tickets;
+- foreign occupancy naming the pid;
+- submit-time refusal with a reason;
+- event-driven wake instead of polling;
+- a persisted admission halt that leaves running work alone;
+- a resource modelled as a *set with overlap semantics*.
+
+### Source References (2026-09-15, research-intake noninf-20260914)
+
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) —
+  U4-SEQ *Off-the-shelf admission check — CLOSED*: patterns (i)–(x) and cpuset/resctrl options A–E.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) —
+  AP-63(b): the lane-arbiter precondition re-pointed at OP-41 after the queue check.
+- [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) — CLOSE-8:
+  admission control, not screening, as the MEAS-6 remedy.
+- `research/intake_index.yaml` — intake-1397#record (kernel/systemd cpuset semantics and the host facts),
+  intake-1369#record (gflow), intake-1382#record (pueue), intake-1383#record (task-spooler).
