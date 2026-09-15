@@ -60,3 +60,31 @@ in the active handoffs. A zero-compute targeted run passed 171 tests with the re
 
 No index row, benchmark, production tree, or measurement authority was changed. The GLM loop was stopped
 cleanly at a completed batch boundary before this hardening wave; its valid store and continuation remain intact.
+
+## Retired serial build-cache retention
+
+The disk-pressure audit found that AutoKernel acceptance and campaign artifacts had grown without a
+working lifecycle boundary. Research commit `c557ad94` wires a deliberately narrow prospective fix into
+serial startup: only retired-state `targets/*/builds` roots with a durable source commit, exact recipe
+identity, stable continuation hashes, reconciled inactive state and a free sibling lock are eligible.
+The current state and newest inactive cache are retained; cleanup is bounded to eight roots and 400/500
+GiB free-space trigger/target watermarks. Plan and result manifests make every decision auditable.
+
+Focused validation passed 3 tests. A read-only live plan selected one 723,931,063-byte verified v9 build
+root and preserved v11 as the recent cache; no artifact was deleted. The wider fleet audit separately
+found 336.78 GiB in acceptance worktrees, 24.84 GiB in deployment build caches and 37.61 GiB in the
+canonical GLM store. Those are not silently covered by this reaper: historical dirty-worktree archival,
+native maintenance-provider wiring, and lossless raw-profile/journal compaction retain their own evidence
+and authority requirements.
+
+## Coverage-run containment incident
+
+The first W4 coverage forward was incorrectly launched through `llama-cli` without `-no-cnv` and with
+stdin inherited. It entered the interactive REPL, held all four CPU regions for 8,464 seconds and wrote
+57.5 GiB of empty prompt lines at approximately 24 GiB/hour. The owning session terminated only its
+captured PIDs 1699977 and 1699975, verified both absent, and truncated exactly
+`/mnt/raid0/llm/tmp/akx-p0c-w4-coverage/stdout-main-only.txt`, restoring free space from about 289 GiB
+to 341 GiB. The process's roughly 31 GiB resident set was stable model memory; the unbounded growth was
+the output file, not a demonstrated heap leak. The wrapper reported `rc=0` after termination, so the run
+and its 8,464-second wall time are invalidated. P0c remains open until a rerun binds `-no-cnv`,
+`stdin=DEVNULL`, a wall timeout and bounded output.
