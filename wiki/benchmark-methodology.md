@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: inferred
-**Last compiled**: 2026-09-14 (incremental: a harness-search "win" describes the infrastructure regime until proven otherwise — a public 28-candidate small-model search was homogeneous within regime and its one clear shift coincided with provider rate limits disappearing; AP-55/AP-56 promotion gates, the DCP-12 flip-floor power prerequisite, timeout censoring, grader isolation, and shipped scorers that are not their paper's metric); earlier: 2026-09-08 (late, operator correction): **an absolute throughput COMPARES across a condition boundary; a FLOOR does not** — t/s is a physical quantity, so pre-change headlines are the reference point and improvement is a genuine gain while a REGRESSION is the signal to investigate the change; only ATTRIBUTION (the ordinary two-conditions-at-once confound) and FLOORS (dispersion, which gates A/B decisions and mis-gates in BOTH directions when stale) need care, and conflating the three is what produced the over-claim that a BIOS era boundary voids every number before it; earlier: 2026-09-08 (evening): **the recipe FORMAT, not the kernels, is the binding constraint on what a campaign can ask** — three expressiveness gaps found and fixed in ONE day (env var `b5f58b74`, identity hash `4952e95e`, self-drafting model `c3e362a1`), each blocking a measurement outright and each found by tripping over it mid-measurement; and **a dispersion that does not tighten when n doubles is a property, not a small sample** (2.350% at n=3 → 2.696% at n=6 on the same configuration); earlier: 2026-09-08 (pm, R23-58): a bench-surface number is not a serving number (tg128 understated the real serving rate ~2.5x, 31.0 vs 79.25 tok/s); a null is admissible only with its POWER stated and its knob PROVEN to have fired (48/48 positive-control readbacks); and a floor from n=10 on an extreme order statistic cannot gate — recalibrate at n>=24 and record n plus a CI; earlier: 2026-09-08 pm (a floor must state its UNIT — arm sd 0.501% vs process-launch sd 2.793%, the 1200-fold sizing error; the champion arm is unstable ~12% across process launches while the pristine control reproduces, so a headline needs >=N independent launches with a session-unit CI; a pre-registered sign test fixes CANNOT TELL before the looks; a candidate confound measured flat is retracted to non-confound; earlier: 2026-09-08 (CJ-8/9/11/12 conversion status: the twelve converted sites are the worked set, ~94 surveyed call sites remain unconverted with the rows open by design, CJ-11 closed via a sibling function never a widened return, CJ-12 closed under the operator's OPTION-1 wrapper ruling with upstream bytes untouched; RC-11 ratified separate FA/FR reporting with `None`-not-`0.0` for unmeasured sides, and the RC-12 rubric-threshold remedy serialized `rubric_threshold_source` into every rubric row; earlier: 2026-09-07 (three-valued gate verdicts, CJ-8/9/11/12: the same absence-read-as-pass defect found in three independent subsystems in one afternoon -- GPQA gold fabrication, an RL timeout charged as failure, a missing baseline accuracy silently passing a promotion gate; earlier: two screening-loop measurement defects, both generalizable: a noise floor estimated as p95 over subsets of ONE fixed sample cannot exceed that sample's own tail, so the decode floor was low by 0.846 pp at 9 pairs and ~18× at 20 — rebuilt by bootstrap from a three-condition A/A campaign to 2.422%/2.021%/1.188% at 5/9/20 pairs, with `pp512` still UNCALIBRATED; and a static v9 anchor against an accumulating candidate tree made every effect cumulative rather than marginal, committing a −2.864% regression as a "+1.846% keep" — an anchor must advance with the champion, and when per-commit attribution is lost the correct fallback is a block audit of the whole range; earlier: 2026-08-25 TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (2026-08-30: EV-14a ran its first real band attempt - EV-14c landed the pinned-reference baseline revisions (per-tier REVISIONS + compare-to-ghost refusal), the SC37 write side shipped (eval_tower_band.py, one self-hashed .band.json per suite, instrument-resolution-only ClaimTuple), and the 2026-08-28 CPU-only run completed repeat 1/3 clean on protocol before 17 infra-failed questions made build_band_artifact refuse the band fail-closed - corrected attribution split them into a PhysReason data defect (images never extracted), GPU-lane escalations, and transients, so EV-14a is HELD pending the GPU lanes, ~12 h ETA))
-**Sources**: 137+ documents
+**Last compiled**: 2026-09-14 (noninf sweep: **absence is a STATE, not a number** — `float(x or 0.0)` on a Pareto axis manufactures a permanent frontier point, and replay corrected the believed blast radius from 231 admitted rows to 0 frontier points before *and* after; **a guard is not deployed until something reads it** (`quality_measured` computed, documented and consulted by nobody, so the only protection was the independent REL-1 floor, and `answer_without_generation` closes the non-blank-zero-token hole); **a report must record the fact its number depends on** — `n_questions` is now the REQUESTED count with a completeness set beside it, and `baseline_pin` stores the comparator as made, at compare time, with a self-announcing legacy fallback (EV-14d/EV-14e closed); **a fence's clearing path must not run through the write it blocks**, or two fail-closed fences latch each other; **a stopping rule destroys its own evidence**, so the counterfactual is captured at stop time or never; **the subset IS the metric** (90 of 456 Tulving questions scored into a metric they are not part of; Kendall tau with no coverage requirement paid 1.0 for answering 22%); a floor's `unit` and `n` are DERIVED from the harness and checked before any launch, never annotated after the fact; and **the measurement pin is not the champion** — the canonical headline's binary was build 10303, not the champion's 10301, an unstated instrumentation delta rather than a wrong lineage, and only digestible because the scratch tree had not yet been cleaned; plus, from the parallel autokernel session, **a progress curve anchored on the campaign's own champion measures accumulation, not capability** (12 isolated production-anchored curves, a release is a dated zero-percent epoch) and **a critic demanding payoff proof before authoring livelocked 8 batches / 24 critic calls to zero measurements**); earlier: 2026-09-14 (incremental: a harness-search "win" describes the infrastructure regime until proven otherwise — a public 28-candidate small-model search was homogeneous within regime and its one clear shift coincided with provider rate limits disappearing; AP-55/AP-56 promotion gates, the DCP-12 flip-floor power prerequisite, timeout censoring, grader isolation, and shipped scorers that are not their paper's metric); earlier: 2026-09-08 (late, operator correction): **an absolute throughput COMPARES across a condition boundary; a FLOOR does not** — t/s is a physical quantity, so pre-change headlines are the reference point and improvement is a genuine gain while a REGRESSION is the signal to investigate the change; only ATTRIBUTION (the ordinary two-conditions-at-once confound) and FLOORS (dispersion, which gates A/B decisions and mis-gates in BOTH directions when stale) need care, and conflating the three is what produced the over-claim that a BIOS era boundary voids every number before it; earlier: 2026-09-08 (evening): **the recipe FORMAT, not the kernels, is the binding constraint on what a campaign can ask** — three expressiveness gaps found and fixed in ONE day (env var `b5f58b74`, identity hash `4952e95e`, self-drafting model `c3e362a1`), each blocking a measurement outright and each found by tripping over it mid-measurement; and **a dispersion that does not tighten when n doubles is a property, not a small sample** (2.350% at n=3 → 2.696% at n=6 on the same configuration); earlier: 2026-09-08 (pm, R23-58): a bench-surface number is not a serving number (tg128 understated the real serving rate ~2.5x, 31.0 vs 79.25 tok/s); a null is admissible only with its POWER stated and its knob PROVEN to have fired (48/48 positive-control readbacks); and a floor from n=10 on an extreme order statistic cannot gate — recalibrate at n>=24 and record n plus a CI; earlier: 2026-09-08 pm (a floor must state its UNIT — arm sd 0.501% vs process-launch sd 2.793%, the 1200-fold sizing error; the champion arm is unstable ~12% across process launches while the pristine control reproduces, so a headline needs >=N independent launches with a session-unit CI; a pre-registered sign test fixes CANNOT TELL before the looks; a candidate confound measured flat is retracted to non-confound; earlier: 2026-09-08 (CJ-8/9/11/12 conversion status: the twelve converted sites are the worked set, ~94 surveyed call sites remain unconverted with the rows open by design, CJ-11 closed via a sibling function never a widened return, CJ-12 closed under the operator's OPTION-1 wrapper ruling with upstream bytes untouched; RC-11 ratified separate FA/FR reporting with `None`-not-`0.0` for unmeasured sides, and the RC-12 rubric-threshold remedy serialized `rubric_threshold_source` into every rubric row; earlier: 2026-09-07 (three-valued gate verdicts, CJ-8/9/11/12: the same absence-read-as-pass defect found in three independent subsystems in one afternoon -- GPQA gold fabrication, an RL timeout charged as failure, a missing baseline accuracy silently passing a promotion gate; earlier: two screening-loop measurement defects, both generalizable: a noise floor estimated as p95 over subsets of ONE fixed sample cannot exceed that sample's own tail, so the decode floor was low by 0.846 pp at 9 pairs and ~18× at 20 — rebuilt by bootstrap from a three-condition A/A campaign to 2.422%/2.021%/1.188% at 5/9/20 pairs, with `pp512` still UNCALIBRATED; and a static v9 anchor against an accumulating candidate tree made every effect cumulative rather than marginal, committing a −2.864% regression as a "+1.846% keep" — an anchor must advance with the champion, and when per-commit attribution is lost the correct fallback is a block audit of the whole range; earlier: 2026-08-25 TU-DTAP-1 landed — the reviewed Apache-2.0 DTAP subset is now a disposable local runner with typed failure outcomes, immutable SHA-256 trace replay and target-disjoint attack payloads (66 tests, zero inference), and TU-DTAP-2 is filed for the live-model half; the root L5.self_optimizing_loop readiness criterion closed 2026-08-25 via the vidya-loop detector (queue 13→6, passive-pickup guardrail test-pinned), and the same batch surfaced a no-inference gate that had been failing since 2026-08-03 on a PII fixture/allowlist drift; earlier: 2026-08-23 evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (evening hygiene sweep: the last pre-B7 scorer divergence closed by DELEGATION, not porting — the research-repo `debug_scorer.py` (10/10 defect classes, off routing path) is now a B7 delegation shim with an era stamp, so research benchmarks scored with it inherit eval-tower B7 semantics instead of remaining a diverged duplicate; earlier: Annex D ratified — `P-PARITY-1` and `P-NONDET-1`, the repo's FIRST protocols of any kind for output identity; every parity check until now was ad hoc. Both are STAGED, not ratified, and neither has yet been exercised. Every load-bearing clause traces to a measured false clear: n ≥ 5 prompts because a 1-prompt check false-clears near 50%, a fresh process per phase because `cache_prompt=false` is not a substitute, per-prompt PASS/FAIL with the first-differing generation-token index and NEVER an aggregate, an f16-KV confound control, and per-arm kernel-route capture. `P-NONDET-1` answers the prior question — a configuration that is not bit-identical with itself cannot support any parity, regression or A/B claim — and a one-shape-per-fresh-process harness is structurally blind to it. `llama-bench` is now a formally excluded correctness instrument; previously 2026-08-22: log retention bounds the evidence window — a nine-day llama-server log hole made an upstream correctness disclosure unanswerable from retained evidence, the clean frontdoor log is a negative only inside its window, and the `empty_generation` detector's silence counts only because its 30 s threshold is provably exceeded by the cold-full-prefill mechanism; previously 2026-08-21 evening: Shape C empirical on the MI210 and the omission-class split) (2026-08-30: EV-14a ran its first real band attempt - EV-14c landed the pinned-reference baseline revisions (per-tier REVISIONS + compare-to-ghost refusal), the SC37 write side shipped (eval_tower_band.py, one self-hashed .band.json per suite, instrument-resolution-only ClaimTuple), and the 2026-08-28 CPU-only run completed repeat 1/3 clean on protocol before 17 infra-failed questions made build_band_artifact refuse the band fail-closed - corrected attribution split them into a PhysReason data defect (images never extracted), GPU-lane escalations, and transients, so EV-14a is HELD pending the GPU lanes, ~12 h ETA))
+**Sources**: 145+ documents (added 2026-09-14: the noninf-sweep cluster — RTG-23 objective absence, EVL-13 ETR-2/3, EVL-14 EV-14d/e, RTG-02 era fences, EVL-04 SEQ-B2, EVL-10 M-12e, INF-66/INF-73 floor-unit enforcement, INF-70 WRAP-10 pin-vs-champion — plus the parallel session's autokernel unified-surface trajectory anchor)
 
 ## Compiled Update — 2026-09-14: a harness-search "win" describes the infrastructure regime until proven otherwise
 
@@ -77,6 +77,314 @@ cost ([Context Management](context-management.md)).
 - intake-1352#03 — timeout and measurement-plumbing artifacts (25.0% vs 45.1%).
 - intake-1353#02 — grader-peek cells and the OpenCode permission model at source.
 - intake-1346#04 — the re-partitioned "held-out" LocBench slice.
+
+## Compiled Update — 2026-09-14 (autokernel unified surface): a progress curve anchored on the campaign's own champion measures ACCUMULATION, not capability
+
+**Confidence: verified** (code-resident normalizer + the campaign's own retained records; compiled from a
+parallel session's sources, not from the noninf sweep). A champion-progress trajectory whose baseline is the
+campaign's own champion-of-record is a curve about the campaign, not about the kernel: it rises whenever
+anything is kept, and it cannot say what the tree can now do that production cannot. **The primary axis must
+be the champion's direct measured gain against frozen production.**
+
+The implementation (`epyc-inference-research` `262b22d3`, `323bcf2c`, `3a4be85d`, `ebb98492`, with
+`a3cf6d0a`, `ab1a34c5`, `a0f3daee`, `154bfee6`) is a **fail-closed normalizer** that emits source hashes
+alongside model / surface / recipe / era and baseline identities, and it yields **12 isolated curves** rather
+than one — Qwen3.8-27B `tg128` **+5.633%**, Qwen3.8-27B `dec-b4` **+22.443%**, DeepSeek `dec-b4`
+**+12.618%**, Gemma **+7.206%**. Three conventions carry beyond this dashboard:
+
+- **Percentages from different recipes or surfaces are never blended**, and a singleton stays a milestone
+  rather than becoming a curve of one.
+- **A production release is a dated vertical zero-percent epoch.** Old segments are preserved across it, and
+  a model first covered in v10 is **not** backfilled onto v9 — an anchor change is a new epoch, never a
+  retroactive re-baselining.
+- **Unjoinable evidence stays an explicit exception, not a point.** Model-unlabelled rows, a conflicting
+  Qwen **+27.363%** record, and the GLM store's CoR-only **+0.830%** are listed as exceptions rather than
+  plotted. And only actual **keeps** render markers (28/4/18/23 = 73/73 across the four curves), because an
+  A/B checkpoint is not a keep.
+
+Sources: [`progress/2026-09/2026-09-14-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md)
+(§§ *Production-anchored dashboard trajectory*, *Trajectory correction*, *Keep-history and browser-interaction
+correction*), [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md),
+and the commits named above. Related: the *static anchor makes every effect cumulative* finding of
+2026-08-30 below is the same defect measured one level down, at the per-commit A/B rather than the campaign
+curve.
+
+## Compiled Update — 2026-09-14 (noninf sweep): absence is a STATE, a guard is not deployed until something reads it, and a report must record the fact its number depends on
+
+**Confidence: verified** — every finding below is local code, unit tests, or an offline replay of stored
+records; the 2026-09-14 zero-inference backlog sweep ran no model and opened no socket. Six defect
+classes closed in one day, and they are one family: a number that stands in for a measurement nobody
+made, and a record that keeps the derived value while dropping the fact it depends on.
+
+### Absence on a Pareto axis is unremovable — and a measurability gate must call its builder (2026-09-14, noninf sweep)
+
+`float(x or 0.0)` is not a coercion, it is a **claim**: it asserts that a value the run never produced
+equals the worst possible measurement. On a max-objective frontier that claim cannot be corrected by
+dominance. Domination requires being at least equal on *every* axis, so a point holding the maximum on
+one axis is unbeatable there however bad its others are; absent an admission floor or a scaled axis —
+and `src/autopilot_core/` had neither — an unmeasured axis read as `0.0` **manufactures a permanent
+frontier point out of a trial that measured nothing.** The rate axis had already been fixed this way
+(`seq_task_rate_qph` returns `None`, never `0.0`); the lesson had not propagated to the other three axes
+of the same tuple.
+
+The companion defect is a gate that checks less than its name: `objectives_measurable`'s docstring said
+*"carries every axis the live dominance vector needs"* while its body tested one of four. **Remedy
+pattern — a measurability gate must not re-implement the check; it calls the builder it gates and reports
+whether the builder refused (`UnmeasuredObjectiveError`).** Gate and construction then cannot diverge.
+
+The offline replay (both journal shards, 1,390 rows / 1,372 trial rows, read-only through
+`reconstruct_archive_from_journal_rows`) also **corrects a prior record, and the correction is the more
+durable finding**. 231 trial rows (16.8%) carried falsy quality; 225 of those ran no eval at all
+(`eval_details == {}`, no question count, no wall clock) — 224 T0 sentinel-lane rows plus one
+bug-corrupted T1 — leaving **6** genuine measured zeros. The builder refusals went 0 → 225 and T0 audit
+entries 318 → 233, while every frontier size was unchanged (legacy T1/T2/T3 11/4/1, rate T1/T2 13/8) and
+zero-quality frontier points were **0 before and 0 after**. The W3d record had read those 231 rows as
+*admitted to the frontier*; they were not, because T0 sits below `MIN_FRONTIER_EVAL_TIER`. The defect was
+real and is now closed; the corruption it was believed to have caused had not occurred. **A count of rows
+carrying a bad value is not a count of decisions that value reached — replay before sizing the remedy.**
+
+Two further rules travel with it. The placeholder is *identifiable on the read side* precisely because
+the substituted value is `0.0`: a zero on a row that ran no eval never measured anything, and a non-zero
+value cannot have come from that path — so absence is separable from a measured zero without rewriting a
+single immutable journal row. And quality-derived display metrics inherit the distinction: an unmeasured
+quality yields a **null** goodput, never `0.0`, or the same rows re-enter under a quality-scaled axis
+scored as zero goodput.
+
+### A guard computed, documented and never consulted — `quality_measured` is now read (2026-09-14, noninf sweep)
+
+This is the WRITE-side twin of the section above, and it closes ETR-2, which this page and
+[safety.md](safety.md) both carried as open. `EvalResult.quality` is a plain float on the Pareto/SafetyGate
+contract, so it cannot be `None`; the 2026-08-03 incident (a T1 calibration reporting `0% correct` purely
+because the orchestrator API was down) was answered by carrying the honesty in a companion flag,
+`quality_measured=False`. **The flag was then read by nobody** — neither `SafetyGate.check()` nor
+`update_baseline()` consulted it, so a placeholder entered the promotion gate as a literal `0.0`
+candidate score. What actually stopped those trials was an *independent* guard, the REL-1 reliability
+floor, which fires because the same infra failure also craters `reliability`. So the protection was
+**incidental** (any placeholder path that leaves reliability intact — a partition filter that empties the
+decision subset, a loader abort that never asks a question — had no guard at all), and where REL-1 did
+fire the trial was charged a **quality-floor regression violation**: a fabricated regression written into
+planner-visible `failure_analysis` out of a measurement that never happened.
+
+**A guard is not deployed until something reads it.** "Computed, documented, never consulted" is the
+symmetric twin of fail-open concealment: the comment asserts the invariant, the code never enforces it,
+and a reader auditing the source concludes the system is safe. Only one half of the repair is
+retrofittable:
+
+- **Read side (cheap).** Fail closed on the flag with its own distinguishable reason
+  (`quality_not_measured`), and **suppress** rather than charge the quality legs — the absence of a
+  measurement is not evidence of a regression, so it blocks promotion without arming the auto-rollback
+  counter. A *measured* `0.0` keeps `quality_measured=True` and is still gated as a measurement. Never
+  conflate the two.
+- **Write side (impossible to retrofit).** Eleven early-return placeholders in `eval_tower.py` built
+  `EvalResult(quality=0)` and left the flag at its `True` default — asserting a measurement they had
+  never made. **A flag that defaults to the safe-looking value silently lies for every producer that
+  forgets it.** The structural remedy is an AST test over the producer module: every
+  `EvalResult(quality=0)` construction must carry `quality_measured=False` *and* a named reason, so a new
+  placeholder cannot reintroduce the defect by omission.
+
+The same change closed a narrow silent-scoring hole one step from the existing `empty_response`
+disposition: a **non-blank** answer with no error field and no structural signal returned `None` from
+`infra_failure_reason` and scored as an ordinary wrong answer. The decisive fact was already on the wire
+and unread — the response reports **zero generated tokens**. New reason: `answer_without_generation`, with
+two scoping rules that generalise. **Name the residue instead of widening the heuristic**: a non-blank
+answer *with* a real token count is a genuine generation, so garbage there stays scored WRONG — "garbage"
+is not detectable, "did not come from a decode" is. And **a measurement guard is not automatically a
+reward guard**: the leg is opt-in (`require_generation_evidence`) and set only on measurement paths, while
+the live-serving reward path deliberately leaves it off, because excluding a row from a quality
+denominator is fail-closed but withholding a *negative* reward from a genuinely wrong answer teaches the
+router that a bad answer never happened.
+
+### Draw completeness and the baseline pin: a report must state what it ASKED for, and a comparison must record its comparator (2026-09-14, noninf sweep)
+
+EV-14d and EV-14e of the FILED-not-built EV-14 block below are now **closed** (`epyc-orchestrator`
+`4555677e`, 28 unit tests). Both are the same failure — *a report that records a derived number but not
+the fact the number depends on* — one about the denominator, the other about the comparator.
+
+**The denominator.** `EvalTower._eval_batch` collects into a pre-sized list and returns
+`[r for r in results if r is not None]`; holes are reachable by design (the pipelined path leaves one when
+a lane is abandoned or a future is cancelled, the serial path `break`s out on the wall-budget timeout).
+Four per-role report writers then defined `n_questions = len(results)`, which **renames the shortfall as
+the denominator**: 40 of 50 questions scored is byte-identical in the report to a complete draw of 40, and
+every accuracy, reliability and task rate computed from it reads as a whole-suite number. The contract now
+carries `n_questions` (the REQUESTED count), `n_questions_requested`, `n_questions_completed`,
+`n_questions_missing`, `completeness_ratio` and `draw_complete` together, plus a top-level
+`draw_complete` / `incomplete_roles` fold on the mode report. `n_questions` stays the *requested* count
+for a specific reason: every pre-existing downstream guard of the form `n_questions < expected_n` keeps
+its meaning, whereas a delivered count would have *weakened* those guards, since a short draw reports a
+smaller number that still "matches" a smaller expectation.
+
+The reusable half is the **pair of deliberately asymmetric predicates**. `draw_is_complete(payload)` is
+**fail-closed** — absent counts are not evidence of completeness, so the only safe answer for a payload
+that never counted is "unknown, therefore not complete"; this is what a *writer of a new decision* uses.
+`draw_shortfall(payload)` is **silent on absence** — it returns `(requested, completed)` only when both
+fields are present and disagree, and `None` both for a complete draw and for a payload with no counts;
+this is what a *reader of old evidence* uses. The asymmetry exists because the fail-closed form applied to
+a gate would have retroactively failed every artifact written before the fields existed, and **a
+correctness fix that invalidates the archive is not deployable.** Generalisation: *when a new provenance
+field lets you detect a defect, the detector that gates NEW writes and the detector that reads OLD
+artifacts are different functions.*
+
+**The comparator.** Before this change AutoPilot's per-tier baseline reached the journal **only as
+prose** — the gate's regression string landed in `failure_analysis` and a regex (`_BASELINE_QUALITY_RE`)
+parsed it back out; `JournalEntry` had no baseline, delta or previous-quality field at all. Three
+independent failures follow, and only the first is obvious. (1) A regex over a sentence recovers a NUMBER
+but never the comparison's **identity** — not which tier reference, not that reference's monotonic
+revision (EV-14c), not the `eval_quality_era` it was captured under; two rows quoting "baseline 1.884" may
+be comparing against different references. (2) The prose is written **only on a regression**, so the
+archive's clean rows are exactly the ones with no comparator. (3) **Ordering**: `update_baseline()` runs
+between the gate check and the journal write, so anything reconstructed at write time is the
+POST-promotion reference — the candidate's own number standing in as its own incumbent. **A pin must be
+captured before the write that can move it**, which means at compare time, by the caller.
+
+`JournalEntry.baseline_pin` (`schema_version: 1`) therefore stores `source`
+(`structured` | `legacy_failure_analysis_regex` | `absent` | `capture_error`), `tier`,
+`baseline_quality`, `baseline_revision`, `eval_quality_era` / `autopilot_speed_era`,
+`per_suite_baseline_quality` / `_counts`, `baseline_path`, `candidate_quality`, `delta`,
+`relative_delta`, `suppressed_by` and `captured_at` — the comparison **as made, stored not recomputed**.
+Two conventions worth carrying: an absent reference is recorded as absent
+(`baseline_quality: None` plus `suppressed_by`), never as `0.0`, because a missing reference and a
+reference of zero decide differently whether a delta means anything; and **the legacy fallback announces
+itself**, stamping `source="legacy_failure_analysis_regex"` and logging once per trial that the comparison
+identity "was never recorded and cannot be recovered", while a prose baseline above the possible 0–3
+quality scale (a known corrupt-era artifact) comes back as suspect with `baseline_quality: None` rather
+than as a number — so a scrubbed corrupt baseline cannot re-enter a comparison through the fallback. The
+migration is additive and **no journal file on disk is rewritten or back-filled**: a pin invented at load
+time would claim a comparison identity the original trial never captured.
+
+### Mutually blocking provenance fences: a fence's CLEARING path must not run through the write it blocks (2026-09-14, noninf sweep)
+
+An instrument-era fence is a pair — a **stamp** on the resident baseline naming the era it was measured
+under, and a **hold** that refuses comparisons across a boundary. AutoPilot runs two, `eval_quality_era`
+(scorer/question-pool instrument) and `autopilot_speed_era` (kernel/binary/topology instrument), and both
+were correct in isolation. The defect was **where the stamps were written**: both lived at the END of
+`SafetyGate.update_baseline()`, i.e. inside a successful promotion, while each hold returns EARLY from that
+same method. So the quality hold's documented remediation — "reseed a baseline stamped with the active
+era" — had as its only in-loop writer the promotion the hold refuses; and the speed stamp sat ~220 lines
+BEHIND the quality hold's early return, making it **unreachable code** while the quality fence was held,
+so the speed hold could never close either, though the throughput instrument has nothing to do with the
+eval instrument. Net live effect: quality promotion dead, and a cross-era throughput violation permanently
+demoted to a warning with no in-code path to re-arm it. **Neither symptom looks like a bug at the symptom
+— both fences report exactly the fail-closed message they were designed to report. Only reachability
+analysis finds it.**
+
+**A fail-closed guard whose only remedy is gated by itself is not fail-closed, it is a latch — and two
+such latches on independent axes will latch each other.** Three rules the repair follows:
+
+1. **One instrument, one fence, one clearing path.** Independent instruments have independent eras, so
+   neither may be held hostage by the other; the speed axis re-anchors from its own in-era measurement
+   (`_reseed_speed_axis_if_held`) on the very path that refuses the quality promotion.
+2. **A stamp must not outrun the measurement it describes.** The speed reseed fires only where
+   `update_tier()` would itself have rewritten `frontdoor_speed` (frontier tier, positive speed sample,
+   eligibility already certified) — stamping an era onto a number nobody re-measured is the provenance lie
+   the field exists to prevent, and the fix would otherwise have reintroduced the original defect one
+   level up.
+3. **Stamp the era of the instrument that PRODUCED the number, never the era current at write time.**
+   Those two differ across exactly the boundary the fence detects, so reading "now" at write time launders
+   a pre-boundary measurement into the current era. The result carries its own era, stamped at measurement
+   time from the human-owned registry with `active` / `unfenced` / `unresolved` as three explicit
+   outcomes, and the baseline writer **refuses** an unstamped or unresolved result rather than guessing.
+   An unstamped baseline holds the fence forever; an invented stamp is worse — it opens it on a claim no
+   measurement supports.
+
+Evidence: `epyc-orchestrator` `d03218fc`, 23 new unit tests (`tests/unit/test_era_stamp_reachability.py`)
+including the deadlock state itself and the four negative cases where no stamp is permitted;
+`pytest tests -k "safety_gate or era or baseline or calibrat"` 1674 → 1696 passed with 20 pre-existing
+failures unchanged. No quality or speed number already on record changes — the edits affect promotability
+and provenance only.
+
+### A stopping rule destroys its own evidence, so the counterfactual must be captured at stop time (2026-09-14, noninf sweep)
+
+The AutoPilot sequential gate does not merely score candidates; it decides which ones keep GENERATING
+data. `safety_gate.py::_sequential_verdict` stamps `state="refuted"` when EITHER evidence axis refutes
+(quality, or rate non-inferiority), and a refuted candidate stops accumulating trials. That makes it
+categorically different from a scoring rule: **a future objective can rescore every trial that exists; it
+can never recover a trial that was never run.** The general belief-kernel rule ("the write side is cheap
+and permanent; the read side cannot be retrofitted") therefore has a strict subcase here — for a
+*reversible* decision post-hoc reconstruction is merely inconvenient; for a *stopping* decision it is
+impossible in principle, because the missing trials are missing. **When a decision destroys its own
+inputs, its rationale must be written at decision time or never.**
+
+The journal recorded only the JOINT `state`. Which axis refuted, and the surviving margin on the OTHER
+axis at the moment of the stop, existed only post hoc in
+`scripts/analysis/readjudicate_sequential_candidates.py` — a reconstruction that works only where the row
+happens to carry both wealths, only under today's policy constants, and which cannot answer the question
+the record exists for: *which stopped candidates would a changed objective want re-run?* The
+`seq-refutation-v1` record (written on the refuted branch only, additive) carries the refuting axis, its
+margin, the other axis and its margin, the trial count at stop, the policy thresholds in force, and a
+capture timestamp.
+
+Two generalisable halves. First, **two definitions of one rule is the drift defect**: the attribution
+predicate existed twice — implicitly in `EProcessState._meets_refutation` and as an independent copy in the
+analysis script. A live writer plus an independent post-hoc reader of the SAME rule is a drift hazard whose
+failure mode is silent: a policy edit moves one copy, and the live record and the reconstruction then
+disagree about a candidate that can never be re-run to settle the question. The remedy is one canonical
+function (`sequential_verdict.axis_refutation`) with the reader reduced to a thin delegation, plus a test
+asserting live-vs-reconstructed AGREEMENT on a synthetic candidate — the property that would break first.
+Second, three attribution conventions stated once because attribution is otherwise ambiguous: **the
+binding threshold depends on `k`** (`futility_e` 0.05 sits far below `budget_min_e` 2.0, so once
+`k >= budget` the budget clause IS the bar and before that futility is — the record names which via
+`rule`); **sign convention margin = `wealth − threshold`, negative means refuted**, with the one boundary
+asymmetry (futility inclusive, budget strict) inherited from the policy rather than invented by the
+record; and **both axes refuting is not "joint"** — precedence is quality-first, with `both_axes_refuted`
+carried separately and each axis's own verdict retained. An unmeasured axis yields `margin=None` and never
+refutes: an absent measurement is not evidence against.
+
+Evidence: `epyc-orchestrator` `4c220b11`, 17 new unit tests (`tests/unit/test_seq_refutation_capture.py`).
+No recorded verdict changes; no journal file on disk was modified.
+
+### The subset IS the metric, and a Kendall tau over a partial match rewards emitting less (2026-09-14, noninf sweep)
+
+A scorer-subset defect class, found by re-scoring stored Tulving responses offline (no model loaded, no
+socket opened). `score_tulving_run.py` appended **every** scored question to the Simple Recall input list
+(`simple_inputs.append(scored)`, unconditional), but the benchmark's Simple Recall Score is defined over
+the *recall* questions only — the rows whose `get` column is `"all"`. The `latest` and `chronological`
+rows are the **Chronological Awareness** subset, a disjoint population with its own metric. The result was
+not noise: 90 of 456 questions were double-counted into a metric they are not part of, and because Simple
+Recall averages *within* bins before averaging *across* bins, the failing Chronological Awareness rows
+landed in bins 1 and 2 and dragged exactly two of the four populated bins down.
+
+**The general shape: when a metric is a fold over bins or subsets, the subset predicate is part of the
+metric definition, not an implementation detail.** A subset bug is invisible in every per-question
+artifact — each row's `f1` was correct — and shows up only in the headline. There is no way to detect it
+from the data; you have to check the definition. And the definition was settled **by counting the
+authors' own shipped artifacts, not by reading the paper prose**: `result_lenient_all_book_200.csv` (the
+12-arm per-question results) has **548 rows**, and the 196-chapter `df_qa.parquet` has **548 of 686** rows
+with `get == "all"`, the remainder being 69 `latest` + 69 `chronological`. The `all` in that filename is
+the **get style**, not "all questions", so the published per-question result file *is* the Simple Recall
+subset.
+
+Two further findings from the same method. **The bins key on EVENTS, not items** — the scorer binned by
+`len(ground_truth_items)`; reproducing the authors' own `bins_items_correct_answer` column matches
+**686/686** on `n_chapters_correct_answer` and only **629/686** on `n_items_correct_answer`, because one
+answer item can be the answer for several chapters, so item count under-bins multi-chapter answers.
+**A column name that looks like a synonym is not one**: `bins_items_correct_answer` is named after items
+and computed from chapters. And **`chronological_tau` had no coverage requirement**, so a model emitting 2
+of 9 ordered items in the right order scored **1.0** — a perfect chronology score for answering 22% of the
+question, a metric that pays for withholding. It now fails closed (tau `0.0` unless the matched set covers
+the FULL ground truth), with `chronological_tau_detail()` reporting `coverage`, the uncovered `tau_raw` as
+a diagnostic that must **never** be averaged into a headline, and a per-question `status` of
+`scored` / `partial` / `too_short`.
+
+Finally, **version the scorer or the two numbers get compared.** `SCORER_VERSION = 2` now rides in the
+summary and the markdown, and the belief-kernel write hook (`tulving_episodic_capture.py`, SC67)
+**refuses** any row with `scorer_version < 2`, because a v1 figure and a v2 figure are different
+quantities under one name. Re-scoring an old run does not promote it either: run `20260619_141212` never
+recorded which arm it was, so it stays pre-hook and emits zero claim rows. The corrected 2026-06-20
+baseline numbers themselves are on [Memory-Augmented Models](memory-augmented.md) and in the Tulving
+section of this page.
+
+### Source References (2026-09-14, noninf sweep)
+
+- [`objective-task-rate-goodput.md`](../handoffs/active/objective-task-rate-goodput.md) — RTG-23 (W3d): the `or 0.0` axes, the `objectives_measurable` gate, and the journal-replay census.
+- [`eval-tower-loop-robustness-audit-2026-07-20.md`](../handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md) — EVL-13 ETR-2/ETR-3: `quality_measured` read at last, and `answer_without_generation`.
+- [`eval-tower-verification.md`](../handoffs/active/eval-tower-verification.md) — EVL-14 EV-14d (draw completeness) and EV-14e (the baseline pin), reusing the EV-14c revision pin.
+- [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — RTG-02: the mutually blocking era fences (boxes at `:1727` and `:1780`).
+- [`autopilot-sequential-allocation.md`](../handoffs/active/autopilot-sequential-allocation.md) — EVL-04 SEQ-B2, finding F2: the stop-time counterfactual record.
+- [`episodic-memory-integrity.md`](../handoffs/active/episodic-memory-integrity.md) — EVL-10 M-12e: the Tulving subset, bin basis, and tau coverage.
+- [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md) — the zero-inference sweep's session record for all six.
+- `epyc-orchestrator` `fb16d860` (RTG-23), `250a5d13` (ETR-2/3, 26 tests), `4555677e` (EV-14d/e, 28 tests), `d03218fc` (era fences, 23 tests), `4c220b11` (SEQ-B2, 17 tests); `epyc-inference-research` `dcb769c1` (Tulving scorer v2).
+- `intake-408#record` — the Tulving benchmark's shipped artifacts, which is where the Simple Recall subset definition was settled by counting.
+- `intake-1141#record` — external framing only, gates nothing locally: a half-vendored suite that passes config validation and then scores a subset of the benchmark without saying so.
 
 ## Compiled Update — 2026-09-08 (evening): the RECIPE FORMAT bounds what a campaign can ask — three expressiveness gaps in one day
 
@@ -259,6 +567,54 @@ sampler straddling the stop inside a single session then read it **flat**: **47.
 against 48 benchmark threads, no step at the stop. The record was corrected from "candidate (unproven)"
 to **measured non-confound**. Note what is and is not retracted: the disturbance itself still happened;
 only its *attribution* to that process is withdrawn.
+
+### Implementation annex (2026-09-14, noninf sweep): a floor's unit is enforced at the writer and the gate, never annotated after the fact
+
+**Confidence: verified** (local code + targeted tests, zero inference). The rule above — every floor record
+carries `unit ∈ {arm, session, process}`, and a gate comparing an effect to a floor of a different unit
+REFUSES — was turned into code on `epyc-inference-research` branch `fix/noninf-floorunit` (INF-66 R23-55 /
+INF-73 U2). Three conventions surfaced that are **not derivable from the rule itself**, and each is the
+difference between a rule that holds and a field that is merely present.
+
+**1. The unit is DERIVED from the harness, never passed as an opinion.** A caller that can *choose* a unit
+can mislabel one, and a mislabelled floor is worse than a missing one — it is a bar nobody will question.
+So the unit belongs to the code that took the samples: `serving.calibrate_floor` relaunches the server for
+every sample and `serving.compare` relaunches it for every sample of every arm, so both are `process`-unit
+**by construction**, stated as module constants (`CALIBRATION_UNIT`, `COMPARE_EFFECT_UNIT`) rather than
+parameters; the screen instrument alternates across `llama-bench` invocations, so `bench.FLOOR_UNIT` is
+`process` for the floor *and* the effect, and both appear in every comparison row. The writer still has to
+*state* it — `write_floor(..., unit=...)` has no default, because a missing unit is the defect R23-55 names
+and must be a refusal rather than a fallback — but what it states is checked against what the row already
+says, and a row and a caller that disagree is a relabelled measurement, which refuses.
+
+**2. A legacy record's unit may be derived from its SCHEMA, but never from its silence.** Two kinds of
+unit-less record exist on disk and they are not the same fact. A **serving** floor
+(`loop-memory/serving-floor.*.json`) has many possible provenances, so silence is unresolvable: it loads as
+`unit=None`, `legacy=True`, and refuses to gate, naming the file and the recalibration command — nothing is
+rewritten, the refusal *is* the fix request. A **bench** floor (`calibration/<surface>.<model>.json`) has
+exactly ONE writer and that writer alternates processes, so its schema *pins* the unit and a pre-rule record
+is admitted as `process` — because the code path that produced it is known, not because the field is absent.
+Operationally that distinction closed the rule over the whole live store without touching a single floor
+file, while keeping the serving path fail-closed where the provenance genuinely is unknown.
+
+**3. `n` is the same defect class and belongs in the same gate.** A floor is an extreme order statistic (p95
+of |deviation|), so a record that cannot state its `n` cannot state its precision either — at n=10 the
+5th–95th percentile of the estimate spanned **4.200%–7.821%** (R23-61). The writer therefore promotes
+whichever count the schema recorded (`samples`, `calibration_pairs`, `pairs_per_condition`) to `n` and
+refuses a row with none, and the gate refuses a floor whose `n` it cannot read. Both fields are checked
+*before any launch*, at the same admission point: **a unit check paid for after a gate's worth of host time
+is a post-mortem, not a gate.**
+
+**Consequence for a sealed record.** A matched (`serving_floor.v2`) floor is sealed by `content_sha256`, so
+`unit` and `n` must be *inside the seal* at calibration time; stamping them at write time would place the
+two fields a gate depends on outside the digest, where an edit leaves no trace. The writer refuses a sealed
+row that lacks them rather than adding them.
+
+Sources: [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) (R23-55, R23-61),
+[`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) (U2),
+[`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md), and
+`epyc-inference-research` branch `fix/noninf-floorunit`
+(`scripts/kernel_rnd/autokernel/loop/{serving,bench,instruments,serving_gate,run,source_loo}.py`).
 
 ### Source References
 
@@ -915,12 +1271,12 @@ The deeper defect underneath the resolution gap is that the two sides of every p
 Three concrete mechanical consequences, each verified in source:
 
 - **The baseline collapses last-write-wins.** `BaselineState.update_tier()` writes `self.baselines_by_tier[tier] = result.quality` and `.update(...)`s the per-suite dicts (`safety_gate.py:1146-1155`), so a re-score of the same suite silently overwrites the prior baseline with no record that one existed. Any repeat-measurement campaign corrupts the very pin it is trying to characterize, so this has to be fixed *before* repeat scoring exists, not after.
-- **The pin never enters the trial record.** `JournalEntry` has no `baseline_quality`, no `delta`, no `previous_quality` field. The incumbent value reaches the journal only as free prose inside `failure_analysis` ("… vs baseline 1.524 …") — and it is then parsed back out with a regex (`experiment_journal.py:99`, `_BASELINE_QUALITY_RE`), a regex that exists because corrupt baselines embedded in prose had to be scrubbed after the fact. A delta that must be reassembled by joining a scalar to a string is not self-contained evidence.
-- **A short draw scores as a complete result.** The sampler logs a shortfall into provenance and returns short, and `n_questions` is then defined as `len(results)`. Three narrow paths already fail closed (promotion-eval min-n, math re-baseline, designed-core missing ids); the general assertion does not exist.
+- **The pin never enters the trial record.** `JournalEntry` has no `baseline_quality`, no `delta`, no `previous_quality` field. The incumbent value reaches the journal only as free prose inside `failure_analysis` ("… vs baseline 1.524 …") — and it is then parsed back out with a regex (`experiment_journal.py:99`, `_BASELINE_QUALITY_RE`), a regex that exists because corrupt baselines embedded in prose had to be scrubbed after the fact. A delta that must be reassembled by joining a scalar to a string is not self-contained evidence. **CLOSED 2026-09-14** (EV-14e, `epyc-orchestrator` `4555677e`): `JournalEntry.baseline_pin` now records the comparison as made — reference value, revision, eras, per-suite map, delta — captured at compare time, with the regex demoted to a self-announcing legacy fallback.
+- **A short draw scores as a complete result.** The sampler logs a shortfall into provenance and returns short, and `n_questions` is then defined as `len(results)`. Three narrow paths already fail closed (promotion-eval min-n, math re-baseline, designed-core missing ids); the general assertion does not exist. **CLOSED 2026-09-14** (EV-14d, `epyc-orchestrator` `4555677e`): `n_questions` is now the REQUESTED count and every per-role block carries the requested/completed/missing/ratio/`draw_complete` set — see *Compiled Update — 2026-09-14 (noninf sweep)* above for the contract and the two deliberately asymmetric predicates.
 
 ### FILED, not built — the EV-14 block
 
-All six items below were filed 2026-08-15 in [`eval-tower-verification.md`](../handoffs/active/eval-tower-verification.md) and are **open**. Nothing in this block has shipped; read the section above as the measured present state and this one as the intended next state.
+All six items below were filed 2026-08-15 in [`eval-tower-verification.md`](../handoffs/active/eval-tower-verification.md) and were **open** at the time of that compile. **Status as of 2026-09-14: EV-14c, EV-14d and EV-14e have shipped** (EV-14c the pinned-reference revisions, EV-14d draw completeness and EV-14e the structured baseline pin — `epyc-orchestrator` `4555677e`, recorded in *Compiled Update — 2026-09-14 (noninf sweep)* above); EV-14a is HELD pending the GPU lanes, and EV-14b/EV-14b′/EV-14f remain open. Read the section above as the state at filing time.
 
 - **EV-14a** — measure a per-suite resolution band with the instrument already in the tree: `scripts/autopilot/core_v2_calibrate.py --repeats` (fixed n and seed, standalone JSONL rows, spread fully retained, nothing averaged) against one **unchanged** config per T1 suite, publishing the band beside the suite. A difference smaller than its own suite's band reports as **UNRESOLVED** — never as "no change", never as a regression. Explicitly: do not build a new rescore harness.
 - **EV-14b** — decide whether the measured band should BLOCK, i.e. give the gate the third state that `self_criticism.py` already computes, so a sub-band delta records as `unresolved` rather than as an improvement.
@@ -2045,7 +2401,7 @@ Terminal-Bench also defines an 8-category failure taxonomy (Disobey Task Specifi
 
 The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) introduces a complementary evaluation paradigm to the existing RULER/NIAH/LongBench/ZeroSCROLLS suite. Where those benchmarks test retrieval ("find the needle"), Tulving tests episodic memory: can a model track entity states across 200 chapters and order events chronologically? The benchmark generates synthetic book-like narratives with controlled ground truth (dates, locations, entity names, event contents) using a skewed geometric distribution for entity frequency, enabling multi-occurrence tracking evaluation.
 
-Two metrics: **Simple Recall Score** (F1 grouped by matching event count bins: 0/1/2/3-5/6+, averaged across bins) and **Chronological Awareness Score** (average of Latest State score and Kendall τ temporal ordering score). The chronological score is dramatically harder — even GPT-5 only achieves 0.804 vs 0.942 recall. **Provenance correction (2026-09-07)**: that 0.804-vs-0.942 gap is a **post-paper leaderboard value**, not a benchmark result from the paper — it comes from the repo README ranking table at `github.com/ahstat/episodic-memory-benchmark` @ `892b22af097d4389d4f1b9cd47b5c51fdacd9bef`, where GPT-5 is flagged "evaluated after paper acceptance"; cite the SHA or a paper table, never the bare figure. 11 datasets span 10K-1M tokens across **4 released variant directories / 3 book styles** (default, world news, sci-fi; plus ordered and GPT-4o-generated variations) — a previously compiled "4 narrative styles" conflated the directory count with the style count. (`intake-408#01`, `intake-408#record`)
+Two metrics: **Simple Recall Score** (F1 grouped by matching event count bins: 0/1/2/3-5/6+, averaged across bins — already correct on the EVENT basis, and worth stating explicitly because the authors' shipped `bins_items_correct_answer` column is computed from `n_chapters_correct_answer`, **not** from the item count its name invites you to read: reproducing that column matches 686/686 on chapters and only 629/686 on items, verified 2026-09-14 under M-12e, research `dcb769c1`) and **Chronological Awareness Score** (average of Latest State score and Kendall τ temporal ordering score). The chronological score is dramatically harder — even GPT-5 only achieves 0.804 vs 0.942 recall. **Provenance correction (2026-09-07)**: that 0.804-vs-0.942 gap is a **post-paper leaderboard value**, not a benchmark result from the paper — it comes from the repo README ranking table at `github.com/ahstat/episodic-memory-benchmark` @ `892b22af097d4389d4f1b9cd47b5c51fdacd9bef`, where GPT-5 is flagged "evaluated after paper acceptance"; cite the SHA or a paper table, never the bare figure. 11 datasets span 10K-1M tokens across **4 released variant directories / 3 book styles** (default, world news, sci-fi; plus ordered and GPT-4o-generated variations) — a previously compiled "4 narrative styles" conflated the directory count with the style count. (`intake-408#01`, `intake-408#record`)
 
 Key findings for benchmark methodology:
 - **95% deterministic scoring.** Ground truth items are specific tokens (dates, location names, entity names). Exact + normalized string matching covers ~95% of cases. The LLM-as-judge handles only ~5% partial matches (e.g., "Bethpage State Park" vs "Bethpage Black Course" = 0.5). This aligns with our ch07 deterministic scoring philosophy.
@@ -2056,7 +2412,7 @@ Key findings for benchmark methodology:
 
 Pre-generated datasets are available on Figshare (MIT license). Integration into our harness requires: download 20ch dataset, llama-server adapter, deterministic F1 scorer, suite registration. The 200ch variant is proposed as a YaRN context extension quality gate (P3b in research-evaluation-index).
 
-2026-06-20 EPYC baseline: `epyc-inference-research` run `20260619_141212` completed the documented 20ch/456-QA Tulving slice on `ingest_long_context` with production/default GGUF expert settings (`--skip-moe-reduction`). Raw artifacts were packaged in research commit `b6edc64`; research `9e63af0` fixed Tulving ground-truth parsing for NumPy-array/list-repr answers and regenerated the score artifacts plus `tulving_failure_modes.md`. The corrected deterministic scorer covered `456/456` questions with no missing ground truth, avg F1 `0.4309`, Simple Recall `0.5530`, Chronological Awareness `0.1593`, and avg decode `17.27 t/s`; the benchmark log ended `448 completed, 8 skipped, 0 errors` because the corrected resume reused the first 8 rows. This result is a mixed baseline: usable lexical entity/time/location recall, poor event-content/full-detail retrieval, weak chronology, and failed zero-answer hallucination checks. It should drive targeted follow-up model-batched comparisons, not routing/memory promotion.
+2026-06-20 EPYC baseline: `epyc-inference-research` run `20260619_141212` completed the documented 20ch/456-QA Tulving slice on `ingest_long_context` with production/default GGUF expert settings (`--skip-moe-reduction`). Raw artifacts were packaged in research commit `b6edc64`; research `9e63af0` fixed Tulving ground-truth parsing for NumPy-array/list-repr answers and regenerated the score artifacts plus `tulving_failure_modes.md`. The corrected deterministic scorer covered `456/456` questions with no missing ground truth, avg F1 `0.4309`, Simple Recall **`0.5684`** (scorer v2, over the 366 `get=="all"` questions; the `0.5530` figure was v1, computed over all 456), Chronological Awareness `0.1593` — kept, with the caveat that 37/45 tau questions now fail closed for partial coverage and 30/45 carry <2 ground-truth items — and avg decode `17.27 t/s`; the benchmark log ended `448 completed, 8 skipped, 0 errors` because the corrected resume reused the first 8 rows. This result is a mixed baseline: usable lexical entity/time/location recall, poor event-content/full-detail retrieval, weak chronology, and failed zero-answer hallucination checks. It should drive targeted follow-up model-batched comparisons, not routing/memory promotion. **M-12e re-score 2026-09-14** — research `dcb769c1`, artifact `benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`; the original `tulving_score.json` is untouched, and `SCORER_VERSION = 2` now rides in every scored artifact so v1 and v2 figures cannot be compared by accident.
 
 > Source: [intake-408](/workspace/research/intake_index.yaml) -- arXiv 2501.13121, ICLR 2025; [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) -- routing intelligence data; [research-evaluation-index.md](/workspace/handoffs/active/research-evaluation-index.md) P3b -- integration plan
 
@@ -4586,6 +4942,80 @@ entire justification, and a lever that reduces traffic can invert a locality opt
   negative, and it costs one arm per lever. Here it caught a lever that had passed a 26-arm study of its own.
 - **Do not delete a lever that measures negative in one stack** — gate it OFF and keep the evidence. Its win
   was real in the kernel it was measured in, and a future stack with different traffic may want it back.
+
+### The measurement PIN is not the champion (2026-09-14, noninf sweep)
+
+**Confidence: verified** (local inspection of build trees and run records; zero inference, zero builds).
+The provenance rule above has a corollary that bites the moment the champion advances. A codified recipe
+pins a kernel by commit, build number and object digests and quotes measured numbers against that pin —
+so there are **two** names in play and they are not interchangeable: the **current champion** (what
+production or the next campaign should run) and the **measurement pin** (the tree whose digests *and*
+served numbers were captured **together**). The tempting edit is to relabel the pin to the new commit,
+because the constants "describe the champion" and the champion has moved. That edit silently asserts an
+identity nothing ever measured — it says a number came off a binary that never produced it — and **the
+failure is invisible because every other assertion in the module keeps passing**: the digests are still
+real digests, the numbers are still real numbers, and only the *pairing* is fabricated.
+
+The correct shape is to carry both, label which is which, and refuse to certify the one you cannot prove.
+In `scripts/lib/qwen38_flash_next_recipe.py`, `CHAMPION_*` keeps naming the pin with an explicit
+`CHAMPION_PIN_MEASURED_AT` record (`is_current_champion: False`, role `ANCESTOR`); `CURRENT_CHAMPION`
+names the champion, and every measured entry keeps a `measured_at_commit` field; and a single
+`CHAMPION_PIN_RESOLVED` flag is **fail-closed** — while it is `False`, `assert_current_champion_identity()`
+hard-refuses any caller that would certify the current champion, and preflight prints an unmissable banner
+naming the pin, the champion, and the gap.
+
+That shape produced three findings the prose alone had hidden:
+
+- **"No digested build exists" was the wrong gap.** The champion `ef81196d5` in fact had *two* digested
+  builds, one per surface, both build **10301** — a HIP build at `/mnt/raid0/llm/tmp/build-fold-ef81196d5`
+  whose `llama-server` and `libllama-common` digests reproduce
+  [champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) byte for
+  byte, and a CPU-surface build at `/mnt/raid0/llm/tmp/build-champion-ef81196d5-cpu-20260909` with
+  `GGML_HIP=OFF` and a cmake configuration matching the recipe's own. Both were recorded rather than either
+  being adopted as the pin. **A gap text saying "no build exists" when two do is stale in a way every
+  reader will act on.**
+- **The real gap was narrower and worse: the headline's binary was a different build.** The 18-launch
+  final-characterisation run behind the canonical headline names its champion arm `bin-r1 (10303)` —
+  **build 10303, not 10301**. The numbers came off the `inf70/retest1-fix1` instrument tree (`2516c9807`),
+  which the recipe's own `do_not_fold` list already recorded as "the binary the final numbers came from. Do
+  NOT merge." The run prose calls that window `ef81196d5` because `ef81196d5` was its *baseline*; the build
+  number says otherwise, and the one genuine `ef81196d5` CPU build postdates the window by a day, appears
+  in no run record, and nothing was ever measured on it. So the flag stays `False` for a reason **no digest
+  can fix**: closing it needs a measurement on a digested CPU build of the champion, not another digest.
+- **Capture the discrepant binary BEFORE classifying it.** The instrument tree was still on disk — in
+  scratch, one cleanup from gone. Digesting it (5 objects; 4 reproduced the digest file its own build script
+  had written at build time) and asking `git merge-base --is-ancestor` changed the verdict: `2516c9807`
+  **descends from** `ef81196d5` by exactly two *instrumentation* commits, so the headline's label is an
+  **unstated delta, not a wrong lineage** — a better finding than the first reading, and available only
+  because the artifact had not yet been collected. It is still not a valid pin (two of that instrument's
+  five knobs default ON, and that default *is* a measured −2.136% regression, so "same source plus dead
+  code" is unavailable, and no bit-identity with either champion build was established). The transferable
+  lesson is the **ordering: capture, then classify** — an undigested scratch artifact can only be described
+  by the prose that mislabelled it, and the prose is the thing you are trying to check.
+
+**Why a build number is the discriminating read.** Both surfaces' builds report build **10301**; the
+headline's binary reports **10303**, and nothing in the prose distinguished them — only the generated
+`common/build-info.cpp` in each build directory (`LLAMA_BUILD_NUMBER`, `LLAMA_COMMIT`, `LLAMA_COMPILER`)
+and the run record's own binary label. That read costs nothing, needs no execution of the binary, and is the
+cheapest available proof that two trees described by the same commit are not the same artifact. Corollary
+for surface-specific recipes: **a HIP build ships a `libggml-cpu.so` like every llama.cpp build does, and
+its digest differs from the CPU-surface build's at the same commit** — so a CPU recipe pinned to a HIP
+build's bundled CPU backend is a wrong pin that passes every digest check.
+
+Rules: never relabel a measured constant onto a later commit (add `measured_at_commit`, keep the pin); a
+pin is valid only if digests **and** numbers were captured on the same artifact, because digests alone do
+not make a pin; state the gap in terms of what is actually missing; read the build number from
+`build-info.cpp`, not from the prose and not by executing the binary; fail closed, so the flag that says
+"I cannot prove this" makes something refuse rather than merely warning in a comment; and digest the
+artifact a number came off **while it still exists**, even when it is the "wrong" binary and especially
+when it lives in scratch — the digests outlive the tree, and the classification improves once you have them.
+
+Sources: [`cpu-decode-roofline-program.md`](../handoffs/active/cpu-decode-roofline-program.md) (INF-70
+WRAP-10, MEAS-2), [`progress/2026-09/2026-09-14-noninf-backlog.md`](../progress/2026-09/2026-09-14-noninf-backlog.md),
+`epyc-inference-research` `fc8c44de` + `932bf5c4` + `45d6ecce`
+(`scripts/lib/qwen38_flash_next_recipe.py`), and
+[champion-max-performance-20260908.md](../docs/design/champion-max-performance-20260908.md) for the digests
+the HIP build reproduces.
 
 ### Source References (2026-09-07, stack composition)
 

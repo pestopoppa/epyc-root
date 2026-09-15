@@ -186,6 +186,23 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   `MEASUREMENT_POLICY.md:37`'s ≥5 reps for a ≥5% claim with the 5-rep confirm declined. MoE-Spec
   stays in the champion as a **capability defaulting to 0**, enabled nowhere. Re-open only with a
   surface and budget where it demonstrably wins.
+
+  **⚠ ANNOTATED 2026-09-14 (INF-40) — the −2.92% pp512 row is VOID as evidence about MoE-Spec, and
+  "fail[ed] to reproduce it on the surface that matters" was structurally impossible.** The arm was
+  measured on **Qwen3.8-27B-Q8_0, a DENSE model**: `general.architecture qwen35`, **0 of 866** tensors
+  match `*exps*`/`ffn_gate_inp`, and the GGUF carries **no `*.expert_count` key**
+  (`model_registry.yaml:1596,1707` also say "dense"). `--moe-spec-budget` masks inside `build_moe_ffn`
+  (`src/llama-graph.cpp:1985`, champion `c7c37a0d9`), a subgraph a dense graph never builds, so **both**
+  GPU arms ran identical code — the same reasoning that voids `tg128` voids `pp512`, for a *stronger*
+  reason (model class, not batch shape). It is also not significant on its own six samples: medians
+  768.83 → 746.38 (−2.92%) but means 758.63 ± 27.80 → 745.37 ± 25.07 (**−1.75%, Welch t = −0.87**,
+  ranges fully overlapping), so it is usable only as a ±3.7% same-window noise reading for that GPU
+  surface. The paired champion-vs-anchor default-path rows (pp512 +2.74%, tg128 −0.02%) remain a valid
+  no-regression check on the composed champion diff. The conclusion **MoE-Spec stays at default 0**
+  survives; its stated reason does not — the live objection to the CPU +10.7% is its own thinness
+  (n=3, Δ ≈ 2.9σ), not a countervailing surface. CH-4 is closed, so this is an annotation, not a
+  re-litigation; the operator decision package lives in
+  [`moe-spec-cpu-spec-dec-integration.md`](moe-spec-cpu-spec-dec-integration.md).
 - [x] **CH-5 — Run DF2-5 (np=8 concurrency) and DF2-6 (exact greedy parity), then admit DFlash2 as
   a parallel spec-decode capability.** Approved by the operator 2026-08-27. ✅ 2026-08-28 — both
   gates run against the champion. Full detail in
@@ -657,6 +674,28 @@ the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's
       `9c4f73e29`, FOLD-2 G1–G5 all PASS. The operator's standing condition — *no kernel research until a
       FULLY consolidated champion* — is **satisfied**. Loop relaunch remains a **separate operator go**;
       nothing on this page launches or schedules it.
+
+#### Inherited v6-fork candidates — from INF-32, archived 2026-09-14
+
+`llamacpp-v6-consolidation.md` (INF-32) was archived 2026-09-14 as superseded by v9. Its three
+unresolved `NEEDS-OPERATOR-REVIEW` rows are relocated here so they do not vanish with the page. They
+are **un-triaged candidates, NOT queued folds** — nothing here is scheduled, and each is subject to the
+operator's standing gate on new kernel research. Full context:
+[`llamacpp-v6-consolidation.md`](../archived/llamacpp-v6-consolidation.md). The other two rows on that
+page are closed: SWA slot-reuse (`d1c72d7fc`/`603702769`) and `--moe-n-expert` (`86901388a`) both
+verified **DROP** 2026-08-12 — the SWA pair is a per-sequence-blind regression, and v9 already covers
+expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
+
+- [ ] **V6R-1 — Differential-Transformer-V2 arch (`36ceed44d` / `23973ea66`)**: eval-gated, not in the
+      deployed registry. Triage question is whether any registry model wants the arch at all before any
+      port cost is spent.
+- [ ] **V6R-2 — streaming KV context-shift controls (`632ce0f92`)**: check first whether v9/upstream
+      already ships equivalent context-shift controls (the `--moe-n-expert` outcome is the precedent —
+      the stock flag had arrived).
+- [ ] **V6R-3 — paged-attn upstream-overlap**: the v6 work was resolved and runtime-verified on branch
+      `f1-paged-attn` @ `112022a0b` (iswa graph block-table wiring `ea50522a7`; opt-in, off-by-default,
+      bit-exact on plain Qwen3.6-35B and SWA gemma-4-31B) but was never folded. It is build-10079-era
+      against a 10241-class champion, so folding means a re-base and a re-measure at the current floor.
 
 #### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
 

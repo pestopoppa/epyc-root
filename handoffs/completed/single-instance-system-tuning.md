@@ -23,7 +23,7 @@
 **Workstream**: Inference Acceleration → CPU Optimization
 **Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md), [`inference-acceleration-index.md`](../active/inference-acceleration-index.md)
 **Related**:
-- [`intra-process-tensor-parallel-decode.md`](../active/intra-process-tensor-parallel-decode.md) — the big compute-parallelism lever; depends on NPS outcomes here
+- [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) — the big compute-parallelism lever; depends on NPS outcomes here
 - [`cpu-shape-specialized-gemv-decode.md`](../active/cpu-shape-specialized-gemv-decode.md) — per-kernel compute lever
 - [`dynamic-stack-concurrency.md`](../active/dynamic-stack-concurrency.md) — multi-instance NUMA deployment (existing production config that some of these knobs might affect)
 

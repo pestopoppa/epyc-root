@@ -182,7 +182,7 @@ A roadmap line describing the 122B UD-IQ2_M as "measured viable, fully GPU-resid
 
 ### Source References (2026-08-12)
 
-- [`llamacpp-v6-consolidation.md`](../handoffs/active/llamacpp-v6-consolidation.md) — the `--moe-n-expert` DROP verdict, the `--override-kv` equivalence, and the retained era-stamped throughput table.
+- [`llamacpp-v6-consolidation.md`](../handoffs/archived/llamacpp-v6-consolidation.md) — the `--moe-n-expert` DROP verdict, the `--override-kv` equivalence, and the retained era-stamped throughput table.
 - [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md) — the CPU15 expert-parallelism disposition this sits inside.
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the argsort equivalence derivation and the AXA-1 roadmap-drift correction.
 

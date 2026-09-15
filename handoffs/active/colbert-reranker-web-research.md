@@ -513,6 +513,17 @@ quality tradeoff.
   strictly worse. Correct adoption requires **re-embedding the entire KB corpus**, which is why this is
   an operator decision (OP-24) and not a code fix.
 
+  **WEB HALF CLOSED 2026-09-14** — `epyc-orchestrator` `f876d989`. The KB side gained the role
+  plumbing in `fe55b228`/`4e5e84c0` but `src/tools/web/colbert_reranker.py` kept its own prefix-less
+  `_encode` (`:153-196`), so no KB-side fix ever reached the web path: no `[Q]`/`[D]`, a two-input
+  feed that returned `None` on any graph declaring `token_type_ids`, no `do_lower_case`, and
+  `_MAX_QUERY_TOKENS = 48` against LateOn's declared `query_length: 32`. It now routes through
+  `colbert_encoder.encode(role=...)` with model-declared caps (`max_query_tokens()` /
+  `max_document_tokens()`); **no re-embed was required — there is no stored web index**, so both sides
+  move together. Tests 51 → 74 passed, encoder mocked, four guards mutation-tested
+  (`TestRoleContract`, `TestTokenCaps`, `TestNoDuplicatedEncoder`). **Still open**: the KB corpus
+  re-embed (OP-24) — this changes nothing about that decision.
+
 - [ ] **PREFIX-2 — confirm whether the published BEIR deltas transfer before banking any model swap.**
   The BEIR figures on this page (GTE 54.67, ColBERT-Zero 55.43, and the LateOn delta) are **published
   vendor scores**, measured with the models used as designed, i.e. **with** the prefixes. Production runs
@@ -520,6 +531,26 @@ quality tradeoff.
   deployment does not reproduce. This does not necessarily bias the *relative* A/B — the defect hits both
   arms — but it does mean the absolute gain is unproven here. Resolve PREFIX-1 before treating any BEIR
   delta as a production forecast.
+
+- [ ] **PREFIX-3 — re-run the banked ONNX↔PyLate parity through `colbert_encoder.encode(role=ROLE_DOCUMENT)`
+  before S3b's 8.24e-03 or S3c's 2.72e-03 is cited again**, because `_encode_onnx` fed raw text (no `[D]`,
+  hardcoded two-input feed, no `do_lower_case`) while `_encode_pylate` inserted `[D]`, so both figures are
+  prefix-free-vs-prefixed rather than like-for-like and mean pooling (`_pooled_vec:462`) plus reference
+  truncation (`:519`) were forgiving enough to pass it; needs the ONNX encoder, so not zero-inference
+  (`scripts/benchmark/colbert/export_lateon_onnx_int8.py:465-494`) (found 2026-09-14, noninf sweep).
+- [ ] **S9 — give the `colbert_encoder` module singleton a locking contract** before the reranker is ever
+  enabled concurrently with KB-RAG, since `_MODEL_DIR` is import-time state that `kb_rag` stamps into
+  `index_meta` and a KB query in flight during a `refresh_model_dir()` re-point would see `_session is None`
+  and return an ordinary miss (`src/retrieval/colbert_encoder.py`) (found 2026-09-14, noninf sweep).
+
+*Declined 2026-09-14: the hardcoded `_QUERY_MAX_TOKENS = 48` / `_DOC_MAX_TOKENS = 256` in `src/retrieval/kb_rag.py:66-67`
+(48 is GTE's number while LateOn declares 32) — not filed because both are stamped into `index_meta` (`:236-237`),
+so changing them alters retrieval against every stored index and the change belongs to the open **PREFIX-1** box's
+OP-24 re-embed decision, where the stamp makes it detectable.*
+
+*Declined 2026-09-14: `src/retrieval/cross_encoder.py:188-189` handles `token_type_ids` correctly and is a
+cross-encoder, so `[Q]`/`[D]` roles do not apply — not filed because it is a recorded no-defect observation with no
+action, kept here only so it is not re-investigated.*
 
 ### Expand — Local fine-tune (newly unblocked)
 

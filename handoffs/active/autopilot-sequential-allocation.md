@@ -268,6 +268,21 @@ outcome.
       distinguished from "the comparator lags a host that got faster". Main residual anti-conservative
       risk.
 
+- [ ] SEQ-B3 — Delete `_axis_refuted_factory` together with whichever test binds it, now that it has no caller
+      in `main()` and is kept only in case the existing test module binds it
+      (`scripts/analysis/readjudicate_sequential_candidates.py:85-89`) (found 2026-09-14, noninf sweep).
+- [ ] SEQ-B4 — Decide explicitly whether the refutation record should carry `k_rate` alongside the QUALITY
+      axis's `k`, which it currently reuses for both axes (matching the journal's single `k` and the reader)
+      even though the two can differ when the rate axis was skipped on earlier trials
+      (`scripts/autopilot/safety_gate.py:1780`) (found 2026-09-14, noninf sweep).
+
+*Declined 2026-09-14: "the rate-axis comparator still has no era fence of its own" (`handoffs/active/autopilot-sequential-allocation.md:265`)
+— not filed because it IS the open **Rate-axis comparator has no era fence of its own** box at that line.*
+
+*Declined 2026-09-14: "no live journal row will carry a `refutation` record while the sequential path stays
+default-off (`AUTOPILOT_SEQ_VERDICT=0`)" — not filed because re-arming is the open **Decide whether to re-arm the
+sequential gate** box at `:249`, an operator decision, and the observation adds no separate action.*
+
 - [ ] SEQ-A — Sticky `refuted` label (above).
 - [ ] SEQ-B — Frozen baseline-promotion gate (above).
 - [x] SEQ-4 — Re-examine the 9 candidates whose refutation does not survive the relaxed budget. ✅ 2026-07-29 — deterministic re-adjudication in [`readjudicate_sequential_20260728.json`](../../epyc-orchestrator/orchestration/reports/readjudicate_sequential_20260728.json) confirms all nine under the same era-fenced `core_v1` evidence; none reaches `confirm_e=20.0`.
@@ -349,7 +364,7 @@ Concretely, and exactly the configuration class the operator says they may later
 `70902e4b665474e7` (k=40), `dd793a6ee43ce718` (k=24), `85c3dcf25823c537` (k=15) stopped under the
 joint gate because they buy quality with throughput.
 
-- [ ] SEQ-B2 — Capture the refutation counterfactual AT STOP TIME: record which axis refuted and the margin on the other. | `safety_gate.py:1528` write-side + `readjudicate_sequential_candidates.py:203` report-side (mainB authorized 2026-08-11 to split quality-refuted / rate-refuted / joint — that fix is the first half) | Deps: none; per CLAUDE.md belief-kernel rule, wire the write side now — a future objective change must at minimum be able to IDENTIFY which stopped candidates deserve re-running, even though their trials must be regenerated.
+- [x] SEQ-B2 — Capture the refutation counterfactual AT STOP TIME: record which axis refuted and the margin on the other. ✅ 2026-09-14 (`seqb2`, `epyc-orchestrator` `4c220b11`, branch `fix/noninf-seqb2`). Write side landed: `safety_gate.py::_sequential_verdict` now writes `block["refutation"]` (`seq-refutation-v1`: `refuting_axis`, `refuting_margin`, `other_axis`, `other_axis_margin`, `both_axes_refuted`, `n_trials_at_stop`, per-axis `{wealth,k,refuted,margin,threshold,rule}`, policy `thresholds`, `captured_at`) on the refuted branch ONLY — additive, legacy and non-stop rows load unchanged, no journal file on disk touched. The predicate is now ONE canonical definition (`sequential_verdict.axis_refutation` / `refutation_record`), and `readjudicate_sequential_candidates.py` was reduced to a thin delegation that PREFERS the live field (`refutation_of`) and falls back to reconstruction for pre-SEQ-B2 rows, tagging every reported row and JSON record with its provenance. Attribution mirrors the script's own `if/elif` exactly: quality first then rate, `both_axes_refuted` carried separately, `null` = the UNEXPLAINED bucket, an unmeasured axis never refutes. Sign convention documented: `margin = wealth - threshold`, negative = refuted, futility inclusive / budget strict. 17 new tests (`tests/unit/test_seq_refutation_capture.py`), including `test_live_and_reconstructed_agree_on_a_synthetic_candidate`; `pytest tests -k "sequential or safety_gate or readjudicat"` 268 → 271 passed, 0 failed. Clean against `fix/noninf-etr` (`merge-tree` exit 0). SEQ-B1 (joint-gate vs quality-primary) remains the operator's, untouched.
 
 ### F3 — knee / max-curvature is not scale-invariant
 

@@ -112,6 +112,25 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
     a banked axis, and the 231 absent-quality rows are a DATA defect that a metric change would
     silently paper over — `or 0.0` should distinguish absent from zero regardless of which option
     is chosen, or the same 231 rows will re-enter under goodput scored as zero goodput.
+
+    **Independent half DONE ✅ 2026-09-14 (RTG-23, `epyc-orchestrator` `fb16d860`, zero inference).**
+    `or 0.0` no longer scores absence as a measurement on ANY axis: `quality_from{,_row}` return
+    `None` for absence (matching the `seq_task_rate_qph` convention), `_row_axis` reads a bare 0.0 on
+    a row whose eval never ran as absence, the row builders return None and the live builder raises
+    `UnmeasuredObjectiveError` when any declared axis is unmeasured, and `objectives_measurable` now
+    delegates to the builder it gates (it checked the rate only). Consumers report absence as absence
+    (dashboard `task_rate_status="quality_unmeasured"`, null goodput; planner evidence `n/a`).
+    Replay over BOTH journal shards (1,372 trial rows, journals unmodified): builder-refused rows
+    0 → 225, T0 audit entries 318 → 233, frontier sizes UNCHANGED (legacy 11/4/1, rate 13/8), and
+    zero-quality frontier points 0 before and 0 after. The 231 falsy-quality rows are 225 rows whose
+    eval never ran (224 T0 sentinel + 1 bug-corrupted T1) plus 6 genuine measured zeros — so the
+    objection's DATA half is closed and its frontier half was never realised on current data. The
+    DOMINANCE hole (a max-rate point cannot be dominated however bad its quality) is untouched and
+    still needs option (a), (b) or (c). Downstream consumers carry the distinction: `551d0e48` stops
+    `eval_batch_serving_evaltower_window.py` and `run_real_suite_v1_evaltower_window.py` defaulting
+    `goodput_qph` to 0.0. Tests: `tests/unit/test_objective_absent_quality.py` (12) plus one per
+    window script; `pytest tests -k "tier_spec or pareto or frontier or objective"` 155 passed /
+    0 failed (143 on origin/main, same 0 failures).
 - [ ] **W3e — retire the tier-cost axis from dominance** (deferred out of W3). The original
       W3 scope included dropping `-cost`; that is what made the vector 3-D and is blocked by
       the positional consumers above. Doing it means fixing `safety_gate.py:2303` and
@@ -203,6 +222,24 @@ instrument's composition load-bearing in a way it never was under tokens/second.
   for this.
 - [x] **W4 — telemetry + doc truth** (~half day): `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are journaled; `scripts/autopilot/program.md` now states that EvalTower `speed` remains the current Pareto speed axis/host-throttle diagnostic, task-rate fields are shadow policy telemetry, and `tokens_per_solved_task` is the bloat diagnostic. The stale wall-occupancy `sum(tokens_generated[role] / throughput_tps[role])` proxy is explicitly marked as not computed/not live. `rg` found no other live system-card copy of that stale text.
 - [x] **W5 — policy decision** (2026-06-13, zero inference): keep `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` as shadow telemetry; leave live Pareto dominance on the current objective until preconditions below are met.
+- [ ] **W7 — rename one of the two boxes both called W3d**, the hold record and the 2026-07-27 panel-activation
+      record, so the id collision stops (`handoffs/active/objective-task-rate-goodput.md:73` and `:207`; `:188`
+      as of origin/main `35b05fde`) (found 2026-09-14, noninf sweep).
+- [ ] **W8 — annotate or replace the `0.0`-for-unavailable sentinel in `task_rate_qph_from{,_row}`**, kept
+      deliberately because they feed archived `eval_details.goodput_qph` history but guaranteed to bite whoever
+      next reads them as measurements (`src/autopilot_core/tier_specs.py`) (found 2026-09-14, noninf sweep).
+- [ ] **W9 — do the same for `_float()`, which returns `0.0` for absence** and is used for other journal
+      fields — the same sentinel class, left as a follow-up by coordinator ruling
+      (`src/autopilot_core/planner_evidence.py:521`) (found 2026-09-14, noninf sweep).
+- [ ] **W10 — find out why the live `pareto_archive` is empty** (`state["pareto_archive"]` has no keys), so
+      every count in RTG-23's table is journal replay rather than the live frontier: either expected
+      post-flip epoch fencing or a silent loss (`orchestration/autopilot_state.json`) (found 2026-09-14,
+      noninf sweep).
+
+*Declined 2026-09-14: "no quality floor / admission gate exists anywhere in `src/autopilot_core/`" (`quality_floor`
+/ `min_quality` grep returns only the replay report's local `QUALITY_FLOOR = 1.0`) — not filed because creating one
+IS option (b) of the still-open **OPERATOR DECISION — goodput vs raw rate on axis 1** box above; it is the decision,
+not a defect.*
 
 ## 2026-06-13 Policy Decision
 

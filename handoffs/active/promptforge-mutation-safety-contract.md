@@ -22,11 +22,17 @@ so this is a **new active stub, not a reopen**.
 
 ## Tasks
 
-- [ ] **MHS-1 — Typed return-effect contract.** Constrain what a mutation may DO (a closed per-site
+- [x] **MHS-1 — Typed return-effect contract.** Constrain what a mutation may DO (a closed per-site
       effect enum, host-normalized and truncated), not only which FILES it may touch. Reference
       implementation: Harness-R1 `code_runner.py:31-34` + `_normalize_hook_result`, ~50 lines.
-      *Highest value, cheapest.* `intake-1323#00`. Zero compute.
-- [ ] **MHS-2 — Close the MH-9 inertness hole.** The AutoMem `schema_evolution` `new_file` lane
+      *Highest value, cheapest.* `intake-1323#00`. Zero compute. ✅ 2026-09-14 — `MutationEffect`
+      (`inert|constrain|expand|replace|unsafe|unknown`) with total `normalize()` (aliases in, unrecognised ⇒
+      `UNKNOWN`, tokens truncated at 32 chars, reasons at 240); `CodeMutation.effect`/`.effect_reason`; both
+      `apply_code_mutation*()` refuse `UNSAFE` and report `effect`. CONSTRAIN/REPLACE derived mechanically
+      (answers Open Question 3 — no separate label needed). epyc-orchestrator `7d4b40a8`, tests
+      `test_effect_enum_is_closed`, `test_effect_normalization`, `test_unrecognized_effects_normalize_to_unknown`,
+      `test_classify_*`, `test_apply_rejects_unsafe_effect`, `test_apply_in_context_reports_effect`.
+- [x] **MHS-2 — Close the MH-9 inertness hole.** The AutoMem `schema_evolution` `new_file` lane
       requires "default-inert" modules as **prompt text only** (`prompt_forge.py:1261-1277`) while
       `_validate_code_mutation`'s importlib step (`:1147`) executes the module top level
       **unsandboxed in the live repo**. Add an AST node denylist
@@ -35,7 +41,16 @@ so this is a **new active stub, not a reopen**.
       `code_runner.py:64-103` and `:170-176`, so inertness is **compile-time, not a promise**. MH-9's
       own row already anticipated this ("keep edit-only allowlist until a stronger isolation story
       exists") — this IS that story. `intake-1323#01`. Zero compute. **Depends on MHS-1** (the effect
-      enum is the denylist's contract).
+      enum is the denylist's contract). ✅ 2026-09-14 — the repo-write + in-process `importlib` step
+      (`origin/main` `prompt_forge.py:1149`/`:1157`) is GONE; validation is static-only
+      (`screen_static_safety`), with the ratified strict node denylist + underscore/dunder rejection for
+      `new_file`, a capability denylist with original-file grandfathering, and the MH-9 prompt rewritten to
+      the shape the screen admits (`MEMORY_SCHEMA_SHAPE_EXAMPLE` screened in CI, so prompt/denylist drift
+      cannot recur). epyc-orchestrator `7d4b40a8` + `c27eec6c`; 100 tests incl.
+      `test_validation_never_writes_the_target_file`, `test_validation_does_not_import_the_candidate_module`,
+      `test_strict_profile_rejects_denylisted_nodes` (11 cases),
+      `test_noop_mutation_of_every_allowlisted_file_passes`, `test_prompt_shape_example_passes_the_strict_screen`,
+      `test_old_class_shaped_proposal_is_rejected_by_the_strict_screen`. Selection 40 → 140 passed.
 - [ ] **MHS-3 — Missing half of the transfer guard.** `_UNIVERSAL_TRANSFER_RE`
       (`prompt_forge.py:83-88`) rejects OVER-generalization (`always|never|all tasks`); Harness-R1's
       `FORBIDDEN_TEXT_PATTERNS` (`harness_r1_patch.py:233-238`) rejects **UNDER**-generalization (a
@@ -60,6 +75,26 @@ so this is a **new active stub, not a reopen**.
       **more** absolute calls. The completed file's pointer to
       `handoffs/active/meta-harness-optimization.md` is DANGLING — that file does not exist — which is
       why this stub, not a reopen, is the right shape. `intake-1317#03`. Zero compute.
+- [ ] **MHS-7 — force the isolated mutation path.** `apply_code_mutation` writes the live tree directly
+      (git-checkpointed) and the isolated `apply_code_mutation_in_context` exists but nothing requires its use
+      (`scripts/autopilot/species/prompt_forge.py:~1440`) (found 2026-09-14, noninf sweep).
+- [ ] **MHS-8 — tighten the apply gate to "only screened effects apply"**, since only `MutationEffect.UNSAFE`
+      is refused today so `UNKNOWN` — the default on a hand-constructed `CodeMutation` — still applies; needs
+      an audit of every construction site (`scripts/autopilot/species/prompt_forge.py`, apply gate)
+      (found 2026-09-14, noninf sweep).
+- [ ] **MHS-9 — narrow `revert_code_mutation`'s new-file revert from `git add -A <path>` to an explicit
+      pathspec**, the idiom the project's hygiene rules warn about
+      (`scripts/autopilot/species/prompt_forge.py:~1478`) (found 2026-09-14, noninf sweep).
+- [ ] **MHS-10 — land a standalone formatting commit for `prompt_forge.py`**, which is format-dirty on
+      `origin/main` (`ruff format --check` fails on a pristine clone), so future diffs stay readable
+      (`scripts/autopilot/species/prompt_forge.py`) (found 2026-09-14, noninf sweep).
+- [ ] **MHS-11 — replace the operator guide's `prompt_forge.py` line-number citations with symbol names**,
+      since `line 575` / `line 594` / `line 509` are already stale by hundreds of lines
+      (`docs/guides/meta-harness-operator-guide.md`) (found 2026-09-14, noninf sweep).
+
+*Declined 2026-09-14: repoint the dangling pointer at `handoffs/completed/meta-harness-optimization.md:3` —
+not filed because it is already recorded as the **Housekeeping rider (E0, owned elsewhere)** in this file's
+Notes and named inside the open **MHS-6** box.*
 
 **Cost yardstick (DERIVED-FROM-CONFIG, never a measurement)**: *"one engineer update ≈ one full sweep
 of your eval suite"* — a reusable rule of thumb for pricing ANY outcome-grounded editor loop. It kills

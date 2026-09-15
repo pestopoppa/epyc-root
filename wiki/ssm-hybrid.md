@@ -33,7 +33,7 @@ Nothing in this pass changes the standing finding that sequential Delta Net veri
 
 - [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md) — the three fired gates, checkpoint identity and license, and the inverted state-size derivation.
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the retraction in its session context and the "three gates fired and were never checked" framing.
-- [`qwen36-27b-cpu-feasibility.md`](../handoffs/active/qwen36-27b-cpu-feasibility.md) — CPU-side feasibility context for hybrid residents on this host.
+- [`qwen36-27b-cpu-feasibility.md`](../handoffs/archived/qwen36-27b-cpu-feasibility.md) — CPU-side feasibility context for hybrid residents on this host.
 
 ## Compiled Update — 2026-08-08: LFM2.5-2.6B is a runnable worker challenger, not yet a replacement
 

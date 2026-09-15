@@ -9,7 +9,7 @@
 **Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md)
 **Related**:
 - [`cpu-uncore-fabric-attribution.md`](../completed/cpu-uncore-fabric-attribution.md) — CPU24 perf-record finding that motivated this work
-- [`intra-process-tensor-parallel-decode.md`](../active/intra-process-tensor-parallel-decode.md) — CPU1 P1.3 per-region mbind (DEPRECATED earlier; mirror would have superseded it)
+- [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) — CPU1 P1.3 per-region mbind (DEPRECATED earlier; mirror would have superseded it)
 - [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md) — CPU15 EP per-node anon mmap (would have partially overlapped for MoE; mirror's failure leaves CPU15 in place)
 - [`cpu-shape-specialized-gemv-decode.md`](../active/cpu-shape-specialized-gemv-decode.md) — CPU2 SIMD kernels read via `tensor_data()` after the accessor migration
 

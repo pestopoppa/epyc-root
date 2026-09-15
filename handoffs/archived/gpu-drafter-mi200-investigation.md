@@ -1,6 +1,36 @@
 # GPU-Drafter on MI200 — Frontdoor Acceleration + CPU-Tier Spec-Dec
 
-**Status**: N5-ALPHA-EVIDENCE-LANDED 2026-07-16 - CPU-testable qwen35/frontdoor drafter alpha now has decision-grade three-arm evidence on experimental v7 `da1bf5e2f`; next GPU-drafter work is Stage 1 end-to-end speedup / co-residency design, not another N5 preflight.
+> # ⛔ ARCHIVED 2026-09-14 — STAGES 1–2 MEASURED AND FAILED; THE REDESIGN IS SOMEONE ELSE'S PAGE.
+>
+> **Reason.** The hardware gate this page waited on opened (MI210 installed 2026-07-02), the N5 alpha
+> landed 2026-07-16, and then **both serving stages failed their own kill-gate on 2026-07-17**:
+>
+> | stage | configuration | result vs no-spec | verdict |
+> |---|---|---|---|
+> | Stage 1 | CPU frontdoor + MI210 external Qwen3.5-0.8B drafter | **0.915× decode / 0.911× wall** at `508/508` acceptance | FAILED ≥1.3× gate |
+> | Stage 2 | frontdoor + drafter **co-resident** on MI210 (`gpu_no_spec` 101.64 t/s) | native MTP **0.948×**, external drafter **0.355×** | FAILED, worse |
+>
+> Perfect acceptance with sub-1.0× throughput is a *structural* refutation, not a tuning miss: every
+> production target already ships a near-free embedded/native MTP head that dominates any
+> separate-drafter scheme. Stage 3 was not reachable and Stage 4 (gemma4 `worker_general` MTP head
+> split) was explicitly gated on Stages 1–3, so it retires unrun. The one remaining open box on this
+> page — *"re-anchor to the live next step: Stage-1 end-to-end speedup / co-residency **redesign**"* —
+> is by its own wording a pointer at a different handoff, which is where it now lives.
+>
+> **Where the live work went.**
+> [`gpu-drafter-control-redesign.md`](../active/gpu-drafter-control-redesign.md) (INF-20) — opened
+> 2026-07-18 from the v7 lever audit expressly to redesign around these failures; it names this page as
+> its parent and now carries both results as `- [x]` inherited-evidence lines. Broader GPU acceleration:
+> [`mi210-big-model-and-acceleration-roadmap.md`](../active/mi210-big-model-and-acceleration-roadmap.md)
+> (Axis-B).
+>
+> **Do not re-derive the negative.** The artifacts are
+> `epyc-inference-research/data/specdec_frontdoor_alpha/stage1_mi210_gpu_drafter_20260717T0518Z_drafttreeunifiedkv/summary.json`
+> and `.../stage2_mi210_gpu_residency_20260717T0510Z/summary.json`. Also preserved here: the GT 1030
+> falsification, the qwen35 tokenizer/M-RoPE blockers, and the two v7 server bugs the Stage-1 run found
+> and fixed (`-md` path loading; `draft-tree` widening `n_seq_max` without unified KV).
+
+**Status**: ARCHIVED 2026-09-14 · N5-ALPHA-EVIDENCE-LANDED 2026-07-16 - CPU-testable qwen35/frontdoor drafter alpha now has decision-grade three-arm evidence on experimental v7 `da1bf5e2f`; next GPU-drafter work is Stage 1 end-to-end speedup / co-residency design, not another N5 preflight.
 **Created**: 2026-05-27 (via session synthesis + companion `/research-intake` run)
 **Categories**: speculative_decoding, hardware_optimization, inference_serving, local_inference
 **Hardware gate**: contingent on MI200-class GPU (MI210 or MI250/X) acquisition. GT 1030 (currently present) is BW-poorer than CPU and not viable for any role here — see § GT 1030 falsification. **→ MI210 INSTALLED 2026-07-02; the fork's HIP build leg is verified on gfx90a and first GPU benchmarks are in — hardware gate now OPEN (see § 2026-07-02 Advancement).**
@@ -31,7 +61,7 @@
 
 ---
 
-> **🔔 Reopen-trigger FIRED — 2026-07-18 stale-open audit.** The hardware gate opened (MI210 installed 2026-07-02); N5 alpha evidence + Stage-1/2 economics landed 2026-07-16/17. The one open box (Stage 4) is blocked on those failed stages; the genuinely-live next step (drafter/control **redesign** + co-residency) was left unboxed. See [`stale-open-audit-2026-07-18.md`](stale-open-audit-2026-07-18.md).
+> **🔔 Reopen-trigger FIRED — 2026-07-18 stale-open audit.** The hardware gate opened (MI210 installed 2026-07-02); N5 alpha evidence + Stage-1/2 economics landed 2026-07-16/17. The one open box (Stage 4) is blocked on those failed stages; the genuinely-live next step (drafter/control **redesign** + co-residency) was left unboxed. See [`stale-open-audit-2026-07-18.md`](../active/stale-open-audit-2026-07-18.md).
 
 - [ ] Re-anchor to the live next step: Stage-1 end-to-end speedup / co-residency **redesign** (Stage 4 stays blocked on failed Stages 1–3)
 
@@ -454,7 +484,7 @@ Chapter 10 § "Heterogeneous Processor Partitioning" (line ~240) is the natural 
 
 ## Research Intake Update — 2026-06-03 (LLM-kernel-generation cluster deep-dive)
 
-The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned **HIP kernels** (attention, MoE dispatch, dequant). Deep-dived the kernel-generation cluster (intake-660–679) for an *automated authoring* path; spun out [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md) + its backend [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md). The NVIDIA/Intel cluster (660–673) is methodology-only, but **AMD's own GEAK (674) / Apex (675) / AgentKernelArena (679) are AMD-native ROCm and largely reusable — GEAK is demonstrated on gfx90a (MI250X = MI210 ISA)** — so authoring these HIP kernels is materially de-risked. Full reasoning: [deep-dive](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md).
+The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned **HIP kernels** (attention, MoE dispatch, dequant). Deep-dived the kernel-generation cluster (intake-660–679) for an *automated authoring* path; spun out [`agentic-rocm-kernel-authoring.md`](../active/agentic-rocm-kernel-authoring.md) + its backend [`rocm-verify-profile-backend.md`](../active/rocm-verify-profile-backend.md). The NVIDIA/Intel cluster (660–673) is methodology-only, but **AMD's own GEAK (674) / Apex (675) / AgentKernelArena (679) are AMD-native ROCm and largely reusable — GEAK is demonstrated on gfx90a (MI250X = MI210 ISA)** — so authoring these HIP kernels is materially de-risked. Full reasoning: [deep-dive](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md).
 
 - **Lead path** = train-free controller (EvoEngineer intake-666 + CudaForge profiler-Judge intake-662) driven by an existing coder model — runs on a single MI210, NO training cluster, opensource_only-compatible.
 - **Decline**: RL training of a bespoke kernel model (CUDA Agent 660 / CUDA-L1 661 / Kevin 663 need a multi-GPU cluster) — but harvest their reward design + anti-reward-hacking gates.
@@ -476,7 +506,7 @@ The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned
 - **GPU-side MTP spec-dec demonstrated (evidence for Stage 4 / § MTP Head Split).** gemma-4-31B-it-Q4_K_M target + the 514 MB NEXTN head (`gemma-4-31B-it-assistant-v6-Q8_0`) both offloaded to ROCm0 via `--spec-type draft-mtp -ngl 99 --spec-draft-ngl 99` (llama-server only — the CLI/speculative example is NOT MTP-wired). Result: decode **43.25 t/s = 1.44× over plain (30.01)**, draft **acceptance 59.7%** (163/273), mean accept length **2.79** of n_max=3, per-position (0.758, 0.593, 0.440). gemma4 + NEXTN have full HIP op coverage; the per-step hidden-state hop is a ~µs PCIe memcpy, not CPU compute. Direct evidence that head-on-GPU MTP is structurally sound on the MI210 (vs the CPU-only MTP baseline in Stage 0 = 76.9% accept).
 - **qwen35 (GDN / hybrid-SSM) decodes CLEAN on the GPU HIP path.** Qwen3.6-27B-Q8_0 (arch `qwen35`, gated-delta-net + full attention) ran at **28.69 t/s** with `-ngl 99`, **no M-RoPE/GDN decode failures**. The v6 fork's `ggml-cuda` has full delta-net/ssm-conv kernels (a strict superset of the `dflash` tree, incl. `gated_delta_net.cu`). This is a notable contrast with the CPU external-draft / tree-spec qwen35 failures in the N5 blocker notes above — it localizes those failures to the **CPU speculative codepath**, not the qwen35 forward pass. (Does NOT by itself supply N5 α — that gate is about frontdoor *drafter* acceptance — but it removes "qwen35 can't decode on our stack" as a GPU-path concern.)
 - **Vulkan on gfx90a is DEFINITIVELY IMPOSSIBLE** (complements the GT 1030 falsification). RADV enumerates zero devices for CDNA2; no Vulkan ICD (RADV / AMDVLK / amdgpu-pro) targets the compute-only Instinct MI200 family. Use HIP/ROCm.
-- **Kernel roofline — real tuning headroom (motivates [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md)).** llama.cpp gfx90a decode reaches only ~33% (Q4_K) / ~47% (Q8_0) of the MI210's ~1.64 TB/s HBM roofline; same-model Qwen3.6-27B confirms Q4_K is partly dequant-bound (Q8 766 GB/s vs Q4 537 GB/s). Flash-attn does not help decode here (`-fa 0` beats `-fa 1`); default MMQ beats forced rocBLAS. The residual gap is CDNA2 kernel maturity — the direct target for the ROCm kernel-authoring handoffs.
+- **Kernel roofline — real tuning headroom (motivates [`agentic-rocm-kernel-authoring.md`](../active/agentic-rocm-kernel-authoring.md)).** llama.cpp gfx90a decode reaches only ~33% (Q4_K) / ~47% (Q8_0) of the MI210's ~1.64 TB/s HBM roofline; same-model Qwen3.6-27B confirms Q4_K is partly dequant-bound (Q8 766 GB/s vs Q4 537 GB/s). Flash-attn does not help decode here (`-fa 0` beats `-fa 1`); default MMQ beats forced rocBLAS. The residual gap is CDNA2 kernel maturity — the direct target for the ROCm kernel-authoring handoffs.
 - **vLLM comparison — DONE.** The official `rocm/vllm:rocm6.2_mi300` image is hard-locked to MI300 (`config.py` raises "built for MI300 only") — dead end, removed. The VERIFIED gfx90a image `rocm/vllm:rocm6.4.1_vllm_0.10.1_20250909` (upstream ROCm/vllm, `PYTORCH_ROCM_ARCH=gfx90a;...`, no MI300 lock; env `TORCH_BLAS_PREFER_HIPBLASLT=0` / `VLLM_USE_TRITON_FLASH_ATTN=1` / `VLLM_ROCM_USE_AITER=0`) computes on gfx90a and supports Qwen3. **RESULT (Qwen3-8B matched fp16): per-stream decode llama.cpp-HIP 62.45 t/s (62% roofline) vs vLLM ~69 t/s (69% roofline) = vLLM +11%; batched 32-way (llama-batched-bench, npp128/ntg128): llama.cpp-HIP 909.8 gen tok/s vs vLLM 1129 out tok/s = vLLM +24%; both scale ~15-16x from single-stream (llama.cpp 62->910, vLLM 69->1129) — strong throughput for subagent fan-out on either engine (llama.cpp already deployed). KEY: at fp16 (no dequant) llama.cpp reaches 62% roofline — the earlier ~47% (Q8) / 33% (Q4) ceiling is a QUANTIZED MMQ-dequant artifact, NOT general kernel immaturity; vLLM's fp16 per-stream edge is modest, its decisive advantage is batched serving.** Quantized-vs-quantized (vLLM AWQ/fp8 vs llama.cpp Q4/Q8) not measured; vLLM 0.10.1 predates our `gemma4`/`qwen35` archs, hence Qwen3-8B.
 
 ## Progress checklist
@@ -496,4 +526,4 @@ The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned
 
 ## Research Intake Update — 2026-07-16 (control-plane relevance: Stage-1 is GPU bet #1)
 
-Operator locked the MI210 sequencing (2026-07-16): **drafter Stage-1 end-to-end speedup is GPU bet #1** — smallest VRAM footprint (co-exists with later residency/offload bets), reversible, and it directly counters the measured plan-review latency regression by accelerating CPU architect/frontdoor turns that the Architect→Reviewer control plane multiplies (see [`reviewer-control-plane-index.md`](reviewer-control-plane-index.md) + [`reviewer-latency-and-sampling-budget.md`](reviewer-latency-and-sampling-budget.md)). **2026-07-17 update:** Stage-1 and Stage-2 are no longer unrun; both failed their economics gates despite usable acceptance, so the control-plane budget should not assume a drafter uplift from these lanes. The useful follow-up is a different drafter/control path.
+Operator locked the MI210 sequencing (2026-07-16): **drafter Stage-1 end-to-end speedup is GPU bet #1** — smallest VRAM footprint (co-exists with later residency/offload bets), reversible, and it directly counters the measured plan-review latency regression by accelerating CPU architect/frontdoor turns that the Architect→Reviewer control plane multiplies (see [`reviewer-control-plane-index.md`](../active/reviewer-control-plane-index.md) + [`reviewer-latency-and-sampling-budget.md`](../active/reviewer-latency-and-sampling-budget.md)). **2026-07-17 update:** Stage-1 and Stage-2 are no longer unrun; both failed their economics gates despite usable acceptance, so the control-plane budget should not assume a drafter uplift from these lanes. The useful follow-up is a different drafter/control path.

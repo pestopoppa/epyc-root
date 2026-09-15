@@ -1549,14 +1549,24 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       quantity would put one measurement behind two ladders. Trigger: the tap port, which is
       compute-gated. Sources: `intake-1328#record`, `intake-1336#record`, `intake-1338#03`.
 
-- [ ] **SC67 — wire `tulving_episodic` on the WRITE side before M-12a runs** (`intake-408#record`).
-      It produces verified measurements today — `score_tulving_run.py` emits a structured
-      per-question artifact with `f1`, `nb_gt`, `nb_pred`, `retrieval_type`, `get_style` — and has
-      **no write-side hook**. Emit producer-authored, self-hashed claim-tuple rows carrying run id,
-      variant + chapter count, arm (`none`/`retrieved`/`full`), scorer version (post-M-12e), n
-      scored, and metric direction. **Locator = the run, never the per-question file.** Do NOT write
-      a new grading rule — project into a `ClaimTuple` and let `claim_tuple.grade()` decide.
-      Pre-hook runs (incl. `20260619_141212`) emit zero rows and are never reconstructed on read.
+- [x] **SC67 — wire `tulving_episodic` on the WRITE side before M-12a runs** (`intake-408#record`).
+      ✅ 2026-09-14, root `baaa6741` (+ the research-side CLI hook in `dcb769c1`).
+      `tulving_episodic_capture.py` is the write side the scorer calls at score-time
+      (`score_tulving_run.py --belief-measurements --arm <none|retrieved|full> --variant … --chapters …`);
+      `tulving_episodic.py` is the strict reader, registered as `tulving-episodic-measurement` under
+      the shared `measurement` ladder — it projects and `claim_tuple.grade()` decides, with a test
+      asserting no `register_ladder` in the adapter. TWO claims per arm, never one: Simple Recall
+      (`get=="all"`) and Chronological Awareness (`latest` + `chronological`) are disjoint subsets, so
+      separate metric ids and `reps` = the subset each metric is about. Rows carry run id, variant +
+      chapter count, arm, scorer version, n scored, metric direction, the five Simple Recall bins with
+      bin 0 included, the bin basis actually used, and the count of tau questions failed closed for
+      partial coverage. **`scorer_version >= 2` is refused at BOTH ends** (a pre-M-12e figure is a
+      different quantity under the same name: 0.5530 vs 0.5684 on the same run) and `--arm` is
+      mandatory and never inferred. **Locator = the run**, pinned by a test. Pre-hook runs — including
+      `20260619_141212` AND its 2026-09-14 re-score, whose arm the harness never recorded — emit zero
+      rows, permanently. 22 tests in `tests/vidya/test_tulving_episodic_adapter.py`; full vidya suite
+      1068 → 1092 passed with the 2 pre-existing failures / 12 pre-existing errors unchanged; source
+      row updated in `scripts/vidya/adapters/README.md`.
 
 - [ ] **SC68 — wire the BEAM adapter on the write side AT AUTHORING TIME, and record BOTH folds**
       (`intake-1337#record`). File at adapter-authoring time (CME-1), not after the first run. The

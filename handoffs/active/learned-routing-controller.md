@@ -274,22 +274,30 @@ routing classifier's own training labels, and skill-bank effectiveness.
         than re-spelling it. Real callers: `scripts/session/health_check.sh` (both repos),
         `autopilot.py` `_run_episodic_check`, `collect_multitier_incumbent_baseline.py`. Orchestrator
         `604c70bf`; `tests/unit/test_episodic_integrity_check.py` 11 -> 14, both mutations caught.
-  - [ ] **EPD-3-R2 — no live write site produces the canonical vector, so the convention re-drifts
-        between reseeds by construction.** `MemoryRecord.embedding_text()` is called only by the
-        reseed and by the degeneracy guard. Every live vector comes from
-        `orchestration/repl_memory/embedder.py:243` `_serialize_task_ir`, which differs three ways:
-        key PRESENCE not truthiness (so it can emit `priority:None` / `type:None`), no `.strip()`,
-        no 2000-char cap, plus extra `constraints:` / `input_types:` segments. Make
-        `_serialize_task_ir` delegate to the canonical builder and add the
-        `TestOneEmbeddingConvention` analogue that `skill_bank` already has
-        (`tests/unit/test_degenerate_embedding_guard.py:290`) — today's version
-        (`tests/unit/test_memory_record.py:89`) compares two records with IDENTICAL fields and so
-        structurally cannot catch this.
-  - [ ] **EPD-3-R3 — two live writers still use foreign conventions.**
-        `scripts/benchmark/seeding_injection.py:65` hard-codes `type:chat` (even when the row's own
-        `task_type` is `math`/`coder`/`hotpotqa`) and truncates the objective to 200 chars;
-        `orchestration/repl_memory/seed_loader.py:470` embeds raw text with no prefix at all and
-        wrote the 94 post-reseed `seed` rows. Both should call the canonical builder.
+  - [x] **EPD-3-R2 — no live write site produces the canonical vector, so the convention re-drifts
+        between reseeds by construction. FIXED ✅ 2026-09-14.** `embedder.py:243` `_serialize_task_ir`
+        now delegates to the new `memory_record.embedding_text_for()` (a thin wrapper over
+        `MemoryRecord.embedding_text()`), so every `embed_task_ir` caller — the live query path
+        included — emits the canonical text: truthiness-keyed (no more literal `priority:None`),
+        stripped, capped at `EMBED_TEXT_MAX_CHARS`, and without the `constraints:`/`input_types:`
+        segments no other writer emits. `tests/unit/test_one_embedding_convention_writers.py` (26
+        tests) supplies the `TestOneEmbeddingConvention` analogue this box asked for: goldens are the
+        canonical text of four REAL store rows (`51aae08a`, `531f4890`, `80d975c1`, `a30ba0aa`), so
+        the writers are pinned to the format the corpus was published with rather than to each other,
+        plus a delegation guard that monkeypatches the builder and asserts each writer CALLS it.
+        Orchestrator `9096a600`; `-k "embed or seed or routing"` 1113 -> 1139 passed, 9 pre-existing
+        `test_e8_quality_baseline_reseed` failures unchanged; mutation-checked (restoring
+        `or "chat"` fails 3 tests).
+  - [x] **EPD-3-R3 — two live writers still use foreign conventions. FIXED ✅ 2026-09-14.**
+        `scripts/benchmark/seeding_injection.py:65` `_precompute_embedding` takes the row's own
+        `task_type` (both call sites pass the suite) and builds the text via
+        `memory_record.embedding_text_for`, defaulting to `chat` exactly as
+        `q_scorer.score_external_result` does — the hard-coded `type:chat` mislabelled every non-chat
+        suite's vector (3,795 `math` / 3,787 `hotpotqa` / 3,585 `coder` rows in the live store).
+        `orchestration/repl_memory/seed_loader.py:470` now embeds `record.embedding_text()` instead
+        of the bare task string. The 200-char truncation stays at the injection call site because the
+        payload's `task_description` is what gets stored. Orchestrator `9096a600`; golden rows
+        `531f4890` (math injection) and `80d975c1`/`a30ba0aa` (seed rows) pin both.
   - [ ] **OPERATOR: EPD-3-R1 — the recipe change needs an inference window, and must NOT land before
         one.** Dropping `priority` from `embedding_text()` invalidates the 34,938 rows embedded with
         it, so landing the code first would make live queries mismatch 100% of the store instead of
@@ -300,6 +308,21 @@ routing classifier's own training labels, and skill-bank effectiveness.
         `reseed_episodic_store.py:473` refuses without `--i-understand-this-re-embeds`. Sequence
         when the window is granted: land R2+R3 -> drop `priority` from the builder -> reseed ->
         re-run the EP-3 probe to confirm the writer-path AUC actually collapses.
+  - [ ] **EPD-3-R5 — kill or annotate the deprecated copy of the hard-coded
+        `type:chat | objective:{task_description[:200]}` convention**, since a deprecated tree is still the copy
+        a future author greps and cargo-cults (`scripts/benchmark/deprecated/seed_specialist_routing_v1.py:1501`)
+        (found 2026-09-14, noninf sweep).
+  - [ ] **EPD-3-R6 — make the seed write loop fail closed**: it catches every `Exception` and only prints, so a
+        total embed failure reports `loaded: 0, failed: N` and still exits 0 even though the tests now assert
+        `failed == 0` (`orchestration/repl_memory/seed_loader.py:~495`) (found 2026-09-14, noninf sweep).
+  - [ ] **EPD-3-R7 — decide the fate of the 200-char objective truncation at the payload level**, i.e. the
+        2026-07-27 audit's defect #2 (12.6% of rows at the cap, 96.9% objective collision) still live on the
+        eval-injection path, where changing it changes what is *stored* and not only what is embedded
+        (`scripts/benchmark/seeding_injection.py:189,287`) (found 2026-09-14, noninf sweep).
+  - [ ] **EPD-3-R8 — route the three remaining unguarded convention builders through the shared builder**
+        (`_serialize_failure_context:279`, `_serialize_exploration:299`, `_serialize_classification_prompt:305`)
+        — single-writer today so no drift yet, but the same shape EPD-3-R2/R3 just fixed
+        (`orchestration/repl_memory/embedder.py`) (found 2026-09-14, noninf sweep).
 
 **Why this is the real result — REVISED 2026-07-27.** The probe asked "is failure decodable?" and
 got 0.726, which was refuted. The follow-up audit then established that EPD-1 and EPD-2 are much

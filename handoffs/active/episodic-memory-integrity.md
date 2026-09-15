@@ -398,15 +398,52 @@ failure caught in amber.
         specified) is a **sanity floor** — far below it means a configuration bug, not a finding.
         It is NOT a target: that run discarded assistant turns and capped answers at 512 tokens
         (intake-1337#record).
-  - [ ] **M-12e — scorer prerequisites, ZERO COMPUTE, do before any arm runs** (intake-408#record).
-        In `epyc-inference-research/scripts/benchmark/score_tulving_run.py`: (i) the unconditional
-        `simple_inputs.append(scored)` (**verified at :121 this session; the dive ledger recorded
-        :120**) must append only when `get_style == "all"`, so Simple Recall is computed over
-        recall questions as the paper defines it; (ii) `chronological_tau` (def at **:51**, returns
-        `_kendall_tau(matched_indices)` at **:80**) must return 0.0 unless the matched set covers
-        the FULL ground truth. Then re-score the existing run artifacts offline — the scorer reads
-        stored responses, no model is loaded — and refresh the four wiki paragraphs quoting
-        SRS 0.5530 / CAS 0.1593.
+  - [x] **M-12e — scorer prerequisites, ZERO COMPUTE, do before any arm runs** (intake-408#record).
+        ✅ 2026-09-14, research `dcb769c1`. THREE defects, not two. (i) the unconditional
+        `simple_inputs.append(scored)` at :121 now fires only for `get_style == "all"`; the subset is
+        settled by counting, not prose — the authors' `result_lenient_all_book_200.csv` has 548 rows
+        and the 196ch `df_qa.parquet` has 548 `get=="all"` rows of 686. (ii) `chronological_tau` fails
+        closed at 0.0 unless the matched set covers the FULL ground truth; `chronological_tau_detail()`
+        reports coverage, the uncovered `tau_raw` as a diagnostic, and a per-question status.
+        (iii) FOUND IN THE SAME SCOPE: the five bins keyed on ground-truth ITEM count, but the paper
+        bins on matching EVENTS — reproducing the authors' `bins_items_correct_answer` matches 686/686
+        on `n_chapters_correct_answer` and 629/686 on `n_items_correct_answer`; `nb_events` now rides
+        in the prompt metadata and the `nb_gt` fallback is reported, never silent. Re-scored
+        `20260619_141212` offline (stored responses; no model loads, verified by reading the import
+        graph) to `benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json` —
+        the original `tulving_score.json` is untouched. **SRS 0.5530 → 0.5684** (over 366 questions,
+        not 456; subset fix alone 0.5755, bin fix alone 0.5402), **CAS 0.1593 → 0.1593** — unchanged
+        only because no partial-coverage question here matched ≥2 items, so the tau defect is real and
+        LATENT; 37 of 45 chronological questions are now labelled partial, and 30 of those 45 have
+        <2 ground-truth items so two thirds of the tau leg is structurally 0.0. `avg_f1`,
+        `by_retrieval_type` and 17.27 t/s unchanged. `SCORER_VERSION = 2` now rides in the summary and
+        the markdown so v1 and v2 figures cannot be compared by accident. Tests 85 → 108 in
+        `scripts/benchmark/test_score_tulving_run.py` + `test_tulving_episodic_adapter.py`. The four
+        wiki paragraphs quoting SRS 0.5530 / CAS 0.1593 were refreshed in the same wrap-up; draft
+        at `wiki/drafts/tulving-subset-scoring-and-tau-coverage.md`.
+  - [ ] **M-12f — decide whether the paper's Chronological Order score excludes single-item questions before
+        CAS is ever a headline**, since 30 of the 45 `chronological` questions in the 20ch set have fewer than
+        two ground-truth items (15 have zero) so ordering is undefined and two thirds of the tau leg is
+        structurally 0.0 — a CAS construction question, not a scorer bug
+        (`scripts/benchmark/tulving_episodic_adapter.py:325` `compute_chronological_awareness_score`) (found
+        2026-09-14, noninf sweep).
+  - [ ] **M-12g — stop comparing SRS across book sizes until the bin sets match**: bin `6+` is empty in the
+        20ch set, so the 20ch SRS averages over four bins while the 200ch figure averages over five
+        (`scripts/benchmark/tulving_episodic_adapter.py` `compute_simple_recall_score`) (found 2026-09-14,
+        noninf sweep).
+  - [ ] **M-12h — close the judge-path tau trap before any LLM judge is wired**: `_llm_judge_fallback_hook` is
+        dead in the deterministic path but `compute_f1_for_result` still branches on it and returns
+        `matched_gt_items: []` when a judge fires, silently giving every judged question zero tau coverage
+        (`scripts/benchmark/tulving_episodic_adapter.py:685-710`) (found 2026-09-14, noninf sweep).
+  - [ ] **M-12i — codify an offline re-scoring protocol before any decision cites the corrected SRS/CAS**,
+        since the 2026-09-14 re-score artifact is deliberately not an admissible claim and emits no belief
+        rows, so the path is a protocol and never a back-filled tuple
+        (`benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`) (found 2026-09-14,
+        noninf sweep).
+  - [ ] **M-12j — sync the repo venv or correct the dependency claim**: neither repo's `.venv` has
+        `pandas`/`pyarrow` even though `epyc-inference-research/pyproject.toml` pins both, so
+        `score_tulving_run.py` cannot run out of the repo venv as checked out
+        (`epyc-inference-research/pyproject.toml`) (found 2026-09-14, noninf sweep).
 
 ## Why the reseed is necessary (and what it will NOT fix)
 

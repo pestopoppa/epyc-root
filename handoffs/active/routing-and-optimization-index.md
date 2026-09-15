@@ -11,7 +11,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | RTG-01 | agent world env synthesis | [agent-world-env-synthesis.md](agent-world-env-synthesis.md) | Run the AW-6 48h bootstrap discovery (≥50 envs / ≥500 tools / ≥500 tasks) with incremental persistence | — |
-| RTG-02 | autopilot continuous optimization | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | Build AP-50's decision cockpit from journal and study evidence while keeping AutoPilot stopped | — |
+| RTG-02 | autopilot continuous optimization | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | Decide the provenance-receipt option (B recommended; era-stamp d03218fc, invocation-log b69bda61 landed); then AP-50 cockpit | — |
 | RTG-03 | autopilot dashboard fidelity audit 2026 07 2 | [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md) | C1 fix #2 Manifest writer intent-not-realized gap — writer lives in | — |
 | RTG-04 | batched edit parallel apply | [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md) | BEP-2 / J8 — CPU latency A/B for the legacy structured patchset path. Head-to-head bench: batch-edit mode vs interleaved Root LM loop on a… | — |
 | RTG-05 | bep dcp falsification harness | [bep-dcp-falsification-harness.md](bep-dcp-falsification-harness.md) | DCP-6 deploy attestation + inference gate: launch-code provenance is satisfied (server_launch_git_sha=eeb8cce, ancestor of 2e2e0d3 and 756c… | — |
@@ -23,7 +23,7 @@
 | RTG-11 | dynamic stack concurrency | [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md) | DS-6-live — QuarterScheduler revalidation gate: parked. Only implement dynamic quarter reassignment if future DS-E1-equivalent evidence sho… | — |
 | RTG-13 | evidence plane event sourcing and narrative | [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md) | W3 — rotation snapshots (impl 3.2, ~1 day): journal segments per 1000 trials chained with a snapshot row (full reconstructed view + policy… | — |
 | RTG-14 | internal interaction lifecycle | [internal-interaction-lifecycle.md](internal-interaction-lifecycle.md) | P3-3. Shadow/optimization calibration: use consult_gate_probe on T2/T3 hard workflow slices to compare always-consult vs targeted-gate beha… | — |
-| RTG-15 | learned routing controller | [learned-routing-controller.md](learned-routing-controller.md) | EP-5 — re-run the probe only after the outcome-label defects are fixed | — |
+| RTG-15 | learned routing controller | [learned-routing-controller.md](learned-routing-controller.md) | EPD-3-R1 re-embed window (R2+R3 landed 9096a600; 11k injection rows carry the wrong type vector) — then EP-5 | — |
 | RTG-16 | loops and dashboards audit 2026 07 05 | [loops-and-dashboards-audit-2026-07-05.md](loops-and-dashboards-audit-2026-07-05.md) | Fix real_suite_v1 discriminability BEFORE certifying OP-1 (forward work from the audit above) — root-cause the run-instability first (two r… | — |
 | RTG-17 | model capability descriptors | [model-capability-descriptors.md](model-capability-descriptors.md) | W5 — GATED tail: unified cascade (Phase 3) (2–3 weeks IF ever opened): one calibrated bilinear P(success \| task_features, model_descriptor… | — |
 | RTG-18 | model stack change standardization audit | [model-stack-change-standardization-audit.md](model-stack-change-standardization-audit.md) | Keep as the per-change update checklist — run it at every model-stack change; never dispatch or flip its boxes | — |
@@ -31,7 +31,7 @@
 | RTG-20 | model stack update pipeline audit | [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md) | Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient | — |
 | RTG-21 | multi file coding completion capability | [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | MF-VBS-1 — measure the verify-before-stop failure rate from existing BEP/REPL traces before building any gate | — |
 | RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | NIB2-18: DS-6 QuarterScheduler revalidation gate — dynamic-stack-concurrency.md(dynamic-stack-concurrency.md) DS-6-live. Do not treat as co… | — |
-| RTG-23 | objective task rate goodput | [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | W3d — the 2026-06-13 hold conditions were superseded, not satisfied; close them out | — |
+| RTG-23 | objective task rate goodput | [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | OPERATOR: goodput vs raw rate on axis 1 (a/b/c, recommend b; absent-quality defect fixed fb16d860) — then W3e | — |
 | RTG-24 | orchestration robustness audit 2026 07 11 | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | P0.1 operator run/pause decision on autopilot candidate species | — |
 | RTG-27 | prompt construction determinism | [prompt-construction-determinism.md](prompt-construction-determinism.md) | D3 — manual canonical bench (sampling quality cert) (clean window; certifies #1–3). Greedy→sampled(0.1–0.3)+seed shifts output behavior. Ce… | — |
 | RTG-28 | reasoning effort levels | [reasoning-effort-levels.md](reasoning-effort-levels.md) | TB-1 — per-model budget curve on a truncation-inducing suite | — |
@@ -58,7 +58,7 @@
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 gate runs to 08-23; meanwhile: rule-11 text per D4 ack, relay-ledger 296-row adjudication, monitor:file starvation fix | RTG-34, RTG-48 |
 | RTG-53 | optical context compression | [optical-context-compression.md](optical-context-compression.md) | OCC-2 DONE 2026-08-25 (billing-asymmetry record); next: OCC-1 — billed-token cost vs QA recall, bitmap frames vs raw text | UFH-07, INF-41 |
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-E7b + CT-9 done 2026-08-23; re-observe the pilot under real traffic | — |
-| RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-1 — port the typed return-effect contract to PromptForge (~50 lines) | RTG-02 |
+| RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-5 — mine examples/heldout_generalization/ as a labelled contrastive corpus (feeds MHS-4); MHS-1/2 landed c27eec6c | RTG-02 |
 
 ## Cross-domain
 

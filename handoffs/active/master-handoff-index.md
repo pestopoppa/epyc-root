@@ -31,7 +31,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
 | OP-1 | P0.1–P0.3 sign-off bundle | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | 2026-07-11 |
-| OP-3 | Zero-inference decision batch — residual `dispatch_swarm_fanout` items | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 2026-07-14 |
 | OP-5 | Reviewer control-plane decision bundle (P-REV-1 amendment) | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-16 |
 | OP-6 | Consolidated quiet window — reviewer-plane baselines on the v8 reference lineup | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-17 |
 | OP-26 | ParEval CPU/HIP trials — flagged tier-1 at Hawkeye Stage-2b close but never reached the approved plan: run, file, or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
@@ -56,7 +55,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-13 | Ratify a P2-5j placement amendment or require a full P-BENCH-PLACEMENT-1 composite; the old four-arm design is observation-only | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P2-5j | 2026-08-11 |
 | OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-17 | Amend frozen-v9 attestation with llama ggml `0.16.0`, or retain an intentionally unverified complete-kernel-set fold | [autokernel-research-loop.md](autokernel-research-loop.md) AK6 dashboard residual | 2026-08-12 |
-| OP-19 | Rule the E8 chain retired (or not): B9/B10 are BLOCKED-AND-LIKELY-MOOT — their source evidence was destroyed and the era advanced to E9 on 2026-08-11, so both boxes wait on this ruling alone. **Widened 2026-08-16**: the same ruling must also restate the `CURRENT-CAMPAIGN.md:103,106` reseed gate against E9 — as written it blocks every stack/lineup/registry change on an E8-form reseed that can no longer be satisfied (the file contains zero occurrences of "E9"), and 8 further handoffs assert the same gate | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | 2026-08-12 |
 | OP-20 | One ruling on `task_failed` scoring applied to BOTH producers (`eval_tower:1339` excludes it; the seeding path scores it WRONG) — until it lands, quality numbers are not comparable across producers. Auditor recommends: non-infra → WRONG in both, infra → EXCLUDED in both | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | 2026-08-12 |
 | OP-22 | Rebuild the devcontainer to deploy `136894e8` (2026-07-31, drops CPU-only llama dirs from the global `LD_LIBRARY_PATH`). Committed but NOT live: container PID 1 started 2026-07-29, so every shell inherits the pre-fix `containerEnv` and hand-run speech binaries silently load mixed ggml generations. Production serving is unaffected; host/container lifecycle is operator-only | [ggml-linkage-and-speech-kernels](../../scripts/session/verify_speech_kernels.sh) | 2026-08-12 |
 | OP-25 | After C5-3 produces a live gfx90a correctness run, choose whether to leave SOL scoring disabled or port measured gfx90a constants for k215 only. Recommendation: k215-only if scoring is needed; never present the four >100×-headroom seeds as speed-of-light objectives | [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md) C5 | 2026-08-16 |
@@ -64,6 +62,8 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
+OP-3 and OP-19 (resolved) are preserved in
+[`../archived/master-handoff-index-history-through-2026-09-14.md`](../archived/master-handoff-index-history-through-2026-09-14.md).
 
 ## Standing contracts
 
@@ -84,11 +84,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 59 | 706 | 16 | 2026-07-29 |
-| pipeline-integration | 5 | 72 | 1 | 2026-07-29 |
-| research-evaluation | 44 | 400 | 10 | 2026-07-29 |
-| reviewer-control-plane | 7 | 33 | 11 | 2026-07-29 |
-| routing-and-optimization | 49 | 453 | 19 | 2026-07-29 |
+| inference-research | 55 | 708 | 16 | 2026-07-29 |
+| pipeline-integration | 5 | 74 | 1 | 2026-07-29 |
+| research-evaluation | 44 | 407 | 10 | 2026-07-29 |
+| reviewer-control-plane | 6 | 31 | 11 | 2026-07-29 |
+| routing-and-optimization | 49 | 463 | 19 | 2026-07-29 |
 | user-facing-harness | 7 | 55 | 3 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
