@@ -29,7 +29,7 @@
 | EVL-20 | fable5 window2 findings 02 heterogeneous gpu | [fable5-window2-findings-02-heterogeneous-gpu.md](fable5-window2-findings-02-heterogeneous-gpu.md) | F1 — per-split GPU/CPU timing under static -cmoe on one MoE model; report | — |
 | EVL-21 | fable5 window2 findings 03 portfolio and mas | [fable5-window2-findings-03-portfolio-and-master-queue.md](fable5-window2-findings-03-portfolio-and-master-queue.md) | G1 · Ratify P-GPU-1 (operator; measurement trust boundary — human-amendment-only). findings-02 §5 | — |
 | EVL-24 | frontier f2 self running lab | [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) | W3 — reliability ladder (ongoing): scripts/lab/promote_job.py enforcing shadow → reviewed → autonomous from logged stats (shadow ≥10 runs s… | — |
-| EVL-25 | frontier f3 data flywheel | [frontier-f3-data-flywheel.md](frontier-f3-data-flywheel.md) | Scope W3(a) planner-distill QLoRA — all three gates met; SFT/QLoRA/GRPO each demonstrated on gfx90a 2026-08-12 | — |
+| EVL-25 | frontier f3 data flywheel | [frontier-f3-data-flywheel.md](frontier-f3-data-flywheel.md) | W3(a) bf16 LoRA 9B fit check — needs operator: ~19 GB Qwen3.5-9B download or a 7B lower-bound stand-in | — |
 | EVL-26 | frontier f4 continuity backup | [frontier-f4-continuity-backup.md](frontier-f4-continuity-backup.md) | restic backend landed 2026-08-23; real run blocked on operator-named off-array target | — |
 | EVL-27 | frontier f6 upstream publication | [frontier-f6-upstream-publication.md](frontier-f6-upstream-publication.md) | W1 — D2 PR spearhead (1–2 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-processing sparse path the PR author asked for help… | — |
 | EVL-29 | intake derived work 2026 07 25 | [intake-derived-work-2026-07-25.md](intake-derived-work-2026-07-25.md) | ID-2 DONE 2026-08-23 (gepa==0.0.26 declared direct, f8bc4d2b); VERSION choice stays gated behind AP-19b | — |
@@ -50,10 +50,10 @@
 | EVL-44 | stale open audit 2026 07 18 | [stale-open-audit-2026-07-18.md](stale-open-audit-2026-07-18.md) | Close or relocate the LANDED/SUPERSEDED handoffs it lists (v6-consolidation, kb-rag K1-K7, x-mas) | — |
 | EVL-45 | strand rust coder rustevo2 verification | [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential | — |
 | EVL-46 | tool use eval contract | [tool-use-eval-contract.md](tool-use-eval-contract.md) | TU-GR-1 — add the grader-isolation clause (graders unreachable from the agent sandbox + transcript tripwire) | — |
-| EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | SC65/SC66/SC68 write-side wirings; SC76 claim_anchor re-verifier (root of SC77–SC80 intake checks) | EVL-50 |
+| EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | SC65/SC66 write-side wirings; SC76 claim_anchor re-verifier (root of SC77–SC80 intake checks) | EVL-50 |
 | EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L14 — KV-quant single-stream long-ctx: dense-Q8 and GDN full-global layers at 64k | — |
 | EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-01 — re-pin the 25 uptime-capped inference-batch entries to the v9 era and the live topology hash | INF-06, INF-07, RTG-46 |
-| EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | CME-1 — author the BEAM 128K/100K adapter and register it at the five documented points | EVL-10 |
+| EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | CME-1: make orchestrator _score_llm_judge score per nugget; smoke on staged 5.4 MB BEAM 100K parquet | EVL-10 |
 
 ## Cross-domain
 

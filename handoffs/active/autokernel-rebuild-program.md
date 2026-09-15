@@ -2148,7 +2148,18 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         floor without its `n` is the same defect class as a floor without its `unit` (R23-55) — a field a
         measurement must carry to be admissible.
 
-        - [ ] **R23-61a — RUN THE RECALIBRATION at n >= 24 and write `n` + a CI into the floor record.**
+        - [x] **R23-61a — RUN THE RECALIBRATION at n >= 24 and write `n` + a CI into the floor record.**
+          ✅ 2026-09-15 — option (b), **PRE-BIOS floor**: p95_dev **7.897%**, unit `process`, n=24 (24/24 valid),
+          95% bootstrap CI [5.520, 11.322]% (descriptive), median 160.18 tok/s, `recipe_hash 29fbffc56cd7`, provenance
+          verified, residency proven 24/24 (peak VRAM 40.44 GB, KFD 1), build `build-fold-ef81196d5`, shim not set.
+          Written to `autokernel/loop-memory/serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json` (sha `0fdf07c0…`), gates
+          via `run._gate_floor`; prior record kept as `.pre-r2361a-20260915.json.bak`. CI code: research branch
+          `sub/r23-61a-floor-n-ci` `a25aaf1f`. The standing 4.581%/n=10 lies below the CI; R23-58's 6.596% lies inside.
+          Window, harness and build differ from the old floor, so this is NOT a measured degradation.
+        - [ ] **R23-61b — POST-BIOS floor repeat.** After the operator reboot + BIOS session (and C8 verification):
+          `recal_serving_floor --apply --samples 24 --require-cpu-list` on the unchanged `ef81196d5` build + recipe
+          (hash `29fbffc56cd7`), host-state "POST-BIOS". Compare p95_dev + CI against the pre-BIOS 7.897%
+          [5.520, 11.322] n=24. Non-overlapping CIs = BIOS moved the variance.
           `recal_serving_floor --apply` under the recipe now in force (so the record carries a `recipe_hash` and
           stops being `unverified`). Needs the host, ~30 min, **nothing is blocking it** — the GPU is idle and
           R23-58 is closed. Extend `serving.write_floor` so the floor file carries `n` and a CI next to the

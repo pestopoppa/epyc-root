@@ -350,10 +350,16 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
   `DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf`, `Qwen3-4B-Thinking-2507-GGUF` (4G, only in
   deprecated benchmarks). Judgment calls (research-only refs, keep unless operator says otherwise):
   `Qwen3-ASR-1.7B-GGUF`, `gemma-4-e2b/e4b-it-Q8_0`, seal-concise set.
+  2026-09-15 PARTIAL: the 7 files + 5 husks deleted (~4.3 G), each ledgered in orchestrator `model_registry.yaml`
+  `deprecated_models` (branch `sub/nib2-65-ledger` `8e1bd269`). HELD: `Qwen3-4B-Thinking-2507-GGUF`, because the rationale above is
+  wrong — `gpu-cot-scaffold-sidecar.md` (active) uses it as a control-arm generator. Operator call.
 - [ ] **NIB2-66** (LOW): **stale kernel trees ~18G** — `llama.cpp-experimental-preserved-20260724T135832Z`
   (14G, superseded), `llama.cpp-v6-iqk` (1.9G, iqk shipped in v9), `llama.cpp-v7-sanitize-audit`
   (1.6G), `llama.cpp-k28-prototype-20260720` (0.9G). Keep `llama.cpp-dflash2-qwen38-20260820`
   (active handoff `dflash2-block-drafter-experimental-build.md`).
+  2026-09-15 PARTIAL: `llama.cpp-v6-iqk` and `llama.cpp-v7-sanitize-audit` removed (clean, fully pushed, `git worktree remove`).
+  HELD: `llama.cpp-k28-prototype-20260720` (dirty: uncommitted GDN `.cu` edit + doc — commit/push or discard first);
+  `llama.cpp-experimental-preserved-*` (dirty worktree of the production clone, operator-owned).
 - [ ] **NIB2-67** (LOW): **`cache/huggingface` 127G** — re-downloadable HF cache, all files touched
   <30d ago (in active use by sessions). Reclaim only when disk pressure returns; `pip`/`uv`/`dflash`
   caches also live under `cache/`.
@@ -393,11 +399,18 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
 Found by the INF-70 `c7-finish` agent while merging the NUMA pre-evict enable (orchestrator `5f20e23c`); none
 attributable to C7 — reproduced identically on the pristine pre-merge base `510f5048`.
 
-- [ ] **NIB2-69** (MED): **orchestrator `origin/main` carries 39 launch-manifest/port-guard errors and 33
+- [x] **NIB2-69** (MED): **orchestrator `origin/main` carries 39 launch-manifest/port-guard errors and 33
       pre-existing unit failures** (49 manifest errors before the C7 priors regen reduced them to 39; the 33 unit
       failures are identical on `510f5048`, plus 1 flaky on both bases). Triage by reason (not a bare count), fix
       or explicitly retire each, and make `stack_change_pipeline.py check` gate on zero manifest errors so the
       next merge cannot inherit them silently. Evidence: `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`.
+      ✅ 2026-09-15 — orchestrator `sub/nib2-69-strict-gate` (`218c0591`, `4055dba0`, `89b30eb5`). The 39 = 13 half-port errors ×
+      3 guard steps, a CHECK-MODE ARTIFACT: priors compiled for declared `both`, guard launch view fell to fleet→env→`full`.
+      `check` now resolves ONE mode (`--numa-mode` > `stack_topology.yaml`, ambient env ignored + warned), records it as step
+      `numa_mode`, threads it to compile and every guard step; manifest/port errors are hard in all guard steps. Also fixed 3
+      stale priors pins and a lean check that judged a gitignored cache key. Unit: 33 base failures → 0 (2 real bugs, 1 order
+      leak, 1 aged fixture, 17 made hermetic, 12 E8 tests `skipif` on deleted sealed staging bundles — coverage lost until
+      restored). Residual: standalone `stack_change_guard.py` still uses fleet→env mode resolution.
 
 ## 2026-09-08 supplement — shared research clone dirty-state rescue
 
