@@ -37205,6 +37205,49 @@
   - 'Repo drift: GEAK-agent HEAD is the Dec-2025 v2 codebase, NOT the July-2025 paper''s 4-module agent — pin a commit/tag matching the paper.'
   - 'MI250X dual-GCD != MI210 single-GCD: the 52.72%/2.42x gfx90a numbers used dual-GCD aggregate bandwidth; MI210 (~one GCD, ~half aggregate BW) needs autotune re-tuning and may show lower absolute speedups even though correctness/portability carry over.'
   notes: 'Ingested via /research-intake GEAK keystone deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-672. THE keystone AMD-native reference: train-free Triton agent + two open MIT benchmarks, evaluated ON gfx90a (MI250X = MI210''s ISA family) => C1/C2/C3/C5 of rocm-verify-profile-backend.md largely ALREADY BUILT and gfx90a-runnable. GEAK-eval becomes the primary AMD backend substrate; our net-new = C6 anti-hacking + C4 profiler-metric. Follow-up: GEAK-v2 (OptimAgentv2 + OpenEvolve) + GEAK-HIP. Repos: AMD-AIG-AIMA/GEAK-agent + GEAK-eval (MIT).'
+  verification: dive-verified
+  source_revision: arXiv:2507.23194v1 (only version, 2025-07-31), html sha256 5bbd39b0200d, retrieved 2026-09-15
+  claim_anchors:
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 5.1 Main Results
+    quote: On MI300, GEAK achieves 54.89% execution accuracy and a 2.59× speedup on TritonBench-revised Benchmark, and 63.33%
+      execution accuracy and 0.92x speedup on ROCm Benchmark
+    quote_sha256: 14ea124bd9eb84c7fee66d60bf7ec7f408139eabfbeb2d1cc14f325262730270
+    source_revision: arXiv:2507.23194v1 (only version, 2025-07-31), html sha256 5bbd39b0200d, retrieved 2026-09-15
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 4.2 Debugging trap
+    quote: we impose a limit on the number of debugging attempts per code snippet using a parameter max_perf_debug_num
+    quote_sha256: 2627c10891e76a508598f2c7714e015192f33357090d19bf896147e16c1ded40
+    source_revision: arXiv:2507.23194v1 (only version, 2025-07-31), html sha256 5bbd39b0200d, retrieved 2026-09-15
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: MI250 not MI250X; Triton-only, no HIP content.
+  - claim_index: 1
+    effect: unaffected
+    note: Modules confirmed.
+  - claim_index: 2
+    effect: narrowed
+    note: Best direct-prompt exec accuracy 16.85% (Gemini 2.5 Pro 1-shot), not <15%; ROCm bench speedup 0.92x.
+  - claim_index: 3
+    effect: unaffected
+    note: 184 kernels / 37 fixed / 30-kernel ROCm bench confirmed.
+  - claim_index: 4
+    effect: unaffected
+    note: Iteration and Pass@10 figures confirmed.
+  - claim_index: 5
+    effect: narrowed
+    note: MIT license not found in paper text.
+  depends_on: []
+  dive_corrections: '2026-09-15 (Stage-2b, resurfaced from intake-1400 AsmEvo dive): this is the "Wang et al. 2025" AsmEvo cites
+    for its KernelBench HIP input pipeline, but it is Triton-only with nothing on HIP generation, hipcc, flags or KernelBench,
+    so it cannot support AsmEvo''s description of how K0 was produced.'
+  reader_should_conclude: Triton-agent claims hold except the <15% baseline. Never cite for HIP compile settings or AsmEvo input
+    provenance.
 - id: intake-675
   arxiv_id: null
   url: https://github.com/AMD-AGI/Apex
@@ -37549,6 +37592,67 @@
   - Ships no open benchmark suite (only illustrative example kernels) + a research-use-only code drop — cannot be adopted turnkey the way GEAK-eval can; verify actual license before any code reuse.
   - 3-module design drops GEAK v1's explicit Optimizer (LLM-as-Optimizer over historical metrics); no ablation on whether HIP optimization quality suffers vs the 4-module Triton agent.
   notes: 'Ingested via /research-intake GEAK-v2/HIP follow-up batch (parallel sub-agent), 2026-06-03. Expanded from intake-674. Blog-stage (no arXiv). RAW HIP/C++ optimization (not Triton) = directly on-path for our llama.cpp hand-HIP endgame; STRONGEST existence-proof that agentic kernel authoring can beat a human engineer (Voxelization 2.07x vs 1.84x). gfx942/CDNA3 only (no gfx90a). Ships no open benchmark => adopt_patterns. AUDIT REMINDER: watch for a GEAK-HIP arXiv/benchmark release + re-run on gfx90a when MI210 lands; pairs with llama-cpp-dsa-contribution.md (hand-HIP).'
+  verification: dive-verified
+  source_revision: rocm.blogs.amd.com GEAK-HIP blog (dated 2025-12-23), page sha256 f69496f48331, retrieved 2026-09-15; repo
+    AMD-AGI/GEAK branch GEAK-HIP @ 6ab5a3c4d348cafa9b54b7a94fa109cc294c96a2
+  claim_anchors:
+  - claim_index: 2
+    kind: page-and-quote
+    locator: blog, intro paragraph
+    quote: 'adapting it for HIP optimization involves key modifications: handling pre-existing code as input, incorporating
+      HIP-specific syntax in instructions, cultivating a compile/debug pipeline, and emphasizing iterative refinement for latency
+      reduction'
+    quote_sha256: b0b5c5f0a3812edb90626e38ec6bcb4a332ec80b949263ac9d3d63812fc8a78e
+    source_revision: rocm.blogs.amd.com GEAK-HIP blog (dated 2025-12-23), page sha256 f69496f48331, retrieved 2026-09-15; repo
+      AMD-AGI/GEAK branch GEAK-HIP @ 6ab5a3c4d348cafa9b54b7a94fa109cc294c96a2
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'blog, Case Study #3'
+    quote: 'Overall, the agent generated heuristic speedup ratio vs. AITER original heuristic (all GEMM): 1.28x Overall, the
+      agent generated heuristic speedup ratio vs. AITER tuned heuristic (all GEMM): 0.8x'
+    quote_sha256: 6518a35e3eb8d7c1638e5753ea2ed62e110429c1a927a33ee0b1a5075fbfa6ff
+    source_revision: rocm.blogs.amd.com GEAK-HIP blog (dated 2025-12-23), page sha256 f69496f48331, retrieved 2026-09-15; repo
+      AMD-AGI/GEAK branch GEAK-HIP @ 6ab5a3c4d348cafa9b54b7a94fa109cc294c96a2
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'blog, Case Study #3'
+    quote: The agent generated heuristics is tested on GEMM problem sizes from the Qwen3-32B model with TP=2 setup
+    quote_sha256: c7d32679cd0c9de635d6b316c0513fb0e556809edf5566871fd63f1a10468f1c
+    source_revision: rocm.blogs.amd.com GEAK-HIP blog (dated 2025-12-23), page sha256 f69496f48331, retrieved 2026-09-15; repo
+      AMD-AGI/GEAK branch GEAK-HIP @ 6ab5a3c4d348cafa9b54b7a94fa109cc294c96a2
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Framing confirmed; "the layer our llama.cpp fork hand-writes" is our gloss.
+  - claim_index: 1
+    effect: narrowed
+    note: Four modules (Optimizer included), not three.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim; hipcc named only in repo Makefiles.
+  - claim_index: 3
+    effect: narrowed
+    note: Engineer-baseline flags unstated in blog; repo voxel build uses hipcc -O3.
+  - claim_index: 4
+    effect: overturned
+    note: Qwen3-32B is the workload supplying GEMM sizes, not the driving model (GPT-5); 1.28x is vs AITER original heuristic,
+      0.8x vs tuned.
+  - claim_index: 5
+    effect: narrowed
+    note: Branch has 6 rocm-examples + 10 MMCV kernels + voxel/silu/rms/GEMM; research-only release; no benchmark suite.
+  depends_on: []
+  dive_corrections: '2026-09-15 (Stage-2b, resurfaced from intake-1400 AsmEvo dive as "GEAK (Wang et al. 2025)", operator-selected):
+    blog gives no compiler or flags; repo builds mix hipcc -O3 (voxel, silu +-ffast-math), rocm-examples with no -O flag, and
+    torch-JIT MMCV kernels with no extra flags. Hardware MI300X (ROCm 6.4.3) and MI308X (GEMM); prompts target MI308 (CDNA3);
+    no gfx90a. Instruction prompts tell the agent to "Apply #pragma unroll to inner loops" and separately to reduce register
+    usage for occupancy, never measuring the interaction - the same tension our 2026-09-15 unroll/VGPR A/B measured (and note
+    "#pragma unroll" is a no-op on ROCm 6.2 per that A/B). Claim 4 attribution corrected.'
+  reader_should_conclude: GEAK-HIP is a GPT-5 refinement loop that inherits each example's own build flags (mixed -O3 / none).
+    Never cite its GEMM heuristic as a win (0.8x vs tuned AITER). Its prompts pair unroll pragmas with register-usage reduction
+    without measuring the conflict.
 - id: intake-679
   arxiv_id: '2605.16819'
   url: https://github.com/AMD-AGI/AgentKernelArena
@@ -60457,6 +60561,21 @@
   - '[review candidate] ADD -mllvm --amdgpu-unroll-threshold-local=600 to the build-flag checklist as a PRECONDITION of any ROCm 7+ upgrade. No action needed on ROCm 6.2.'
   - '[review candidate] RE-MEASURE prefill immediately after any ROCm upgrade rather than assuming the flag is sufficient.'
   notes: 'credibility_score 3: no peer-reviewed venue +0; recent +1; llama.cpp upstream is a known-contributor community +1; commercial bias +0; independent corroboration +1 (a reported regression with a reproducible workaround in the project issue tracker is community-verified rather than self-reported). Net 3. NOT REPRODUCED HERE - we do not run ROCm 7.'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Mechanism is llvm PR #147700 GEP-eligibility logic (intake-1414), not a threshold regression; among GA ROCm only
+      7.2.0 carries it (reverted in 7.2.1+ and LLVM main). The 3.7-5x magnitude came from llama.cpp#19984, later attributed
+      by its reporter to GGML_HIP_ROCWMMA_FATTN=ON; use rocm-systems#2865 gfx1100 ~3.1x.'
+  - claim_index: 1
+    effect: unaffected
+    note: Workaround flag confirmed by AMD in rocm-systems#2865.
+  - claim_index: 2
+    effect: unaffected
+    note: ROCm 6.2 is on the good side (default thresholds identical, GEP change absent).
+  dive_corrections: '2026-09-15 (Stage-2b via intake-1414 dive of llvm PR #147700): mechanism, scope and magnitude corrected
+    per claim_corrections. Precondition for upgrade narrows: avoid ROCm 7.2.0 specifically; 7.2.1+ reverted it. Separate newer
+    risk: LLVM 23 #194924 enables runtime unrolling for all AMDGPU loops (therock-10.1 gates it off).'
 - id: intake-970
   arxiv_id: '2406.06647'
   url: https://arxiv.org/abs/2406.06647
@@ -157109,3 +157228,2642 @@
     disposition: 'decline'
     reason: 'Both were measured with both sides correctly pinned; the channel was DRAM bandwidth (decode -7%, prefill flat). Core confinement removes CPU co-tenancy, not bandwidth co-tenancy; any claim of relief needs its own A/A under the new configuration after the gated reboot.'
   reader_should_conclude: 'cgroup-v2 cpusets, driven by systemd AllowedCPUs=/AllowedMemoryNodes= at host root, can kernel-enforce that non-lock-callers stay off a benchmark''s CPUs, and a partition root makes those CPUs exclusive. They cannot make memory nodes exclusive, cannot touch DRAM bandwidth, L3 sharing, IRQs or per-CPU kthreads, and cannot help a full-host recipe. On this host cgroup v2 is unified and cpuset is enabled down to system.slice, but nothing can be built from inside the devcontainer: the partition flag is parent-owned, the namespace root is populated, and agent processes span four other subtrees. For OP-41 this is a design input: cores via systemd at host root, bandwidth via something else (resctrl MBM/MBA is the surfaced candidate), all after the operator''s gates.'
+
+- id: intake-1398
+  arxiv_id: null
+  url: inline:operator-paste-2026-09-15 (reply to x-2026-09-15-mi210-low-quants)
+  source_type: blog
+  title: 'MI210 vs Blackwell low-bit decode gap: hardware vs software vs compiler attribution (unsourced reply to our own
+    X thread on MI210 low quants)'
+  authors:
+  - Unknown (no byline; style consistent with an AI-assistant answer). Replies to our thread docs/publication/social/threads/2026-09-15-x-mi210-low-quants.md
+  categories:
+  - hardware_optimization
+  - quantization
+  - local_inference
+  novelty: low
+  relevance: high
+  discovered_via: input
+  expanded_from: null
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: 0
+  key_claims:
+  - 'CIRCULAR, NOT CORROBORATION: the 64-VGPR / 8-vs-6 waves-per-SIMD threshold and the ~25% occupancy loss are read back
+    from OUR OWN X thread (tweets 2-3), which cites artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md. The paste
+    adds no independent evidence for them.'
+  - 'UNSOURCED: hardware/architecture (wave64 vs warp32, MFMA vs Tensor Cores, LDS-vs-register trade) accounts for ~40-50%
+    of why Blackwell avoids the occupancy cliff, and software maturity (MMVQ/MMQ tuning, fusion, launch bounds, TensorRT-LLM/vLLM/CUDA
+    graphs, compiler) for ~50-60%. No method or data is given for either split.'
+  - 'UNSOURCED: nvcc/ptxas register allocation is better tuned for irregular GGML dequant kernels than hipcc (LLVM AMDGPU),
+    raising VGPR use and lowering occupancy for the same algorithmic kernel.'
+  - 'UNSOURCED: 20-50%+ gains are plausible on the most register-heavy low-bit decode paths, with past AMD-side llama.cpp/ROCm
+    PRs cited as having shown double-digit gains from similar work (no PR named).'
+  - Recommends kernel-level work (live-range reduction, LDS temporaries, occupancy-aware launch bounds, fusion, MFMA paths,
+    Q3_K/IQ specialization) before compiler work, which it rates months-to-years and high difficulty; suggests measuring .vgpr_count
+    and trying "#pragma unroll".
+  techniques:
+  - register-pressure (VGPR) reduction in MMVQ decode kernels
+  - LDS for temporaries
+  - occupancy-aware launch bounds
+  - MFMA path extension
+  - compiler register-allocation improvement (AMDGPU backend)
+  reported_results:
+  - None measured. All percentages (40-50%, 50-60%, 20-50%+) are asserted without data.
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - 'Stage-1 expansion (2026-09-15, bounded): the "double-digit AMD PR" claim is PARTIAL - PRs #10498, #23227, #24546, #27841
+    show double-digit gains but all in prefill/batched MMQ, none in batch-1 MMVQ decode via register-pressure refactor (provisional,
+    see intake-1404..1406).'
+  - 'Stage-1 expansion: no source compares hipcc vs nvcc register allocation on the same kernel; the nvcc-superiority claim
+    is NOT-FOUND (provisional).'
+  - 'Repo evidence: artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md attributes the IQ2_XXS 78 VGPR to the sign-unpack
+    source path (vecdotq.cuh:990), i.e. source structure; "#pragma unroll" is not a known hipcc pragma in the repo (unroll
+    is controlled via --amdgpu-unroll-* LLVM options).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - mi210-q8-dequant-gemv-roofline.md
+    - autokernel-research-loop.md
+    - agentic-rocm-kernel-authoring.md
+    - fable5-window2-findings-05c-mi210-lever-category-matrix.md
+    - autokernel-rebuild-program.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-969
+    - intake-965
+    - intake-964
+    intake_entry_notes:
+    - 'evidence artifacts (not experiments/ files): artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md; artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md'
+    - intake-969 (ROCm 7+ unroll regression; --amdgpu-unroll-threshold-local workaround)
+    - intake-965 (apache/tvm autoscheduler as search substrate)
+    - intake-964 (llvm-project AMDGPU TableGen capability oracle)
+  handoffs_updated:
+  - autokernel-research-loop.md
+  - mi210-q8-dequant-gemv-roofline.md
+  - vidya-belief-substrate-program.md
+  handoffs_created: []
+  source_revision: 'operator paste 2026-09-15; no URL; sha256 of a condensed paraphrase record only (raw paste not retained
+    as a file): 99156c425e96'
+  verification: stage1-unverified
+  reader_should_conclude: UNVERIFIED and CIRCULAR - never cite this entry as corroboration of the 64-VGPR threshold (it is
+    our own claim echoed back). Never cite the 40-50%/50-60%/20-50% figures. Use it only as the prompt for the compiler-vs-source
+    A/B.
+  notes: 'Operator follow-up question (steering seq 1): should we build an "autocompiler"? Internal sweep (2026-09-15): no
+    compiler A/B on VGPR existed; "compiler flags" is nominally in AutoKernel search space but never ranked; no ML-compiler
+    intakes existed. Operator ran/authorized a compiler-only VGPR A/B on IQ2_XXS (steering seq 2) - RESULT 2026-09-15 (our
+    own measurement, not a claim of this source): artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md. Clang
+    full-unroll of the 4-trip sign-unpack loop is the VGPR multiplier: pragma clang loop unroll(disable) on vecdotq.cuh:1000
+    takes IQ2_XXS <1,true,false> 78->44 VGPR (IQ3_XXS 71->44), zero spill, other quants unchanged (Q3_K regresses 88->96 if
+    applied there). About 30 AMDGPU RA/scheduler knobs moved nothing; the existing pragma unroll is a no-op. Static only;
+    throughput untested. This overturns the premise that compiler register allocation is the lever: the effective lever is
+    per-loop unroll control expressed in source.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4: autokernel-research-loop.md AK-QL-2b/AK-QL-7/AK-QL-8 (operator decision D1 no general autocompiler);
+    mi210-q8-dequant-gemv-roofline.md INF37-IQ-2; vidya-belief-substrate-program.md SC76; docs/runbooks/rocm-upgrade-checklist.md
+    unpin gates (D2)'
+  novelty_justification: Thesis largely restates our own published finding; only the unsourced attribution percentages and
+    the compiler-vs-kernel framing are new.
+  relevance_justification: Directly on the MI210 decode register-pressure lever (AK-H-QL-1/2, AK-QL-2) and prompted the operator
+    question whether to build an autocompiler.
+  verdict_justification: worth_investigating for the compiler-vs-source attribution question it raises, which the repo had
+    never tested; its own numbers are not citable.
+  dive_corrections: 'Stage-4 2026-09-15: the "production 122B IQ2 MoE on GPU" premise used in dives is STALE - ROCm0 residents
+    are Qwen3.6/3.8-27B Q8_0 and Qwen3-VL-30B-A3B Q4_K_M (repos/epyc-orchestrator/orchestration/launch_manifest.yaml); no
+    IQ-format GPU role, so payoff is TRIPWIRE-gated (mi210 handoff INF37-IQ-2).'
+- id: intake-1399
+  arxiv_id: '2506.17506'
+  url: https://arxiv.org/abs/2506.17506
+  source_type: paper
+  title: 'VeriLocc: End-to-End Cross-Architecture Register Allocation via LLM'
+  authors:
+  - Lesheng Jin
+  - Zhenyuan Ruan
+  - Haohui Mai
+  - Jingbo Shang
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: 3
+  key_claims:
+  - A fine-tuned Qwen2.5-Coder-7B-Instruct maps normalized MIR to JSON register assignments per basic block, on MIR already
+    transformed (post inlining/unrolling).
+  - Allocations are validated by an SMT (Z3 4.14.0) check for consistency, safety and realizability; the model is resampled
+    until valid or attempts are exhausted.
+  - Evaluated on NVIDIA RTX 4090 (PTX) and AMD MI250x (ROCm 6.3.1, CDNA2) across Same-NV, Same-AMD and Mixed settings on a
+    9,325-instance dataset.
+  - A single self-described anecdotal GEMM case on MI250x runs 11.63% faster than rocBLAS, attributed (speculatively) to placing
+    matrix values in AccVGPRs where rocBLAS uses VGPRs.
+  - Pass@1 85-99% and Pass@100 89.76-99.86% by setting; "pass" means verifier-valid, not optimal or matching allocation quality.
+  techniques:
+  - LLM register allocation
+  - SMT-verified allocation
+  - regenerate-on-invalid loop
+  reported_results:
+  - 'Sec 4.7: 111.44 TFLOPS GEMM, 11.63% faster than rocBLAS on MI250x (anecdote, average of 100 runs, no variance).'
+  - 'Table 2: Pass@100 as low as 89.76% (Mixed MHA), 96.84% (Same-AMD MHA).'
+  - No runtime comparison against the ROCm/LLVM default allocator; no spill, copy or VGPR-count metric.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv:2506.17506v1 (2025-06-20, html); EMNLP 2025 main pp.30252-30262
+  verification: dive-verified
+  reader_should_conclude: 'Do not cite VeriLocc as evidence that learned register allocation relieves MMVQ register pressure
+    or justifies a toolchain change: it assigns registers/classes on post-unroll MIR and never benchmarks against the compiler
+    allocator. Its only EPYC use is the register-class-usage audit idea. Never carry the 11.63% as an expected gain.'
+  notes: Most direct precedent for an "autocompiler" narrowed to register allocation on the same arch family. Gain is a single
+    case study vs rocBLAS, not vs the default hipcc allocator on GGML kernels.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - '2026-09-15 Stage-2 dive: register-assignment/class lever only, after unrolling; retained as context for autocompiler
+    decision; Stage-3 plan may promote'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Sec 3.3
+    quote: VeriLocc uses a 7B decoder-only language model fine-tuned on the normalized input-output pairs described above.
+      As the backbone model, VeriLocc uses Qwen2.5-Coder-7B-Instruct
+    quote_sha256: 313c8c27ba4bf951649b12ee27dfd26533c57b0666e0e14638f0b4fcfc8f9809
+    source_revision: arXiv:2506.17506v1 (2025-06-20, html); EMNLP 2025 main pp.30252-30262
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec 3.4
+    quote: Specifically, we use Z3 4.14.0 for validating the results of register allocations. It continuously re-samples the
+      model until a valid allocation is found or a maximum number of attempts are exhausted.
+    quote_sha256: 6ce6b4c9c75eff4b210cf6d7237564bd4bfb07544bda7bf74b11e13df5f1fa8d
+    source_revision: arXiv:2506.17506v1 (2025-06-20, html); EMNLP 2025 main pp.30252-30262
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Sec 4.1 / 4.2
+    quote: The dataset consists of MIRs and ISAs for both NVIDIA RTX 4090 and AMD MI250x GPUs.
+    quote_sha256: 1e11d89a6474a96172c4dac0fffe3f485fc20aae0490d80999c7301e7d36fb11
+    source_revision: arXiv:2506.17506v1 (2025-06-20, html); EMNLP 2025 main pp.30252-30262
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec 4.7
+    quote: VeriLocc discovers an assignment that stores the values of the matrices in the AccVGPRs aggressively while rocBLAS
+      stores them in the VGPRs.
+    quote_sha256: eff1dd3df977631bb72652ef7a51c7b96a1622b541350ca4e8845117013d7ec5
+    source_revision: arXiv:2506.17506v1 (2025-06-20, html); EMNLP 2025 main pp.30252-30262
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec 4.7
+    quote: This refined version of GEMM achieves 111.44 TFLOPS
+    quote_sha256: 08a8c1873eb832174c4d8d1810fff3e3f1e822aa597f28100dde4aa7f3b65485
+    source_revision: arXiv:2506.17506v1 (2025-06-20, html); EMNLP 2025 main pp.30252-30262
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed; note it operates after inlining/unrolling, so it cannot reduce live-value count or VGPR pressure.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed as stated.
+  - claim_index: 2
+    effect: narrowed
+    note: Confirmed; ROCm 6.3.1, per-toolchain MIR normalizer and training labels intercepted from the ROCm allocator, so
+      it is toolchain-bound (ours is roc-6.2.0).
+  - claim_index: 3
+    effect: narrowed
+    note: Authors call it an anecdote; mechanism is a "we suspect" that contradicts AMD ISA docs; no ablation; rocBLAS hand-assembly
+      vs compiled kernel is not a controlled comparison.
+  - claim_index: 4
+    effect: narrowed
+    note: Stage-1 "near-100% pass@100" overstated (89.76% Mixed MHA); pass = verifier validity only.
+  depends_on: []
+  dive_corrections: '2026-09-15: facts confirmed, scope narrowed. 11.63% vs rocBLAS is a single uncontrolled anecdote with
+    speculated mechanism. No runtime baseline vs the compiler default allocator (labels imitate it). Acts on register assignment/class
+    only, after unrolling; does not reduce register count, spill or occupancy, so it would not find our unroll(disable) VGPR
+    gain. Pass@100 range corrected. Venue EMNLP 2025 (credibility +2 peer review, recent +1). Repo github.com/Jimmy-MMMM/VeriLocc
+    has no license. Stage-2b close-out 2026-09-15: operator-selected CDNA2 ISA doc ingested as intake-1409 (AccVGPRs are real
+    and MFMA-only; no Acc-vs-Arch latency statement, so the VeriLocc premise "ISA doc says no latency difference" is NOT-FOUND
+    in that revision; register-class audit cannot help non-MFMA MMVQ decode). Declined by operator (recommended): PresCount
+    (CGO 2024), RL4ReAl (CC 2023) - allocator papers; our A/B shows allocator knobs are not the binding lever.'
+  dive_actionables_ledger:
+  - direction: Cite VeriLocc as evidence for a toolchain change or an LLM register-allocation autocompiler for MMVQ pressure
+    disposition: decline
+    reason: Acts after the transformations that set VGPR count; no baseline vs compiler allocator; one anecdote.
+  - direction: 'Static disassembly audit: do hipcc-built MMVQ IQ2_XXS/Q4_K kernels leave any register class (AccVGPR analogue
+      on CDNA2) unused? OBSERVATION grade, experimental tree, zero GPU.'
+    disposition: plan-candidate
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - direction: Autocompiler search space should target pre-regalloc transformations (per-loop unroll/vectorize pragmas), where
+      VGPR count moves
+    disposition: plan-candidate (merge with intake-1400 ledger row 1)
+    owner: handoffs/active/autokernel-research-loop.md
+  dive_surfaced_sources:
+  - ref: 'Guan et al. 2024, PresCount: bank-conflict-aware register allocation (CGO 2024)'
+    what_it_would_settle: Whether a GPU-aware allocator yields measured runtime gains over LLVM default (VeriLocc never measured
+      this)
+    bears_on: intake-1399
+    recommend: 'decline (pending operator): our A/B shows allocator knobs are not the binding lever'
+  - ref: VenkataKeerthy et al. 2023, RL4ReAl (CC 2023)
+    what_it_would_settle: Learned regalloc spill/copy reduction vs LLVM greedy with runtime
+    bears_on: intake-1399
+    recommend: decline (pending operator)
+  - ref: AMD Instinct MI200 CDNA2 ISA documentation (amd.com instinct-mi200-cdna2-instruction-set-architecture.pdf)
+    what_it_would_settle: Whether AccVGPRs exist/usable on MI210 and documented latency parity; needed for the register-class
+      audit
+    bears_on: intake-1399
+    recommend: ingest-and-dive (pending operator)
+- id: intake-1400
+  arxiv_id: '2608.20711'
+  url: https://arxiv.org/abs/2608.20711
+  source_type: paper
+  title: 'AsmEvo: Agentic Assembly-Level Optimization of AMD GPU Kernels with Functional Equivalence Verification'
+  authors:
+  - (AMD / SUSTech; full author list not recorded by the dive)
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: 3
+  key_claims:
+  - An LLM agent optimizes compiled AMDGPU HSACO code objects post-compilation, without source (KernelBench inputs were HIP
+    kernels refined by a GEAK-style agent then compiled; AsmEvo never sees the source).
+  - Every candidate passes empirical functional-equivalence checks before timing; float outputs pass at cosine>=0.9999 and
+    L-inf<=1e-3 (not bit-exact), integers byte-exact.
+  - A metadata-aware rebuild rescans edited assembly for VGPR/SGPR/AGPR, LDS and scratch usage and recomputes descriptor and
+    AMDGPU metadata; a byte-patch fallback exists for resource-neutral edits.
+  - Across 30 KernelBench kernels on MI308X (CDNA3), 29 improve with 1.35x geomean single-kernel latency; only 5.1% of candidates
+    become commits; budget 12 h x 4 GPU workers per kernel with Claude Opus 4.8 as the agent.
+  techniques:
+  - post-compile assembly search
+  - differential functional-equivalence gate
+  - descriptor re-derivation
+  reported_results:
+  - 'Table 2 (MI308X): L1 15/15 improved, geomean 1.56, max 3.88; L2 14/15, geomean 1.17, max 2.55; all 30: 1.35 geomean,
+    137.8 attempts and 7.0 commits per kernel.'
+  - 'Table 3 (MI300X): AITer geomean 1.09 (max 1.310); Triton JIT (vLLM/SGLang) geomean 1.18 (max 1.343).'
+  - All figures are single-kernel latency ratios (median of event-timed launches on shared hardware), not serving throughput.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  source_revision: arXiv:2608.20711v1 (2026-08-21, html)
+  verification: dive-verified
+  reader_should_conclude: 'Cite intake-1400#02 (rebuild recomputes VGPR/SGPR/AGPR/LDS) and #03 (5.1% commit rate, 12 h x 4
+    GPUs per kernel) only as feasibility evidence for agentic post-compile AMDGPU editing on CDNA3 at kernel-latency level.
+    Never cite it for gfx90a/CDNA2 applicability, serving throughput, register-pressure-driven gains, gains over compiler-flag
+    tuning, or a toolchain change. Never carry 1.56x/3.88x as an expected EPYC gain.'
+  notes: Evidence that hipcc output leaves recoverable headroom, and a cost anchor for an agentic binary-level loop. No llama.cpp
+    MMVQ kernels tested; no default-allocator ablation reported in the stage-1 read.
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4: autokernel-research-loop.md AK-QL-8 records AsmEvo-style HSACO rewriting as declined; compile-control
+    arm latent'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Method > Overview
+    quote: AsmEvo optimizes compiled AMDGPU code objects without source code or an independent reference implementation. It
+      treats the original object K0 as a differential oracle
+    quote_sha256: 9b26cf87a0c0d1f6c3b8c9be59267918da9661437cb1bd5b8dda513db2245cb5
+    source_revision: arXiv:2608.20711v1 (2026-08-21, html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Experiments > Experimental Setup
+    quote: 'Every candidate passes GatedEval in a fixed order: functional-equivalence verification first, performance measurement
+      second. The equivalence check is repeated three times per candidate, using θ=0.9999 and τ=10^-3 in Eq. 1.'
+    quote_sha256: f6252834ecb28b30ae711bc714778dfe619db259d9d1bb55e7cbcd2e216b5a29
+    source_revision: arXiv:2608.20711v1 (2026-08-21, html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Method > Metadata-Aware Rebuild
+    quote: AsmEvo converts each edited assembly into a loadable code object by rescanning it for VGPR/SGPR/AGPR, LDS, and
+      scratch usage. It then recomputes resource fields in both the kernel descriptor and AMDGPU metadata before relinking
+      the object.
+    quote_sha256: 450ec769959e36909d16b393e3cef86ec7acff1844bbd2c7ef21576f2833ff78
+    source_revision: arXiv:2608.20711v1 (2026-08-21, html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Results > KernelBench Kernels
+    quote: Across all 30 selected kernels, AsmEvo improves 29, with a geometric-mean speedup of 1.35×. Despite the high improvement
+      rate, only 5.1% of evaluated candidates become verified commits, indicating that useful assembly rewrites are sparse.
+    quote_sha256: 2055ffb5e423bb17523b744c98af1998fc29c04dc910e62ad7be7cec8e7ba329
+    source_revision: arXiv:2608.20711v1 (2026-08-21, html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Scope and Limitations
+    quote: the current recovery and metadata-aware rebuild implementation is calibrated for CDNA-class AMD GPUs.
+    quote_sha256: 19017c1326cd1f95563f76c6c2e4e7d132c1b326a5fcfd1da715cd52c635b1b4
+    source_revision: arXiv:2608.20711v1 (2026-08-21, html)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Confirmed; KernelBench K0 objects came from an LLM-refined HIP pipeline with unstated compiler flags, so headroom
+      may partly reflect how inputs were produced.
+  - claim_index: 1
+    effect: narrowed
+    note: Equivalence is empirical over tested inputs/captured dispatches, and float tolerance (cos 0.9999, L-inf 1e-3) is
+      not bit-exact.
+  - claim_index: 2
+    effect: unaffected
+    note: Rebuild recomputes VGPR/SGPR/AGPR/LDS/scratch as stated; but no VGPR or occupancy delta is ever reported.
+  - claim_index: 3
+    effect: narrowed
+    note: Tested on CDNA3 only (MI308X/MI300X); no gfx90a/CDNA2; latency not throughput; no ablation vs compiler flags or
+      recompilation; promised search-driver comparison absent in v1; no code released.
+  depends_on: []
+  dive_corrections: '2026-09-15: all four stage-1 claims CONFIRMED against v1 but scope narrowed: CDNA3 only, single-kernel
+    latency not throughput, tolerance-based float equivalence, no compiler-flag/recompile ablation or speedup attribution,
+    VGPR recomputed but never reported, no code release. Does not show gains beyond a flag/pragma sweep on gfx90a MMVQ and
+    is no evidence for a toolchain change. Stage-1 omissions added: 5.1% commit rate, agent LLM Claude Opus 4.8. Independent
+    replication: none found (2 queries, restatements only). Stage-2b close-out 2026-09-15: GEAK resurfaced; collided with
+    intake-674/677/678, dived in place (no new entry). Finding: AsmEvo cites the Triton-only GEAK paper for its HIP input
+    pipeline; GEAK-HIP tooling mixes hipcc -O3 and flag-less builds and prompts for #pragma unroll, so KernelBench 1.35x/1.56x
+    headroom provenance is UNDETERMINED - treat it as headroom over an undisclosed K0 pipeline, not post-O3 headroom; AITer/Triton
+    1.09x/1.18x are the more reliable figures. Declined by operator (recommended): Luthier, CuAsmRL - post-compile binary
+    editing already declined under the freeze. Stage-2b round-2 2026-09-15 (intake-1419): AMD-AGI hip_kernel_llm_lab @980faee8
+    matches AsmEvo''s K0 description (KernelBench HIP, GPT-5, ~5 attempts, torch cpp_extension compile with no explicit device
+    -O level, default arch gfx942) but never names AsmEvo; K0 provenance probable, unproven. Declined by operator (round-2
+    recommended): amd/hip_llm_dataset, torch cpp_extension flag defaults.'
+  dive_actionables_ledger:
+  - direction: 'Autocompiler step 1: add a static-VGPR-gated per-loop pragma/rewrite search direction to autokernel for MMVQ
+      decode kernels (experimental tree; throughput + bit-exact gates). Justified by our own 2026-09-15 A/B, not by AsmEvo.'
+    disposition: plan-candidate
+    owner: handoffs/active/autokernel-research-loop.md
+  - direction: Post-compilation HSACO rewriting of llama.cpp kernels (AsmEvo-style)
+    disposition: decline
+    reason: No code release; not shown on CDNA2/gfx90a; an edited HSACO forks compiler output, breaking the commit+recipe
+      champion model; tolerance equivalence conflicts with our correctness gate. Revisit only if code ships and source-level
+      search exhausts headroom.
+  - direction: Toolchain change justified by AsmEvo
+    disposition: decline
+    reason: No compiler-flag or recompilation ablation; silent on the question.
+  dive_surfaced_sources:
+  - ref: Luthier (Raayai-Ardakani et al. 2025), ROCm code-object instrumentation
+    what_it_would_settle: Whether an open HSACO recovery/rebuild layer exists usable on CDNA2/gfx90a
+    bears_on: intake-1400
+    recommend: decline (pending operator)
+  - ref: CuAsmRL (He and Yoneki 2025)
+    what_it_would_settle: Assembly-level instruction reordering gains with ablation (NVIDIA analogue)
+    bears_on: intake-1400
+    recommend: decline (pending operator)
+  - ref: GEAK (Wang et al. 2025), AMD agentic HIP kernel generation
+    what_it_would_settle: How AsmEvo KernelBench K0 inputs were produced/compiled, i.e. whether headroom is an input artifact
+    bears_on: intake-1400
+    recommend: ingest-and-dive (pending operator)
+- id: intake-1401
+  arxiv_id: '2601.21096'
+  url: https://arxiv.org/abs/2601.21096
+  source_type: paper
+  title: 'Magellan: Autonomous Discovery of Novel Compiler Optimization Heuristics with AlphaEvolve'
+  authors:
+  - (Google / DeepMind incl. M. Trofin; full list at dive)
+  categories:
+  - autonomous_research
+  - hardware_optimization
+  novelty: high
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: 2
+  key_claims:
+  - LLM coding agent plus evolutionary search synthesizes C++ heuristics that plug into LLVM.
+  - Targets inlining and register-allocation live-range priority; some XLA work.
+  - 'Abstract: learned inlining beats hand-tuned heuristics; the regalloc priority result matches human policies.'
+  techniques:
+  - AlphaEvolve heuristic synthesis
+  - LLVM inliner/regalloc priority heuristics
+  reported_results:
+  - Abstract only; no numbers read in stage 1.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv v1 (2026-01-28), abstract only
+  verification: stage1-unverified
+  reader_should_conclude: UNVERIFIED (stage1) - do not cite any figure or mechanism from this entry in a plan or handoff until
+    a Stage-2 dive promotes it.
+  notes: 'Bears on autocompiler question: regalloc heuristic search on CPU matched, did not beat, human policy.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 2026-09-15 Stage-1 intake; no primary-source dive yet
+- id: intake-1402
+  arxiv_id: '2101.04808'
+  url: https://arxiv.org/abs/2101.04808
+  source_type: paper
+  title: 'MLGO: a Machine Learning Guided Compiler Optimizations Framework'
+  authors:
+  - Mircea Trofin
+  - Yundi Qian
+  - Eugene Brevdo
+  - Zinan Lin
+  - Krzysztof Choromanski
+  - David Li
+  categories:
+  - autonomous_research
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: 2
+  key_claims:
+  - Production ML policies integrated into LLVM passes (inlining-for-size first).
+  - Policies generalize across codebases and compiler versions.
+  - A later regalloc eviction policy exists upstream (LLVM D117147).
+  techniques:
+  - RL/ES-trained inlining policy
+  - ML regalloc eviction advisor (--regalloc-enable-advisor)
+  reported_results:
+  - 'Abstract: up to 7% size reduction vs -Oz. Regalloc eviction 0.3-1.5% QPS figure is a search snippet only (unverified).'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv v1 (2021-01-13), abstract
+  verification: stage1-unverified
+  reader_should_conclude: UNVERIFIED (stage1) - do not cite any figure or mechanism from this entry in a plan or handoff until
+    a Stage-2 dive promotes it.
+  notes: The ROCm 6.2 llc exposes --regalloc-enable-advisor, so the MLGO regalloc hook is present in our toolchain (checked
+    2026-09-15 via llc --help-hidden). Credibility -1 age offset by lab +1 and upstreaming.
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 2026-09-15 Stage-1 intake; no primary-source dive yet
+- id: intake-1403
+  arxiv_id: '2407.02524'
+  url: https://arxiv.org/abs/2407.02524
+  source_type: paper
+  title: 'Meta Large Language Model Compiler: Foundation Models of Compiler Optimization'
+  authors:
+  - Chris Cummins
+  - Volker Seeker
+  - et al. (Meta AI)
+  categories:
+  - autonomous_research
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: 2
+  key_claims:
+  - Code Llama models further trained on LLVM-IR and assembly.
+  - Predicts pass lists for code-size optimization.
+  - Disassembles x86/ARM assembly back to IR.
+  techniques:
+  - LLM pass-list prediction
+  - IR/assembly foundation model
+  reported_results:
+  - 'Abstract (unverified): 77% of autotuning search potential for size; 45% disassembly round-trip.'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: arXiv v1 (2024-06-27), abstract
+  verification: stage1-unverified
+  reader_should_conclude: UNVERIFIED (stage1) - do not cite any figure or mechanism from this entry in a plan or handoff until
+    a Stage-2 dive promotes it.
+  notes: Size-oriented CPU pass ordering; no GPU register-pressure results. Lowest relevance of the compiler-ML set.
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 2026-09-15 Stage-1 intake; no primary-source dive yet
+- id: intake-1404
+  arxiv_id: null
+  url: https://github.com/apollosenvy/kernel-anvil
+  source_type: repo
+  title: 'kernel-anvil: profile-guided MMVQ launch/block configuration tuner for AMD GPUs'
+  authors:
+  - apollosenvy / Tuklus-Labs (Gary Duncan), junkman690
+  categories:
+  - hardware_optimization
+  - quantization
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: not_applicable
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - The default gguf-optimize path sweeps a Triton FP16 GEMV proxy over BLOCK_N/BLOCK_K/num_warps and maps BLOCK_N//64 to
+    rows_per_block; only the later `ablate` command A/Bs real llama-bench, one bit per cell.
+  - Bottleneck classes (bandwidth-bound, occupancy-limited, register-spill, compute-bound) are computed from heuristic VGPR/LDS
+    estimates with scratch hard-coded to 0 and wave32 assumed; nothing reads measured .vgpr_count.
+  - The llama.cpp patch (~15 lines in mmvq.cu plus a header, config via SMITHY_CONFIG env) can only force should_use_small_k
+    on per (quant, N-bucket, K-bucket); nwarps in the JSON is ignored at runtime.
+  - README headline Qwen3.5-27B Q4_K_M 12 -> 27 tok/s (2.25x) on 7900 XTX used a TurboQuant-KV baseline; stock is ~20 tok/s
+    per the README itself, and no raw logs or repetitions are committed.
+  techniques:
+  - shape-specialized launch-bound autotuning
+  - bottleneck classification
+  reported_results:
+  - 'README.md:143: 12 tok/s baseline had TurboQuant turbo3 KV; stock ~20 tok/s (so <=1.35x vs stock, combined with TurboQuant
+    path).'
+  - 'Issue #4 (MI50, gfx906, GCN wave64): <1% tg, no pp change.'
+  - 'docs/reddit-feedback.md:78-79: users report 30-40 t/s stock on the same GPU/model.'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: github apollosenvy/kernel-anvil @ d9374a89394cf42e3e72193ab0f71312c472d41c (2026-09-05, Apache-2.0, 28
+    commits)
+  verification: dive-overturned
+  reader_should_conclude: 'Do not cite kernel-anvil as evidence of a 2x MMVQ decode lever: its runtime effect is one small_k
+    bit undoing an RDNA-only ban absent on CDNA2 in v9, and the 2.25x is TurboQuant-baseline-inflated and unreproduced. At
+    most a low-priority forced-small_k experimental A/B, null expected.'
+  notes: Only batch-1 decode double-digit evidence surfaced, but RDNA-only and self-reported. On CDNA2 the MMVQ launch size
+    is already tied to wavefront_size 64 (.max_flat_workgroup_size 256 observed in our note) - a dive must check whether the
+    claimed lever exists on gfx90a.
+  integration_disposition: declined
+  disposition_evidence:
+  - 2026-09-15 Stage-2 dive overturned the lever for CDNA2 (v9 mmvq.cu:490-493); remaining A/B idea goes to Stage-3 plan as
+    low priority
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: kernel_anvil/cli.py:335 @d9374a8
+    quote: '"rows_per_block": best_config.get("BLOCK_N", 64) // 64,  # normalize to rows'
+    quote_sha256: a9c81f16b20184305df2db79711dce8c1d9e7cc422fd3b18c7bf391da3398435
+    source_revision: github apollosenvy/kernel-anvil @ d9374a89394cf42e3e72193ab0f71312c472d41c (2026-09-05, Apache-2.0, 28
+      commits)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: kernel_anvil/profile.py:86 @d9374a8
+    quote: 'scratch_bytes=0,  # can''t estimate without rocprofv3'
+    quote_sha256: 779c5823625f90e5bde5d43692f4b4675571609f7eaab20fdf30022612aa555c
+    source_revision: github apollosenvy/kernel-anvil @ d9374a89394cf42e3e72193ab0f71312c472d41c (2026-09-05, Apache-2.0, 28
+      commits)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: kernel_anvil/cell_ablation.py:4-7 @d9374a8
+    quote: 'the patched llama.cpp runtime can honor exactly ONE bit per (quant, N-bucket, K-bucket) cell: force the small_k
+      dispatch path on, or leave the default. nwarps in the JSON is dead weight at runtime (it is __launch_bounds__-bound
+      at compile time).'
+    quote_sha256: e493a339cf0f25fffcd067a8e4f480c2334601418a835d16d2f9c52caa043b3d
+    source_revision: github apollosenvy/kernel-anvil @ d9374a89394cf42e3e72193ab0f71312c472d41c (2026-09-05, Apache-2.0, 28
+      commits)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:143 @d9374a8
+    quote: The 12 tok/s baseline was measured with TurboQuant turbo3 KV cache compression enabled, which adds decode overhead.
+      Stock llama.cpp without TurboQuant gets ~20 tok/s on this model.
+    quote_sha256: deaab6d9e097007f1618240b411a729fef1717b7c70cc8055005718e2150460d
+    source_revision: github apollosenvy/kernel-anvil @ d9374a89394cf42e3e72193ab0f71312c472d41c (2026-09-05, Apache-2.0, 28
+      commits)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Stage-1 said real-GPU MMVQ launch/block/thread sweep; the default path is a Triton FP16 proxy and no split parameter
+      reaches runtime.
+  - claim_index: 1
+    effect: narrowed
+    note: Classes exist but are heuristic, wave32-hardcoded, scratch always 0; register_spill can never fire from profile_kernel.
+  - claim_index: 2
+    effect: narrowed
+    note: Patch confirmed small, but the only runtime lever is one small_k boolean; it does not change launch size, nwarps,
+      wave or thread count.
+  - claim_index: 3
+    effect: overturned
+    note: Baseline misconfigured (TurboQuant KV overhead) and per-shape credits point at nwarps, which runtime ignores; no
+      reproducible kernel-only 2.25x.
+  depends_on: []
+  dive_corrections: '2026-09-15: OVERTURNED. Runtime effect is one small_k bit per shape bucket, undoing an RDNA-only small_k
+    ban. Frozen v9 maps CDNA to the GCN table which already enables small_k rows_per_block=nwarps (/mnt/raid0/llm/llama.cpp
+    ggml/src/ggml-cuda/mmvq.cu:490-493; RDNA ban at :1120 does not apply), so the patch hunk is a no-op for gfx90a. Headline
+    2.25x rests on a TurboQuant-degraded baseline. Only wave64 GCN field report (MI50) was <1% tg. verdict -> not_applicable
+    (RDNA-specific lever absent on CDNA2; out-of-scope mechanism, not out-competed), novelty -> low, relevance -> medium.
+    Stage-2b close-out 2026-09-15: discussion #21043 ingested as intake-1411 (dive-overturned: Vulkan-only rm_kq knob); commit
+    25ae3a9b3 ingested as intake-1412 (GB10-only; GCN/CDNA byte-identical; no CDNA table changes upstream through 5d4a3be26).
+    Declined by operator (recommended): kernel-anvil issue #4 comment (MI50 null already recorded).'
+  verdict_justification: 'not_applicable: the only runtime lever undoes an RDNA-only dispatch ban that CDNA2 in frozen v9
+    never had (mmvq.cu:490-493 vs :1120); heuristics are wave32-specific.'
+  dive_actionables_ledger:
+  - direction: Adopt kernel-anvil patch/configs
+    disposition: decline
+    reason: Patch hunk no-op on CDNA in v9; nwarps knob dead at runtime; MI50 wave64 report <1%.
+  - direction: One-bit forced-small_k A/B for batch-1 dense large-K (>=2048) Q8_0/Q4_K shapes on MI210 in llama.cpp-experimental,
+      tg128 ABA vs v9
+    disposition: plan-candidate (low priority, expected null; likely raises VGPR/LDS pressure)
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - direction: Runtime JSON per-shape dispatch table pattern
+    disposition: decline
+    reason: Values that matter (nwarps) are compile-time __launch_bounds__-bound.
+  - direction: Heuristic VGPR/occupancy classifier
+    disposition: decline
+    reason: Estimates not measurements; our .vgpr_count static read is stronger.
+  dive_surfaced_sources:
+  - ref: https://github.com/apollosenvy/kernel-anvil/issues/4#issuecomment-4643621258
+    what_it_would_settle: Full config of the only wave64 GCN (MI50) null report
+    bears_on: intake-1404
+    recommend: 'decline: null already recorded'
+  - ref: https://github.com/ggml-org/llama.cpp/discussions/21043
+    what_it_would_settle: Upstream "rm_kq = 1" MMVQ change; possible independent decode lever for GCN/CDNA tables
+    bears_on: intake-1404
+    recommend: ingest-and-dive (pending operator)
+  - ref: upstream ggml-org/llama.cpp commit 25ae3a9b3 (GB10 MMVQ table; calc_nwarps(small_k, halve_iters) signature)
+    what_it_would_settle: Whether newer upstream calc_nwarps adds CDNA levers absent from frozen v9
+    bears_on: intake-1404
+    recommend: ingest-and-dive (pending operator)
+- id: intake-1405
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/23227
+  source_type: repo
+  title: 'llama.cpp PR #23227: per-quant MMVQ/MMQ crossover thresholds gated on MFMA availability (release b9387)'
+  authors:
+  - jadenmach2 (Jaden_Mach)
+  - Johannes Gäßler (co-author)
+  categories:
+  - hardware_optimization
+  - quantization
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: already_integrated
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Adds ggml_cuda_should_use_mmvq with per-quant MMVQ/MMQ crossover thresholds; merged code gates on the CDNA device check
+    (with separate CDNA1 and CDNA2 tables), not on MFMA availability; MMVQ_MAX_BATCH_SIZE=8 remains the default elsewhere.
+  - 'Author rationale: on CDNA the per-row GEMV cost is dominated by dequantisation, so K-quants hand over to MMQ sooner.'
+  - 'Measured on MI250X (gfx90a, ROCm 7.2.1), Llama-3.2-3B-Instruct, llama-bench pp512 with ubatch 1..8, 10 reps: Q4_K_S 559->940
+    t/s (+68%), Q5_K_S 503->884 (+76%); CDNA2 thresholds Q3/4/5_K MMVQ<=3, Q2_K/Q6_K <=5.'
+  - Already an ancestor of production-consolidated-v9 (0db32c06e); code live at mmvq.cu:290-350 with EPYC-local Q8_0 ne11<=1
+    extension (a6b4b5263) stacked on it.
+  techniques:
+  - per-quant MMVQ->MMQ crossover
+  reported_results:
+  - 'Commit msg: MI250X gfx90a ROCm 7.2.1, pp512 ubatch 1..8: Q4_K_S 559->940 (+68%), Q5_K_S 503->884 (+76%).'
+  - Router only affects non-MoE MUL_MAT at ne11>=4 (>=6 Q2_K/Q6_K); batch-1 decode unchanged; MUL_MAT_ID tables untouched.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'PR #23227 MERGED 2026-05-28, merge sha bc81d47aba663383dc8827bd3bc8c4a35f735d16 (release b9387); read
+    via PR page and git show in frozen tree'
+  verification: dive-verified
+  reader_should_conclude: 'PR #23227 is already inside frozen v9; do not open adoption work. It only reroutes K-quant non-MoE
+    matmul at ubatch>=4 on CDNA and is irrelevant to batch-1 decode and Q8_0. Do not assume the MI250X/ROCm 7.2.1 thresholds
+    carry to MI210/ROCm 6.2 without one check.'
+  notes: Same arch (gfx90a). Batched, not batch-1. A dive must check whether frozen v9 (0db32c06e) already contains it and
+    the ROCm 7.2.1 vs 6.2 confound.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - '2026-09-15 dive: bc81d47ab is ancestor of production-consolidated-v9 (0db32c06e); mmvq.cu:290-350'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: /mnt/raid0/llm/llama.cpp/ggml/src/ggml-cuda/mmvq.cu:302,332-338 @0db32c06e
+    quote: 'if (GGML_CUDA_CC_IS_CDNA(cc)) { ... switch (type) { // tuned for CDNA2 case GGML_TYPE_Q2_K: return log_decision(ne11
+      <= 5); case GGML_TYPE_Q3_K: case GGML_TYPE_Q4_K: case GGML_TYPE_Q5_K: return log_decision(ne11 <= 3);'
+    quote_sha256: 8e09916697aa48f46f4b1c1b2f32506d33271d7afb906e17c86893c41a881a66
+    source_revision: 'PR #23227 MERGED 2026-05-28, merge sha bc81d47aba663383dc8827bd3bc8c4a35f735d16 (release b9387); read
+      via PR page and git show in frozen tree'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: git show bc81d47ab (commit message)
+    quote: 'On AMD CDNA, the optimal crossover differs substantially by quant family because the per-row GEMV cost is dominated
+      by dequantisation, not the dot-product itself: K-quants pay a heavier super-block decode and so MMQ wins sooner'
+    quote_sha256: d0b605661dccb1ad7d62946c26123aeabf4a18cdccd5d1b34b8f66bd445b0015
+    source_revision: 'PR #23227 MERGED 2026-05-28, merge sha bc81d47aba663383dc8827bd3bc8c4a35f735d16 (release b9387); read
+      via PR page and git show in frozen tree'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: git show bc81d47ab (commit message)
+    quote: Measured on MI250X (gfx90a, ROCm 7.2.1) with Llama-3.2-3B-Instruct, llama-bench pp512 across all 20 supported quants,
+      ubatch 1..8, 10 reps.
+    quote_sha256: 2bcf108003cfa41c83bc7bd1e2e4ae8c62b582d5bcfa1914d447defb7038490a
+    source_revision: 'PR #23227 MERGED 2026-05-28, merge sha bc81d47aba663383dc8827bd3bc8c4a35f735d16 (release b9387); read
+      via PR page and git show in frozen tree'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Stage-1 said gated on MFMA; merged code gates on GGML_CUDA_CC_IS_CDNA with CDNA1 and CDNA2 tables; GGML_HIP_MMQ_MFMA
+      does not affect this router.
+  - claim_index: 1
+    effect: unaffected
+    note: Rationale quoted verbatim; author assertion without profiler evidence.
+  - claim_index: 2
+    effect: narrowed
+    note: Figures verbatim but workload is pp512 with tiny ubatches on a 3B model, not concurrent serving or decode; ROCm
+      7.2.1 not 6.2.
+  - claim_index: 3
+    effect: unaffected
+    note: 'New claim from dive: git merge-base --is-ancestor bc81d47ab 0db32c06e -> ancestor.'
+  depends_on: []
+  dive_corrections: '2026-09-15: gate is the CDNA device check (not MFMA) with an added CDNA1 table; benchmark is pp512 ubatch
+    1..8 on 3B, not serving; already ancestor of frozen v9 with EPYC Q8_0<=1 extension on top; does not touch batch-1 decode.
+    verdict -> already_integrated. Nothing to adopt; only residual question is whether the MI250X/ROCm 7.2.1 K-quant crossover
+    holds on MI210/ROCm 6.2 for np>=4 or MTP verify blocks. Stage-2b close-out 2026-09-15: PR #20905 ingested as intake-1410
+    (already in v9; CDNA MMID IQ2_XXS=5 cutoff unmeasured on gfx90a; matters only at ne2>=2). Declined by operator (recommended):
+    PR #23227 full description table (fold into re-validation task if activated).'
+  verdict_justification: 'already_integrated: bc81d47ab is an ancestor of production-consolidated-v9; code live at mmvq.cu:290-350.'
+  dive_actionables_ledger:
+  - direction: 'Adopt PR #23227'
+    disposition: decline
+    reason: Already in frozen v9 (ancestor).
+  - direction: Re-validate CDNA2 K-quant MMVQ/MMQ crossover (<=3/<=5) on MI210 + ROCm 6.2 for np>=4 and MTP verify blocks,
+      extending GGML_CUDA_MMVQ_ROUTE_DECISION logging beyond Q8_0
+    disposition: 'plan-candidate (conditional: only when a K-quant model is served at np>=4)'
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - direction: Use as lever for batch-1 decode register pressure
+    disposition: decline
+    reason: Router leaves ne11<=3 on MMVQ for all types.
+  dive_surfaced_sources:
+  - ref: https://github.com/ggml-org/llama.cpp/pull/20905#issuecomment-4145835627
+    what_it_would_settle: Methodology of per-arch MUL_MAT_ID (MoE) MMVQ tables incl. CDNA table mmvq.cu:185
+    bears_on: intake-1405
+    recommend: 'ingest-and-dive (pending operator): production 122B IQ2 is MoE, so the MMID crossover is the live path'
+  - ref: https://github.com/ggml-org/llama.cpp/pull/23227 full PR description table (20 quants x ub 1..8)
+    what_it_would_settle: Per-quant crossover curves incl. upstream Q8_0 on CDNA2 vs our a6b4b5263 <=1 override
+    bears_on: intake-1405
+    recommend: 'decline: same source, fold into the re-validation task if activated'
+- id: intake-1406
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/10498
+  source_type: repo
+  title: 'llama.cpp PR #10498: minimal optimizations for CDNA (disable MMQ, FP32 compute type for MFMA)'
+  authors:
+  - IMbackK
+  categories:
+  - hardware_optimization
+  - quantization
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Disabled MMQ on CDNA because of register pressure and VGPR spilling.
+  - FP32 compute type to use MFMA.
+  techniques:
+  - route away from high-register kernels
+  - MFMA via FP32 compute type
+  reported_results:
+  - 'PR text (unverified): 8B Q4_K pp512 467->1108 t/s (~2.4x).'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: merged 2024-11-27
+  verification: stage1-unverified
+  reader_should_conclude: UNVERIFIED (stage1) - do not cite any figure or mechanism from this entry in a plan or handoff until
+    a Stage-2 dive promotes it.
+  notes: 'Historical; prefill-side register-pressure mitigation by routing, not kernel refactor. PR #14624 (MFMA for MMQ,
+    merged 2025-07-26) later reversed the MMQ disable; recorded here rather than as a separate entry to respect the expansion
+    cap.'
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 2026-09-15 Stage-1 intake; no primary-source dive yet
+- id: intake-1407
+  arxiv_id: null
+  url: https://github.com/ROCm/llvm-project/issues/4434
+  source_type: repo
+  title: 'ROCm/llvm-project #4434: full-LTO default on AMDGCN causes VGPR spills and up to 7.6x slowdown'
+  authors:
+  - amd-alavin (issue reporter)
+  categories:
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - After the full-offload-LTO default, the AMDGPU register allocator hits the 256-VGPR ceiling and spills, including inside
+    a software-pipelined inner loop (VGPRs 247 -> 256, scratch 0 B -> 268 B).
+  - MFMA instruction count is unchanged (360) while scratch ops rise 4 -> 260 and pipeline drains 10 -> 122; total instructions
+    also rise 1,800 -> 2,012.
+  - -fno-offload-lto restores 7.13.0-level performance within 1% on every layer measured.
+  - 'Timing: 24.17 ms (ROCm 7.16.26362, clang 24) vs 3.18 ms (ROCm 7.13.0, clang 23) on MI355X for 3 of 14 MIOpen ConvHipConv
+    configs; trigger is llvm/llvm-project PR #201457 (AMDGCN default LTO = full, merged 2026-06-09).'
+  - 'Local check 2026-09-15: ROCm 6.2 clang 18 (our pinned toolchain) lists -fno-offload-lto as the default, so current production
+    builds are unaffected.'
+  techniques:
+  - offload LTO
+  - VGPR spill diagnosis
+  reported_results:
+  - configs[37],[45],[85] regress, 11 of 14 unchanged; 24.17 ms vs 3.18 ms across two toolchain versions (MI355X, MIOpen),
+    not an LTO on/off within one toolchain.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: ROCm/llvm-project#4434 OPEN, opened 2026-09-14 by amd-alavin, untriaged (fetched 2026-09-15)
+  verification: dive-verified
+  reader_should_conclude: intake-1407 matters for any compiler unpin but not for production today (ROCm 6.2 clang 18 defaults
+    to -fno-offload-lto). Treat newer ROCm/clang as carrying two silent codegen regressions (full offload LTO spill; unroll-threshold
+    drop). Never approve an unpin without the 2x2 static audit plus MI210 decode/prefill ABA. Never cite 7.6x as a general
+    AMDGCN figure.
+  notes: 'Evidence that AMDGPU register allocation is sensitive to pipeline flags - the premise of a compiler-flag search.
+    Related: llvm/llvm-project #222423 (not ingested; cap).'
+  integration_disposition: monitor
+  disposition_evidence:
+  - '2026-09-15 Stage-2 dive: trigger = any ROCm/clang unpin for the ggml-hip build (production 6.2 defaults to -fno-offload-lto);
+    Stage-3 plan files the unpin gate'
+  - '2026-09-15 Stage-4: docs/runbooks/rocm-upgrade-checklist.md preflight -fno-offload-lto and 2x2 static audit validation
+    gate'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'issue #4434 body'
+    quote: the register allocator hits the 256-VGPR ceiling and spills, including inside a software-pipelined inner loop
+    quote_sha256: 4c1484e4dbfe43feafb513264e0675438d0ceff30c18d91ff4534bfab53053a8
+    source_revision: ROCm/llvm-project#4434 OPEN, opened 2026-09-14 by amd-alavin, untriaged (fetched 2026-09-15)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'issue #4434 workaround section'
+    quote: '`-fno-offload-lto` restores 7.13.0-level performance to within 1% on every layer measured'
+    quote_sha256: e166ff1ec9e9beea10ab239b34b34d7139e5ecb242a4dd31ab44dd3a2e07aed4
+    source_revision: ROCm/llvm-project#4434 OPEN, opened 2026-09-14 by amd-alavin, untriaged (fetched 2026-09-15)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'issue #4434 timing table + scope sentence'
+    quote: Of the fourteen in this shard, `configs[37]`, `[45]` and `[85]` regress and the other eleven are unchanged
+    quote_sha256: d61c0cc092ccca78a61da4f537485be4712b87bdcfc3cbc6dcd4a3a51f77db52
+    source_revision: ROCm/llvm-project#4434 OPEN, opened 2026-09-14 by amd-alavin, untriaged (fetched 2026-09-15)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Mechanism as stated; the issue does not split blame between cross-TU inlining and the double pre-/post-link pipeline.
+  - claim_index: 1
+    effect: narrowed
+    note: Scratch 4->260 table value restated by fetch tool (not verbatim prose); total instructions also rose, so LTO changed
+      loop/inline shape, not only register assignment.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 3
+    effect: narrowed
+    note: 7.6x is a cross-version comparison on 3/14 MIOpen configs on MI355X; not a general AMDGCN slowdown.
+  - claim_index: 4
+    effect: unaffected
+    note: Dive-added claim from local clang++ --help-hidden on ROCm 6.2.
+  depends_on: []
+  dive_corrections: '2026-09-15: verified against the issue; 7.6x narrowed to a cross-version, 3/14-config MIOpen result attributed
+    to LTO via the -fno-offload-lto recovery; codegen shape also changed (+212 instructions). ROCm 6.2 clang 18 defaults to
+    -fno-offload-lto (checked locally), so production is unaffected; risk applies only to a future toolchain unpin. Related:
+    llvm#222423 (tied 8-VGPR constraint changes SLP/VectorCombine shape, ~1.04x, no spill), llama.cpp#19984 / rocm-systems#2865
+    (ROCm 7 prefill regressions tied to the unroll-threshold drop llvm#147700, matches intake-969). Newer toolchains carry
+    two known silent regressions on exactly our binding axes (VGPR/unroll) and no documented AMDGPU register-allocation improvement
+    was found. Stage-2b close-out 2026-09-15: llvm PR #201457 ingested as intake-1413 (LTO default lands in LLVM 23 / therock-10.1,
+    no ROCm GA <=7.2.4); llvm PR #147700 as intake-1414 (7.2.0-only GEP-logic unroll change, reverted; corrects intake-969);
+    issue #222182 as intake-1415 (CoExec MFMA-only, absent on 6.2); Phoronix PGO as intake-1416 and its primary PR #177665
+    as intake-1417 (spill-placement lever, may worsen unrolling). Net: no positive reason to unpin found; newer upstream unrolls
+    MORE (#194924). Declined by operator (recommended): rocm-systems#2865 in round 1 (re-surfaced in round 2 as primary evidence,
+    pending operator).'
+  dive_actionables_ledger:
+  - direction: 'Toolchain-unpin gate: before any ROCm/clang unpin for ggml-hip, run a 2x2 {offload-lto default, -fno-offload-lto}
+      x {default unroll, --amdgpu-unroll-threshold-local=600} static per-kernel audit (VGPR, scratch bytes/ops, drains) on
+      IQ2_XXS/IQ3_XXS/IQ4_XS/Q4_K/Q8_0 MMVQ vs the 6.2 build, then MI210 tg/pp same-window ABA with residency proof and a
+      correctness pair; upgrade only if a cell beats 6.2 on decode without losing prefill'
+    disposition: plan-candidate
+    owner: docs/runbooks/rocm-upgrade-checklist.md
+  - direction: 'Pin -fno-offload-lto explicitly in experimental HIP builds on clang at/after the #201457 era and record it
+      in the codified recipe'
+    disposition: plan-candidate
+    owner: docs/runbooks/rocm-upgrade-checklist.md
+  - direction: Adopt offload LTO on 6.2 as an optimization
+    disposition: decline
+    reason: Evidence shows full offload LTO inflates VGPR/spill in register-bound kernels; no source shows a gain.
+  dive_surfaced_sources:
+  - ref: https://github.com/llvm/llvm-project/pull/201457
+    what_it_would_settle: 'First ROCm release carrying the full-LTO default; revert/reland history (#202714, #205094)'
+    bears_on: intake-1407
+    recommend: ingest-and-dive (pending operator)
+  - ref: https://github.com/llvm/llvm-project/issues/147700
+    what_it_would_settle: Unroll-threshold regression root cause and fix version (is =600 still needed upstream?)
+    bears_on: intake-1407
+    recommend: ingest-and-dive (pending operator)
+  - ref: https://github.com/llvm/llvm-project/issues/222182
+    what_it_would_settle: Whether pending CoExec VGPR->AGPR fixes could reduce VGPR pressure (a positive reason to upgrade)
+    bears_on: intake-1407
+    recommend: ingest-and-dive (pending operator)
+  - ref: https://github.com/ROCm/rocm-systems/issues/2865
+    what_it_would_settle: Whether the ROCm 7 llama.cpp prefill regression is fully explained by unroll threshold
+    bears_on: intake-1407
+    recommend: 'decline (pending operator): prefill-only, overlaps intake-969'
+  - ref: https://www.phoronix.com/news/AMD-LLVM-Device-Side-PGO-ROCm
+    what_it_would_settle: Whether device-side PGO in newer ROCm is a positive reason to unpin
+    bears_on: intake-1407
+    recommend: ingest-and-dive (pending operator)
+- id: intake-1408
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/14624
+  source_type: repo
+  title: 'llama.cpp PR #14624: HIP matrix cores (MFMA) for MMQ kernels on CDNA; wave-size generalization'
+  authors:
+  - deepsek (AMD)
+  categories:
+  - hardware_optimization
+  - quantization
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1398
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Adds an MFMA path for MMQ on CDNA1/2/3 and removes the hard-coded WARP_SIZE.
+  - Review discussed register pressure.
+  - 'Caused a 23-29% pp regression on wave-32 RDNA, fixed in #15014.'
+  techniques:
+  - MFMA MMQ path
+  - wavefront-size-generic launch sizing
+  reported_results:
+  - No speedup numbers recovered in stage 1.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: merged 2025-07-26
+  verification: stage1-unverified
+  reader_should_conclude: UNVERIFIED (stage1) - do not cite any figure or mechanism from this entry in a plan or handoff until
+    a Stage-2 dive promotes it.
+  notes: Confirms the MFMA-for-MMQ work the paste alludes to exists; magnitude unverified.
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 2026-09-15 Stage-1 intake; no primary-source dive yet
+
+- id: intake-1409
+  arxiv_id: null
+  url: https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/instruction-set-architectures/instinct-mi200-cdna2-instruction-set-architecture.pdf
+  source_type: blog
+  title: 'AMD Instinct MI200 (CDNA2) Instruction Set Architecture: Reference Guide'
+  authors:
+  - AMD
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1399
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: 4
+  key_claims:
+  - CDNA2 has 256 architectural VGPRs (V0-V255), 256 accumulation VGPRs (AV0-AV255) and SGPRs S0-S103; a wave may have up
+    to 512 VGPRs total, 256 of each type.
+  - MI200 merged Arch and Acc VGPRs into one pool and lets memory operations return data directly into Acc VGPRs (the document
+    also describes two pools; most likely one 512 budget with two address spaces).
+  - 'Acc VGPRs serve the matrix SIMD: MFMA A/B come from Arch or Acc VGPRs, C (accumulator) and D (result) use Acc VGPRs.'
+  - Acc<->Arch movement is explicit (V_ACCVGPR_READ, V_ACCVGPR_WRITE, V_ACCVGPR_MOV_B32) plus an ACC bit on MAI, vector-memory
+    and DS encodings; ordinary v_* VALU encodings carry no ACC field.
+  - Integer dot kernels such as V_DOT4C_I32_I8 are ordinary vector instructions on Arch VGPRs, distinct from MFMA.
+  techniques:
+  - accumulation VGPR register file
+  - MFMA
+  - V_ACCVGPR_READ/WRITE
+  reported_results:
+  - No latency or performance figures for Acc vs Arch VGPRs (NOT-FOUND-IN-SOURCE).
+  - No wave-sizing/occupancy rule (the 64 VGPR -> 8/6 waves rule is NOT-FOUND-IN-SOURCE).
+  - 'Local check (our ELF, frozen v9 mmvq.cu): IQ2_XXS <1,true,false> has 0 MFMA/Acc instructions; dot product is 16x v_dot4c_i32_i8_e32;
+    all 266 kernels agpr_count=0.'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated:
+  - mi210-q8-dequant-gemv-roofline.md
+  handoffs_created: []
+  source_revision: AMD Instinct MI200 CDNA2 ISA reference guide, cover 4-Feb-2022 (PDF ModDate 2021-09-27), 275 pp, sha256
+    6c8b6e86fddb4894, retrieved 2026-09-15 via direct PDF (no HTML exists)
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.24 (printed 16), 3.6.4 VGPR Allocation
+    quote: 'VGPRs are allocated out of two pools: regular VGPRs and accumulation VGPRs. Accumulation VGPRs are used with matrix
+      VALU instructions, and can also be loaded directly from memory. A wave may have up to 512 total VGPRs, 256 of each type.'
+    quote_sha256: e8058e7e2f00dbaeeb0ff6a5886da37f8d16c5474c0b0617eaaa940837e42810
+    source_revision: AMD Instinct MI200 CDNA2 ISA reference guide, cover 4-Feb-2022 (PDF ModDate 2021-09-27), 275 pp, sha256
+      6c8b6e86fddb4894, retrieved 2026-09-15 via direct PDF (no HTML exists)
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.10, Feature Changes in MI200 devices
+    quote: Merged Architectural and Accumulation VGPRs into one unified pool of VGPRs • Allow memory operations to return
+      data directly to accumulation VGPRs
+    quote_sha256: db9a968138ddbaf28dd5fe614fabb2d1226b3fc684287efa4b1db9a578964db9
+    source_revision: AMD Instinct MI200 CDNA2 ISA reference guide, cover 4-Feb-2022 (PDF ModDate 2021-09-27), 275 pp, sha256
+      6c8b6e86fddb4894, retrieved 2026-09-15 via direct PDF (no HTML exists)
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.53 (printed 45), Ch.7 MAI
+    quote: The A and B matrices are source data and can come from either Arch or Acc VGPRs. The C matrix is the accumulation
+      source matrix, and comes from Acc VGPRs. The D matrix is the result matrix, and uses the Acc VGPRs.
+    quote_sha256: 7255fc72c6110690c6b23cb0710645a71d1f3ecb2a2a0f778081b76268abc528
+    source_revision: AMD Instinct MI200 CDNA2 ISA reference guide, cover 4-Feb-2022 (PDF ModDate 2021-09-27), 275 pp, sha256
+      6c8b6e86fddb4894, retrieved 2026-09-15 via direct PDF (no HTML exists)
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PDF p.157, VOP3P opcodes 88/89
+    quote: 88 V_ACCVGPR_READ  move one AccVGPR to ArchVGPR, one source operand 89 V_ACCVGPR_WRITE  move one ArchVGPR to AccVGPR,
+      one source operand
+    quote_sha256: efe76abea98a71b425249b892a2fc3bcceac3daad23147337564386f21bea671
+    source_revision: AMD Instinct MI200 CDNA2 ISA reference guide, cover 4-Feb-2022 (PDF ModDate 2021-09-27), 275 pp, sha256
+      6c8b6e86fddb4894, retrieved 2026-09-15 via direct PDF (no HTML exists)
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: Document is internally inconsistent (unified pool vs two pools of 256); read as one 512 budget with two address
+      spaces.
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 3
+    effect: unaffected
+    note: Opcode table verbatim.
+  - claim_index: 4
+    effect: unaffected
+    note: Opcode 57 table entry.
+  depends_on: []
+  dive_corrections: '2026-09-15: term "AGPR" never appears; HIPCC .agpr_count = AccVGPR count is an inference. No occupancy/wave-sizing
+    rule and no Acc-vs-Arch latency statement, so VeriLocc''s (intake-1399) "ISA doc says no latency difference" premise is
+    NOT-FOUND in this revision. Imported repo note handoffs/completed/mi210-mfma-compute-bound-paths.md:94-96 ("HIPCC will
+    not feed AGPRs to matrix-core instructions") describes compiler behaviour at most: the ISA allows MFMA A/B from Acc VGPRs.
+    Stage-2b round-2 2026-09-15: MI250 microarchitecture doc ingested as intake-1418 - also no occupancy rule; SPI resource-shortage
+    counters are the documented measurement route. Declined by operator (round-2 recommended): MI300 CDNA3 ISA, CDNA4 whitepaper.
+    Round-3 dive-surfaced sources operator-declined via Stage-3 plan approval 2026-09-15. (CDNA4 whitepaper, MI300 ISA)'
+  dive_actionables_ledger:
+  - direction: Annotate handoffs/completed/mi210-mfma-compute-bound-paths.md:94-96 that the ISA permits MFMA A/B from Acc
+      VGPRs; the "will not feed AGPRs" statement is a compiler observation, not an ISA limit
+    disposition: plan-candidate
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md (completed handoff is historical; record correction in active
+      owner)
+  - direction: Use Acc VGPRs to relieve MMVQ decode VGPR pressure
+    disposition: decline
+    reason: Needs V_ACCVGPR_READ before every v_* use; MMVQ has no MFMA; occupancy accounting undocumented.
+  - direction: Locate the documented wave-sizing/occupancy rule and whether Acc VGPRs count toward it
+    disposition: 'plan-candidate (source: MI250 microarchitecture doc)'
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  dive_surfaced_sources:
+  - ref: https://instinct.docs.amd.com/latest/gpu-arch/mi250.html
+    what_it_would_settle: Documented occupancy/wave-sizing rule per SIMD and register-class budgets
+    bears_on: intake-1409
+    recommend: ingest-and-dive (pending operator)
+  - ref: AMD Instinct MI300 CDNA3 ISA PDF
+    what_it_would_settle: Whether CDNA3 changed Acc/Arch pooling
+    bears_on: intake-1409
+    recommend: 'decline: different device'
+  reader_should_conclude: Cite for CDNA2 register-class facts (256+256 VGPRs, Acc VGPRs for MFMA, explicit READ/WRITE movement).
+    Never cite for the 64-VGPR/8-wave rule or any Acc-vs-Arch latency claim - neither is in it. Do not propose Acc VGPRs as
+    an MMVQ decode lever.
+  notes: null
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4: mi210-q8-dequant-gemv-roofline.md INF37-IQ-3 (AGPR note correction)'
+- id: intake-1410
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/20905
+  source_type: repo
+  title: 'llama.cpp PR #20905: optimize MoE GEMV kernel for BS>1; per-arch MUL_MAT_ID MMVQ max-batch tables'
+  authors:
+  - gaugarg-nv (Gaurav Garg)
+  - am17an (Aman Gupta)
+  - JohannesGaessler (benchmarks)
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1405
+  verdict: already_integrated
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Adds a dedicated mul_mat_vec_q_moe kernel for multi-token MUL_MAT_ID (grid ceil(nrows/rpb) x nchannels, block warp_size
+    x ncols_dst).
+  - Raises the MMID MMVQ max batch from 4 to 8 and makes it configurable per GPU arch and quant type.
+  - Thresholds come from a BS 2-8 sweep on MI60/MI50, MI100 (GCN), several NVIDIA cards and RX 6800/9060 XT using granitemoe
+    3B and gpt-oss 20B.
+  - The only CDNA evidence in the thread is a Q8_0 spot check at ubatch 1 and 4; the CDNA IQ2/IQ3 cutoffs (IQ2_XXS=5, IQ3_XXS=5)
+    have no published gfx90a measurement.
+  - Already in frozen v9 (mmvq.cu:185-194; used at ggml-cuda.cu:1911-1913 routing and :2551-2552 HIP-graph disable).
+  techniques: []
+  reported_results:
+  - 'MI100 IQ2_XXS speedup vs master: BS2 1.13, BS3 1.15, BS4 1.13, BS5 1.02, BS6 0.95, BS8 0.91.'
+  - 'CDNA Q8_0 pp512@d16384: ubatch1 0.98 (noise), ubatch4 1.06.'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated:
+  - mi210-q8-dequant-gemv-roofline.md
+  handoffs_created: []
+  source_revision: 'PR #20905 merged 2026-03-29 (squash ec16a072f06c9c44d33513405a83068b15ae1b2c; ancestor of v9 0db32c06e);
+    retrieved 2026-09-15'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: ec16a072f commit message
+    quote: New mul_mat_vec_q_moe kernel is dedicated for MoE multi-token kernel with grid (ceil(nrows_x/rpb), nchannels_dst),
+      block (warp_size, ncols_dst).
+    quote_sha256: 7c9cbdb8e0aefe5a2acd879598f9edea6d349a478f03bfbefae085759433d499
+    source_revision: 'PR #20905 merged 2026-03-29 (squash ec16a072f06c9c44d33513405a83068b15ae1b2c; ancestor of v9 0db32c06e);
+      retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: ec16a072f commit message
+    quote: Increase max batch size for MMVQ kernels for MUL_MAT_ID to 8
+    quote_sha256: 05fc3984e22c6248ecb946ad126d2f8bfe31456fdb6e5ab3a75b41d2aef88422
+    source_revision: 'PR #20905 merged 2026-03-29 (squash ec16a072f06c9c44d33513405a83068b15ae1b2c; ancestor of v9 0db32c06e);
+      retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 3
+    effect: narrowed
+    note: Provenance of CDNA IQ2/IQ3 cutoffs NOT-FOUND; treat IQ2_XXS=5 as unmeasured on gfx90a.
+  - claim_index: 0
+    effect: unaffected
+    note: Commit message verbatim.
+  - claim_index: 1
+    effect: unaffected
+    note: Commit message verbatim.
+  - claim_index: 2
+    effect: narrowed
+    note: Benchmark comment has no threshold table; tables appear only in code.
+  - claim_index: 4
+    effect: unaffected
+    note: merge-base --is-ancestor passes.
+  depends_on: []
+  dive_corrections: '2026-09-15: stage-1 hint of merge sha 5d282ad48 reattributed (PR-internal commit); squash ec16a072f.
+    Batch-1 decode (ne2=1) is unaffected. For the 122B IQ2 MoE at ne2>=2 (e.g. MTP verify), ne2<=5 stays MMVQ with HIP graphs;
+    ne2>=6 routes MMQ and disables HIP graphs (ggml-cuda.cu:2552). Stage-2b round-2 2026-09-15: PR #27621 ingested as intake-1420
+    (MoE fusion for multi-token verify; AMD HIP correctness issue #28113). Declined by operator (round-2 recommended): PR
+    #26079 (NVIDIA-only rows), PR #22933 (Vulkan). Stage-4 2026-09-15: the "production 122B IQ2 MoE on GPU" premise used in
+    dives is STALE - ROCm0 residents are Qwen3.6/3.8-27B Q8_0 and Qwen3-VL-30B-A3B Q4_K_M (repos/epyc-orchestrator/orchestration/launch_manifest.yaml);
+    no IQ-format GPU role, so payoff is TRIPWIRE-gated (mi210 handoff INF37-IQ-2).'
+  dive_actionables_ledger:
+  - direction: Sweep MUL_MAT_ID ne2=2..8 for IQ2_XXS on MI210 in llama.cpp-experimental to check whether the CDNA cutoff 5
+      is optimal and quantify the HIP-graph-disable cost at >=6 (tie to the MTP draft widths the 122B recipe uses)
+    disposition: plan-candidate
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  dive_surfaced_sources:
+  - ref: https://github.com/ggml-org/llama.cpp/pull/27621 (41ef91f7c)
+    what_it_would_settle: Whether MoE glu/topk-router fusion for multi-token specdec helps 122B MoE MTP verify on HIP and
+      interacts with the MMID graph cutoff
+    bears_on: intake-1410
+    recommend: ingest-and-dive (pending operator)
+  - ref: https://github.com/ggml-org/llama.cpp/pull/26079
+    what_it_would_settle: Later per-HW MMVQ/MMQ crossover rows
+    bears_on: intake-1410
+    recommend: 'decline: NVIDIA-only rows'
+  reader_should_conclude: Already in v9. The CDNA IQ2_XXS=5 MMID cutoff is unmeasured on gfx90a; it only matters at ne2>=2
+    on the 122B IQ2 MoE, where >5 also disables HIP graphs. Batch-1 decode untouched.
+  notes: null
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4: mi210-q8-dequant-gemv-roofline.md INF37-IQ-2 item (2), TRIPWIRE-gated'
+- id: intake-1411
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/discussions/21043
+  source_type: repo
+  title: 'llama.cpp discussion #21043: RDNA4 Llama experiments on R9700 (Vulkan rm_kq = 1)'
+  authors:
+  - JohnTDI-cpu
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1404
+  verdict: not_applicable
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - rm_kq is the Vulkan backend rows-per-shader-invocation specialization constant for K-quant mul_mat_vec pipelines; setting
+    it 2 -> 1 is reported to cut VGPR pressure on RDNA4.
+  - 'Reported: AMDVLK dense decode +13%, RADV MoE decode +1.1%, Windows LLPC dense +1% (single-user local experiment).'
+  - Hardware is an AMD Radeon AI PRO R9700 (gfx1201) on Vulkan drivers, not ROCm/HIP.
+  - No upstream PR implemented rm_kq=1; frozen v9 ggml-vulkan.cpp still has rm_kq=2 (4 for AMD_GCN) and no rm_kq in ggml-cuda.
+  techniques: []
+  reported_results:
+  - AMDVLK dense decode +13%; RADV MoE +1.1% (user-reported, unreplicated).
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'discussion #21043 started 2026-03-26, retrieved 2026-09-15; local git log -S rm_kq over frozen tree'
+  verification: dive-overturned
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: v9 ggml/src/ggml-vulkan/ggml-vulkan.cpp:4872-4882 @0db32c06e
+    quote: uint32_t rm_kq = 2;
+    quote_sha256: 2ec794693bdea550950948012c38e371f832e4d6ef052d77ae2f37ff7c8e1ae4
+    source_revision: 'discussion #21043 started 2026-03-26, retrieved 2026-09-15; local git log -S rm_kq over frozen tree'
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 3
+    effect: reattributed
+    note: Stage-2 described it as an MMVQ change; it is a Vulkan DMMV knob with no PR.
+  - claim_index: 0
+    effect: unaffected
+    note: v9 source read.
+  - claim_index: 1
+    effect: unaffected
+    note: User figures as posted.
+  - claim_index: 2
+    effect: unaffected
+    note: As posted.
+  depends_on: []
+  dive_corrections: '2026-09-15: OVERTURNED as a lever for our stack: Vulkan-only, no path into HIP serving. Closest HIP analog
+    (small_k rows_per_block, GCN nwarps=2) is already in v9 (mmvq.cu:489-493, 391-397); the fewer-rows-per-block idea is already
+    written into v9 RDNA4 calc_nwarps comment (mmvq.cu:415-417).'
+  dive_actionables_ledger:
+  - direction: Port Vulkan rm_kq=1
+    disposition: decline
+    reason: Vulkan-only; HIP analog already present.
+  dive_surfaced_sources: []
+  reader_should_conclude: Not a HIP lever; do not cite for MI210 decode.
+  notes: null
+  integration_disposition: declined
+  disposition_evidence:
+  - '2026-09-15 dive: Vulkan-only knob; not on serving path'
+- id: intake-1412
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/commit/25ae3a9b331fffea50ff8d07a5cad34c33f1276f
+  source_type: repo
+  title: 'llama.cpp commit 25ae3a9b3 (PR #26843): MMVQ nwarps=8 for bs=1 dense models on DGX Spark (GB10); calc_nwarps(small_k,
+    halve_iters)'
+  authors:
+  - ynankani (NVIDIA)
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1404
+  verdict: not_applicable
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Adds MMVQ_PARAMETERS_GB10 selected only for GGML_CUDA_CC_DGX_SPARK.
+  - calc_nwarps gains small_k and halve_iters; on GB10 with ncols_dst==1 and no ids it doubles nwarps (4->8) for Q4_0/Q4_1/Q5_0/Q5_1/Q8_0/Q4_K/Q5_K/Q6_K/IQ4_NL
+    when the K loop idle tail is at most 1/8.
+  - MoE (has_ids) and IQ2/IQ3 types are excluded; GCN/CDNA behaviour is byte-identical.
+  - Frozen v9 has the 3-argument calc_nwarps (mmvq.cu:374); no upstream commit between the v9 merge-base (a8dc0e326) and 5d4a3be26
+    changes GCN/CDNA MMVQ table rows.
+  techniques: []
+  reported_results:
+  - No numbers in the commit (NOT-FOUND-IN-SOURCE).
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'ggml-org/llama.cpp commit 25ae3a9b331fffea50ff8d07a5cad34c33f1276f (2026-08-18, PR #26843); not ancestor
+    of v9; upstream mmvq.cu scanned to origin/master 5d4a3be26 (2026-08-31)'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 25ae3a9b3 should_halve_iters
+    quote: // Expert rows are gathered per token, so a wider block adds reduction work without reuse.
+    quote_sha256: 7f136b854d69b5d58980f7e28b97258190a87be1795de0b1d8e7e4d836a86f3b
+    source_revision: 'ggml-org/llama.cpp commit 25ae3a9b331fffea50ff8d07a5cad34c33f1276f (2026-08-18, PR #26843); not ancestor
+      of v9; upstream mmvq.cu scanned to origin/master 5d4a3be26 (2026-08-31)'
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 25ae3a9b3 should_halve_iters
+    quote: return idle * 8 <= iters_wide * 2;
+    quote_sha256: 05c6cfc3c7eabd4f80bca17bfd42777e16fb9dfe3ed7a5ef04752445d5088d12
+    source_revision: 'ggml-org/llama.cpp commit 25ae3a9b331fffea50ff8d07a5cad34c33f1276f (2026-08-18, PR #26843); not ancestor
+      of v9; upstream mmvq.cu scanned to origin/master 5d4a3be26 (2026-08-31)'
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: halve_iters widens blocks and raises register pressure; it is not a register-relief lever.
+  - claim_index: 0
+    effect: unaffected
+    note: Diff read.
+  - claim_index: 2
+    effect: unaffected
+    note: Diff read.
+  - claim_index: 3
+    effect: unaffected
+    note: Local git.
+  depends_on: []
+  dive_corrections: '2026-09-15: no CDNA/GCN lever for IQ2_XXS/IQ3_XXS decode. Only borrowable idea: gate v9 unconditional
+    CDNA2 Q8_0 bs=1 nwarps=4 (mmvq.cu:397) by K geometry using the idle-tail rule (experimental, low priority). Commits after
+    2026-08-31 not scanned.'
+  dive_actionables_ledger:
+  - direction: Port GB10 halve_iters to CDNA
+    disposition: decline
+    reason: Excludes IQ2/IQ3/MoE and raises register pressure.
+  - direction: Gate CDNA2 Q8_0 bs=1 nwarps=4 by K geometry (idle-tail rule), experimental branch, next kernel version
+    disposition: plan-candidate (low priority)
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  dive_surfaced_sources: []
+  reader_should_conclude: Not in v9 and nothing to port for gfx90a; upstream has not touched GCN/CDNA MMVQ tables since v9
+    base (scanned to 5d4a3be26).
+  notes: null
+  integration_disposition: declined
+  disposition_evidence:
+  - '2026-09-15 dive: GB10-only; GCN/CDNA byte-identical'
+- id: intake-1413
+  arxiv_id: null
+  url: https://github.com/llvm/llvm-project/pull/201457
+  source_type: repo
+  title: 'llvm-project PR #201457: set default offload LTO mode for AMDGCN/SPIR-V targets to full'
+  authors:
+  - Joseph Huber (jhuber6)
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1407
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Moves the decision to treat offload device code as LTO into per-toolchain getDefaultLTOMode() = LTOK_Full (AMDGCN, SPIRV
+    AMD, HIPSPV, AMDGPU OpenMP).
+  - Author frames it as mainly a driver refactor with small old-driver side effects recoverable by -fno-offload-lto.
+  - 'Reverted within hours for flang failures and reapplied the same day; #205094 kept old --no-offload-new-driver behaviour
+    for LLVM 23.'
+  - '#205243 turns LTO back off for AMDGCN --offload-device-only builds that are non-RDC without explicit -foffload-lto.'
+  - First upstream major is LLVM 23; no GA ROCm tag through rocm-7.2.4 carries it; release/therock-10.1 does.
+  techniques: []
+  reported_results:
+  - 'No performance data in #201457, #202736 or #205094 (NOT-FOUND-IN-SOURCE).'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'llvm/llvm-project PR #201457 merged 2026-06-09 (859ee9d8), reverted 65546220 (#202714), reapplied 89b969ea
+    (#202736); follow-ups #205094 (6b59e09d), #205243 (26818791); ROCm tags rocm-6.1.0..7.2.4 and therock branches scanned;
+    retrieved 2026-09-15'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: '#201457 body'
+    quote: The main artifact of this PR should be trimming up the massive if statement.
+    quote_sha256: ab2e0ebbd4c67bcca29bc7e28b67549ae96af1a3ca13bcb10b5be7c899cd1ad5
+    source_revision: 'llvm/llvm-project PR #201457 merged 2026-06-09 (859ee9d8), reverted 65546220 (#202714), reapplied 89b969ea
+      (#202736); follow-ups #205094 (6b59e09d), #205243 (26818791); ROCm tags rocm-6.1.0..7.2.4 and therock branches scanned;
+      retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: '#201457 body'
+    quote: Some slight by-products on the old-driver path, but this can be recovered with `-fno-offload-lto` and the old driver
+      should be deleted in a few months anyways.
+    quote_sha256: 3ab823d07f01fabfce684b036382908e88dbc6c733c3fd9190d07b1e63638be0
+    source_revision: 'llvm/llvm-project PR #201457 merged 2026-06-09 (859ee9d8), reverted 65546220 (#202714), reapplied 89b969ea
+      (#202736); follow-ups #205094 (6b59e09d), #205243 (26818791); ROCm tags rocm-6.1.0..7.2.4 and therock branches scanned;
+      retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: '#205243 body'
+    quote: this caused the default for `--offload-device-only` to now be LLVM-IR. This is a regression from prior behavior,
+      so we special case it out.
+    quote_sha256: a6c8ee6afa846f5eba157c2692a5e87c243e3fbcb365bc6baf205c95eee4c82a
+    source_revision: 'llvm/llvm-project PR #201457 merged 2026-06-09 (859ee9d8), reverted 65546220 (#202714), reapplied 89b969ea
+      (#202736); follow-ups #205094 (6b59e09d), #205243 (26818791); ROCm tags rocm-6.1.0..7.2.4 and therock branches scanned;
+      retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: In llvmorg-23.1.1 device-only non-RDC AOT stays non-LTO; ordinary -x hip host+device compiles get full device LTO
+      via the linker wrapper.
+  - claim_index: 1
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: PR history.
+  - claim_index: 3
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 4
+    effect: unaffected
+    note: Tag/branch scan as stated.
+  depends_on: []
+  dive_corrections: '2026-09-15: located the LTO-default change behind intake-1407: LLVM 23 / therock-10.1, not ROCm GA <=7.2.4.
+    Whether a llama.cpp HIP build is affected depends on the driver invocation (our house build is -x hip host+device, which
+    would get device LTO). Does not touch unrolling.'
+  dive_actionables_ledger:
+  - direction: 'Unpin checklist: pass -fno-offload-lto explicitly and verify the device cc1/lld lines show no LTO on any LLVM23/therock-10.1
+      toolchain'
+    disposition: plan-candidate
+    owner: docs/runbooks/rocm-upgrade-checklist.md
+  - direction: 'Chase the #201135 non-LTO wrapper reland'
+    disposition: decline
+    reason: Explicit -fno-offload-lto covers it.
+  dive_surfaced_sources:
+  - ref: https://github.com/llvm/llvm-project/pull/201135
+    what_it_would_settle: Non-RDC non-LTO wrapper pipeline cost
+    bears_on: intake-1413
+    recommend: 'decline: covered by explicit flag'
+  reader_should_conclude: An unpin to LLVM 23 or therock-10.1 defaults host+device HIP compiles to full device LTO; always
+    pass -fno-offload-lto and verify the device link. Not relevant to ROCm 6.2 or to the unroll finding.
+  notes: null
+  integration_disposition: monitor
+  disposition_evidence:
+  - '2026-09-15 dive: trigger = unpin to an LLVM23-based toolchain'
+  - '2026-09-15 Stage-4: docs/runbooks/rocm-upgrade-checklist.md preflight -fno-offload-lto'
+- id: intake-1414
+  arxiv_id: null
+  url: https://github.com/llvm/llvm-project/pull/147700
+  source_type: repo
+  title: 'llvm-project PR #147700: AMDGPU fix runtime unrolling when cascaded GEPs are present (root cause of the ROCm 7.2.0
+    llama.cpp prefill regression)'
+  authors:
+  - macurtis-amd
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1407
+  verdict: superseded
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Replaces a direct isa<GlobalVariable/Argument> check with getUnderlyingObject(), making loops with cascaded GEPs into
+    local memory eligible for the local unroll threshold (1000) and runtime unrolling.
+  - No default unroll threshold changed (base 300, private 2700, local 1000, if-bonus 200 in rocm-6.2.0 through 7.2.4 and
+    LLVM main).
+  - AMD bisected the ROCm 7.2 llama.cpp prefill slowdown to this PR, observing VGPR spills and lower occupancy; reverting
+    restored gfx1100 from 1416.90 to 4378.87 t/s.
+  - Workaround --amdgpu-unroll-threshold-local=600; reverted in ROCm (rocm-7.2.1+) and upstream main (LLVM 23), not backported
+    to release/22.x; among GA ROCm only 7.2.0 has it.
+  techniques: []
+  reported_results:
+  - 'rocm-systems#2865: gpt-oss-20B gfx1151 pp512 1648 (6.4.4) vs 545 (7.2), tg128 72.96 vs 73.21 (decode flat).'
+  - gfx1100 1416.90 -> 4378.87 t/s with PR reverted.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  handoffs_created: []
+  source_revision: 'llvm/llvm-project PR #147700 merged 2025-07-10 (cff4a00d); upstream revert 8f9c9268 (#183641, 2026-02-27);
+    ROCm revert ae1c7a38 (2026-02-04, in rocm-7.2.1+); rocm-systems#2865 comments read; retrieved 2026-09-15'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: '#147700 body'
+    quote: Cascaded GEP (i.e. GEP of GEP) are not handled when determining if it is ok to runtime unroll loops.
+    quote_sha256: eee31dbbce92e496eb7a786ec812bf78d1717794c00d17451d79381648f987b1
+    source_revision: 'llvm/llvm-project PR #147700 merged 2025-07-10 (cff4a00d); upstream revert 8f9c9268 (#183641, 2026-02-27);
+      ROCm revert ae1c7a38 (2026-02-04, in rocm-7.2.1+); rocm-systems#2865 comments read; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: ROCm/rocm-systems#2865 comment jmmartinez 2026-02-03
+    quote: After a quick look to the assembly files I see VGPR spills and the occupancy of several kernels dropping.
+    quote_sha256: 6f4893f9a19dd1ed62cdb5212a2b995536f6c6c0b9d9162bfc4d16c7a5663ac0
+    source_revision: 'llvm/llvm-project PR #147700 merged 2025-07-10 (cff4a00d); upstream revert 8f9c9268 (#183641, 2026-02-27);
+      ROCm revert ae1c7a38 (2026-02-04, in rocm-7.2.1+); rocm-systems#2865 comments read; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: rocm-systems#2865 jmmartinez 2026-02-04
+    quote: currently the default value of `--amdgpu-unroll-threshold-local` is `1000`
+    quote_sha256: 7ddf8efbdbfe48251cd8e2b45dade941296d22746a7011e07342423646953389
+    source_revision: 'llvm/llvm-project PR #147700 merged 2025-07-10 (cff4a00d); upstream revert 8f9c9268 (#183641, 2026-02-27);
+      ROCm revert ae1c7a38 (2026-02-04, in rocm-7.2.1+); rocm-systems#2865 comments read; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 1
+    effect: unaffected
+    note: Default thresholds compared across tags.
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 2
+    effect: narrowed
+    note: Prefill-only in reported data; decode flat.
+  - claim_index: 3
+    effect: unaffected
+    note: Revert commits verified.
+  depends_on: []
+  dive_corrections: '2026-09-15: source is a merged PR, not an issue. Mechanism is GEP-eligibility logic, not a threshold
+    regression. llama.cpp#19984 3.7-5x was later attributed by its reporter to GGML_HIP_ROCWMMA_FATTN=ON and cannot be cited
+    as this PR''s cost; use the #2865 gfx1100 ~3.1x. Explains why --amdgpu-unroll-threshold-local=600 was a null for MMVQ
+    on 6.2 (our A/B): MMVQ unrolling likely comes via the base (300) or private (2700) path (inference, untested). Newer upstream
+    (#194924, LLVM 23) enables runtime unrolling for all AMDGPU loops (more aggressive); therock-10.1 gates it off (afcb2456).
+    Stage-2b round-2 2026-09-15 (via intake-1424 primary thread and intake-1422/1423): scope widened - TheRock 7.x nightlies
+    before about 2026-02-13 (including 7.11, never fixed) were also affected, not only GA 7.2.0. Revert evidence in the primary
+    thread is ROCm/llvm-project PRs #1349 (amd-mainline) and #1348 (rel-7.2, 2026-02-26); ae1c7a38 / #183641 were not cited
+    there. CONFLICT recorded: a round-2 ancestry scan (intake-1421/1422 dive) found no revert of cff4a00d by ancestry; the
+    primary thread''s named revert PRs take precedence, absence-by-ancestry is not evidence of absence. llama.cpp#19984 ROCWMMA
+    attribution unverifiable from #2865.'
+  dive_actionables_ledger:
+  - direction: 'Static A/B on ROCm 6.2 IQ2_XXS/IQ3_XXS MMVQ: vary --amdgpu-unroll-threshold-private and -unroll-threshold-default
+      to identify which unroll path inflates VGPR'
+    disposition: plan-candidate
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - direction: Correct intake-969 mechanism/scope/magnitude
+    disposition: done in this Stage-2b apply (dive_corrections on intake-969)
+  - direction: 'Unpin checklist: keep --amdgpu-unroll-runtime-default off on LLVM23-based toolchains and re-run the static
+      VGPR A/B'
+    disposition: plan-candidate
+    owner: docs/runbooks/rocm-upgrade-checklist.md
+  dive_surfaced_sources:
+  - ref: https://github.com/llvm/llvm-project/pull/194924
+    what_it_would_settle: Runtime-unroll default for all AMDGPU loops in LLVM 23 and its llama.cpp claims
+    bears_on: intake-1414
+    recommend: ingest-and-dive (pending operator)
+  - ref: https://github.com/ROCm/rocm-systems/issues/2865
+    what_it_would_settle: Primary bisect and per-kernel VGPR evidence behind intake-969 (still open)
+    bears_on: intake-1414
+    recommend: ingest-and-dive (pending operator; reverses the earlier decline because it is the primary evidence)
+  - ref: https://github.com/ROCm/llvm-project/commit/afcb24566ee2b0cdf27cc2582bb771f2980f6fd8
+    what_it_would_settle: Whether ROCm keeps runtime unroll off in future GA
+    bears_on: intake-1414
+    recommend: ingest-and-dive (pending operator)
+  reader_should_conclude: 'Cite as the root cause of the ROCm 7.2.0 (not "7+") prefill regression: GEP-eligibility change,
+    reverted in 7.2.1+ and LLVM main. ROCm 6.2 is on the good side. Never cite 3.7-5x as its cost. It does not explain 6.2
+    MMVQ VGPR inflation.'
+  notes: null
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4: agentic-rocm-kernel-authoring.md #19984 correction; docs/runbooks/rocm-upgrade-checklist.md preflight
+    (avoid 7.2.0 / early TheRock 7.x) and failure-signature rewrite'
+- id: intake-1415
+  arxiv_id: null
+  url: https://github.com/llvm/llvm-project/issues/222182
+  source_type: repo
+  title: 'llvm-project issue #222182: AMDGPU gfx950 CoExec does not consider persistent 32x32 MFMA chains for AGPR allocation'
+  authors:
+  - bangtianliu
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1407
+  verdict: not_applicable
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - On upstream main, the CoExec scheduler strategy (-amdgpu-sched-strategy=coexec) excludes all 32 wide 32x32x16 MFMA instructions
+    from its pre-RA VGPR-to-AGPR rewrite.
+  - The candidate check rejects instructions whose destination has any use that is neither MAI nor a copy.
+  - A post-RA pass recovers 10 of 32; final lowering uses 204 B scratch vs 68 B for a mixed AGPR/VGPR lowering.
+  - Reproducer is a BF16 backward-attention kernel on gfx950; ROCm 6.2 llc has no -amdgpu-sched-strategy option (CoExec absent,
+    checked locally).
+  techniques: []
+  reported_results:
+  - 204 B vs 68 B scratch (single reproducer, no runtime).
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'llvm/llvm-project issue #222182 OPEN, opened 2026-09-08, label backend:AMDGPU, no comments; tested at
+    main 66462afa7e4a; retrieved 2026-09-15'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: issue body, code excerpt
+    quote: if (!TII->isMAI(UseMI) && !UseMI.isCopy()) return false;
+    quote_sha256: 765edee24184a645c69fd53bf16cfe912c8e9732d91e7273cfa371c07e0d2116
+    source_revision: 'llvm/llvm-project issue #222182 OPEN, opened 2026-09-08, label backend:AMDGPU, no comments; tested at
+      main 66462afa7e4a; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: issue body
+    quote: A later post-RA pass converts 10 of the 32 instructions, but the final intrinsic lowering uses 204 B of scratch
+      versus 68 B for a contextual mixed AGPR/VGPR constrained lowering.
+    quote_sha256: ce2b03c90485cf409d8fa3f0d3d47b7af4f995570c0df03276cf77f831f4820b
+    source_revision: 'llvm/llvm-project issue #222182 OPEN, opened 2026-09-08, label backend:AMDGPU, no comments; tested at
+      main 66462afa7e4a; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Upstream main only; first release shipping CoExec NOT-FOUND.
+  - claim_index: 3
+    effect: narrowed
+    note: gfx90a support and non-MFMA applicability NOT-FOUND-IN-SOURCE; candidacy defined only over MFMA.
+  - claim_index: 1
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim.
+  depends_on: []
+  dive_corrections: '2026-09-15: no reason to unpin for MMVQ decode: the rewrite relieves VGPR only for MFMA instructions;
+    our vec_dot kernels have no MFMA and agpr_count=0. Stage-2b round-2 2026-09-15: CoExec introduced by llvm PR #169616 (intake-1421);
+    rewrite candidacy is isMAI-only in source (GCNSchedStrategy.cpp:2447-2450 @bde5e743), confirming this entry. Declined
+    by operator (round-2 recommended): llvm #203797 vgpr-threshold-percent, #223291, #222853, #196372.'
+  dive_actionables_ledger:
+  - direction: Evaluate CoExec VGPR->AGPR rewrite for MMVQ vec_dot
+    disposition: decline
+    reason: MFMA-only candidacy, gfx950, unfixed.
+  - direction: Record "ROCm 6.2 has no CoExec" in the unpin evidence
+    disposition: plan-candidate
+    owner: docs/runbooks/rocm-upgrade-checklist.md
+  dive_surfaced_sources:
+  - ref: CoExec-introducing PR in llvm-project (AMDGPU -amdgpu-sched-strategy=coexec)
+    what_it_would_settle: What CoExec rewrites, gfx targets, non-MFMA applicability, first LLVM/ROCm release
+    bears_on: intake-1415
+    recommend: ingest-and-dive (pending operator)
+  reader_should_conclude: Not a reason to unpin for MMVQ decode; CoExec VGPR->AGPR rewrite is MFMA-only and absent on ROCm
+    6.2.
+  notes: null
+  integration_disposition: declined
+  disposition_evidence:
+  - '2026-09-15 dive: MFMA-only; no bearing on MMVQ decode'
+- id: intake-1416
+  arxiv_id: null
+  url: https://www.phoronix.com/news/AMD-LLVM-Device-Side-PGO-ROCm
+  source_type: blog
+  title: 'Phoronix: AMD squeezing out more ROCm/HIP performance with new device-side PGO (press restatement)'
+  authors:
+  - Michael Larabel
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1407
+  verdict: superseded
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - AMD engineer Yaxun (Sam) Liu proposed device-side PGO for AMDGPU HIP kernels with uniformity-aware optimization.
+  - Uniformity detection is needed because SIMT execution breaks CPU PGO cold-path assumptions.
+  - Reports 12-14% speedup on uniform branches with no regression on divergent branches (vendor figure relayed).
+  techniques: []
+  reported_results:
+  - 12-14% on uniform branches (vendor-reported, restated).
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: Phoronix article published 2026-01-26, retrieved 2026-09-15
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: article body (quoting RFC)
+    quote: The uniformity detection is essential because GPU execution follows the SIMT (Single Instruction, Multiple Threads)
+      model, where standard CPU PGO assumptions about 'cold' code paths do not hold.
+    quote_sha256: 97b494d4ae965105904604e74b55f26968bc29d369acf3a58e1d3ee489b551ad
+    source_revision: Phoronix article published 2026-01-26, retrieved 2026-09-15
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 2
+    effect: reattributed
+    note: Vendor figure from synthetic spill-stress microbenchmarks; RFC says not representative; see intake-1417.
+  - claim_index: 0
+    effect: unaffected
+    note: Restatement.
+  - claim_index: 1
+    effect: unaffected
+    note: Quote.
+  depends_on: []
+  dive_corrections: '2026-09-15: press restatement; omits synthetic-only caveat. Superseded by the primary PR/RFC (intake-1417).'
+  dive_actionables_ledger: []
+  dive_surfaced_sources: []
+  reader_should_conclude: Pointer only; cite intake-1417 instead. Not independent evidence.
+  notes: null
+  integration_disposition: declined
+  disposition_evidence:
+  - '2026-09-15 dive: restatement of intake-1417'
+- id: intake-1417
+  arxiv_id: null
+  url: https://github.com/llvm/llvm-project/pull/177665
+  source_type: repo
+  title: 'llvm-project PR #177665 + RFC 89577: basic HIP offload (device-side) PGO for AMDGPU with uniformity-gated spill
+    placement'
+  authors:
+  - yxsamliu (Yaxun Liu)
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1407
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Adds instrumentation for AMDGPU device code with per-TU wave-aggregated counters, uniformity bits (indexed profile v14)
+    and llvm-profdata merge support.
+  - Uniformity gating affects only SpillPlacement; other PGO consumers still receive frequencies.
+  - Supports AOT (-fprofile-generate / run / -fprofile-use) and HIPRTC with stock HIP APIs.
+  - Evidence is synthetic spill-stress microbenchmarks only; validation on rocBLAS/MIGraphX is future work.
+  techniques: []
+  reported_results:
+  - ~12% (RFC) / 12-14% (PR) on uniform branches, synthetic.
+  - ~3.7x slower without gating (IR test).
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'llvm/llvm-project PR #177665 merged 2026-05-27 (labels llvm:regalloc, PGO); RFC discourse t/89577 posted
+    2026-01-26, discussion through April 2026; retrieved 2026-09-15'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: RFC body
+    quote: uniformity gating is surgical – it only affects SpillPlacement
+    quote_sha256: 075fd5dd03acddc765cc74039e99d3bc96ffa9ac49c6c2c325f40168514c0b25
+    source_revision: 'llvm/llvm-project PR #177665 merged 2026-05-27 (labels llvm:regalloc, PGO); RFC discourse t/89577 posted
+      2026-01-26, discussion through April 2026; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: RFC benchmarks section
+    quote: Validation on production HIP applications (e.g., rocBLAS, MIGraphX) is future work.
+    quote_sha256: d8130e5a54747d7c801c8f6c67866f62a9ccb24d007ec208bcd24ffb833eb35b
+    source_revision: 'llvm/llvm-project PR #177665 merged 2026-05-27 (labels llvm:regalloc, PGO); RFC discourse t/89577 posted
+      2026-01-26, discussion through April 2026; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: RFC body
+    quote: No special environment variables or CLR patches required.
+    quote_sha256: 13cb986f244dc3735a242f99013183f2320cfac7757caeb4eea3eb4dbb0f5cc4
+    source_revision: 'llvm/llvm-project PR #177665 merged 2026-05-27 (labels llvm:regalloc, PGO); RFC discourse t/89577 posted
+      2026-01-26, discussion through April 2026; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Shipping ROCm release NOT-FOUND; not in ROCm 6.2 (no offload profiling flags locally).
+  - claim_index: 2
+    effect: narrowed
+    note: AOT supported in principle; no AOT HIP application demonstrated; gfx targets NOT-FOUND.
+  - claim_index: 1
+    effect: narrowed
+    note: No evidence PGO reduces VGPR count or wave width.
+  - claim_index: 3
+    effect: unaffected
+    note: Verbatim.
+  depends_on: []
+  dive_corrections: '2026-09-15: lever is spill placement, not VGPR count. Profile-driven hotness normally makes LoopUnroll
+    more aggressive on hot loops - the VGPR inflator found in our 2026-09-15 A/B - so PGO could worsen MMVQ decode unless
+    unrolling is pinned off. Not a positive reason to unpin.'
+  dive_actionables_ledger:
+  - direction: Device PGO build for ggml-hip on gfx90a
+    disposition: decline
+    reason: No shipping ROCm release, no gfx90a evidence, spill-placement lever, risk of extra unrolling.
+  - direction: 'Hazard note: any future profile-use build must keep unrolling disabled on MMVQ decode loops'
+    disposition: plan-candidate
+    owner: artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md (caveat) / docs/runbooks/rocm-upgrade-checklist.md
+  dive_surfaced_sources:
+  - ref: compiler-rt/lib/profile/InstrProfilingPlatformGPU.c (llvm main)
+    what_it_would_settle: Whether generic GPU PGO superseded the HIP path
+    bears_on: intake-1417
+    recommend: 'decline: no bearing on VGPR'
+  - ref: 'llvm PRs #200101/#200111/#200127'
+    what_it_would_settle: Profile runtime build gating
+    bears_on: intake-1417
+    recommend: 'decline: buildbot plumbing'
+  reader_should_conclude: Device PGO exists upstream and is AOT-capable but unproven on real kernels, gfx90a, or any ROCm
+    release; it does not address VGPR pressure and may worsen it through unrolling.
+  notes: null
+  integration_disposition: monitor
+  disposition_evidence:
+  - '2026-09-15 dive: trigger = a ROCm release shipping offload PGO with gfx90a support'
+  - '2026-09-15 Stage-4: docs/runbooks/rocm-upgrade-checklist.md preflight (no profile-use build on MMVQ decode without re-checking
+    unrolling)'
+- id: intake-1418
+  arxiv_id: null
+  url: https://instinct.docs.amd.com/latest/gpu-arch/mi250.html
+  source_type: blog
+  title: AMD Instinct MI250 microarchitecture (ROCm docs) + MI300/MI200 performance counters page
+  authors:
+  - AMD
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1409
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - The MI250 GCD (CDNA2) has 104 active compute units, each with 4 SIMD units, processing a 64-element wavefront.
+  - On CDNA2, wave dispatch can be limited by a shortage of VGPR slots or SGPR slots, each counted separately (SPI_RA_VGPR_SIMD_FULL_CSN,
+    SPI_RA_SGPR_SIMD_FULL_CSN).
+  - 'Other documented dispatch limiters: wave slots, LDS space, temp space, pipeline slots, tg_limit and WAVE_LIMIT.'
+  - Wave launch spends measurable quad-cycles initialising VGPRs and SGPRs (SPI_VWC_CSC_WR / SPI_SWC_CSC_WR).
+  techniques: []
+  reported_results:
+  - No occupancy or waves-per-SIMD formula; the project 64 VGPR -> 8 / >64 -> 6 waves rule is NOT-FOUND-IN-SOURCE.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated:
+  - autokernel-research-loop.md
+  - mi210-q8-dequant-gemv-roofline.md
+  handoffs_created: []
+  source_revision: rocm.docs.amd.com/en/latest/reference/gpu-arch/mi250.html (ROCm 10.0.0 docs, sha256 da090a1bb9fe62f1) via
+    redirect stub instinct.docs.amd.com (0d2fa1f6c090f507); also mi300-mi200-performance-counters.html (d3b840685dc2b130);
+    retrieved 2026-09-15
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: mi250.html microarchitecture para 3
+    quote: The MI250 GCD has 104 active CUs. Each compute unit is further subdivided into four SIMD units that process SIMD
+      instructions of 16 data elements per instruction (for the FP64 data type). This enables the CU to process 64 work items
+      (a so-called “wavefront”)
+    quote_sha256: e3f52ac2272d134f59586477efbbabf1ca9404f5f6e53653f07a34d5ab41a446
+    source_revision: rocm.docs.amd.com/en/latest/reference/gpu-arch/mi250.html (ROCm 10.0.0 docs, sha256 da090a1bb9fe62f1)
+      via redirect stub instinct.docs.amd.com (0d2fa1f6c090f507); also mi300-mi200-performance-counters.html (d3b840685dc2b130);
+      retrieved 2026-09-15
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: mi300-mi200-performance-counters.html SPI counters
+    quote: SPI_RA_VGPR_SIMD_FULL_CSN SIMD-cycles Accumulated number of SIMDs per cycle affected by shortage of vector general-purpose
+      register (VGPR) slots for compute shader (n th pipe) wave dispatch
+    quote_sha256: bc9ceeefe6da043035ed916940c413eb9b5d180bea274ac4516a6483bc78f42c
+    source_revision: rocm.docs.amd.com/en/latest/reference/gpu-arch/mi250.html (ROCm 10.0.0 docs, sha256 da090a1bb9fe62f1)
+      via redirect stub instinct.docs.amd.com (0d2fa1f6c090f507); also mi300-mi200-performance-counters.html (d3b840685dc2b130);
+      retrieved 2026-09-15
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: same table
+    quote: SPI_RA_LDS_CU_FULL_CSN CU Number of compute units affected by shortage of local data share (LDS) space for compute
+      shader (n th pipe) wave dispatch
+    quote_sha256: 56c1156d95a500170cd8c240a9df5daf78a90815d921bf5f9900708eb65cfcb0
+    source_revision: rocm.docs.amd.com/en/latest/reference/gpu-arch/mi250.html (ROCm 10.0.0 docs, sha256 da090a1bb9fe62f1)
+      via redirect stub instinct.docs.amd.com (0d2fa1f6c090f507); also mi300-mi200-performance-counters.html (d3b840685dc2b130);
+      retrieved 2026-09-15
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: same table
+    quote: SPI_VWC_CSC_WR Qcycles Number of quad-cycles taken to initialize VGPRs when launching waves
+    quote_sha256: 32cec96465cd7a0b3bbae2829776b6e2fb4d79fce3688004a82be64ab936354d
+    source_revision: rocm.docs.amd.com/en/latest/reference/gpu-arch/mi250.html (ROCm 10.0.0 docs, sha256 da090a1bb9fe62f1)
+      via redirect stub instinct.docs.amd.com (0d2fa1f6c090f507); also mi300-mi200-performance-counters.html (d3b840685dc2b130);
+      retrieved 2026-09-15
+    verified_by: research-intake/stage2b-r2
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: Shows VGPR slot shortage is a dispatch limiter but gives no thresholds or 8-vs-6 wave rule.
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 3
+    effect: unaffected
+    note: Verbatim.
+  depends_on: []
+  dive_corrections: '2026-09-15: the 64-VGPR/8-wave rule is vendor-undocumented (consistent with intake-1409); it stays an
+    empirical rocprof/compiler observation. The SPI resource-shortage counters are the documented instrument to test it. The
+    performance-counters page recommended by the dive was read within this entry (no separate ingest needed). Round-3 dive-surfaced
+    sources operator-declined via Stage-3 plan approval 2026-09-15. (CDNA4 whitepaper, MI300 ISA)'
+  dive_actionables_ledger:
+  - direction: 'Measure the rule: run the 78-VGPR and 44-VGPR (unroll-disable) IQ2_XXS MMVQ variants and compare SPI_RA_VGPR/WAVE/SGPR_SIMD_FULL_CSN,
+      SPI_RA_LDS_CU_FULL_CSN, SPI_VWC_CSC_WR with decode t/s'
+    disposition: plan-candidate
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - direction: Label the 64 -> 8/6 waves rule "empirical, not vendor-documented" where cited
+    disposition: plan-candidate
+    owner: wiki/hardware-optimization.md / wiki/quantization.md
+  dive_surfaced_sources:
+  - ref: AMD CDNA4 architecture whitepaper
+    what_it_would_settle: Newer-generation wave sizing
+    bears_on: intake-1418
+    recommend: 'decline: not our device'
+  - ref: AMD MI300 CDNA3 ISA
+    what_it_would_settle: CDNA3 wave-count rule
+    bears_on: intake-1418
+    recommend: 'decline: other device; measurement settles faster'
+  reader_should_conclude: 'Never cite AMD documentation for the 64-VGPR/8-wave rule: it is not there. Cite the SPI_RA_*_FULL_CSN
+    counters as the documented way to measure which resource limits wave dispatch.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4: autokernel-research-loop.md AK-QL-7(c) SPI counter test; mi210-q8-dequant-gemv-roofline.md INF37-IQ-3'
+- id: intake-1419
+  arxiv_id: null
+  url: https://github.com/AMD-AGI/hip_kernel_llm_lab
+  source_type: repo
+  title: 'AMD-AGI hip_kernel_llm_lab: CPT/SFT/RL training framework and LLM HIP-kernel generator/optimizer kits'
+  authors:
+  - AMD-AGI AI-Algorithm team
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-678
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Generator kits call an LLM (default Azure GPT-5 deployment) for up to 5 attempts per sample, feeding back compile/correctness/perf
+    results and keeping the fastest correct kernel.
+  - Generated kernels compile via torch.utils.cpp_extension.load; the device -O level is never set explicitly and the arch
+    defaults to gfx942 or environment variables.
+  - The -O0/-O3/-Ofast "benchmark" times compilation and .so size only; no kernel runtime is measured and no results are committed.
+  - The "fix_gfx90a" history fixes a malformed hipcc --amdgpu-target=gfx90a;gfx942 argument, not gfx90a codegen.
+  - 'Prompts recommend #pragma unroll and loop unrolling alongside "Reduce LDS/register usage for higher occupancy"; there
+    is no automated search over compiler flags or pragmas anywhere in the repo.'
+  techniques: []
+  reported_results:
+  - No runtime results for any -O level (benchmark_results.json not committed).
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  source_revision: github AMD-AGI/hip_kernel_llm_lab @ 980faee8b8945aa7e9a45b82e6bae64ab0430abf (2026-08-27, single squashed
+    commit, Apache-2.0); retrieved 2026-09-15
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: hip-kernel-generator/py_hip_kernel2kernel_kit/README.md:28-30 @980faee8
+    quote: Repeats for up to `5` attempts, feeding the previous candidate code, compiler/runtime errors, correctness mismatches,
+      and performance numbers into the next prompt.
+    quote_sha256: b96f42c07c6a339fccee5cb465231e651656818dac14ea842050fcab56772f7e
+    source_revision: github AMD-AGI/hip_kernel_llm_lab @ 980faee8b8945aa7e9a45b82e6bae64ab0430abf (2026-08-27, single squashed
+      commit, Apache-2.0); retrieved 2026-09-15
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 1
+    kind: line-range
+    locator: py_hip_kernel2kernel_kit/hip_runtime.py:58-60 @980faee8
+    quote: "extra_cuda_cflags: list[str] = []\n    if offload_arch:\n        extra_cuda_cflags.append(f\"--offload-arch={offload_arch}\"\
+      )"
+    quote_sha256: 038c0cd7f93cfcd04a3de74f18f206244b280f13577386e3eff8b3343d3f85c5
+    source_revision: github AMD-AGI/hip_kernel_llm_lab @ 980faee8b8945aa7e9a45b82e6bae64ab0430abf (2026-08-27, single squashed
+      commit, Apache-2.0); retrieved 2026-09-15
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 4
+    kind: line-range
+    locator: rl/rl4kernel_hip/dataset/prompts.py:145,151 @980faee8
+    quote: 'Reduce LDS/register usage for higher occupancy ... Use compiler hints like #pragma unroll'
+    quote_sha256: df7b8dccdfb6e9337ca4340ab047f023c1bf17ac6d356efe19798bab03da063e
+    source_revision: github AMD-AGI/hip_kernel_llm_lab @ 980faee8b8945aa7e9a45b82e6bae64ab0430abf (2026-08-27, single squashed
+      commit, Apache-2.0); retrieved 2026-09-15
+    verified_by: research-intake/stage2b-r2
+  claim_corrections:
+  - claim_index: 2
+    effect: overturned
+    note: Stage-2b sighting called it an -O level runtime benchmark; it measures compile time and .so size only.
+  - claim_index: 3
+    effect: reattributed
+    note: Toolchain argument bug; benchmark target was gfx942.
+  - claim_index: 0
+    effect: unaffected
+    note: README verbatim.
+  - claim_index: 1
+    effect: unaffected
+    note: Source read.
+  - claim_index: 4
+    effect: unaffected
+    note: Prompt text verbatim.
+  depends_on: []
+  dive_corrections: '2026-09-15: no AsmEvo/2608.20711/K0 mention; matches AsmEvo''s description (KernelBench HIP, GPT-5, ~5
+    rounds) so the K0 link is probable but unproven. Negative prior art for an autocompiler: AMD''s own stack has no flag/pragma
+    autotuner. Its "#pragma unroll" advice is a no-op on ROCm 6.2 hipcc (our A/B) and points the wrong way for VGPR-bound
+    kernels. Round-3 dive-surfaced sources operator-declined via Stage-3 plan approval 2026-09-15. (amd/hip_llm_dataset, torch
+    cpp_extension)'
+  dive_actionables_ledger:
+  - direction: 'Wiki note: #pragma unroll is a no-op on ROCm 6.2 hipcc and LLM-generated HIP code often emits it; use #pragma
+      clang loop unroll(disable) where VGPR binds'
+    disposition: plan-candidate
+    owner: wiki/hardware-optimization.md
+  - direction: Record "no flag/pragma autotuner prior art at AMD-AGI @980faee8" in the autocompiler decision package
+    disposition: plan-candidate
+    owner: autocompiler decision package
+  - direction: Adopt hipcc wrapper / compile-throughput scripts
+    disposition: decline
+    reason: Different ROCm/container bug; compile speed only.
+  - direction: Adopt veRL HIP RL stack or amd/hip_llm_dataset
+    disposition: decline
+    reason: Kernel-writing LLM training infrastructure; out of scope.
+  dive_surfaced_sources:
+  - ref: https://huggingface.co/datasets/amd/hip_llm_dataset
+    what_it_would_settle: KernelBench HIP compile metadata tying to AsmEvo K0
+    bears_on: intake-1419
+    recommend: 'decline: not load-bearing'
+  - ref: torch cpp_extension COMMON_HIPCC_FLAGS
+    what_it_would_settle: Default device -O level
+    bears_on: intake-1419
+    recommend: 'decline: our builds set flags explicitly'
+  reader_should_conclude: 'AMD LLM kernel-rewrite/RL stack for gfx942-class GPUs; no compiler-flag autotuner; teaches #pragma
+    unroll (no-op on our hipcc). Cite only as negative prior art for an autocompiler and as probable-but-unproven AsmEvo input
+    pipeline.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4: autokernel-research-loop.md AK-QL-8 (no prior art); artifact addendum on #pragma unroll'
+- id: intake-1420
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/27621
+  source_type: repo
+  title: 'llama.cpp PR #27621: extend MoE GLU and top-k router fusion to multi-token spec-decode verify (2-8 tokens)'
+  authors:
+  - ynankani (NVIDIA)
+  categories:
+  - moe_optimization
+  - speculative_decoding
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1410
+  verdict: worth_investigating
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Extends the BS=1 MoE GLU fusion (gate, biases, scales, GLU folded into the up-projection MMVQ kernel) to the multi-token
+    mul_mat_vec_q_moe kernel.
+  - Changes the MUL_MAT_ID fusion gate from ne2==1 to ne2 <= get_mmvq_mmid_max_batch(type, cc), so on CDNA the fused window
+    is IQ2_XXS ne2<=5 (the same window that keeps HIP graphs).
+  - Top-k router fusion handles up to 8 rows with a thread sync before writes.
+  - Reports 2-22% end-to-end decode gains on NVIDIA (RTX PRO 6000 Blackwell, DGX Spark) for Qwen3.6-35B NVFP4/Q4_K_M MTP,
+    largest at draft widths 2 and 4; no AMD data.
+  - 'Issue #28113 reports garbage output on AMD HIP RDNA3.5 (gfx1151) bisected to this condition change; fix not located.'
+  techniques: []
+  reported_results:
+  - Blackwell NVFP4 w4 258.12 -> 292.63 t/s (+13.4%); DGX Spark w4 +0.1%; Q4_K_M w2 274.67 -> 303.17 (+10.4%); PPL unchanged
+    within error.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated:
+  - mi210-q8-dequant-gemv-roofline.md
+  handoffs_created: []
+  source_revision: 'PR #27621 merged 2026-08-31 (41ef91f7c8046087cdfbb276b79bff311ecf1c6d); not ancestor of v9; retrieved
+    2026-09-15'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PR description
+    quote: This PR extends the BS=1 MoE fusions in the CUDA backend to specdec 2-8 tokens, like MTP and Dflash.
+    quote_sha256: 38fc07bc6ca9a93a1d4636a82b584f5a7a76b14208158d358eab28e430965ec4
+    source_revision: 'PR #27621 merged 2026-08-31 (41ef91f7c8046087cdfbb276b79bff311ecf1c6d); not ancestor of v9; retrieved
+      2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 41ef91f7c ggml-cuda.cu hunk
+    quote: if (tensor->op == GGML_OP_MUL_MAT_ID && dst->ne[2] > get_mmvq_mmid_max_batch(src0->type, cc)) {
+    quote_sha256: 94ee0f8aed9521e923a244a41d17ae463770978fdeffe812bb19c29a4fb50b4b
+    source_revision: 'PR #27621 merged 2026-08-31 (41ef91f7c8046087cdfbb276b79bff311ecf1c6d); not ancestor of v9; retrieved
+      2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PR description
+    quote: 2–22% E2E decode speed-up depending on model, quant, and draft width, with the largest gains at draft widths 2
+      and 4.
+    quote_sha256: 42e15bb707dc2b21e29cffdb4a521316a08bc849019a25ac25033391e304df17
+    source_revision: 'PR #27621 merged 2026-08-31 (41ef91f7c8046087cdfbb276b79bff311ecf1c6d); not ancestor of v9; retrieved
+      2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  claim_corrections:
+  - claim_index: 3
+    effect: narrowed
+    note: NVIDIA-only numbers; no IQ2; DGX Spark w4 +0.1%.
+  - claim_index: 1
+    effect: narrowed
+    note: 'AMD HIP correctness regression #28113 bisected to this line; CDNA unverified.'
+  - claim_index: 0
+    effect: unaffected
+    note: Diff read.
+  - claim_index: 2
+    effect: unaffected
+    note: Diff read.
+  - claim_index: 4
+    effect: unaffected
+    note: Issue title/bisect read; fix not located.
+  depends_on: []
+  dive_corrections: '2026-09-15: backend-agnostic ggml-cuda code so it compiles for HIP; does not change HIP-graph eligibility;
+    not in frozen v9 (ggml-cuda.cu:1805 still ne[2]!=1, topk-moe.cu:285 rows_per_block=4); v9 lacks SWIGLU_CLAMP so a backport
+    needs #27930 or that case dropped. Plausible low-single-digit gain for 122B IQ2 MTP verify at ne2<=5 only if the GGUF
+    has separate gate/up expert tensors. Stage-4 2026-09-15: the "production 122B IQ2 MoE on GPU" premise used in dives is
+    STALE - ROCm0 residents are Qwen3.6/3.8-27B Q8_0 and Qwen3-VL-30B-A3B Q4_K_M (repos/epyc-orchestrator/orchestration/launch_manifest.yaml);
+    no IQ-format GPU role, so payoff is TRIPWIRE-gated (mi210 handoff INF37-IQ-2). Round-3 dive-surfaced sources operator-declined
+    via Stage-3 plan approval 2026-09-15. (#28113 carried as a task in INF37-IQ-2; #27930, #28935)'
+  dive_actionables_ledger:
+  - direction: Inspect production 122B IQ2 GGUF for separate ffn_gate_exps/ffn_up_exps (fusion precondition)
+    disposition: plan-candidate
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - direction: 'Backport #27621 onto llama.cpp-experimental; test-backend-ops MUL_MAT_ID/TOPK_MOE incl m_batch 2/4/8 on MI210;
+      greedy/logit correctness fusion on vs GGML_CUDA_DISABLE_FUSION=1 at ne2 2..5; then serving ABA'
+    disposition: plan-candidate (conditional on GGUF precondition)
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - direction: 'Locate the #28113 fix before any promotion'
+    disposition: plan-candidate (promotion blocker)
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - direction: Patch v9 in place
+    disposition: decline
+    reason: Production frozen.
+  dive_surfaced_sources:
+  - ref: https://github.com/ggml-org/llama.cpp/issues/28113
+    what_it_would_settle: Root cause/fix of multi-token fused-path garbage on AMD HIP; CDNA exposure
+    bears_on: intake-1420
+    recommend: carried to Stage-3 plan as a promotion-blocking lookup task (not a plan-shaping source)
+  - ref: https://github.com/ggml-org/llama.cpp/pull/27930
+    what_it_would_settle: SWIGLU_CLAMP dependency
+    bears_on: intake-1420
+    recommend: 'decline: build dependency'
+  - ref: https://github.com/ggml-org/llama.cpp/pull/28935
+    what_it_would_settle: RDNA3.5 tile heuristic
+    bears_on: intake-1420
+    recommend: decline
+  reader_should_conclude: 'Experimental-branch candidate for 122B IQ2 MTP verify at ne2<=5, gated on bit-level correctness
+    (AMD HIP regression #28113). Never cite its NVIDIA 2-22% as an MI210 expectation.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4: mi210-q8-dequant-gemv-roofline.md INF37-IQ-2 item (3), gated on GGUF gate/up check and #28113 fix'
+- id: intake-1421
+  arxiv_id: null
+  url: https://github.com/llvm/llvm-project/pull/169616
+  source_type: repo
+  title: 'llvm-project PR #169616: AMDGPU ML-oriented CoExec scheduler strategy selection and queue handling'
+  authors:
+  - kerbowa
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1415
+  verdict: not_applicable
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Introduces the CoExec pre-RA scheduler strategy, selected via amdgpu-sched-strategy=coexec (attribute or hidden flag)
+    or an amdgpu-workload-type module flag mapping ML workloads; off by default.
+  - Supported targets are gfx1250/gfx950; other targets get a warning but still run.
+  - 'The pre-RA VGPR->AGPR rewrite (RewriteMFMAFormStage, added by #199050) accepts only isMAI instructions with an AGPR form,
+    so vector-ALU dot-product kernels can never be candidates.'
+  - CoExec is in LLVM 23.1.x and ROCm therock-10.x/amd-staging; absent from ROCm 6.2 and GA 7.2.4.
+  techniques: []
+  reported_results:
+  - 'No performance numbers in #169616.'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'llvm PR #169616 merged 2026-03-23 (3e4efe3ed4a2); code at main bde5e74309f6; present llvmorg-23.1.x, ROCm
+    therock-10.0/10.1, amd-staging; absent llvmorg-22.1.0, rocm-7.2.4, amd-mainline, ROCm 6.2; retrieved 2026-09-15'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'PR #169616 body'
+    quote: It introduces function and module-level controls for selecting the AMDGPU preRA and postRA schedulers, including
+      an `amdgpu-workload-type` module flag that maps ML workloads to coexec preRA scheduling
+    quote_sha256: f5dd32c260a76cfe9c70290a728f3f003ed9569a9a6200a1eb59cd8c67892e87
+    source_revision: 'llvm PR #169616 merged 2026-03-23 (3e4efe3ed4a2); code at main bde5e74309f6; present llvmorg-23.1.x,
+      ROCm therock-10.0/10.1, amd-staging; absent llvmorg-22.1.0, rocm-7.2.4, amd-mainline, ROCm 6.2; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 2
+    kind: line-range
+    locator: llvm main GCNSchedStrategy.cpp:2447-2450 @bde5e74309f6
+    quote: "bool RewriteMFMAFormStage::isRewriteCandidate(MachineInstr *MI) const {\n  if (!static_cast<const SIInstrInfo\
+      \ *>(DAG.TII)->isMAI(*MI))\n    return false;"
+    quote_sha256: 7e209235c6f609c6001fa99e1bba6719c32701a27acf0a8baec27981cd076aca
+    source_revision: 'llvm PR #169616 merged 2026-03-23 (3e4efe3ed4a2); code at main bde5e74309f6; present llvmorg-23.1.x,
+      ROCm therock-10.0/10.1, amd-staging; absent llvmorg-22.1.0, rocm-7.2.4, amd-mainline, ROCm 6.2; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 1
+    effect: unaffected
+    note: Source read.
+  - claim_index: 2
+    effect: unaffected
+    note: Source read.
+  - claim_index: 3
+    effect: unaffected
+    note: Ancestry scan as stated.
+  depends_on: []
+  dive_corrections: '2026-09-15: confirms intake-1415 conclusion from the introducing code: no VGPR relief path for non-MFMA
+    MMVQ decode on gfx90a. Round-3 dive-surfaced sources operator-declined via Stage-3 plan approval 2026-09-15. (llvm #203797)'
+  dive_actionables_ledger:
+  - direction: Evaluate -amdgpu-sched-strategy=coexec on gfx90a MMVQ
+    disposition: decline
+    reason: Absent on 6.2, MAI-only rewrite, gfx90a unsupported.
+  dive_surfaced_sources:
+  - ref: https://github.com/llvm/llvm-project/pull/203797
+    what_it_would_settle: -amdgpu-vgpr-threshold-percent on gfx90a MMVQ
+    bears_on: intake-1421
+    recommend: 'decline: same class as ~30 null RA/scheduler knobs; needs unpin'
+  reader_should_conclude: CoExec gives no automatic VGPR relief for vector-ALU MMVQ decode on gfx90a.
+  integration_disposition: declined
+  disposition_evidence:
+  - '2026-09-15 dive: MAI-only, not on 6.2'
+- id: intake-1422
+  arxiv_id: null
+  url: https://github.com/llvm/llvm-project/pull/194924
+  source_type: repo
+  title: 'llvm-project PR #194924: AMDGPU enable runtime loop unrolling (+ #198901 PartialThreshold restore)'
+  authors:
+  - adelejjeh
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1414
+  verdict: not_applicable
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Sets UP.Runtime=true (and initially PartialThreshold=Threshold/4) in AMDGPU getUnrollingPreferences.
+  - '#198901 removed the PartialThreshold change because it also gated compile-time partial unrolling of constant-trip loops
+    (IREE regression #196372); UP.Runtime=true stayed.'
+  - In llvmorg-23.1.0/23.1.1 and main; ROCm therock-10.0/7.14 revert it.
+  - Runtime unrolling only applies when TripCount==0, so constant 4-trip vec_dot loops are unaffected; MMVQ block loops with
+    runtime trip counts could be runtime-unrolled, adding VGPR pressure.
+  - Author reports benchmarking on MI350X/MI300X with CK, xpu-perf and llama.cpp showing "some improvements and no real regressions"
+    with no numbers.
+  techniques: []
+  reported_results:
+  - No numbers reported.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: 'llvm PR #194924 (b09174b41e7e, 2026-05-01) + #198901 (c3fc506e29ba, 2026-05-27); upstream main bde5e743;
+    llvmorg-23.1.1 LoopUnrollPass.cpp:1465; ROCm revert a486103da2 on therock-10.0/7.14; retrieved 2026-09-15'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'PR #194924 diff'
+    quote: '-  // TODO: Do we want runtime unrolling?
+
+      +  UP.Runtime = true;
+
+      +  UP.PartialThreshold = UP.Threshold / 4;'
+    quote_sha256: a39238c7eb37c21ff1876a58a0cec89139d757641e93cfb3bd4db96a75e1419b
+    source_revision: 'llvm PR #194924 (b09174b41e7e, 2026-05-01) + #198901 (c3fc506e29ba, 2026-05-27); upstream main bde5e743;
+      llvmorg-23.1.1 LoopUnrollPass.cpp:1465; ROCm revert a486103da2 on therock-10.0/7.14; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'PR #198901 body'
+    quote: PartialThreshold also gates compile-time partial unrolling of constant-trip-count loops.
+    quote_sha256: dca21bc8b95baca55ea14bb4fcabdd8481dc68df3c31d723ee72fab626ad9041
+    source_revision: 'llvm PR #194924 (b09174b41e7e, 2026-05-01) + #198901 (c3fc506e29ba, 2026-05-27); upstream main bde5e743;
+      llvmorg-23.1.1 LoopUnrollPass.cpp:1465; ROCm revert a486103da2 on therock-10.0/7.14; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 3
+    kind: line-range
+    locator: llvmorg-23.1.1 LoopUnrollPass.cpp:1465
+    quote: UP.Runtime &= TripCount == 0 && TripMultiple % UP.Count != 0;
+    quote_sha256: c2c8582005602f5dc74aaf61caa3a7c1ae199947f59ac689498d7056a1131522
+    source_revision: 'llvm PR #194924 (b09174b41e7e, 2026-05-01) + #198901 (c3fc506e29ba, 2026-05-27); upstream main bde5e743;
+      llvmorg-23.1.1 LoopUnrollPass.cpp:1465; ROCm revert a486103da2 on therock-10.0/7.14; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  claim_corrections:
+  - claim_index: 3
+    effect: narrowed
+    note: MMVQ runtime-trip block-loop impact is inference; reviews contain no register-pressure discussion.
+  - claim_index: 0
+    effect: unaffected
+    note: Diff.
+  - claim_index: 1
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: Ancestry.
+  - claim_index: 4
+    effect: unaffected
+    note: Verbatim body, no numbers.
+  depends_on: []
+  dive_corrections: '2026-09-15: an upstream LLVM 23 move only adds runtime unrolling (wrong direction for VGPR) and cannot
+    touch the constant-trip unroll inflation we measured. Round-3 dive-surfaced sources operator-declined via Stage-3 plan
+    approval 2026-09-15. (llvm #223291, #222853, #196372)'
+  dive_actionables_ledger:
+  - direction: On any LLVM>=23 upstream-based toolchain, pin runtime unrolling off for the AMDGPU device compile and re-check
+      VGPR on MMVQ runtime-trip block loops
+    disposition: plan-candidate
+    owner: docs/runbooks/rocm-upgrade-checklist.md
+  - direction: Unpin to get AMDGPU unroll changes
+    disposition: decline
+    reason: Newer toolchains add runtime unrolling or gate back to 6.2 parity; none reduces constant-trip VGPR.
+  dive_surfaced_sources:
+  - ref: https://github.com/llvm/llvm-project/pull/223291
+    what_it_would_settle: Per-function partial-unroll attribute
+    bears_on: intake-1422
+    recommend: 'decline: unmerged; our pragma gives control on 6.2'
+  - ref: https://github.com/llvm/llvm-project/pull/222853
+    what_it_would_settle: LDS runtime-unroll AND semantics
+    bears_on: intake-1422
+    recommend: 'decline: unmerged, runtime-only'
+  - ref: https://github.com/llvm/llvm-project/issues/196372
+    what_it_would_settle: IREE constant-trip regression
+    bears_on: intake-1422
+    recommend: 'decline: covered by #198901 anchor'
+  reader_should_conclude: LLVM 23 upstream turns AMDGPU runtime unrolling on; it cannot reduce MMVQ VGPR and does not affect
+    constant-trip loops. Pin it off on any future toolchain.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - '2026-09-15 dive: unpin-checklist input only'
+  - '2026-09-15 Stage-4: docs/runbooks/rocm-upgrade-checklist.md preflight (keep AMDGPU runtime unrolling off on LLVM>=23)'
+- id: intake-1423
+  arxiv_id: null
+  url: https://github.com/ROCm/llvm-project/commit/afcb24566ee2b0cdf27cc2582bb771f2980f6fd8
+  source_type: repo
+  title: 'ROCm/llvm-project afcb2456: disable -amdgpu-unroll-runtime-default (gate runtime unrolling back off)'
+  authors:
+  - Ron Lieberman
+  categories:
+  - hardware_optimization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1414
+  verdict: not_applicable
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - Adds hidden -amdgpu-unroll-runtime-default and applies UP.Runtime only when the flag is passed, so runtime unrolling stays
+    off by default.
+  - Motivation is compile time (transferbench build 15 min -> 160+ min), explicitly a stopgap.
+  - Carried by therock-10.1 (from the 20260825 BKC) and amd-staging; no GA rocm-* tag carries it.
+  - amd-staging follow-up b928fc3b flips cl::init to true, which has no effect because of the getNumOccurrences() gate.
+  techniques: []
+  reported_results:
+  - Build time 15 min -> 160+ min with runtime unrolling (commit message); no GPU perf numbers.
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated: []
+  handoffs_created: []
+  source_revision: ROCm/llvm-project commit afcb24566ee2b0cdf27cc2582bb771f2980f6fd8 (2026-07-18); carried by release/therock-10.1
+    (d6f6cb69), bkc therock-10.1-20260825/-20260908, amd-staging (e4af98d4); absent from bkc -20260811, therock-10.0, therock-7.14,
+    amd-mainline, rocm-7.2.4, upstream main; retrieved 2026-09-15
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: afcb2456 diff tti.cpp
+    quote: '+  if (UnrollRuntimeDefault.getNumOccurrences())
+
+      +    UP.Runtime = UnrollRuntimeDefault;'
+    quote_sha256: 14f962604ba7fa89cb475ba49fd27690086765665927bebc7443254e3c31a136
+    source_revision: ROCm/llvm-project commit afcb24566ee2b0cdf27cc2582bb771f2980f6fd8 (2026-07-18); carried by release/therock-10.1
+      (d6f6cb69), bkc therock-10.1-20260825/-20260908, amd-staging (e4af98d4); absent from bkc -20260811, therock-10.0, therock-7.14,
+      amd-mainline, rocm-7.2.4, upstream main; retrieved 2026-09-15
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: afcb2456 commit message
+    quote: 'rocprofiler-apps transferbench build time from 15min to 160min+
+
+      Need to triage why, buying time,'
+    quote_sha256: bf9ffddfd8c5f9d30773ffbc72ae26d5f59b41230ce07dce9d69798af7520236
+    source_revision: ROCm/llvm-project commit afcb24566ee2b0cdf27cc2582bb771f2980f6fd8 (2026-07-18); carried by release/therock-10.1
+      (d6f6cb69), bkc therock-10.1-20260825/-20260908, amd-staging (e4af98d4); absent from bkc -20260811, therock-10.0, therock-7.14,
+      amd-mainline, rocm-7.2.4, upstream main; retrieved 2026-09-15
+    verified_by: research-intake/stage2b-r2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Value only matters when passed; init value irrelevant.
+  - claim_index: 2
+    effect: narrowed
+    note: Absent from earliest 10.1 BKC (20260811).
+  - claim_index: 1
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 3
+    effect: unaffected
+    note: Diff.
+  depends_on: []
+  dive_corrections: '2026-09-15: TheRock 10.1 and amd-staging are at ROCm-6.2 parity for runtime unrolling; nothing addresses
+    constant-trip full unrolling. Temporary by its own message.'
+  dive_actionables_ledger: []
+  dive_surfaced_sources: []
+  reader_should_conclude: Runtime-unroll parity with 6.2 on therock-10.1, not an improvement, and explicitly temporary.
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - '2026-09-15 dive: unpin-checklist input only'
+  - '2026-09-15 Stage-4: docs/runbooks/rocm-upgrade-checklist.md preflight cites afcb2456'
+- id: intake-1424
+  arxiv_id: null
+  url: https://github.com/ROCm/rocm-systems/issues/2865
+  source_type: repo
+  title: 'ROCm/rocm-systems #2865: ROCm 7+ llama.cpp performance regression (bisected to llvm PR #147700 unroll cost-model
+    bug)'
+  authors:
+  - kyuz0 (reporter)
+  - jmmartinez (AMD, bisect/root cause)
+  categories:
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1414
+  verdict: already_integrated
+  ingested_date: '2026-09-15'
+  credibility_score: null
+  key_claims:
+  - ROCm 6.4.4 -> 7.2 cut llama.cpp pp512 about 3x on Strix Halo gfx1151 (gpt-oss-20B MXFP4), TheRock 7 nightlies about 2x;
+    tg128 unchanged.
+  - 'AMD bisected it to llvm PR #147700; on gfx1100 rocm-rel-7.2 reverting it raised throughput 1416.90 -> 4378.87 t/s, with
+    VGPR spills and lower occupancy in several kernels.'
+  - 'Root cause: the local-memory (alloca/LDS) unroll threshold boost was wrongly applied to accesses to __shared__ memory.'
+  - Workaround --amdgpu-unroll-threshold-local=600 (default 1000; normal -O3 threshold 300); the cost model is generic across
+    AMDGPU targets.
+  - 'Reverts via ROCm/llvm-project #1349 (amd-mainline, TheRock nightlies from about 2026-02-13) and #1348 (release/rocm-rel-7.2,
+    2026-02-26); fix expected in 7.2.1, confirmed in 7.12 nightlies, not in 7.11.'
+  techniques: []
+  reported_results:
+  - 'gfx1151 pp512: 6.4.4 1648.22 / 7-nightly 815.27 / 7.2 545.11 t/s; tg128 ~73 t/s all three.'
+  - 'gfx1100: 1416.90 +/-14.42 vs 4378.87 +/-68.56 with #147700 reverted.'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references: {}
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  handoffs_created: []
+  source_revision: 'ROCm/rocm-systems issue #2865 OPEN (status: triage), created 2026-01-26, last activity 2026-03-02, 41
+    comments; retrieved 2026-09-15'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: kyuz0 2026-01-26 (issue body)
+    quote: Llama.cpp with ROCm 6.4.4 is faster than when using 7.2, which is the worst performance regression (3x slower !!),
+      and 7-nightlies (from TheRock), almost 2x slower than 6.4.4
+    quote_sha256: 80faf89a48050a93aa103947c55e6c344291b6c84cfa779717cf81dc4c246aa6
+    source_revision: 'ROCm/rocm-systems issue #2865 OPEN (status: triage), created 2026-01-26, last activity 2026-03-02, 41
+      comments; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: jmmartinez 2026-02-03T10:24
+    quote: After a quick look to the assembly files I see VGPR spills and the occupancy of several kernels dropping. This
+      would explain the massive slowdown.
+    quote_sha256: 76492a09c11526fe9153c3fd34c858d79ccaade992e7fb073dd0cff0b303b828
+    source_revision: 'ROCm/rocm-systems issue #2865 OPEN (status: triage), created 2026-01-26, last activity 2026-03-02, 41
+      comments; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: jmmartinez 2026-02-03T12:58
+    quote: Currently, the code is incorrectly boosting the threshold for memory accesses to `__shared__`.
+    quote_sha256: c8ebb11c6d417aeeb302661638c0836c5a8d5f4aaf6ddb96bc0b7499982f9090
+    source_revision: 'ROCm/rocm-systems issue #2865 OPEN (status: triage), created 2026-01-26, last activity 2026-03-02, 41
+      comments; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: jmmartinez 2026-02-05T16:01
+    quote: It's not ISA dependent. The problem is in the AMDGPU cost-model used for to decide if a boost is given to unroll
+      loops that contain LDS memory accesses. This cost model is generic for all AMDGPU targets.
+    quote_sha256: 8dfe7618de403b7c5ec1a17ad3e14e2243f2b5d5841b3598060840da1090c8b9
+    source_revision: 'ROCm/rocm-systems issue #2865 OPEN (status: triage), created 2026-01-26, last activity 2026-03-02, 41
+      comments; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: jmmartinez 2026-02-27T18:55
+    quote: The patch should be shipped in the next minor release (I think it is 7.2.1).
+    quote_sha256: 9c604c7a4ba5afd23c27291ef01ba70807e1bccc1b0364a547161c683e8efcd0
+    source_revision: 'ROCm/rocm-systems issue #2865 OPEN (status: triage), created 2026-01-26, last activity 2026-03-02, 41
+      comments; retrieved 2026-09-15'
+    verified_by: research-intake/stage2b-r2
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: Kernel names NOT-FOUND ("several kernels"); gfx1100 test/model unstated.
+  - claim_index: 4
+    effect: narrowed
+    note: 7.2.1 is the engineer's guess; confirmed fixed build is a 7.12.0.dev0 nightly.
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim.
+  - claim_index: 3
+    effect: unaffected
+    note: Verbatim.
+  depends_on: []
+  dive_corrections: '2026-09-15: primary evidence for intake-969/1414. Decode (tg128) unchanged; no gfx90a/CDNA2/ROCm 6.2
+    mention. Local check: ROCm 6.2 clang already has amdgpu-unroll-threshold(-local/-private/-if) and amdgpu-unroll-runtime-local,
+    so the local-bonus path exists on 6.2 with defaults unknown; our MMVQ finding would be stronger with a control varying
+    only -local and the base threshold. Round-3 dive-surfaced sources operator-declined via Stage-3 plan approval 2026-09-15.
+    (ROCm PRs #1348/#1349, rocMLIR#1977, llama.cpp #17917, TheRock #3279)'
+  dive_actionables_ledger:
+  - direction: 'Static control on ROCm 6.2: vary only --amdgpu-unroll-threshold-local and separately --amdgpu-unroll-threshold
+      / -private on IQ2_XXS/IQ3_XXS MMVQ to identify the unroll path that inflates VGPR (assembly/VGPR only, no bench)'
+    disposition: plan-candidate (merge with intake-1414 ledger row 1)
+    owner: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+  - direction: Adopt -local=600 in production builds
+    disposition: decline
+    reason: 7.x-only bug; production pinned 6.2; -local=600 was a null in our 6.2 A/B.
+  dive_surfaced_sources:
+  - ref: https://github.com/llvm/llvm-project/pull/147700
+    what_it_would_settle: Pre-change local-bonus logic
+    bears_on: intake-1424
+    recommend: already ingested as intake-1414
+  - ref: 'ROCm/llvm-project PRs #1348/#1349'
+    what_it_would_settle: Revert hashes/dates
+    bears_on: intake-1424
+    recommend: 'decline: history only, recorded here'
+  - ref: https://github.com/ROCm/rocMLIR/issues/1977
+    what_it_would_settle: Kernels that benefit from unroll bonus
+    bears_on: intake-1424
+    recommend: 'decline: MLIR, other GPU family'
+  - ref: https://github.com/ggml-org/llama.cpp/issues/17917
+    what_it_would_settle: Quantized-path-only regression claim
+    bears_on: intake-1424
+    recommend: 'decline: not load-bearing'
+  - ref: https://github.com/ROCm/TheRock/pull/3279
+    what_it_would_settle: Nightly fix date
+    bears_on: intake-1424
+    recommend: 'decline: ROCm 7 only'
+  reader_should_conclude: Cite as primary evidence that the ROCm 7.x llama.cpp prefill regression was an AMDGPU unroll cost-model
+    bug causing VGPR spills (decode flat), fixed by revert. Says nothing about ROCm 6.2, gfx90a or MMVQ decode.
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-15 Stage-4: agentic-rocm-kernel-authoring.md correction; docs/runbooks/rocm-upgrade-checklist.md failure-signature
+    rewrite'

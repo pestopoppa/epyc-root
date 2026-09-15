@@ -17,6 +17,14 @@ experimental-kernel workflow in the root `AGENTS.md`.
 - [ ] Preserve any other required HIP flags when setting `CMAKE_HIP_FLAGS`; do not overwrite them.
 - [ ] Prove the option reached the HIP compile commands (for example, inspect the generated verbose
   build or `compile_commands.json`) and record that evidence in the build receipt.
+- [ ] Pass `-fno-offload-lto` explicitly and prove the device `cc1`/`lld` lines show no offload LTO.
+  LLVM 23 / TheRock 10.1 default host+device HIP compiles to full device LTO (llvm #201457), which spilled
+  register-bound kernels in ROCm/llvm-project#4434 (intake-1407/1413); ROCm 6.2 defaults to off.
+- [ ] Do not test ROCm 7.2.0 or TheRock 7.x nightlies before ~2026-02-13 (7.11 included): they carry the
+  llvm #147700 unroll cost-model bug (reverted 7.2.1+/7.12; intake-1414/1424).
+- [ ] On any LLVM ≥23 upstream-based compiler, keep AMDGPU runtime unrolling off (llvm #194924 turns it on;
+  ROCm afcb2456 gates it off only on therock-10.1/amd-staging; intake-1422/1423), and never combine a
+  profile-use (device PGO) build with MMVQ decode without re-checking unrolling (intake-1417).
 
 ## Validation gate
 
@@ -29,11 +37,18 @@ experimental-kernel workflow in the root `AGENTS.md`.
   without it. Record that result; an upstream claim alone cannot waive the on-box test.
 - [ ] Re-run CPU/GPU no-regression, linkage, packaging, and production-freeze gates before proposing a
   new production version. Promote a fresh full candidate; never patch the frozen tree in place.
+- [ ] Before any unpin is proposed, run the zero-GPU static audit on IQ2_XXS/IQ3_XXS/IQ4_XS/Q4_K/Q8_0
+  MMVQ kernels vs the ROCm 6.2 build (VGPR, spill, scratch bytes/ops, drains) across
+  {offload-lto default, `-fno-offload-lto`} × {default unroll, `--amdgpu-unroll-threshold-local=600`}, then an
+  MI210 decode/prefill same-window ABA with correctness. Unpin only if a cell beats 6.2 on decode without
+  losing prefill; expect a plain upgrade to regress. Method: `artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md`.
 
 ## Known failure signature
 
-The historical regression presents as a large prefill loss under ROCm 7+ (reported at roughly
-3.7–5×). The mitigation is the LLVM local-unroll threshold above. The host currently uses ROCm 6.2,
-so this is an upgrade guard, not a flag to retrofit into the frozen v9 build.
+The historical regression presents as a large prefill loss (decode flat) on ROCm 7.2.0 and early TheRock
+7.x nightlies: an AMDGPU unroll cost-model bug (llvm #147700) over-unrolled loops touching `__shared__`
+memory, causing VGPR spills (AMD bisect: gfx1100 1416.90 → 4378.87 t/s after revert). The widely quoted
+3.7–5× (llama.cpp #19984) is confounded and should not be cited. The local-unroll threshold above is the
+mitigation. The host runs ROCm 6.2, so this is an upgrade guard, not a flag to retrofit into frozen v9.
 
 Primary upstream discussion: [llama.cpp ROCm performance discussion #15021](https://github.com/ggml-org/llama.cpp/discussions/15021).
