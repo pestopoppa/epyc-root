@@ -363,8 +363,10 @@ Re-verified independently against the frozen tree 2026-08-23 (intake-1290#record
       **The kernel will silently not launch at defaults.** Its occupancy floor requires
       `chunked_blocks >= MIN_BLOCKS_PER_SM * nsm` with `MIN_BLOCKS_PER_SM` = 3; at H=32 v-heads and
       `n_seqs = 1` that is 32 × (128/16) = **256 blocks against 3 × 104 = 312 on MI210**, so it never
-      fires. Set `GGML_CUDA_DELTANET_MIN_BLOCKS_PER_SM=2` **or** run `-np >= 2`, where it fires
-      unmodified. A run that omits this measures the recurrent kernel twice and reports a tie —
+      fires. Rebuild with `-DGGML_CUDA_DELTANET_MIN_BLOCKS_PER_SM=2` (compile-time macro,
+      `gated_delta_net.cu:608-610`; exporting it as an env var silently does nothing — intake-1434#record)
+      **or** run `-np >= 2`, where it fires unmodified, and require the `GGML_CUDA_DELTANET_CHUNKED_DEBUG=1`
+      dispatch trace in the A/B log. A run that omits this measures the recurrent kernel twice and reports a tie —
       which is exactly the failure the third-party head-to-head already hit.
       **Gate:** **≥ 8 % full-model prefill gain at p8192, with G16 clean.** Below that, K28's no-go
       stands on the reasoning that closed it.
@@ -379,6 +381,12 @@ Re-verified independently against the frozen tree 2026-08-23 (intake-1290#record
       ([log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md)) has not
       cleared numerically. Both compute planes were held by other sessions through this wave —
       **filed, not run**.
+- [ ] **G15a — short-prompt no-regression arm, conditional.** If G15 passes only with the occupancy floor rebuilt
+      lower (or with `-np >= 2`), add pp128 / pp512 chunked-on vs chunked-off on the SAME binary before any
+      promotion. The floor is the chunked kernel's short-shape fallback threshold. All three chunked-GDN contest
+      designs deliberately kept a sequential short path (MSInfer ≤ 256 tokens, LLM-CUDA, Kachua's adaptive CHUNK).
+      G15 today benches only pp2048/8192/32768, so a short-prompt regression would not show. Sources:
+      intake-1428#record, intake-1434#record. GPU, same binary as G15.
 - [ ] **B5 (B, blocked on `G16` in
       [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md)) — do not stack
       a chunked GDN kernel on `GGML_CUDA_GDN_STATE_BF16`.** The two levers compound *two independent
