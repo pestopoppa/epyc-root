@@ -2631,7 +2631,7 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
 
 ### Open (R24)
 
-- [ ] **R24-1 — wire the existing hardened bench into the live loop.** `loop/bench.py:219-221` runs plain
+- [x] **R24-1 — wire the existing hardened bench into the live loop.** ✅ 2026-09-15 — `loop/bench.py:219-221` runs plain
       `llama-bench`. `--autokernel-harden <per-candidate seed>` (llama.cpp `a4cb04ca8`, RVP-C6-8) and
       `microbench._check_autokernel_hardening` (research `execution/microbench.py:1765-1880`) exist, but nothing
       invokes them. `run_once` should pass the flag and admit a `Comparison` only when the hardening receipt check
@@ -2640,7 +2640,9 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       (`llama-context.cpp:1370-1383`) presents identical pointers with different content on every rep. The hazard is
       observed practice on a surface shaped like ours (intake-1426#record, intake-1431#record). Zero compute beyond the
       bench already run.
-- [ ] **R24-2 — measure with a TRUSTED instrument and review the WHOLE tree.**
+      **Landed:** research `13f8e63a` / main `81fbd472` passes one per-candidate hardening seed to
+      every arm and refuses every receipt reason before constructing a `Comparison`.
+- [x] **R24-2 — measure with a TRUSTED instrument and review the WHOLE tree.** ✅ 2026-09-15
       (i) Build both arms' `llama-bench` from a pinned instrument commit; today `loop/run.py:414-415` builds it from the
       candidate's own tree.
       (ii) Critic pass 2 diffs only actor-declared paths (`loop/actors.py:493-495`). Hash `git status --porcelain` plus
@@ -2648,7 +2650,10 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       `ggml/src/` (especially `tools/` and the instrument frame).
       (iii) Run `execution/reward_hack_scan.py` over the whole diff; its flags withhold ranking.
       Source: intake-1426#record.
-- [ ] **R24-3 — the critic must not be able to edit the candidate.** `actors.py:84-87` runs the Claude critic with
+      **Landed:** the existing whole-tree/protected-instrument validation remains authoritative and
+      the full diff now passes `reward_hack_scan`; undeclared, protected and named exploit findings
+      hard-refuse before build. Research `13f8e63a` / main `81fbd472`.
+- [x] **R24-3 — the critic must not be able to edit the candidate.** ✅ 2026-09-15 — `actors.py:84-87` runs the Claude critic with
       `--dangerously-skip-permissions` in the lane worktree. The shared `_CLAUDE_SANDBOX_NOTE` (`:55-61`) tells it
       *"If the task asks for an edit, make it directly"*. `review_patch` takes its diff BEFORE the call, and nothing
       re-hashes the tree before `gate()`.
@@ -2661,7 +2666,10 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       (iv) Pin it with a test in which a critic stub that edits a file fails the candidate.
       Warrant: HAN Lab's writer instructed its edit-capable verifier to implement its work through the review prompt
       (intake-1433#record). Zero compute.
-- [ ] **R24-4 — wire the no-fallback dispatch proof into the correctness gate.** Two checks exist:
+      **Landed:** critic backends are read-only, candidate data is delimited/untrusted, and both the
+      critic wrapper and host-owned loop validation compare pre/post tree identities before gating.
+      Research `13f8e63a` / main `81fbd472`.
+- [x] **R24-4 — wire the no-fallback dispatch proof into the correctness gate.** ✅ 2026-09-15 — Two checks exist:
       `evaluator/correctness.py:3047` `check_no_fallback_dispatch_proof`, and `loop/fold2_gates.py` G4
       (`GGML_SCHED_DEBUG=2`, target ops must sit on `ROCm0`). `loop/run.py:31-33` imports neither. `gates.py` runs only
       `test-backend-ops`, and `residency.Sampler` proves whole-process VRAM residency, not per-op placement. Capture the
@@ -2669,10 +2677,16 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       invocation, and fail closed on any CPU-assigned target op. Warrant: the GDN Full-Agent contest winner shipped a
       decode kernel with a silent host-CPU fallback, and its harness's output check passes it (intake-1432#record).
       Spec §12 (`autokernel-research-loop.md:2617`) already demands this check. GPU: one debug capture per candidate.
-- [ ] **R24-5 — fix or delete `gates.deterministic`.** `loop/gates.py:127-150` adds each run's RETURN CODE to a set
+      **Landed:** a scheduler trace feeds the existing no-fallback evaluator after the op oracle and
+      fails closed on missing, vacuous or CPU-assigned target-op evidence. Research `13f8e63a` /
+      main `81fbd472`.
+- [x] **R24-5 — fix or delete `gates.deterministic`.** ✅ 2026-09-15 — `loop/gates.py:127-150` adds each run's RETURN CODE to a set
       and never compares outputs. It has no caller, yet it is exported (`:177`) as if it worked. Either delete it or
       compare hashed logits across runs through the hardened path (R24-1). This is the vacuous-verification class. Zero
       compute.
+      **Landed:** three identical seeded hardened executions must carry one output-hash record;
+      otherwise the gate refuses. It is wired into the non-serving candidate gate. Research
+      `13f8e63a` / main `81fbd472`. Combined verification: 455 tests and 31 subtests passed.
 - [ ] **R24-6 — anti-gaming clause in the planner/author prompt.** Neither `actors.py:407-422` nor `program.md`
       carries one. The clause should forbid:
       - input-identity or pointer-keyed caching of outputs;

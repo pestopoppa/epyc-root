@@ -88,3 +88,21 @@ to 341 GiB. The process's roughly 31 GiB resident set was stable model memory; t
 the output file, not a demonstrated heap leak. The wrapper reported `rc=0` after termination, so the run
 and its 8,464-second wall time are invalidated. P0c remains open until a rerun binds `-no-cnv`,
 `stdin=DEVNULL`, a wall timeout and bounded output.
+
+## R24 live verification and AKX acceptance
+
+Research `13f8e63a` (promoted to main `81fbd472`) closes R24-1 through R24-5 at the next run
+boundary. Live bench arms now share a per-candidate hardened seed and must pass the installed
+hardening receipt. Whole-tree validation and the reward-hack scanner cover the full diff; critics
+run read-only over delimited untrusted data and cannot change the tree between review and gate.
+The correctness tail now consumes an actual scheduler no-fallback trace, while determinism compares
+hardened output hashes instead of return codes. GitNexus rated each changed symbol LOW; 455 tests and
+31 subtests passed after rebase.
+
+AKX-P0b/P0c live acceptance also passed in the isolated `ef81196d5` coverage worktree. Two W1
+HIP runs emitted identical 2,564-row route multisets (SHA-256 `c00c24ff…9944a94`). W4 exercised
+309/1,465 `ggml-cpu.c` lines in 29.013 seconds; W1 exercised 1,564/3,891 `ggml-cuda.cu`
+host lines in 5.802/5.882 seconds. Every valid CLI had `-no-cnv --single-turn --simple-io`,
+closed stdin, a 900-second timeout and 16 MiB output cap. Production-like hashes and mtimes stayed
+unchanged, all CPU/GPU claims were released, and no acceptance PID remained. Evidence:
+`/mnt/raid0/llm/tmp/akx-p0bc-acceptance-20260915/ACCEPTANCE.md`.

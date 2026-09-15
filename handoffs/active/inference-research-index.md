@@ -65,7 +65,7 @@
 | INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | SWE closed on both protocols; re-collect the 24-cell grid at the measured n-max 8 optimum when GPU frees | INF-60 |
 | INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Finish U3-SEED, relaunch GLM, and complete the remaining 15 healthy monitored iterations | INF-66, INF-65, INF-70 |
 | INF-74 | autokernel concurrent targets | [autokernel-concurrent-target-coordination.md](autokernel-concurrent-target-coordination.md) | Review CTC-REVIEW: model-independent stage coordination and resident GPU overlap; implementation requires approval | INF-73 |
-| INF-75 | autokernel cross-workload keep gate | [autokernel-cross-workload-keep-gate.md](autokernel-cross-workload-keep-gate.md) | Complete P0b/P0c live acceptance, then bind composed evidence at the serial freeze boundary | INF-73, INF-66, INF-65 |
+| INF-75 | autokernel cross-workload keep gate | [autokernel-cross-workload-keep-gate.md](autokernel-cross-workload-keep-gate.md) | Bind the proven census/coverage/route evidence at the serial freeze boundary, then replay P1b | INF-73, INF-66, INF-65 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.

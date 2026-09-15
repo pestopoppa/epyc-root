@@ -558,11 +558,13 @@ Global constraints:
   - ✅ 2026-09-15 — research `e5c0d798`: `loop/census.py` owns the shape-envelope producer,
     workload-census-v1 schema, atomic storage and vacuous guards; the retained fixture proves 27,516 nodes,
     SSM_SCAN=0 and 12 CPU GET_ROWS, while stale, zero-node and ANSI-corrupted evidence stays UNKNOWN.
-- [ ] **AKX-P0b — HIP route layer.**
+- [x] **AKX-P0b — HIP route layer.** ✅ 2026-09-15
   - Parse `GGML_CUDA_LOG_MMVQ_ROUTE=2` into `hip_matmul_routes`.
   - **Acceptance:** on a recorded W1 decode log, the route multiset is stable across two runs of the same build (A/A structural identity).
   - Compute: correctness-surface on ROCm0 under the GPU claim.
-- [ ] **AKX-P0c — coverage build variant.**
+  - **Observed:** two claimed W1 runs emitted 2,564 route rows each with identical multiset SHA-256
+    `c00c24ff7d8aca91ccd56ab46d811df938a7e814ccbbe46f41de2692b9944a94`.
+- [x] **AKX-P0c — coverage build variant.** ✅ 2026-09-15
   - Add a `coverage` variant to `controller/build_recipe.py` for CPU and HIP (same defines as production, plus coverage flags, plus atomic update).
   - Prove that it builds, that `ggml/src` host lines execute on a W1 and a W4 short forward, and that the production-variant digests are unchanged.
   - Record forward wall times per workload. These replace the §10 ESTIMATEs.
@@ -578,6 +580,13 @@ Global constraints:
     1699977/1699975 and truncated that one log. The run is invalid despite emitted counters and the
     wrapper's misleading `rc=0`; rerun with `-no-cnv`, `stdin=DEVNULL`, a wall timeout and bounded
     stdout before checking executed lines or recording wall time.
+  - **Valid acceptance:** W4 CPU completed in 29.013 s and executed 309/1,465 `ggml-cpu.c`
+    lines; two W1 HIP runs completed in 5.802/5.882 s and executed 1,564/3,891
+    `ggml-cuda.cu` host lines. Every valid CLI used `-no-cnv --single-turn --simple-io`,
+    `stdin=DEVNULL`, a 900 s timeout and 16 MiB per-file cap. Production-like artifact hashes
+    and mtimes were unchanged. Evidence:
+    `/mnt/raid0/llm/tmp/akx-p0bc-acceptance-20260915/ACCEPTANCE.md`, SHA-256
+    `2f6099cb7f93e9c3da71e3d5f9e41e0396add6c4c8a241d6684aee932b8a099c`.
 - [ ] **AKX-P0d — base census for W1–W6 on the current champion-of-record.**
   - Compute: correctness-surface, six workloads, under stage claims.
   - **Acceptance:** six observed censuses with witnesses. W3–W6 CPU runs are inside region-lock windows, and foreign load is sampled (`foreign_load.py`).
