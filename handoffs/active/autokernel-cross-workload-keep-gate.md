@@ -572,6 +572,12 @@ Global constraints:
     recipes preserve the sealed base define prefixes and digests, append atomic host counters and HIP
     clang profile/mapping flags, and resolve by content identity. The required real builds and W1/W4
     executed-line acceptance remain open; no coverage result is yet claimed.
+  - **Invalid W4 acceptance attempt 2026-09-15:** both coverage variants built, but the first CPU
+    forward omitted `-no-cnv` and left stdin open. `llama-cli` entered its REPL, ran for 8,464 seconds
+    and produced a 57.5 GiB stream of empty prompts before the owning session terminated exact PIDs
+    1699977/1699975 and truncated that one log. The run is invalid despite emitted counters and the
+    wrapper's misleading `rc=0`; rerun with `-no-cnv`, `stdin=DEVNULL`, a wall timeout and bounded
+    stdout before checking executed lines or recording wall time.
 - [ ] **AKX-P0d — base census for W1–W6 on the current champion-of-record.**
   - Compute: correctness-surface, six workloads, under stage claims.
   - **Acceptance:** six observed censuses with witnesses. W3–W6 CPU runs are inside region-lock windows, and foreign load is sampled (`foreign_load.py`).

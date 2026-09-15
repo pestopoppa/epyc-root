@@ -3442,6 +3442,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Require closed original evaluation/native/worker/held-cost evidence and exclusive physical
     ownership before issuing any disposition. No inferred rejection, caller-label authority,
     historical backfill, temporary duplicate accounting record or deletion-policy change.
+  - [x] **AKU-10j — bound retired serial build-cache retention**: ✅ 2026-09-15 — startup now
+    plans and reaps only reproducible `targets/*/builds` roots from retired serial states, preserves
+    the current state plus the newest inactive cache, and refuses live, locked, unreconciled,
+    identity-changing or path-escaping candidates. Continuation hashes, durable source commits,
+    exact recipe digests and CMake build shape are revalidated before removal; anchors, receipts,
+    logs, patches, stores and source worktrees are never candidates. The operation is dry-run capable,
+    bounded to eight directories per start, governed by 400/500 GiB free-space watermarks, and writes
+    exact plan/result manifests. Focused acceptance passed 3 tests. Research `c557ad94`.
+    This closes the prospective serial build-cache leak, not historical worktree retirement or raw
+    profile/journal compaction; those remain under AKU-10d/10f/10g and the disk-hygiene sweep.
 - [ ] **AKU-11 — real resource-provider/broker integration** (AK-AUTO-03/05): retained OP-41 ownership and
   finalise → promote → reboot gate. Implementation is authorized by the operator's instruction
   to implement this handoff; do not reopen broker-code authorization as a pending choice.
