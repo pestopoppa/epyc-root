@@ -1,9 +1,9 @@
 {
   "session_id": "noninf-20260914-intake-openresearch",
   "started_at": "2026-09-14T22:20:00Z",
-  "last_checkpoint": "2026-09-15T09:58:38Z",
+  "last_checkpoint": "2026-09-15T10:29:57Z",
   "phase": 5,
-  "stage": "stage2b-complete (round 3 FINAL) — Stage-3 plan pending ledger consolidation",
+  "stage": "stage4-complete",
   "session_kind": "research-intake (1 operator-submitted URL)",
   "previous_session": {
     "session_id": "5116d160-6be4-4cbb-9bd2-dfd5ffb46a17",
@@ -260,5 +260,25 @@
     "intake-1396": "arXiv 2510.20270 ImpossibleBench",
     "intake-1397": "systemd resource control: AllowedCPUs/CPUAffinity/NUMAPolicy slices (cpuset cgroup v2)"
   },
-  "stage2b_round3_result": "intake-1393..1397 appended dive-verified; no OVERTURN-CANDIDATE surfaced; SpecBench declined (1396 closed the judge question); round-3 surfaced sources recorded only (final round)"
+  "stage2b_round3_result": "intake-1393..1397 appended dive-verified; no OVERTURN-CANDIDATE surfaced; SpecBench declined (1396 closed the judge question); round-3 surfaced sources recorded only (final round)",
+  "stage3_plan": "/home/node/.claude/plans/bright-percolating-karp.md (approved via ExitPlanMode 2026-09-15; S3-OP-01 ruled option a)",
+  "stage4_result": {
+    "commits": [
+      "80fc63b0 (Stages 1-2b index)",
+      "45c1b008 (Stage 4 apply)"
+    ],
+    "promoted_main": "72e5087e",
+    "new_handoff": "autokernel-cross-workload-keep-gate.md (INF-75)",
+    "new_tasks": "40 in existing handoffs + 20 in INF-75",
+    "validator": "OK 1393",
+    "index_state_check": "0 problems",
+    "cite_check": "exit 3, all blocking hits pre-existing in untouched files",
+    "incident": "clerk script-name collision in shared scratchpad triplicated three handoff insertions; detected, deduplicated to exact single copies before commit",
+    "followups": [
+      "SKILL.md RI-04 dive-artifact dir vs 'Stage 2 writes ONLY the index' boundary wording",
+      "expansion_refused has no schema field",
+      "scripts/vidya/adapters/README.md rows 304-310 (+SC81 row) sit outside their table (pre-existing)",
+      "S3-WIKI-02/03 held for the operator compile sweep"
+    ]
+  }
 }
