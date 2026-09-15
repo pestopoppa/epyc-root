@@ -36,9 +36,15 @@ in the active handoffs. A zero-compute targeted run passed 171 tests with the re
 - Closed S3-AKU-17's design boundary with an exact content-addressed objective-ledger schema, evidence joins,
   non-tradeable constraints, research-only conflict semantics and fail-closed fixture matrix. No runtime
   authority was added; `CampaignManifest.objective_ref` remains the future live binding seam.
+- Closed S3-AKU-09 with additive effect/mechanism claim separation. Verified effects require oracle plus
+  paired A/B; mechanisms remain hypotheses unless an explicit evidenced ablation verifies them, and planner
+  recall no longer treats hypothesis narratives as causal findings.
 - Audited S3-AKU-04 and did not invent a variance admission rule: U3-SEED must first specify the spread
   estimator/significance rule, after which Bundle v3 and runtime retention can reuse the shared Pareto helper
   over `(effect_pct, -spread_pct)` with an explicit import closure.
+- Filed OP-AKU-U3 because only the operator can set that missing scientific admission rule. Recommended:
+  paired log downside-semideviation ratio, one-sided bootstrap 95% upper bound below zero, n≥14 per arm, and
+  a throughput lower bound above the negative session-unit floor; p95 deviation remains descriptive.
 - Added the AKX-P0c CPU/HIP coverage recipe variants without touching base recipe identities. Hardware
   build and W1/W4 executed-line acceptance remain open and are not represented as complete.
 - Closed AKX-P2c with live serial ordering and early-refusal wiring. Review removed an accidental default

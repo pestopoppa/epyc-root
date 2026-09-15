@@ -758,7 +758,13 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
 
 - [ ] **U3-SEED — specify the RUNTIME_CONFIG arm type against the THP instance**: session-unit paired
       launches, spread reported with the point estimate, a variance-reduction keep grammar, and the recipe
-      hash in the epoch. Blocked on nothing; do it before authoring any RUNTIME_CONFIG hypothesis.
+      hash in the epoch. Do it before authoring any RUNTIME_CONFIG hypothesis. **2026-09-15 audit:** paired
+      separate-process launches, recipe identity and reporting-only spread already exist. Runtime admission
+      cannot be completed until OP-AKU-U3 selects the variance estimand/test, alpha/N/multiplicity treatment
+      and mean-throughput guard; `_spread()` explicitly has no decision authority. Recommended narrow rule:
+      log ratio of candidate/anchor downside semideviation, one-sided paired-bootstrap 95% upper bound < 0,
+      n ≥ 14 launches/arm, plus throughput 95% lower bound above minus the applicable session-unit floor.
+      Keep p95 deviation as reporting only.
   - [x] **S3-AKU-08 (U3-PROPOSER) — write the RUNTIME_CONFIG proposer ownership split into U3-SEED.** (a)
         Default proposer for a declared knob box is operator/LLM hypotheses plus seeded random/LHS fill, NOT
         a model-based sampler. (b) A TPE arm may be enabled only if ALL of: (i) arms per campaign ≥ 10× box
@@ -3648,11 +3654,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       kind, producer independence, inspected evidence, disposition/reason and whether it changed later
       search. Measurement results are marked causal when they close an attempt or move the anchor; grading
       and keep policy are unchanged.
-- [ ] **S3-AKU-09 — split every keep record into EFFECT and MECHANISM claims.** EFFECT is gated by oracle +
+- [x] **S3-AKU-09 — split every keep record into EFFECT and MECHANISM claims.** EFFECT is gated by oracle +
       paired A/B. MECHANISM is the planner narrative and carries status=hypothesis unless an ablation tested
       it. Example defect: R23-35's recorded MMQ→MMVQ reroute mechanism beside an A/B-validated effect
       nothing tested. Wiki/planner consumers must not compound on hypothesis-status mechanisms.
-      intake-1374#03.
+      intake-1374#03. ✅ 2026-09-15 — research `10b9301a`: additive `keep_claims.v1` verifies EFFECT only
+      from a passed oracle plus paired A/B; MECHANISM defaults to hypothesis and becomes verified only with
+      explicit nonempty ablation evidence. Legacy/malformed mechanisms fail closed to hypothesis, planner
+      causal pooling excludes them, and generated experiment prose labels their status.
 - [x] **S3-AKU-10 — retrospective process metrics over existing autokernel stores (do first).**
       First-improvement step, AUC-over-steps of best-so-far effect, valid-step ratio (measured / (measured +
       refused_at_formation + planner_transient + bench_failed)), and critic-pass-1 rejection rate vs
