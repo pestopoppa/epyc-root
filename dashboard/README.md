@@ -104,6 +104,7 @@ the orchestrator's venv is **not** required.
 | `dashboard/loop_status.py` | read side of the **rebuilt AutoKernel loop's** `loop-status.json` contract: four-valued freshness + derived folds |
 | `dashboard/static/handoffs.html` | kanban UI + modal + hand-rolled SVG charts (no framework, no CDN) |
 | `dashboard/static/loop.html` | **THE Kernel R&D page** (`/loop`): the rebuilt AutoKernel loop's state, freshness banner, dispositions incl. negatives, GPU held-vs-busy — **plus** the operator-gated champion evidence merged in from the retired `/kernel`, on its own second envelope. Two producers, two envelopes, neither dating the other |
+| `dashboard/static/cockpit.html` | **AP-50 decision cockpit** (`/cockpit`): view plane over the orchestrator's `epyc.autopilot.decision_cockpit.v1` contract — see *Decision cockpit* below |
 | `scripts/handoffs/build_handoff_timeline.py` | git-history → `data/handoff_timeline.json` |
 | `scripts/handoffs/install_timeline_hook.sh` | post-commit hook that regenerates the artifact |
 | `tests/test_handoff_parser.py`, `tests/test_handoff_timeline.py` | `unittest` suites |
@@ -126,6 +127,8 @@ the orchestrator's venv is **not** required.
   no-store`, plain-text body (withheld on HEAD). `static/kernel.html` is deleted
   and the `kernel` registry row is gone; see below for why a redirect and not an
   archive page
+- `GET /cockpit` — the AP-50 decision cockpit page. Data plane is the orchestrator
+  (`:8000/dashboard/api/decision_cockpit`, data probe `.../decision_cockpit/health`)
 - `GET /loop` — **THE Kernel R&D page.** The rebuilt AutoKernel loop, and since
   2026-08-30 the operator-gated champion evidence merged in from `/kernel`
 - `GET /api/loop` — the loop's `epyc.autokernel.loop_status.v1` report + its panel
@@ -593,6 +596,38 @@ audits its own source to keep it that way.
   loudly read stale, and a consumer polling it would be told a dead campaign is a
   quiet one. `/api/kernel/health` does answer `503 degraded`. The page a human
   could land on is gone; the route a script could still trust is not.
+
+## Decision cockpit (`/cockpit`) — AP-50
+
+"What optimizes the orchestrator", as a decision surface rather than a narrative.
+**Plane rule:** the contract `epyc.autopilot.decision_cockpit.v1` is owned by
+`epyc-orchestrator/scripts/autopilot/decision_cockpit.py` and served live at
+`:8000/dashboard/api/decision_cockpit?era=<bucket>`; this hub owns only the page,
+the `cockpit` registry row and the nav. Nothing is proxied.
+
+* **Evidence, not the digest.** Built per request from *every* rotated journal
+  shard (supersessions folded), the era-matched Optuna studies (read-only), the
+  declared state, the `production_best` checkpoint meta and the era registry.
+* **One era at a time.** A view is one era bucket (quality era x speed era); the
+  default is the state's active era. There is no pooled all-era view. An empty
+  current era (e.g. E16 before its first trial) renders as known-empty, not unknown.
+* **States are distinct:** proposed, executed, valid, kept, promoted, currently
+  live. "Currently live" is provable only for the trial the `production_best`
+  checkpoint names; any other kept trial is `unknown` (shown as `+N?`), never 0.
+* **OP-20 fence.** Seeding-path (`seed_batch`) quality is shown apart from
+  EvalTower-scored quality and never compared to the incumbent until AP-64 lands.
+* **Three probes, three claims.** The registry row's `health_path` is `/health`
+  (hub transport). `:8000/dashboard/api/decision_cockpit/health` is the data probe
+  (200 only for `ok`; 503 `absent`/`degraded` when an input is missing/unreadable/
+  partial or the era is unknown). The payload's `_freshness` is the orchestrator
+  panel envelope (`dashboard_panels.py` key `decision_cockpit`, non-gating because a
+  paused AutoPilot declares its silence in `evidence_freshness`).
+* **Fail closed in the browser.** A failed fetch paints every section UNKNOWN; a
+  builder error body renders UNKNOWN panels under the error banner.
+
+Tests: `tests/test_dashboard_cockpit_page.py` (registration, DOM ids, runtime render
+under node against a producer-generated sample and both failure shapes);
+producer: `epyc-orchestrator/tests/unit/test_decision_cockpit.py`.
 
 ## Kernel R&D (`/loop`) — THE surface
 

@@ -1618,7 +1618,7 @@ captures the seq preflight containment result only.
 
 
 ## Research-intake integration — 2026-07-22 (measurement-discipline hardening + orx/OpenHyra patterns)
-_Via /research-intake Stage-2 (intake-883 orx, intake-884 HyRA, intake-885 OpenHyra)._
+_Via /research-intake Stage-2 (intake-883#record orx, intake-884 HyRA, intake-885 OpenHyra)._
 - [ ] Harden keep/revert into an explicit self-scoring candidate contract: always retain a proven baseline (valid rollback before any experiment); accept only on a re-verified strict improvement measured under pinned determinism (fixed threads/seed, N-run mean); atomic config swap; require an inline validity note stating what the number does/doesn't prove — including "no gating on a locally-unmeasurable proxy without held-out re-verify"
 - [x] Adopt run-manifest provenance (sha256 of sources+task+evaluator + resume-drift rejection, per OpenHyra `provenance.py:72-157`) as the attestation format for experiment runs — codifies MEASUREMENT.md (protocol-id, attestation ref) in the loop ✅ 2026-07-29. `scripts/autopilot/run_manifest.py` creates a deterministic SHA-256 receipt over the AutoPilot/controller/evaluator sources, selected action, and evaluator identity. The receipt is persisted only in the in-flight WAL marker before dispatch; startup pauses and refuses crash recovery if its digest, sources, or evaluator drift. Legacy markers recover unchanged and historical journal rows/measurement records are not rewritten. Focused recovery + manifest validation: 46 passed; Ruff and `git diff --check` clean.
 - [x] Evaluate OpenHyra's evidence-gated stop controller (LLM may only REQUEST stop; deterministic guards on evaluator records dispose; `stopping.py:238-263`) vs current keep/revert + convergence stop ✅ 2026-07-29. **Adopt the control-plane pattern, not an LLM stop switch.** OpenHyra accepts a stop request only after deterministic checks over complete evaluator records (minimum completed contexts, no meaningful gain for a patience window, and sufficient recent successful candidates), then writes a decision plus evidence to a terminal receipt ([source](https://github.com/MrSteeeve/OpenHyra/blob/main/stopping.py)). Its `expected_gain` and `confidence` are explicitly telemetry, never stop inputs. Our loop already has useful lower-level protections: terminal keep/revert rows are not replayed by W8, and `reproduction_confirmed` is excluded from Pareto learning while retained as valid convergence evidence (`scripts/autopilot/autopilot.py`). But Seeder's TD-error convergence is status telemetry, not a durable run-level disposition, and there is no single receipt binding a stop decision to complete evaluator records and run provenance. **Required eventual shape:** after the run-manifest row above lands, add a pure deterministic reviewer that consumes only complete journal groups and emits `{accepted, reasons, evidence}`; an LLM may request `stop` but cannot cause it. Refuse termination on incomplete/mixed-provenance groups; keep eligible independent work runnable rather than turning one candidate's convergence into a global kill. Cover accepted, refused, malformed-agent-request, incomplete-group, and resume-after-terminal cases with unit tests before wiring it into AutoPilot.
@@ -3019,6 +3019,18 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       periodically generated digest. Retain the provenance graph as a drill-down, but lay it out
       left-to-right as hypothesis → experiment → evidence → verdict → runtime state, with era/status
       filters and explicit edge semantics.
+      _Evidence 2026-09-15 (code landed on branches, not yet deployed):_ orchestrator branch
+      `sub/ap-50-decision-cockpit` adds `scripts/autopilot/decision_cockpit.py`
+      (contract `epyc.autopilot.decision_cockpit.v1`: all journal shards + supersessions, era-matched
+      Optuna studies, state, `production_best` meta; per-era buckets defaulting to the active era; the six
+      distinct states with drop reasons; incumbent deltas with n / binomial SE / paired discordance /
+      replication; OP-20 seeding fence; journal+study lever scoreboard; L→R provenance graph with
+      era/status filters and edge semantics; fail-closed UNKNOWN inputs) plus
+      `:8000/dashboard/api/decision_cockpit` and `/decision_cockpit/health`, with 15 offline tests. Root branch
+      `sub/ap-50-cockpit-page` adds hub page `/cockpit`, a registry row, a README section and 7 page tests.
+      Real-journal read-only parse: 2 shards, 1,372 trial rows, 0 bad lines, 119 supersessions folded,
+      8 era buckets; current era E16 has 0 journaled trials. **Remains:** merge both branches, an
+      API-only `:8000` reload and a hub restart (owning session), then a live look at `/cockpit`.
 - [ ] **AP-48 — Add backlog-aware adaptive full/split admission after the E13 burst baseline.** Treat
       E13's guarded split policy for router-owned EvalTower traffic as the conservative burst anchor,
       not the final general scheduler. Build an admission policy that uses arrival pressure, physical

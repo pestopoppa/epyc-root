@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPYC — Decision cockpit</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --dim:#6e7681; --accent:#60a5fa; --good:#34d399;
+    --warn:#fbbf24; --bad:#f87171; --p0:#f85149; --unk:#a78bfa;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,
+    "Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .muted{color:var(--muted)} .mono{font-family:var(--mono)} .dim{color:var(--dim)}
+  header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:11px 20px;background:rgba(13,17,23,.93);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
+  header h1{font-size:16px;margin:0;font-weight:650;white-space:nowrap}
+  header .sub{color:var(--muted);font-size:12px}
+  nav#epyc-nav{display:flex;gap:14px;align-items:center;font-size:13px;flex-wrap:wrap}
+  .hspacer{margin-left:auto}
+  select{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:12px}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 9px;border-radius:20px;
+    border:1px solid var(--border);color:var(--muted);white-space:nowrap}
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+  .badge.ok{color:var(--good)} .badge.ok .dot{background:var(--good)}
+  .badge.warn{color:var(--warn)} .badge.warn .dot{background:var(--warn)}
+  .badge.bad{color:var(--p0)} .badge.bad .dot{background:var(--p0)}
+  .badge.unknown{color:var(--unk)} .badge.unknown .dot{background:var(--unk)}
+  main{padding:16px 20px 40px;max-width:1500px;margin:0 auto}
+  section.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+  .ph{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:650;margin-bottom:6px;
+    display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+  .why{color:var(--dim);font-size:12px;margin:0 0 10px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px}
+  .unk{color:var(--unk);font-weight:650;letter-spacing:.3px}
+  .caveat{border-left:3px solid var(--warn);padding:4px 10px;margin:4px 0;color:var(--muted);font-size:12px}
+  .deadbody{color:var(--muted);font-size:12px} .deadbody b{color:var(--bad)}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{text-align:left;padding:4px 7px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--muted);font-weight:600;white-space:nowrap}
+  td.num,th.num{text-align:right;font-family:var(--mono);white-space:nowrap}
+  .tablewrap{overflow-x:auto}
+  .pos{color:var(--good)} .neg{color:var(--bad)}
+  .chip{display:inline-block;font-size:11px;padding:1px 7px;border-radius:10px;border:1px solid var(--border);color:var(--muted);margin:1px 2px 1px 0}
+  .chip.on{color:var(--good);border-color:#1f4d38} .chip.off{color:var(--dim)} .chip.q{color:var(--unk);border-color:#4c3d7a}
+  .kv{display:grid;grid-template-columns:150px 1fr;gap:3px 12px;font-size:13px}
+  .kv .k{color:var(--muted)}
+  .funnel .row{display:grid;grid-template-columns:130px 1fr 70px;gap:10px;align-items:center;margin:6px 0}
+  .funnel .bar{height:16px;background:var(--panel2);border-radius:4px;overflow:hidden;position:relative}
+  .funnel .bar i{display:block;height:100%;background:var(--accent)}
+  .funnel .bar i.u{background:var(--unk);opacity:.7}
+  .funnel .drop{grid-column:2 / 4;font-size:12px;color:var(--muted);margin:-2px 0 4px}
+  details summary{cursor:pointer;color:var(--accent);font-size:13px}
+  .filters button{background:var(--panel2);color:var(--muted);border:1px solid var(--border);border-radius:14px;padding:2px 10px;font-size:12px;cursor:pointer;margin:2px}
+  .filters button.sel{color:var(--text);border-color:var(--accent)}
+  .graphwrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;background:var(--panel2);margin-top:8px}
+  svg text{font:11px -apple-system,Segoe UI,Roboto,sans-serif;fill:var(--text)}
+  .legend span{margin-right:14px;font-size:12px;color:var(--muted)}
+  .legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:5px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Decision cockpit</h1>
+  <span class="sub">what optimizes the orchestrator — AP-50</span>
+  <nav id="epyc-nav"></nav>
+  <span class="hspacer"></span>
+  <label class="muted" style="font-size:12px">era <select id="era-select"><option value="current">current</option></select></label>
+  <span class="badge unknown" id="health-badge"><span class="dot"></span><span id="health-text">data health unknown</span></span>
+  <span class="badge unknown" id="conn-badge"><span class="dot"></span><span id="conn-text">:8000 — connecting</span></span>
+</header>
+<main>
+  <section class="panel" id="p-banner">
+    <div class="ph">evidence inputs &amp; caveats<span class="dim" id="fresh-text"></span></div>
+    <p class="why">Every number below is scoped to ONE measurement era. An input the cockpit cannot read
+      is shown as UNKNOWN — never as zero and never as a green default.</p>
+    <div id="ck-banner"><span class="muted">loading…</span></div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel" id="p-current">
+      <div class="ph">current trial · intervention · falsifier</div>
+      <div id="ck-current"><span class="muted">loading…</span></div>
+    </section>
+    <section class="panel" id="p-funnel">
+      <div class="ph">experiment funnel</div>
+      <p class="why">proposed → executed → valid → kept → promoted → currently live, with the reason each
+        trial dropped out. "Applied" alone is ambiguous, so it is never used.</p>
+      <div id="ck-funnel"><span class="muted">loading…</span></div>
+    </section>
+  </div>
+
+  <section class="panel" id="p-deltas">
+    <div class="ph">incumbent vs candidate objective deltas</div>
+    <p class="why">Δ quality against the ratified incumbent of the SAME era and tier, with n, binomial SE,
+      paired discordance on shared questions, and how many valid runs replicate the same configuration.</p>
+    <div id="ck-deltas"><span class="muted">loading…</span></div>
+  </section>
+
+  <section class="panel" id="p-levers">
+    <div class="ph">live lever scoreboard</div>
+    <p class="why">Sourced from every journal shard plus the era-matched Optuna studies — not from the
+      periodically generated digest.</p>
+    <div id="ck-levers"><span class="muted">loading…</span></div>
+  </section>
+
+  <section class="panel" id="p-graph">
+    <div class="ph">provenance drill-down</div>
+    <details id="graph-details">
+      <summary>hypothesis → experiment → evidence → verdict → runtime state</summary>
+      <div class="filters" id="graph-filters"></div>
+      <div class="legend" id="graph-legend"></div>
+      <div class="graphwrap" id="ck-graph"></div>
+      <div id="ck-graph-detail" class="muted" style="font-size:12px;margin-top:6px"></div>
+    </details>
+  </section>
+</main>
+
+<script src="/nav.js"></script>
+<script>
+/* ============================================================================
+   EPYC hub — AP-50 decision cockpit. View plane only: the data contract
+   (epyc.autopilot.decision_cockpit.v1) is served by the orchestrator at
+   :8000/dashboard/api/decision_cockpit and fetched cross-origin. No framework.
+   Fail closed: a failed fetch paints every section UNKNOWN, never empty/zero.
+   ========================================================================== */
+const API = location.protocol + '//' + location.hostname + ':8000';
+const FETCH_MS = 15000;
+const POLL_MS = 30000;
+const STAGE_ORDER = ['proposed', 'executed', 'valid', 'kept', 'promoted', 'currently_live'];
+const EDGE_COLOR = {tested_by:'#60a5fa', produced:'#34d399', not_executed:'#6e7681', judged:'#fbbf24', resulted_in:'#a78bfa'};
+const COCKPIT = {data: null, era: 'current', graphStatus: null, lastOk: null};
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isNum = v => typeof v === 'number' && isFinite(v);
+const UNK = '<span class="unk">UNKNOWN</span>';
+function num(v, d){ return isNum(v) ? v.toFixed(d == null ? 3 : d) : UNK; }
+function signed(v, d){
+  if (!isNum(v)) return UNK;
+  const cls = v > 0 ? 'pos' : (v < 0 ? 'neg' : '');
+  return '<span class="' + cls + '">' + (v > 0 ? '+' : '') + v.toFixed(d == null ? 3 : d) + '</span>';
+}
+function fmtAge(s){
+  if (!isNum(s)) return 'unknown age';
+  if (s < 3600) return Math.round(s / 60) + 'm';
+  if (s < 86400) return (s / 3600).toFixed(1) + 'h';
+  return (s / 86400).toFixed(1) + 'd';
+}
+function setHtml(id, html){ const el = document.getElementById(id); if (el) el.innerHTML = html; }
+function setBadge(id, textId, cls, text){
+  const b = document.getElementById(id); if (b) b.className = 'badge ' + cls;
+  const t = document.getElementById(textId); if (t) t.textContent = text;
+}
+function stateChips(states){
+  if (!states) return UNK;
+  return STAGE_ORDER.map(s => {
+    const v = states[s];
+    const cls = v === true ? 'on' : (v === 'unknown' ? 'q' : 'off');
+    return '<span class="chip ' + cls + '">' + esc(s.replace('_', ' ')) + (v === 'unknown' ? '?' : '') + '</span>';
+  }).join('');
+}
+
+/* ------------------------------------------------------------------ banner */
+function renderBanner(d){
+  const h = d.health || {};
+  const st = h.status || 'unknown';
+  setBadge('health-badge', 'health-text', st === 'ok' ? 'ok' : (st === 'absent' ? 'bad' : (st === 'degraded' ? 'warn' : 'unknown')),
+    'data ' + st + (h.reasons && h.reasons.length ? ' · ' + h.reasons.length + ' reason(s)' : ''));
+  const f = d._freshness || {};
+  const ef = d.evidence_freshness || {};
+  const fresh = document.getElementById('fresh-text');
+  if (fresh) fresh.textContent = 'newest trial ' + (ef.newest_trial_at ? fmtAge(ef.newest_trial_age_s) + ' ago' : 'unknown') +
+    ' · producer ' + (ef.producer_declared_state || 'unknown') + ' · envelope ' + (f.staleness_class || 'unknown');
+  let html = '';
+  if (d.error) html += '<div class="deadbody"><b>cockpit builder failed</b> — ' + esc(d.error) + '</div>';
+  if (h.reasons && h.reasons.length) html += '<div class="caveat">' + h.reasons.map(esc).join(' · ') + '</div>';
+  const inputs = d.inputs || {};
+  const names = ['journal', 'state', 'eras', 'study', 'production_best'];
+  html += '<div class="tablewrap"><table><tr><th>input</th><th>status</th><th>detail</th><th>absence means</th></tr>';
+  for (const n of names){
+    const i = inputs[n];
+    if (!i){ html += '<tr><td>' + n + '</td><td>' + UNK + '</td><td></td><td></td></tr>'; continue; }
+    let detail = '';
+    if (n === 'journal' && i.shard_count != null)
+      detail = i.shard_count + ' shard(s), ' + i.trial_rows + ' trial rows, ' + i.bad_lines + ' bad lines, ' +
+        i.supersessions_applied + ' supersessions folded';
+    else if (n === 'study' && i.study_count != null) detail = i.study_count + ' studies (read-only)';
+    else if (n === 'production_best' && i.status === 'ok') detail = (i.resolved || '') + ' · trial ' + (i.trial_id == null ? '—' : i.trial_id) + ' · ' + (i.notes || '');
+    else if (i.error) detail = i.error;
+    const cls = i.status === 'ok' ? 'pos' : (i.status === 'absent' ? 'dim' : 'neg');
+    html += '<tr><td>' + esc(n) + '</td><td class="' + cls + '">' + esc(i.status || 'unknown') + '</td><td>' +
+      esc(detail) + '</td><td class="dim">' + esc(i.absence_means || '') + '</td></tr>';
+  }
+  html += '</table></div>';
+  for (const c of (d.caveats || [])) html += '<div class="caveat">' + esc(c) + '</div>';
+  setHtml('ck-banner', html);
+}
+
+/* ----------------------------------------------------------------- eras */
+function renderEras(d){
+  const sel = document.getElementById('era-select');
+  const eras = d.eras || {};
+  const cur = eras.current || {};
+  const opts = ['<option value="current">current — ' + esc(cur.label || 'unknown') + '</option>'];
+  for (const e of (eras.available || []))
+    opts.push('<option value="' + esc(e.id) + '"' + (COCKPIT.era === e.id ? ' selected' : '') + '>' +
+      esc(e.label) + ' · ' + e.trials + ' trials</option>');
+  if (sel) sel.innerHTML = opts.join('');
+}
+
+/* -------------------------------------------------------------- current */
+function trialBlock(t, title){
+  if (!t) return '';
+  const iv = t.intervention || {};
+  const detail = iv.params ? JSON.stringify(iv.params) : (iv.flags ? JSON.stringify(iv.flags) : (iv.file || iv.surface || ''));
+  let h = '<div class="kv" style="margin-top:8px">';
+  h += '<div class="k">' + esc(title) + '</div><div><b class="mono">T' + esc(t.trial_id) + '</b> · era ' + esc(t.era_label) +
+    ' · ' + esc(t.timestamp || '') + '</div>';
+  h += '<div class="k">intervention</div><div>' + esc(iv.action_type || '—') + ' ' + esc((iv.levers || []).join(', ')) +
+    (detail ? ' <span class="mono dim">' + esc(detail).slice(0, 200) + '</span>' : '') + '</div>';
+  h += '<div class="k">hypothesis</div><div>' + (t.hypothesis ? esc(t.hypothesis) : '<span class="dim">none recorded</span>') + '</div>';
+  h += '<div class="k">falsifier</div><div>' + (t.falsifier ? esc(t.falsifier) : '<span class="dim">none recorded</span>') + '</div>';
+  h += '<div class="k">verdict</div><div>' + esc(t.verdict || '—') + ' · ' + esc(t.outcome_status || '') + '</div>';
+  h += '<div class="k">states</div><div>' + stateChips(t.states) + '</div>';
+  if (t.drop) h += '<div class="k">dropped at</div><div>' + esc(t.drop.stage) + ': <span class="mono">' + esc(t.drop.code) +
+    '</span> <span class="dim">' + esc(t.drop.detail || '') + '</span></div>';
+  return h + '</div>';
+}
+function renderCurrent(d){
+  const c = d.current;
+  if (!c){ setHtml('ck-current', UNK); return; }
+  const pd = c.producer_declared || {};
+  let h = '<div class="kv"><div class="k">status</div><div><b>' + esc(c.status) + '</b></div>' +
+    '<div class="k">producer declares</div><div>paused=' + esc(pd.paused) + ' · trial counter ' + esc(pd.trial_counter) + '</div></div>';
+  if (c.in_flight) h += '<div class="caveat">in flight: T' + esc(c.in_flight.trial_id) + ' ' + esc(JSON.stringify(c.in_flight.action || {})) + '</div>';
+  if (c.last_in_selected_era) h += trialBlock(c.last_in_selected_era, 'last in this era');
+  else h += '<p class="muted">No trial in the selected era — ' + esc(c.last_in_selected_era_reason || 'unknown') + '.</p>';
+  const lj = c.last_journaled;
+  if (lj && (!c.last_in_selected_era || lj.trial_id !== c.last_in_selected_era.trial_id))
+    h += trialBlock(lj, 'last journaled (other era — context only)');
+  setHtml('ck-current', h);
+}
+
+/* --------------------------------------------------------------- funnel */
+function renderFunnel(d){
+  const f = d.funnel;
+  if (!f || !f.known || !Array.isArray(f.stages)){
+    setHtml('ck-funnel', UNK + ' <span class="muted">— ' + esc((f && f.reason) || 'funnel not reported') + '</span>');
+    return;
+  }
+  const top = Math.max(1, f.stages[0].count || 0);
+  let h = '<div class="funnel">';
+  for (const s of f.stages){
+    const w = 100 * (s.count || 0) / top;
+    const u = isNum(s.unknown) ? 100 * s.unknown / top : 0;
+    h += '<div class="row"><div>' + esc(s.stage.replace('_', ' ')) + '</div><div class="bar"><i style="width:' + w.toFixed(1) +
+      '%;float:left"></i><i class="u" style="width:' + u.toFixed(1) + '%;float:left"></i></div><div class="mono" style="text-align:right">' +
+      s.count + (isNum(s.unknown) ? ' <span class="unk">+' + s.unknown + '?</span>' : '') + '</div>';
+    const rs = (s.reasons || []).slice(0, 4);
+    if (isNum(s.dropped) && s.dropped > 0 || rs.length)
+      h += '<div class="drop">' + (isNum(s.dropped) ? '−' + s.dropped + ': ' : '') + rs.map(r =>
+        '<span class="chip" title="' + esc(r.example || '') + ' · e.g. T' + esc((r.trial_ids || []).join(', T')) + '">' +
+        esc(r.code) + ' ×' + r.count + '</span>').join('') + '</div>';
+    h += '</div>';
+  }
+  h += '</div>';
+  const eo = f.evidence_only_actions || {};
+  const cr = f.critic_rejections_before_journal || {};
+  h += '<p class="dim" style="font-size:12px">evidence-only actions (not in funnel): ' + esc(eo.count) + ' ' +
+    esc(JSON.stringify(eo.by_type || {})) + ' · critic rejections before journal: ' + (cr.count == null ? UNK : esc(cr.count)) + '</p>';
+  if (f.anomalies && Object.keys(f.anomalies).length)
+    h += '<div class="caveat">anomalies: ' + esc(JSON.stringify(f.anomalies)) + '</div>';
+  setHtml('ck-funnel', h);
+}
+
+/* --------------------------------------------------------------- deltas */
+function renderDeltas(d){
+  const od = d.objective_deltas;
+  if (!od){ setHtml('ck-deltas', UNK); return; }
+  const inc = od.incumbent || {};
+  let h = '';
+  if (!inc.available) h += '<p>incumbent: ' + UNK + ' <span class="muted">— ' + esc(inc.reason || '') + '</span></p>';
+  else {
+    h += '<p class="muted">incumbent · ' + esc(inc.status) + ' · ' + esc(inc.policy_version) + ' · era ' +
+      esc(inc.era_bucket ? inc.era_bucket.split('|')[0] : 'unknown') + '</p><div class="tablewrap"><table><tr><th>tier</th>' +
+      '<th class="num">quality</th><th class="num">n</th><th class="num">±SE</th><th class="num">reliability</th><th>core</th></tr>';
+    for (const [t, v] of Object.entries(inc.tiers || {}))
+      h += '<tr><td>T' + esc(t) + '</td><td class="num">' + num(v.quality) + '</td><td class="num">' + esc(v.n) + '</td><td class="num">' +
+        num(v.se) + '</td><td class="num">' + num(v.reliability, 2) + '</td><td class="mono dim">' + esc(v.core_id) + '</td></tr>';
+    h += '</table></div>';
+  }
+  const cands = od.candidates || [];
+  if (!cands.length) h += '<p class="muted">No candidate: ' + esc(od.empty_reason || 'none reported') + '.</p>';
+  else {
+    h += '<p class="muted">' + od.candidate_count + ' valid candidate(s) in era, ' + od.comparable_count + ' comparable to the incumbent</p>';
+    h += '<div class="tablewrap"><table><tr><th>trial</th><th>tier</th><th>lever</th><th class="num">quality (n ±SE)</th>' +
+      '<th class="num">Δ vs incumbent ±SE</th><th class="num">z</th><th class="num">paired c+/i+</th><th class="num">Δ vs pinned</th>' +
+      '<th class="num">replication</th><th>verdict</th></tr>';
+    for (const c of cands){
+      const vi = c.vs_incumbent || {};
+      const vp = c.vs_pinned_baseline || {};
+      const rep = c.replication || {};
+      const cq = c.candidate || {};
+      h += '<tr><td class="mono">T' + esc(c.trial_id) + '</td><td>T' + esc(c.tier) + '</td><td>' + esc((c.levers || []).join(', ')) + '</td>' +
+        '<td class="num">' + num(cq.quality) + ' <span class="dim">(' + esc(cq.n_scored == null ? '?' : cq.n_scored) + ' ±' + (isNum(cq.se) ? cq.se.toFixed(3) : '?') + ')</span></td>' +
+        (vi.comparable
+          ? '<td class="num">' + signed(vi.delta) + ' ±' + num(vi.delta_se) + '</td><td class="num">' + num(vi.z, 2) + '</td><td class="num">' +
+            esc((vi.paired || {}).candidate_only_correct) + '/' + esc((vi.paired || {}).incumbent_only_correct) + ' <span class="dim">of ' + esc((vi.paired || {}).shared_qids) + '</span></td>'
+          : '<td class="num dim" colspan="3">not comparable: ' + esc(vi.reason || 'unknown') + '</td>') +
+        '<td class="num" title="' + esc(vp.source) + '">' + (isNum(vp.delta) ? signed(vp.delta) : '<span class="dim">' + esc(vp.source || '—') + '</span>') + '</td>' +
+        '<td class="num">' + esc(rep.valid_runs_same_signature) + ' run(s)' + (rep.seq_k != null ? ' · seq k=' + esc(rep.seq_k) : '') + '</td>' +
+        '<td>' + esc(c.verdict || '—') + '</td></tr>';
+    }
+    h += '</table></div>';
+  }
+  const sp = od.seeding_producer || {};
+  h += '<div class="caveat">seeding producer (seed_batch): ' + esc(sp.valid_rows) + ' valid row(s), mean quality ' +
+    (isNum(sp.mean_quality) ? sp.mean_quality.toFixed(3) : '—') + ' — shown apart, never merged. ' + esc(sp.note || '') + '</div>';
+  setHtml('ck-deltas', h);
+}
+
+/* --------------------------------------------------------------- levers */
+function renderLevers(d){
+  const b = d.lever_scoreboard;
+  if (!b || !Array.isArray(b.levers)){ setHtml('ck-levers', UNK); return; }
+  if (!b.levers.length){ setHtml('ck-levers', '<p class="muted">No lever has journal or study evidence in this era.</p>'); return; }
+  let h = '<div class="tablewrap"><table><tr><th>lever</th><th class="num">prop</th><th class="num">exec</th><th class="num">valid</th>' +
+    '<th class="num">kept</th><th class="num">promo</th><th class="num">live</th><th class="num">reverted</th><th class="num">best Δ</th>' +
+    '<th class="num">mean Δ (n)</th><th>strength</th><th>study (era-matched)</th><th class="num">last</th></tr>';
+  for (const l of b.levers){
+    const st = l.study;
+    let study = '<span class="dim">—</span>';
+    if (st && st.status) study = UNK + ' <span class="dim">' + esc(st.status) + '</span>';
+    else if (st) study = st.complete + ' complete / ' + st.fail + ' fail' + (isNum(st.best_quality) ? ' · best q ' + st.best_quality.toFixed(3) : '') +
+      (st.note ? ' <span class="dim">' + esc(st.note) + '</span>' : '');
+    h += '<tr><td class="mono">' + esc(l.lever) + (l.multi_factor_trials ? ' <span class="chip q" title="trials that changed several levers at once">confounded ×' + l.multi_factor_trials + '</span>' : '') + '</td>' +
+      '<td class="num">' + l.proposed + '</td><td class="num">' + l.executed + '</td><td class="num">' + l.valid + '</td><td class="num">' + l.kept +
+      '</td><td class="num">' + l.promoted + '</td><td class="num">' + l.currently_live + (l.currently_live_unknown ? ' <span class="unk">+' + l.currently_live_unknown + '?</span>' : '') +
+      '</td><td class="num">' + l.reverted + '</td><td class="num">' + (isNum(l.best_delta) ? signed(l.best_delta) : '—') + '</td><td class="num">' +
+      (isNum(l.mean_delta) ? signed(l.mean_delta) : '—') + ' (' + l.n_deltas + ')</td><td title="' + esc(JSON.stringify(l.delta_sources || {})) + '">' +
+      esc(l.evidence_strength) + '</td><td>' + study + '</td><td class="num">' + (l.last_trial_id == null ? '—' : 'T' + esc(l.last_trial_id)) + '</td></tr>';
+  }
+  setHtml('ck-levers', h + '</table></div>');
+}
+
+/* ---------------------------------------------------------------- graph */
+function graphView(g, status){
+  const nodes = g.nodes || [], edges = g.edges || [];
+  if (!status) return {nodes, edges};
+  const keepX = new Set(nodes.filter(n => n.column === 'experiment' && n.states && n.states[status] === true).map(n => n.id));
+  const byTrial = new Set(nodes.filter(n => keepX.has(n.id)).map(n => n.trial_id));
+  const keep = new Set();
+  for (const n of nodes) if (n.trial_id != null && byTrial.has(n.trial_id)) keep.add(n.id);
+  for (const e of edges){
+    if (e.relation === 'tested_by' && keep.has(e.to)) keep.add(e.from);
+    if (e.relation === 'resulted_in' && keep.has(e.from)) keep.add(e.to);
+  }
+  return {nodes: nodes.filter(n => keep.has(n.id)), edges: edges.filter(e => keep.has(e.from) && keep.has(e.to))};
+}
+function renderGraph(d){
+  const g = d.provenance;
+  if (!g || !Array.isArray(g.nodes)){ setHtml('ck-graph', UNK); setHtml('graph-filters', ''); return; }
+  const statuses = (g.filters && g.filters.statuses) || STAGE_ORDER;
+  setHtml('graph-filters', ['<button type="button" data-status="" class="' + (COCKPIT.graphStatus ? '' : 'sel') + '">all statuses</button>']
+    .concat(statuses.map(s => '<button type="button" data-status="' + esc(s) + '" class="' + (COCKPIT.graphStatus === s ? 'sel' : '') + '">' +
+      esc(s.replace('_', ' ')) + '</button>')).join('') + (g.truncated ? ' <span class="dim">showing the latest ' + esc(g.limit) + ' interventions</span>' : ''));
+  const sem = g.edge_semantics || {};
+  setHtml('graph-legend', Object.keys(sem).map(k => '<span title="' + esc(sem[k]) + '"><i style="background:' + (EDGE_COLOR[k] || '#888') + '"></i>' +
+    esc(k) + ' — ' + esc(sem[k]) + '</span>').join('<br>'));
+  const view = graphView(g, COCKPIT.graphStatus);
+  const cols = g.columns || ['hypothesis', 'experiment', 'evidence', 'verdict', 'runtime_state'];
+  if (!view.nodes.length){ setHtml('ck-graph', '<p class="muted" style="padding:10px">No provenance in this era/filter.</p>'); return; }
+  const colW = 250, rowH = 26, pad = 30, boxW = 220;
+  const pos = {};
+  let maxRows = 0;
+  cols.forEach((c, ci) => {
+    const inCol = view.nodes.filter(n => n.column === c);
+    maxRows = Math.max(maxRows, inCol.length);
+    inCol.forEach((n, ri) => { pos[n.id] = {x: pad + ci * colW, y: pad + 20 + ri * rowH, n}; });
+  });
+  const W = pad * 2 + cols.length * colW, H = pad * 2 + 20 + maxRows * rowH;
+  let s = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '">';
+  cols.forEach((c, ci) => { s += '<text x="' + (pad + ci * colW) + '" y="' + (pad) + '" style="fill:#8b949e;font-weight:600">' + esc(c.replace('_', ' ')) + '</text>'; });
+  for (const e of view.edges){
+    const a = pos[e.from], b = pos[e.to];
+    if (!a || !b) continue;
+    const x1 = a.x + boxW, y1 = a.y + 9, x2 = b.x, y2 = b.y + 9, mx = (x1 + x2) / 2;
+    s += '<path d="M' + x1 + ',' + y1 + ' C' + mx + ',' + y1 + ' ' + mx + ',' + y2 + ' ' + x2 + ',' + y2 + '" fill="none" stroke="' +
+      (EDGE_COLOR[e.relation] || '#888') + '" stroke-opacity=".55" stroke-width="1.2"><title>' + esc(e.relation + ': ' + (sem[e.relation] || '')) + '</title></path>';
+  }
+  for (const p of Object.values(pos)){
+    const n = p.n;
+    const stroke = n.valid === false ? '#f87171' : (n.states && n.states.kept === true ? '#34d399' : '#30363d');
+    s += '<g data-node="' + esc(n.id) + '"><rect x="' + p.x + '" y="' + p.y + '" width="' + boxW + '" height="19" rx="4" fill="#161b22" stroke="' + stroke + '"></rect>' +
+      '<text x="' + (p.x + 6) + '" y="' + (p.y + 13) + '">' + esc(String(n.label || n.id).slice(0, 36)) + '</text><title>' +
+      esc((n.label || '') + (n.falsifier ? '\nfalsifier: ' + n.falsifier : '') + (n.drop ? '\ndropped: ' + n.drop.stage + ' ' + n.drop.code : '')) + '</title></g>';
+  }
+  setHtml('ck-graph', s + '</svg>');
+}
+
+/* ----------------------------------------------------------- orchestration */
+function render(d){
+  COCKPIT.data = d;
+  renderBanner(d);
+  renderEras(d);
+  renderCurrent(d);
+  renderFunnel(d);
+  renderDeltas(d);
+  renderLevers(d);
+  renderGraph(d);
+}
+function renderDead(reason){
+  const msg = '<div class="deadbody"><b>UNKNOWN</b> — the decision-cockpit contract could not be fetched from ' +
+    esc(API) + '/dashboard/api/decision_cockpit (' + esc(reason) + '). ' +
+    (COCKPIT.lastOk ? 'The figures below are NOT shown: the last good payload is ' + Math.round((Date.now() - COCKPIT.lastOk) / 1000) + 's old. ' : '') +
+    'The orchestrator API is down, has not reloaded with this route, or CORS is blocking the hub origin.</div>';
+  setBadge('conn-badge', 'conn-text', 'bad', ':8000 — ' + reason);
+  setBadge('health-badge', 'health-text', 'unknown', 'data health unknown');
+  for (const id of ['ck-banner', 'ck-current', 'ck-funnel', 'ck-deltas', 'ck-levers', 'ck-graph']) setHtml(id, msg);
+}
+async function load(){
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), FETCH_MS);
+  const q = COCKPIT.era && COCKPIT.era !== 'current' ? '?era=' + encodeURIComponent(COCKPIT.era) : '';
+  try {
+    const r = await fetch(API + '/dashboard/api/decision_cockpit' + q, {cache: 'no-store', mode: 'cors', signal: ac.signal});
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    COCKPIT.lastOk = Date.now();
+    setBadge('conn-badge', 'conn-text', 'ok', ':8000 — connected');
+    render(d);
+  } catch (e) {
+    const m = e && e.message ? e.message : String(e);
+    renderDead(/abort/i.test(m) ? 'timed out' : m);
+  } finally { clearTimeout(timer); }
+}
+function wire(){
+  const sel = document.getElementById('era-select');
+  if (sel) sel.addEventListener('change', () => { COCKPIT.era = sel.value; load(); });
+  const filters = document.getElementById('graph-filters');
+  if (filters) filters.addEventListener('click', ev => {
+    const btn = ev.target && ev.target.closest ? ev.target.closest('button[data-status]') : null;
+    if (!btn) return;
+    COCKPIT.graphStatus = btn.getAttribute('data-status') || null;
+    if (COCKPIT.data) renderGraph(COCKPIT.data);
+  });
+  load();
+  setInterval(load, POLL_MS);
+}
+wire();
+</script>
+</body>
+</html>

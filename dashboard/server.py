@@ -20,6 +20,7 @@ GET /api/kernel              the kernel-R&D dashboard contract (+ freshness)
 GET /api/kernel/health       Kernel-R&D producer/data health only (non-recursive)
 GET /machine                 the machine / live-inference page (data plane: :8000 API)
 GET /autopilot               the autopilot-loop page (data plane: :8000 API)
+GET /cockpit                 the AP-50 decision cockpit (data plane: :8000 API)
 GET /nav.js                  the ONE shared cross-dashboard nav, with the registry
                              injected ahead of it as ``window.__EPYC_DASHBOARDS``
 GET /api/dashboards          the dashboard directory (dashboard/registry.json) plus a
@@ -94,6 +95,9 @@ BUS_HTML = _STATIC / "bus.html"
 BENCHMARKS_HTML = _STATIC / "benchmarks.html"
 MACHINE_HTML = _STATIC / "machine.html"
 AUTOPILOT_HTML = _STATIC / "autopilot.html"
+#: AP-50 decision cockpit — view plane only; data contract served by the orchestrator
+#: (``:8000/dashboard/api/decision_cockpit``, schema epyc.autopilot.decision_cockpit.v1).
+COCKPIT_HTML = _STATIC / "cockpit.html"
 #: THE Kernel-R&D page. There is no ``KERNEL_HTML`` any more: ``static/kernel.html``
 #: was deleted and ``/kernel`` retired to a redirect (``REDIRECT_ROUTES``) on
 #: 2026-08-30, because two pages carried this domain and the other one's producers
@@ -14752,6 +14756,7 @@ HTML_ROUTES = {
     "/": STATIC_HTML,
     "/machine": MACHINE_HTML,
     "/autopilot": AUTOPILOT_HTML,
+    "/cockpit": COCKPIT_HTML,
     "/loop": LOOP_HTML,
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
