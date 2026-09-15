@@ -253,12 +253,15 @@ def test_generated_cache_and_build_ignored_files_are_inventoried_and_discarded(
 ):
     case = make_case(tmp_path)
     configure_ignored(
-        case, tmp_path / "exclude", ".pytest_cache/\n.ruff_cache/\nbuild/\n"
+        case,
+        tmp_path / "exclude",
+        ".pytest_cache/\n.ruff_cache/\nbuild/\n__pycache__/\n",
     )
     files = {
         ".pytest_cache/v/cache/nodeids": b"[]\n",
-        ".ruff_cache/index": b"ruff\n",
+        ".ruff_cache/VERDICT-generated.json": b"generated\n",
         "build/CMakeFiles/object.o": b"object\x00bytes",
+        "scripts/vidya/adapters/__pycache__/sealed_manifest.cpython-313.pyc": b"pyc",
     }
     for relative, payload in files.items():
         destination = case["worktree"] / relative
@@ -286,6 +289,25 @@ def test_generated_cache_and_build_ignored_files_are_inventoried_and_discarded(
     ]
     assert "ignored-remove-authorized" in events
     assert "ignored-removed" in events
+
+
+def test_evidence_names_below_canonical_cache_dirs_are_generated_artifacts(
+    tmp_path, complete_probe, capsys
+):
+    case = make_case(tmp_path)
+    configure_ignored(case, tmp_path / "exclude", "__pycache__/\n.ruff_cache/\n")
+    files = {
+        "scripts/vidya/adapters/__pycache__/sealed_manifest.cpython-313.pyc": b"pyc",
+        ".ruff_cache/VERDICT-generated.json": b"generated\n",
+    }
+    for relative, payload in files.items():
+        destination = case["worktree"] / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(payload)
+
+    assert retire.main(args(case)) == 0
+    inventory = json.loads(capsys.readouterr().out)["rows"][0]["ignored_inventory"]
+    assert {item["path"] for item in inventory} == set(files)
 
 
 def test_ignored_evidence_pattern_is_refused(tmp_path, complete_probe, capsys):

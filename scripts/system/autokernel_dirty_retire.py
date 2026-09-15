@@ -245,7 +245,11 @@ def inventory_ignored_path(target: Path, relative: str) -> dict[str, Any]:
     parts = Path(relative).parts
     if ".git" in parts:
         raise RetireError(f"ignored path crosses a .git boundary: {relative}")
-    if sweep.EVIDENCE_RE.search(Path(relative).name):
+    path = Path(relative)
+    below_evidence_skip_dir = any(
+        part in sweep.EVIDENCE_SKIP_DIRS for part in path.parts[:-1]
+    )
+    if not below_evidence_skip_dir and sweep.EVIDENCE_RE.search(path.name):
         raise RetireError(
             f"ignored path matches a durable evidence pattern: {relative}"
         )

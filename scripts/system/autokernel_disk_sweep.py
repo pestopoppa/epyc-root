@@ -84,7 +84,7 @@ EVIDENCE_RE = re.compile(
     r"(?i)(^verdict[^/]*\.json$|^SHA256SUMS$|receipt[^/]*\.jsonl?$|(^|[._-])sealed([._-]|$)|"
     r"attestation[^/]*\.json$|^ratif[^/]*\.json$)"
 )
-EVIDENCE_SKIP_DIRS = {"node_modules", "__pycache__", ".pytest_cache", ".gitnexus", "CMakeFiles", ".mypy_cache"}
+EVIDENCE_SKIP_DIRS = {"node_modules", "__pycache__", ".pytest_cache", ".ruff_cache", ".gitnexus", "CMakeFiles", ".mypy_cache"}
 BASENAME_MIN_DISTINCT = 10  # shorter basenames (b3, d1, prof) only match as parent/child pairs
 PATH_TOKEN_RE = re.compile(r"[A-Za-z0-9_.+\-/]*[A-Za-z0-9_+\-]")
 NAME_TOKEN_RE = re.compile(r"[A-Za-z0-9_.+\-]{4,}")

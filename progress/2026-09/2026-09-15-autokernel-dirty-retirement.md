@@ -14,8 +14,13 @@ Dirty drift, ignored evidence, nested repositories, escaping symlinks, special f
 probes, identity changes and archive mismatches retain the tree. Interrupted rows resume from the
 last durable authorization.
 
-The 18-case focused suite (45 tests with preserve and sweep regressions) covers
+The 19-case focused suite (46 tests with preserve and sweep regressions) covers
 archive/fingerprint tamper, incomplete and live process probes, missing
 confirmation, exact-root refusal, cache/build ignored-artifact discard, ignored evidence/nested
 Git/escaping-symlink/special-file refusals, exact non-force removal with an unpushed bundle, and
 resumption across durable mutation stages. No existing worktree was processed or removed.
+
+The evidence matcher shares the sweep's canonical cache-skip semantics. In particular,
+`scripts/vidya/adapters/__pycache__/sealed_manifest.cpython-313.pyc` and evidence-shaped names
+under `.ruff_cache` are generated artifacts, while the same evidence names outside a cache still
+refuse retirement.
