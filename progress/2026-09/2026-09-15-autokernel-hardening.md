@@ -20,6 +20,11 @@ in the active handoffs. A zero-compute targeted run passed 171 tests with the re
   that historical rows cannot support the requested critic-cohort comparison because they lack pass-1 lineage.
 - Closed AKX-P0a and AKX-P1a's zero-compute portions: per-workload census production and the static
   diff/compile-closure footprint producer now have their historical acceptance fixtures.
+- Closed S3-AKU-08 as a design task. Its controls bind when the still-open U3-SEED knob-box proposer is
+  implemented; the current deterministic one-factor enumerator contains no sampler or LLM override path.
+- Closed AKX-P2a/P2b's zero-compute refusal logic: non-author workload regressions now use the interim
+  unit-matched k_delta=1 floor (or a witnessed T0/T1 INERT row), and a failed aggregate now changes
+  controller state and synchronously refuses instead of merely withholding LOO.
 - Corrected the D3 capability statement: build flags are representable but both builds share sealed defines,
   so planner-selectable per-arm BUILD_RECIPE A/B is still missing. Added S3-AKU-19 for that implementation;
   source pragmas already use the SOURCE arm. AK-QL-8 remains a completed decision/specification row.

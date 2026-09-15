@@ -759,7 +759,7 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
 - [ ] **U3-SEED — specify the RUNTIME_CONFIG arm type against the THP instance**: session-unit paired
       launches, spread reported with the point estimate, a variance-reduction keep grammar, and the recipe
       hash in the epoch. Blocked on nothing; do it before authoring any RUNTIME_CONFIG hypothesis.
-  - [ ] **S3-AKU-08 (U3-PROPOSER) — write the RUNTIME_CONFIG proposer ownership split into U3-SEED.** (a)
+  - [x] **S3-AKU-08 (U3-PROPOSER) — write the RUNTIME_CONFIG proposer ownership split into U3-SEED.** (a)
         Default proposer for a declared knob box is operator/LLM hypotheses plus seeded random/LHS fill, NOT
         a model-based sampler. (b) A TPE arm may be enabled only if ALL of: (i) arms per campaign ≥ 10× box
         dimension; (ii) expected effect > floors[surface] in the SAME unit; (iii) TPE beats an equal-budget
@@ -783,6 +783,11 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
         and does not reverse this. Do not cite intake-1372 as "classical beats LLM" (D-20) or intake-1381 as
         "RS beats HPO" (D-37). (intake-1372#01, #06; intake-1381#03, #06; intake-1390#01, #04, #05;
         intake-1391#01, #06; intake-1392#02, #04, #05; intake-1394#03, #08; intake-1389#record)
+        ✅ 2026-09-15 — design closure only: the ownership split and all four admission/cap rules above
+        are now the U3-SEED contract. Runtime enforcement remains part of the still-open parent U3-SEED;
+        the current planner deterministically enumerates declared one-factor runtime dimensions and has no
+        TPE/classical/LLM knob-box sampler to constrain, so adding a detached policy module now would be
+        dead code rather than enforcement. Focused `test_unified_planner.py`: 31 passed.
 - [x] **U3-DEFAULTS — RESOLVED 2026-09-08: NOT APPLICABLE. R23-58 did NOT confirm the shim on the GPU
       serving path, so it does NOT go into the loop's recipe defaults.** ✅ 2026-09-08. The conditional this
       task was written under evaluated **false**: bounded null, T0/D0, registered action "do not adopt".

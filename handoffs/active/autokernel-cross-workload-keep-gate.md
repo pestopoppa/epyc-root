@@ -613,12 +613,19 @@ Global constraints:
 ### P2 — gate in refuse mode
 
 - [x] **AKX-P2-PRE — AK-RH-1 landed** (§7.1 integrity precondition): the author step verifies the full dirty set, refuses oracle/bench paths, and the kept commit equals the measured tree. P2 refuse-mode rows are untrusted until this is ticked. ✅ 2026-09-15 — research `bada71c2`; the S3-AKU-15 implementation and zero-compute regression fixtures prove all three preconditions before build/keep.
-- [ ] **AKX-P2a — upgrade `surface_validation.classify` for non-author rows** from `ab_verdict` to §8.1 (interim floor form, then e-process per §13 Q2). INERT rows are excused only with a `blast_radius_row` witness.
+- [x] **AKX-P2a — upgrade `surface_validation.classify` for non-author rows** from `ab_verdict` to §8.1 (interim floor form, then e-process per §13 Q2). INERT rows are excused only with a `blast_radius_row` witness.
   - **Acceptance:** fixtures cover −0.9% @ 0.949% floor, which today passes and must now refuse at k_δ=1 (interim); a cross-unit floor refuses; a missing floor stays pending.
   - Compute: zero (fixtures).
-- [ ] **AKX-P2b — make `failed` gate.** `required_source_validation.v1` `failed` refuses (option A) or blocks cadence, ValidationBatch and FOLD and auto-builds the derived candidate without the keep (option B), per §13 Q3.
+  - ✅ 2026-09-15 — research `24725359`: non-author validation uses the interim k_delta=1 rule,
+    refuses floor/effect unit mismatches, retains missing floors as pending, and accepts an INERT excuse only
+    from a strict T0/T1 blast-radius witness. Fixtures cover the stated −0.9%@0.949% case.
+- [x] **AKX-P2b — make `failed` gate.** `required_source_validation.v1` `failed` refuses (option A) or blocks cadence, ValidationBatch and FOLD and auto-builds the derived candidate without the keep (option B), per §13 Q3.
   - **Acceptance:** a test proves a failed row changes controller state. A warning-only path fails the test.
   - Compute: zero.
+  - ✅ 2026-09-15 — research `57e9ddef`: option A is implemented narrowly. After persisting the
+    aggregate in controller state, a failed required-source row raises `SerialRefused` with the failed
+    target identities; both normal completion and recovery traverse this gate, so failure cannot remain a
+    warning-only condition or advance into LOO/cadence.
 - [ ] **AKX-P2c — ordering and early refusal** (§8.3), with `not_run_after_refusal` rows.
   - Compute: zero (logic).
 - [ ] **AKX-P2d — floors for every production workload** at its production-optimal recipe, n ≥ 24 plus an interval, carrying `unit`.
