@@ -3638,12 +3638,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       variance" (§3.3), but retention is governed by one scalar. Make the keep record carry both coordinates
       and retain non-dominated candidates. Reuse autopilot's pareto_math.dominates; do not write a second
       one. intake-1367#record (remedy R2).
-- [ ] **S3-AKU-05 — validator provenance on every critic verdict and every keep.** Record per decision:
+- [x] **S3-AKU-05 — validator provenance on every critic verdict and every keep.** Record per decision:
       validator identity and kind (script / oracle / LLM critic), its independence relation to the producer
       (same fleet / same family / different family / non-model), the evidence it inspected, and whether its
       result changed subsequent search. planner_evidence covers the last field for keeps only.
       intake-1367#record (remedy R3); GRAFT-ATHENA's analytic-vs-Advisor axis split is one more instance
-      (intake-1380#record). Autopilot twin: S3-AP-07.
+      (intake-1380#record). Autopilot twin: S3-AP-07. ✅ 2026-09-15 — research `54d1370d`,
+      `e1fef75d`: every critic, deterministic gate/oracle and paired-A/B verdict carries validator identity,
+      kind, producer independence, inspected evidence, disposition/reason and whether it changed later
+      search. Measurement results are marked causal when they close an attempt or move the anchor; grading
+      and keep policy are unchanged.
 - [ ] **S3-AKU-09 — split every keep record into EFFECT and MECHANISM claims.** EFFECT is gated by oracle +
       paired A/B. MECHANISM is the planner narrative and carries status=hypothesis unless an ablation tested
       it. Example defect: R23-35's recorded MMQ→MMVQ reroute mechanism beside an A/B-validated effect
@@ -3711,11 +3715,31 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       indexed and flattened tensor dimensions (including reversed literal comparisons), type/op literals,
       and hot-path mutable state; candidate evidence crosses public oracle/bench identities, forces an
       unseen confirmation for suspicious keeps, and persists the public-to-held-out speedup gap.
-- [ ] **S3-AKU-17 — objective ledger for autokernel campaigns (design item).** A structured record per
+- [x] **S3-AKU-17 — objective ledger for autokernel campaigns (design item).** A structured record per
       campaign/target: the aims a keep must satisfy (serving throughput per surface, correctness oracle,
       variance), the evidence for each, the trade-offs among them, and the decision rule used when the loop
       proceeds despite an unresolved conflict. Seed it from the §8 per-surface evidence matrix and
-      floors-with-units; do not add implementation authority. intake-1367#record (remedy R1).
+      floors-with-units; do not add implementation authority. intake-1367#record (remedy R1). ✅ **Design
+      closed 2026-09-15:**
+  - `epyc.autokernel.objective_ledger.v1` is a content-addressed, read-only declaration/assessment snapshot;
+    it cannot launch work, reserve resources, grade ClaimTuples, amend policy, keep/promote, or authorize
+    unresolved evidence. `CampaignManifest.objective_ref` is its pointer seam; live resolution is separate.
+  - Exact top-level fields are `schema`, `campaign_id`, `campaign_manifest_digest`, `objective_id`,
+    `revision`, `targets`, `tradeoffs`, `conflict_rules`, `ledger_digest`; the digest excludes itself. There
+    is exactly one target row per resolved `(target_revision_digest, surface_id)`.
+  - Target/objective rows bind revision/workload/backend/surface/recipe, aim/kind/required,
+    estimand/metric/direction, instrument, `arm|session|process` unit, explicit finite threshold,
+    unit-matched content-addressed floor, witnesses, native evidence refs and projected assessment. Evidence
+    must match its ExperimentPlan and exact scoped-evidence ClaimKey; hand-entered results are forbidden.
+  - Tradeoffs reference aim/threshold IDs. Correctness, source/tree identity, instrument integrity and
+    required witnesses are non-tradeable; gains cannot cross units or surfaces. Conflict actions are only
+    `hold|refuse|proceed_research_only`; research-only remains ineligible for keep, global validation,
+    promotion, release and headlines. No matching rule fails closed to hold.
+  - Every serving surface has one throughput aim; every target has required correctness; session/process
+    throughput requires a variance aim. Candidate/source/recipe changes stale prior assessments; CPU evidence
+    cannot satisfy GPU; missing/changed refs, unit mismatches, unknown fields and non-finite values refuse.
+    The zero-compute fixture matrix covers these invariants plus digest stability, duplicate rows/priorities,
+    non-tradeable correctness and rejection of keep-like conflict actions.
 - [x] **S3-AKU-18 (AK-RH-3) — first-class planner abstain.** Accept {"abstain": "<reason>"} as a valid reply
       to Planner.propose and Planner.author, and record Outcome("abstained", hypothesis, [reason]) as a
       science outcome: it feeds the Characterised context, not the transient streak. Stop booking an empty

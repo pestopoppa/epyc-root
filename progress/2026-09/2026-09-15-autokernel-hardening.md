@@ -30,6 +30,15 @@ in the active handoffs. A zero-compute targeted run passed 171 tests with the re
 - Closed S3-AKU-02 as a documented decline: a compile-time “official” stamp is forgeable or forces a
   post-measurement rebuild, while the existing source/recipe/build/object/binary provenance chain preserves
   measured-artifact identity without conflating compilation with operator ratification.
+- Closed S3-AKU-05: critic, oracle/gate and paired-A/B decisions now retain validator provenance and the
+  actual downstream-search effect; a measured null/regression is correctly marked as closing its attempt,
+  while a keep records anchor movement.
+- Closed S3-AKU-17's design boundary with an exact content-addressed objective-ledger schema, evidence joins,
+  non-tradeable constraints, research-only conflict semantics and fail-closed fixture matrix. No runtime
+  authority was added; `CampaignManifest.objective_ref` remains the future live binding seam.
+- Audited S3-AKU-04 and did not invent a variance admission rule: U3-SEED must first specify the spread
+  estimator/significance rule, after which Bundle v3 and runtime retention can reuse the shared Pareto helper
+  over `(effect_pct, -spread_pct)` with an explicit import closure.
 - Added the AKX-P0c CPU/HIP coverage recipe variants without touching base recipe identities. Hardware
   build and W1/W4 executed-line acceptance remain open and are not represented as complete.
 - Closed AKX-P2c with live serial ordering and early-refusal wiring. Review removed an accidental default
