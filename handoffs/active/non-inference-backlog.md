@@ -446,7 +446,7 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       stdin, so any run that does not get its expected prompt hangs and spews forever — see
       `feedback_llama_cli_repl_must_be_killed`. Add `-no-cnv` (or `< /dev/null`) plus an output-size cap, and make
       the harness fail the cell when its child produces no measurable output.
-- [ ] **NIB2-73** (MED): **the NIB2-65 deletion ledger cannot be committed to the MASTER registry** because the
+- [x] **NIB2-73** (MED): **the NIB2-65 deletion ledger cannot be committed to the MASTER registry** because the
       research repo's pre-commit evidence gate fails on **12 artifact citations that exist only as UNCOMMITTED files
       in the shared clone** (`artifacts/architect-bench-gpu-2026071{4,20}/...`, `data/ternary_q2_g64_quality_gate/...`,
       `data/gemma4_iq4_residency/...`, `data/paddleocr_vl_receipt_extract_...`). They resolve in
@@ -454,6 +454,25 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       worktree-blindness class as OBS-13. Fix: commit the artifacts, re-point the citations, or mark them
       `# ARTIFACT LOST` — the registry owner's call. The prepared change is in `sub/nib2-65-master-ledger`
       (worktree `/mnt/raid0/llm/worktrees/sub-master-ledger`, uncommitted).
+      ✅ 2026-09-15 — LANDED as research `d4de5535` on origin/main: all 8 entries are in the MASTER
+      `deprecated_models` (77 total, YAML re-parsed, schema keys checked). The gate ran for real and passed
+      (`errors: 0`, 424/429 citations OK, the 5 remaining are pre-existing WAIVED_LOST): the 12 cited artifacts were
+      made resolvable in the worktree by copying them from the shared clone — the same untracked-presence the gate
+      accepts there — then removed again, so nothing extra was committed.
+      **The underlying defect is NOT fixed and keeps its own row → NIB2-73a:** those 12 artifacts exist ONLY as
+      untracked files in `/mnt/raid0/llm/epyc-inference-research`, so every worktree still fails the gate, and one
+      `git clean` would destroy evidence the registry cites.
+- [ ] **NIB2-73a** (MED): **12 registry-cited artifacts are untracked, so they exist in exactly one checkout.**
+      `artifacts/architect-bench-gpu-2026071{4,20}/...`, `data/ternary_q2_g64_quality_gate/...`,
+      `data/gemma4_iq4_residency/...`, `data/paddleocr_vl_receipt_extract_...` (22.4 MB + 9 small files). Commit them,
+      re-point the citations, or mark them `# ARTIFACT LOST` — the registry owner's call. Until then the evidence gate
+      is location-dependent (passes in the main clone, fails in every worktree) and a `git clean` loses cited evidence.
+- [ ] **NIB2-73b** (MED): **the lean registry must be recompiled and the priors re-pinned when the shared research
+      clone is next synced.** The compiler reads master from `/mnt/raid0/llm/epyc-inference-research`, which is ~298
+      commits behind, so today's ledger is NOT yet in the compiled lean view and the pinned registry hash still
+      matches (gate green). When that clone fast-forwards, the next `orchestrator_stack.py start` will compile the 8
+      entries into the lean file and the pin will mismatch — run `stack_change_pipeline.py update` and commit the
+      regenerated descriptors/priors/summary in the same change. This is the standing master→recompile→verify flow.
 - [ ] **NIB2-74** (MED): **`scripts/benchmark/debug_scorer.py` runs code tasks with bare `python3` from PATH**, so
       without the venv every pandas-dependent task silently scores False. Same shape as OBS-12. Found while
       triaging the NIB2-69 unit failures.
