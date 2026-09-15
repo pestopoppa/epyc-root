@@ -235,6 +235,19 @@ def _read(path: str, binary: bool = False):
         return fh.read()
 
 
+def _process_gone_or_exited(base: str) -> bool:
+    """Resolve an ENOENT race without turning a live unreadable process into absence."""
+    try:
+        statline = _read(os.path.join(base, "stat"))
+    except FileNotFoundError:
+        return True
+    except OSError:
+        return False
+    rparen = statline.rfind(")")
+    fields = statline[rparen + 2:].split() if rparen >= 0 else []
+    return bool(fields) and fields[0] in ("Z", "X")
+
+
 def probe_processes(proc_root: str, aliases: list[tuple[str, str]]) -> ProcSnapshot:
     try:
         entries = [e for e in os.listdir(proc_root) if e.isdigit()]
@@ -276,7 +289,11 @@ def probe_processes(proc_root: str, aliases: list[tuple[str, str]]) -> ProcSnaps
         try:
             p.cwd = norm_path(os.readlink(os.path.join(base, "cwd")), aliases)
         except FileNotFoundError:
-            if not os.path.exists(base):
+            # /proc/<pid> can outlive cwd/fd briefly while the task transitions
+            # through zombie/exit. Re-read stat at the failure boundary: only
+            # proven disappearance or Z/X is absence; every other case remains
+            # unreadable and therefore fails closed.
+            if _process_gone_or_exited(base):
                 continue
             p.readable = False
         except OSError:
@@ -295,7 +312,9 @@ def probe_processes(proc_root: str, aliases: list[tuple[str, str]]) -> ProcSnaps
                     if tgt.startswith("/"):
                         p.paths.add(norm_path(tgt, aliases))
             except FileNotFoundError:
-                pass
+                if _process_gone_or_exited(base):
+                    continue
+                p.readable = False
             except OSError:
                 p.readable = False
             try:

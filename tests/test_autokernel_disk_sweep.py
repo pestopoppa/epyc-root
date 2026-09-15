@@ -314,6 +314,124 @@ def test_probe_skips_kernel_threads_and_zombies(tmp_path):
     assert set(snap.procs) == {60}
 
 
+def test_probe_skips_process_that_becomes_zombie_when_cwd_vanishes(
+        tmp_path, monkeypatch):
+    proc = tmp_path / "proc"
+    fake_proc(proc, 60, 1, "stable", tmp_path)
+    fake_proc(proc, 70, 1, "racing", tmp_path)
+    real_readlink = sweep.os.readlink
+
+    def readlink(path):
+        if os.fspath(path) == str(proc / "70/cwd"):
+            (proc / "70/stat").write_text("70 (racing) Z 1 0 0")
+            raise FileNotFoundError(path)
+        return real_readlink(path)
+
+    monkeypatch.setattr(sweep.os, "readlink", readlink)
+    snap = sweep.probe_processes(str(proc), [])
+    assert snap.state == "COMPLETE"
+    assert set(snap.procs) == {60}
+    assert snap.unreadable == []
+
+
+def test_probe_skips_process_that_exits_when_fd_directory_vanishes(
+        tmp_path, monkeypatch):
+    proc = tmp_path / "proc"
+    fake_proc(proc, 60, 1, "stable", tmp_path)
+    fake_proc(proc, 70, 1, "racing", tmp_path)
+    real_listdir = sweep.os.listdir
+
+    def listdir(path):
+        if os.fspath(path) == str(proc / "70/fd"):
+            (proc / "70/stat").write_text("70 (racing) X 1 0 0")
+            raise FileNotFoundError(path)
+        return real_listdir(path)
+
+    monkeypatch.setattr(sweep.os, "listdir", listdir)
+    snap = sweep.probe_processes(str(proc), [])
+    assert snap.state == "COMPLETE"
+    assert set(snap.procs) == {60}
+    assert snap.unreadable == []
+
+
+@pytest.mark.parametrize("missing", ["cwd", "fd"])
+def test_probe_skips_process_that_vanishes_during_cwd_or_fd_read(
+        tmp_path, monkeypatch, missing):
+    proc = tmp_path / "proc"
+    fake_proc(proc, 60, 1, "stable", tmp_path)
+    fake_proc(proc, 70, 1, "racing", tmp_path)
+    stat_path = str(proc / "70/stat")
+    stat_reads = 0
+    real_read = sweep._read
+
+    def read(path, binary=False):
+        nonlocal stat_reads
+        if os.fspath(path) == stat_path:
+            stat_reads += 1
+            if stat_reads > 1:
+                raise FileNotFoundError(path)
+        return real_read(path, binary)
+
+    monkeypatch.setattr(sweep, "_read", read)
+    if missing == "cwd":
+        real_readlink = sweep.os.readlink
+        def readlink(path):
+            if os.fspath(path) == str(proc / "70/cwd"):
+                raise FileNotFoundError(path)
+            return real_readlink(path)
+        monkeypatch.setattr(sweep.os, "readlink", readlink)
+    else:
+        real_listdir = sweep.os.listdir
+        def listdir(path):
+            if os.fspath(path) == str(proc / "70/fd"):
+                raise FileNotFoundError(path)
+            return real_listdir(path)
+        monkeypatch.setattr(sweep.os, "listdir", listdir)
+
+    snap = sweep.probe_processes(str(proc), [])
+    assert snap.state == "COMPLETE"
+    assert set(snap.procs) == {60}
+    assert snap.unreadable == []
+
+
+@pytest.mark.parametrize("missing", ["cwd", "fd"])
+def test_probe_keeps_active_missing_cwd_or_fd_fail_closed(tmp_path, missing):
+    proc = tmp_path / "proc"
+    fake_proc(proc, 60, 1, "stable", tmp_path)
+    fake_proc(proc, 70, 1, "still-active", None if missing == "cwd" else tmp_path)
+    if missing == "fd":
+        (proc / "70/fd").rmdir()
+    snap = sweep.probe_processes(str(proc), [])
+    assert snap.state == "PARTIAL"
+    assert set(snap.procs) == {60, 70}
+    assert snap.unreadable == [
+        {"pid": 70, "uid": os.stat(proc / "70").st_uid,
+         "args": "still-active", "why": "cwd/fd"}]
+
+
+def test_probe_keeps_unreadable_stat_recheck_fail_closed(tmp_path, monkeypatch):
+    proc = tmp_path / "proc"
+    fake_proc(proc, 60, 1, "stable", tmp_path)
+    fake_proc(proc, 70, 1, "permission-denied", None)
+    stat_path = str(proc / "70/stat")
+    stat_reads = 0
+    real_read = sweep._read
+
+    def read(path, binary=False):
+        nonlocal stat_reads
+        if os.fspath(path) == stat_path:
+            stat_reads += 1
+            if stat_reads > 1:
+                raise PermissionError(path)
+        return real_read(path, binary)
+
+    monkeypatch.setattr(sweep, "_read", read)
+    snap = sweep.probe_processes(str(proc), [])
+    assert snap.state == "PARTIAL"
+    assert set(snap.procs) == {60, 70}
+    assert snap.unreadable[0]["pid"] == 70
+
+
 def test_probe_unknown_when_proc_unlistable(tmp_path):
     snap = sweep.probe_processes(str(tmp_path / "missing"), [])
     assert snap.state == "UNKNOWN"
