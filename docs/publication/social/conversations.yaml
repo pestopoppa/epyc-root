@@ -1,0 +1,58 @@
+schema_version: social_conversations.v1
+policy: >-
+  Append-only ledger of external social conversations. Every public performance
+  claim carries an in-repo evidence pointer and a MEASUREMENT.md grade. No
+  internal role aliases, local paths, host identifiers, or F1 personal-task data
+  leave this repo. This ledger is a working record, not published site content;
+  it lives outside the mkdocs docs_dir (site_src). Corrections are appended,
+  never rewritten in place.
+conversations:
+  - id: x-2026-09-15-mi210-low-quants
+    platform: x
+    date: 2026-09-15
+    account: "@<handle>"
+    url: ""
+    kind: thread
+    status: posted
+    topic: "Running low-bit quants on an AMD MI210 Instinct"
+    audience: "reply to an MI210 user asking for low-quant tips"
+    transcript: threads/2026-09-15-x-mi210-low-quants.md
+    claims:
+      - text: "Below ~4 bits/weight on MI210 is a capacity play, not a speed play"
+        evidence: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+        grade: observation
+        protocol: null
+      - text: "gfx90a: 64 VGPR or less keeps 8 waves/SIMD; above it drops to 6"
+        evidence: artifacts/gpu-aux-baselines/a10_iq2_vgpr_lever_20260812.md
+        grade: verified
+        protocol: null
+      - text: "Sub-4-bit formats can be 27-46% smaller and 36-39% slower at batch 1"
+        evidence: artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md
+        grade: observation
+        protocol: null
+      - text: "Prefill is ~flat across quants (no knee); the cliff is batch-1 decode only"
+        evidence: artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md
+        grade: observation
+        protocol: null
+      - text: "Batching closes the gap for Q4_K/Q8 by B=32; sub-4-bit IQ recovers only to ~0.77-0.88"
+        evidence: artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md
+        grade: observation
+        protocol: null
+      - text: "Production 122B runs the 6-wave IQ2 instantiation; its MoE-IQ2 rung is ~10% of bandwidth"
+        evidence: handoffs/active/mi210-q8-dequant-gemv-roofline.md
+        grade: observation
+        protocol: null
+      - text: "q8_0 KV costs 7-17% decode (35B-A3B hybrid, dense 27B)"
+        evidence: wiki/quantization.md
+        grade: observation
+        protocol: null
+    inbound: []
+    follow_up: null
+    notes: >-
+      Tweet 11 invites correction from @AIatAMD. Four soft spots to have ready
+      if challenged: (1) "stick to f16 KV" is a speed-only statement — KV quant
+      remains the max-context/VRAM lever; (2) the MoE batching half is still
+      unmeasured, only the dense half ran; (3) "double-digit prefill wins in
+      config space" are search-stage, nonpromotable candidates, not ratified
+      results; (4) Q3_K at 88 VGPR is from the static VGPR table, not a measured
+      ladder rung.
