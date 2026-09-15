@@ -267,11 +267,6 @@ def inventory_ignored_path(target: Path, relative: str) -> dict[str, Any]:
     elif stat.S_ISLNK(details.st_mode):
         link_target = os.readlink(candidate)
         payload = link_target.encode("utf-8", errors="surrogateescape")
-        resolved = (candidate.parent / link_target).resolve(strict=False)
-        if resolved != target and not resolved.is_relative_to(target):
-            raise RetireError(
-                f"ignored symlink escapes the worktree: {relative} -> {link_target}"
-            )
         digest = preserve.sha256_bytes(payload)
         kind = "symlink"
         size = len(payload)

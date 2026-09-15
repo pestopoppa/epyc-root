@@ -334,18 +334,39 @@ def test_ignored_nested_repo_or_worktree_is_refused(tmp_path, complete_probe, ca
     assert marker.exists()
 
 
-def test_ignored_symlink_escape_is_refused(tmp_path, complete_probe, capsys):
+def test_ignored_escaping_file_and_directory_symlinks_unlink_only_inode(
+    tmp_path, complete_probe, monkeypatch, capsys
+):
     case = make_case(tmp_path)
-    configure_ignored(case, tmp_path / "exclude", "cache/\n")
-    cache = case["worktree"] / "cache"
-    cache.mkdir()
-    outside = tmp_path / "outside.bin"
-    outside.write_text("outside\n")
-    os.symlink(outside, cache / "escape")
+    configure_ignored(case, tmp_path / "exclude", ".venv/\n")
+    links = case["worktree"] / ".venv/bin"
+    links.mkdir(parents=True)
+    outside_file = tmp_path / "shared-python"
+    outside_file.write_text("interpreter\n")
+    outside_dir = tmp_path / "shared-runtime"
+    outside_dir.mkdir()
+    (outside_dir / "runtime.so").write_text("runtime\n")
+    os.symlink(outside_file, links / "python")
+    os.symlink(outside_dir, links / "runtime")
 
-    assert retire.main(args(case)) == 2
-    assert "symlink escapes" in capsys.readouterr().err
-    assert outside.read_text() == "outside\n"
+    assert retire.main(args(case)) == 0
+    inventory = json.loads(capsys.readouterr().out)["rows"][0]["ignored_inventory"]
+    assert {item["path"] for item in inventory} == {
+        ".venv/bin/python",
+        ".venv/bin/runtime",
+    }
+    assert {item["type"] for item in inventory} == {"symlink"}
+    assert {item["link_target"] for item in inventory} == {
+        str(outside_file),
+        str(outside_dir),
+    }
+
+    monkeypatch.setattr(retire, "operator_confirm", lambda *_args: True)
+    assert retire.main(args(case, apply=True)) == 0
+    capsys.readouterr()
+
+    assert outside_file.read_text() == "interpreter\n"
+    assert (outside_dir / "runtime.so").read_text() == "runtime\n"
 
 
 def test_ignored_special_file_is_refused(tmp_path, complete_probe, capsys):

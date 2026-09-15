@@ -504,13 +504,16 @@ durable per-row authorization receipt, resets tracked state to the archived HEAD
 the exact nonignored untracked paths enumerated by Git and covered by the archive, then handles
 generated ignored residue through a second explicit discard stage. Every ignored path must be
 enumerated by both `git ls-files --others --ignored --exclude-standard` and `git check-ignore`;
-the receipt inventories its path, type, byte count, mode and hash before mutation. Nested Git
-metadata, `.git` crossings, special files, escaping symlinks, and durable-evidence names refuse
-the row. Evidence-name matching follows the sweep's `EVIDENCE_SKIP_DIRS`: generated names below
+the receipt inventories its path, type, byte count, mode and hash before mutation. Ignored
+symlinks, including links to files or directories outside the tree, are inventoried by inode mode
+and exact link-target bytes/hash, revalidated with `lstat`/`readlink`, and removed only by unlinking
+the symlink path; targets are never resolved, followed, recursed, or removed. Nested Git
+metadata, `.git` crossings, special files, and durable-evidence names refuse the row.
+Evidence-name matching follows the sweep's `EVIDENCE_SKIP_DIRS`: generated names below
 canonical caches such as `__pycache__`, `.pytest_cache`, `.ruff_cache`, `CMakeFiles`, and
 `.mypy_cache` remain generated residue rather than false evidence. After the inventory is durably
-authorized, only those exact entries are unlinked. The
-helper then proves the tree completely clean and runs exactly
+authorized, only those exact entries are unlinked. The helper then proves the tree completely
+clean and runs exactly
 `git -C <owning-repo> worktree remove <exact-path>`. There is no prune, gc, force flag, wildcard,
 or name discovery. Authorization checkpoints make reset, untracked removal and worktree removal
 resumable after interruption without weakening any fresh probe, identity or content check.
