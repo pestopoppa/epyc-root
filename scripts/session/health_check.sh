@@ -1,11 +1,97 @@
 #!/bin/bash
 # health_check.sh - Pre-session system health check
 # Usage: bash scripts/session/health_check.sh
+#
+# OBS-6 (2026-09-15): this script used to have exactly two verdicts, PASS/FAIL
+# (WARN was a soft FAIL), and several probes forced an unreadable signal into
+# that binary by piping it through `|| echo "unknown"` and then COMPARING
+# "unknown" against the expected value — which reports FAIL for a node this
+# container simply cannot see, identically to a real misconfiguration. Two
+# name-pattern process probes had the matching defect for identity instead of
+# for readability: `pgrep -f "claude"` is a bare substring over every process's
+# argv, including THIS CHECK'S OWN CALLER (CLAUDE.md: "a guard process's argv
+# necessarily contains the names it guards"), and `pgrep -f "monitor_storage"`
+# reads a renamed/relocated monitor as permanently absent forever. Neither
+# process publishes a pid/heartbeat file this script could check instead, so
+# per the observation contract (scripts/coordination/observer_guard.sh) the
+# honest answer where no reliable channel exists is UNKNOWN, not a guess dressed
+# up as PASS/WARN/FAIL. Everything below is restructured so `main` can be
+# skipped when this file is SOURCED (by scripts/session/tests/test_health_check.sh),
+# leaving only read-only helper functions defined.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/env.sh"
+
+check() {
+  local test_name="$1"
+  local condition="$2"
+  local fail_msg="${3:-}"
+
+  if eval "$condition"; then
+    echo "✅ PASS: $test_name"
+    ((PASS+=1))
+    return 0
+  else
+    if [[ -n "$fail_msg" ]]; then
+      echo "❌ FAIL: $test_name - $fail_msg"
+      ((FAIL+=1))
+    else
+      echo "⚠️  WARN: $test_name"
+      ((WARN+=1))
+    fi
+    return 0  # don't trip outer `set -e` — failures are tracked via $FAIL/$WARN + the summary
+  fi
+}
+
+# sysfs_value <path> - print the raw content of a /proc or /sys node, or the
+# literal sentinel __UNREADABLE__ if it cannot be read.
+#
+# __UNREADABLE__ is deliberately not a string the kernel could ever publish, so
+# it can never be confused with a real (if wrong) setting the way the old
+# `cat ... || echo "unknown"` fallback could — "unknown" IS a value a caller
+# might legitimately compare against, and comparing an I/O failure to it by
+# accident is exactly how an unreadable node got scored FAIL.
+sysfs_value() {
+  local path="$1"
+  [[ -r "$path" ]] || { printf '__UNREADABLE__\n'; return 0; }
+  cat "$path" 2>/dev/null || printf '__UNREADABLE__\n'
+}
+
+# sysfs_bracketed <path> - like sysfs_value, but for a kernel enum file whose
+# active choice is the bracketed token (e.g. "always [madvise] never").
+sysfs_bracketed() {
+  local path="$1" raw
+  raw="$(sysfs_value "$path")"
+  [[ "$raw" == "__UNREADABLE__" ]] && { printf '__UNREADABLE__\n'; return 0; }
+  printf '%s\n' "$raw" | awk -F'[][]' '{print $2}'
+}
+
+# check_sysfs_eq <test_name> <value> <expected> <fail_msg>
+#
+# THE THREE-VALUED FOLD for a sysfs/procfs equality probe: PASS, FAIL, or
+# (new) UNKNOWN when the node could not be read at all — never counted as a
+# pass, never counted as a fail. UNKNOWN is tallied separately and never gates
+# the exit code, mirroring the SKIP verdict this file already uses for the
+# episodic-memory check.
+check_sysfs_eq() {
+  local test_name="$1" value="$2" expected="$3" fail_msg="$4"
+  if [[ "$value" == "__UNREADABLE__" ]]; then
+    echo "❓ UNKNOWN: $test_name - node unreadable (container/sandbox?); not scored pass or fail"
+    ((UNKNOWN+=1))
+    return 0
+  fi
+  if [[ "$value" == "$expected" ]]; then
+    echo "✅ PASS: $test_name"
+    ((PASS+=1))
+  else
+    echo "❌ FAIL: $test_name - $fail_msg"
+    ((FAIL+=1))
+  fi
+}
+
+main() {
 
 # Health-check profile: 'session-init' (default) protects quarter-TB model downloads; 'batch' relaxes
 # thresholds for an inference-batch preflight whose artifact footprint is MB-scale, and demotes the
@@ -31,27 +117,7 @@ echo ""
 PASS=0
 WARN=0
 FAIL=0
-
-check() {
-  local test_name="$1"
-  local condition="$2"
-  local fail_msg="${3:-}"
-
-  if eval "$condition"; then
-    echo "✅ PASS: $test_name"
-    ((PASS+=1))
-    return 0
-  else
-    if [[ -n "$fail_msg" ]]; then
-      echo "❌ FAIL: $test_name - $fail_msg"
-      ((FAIL+=1))
-    else
-      echo "⚠️  WARN: $test_name"
-      ((WARN+=1))
-    fi
-    return 0  # don't trip outer `set -e` — failures are tracked via $FAIL/$WARN + the summary
-  fi
-}
+UNKNOWN=0
 
 # ============================================
 # 1. FILESYSTEM CHECKS
@@ -134,25 +200,24 @@ echo ""
 # ============================================
 # 4. PROCESS CHECKS
 # ============================================
+#
+# OBS-6: neither process below publishes a pid file or heartbeat this script
+# could check instead of an argv substring, so — per the observation contract —
+# the honest verdict is UNKNOWN, not a guessed PASS/WARN from a channel known to
+# misfire. Recorded as UNKNOWN, never silently dropped: the limitation is the
+# finding.
 
 echo "--- Process Status ---"
 
-if pgrep -f "claude" >/dev/null; then
-  echo "⚠️  WARN: Claude process already running"
-  ps aux | grep -i claude | grep -v grep
-  ((WARN+=1))
-else
-  echo "✅ PASS: No Claude processes running"
-  ((PASS+=1))
-fi
+echo "❓ UNKNOWN: Other Claude sessions running - no reliable channel: \`pgrep -f \"claude\"\` is a bare"
+echo "   substring that matches this very check's own caller (CLAUDE.md: a guard's argv necessarily"
+echo "   contains the names it guards), and no per-session pid/lock file exists to check instead. Not scored."
+((UNKNOWN+=1))
 
-if pgrep -f "monitor_storage" >/dev/null; then
-  echo "✅ PASS: Storage monitor is running"
-  ((PASS+=1))
-else
-  echo "⚠️  WARN: Storage monitor not running - consider starting it"
-  ((WARN+=1))
-fi
+echo "❓ UNKNOWN: Storage monitor running - \`pgrep -f \"monitor_storage\"\` reads a renamed or relocated"
+echo "   monitor as permanently absent, and monitor_storage.sh publishes no pid/lock file to check instead."
+echo "   Not scored; verify manually if this matters right now."
+((UNKNOWN+=1))
 
 echo ""
 
@@ -165,22 +230,31 @@ echo "--- System Resources ---"
 MEM_AVAIL=$(free -g | awk 'NR==2 {print $7}')
 check "Available RAM >100GB" "[ $MEM_AVAIL -gt 100 ]"
 
-CPU_GOVERNOR=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo "unknown")
-check "CPU governor is 'performance'" "[ \"$CPU_GOVERNOR\" == \"performance\" ]" "Currently: $CPU_GOVERNOR"
+CPU_GOVERNOR="$(sysfs_value "${EPYC_SYS_ROOT:-/sys}/devices/system/cpu/cpu0/cpufreq/scaling_governor")"
+check_sysfs_eq "CPU governor is 'performance'" "$CPU_GOVERNOR" "performance" "Currently: $CPU_GOVERNOR"
 
 # Canonical inference host prereqs — see docs/infrastructure/01-hardware-system.md
 # and handoffs/active/cpu-kernel-env-flags-inventory.md
-NUMA_BAL=$(cat /proc/sys/kernel/numa_balancing 2>/dev/null || echo "unknown")
-check "kernel.numa_balancing is 0" "[ \"$NUMA_BAL\" == \"0\" ]" "Currently: $NUMA_BAL — fix: sudo sysctl -w kernel.numa_balancing=0 (self-resets per session per feedback_numa_balancing_self_reset)"
+NUMA_BAL="$(sysfs_value "${EPYC_PROC_ROOT:-/proc}/sys/kernel/numa_balancing")"
+check_sysfs_eq "kernel.numa_balancing is 0" "$NUMA_BAL" "0" "Currently: $NUMA_BAL — fix: sudo sysctl -w kernel.numa_balancing=0 (self-resets per session per feedback_numa_balancing_self_reset)"
 
-THP_ENABLED=$(awk -F'[][]' '{print $2}' /sys/kernel/mm/transparent_hugepage/enabled 2>/dev/null || echo "unknown")
-check "THP enabled is 'always'" "[ \"$THP_ENABLED\" == \"always\" ]" "Currently: $THP_ENABLED — fix: echo always | sudo tee /sys/kernel/mm/transparent_hugepage/enabled"
+THP_ENABLED="$(sysfs_bracketed "${EPYC_SYS_ROOT:-/sys}/kernel/mm/transparent_hugepage/enabled")"
+check_sysfs_eq "THP enabled is 'always'" "$THP_ENABLED" "always" "Currently: $THP_ENABLED — fix: echo always | sudo tee /sys/kernel/mm/transparent_hugepage/enabled"
 
-THP_DEFRAG=$(awk -F'[][]' '{print $2}' /sys/kernel/mm/transparent_hugepage/defrag 2>/dev/null || echo "unknown")
-check "THP defrag is 'always'" "[ \"$THP_DEFRAG\" == \"always\" ]" "Currently: $THP_DEFRAG — fix: echo always | sudo tee /sys/kernel/mm/transparent_hugepage/defrag"
+THP_DEFRAG="$(sysfs_bracketed "${EPYC_SYS_ROOT:-/sys}/kernel/mm/transparent_hugepage/defrag")"
+check_sysfs_eq "THP defrag is 'always'" "$THP_DEFRAG" "always" "Currently: $THP_DEFRAG — fix: echo always | sudo tee /sys/kernel/mm/transparent_hugepage/defrag"
 
-PERF_PARANOID=$(cat /proc/sys/kernel/perf_event_paranoid 2>/dev/null || echo "unknown")
-check "kernel.perf_event_paranoid <= 1" "[ \"$PERF_PARANOID\" -le 1 ] 2>/dev/null" "Currently: $PERF_PARANOID — fix: sudo sysctl -w kernel.perf_event_paranoid=1"
+PERF_PARANOID="$(sysfs_value "${EPYC_PROC_ROOT:-/proc}/sys/kernel/perf_event_paranoid")"
+if [[ "$PERF_PARANOID" == "__UNREADABLE__" ]]; then
+  echo "❓ UNKNOWN: kernel.perf_event_paranoid <= 1 - node unreadable (container/sandbox?); not scored pass or fail"
+  ((UNKNOWN+=1))
+elif [[ "$PERF_PARANOID" =~ ^-?[0-9]+$ ]] && [ "$PERF_PARANOID" -le 1 ]; then
+  echo "✅ PASS: kernel.perf_event_paranoid <= 1"
+  ((PASS+=1))
+else
+  echo "❌ FAIL: kernel.perf_event_paranoid <= 1 - Currently: $PERF_PARANOID — fix: sudo sysctl -w kernel.perf_event_paranoid=1"
+  ((FAIL+=1))
+fi
 
 echo ""
 
@@ -262,6 +336,7 @@ echo "=============================================="
 echo "  Passed:   $PASS ✅"
 echo "  Warnings: $WARN ⚠️"
 echo "  Failed:   $FAIL ❌"
+echo "  Unknown:  $UNKNOWN ❓ (not scored pass or fail — see notes above)"
 echo ""
 
 if [ $FAIL -gt 0 ]; then
@@ -274,7 +349,7 @@ if [ $FAIL -gt 0 ]; then
   if ! mountpoint -q /tmp/claude 2>/dev/null; then
     echo "  2. Start Claude via: bash ${PROJECT_ROOT}/scripts/session/claude_safe_start.sh"
   fi
-  if [ "$CPU_GOVERNOR" != "performance" ]; then
+  if [ "$CPU_GOVERNOR" != "performance" ] && [ "$CPU_GOVERNOR" != "__UNREADABLE__" ]; then
     echo "  3. Set CPU governor: echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
   fi
   echo "  *. Apply ALL host tunables at once (governor, THP, numa_balancing,"
@@ -285,11 +360,6 @@ if [ $FAIL -gt 0 ]; then
 elif [ $WARN -gt 0 ]; then
   echo "⚠️  WARNINGS PRESENT - Review above"
   echo ""
-  echo "Recommended actions:"
-  if ! pgrep -f "monitor_storage" >/dev/null; then
-    echo "  • Start monitor: bash ${PROJECT_ROOT}/scripts/session/monitor_storage.sh &"
-  fi
-  echo ""
   exit 0
 else
   echo "✅ ALL CHECKS PASSED - System ready for Claude session"
@@ -298,4 +368,10 @@ else
   echo "  bash ${PROJECT_ROOT}/scripts/session/claude_safe_start.sh"
   echo ""
   exit 0
+fi
+
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
 fi

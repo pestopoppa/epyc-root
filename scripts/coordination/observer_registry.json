@@ -147,10 +147,8 @@
     {
       "id": "session_health_check",
       "script": "scripts/session/health_check.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/non-inference-backlog.md",
-      "task_marker": "OBS-6",
-      "notes": "`pgrep -f \"claude\"` is a bare substring matching any argv containing 'claude', including its own caller. `pgrep -f \"monitor_storage\"` makes a renamed/relocated monitor read as permanently absent, so the check permanently recommends starting a second one. Several probes use `|| echo unknown` and then COMPARE 'unknown' against the expected value, reporting FAIL \u2014 an unreadable /sys node in a container is scored as a misconfiguration. Report-only, but it gates session start."
+      "contract": "exempt",
+      "reason": "FIXED, not deferred \u2014 reviewed 2026-09-15. `pgrep -f \"claude\"` (a bare substring matching any argv containing 'claude', including its own caller) and `pgrep -f \"monitor_storage\"` (which made a renamed/relocated monitor read as permanently absent) are DELETED; neither process publishes a pid/heartbeat this script could check instead, so both are now reported as a distinct UNKNOWN verdict, tallied separately and never scored PASS/WARN/FAIL. The `cat ... || echo \"unknown\"` probes that then COMPARED that string against the expected value (scoring an unreadable /sys node as a misconfiguration) are replaced by `sysfs_value`/`sysfs_bracketed`, which return the sentinel `__UNREADABLE__` \u2014 a string the kernel could never itself publish \u2014 and `check_sysfs_eq`, which reports UNKNOWN (not FAIL) for that sentinel while still FAILing a readable-but-wrong value. Body restructured behind a `main()` gated by the BASH_SOURCE guard so `scripts/session/tests/test_health_check.sh` can source the file for its helper functions without running the live checks. NOT battery-adoptable: it is a one-shot report script run before a session starts, not a daemon watchdog \u2014 it has no `observe` entrypoint, no corrective action, and no target with a pid/heartbeat the harness's compliant/absent/blind battery could drive."
     },
     {
       "id": "session_emergency_cleanup",

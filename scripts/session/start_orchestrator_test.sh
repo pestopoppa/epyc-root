@@ -13,6 +13,76 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=../lib/env.sh
 source "${SCRIPT_DIR}/../lib/env.sh"
 
+# =============================================================================
+# PORT OBSERVATION (OBS-8, 2026-09-15)
+# =============================================================================
+# THE DEFECT: the port gate probed with `netstat` alone, piped through
+# `2>/dev/null`. `netstat` is not installed on this host, so that pipe silently
+# swallowed "command not found" as if it meant "no matches" — a MISSING TOOL
+# read as an EMPTY PORT. The kill loop that used to sit here iterated zero
+# times (nothing to parse), the availability check then printed
+# "[✓] Ports 8000 and 8080 available" UNCONDITIONALLY, and the script launched
+# a second llama-server and a second uvicorn on top of whatever was already
+# listening. bus_supervisor.sh already names this file as the cautionary
+# example of assuming a tool is installed.
+#
+# THREE STATES, matching scripts/coordination/observer_guard.sh's contract: a
+# port probe that CANNOT RUN is not evidence the port is free.
+#   free           - a real tool looked, and found no listener.
+#   occupied       - a real tool looked, and found one.
+#   cannot-observe - no port-inspection tool is on PATH. Refuse to launch: this
+#                    script has no basis to claim anything about the port.
+#
+# The functions below are extracted so they can be SOURCED (by
+# scripts/session/tests/test_start_orchestrator_test.sh) and driven against
+# PATH shims — fake ss/netstat/lsof binaries in a tmp dir — without ever
+# reaching the `main` launch logic further down. Nothing above the
+# `main`/BASH_SOURCE guard at the bottom of this file may have a side effect:
+# sourcing this file must be safe.
+
+# osp_probe_tool - print the first available port-inspection tool (ss, then
+# netstat, then lsof), or nothing if none is on PATH.
+osp_probe_tool() {
+  if command -v ss >/dev/null 2>&1; then printf 'ss\n'; return 0; fi
+  if command -v netstat >/dev/null 2>&1; then printf 'netstat\n'; return 0; fi
+  if command -v lsof >/dev/null 2>&1; then printf 'lsof\n'; return 0; fi
+  return 0
+}
+
+# osp_port_pids <tool> <port> - print the pid(s) LISTENing on <port> per <tool>.
+#
+# READ-ONLY IDENTIFICATION ONLY. ***NOT A KILL TARGET.*** This host is shared;
+# CLAUDE.md: "kill only PIDs you captured yourself" — a pid this run merely
+# observed on a port is not a pid this run started, so this function's output
+# is for the operator refusal message, never for a `kill` this script issues.
+osp_port_pids() {
+  local tool="$1" port="$2"
+  case "$tool" in
+    ss)
+      ss -tlnp 2>/dev/null | awk -v p=":${port}\$" '$4 ~ p' | grep -oP 'pid=\K[0-9]+' | sort -u
+      ;;
+    netstat)
+      netstat -tlnp 2>/dev/null | awk -v p=":${port}\$" \
+        '$4 ~ p { split($7, a, "/"); if (a[1] ~ /^[0-9]+$/) print a[1] }' | sort -u
+      ;;
+    lsof)
+      lsof -t -i "TCP:${port}" -sTCP:LISTEN 2>/dev/null | sort -u
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+# osp_port_state <tool> <port> - echoes free|occupied. Caller must already have
+# a non-empty <tool> (i.e. have handled cannot-observe) before calling this.
+osp_port_state() {
+  local tool="$1" port="$2" pids
+  pids="$(osp_port_pids "$tool" "$port")"
+  if [[ -n "$pids" ]]; then printf 'occupied\n'; else printf 'free\n'; fi
+}
+
+main() {
 DEV_MODE=false
 if [[ "${1:-}" == "--dev-mode" ]]; then
   DEV_MODE=true
@@ -70,44 +140,44 @@ if [[ ! -f "$MODEL_PATH" ]]; then
 fi
 echo "[✓] Model found: $(basename $MODEL_PATH)"
 
-# Kill existing processes
+# Verify ports 8000 and 8080 are free — refuse otherwise
 echo ""
-echo "Stopping existing processes..."
-# Resolve what to stop by LISTENING PORT, never by name pattern.
-#
-# This host is shared. `pkill -f "llama-server"` is a wildcard over every session's
-# processes, not just this script's — it killed another agent's server twice
-# (INC-20260731, docs/reference/agent-config/INCIDENT_LOG.md). A port is a precise
-# identity: only one process can hold it, and it is the one actually in our way.
-for port in 8000 8080; do
-  for pid in $(netstat -tlnp 2>/dev/null | awk -v p=":${port}\$" '$4 ~ p { split($7, a, "/"); if (a[1] ~ /^[0-9]+$/) print a[1] }' | sort -u); do
-    echo "  Port $port held by PID $pid — stopping it"
-    kill "$pid" 2>/dev/null || true
-    for _ in $(seq 1 10); do ps -p "$pid" >/dev/null 2>&1 || break; sleep 1; done
-    if ps -p "$pid" >/dev/null 2>&1; then
-      echo "  PID $pid ignored SIGTERM; escalating to SIGKILL"
-      kill -9 "$pid" 2>/dev/null || true
-      sleep 1
-    fi
-    if ps -p "$pid" >/dev/null 2>&1; then
-      echo "ERROR: PID $pid is still alive after SIGKILL — refusing to continue"
-      exit 1
-    fi
-    echo "  PID $pid confirmed stopped"
-  done
-done
-sleep 1
+echo "Checking ports 8000 and 8080..."
+PORT_TOOL="$(osp_probe_tool)"
+if [[ -z "$PORT_TOOL" ]]; then
+  echo "ERROR: no port-inspection tool on PATH (checked: ss, netstat, lsof)."
+  echo "This script CANNOT OBSERVE whether ports 8000/8080 are free, so it refuses"
+  echo "to guess and launch a possible duplicate stack on top of a live one."
+  echo "Install one of: ss (iproute2), netstat (net-tools), lsof — then re-run."
+  exit 1
+fi
+echo "[i] Port probe tool: $PORT_TOOL"
 
-# Check ports
+OCCUPIED=()
 for port in 8000 8080; do
-  if netstat -tlnp 2>/dev/null | grep -q ":$port "; then
-    echo "ERROR: Port $port still in use after cleanup"
-    netstat -tlnp 2>/dev/null | grep ":$port "
-    echo "Wait 60s for TIME_WAIT or kill the process manually"
-    exit 1
+  if [[ "$(osp_port_state "$PORT_TOOL" "$port")" == "occupied" ]]; then
+    OCCUPIED+=("$port")
   fi
 done
-echo "[✓] Ports 8000 and 8080 available"
+
+if (( ${#OCCUPIED[@]} > 0 )); then
+  echo "ERROR: port(s) ${OCCUPIED[*]} already in use — refusing to launch."
+  echo "This script no longer stops occupants on your behalf. Host rule (CLAUDE.md):"
+  echo "\"kill only PIDs you captured yourself\" — a pid discovered on a port by THIS"
+  echo "run is not a pid THIS run started, and this is a shared host (INC-20260731-"
+  echo "broad-process-pattern-kills)."
+  for port in "${OCCUPIED[@]}"; do
+    echo "  Port $port held by:"
+    while read -r pid; do
+      [[ -n "$pid" ]] || continue
+      echo "    pid $pid: $(ps -p "$pid" -o pid,etime,cmd --no-headers 2>/dev/null || echo '<already gone>')"
+    done < <(osp_port_pids "$PORT_TOOL" "$port")
+  done
+  echo "Verify each pid is really what you think it is, then stop it yourself:"
+  echo "  kill <pid>   # then confirm: ps -p <pid>  (escalate to -9 only if it ignores SIGTERM)"
+  exit 1
+fi
+echo "[✓] Ports 8000 and 8080 available (verified with $PORT_TOOL)"
 
 # Set environment (already sourced from env.sh, but export for subprocesses)
 export HF_HOME="${CACHE_DIR}/huggingface"
@@ -242,3 +312,8 @@ echo "  ps -p $LLAMA_PID -p $ORCH_PID  # confirm they are gone; escalate to -9 o
 echo ""
 echo "Memory usage:"
 free -h | head -2
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi
