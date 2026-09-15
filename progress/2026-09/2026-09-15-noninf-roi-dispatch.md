@@ -79,3 +79,29 @@ The first ROI overview was verified against that stale tree, so several "open" i
 - **Wrap-up gates:** README freshness clean; wiki scan `has_drift: false` (no compile needed); prune candidates 0;
   `index_state.py --check` 0 problems. Agent logging was never started this session (`agent_session_start` not
   called), so there are no open `agent_task_*` spans to close.
+
+## Evidence-durability pass (NIB2-73 family)
+
+- **NIB2-73 closed** (research `d4de5535`): the 8 deleted models are ledgered in the MASTER registry, where a recompile
+  cannot erase them. The first attempt put them in the COMPILED lean file — the defect
+  `feedback_ledger_goes_in_master_not_compiled_output` already records — which broke the priors' hash pin and was
+  caught by the strict gate NIB2-69 landed hours earlier. Reverted as orchestrator `92bbeb06`.
+- **NIB2-73a closed** (research `041ecb1d`): 8 of 9 cited artifacts carried into git with per-campaign README +
+  SHA256SUMS, every sha256 verified against the origin. The 22.4 MB campaign was carried at **1.54%** — the distilled
+  results and provenance chain, not the raw capture, verbose logs, VRAM telemetry or SWE-bench patch bodies, which also
+  keeps upstream authors' emails out of the tree. The 9th was already correctly WITHHELD (third-party receipt PII).
+  Side effect: both dflash2-challenger ratification hashes now verify against artifacts in git; until then they hashed
+  untracked files, so they asserted nothing in any checkout but one.
+- **NIB2-73c closed**: the gate could not distinguish DELIBERATELY WITHHELD from LOST. A `<file>.WITHHELD.sha256`
+  sibling now resolves a citation as verdict WITHHELD — info severity, never folded into OK, never escalated by `-W`.
+- **HYG-3 closed** (root `7b72bf64`): epyc-root's commit-hygiene hook read a `2>&1` redirection as a pathspec, blocking
+  the most common git idiom on this host. It fired against me three times today, including on the commit recording its
+  own fix (the active hook comes from the stale shared clone).
+- **NIB2-73d closed** (research `6575c33c`): the 11 undocumented campaign directories now carry provenance READMEs +
+  SHA256SUMS, written from git history / registry citations / progress logs / handoffs, with `UNVERIFIED` wherever a
+  fact could not be established. 3,782 files sealed, `sha256sum -c` clean, missing-docs list now EMPTY.
+  **Three premises I handed the agents were wrong and were corrected in the writing** — bonsai_current_v7 is the
+  speed-rerun evidence, not the quality rejection's; numa_placement is the shared attestation dir disambiguated by arm;
+  the glm52 native-MTP 185837Z pair is not a completed A/B. Sourcing each claim is what caught them.
+- **Filed, not fixed:** NIB2-73e (the gate scans the registry only, so cited-but-untracked evidence in docs/handoffs is
+  invisible — with 4 concrete instances), NIB2-73f (the operator's own email in a tracked audit file — his call).

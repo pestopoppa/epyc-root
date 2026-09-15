@@ -481,6 +481,29 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       `<file>.WITHHELD.sha256` sibling carries a real hash as verdict **WITHHELD** — severity `info`, listed by
       default, never folded into `OK` (OK means a reader can recompute the hash here) and never escalated by `-W`
       (which is for recorded LOSSES). `ARTIFACT LOST` still wins. 12 new tests, 64 pass. In `041ecb1d`.
+- [x] **NIB2-73d** (MED): **the 11 campaign directories with no provenance docs.** ✅ 2026-09-15 — research
+      `6575c33c`: all 11 now carry `README.md` + `SHA256SUMS` written from git history, registry citations, progress
+      logs and handoffs, with every unestablished fact written as `UNVERIFIED — <what is missing>` rather than guessed
+      (measurement dates come from run-directory timestamps and `start_utc.txt`, never worktree mtimes — OBS-13).
+      `sha256sum -c` passes on all 3,782 sealed files; the gate's missing-durability-docs list is now EMPTY and
+      `errors: 0` holds. Three premises were CORRECTED in the writing, which is the point of sourcing them:
+      `bonsai_current_v7` is NOT the evidence behind the sub-2-bit quality rejection (it is the speed reruns that
+      changed nothing; the quality failures live in two other dirs); `numa_placement` is the shared
+      P-BENCH-PLACEMENT-1 attestation dir disambiguated by arm, not "the fix's evidence"; and the
+      `glm52_native_mtp_ab` 185837Z pair is not a completed A/B (the MTP arm hit `failed_completion_floor`).
+      `cpu_optimization` holds ~30 distinct tracks across 66 bundles and was enumerated per bundle, not flattened.
+- [ ] **NIB2-73e** (MED): **the durability gate scans the REGISTRY only, so cited-but-untracked evidence in DOCS and
+      HANDOFFS is invisible to it.** Found while writing the 11 READMEs, all recorded in-file:
+      `docs/reference/models/model-admission-2026-07-16.md:359-363` cites two `summary.json` files that exist only in
+      the shared clone; `gemma-challenge-kernel-techniques-v7.md:141` carries two DANGLING citations (only the n=2 dir
+      exists); six `*_20260718Tcodex` dirs carry reports whose cited run data is untracked; and further untracked
+      sibling bundles are cited under `bonsai_current_v7` (L8626/8627/8641/8642/8715) and
+      `qwable_reasoning_economics` (L9124-9131). Extend the checker's scan to docs/handoffs, or accept the limit
+      explicitly — today the gate's silence on these is not evidence of their durability.
+- [ ] **NIB2-73f** (LOW, operator): **the operator's own email address is in a tracked file** —
+      `data/cpu_optimization/2026-04-30-v5-cleanup-audit/README.md:27`, attributing his own decisions. First-party, so
+      the third-party-PII WITHHELD precedent does not apply and nothing was changed. Redact or keep: an operator call,
+      relevant only if this repo ever becomes public.
 - [x] **HYG-3** (MED): **epyc-root's commit-hygiene hook read `2>&1` as a pathspec**, so `git commit --file=msg.txt 2>&1`
       — the most common idiom on this host — was blocked as a pathspec commit, and the only escape also disabled rules
       A/B and the checkout/stash shapes. ✅ 2026-09-15 — `strip_redirections()` removes redirections at the same early
