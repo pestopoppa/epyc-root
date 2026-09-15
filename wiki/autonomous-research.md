@@ -2628,3 +2628,30 @@ name an unavailable diagnostic as mandatory admission evidence.
   observed batch sequence, Qwen comparison, validation result and operational campaign correction.
 - [`autokernel-actor-preparation.md`](../docs/autokernel-actor-preparation.md) — actor preparation,
   context and refusal-feedback boundary that the live planner/critic contract implements.
+
+## Compiled Update — 2026-09-15: an accumulator screen is not a champion-promotion result
+
+**Confidence: verified for the recorded campaign checkpoint; live monitoring remains in progress.**
+The GLM AutoKernel's bounded recovery corrected escape, screening, stopped-resume accounting,
+successor handling and duplicate confirmation without loosening the existing experiment or serving
+gates. Its first published whole-bundle checkpoint advanced the experimental research anchor to
+`7e9f5eb`; the following batch produced a provisional successor. The 26-keep bundle's `+0.855%`
+value is an unresolved estimate against the campaign champion-of-record. It is useful for deciding
+that retained work continues, but it is neither an independently verified champion delta nor a
+production-promotion result.
+
+The durable presentation rule follows from that distinction: a dashboard must show campaign-local
+accumulation, champion movement and production-era evidence as separate scopes. The corrected
+headline preserves direct-endpoint gaps and explicit unresolved markers instead of drawing a
+continuous curve through incompatible evidence. This avoids treating an estimate that cleared a
+cheap screen as if it had cleared a different full-target or serving gate. The production-v9 kernel
+remains frozen; the live batch is an operational health monitor, not authority to mutate it.
+
+### Source References (2026-09-15 GLM recovery and trajectory scope)
+
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md)
+  — AKU-12g/h completed checkpoint, AKU-12i operational remainder and production boundary.
+- [`2026-09-15-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-15-autokernel-unified-20260908.md)
+  — exact recovery commits, 26-keep checkpoint and dashboard commit.
+- [`2026-09-14-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md)
+  — preceding 50-loop health proof and the earlier trajectory-scope contract.

@@ -3488,6 +3488,23 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     critic and loop validation passed 74 tests. Continuous batch 42, started after publication,
     loaded the corrected planner contract; its scientific outcome remains live campaign work and
     is not claimed by this implementation checkpoint.
+  - [x] **AKU-12g — complete the bounded post-formation recovery and first full-bundle checkpoint**:
+    ✅ 2026-09-15 — the planner/profile/escape/reduced-screen and stopped-resume corrections
+    (`632939b0`, `2db9d844`, `733bfaa6`, `5f368aa2`, `92a91c99`) were exercised by the relaunched
+    GLM campaign. Batch 3 produced the first published whole-bundle confirmation and advanced the
+    experimental research anchor to `7e9f5eb`; batch 4 produced a provisional successor. The
+    current 26-keep accumulator estimate is `+0.855%` versus the campaign CoR. That estimate and
+    the confirmation are campaign-local evidence only: they neither replace the frozen champion
+    nor authorize a production change. Production remains frozen at v9.
+  - [x] **AKU-12h — make the headline trajectory disclose scope rather than imply a promotion**:
+    ✅ 2026-09-15 — ROOT `35746b46` labels GLM as a retained campaign trajectory, retains explicit
+    discontinuities/unjoinable receipts, and keeps unresolved accumulator estimates separate from
+    verified champion movement. The dashboard is bound to production-v9 as its serving era; no
+    production-kernel mutation, registry change or live-loop control was performed.
+  - [ ] **AKU-12i — monitor the relaunched GLM AutoKernel through 20 healthy completed iterations**:
+    batch 5 is live after three clean completed iterations. Stop safely, repair and relaunch on any
+    unexpected behavior; after 20 clean iterations leave the continuous campaign running. This is
+    operational health monitoring, not candidate validation, champion promotion or production mutation.
   - [ ] **AKU-12e — validate the accumulated GLM tip across required targets**: run the
     existing required-target validation and exact GLM correctness gates against experimental
     tip `dc3798db10a6`; publish the aggregate disposition before any champion admission proposal.

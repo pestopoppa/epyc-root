@@ -97,10 +97,10 @@ def test_backend_keeps_glm_cor_measurement_secondary(tmp_path: Path) -> None:
     local = result["campaign_drilldown"]
     assert local["state"] == "available"
     assert local["basis"] == "gain_pct_vs_campaign_cor"
-    assert local["bench_checkpoints"] == [{
+    assert [{key: point[key] for key in ("keep_count", "gain_pct", "evidence_state")}
+            for point in local["bench_checkpoints"]] == [{
         "keep_count": 3, "gain_pct": 3.25,
-        "evidence_state": "cheap_screen_estimate",
-    }]
+        "evidence_state": "cheap_screen_estimate"}]
 
 
 def test_backend_distinguishes_absent_and_malformed_local_evidence(tmp_path: Path) -> None:
@@ -194,6 +194,35 @@ def test_keep_history_recovers_bounded_active_identity_and_bundle_order(tmp_path
     assert glm_events[0]["hypothesis"] == "bounded hypothesis"
     assert glm_events[1]["recorded_at"] is None
     assert glm_events[1]["effect_pct"] is None
+
+
+def test_recovered_bundle_member_uses_legacy_null_as_metadata_not_membership(
+        tmp_path: Path) -> None:
+    global_root, active_root = tmp_path / "global", tmp_path / "active"
+    global_root.mkdir(); active_root.mkdir()
+    _store(global_root); _store(active_root)
+    mechanism, commit = "akm-recovered", "a" * 40
+    _insert(active_root, "old-null", "2026-09-10T03:00:00Z", mechanism,
+            "measured_null", {"statement": "legacy result"})
+    con = sqlite3.connect(active_root / "experiments.db")
+    con.execute("UPDATE experiments SET effect_fraction = ? WHERE attempt_id = ?",
+                (.0125, "old-null")); con.commit(); con.close()
+    (active_root / "accumulator-bundle.json").write_text(json.dumps({
+        "schema": "epyc.autokernel.accumulator_bundle.v2", "keeps": [mechanism]}))
+    (active_root / "recovery").mkdir()
+    (active_root / "recovery/recovered-accumulator-state.json").write_text(json.dumps({
+        "schema": "epyc.autokernel.accumulator_recovery.v1",
+        "keeps": [{"mechanism_id": mechanism, "commit": commit}]}))
+    history = loop_status._retained_keep_history(global_root, {"curves": []}, {
+        "id": "glm", "model": "GLM-5.3-Flash", "store": str(active_root)})
+    event = next(item for item in history["events"]
+                 if item.get("mechanism_id") == mechanism)
+    assert event["disposition"] == "kept"
+    assert event["original_disposition"] == "measured_null"
+    assert event["recorded_at"] == "2026-09-10T03:00:00Z"
+    assert event["effect_pct"] == 1.25
+    assert event["commit"] == commit
+    assert "journal_metadata" in event["membership_source"]
 
 
 def test_keep_history_refuses_ambiguous_checkpoint_commit_model(tmp_path: Path) -> None:
@@ -337,15 +366,14 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
                            "renderImprovementTrajectory"], capture_output=True,
                           text=True, timeout=30, check=True)
     card = json.loads(proc.stdout)["by_id"]["trajectory"]
-    assert "declared baseline 0%" in card
+    assert "declared production baseline · 0%" in card
     assert "epoch-band" in card and "epoch-boundary" in card
     assert "Qwen3.8-27B-Q8_0.gguf" in card
     assert "data-point-count=\"2\"" in card
-    assert "cumulative: +7.200%" in card
-    assert "Campaign-local CoR drill-down" in card
-    assert "not production-relative" in card
-    assert "1 unjoinable production receipt" in card
-    assert "missing_production_ab" in card
+    assert "checkpoint: +7.200%" in card
+    assert "Direct checkpoints vs each declared production baseline" in card
+    assert "unjoinable production receipt" not in card
+    assert "missing_production_ab" not in card
     assert 'tabindex="0" role="button"' in card
     assert "trajectory-event-drawer" in card
     assert "trajectory-picker" in card
@@ -358,6 +386,43 @@ def test_browser_leads_with_production_curves_and_demotes_cor(tmp_path: Path) ->
     assert dispositions and set(dispositions) == {"kept"}
     for forbidden in ("measured_null", "formation_refusal", "invalid_or_setup", "data-event-filter"):
         assert forbidden not in card
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
+def test_browser_marks_campaign_cor_scope_without_claiming_production_gain(tmp_path: Path) -> None:
+    stamp = "2026-09-14T20:09:49Z"
+    payload = {"knowledge": {"improvement_trajectory": {
+        "production_headline": {"state": "unavailable", "detail": "no direct GLM A/B",
+            "baseline_epochs": [], "evidence_errors": [], "exceptions": [], "curves": [],
+        }, "campaign_drilldown": {"state": "available", "model": "GLM-5.3-Flash",
+            "campaign_id": "glm", "keeps": [{}],
+            "bench_checkpoints": [{"gain_pct": -1.2676}], "serving_checks": [],
+            "curve": {"id": "campaign::glm", "model": "GLM-5.3-Flash",
+                "scope": "campaign_cor", "surface": "campaign-accumulator",
+                "metric": "whole_bundle_gain_pct", "backend": "cpu", "points": [
+                    {"commit": "b" * 40, "recorded_at": stamp, "gain_pct": -1.2676,
+                     "evidence_state": "cheap_screen_estimate", "recipe": "matched-process",
+                     "era": "glm", "baseline": {"commit": "c" * 40,
+                                                  "label": "campaign-CoR"}}]}},
+        "keep_history": {"events": [{"attempt_id": "keep-1", "recorded_at": stamp,
+            "mechanism_id": "akm-one", "disposition": "kept", "effect_pct": .67,
+            "commit": "b" * 40, "model": "GLM-5.3-Flash",
+            "surface": "campaign-accumulator", "evidence": [], "identifiers": {}}]}
+    }}}
+    blocks = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>",
+                        PAGE.read_text(), re.DOTALL)
+    page_js, data = tmp_path / "page.js", tmp_path / "payload.json"
+    page_js.write_text("\n".join(blocks)); data.write_text(json.dumps(payload))
+    proc = subprocess.run(["node", str(HARNESS), str(page_js), str(data),
+                           "renderImprovementTrajectory"], capture_output=True,
+                          text=True, timeout=30, check=True)
+    card = json.loads(proc.stdout)["by_id"]["trajectory"]
+    assert "CAMPAIGN CoR" in card
+    assert "not yet a frozen-production A/B" in card
+    assert "keep marginals are never compounded" in card
+    assert "-1.268%" in card
+    assert "keep-timeline" in card
+    assert "PRODUCTION" not in card
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node unavailable")
@@ -413,7 +478,7 @@ def _history(root: Path, *, active: dict | None = None,
     }))
 
 
-def test_new_retained_promotion_auto_appears_as_compatible_provisional(tmp_path: Path) -> None:
+def test_new_retained_promotion_stays_on_campaign_cor_curve(tmp_path: Path) -> None:
     _store(tmp_path)
     cor, tip1, tip2 = "c" * 40, "1" * 40, "2" * 40
     active = {"id": "campaign-era", "model": "GLM-5.3-Flash",
@@ -425,22 +490,78 @@ def test_new_retained_promotion_auto_appears_as_compatible_provisional(tmp_path:
             "schema": "epyc.autokernel.accumulator_bundle.v2",
             "champion_of_record": cor[:12], "tip": tip, "keeps": keeps,
             "measurement_validity": "current_snapshot", "compounded_bench_pct": gain}))
-        (tmp_path / loop_status.STATUS_FILENAME).write_text(json.dumps({
-            "schema": loop_status.STATUS_SCHEMA, "generated_at": "2026-09-14T01:00:00Z",
-            "champion_head": tip, "model": "/models/GLM-5.3-Flash.gguf",
-            "surface": "serving:glm53-cpu-mtp-recipe"}))
 
     publish(tip1, ["keep-1"], .4)
     first = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)
-    provisional = [p for c in first["production_headline"]["curves"] for p in c["points"]
-                   if p["evidence_state"] == "accumulated_chained_provisional"]
+    assert not any(c["model"] == "GLM-5.3-Flash"
+                   for c in first["production_headline"]["curves"])
+    provisional = first["campaign_drilldown"]["curve"]["points"]
     assert [(p["commit"], p["gain_pct"], p["keep_count"]) for p in provisional] == [(tip1, .4, 1)]
 
     publish(tip2, ["keep-1", "keep-2"], .83)
     second = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)
-    provisional = [p for c in second["production_headline"]["curves"] for p in c["points"]
-                   if p["evidence_state"] == "accumulated_chained_provisional"]
+    provisional = second["campaign_drilldown"]["curve"]["points"]
     assert [(p["commit"], p["gain_pct"], p["keep_count"]) for p in provisional] == [(tip2, .83, 2)]
+
+
+def test_campaign_curve_uses_only_actual_whole_bundle_checkpoints(tmp_path: Path) -> None:
+    _store(tmp_path)
+    cor, tip = "c" * 40, "3" * 40
+    keeps = ["keep-1", "keep-2", "keep-3"]
+    _history(tmp_path, active={"id": "glm", "model": "GLM-5.3-Flash",
+        "store": str(tmp_path), "champion_of_record": cor, "backend": "cpu"})
+    (tmp_path / "accumulator-bundle.json").write_text(json.dumps({
+        "schema": "epyc.autokernel.accumulator_bundle.v2", "champion_of_record": cor[:12],
+        "tip": tip, "keeps": keeps, "measurement_validity": "current_snapshot",
+        "compounded_bench_pct": .8}))
+    (tmp_path / "recovery").mkdir()
+    (tmp_path / "recovery/recovered-accumulator-state.json").write_text(json.dumps({
+        "schema": "epyc.autokernel.accumulator_recovery.v1", "keeps": [
+            {"mechanism_id": "keep-1", "commit": "1" * 40}],
+        "tip": "1" * 40, "effect_pct": -.5, "gate_outcome": "diverged",
+        "recovered_at": "2026-09-10T00:00:00Z"}))
+    (tmp_path / "serving").mkdir()
+    (tmp_path / "serving/bundle-a2b2c2d2e2f2.json").write_text(json.dumps({
+        "planner_evidence": {"bundled_keeps": keeps[:2], "compounded_bench_pct": .6},
+        "bundled_keeps": keeps[:2], "effect_pct": .2, "decisive": False,
+        "outcome": "diverged"}))
+    result = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)
+    assert not any(curve["model"] == "GLM-5.3-Flash"
+                   for curve in result["production_headline"]["curves"])
+    points = result["campaign_drilldown"]["curve"]["points"]
+    assert sorted((p["keep_count"], p["gain_pct"], p["evidence_state"])
+                  for p in points) == sorted([
+        (1, -.5, "recovered_whole_bundle"),
+        (2, .2, "serving_inconclusive"),
+        (3, .8, "cheap_screen_estimate")])
+
+
+def test_active_trajectory_ignores_oversized_or_lagging_operational_status(tmp_path: Path) -> None:
+    _store(tmp_path)
+    cor, old_tip, new_tip = "c" * 40, "1" * 40, "2" * 40
+    _history(tmp_path, active={"id": "campaign-era", "model": "GLM-5.3-Flash",
+        "store": str(tmp_path), "champion_of_record": cor,
+        "surface": "serving:glm53-cpu-mtp", "metric": "tg128_tok_s", "backend": "cpu"})
+    (tmp_path / "accumulator-bundle.json").write_text(json.dumps({
+        "schema": "epyc.autokernel.accumulator_bundle.v2",
+        "champion_of_record": cor[:12], "tip": new_tip, "keeps": ["keep-1"],
+        "measurement_validity": "current_snapshot", "compounded_bench_pct": .67}))
+    # Status is an operational/debug carrier, not trajectory input.  It can be
+    # far larger than the compact receipt and lag one publication boundary.
+    (tmp_path / loop_status.STATUS_FILENAME).write_text(json.dumps({
+        "schema": loop_status.STATUS_SCHEMA, "champion_head": old_tip,
+        "telemetry": "x" * (loop_status.TRAJECTORY_RAW_MAX_BYTES + 1)}))
+
+    result = loop_status.improvement_trajectory(tmp_path, [], PRODUCTION)
+    assert not any(curve["model"] == "GLM-5.3-Flash"
+                   for curve in result["production_headline"]["curves"])
+    point = result["campaign_drilldown"]["curve"]["points"][0]
+    assert point["commit"] == new_tip
+    assert point["gain_pct"] == .67
+    assert point["surface"] == "serving:glm53-cpu-mtp"
+    assert point["metric"] == "tg128_tok_s"
+    assert not any(row.get("evidence_state") == "broken_promotion_chain"
+                   for row in result["production_headline"].get("exceptions", []))
 
 
 def test_baseline_epochs_break_v9_v10_and_admit_model_first_seen_in_v10(tmp_path: Path) -> None:
