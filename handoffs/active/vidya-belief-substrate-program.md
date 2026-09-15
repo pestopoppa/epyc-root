@@ -1568,13 +1568,26 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       1068 → 1092 passed with the 2 pre-existing failures / 12 pre-existing errors unchanged; source
       row updated in `scripts/vidya/adapters/README.md`.
 
-- [ ] **SC68 — wire the BEAM adapter on the write side AT AUTHORING TIME, and record BOTH folds**
+- [x] **SC68 — wire the BEAM adapter on the write side AT AUTHORING TIME, and record BOTH folds**
       (`intake-1337#record`). File at adapter-authoring time (CME-1), not after the first run. The
       **BEAM-fold headline is the claim**; the rubric-item micro-average and the binarised pass count
       are **recorded context in the same tuple**. A claim tuple that does not record WHICH fold
       produced the number cannot be compared to any external BEAM figure later — this wave's dive is
       the proof (49.0 vs 55.7 on the same run). Source-table row in
       `scripts/vidya/adapters/README.md`; task here. Project, do not grade.
+      ✅ 2026-09-15 — root branch `sub/sc68-beam-write-side` + research `5fb27644` (CME-1/CME-2).
+      `beam_memory_capture.py` is the write side `score_beam_run.py --belief-measurements --arm …`
+      calls at score-time; `beam_memory.py` is the strict reader, registered as
+      `beam-memory-measurement` under the shared `measurement` class — it projects and
+      `claim_tuple.grade()` decides (a test asserts no `register_ladder`). ONE claim per arm, the
+      BEAM-fold headline; the rubric-item micro-average and binarised pass count ride in `extra` of the
+      same tuple. The validator re-derives `value` as the mean of the ten recorded per-ability columns,
+      so the other fold cannot be written under this metric; fewer than ten columns is refused. Judge
+      model + prompt version + `question_in_judge_prompt` are mandatory and part of id and locator
+      (`beam:<run>:<split>:arm-<arm>:judge-<model>`). 27 tests in
+      `tests/vidya/test_beam_memory_adapter.py`; full vidya suite 1120 passed, the only failures being
+      the pre-existing `test_autokernel_serving_feedback` set (1 failed / 12 errors, `EPYC_RESEARCH_ROOT`
+      unset). Source row updated in `scripts/vidya/adapters/README.md`.
 - [ ] **SC74 — repair the blocking `intake-1300#record` citation in `docs/design/vidya-pilot-spec.md`.** The 2026-09-07 external-corroboration paragraph cites the entry at ENTRY level, so it inherits that entry's overturned deprecation claim (`intake-1300#record`) and `scripts/handoffs/index_state.py --check` reports it as the one blocking cite-check problem on main. The faithful narrowing is ambiguous between claim 0 (immutability is half-scoped) and claim 2 (the trust score gates nothing), so the author of the paragraph decides which claim the corroboration actually rests on — a passing session must not guess. Introduced by commit `51f9ef61`; surfaced by the 2026-09-07 research-intake wrap-up. Filed as SC69, renumbered to SC74 the same day because a concurrent session claimed SC69-SC73 in commit `6ebb8878`. Zero compute.
 
 ## SC75 — VB-INF70-ARMS: the INF-70 serving-harness arm records (filed 2026-09-08)
