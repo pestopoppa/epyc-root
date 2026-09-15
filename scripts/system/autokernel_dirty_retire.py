@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import socket
+import stat
 import subprocess
 import sys
 import tarfile
@@ -42,6 +43,8 @@ RESUME_STATES = {
     "tracked_reset",
     "untracked_remove_authorized",
     "untracked_removed",
+    "ignored_remove_authorized",
+    "ignored_removed",
     "worktree_remove_authorized",
     "removed",
 }
@@ -199,11 +202,125 @@ def registered_worktree(repo: Path, target: Path) -> bool:
     return any(line == f"worktree {target}" for line in result.stdout.splitlines())
 
 
-def ignored_paths(target: Path) -> list[str]:
-    output = preserve.git(
-        target, "ls-files", "--others", "--ignored", "--exclude-standard", "-z"
+def filesystem_hazards(target: Path) -> tuple[list[str], list[str]]:
+    markers: list[str] = []
+    special: list[str] = []
+    for directory, dirnames, filenames in os.walk(target, followlinks=False):
+        here = Path(directory)
+        if here == target:
+            dirnames[:] = [name for name in dirnames if name != ".git"]
+            filenames = [name for name in filenames if name != ".git"]
+        if ".git" in dirnames or ".git" in filenames:
+            markers.append(str((here / ".git").relative_to(target)))
+            dirnames[:] = [name for name in dirnames if name != ".git"]
+        for name in [*dirnames, *filenames]:
+            candidate = here / name
+            try:
+                mode = candidate.lstat().st_mode
+            except OSError as exc:
+                raise RetireError(
+                    f"cannot classify filesystem entry {candidate}: {exc}"
+                ) from exc
+            if not (stat.S_ISDIR(mode) or stat.S_ISREG(mode) or stat.S_ISLNK(mode)):
+                special.append(str(candidate.relative_to(target)))
+    return sorted(markers), sorted(special)
+
+
+def confirm_ignored(target: Path, raw_items: list[bytes]) -> None:
+    if not raw_items:
+        return
+    checked = subprocess.run(
+        ["git", "-C", str(target), "check-ignore", "-z", "--stdin"],
+        input=b"\0".join(raw_items) + b"\0",
+        capture_output=True,
+        check=False,
     )
-    return [preserve.safe_relative(raw) for raw in preserve.nul_items(output)]
+    if checked.returncode or preserve.nul_items(checked.stdout) != raw_items:
+        raise RetireError(
+            "git check-ignore did not confirm the exact enumerated ignored-path sequence"
+        )
+
+
+def inventory_ignored_path(target: Path, relative: str) -> dict[str, Any]:
+    parts = Path(relative).parts
+    if ".git" in parts:
+        raise RetireError(f"ignored path crosses a .git boundary: {relative}")
+    if sweep.EVIDENCE_RE.search(Path(relative).name):
+        raise RetireError(
+            f"ignored path matches a durable evidence pattern: {relative}"
+        )
+    candidate = target / relative
+    try:
+        details = candidate.lstat()
+    except OSError as exc:
+        raise RetireError(f"cannot inventory ignored path {relative}: {exc}") from exc
+    mode = stat.S_IMODE(details.st_mode)
+    if stat.S_ISREG(details.st_mode):
+        digest = preserve.sha256_file(candidate)
+        kind = "file"
+        size = details.st_size
+        link_target = None
+    elif stat.S_ISLNK(details.st_mode):
+        link_target = os.readlink(candidate)
+        payload = link_target.encode("utf-8", errors="surrogateescape")
+        resolved = (candidate.parent / link_target).resolve(strict=False)
+        if resolved != target and not resolved.is_relative_to(target):
+            raise RetireError(
+                f"ignored symlink escapes the worktree: {relative} -> {link_target}"
+            )
+        digest = preserve.sha256_bytes(payload)
+        kind = "symlink"
+        size = len(payload)
+    else:
+        raise RetireError(f"ignored special file is never discarded: {relative}")
+    item = {
+        "path": relative,
+        "type": kind,
+        "bytes": size,
+        "mode": mode,
+        "sha256": digest,
+    }
+    if link_target is not None:
+        item["link_target"] = link_target
+    return item
+
+
+def ignored_inventory(target: Path) -> list[dict[str, Any]]:
+    raw_items = preserve.nul_items(
+        preserve.git(
+            target, "ls-files", "--others", "--ignored", "--exclude-standard", "-z"
+        )
+    )
+    if len(raw_items) != len(set(raw_items)):
+        raise RetireError("Git returned duplicate ignored paths")
+    confirm_ignored(target, raw_items)
+
+    nested, special = filesystem_hazards(target)
+    if nested:
+        raise RetireError(
+            f"ignored content contains nested repo/worktree markers: {nested[:10]}"
+        )
+    if special:
+        raise RetireError(f"special file is never discarded: {special[:10]}")
+
+    inventory = [
+        inventory_ignored_path(target, preserve.safe_relative(raw)) for raw in raw_items
+    ]
+    return sorted(inventory, key=lambda item: item["path"])
+
+
+def verify_ignored_subset(
+    target: Path, authorized: list[dict[str, Any]], *, require_exact: bool
+) -> list[dict[str, Any]]:
+    current = ignored_inventory(target)
+    allowed = {item["path"]: item for item in authorized}
+    if any(allowed.get(item["path"]) != item for item in current):
+        raise RetireError(
+            "ignored content is new or differs from its durable authorization"
+        )
+    if require_exact and current != authorized:
+        raise RetireError("ignored content changed before discard authorization")
+    return current
 
 
 def verify_unpushed_bundle(
@@ -357,11 +474,6 @@ def verify_reset_state(
     head = preserve.git(target, "rev-parse", "HEAD").decode().strip()
     if head != record["head"]:
         raise RetireError(f"HEAD changed after archive: {head} != {record['head']}")
-    ignored = ignored_paths(target)
-    if ignored:
-        raise RetireError(
-            f"ignored content is never deleted by retirement: {ignored[:10]}"
-        )
     current = untracked_metadata(target)
     archived = {entry["path"]: entry for entry in metadata.get("untracked", [])}
     for entry in current:
@@ -471,11 +583,7 @@ def preflight_record(
             )
     repo = exact_worktree_identity(target, row, metadata)
     probe = process_guard(target, proc_root, aliases)
-    ignored = ignored_paths(target)
-    if ignored:
-        raise RetireError(
-            f"ignored content is never archived or deleted: {ignored[:10]}"
-        )
+    ignored = ignored_inventory(target)
 
     state = receipt["state"] if receipt else "new"
     if state in {"new", "verified"}:
@@ -489,6 +597,19 @@ def preflight_record(
         remaining = [entry.metadata() for entry in snapshot.untracked]
     else:
         remaining = verify_reset_state(target, record, metadata)
+        authorized_ignored = receipt.get("ignored_inventory")
+        if not isinstance(authorized_ignored, list):
+            raise RetireError("resumable receipt has no ignored-content inventory")
+        ignored = verify_ignored_subset(
+            target,
+            authorized_ignored,
+            require_exact=state
+            not in {
+                "ignored_remove_authorized",
+                "ignored_removed",
+                "worktree_remove_authorized",
+            },
+        )
     return {
         "row": row,
         "record": record,
@@ -500,6 +621,7 @@ def preflight_record(
         "repo": repo,
         "probe": probe,
         "remaining_untracked": remaining,
+        "ignored_inventory": ignored,
         "already_absent": False,
     }
 
@@ -520,6 +642,19 @@ def remove_enumerated(target: Path, entries: list[dict[str, Any]]) -> None:
         if current_by_path.get(entry["path"]) != entry:
             raise RetireError(
                 f"authorized untracked path changed before unlink: {entry['path']}"
+            )
+        candidate.unlink()
+
+
+def remove_ignored(target: Path, authorized: list[dict[str, Any]]) -> None:
+    current = verify_ignored_subset(target, authorized, require_exact=False)
+    for entry in sorted(current, key=lambda item: item["path"], reverse=True):
+        candidate = target / entry["path"]
+        raw = entry["path"].encode("utf-8")
+        confirm_ignored(target, [raw])
+        if inventory_ignored_path(target, entry["path"]) != entry:
+            raise RetireError(
+                f"authorized ignored path changed before unlink: {entry['path']}"
             )
         candidate.unlink()
 
@@ -556,6 +691,8 @@ def apply_plan(
             state="verified",
             source_fingerprint=record["source_fingerprint"],
             process_probe=plan["probe"],
+            ignored_inventory=plan["ignored_inventory"],
+            ignored_bytes=sum(item["bytes"] for item in plan["ignored_inventory"]),
         )
     if receipt["state"] == "removed":
         return "already-removed"
@@ -573,6 +710,9 @@ def apply_plan(
                     "source changed after preflight and before reset authorization"
                 )
             process_guard(target, proc_root, aliases)
+            verify_ignored_subset(
+                target, receipt["ignored_inventory"], require_exact=True
+            )
             receipt_event(
                 receipt_path,
                 receipt,
@@ -622,6 +762,29 @@ def apply_plan(
                 receipt_path, receipt, "untracked-removed", state="untracked_removed"
             )
         if receipt["state"] == "untracked_removed":
+            current_ignored = verify_ignored_subset(
+                target, receipt["ignored_inventory"], require_exact=True
+            )
+            process_guard(target, proc_root, aliases)
+            receipt_event(
+                receipt_path,
+                receipt,
+                "ignored-remove-authorized",
+                state="ignored_remove_authorized",
+                authorized_ignored=current_ignored,
+            )
+        if receipt["state"] == "ignored_remove_authorized":
+            process_guard(target, proc_root, aliases)
+            authorized_ignored = receipt.get("authorized_ignored", [])
+            remove_ignored(target, authorized_ignored)
+            if verify_ignored_subset(target, authorized_ignored, require_exact=False):
+                raise RetireError(
+                    "ignored content remains after exact enumerated discard"
+                )
+            receipt_event(
+                receipt_path, receipt, "ignored-removed", state="ignored_removed"
+            )
+        if receipt["state"] == "ignored_removed":
             if preserve.git(
                 target,
                 "status",
@@ -756,6 +919,11 @@ def main(argv: list[str] | None = None) -> int:
                                     else None
                                 ),
                                 "probe": plan["probe"],
+                                "ignored_inventory": plan.get("ignored_inventory", []),
+                                "ignored_bytes": sum(
+                                    item["bytes"]
+                                    for item in plan.get("ignored_inventory", [])
+                                ),
                             }
                             for plan in plans
                         ],

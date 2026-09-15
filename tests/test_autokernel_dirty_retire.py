@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -127,6 +128,11 @@ def source_state(case: dict) -> tuple[str, str, bytes]:
     )
 
 
+def configure_ignored(case: dict, exclude: Path, patterns: str) -> None:
+    exclude.write_text(patterns)
+    git(case["worktree"], "config", "core.excludesFile", str(exclude))
+
+
 def test_default_dry_run_verifies_without_mutation_or_receipt(tmp_path, complete_probe):
     case = make_case(tmp_path)
     before = source_state(case)
@@ -242,18 +248,125 @@ def test_apply_requires_operator_confirmation(
     assert not case["receipts"].exists()
 
 
-def test_ignored_content_is_never_removed(
+def test_generated_cache_and_build_ignored_files_are_inventoried_and_discarded(
     tmp_path, complete_probe, monkeypatch, capsys
 ):
     case = make_case(tmp_path)
-    git(case["worktree"], "config", "core.excludesFile", str(tmp_path / "exclude"))
-    (tmp_path / "exclude").write_text("ignored.bin\n")
-    (case["worktree"] / "ignored.bin").write_text("not archived\n")
-    monkeypatch.setattr(retire, "operator_confirm", lambda *_args: True)
+    configure_ignored(
+        case, tmp_path / "exclude", ".pytest_cache/\n.ruff_cache/\nbuild/\n"
+    )
+    files = {
+        ".pytest_cache/v/cache/nodeids": b"[]\n",
+        ".ruff_cache/index": b"ruff\n",
+        "build/CMakeFiles/object.o": b"object\x00bytes",
+    }
+    for relative, payload in files.items():
+        destination = case["worktree"] / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(payload)
 
-    assert retire.main(args(case, apply=True)) == 2
-    assert "ignored content" in capsys.readouterr().err
-    assert (case["worktree"] / "ignored.bin").exists()
+    assert retire.main(args(case)) == 0
+    report = json.loads(capsys.readouterr().out)
+    inventory = report["rows"][0]["ignored_inventory"]
+    assert {item["path"] for item in inventory} == set(files)
+    assert {item["type"] for item in inventory} == {"file"}
+    assert report["rows"][0]["ignored_bytes"] == sum(map(len, files.values()))
+
+    monkeypatch.setattr(retire, "operator_confirm", lambda *_args: True)
+    assert retire.main(args(case, apply=True)) == 0
+    capsys.readouterr()
+
+    receipt_path = next(case["receipts"].rglob("*.json"))
+    receipt = json.loads(receipt_path.read_bytes())
+    assert receipt["state"] == "removed"
+    assert {item["path"] for item in receipt["ignored_inventory"]} == set(files)
+    events = [
+        json.loads(line)["event"]
+        for line in receipt_path.with_suffix(".jsonl").read_text().splitlines()
+    ]
+    assert "ignored-remove-authorized" in events
+    assert "ignored-removed" in events
+
+
+def test_ignored_evidence_pattern_is_refused(tmp_path, complete_probe, capsys):
+    case = make_case(tmp_path)
+    configure_ignored(case, tmp_path / "exclude", "cache/\n")
+    evidence = case["worktree"] / "cache/VERDICT-run.json"
+    evidence.parent.mkdir()
+    evidence.write_text('{"keep": true}\n')
+
+    assert retire.main(args(case)) == 2
+    assert "durable evidence pattern" in capsys.readouterr().err
+    assert evidence.exists()
+
+
+def test_ignored_nested_repo_or_worktree_is_refused(tmp_path, complete_probe, capsys):
+    case = make_case(tmp_path)
+    configure_ignored(case, tmp_path / "exclude", "build/\n")
+    marker = case["worktree"] / "build/nested/.git"
+    marker.mkdir(parents=True)
+    (marker / "config").write_text("[core]\n")
+
+    assert retire.main(args(case)) == 2
+    assert "nested repo/worktree" in capsys.readouterr().err
+    assert marker.exists()
+
+
+def test_ignored_symlink_escape_is_refused(tmp_path, complete_probe, capsys):
+    case = make_case(tmp_path)
+    configure_ignored(case, tmp_path / "exclude", "cache/\n")
+    cache = case["worktree"] / "cache"
+    cache.mkdir()
+    outside = tmp_path / "outside.bin"
+    outside.write_text("outside\n")
+    os.symlink(outside, cache / "escape")
+
+    assert retire.main(args(case)) == 2
+    assert "symlink escapes" in capsys.readouterr().err
+    assert outside.read_text() == "outside\n"
+
+
+def test_ignored_special_file_is_refused(tmp_path, complete_probe, capsys):
+    case = make_case(tmp_path)
+    configure_ignored(case, tmp_path / "exclude", "cache/\n")
+    cache = case["worktree"] / "cache"
+    cache.mkdir()
+    fifo = cache / "events.fifo"
+    os.mkfifo(fifo)
+
+    assert retire.main(args(case)) == 2
+    assert "special file" in capsys.readouterr().err
+    assert fifo.exists()
+
+
+def test_partial_ignored_discard_resumes_from_durable_inventory(
+    tmp_path, complete_probe, monkeypatch
+):
+    case = make_case(tmp_path)
+    configure_ignored(case, tmp_path / "exclude", "cache/\n")
+    cache = case["worktree"] / "cache"
+    cache.mkdir()
+    (cache / "one.bin").write_bytes(b"one")
+    (cache / "two.bin").write_bytes(b"two")
+    monkeypatch.setattr(retire, "operator_confirm", lambda *_args: True)
+    original = retire.remove_ignored
+
+    def interrupt_after_one(target, authorized):
+        (target / authorized[0]["path"]).unlink()
+        raise retire.RetireError("simulated interruption during ignored discard")
+
+    monkeypatch.setattr(retire, "remove_ignored", interrupt_after_one)
+    assert retire.main(args(case, apply=True)) == 1
+    receipt_path = next(case["receipts"].rglob("*.json"))
+    receipt = json.loads(receipt_path.read_bytes())
+    assert receipt["state"] == "ignored_remove_authorized"
+    assert len(receipt["authorized_ignored"]) == 2
+    assert case["worktree"].exists()
+
+    monkeypatch.setattr(retire, "remove_ignored", original)
+    assert retire.main(args(case, apply=True)) == 0
+    assert not case["worktree"].exists()
+    assert json.loads(receipt_path.read_bytes())["state"] == "removed"
 
 
 def test_success_uses_exact_nonforce_worktree_remove_and_writes_receipt(

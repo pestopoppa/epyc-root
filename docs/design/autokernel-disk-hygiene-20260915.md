@@ -501,8 +501,13 @@ python3 scripts/system/autokernel_dirty_retire.py \
 Apply requires a COMPLETE host process probe, no live holder, a target strictly below one of the
 three worktree roots, and the operator typing the reviewed SHA prefix on a TTY. It then writes a
 durable per-row authorization receipt, resets tracked state to the archived HEAD, unlinks only
-the exact nonignored untracked paths enumerated by Git and covered by the archive, proves the tree
-clean (ignored content refuses), and runs exactly
+the exact nonignored untracked paths enumerated by Git and covered by the archive, then handles
+generated ignored residue through a second explicit discard stage. Every ignored path must be
+enumerated by both `git ls-files --others --ignored --exclude-standard` and `git check-ignore`;
+the receipt inventories its path, type, byte count, mode and hash before mutation. Nested Git
+metadata, `.git` crossings, special files, escaping symlinks, and durable-evidence names refuse
+the row. After the inventory is durably authorized, only those exact entries are unlinked. The
+helper then proves the tree completely clean and runs exactly
 `git -C <owning-repo> worktree remove <exact-path>`. There is no prune, gc, force flag, wildcard,
 or name discovery. Authorization checkpoints make reset, untracked removal and worktree removal
 resumable after interruption without weakening any fresh probe, identity or content check.
