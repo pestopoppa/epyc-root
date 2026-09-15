@@ -2150,7 +2150,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         `test_matched_serving.py`'s two matched-keep tests failing identically on `origin/main` and unrelated
         to floors — and `/tmp` is blocked here, so pytest needs `TMPDIR` inside `/mnt/raid0/llm/tmp` or its
         basetemp mass-fails (found 2026-09-14, noninf sweep).
-      - [ ] **R23-69 (S3-AKR-01) — "answered ⇒ closed" enforced in CODE at dispatch, not in the planner
+      - [x] **R23-69 (S3-AKR-01) — "answered ⇒ closed" enforced in CODE at dispatch, not in the planner
         prompt.** Distinguish an ANSWER (kept, keep_candidate, confirm-vetoed, measured_null — good, bad or
         nan) from a NON-ANSWER (build/oracle failure, OOM, timeout, planner transient, superseded, stopped).
         (a) **Exact attempt identity at dispatch:** inside the serialized tail, before gates.compiles, compute
@@ -2171,6 +2171,13 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         does not produce state tracking (intake-1372#record); orze execution_identity pattern (intake-1384#02,
         #03); InferenceBench restart loops (intake-1392#04). No similarity/Jaccard filter (D-43). Part of the
         historical 38x repeat is policy (the P-AK-SEARCH-1 memory denial), not only model incapacity.
+
+        ✅ 2026-09-15 — research `69e04616`, `8bdcbe61`, `8871ef3a`: exact identity, atomic SQLite
+        reservation, durable answered-duplicate refusal with prior effect/epoch, one-retry NON-ANSWER
+        closure, fail-closed corruption handling, pre-critic characterised refusal, and exact-repeat counts
+        are wired. Canonical nested regime identity, changed-diff/new-epoch reopening, content-addressed
+        operator-unblock artifacts and ambiguous/corrupt fail-closed handling are covered by fresh-process
+        round-trip fixtures.
 
       *Declined 2026-09-14: "every serving floor on disk predates R23-55, so every one loads as `legacy` and
       refuses to gate (`FloorReading.gate_floor` fails closed by design), and the next serving gate cannot run
