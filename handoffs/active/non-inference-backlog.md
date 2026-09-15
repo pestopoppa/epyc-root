@@ -431,6 +431,47 @@ fast-forwarded to `7b5d1eb6`, tracked tree clean.
       comment lines** on legacy discovery scripts (build-recipe / `ROCWMMA_FATTN` notes). Decide: fold the
       comments forward, or delete the branch. Small item — the rescue itself is done, this is disposition only.
 
+## 2026-09-15 supplement — surfaced by the non-CPU-inference ROI dispatch
+
+All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (progress note
+`progress/2026-09/2026-09-15-noninf-roi-dispatch.md`).
+
+- [ ] **NIB2-72** (**HIGH**, host): **a coverage-harness `llama-cli` is stuck in interactive mode and has written
+      58.4 GB of `>` prompts.** `/mnt/raid0/llm/tmp/akx-p0c-w4-coverage/stdout-main-only.txt`, growing at a
+      **measured 24 GB/h** (144 MB / 20 s, 2026-09-15 22:10Z); writer pid 1699977
+      (`acceptance/akx-p0c-coverage-20260915/build-cpu-coverage/bin/llama-cli -m gemma-4-26B-A4B-it-ORIG-Q4_K_M
+      ... -t 96`), parent pid 1699975 (`python3 -`), started 19:50Z. At 282 GB free that fills the volume in ~12 h,
+      and it has held 96 threads since 19:50. The kill is the **operator's / the Codex AutoKernel session's** (not
+      our PID). The CODE fix is this task: the harness invokes `llama-cli` with neither `-no-cnv` nor a redirected
+      stdin, so any run that does not get its expected prompt hangs and spews forever — see
+      `feedback_llama_cli_repl_must_be_killed`. Add `-no-cnv` (or `< /dev/null`) plus an output-size cap, and make
+      the harness fail the cell when its child produces no measurable output.
+- [ ] **NIB2-73** (MED): **the NIB2-65 deletion ledger cannot be committed to the MASTER registry** because the
+      research repo's pre-commit evidence gate fails on **12 artifact citations that exist only as UNCOMMITTED files
+      in the shared clone** (`artifacts/architect-bench-gpu-2026071{4,20}/...`, `data/ternary_q2_g64_quality_gate/...`,
+      `data/gemma4_iq4_residency/...`, `data/paddleocr_vl_receipt_extract_...`). They resolve in
+      `/mnt/raid0/llm/epyc-inference-research` and nowhere else, so every worktree fails the gate — the same
+      worktree-blindness class as OBS-13. Fix: commit the artifacts, re-point the citations, or mark them
+      `# ARTIFACT LOST` — the registry owner's call. The prepared change is in `sub/nib2-65-master-ledger`
+      (worktree `/mnt/raid0/llm/worktrees/sub-master-ledger`, uncommitted).
+- [ ] **NIB2-74** (MED): **`scripts/benchmark/debug_scorer.py` runs code tasks with bare `python3` from PATH**, so
+      without the venv every pandas-dependent task silently scores False. Same shape as OBS-12. Found while
+      triaging the NIB2-69 unit failures.
+- [ ] **NIB2-75** (MED): **12 E8 unit tests are now `skipif`-skipped because their sealed staging bundles are gone
+      from the host** (no copy under `/mnt/raid0/llm`). Real coverage loss, owner = the E8 quality-baseline
+      campaign: restore the bundles, rebuild equivalent fixtures, or retire the tests deliberately.
+- [ ] **NIB2-76** (LOW): **two residuals of the NIB2-69 gate fix.** (a) standalone `scripts/registry/stack_change_guard.py`
+      still resolves the NUMA mode fleet→env→`full`, the exact mismatch NIB2-69 removed from `check`; (b) the priors'
+      `source_artifacts` hold absolute main-clone paths, so a `check` run in a worktree verifies the MAIN clone's
+      files rather than its own — location-dependent by construction.
+- [ ] **NIB2-77** (MED): **the AutoKernel disk sweep is prepared but unapplied.** DRY-RUN manifest + script
+      (`scripts/system/autokernel_disk_sweep.py`) + design review `docs/design/autokernel-disk-hygiene-20260915.md`.
+      Of 607 GB scanned only 34.8 GB is REMOVE; **370 GB is dirty acceptance trees, 29 of them (48 GB) holding diffs
+      that exist nowhere else**, and 187 lane worktrees are registered against the FROZEN `llama.cpp` clone. Apply
+      needs a fresh host-root dry-run, operator review and interactive confirmation at a boundary the AutoKernel
+      owner picks. Highest-value design ask: register a cleanup handler where each worktree is created and make
+      acceptance end in commit-or-discard (`source_loo.py:173-176` creates and never removes).
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):

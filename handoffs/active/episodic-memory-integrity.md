@@ -398,6 +398,10 @@ failure caught in amber.
         specified) is a **sanity floor** — far below it means a configuration bug, not a finding.
         It is NOT a target: that run discarded assistant turns and capped answers at 512 tokens
         (intake-1337#record).
+  - [ ] **M-12e-a — make the Tulving adapter's dataframe load FAIL LOUDLY.** `tulving_episodic_adapter._load_qa_from_variant`
+    swallows a missing pandas/pyarrow and then scores every question as missing, so an M-12a run in the research venv
+    (which has no pyarrow) would emit an all-zero summary that looks like a result. Raise instead, and add pyarrow to
+    the research venv. Found 2026-09-15 while verifying the M-12e rescore, which had to run under the delta-Mem venv.
   - [x] **M-12e — scorer prerequisites, ZERO COMPUTE, do before any arm runs** (intake-408#record).
         ✅ 2026-09-14, research `dcb769c1`. THREE defects, not two. (i) the unconditional
         `simple_inputs.append(scored)` at :121 now fires only for `get_style == "all"`; the subset is
