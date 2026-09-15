@@ -143,6 +143,9 @@ RTX PRO 6000 22–44%, H100 15.3%, MI300X 12.3%. **Prefill kernel *quality* is n
 - **llama.cpp issue #19984 — an LLVM loop-unroll regression in ROCm 7+ costing 3.7–5× on prefill**,
   workaround `-mllvm --amdgpu-unroll-threshold-local=600`. We are on ROCm 6.2 so this does not bite today;
   it belongs on the build-flag checklist **before any ROCm upgrade**.
+  **Corrected 2026-09-15 (intake-969/1414/1424):** root cause is llvm #147700 (unroll cost model, not a
+  threshold change), scoped to ROCm 7.2.0 + early TheRock 7.x nightlies and reverted; decode unaffected;
+  do not cite 3.7–5×. Updated guard lives in `docs/runbooks/rocm-upgrade-checklist.md`.
 
 **Profiler tooling — RESOLVED FOR THE CURRENT C4 AND LDS SURFACES.** `rocprofv2`, `rocprof` and
 `rocm-bandwidth-test` are available, version-matched to ROCm 6.2.0-66, side-loaded by extraction

@@ -5202,6 +5202,32 @@ they pay.
       regime. It is deliberately not a hard family-wide DNR and does not forbid narrower per-format
       hypotheses or governed re-entry.
 
+  - [x] **AK-QL-2b — Record the compiler-side route to the IQ2_XXS/IQ3_XXS threshold.** ✅ 2026-09-15 —
+        static A/B on frozen-v9 `mmvq.cu` (ROCm 6.2 hipcc, zero GPU): `#pragma clang loop unroll(disable)`
+        on the 4-trip sign-unpack loop (`vecdotq.cuh:1000` IQ2_XXS, `:1124` IQ3_XXS) takes
+        `<_,1,true,false>` 78→44 and 71→44 VGPR, spill 0, other quants unchanged; the same pragma on Q3_K
+        regresses 88→96; `#pragma unroll` is a no-op; ~30 AMDGPU RA/scheduler knobs null. Unrolling is the
+        multiplier, sign unpacking the payload. Static only — executed instructions per block are probably
+        ≈ unchanged. Evidence: `artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md`.
+- [ ] **AK-QL-7 — Run AK-H-QL-1's second falsifier on the unroll(disable) candidate.** TRIPWIRE-gated:
+      activate only when an IQ2/IQ3 GGUF becomes GPU-resident (mi210 handoff TRIPWIRE; current ROCm0
+      residents are Q8_0/Q4_K, already ≤64 VGPR). Fresh production → `llama.cpp-experimental` full build
+      with the IQ2+IQ3 pragma hunks; (a) zero-GPU control first: vary only
+      `--amdgpu-unroll-threshold-local`, `-private` and `-unroll-threshold` to name the unroll path;
+      (b) batch-1 decode ABA vs v9 in one window with residency proof and a correctness pair; (c) sample
+      `SPI_RA_VGPR_SIMD_FULL_CSN` vs `SPI_RA_WAVE/SGPR_SIMD_FULL_CSN` and `SPI_VWC_CSC_WR` on both
+      arms — the documented test of the undocumented 64-VGPR rule. Hold the MI210 claim and schedule
+      outside AutoKernel CPU-anchor windows (a GPU run's host threads perturb the CPU floor).
+- [x] **AK-QL-8 — Operator decision: no general autocompiler; compile control is a latent search
+      space.** ✅ 2026-09-15 — no LLVM/hipcc fork and no toolchain unpin for VGPR (no toolchain
+      reduces vector-ALU VGPR: CoExec is MFMA-only, device PGO moves spills, LLVM 23 adds runtime
+      unrolling; intake-1415/1417/1421/1422). If AK-QL-7 keeps a win, the arm is: per-TU/per-loop
+      `{#pragma clang loop unroll(disable|count(N)), -O level, --unroll-count}`, pre-filtered by the zero-GPU
+      `.vgpr_count` read (≤64, spill 0) with a **whole-TU regression rule** (every quant in the TU,
+      since -O1/`--unroll-count=1` help IQ2/IQ3 but regress Q8_0/Q4_K), then the GPU gate. It needs the
+      D3 build-recipe arm to carry `CMAKE_HIP_FLAGS` or a source-pragma patch (undocumented today). No
+      prior art: AMD-AGI `hip_kernel_llm_lab` @980faee8 has no flag/pragma tuner (intake-1419#04).
+
 **Not filed, recorded so it is not re-derived:** a new belief-kernel adapter row. AutoKernel already
 has five source rows in `scripts/vidya/adapters/README.md`; this ladder was run **outside** the loop
 and emits no `evaluation_event`, so it correctly produces zero claim rows. If AK-QL-3 re-runs it

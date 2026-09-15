@@ -1963,3 +1963,13 @@ came back clean: 161/161 and 155/155, harmful 0). Decision recorded in
 `vidya-p5c-evaluation-and-decision.md` §6 with the full evidence block; shadow status ends.
 The standing open rows below (freeze-gated producer triggers) are tracked work, not gate
 conditions.
+
+## SC76 — VB-VGPR-STATIC: static compile-sweep register stats (filed 2026-09-15)
+
+Source: zero-GPU reads of per-kernel register allocation (`.vgpr_count`, `.vgpr_spill_count`,
+`.sgpr_count`) from the AMDGPU `.note` of compiled gfx90a device objects, produced by compile-flag and
+pragma sweeps (first run: `artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md`, research
+intake-1398). They gate the latent compile-control arm (autokernel-research-loop AK-QL-7/AK-QL-8) and are
+OBSERVATION grade: register counts, not throughput. Source row added to `scripts/vidya/adapters/README.md`.
+
+- [ ] **SC76 (VB-VGPR-STATIC) — wire static compile-sweep register reads on the WRITE side** before AK-QL-7/AK-QL-8 run: each read emits a ClaimTuple (source commit, toolchain id, flag/pragma set, kernel symbol, vgpr/spill/sgpr, OBSERVATION grade); no new grading rule.

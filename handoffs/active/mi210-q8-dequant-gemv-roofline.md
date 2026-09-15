@@ -288,6 +288,9 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
     identical wrapper landing at exactly 64 VGPR = 8 waves. **EXPERIMENTAL BRANCH ONLY** — production
     `production-consolidated-v9` is frozen. Report `vgpr_spill_count` beside occupancy, and note that
     decode is bandwidth-bound so this is necessary-not-sufficient for throughput.
+    **2026-09-15:** a compiler-side route reaches the same threshold without the rewrite
+    (`#pragma clang loop unroll(disable)` → 44 VGPR static; autokernel-research-loop AK-QL-2b). Attempt
+    v_perm_b32 only if AK-QL-7 shows the retained 4-trip loop costs more than the regained waves.
   - [ ] **Re-run the decode attribution under governance** once RVP-C2-11's `--gen-tokens` patch
     lands, so the 16.42% decode figure carries a durable receipt instead of a non-governed probe.
     The Omniperf 2.0.1 / `rocprof` v1 fallback is now durable in research, but its first governed run
@@ -335,3 +338,16 @@ Raise **single-stream** GPU decode throughput for the qwen35/Q8 family toward th
     research `5ae54e0ae4a80ab02450f703617b6a769599caf2` assigns zero current live-stack payoff,
     preserves the IQ mechanism as ineligible memory, and requires reprice on an IQ residency change.
     Automatic machine-trigger enforcement is owned by AutoKernel AK-ADM-1.
+  - [ ] **INF37-IQ-2 — On IQ residency, reprice with the levers now on file.** Activate on the same
+    trigger. (1) AK-QL-7 unroll(disable) falsifier. (2) If the resident is an IQ2/IQ3 **MoE**: confirm the
+    CDNA MUL_MAT_ID cutoff (IQ2_XXS `ne2<=5`, mmvq.cu:185-194 — unmeasured on gfx90a, intake-1410) at the
+    recipe's verify widths, since `ne2>=6` also disables HIP graphs. (3) Optional: backport llama.cpp
+    #27621 (multi-token MoE GLU/top-k fusion) — only if the GGUF has separate `ffn_gate_exps`/`ffn_up_exps`
+    and after locating the fix for AMD-HIP garbage-output issue #28113; correctness (fusion on vs
+    `GGML_CUDA_DISABLE_FUSION=1`) before speed (intake-1420).
+  - [x] **INF37-IQ-3 — Correct the imported AGPR compiler-tax note.** ✅ 2026-09-15 — the MI200 CDNA2
+    ISA (intake-1409) lets MFMA A/B come from Acc VGPRs, so "HIPCC will not feed AGPRs to matrix-core
+    instructions" (`completed/mi210-mfma-compute-bound-paths.md:94-96`) is at most a compiler
+    observation, not an ISA limit. Acc VGPRs are MFMA-only (ordinary v_* needs `V_ACCVGPR_READ`), so they
+    are no MMVQ decode lever. The 64-VGPR→8-wave rule is in neither the ISA nor the MI250 docs
+    (intake-1418); treat it as empirical.
