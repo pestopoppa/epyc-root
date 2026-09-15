@@ -568,6 +568,10 @@ Global constraints:
   - Record forward wall times per workload. These replace the §10 ESTIMATEs.
   - **Acceptance:** non-zero executed lines in `ggml-cpu.c` and `ggml-cuda.cu` host code. If HIP coverage does not link, record UNKNOWN-by-construction for device-only hunks and escalate §13 Q4.
   - Compute: build plus correctness-surface.
+  - **Code checkpoint 2026-09-15 — research `ca16b055`:** distinct correctness-only CPU/HIP coverage
+    recipes preserve the sealed base define prefixes and digests, append atomic host counters and HIP
+    clang profile/mapping flags, and resolve by content identity. The required real builds and W1/W4
+    executed-line acceptance remain open; no coverage result is yet claimed.
 - [ ] **AKX-P0d — base census for W1–W6 on the current champion-of-record.**
   - Compute: correctness-surface, six workloads, under stage claims.
   - **Acceptance:** six observed censuses with witnesses. W3–W6 CPU runs are inside region-lock windows, and foreign load is sampled (`foreign_load.py`).
@@ -626,8 +630,14 @@ Global constraints:
     aggregate in controller state, a failed required-source row raises `SerialRefused` with the failed
     target identities; both normal completion and recovery traverse this gate, so failure cannot remain a
     warning-only condition or advance into LOO/cadence.
-- [ ] **AKX-P2c — ordering and early refusal** (§8.3), with `not_run_after_refusal` rows.
+- [x] **AKX-P2c — ordering and early refusal** (§8.3), with `not_run_after_refusal` rows.
   - Compute: zero (logic).
+  - ✅ 2026-09-15 — research `5b8cd719`, `fe901100`, `a15a98e5`: failed rows outrank pending,
+    remaining targets are recorded `not_run_after_refusal`, and the serial owner launches no successor after
+    a failed aggregate. When a campaign explicitly enrolls an immutable per-commit priority receipt, it
+    selects one row at a time by validated cost/p_fail (shared machinery p_fail=1) and refuses malformed,
+    incomplete or changed evidence. The feature remains opt-in so existing campaigns do not acquire a new
+    receipt dependency merely by upgrading the loop.
 - [ ] **AKX-P2d — floors for every production workload** at its production-optimal recipe, n ≥ 24 plus an interval, carrying `unit`.
   - This is **benchmark-window compute** and is scheduled as calibration debt under OP-41 rules. Missing floors keep rows pending.
 - [ ] **AKX-P2e — first live refuse-mode keep** in a GPU campaign.

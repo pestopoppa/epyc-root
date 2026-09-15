@@ -25,6 +25,20 @@ in the active handoffs. A zero-compute targeted run passed 171 tests with the re
 - Closed AKX-P2a/P2b's zero-compute refusal logic: non-author workload regressions now use the interim
   unit-matched k_delta=1 floor (or a witnessed T0/T1 INERT row), and a failed aggregate now changes
   controller state and synchronously refuses instead of merely withholding LOO.
+- Closed S3-AKU-12/S3-AKU-14 with observe-only stagnation and rejection-round telemetry; neither changes
+  selection policy.
+- Closed S3-AKU-02 as a documented decline: a compile-time “official” stamp is forgeable or forces a
+  post-measurement rebuild, while the existing source/recipe/build/object/binary provenance chain preserves
+  measured-artifact identity without conflating compilation with operator ratification.
+- Added the AKX-P0c CPU/HIP coverage recipe variants without touching base recipe identities. Hardware
+  build and W1/W4 executed-line acceptance remain open and are not represented as complete.
+- Closed AKX-P2c with live serial ordering and early-refusal wiring. Review removed an accidental default
+  receipt dependency: priority evidence is strict when explicitly enrolled, while existing scheduled
+  campaigns retain their established order and still stop unconditionally after the first failed aggregate.
+- Audited AKX-P3a/P3b and stopped a dead-code/high-impact edit: the live serial loop bypasses the offline
+  ValidationConsumer, and the 18-call-site promotion manifest cannot yet bind composed census/footprint
+  evidence or per-keep TOUCHED subsets. The prerequisite is a live durable freeze boundary, followed by a
+  reviewed manifest schema migration; no disconnected gate was landed.
 - Corrected the D3 capability statement: build flags are representable but both builds share sealed defines,
   so planner-selectable per-arm BUILD_RECIPE A/B is still missing. Added S3-AKU-19 for that implementation;
   source pragmas already use the SOURCE arm. AK-QL-8 remains a completed decision/specification row.

@@ -3625,10 +3625,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       lifecycle, intake-883#record @3a8b0286 (community-contributed #322, not alphaXiv's design). Either
       implement the §8.12 state set or delete it. Any change to the native transition validator rides
       OP-AKU-A2; do not bypass it.
-- [ ] **S3-AKU-02 — evaluate a compile-time build-channel stamp for loop binaries.** Make "is this an
+- [x] **S3-AKU-02 — evaluate a compile-time build-channel stamp for loop binaries.** Make "is this an
       official/production build" unforgeable: a mis-set flag FAILS THE BUILD rather than degrading silently.
       Compare against the existing anchor provenance.json + object-digest approach, and record
-      adopt/decline. Pattern: intake-883#record (orx build.rs) @3a8b0286.
+      adopt/decline. Pattern: intake-883#record (orx build.rs) @3a8b0286. **DECLINED 2026-09-15:**
+      production is a post-measurement operator ratification state, not a compile-time property, and the
+      loop itself is Python. A source/CMake stamp is forgeable; flipping it at promotion would rebuild and
+      violate measured-artifact == promoted-artifact. Existing BuildIdentity, sealed recipe, source snapshot,
+      build/log/binary/library digests, anchor object digest and independent production verifier are stronger
+      and correctly layered. Revisit only if an independently signed release authority is introduced.
 - [ ] **S3-AKU-04 — 2-D (effect, spread) keep frontier.** The keep grammar must already accept "reduces
       variance" (§3.3), but retention is governed by one scalar. Make the keep record carry both coordinates
       and retain non-dominated candidates. Reuse autopilot's pareto_math.dominates; do not write a second
@@ -3661,13 +3666,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       before launch. Recorded cost: ~255 attempts/arm to detect a keep-rate halving at 80% power, ~31
       GPU-h/arm on the screen surface, infeasible on CPU; a zero-keep surface is degenerate. Launch is
       operator-gated. intake-1375#02.
-- [ ] **S3-AKU-12 — journal a per-target stagnation signal, OBSERVE-ONLY.** Record the slope of best-so-far
+- [x] **S3-AKU-12 — journal a per-target stagnation signal, OBSERVE-ONLY.** Record the slope of best-so-far
       effect over a trailing window and the consecutive measured_null count. No behaviour switch until
-      S3-AKU-11 reports. intake-1375#03.
-- [ ] **S3-AKU-14 — rejection-round telemetry for the planner.** Record on every Outcome the
+      S3-AKU-11 reports. intake-1375#03. ✅ 2026-09-15 — research `e1ee4cf0`: loop status publishes
+      an explicitly observe-only, per-target 20-measurement best-so-far OLS slope and consecutive trailing
+      measured-null count; non-measurement outcomes do not become synthetic zeroes and no policy consumes it.
+- [x] **S3-AKU-14 — rejection-round telemetry for the planner.** Record on every Outcome the
       hypothesis/patch round and whether the prompt carried prior-rejection text. Once the op-coverage
       oracle extension (P3) lands, report op-coverage changes and env-gated fall-through findings by round.
-      intake-1379#record (violation severity rose with each round of error feedback).
+      intake-1379#record (violation severity rose with each round of error feedback). ✅ 2026-09-15 —
+      research `e1ee4cf0`: every serialized Outcome carries one-based hypothesis/patch rounds and whether
+      prior-rejection text was present; non-formation outcomes retain explicit 0/0/false defaults.
 - [x] **S3-AKU-15 — diff-scope equality and oracle/bench-source immutability, before critic pass 2 (binding
       together with S3-AKU-16).** After planner.author, take the lane worktree's full git status --porcelain
       --untracked-files=all and refuse the patch (no build) if: (a) the dirty set is not exactly the
