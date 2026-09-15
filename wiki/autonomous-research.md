@@ -2,8 +2,43 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-15 (research-intake noninf-20260914: orx has no judge in code; the three-collapse vocabulary and gating test; undeclared-edit reward-hacking hole AK-RH-1/2/3; LLM planners vs random search and why U3 rests on our own effect/noise numbers; earlier 2026-09-14: GLM-5.3-Flash continuous 50-loop AutoKernel acceptance, plus the planner/critic formation-payoff deadlock: 8 batches and 24 first-pass critic calls reached zero authoring because payoff evidence was required at formation — a gate whose evidence cannot be produced at the stage it gates is a latch; earlier: 2026-09-11 unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below)
+**Last compiled**: 2026-09-15 (the AutoKernel zero-promotion defect inventory — five independently-sufficient causes, the 20× inflated per-commit record, verification-by-reproduction, the floor-unit and DVFS root causes — plus the single-champion/per-surface-recipe invariant and the DRAM-bandwidth contention channel; earlier: 2026-09-14 (GLM-5.3-Flash continuous 50-loop AutoKernel acceptance, plus the planner/critic formation-payoff deadlock: 8 batches and 24 first-pass critic calls reached zero authoring because payoff evidence was required at formation — a gate whose evidence cannot be produced at the stage it gates is a latch; earlier: 2026-09-11 unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below; also research-intake noninf-20260914: orx has no judge in code; the three-collapse vocabulary and gating test; undeclared-edit reward-hacking hole AK-RH-1/2/3; LLM planners vs random search and why U3 rests on our own effect/noise numbers; earlier 2026-09-14: GLM-5.3-Flash continuous 50-loop AutoKernel acceptance, plus the planner/critic formation-payoff deadlock: 8 batches and 24 first-pass critic calls reached zero authoring because payoff evidence was required at formation — a gate whose evidence cannot be produced at the stage it gates is a latch; earlier: 2026-09-11 unified AutoKernel mixed CPU/GPU acceptance; earlier dated findings retained below)
 **Sources**: 127+ documents
+
+## Compiled Update — 2026-09-15: AutoKernel's month of zero promotions was five independent defects — and the fix is verification by REPRODUCTION, not by proof
+
+**Confidence: verified** for the defect inventory, the measured effect sizes and the structural rules
+(INF-66 / INF-73 / INF-75 handoffs, each receipted). The autopilot and collaboration-harness findings
+are `observation`-grade design records.
+
+**The largest lever on an autonomous optimization loop is not a kernel — it is whether the loop can reproduce its own result.** A month of promotions sat at zero on **five independently-sufficient verified causes**: `"promotion_claim": false` appears 4,797 times and `true` zero times; the benchmark model (`Qwen2.5-Coder-0.5B-Q4_K_M`) has a GGUF header that is actually 132×Q5_0, so the optimized path never dispatched in production; a mean-anchor-vs-median-candidate estimator bias of **+2.01 pp** flipped the sign of **10 of 25** results; the planner had no memory (`RESOLVED 0 · ADOPTED 0`); and the drift bound was raised **0.0308→0.1850 (6.0×)**, which produced every KEEP. The per-commit record on `ak/loop-champion-20260828` was inflated **~20×** — 36 commit messages claiming **+171.7% compounded** against a measured block effect of **+8.524%** (264.918→287.499 t/s, 20 pairs, floor 1.188%). The diagnosis in one line: **the loop chose verification by *proof* where verification by *reproduction* was available** — a `llama-bench` re-run costs 90 s and the tree is a git commit, while proving a run was honest cost 3,869 LOC to deliver one float. ([autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md))
+
+- **A floor without its unit is a 1200-fold error.** Within-session arm sd **0.501%** vs between-session process-launch sd **2.793%** (~13× coarser); sizing a THP test on the arm unit produced 4 sessions/side where the session-unit answer is **4,780**.
+- **A floor estimated from n=10 on an extreme order statistic cannot gate.** Bootstrap of n=10 draws from 24 spanned **4.200–7.821%**; recalibrate at n≥24 and record n + a CI. The D8 decode floor was rebuilt by bootstrap to **1.188% at 20 pairs** (superseding 0.067%).
+- **The champion is a workload vector, not one number**: −1.414% (27B Q8_0 prefill), **+7.206%** (26B-A4B Q4_K prefill), 2.38× (27B speculative decode, DFlash2). The same kernel can be decisive-positive on one target and decisive-negative on another.
+- **A keep is not a gate until it can refuse or revert.** The required-target validation runs *after* the keep lands, fails only on a decisive negative, and a `failed` aggregate does not refuse the keep — today's row is an annotation, not a gate. ([autokernel-cross-workload-keep-gate.md](../handoffs/active/autokernel-cross-workload-keep-gate.md))
+- **Anchor drift was DVFS**: the card idled at 800 MHz and jumped to 1700 MHz (**2.125×**) at each benchmark window, paid by every `llama-bench` process; pinning clocks resolved it. `libggml-hip.so` is non-reproducible at `-j64` (hipcc gfx90a code-object generation); `-j1` (~13 min) is byte-identical and fixes the anchor guard.
+
+**The single-champion invariant is ratified.** One champion per production kernel tree aggregates **all** work between promotions; seed-from-production is legal only immediately after a promotion; a second lineage is a defect the moment it exists. **A launch recipe is PER-SURFACE** — one champion commit carries two recipes: `GGML_NOHUGEPAGE_PROCESS=1` is adopted on CPU decode but must NOT be added to GPU serving (R23-58 bounded null: `p95_dev` ratio 0.713, p=0.3159, 48 launches/24 couples), and cross-surface transfer was tested and did not transfer. ([autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md))
+
+**The contention channel is DRAM bandwidth, not cores.** Prefill stayed flat (±2%) while decode fell 7%; mutual degradation was **4.2× / 2.9×** with both sides correctly pinned; a third-party disturbance cost **~17% in arms**. No CPU-occupancy screen can see it — the case for admission control over cooperative locking ("region-lock serialises those who call it; nothing constrains those who don't").
+
+**Autopilot findings** (`observation`, design): per-role evaluation replaced a 3-way eval whose Q-values were **96% uniform after 7,211 decisions**; GEPA was a **guaranteed no-op** (`propose_new_texts` raised `NotImplementedError`); a permanently-red check is indistinguishable from an absent one (autokernel-guards red on **43/43 runs** on `No module named pytest`); and a test can cover all the machinery without touching whether it is *reached* (`sub_decision` 0 of 642,328 rows; `binding_router` dead at three layers). ([autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md))
+
+**Agent-collaboration harness** (`observation`): **Agent Collapse** — agents converge on a narrow axis set and avoid the hard custom-kernel wins — is the headline risk; layered/rotating quality gates defeat metric-gaming, taskforces+channels defeat collapse, and trace sharing defeats repeated dead-ends. ([agent-collab-rnd-harness.md](../handoffs/active/agent-collab-rnd-harness.md))
+
+### Open Questions (2026-09-15)
+
+- The non-inferiority margin `k_δ` (2 = today's "not a decisive negative"; 1 = catches losses ≥ floor) and the gate's timing (synchronous-before-commit vs provisional-blocking) are undecided.
+- The source of the champion's ~12% launch-to-launch variance (page-cache/NUMA placement, THP state, HIP graph capture, allocator) is unexplained.
+
+### Source References (2026-09-15)
+
+- [autokernel-rebuild-program.md](../handoffs/active/autokernel-rebuild-program.md) — the five zero-promotion causes, the 20× inflated per-commit record, the floor-unit and DVFS root causes.
+- [autokernel-unified-surface-program.md](../handoffs/active/autokernel-unified-surface-program.md) — the single-champion invariant, per-surface recipe, and the DRAM-bandwidth contention channel.
+- [autokernel-cross-workload-keep-gate.md](../handoffs/active/autokernel-cross-workload-keep-gate.md) — the cross-workload sign flip and the keep-is-not-a-gate finding.
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) — per-role evaluation, the GEPA no-op, and the red-check/reachability defects.
+- [agent-collab-rnd-harness.md](../handoffs/active/agent-collab-rnd-harness.md) — Agent Collapse and the layered-gate / taskforce / trace-sharing patterns.
 
 ## Compiled Update — 2026-09-14: the GLM AutoKernel ran 50 monitored measured loops, and its 23-keep accumulator is a direct +0.83% that is still not a champion
 
@@ -2626,7 +2661,7 @@ name an unavailable diagnostic as mandatory admission evidence.
   AKU-12f root cause, retained safety grounds, implementation identity and live deployment boundary.
 - [`2026-09-14-autokernel-unified-20260908.md`](../progress/2026-09/2026-09-14-autokernel-unified-20260908.md) —
   observed batch sequence, Qwen comparison, validation result and operational campaign correction.
-- `epyc-inference-research` `docs/autokernel-actor-preparation.md` — actor preparation,
+- [`autokernel-unified-surface-program.md`](../handoffs/active/autokernel-unified-surface-program.md) — actor preparation,
   context and refusal-feedback boundary that the live planner/critic contract implements.
 
 ## Compiled Update — 2026-09-15: an accumulator screen is not a champion-promotion result
