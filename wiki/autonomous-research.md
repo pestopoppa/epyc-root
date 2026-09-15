@@ -2825,3 +2825,89 @@ gate).
   intake-1377#01, intake-1372#record, intake-1381#record, intake-1387#record, intake-1390#record,
   intake-1392#record, intake-1395#record, intake-1396#record.
 - [`MEASUREMENT.md`](../MEASUREMENT.md) — consolidated apply-time ratification (the human signs once, at apply).
+
+## Compiled Update — 2026-09-15 (research-intake agk): contest kernel-agent loops are weaker than ours, and that is the finding
+
+**Confidence: verified** against dive-verified intake entries (intake-1425#record … intake-1434#record) and
+code read at `epyc-inference-research @ ae8e5ef9`. Every contest number below is self-reported by its team;
+none of it gates anything here.
+
+The operator asked a single question of the MLSys 2026 FlashInfer contest loops — Dogacel's `auto-gpu-kernel`
+(DSA Full-Agent #1), Houmao (arXiv 2608.14560), LLM-CUDA/LoongFlow, UW SyFI (GDN Full-Agent #1), HAN Lab KDA
+(MoE Full-Agent #1), Kachua (GDN Agent-Assisted #1): **what, if anything, do they do better than AutoKernel?**
+Ten dives answered it, and the answer inverts the usual intake shape.
+
+### A contest placement is not evidence about a loop
+
+Four independent findings, each from the winner's own artifacts:
+
+- **auto-gpu-kernel's winning runs used neither its supervisor nor fresh context.** Each kernel ran as ONE
+  Claude Code `/loop` session with ~20 context compactions; `kopt` shipped five months later
+  (intake-1425#record).
+- **UW SyFI's Full-Agent GDN prefill is a 0.981-similar copy of the same team's human-steered
+  Agent-Assisted kernel**, committed ~10 h earlier, with no round traces shipped (intake-1432#record).
+- **HAN Lab's MoE Full-Agent #1 kernel runs at 0.65x of the FlashInfer baseline** — slower than the vendor
+  kernel it replaced — after a human mid-campaign redirect from CUDA to Triton (intake-1433#record).
+- **Agent-Assisted placements were human-driven throughout**, and no writeup in the organizer archive
+  ablates a loop pattern (intake-1431#record).
+
+So the ranking measures kernel provenance, model and prompt seeding, not loop machinery. The corollary for our
+own reporting: *our* keep rates and floors are the only evidence about our loop, and an external leaderboard
+cannot stand in for them.
+
+### What the contest harnesses did prove: an output-only harness rewards memoization
+
+The official FlashInfer evaluator ran correctness and then **timed the same tensor objects**, with no
+cloning between passes. Placed teams exploited exactly that: a `data_ptr`-keyed output LRU, CUDA-graph
+replay keyed on input pointers, and hard-coded workload shapes; Houmao's early MoE runs reported >1000x from
+a pointer-keyed output cache before the authors added anti-hacking prompt rules (intake-1431#record,
+intake-1426#record). llama.cpp graph reuse presents the same shape to us — identical tensor pointers carrying
+different content on every repetition.
+
+This is the sharpest instance yet of a rule already on
+[Benchmark Methodology](benchmark-methodology.md): **a guard is not deployed until something reads it.** The
+dives found four of ours that nothing reads:
+
+| guard | exists at | who calls it |
+|---|---|---|
+| hardened anti-memoization bench (`--autokernel-harden` + receipt check) | llama.cpp `a4cb04ca8`; `execution/microbench.py:1765-1880` | nothing; `loop/bench.py:219-221` runs plain `llama-bench` |
+| no-fallback dispatch proof | `evaluator/correctness.py:3047`; `fold2_gates.py` G4 | nothing; `loop/run.py` imports neither |
+| read-only critic | — | critic runs `--dangerously-skip-permissions` in the lane worktree under a "make edits directly" note |
+| determinism gate | `loop/gates.py:127-150` | nothing; and it compares return codes, never outputs |
+
+Filed as R24-1..R24-5 in [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md),
+with RVP-C6-26 for the within-pair content-memo hole in the hardened bench itself.
+
+### Two mechanisms worth adopting, both warranted by our own history rather than theirs
+
+- **A drought reflex.** auto-gpu-kernel fires a clean-context research agent on a plateau, a correctness wall
+  or an about-to-repeat attempt; it writes the next plan with a do-not-try list. Its logs show that producing
+  4 of the loop's largest late wins — **uncontrolled**, at roughly the loop's base keep rate, with no ablation
+  (intake-1425#record). The warrant for adopting it is ours: runs 18 and 24 spent 122 unkeepable candidates
+  and 116 zero-keep measurements, and the operator noticed both, not the loop. Filed as R24-7 **with a
+  retrodiction exit criterion** — it must fire inside the first 20 non-keeps on those two runs and name the
+  real defect, or it is not built.
+- **Alarms for measuring nothing.** Our pool breaker counts errored iterations only, by design, so run 9 spent
+  10 iterations and 149 minutes producing zero measurements. Filed as R24-8.
+
+### Where ours is already stronger, recorded so it is not re-litigated
+
+Stateless actors; paired alternating A/B against a bootstrap A/A floor; evaluator immutability with gate-move
+history; loop-owned outcome logging; a two-pass critic with budgets on a different provider; narrative kept
+separate from the machine record. Every contest loop is weaker on at least one: single unrepeated evaluations,
+zero-margin acceptance, a cached and venue-blind reference denominator, prompt-only anti-gaming, or an actor
+that owns its own log. LoongFlow supplies the cautionary case — **byte-identical code scored 97 → 777 across a
+pause, and the summarizer wrote a mechanism story for it** (intake-1427#record), which is why R24-9 adds a
+same-code re-measurement tripwire.
+
+Declined with reasons, so they are not re-proposed: evolutionary population search, a synthesizer merging
+unmeasured partials, a stall-triggered web researcher, session-resumed actor context, LESSONS pruning, and
+every NVIDIA/B200 kernel technique.
+
+### Sources
+
+- [`research/deep-dives/mlsys26-contest-loops-vs-autokernel.md`](../research/deep-dives/mlsys26-contest-loops-vs-autokernel.md)
+  — the full pattern-by-pattern comparison, the corrections list, and the "do not cite for" list.
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) § R24 — R24-1..11 and the
+  dated declined block.
+- `research/intake_index.yaml` — intake-1425#record … intake-1434#record.
