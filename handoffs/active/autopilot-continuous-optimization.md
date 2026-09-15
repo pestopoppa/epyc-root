@@ -2243,6 +2243,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
     made the disagreement legible. *(Verified by `mainC`: an HTTP-400 client error and an unparseable
     200 body both classify `task_failed`, and `legacy_error_type` maps that to `task_failure`.)*
     Needs one ruling, applied to both, rather than two local fixes.
+    **RULED 2026-09-15 (S3-OP-01, option a); implementation is AP-64.**
   - [ ] **OPERATOR DECISION, deliberately not taken by the subagent:** `:1960` also says reliability
     should have collapsed the run long before 70 questions. Early abort is a live-control-loop policy
     change — *how many consecutive infra-failed rows should abort an in-flight batch, and abort or
@@ -3262,3 +3263,85 @@ Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake
       slot count; replay the baseline action chain and require identical trajectories before trusting a
       single-run verdict. External, descriptive: promotion rate 7.9% (1,223 decisions) → 25.2% (131)
       after determinism. Inference-gated; measure the local signal change first. `intake-1355#01`.
+
+## Research Intake Update — 2026-09-15 (noninf-20260914: orx / auto-research critique cluster)
+
+- [ ] **AP-63 (S3-AP-01) — close the two preconditions that have blocked the orx
+      per-completion-refill shape since 2026-07-29 (rows at "Mine orx's experiment-tree lineage
+      model" / "Mine orx's stacked bushes").** (a) Stamp the AP-1510 run manifest onto journal rows,
+      not only the in-flight WAL marker; with it, make parent selection explicit (a stored parent
+      id, not the same-species parent_trial heuristic). (b) The lane-arbiter precondition is
+      re-pointed at **OP-41** alone: gflow, pueue and task-spooler were checked (intake-1369#record,
+      intake-1382#record, intake-1383#record) and no off-the-shelf single-node queue models CPU/NUMA
+      contention. OP-41 forbids any broker/scheduler/admission daemon until champion finalised →
+      production promotion → host reboot, and the operator owns the design. (a) is unblocked
+      zero-compute work; (b) is blocked on that named external sequence. intake-883#record.
+- [ ] **AP-64 (S3-AP-02) — apply the OP-20 task_failed ruling to BOTH producers** (eval_tower and
+      the seeding path), per the operator's ruling at the 2026-09-15 Stage-3 plan approval (S3-OP-01
+      option a: non-infra task_failed → WRONG in both producers, infra → EXCLUDED in both), with a
+      test that one run yields the same axis-0 quality from either producer. Closes the
+      "PRE-EXISTING: eval_tower and the seeding path DISAGREE" row.
+- [ ] **AP-65 (S3-AP-03) — decide whether _proxy_check binds.** It is the only leg built to catch a
+      candidate whose entire gain is one easy suite, and it returns warnings, never violations ("an
+      external checker whose output does not gate the loop", intake-1367#02). Either make it a
+      violation at a stated threshold or record why a warning is the right strength. S3-AP-08's
+      rotation-drop data is the empirical basis for any threshold.
+- [ ] **AP-66 (S3-AP-04) — NumericSwarm must tell INFEASIBLE configs to the sampler, not hide
+      them.** Split non-answers (preimage unavailable, no-change, infra) from INFEASIBLE answers
+      (invalid config; dominance axis unmeasured because the config broke the eval). Tell the latter
+      as COMPLETE with a constraint violation via NSGAIISampler(constraints_func=…), or failing that
+      a Pareto-dominated objective vector — never TrialState.FAIL (GA parents are drawn from
+      COMPLETE trials only), and never an out-of-scale penalty scalar (the covariance-poisoning
+      pattern). **Encoding details:** (i) a crash/OOM/apply-error is strictly worse than ANY
+      SLO/quality miss. Normalise every overage as overage/cap and set the crash violation to 1 +
+      the maximum possible normalised overage, or give crashes their own constraint dimension. Never
+      add a fixed crash constant to raw ms overages: in SLO-Guard, a miss more than 100 ms over cap
+      ranks worse than a crash. (ii) Tell a FINITE worst-observed objective vector, never -inf;
+      infinite objectives risk NaN crowding distance in the 4-objective NSGAIISampler. (iii) Record
+      the outcome class (startup | preflight | runtime | slo_miss) as a trial user_attr. Unit tests:
+      a penalized infeasible trial shifts the next suggestion away; a crash ranks below the worst
+      SLO miss; no objective is non-finite. Do not cite SLO-Guard as evidence that the encoding
+      helps, since 0 of its 300 trials crashed. **Acceptance (offline, before touching live
+      autopilot):** replay on the LLMSYS-HPOBench SGLang table (Zenodo 20048594, CC-BY-4.0 data
+      only, no GPL code vendored; one fidelity, 16 knobs, context_length ≥ 9216 deterministically
+      infeasible). Arms: NSGAIISampler (FAIL), NSGAIISampler (constraints_func, raw violation),
+      NSGAIISampler (constraints_func, normalised strictly-dominating violation, the third encoding
+      arm), and BoTorchSampler qLogNEHVI with constraints_func, all with the same 20-point QMC/Sobol
+      init, 50 and 100 trials, 10 seeds. Restrict all samplers to the observed per-knob value sets
+      (CategoricalDistribution) so every proposal is an exact table hit; if any sampler must use
+      continuous distributions, report snap rate with MinMax-normalised distance, never the
+      unnormalised L1 API. Report infeasible-proposal rate AND hypervolume at equal trial count.
+      Pass = infeasible-proposal rate falls under the constraint encoding. Results in scratch.
+      (intake-1372#02; intake-1381#05; intake-1389#02, #04; intake-1390#01; intake-1393#01)
+- [ ] **AP-67 (S3-AP-05) — planner-authored numeric trials must reach the sampler.** The
+      explicit-params branch applies and evaluates without any study.tell, so NSGA-II is blind to
+      every LLM trial. Record each completed explicit trial into the surface study
+      (study.add_trial(create_trial(params, distributions, values)), tagged source=planner). Do NOT
+      inject planner-authored FAILURES until AP-66 lands. intake-1372#05.
+- [ ] **AP-68 (S3-AP-06) — measure whether planner numeric trials are the worst proposer arm.** From
+      the journal, compute per-surface spread and step (normalized to bounds) for planner-sourced vs
+      sampler-sourced numeric trials. This decides AP-67's priority. The exact-repeat rate of
+      (surface, param, value) proposals is measured ONCE, inside AP-53's zero-compute re-proposal
+      count, not twice. intake-1372#02.
+- [ ] **AP-69 (S3-AP-07) — label every planner-critic verdict kind=proposal_filter, never
+      validation**, in the journal and any receipt/dashboard summarizing it. The critic
+      (local_frontdoor) reads only the planner's prose draft, which is the manuscript-only review
+      shape (intake-1373#01). This is the autopilot twin of S3-AKU-05, with the kind enum widened to
+      script / oracle / proposal_filter / llm_judge. Eval tower + safety_gate stay the validation
+      path.
+- [ ] **AP-70 (S3-AP-08) — rotation-boundary generalisation drop, observe-only.** At every
+      core-rotation boundary, score the outgoing incumbent on both the outgoing and the incoming
+      draw. Journal drop = q(outgoing) − q(incoming) with both rotation indices. Report mean drop ±
+      SE over K boundaries, with K fixed before reading. No fitness/archive/baseline/promotion
+      effect without a separately approved protocol. It is also the atypical-observation probe
+      (intake-1379#record). intake-1378#record.
+- [ ] **AP-71 (S3-AP-09) — PromptForge lineage-depth side-effect audit.** For every kept prompt
+      file, reconstruct the keep lineage (git + journal). Tabulate against lineage depth: gated
+      quality, prompt token length, count of added lines sharing a verbatim ≥8-token n-gram with any
+      draw/sentinel/trace-bank question or expected answer, and _suite_mentions on added text. ICRH
+      signature: quality up while a side-effect column rises with depth. intake-1379#record.
+- [ ] **AP-72 (S3-AP-10) — metric-event physicality bound in SafetyGate.** A trial whose reported
+      speed exceeds a physical bound (tokens/s above the surface roofline ceiling, or TTFT/TPOT
+      below a hardware floor) is invalid, not a keep. Scoring runs from the harness's own canonical
+      request set, outside any planner-editable path. Autokernel refuses above-roofline proposals at
+      critic time, but autopilot's safety_gate bounds quality only. intake-1392#07, #10.

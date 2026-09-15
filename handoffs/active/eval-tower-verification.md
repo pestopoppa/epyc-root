@@ -925,3 +925,21 @@ The single exception is already instrumented, zero-inference, and report-only, s
       genuine failure. If that number is small, this direction is closed for our harness on present evidence;
       if it is large, it is the first honest datapoint for re-opening the Claw-Eval direction. Runs offline
       against existing sidecars — no new inference, no new suite.
+
+## Research Intake Update — 2026-09-15 (judge independence and judge validity)
+
+- [ ] **EV-6b (S3-EV-01) — check_cross_family is VACUOUS on its only production call site.** eval_tower passes
+      a ROLE name (e.g. architect_general) as verifier_model, no VERIFICATION_FAMILIES pattern matches a role,
+      the family resolves unknown, and the permissive default returns True for every generator. The llm_judge
+      path has no family check at all. Fix: resolve role → served model via model_registry.yaml before the
+      check; fail CLOSED on an unknown family, or record independence: unverified on the row so it can never
+      read as a cross-family judgment; extend families (gpt-oss, glm, kimi, nemotron, minimax); apply the same
+      check on the llm_judge path. Tests: a role name resolves; an unknown family blocks or labels; the judge
+      path is covered. EV-6 ✅ 2026-04-15 shipped the permissive default as design; this supersedes it.
+      (intake-1367#record; intake-1377#record; intake-875 already shows cross-family is a partial defense.)
+- [ ] **EV-16 (S3-EV-02) — judge-validity gate before AUTOPILOT_RUBRIC_JUDGE_ROLES is enabled for any run
+      whose scores reach the quality axis.** Run a controlled-perturbation check on deep_research_* answers
+      with the intended judge role: localized faithfulness / evidence-omission / fabrication edits, scored
+      holistic vs per-chunk, REPORTING THE TIE RATE. Enable only a fine-grained (per-chunk) or
+      swapped-pairwise protocol that clears a detection floor pre-registered before the sweep. Zero cost until
+      someone proposes enabling the rubric judge. intake-1377#record.

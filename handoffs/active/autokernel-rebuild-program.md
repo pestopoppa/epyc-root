@@ -2129,7 +2129,10 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           `recal_serving_floor --apply` under the recipe now in force (so the record carries a `recipe_hash` and
           stops being `unverified`). Needs the host, ~30 min, **nothing is blocking it** — the GPU is idle and
           R23-58 is closed. Extend `serving.write_floor` so the floor file carries `n` and a CI next to the
-          percentage; a floor that cannot state its `n` must not gate.
+          percentage; a floor that cannot state its `n` must not gate. **Also the precondition for citing
+          autokernel's judge as an external constraint** (intake-1367#record, §9 test): until the gating floor
+          carries recipe_hash + n + CI, a floor produced by the loop's own harness is not an external
+          constraint. (Residency half closed by R23-60 ✅ 2026-09-08.)
 
       - [ ] **R23-66 — give the unit vocabulary a leaf module so `FLOOR_UNIT` stops repeating the `"process"`
         literal**, which it does only because `serving` → `loop` → `bench` is a real import cycle (hence
@@ -2147,6 +2150,27 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         `test_matched_serving.py`'s two matched-keep tests failing identically on `origin/main` and unrelated
         to floors — and `/tmp` is blocked here, so pytest needs `TMPDIR` inside `/mnt/raid0/llm/tmp` or its
         basetemp mass-fails (found 2026-09-14, noninf sweep).
+      - [ ] **R23-69 (S3-AKR-01) — "answered ⇒ closed" enforced in CODE at dispatch, not in the planner
+        prompt.** Distinguish an ANSWER (kept, keep_candidate, confirm-vetoed, measured_null — good, bad or
+        nan) from a NON-ANSWER (build/oracle failure, OOM, timeout, planner transient, superseded, stopped).
+        (a) **Exact attempt identity at dispatch:** inside the serialized tail, before gates.compiles, compute
+        sha256 over {whitespace-normalized candidate diff vs champion, champion/anchor commit, build recipe
+        (cmake_defines), bench recipe + model, surface} and reserve it atomically in the experiment store.
+        Prior ANSWER → refuse with a durable status=refused_duplicate row carrying duplicate_of, the prior
+        effect and the epoch. Prior NON-ANSWER → replaceable. Unreadable/corrupt registry → refuse (fail
+        closed). Refused rows render into the next planner context. (b) **Characterised-mechanism refusal:**
+        call controller/do_not_repeat (mechanism facets + regime identity, prose ignored) from loop formation
+        before critic pass 1, so a target_symbol + mechanism that is CHARACTERISED (≥3 comparable same-epoch
+        measurements) is refused in code with a Review-shaped reason. It reopens only on a changed diff, a new
+        epoch or an operator unblock artifact. Record which gate refused. (c) **NON-ANSWER retry cap:** a
+        crash/OOM/timeout/build break may be re-dispatched with IDENTICAL arguments at most once. A second
+        identical NON-ANSWER closes the config as infeasible and is told to the proposer as infeasible, not
+        silently retried. Journal an exact-repeat-dispatch count per campaign. Acceptance: a fresh-process
+        round-trip test that a second identical diff is refused (not a presence check); a test that a changed
+        champion or recipe reopens it; a test that a corrupt registry refuses. Evidence: history-in-prompt
+        does not produce state tracking (intake-1372#record); orze execution_identity pattern (intake-1384#02,
+        #03); InferenceBench restart loops (intake-1392#04). No similarity/Jaccard filter (D-43). Part of the
+        historical 38x repeat is policy (the P-AK-SEARCH-1 memory denial), not only model incapacity.
 
       *Declined 2026-09-14: "every serving floor on disk predates R23-55, so every one loads as `legacy` and
       refuses to gate (`FloorReading.gate_floor` fails closed by design), and the next serving gate cannot run

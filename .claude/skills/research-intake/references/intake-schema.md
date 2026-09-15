@@ -93,6 +93,10 @@ seconds; reconstructing it later costs a re-read, and often is not possible at a
 Anchors are optional and per-claim: record them for claims that will be cited, gate a decision, or
 enter an authoritative projection. Ordinary prose does not need one.
 
+Optional setup_scope (what was actually tested, e.g. "downscaled 2-GPU reproduction") and cost_note
+on a claim_anchor or claim_corrections row, so "inconclusive under this setup" is expressible without
+weakening CONFIRMED/OVERTURNED/PARTIAL/NOT-FOUND-IN-SOURCE. (intake-883#record)
+
 ## `claim_corrections` — which claims a correction actually touched (added 2026-08-10)
 
 `dive_corrections` is prose. It says a dive changed *something* about the entry, and no program can

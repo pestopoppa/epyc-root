@@ -57,6 +57,20 @@ so this is a **new active stub, not a reopen**.
       patch naming a specific eval task id / sample index / item id). We have **no** guard against a
       mutation memorising the eval set by naming its instances. Add an anti-leakage pattern set over
       accepted mutation text keyed to our suite/task identifiers. `intake-1323#02`. Zero compute.
+      **Structural form (2026-09-15):** the refusal lives in _transfer_safety_verdict and returns
+      valid=False when a mutation's added text — prompt mutations AND code_mutation mutated_content
+      (string literals, comparisons) — shares a verbatim ≥8-token n-gram with, or an exact expected
+      answer from, the current draw, sentinel_questions.yaml, tool_sentinels.yaml or the contrastive
+      trace bank. Record the matched source id. It also refuses in-suite special-casing, which the
+      current check allows (it refuses only suites absent from the source context).
+      **Source-identity key:** it ALSO refuses a mutation whose few-shot or example content was
+      derived from a trace of a question in the current draw. The key is the question id or sentinel
+      id carried in the contrastive trace-bank records (actions.py trace context; eval_tower.py
+      fixed 20-trial draw), not only a verbatim n-gram, because paraphrase bypasses n-gram matching.
+      BAITBENCH entity-overlap and near-duplicate shortcuts had take-rates of 82.5% and 72.5%
+      (intake-1395#record). One leakage checker serves prompt and code mutations. Instruction text
+      ("don't overfit") is not the fix (intake-1379#record; intake-1395#record, where validity
+      prompting moved -6.2 pp). EvilGenie partial-hardcoding class (intake-1387#record).
 - [ ] **MHS-4 — ANTI-OVERRIDE risk prior.** Rank/gate mutations by CONSTRAIN (add a check, block a bad
       path, re-prompt) vs REPLACE (rewrite/force an action, hard-code an answer). In the released
       corpus **every** catastrophic held-out regression came from an override patch; the trained
@@ -91,6 +105,13 @@ so this is a **new active stub, not a reopen**.
 - [ ] **MHS-11 — replace the operator guide's `prompt_forge.py` line-number citations with symbol names**,
       since `line 575` / `line 594` / `line 509` are already stale by hundreds of lines
       (`docs/guides/meta-harness-operator-guide.md`) (found 2026-09-14, noninf sweep).
+- [ ] **MHS-12 — eval-identity screen for code_mutation.** Refuse (MutationEffect.UNSAFE with
+      reason) any mutation whose ADDED code reads workload_class, scoring_method, batch_id,
+      request-metadata suite/tier keys or the literal "eval_batch", or removes/overrides force_role
+      handling, in any allowlisted file. Grandfather existing references the way MHS-2 grandfathers
+      imports. Fixtures: a chat.py mutation branching on workload_class == "eval_batch" is refused;
+      a no-op chat.py mutation passes. Partly answers Open Question 2 (key on eval-identity fields,
+      not only suite/task names). intake-1387#record.
 
 *Declined 2026-09-14: repoint the dangling pointer at `handoffs/completed/meta-harness-optimization.md:3` —
 not filed because it is already recorded as the **Housekeeping rider (E0, owned elsewhere)** in this file's

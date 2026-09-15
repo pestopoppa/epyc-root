@@ -757,6 +757,30 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
 - [ ] **U3-SEED — specify the RUNTIME_CONFIG arm type against the THP instance**: session-unit paired
       launches, spread reported with the point estimate, a variance-reduction keep grammar, and the recipe
       hash in the epoch. Blocked on nothing; do it before authoring any RUNTIME_CONFIG hypothesis.
+  - [ ] **S3-AKU-08 (U3-PROPOSER) — write the RUNTIME_CONFIG proposer ownership split into U3-SEED.** (a)
+        Default proposer for a declared knob box is operator/LLM hypotheses plus seeded random/LHS fill, NOT
+        a model-based sampler. (b) A TPE arm may be enabled only if ALL of: (i) arms per campaign ≥ 10× box
+        dimension; (ii) expected effect > floors[surface] in the SAME unit; (iii) TPE beats an equal-budget
+        random arm in an offline replay over our own journalled arms, where the replay answers only
+        exact-match arms (off-set proposals count as unanswered, never snapped), injects Gaussian noise at
+        the unit-matched session floor into every replayed value, and reports the off-set proposal rate; a
+        replay win licenses a live A/B, never a deploy config; (iv) a STAGED proposer (cheap-screen recipe
+        tuning, then winners to serving or model choice) only for a mechanism family (R23-25) whose
+        screen-vs-serving Spearman, computed on >= 10 journalled paired screen/serving arms whose serving
+        effects exceed the serving floor, is >= 0.4 AND has a bootstrap 95% CI lower bound > 0; otherwise
+        that family skips the screen and is evaluated on the serving instrument directly. An admitted screen
+        may only rank and seed candidates; every keep/promote verdict is re-measured on serving. The 0.4
+        floor is a borrowed HEURISTIC (MFTune released code refuses rho <= 0.39 on 10 pairs; the paper
+        derives no threshold), not a derived constant. (c) LLM override cap 30% of config arms, overrides
+        told back. (d) LLM-authored RUNTIME_CONFIG hypotheses enter as a declared SET of arms, executed and
+        journalled by the harness, never as an LLM-driven launch/edit loop. The harness owns best-seen state
+        and keep/commit. A campaign with < 3 distinct non-default configs measured is reported
+        under-explored, not converged. (e) SOURCE and non-box edits stay LLM-authored. Reason, recorded with
+        the row: NO-GO for a classical sampler as default today (effects below floor, tens of arms).
+        intake-1389 (MOBO beats Sobol at 50 evals only where categorical effects are large) is off-regime
+        and does not reverse this. Do not cite intake-1372 as "classical beats LLM" (D-20) or intake-1381 as
+        "RS beats HPO" (D-37). (intake-1372#01, #06; intake-1381#03, #06; intake-1390#01, #04, #05;
+        intake-1391#01, #06; intake-1392#02, #04, #05; intake-1394#03, #08; intake-1389#record)
 - [x] **U3-DEFAULTS — RESOLVED 2026-09-08: NOT APPLICABLE. R23-58 did NOT confirm the shim on the GPU
       serving path, so it does NOT go into the loop's recipe defaults.** ✅ 2026-09-08. The conditional this
       task was written under evaluated **false**: bounded null, T0/D0, registered action "do not adopt".
@@ -899,6 +923,33 @@ the docker containers remain — a **candidate, unproven** source of that 800% p
         it; nothing constrains those who don't"*) to the operator as the design input. Gates: champion finalised →
         promoted to production → host reboot. Nothing in U4 is buildable before that, and this row exists to record
         the sequencing, not to authorise work.
+        > **Off-the-shelf admission check — CLOSED (research-intake 2026-09-15).** gflow @598fa6e0
+        > (intake-1369#record), pueue @193ed226 (intake-1382#record) and task-spooler ts-1.0.4 / justanhduc
+        > @1522ab0f (intake-1383#record) were checked. None models CPU cores, CPU sets, NUMA regions or DRAM
+        > bandwidth: admission is a COUNT of slots. Inputs for the operator's OP-41 design, not decisions:
+        > (i) a typed waiting reason on every queued ticket, surfaced to agents; (ii) foreign occupancy
+        > marks a slot unavailable and names the pid, plus an operator ignore list (bandwidth stays
+        > invisible to any occupancy screen); (iii) submit-time refusal with a reason string; (iv)
+        > event-driven wake instead of polling; (v) a persisted override that halts admission without
+        > touching running work; (vi) a read-only vs MUTATES agent-tool split with preview twins; (vii)
+        > region-as-queue cannot express overlap, so the broker's resource must be a set with overlap
+        > semantics; (viii) every count-slot queue backfills past a head job that does not fit, so
+        > exclusive-window starvation is structural and needs head-of-line reservation; (ix) task-spooler's
+        > grant-then-client-runs model keeps the caller's env (per-tree LD_LIBRARY_PATH) but conflicts with
+        > U4 rule (b), broker-owns-lifecycle; that choice is the operator's. (x) cgroup-v2 cpuset
+        > confinement (intake-1397#record): host-root systemd AllowedCPUs=/AllowedMemoryNodes= on
+        > system.slice, user.slice and a bench slice kernel-enforces CPU placement for every userspace task
+        > outside the root cgroup, including containers and host sessions that never call cpu_region_lock; a
+        > partition root (cpuset.cpus.partition=root|isolated; unit directive only in systemd >= 261) adds
+        > sibling-proof CPU exclusivity. It does NOT confine DRAM bandwidth (the MEAS-6 channel), shared L3
+        > per CCD, SMT siblings unless both are reserved, IRQs or per-CPU kthreads; memory nodes are never
+        > exclusive; outsiders can never get zero CPUs, so a full-host recipe gains nothing; it cannot be
+        > built from inside the devcontainer. Options for the operator's design, no decision: A static
+        > complementary slices; B partition root on the bench slice; C per-window systemctl set-property
+        > --runtime narrowing; D resctrl MBM/MBA, the only kernel mechanism on the bandwidth channel (1/8
+        > GB/s per L3 domain, effect on this host unmeasured, needs its own A/A); E status quo (cooperative
+        > lock plus the labelled tax). Our cpu_region_lock is a 50 ms non-blocking poll with no FIFO and
+        > shares the starvation exposure. Authorizes no broker, slice, cgroup or resctrl work.
 
 - **OP-40 IS NOW PART OF OP-41 — ONE item, owned by `ak-rebuild-20260828` (transferred 2026-09-08).**
   INF-70 closed today and, on an **operator ruling**, transferred its **OP-40** (unfenced tooling inside the
@@ -1031,18 +1082,46 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [x] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES ✅ 2026-09-14 — research `eb8a88de`: `unit` + `n` are required fields of `serving_floor.v1`/`.v2` and of the bench `surface_calibration.v1` writer; `FloorReading.gate_floor` / `serving.check_unit` are the single admission rule and raise `FloorUnitMismatch` (a `ServingFloorMismatch`, so every gate already exits REFUSED) naming both units; legacy unit-less serving floors load but cannot gate, and nothing on disk was rewritten. See R23-55. (Original refs: INF-70 RETEST-1,
       2026-09-08: arm sd 0.501% vs process-launch sd 2.793%; the 1200-fold THP sizing error.)
 - [ ] **Headline admissibility: ≥N independent launches with a session-unit CI**, N sized from the
-      between-session sd (2.793%), not the arm sd; a single-session headline is refused (R23-57)
+      between-session sd (2.793%), not the arm sd; a single-session headline is refused (R23-57) **Give N a
+      number now** (2026-09-15, intake-1367#record): solve N from the recorded between-session sd for a
+      stated minimum detectable effect, write N into the floor/headline record schema, and make a headline
+      computation with fewer than N launches REFUSE (not warn), per the unit-mismatch precedent
+      (FloorUnitMismatch, R23-55).
 - [ ] **Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP
       state, HIP graph capture, allocator) — ~12% spread on an identical config, pristine control stable (R23-57)
 - [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
 - [ ] **Re-baseline on cor advance**: `stale_baseline` set on every non-promoting surface at PROMOTE, cleared only by
       a tip-vs-new-cor measurement on that surface's own harness; test that a quote while flagged is refused
+- [ ] **S3-AKU-07 — promotion evidence from held-out launches.** The promotion record's compounded gain, and
+      any headline, is computed ONLY from fresh launches disjoint from every A/B pair that decided a keep,
+      against the frozen production binary pinned by commit + recipe hash. Record pair ids on both sides so
+      disjointness is checkable. A computation that reuses keep-deciding pairs REFUSES. S3-AKU-03 sets how
+      MANY launches; this sets WHICH. intake-1370#record (ERA separates selection from report).
+- [ ] **S3-AKU-13 — Goodharted-keep count at PROMOTE.** Beside each LOO arm (R23-48) record that keep's
+      bench effect at keep time. Count keeps whose LOO arm is at least as fast as the full bundle on the
+      serving surface or any re-baselined surface, and report the count on the promotion record.
+      intake-1378#record. Consumed by INF-75 AKX-P3b.
 - [ ] First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
 
 ### P3 — RUNTIME_CONFIG arm (U3)  · exit: a config keep committed to a codified recipe and re-measurable from a fresh checkout
 - [ ] Hypothesis kind enum; author path that edits a recipe file, no build
 - [ ] A/B of one binary under two recipes; recipe hash in the epoch
 - [ ] Oracle extension: op-coverage diff for env-gated knobs (fall-through class)
+- [ ] **AKX-1 — workload census + blast-radius screen (design item; spec lives in INF-75).** Per-workload
+      census of executed ops/types/shapes/backends/fired kernels on the champion, plus a patch footprint,
+      classifying every (keep, workload) pair INERT (proven: object identity or differential coverage,
+      with witnesses) / TOUCHED / UNKNOWN, where UNKNOWN is treated as TOUCHED. It discharges the
+      op-coverage-diff oracle item directly above for the fall-through class. No kernel source patch is
+      needed (G4 scheduler-debug probe + HIP route log + coverage build variant). Spec, acceptance
+      (732389d6 + sync17-fix2 replay) and compute classes:
+      [`autokernel-cross-workload-keep-gate.md`](autokernel-cross-workload-keep-gate.md) §6–§7, §12 P0–P1.
+- [ ] **AKX-2 — multi-workload non-regression keep gate (design item; spec lives in INF-75).** A keep must
+      be decisive on its author target AND non-inferior (one-sided, against each TOUCHED workload's own
+      floor, unit- and n-matched via `gate_floor`) on every TOUCHED workload. Refusal carries a
+      re-gate-on-a-discriminator remedy, and the re-gated patch re-enters the screen. The FOLD /
+      ValidationBatch re-screens the composed candidate on the full workload set. This upgrades the
+      existing required-target validation so that `failed` refuses instead of only withholding LOO.
+      [`autokernel-cross-workload-keep-gate.md`](autokernel-cross-workload-keep-gate.md) §8–§9, §12 P2–P3.
 - [ ] Known-good and known-null config patches classify correctly
 
 ### P4 — broker + budgets (U4)  · exit: 10 consecutive iterations mixing surfaces with zero unlocked builds and foreign load under bound on every arm
@@ -1098,6 +1177,7 @@ see §3.4.
 | UD-1 | CPU serving recipe = the gate for the CPU surface | the CPU session's canonical served recipe (Qwen3.8-Flash-Next), codified as `Recipe`; not a bench proxy |
 | UD-2 | promotion granularity | one production candidate carries BOTH surfaces; a surface without a demonstrated gate does not block the other's keeps landing on the champion, but does block promotion |
 | UD-3 | who authors CPU hypotheses after U3 | loop planner for RUNTIME_CONFIG/SOURCE on the CPU surface; CPU session keeps diagnosis; revisit after 10 CPU iterations |
+| UD-5 — RULED ✅ 2026-09-15 | ERA-style branching tree (population of lineages, argmax retention) for AutoKernel | **DECLINED — operator agreed.** It recreates lineage divergence under a frozen, versioned-past kernel set; ONE champion per production tree stays the SOURCE rule, and per-model kernel forks are REJECTED (cross-model interference is handled by INF-75's screen + non-regression gate instead). ERA's shape is in-loop executable scoring plus post-hoc external comparison (`intake-1370#record`). **Parked-branch variant — revisit trigger:** re-open only if a keep is later shown to depend on an earlier rejected change. |
 
 ## 5b. INF-70's unowned residue — PARKED, explicitly NOT adopted (2026-09-08)
 
@@ -1299,6 +1379,10 @@ Report requested, granted, physically held and actively used resources separatel
 Target records bind model/hash, architecture/tensor census, backend/kernel tree, context/concurrency,
 speculation/drafter, environment, metric/direction, correctness and regression requirements, route and
 calibration refs. Key recipes by target/surface/operating mode, not one global recipe or backend alone.
+Build variants of one source commit are the sanctioned form of per-model binaries (operator, 2026-09-15:
+specialization only via runtime dispatch on a kernel-visible discriminator, a per-model/per-surface
+recipe, or a CMake/PGO build variant of the same commit — per-model source forks REJECTED; taxonomy in
+[INF-75 §4](autokernel-cross-workload-keep-gate.md)).
 Deduplicate roles only on complete workload-signature equality. A seed creates its own
 candidate target without changing production or inheriting another calibration. If production cannot
 load it, use the first compatible experimental build as exploration baseline, never a fabricated
@@ -3521,6 +3605,99 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     The generated full-SMT campaign resolves seven production workloads plus the explicit GLM
     candidate and passes original-owner preflight. Final closure awaits the persisted final-code
     dry-run artifact and repair of the full-suite speculation-identity regression it exposed.
+
+### Research-intake 2026-09-15 (noninf-20260914) — judge/critic hardening
+
+- [ ] **S3-AKU-01 — typed trial lifecycle with a single transition table.** Replace the stringly-typed
+      `Outcome.status` (loop/loop.py) with a typed lifecycle whose transition table is the only legality
+      source; derive the persistence guard from it (terminal states absorbing, a duplicate/racing completion
+      is a no-op), with a matrix test asserting implementation == table. Reference pattern: orx run
+      lifecycle, intake-883#record @3a8b0286 (community-contributed #322, not alphaXiv's design). Either
+      implement the §8.12 state set or delete it. Any change to the native transition validator rides
+      OP-AKU-A2; do not bypass it.
+- [ ] **S3-AKU-02 — evaluate a compile-time build-channel stamp for loop binaries.** Make "is this an
+      official/production build" unforgeable: a mis-set flag FAILS THE BUILD rather than degrading silently.
+      Compare against the existing anchor provenance.json + object-digest approach, and record
+      adopt/decline. Pattern: intake-883#record (orx build.rs) @3a8b0286.
+- [ ] **S3-AKU-04 — 2-D (effect, spread) keep frontier.** The keep grammar must already accept "reduces
+      variance" (§3.3), but retention is governed by one scalar. Make the keep record carry both coordinates
+      and retain non-dominated candidates. Reuse autopilot's pareto_math.dominates; do not write a second
+      one. intake-1367#record (remedy R2).
+- [ ] **S3-AKU-05 — validator provenance on every critic verdict and every keep.** Record per decision:
+      validator identity and kind (script / oracle / LLM critic), its independence relation to the producer
+      (same fleet / same family / different family / non-model), the evidence it inspected, and whether its
+      result changed subsequent search. planner_evidence covers the last field for keeps only.
+      intake-1367#record (remedy R3); GRAFT-ATHENA's analytic-vs-Advisor axis split is one more instance
+      (intake-1380#record). Autopilot twin: S3-AP-07.
+- [ ] **S3-AKU-09 — split every keep record into EFFECT and MECHANISM claims.** EFFECT is gated by oracle +
+      paired A/B. MECHANISM is the planner narrative and carries status=hypothesis unless an ablation tested
+      it. Example defect: R23-35's recorded MMQ→MMVQ reroute mechanism beside an A/B-validated effect
+      nothing tested. Wiki/planner consumers must not compound on hypothesis-status mechanisms.
+      intake-1374#03.
+- [ ] **S3-AKU-10 — retrospective process metrics over existing autokernel stores (do first).**
+      First-improvement step, AUC-over-steps of best-so-far effect, valid-step ratio (measured / (measured +
+      refused_at_formation + planner_transient + bench_failed)), and critic-pass-1 rejection rate vs
+      eventual measured_null rate of hypotheses accepted after a rejection vs on first pass. If critic
+      rejections do not predict fewer measured_nulls, the two critic passes are unvalidated cost.
+      intake-1375#04.
+- [ ] **S3-AKU-11 — costed design (no launch) for a strategy-only ablation on one frozen champion.** Arm A:
+      production planner+critic. Arm B: same planner with an accept-all Critic. Optional arm C: a catalog
+      Planner.propose drawing uniformly from do_not_repeat mechanism tokens not yet measured on the target.
+      Build/oracle/A-B tail identical; keeps recorded as candidates. Preregister the primary metric and N
+      before launch. Recorded cost: ~255 attempts/arm to detect a keep-rate halving at 80% power, ~31
+      GPU-h/arm on the screen surface, infeasible on CPU; a zero-keep surface is degenerate. Launch is
+      operator-gated. intake-1375#02.
+- [ ] **S3-AKU-12 — journal a per-target stagnation signal, OBSERVE-ONLY.** Record the slope of best-so-far
+      effect over a trailing window and the consecutive measured_null count. No behaviour switch until
+      S3-AKU-11 reports. intake-1375#03.
+- [ ] **S3-AKU-14 — rejection-round telemetry for the planner.** Record on every Outcome the
+      hypothesis/patch round and whether the prompt carried prior-rejection text. Once the op-coverage
+      oracle extension (P3) lands, report op-coverage changes and env-gated fall-through findings by round.
+      intake-1379#record (violation severity rose with each round of error feedback).
+- [ ] **S3-AKU-15 — diff-scope equality and oracle/bench-source immutability, before critic pass 2 (binding
+      together with S3-AKU-16).** After planner.author, take the lane worktree's full git status --porcelain
+      --untracked-files=all and refuse the patch (no build) if: (a) the dirty set is not exactly the
+      declared paths; (b) any dirty path is outside a kernel-source allowlist (ggml/src/**, src/**); or (c)
+      any dirty path is an oracle/bench source (tests/**, tools/llama-bench/**, tools/server/**,
+      examples/**, scripts/**, any CMakeLists.txt). Record the refusal class in the Outcome, and assert the
+      committed keep equals the measured tree. Upstream ports that legitimately add oracle tests go through
+      the operator port lane. **Regression fixture (zero compute):** replay a recorded patch that edits
+      tests/test-backend-ops.cpp outside the declared paths; it must be refused. **Why this shape, and why
+      it is not sufficient alone:** ImpossibleBench Fig. 7, read-only/revert of test edits cut cheating Opus
+      4.1 50% -> 1%, o4-mini 49% -> 11%, GPT-5 only 54% -> 39%, at no legitimate-performance cost; hidden
+      tests reach ~0% but cost 11-26 points and are infeasible here (the candidate tree builds its own
+      test-backend-ops). The planner is gpt-5.6-sol (OpenAI family), whose residual is special-casing /
+      operator overloading / state recording, so S3-AKU-16 binds on the same day. (intake-1387#record;
+      intake-1396#record; intake-1395#record.) This row IS INF-75's AKX-P2-PRE precondition; tick both
+      together.
+- [ ] **S3-AKU-16 — special-casing screen on keeps, binding together with S3-AKU-15.** Per kept patch,
+      record every ADDED branch predicate comparing tensor dims/types/op ids against literals, crossed with
+      the oracle's exercised shapes (test-backend-ops -o MUL_MAT) and the A/B bench shape, plus any ADDED
+      static/global mutable state read on the hot path (the state-recording class). A keep whose speedup
+      path is reachable only under such predicates, or that reads such state, is refused or held
+      KEEP_CANDIDATE-needs-confirm from the day S3-AKU-15 lands, not after S3-AKU-14's op-coverage diffing.
+      **Confirm step:** a needs-confirm keep is confirmed on a bench shape the planner never saw in context
+      (rotated pp/tg/ubatch, or the serving gate), and the public-to-held-out speedup gap is recorded on the
+      Outcome. **Regression fixture (zero compute):** a recorded patch whose fast path is gated on a literal
+      predicate matching the A/B bench shape must be flagged. (intake-1387#record; intake-1396#record,
+      residual 39-58% for GPT-5 under read-only tests; intake-1395#record, Table 2 held-out gap separates
+      hacks from honest runs.)
+- [ ] **S3-AKU-17 — objective ledger for autokernel campaigns (design item).** A structured record per
+      campaign/target: the aims a keep must satisfy (serving throughput per surface, correctness oracle,
+      variance), the evidence for each, the trade-offs among them, and the decision rule used when the loop
+      proceeds despite an unresolved conflict. Seed it from the §8 per-surface evidence matrix and
+      floors-with-units; do not add implementation authority. intake-1367#record (remedy R1).
+- [ ] **S3-AKU-18 (AK-RH-3) — first-class planner abstain.** Accept {"abstain": "<reason>"} as a valid reply
+      to Planner.propose and Planner.author, and record Outcome("abstained", hypothesis, [reason]) as a
+      science outcome: it feeds the Characterised context, not the transient streak. Stop booking an empty
+      author path list as ProviderTransient (loop/actors.py raise ProviderTransient("authoring returned no
+      changed paths") -> loop/loop.py except ActorTransient -> Outcome("planner_transient"); lines 428-429
+      and 245-249 at research ae8e5ef9, 659 and 277-281 at origin/main d9813d65). Tell the planner in the
+      author prompt that abstaining on an infeasible hypothesis is a correct result. Record the abstain rate
+      per run beside S3-AKU-14's rejection-round telemetry. Evidence: ImpossibleBench §5.3, where an abort
+      option cut GPT-5 cheating 54% -> 9% and extra feedback rounds raised cheating 33% -> 38%. The planner
+      is gpt-5.6-sol with PATCH_ROUNDS = 2 rounds of verbatim critic rejections, and today a truthful
+      "cannot implement" is booked as a provider failure. intake-1396#record.
 
 ### Execution discipline and retained decisions
 

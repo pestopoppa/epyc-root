@@ -17,7 +17,7 @@
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | AK-INST-1 still unproven; no run is live — loop relaunch on champion ef81196d5 is a separate operator go, nothing here schedules it | INF-48, EVL-47, INF-64 |
 | INF-64 | autokernel restart-loop fix | [autokernel-restart-and-strip.md](autokernel-restart-and-strip.md) | AK-INST-2: grep the discovery plane for 40-hex constants compared with `==` and convert the instrument pins | — |
 | INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | HEAD-4: promote the 35B sweep out of scratch into research data/; then MTP-27B-1 — the 27B is MTP-capable, PROD-BASE-1's denominator | INF-06, INF-62, INF-64 |
-| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | R23-61a — recalibrate the serving floor at n ≥ 24 with a CI under the recipe in force (GPU, ~30 min); R23-55 closed eb8a88de | INF-06, INF-64, INF-65 |
+| INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | R23-69 answered⇒closed dispatch refusal (zero compute); R23-61a floor recal n≥24 with CI, decide pre/post reboot (R23-65) | INF-06, INF-64, INF-65 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
 | INF-09 | cpu prefill compute large models | [cpu-prefill-compute-large-models.md](cpu-prefill-compute-large-models.md) | PC-4 — experimental qwen35 prefill barrier/graph-fusion prototype: | — |
 | INF-10 | cpu shape specialized gemv decode | [cpu-shape-specialized-gemv-decode.md](cpu-shape-specialized-gemv-decode.md) | Receipts-only holder for the CPU gemv axis; live re-ranking is INF-70 — compact the closed appendix to archived/ | — |
@@ -63,8 +63,9 @@
 | INF-59 | yarn context extension research | [yarn-context-extension-research.md](yarn-context-extension-research.md) | QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss | — |
 | INF-60 | model refresh | [qwen38-27b-replace-qwen36.md](qwen38-27b-replace-qwen36.md) | Registry swap DONE; run stack_change_pipeline regen + stack-change checklist to verify live==config on next start | — |
 | INF-61 | model refresh | [gpu-candidates-surface-qwen38-update.md](gpu-candidates-surface-qwen38-update.md) | SWE closed on both protocols; re-collect the 24-cell grid at the measured n-max 8 optimum when GPU frees | INF-60 |
-| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Monitor through 20 healthy loops; then validate 26-keep GLM tip across required targets; keep broker/production gates separate | INF-66, INF-65, INF-70 |
+| INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Validate 23-keep GLM tip across targets; then S3-AKU-08 U3-SEED proposer split + AKX-1/2 design items (zero compute) | INF-66, INF-65, INF-70 |
 | INF-74 | autokernel concurrent targets | [autokernel-concurrent-target-coordination.md](autokernel-concurrent-target-coordination.md) | Review CTC-REVIEW: model-independent stage coordination and resident GPU overlap; implementation requires approval | INF-73 |
+| INF-75 | autokernel cross-workload keep gate | [autokernel-cross-workload-keep-gate.md](autokernel-cross-workload-keep-gate.md) | AKX-P0a: lift the FOLD-2 G4 dispatch probe into a per-workload census producer; replay 732389d6 as acceptance | INF-73, INF-66, INF-65 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.

@@ -13,3 +13,11 @@ Rows removed from the operator decision queue at the operator-invoked wrap-up of
 |----|----------|-------|-----------|
 | OP-3 | Zero-inference decision batch — residual `dispatch_swarm_fanout` items | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 2026-07-14 |
 | OP-19 | Rule the E8 chain retired (or not): B9/B10 are BLOCKED-AND-LIKELY-MOOT — their source evidence was destroyed and the era advanced to E9 on 2026-08-11, so both boxes wait on this ruling alone. **Widened 2026-08-16**: the same ruling must also restate the `CURRENT-CAMPAIGN.md:103,106` reseed gate against E9 — as written it blocks every stack/lineup/registry change on an E8-form reseed that can no longer be satisfied (the file contains zero occurrences of "E9"), and 8 further handoffs assert the same gate | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | 2026-08-12 |
+
+## Resolved 2026-09-15
+
+- **OP-20** — RULED 2026-09-15 at the research-intake Stage-3 plan approval (session noninf-20260914, plan S3-OP-01): option (a) — non-infra `task_failed` → WRONG in both producers, infra → EXCLUDED in both. Implementation: `autopilot-continuous-optimization.md` AP-64.
+
+| ID | Decision | Owner | Open since |
+|----|----------|-------|-----------|
+| OP-20 | One ruling on `task_failed` scoring applied to BOTH producers (`eval_tower:1339` excludes it; the seeding path scores it WRONG) — until it lands, quality numbers are not comparable across producers. Auditor recommends: non-infra → WRONG in both, infra → EXCLUDED in both | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | 2026-08-12 |

@@ -1776,6 +1776,49 @@ retrofitting the read side is impossible. Source row added to
     manufacture a scientific policy, combine measurement grades into a new ladder, or reconstruct
     a missing decided proposition on read. Source quality and permitted scientific use stay separate.
 
+## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914)
+
+- [ ] **SC76 (S3-VID-02) — claim_anchors are re-verified, not self-consistent.** The only hasher runs at
+      write time (machine_anchor.py) and the validator has zero claim_anchors checks. Add a
+      re-verification call: re-find the quote in the RAW fetched artifact whose sha256 is recorded (not
+      a summary, not a paraphrase), and recompute quote_sha256 over canonical.normalized_quote
+      (scripts/vidya/canonical.py:116-141, which already exists; cite it, do not define a second one).
+      Reference implementation: /mnt/raid0/llm/tmp/stage2b/s2b-valid-anchors.py (re-found every quote in
+      intake-1373/1374/1377). This is the ONE re-verifier that SC77, SC79 and SC80 build on.
+      (intake-1367#record; intake-1373#record; intake-1386#record)
+- [ ] **SC77 (S3-VID-03) — research_intake adapter tier comes from a verified hash, not record shape.**
+      research_intake.py returns Attested whenever quote_sha256 and source_revision are both present,
+      and the machine-anchor cap applies only to located_by: machine, so a human-labelled anchor with a
+      fabricated quote reaches Attested. Tie the tier to SC76's verification result. intake-1367#record.
+- [ ] **SC78 (S3-VID-04) — dilemmatic regression fixtures for research-intake, scored mechanically.**
+      4–6 frozen fixtures whose only correct Stage-1/2 output is an honest non-claim: abstract-only
+      fetch; 404/empty body; results table stripped; headline number only in a figure image; repo README
+      with no license. Pass: every claim_anchors quote is a normalized substring of the stored fixture
+      and its hash recomputes; any key_claim number absent from the artifact is absent from key_claims
+      (allowed only in notes as unverified). Built on SC76 (one checker). intake-1376#00, #02.
+- [ ] **SC79 (S3-VID-05) — citation-class fixtures on the SC78 harness and SC76 re-verifier.** (a)
+      IH-anchor: quote verbatim in a DIFFERENT document/revision than source_revision names,
+      self-consistent hash → FAIL. (b) TF-anchor: quote absent, hash well-formed → FAIL. (c) SH-anchor:
+      one-word or one-number paraphrase → FAIL. (d) PAC-claim: quote present but key_claim
+      number/attribution differs → FAIL on a number/named-entity consistency check (real examples:
+      dive-1367's MLGym→X. Li attribution; the Ansari taxonomy attributed to GPTZero). (e) PH-anchor:
+      12-hex or zero hash, "<excerpt>"/"TBD" quote, "Section X" locator → FAIL at schema. (f)
+      IH-identifier: arxiv_id whose abs-page title mismatches the recorded title → FAIL. (g) HONEST
+      NON-CLAIM: a title-only surfaced source with no resolvable id, and a paper whose reference list
+      contains a fabricated citation; the only pass is "unresolved, no entry". Fixture data:
+      gptzero.me/news/neurips (read) and 2412.13176 as the F9 seed, cited from intake-1386.
+      (intake-1386#01, #05)
+- [ ] **SC80 (S3-VID-06) — cite-check: an out-of-range claim index is dangling, not unknown.**
+      intake-NNN#NN with NN ≥ the entry's key_claims count must return status dangling (blocking, exit
+      3), distinct from unknown (claims not yet ingested). Today both return unknown, non-blocking
+      (citation_gate.py). Fixtures: in range and ingested → graded; in range, not ingested → unknown;
+      out of range → dangling. intake-1386#record.
+- [ ] **SC81 (S3-VID-07) — write-side wiring for AutoKernel workload census + blast-radius rows
+      (INF-75).** Census rows (epyc.autokernel.workload_census.v1) and patch-footprint/classification
+      rows (epyc.autokernel.patch_footprint.v1) are verified structural findings: project them via an
+      adapter into ClaimTuple (no new grading rule). Non-regression rows reuse the existing serving A/B
+      archive/belief export.
+
 ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07)
 
 *Source: the Q.1 mutation audit of `tests/vidya/` run at the end of the Prove2Me wave — 62 mutations
