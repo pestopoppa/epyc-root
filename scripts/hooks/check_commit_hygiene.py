@@ -203,6 +203,52 @@ def strip_heredoc_bodies(cmd: str) -> str:
     return "\n".join(out)
 
 
+# A shell REDIRECTION, as shlex leaves it. shlex is a word splitter, not a shell parser:
+# it has no concept of redirection, so `2>&1` survives as one ordinary token and `> out.log`
+# survives as two. Either way the tokens reach positional_and_flags(), which sees something
+# that does not start with `-` and files it as a POSITIONAL -- i.e. as a pathspec.
+#
+# HYG-3 (measured 2026-09-15). `git commit --file=msg.txt 2>&1` was blocked as
+# "`git commit -- <pathspec>`", naming `2>&1` as the offending path. That is the single most
+# common way any agent or script invokes git, so the guard was unusable in its normal form and
+# the only ways past it were to drop the redirect or to set
+# EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 -- and that override ALSO switches off rule A, rule B and
+# the checkout/stash shapes. A guard that makes the ordinary idiom fail teaches people to
+# disable it wholesale, which is precisely the failure this module's own docstring warns about
+# ("an over-broad matcher is worse than a missing one") and the same family as the heredoc and
+# HYG-2 quoted-newline false positives already fixed above.
+#
+# Matches an optional leading fd number or `&`, then a redirection operator. A token that is
+# ONLY the operator takes its target with it (`>`, `out.log`); a token that carries its target
+# or its fd (`2>&1`, `>out.log`, `<<DELIM`) is self-contained.
+_REDIRECT = re.compile(r"^(?:[0-9]+|&)?(?:>>|>&|>|<<<|<<|<&|<)")
+
+
+def strip_redirections(tokens: list[str]) -> list[str]:
+    """Drop shell redirections from a token stream.
+
+    A redirection is shell SYNTAX, not an argument to the command, so it must never be read
+    as a pathspec. Same reasoning as strip_heredoc_bodies: decide what is command and what is
+    plumbing ONCE, before any rule looks at the tokens, so no two rules can disagree.
+
+    Erring permissive is deliberate and consistent with the module's stated posture: the worst
+    case is a genuinely redirection-shaped FILENAME going unchecked, whereas the bug being
+    fixed blocked every redirected git command on the host.
+    """
+    out: list[str] = []
+    i = 0
+    while i < len(tokens):
+        tok = tokens[i]
+        m = _REDIRECT.match(tok)
+        if m:
+            # Bare operator: the NEXT token is its target, and is not an argument either.
+            i += 2 if m.end() == len(tok) else 1
+            continue
+        out.append(tok)
+        i += 1
+    return out
+
+
 def split_into_segments(cmd: str) -> list[str]:
     """Command segments, cut at &&/||/;/| -- QUOTE-AWARE.
 
@@ -234,7 +280,7 @@ def split_into_segments(cmd: str) -> list[str]:
     happens before segmenting, not after.
     """
     try:
-        tokens = shlex.split(cmd)
+        tokens = strip_redirections(shlex.split(cmd))
     except ValueError:
         return []                          # unparsable -> no segments (fail open, as before)
     segments: list[str] = []

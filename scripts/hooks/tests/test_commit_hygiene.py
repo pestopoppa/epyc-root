@@ -169,6 +169,50 @@ CASES += [
     ("git stash list", 0, FRESH, "PAIR: read-only stash subcommands allowed"),
 ]
 
+# ---- HYG-3 (measured 2026-09-15): a shell REDIRECTION is not a pathspec ------
+# shlex is a word splitter, not a shell parser, so `2>&1` survived as an ordinary
+# token, did not start with `-`, and was filed as a positional -- i.e. read as a
+# pathspec. `git commit --file=msg.txt 2>&1` was therefore BLOCKED as a pathspec
+# commit, naming `2>&1` as the path. That is the most common way anything on this
+# host invokes git, and the only escapes were to drop the redirect or to set
+# EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 -- which also disables rules A and B and the
+# checkout/stash shapes. Same family as the heredoc and HYG-2 false positives.
+#
+# Every permissive case is PAIRED with an enforcement case using the same
+# redirection, because a fix that simply stopped parsing redirected commands
+# would pass the permissive half while silently switching the guard off.
+CASES += [
+    # the measured bug, in its exact shape and its -F variant
+    ("git commit --file=msg.txt 2>&1", 0, FRESH,
+     "HYG-3: `2>&1` on a commit is a redirection, not a pathspec"),
+    ("git commit -F msg.txt 2>&1", 0, FRESH,
+     "HYG-3: same via `-F <file>`"),
+    ('git commit -m "x" 2>&1 | tail -5', 0, FRESH,
+     "HYG-3: redirect plus a pipe still segments correctly"),
+    # every other redirection shape shlex can leave behind
+    ('git commit -m "x" > out.log', 0, FRESH,
+     "HYG-3: bare `>` takes its target with it"),
+    ('git commit -m "x" >out.log', 0, FRESH, "HYG-3: `>` with attached target"),
+    ('git commit -m "x" >> out.log 2>&1', 0, FRESH, "HYG-3: append plus stderr dup"),
+    ('git commit -m "x" &> out.log', 0, FRESH, "HYG-3: `&>` combined redirect"),
+    ('git commit -m "x" 1>out.log 2>err.log', 0, FRESH, "HYG-3: explicit fds"),
+    ('git commit -m "x" < /dev/null', 0, FRESH, "HYG-3: input redirection"),
+
+    # PAIRS: the rules must still fire when a redirection is present.
+    ("git commit -m 'x' -- handoffs/active/master-handoff-index.md 2>&1", 2, FRESH,
+     "HYG-3 PAIR: a REAL pathspec commit is still blocked when redirected"),
+    ("git add -A 2>&1", 2, FRESH,
+     "HYG-3 PAIR: wholesale add is still blocked when redirected"),
+    ('git commit -am "x" > out.log', 2, FRESH,
+     "HYG-3 PAIR: commit -am is still blocked when redirected"),
+    ('git commit -m "x" 2>&1', 2, STALE,
+     "HYG-3 PAIR: rule B still fires on a redirected commit"),
+    ("git stash push -m wip 2>&1", 2, FRESH,
+     "HYG-3 PAIR: stash is still blocked when redirected"),
+    ("git fetch 2>&1 && git commit -m \"x\" 2>&1", 0, STALE,
+     "HYG-3 PAIR: a redirected fetch still satisfies freshness for a redirected commit"),
+]
+
 
 def main() -> int:
     failures: list[str] = []
