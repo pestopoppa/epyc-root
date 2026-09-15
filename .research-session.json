@@ -1,307 +1,264 @@
 {
- "session_id": "5116d160-6be4-4cbb-9bd2-dfd5ffb46a17",
- "started_at": "2026-09-14T00:00:00Z",
- "last_checkpoint": "2026-09-14T20:30:00Z",
- "phase": 5,
- "stage": "stage4-complete",
- "session_kind": "research-intake (6 operator-submitted sources: 5 URLs + 1 pasted inline write-up)",
- "previous_session": {
-  "session_id": "f0c4b0c3-2192-41e9-98a5-ae47b9c12c27",
-  "stage": "complete",
-  "last_checkpoint": "2026-09-07T14:20:00Z",
-  "note": "7 days old, stage complete, unrelated mandate. NOT resumed; full prior state backed up to the session scratchpad before overwrite."
- },
- "mandate": "Ingest 6 operator-submitted sources: github redhat-et/ripwire, github chadhurley25075-png/pd-bridge, arxiv 2609.09153, arxiv 2609.05364, github NVlabs/SoL-Pi, INLINE write-up 'Same Weights, Three Times the Solved Tasks' (GPT-OSS-20B harness search on Terminal-Bench, attributed to X post @joelniklaus 2026-09-10)",
- "submitted_url_count": 6,
- "max_existing_intake_id_at_start": 1345,
- "existing_entry_count_at_start": 1341,
- "next_intake_id": 1367,
- "expansion_cap": 10,
- "expansion_count": 10,
- "lane_note": "SHARED CLONE, NO LANE WORKTREE (operator-spawned /research-intake). check_lane_worktree.py --strict exit 3. Stage-1 writes research/intake_index.yaml + .research-session.json ONLY; research/ was clean at start.",
- "dedup": {
-  "sweep": "unbounded python regex over all url/arxiv_id values (1341 urls)",
-  "exact_collisions": 0,
-  "related_not_duplicate": {
-   "INLINE harness-search write-up": "intake-753 (Niklaus HF Space harness-optimization, DeepSeek-V4-Pro/legal benchmark) \u2014 distinct artifact, different model and benchmark"
-  }
- },
- "inline_sources": {
-  "inline_harness_search_gptoss20b": {
-   "sha256": "b0c0b9cbfc3773b114fe2e6ae85e37d64ff34df6b6cc0e4b7efa785891951547"
-  }
- },
- "processed_urls": [
-  "https://github.com/redhat-et/ripwire -> intake-1346",
-  "https://github.com/chadhurley25075-png/pd-bridge -> intake-1347",
-  "https://arxiv.org/html/2609.09153v1 -> intake-1348",
-  "https://arxiv.org/html/2609.05364v1 -> intake-1349",
-  "https://github.com/NVlabs/SoL-Pi -> intake-1350",
-  "INLINE harness-search write-up -> intake-1351"
- ],
- "steering_ledger": [
-  {
-   "seq": 1,
-   "stage": 2,
-   "verbatim": "proceed with recommended deep dives",
-   "disposition": "context-only",
-   "plan_ref": null,
-   "note": "Operator dive selection = ranks 1-9 of the Stage-1 recommendation table: intake-1346, 1357, 1356, 1351, 1352, 1355, 1360, 1353, 1350, 1358, 1359, 1348. Declines 1347/1354/1361/1349 stand. Authorizes Stage-2 index writes only; no handoff writes."
+  "session_id": "noninf-20260914-intake-openresearch",
+  "started_at": "2026-09-14T22:20:00Z",
+  "last_checkpoint": "2026-09-15T09:58:38Z",
+  "phase": 5,
+  "stage": "stage2b-complete (round 3 FINAL) — Stage-3 plan pending ledger consolidation",
+  "session_kind": "research-intake (1 operator-submitted URL)",
+  "previous_session": {
+    "session_id": "5116d160-6be4-4cbb-9bd2-dfd5ffb46a17",
+    "stage": "stage4-complete",
+    "started_at": "2026-09-14T00:00:00Z",
+    "note": "<7 days old but a different completed mandate; started fresh, no URLs skipped"
   },
-  {
-   "seq": 2,
-   "stage": 2,
-   "verbatim": "proceed with all.",
-   "disposition": "context-only",
-   "plan_ref": null,
-   "note": "Stage-2b selection: A HF bucket joelniklaus/harness-optimization-results (1351), B X post by Niklaus 2026-08-24 (see intake-1363 url) (1352), C arXiv 2605.16352 LARGER (1356), D arXiv 2603.28119 SWEzze (1357), E arXiv 2602.05892 ContextBench (1357). Index-only writes."
+  "mandate": "Ingest https://github.com/alphaXiv/OpenResearch; operator question: can it improve autopilot/autokernel planner/critic loops",
+  "submitted_url_count": 1,
+  "max_existing_intake_id_at_start": 1366,
+  "existing_entry_count_at_start": 1362,
+  "next_intake_id": 1398,
+  "expansion_cap": 10,
+  "expansion_count": 2,
+  "lane_note": "LANE WORKTREE /mnt/raid0/llm/worktrees/mains/noninf-20260914 (lane/noninf-20260914). Stage-1 writes research/intake_index.yaml + .research-session.json ONLY.",
+  "dedup": {
+    "method": "unbounded grep -ci over research/intake_index.yaml + curl -I redirect check",
+    "result": "EXACT COLLISION BY RENAME: github.com/alphaXiv/openresearch-cli (intake-883) 301-redirects to github.com/alphaXiv/OpenResearch",
+    "persisted_new_entry": false,
+    "recorded_on": "intake-883 notes"
   },
-  {
-   "seq": 3,
-   "stage": 2,
-   "verbatim": "you cna declien all these.",
-   "disposition": "context-only",
-   "plan_ref": null,
-   "note": "Operator declines all 15 recommend-decline dive-surfaced sources; recorded in bearing entries' dive_corrections."
-  },
-  {
-   "seq": 4,
-   "stage": 3,
-   "verbatim": "File + fix in Stage 4 (Recommended)",
-   "disposition": "planned",
-   "plan_ref": "Tier C (plan /home/node/.claude/plans/sharded-discovering-mist.md)"
-  },
-  {
-   "seq": 5,
-   "stage": 4,
-   "verbatim": "merge the branches once the fixes land",
-   "disposition": "planned",
-   "plan_ref": "Tier C merge: combine intake/20260914-dive-defects-{deleg,repl,guard} -> intake/20260914-dive-defects, test, merge into epyc-orchestrator main (no push unless asked)"
-  }
- ],
- "expansion_entries": {
-  "intake-1352": "JoelNiklaus/harness-optimization <- 1351",
-  "intake-1353": "neuralnoise harness-bench <- 1351",
-  "intake-1354": "hkinsley right-harness <- 1351",
-  "intake-1355": "henrypan harness-training <- 1351",
-  "intake-1356": "2503.09089 LocAgent <- 1346",
-  "intake-1357": "2607.09691 act-context <- 1346",
-  "intake-1358": "2608.01507 deep agentic search <- 1346",
-  "intake-1359": "2608.16370 compression cost <- 1346",
-  "intake-1360": "earendil-works/pi <- 1350",
-  "intake-1361": "EdgeBench dataset <- 1350"
- },
- "validator": "validate_intake.sh exit 0 (1357 entries); append-only diff 1820+/0-; two in-place fixes to NEW entries only (wiki refs moved out of chapters for 1358/1359; completed/ prefix stripped from handoff refs)",
- "pii_scrubbed": "third-party email removed from 1346 authors; personal bio removed from 1347 authors",
- "dive_recommendations_ranked": [
-  {
-   "rank": 1,
-   "intakes": [
-    "intake-1346"
-   ],
-   "why": "challenges the CLAUDE.md-mandated GitNexus rule; all comparative evidence self-run; one agent-loop result is a cost loss"
-  },
-  {
-   "rank": 2,
-   "intakes": [
-    "intake-1357",
-    "intake-1356"
-   ],
-   "why": "code-context cluster: bears on built DCP-3 codemap band and unmeasured DCP discovery; open artifacts"
-  },
-  {
-   "rank": 3,
-   "intakes": [
-    "intake-1351",
-    "intake-1352",
-    "intake-1355"
-   ],
-   "why": "lifecycle-patch claim cluster: primary unlocated, companion repo negative, henrypan partially deflates tool-call repair; subagent file:line equivalents in epyc-orchestrator need verification"
-  },
-  {
-   "rank": 4,
-   "intakes": [
-    "intake-1360"
-   ],
-   "why": "open HS-1f; claims our own handoff lineage wording is wrong"
-  },
-  {
-   "rank": 5,
-   "intakes": [
-    "intake-1353"
-   ],
-   "why": "OpenCode hidden-grader peek bears on HS-4 eval contamination; cheap source check"
-  },
-  {
-   "rank": 6,
-   "intakes": [
-    "intake-1350"
-   ],
-   "why": "verified-quote receipt + ObservationPack vs our spill/peek"
-  },
-  {
-   "rank": 7,
-   "intakes": [
-    "intake-1358"
-   ],
-   "why": "silent hand-off failure mapped onto worker_summarize path (subagent hypothesis)"
-  },
-  {
-   "rank": 8,
-   "intakes": [
-    "intake-1359"
-   ],
-   "why": "reacquisition-cost metric; only needed before quoting numbers"
-  },
-  {
-   "rank": 9,
-   "intakes": [
-    "intake-1348"
-   ],
-   "why": "procedural graphs; low priority"
-  }
- ],
- "explicit_declines": {
-  "intake-1347": "mechanism and limits fully read at Stage 1 from README/RESULTS/hook source; nothing runnable on EPYC/MI210; fidelity rests on a 5-question eval a dive cannot strengthen",
-  "intake-1354": "per-task matrix already extracted; no mechanism to verify",
-  "intake-1361": "full protocol cost-hostile (12 h/task, ~137 GB images); dive only if a short-budget slice is wanted",
-  "intake-1349": "relevance low; whole paper read, no tables/code"
- },
- "expansion_candidates_not_ingested_cap_reached": [
-  "https://blog.exolabs.net/nvidia-dgx-spark/",
-  "oMLX (URL unverified)",
-  "2605.01160",
-  "2409.07429 AWM",
-  "2508.06433 MemP",
-  "2603.23638 EnterpriseArena",
-  "2405.15793 SWE-agent",
-  "2410.14684 RepoGraph",
-  "2606.14066 FastContext",
-  "2605.15184",
-  "2608.01056 CompressAgent",
-  "2606.10209",
-  "2603.28119 SWEzze",
-  "2602.05892 ContextBench",
-  "2412.01007 CodeRankEmbed",
-  "2604.00362 In harmony with gpt-oss",
-  "2604.20938 HARBOR",
-  "2606.12344 Claw-SWE-Bench",
-  "https://github.com/stanford-iris-lab/meta-harness-tbench2-artifact",
-  "https://composio.dev/content/pi-vs-omp",
-  "Towards AI DSV4F vs GLM-5.2 harness swap",
-  "https://github.com/svkozak/pi-acp",
-  "2607.05155 EdgeBench paper + github.com/ByteDance-Seed/EdgeBench SForge",
-  "https://github.com/workofart/harness-training",
-  "huggingface bucket joelniklaus/CodingBenchmarkResults"
- ],
- "stage2_selected": [
-  "intake-1346",
-  "intake-1357",
-  "intake-1356",
-  "intake-1351",
-  "intake-1352",
-  "intake-1355",
-  "intake-1360",
-  "intake-1353",
-  "intake-1350",
-  "intake-1358",
-  "intake-1359",
-  "intake-1348"
- ],
- "stage2_results": {
-  "dived": 12,
-  "verdicts": "all 12 dive-verified (none overturned at entry level); many claims narrowed",
-  "intake_1204_correction": "sibling-fork wording corrected in place (key_claims[5], reader_should_conclude, claim_corrections[5] addendum) per intake-1360 dive",
-  "validator": "exit 0, 1357 entries"
- },
- "stage2b_candidates": {
-  "recommend_ingest_and_dive": [
-   {
-    "ref": "HF bucket joelniklaus/harness-optimization-results",
-    "bears_on": "intake-1351"
-   },
-   {
-    "ref": "X post by Niklaus 2026-08-24 (see intake-1363 url) (Niklaus, 10 harnesses x TB2.1 held-out, Muse-Glimmer-30B)",
-    "bears_on": "intake-1352"
-   },
-   {
-    "ref": "arXiv 2605.16352 LARGER",
-    "bears_on": "intake-1356"
-   },
-   {
-    "ref": "arXiv 2603.28119 SWEzze",
-    "bears_on": "intake-1357"
-   },
-   {
-    "ref": "arXiv 2602.05892 ContextBench",
-    "bears_on": "intake-1357"
-   }
+  "processed_urls": [
+    "https://github.com/alphaXiv/OpenResearch"
   ],
-  "recommend_decline": [
-   "HN 49593050 (ripwire)",
-   "ripwire issue #59",
-   "GitNexus LICENSE file",
-   "wavect ripwire review",
-   "EdgeBench (already intake-1361)",
-   "pi-fabric",
-   "pi docs models.md/llama-cpp.md",
-   "huggingface/harbor-hf",
-   "opencode#21733",
-   "opencode#16126",
-   "arXiv 2602.20048 CodeCompass",
-   "arXiv 2509.25242 MULocBench",
-   "arXiv 2510.01003 RepoMem",
-   "arXiv 2608.24221 DeepRepoQA",
-   "arXiv 2608.01056 CompressAgent"
-  ]
- },
- "stage2b_ids": {
-  "A": "intake-1362",
-  "B": "intake-1363",
-  "C": "intake-1364",
-  "D": "intake-1365",
-  "E": "intake-1366"
- },
- "stage2b_result": "intake-1362..1366 written born dive-verified; close-out decisions recorded on bearing entries; intake-1351 reported_results bucket bullet corrected; 1352/1356 notes corrected; validator exit 0 (1362 entries)",
- "stage3_plan": "/home/node/.claude/plans/sharded-discovering-mist.md (approved via ExitPlanMode)",
- "stage4_result": {
-  "handoffs_changed": [
-   "delegation-context-preassembly.md",
-   "tool-output-compression.md",
-   "context-folding-progressive.md",
-   "harness-selection-and-integration.md",
-   "tool-use-eval-contract.md",
-   "multi-file-coding-completion-capability.md",
-   "autopilot-continuous-optimization.md",
-   "master-handoff-index.md (generated rollup)"
+  "artifacts": {
+    "readme_sha256": "0c9042c88d535e3d061dd16e7a3a672ba3e06f25026ab81a92c6b48692bde752",
+    "head": "3a8b02866b6decd8ecdfe2b8c07e230d107881d0",
+    "retrieved": "2026-09-14T22:26Z"
+  },
+  "steering_ledger": [
+    {
+      "seq": 1,
+      "stage": 1,
+      "verbatim": "planner/critic loop mechanics for autokernel and autopilot — what does orx do in the propose → run → judge → refill cycle that our two\n  loops don't?",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "dive framing; becomes the Stage-2 scope if intake-883 is selected"
+    },
+    {
+      "seq": 2,
+      "stage": 1,
+      "verbatim": "also, potentially it could inspire refinements of the research-intake skill?",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "carried to Stage 3; one concrete candidate already surfaced in Stage 1 (redirect-following dedup)"
+    },
+    {
+      "seq": 3,
+      "stage": 2,
+      "verbatim": "dive 883 + 1367",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Stage-2 selection; two dive agents dispatched at 2026-09-14T22:5xZ, intake-883 pinned to head 3a8b0286"
+    },
+    {
+      "seq": 4,
+      "stage": 2,
+      "verbatim": "all recommended",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Stage-2b selection = rows 1,7,8,9,10,11,12,13,14,15 (recommended) + 17,19 (weak recommend); rows 2,3,4,5,6,16,18,20 declined, to be recorded in bearing entries' dive_corrections"
+    },
+    {
+      "seq": 5,
+      "stage": 2,
+      "verbatim": "all recommended, 1380 adopt_patterns,regarding the ERA-style branching tree, what is its advantage over out current one-champion rule?",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Round-2 selection = rows 1,3,10,19,22,32 (ids 1381-1388); 29 rows declined; 1380 ruled adopt_patterns; ERA-tree question answered in chat, decision still open"
+    },
+    {
+      "seq": 6,
+      "stage": 2,
+      "verbatim": "it seems that the source of the complications lie in having to merge back to the champion. The question I've been asking myself on/off for a while is: would it make sense to have different kernels specific to each model we want to run as opposed to one single kernel that has to optimally run them all? Then again, what's the difference between having multiple kernels vs compute model specific compute branches within a single kernel? I ask because I've noticed that sometimes autokernel finds keeps whiel optimizing a specific model which actually cause regressions in the champion for another model",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "answered in chat 2026-09-15; candidate Stage-3 design items: workload op-census blast-radius screen + multi-workload non-regression keep gate (autokernel-unified-surface-program.md); per-model build variants of one source lineage; ERA tree decline reframed"
+    },
+    {
+      "seq": 7,
+      "stage": 2,
+      "verbatim": "[operator 2026-09-15] blast-radius screen + multi-workload non-regression gate 'seems like something that should be urgently built into autokernel. Can you write a detailed exposition of the matter along with your recommended spec as a distinct handoff please?' ERA tree decline: 'agreed.' Design items + build-variant note: 'yes please, autokernel-unified-surface-program.md is the perfect place to put all of this in stage 3-4'. 4 sources from intake-1381: 'deep dive them now as part of this stage 2b literature expansion'",
+      "disposition": "planned",
+      "plan_ref": "S3-AKX (new handoff: cross-workload keep gate) + S3-AKX-U (unified-surface design items + build-variant note) + ERA-tree decline recorded",
+      "note": "handoff text drafted in Stage 2 scratch (/mnt/raid0/llm/tmp/akx-handoff/), written only in Stage 4 after plan approval, per the skill's review gate; round-2b-ext ids intake-1389..1392"
+    },
+    {
+      "seq": 8,
+      "stage": 2,
+      "verbatim": "\"The full text is drafted now and put verbatim into the Stage-3 plan, then written the moment you approve it (Stage 4).\" - correct",
+      "disposition": "context-only",
+      "plan_ref": "S3-AKX",
+      "note": "operator confirmed the review-gate sequencing for the cross-workload keep-gate handoff"
+    },
+    {
+      "seq": 9,
+      "stage": 2,
+      "verbatim": "all recommended, confirm decline, 1388 monitor, re-score 1096, yes last round. I hope you haven't forgotten about the rest of the research-intake's actionables",
+      "disposition": "planned",
+      "plan_ref": "round-3 dives + Stage-3 consolidated actionables ledger",
+      "note": "round-3 = SLO-Guard 2604.17627 (1393), Less Is More 2608.00759 (1394), BAITBENCH 2608.30724 (1395), ImpossibleBench 2510.20270 (1396), systemd cpuset slices (1397); SpecBench conditional -> declined unless 1396 leaves the judge question open; round 3 FINAL (surfaced sources recorded, no round-4 gate unless one would overturn a verdict); AIConfigurator declined; 1388 MONITOR; 1096 re-scored -1"
+    }
   ],
-  "new_tasks": 25,
-  "ticked_on_merge": 6,
-  "open_new": 19,
-  "orchestrator": {
-   "combined_branch": "intake/20260914-dive-defects",
-   "base": "origin/main 826008df",
-   "merged_main": "35b05fde (local, not pushed; ahead of origin by 12)",
-   "commits": {
-    "C1": "1e2a6315",
-    "C2": "b32f683c",
-    "C3": "090c63d9",
-    "C4": "2bffb45b",
-    "C5": "57ceb7d5",
-    "C6": "a2af42ad",
-    "C7": "982ca87c",
-    "C8": "118b65e5",
-    "C9": "0b261dde"
-   },
-   "tests": "1856 passed, 52 skipped on merged tree"
+  "dive_recommendations_ranked": [
+    {
+      "rank": 1,
+      "intake": "intake-883",
+      "why": "only mining so far was autopilot-lens (2026-07-29) on two files; repo has 12 agent skills now and a run-lifecycle state machine landed 2026-09-14",
+      "settles": "what orx's judge/refill mechanics are vs autokernel R23 sealed-measurement controller and autopilot lane arbiter; whether orx-evidence/orx-reports shape helps research-intake"
+    },
+    {
+      "rank": 2,
+      "intake": "intake-1367",
+      "why": "names the judge-step failure classes (objective/validation/acceptance collapse) the operator question is about; audit rubric over 21 systems could be applied to autokernel + autopilot",
+      "settles": "whether either EPYC loop exhibits a collapse the remedies section addresses and R23/lane-arbiter do not already cover"
+    }
+  ],
+  "preliminary_actionables_unverified": [
+    {
+      "intake": "intake-883",
+      "owning_handoff": "autokernel-unified-surface-program.md or autokernel-rebuild-program.md",
+      "draft": "[unverified] compare orx run-lifecycle state machine (#322) + orx-evidence to the R23 sealed-measurement controller; mine only if it names a state/guard ours lacks"
+    },
+    {
+      "intake": "intake-883",
+      "owning_handoff": "autopilot-continuous-optimization.md",
+      "draft": "[unverified] revisit the 2026-07-29 'stacked bushes' disposition against orx-agent-delegation/orx-instances (refill + sibling fan semantics) now that AP-1510 status may have moved"
+    },
+    {
+      "intake": "skill",
+      "owning_handoff": ".claude/skills/research-intake/SKILL.md (Phase 1 step 2)",
+      "draft": "[unverified-in-stage1 but locally verified] dedup must follow HTTP redirects for repo URLs: renamed repos defeat normalized-url matching (this exact case)"
+    },
+    {
+      "intake": "intake-883",
+      "owning_handoff": "research-intake skill / minddr-deep-research-mode.md",
+      "draft": "[unverified] orx-lit-review / orx-paper / orx-evidence skills as a comparator for research-intake Stage-1/2 mechanics (evidence tying, per-run immutable archive)"
+    }
+  ],
+  "explicit_declines": {
+    "expansion": "Tier-1 reference chasing: README has zero arXiv refs. Tier-2 search: 2 of the 10 results ingested (the two that critique the judge step); the rest (IntelliAsk 2602.15849, AlphaResearch 2511.08522, AiraXiv 2605.21481, OpenReviewer 2412.11948, AutoResearch AI 2605.23204) declined - idea-generation/reviewer-model/platform papers, not the propose->run->judge->refill mechanics the operator asked about.",
+    "intake-1368": "dive not recommended in this round: empirical sibling of intake-1367; dive 1367 first and let its ledger decide whether the benchmark is worth a Stage-2b pass"
   },
-  "intake_entries": "handoffs_updated + integration_disposition set for 1346-1366; 1346 licence framing retracted",
-  "validators": {
-   "validate_intake": 0,
-   "index_state_check": 0,
-   "cite_check": 0
+  "validator": "validate_intake.sh exit 0 (1364 entries); append-only +2 entries; 1 in-place notes append on intake-883",
+  "expansion_entries": {
+    "intake-1367": "2605.26200 Workflow Closure != Scientific Closure (search, from intake-883)",
+    "intake-1368": "2606.18060 PseudoBench (search, from intake-883)"
   },
-  "progress": "progress/2026-09/2026-09-14.md",
-  "not_committed": "epyc-root changes are uncommitted (shared clone; peers have uncommitted work in other files)"
- }
+  "contradiction_pass": {
+    "intake-883": "no direct criticism of orx/OpenResearch surfaced in a bounded search (provisional); two adjacent critiques of the auto-research CLASS ingested as 1367/1368"
+  },
+  "stage2_selected": [
+    "intake-883",
+    "intake-1367"
+  ],
+  "stage2_results": {
+    "intake-883": "DIVE-VERIFIED at sha 3a8b0286 (v0.2.1). Central conclusion (adopt_patterns) STANDS: orx has no proposer and no judge in code - a skill-prose loop plus two real primitives (a first-completion \"slot freed\" signal with a documented non-authority contract, and chat_run_wakeups, a leased claim-token exactly-once queue that re-enters the same agent session) plus a freeze rule, an allowlist-only PreToolUse plan gate and a coded 5-wide/1-deep spawn cap. Claim 4 partly OVERTURNED (9 backends not 7; W&B streaming removed by test assertion), claim 5 SPLIT (compile-time build-channel gate means an EPYC source build sends nothing - stronger than recorded - but as a product claim it is false: unprompted github.com update check every run, Overleaf live-sync streaming document text off-box on a lifted browser cookie, release-build free-text telemetry fields). NO-LICENSE contradicting_evidence row RETIRED (root MIT LICENSE now exists), leaving one blocker vs adopt_component. credibility_score stays null: the repo makes no empirical claim.",
+    "intake-1367": "DIVE-VERIFIED against arXiv:2605.26200v1. Central conclusion (worth_investigating as an audit rubric) STANDS and no claim is overturned: the 21-system audit is rubric-based with an inspectable per-system trace and the 81.0/71.4/90.5% rates re-derive exactly, but single-coder, no inter-rater reliability, public artifacts only, and section 8 states the rates are NOT prevalence estimates; \">100 papers\" is asserted, never enumerated; the six remedies carry zero implementation and zero evaluation. The framework is partly definitional, and the papers factual load is carried by three other groups measurements, none of them in our index. Net value: a vocabulary (\"autonomous execution under non-autonomous epistemic control\"), one operational test (\"adding an external checker is insufficient if its output does not gate the loop\" - the same finding as our computed-guard-never-consulted family, reached from the opposite direction), and a scorecard whose worst cell is autopilot L2, where planner AND critic are roles served by the fleet under optimization."
+  },
+  "stage2b_candidates": 21,
+  "stage2b_candidates_note": "21 consolidated rows in /mnt/raid0/llm/tmp/stage2-surfaced.md: 19 ABSENT, 1 PRESENT (intake-1368), 1 MIXED (GEPA intake-240 + Fortytwo intake-615 present, 19 of the 21 audited repos absent). 9 rows recommended ingest-and-dive; rows 9 and 10 need an arXiv-id resolution step first.",
+  "stage2_outputs": {
+    "index_writes": "research/intake_index.yaml only: intake-883 (+verification, 11 claim_anchors, 5 claim_corrections, 1 dive_corrections note, depends_on [], 12 dive_actionables_ledger rows, contradicting_evidence[0] RETIRED-prefixed and 3 new rows) and intake-1367 (verification stage1-unverified -> dive-verified, 25 claim_anchors, 5 claim_corrections, 8 dive_corrections notes, depends_on [], 16 dive_actionables_ledger rows).",
+    "surfaced_list": "/mnt/raid0/llm/tmp/stage2-surfaced.md",
+    "validator": "validate_intake.sh exit 0 (1364 entries)",
+    "no_handoff_writes": "git status --short handoffs/ empty; no wiki, index or skill edits",
+    "clerk_corrections_to_the_dives": "Both dive agents read the SHARED clone at d372c953, not the lane. dive-883 wrongly reported the 2026-09-14 RE-ENCOUNTER note on intake-883 as NOT-FOUND (it exists, uncommitted, in the lane). dive-1367 wrongly reported that intake-1367/1368 and the 2026-09-14 wiki sections do not exist (all exist on origin/main 5406c223..1d9d31e5; wiki/autonomous-research.md:5,:45,:70,:2605 and wiki/benchmark-methodology.md:5,:8,:81,:112). Both artifacts are recorded as clerk corrections inside the entries rather than copied as findings."
+  },
+  "stage2b_ids": {
+    "intake-1369": "github.com/AndPuQing/gflow",
+    "intake-1370": "ERA (Aygun et al., Nature 2026)",
+    "intake-1371": "arXiv 2603.15916",
+    "intake-1372": "arXiv 2603.24647",
+    "intake-1373": "arXiv 2605.19156",
+    "intake-1374": "arXiv 2604.18805",
+    "intake-1375": "arXiv 2605.17373 FML-bench",
+    "intake-1376": "arXiv 2605.10246 SciIntegrity-Bench",
+    "intake-1377": "arXiv 2605.19196 Time to REFLECT",
+    "intake-1378": "Karwowski et al. Goodhart in RL ICLR 2024",
+    "intake-1379": "Pan et al. in-context reward hacking ICML 2024",
+    "intake-1380": "arXiv 2605.11117 GRAFT-ATHENA"
+  },
+  "stage2b_result": "12 entries appended (intake-1369..1380, all dive-verified; 1380 held at placeholder worth_investigating); intake-1367 +4 claim_corrections, +9 dive_corrections, depends_on +1 (intake-1370), AP-VAL-1 amended; intake-883 +2 dive_corrections, DA-2 amended; 35 round-2 surfaced rows (34 ABSENT) at /mnt/raid0/llm/tmp/stage2b/ROUND2-SURFACED.md.",
+  "pending_operator_decisions": [],
+  "stage2b_outputs": {
+    "round2_surfaced": "/mnt/raid0/llm/tmp/stage2b/ROUND2-SURFACED.md",
+    "clerk_correction": "steering seq 4 note listed Stage-2 rows 2 (Molab) and 3 (Antigravity) as declined; stage2-surfaced.md labelled both ingest-and-dive (low priority), they were not dived, so they are carried OPEN to ROUND2-SURFACED.md; only 883 rows 4,5,6 and 1367 rows 16,18,20 recorded as declines."
+  },
+  "stage2b_round2_ids": {
+    "intake-1381": "arXiv 2605.08305 LLMSYS-HPOBench",
+    "intake-1382": "github.com/Nukesor/pueue",
+    "intake-1383": "task-spooler",
+    "intake-1384": "github.com/warlockee/orze",
+    "intake-1385": "arXiv 2605.08956",
+    "intake-1386": "arXiv 2602.05930 GPTZero fabricated-citation taxonomy",
+    "intake-1387": "EvilGenie",
+    "intake-1388": "School of Reward Hacks"
+  },
+  "decisions_recorded": {
+    "intake-1380": "adopt_patterns (2026-09-15)",
+    "ERA-style branching tree for autokernel": "DECLINED, operator agreed 2026-09-15 (lineage divergence; parked-branch variant recorded as revisit-trigger decline)"
+  },
+  "stage2b_round2_ext_ids": {
+    "intake-1389": "arXiv 2502.18635 multi-objective LLM/RAG system tuning",
+    "intake-1390": "arXiv 2501.01876 surrogate benchmarks mislead HPO comparisons",
+    "intake-1391": "CDS4RAG (IJCAI 2026)",
+    "intake-1392": "arXiv 2607.20468 InferenceBench"
+  },
+  "stage2b_round2_result": {
+    "appended_ids": [
+      "intake-1381",
+      "intake-1382",
+      "intake-1383",
+      "intake-1384",
+      "intake-1385",
+      "intake-1386",
+      "intake-1387",
+      "intake-1388",
+      "intake-1389",
+      "intake-1390",
+      "intake-1391",
+      "intake-1392"
+    ],
+    "append_method": "text concatenation of /mnt/raid0/llm/tmp/stage2b/intake-1381..1392.yaml, id lines normalized unquoted; dedup by unbounded grep (arxiv_id/url hits were prose-only)",
+    "intake-1388_notes": "OPERATOR-REVIEW monitor suggestion appended; verdict kept worth_investigating",
+    "corrections_2026-09-15": {
+      "intake-1371": "+1 claim_corrections (claim 0 narrowed: Jaccard dedup not in public Orze; exact-hash only), dive_corrections (6)-(7) appended (incl. warlockee archived -> orze-ai/orze), DA-3 fold-row reason corrected",
+      "intake-1381": "+1 claim_corrections (claim 3 narrowed: lookup-confounded, contradicted by intake-1390 16/29), dive_corrections (6)-(7) appended",
+      "intake-1372": "dive_corrections (7): LLMSYS-HPOBench optimizer comparison is single-objective",
+      "intake-1096": "+4 dive_corrections (InferenceBench not corroboration; credibility_score may be over by 1 - not changed; falsifier narrowed; whole-stack = action space, 94% flag tuning) +1 claim_corrections (claim 5 narrowed)",
+      "intake-883": "+3 dive_corrections (38-repeats premise corrected; do_not_repeat.py not imported by loop/; pueue+task-spooler cannot model CPU sets/NUMA, lane arbiter waits only on OP-41), DA-3 reason amended, +3 ledger sub-rows (AK-DA3-1, AK-DA3-2, NON-ANSWER retry cap)",
+      "intake-1369": "notes: cpu_region_lock.py location correction (epyc-orchestrator/src/runtime/)"
+    }
+  },
+  "stage2b_round3_candidates": {
+    "file": "/mnt/raid0/llm/tmp/stage2b/ROUND3-SURFACED.md",
+    "total_rows": 34,
+    "recommended_ingest": 6,
+    "top_picks": [
+      "arXiv 2604.17627 SLO-Guard",
+      "arXiv 2608.00759 Less Is More (imperfect fidelity)",
+      "arXiv 2608.30724 BAITBENCH",
+      "arXiv 2510.20270 ImpossibleBench",
+      "systemd AllowedCPUs/NUMAPolicy cpuset slices (OP-41 input)"
+    ],
+    "already_entries_or_done": 7,
+    "fixture_or_covered_no_entry": 3,
+    "recommend_decline": 18
+  },
+  "stage2b_round3_ids": {
+    "intake-1393": "arXiv 2604.17627 SLO-Guard",
+    "intake-1394": "arXiv 2608.00759 Less Is More (imperfect fidelity)",
+    "intake-1395": "arXiv 2608.30724 BAITBENCH",
+    "intake-1396": "arXiv 2510.20270 ImpossibleBench",
+    "intake-1397": "systemd resource control: AllowedCPUs/CPUAffinity/NUMAPolicy slices (cpuset cgroup v2)"
+  },
+  "stage2b_round3_result": "intake-1393..1397 appended dive-verified; no OVERTURN-CANDIDATE surfaced; SpecBench declined (1396 closed the judge question); round-3 surfaced sources recorded only (final round)"
 }
