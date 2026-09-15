@@ -481,6 +481,32 @@ The additional guards added after the first real dry-run are covered by unit tes
 is run with `--apply` only after the operator reviews the manifest and confirms, at a boundary the
 AutoKernel owner chooses.**
 
+### 6.1 Archived KEEP-dirty retirement
+
+`scripts/system/autokernel_dirty_retire.py` is the separate, fail-closed bridge between a durable
+archive from `autokernel_dirty_preserve.py` and removal of one reviewed `KEEP-dirty` worktree. It
+does not make an ordinary dirty tree eligible: every selected `--record` must bind the exact
+reviewed sweep-manifest SHA, row, source path, HEAD, source fingerprint and content-addressed
+archive. If HEAD was unpushed, the archive's standalone bundle is verified and must advertise
+that exact HEAD.
+
+The default is a read-only dry-run:
+
+```bash
+python3 scripts/system/autokernel_dirty_retire.py \
+  --manifest <reviewed-sweep.json> --manifest-sha <exact-sha256> \
+  --record <archive-root>/records/<source-key>/<archive-sha>.json
+```
+
+Apply requires a COMPLETE host process probe, no live holder, a target strictly below one of the
+three worktree roots, and the operator typing the reviewed SHA prefix on a TTY. It then writes a
+durable per-row authorization receipt, resets tracked state to the archived HEAD, unlinks only
+the exact nonignored untracked paths enumerated by Git and covered by the archive, proves the tree
+clean (ignored content refuses), and runs exactly
+`git -C <owning-repo> worktree remove <exact-path>`. There is no prune, gc, force flag, wildcard,
+or name discovery. Authorization checkpoints make reset, untracked removal and worktree removal
+resumable after interruption without weakening any fresh probe, identity or content check.
+
 **Known limits:**
 - References are matched as `parent/basename` pairs or as distinctive basenames. A glob-shaped
   citation such as `tmp/aku-checkpoint.*` is not matched.
