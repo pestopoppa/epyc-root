@@ -165,8 +165,8 @@ So: one H1, `## Summary`, and a source-reference section are **hard**; the rest 
 - Inline, in Key Findings: `[source citation](../path/to/source.md)` — a repo-relative link that
   climbs out of `wiki/` with `../`.
 - Papers: `[intake-NNN]` plus the title. Note the root `CLAUDE.md` citation-precision rule —
-  `intake-896` inherits every defect of every claim in the entry, `intake-896#03` cites one claim,
-  `intake-896#record` *discusses* the record and asserts nothing; prose *about* an entry is itself
+  `intake-NNN` inherits every defect of every claim in the entry, `intake-NNN#03` cites one claim,
+  `intake-NNN#record` *discusses* the record and asserts nothing; prose *about* an entry is itself
   a citation and needs `#record`. Gate with
   `python3 scripts/vidya/cli.py cite-check --as-of <ts>`.
 - In `## Source References`: `- [title](../path/file.md) — <what it contributed>`, one line each.

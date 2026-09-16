@@ -185,7 +185,7 @@ one word denoting two different things, with a standing invitation for an implem
 apparent gap by adding a count-the-paths rule inside the fold — silently voiding the Deletion
 Property's hypotheses.
 
-**External corroboration, added 2026-09-07 (`intake-1300`, `intake-1297#record`).** The argument
+**External corroboration, added 2026-09-07 (`intake-1300#02`, `intake-1297#record`).** The argument
 above is internal and algebraic. It now has an independent instantiation by a system with every
 commercial incentive to decide otherwise: the Prove2Me formalization platform runs the same
 two-plane split. Its correctness plane is idempotent — one theorem "can collect many independent

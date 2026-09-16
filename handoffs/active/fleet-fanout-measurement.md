@@ -62,7 +62,7 @@ Related existing work (do NOT duplicate):
   fixing orchestration without better models. **This is a strictly WEAKER oracle than FM-4 and does
   NOT block on it** — "was the output used" is derivable from the parent's subsequent tool calls and
   git diff, and needs no task-success verdict. That is the whole reason to do it first.
-- [x] **FM-6 — Reconnection requirement (intake-1299; 2026-09-07).** ✅ 2026-09-07 — orphan rate 35.0%; declared width 1,187 -> measured 928 (-21.8%). A fan-out record counts only if
+- [x] **FM-6 — Reconnection requirement (intake-1299#05; 2026-09-07).** ✅ 2026-09-07 — orphan rate 35.0%; declared width 1,187 -> measured 928 (-21.8%). A fan-out record counts only if
   each subagent's output is linked to a backlog row or an artifact path; unlinked output is reported
   as `orphan` and excluded from the measured fan-out width. Adapted from Prove2Me's rule that work
   which does not reconnect to the mission decomposition earns no credit at all. Note the direct
