@@ -82,6 +82,11 @@ MIN_STALE_AFTER_S = 60.0
 #: a test can point one request somewhere else without reloading the hub.
 STORE_ROOT_ENV = "AUTOKERNEL_LOOP_STORE_ROOT"
 DEFAULT_STORE_ROOT = Path("/mnt/raid0/llm/autokernel/loop-memory")
+CURRENT_SERIAL_RUN_ENV = "AUTOKERNEL_CURRENT_SERIAL_RUN_POINTER"
+CURRENT_SERIAL_RUN_POINTER = DEFAULT_STORE_ROOT / "current-serial-run.json"
+CURRENT_SERIAL_RUN_SCHEMA = "epyc.autokernel.current_serial_run.v1"
+CURRENT_SERIAL_RUN_TRUSTED_ROOT_ENV = "AUTOKERNEL_CURRENT_SERIAL_RUN_TRUSTED_ROOT"
+CURRENT_SERIAL_RUN_TRUSTED_ROOT = Path("/mnt/raid0/llm/tmp")
 
 STATE_FRESH = "fresh"
 STATE_STALE = "stale"
@@ -158,6 +163,43 @@ NOTICES = (NOTICE_ABSENT, NOTICE_MALFORMED, NOTICE_STALE, NOTICE_FINISHED,
 def store_root() -> Path:
     """The loop's store root, resolved at call time."""
     return Path(os.environ.get(STORE_ROOT_ENV) or DEFAULT_STORE_ROOT)
+
+
+def _selected_live_root() -> tuple[Path, dict]:
+    """Prefer the serial launcher's durable current-run pointer over a stale hub env.
+
+    The environment remains a fallback for legacy producers. An explicit
+    ``snapshot(root=...)`` bypasses this discovery entirely. The pointer is
+    bounded and validated before it can select a status file; it never redirects
+    the canonical champion/knowledge readers.
+    """
+    fallback = store_root()
+    pointer = Path(os.environ.get(CURRENT_SERIAL_RUN_ENV) or CURRENT_SERIAL_RUN_POINTER)
+    try:
+        if pointer.stat().st_size > 4096:
+            raise ValueError("current-run pointer exceeds 4096 bytes")
+        record = json.loads(pointer.read_text(encoding="utf-8"))
+        if (not isinstance(record, dict)
+                or record.get("schema") != CURRENT_SERIAL_RUN_SCHEMA
+                or not isinstance(record.get("state_dir"), str)
+                or not isinstance(record.get("generated_at"), str)):
+            raise ValueError("current-run pointer has an unsupported shape")
+        root = Path(record["state_dir"])
+        if not root.is_absolute() or ".." in root.parts:
+            raise ValueError("current-run state_dir is not an absolute, normalized path")
+        trusted = Path(os.environ.get(CURRENT_SERIAL_RUN_TRUSTED_ROOT_ENV)
+                       or CURRENT_SERIAL_RUN_TRUSTED_ROOT).resolve()
+        resolved = root.resolve()
+        if resolved != trusted and trusted not in resolved.parents:
+            raise ValueError("current-run state_dir escapes trusted run root")
+        if not (root / STATUS_FILENAME).is_file():
+            raise ValueError("current-run status file is absent")
+        return root, {"kind": "current_serial_run_pointer", "evidence": str(pointer)}
+    except FileNotFoundError:
+        return fallback, {"kind": "configured_store_root", "evidence": STORE_ROOT_ENV}
+    except (OSError, ValueError, UnicodeError, json.JSONDecodeError) as exc:
+        return fallback, {"kind": "configured_store_root", "evidence": STORE_ROOT_ENV,
+                          "pointer_error": str(exc), "pointer_evidence": str(pointer)}
 
 
 def status_path(root: Optional[Path] = None) -> Path:
@@ -3322,11 +3364,12 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
     One read, so the body the page renders and the body the health probe judges
     cannot be two different files written a second apart.
     """
-    report = read(root)
+    live_root, selection = (_selected_live_root() if root is None else
+                            (Path(root), {"kind": "explicit_store_root"}))
+    report = read(live_root)
     fresh = freshness(report, now=now)
     body = report.get("body")
     campaign = campaign_status.snapshot(now=now)
-    live_root = store_root() if root is None else Path(root)
     # Selecting a live trial must not redirect the canonical champion or erase
     # the original memory store. Explicit-root callers remain self-contained.
     canonical_root = DEFAULT_STORE_ROOT if root is None else Path(root)
@@ -3335,6 +3378,7 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
         "schema": STATUS_SCHEMA,
         "evidence": report.get("path"),
         "store_root": str(live_root),
+        "run_selection": selection,
         "canonical_store_root": str(canonical_root),
         "knowledge_store_root": str(canonical_root),
         "artifact_present": bool(report.get("artifact_present")),

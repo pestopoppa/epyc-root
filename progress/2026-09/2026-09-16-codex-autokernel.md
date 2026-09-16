@@ -64,3 +64,16 @@ lanes and prospective cleanup observation. The AutoKernel wiki chapter now
 compiles nine content-hash-drifted sources, including this GLM abstention
 observation. The handoff index check, wiki lint (zero errors), and README
 freshness check passed; the shared wiki watermark was advanced after synthesis.
+
+The dashboard's repeated v12 "unexplained stale" banner was traced to the
+running hub's inherited `AUTOKERNEL_LOOP_STORE_ROOT` pin, despite v14 publishing
+an explicit terminal `failed` report. A producer/reader pair now uses the
+canonical `current-serial-run.json` pointer: the serial launcher writes it
+atomically at startup/terminal with a run identity guard, and the hub selects
+that status per request without redirecting champion or knowledge history.
+The legacy env root is only a fallback. A bounded, trusted-root check rejects
+invalid pointers. The pointer was initialized to the already-terminal v14
+artifact; the new reader reports that exact `failed` notice in a local
+integration check. Root dashboard tests passed 75 tests/8 subtests before the
+final trusted-root addition, then 25 focused tests passed. Live hub deployment
+and a future pointer rollover remain the acceptance checks in AKU-09l.

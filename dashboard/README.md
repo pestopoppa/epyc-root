@@ -779,8 +779,11 @@ The retired surface must never become a data dependency of the live one.
 * **Contract** — `epyc.autokernel.loop_status.v1`, written atomically by
   `scripts/kernel_rnd/autokernel/loop/status.py` in **epyc-inference-research**
   into the loop's store root (default
-  `/mnt/raid0/llm/autokernel/loop-memory/loop-status.json`, overridable with
-  `AUTOKERNEL_LOOP_STORE_ROOT`, resolved **per request**). The plane rule holds:
+  `/mnt/raid0/llm/autokernel/loop-memory/loop-status.json`. For a serial campaign,
+  the producer's atomic `current-serial-run.json` pointer selects the current
+  state directory **per request**; `AUTOKERNEL_LOOP_STORE_ROOT` remains the
+  legacy fallback, not a permanent pin to an old run. An explicit reader root
+  bypasses pointer discovery. Champion and knowledge reads stay canonical. The plane rule holds:
   the producer owns the schema, this hub owns the page, the nav row and the probe.
   The hub **never imports** that package and pins no path or digest of it.
 * **Four-valued freshness** — `absent` / `malformed` / `stale` / `fresh`, each

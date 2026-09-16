@@ -3259,6 +3259,12 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     ✅ 2026-09-09 — missing/stale/legacy magnitudes remain labelled history; membership/cadence remain
     visible. Stale threshold signals are producer-reported/unverified, not fresh warrant. Main's Node
     DOM harness covers these combinations (69 tests, 5 subtests); this is not a browser or live-soak test.
+  - [ ] **AKU-09l — follow the current serial run, not a stale hub environment pin**:
+    the serial supervisor publishes a durable current-run pointer at startup and terminal, guarded
+    against an older run overwriting a newer selection. The hub validates and follows that pointer
+    per request, retaining `AUTOKERNEL_LOOP_STORE_ROOT` only as a legacy fallback; canonical champion
+    and knowledge readers do not move. Acceptance requires the live `/api/loop` and rendered page
+    to name the latest run's evidence and terminal reason, plus a fresh-launch pointer rollover.
   - [x] **AKU-09c — existing hub consumes coherent management-v1 snapshots and direct controls**:
     explicit campaign/config selection, closed snapshot/ACK validation, monotonic stream fencing,
     separate producer/activity/science clocks and independently dated evidence cards.
