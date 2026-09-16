@@ -19,8 +19,9 @@ This adapter PROJECTS that row. ``claim_tuple.grade()`` decides the grade. The r
   refused. The shared ladder grades these ``Judged/Located``.
 * **Locator = the scoring run** (reviewer config x corpus version), never the decoy.
 * **The denominator is accounted for.** ``n_decoys == scored + unscored +
-  excluded_for_arbitration``, and every stale id must sit in ``unscored``. A rate
-  whose denominator silently dropped decoys is refused.
+  excluded_for_arbitration``. Every stale id must sit in ``unscored``, and every
+  ``stale_excluded`` id (a stale verdict on a decoy awaiting arbitration) must sit in
+  ``excluded_for_arbitration``. A rate whose denominator silently dropped decoys is refused.
 * **Staleness is never re-bound on read.** A verdict the writer dropped stays
   dropped. A run with no scored decoy has no row, and none is invented here.
 * **Input decay is recorded, not repaired.** An input file that still exists at
@@ -102,6 +103,13 @@ def _check_line(line: Mapping[str, Any]) -> None:
             f"{den + len(unscored) + len(excluded)} accounted for")
     if not set(line.get("stale") or {}) <= set(unscored):
         raise ProjectionError("a stale verdict is not listed as unscored; it was re-bound")
+    # Stale verdicts on decoys still awaiting arbitration are listed apart; those decoys are
+    # already excluded from the denominator, never scored.
+    if not set(line.get("stale_excluded") or {}) <= set(excluded):
+        raise ProjectionError(
+            "a stale_excluded verdict is not listed as excluded_for_arbitration")
+    if set(line.get("stale") or {}) & set(line.get("stale_excluded") or {}):
+        raise ProjectionError("a decoy is listed as both stale and stale_excluded")
     rows = line.get("belief_measurements")
     if not isinstance(rows, list) or len(rows) > 1:
         raise ProjectionError("a scoring run carries at most one belief row")
@@ -117,6 +125,8 @@ def _check_line(line: Mapping[str, Any]) -> None:
             raise ProjectionError("row corpus_sha256 differs from the line's corpus input")
         if sorted(extra.get("stale") or []) != sorted(line.get("stale") or {}):
             raise ProjectionError("row stale list differs from its line")
+        if sorted(extra.get("stale_excluded") or []) != sorted(line.get("stale_excluded") or {}):
+            raise ProjectionError("row stale_excluded list differs from its line")
 
 
 def native_rows(path: str | Path) -> tuple[dict[str, Any], ...]:

@@ -34,7 +34,7 @@ FA_OUT = Path("/mnt/raid0/llm/epyc-orchestrator/data/reviewer_eval/false_accept_
 SOURCES = {"journal_dir": str(JOURNAL_DIR),
            "journal_shards": [{"path": str(JOURNAL_DIR / "autopilot_journal.jsonl"),
                                "bytes": 1000, "prefix_sha256": "c" * 64}],
-           "mutation_ledger": {"path": str(JOURNAL_DIR / "autopilot_rejected_mutations.jsonl"),
+           "rejected_mutation_ledger": {"path": str(JOURNAL_DIR / "autopilot_rejected_mutations.jsonl"),
                                "bytes": 400, "prefix_sha256": "d" * 64}}
 FLAG = {"type": "structural_experiment", "flags": {"user_modeling": True}}
 FAIL = "VIOLATIONS:\n  - Quality floor violation\n"
@@ -146,6 +146,13 @@ def sc83() -> None:
         pb = write_fa_inputs(b, [_verdict("d2", True, stale)])
         lines.append(far.build_run_line(run_id="fixture-r2", out=FA_OUT,
                                         scored_at="2026-09-16T12:05:00+00:00", **pb))
+        c = Path(td) / "c"
+        c.mkdir()
+        arb_stale = _binding("d-arb", source_version="v0", source_hash=rev.content_hash("old"))
+        pc = write_fa_inputs(c, [_verdict("d0", True), _verdict("d1", False),
+                                 _verdict("d-arb", True, arb_stale)])
+        lines.append(far.build_run_line(run_id="fixture-r3", out=FA_OUT,
+                                        scored_at="2026-09-16T12:10:00+00:00", **pc))
     (HERE / "false_accept_runs.jsonl").write_text(
         "".join(far._canon(x) + "\n" for x in lines))
 

@@ -2056,7 +2056,7 @@ standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../sc
       Trigger: the first decoy rows plus a scored reviewer run. Zero compute to file.
       *2026-09-16 status:* `gold_annotations.py` and `review_envelope.py` are on orchestrator main, but
       no scoring run persists `FalseAcceptResult` yet. There is nothing to project until one does.
-      ✅ 2026-09-16 (sub-vb-writers), orchestrator `2789b56d` (branch `sub/vb-writers-orch-20260916`) plus the
+      ✅ 2026-09-16 (sub-vb-writers), orchestrator `2789b56d` + `e93edfdb` (branch `sub/vb-writers-orch-20260916`) plus the
       root commit on `sub/vb-writers-root-20260916`. Neither is merged yet.
       - Writer: `false_accept_record.py` plus `scripts/review/score_false_accept.py` append one self-hashed
         `epyc.reviewer.false_accept_run.v1` line per scoring run to `data/reviewer_eval/false_accept_runs.jsonl`.
@@ -2064,6 +2064,8 @@ standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../sc
           unscored.
         - The endorsement is read only from the signed body.
         - A run that mixes reviewer configs is refused.
+        - A stale verdict on a decoy awaiting arbitration is listed in `stale_excluded`, not `stale`
+          (Fable review fix). The reader checks it against `excluded_for_arbitration`.
         - `n_decoys == scored + unscored + excluded` is checked before the line is written.
         - A run with no scored decoy writes no row.
       - Reader: `adapters/reviewer_false_accept.py`, dispatched as `cli.py ingest reviewer-fa`. It refuses a
@@ -2114,7 +2116,7 @@ was filed and built before the first GPU run, so that run will not fall in a pre
     foreign-process gate in `contention_matrix.py`. Both are carried, never graded.
 - [x] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
   per-window rates** (filed 2026-09-16 by sub-autopilot-evidence; the filing text is in the /workspace
-  working copy). ✅ 2026-09-16 (sub-vb-writers), orchestrator `2789b56d`, not merged.
+  working copy). ✅ 2026-09-16 (sub-vb-writers), orchestrator `2789b56d` + review fix `e93edfdb`, not merged.
   - Writer: `scripts/autopilot/reproposal_rate.py`. `autopilot.py` calls it fail-open after both
     `journal.record` sites. Its first call writes an `armed` record. Each closed 100-trial window then gets
     one self-hashed line in `orchestration/autopilot_reproposal_rates.jsonl`. The line carries:
@@ -2125,6 +2127,8 @@ was filed and built before the first GPU run, so that run will not fall in a pre
     - rows for `all_trials`, `keyed_trials` and `diff_repeat_rate`, each with its numerator and denominator
       stated. A zero denominator writes no row.
   - Locator: the window.
+  - Rewind guard (Fable review fix): an emitted window whose recorded journal prefix digest no longer
+    matches rotates the file to `*.rewound-<utc>` and re-arms.
   - Reader: `adapters/autopilot_reproposal_rate.py`, dispatched as `cli.py ingest autopilot-reproposal-rate`.
   - Tests: orchestrator 12; root 10, including a live cross-repo test.
   - **Backfill: zero belief rows, per spec §4.7.** A pre-hook row is skipped, not back-filled: today's key

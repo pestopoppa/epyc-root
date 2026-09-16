@@ -64,7 +64,8 @@ def write_fixture(tmp: Path) -> Path:
 
 def test_fixture_projects_one_row_for_the_scored_run_only():
     rows = adapter.native_rows(RUNS)
-    assert [r["extra"]["run_id"] for r in rows] == ["fixture-r1"]   # r2: every verdict stale
+    assert [r["extra"]["run_id"] for r in rows] == ["fixture-r1", "fixture-r3"]  # r2: all stale
+    rows = rows[:1]
     [native] = rows
     tup = ct.registered()[adapter.PROJECTION_NAME](native)
     assert (tup.value, tup.reps) == (0.5, 2)
@@ -80,7 +81,7 @@ def test_fixture_projects_one_row_for_the_scored_run_only():
 
 
 def test_denominator_that_dropped_decoys_is_refused(tmp_path):
-    r1, r2 = lines()
+    r1 = lines()[0]
     bad = copy.deepcopy(r1)
     bad["result"]["unscored"] = []           # d2 silently vanished from the accounting
     with pytest.raises(ct.ProjectionError, match="dropped decoys"):
@@ -88,15 +89,28 @@ def test_denominator_that_dropped_decoys_is_refused(tmp_path):
 
 
 def test_rebound_stale_verdict_is_refused(tmp_path):
-    r1, _ = lines()
+    r1 = lines()[0]
     bad = copy.deepcopy(r1)
     bad["result"]["unscored"] = ["d9"]       # still accounts, but stale d2 is no longer unscored
     with pytest.raises(ct.ProjectionError, match="re-bound"):
         adapter.native_rows(write_lines(tmp_path / "a.jsonl", [rehash(bad)]))
 
 
+def test_stale_arbitration_decoy_projects_and_misfiled_one_is_refused(tmp_path):
+    """Fixture run r3: the only stale verdict is on the needs_arbitration decoy."""
+    r3 = lines()[2]
+    assert r3["stale"] == {} and list(r3["stale_excluded"]) == ["d-arb"]
+    rows = adapter.native_rows(write_lines(tmp_path / "a.jsonl", [r3]))
+    assert [r["extra"]["stale_excluded"] for r in rows] == [["d-arb"]]
+    adapter.project(rows[0])
+    bad = copy.deepcopy(r3)
+    bad["stale_excluded"] = {"d0": ["inputs changed"]}      # d0 is not arbitration-excluded
+    with pytest.raises(ct.ProjectionError, match="stale_excluded"):
+        adapter.native_rows(write_lines(tmp_path / "b.jsonl", [rehash(bad)]))
+
+
 def test_edited_line_or_row_and_duplicate_run_are_refused(tmp_path):
-    r1, r2 = lines()
+    r1 = lines()[0]
     bad = copy.deepcopy(r1)
     bad["result"]["numerator"] = 0
     with pytest.raises(ct.ProjectionError, match="line_sha256"):
@@ -113,7 +127,7 @@ def test_edited_line_or_row_and_duplicate_run_are_refused(tmp_path):
 
 
 def test_projection_refuses_a_protocol_and_projected_objections():
-    native = adapter.native_rows(RUNS)[0]
+    native = adapter.native_rows(RUNS)[0]  # fixture-r1
     bad = copy.deepcopy(native)
     bad["protocol_id"] = "RC-6a"
     with pytest.raises(ct.ProjectionError, match="RC-6a"):
@@ -125,7 +139,7 @@ def test_projection_refuses_a_protocol_and_projected_objections():
 
 
 def test_input_decay_is_carried_not_repaired(tmp_path):
-    r1, _ = lines()
+    r1 = lines()[0]
     corpus = tmp_path / "corpus.jsonl"
     corpus.write_text("edited after scoring\n")
     moved = copy.deepcopy(r1)
@@ -134,8 +148,8 @@ def test_input_decay_is_carried_not_repaired(tmp_path):
     assert native["attestation_present"] is False
     tup = adapter.project(native)                 # reader key is outside the writer's row hash
     assert tup.attestation_present is False
-    [fresh] = adapter.native_rows(RUNS)           # recorded inputs no longer on disk: not asserted
-    assert "attestation_present" not in fresh
+    for fresh in adapter.native_rows(RUNS):       # recorded inputs no longer on disk: not asserted
+        assert "attestation_present" not in fresh
 
 
 def test_cli_ingest_fixture(tmp_path, capsys):
@@ -145,12 +159,12 @@ def test_cli_ingest_fixture(tmp_path, capsys):
                    "--path", str(path), "--as-of", AS_OF])
     assert rc == 0
     report = json.loads(capsys.readouterr().out)
-    assert report["rows_projected"] == 1 and report["frames_emitted"] == 3
+    assert report["rows_projected"] == 2 and report["frames_emitted"] == 6
     assert report["refused"] == [] and report["declined"] == []
 
 
 def test_cli_ingest_run_file_with_no_scored_run_is_declined(tmp_path, capsys):
-    _, r2 = lines()
+    r2 = lines()[1]
     path = write_lines(tmp_path / "false_accept_runs.jsonl", [r2])
     rc = cli.main(["--ledger", str(tmp_path / "l.jsonl"), "--json", "ingest", "reviewer-fa",
                    "--path", str(path), "--as-of", AS_OF])
