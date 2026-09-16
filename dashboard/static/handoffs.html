@@ -1074,6 +1074,53 @@ const _mix = (w, home) => {
   return `rgb(${hc.map((v,i)=>Math.round(v*HOME_W+nm[i]*(1-HOME_W))).join(",")})`;
 };
 
+// ---- node packing. Pure (items in, x/y out) so a test can run it without a DOM.
+// SEED INSIDE THE BAND, then relax. Pure relaxation from a collapsed start never
+// converged: the spring pulled nodes back together every step and dense bands
+// oscillated, leaving 26 halo pairs overlapping by up to 18px however long it ran.
+// A separated seed avoids that. But an EXACT grid seed was already separated, so
+// the relax never moved a node and the band read as a lattice — implied rows and
+// columns that mean nothing. So each seed cell is offset by a deterministic
+// per-id jitter (FNV-1a of the id: same graph -> same picture, no reshuffle on
+// the 2-minute refresh), rows are staggered half a cell, and the relax (push-only,
+// no spring, so it cannot oscillate) resolves the overlaps the jitter creates.
+// Test: tests/test_dashboard_handoff_graph_readiness.py (LayoutTests).
+const _unit = (s, salt) => { let h=0x811c9dc5^salt;
+  for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193); }
+  return ((h>>>0)%100000)/100000; };
+function packBands(items, colX, half, o){
+  const {W, BAND, PAD, SEP, RELAX, JITTER} = o;
+  const byDom={}; for(const it of items) (byDom[it.n.domain]||=[]).push(it);
+  for(const d in byDom){
+    const lst=byDom[d].sort((a,b)=> b.r-a.r || (a.n.id<b.n.id?-1:1));
+    const cell=2*Math.max(...lst.map(it=>it.r))+SEP, J=JITTER*cell;
+    const cols=Math.max(1, Math.floor((half[d]*2)/cell - 0.5));
+    const left=colX[d]-(cols*cell)/2+cell/4;
+    lst.forEach((it,k)=>{ const row=Math.floor(k/cols);
+      it.x=left+(k%cols)*cell+(row%2?cell/2:0)+(2*_unit(it.n.id,1)-1)*J;
+      it.y=BAND+J+row*cell+(2*_unit(it.n.id,2)-1)*J;
+      it.top=BAND+_unit(it.n.id,3)*J; });
+  }
+  for(let k=0;k<RELAX;k++){
+    let worst=0;
+    for(let a=0;a<items.length;a++){ const A=items[a];
+      for(let b=a+1;b<items.length;b++){ const B=items[b];
+        const dx=B.x-A.x, dy=B.y-A.y, md=A.r+B.r+SEP, d2=dx*dx+dy*dy;
+        if(d2===0){ B.x+=0.7; B.y+=0.7; continue; }
+        if(d2>=md*md) continue;
+        const dist=Math.sqrt(d2), push=(md-dist)/2, ux=dx/dist, uy=dy/dist;
+        A.x-=ux*push; A.y-=uy*push; B.x+=ux*push; B.y+=uy*push;
+        if(push>worst) worst=push; } }
+    for(const it of items){
+      // A shared floor would line the top row back up, so each node gets its own.
+      if(it.y<it.top) it.y=it.top;
+      const lo=PAD+it.r, hi=W-PAD-it.r;
+      if(it.x<lo) it.x=lo; if(it.x>hi) it.x=hi; }
+    if(worst<0.05) break;
+  }
+  return items;
+}
+
 async function loadGraph(){
   let g;
   try{ g = await getJSON("/api/handoff_graph"); }
@@ -1141,7 +1188,7 @@ async function loadGraph(){
   // SEP clears the HALO (outer edge r+2.2), not the disc: rA+rB+14 leaves ~9.6px
   // of background between neighbouring halos, which is what makes individual
   // nodes readable. Height is free — H is computed from the packing.
-  const W=1200, TOP=64, BAND=158, PAD=26, MINW=118, SEP=14, RELAX=120;
+  const W=1200, TOP=64, BAND=158, PAD=26, MINW=118, SEP=14, RELAX=400, JITTER=0.3;
   const doms2=doms.slice();
   const counts={}; doms2.forEach(d=>counts[d]=g.nodes.filter(n=>n.domain===d).length);
   const total=g.nodes.length||1, inner=W-2*PAD;
@@ -1158,34 +1205,7 @@ async function loadGraph(){
             r:Math.max(5, Math.min(15, 3.4+1.9*Math.sqrt(n.open)))};
   });
 
-  // SEED ON A GRID INSIDE THE BAND, then relax lightly. Pure relaxation from a
-  // collapsed start never converged: the spring pulled nodes back together every
-  // step and dense bands oscillated, leaving 26 halo pairs overlapping by up to
-  // 18px however long it ran. A grid seed starts already-separated so the relax
-  // only softens it — measured 0 overlaps, 9.6px minimum halo gap.
-  const byDom={}; for(const it of items) (byDom[it.n.domain]||=[]).push(it);
-  for(const d in byDom){
-    const lst=byDom[d].sort((a,b)=> b.r-a.r || (a.n.id<b.n.id?-1:1));
-    const cell=2*Math.max(...lst.map(it=>it.r))+SEP;
-    const cols=Math.max(1, Math.floor((half[d]*2)/cell));
-    const left=colX[d]-(cols*cell)/2+cell/2;
-    lst.forEach((it,k)=>{ it.x=left+(k%cols)*cell; it.y=BAND+Math.floor(k/cols)*cell; });
-  }
-  for(let k=0;k<RELAX;k++){
-    let moved=0;
-    for(let a=0;a<items.length;a++){ const A=items[a];
-      for(let b=a+1;b<items.length;b++){ const B=items[b];
-        const dx=B.x-A.x, dy=B.y-A.y, md=A.r+B.r+SEP, d2=dx*dx+dy*dy;
-        if(d2===0){ B.x+=0.7; B.y+=0.7; continue; }
-        if(d2>=md*md) continue;
-        const dist=Math.sqrt(d2), push=(md-dist)/2, ux=dx/dist, uy=dy/dist;
-        A.x-=ux*push; A.y-=uy*push; B.x+=ux*push; B.y+=uy*push; moved+=push; } }
-    for(const it of items){
-      if(it.y<BAND) it.y=BAND;
-      const lo=PAD+it.r, hi=W-PAD-it.r;
-      if(it.x<lo) it.x=lo; if(it.x>hi) it.x=hi; }
-    if(moved<0.5) break;
-  }
+  packBands(items, colX, half, {W, BAND, PAD, SEP, RELAX, JITTER});
   const H=Math.ceil(Math.max(...items.map(it=>it.y+it.r))+PAD);
   svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
 

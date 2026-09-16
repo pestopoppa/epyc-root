@@ -120,6 +120,15 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
 - [ ] **Graph layout reads as a lattice.** At the spacing that makes nodes distinguishable, the grid
   seed shows through. Loosening the relax convergence threshold would reintroduce irregularity at
   some cost to the clean separation. Cosmetic; only worth doing if the regularity actually misleads.
+  - [x] **Seed de-latticed; visual verdict still open.** 2026-09-16 — `sub-rtg46-layout`, SHA
+    pending integration (branch `sub/rtg46-readiness-20260916`). Packing extracted to a pure
+    `packBands()` in `dashboard/static/handoffs.html`: staggered seed + deterministic per-id jitter
+    (0.3 cell, FNV-1a, stable across refreshes) + push-only relax. Offline, live `.index-graph.json`
+    (173 nodes): row-aligned nodes 98% -> 6%, column-aligned 89% -> 0%, 0 halo overlaps both,
+    min halo gap 9.60 -> 9.57px, height 603 -> 669px. Proxy criterion (`LayoutTests` in
+    `tests/test_dashboard_handoff_graph_readiness.py`): near-neighbour alignment < 0.2 with a
+    zero-jitter mutation > 0.8, zero crowding below SEP, domains inside their band, deterministic.
+    **Parent stays open: "does it still read as a lattice" is a human look at :8100 after deploy.**
 - [ ] **OPERATOR: nothing restarts `hub_supervisor.sh` if it dies.** It was found dead on 2026-08-10
   (recorded pid 543919 not running), which is why the hub sat on stale code unnoticed. Its own
   docstring rules out a systemd unit ("host config is operator territory"); the documented alternative
