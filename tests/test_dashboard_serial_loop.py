@@ -34,6 +34,7 @@ def producer(monkeypatch):
 
 @pytest.fixture
 def sources(tmp_path, monkeypatch, producer):
+    monkeypatch.setenv(loop_status.CURRENT_SERIAL_RUN_ENV, str(tmp_path / "no-current-run-pointer.json"))
     canonical = tmp_path / "canonical"
     canonical.mkdir()
     original = recorded_loop()
@@ -98,6 +99,24 @@ def test_original_writer_reader_page_keeps_canonical_history(sources, tmp_path):
     wire["serial"]["routing"]["stop_requested"] = True
     stopping = _run(_page_js(), wire, tmp_path, ["renderSerial"])
     assert "STOP REQUESTED" in stopping["by_id"]["serial"]
+
+
+def test_headline_stage_uses_only_a_fresh_joined_running_child(sources):
+    _canonical, router, child, _active, _routing = sources
+    router_path = router / "loop-status.json"
+    child_path = child / "loop-status.json"
+    _rewrite(router_path, lambda row: row.update(step="serial routing only"))
+    _rewrite(child_path, lambda row: row.update(step="[lane0] measuring A/B on the device"))
+    wire = loop_status.snapshot()[0]
+    assert wire["display_step"] == "[lane0] measuring A/B on the device · serial routing"
+    assert wire["loop"]["step"] == "serial routing only"
+    assert wire["serial"]["child"]["loop"]["step"] == "[lane0] measuring A/B on the device"
+
+    _rewrite(child_path, lambda row: row.update(generated_at="2000-01-01T00:00:00Z"))
+    assert loop_status.snapshot()[0]["display_step"] == "serial routing only"
+    _rewrite(child_path, lambda row: row.update(generated_at=json.loads(router_path.read_text())["generated_at"],
+                                                batch={"output_dir": "/other/batch", "pid": os.getpid()}))
+    assert loop_status.snapshot()[0]["display_step"] == "serial routing only"
 
 
 def test_serial_router_is_the_selected_health_producer(sources):

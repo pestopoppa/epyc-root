@@ -3421,6 +3421,18 @@ def snapshot(root: Optional[Path] = None, *, now: Optional[float] = None
             and body.get("surface") == "serial_targets":
         serial = _serial_snapshot(body, now=now, root=live_root)
         wire["serial"] = serial
+        child = serial.get("child")
+        if (fresh["state"] == STATE_FRESH and serial.get("state") == RUN_RUNNING
+                and isinstance(child, Mapping) and child.get("joined") is True
+                and child.get("freshness_state") == STATE_FRESH
+                and isinstance(child.get("loop"), Mapping)
+                and child["loop"].get("state") == RUN_RUNNING
+                and isinstance(child.get("display_step"), str)
+                and child["display_step"]):
+            # The router owns run liveness; the joined child owns the active
+            # work stage. Keep both identities visible without rewriting either
+            # producer's original status body.
+            wire["display_step"] = f"{child['display_step']} · serial routing"
     return wire, campaign_observation(campaign, observation(report, fresh, serial))
 
 
