@@ -2000,3 +2000,21 @@ intake-1398). They gate the latent compile-control arm (autokernel-research-loop
 OBSERVATION grade: register counts, not throughput. Source row added to `scripts/vidya/adapters/README.md`.
 
 - [ ] **SC76 (VB-VGPR-STATIC) — wire static compile-sweep register reads on the WRITE side** before AK-QL-7/AK-QL-8 run: each read emits a ClaimTuple (source commit, toolchain id, flag/pragma set, kernel symbol, vgpr/spill/sgpr, OBSERVATION grade); no new grading rule.
+
+## SC82 — VB-AK-MAXPERF: champion max-performance serving sweeps (filed 2026-09-16)
+
+Source: the `serving.calibrate_floor` np sweeps behind the canonical headline serving rates in
+`docs/design/champion-max-performance-20260908.md` (27B: research `data/ak-champion-maxperf-2026-09-08/`;
+35B-A3B-MTP: research `data/ak-champion-maxperf-35b-2026-09-08/`, promotion completed at research
+`1eb4a89b`). No adapter covers them — `calibrate_floor` writes no `belief_capture`; only `serving.compare`
+does. Source row added to `scripts/vidya/adapters/README.md`.
+
+- [ ] **SC82 (VB-AK-MAXPERF) — wire max-performance serving sweeps on the WRITE side** before the next
+  sweep (HEAD-3 np=24/32, MTP-27B-1 in `autokernel-champion-aggregate.md`): one producer-authored row per
+  np point carrying `recipe_hash`, build/executable/DSO digests, model digest, frozen request digest,
+  the per-LAUNCH run vector (n, unit LAUNCH), median aggregate t/s, `_spread` p95 dev/cv, and the
+  in-window residency record as a dependency. Strict reader re-derives the median and spread from the
+  run vector; `claim_tuple.grade()` decides; no new ladder. The 2026-09-08 27B and 35B sweeps are
+  PRE-HOOK and emit zero rows (their per-point JSON lacks build/model/request digests) — never
+  reconstruct them on read.
+
