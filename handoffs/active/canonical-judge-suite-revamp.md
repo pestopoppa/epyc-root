@@ -195,6 +195,45 @@ fleet models.** No inference runs without the standing region claim; no at-scale
         --metrics --slots --no-kv-unified` (c=49152, not 16384, so each slot holds 8192-token answers — VRAM
         unmeasured; fall back to np=1). Thinking off via chat endpoint; assert `reasoning_chars == 0`. Full text in
         the design doc above.
+      - **RUN 2026-09-16 (sub-gpu-runner), 11:28–14:01Z. Result: the ORDERING IS NOT RESOLVED at n=198.**
+        **Evidence:** research `sub/gpu-runner-20260916`, commit `c72e5ad2`, `data/cj1e-gpqa-pair-20260916/`.
+        Only summaries are committed; the GPQA question text and manifest stay out of git (canary).
+        Runner `scripts/benchmark/cj1e_gpu_pair.py`, which drives `v7_quality_gate_runner.py` at `b1c7dedb`.
+        **Setup:**
+        - Manifest from `cj_gpqa_sample.py`: n=198/198, seed 42, `sample_ids_sha256 381ba365…`.
+        - Both arms loaded at the planned **np=4, -c 49152**, so no fallback was needed.
+          - Arm A peak VRAM 41.3 GiB (recipe_hash `29fbffc5…`).
+          - Arm B peak VRAM 38.5 GiB (recipe_hash `92c97894…`).
+        - Residency proven on both arms. Arms ran sequentially, under the GPU claim.
+        - Arm A's peak KFD count was **2**. The most likely cause is a `rocm-smi` sample taken by this runner
+          during the window, but that is not proven, so it is noted here.
+        - `/props` reported a non-empty chat template on both arms. **`reasoning_chars == 0` and no `<think>`
+          on all 396 rows.**
+
+        | arm | correct/n | accuracy | truncated | wall | agg decode tok/s |
+        |---|---|---|---|---|---|
+        | Qwen3.8-27B-Q8_0 + DFlash2 | 152/198 | **76.8%** | 28 | 5,799 s | 127.7 |
+        | Qwen3.6-35B-A3B-MTP-Q8_0 | 158/198 | **79.8%** | 8 | 3,352 s | 155.2 |
+
+        **Paired analysis:**
+        - Both arms correct on 69.2% of items.
+        - Discordant pairs: 15 only-27B vs 21 only-35B.
+        - **Exact two-sided sign test p = 0.405.**
+        - The local point ordering (35B-A3B > 27B) is the reverse of the vendor ordering (0.878 vs 0.860),
+          but the difference is **not resolvable**. The design doc's power table puts this at about 0.3–0.6
+          even for a 5–7 pp gap.
+
+        **Caveat:** the 27B arm truncated 28/198 answers at max_tokens 8192, against 8 for the 35B arm. Its
+        accuracy is partly capped by the 8192-token answer budget under `enable_thinking=false`.
+
+        **Per the design doc:** a null is a finding about the instrument, not a reason to add repeats.
+        `local_benchmarks.gpqa_diamond` is emitted only if CJ-GATE adopts it.
+
+        **Belief kernel:** the SC32 rows were written by the runner (`--belief-category CANDIDATE`), one
+        `belief_measurements` row per arm in each `result.json`.
+
+        **Box left open for the owner:** "verify discrimination" returned *not demonstrated*, and CJ-GATE
+        decides adoption.
 
 ### CJ-2 — LiveCodeBench (contamination-resistant via date-windowing; all six models publish it)
 
