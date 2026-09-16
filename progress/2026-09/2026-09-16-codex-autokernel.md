@@ -145,3 +145,42 @@ support a clean-contention claim; it did not report detected contamination,
 and current CPU admission treats the census as diagnostic. The negative
 candidate was rejected regardless. Do not reinterpret that incomplete census
 as proof of a quiet host.
+
+## Half-screen accumulation restored and v18 continuous run (12:02–13:30 UTC)
+
+v17 completed a valid five-pair half-core matched-process screen for
+`akm-moe-private-down-cohorts`: +0.545% against the same retained anchor, below
+the 0.708% floor. It was classified `measured_null`, and the screen path failed
+to retain it as a provisional positive. This was a real regression from the
+original accumulator contract, not evidence that the source change has no
+value. The patch archive, binary, native capture and exact receipt remain in
+the canonical store. v17 batch 1 was intentionally stopped during profiling to
+apply the narrow correction; it produced no measurement.
+
+The live half/quarter CPU screen now retains calibrated, stationary positive
+results as provisional `keep_candidate`s even when individually sub-floor.
+The original full-target confirmation remains mandatory before a candidate
+enters the working accumulator or promotes a full champion; a reduced screen
+alone cannot claim either result. The planner-feedback path also no longer
+rebinds an accumulated comparison to the old campaign CoR. Research commits
+`3c1e9e98`, `0f8bd68c` and `2eab7a48` are on the live lane; the corrected
+research main is `e4576171`. The focused combined suite passed 54 tests.
+
+The retained v17 +0.545% patch can be re-evaluated without falsifying its
+immutable old receipt. An isolated one-shot recovery implementation is in
+research branch `codex/half-screen-accum-20260916` at `e455ad2b`, with 114
+focused tests. It verifies the old continuation, patch, source/build identity
+and then requires a new full-core oracle and A/B. It is deliberately not
+merged into the continuous loop: full-core q3 confirmation must wait until the
+other session's MI210 queue releases its claim, and the one-off CLI deserves
+review at that boundary. The old candidate is preserved; no store was reset.
+
+v18 launched continuously with the corrected path, `--rounds 0`, in
+`/mnt/raid0/llm/tmp/aku-glm53-continuous-20260916-v18`. At 13:29 UTC its
+status and the canonical store were fresh, with the child in critic pass 1.
+The dashboard followed the new run through the current-run pointer. This GLM
+run is CPU-only (`-ngl 0`) on q0+q1 and will not claim the MI210 while
+workspace-57's serialized GPU queue is active. One real completed batch
+has been observed since the v17 health checkpoint; the requested 20-batch
+watch remains in progress. No GPU or full-core q3 measurement was launched,
+and production v9 remains frozen.
