@@ -94,6 +94,16 @@ def _attestation_verified(row: dict) -> bool:
     return recomputed == claimed
 
 
+def _ap55_gate(raw) -> dict:
+    """The writer's AP-55 gate block, copied field by field; ``{}`` when absent."""
+    if not isinstance(raw, dict) or not raw:
+        return {}
+    return {"mode": str(raw.get("mode") or ""),
+            "seed_rerun": str(raw.get("seed_rerun") or ""),
+            "batch_homogeneity": str(raw.get("batch_homogeneity") or ""),
+            "hold": bool(raw.get("hold"))}
+
+
 def as_record(shard: Path, row: dict) -> dict:
     """Shape a journal row into the record `measurement_record.grade()` consumes."""
     meas = row["measurement"]
@@ -125,6 +135,11 @@ def as_record(shard: Path, row: dict) -> dict:
         # Empty on rows written before 2026-09-16 (never back-filled).
         "infra_fingerprint": str(meas.get("infra_fingerprint") or ""),
         "comparability": str(meas.get("comparability") or ""),
+        # AP-55 (b)+(c): the promotion-gate legs as RECORDED by the writer — the same-regime
+        # seed re-run verdict, the candidate-batch homogeneity verdict, the gate mode and
+        # whether it held the promotion. Carried, never graded. Empty on rows written before
+        # the gate existed (never back-filled).
+        "ap55_gate": _ap55_gate(meas.get("ap55_gate")),
         # AP-54: whether the eval rollouts ran behind the knowledge fence ("active" | "absent" |
         # "mixed"), as RECORDED by the writer from the API echo. Carried, never graded. Empty on
         # rows written before the fence existed, which must be read as unfenced.
@@ -184,6 +199,7 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                        "metric_direction": rec["metric_direction"],
                        "infra_fingerprint": rec["infra_fingerprint"],
                        "comparability": rec["comparability"],
+                       "ap55_gate": rec["ap55_gate"],
                        "eval_fence": rec["eval_fence"]},
             provenance={"evidence": f"evd_ap_{ident}", "about": claim_id, "method": ADAPTER_ID,
                         "grade_reasons": reasons, "reps_basis": rec["reps_basis"]},
