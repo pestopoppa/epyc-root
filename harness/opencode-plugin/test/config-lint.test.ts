@@ -41,6 +41,9 @@ const mutations: Array<[string, (c: any) => void, RegExp]> = [
   ["x_ in model options", (c) => { c.provider["epyc-orchestrator"].models.orchestrator.options = { x_memory: "on" } }, /staticKeys/],
   ["x_ in provider options", (c) => { c.provider["epyc-orchestrator"].options.x_memory = "on" }, /staticKeys/],
   ["output over cap", (c) => { c.provider["epyc-orchestrator"].models.orchestrator.limit.output = 64000 }, /limit\.output/],
+  ["User-Agent header missing", (c) => { delete c.provider["epyc-orchestrator"].options.headers }, /User-Agent/],
+  ["User-Agent without opencode", (c) => { c.provider["epyc-orchestrator"].options.headers = { "User-Agent": "curl/8" } }, /User-Agent/],
+  ["User-Agent duplicated by case", (c) => { c.provider["epyc-orchestrator"].options.headers["user-agent"] = "opencode/1.0.0 epyc-orchestrator" }, /User-Agent/],
   ["plugin missing", (c) => { c.plugin = [] }, /plugin/],
   ["plugin bad static key", (c) => { c.plugin[0][1].staticKeys = { x_session_id: "spoof" } }, /owned by the plugin/],
 ]

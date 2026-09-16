@@ -104,3 +104,69 @@ test("wire contract: a stream request carries the same keys", { skip: !sdk && !r
   assert.equal(bodies[0].x_user_id, "u2")
   assert.equal(bodies[0].x_tool_mode, "client")
 })
+
+// ---- User-Agent marker for the /v1 session guard (HS-4 P0.3b) --------------------------
+// The guard detects OpenCode by a User-Agent containing "opencode". Two cases are checked
+// against the pinned SDK:
+//  (a) no call-level headers: a plugin-less / `agent create` style call. The template's
+//      provider.options.headers must reach the wire on its own.
+//  (b) session calls: request.ts:196-200 adds `User-Agent: opencode/<build>` per call.
+// provider.ts builds the SDK as factory({ name: providerID, ...provider.options }).
+import { readFileSync } from "node:fs"
+import { fileURLToPath } from "node:url"
+import { stripJsonc } from "../src/config-lint.ts"
+
+const templateOptions = () => {
+  const cfg = JSON.parse(
+    stripJsonc(readFileSync(fileURLToPath(new URL("../config/opencode.jsonc.template", import.meta.url)), "utf8")),
+  )
+  return cfg.provider["epyc-orchestrator"].options
+}
+
+async function captureUserAgent(callHeaders?: Record<string, string>): Promise<string | null> {
+  const seen: Array<string | null> = []
+  const fakeFetch = async (_url: string, init: any) => {
+    seen.push(new Headers(init.headers).get("user-agent"))
+    return new Response(
+      JSON.stringify({
+        id: "x", object: "chat.completion", created: 0, model: "orchestrator",
+        choices: [{ index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" }],
+        usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+      }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    )
+  }
+  const { headerTimeout: _h, chunkTimeout: _c, ...opts } = templateOptions() // stripped by provider.ts:1799-1802
+  const provider = sdk.createOpenAICompatible({
+    name: "epyc-orchestrator",
+    ...opts,
+    baseURL: "http://fake.invalid/v1",
+    fetch: fakeFetch,
+  })
+  await provider.languageModel("orchestrator").doGenerate({
+    prompt: [{ role: "user", content: [{ type: "text", text: "hi" }] }],
+    ...(callHeaders ? { headers: callHeaders } : {}),
+  })
+  assert.equal(seen.length, 1)
+  return seen[0]
+}
+
+test("wire contract: template User-Agent reaches the request with no plugin and no call headers", { skip: !sdk && !required && "EPYC_OPENCODE_SDK_DIR not set" }, async () => {
+  assert.ok(sdk)
+  const ua = await captureUserAgent()
+  // Observed on node 22: "... ai-sdk/openai-compatible/2.0.41 ai-sdk/provider-utils/4.0.23 runtime/node.js/22".
+  // The runtime suffix differs under Bun, so assert the prefix.
+  assert.match(ua ?? "", /^opencode\/1\.18\.31 epyc-orchestrator ai-sdk\/openai-compatible\/2\.0\.41 /)
+})
+
+test("wire contract: session-call User-Agent (request.ts) still contains opencode", { skip: !sdk && !required && "EPYC_OPENCODE_SDK_DIR not set" }, async () => {
+  assert.ok(sdk)
+  const ua = await captureUserAgent({
+    "x-session-affinity": "ses_1",
+    "X-Session-Id": "ses_1",
+    "User-Agent": "opencode/1.18.31",
+  })
+  // Observed: "opencode/1.18.31 ai-sdk/provider-utils/4.0.23 runtime/node.js/22". The call-level
+  // value replaces the template marker and the provider suffix, but it still starts with "opencode/".
+  assert.match(ua ?? "", /^opencode\/1\.18\.31 /)
+})

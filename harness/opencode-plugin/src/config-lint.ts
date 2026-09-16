@@ -6,6 +6,11 @@ import { parseOptions, DEFAULT_PROVIDER_IDS } from "./lib.ts"
 
 export const PLUGIN_SPEC_SUFFIX = "harness/opencode-plugin/src/index.ts"
 
+/** Pinned OpenCode version (audit 350c726aa). The guard needs only the "opencode" substring. */
+export const OPENCODE_PINNED_VERSION = "1.18.31"
+export const EXPECTED_USER_AGENT = `opencode/${OPENCODE_PINNED_VERSION} epyc-orchestrator`
+export const REQUIRED_USER_AGENT = /^opencode\/\d+\.\d+\.\d+ epyc-orchestrator$/
+
 export const REQUIRED_ENV_FLAGS = [
   "OPENCODE_DISABLE_MODELS_FETCH",
   "OPENCODE_DISABLE_AUTOUPDATE",
@@ -108,6 +113,18 @@ export function lintConfig(cfg: unknown): string[] {
       errs.push(`provider.${pid}.options.baseURL missing`)
     }
     const provOpts = isRecord(prov.options) ? prov.options : {}
+    // The /v1 session guard recognises OpenCode by a User-Agent containing "opencode".
+    // The generic openai-compatible SDK sets none of its own, so the config must set it,
+    // or a plugin-less request is unrecognisable.
+    const hdrs = isRecord(provOpts.headers) ? provOpts.headers : {}
+    const uaKeys = Object.keys(hdrs).filter((k) => k.toLowerCase() === "user-agent")
+    const ua = uaKeys.length === 1 ? hdrs[uaKeys[0]] : undefined
+    if (typeof ua !== "string" || !REQUIRED_USER_AGENT.test(ua)) {
+      errs.push(
+        `provider.${pid}.options.headers["User-Agent"] must be exactly one header matching ${REQUIRED_USER_AGENT} ` +
+          `(e.g. "${EXPECTED_USER_AGENT}")`,
+      )
+    }
     for (const k of Object.keys(provOpts)) {
       if (k.startsWith("x_")) errs.push(`provider.${pid}.options.${k}: x_* keys belong in the plugin's staticKeys`)
     }

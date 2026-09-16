@@ -26,7 +26,16 @@
         "baseURL": "{env:EPYC_ORCHESTRATOR_BASE_URL}",
         // Orchestrator turns can exceed the 300 s header default. false disables the timeout.
         "headerTimeout": false,
-        "chunkTimeout": 600000
+        "chunkTimeout": 600000,
+        // Plugin-independent OpenCode marker for the /v1 session guard, which answers 422 to
+        // an OpenCode request with no x_session_id. provider.ts:1782-1858 passes these headers
+        // to the SDK factory, so every call made with this SDK carries them. That includes
+        // paths that never run the plugin, such as `agent create` (agent/agent.ts:435).
+        // Session calls also get `User-Agent: opencode/<build>` from session/llm/request.ts:199,
+        // and that call-level value replaces this one. Either way the value contains
+        // "opencode". The SDK appends "ai-sdk/openai-compatible/2.0.41".
+        // Keep the version in step with the audited pin.
+        "headers": { "User-Agent": "opencode/1.18.31 epyc-orchestrator" }
       },
       "models": {
         "orchestrator": {

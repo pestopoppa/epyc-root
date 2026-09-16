@@ -177,3 +177,21 @@ EPYC_OPENCODE_CONTRACT=1 EPYC_OPENCODE_SDK_DIR="$D" node --test 'test/*.test.ts'
   - 20 config-lint mutations;
   - env-file lint;
   - the wire contract (`doGenerate` and `doStream`).
+
+## Addendum P0.3b: User-Agent marker for the `/v1` session guard
+
+The P0.1/P0.2 session guard returns 422 for an OpenCode request with no `x_session_id`. It recognises OpenCode by a User-Agent containing `opencode` or by `x_tool_mode=client`. Measured against the pinned SDK with a fake fetch (node 22):
+
+| Call | User-Agent on the wire |
+|---|---|
+| Session call (E1–E5, E7–E10). `session/llm/request.ts:196-200` sets `User-Agent: opencode/<build>` per call, with or without the plugin | `opencode/1.18.31 ai-sdk/provider-utils/4.0.23 runtime/node.js/22` (the call-level value replaces the provider header and the SDK's provider suffix) |
+| SDK call with no call-level headers (E11 `agent create`; any plugin-less path outside `prepare`), **without** the template header | `ai-sdk/openai-compatible/2.0.41 ai-sdk/provider-utils/4.0.23 runtime/node.js/22`: **no marker**, so the guard cannot fire |
+| Same call **with** `provider.options.headers["User-Agent"] = "opencode/1.18.31 epyc-orchestrator"` | `opencode/1.18.31 epyc-orchestrator ai-sdk/openai-compatible/2.0.41 ai-sdk/provider-utils/4.0.23 runtime/node.js/22` |
+
+- **Template:** now sets that header.
+- **Config lint:** requires exactly one `User-Agent` matching `^opencode/X.Y.Z epyc-orchestrator$`.
+- **Tests:**
+  - `test/wire-contract.test.ts` checks both wire rows above, using the header from the shipped template.
+  - A mutation run with the header removed fails, as expected.
+  - Results: 45/45 with `EPYC_OPENCODE_CONTRACT=1`; 41 pass + 4 skip without the SDK.
+- **Still uncovered:** E12, the core v2 runner, uses `LLMClient`, not this SDK instance, so the template header is not shown to reach it. It remains a per-bump watch item.
