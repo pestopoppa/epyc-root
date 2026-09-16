@@ -29,6 +29,36 @@ Two dive results reshape the report's design. First, **overcorrection dominates*
 - [ ] **RC-8 — Baseline run**: current self-review (architect alias) in shadow on corpus v1 — the first FA/FR numbers. **Broken-grader guardrail**: read transcripts before trusting a surprising number (CORE-Bench 42→95% was grader repair, not model change).
 - [ ] **RC-9 — Rubric persistence** ~~✅ 2026-07-29~~ **REOPENED 2026-09-16** (`review_ledger.v2`; focused validation: 94 passed, 1 expected skip): full rubric and per-item grade snapshots now persist in nullable canonical-JSON `rubric_json` / `per_item_grades_json` columns. The additive migration preserves pre-RC-9 rows; legacy writers remain valid, and readers retain raw forensic columns while exposing decoded `rubric` / `per_item_grades` aliases. This is an accounting schema change only — no reviewer metric or instrument claim was produced. **Staleness audit 2026-07-29:** the prior ledger had `rubric_version` only, with no rubric/grade payload; its append writer has HIGH impact (analysis, tests, Autopilot, and trace modules), so this was implemented as a separately reviewed additive schema + backward-compatible writer/read change.
   - **Reopen note 2026-09-16 (sub-closure-fix):** the 2026-07-29 tick is false. The `review_ledger.v2` schema and the `rubric_json` / `per_item_grades_json` columns **exist on no ref**. They are absent from orchestrator `origin/main` @ `88a2902d` (`src/trace/review_ledger.py`, `src/trace/store.py`) and from every branch tip and the `log --all -S` history of root, orchestrator and research; the only hits are untracked bus state. The tick arrived in root `4762625d` (2026-07-30), the same false cohort as UTM-M7/M8 and E1a. Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #2) and `scripts/handoffs/closure_audit.py --strict-idents`. The work is still needed: the ledger carries `rubric_version` only.
+  - **Progress 2026-09-16 (sub-rc9): implemented, NOT yet on `origin/main` — box stays open until merge.**
+    Orchestrator branch `sub/rc9-20260916` @ `ebfb1cb5` (unpushed) implements the spec above:
+    nullable canonical-JSON `rubric_json` / `per_item_grades_json` columns in `src/trace/store.py`;
+    an additive, idempotent v1→v2 `ALTER TABLE` migration with no back-fill (read-only ledgers still read);
+    `LEDGER_DDL_VERSION = "review_ledger.v2"`; and readers that keep the raw columns and add decoded
+    `rubric` / `per_item_grades` aliases (`None` on v1 rows). Legacy writers are unchanged and still
+    valid. The writers now populate the columns wherever a producer holds the data:
+    - `grade_result_to_ledger_row()` covers the RD-2 `GradeResult`, including its full rubric and
+      per-item grades.
+    - `review_decision_to_ledger_row` / `record_review_decision` accept the snapshots and map
+      `rubric_ref` to `rubric_version`.
+    - The `review_plan_rubric` event records a rubric snapshot (id, template sha256, axes). It
+      records per-item grades only when the emission parsed, because the axes default to `True`
+      otherwise.
+    - `reviewer_events_to_ledger` passes both snapshots through.
+    - The `reviewer_corpus_ledger_run` field-order arms carry their prompt-rubric snapshot.
+
+    Validation: `tests/test_review_ledger_v2.py` (15 tests); related suites 409 passed, 1 skipped,
+    4 xfailed. A migration dry run on a copy of `data/trace/review_ledger.sqlite` read all 813 rows
+    before and after the migration, `calibration_summary` was identical, and 0 rows were back-filled.
+    No reviewer metric was produced. **Data gaps (need a capture run, i.e. inference, not schema
+    work):**
+    - The single-token corpus probe has no per-item grades.
+    - No live producer calls `grade_candidate` yet, so no captured rubric snapshot exists.
+    - Score-token logprobs / K-vector remain uncaptured (RC-10 / SC43).
+
+    Vidya: root `origin/main` has no reviewer adapter (SC43 / SC83 are "none (planned)"), so there
+    is nothing to re-wire yet; a future adapter reads the decoded aliases.
+    **Tick when `ebfb1cb5` lands on orchestrator `origin/main`** (that merge is the only remaining
+    step).
 - [ ] **RC-10 — Evaluate a logprob-expectation confidence construction against the existing ledger and
   corpus.** The intake-804 cross-link below (Research Intake Cross-Link — 2026-07-29) has been prose
   only since it was filed; this is its first runnable entry point, and it inherits that block's scope
