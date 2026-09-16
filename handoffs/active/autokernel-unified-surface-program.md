@@ -3803,6 +3803,13 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       abstention, the author prompt names it as a correct science result, `Outcome("abstained", ...)` skips
       judges and re-enters characterised context without incrementing transient streaks, and run status
       publishes `abstain_rate`.
+  - [x] **S3-AKU-18a — settle a science abstention through the serial scheduler**:
+    ✅ 2026-09-16 — research `main` `fb8a8273` accepts `abstained` as a distinct
+    charged, nonmeasurement terminal outcome rather than stopping the campaign as
+    `SerialSchedulingRefused`. Nine focused tests pass; the actual v14 child
+    receipt now maps to `abstained`. Existing GLM store and 27 keeps were not
+    reset. The hardware relaunch remains separate and waits for the operator's
+    announced quiet GPU window.
 - [ ] **S3-AKU-19 — conditional on AK-QL-7 retaining a throughput win: make BUILD_RECIPE a
       planner-selectable per-arm A/B.** Do not implement or activate this arm before that tripwire.
       Split the currently sealed
