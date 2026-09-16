@@ -404,6 +404,12 @@ n=500 per arm × 3 arms = 1,500 generations + 500 estimator calls ≈ 2,000 requ
       `architect_general`, plus the `frontdoor` CPU-decode overhead replicate, and apply the fixed
       decision rule. On completion the run produces measurements → file the belief-kernel adapter
       wiring task at the same boundary (source row in `scripts/vidya/adapters/README.md`).
+      - **Pre-run gaps closed 2026-09-16 (sub-gpu-prep, offline; run still open):** research `a454b7fd`
+        (ported as `76f5132b`, on research `main` via merge `a280853d`) — estimator tokens/time charged
+        (`*_incl_estimator` beside answer-only), TALE-EP token budgets (`--budget-unit tokens` default),
+        `--temperature`/`--seed`, `--endpoint` for any GPU URL, served model/GGUF identity from
+        `/v1/models`+`/props` in `<out>.meta.json`, `--chat-template-kwargs`. Tests:
+        `scripts/benchmark/test_eval_tale_budget.py` 14/14. Belief-kernel task: VB-PRB-T4.
 
 **PRB-T3 LIVE CONFIRMATION ✅ 2026-08-21 (closing the static-analysis caveat).** Real llama-server
 (frozen v9, CPU, Qwen3.6-35B-A3B, test port :8990), `POST /apply-template`: a top-level

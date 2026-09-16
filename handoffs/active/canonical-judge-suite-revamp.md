@@ -169,11 +169,11 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       outcome already recorded in this note and the underlying CJ-1c was in fact complete (:169,
       ported to main 2026-08-16); closing this note row so the open count stops misstating it.
 - [x] **CJ-1c. Execution requirement** — expected **none**. ✅ 2026-08-13 — **CONFIRMED canonical, no bespoke extractor**. Trace: `GPQADiamondAdapter`/`GPQADiamondCoTAdapter` set `scoring_method="multiple_choice"`, `scoring_config={}` (`dataset_adapters.py:1306-1316`) → the runner scores via `score_response` (`architect_sequential_runner.py:255`, `v7_quality_gate_runner.py:614`) which is **re-exported from the canonical `answer_scoring` module** (`v7_quality_gate_runner.py:353-359` — single source per `scoring-infra-standardization.md` 1a) → `answer_scoring.score_response` dispatches `multiple_choice` → `extract_letter_answer(response) == expected.upper().strip()` (`answer_scoring.py:450`). Functionally verified: CoT adapter replaces the letter-only framing with "Reason step by step… ANSWER: <letter>", canonical extractor parses that format (incl. terse/verbose final-line), `score_response` dispatch correct; 12/12 `test_answer_scoring.py` pass. Rescore tooling for the 2026-07-24 A4 artifact (`gpqa 43.4→53.0%`) is `architect_bench_rescore.py`, which also uses canonical `score_response`/`extract_letter_answer`. **Use `gpqa_diamond_cot`, not the letter-only framing** — confirmed registered in `get_adapter` (`dataset_adapters.py:172`); the plain `gpqa_diamond` prompt is letter-only by design and suppresses reasoning, so the CJ-1d wire-up must name `gpqa_diamond_cot`. *(Completed 2026-08-13 on lane/mainD `1715e6c3`, stranded there; ported to main 2026-08-16. The 2026-08-16 re-screen note above predates this port — the row was already done, not merely live.)*
-- [ ] **CJ-1d. Wire a representative sample** — the adapters exist (`gpqa_diamond`,
+- [x] **CJ-1d. Wire a representative sample** — the adapters exist (`gpqa_diamond`,
       `gpqa_diamond_cot` in `scripts/benchmark/dataset_adapters.py`). Decide n (full 198 vs a seeded
       subset) against the cold-start budget rule above.
-      DONE ON BRANCH, pending integration (sub/gpu-prep-20260916 is based on the autokernel lane; needs a cherry-pick onto origin/main):
-      2026-09-16 (sub-gpu-prep, offline) — research `b1c7dedb` on `sub/gpu-prep-20260916`:
+      ✅ 2026-09-16 (sub-gpu-prep, offline) — research `b1c7dedb` on `sub/gpu-prep-20260916`, cherry-picked as
+      `bababea8` and merged to research `main` at `a280853d` (sub-gpuprep-port):
       `scripts/benchmark/cj_gpqa_sample.py` writes the pinned `--questions-in` manifest for
       `v7_quality_gate_runner.py` (`gpqa_diamond_cot` only; letter-only refused; population id-set must equal
       the 2026-08-25 EVL-08 pin; no question text committed). **n = 198 (full set)**: measured MI210 cost
