@@ -1,0 +1,16 @@
+{
+  "name": "@epyc/opencode-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "epyc-orchestrator OpenCode plugin (HS-4 P0.3): session identity on /v1 requests and orchestrator/memory MCP calls",
+  "license": "UNLICENSED",
+  "engines": { "node": ">=22.18" },
+  "opencode": { "auditedTip": "350c726aa8b6b11eb9242040bc5eb7ae837fbf8a", "pluginApi": "1.18.31" },
+  "scripts": {
+    "test": "node --test 'test/*.test.ts'",
+    "test:contract": "EPYC_OPENCODE_CONTRACT=1 node --test 'test/*.test.ts'",
+    "lint:config": "node scripts/lint-config.ts config/opencode.jsonc.template config/opencode.env",
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

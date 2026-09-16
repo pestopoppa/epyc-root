@@ -1,0 +1,101 @@
+// OpenCode config template for the EPYC orchestrator shell (HS-4 P0.3).
+// Audited against OpenCode @ 350c726aa (packages/opencode v1.18.31).
+// Report: docs/reference/harness-candidates/opencode-p03-audit-20260916.md
+//
+// Install: copy to <project>/opencode.jsonc (or $XDG_CONFIG_HOME/opencode/opencode.jsonc),
+// export the variables in opencode.env, then run
+//   node --test 'harness/opencode-plugin/test/*.test.ts'
+//   node harness/opencode-plugin/scripts/lint-config.ts <file> harness/opencode-plugin/config/opencode.env
+// OpenCode substitutes {env:VAR} when it loads the file (src/config/variable.ts:33-40).
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // ---- One provider, one model, custom-provider mode --------------------------------
+  // The provider ID is also the providerOptions namespace that the plugin writes into.
+  // Keep it free of "." and not starting with "opencode" (the plugin refuses both).
+  "enabled_providers": ["epyc-orchestrator"],
+  "model": "epyc-orchestrator/orchestrator",
+  // Title and other "small" calls resolve to this model. Point it at the same model
+  // so no small-model search can happen (provider/provider.ts:1939-2006).
+  "small_model": "epyc-orchestrator/orchestrator",
+  "provider": {
+    "epyc-orchestrator": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "EPYC orchestrator",
+      "options": {
+        "baseURL": "{env:EPYC_ORCHESTRATOR_BASE_URL}",
+        // Orchestrator turns can exceed the 300 s header default. false disables the timeout.
+        "headerTimeout": false,
+        "chunkTimeout": 600000
+      },
+      "models": {
+        "orchestrator": {
+          "name": "EPYC orchestrator (routed)",
+          "tool_call": true,
+          "temperature": true,
+          // /v1 caps max_tokens at 32768 (orchestrator src/api/models/openai.py:90).
+          // OpenCode sends min(limit.output, 32000).
+          // limit.context must match the window the orchestrator advertises. 0 disables
+          // OpenCode's overflow maths entirely; set it from /v1/models when P1 lands.
+          "limit": { "context": 131072, "output": 32000 }
+          // Do NOT put x_* keys under per-model "options". The plugin owns them (static
+          // keys go in the plugin options below), so there is one source of truth.
+        }
+      }
+    }
+  },
+
+  // ---- The epyc-orchestrator plugin ------------------------------------------------
+  "plugin": [
+    [
+      "{env:EPYC_ROOT}/harness/opencode-plugin/src/index.ts",
+      {
+        "userId": "{env:EPYC_USER_ID}",
+        "providerIDs": ["epyc-orchestrator"],
+        "stampPrefixes": ["orchestrator_", "memory_"],
+        "staticKeys": {
+          "x_show_routing": true
+        }
+      }
+    ]
+  ],
+
+  // ---- Shell-side autonomy OFF: features live in the orchestrator (HS-4 §2) ---------
+  "compaction": { "auto": false, "prune": false },
+  "share": "disabled",
+  "autoupdate": false,
+  "snapshot": true,
+  "agent": {
+    // Removing the title agent makes SessionPrompt.ensureTitle return before any request
+    // (session/prompt.ts:216-217).
+    "title": { "disable": true },
+    // No sub-agents: delegation lives in the orchestrator (HS-4 §3.5). Disabling them also
+    // closes the user-typed "@agent" subtask path, which bypasses permission.task
+    // (session/prompt.ts:255-331, bypassAgentCheck).
+    "general": { "disable": true },
+    "explore": { "disable": true }
+  },
+  "subagent_depth": 0,
+  "permission": {
+    // Unmatched rules fall back to "ask", and `opencode run` auto-rejects asks.
+    "task": "deny",
+    "webfetch": "ask",
+    "websearch": "deny",
+    "skill": "allow"
+    // external_directory stays at its default ("ask"). The container/worktree jail is
+    // the boundary (package §4).
+  },
+
+  // ---- Skills: versioned in-repo folder only (HS-4 §3.7) ----------------------------
+  "skills": { "paths": ["{env:EPYC_ROOT}/harness/opencode-skills"] },
+
+  // ---- MCP: orchestrator tools (names become "<server>_<tool>") ----------------------
+  "mcp": {
+    "orchestrator": {
+      "type": "local",
+      "command": ["{env:EPYC_ORCHESTRATOR_MCP_PYTHON}", "-m", "src.mcp_server"],
+      "cwd": "{env:EPYC_ORCHESTRATOR_REPO}",
+      "enabled": false
+    }
+  }
+}
