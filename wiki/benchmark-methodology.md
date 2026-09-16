@@ -5628,3 +5628,49 @@ crashes. AutoPilot's AP-66 takes the opposite rules:
   AP-66: INFEASIBLE configs told as constraint violations, with normalised crash encoding.
 - `research/intake_index.yaml` — intake-1394#record (MFTune fidelity perfection and the 0.39 code floor),
   intake-1393#record (SLO-Guard crash model), intake-1367#record (the gating test).
+
+## Evidence durability: a citation is only as good as the checkout it resolves in
+
+Measured 2026-09-15 (epyc-root `cff7484d`; research `d4de5535`, `041ecb1d`, `6575c33c`).
+
+A registry that cites an artifact asserts nothing unless the artifact is **in git**. On 2026-09-15 the
+master registry cited 12 artifacts that existed only as **untracked files in one clone**: the durability
+gate passed there and failed in every worktree, and a single `git clean` would have destroyed the
+evidence behind ratified claims. Two ratification hashes on the DFlash2 challenger were hashing
+untracked files — assertions that held in exactly one checkout.
+
+The shape generalises past this one repo:
+
+- **Passing in the main clone is not passing.** A check whose result depends on which checkout runs it
+  is measuring the filesystem, not the repository. Verify evidence gates from a worktree.
+- **WITHHELD is a third state, and a gate without it lies twice.** Artifacts that cannot be committed
+  (third-party PII, licence, size) are recorded hash-and-provenance-only per `MEASUREMENT.md` §5. A
+  checker that knows only `OK`/`MISSING` reports a deliberately withheld artifact as lost — and the fix
+  is a distinct verdict, never folding it into `OK`: `OK` means *a reader can recompute this hash here*,
+  `WITHHELD` means *verification needs the original*.
+- **Carry the distillation, not the substrate.** A 22.4 MB campaign was carried at 1.54% — results plus
+  the provenance chain, not raw per-question capture, `-lv 3` logs or telemetry that was already reduced
+  to four integers. Excluding the bulk also excluded a real third-party-PII surface (upstream authors'
+  emails quoted into SWE-bench prompts), so minimality and privacy pointed the same way.
+- **Provenance docs must cite their sources or say `UNVERIFIED`.** Writing 11 campaign READMEs from git
+  history, registry citations and progress logs **corrected three premises** that had been stated
+  confidently in the task that commissioned them: an evidence directory assumed to back a quality
+  rejection turned out to hold only speed reruns; a placement directory assumed to be "the fix's
+  evidence" was the shared attestation set disambiguated by arm; an "A/B" had one arm that never
+  completed. A README with three sourced facts and two `UNVERIFIED` lines is worth more than five
+  plausible ones.
+- **Never date evidence by file mtime.** In a linked worktree every mtime is the checkout time. Use the
+  run-directory timestamp, the run's own `start_utc.txt`, or the commit that added it — same defect class
+  as the wiki scanner's mtime-vs-content-hash bug (OBS-13).
+- **A gate sees only what it scans.** This one scans the registry, so cited-but-untracked evidence in
+  *docs and handoffs* stays invisible: four instances remain open as NIB2-73e. The gate's silence is not
+  evidence of durability.
+
+### Source References (2026-09-15, non-CPU-inference ROI dispatch)
+
+- [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — NIB2-73/73a/73c/73d (closed),
+  NIB2-73e/73f (open), HYG-3.
+- [`2026-09-15-noninf-roi-dispatch.md`](../progress/2026-09/2026-09-15-noninf-roi-dispatch.md) — the
+  session record, including the compiled-vs-master registry regression the strict gate caught.
+- `epyc-inference-research scripts/validate/check_evidence_durability.py` — the WITHHELD verdict and its
+  12 tests; `data/*/README.md` + `SHA256SUMS` — the per-campaign provenance convention.
