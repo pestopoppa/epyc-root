@@ -208,6 +208,12 @@
       "owning_handoff": "handoffs/active/non-inference-backlog.md",
       "task_marker": "NI-OC-a",
       "notes": "Added 2026-09-08 (commit 4eb19af5 landed it unregistered and blocked fleet commits \u2014 fixed same hour). The reaper never kills: `pgrep -x opencode` is a READ-ONLY presence probe whose only consumer is the decision to VACUUM the opencode DB. The decision now FAILS CLOSED: any probe result other than 'definitely absent' (exit 1) skips VACUUM, so a drifted/ambiguous pattern costs a deferred VACUUM, never a corrupted live TUI. NI-OC-a adopts observer_guard.sh three-state probing properly; until then this row records the instance rather than hiding it."
+    },
+    {
+      "id": "inf70_harness1_cores_sampler",
+      "script": "scripts/inf70/harness1/tools/cores_sampler.sh",
+      "contract": "exempt",
+      "reason": "Not a liveness observer. It is the INF-70 HARNESS-1 per-arm CO-RESIDENCY SAMPLER (promoted from /mnt/raid0/llm/tmp on 2026-09-16, VB-WIRE-2): every 20 s it lists the top CPU consumers with `ps -eo pid,pcpu,comm` and classifies each FOREIGN process's Cpus_allowed_list against the bench region. It identifies its own subject by the PID the arm script passes in, never by name or argv, decides nothing about whether anything is alive, and takes no corrective action; its output is the per-arm contention verdict that the SC75 writer consumes. A process that vanishes mid-sample is recorded as GONE, which the writer counts separately."
     }
   ]
 }

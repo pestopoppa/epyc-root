@@ -1634,6 +1634,14 @@ retrofitting the read side is impossible. Source row added to
       --launch-json "$OUT/$SESS.launch.json" --arm-started-at "$(date -u -d @$A0 +%FT%TZ)"`. It needs a
       `launch.json` written once per launch (launch_id, model_path, gguf_sha256, kernel_commit,
       binary_version, launch_recipe{env,args}, pinning, bench_cpus).
+      ✅ 2026-09-16 — **producer hook wired (VB-WIRE-2, `sub-own`)**: harness promoted to root
+      `scripts/inf70/harness1/` (`b57b1efb`, verbatim), capture wired in `3c5a4b30`
+      (`sc75_capture.sh` + `sc75_launch.py`, sourced by both arm scripts; the call sits right after the
+      per-arm `coresummary.sh` line; `launch.json` comes from the live server's `/proc` environ and
+      cmdline; a missing field or a writer refusal is loud and never aborts the arm). The scratch copies
+      under `/mnt/raid0/llm/tmp/inf70/agents/harness1` got the same edit (originals kept as
+      `*.pre-sc75-20260916`). Test: `tests/vidya/test_inf70_harness_sc75_hook.py` (7): a fixture arm goes
+      through the capture step and `ingest inf70-arms` projects 1 row.
 
 ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10)
 
@@ -2088,10 +2096,19 @@ was filed and built before the first GPU run, so that run will not fall in a pre
   - Also ported from the /workspace working copy, where both producers are already on orchestrator
     main: AP-55 `infra_fingerprint`/`comparability` in `autopilot_journal.py` and the RTG-35
     foreign-process gate in `contention_matrix.py`. Both are carried, never graded.
-- [ ] **VB-WIRE-2 — SC75's producer does not call the hook yet.** `agents/harness1/arm_hot.sh` and
+- [x] **VB-WIRE-2 — SC75's producer does not call the hook yet.** `agents/harness1/arm_hot.sh` and
   `arm_cold.sh` under `/mnt/raid0/llm/tmp/inf70`, which are not in git, never invoke
   `inf70_serving_arm_capture.py`. Until they do, `ingest inf70-arms` will keep reading zero sidecars.
   Add the call at arm end before the next serving-harness arm. Owner: the INF-70 harness session.
+  ✅ 2026-09-16 (`sub-own`, operator-directed): root `b57b1efb` promotes the harness and everything it
+  sources to `scripts/inf70/harness1/`; `3c5a4b30` + `b68ce8bf` wire the capture. The scratch copies got
+  the same edit. 7 tests in `tests/vidya/test_inf70_harness_sc75_hook.py`, including a fixture arm
+  ingested end to end.
+  - The first real arm still needs two things. `gguf_sha256` must be supplied (`$GGUF_SHA256` or a
+    `<gguf>.sha256` sidecar); it is never hashed inline, because hashing would refill the page cache
+    the eviction just emptied.
+  - The scratch copies resolve the writer from `/workspace`, which lacks it until that checkout
+    reaches origin/main. Until then their capture fails loudly, and the measurement is unaffected.
 
 Status of the 2026-09-16 filings, as of origin/main `c57b0b6c`. VB-KBRAG-QLEN, VB-PRB-T4,
 VB-REVIEW-F1, VB-SL2-STEPS, VB-HARNESS-AUDIT, VB-AP53-RATE and VB-EVCONF2 are so far written only in
@@ -2100,7 +2117,7 @@ the /workspace working copy of this file. Their owners commit those boxes.
 | task | adapter exists where | ingest wired | remaining |
 |---|---|---|---|
 | VB-KBRAG-QLEN | origin/main `kb_rag_query_length.py` | yes, `kb-rag-qlen --path <report.json>` | first traffic, then a `query_length_report.py --out` snapshot, then ingest |
-| SC75 / VB-INF70-ARMS | origin/main `inf70_serving_arm{,_capture}.py` | yes, `inf70-arms` | VB-WIRE-2: the arm scripts must call the capture |
+| SC75 / VB-INF70-ARMS | origin/main `inf70_serving_arm{,_capture}.py` | yes, `inf70-arms` | none: VB-WIRE-2 wired (root `3c5a4b30`); first real arm pending |
 | VB-PRB-T4 | `tale_budget{,_capture}.py`, uncommitted in /workspace (sub-gpu-runner) | no | producer is on unmerged research `sub/gpu-prep`/`sub/gpu-runner`; commit it, merge it, then add an ingest name |
 | VB-REVIEW-F1 | `review_f1{,_capture}.py`, uncommitted in /workspace | no | producer (`ev13b_run.py`) is on unmerged research `sub/gpu-runner-ev13b-20260916` |
 | VB-SL2-STEPS | n/a (a decision) | n/a | still a decision; the serving-belief reader `autokernel_legacy_serving.py` IS on origin/main now |
