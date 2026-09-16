@@ -3247,11 +3247,12 @@ Four rows, all zero-compute to write; one carries a compute-gated arm that is fi
       held-out tasks (−4.3 ± 2.5 and −0.4 ± 3.6), with 1/9 and 3/9 failing validation outright.
       **PromptForge is that loop.** SafetyGate scores the same suite the mutation was proposed from;
       nothing measures out-of-sample transfer of an accepted mutation. Negative deltas concentrate in
-      `rewrite_action` / `force_action` patches, which ties this directly to **MHS-4** in
+      `rewrite_action` / `force_action` patches (all 4 REPLACE patches regress, but the single worst
+      patch is hint-only CONSTRAIN — MHS-5, orchestrator `4f28e6c3`, pending merge), which ties this directly to **MHS-4** in
       [`promptforge-mutation-safety-contract.md`](promptforge-mutation-safety-contract.md).
       The caution itself is zero-compute and lands with this row. **The held-out arm on accepted
       mutations is COMPUTE-GATED: filed, never run here** — it needs eval compute and belongs to
-      another session. `intake-1323#03`. Dependency: MHS-4.
+      another session. `intake-1323#record` (dive actionable D3). Dependency: MHS-4.
 - [ ] **AP-53 — Harness-written rejected-mutation ledger.** Record
       `{target, mutation_type, unified diff, per-suite deltas, rejecting gate, timestamp}` on
       **every** reject path in `actions.py`, and feed it into `_build_mutation_prompt`.
