@@ -15,6 +15,9 @@ read it as a tie on SWE, not a regression. Remaining: re-collect the 24-cell gri
 Re-collect Qwen3.8's 24-cell np × depth grid at measured `n-max 8`, then depth-sweep the other arms
 under their own best draft settings. The existing Qwen3.8 grid used `n-max 4`, about 8.7% below peak.
 Do not rerun the closed SWE protocols or revive the cleared devcontainer/parser blocker.
+**2026-09-16:** the n-max 8 grid was re-collected (INF-61, research `0a711890`; see Task). It comes out *below*
+the n-max 4 grid at np≥2 (cross-session, so an observation). Before any cells ship, run a same-window
+n-max 4 vs 8 ABA at np≥2.
 
 ## The artifact
 
@@ -84,9 +87,34 @@ results slot straight into this row.
   "N× over plain" ratio, the `FF 27B (non-MTP)` grid, the MTP workload-gate card, and every
   non-best FF rate. Headline is now **70.0 t/s** (dFlash2 block-8, np=1) as best *measured* with the
   parity caveat, alongside **55.46 t/s** as best *selectable*.
-- [ ] **Re-collect the 24-cell np×depth grid at `n-max 8`** — the published grid was captured at
+- [x] **Re-collect the 24-cell np×depth grid at `n-max 8`** — the published grid was captured at
   `n-max 4`, i.e. ~8.7% under the measured optimum, and its cells were WITHDRAWN from the artifact
   rather than shipped below peak. Needs GPU; blocked only on compute availability.
+  - ✅ **2026-09-16 16:16–19:10Z (sub-gpu-runner, INF-61): re-collected on v9 (`0db32c06e`/`10125`, HIP
+    binary sha `21cfb750`).** Evidence: research `0a711890`, `data/inf61-q38-np-depth-mtp8-20260916/`
+    (`grid_summary.json`). Category CANDIDATE; unit = launch.
+    - **Coverage.** 18 launchable cells × 2 passes, 36/36 ok. Residency was proven and host threads fenced to
+      184-191 on every launch. The 6 cells np16 @16k/32k and np32 @all L are capacity skips (`failed to
+      allocate ROCm0 buffer` at startup).
+    - **Results.** Mean aggregate decode t/s (between-launch spread up to 13.6%):
+
+      | np | 2k | 8k | 16k | 32k |
+      |---|---|---|---|---|
+      | 1 | 46.4 | 45.2 | 44.0 | 45.5 |
+      | 2 | 63.0 | 59.8 | 58.0 | 59.1 |
+      | 4 | 91.8 | 92.2 | 78.6 | 88.0 |
+      | 8 | 112.3 | 99.6 | 97.3 | 95.2 |
+      | 16 | 116.8 | 97.2 | — | — |
+
+      MTP acceptance was 0.39–0.47.
+    - **FINDING: n-max 8 does not beat the withdrawn n-max 4 grid at np≥2.** Examples: np8/2k 112.3 vs 157.3,
+      np16/2k 116.8 vs 153.5, np2/8k 59.8 vs 66.6. Single-stream is level (46.4 vs 47.6 at 2k).
+    - **Caveats.** This comparison is cross-session (2026-08-15, one launch per cell, different containment),
+      so it is an observation, not an ABA result. Each launch runs only `np` questions, with heavy
+      truncation at 2k. The 2026-08-15 grid also launched np32 @2k (141.1 t/s), which OOMs at startup
+      under n-max 8.
+    - **Consequence.** Do not ship these cells as "best config" without a same-window n-max 4 vs 8 ABA at
+      np≥2. The single-stream n-max 8 optimum may not hold for batched serving.
 - [ ] **Depth-sweep the other arms (A4, A3, A1, FF, Laguna)** — none was ever draft-depth swept, so
   their published figures are best-KNOWN, not best-POSSIBLE. Qwen3.8 gained 8.7% from its sweep
   alone; the same headroom plausibly exists here and would change cross-arm ranking.

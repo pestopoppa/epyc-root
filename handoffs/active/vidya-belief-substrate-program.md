@@ -1974,7 +1974,24 @@ are left to that still-running agent.
     emits answer-only latency. Rows project `protocol_id=""` (no TALE protocol is codified), so tuples cap at
     `Judged/Located`. The writer reads the per-question `.jsonl` + `.meta.json`, not `.summary.json`; its formulas
     match `summarize()`. Left unticked until the driver (research `sub/gpu-runner-20260916`) merges.
-- [ ] **VB-REVIEW-F1 — wire review_f1 `_summary.json` (EV-13b) at write time** (research `e70b6974` → `726e2676`;
+- [ ] **VB-GPU-RUNNER — write hooks for the sub-gpu-runner recipe sweeps (filed 2026-09-16, sub-gpu-runner).**
+  These 2026-09-16 runs are PRE-HOOK and emit zero rows. None has a write hook: `serving_beliefs` fires only
+  inside `serving.compare`. Do not project their JSONL on read.
+
+  | Run | Went through | Evidence (research) |
+  |---|---|---|
+  | INF-62 SL-1 / SL-5 | `serving.calibrate_floor(samples=1)` | `8146880b` |
+  | DF2-6 serial-exact | `df2_greedy_parity` | `8146880b` |
+  | fable5 §5 #1 MoE sweep | `llama-batched-bench` wrapper | `6cbdd856` |
+  | ERNIE-Image-Turbo ROCm rebench | sd-server wrapper | `cf05eefc` |
+  | INF-61 Qwen3.8 np×depth grid, MTP n-max 8 | `v7_quality_gate_runner` wrapper (throughput only) | `0a711890` |
+
+  Before any successor sweep:
+  - Give `calibrate_floor`-based recipe sweeps, and the batched-bench, sd-server and np-grid wrappers, a
+    producer hook. Carry per launch: recipe_hash, residency, unit=launch, and the tok/s (or s/image)
+    estimator string.
+  - Give the parity and A/A runners one too. Categorical PASS/FAIL per prompt stays categorical.
+- [x] **VB-REVIEW-F1 — wire review_f1 `_summary.json` (EV-13b) at write time** (research `e70b6974` → `726e2676`;
   the `_summary.json` producer `ev13b_run.py` is on unmerged `sub/gpu-runner-ev13b-20260916`): micro
   P/R/F1 with n_runs≥3 and sd, reader AND judge identity, `golden_manifest_checksum`, matcher-spec sha,
   `cross_family_ok`, judge-swap delta. Refuse a summary with judge==reader or no manifest checksum. Locator =
@@ -1983,6 +2000,9 @@ are left to that still-running agent.
     `cli.py ingest review-f1` (end-to-end test). The field names match `semantic_judge.py score` at research
     `0627a5d9`. Rows project `protocol_id=""`, so tuples cap at `Judged/Located`. Left unticked until
     `ev13b_run.py` merges.
+  - ✅ 2026-09-16 (sub-gpu-collect2): **first run landed through the hook.** `ev13b_run.py` merged to research main
+    (`59d0bc73`). The EV-13b run emitted both `_summary.semantic.<judge>.beliefs.jsonl` sidecars at write time, and
+    `cli.py ingest review-f1` projected 2 units → 6 rows (0 refused) into the shared ledger. Evidence: research `aac025a4`.
 - [ ] **VB-SL2-STEPS — decide whether the serving A/B's `target_sample_steps_est` block (INF-62 SL-2, research
   branch `sub/gpu-prep-20260916`) gets its own `belief_measurements` rows.** Today it rides inside the
   `serving_beliefs` native body (so `native_sha256` binds it) but only tok/s is projected. It is an ESTIMATE
@@ -2293,7 +2313,7 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 | VB-AP53-RATE | none for the rate; the AP-55 part is ported here | no | producer `rejected_mutation_ledger.py` is on orchestrator main, but no per-window rate row writer exists |
 | SC83 (was SC76, reviewer FA rate) | none | no | see SC83 above |
 | VB-MHS-GATES | none | no | producer is on unmerged orchestrator `sub/autopilot-safety-20260916` |
-| VB-GPU-RUNNER | none | no | the sweeps are pre-hook; needs a producer hook in `calibrate_floor` |
+| VB-GPU-RUNNER | none | no | the sweeps (INF-62 SL-1/SL-5, DF2-6, §5 MoE batched, ERNIE, INF-61) are pre-hook; each needs a producer hook (`calibrate_floor`, batched-bench, sd-server and np-grid wrappers) |
 
 ## SC86 — HS-4 OpenCode-shell runs (filed 2026-09-16)
 
