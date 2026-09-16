@@ -22,6 +22,7 @@ Usage (run with the orchestrator venv interpreter — PyYAML is required):
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py  # incremental (content-hash diff vs tracked manifest)
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --full  # all sources regardless of the baseline
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --touch  # advance the tracked manifest + .last_compile after compiling the delta
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --touch research --touch progress/2026-09  # scoped: advance only those entries (OP-34)
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --type research  # filter by source type
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --since 2026-04-01  # explicit mtime since-date override (not the default selection)
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --full --write-manifest
@@ -514,13 +515,14 @@ def incremental_since_tracked_manifest(type_filter: str | None = None) -> dict:
 def refresh_tracked_manifest() -> dict:
     """Regenerate the tracked manifest from the current source set.
 
-    This is what ``--touch`` does: after the reported delta has been compiled
-    into wiki pages, recording the current full set means the next
-    incremental scan reports nothing. The manifest is the shared watermark —
-    tracked, so it advances only when the change is committed, and identical
-    content hashes are recorded whichever worktree the touch runs from.
-    Refuses when no baseline manifest exists yet; establish one with
-    ``--full --write-manifest`` first.
+    This is what an UNSCOPED ``--touch`` does: after the reported delta has
+    been compiled into wiki pages, recording the current full set means the
+    next incremental scan reports nothing. The manifest is the shared
+    watermark — tracked, so it advances only when the change is committed,
+    and identical content hashes are recorded whichever worktree the touch
+    runs from. Refuses when no baseline manifest exists yet; establish one
+    with ``--full --write-manifest`` first. For a partial compile use
+    :func:`refresh_tracked_manifest_scoped` instead (OP-34).
     """
     if not SOURCE_MANIFEST_PATH.exists():
         raise ValueError(
@@ -531,6 +533,122 @@ def refresh_tracked_manifest() -> dict:
     full = build_manifest(scan_sources(0.0, None), "touch")
     write_manifest(SOURCE_MANIFEST_PATH, full)
     return full
+
+
+def _normalize_scope_path(token: str) -> str:
+    """Render a path scope token repository-relative, without trailing slash."""
+    path = Path(token).expanduser()
+    if path.is_absolute():
+        try:
+            path = path.resolve().relative_to(ROOT.resolve())
+        except ValueError as exc:
+            raise ValueError(f"touch scope path is outside the project: {token}") from exc
+    text = path.as_posix().rstrip("/")
+    if text in ("", "."):
+        raise ValueError("touch scope path must name a file or directory, not the root")
+    return text
+
+
+def parse_touch_scope(tokens: list[str]) -> tuple[set[str], set[str]]:
+    """Split ``--touch`` scope tokens into (source types, repo-relative paths).
+
+    A token equal to a configured ``source_dirs`` type is a type scope;
+    anything else is a path scope (a file, a directory prefix, or an fnmatch
+    glob). Comma-separated lists are accepted inside one token.
+    """
+    known_types = {str(item["type"]) for item in CONFIG["source_dirs"]}
+    types: set[str] = set()
+    paths: set[str] = set()
+    for token in tokens:
+        for part in (p.strip() for p in token.split(",")):
+            if not part:
+                continue
+            if part in known_types:
+                types.add(part)
+            else:
+                paths.add(_normalize_scope_path(part))
+    if not types and not paths:
+        raise ValueError("scoped --touch needs at least one source type or path")
+    return types, paths
+
+
+def _in_touch_scope(source: dict, types: set[str], paths: set[str]) -> bool:
+    if source.get("type") in types:
+        return True
+    path = str(source.get("path", ""))
+    for scope in paths:
+        if path == scope or path.startswith(scope + "/") or fnmatch.fnmatch(path, scope):
+            return True
+    return False
+
+
+def refresh_tracked_manifest_scoped(types: set[str], paths: set[str]) -> dict:
+    """Advance the tracked manifest ONLY for the sources a partial compile covered.
+
+    In-scope entries are replaced by the current scan (added, changed, and
+    removed sources all land); out-of-scope entries are carried over from the
+    saved manifest byte-for-byte, so another lane's uncompiled delta stays
+    visible to the next incremental scan. The fleet-wide ``.last_compile``
+    watermark is NOT advanced and the manifest's ``last_compile`` is kept —
+    a partial compile is not a compile of everything. The scope that was
+    applied is recorded under ``last_touch`` for review.
+
+    Raises ValueError when no baseline exists or a scope token matches no
+    saved or current source (a typo must not silently touch nothing).
+    """
+    if not SOURCE_MANIFEST_PATH.exists():
+        raise ValueError(
+            f"no tracked baseline manifest at {SOURCE_MANIFEST_PATH}; "
+            "run --full --write-manifest first (nothing is recorded compiled)"
+        )
+    saved = read_manifest(SOURCE_MANIFEST_PATH)
+    current_sources = scan_sources(0.0, None)
+    saved_sources = [s for s in saved["sources"] if isinstance(s, dict)]
+
+    all_sources = [*saved_sources, *current_sources]
+    unmatched = sorted(
+        [t for t in types if not any(s.get("type") == t for s in all_sources)]
+        + [p for p in paths if not any(_in_touch_scope(s, set(), {p}) for s in all_sources)]
+    )
+    if unmatched:
+        raise ValueError(
+            "touch scope matches no saved or current source: " + ", ".join(unmatched)
+        )
+
+    saved_by_path = source_index(saved_sources)
+    current_paths = {str(s["path"]) for s in current_sources}
+    merged: list[dict] = []
+    touched = {"added": 0, "changed": 0, "removed": 0}
+    for source in current_sources:
+        path = str(source["path"])
+        previous = saved_by_path.get(path)
+        if _in_touch_scope(source, types, paths):
+            if previous is None:
+                touched["added"] += 1
+            elif previous.get("content_hash") != source.get("content_hash"):
+                touched["changed"] += 1
+            merged.append(source)
+        elif previous is not None:
+            merged.append(previous)
+    for source in saved_sources:
+        path = str(source.get("path", ""))
+        if path in current_paths:
+            continue
+        if _in_touch_scope(source, types, paths):
+            touched["removed"] += 1
+        else:
+            merged.append(source)
+
+    manifest = build_manifest(merged, "touch:scoped")
+    manifest["last_compile"] = saved.get("last_compile")
+    manifest["last_touch"] = {
+        "at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "scope_types": sorted(types),
+        "scope_paths": sorted(paths),
+        "advanced": touched,
+    }
+    write_manifest(SOURCE_MANIFEST_PATH, manifest)
+    return manifest
 
 
 def resolve_manifest_arg(value: str | None) -> Path:
@@ -554,11 +672,17 @@ def main() -> int:
     )
     parser.add_argument(
         "--touch",
-        action="store_true",
+        nargs="?",
+        const="",
+        action="append",
+        metavar="SCOPE",
         help=(
-            "After compiling the reported delta, regenerate the tracked "
-            "source manifest (and advance .last_compile) so the next "
-            "incremental scan reports nothing."
+            "After compiling the reported delta, advance the tracked source "
+            "manifest. Bare --touch (without --type) regenerates the whole "
+            "manifest and advances .last_compile. --touch SCOPE (repeatable, "
+            "or comma-separated; a source type, a path, a directory prefix or "
+            "a glob) and --touch --type T advance ONLY the in-scope entries "
+            "and leave .last_compile alone."
         ),
     )
     parser.add_argument(
@@ -685,18 +809,35 @@ def main() -> int:
             return 1
         write_manifest(target, manifest)
 
-    if args.touch:
+    if args.touch is not None:
+        scope_tokens = [t for t in args.touch if t]
+        if not scope_tokens and args.type_filter:
+            scope_tokens = [args.type_filter]
         try:
-            refreshed = refresh_tracked_manifest()
+            if scope_tokens:
+                types, paths = parse_touch_scope(scope_tokens)
+                refreshed = refresh_tracked_manifest_scoped(types, paths)
+            else:
+                refreshed = refresh_tracked_manifest()
         except ValueError as exc:
             print(f"ERROR: {exc}", file=sys.stderr)
             return 1
-        print(
-            f"touch: regenerated {SOURCE_MANIFEST_PATH} from the current "
-            f"source set ({len(refreshed['sources'])} sources) and advanced "
-            f"{LAST_COMPILE_PATH}",
-            file=sys.stderr,
-        )
+        if scope_tokens:
+            adv = refreshed["last_touch"]["advanced"]
+            print(
+                f"touch (scoped: {', '.join(scope_tokens)}): advanced "
+                f"{SOURCE_MANIFEST_PATH} for in-scope sources only "
+                f"(+{adv['added']} ~{adv['changed']} -{adv['removed']}); "
+                f"{LAST_COMPILE_PATH} left unchanged",
+                file=sys.stderr,
+            )
+        else:
+            print(
+                f"touch: regenerated {SOURCE_MANIFEST_PATH} from the current "
+                f"source set ({len(refreshed['sources'])} sources) and advanced "
+                f"{LAST_COMPILE_PATH}",
+                file=sys.stderr,
+            )
 
     return 0
 

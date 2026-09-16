@@ -366,3 +366,151 @@ def test_refresh_tracked_manifest_refuses_without_baseline(tmp_path: Path) -> No
 
     with pytest.raises(ValueError, match="--full --write-manifest"):
         module.refresh_tracked_manifest()
+
+
+# --- OP-34: scoped --touch ------------------------------------------------
+
+
+def _three_source_baseline(module, root: Path) -> tuple[Path, Path, Path]:
+    alpha = root / "handoffs" / "active" / "alpha.md"
+    beta = root / "handoffs" / "active" / "beta.md"
+    gamma = root / "progress" / "2026-06" / "gamma.md"
+    _write_baseline(module, root, [
+        (alpha, "# Alpha\n\nFirst.\n"),
+        (beta, "# Beta\n\nSecond.\n"),
+        (gamma, "# Gamma\n\nThird.\n"),
+    ])
+    return alpha, beta, gamma
+
+
+def _delta_paths(module) -> list[str]:
+    return [s["path"] for s in module.incremental_since_tracked_manifest(None)["sources"]]
+
+
+def test_scoped_touch_by_type_leaves_other_types_pending(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha, _beta, gamma = _three_source_baseline(module, tmp_path)
+    module.touch_last_compile()
+    watermark = module.LAST_COMPILE_PATH.read_text(encoding="utf-8")
+    saved_last_compile = json.loads(
+        module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8")
+    )["last_compile"]
+
+    _write(alpha, "# Alpha\n\nChanged.\n")
+    _write(gamma, "# Gamma\n\nChanged.\n")
+    types, paths = module.parse_touch_scope(["handoff-active"])
+    refreshed = module.refresh_tracked_manifest_scoped(types, paths)
+
+    assert refreshed["mode"] == "touch:scoped"
+    assert refreshed["last_touch"]["scope_types"] == ["handoff-active"]
+    assert refreshed["last_touch"]["advanced"] == {"added": 0, "changed": 1, "removed": 0}
+    assert _delta_paths(module) == ["progress/2026-06/gamma.md"]
+    # the fleet-wide watermark is not advanced by a partial compile
+    assert module.LAST_COMPILE_PATH.read_text(encoding="utf-8") == watermark
+    assert refreshed["last_compile"] == saved_last_compile
+
+
+def test_scoped_touch_by_path_and_directory(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha, beta, gamma = _three_source_baseline(module, tmp_path)
+    _write(alpha, "# Alpha\n\nChanged.\n")
+    _write(beta, "# Beta\n\nChanged.\n")
+    _write(gamma, "# Gamma\n\nChanged.\n")
+    delta = tmp_path / "progress" / "2026-07" / "delta.md"
+    _write(delta, "# Delta\n")
+
+    types, paths = module.parse_touch_scope(
+        ["handoffs/active/alpha.md,progress/2026-06/", str(delta)]
+    )
+    assert types == set()
+    assert paths == {
+        "handoffs/active/alpha.md",
+        "progress/2026-06",
+        "progress/2026-07/delta.md",
+    }
+    module.refresh_tracked_manifest_scoped(types, paths)
+
+    assert _delta_paths(module) == ["handoffs/active/beta.md"]
+
+
+def test_scoped_touch_glob_and_removal(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha, beta, gamma = _three_source_baseline(module, tmp_path)
+    beta.unlink()
+    gamma.unlink()
+
+    refreshed = module.refresh_tracked_manifest_scoped(set(), {"handoffs/*/b*.md"})
+
+    stored_paths = {s["path"] for s in refreshed["sources"]}
+    # in-scope removal lands; out-of-scope removal stays pending for review
+    assert stored_paths == {"handoffs/active/alpha.md", "progress/2026-06/gamma.md"}
+    assert refreshed["last_touch"]["advanced"]["removed"] == 1
+    drift = module.incremental_since_tracked_manifest(None)
+    assert [s["path"] for s in drift["removed_sources"]] == ["progress/2026-06/gamma.md"]
+
+
+def test_scoped_touch_rejects_unmatched_scope(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    _three_source_baseline(module, tmp_path)
+    before = module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8")
+
+    with pytest.raises(ValueError, match="matches no saved or current source"):
+        module.refresh_tracked_manifest_scoped(set(), {"handoffs/active/typo.md"})
+    with pytest.raises(ValueError, match="outside the project"):
+        module.parse_touch_scope(["/etc/passwd"])
+    assert module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8") == before
+
+
+def test_scoped_touch_refuses_without_baseline(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    _write(tmp_path / "handoffs" / "active" / "alpha.md", "# Alpha\n")
+
+    with pytest.raises(ValueError, match="--full --write-manifest"):
+        module.refresh_tracked_manifest_scoped({"handoff-active"}, set())
+
+
+def _run_main(module, monkeypatch, argv: list[str]) -> int:
+    monkeypatch.setattr(sys, "argv", ["compile_sources.py", *argv])
+    return module.main()
+
+
+def test_cli_bare_touch_keeps_unscoped_behaviour(tmp_path: Path, monkeypatch, capsys) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha, _beta, gamma = _three_source_baseline(module, tmp_path)
+    _write(alpha, "# Alpha\n\nChanged.\n")
+    _write(gamma, "# Gamma\n\nChanged.\n")
+
+    assert _run_main(module, monkeypatch, ["--touch"]) == 0
+
+    stored = json.loads(module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8"))
+    assert stored["mode"] == "touch"
+    assert "last_touch" not in stored
+    assert module.LAST_COMPILE_PATH.exists()
+    assert _delta_paths(module) == []
+
+
+def test_cli_touch_with_type_or_scope_is_scoped(tmp_path: Path, monkeypatch, capsys) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha, beta, gamma = _three_source_baseline(module, tmp_path)
+    _write(alpha, "# Alpha\n\nChanged.\n")
+    _write(beta, "# Beta\n\nChanged.\n")
+    _write(gamma, "# Gamma\n\nChanged.\n")
+
+    assert _run_main(module, monkeypatch, ["--type", "progress", "--touch"]) == 0
+    assert not module.LAST_COMPILE_PATH.exists()
+    assert _delta_paths(module) == ["handoffs/active/alpha.md", "handoffs/active/beta.md"]
+
+    assert _run_main(
+        module, monkeypatch, ["--touch", "handoffs/active/alpha.md"]
+    ) == 0
+    assert _delta_paths(module) == ["handoffs/active/beta.md"]
+
+    assert _run_main(module, monkeypatch, ["--touch", "no-such-type-or-path"]) == 1
+    assert "matches no saved or current source" in capsys.readouterr().err
