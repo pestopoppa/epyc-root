@@ -547,19 +547,50 @@ the four generated/runtime files"), and the live `git clean` recorded in `824007
 
 The compile was then run against the correct 51 and the watermark advanced normally.
 
-- [ ] **KB-WM-1 — Make watermark LOSS distinguishable from "never compiled".** `get_last_compile()`
+- [x] **KB-WM-1 — Make watermark LOSS distinguishable from "never compiled".** `get_last_compile()`
       returns `0.0` both when `wiki/.last_compile` is absent and when it fails to parse, so a destroyed
       watermark is indistinguishable from a virgin repo. The realistic next action for whoever sees
       "844 new" is to `--touch` it forward, which silently skips every genuinely uncompiled source —
       the precise silent knowledge loss the wrap-up lease exists to prevent. Fail loudly on
       absent-but-wiki-pages-exist instead of returning 0.0.
-- [ ] **KB-WM-2 — Decide where the watermark should live, given it is fleet-shared but untracked.**
+      ✅ 2026-09-16 **CLOSED SUPERSEDED, not implemented as written** (`sub-hs4`, verified on origin/main
+      `61b005c4`). `0ea91f3e` moved incremental selection off `.last_compile` entirely: the default path is
+      a content-hash diff against the TRACKED `wiki/source_manifest.json`
+      (`compile_sources.py` `incremental_since_tracked_manifest` / `_drift_manifest`), so `.last_compile`
+      loss no longer changes any count, and `get_last_compile()` now has **zero callers**. The failure
+      shape the box names is closed at both ends: (1) the watermark is tracked, so `git clean` cannot
+      remove it and a deletion shows in `git status` and is restorable from git; (2) the harmful
+      follow-up is refused — bare `--touch` and scoped `--touch` (OP-34, `719ac638`) both raise "no
+      tracked baseline manifest" when it is absent (`refresh_tracked_manifest`,
+      `refresh_tracked_manifest_scoped`), and a corrupt manifest exits 1 via `read_manifest`. An absent
+      manifest makes the incremental run emit the full set once, with a NOTE — over-inclusive, never a
+      silent skip. Guards: `test_incremental_without_tracked_manifest_raises`,
+      `test_refresh_tracked_manifest_refuses_without_baseline`, `test_scoped_touch_refuses_without_baseline`
+      (21/21 pass in `tests/skills/test_project_wiki_compile_sources.py`). Residual → KB-WM-4.
+- [x] **KB-WM-2 — Decide where the watermark should live, given it is fleet-shared but untracked.**
       It is documented as ONE watermark for the whole repo, yet it is untracked, so every lane
       worktree carries its own and any `git clean` removes it with no trace. Those two properties are
       inconsistent. Options: track it (reverses a deliberate hygiene decision taken three times);
       move it under `coordination/` runtime state alongside the other fleet-shared runtime files; or
       derive it from the last `--touch` commit instead of storing it. **Not resolved unilaterally —
       the untracking was another session's considered call.**
+      ✅ 2026-09-16 **CLOSED SUPERSEDED** (`sub-hs4`). Decided by `0ea91f3e` (NIB2-68/OBS-13): the
+      watermark is now the tracked content-hash manifest `wiki/source_manifest.json` (not gitignored;
+      last advanced `0e97eee7`, 988 sources), described in its module docstring as "the one shared
+      watermark". That keeps the `f1717d80` untracking of `.last_compile` intact (still `.gitignore:44`)
+      while making the shared watermark identical across lane worktrees, and it advances only when a
+      `--touch` is committed. Residual → KB-WM-4.
+- [ ] **KB-WM-4 — Retire `wiki/.last_compile`, or give it one format.** Residual of KB-WM-1/2
+      (2026-09-16). It no longer drives selection, yet it still has two writers with **incompatible
+      formats**: `compile_sources.py` `touch_last_compile()` writes an ISO timestamp, while
+      `scripts/coordination/heavy_wrap.py` `step_7_compile_wiki` writes `"<request_id> <iso>"`. The
+      readers expect ISO: `get_last_compile()` (zero callers, and still returns 0.0 on absence or
+      parse failure) would read heavy_wrap's form as epoch, and `get_last_compile_iso()` copies the raw
+      text into every emitted manifest's `last_compile` field. Pick one and land it with a test that
+      fails before the fix: (a) retire it — delete `get_last_compile`/`get_last_compile_source`, stop
+      both writers, and drop it from the shared-file lists in `worker_checkpoint.py`,
+      `serialized_push.py`, `session_bus_coordinator.py` and `wrap-up.md`; or (b) keep it as the
+      manifest's timestamp companion, with one ISO format that both writers share.
 - [ ] **KB-WM-3 — Same audit for the other three files untracked by `f1717d80`.** If `.last_compile`
       had this failure shape, its siblings from the same commit should be checked for it rather than
       assumed safe.
