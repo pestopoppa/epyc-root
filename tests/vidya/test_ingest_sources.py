@@ -90,6 +90,11 @@ def _chat_template(tmp: Path) -> Path:
     return h.write_sidecar(h.make_run(tmp))
 
 
+def _occ1(tmp: Path) -> Path:
+    h = _helpers("test_occ1_optical_compression_adapter")
+    return h.write_sidecar(h.make_run(tmp))
+
+
 def _memento(tmp: Path) -> Path:
     h = _helpers("test_memento_lora_adapter")
     row = copy.deepcopy(h._load_fixture())
@@ -146,6 +151,7 @@ BUILDERS = {
     "beam": _beam,
     "tulving": _tulving,
     "chat-template-ab": _chat_template,
+    "occ1": _occ1,
     "memento-lora": _memento,
     "pareval": _pareval,
     "eval-tower-band": _band,

@@ -24,7 +24,12 @@ What the hook exists to pin (``intake-1337#record``):
   under the same name, and is refused.
 * **The judge is identity.** Four judges have put BEAM on four axes, so the judge model, the judge
   prompt version and whether the judge saw the probing question are mandatory and part of the id.
-* **Nothing is guessed.** ``arm`` must be one of the three M-12a arms; pre-hook runs emit zero rows.
+* **Nothing is guessed.** ``arm`` must be one of the three M-12b arms (M-12 B2): ``full`` (BEAM's
+  Vanilla column, memory-off), ``rag`` (``pair_chunk`` x BM25, the naive-memory control) or
+  ``trace`` (the same chunks through the orchestrator trace store, the arm under test). The
+  scorer's summary must record that every judged row was produced under exactly that arm
+  (``context_mode_by_row``, from the harness's per-row provenance); pre-hook runs and runs
+  whose rows never recorded their arm emit zero rows.
 """
 
 from __future__ import annotations
@@ -55,7 +60,15 @@ BEAM_ABILITIES = (
     "preference_following", "summarization", "temporal_reasoning",
 )
 SPLITS = frozenset({"100K", "500K", "1M", "10M"})
-ARMS = frozenset({"none", "retrieved", "full"})
+ARMS = frozenset({"full", "rag", "trace"})
+
+
+def _single_arm(by_row: Any) -> str | None:
+    """The one arm a ``context_mode_by_row`` count map names, else None."""
+    if not isinstance(by_row, Mapping):
+        return None
+    present = [k for k, v in by_row.items() if _nonneg_int(v) and v > 0]
+    return present[0] if len(present) == 1 else None
 
 #: beam_scoring.FOLD_VERSION 1 is the first fold with a tested contract (CME-2).
 MIN_SCORER_VERSION = 1
@@ -181,6 +194,9 @@ def validate_row(row: Any) -> list[str]:
 
     if extra.get("arm") not in ARMS:
         p.append(f"extra.arm must be one of {sorted(ARMS)} — never inferred on read")
+    elif _single_arm(extra.get("context_mode_by_row")) != extra.get("arm"):
+        p.append("extra.context_mode_by_row must show every judged row produced under "
+                 "extra.arm (the harness-recorded arm, M-12 B2)")
     if extra.get("split") not in SPLITS:
         p.append(f"extra.split must be one of {sorted(SPLITS)}")
     if not _nonneg_int(extra.get("scorer_version")):
@@ -316,6 +332,11 @@ def write_belief_measurements(
     if not _nonneg_int(scorer_version) or scorer_version < MIN_SCORER_VERSION:
         raise CaptureError(f"summary.scorer_version must be >= {MIN_SCORER_VERSION}; got "
                            f"{scorer_version!r}")
+    by_row = summary.get("context_mode_by_row")
+    if _single_arm(by_row) != arm:
+        raise CaptureError(
+            f"arm={arm!r} is not what the result rows record ({by_row!r}); the harness writes "
+            "each row's arm, and a claim may only restate it")
     diag = summary.get("secondary_diagnostics")
     if not isinstance(diag, Mapping):
         raise CaptureError("summary.secondary_diagnostics is missing — BOTH folds must be "
@@ -327,6 +348,7 @@ def write_belief_measurements(
     judge_model = str(summary.get("judge_model") or "")
     extra: dict[str, Any] = {
         "arm": arm,
+        "context_mode_by_row": {str(k): v for k, v in by_row.items()},
         "split": split,
         "scorer_version": scorer_version,
         "fold": summary.get("fold"),

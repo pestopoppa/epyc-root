@@ -28,6 +28,13 @@ from adapters import tulving_episodic_capture as capture  # noqa: E402
 
 SUMMARY = {
     "scorer_version": 2,
+    # M-12 B1 gold binding, as score_tulving_run records it.
+    "gold_binding": "chapter_set_v1",
+    "variant": "Udefault_Sdefault_seed0",
+    "chapters": 200,
+    "chapter_set": "200ch",
+    "book_chapters": 196,
+    "row_binding": {"recorded": 686},
     "run_id": "20260914_101010",
     "model_role": "ingest_long_context",
     "config_name": "memory_off",
@@ -67,7 +74,7 @@ def write_sidecar(run: Path, *, summary=None, **overrides) -> Path:
         producer="score_tulving_run.py",
         arm="none",
         variant="Udefault_Sdefault_seed0",
-        chapters=196,
+        chapters=200,
         emitted_at="2026-09-14T12:00:00Z",
     )
     kwargs.update(overrides)
@@ -96,7 +103,8 @@ def test_tuple_carries_the_sc67_identity_axes(tmp_path):
     srs = by_metric[capture.SIMPLE_RECALL_METRIC]
     assert srs.extra["arm"] == "none"
     assert srs.extra["variant"] == "Udefault_Sdefault_seed0"
-    assert srs.extra["chapters"] == 196
+    assert srs.extra["chapters"] == 200
+    assert srs.extra["book_chapters"] == 196 and srs.extra["gold_binding"] == "chapter_set_v1"
     assert srs.extra["scorer_version"] == 2
     assert srs.extra["simple_recall_bin_basis"] == "nb_events"
     assert srs.metric_direction == "higher_better"
@@ -120,7 +128,7 @@ def test_locator_names_the_run_never_a_per_question_file(tmp_path):
     run = make_run(tmp_path)
     tups = [reader.project(n) for n in reader.native_rows(write_sidecar(run))]
     locators = {t.attestation_locator for t in tups}
-    assert locators == {"tulving-episodic:20260914_101010:Udefault_Sdefault_seed0:196ch:arm-none"}
+    assert locators == {"tulving-episodic:20260914_101010:Udefault_Sdefault_seed0:200ch:arm-none"}
     for t in tups:
         assert "per_question" not in t.attestation_locator
 
@@ -284,7 +292,7 @@ def test_writer_refuses_an_empty_summary(tmp_path):
         capture.write_belief_measurements(
             run / "tulving_score.json", summary={}, run_id="r",
             producer="score_tulving_run.py", arm="none",
-            variant="Udefault_Sdefault_seed0", chapters=196)
+            variant="Udefault_Sdefault_seed0", chapters=200)
 
 
 def test_writer_does_not_recompute_the_metric(tmp_path):
@@ -321,3 +329,36 @@ def test_frames_go_through_the_shared_emitter(tmp_path):
         assert sup["assertion"]["category"] == "CANDIDATE"
     assert len({f["assertion"]["claim_id"] for f in frames
                 if f["frame_type"].endswith("claim_proposed/v1")}) == 2
+
+
+# --- M-12 B1: the gold must be bound to the run's chapter set ------------------------------
+
+@pytest.mark.parametrize("mutation, match", [
+    ({"gold_binding": None}, "not bound to the run's chapter set"),
+    ({"chapters": 20}, "disagrees with the 20 chapter set"),
+    ({"variant": "Unews_Snews_seed1"}, "variant="),
+    ({"book_chapters": None}, "book_chapters"),
+    ({"row_binding": {"legacy_prompt_verified": 456}}, "pre-hook run"),
+    ({"row_binding": {"recorded": 600, "legacy_prompt_verified": 86}}, "pre-hook run"),
+])
+def test_writer_refuses_a_summary_not_bound_to_the_run_book(tmp_path, mutation, match):
+    run = make_run(tmp_path)
+    with pytest.raises(capture.CaptureError, match=match):
+        write_sidecar(run, summary={**SUMMARY, **mutation})
+    assert not (run / capture.SIDECAR_NAME).exists()
+
+
+def test_writer_refuses_an_on_disk_count_as_the_chapter_set(tmp_path):
+    run = make_run(tmp_path)
+    with pytest.raises(capture.CaptureError, match="nominal set"):
+        write_sidecar(run, chapters=196)
+
+
+def test_reader_refuses_a_row_whose_gold_binding_was_stripped(tmp_path):
+    sidecar = write_sidecar(make_run(tmp_path))
+    rows = [json.loads(line) for line in sidecar.read_text().splitlines()]
+    for row in rows:
+        row["extra"].pop("gold_binding")
+        row["row_sha256"] = capture.row_digest(row)
+    sidecar.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    assert reader.native_rows(sidecar) == ()
