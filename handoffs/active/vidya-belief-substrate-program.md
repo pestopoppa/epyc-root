@@ -1991,7 +1991,11 @@ came back clean: 161/161 and 155/155, harmful 0). Decision recorded in
 The standing open rows below (freeze-gated producer triggers) are tracked work, not gate
 conditions.
 
-## SC76 — VB-VGPR-STATIC: static compile-sweep register stats (filed 2026-09-15)
+## SC84 — VB-VGPR-STATIC: static compile-sweep register stats (filed 2026-09-15 as SC76)
+
+*Renumbered 2026-09-16 (sub-vidya-wire): `SC76` was allocated twice on 2026-09-15. The
+claim_anchor re-verifier (S3-VID-02, above) keeps SC76, since SC77-SC80 and the research-intake
+skill cite it.*
 
 Source: zero-GPU reads of per-kernel register allocation (`.vgpr_count`, `.vgpr_spill_count`,
 `.sgpr_count`) from the AMDGPU `.note` of compiled gfx90a device objects, produced by compile-flag and
@@ -1999,4 +2003,76 @@ pragma sweeps (first run: `artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_
 intake-1398). They gate the latent compile-control arm (autokernel-research-loop AK-QL-7/AK-QL-8) and are
 OBSERVATION grade: register counts, not throughput. Source row added to `scripts/vidya/adapters/README.md`.
 
-- [ ] **SC76 (VB-VGPR-STATIC) — wire static compile-sweep register reads on the WRITE side** before AK-QL-7/AK-QL-8 run: each read emits a ClaimTuple (source commit, toolchain id, flag/pragma set, kernel symbol, vgpr/spill/sgpr, OBSERVATION grade); no new grading rule.
+- [ ] **SC84 (VB-VGPR-STATIC) — wire static compile-sweep register reads on the WRITE side** before AK-QL-7/AK-QL-8 run: each read emits a ClaimTuple (source commit, toolchain id, flag/pragma set, kernel symbol, vgpr/spill/sgpr, OBSERVATION grade); no new grading rule.
+
+## SC83 — reviewer negative-control FA rate + machine-review envelopes (filed 2026-09-16)
+
+*Allocated as `SC76` in the /workspace working copy, which collided with two existing SC76
+allocations; renumbered SC83 on 2026-09-16 (sub-vidya-wire). SC82 is taken on
+`sub/misc-fixes-root-20260916` (VB-AK-MAXPERF).*
+
+Source: `reviewer-typed-artifacts.md` RA-9 and RA-12, landed 2026-09-16 in `epyc-orchestrator` on branch
+`sub/reviewer-artifacts-20260916` (not yet merged). The RA-9 dual-gold corpus adds `status: invalid` decoys,
+which make a reviewer **false-accept rate** measurable from our own data for the first time. RA-12 binds
+every machine review to the exact inputs it was produced against. Filed at producer creation, per the
+standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
+
+- [ ] **SC83 — wire the negative-control FA rate on the WRITE side before the first decoy corpus is scored.**
+      Class `measurement`, **rates only**. A single verdict or objection is categorical and must not be
+      forced through `ClaimTuple` (the same call as the headless-audit row). Project
+      `gold_annotations.FalseAcceptResult.as_dict()`: numerator, denominator, `lower_is_better`, and the
+      unscored and arbitration-excluded ids. A rate whose denominator dropped decoys silently must be refused.
+      **Locator = the scoring run (reviewer config × corpus version)**, never the decoy (SC6-HAZARD).
+      **Staleness is a write-side filter:** only verdicts whose RA-12 envelope passes
+      `review_envelope.check_binding` against current inputs may contribute; a stale verdict emits zero
+      rows and is never re-bound on read. Machine objections are `unverified_lead` and never corroboration.
+      **Do NOT write a grading rule**: project, and let `claim_tuple.grade()` decide. Until RC-6a merges,
+      these are observations and must not be graded as decision-gating.
+      Trigger: the first decoy rows plus a scored reviewer run. Zero compute to file.
+      *2026-09-16 status:* `gold_annotations.py` and `review_envelope.py` are on orchestrator main, but
+      no scoring run persists `FalseAcceptResult` yet. There is nothing to project until one does.
+
+## VB-WIRE — `cli.py ingest` wiring and reconciliation of the 2026-09-16 filings (sub-vidya-wire)
+
+- [x] **VB-WIRE-1 — give every file-shaped adapter an `ingest` name.** ✅ 2026-09-16
+  - `scripts/vidya/ingest_sources.py` is a dispatcher, not a grader. It uses each adapter's own
+    `native_rows` and its registered projection, and emits through `claim_tuple.to_frames`.
+  - 15 names: `kb-rag-qlen` (closes VB-KBRAG-QLEN-R), `inf70-arms` (SC75), `contention-gate`,
+    `contention-matrix`, `beam`, `tulving`, `chat-template-ab`, `memento-lora`, `pareval`,
+    `eval-tower-band`, `fanout-outcome`, `research-sweep-g1`, `research-sweep-g234`,
+    `autopilot-journal`, `sealed-manifest`. `dflash2_experimental_runtime` is left out on purpose,
+    with the reason in `UNWIRED`.
+  - `tests/vidya/test_ingest_sources.py` (22 pass): each source ingests a fixture through the CLI.
+    Each ledger grade equals `claim_tuple.grade()` of the adapter's own projection.
+  - Real-corpus dry runs on 2026-09-16:
+    - `contention-gate`: 382 rows.
+    - `fanout-outcome`: 5 rows.
+    - `sealed-manifest`: 6 rows; 8 manifests are unsealed and declined.
+    - `contention-matrix`: 6 runs, all pre-hook and declined.
+    - `inf70-arms`: 0 sidecars.
+    - `autopilot-journal`: 0 measured rows.
+  - Also ported from the /workspace working copy, where both producers are already on orchestrator
+    main: AP-55 `infra_fingerprint`/`comparability` in `autopilot_journal.py` and the RTG-35
+    foreign-process gate in `contention_matrix.py`. Both are carried, never graded.
+- [ ] **VB-WIRE-2 — SC75's producer does not call the hook yet.** `agents/harness1/arm_hot.sh` and
+  `arm_cold.sh` under `/mnt/raid0/llm/tmp/inf70`, which are not in git, never invoke
+  `inf70_serving_arm_capture.py`. Until they do, `ingest inf70-arms` will keep reading zero sidecars.
+  Add the call at arm end before the next serving-harness arm. Owner: the INF-70 harness session.
+
+Status of the 2026-09-16 filings, as of origin/main `c57b0b6c`. VB-KBRAG-QLEN, VB-PRB-T4,
+VB-REVIEW-F1, VB-SL2-STEPS, VB-HARNESS-AUDIT, VB-AP53-RATE and VB-EVCONF2 are so far written only in
+the /workspace working copy of this file. Their owners commit those boxes.
+
+| task | adapter exists where | ingest wired | remaining |
+|---|---|---|---|
+| VB-KBRAG-QLEN | origin/main `kb_rag_query_length.py` | yes, `kb-rag-qlen --path <report.json>` | first traffic, then a `query_length_report.py --out` snapshot, then ingest |
+| SC75 / VB-INF70-ARMS | origin/main `inf70_serving_arm{,_capture}.py` | yes, `inf70-arms` | VB-WIRE-2: the arm scripts must call the capture |
+| VB-PRB-T4 | `tale_budget{,_capture}.py`, uncommitted in /workspace (sub-gpu-runner) | no | producer is on unmerged research `sub/gpu-prep`/`sub/gpu-runner`; commit it, merge it, then add an ingest name |
+| VB-REVIEW-F1 | `review_f1{,_capture}.py`, uncommitted in /workspace | no | producer (`ev13b_run.py`) is on unmerged research `sub/gpu-runner-ev13b-20260916` |
+| VB-SL2-STEPS | n/a (a decision) | n/a | still a decision; the serving-belief reader `autokernel_legacy_serving.py` IS on origin/main now |
+| VB-EVCONF2 | none | no | `confidence_source_compare.py` is on unmerged orchestrator `sub/evconf2-20260916` |
+| VB-HARNESS-AUDIT | none | no | decision (a)/(b)/(c); the findings are handoff prose with no machine-readable record to project |
+| VB-AP53-RATE | none for the rate; the AP-55 part is ported here | no | producer `rejected_mutation_ledger.py` is on orchestrator main, but no per-window rate row writer exists |
+| SC83 (was SC76, reviewer FA rate) | none | no | see SC83 above |
+| VB-MHS-GATES | none | no | producer is on unmerged orchestrator `sub/autopilot-safety-20260916` |
+| VB-GPU-RUNNER | none | no | the sweeps are pre-hook; needs a producer hook in `calibrate_floor` |

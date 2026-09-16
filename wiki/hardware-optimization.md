@@ -91,7 +91,7 @@ wall timeout, and bounded output.
 - [mi210-q8-dequant-gemv-roofline.md](../handoffs/active/mi210-q8-dequant-gemv-roofline.md) — INF37-IQ-2 / INF37-IQ-3.
 - [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md) — the #19984 correction.
 - [rocm-upgrade-checklist.md](../docs/runbooks/rocm-upgrade-checklist.md) — unpin gates.
-- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — SC76 write-side hook.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — SC84 write-side hook (VB-VGPR-STATIC; filed as SC76).
 - [2026-09-15-vgpr-compiler-ab.md](../progress/2026-09/2026-09-15-vgpr-compiler-ab.md) — session record including the +31 intake renumbering.
 
 ## Compiled Update — 2026-09-15: gfx90a kernel authoring — the vendor ISA knowledge exists, the vendor numbers do not, and a profiler is a multiplier not a prerequisite
