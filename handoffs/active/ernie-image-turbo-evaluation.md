@@ -149,4 +149,35 @@ enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor
     for A/B). `verify_ggml_linkage.sh` PASS (all four ggml libs inside the build dir). Runner recipe (port 18190,
     768–1024² × 8 steps × 3 repeats, fix on/off, blank-PNG metric, VRAM sampled during the run):
     `RUNNER_RECIPE.md` in the worktree. Prod `build/` and `build-hip/` untouched.
+  - **RUN 2026-09-16, 14:21–14:30Z (sub-gpu-runner; collected by sub-gpu-collect).** Result: **the f32 fix is
+    REFUTED**, by the recipe's own rule ("B still blank at 1024²"). Box NOT ticked: there is no valid 1024² GPU
+    number.
+    - **Evidence.** Research main `cf05eefc`, `data/ernie-rocm-rebench-20260916/`. PNG sha256s are in
+      `requests.jsonl`; the images themselves are not committed.
+    - **Admissibility.**
+      - 23/23 requests returned HTTP 200.
+      - The server pid was listed in KFD in every sample of every request.
+      - The log shows `found 1 ROCm devices` / MI210, and params load with `RAM 0.00MB`.
+      - Peak VRAM: 25.5 GiB with the patch ON, 19.0 GiB with it OFF.
+      - Peak KFD count 1. The linkage receipt PASSes.
+      - sclk dipped to 1295 MHz.
+    - **Results.** 8 steps, seed 2026072732, n=3 per cell. Every cell was bit-identical across its reps, so
+      the spread is zero.
+
+      | shape | patch ON gen s | patch OFF gen s | output |
+      |---|---|---|---|
+      | 768² | 16.3 | — | good |
+      | 896² | 23.0 | 20.3 | good |
+      | 960² | 26.9 | — | good (visually checked) |
+      | 1024² | 30.2 | 26.5 | **uniform white** (mean 255, sd 0, 33 KB), ON and OFF |
+      | 832×1248 | 30.4 | — | **uniform white** |
+
+    - **Reading.**
+      - The patch does not fix the ≥1024² white output, and it costs about 13% (896²: 23.0 vs 20.3 s).
+      - 960² is now non-blank with the patch ON, where the 2026-07-19 build was blank at ≥960². Patch OFF was
+        not run at 960², so that change cannot be attributed to the patch.
+      - Per the recipe, no headline speedup is computed.
+    - **Next (recipe §5).** Widen f32 to `to_q/k/v`, `gate_proj/up_proj` and `final_linear`, or use the
+      `z_image.hpp:51` out-proj `set_scale(1/16)` pattern. Then add a patch-OFF 960² cell.
+    - **Belief kernel.** No write hook; covered by VB-GPU-RUNNER.
 - [ ] Re-litigate FLUX.1-schnell alternative if bilingual long-form in-image text not needed by product
