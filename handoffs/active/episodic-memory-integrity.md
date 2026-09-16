@@ -402,6 +402,10 @@ failure caught in amber.
     swallows a missing pandas/pyarrow and then scores every question as missing, so an M-12a run in the research venv
     (which has no pyarrow) would emit an all-zero summary that looks like a result. Raise instead, and add pyarrow to
     the research venv. Found 2026-09-15 while verifying the M-12e rescore, which had to run under the delta-Mem venv.
+    *Progress 2026-09-16 (not ticked):* research `ccc41d4b` — the RAISE half is done: a missing pandas/pyarrow and any per-file parquet read error now raise
+    `RuntimeError` (tests: `test_tulving_context_mode.py`). The research `.venv` still lacks pyarrow and was not
+    modified; `/mnt/raid0/llm/venvs/ml-training` has pandas + pyarrow + pytest and ran the rescore. **Remains:** add
+    pyarrow to the research `.venv`. That needs a package install (network), which this lane was not allowed to do.
   - [x] **M-12e — scorer prerequisites, ZERO COMPUTE, do before any arm runs** (intake-408#record).
         ✅ 2026-09-14, research `dcb769c1`. THREE defects, not two. (i) the unconditional
         `simple_inputs.append(scored)` at :121 now fires only for `get_style == "all"`; the subset is
@@ -425,6 +429,12 @@ failure caught in amber.
         `scripts/benchmark/test_score_tulving_run.py` + `test_tulving_episodic_adapter.py`. The four
         wiki paragraphs quoting SRS 0.5530 / CAS 0.1593 were refreshed in the same wrap-up; draft
         at `wiki/drafts/tulving-subset-scoring-and-tau-coverage.md`.
+        *Re-verified 2026-09-16 (sub-memeval, root `sub/memeval-root-20260916`):* 108/108 tests pass; an
+        independent offline re-score of the only stored Tulving run (`20260619_141212`) with the pre-fix
+        scorer (`dcb769c1^`) gives SRS 0.5530 / CAS 0.1593 and with v2 gives SRS 0.5684 (366 q) / CAS
+        0.1593 (37 partial). The fresh v2 summary is byte-for-byte identical to the committed rescore. Three
+        un-annotated SRS 0.5530 quotes remained in `bulk-inference-campaign.md` (:5, :83, :584). They now
+        carry the v2 value and the scorer note.
   - [ ] **M-12f — decide whether the paper's Chronological Order score excludes single-item questions before
         CAS is ever a headline**, since 30 of the 45 `chronological` questions in the 20ch set have fewer than
         two ground-truth items (15 have zero) so ordering is undefined and two thirds of the tau leg is

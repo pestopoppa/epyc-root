@@ -24,7 +24,7 @@ Build the two adapters M-12 needs and that our five-suite long-context roster la
 
 ## Tasks
 
-- [ ] **CME-1 — Author `BEAMAdapter` (a `BaseAdapter` subclass) for the 128K/100K split** in
+- [x] **CME-1 — Author `BEAMAdapter` (a `BaseAdapter` subclass) for the 128K/100K split** in
       `epyc-inference-research/scripts/benchmark/long_context_adapters.py`, registered at the five
       points the intake-1330 dive enumerated: the lazy-import bridge `_get_long_context_adapter`
       (`dataset_adapters.py`, verified in-tree at :89–96), the `ADAPTER_SUITES` set (:50), the
@@ -47,6 +47,22 @@ Build the two adapters M-12 needs and that our five-suite long-context roster la
       with `beam_scoring.build_nugget_judge_prompt` and keep the 0/0.5/1 verdicts
       (`parse_nugget_verdict`) for `score_beam_run.py`; (2) a real-data smoke on the staged
       `data/100K-00000-of-00001.parquet` (5,429,768 B) under `/mnt/raid0/llm/data/eval/beam/`.
+      ✅ 2026-09-16 (sub-memeval): both remains closed. (1) orchestrator `dae95a86`
+      (`sub/memeval-orch-20260916`) moves the judge transport into public
+      `debug_scorer.request_llm_judge_text` and makes the boolean `_score_llm_judge` REFUSE
+      `per_nugget` items (`llm_judge_per_nugget_item`). Research `87991705` (`sub/memeval-20260916`)
+      adds `scripts/benchmark/judge_beam_run.py`, which makes one served-judge call per nugget with
+      `build_nugget_judge_prompt` and parses each reply with `parse_nugget_verdict`, writing the
+      judged payload `score_beam_run.py` folds. Unavailable or unparseable questions go to
+      `unjudged`, never 0.0, and the fold refuses a payload with any. Verdicts persist per
+      question, so a rerun resumes. Tests: orchestrator +7 (822 passed across every
+      llm_judge/debug_scorer test), research +9. (2) The data was not actually staged: fetched
+      HF rev `3205395e` after re-checking the licence (CC BY-SA 4.0 / MIT). 5,429,768 B, sha256
+      `c0519be2…`, provenance in `/mnt/raid0/llm/data/eval/beam/PROVENANCE.txt`. Offline smoke:
+      20 conversations → 400 prompts (40 per ability), all `llm_judge`, 1–9 nuggets (median 2),
+      0 dropped. **Prompt length 404k–905k chars (median 581k)**: check it against the serving
+      context before M-12a. A real judged run needs the orchestrator commit merged, because the
+      research shim loads the main clone's `debug_scorer.py`.
 - [x] **CME-2 — Make the FOLD an explicit, tested contract** (intake-1337#record): per question, mean
       of three-valued nugget verdicts; per ability, mean over questions; headline, unweighted mean
       of the reported ability columns. Emit the rubric-item micro-average and any binarised pass
@@ -69,11 +85,24 @@ Build the two adapters M-12 needs and that our five-suite long-context roster la
       *Progress 2026-09-15 (not ticked):* the note rides in every SC68 BEAM tuple
       (`beam_memory_capture.HARNESS_NOTE`) and our judge prompt passes the probing question
       (`question_in_judge_prompt` recorded); quotes outside the tuple still need it.
-- [ ] **CME-4 — Add a `context_mode` parameter {none, retrieved, full} to the Tulving adapter's
+- [x] **CME-4 — Add a `context_mode` parameter {none, retrieved, full} to the Tulving adapter's
       `_row_to_prompt`** (verified at `tulving_episodic_adapter.py:582`, which always prepends the
       book). Route `retrieved` through the `src/trace` FTS5 + `navigation.py` surface. **The
       `"context"` key the adapter already emits at :637 is INERT** (`run_benchmark.py` never reads
       it), so each arm must be expressed in the prompt itself. (intake-408#record)
+      ✅ 2026-09-16 — research `ccc41d4b` (`sub/memeval-20260916`). `context_mode` ∈ {none, retrieved,
+      full}, set by constructor argument or `$TULVING_CONTEXT_MODE` (`get_adapter()` takes no
+      arguments). The default is `full`, which is byte-identical to the old prompt: all 456
+      stored prompts of `20260619_141212` are reproduced. Each arm has its own prompt header,
+      and `none` is the bare question. `retrieved` goes through the new
+      `tulving_trace_retriever.py`: one trace `Event` per chapter in a PRIVATE store built with
+      the orchestrator's `ensure_schema`, queried through `navigation.search_records`, then
+      bm25-ranked. **Finding:** `src/trace/query.query` says "rank by bm25" but orders by
+      `ts_utc DESC`, so a limited search keeps the latest matches, not the best. The retrieved arm
+      raises rather than degrade when no retriever exists. On the real 19ch book with top_k=3,
+      prompts average 8.2k chars vs 50.9k for full. The scorer now reads the arm off the stored
+      prompt headers (`context_mode_by_prompt`) and REFUSES a `--belief-measurements --arm` that
+      disagrees. 23 new tests + 6 scorer tests; 136 passed.
 
 ## Open Questions
 
