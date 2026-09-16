@@ -84,6 +84,7 @@ def _sweep_projection(mod, native: dict) -> Callable:
         schema, mod.project_g4)
 
 
+ORCH_JOURNAL_DIR = Path("/workspace/repos/epyc-orchestrator/orchestration")
 INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
@@ -119,6 +120,15 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
     Source("fanout-outcome", "fanout_outcome", _files("*.v2.jsonl"),
            default=Path(__file__).resolve().parents[2] / "data" / "fanout_timing"
            / "merged.v2.jsonl", task="SC62"),
+    Source("mhs-guard-verdicts", "mhs_guard", _run_dirs("autopilot_rejected_mutations.jsonl"),
+           default=ORCH_JOURNAL_DIR,
+           note="AP-53 ledger + journal, closed post-hook day windows; declines until "
+                "VIDYA_MHS_GUARD_HOOK_SINCE / mhs_guard.HOOK_SINCE is set "
+                "(producer sub/gate-frontier-20260916, pending merge)", task="VB-MHS-OPS"),
+    Source("mhs-guard-ops", "mhs_guard", _run_dirs("autopilot_journal.jsonl"),
+           default=ORCH_JOURNAL_DIR, natives="ops_native_rows", project="project_ops",
+           note="journal `eval_leakage_guard` events: preflight failures, closed alarm "
+                "intervals", task="VB-MHS-OPS"),
     Source("research-sweep-g1", "research_sweeps", _run_dirs("run_manifest.json"),
            project="project_g1", task="SC49"),
     Source("research-sweep-g234", "research_sweeps", _files("*.jsonl"),

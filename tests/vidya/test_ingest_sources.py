@@ -135,6 +135,10 @@ def _autopilot(tmp: Path) -> Path:
     return tmp
 
 
+def _mhs_guard(tmp: Path) -> Path:
+    return _helpers("test_mhs_guard_adapter").copy_fixture(tmp)
+
+
 BUILDERS = {
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
@@ -151,10 +155,18 @@ BUILDERS = {
     "research-sweep-g1": _sweep_g1,
     "research-sweep-g234": _sweep_g234,
     "autopilot-journal": _autopilot,
+    "mhs-guard-verdicts": _mhs_guard,
+    "mhs-guard-ops": _mhs_guard,
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.
 FRAME_LEVEL = {"autopilot-journal", "sealed-manifest"}
+
+
+@pytest.fixture(autouse=True)
+def _mhs_guard_hook_epoch(monkeypatch):
+    """The verdict source declines without a hook epoch; the fixture's producer went live here."""
+    monkeypatch.setenv("VIDYA_MHS_GUARD_HOOK_SINCE", "2026-09-17T10:00:00+00:00")
 
 
 def test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift():
@@ -297,6 +309,29 @@ def test_autopilot_journal_accepts_a_shard_file_and_declines_a_foreign_file(tmp_
     report = json.loads(capsys.readouterr().out)
     assert rc3 == 0 and report["rows_projected"] == 0
     assert report["declined"] == [str(foreign)]
+
+
+def test_mhs_guard_verdicts_decline_without_a_hook_epoch(tmp_path, capsys, monkeypatch):
+    """Pre-hook data gets zero rows: no epoch, no rows -- the unit is declined, not filled."""
+    monkeypatch.delenv("VIDYA_MHS_GUARD_HOOK_SINCE")
+    path = _mhs_guard(tmp_path / "fx")
+    rc, ledger = _cli(tmp_path, "mhs-guard-verdicts", path)
+    assert rc == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["units_matched"] == 1 and report["rows_projected"] == 0
+    assert report["declined"] == [str(path)]
+    assert not ledger.exists() or len(Ledger(ledger).read_all()) == 0
+
+
+def test_mhs_guard_rows_counts(tmp_path, capsys):
+    path = _mhs_guard(tmp_path / "fx")
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    _cli(tmp_path / "a", "mhs-guard-verdicts", path)
+    verdicts = json.loads(capsys.readouterr().out)
+    _cli(tmp_path / "b", "mhs-guard-ops", path)
+    ops = json.loads(capsys.readouterr().out)
+    assert (verdicts["rows_projected"], ops["rows_projected"]) == (4, 2)
 
 
 def test_limit_is_a_global_row_limit(tmp_path, capsys):

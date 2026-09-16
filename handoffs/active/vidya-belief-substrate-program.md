@@ -2010,11 +2010,26 @@ are left to that still-running agent.
   proposed and of accepted mutations, which is the AP-52 read) into ClaimTuples. Hold
   vocabulary-unavailable rejections out of the leakage denominator. No new grading rule. The locator
   is the window, never the proposal. README row: "PromptForge mutation-safety gate verdicts".
-- [ ] **VB-MHS-OPS — project the `eval_leakage_guard` ledger events into claim tuples** (filed 2026-09-16,
+- [x] **VB-MHS-OPS — project the `eval_leakage_guard` ledger events into claim tuples** (filed 2026-09-16,
   `sub-gate-frontier`; producer on orchestrator `sub/gate-frontier-20260916`, under review, unmerged). Each
   `preflight_failed`/`alarm_raised`→`alarm_cleared` interval is an instrument-unavailable interval;
   VB-MHS-GATES consumes them as the leakage-denominator exclusion. No new grading rule. README row:
-  "AutoPilot eval-leakage guard operability events".
+  "AutoPilot eval-leakage guard operability events". ✅ 2026-09-16
+  - Done (`sub-vbmhsops`, root branch `sub/vb-mhs-ops-20260916`): `scripts/vidya/adapters/mhs_guard.py`
+    is the adapter pair, and it only projects.
+    - `ingest mhs-guard-ops`: one row per `preflight_failed` event and one per closed alarm interval.
+    - `ingest mhs-guard-verdicts`: per closed UTC-day window, the rejection rate for each reason
+      class over the mutations the guard screened (AP-53 ledger joined to journal rows by
+      `trial_id`). `vocabulary_unavailable` is held out of the leakage denominator.
+    - The fixture is written by the producer code, and the producer vocabulary is pinned against
+      the branch source.
+  - State: adapter ready, producer pending merge. Both README rows are updated. Detail:
+    `progress/2026-09/2026-09-16-sub-vbmhsops.md`.
+- [ ] **VB-MHS-OPS-HOOK — after `sub/gate-frontier-20260916` merges and AutoPilot restarts on it, set
+  `mhs_guard.HOOK_SINCE` to that restart time, then run the first real `cli.py ingest mhs-guard-verdicts`
+  and `mhs-guard-ops`** (filed 2026-09-16, `sub-vbmhsops`). Waiting on an external event: the merge
+  and the restart. Until the epoch is set, the verdict source declines every unit, because nothing
+  persisted marks a clean window as screened, so pre-hook data must get zero rows.
 - [ ] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
   per-window rates** (filed 2026-09-16, sub-autopilot-evidence; orchestrator `203cb6e2`, merged at `753343f5`).
   - Producers:

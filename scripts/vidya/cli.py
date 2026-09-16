@@ -549,6 +549,7 @@ _FILE_SOURCES = (
     "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
     "chat-template-ab", "occ1", "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
     "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
+    "mhs-guard-verdicts", "mhs-guard-ops",
 )
 
 
