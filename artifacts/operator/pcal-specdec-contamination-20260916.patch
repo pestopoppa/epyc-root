@@ -72,8 +72,8 @@ diff --git a/measurement/protocols/quality-eval.md b/measurement/protocols/quali
 +    in the Baselines bullet below are never edited.
 +  - **Evidence**: epyc-orchestrator `b98dee18` (per-token trace; placeholder tokens stored as a
 +    sentinel and counted) and `f2e9ee07` (EV-CONF-2 probe driver; the spec-off arm fails closed
-+    when a draft is present). Both are on review branches `sub/evconf2-20260916` and
-+    `sub/evconf2-probe-20260916` and were unmerged at ratification. Sidecars:
++    when a draft is present). Both were merged 2026-09-16 via d8b915ee/88a2902d (epyc-orchestrator
++    origin/main). Sidecars:
 +    `orchestration/reports/eval_tower_math_rebaseline_E7c/` and
 +    `orchestration/reports/eval_tower_calibration_baseline_HE-R+/*_ev4c/`. Operator decision
 +    2026-09-16, option (a): caveat now rather than wait for the probe.

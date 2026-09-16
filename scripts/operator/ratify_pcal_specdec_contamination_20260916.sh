@@ -45,8 +45,8 @@
 # EVIDENCE
 #   epyc-orchestrator b98dee18  per-token trace; placeholder tokens stored as a sentinel and counted
 #   epyc-orchestrator f2e9ee07  EV-CONF-2 probe driver; the spec-off arm fails closed on a draft
-#   Both were unmerged review branches (sub/evconf2-20260916, sub/evconf2-probe-20260916) when
-#   this was prepared.
+#   Both merged 2026-09-16 via d8b915ee/88a2902d (epyc-orchestrator origin/main). Preflight
+#   verifies each is an ancestor of the freshly fetched origin/main.
 #   Sidecars, which carry the saturation counts:
 #     epyc-orchestrator orchestration/reports/eval_tower_math_rebaseline_E7c/question_results.ev11-*.jsonl
 #     epyc-orchestrator orchestration/reports/eval_tower_calibration_baseline_HE-R+/*_ev4c/question_results.*.jsonl
@@ -58,14 +58,14 @@
 #
 # PINS. Any mismatch is refused. If a target has moved, REGENERATE the bundle; never force or
 # fuzz it.
-#   patch                                   2fb3402ea2bf62e7d788b8f795dd6acc2589a9a19dee7f66331b04024791a294
+#   patch                                   b3045b69a9fbb982ca6108a280bf457f6bc90eb93cc43adfa8eb3fbb13fa2691
 #   MEASUREMENT.md             pre-state    45c7e3a31ccc7c453d66b00124011a5bbbf9f44eaa90510d4cb3f75a1ae49dec
 #   MEASUREMENT.md             post-state   9659d8c3bf66a06a215f7c2c5e5d6fd8eefe5e3f2c15d9656f0c8648bb720c4a
 #   protocols/quality-eval.md  pre-state    94a2726f1e5327c20854b574e22be4834d47866ca7a3350865873ed3b365ebff
-#   protocols/quality-eval.md  post-state   dac23d84aa0ed801d543af807a8cf9f019e2aa14356a530d58749c49989fe566
-# The pre-state pins are origin/main 8abf6984b. A stale checkout (the shared clone lagged
-# origin/main by 388 commits on 2026-09-16) is refused for the same reason: fast-forward or merge
-# first.
+#   protocols/quality-eval.md  post-state   ec25a3ea2a483341bcac05ad956030148ebf5aa4567e64963388e4082dd1a644
+# The pre-state pins match origin/main 7ec9f779 and 87109bb2; both targets are byte-identical
+# there. A stale checkout is refused for the same reason (on 2026-09-16 the shared /workspace
+# clone lagged origin/main by several hundred commits): fast-forward or merge first.
 #
 # IDEMPOTENT. When both targets sit at their post-state pins and the decision receipt exists, a
 # re-run prints ALREADY RATIFIED and exits 0 without writing. Every other partial state is refused
@@ -92,11 +92,11 @@ RECEIPT="$ROOT/$RECEIPT_REL"
 INDEX="$ROOT/$INDEX_REL"
 CONSOLIDATED="$ROOT/$CONSOLIDATED_REL"
 
-PATCH_SHA256="2fb3402ea2bf62e7d788b8f795dd6acc2589a9a19dee7f66331b04024791a294"
+PATCH_SHA256="b3045b69a9fbb982ca6108a280bf457f6bc90eb93cc43adfa8eb3fbb13fa2691"
 MEAS_PRE_SHA256="45c7e3a31ccc7c453d66b00124011a5bbbf9f44eaa90510d4cb3f75a1ae49dec"
 MEAS_POST_SHA256="9659d8c3bf66a06a215f7c2c5e5d6fd8eefe5e3f2c15d9656f0c8648bb720c4a"
 QE_PRE_SHA256="94a2726f1e5327c20854b574e22be4834d47866ca7a3350865873ed3b365ebff"
-QE_POST_SHA256="dac23d84aa0ed801d543af807a8cf9f019e2aa14356a530d58749c49989fe566"
+QE_POST_SHA256="ec25a3ea2a483341bcac05ad956030148ebf5aa4567e64963388e4082dd1a644"
 
 ORCH="${ORCH:-/mnt/raid0/llm/epyc-orchestrator}"
 EVIDENCE_FILES=(
@@ -178,13 +178,25 @@ fi
 ev_missing=0
 for f in "${EVIDENCE_FILES[@]}"; do [ -f "$f" ] || { printf '  FAIL  evidence missing: %s\n' "$f"; ev_missing=1; }; done
 if [ "$ev_missing" -eq 0 ]; then printf '  ok    %-44s (%d files)\n' "evidence sidecars present" "${#EVIDENCE_FILES[@]}"; else fail=1; fi
-for c in b98dee18 f2e9ee07; do
-  if git -C "$ORCH" cat-file -e "$c^{commit}" 2>/dev/null; then printf '  ok    %-44s\n' "orchestrator commit $c resolvable"
-  else printf '  FAIL  %-44s\n' "orchestrator commit $c resolvable"; fail=1; fi
-done
+# The evidence must be MERGED, not merely present in the object store. Fetch first, so that
+# origin/main is current rather than whatever this clone last saw.
+if git -C "$ORCH" fetch -q origin 2>/dev/null; then
+  printf '  ok    %-44s\n' "orchestrator fetch origin"
+  for c in b98dee18 f2e9ee07; do
+    if git -C "$ORCH" merge-base --is-ancestor "$c" origin/main 2>/dev/null; then
+      printf '  ok    %-44s\n' "orchestrator $c merged in origin/main"
+    else
+      printf '  FAIL  %-44s\n' "orchestrator $c merged in origin/main"; fail=1
+    fi
+  done
+else
+  printf '  FAIL  %-44s\n' "orchestrator fetch origin"
+  printf '        cannot fetch %s; evidence merge status is unverifiable (network or auth?)\n' "$ORCH"
+  fail=1
+fi
 
 if [ "$fail" -ne 0 ]; then
-  die "preflight failed: $ROOT is not in the state this bundle was prepared against (origin/main 8abf6984b). Stale checkout: fast-forward it first. Moved target: regenerate the bundle. Nothing written."
+  die "preflight failed: $ROOT is not in the state this bundle was prepared against (origin/main 7ec9f779 / 87109bb2). Stale checkout: fast-forward it first. Moved target: regenerate the bundle. Nothing written."
 fi
 say "  preflight clean"
 
@@ -326,8 +338,8 @@ doc = {
   "historical_numbers": "preserved verbatim; nothing deleted or edited",
   "evidence": {
     "mechanism": "llama.cpp v7/v9 reports prob=1.0 with empty top-k for draft-accepted tokens",
-    "orchestrator_commits": {"b98dee18": "token_confidence per-token trace + placeholder sentinel (branch sub/evconf2-20260916)",
-                             "f2e9ee07": "EV-CONF-2 probe driver, spec-off fail-closed (branch sub/evconf2-probe-20260916)"},
+    "orchestrator_commits": {"b98dee18": "token_confidence per-token trace + placeholder sentinel (merged 2026-09-16 via d8b915ee/88a2902d)",
+                             "f2e9ee07": "EV-CONF-2 probe driver, spec-off fail-closed (merged 2026-09-16 via d8b915ee/88a2902d)"},
     "probe_spec": "handoffs/active/autopilot-decision-plane-audit-2026-07-22.md (EV-CONF-2 box)",
   },
   "consolidated_receipt": consolidated_rel,
