@@ -402,6 +402,10 @@ failure caught in amber.
     swallows a missing pandas/pyarrow and then scores every question as missing, so an M-12a run in the research venv
     (which has no pyarrow) would emit an all-zero summary that looks like a result. Raise instead, and add pyarrow to
     the research venv. Found 2026-09-15 while verifying the M-12e rescore, which had to run under the delta-Mem venv.
+    *Progress 2026-09-16 (not ticked):* research `ccc41d4b` — the RAISE half is done: a missing pandas/pyarrow and any per-file parquet read error now raise
+    `RuntimeError` (tests: `test_tulving_context_mode.py`). The research `.venv` still lacks pyarrow and was not
+    modified; `/mnt/raid0/llm/venvs/ml-training` has pandas + pyarrow + pytest and ran the rescore. **Remains:** add
+    pyarrow to the research `.venv`. That needs a package install (network), which this lane was not allowed to do.
   - [x] **M-12e — scorer prerequisites, ZERO COMPUTE, do before any arm runs** (intake-408#record).
         ✅ 2026-09-14, research `dcb769c1`. THREE defects, not two. (i) the unconditional
         `simple_inputs.append(scored)` at :121 now fires only for `get_style == "all"`; the subset is
