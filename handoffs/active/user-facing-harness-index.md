@@ -17,6 +17,7 @@
 | UFH-05 | reasoning compression | [reasoning-compression.md](reasoning-compression.md) | If validated: implement enforce mode (route easy→worker, hard→architect) | — |
 | UFH-06 | security review skill | [security-review-skill.md](security-review-skill.md) | GATE-0 production-reachability, ordered BEFORE exploitability. CodeCrucible short-circuits on whether the code path is reachable in product… | — |
 | UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | P4e — Decision gate: roll-out scope (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (… | — |
+| UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | HIL-1 — after HS-4 feature map lands, list loop-friendly orchestrator homes (deferred) | UFH-01 |
 
 ## Cross-domain
 
