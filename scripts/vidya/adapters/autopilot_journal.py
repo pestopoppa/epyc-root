@@ -129,6 +129,9 @@ def as_record(shard: Path, row: dict) -> dict:
         # "mixed"), as RECORDED by the writer from the API echo. Carried, never graded. Empty on
         # rows written before the fence existed, which must be read as unfenced.
         "eval_fence": str(meas.get("eval_fence") or ""),
+        # AP-54 kernel enforcement level behind an active fence: landlock | mountns | hook-only.
+        # Carried, never graded. Empty when the fence was not active or the row predates it.
+        "eval_fence_enforcement": str(meas.get("eval_fence_enforcement") or ""),
         "attestation": {
             "path": f"{ORCH_REL}/orchestration/{shard.name}",
             "sha256": att.get("sha256"),
@@ -184,7 +187,8 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                        "metric_direction": rec["metric_direction"],
                        "infra_fingerprint": rec["infra_fingerprint"],
                        "comparability": rec["comparability"],
-                       "eval_fence": rec["eval_fence"]},
+                       "eval_fence": rec["eval_fence"],
+                       "eval_fence_enforcement": rec["eval_fence_enforcement"]},
             provenance={"evidence": f"evd_ap_{ident}", "about": claim_id, "method": ADAPTER_ID,
                         "grade_reasons": reasons, "reps_basis": rec["reps_basis"]},
             actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,
