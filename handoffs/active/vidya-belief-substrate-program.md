@@ -1958,6 +1958,147 @@ no rate at all. A later session may extend the audit but may not report these fi
   critical-path timing with instrumentation-off controls, individual switch ablations,
   and matched unprofiled baseline/integrated repetitions. Preserve rejected variants.
 
+## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep)
+
+Ported by wrap-up pass 2 from the /workspace working copy. The sub-gpu-prep producers `a454b7fd` and
+`e70b6974` reached research `main` as `76f5132b` / `726e2676` (merge `a280853d`, sub-gpuprep-port);
+the SL-2 commit `5368766b` did not. The sub-gpu-runner notes (the TALE capture wiring and VB-GPU-RUNNER)
+are left to that still-running agent.
+
+- [ ] **VB-PRB-T4 — wire `eval_tale_budget.py` at write time** (research `a454b7fd`, ported as
+  `76f5132b`, on research `main` via `a280853d`): project `.jsonl` + `.meta.json` + `.summary.json` per suite×arm into ClaimTuples
+  (accuracy; answer-only AND incl-estimator tokens/latency; budget_unit, temperature+seed, served GGUF identity,
+  chat_template_kwargs) BEFORE the PRB-T4 run. Locator = the run×suite×arm, never per question. No new grading rule.
+- [ ] **VB-REVIEW-F1 — wire review_f1 `_summary.json` (EV-13b) at write time** (research `e70b6974` → `726e2676`;
+  the `_summary.json` producer `ev13b_run.py` is on unmerged `sub/gpu-runner-ev13b-20260916`): micro
+  P/R/F1 with n_runs≥3 and sd, reader AND judge identity, `golden_manifest_checksum`, matcher-spec sha,
+  `cross_family_ok`, judge-swap delta. Refuse a summary with judge==reader or no manifest checksum. Locator =
+  reader model/quant × judge × run, never per finding.
+- [ ] **VB-SL2-STEPS — decide whether the serving A/B's `target_sample_steps_est` block (INF-62 SL-2, research
+  branch `sub/gpu-prep-20260916`) gets its own `belief_measurements` rows.** Today it rides inside the
+  `serving_beliefs` native body (so `native_sha256` binds it) but only tok/s is projected. It is an ESTIMATE
+  (`predicted_n - draft_n_accepted`), not the server's `n_draft_verif_steps`; project it only with that
+  estimator string in the tuple. (The serving belief READER `scripts/vidya/adapters/autokernel_legacy_serving.py`, reported absent when
+  filed, is on root `main` now; see the VB-WIRE status table.)
+
+## VB-HARNESS-AUDIT — harness source-audit findings (filed 2026-09-16, sub-harness)
+
+- [ ] **VB-HARNESS-AUDIT — decide how pinned source-audit findings enter the ledger, before HS-4 cites them.**
+  `harness-selection-and-integration.md` now holds three families of source-read findings. Each one carries
+  a pinned `repo@sha path:line`, and HS-4 (operator) will read them:
+  - the HS-1g call-verb matrix (HONOURED / SILENT-NO-OP / N/A per request path × lever, for 5 candidates);
+  - the HS-13 structured-output capability record (llama.cpp `0db32c06e` + orchestrator);
+  - the HS-6c conformant Harness Card (eval-tower settings at orchestrator `92bbeb06`, plus 13 named gaps).
+
+  They are **categorical and re-derivable**: a third party can re-read the pinned lines. They are neither
+  measurements nor literature, and no adapter projects them today. Choose one:
+  - (a) project them through the `verifier` class, with `decided_proposition_field` = the cell verdict and
+    locator = `repo@sha path:line`;
+  - (b) record them as dependency edges only, like wiki pages;
+  - (c) decline them explicitly.
+
+  Do not write a new grading rule. Pins go stale when a candidate moves, so the locator must carry the sha.
+  README source-table row added.
+
+
+- [ ] **VB-MHS-GATES — wire the write side of the RTG-55 gate verdicts when AP-53's rejected-mutation
+  ledger lands** (orchestrator `8219d8e8`, branch `sub/autopilot-safety-20260916`, under review, unmerged;
+  AP-53's ledger itself is on orchestrator `main` at `753343f5`). Persist
+  `rejecting_gate` (static screen / `eval_instance_leakage` / `eval_leakage_vocabulary_unavailable` /
+  `effect_risk_gate`), `effect`, `effect_risk`, the gate value and the vocabulary identity per
+  proposal. Then project RATES per window (leakage-rejection rate; CONSTRAIN-vs-REPLACE share of
+  proposed and of accepted mutations, which is the AP-52 read) into ClaimTuples. Hold
+  vocabulary-unavailable rejections out of the leakage denominator. No new grading rule. The locator
+  is the window, never the proposal. README row: "PromptForge mutation-safety gate verdicts".
+- [ ] **VB-MHS-OPS — project the `eval_leakage_guard` ledger events into claim tuples** (filed 2026-09-16,
+  `sub-gate-frontier`; producer on orchestrator `sub/gate-frontier-20260916`, under review, unmerged). Each
+  `preflight_failed`/`alarm_raised`→`alarm_cleared` interval is an instrument-unavailable interval;
+  VB-MHS-GATES consumes them as the leakage-denominator exclusion. No new grading rule. README row:
+  "AutoPilot eval-leakage guard operability events".
+- [ ] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
+  per-window rates** (filed 2026-09-16, sub-autopilot-evidence; orchestrator `203cb6e2`, merged at `753343f5`).
+  - Producers:
+    - `orchestration/autopilot_rejected_mutations.jsonl`, harness-written, one record per reject;
+    - the journal fold `rejected_mutation_ledger.rejected_configs_from_entries()`.
+  - Measurement: per trial-id window, the share of trials re-proposing a still-standing
+    hard-rejected config, split by action type.
+  - The one-off zero-compute value (9.7% of all trials, 31.3% keyed, trials 0–1505) came from a
+    scratch script. It is an OBSERVATION until a producer-authored row pins the window, the key
+    definition (`config_fingerprint`, narrative fields dropped) and the rejection classes.
+  - No new grading rule. Locator: the window.
+  - Also done: the autopilot-journal adapter now carries AP-55 `infra_fingerprint` + `comparability`
+    through the support frame (grade unchanged; `tests/vidya/test_autopilot_journal_adapter.py`,
+    11 passed, including a fixed `sys.path` in the end-to-end test).
+  - The AP-54 structural answer (AMBIGUOUS, file-tool reachability of the wiki) is a pinned
+    source-read finding of the VB-HARNESS-AUDIT kind; route it through that decision.
+  - 2026-09-16 (`sub-vb-writers`): durable writers built — orchestrator `sub/vb-writers-orch-20260916`
+    + root `sub/vb-writers-root-20260916`, **under review, unmerged** (merge orch first). Rows appear after
+    the AutoPilot restart, at most ~200 trials later. The SC83 writer is on the same branches; SC83 has
+    nothing to backfill (no decoy corpus or scored reviewer run exists). Detail:
+    `progress/2026-09/2026-09-16-sub-vb-writers.md`.
+
+## VB-KBRAG-QLEN — KB-RAG live query-length telemetry (filed 2026-09-16, sub-tooling)
+
+- [x] **VB-KBRAG-QLEN-W — wire the write side and the projection at instrument-creation time**
+  (`internal-kb-rag.md` H2). ✅ 2026-09-16
+  - Producer: orchestrator `32336445` on branch `sub/tooling-orch-20260916`, merged at `370dc715`. `kb_rag.query()` appends one
+    UNTRUNCATED query token count per live query. `query_length_report.py --out` persists
+    producer-authored `belief_measurements` rows, per (encoder, cap, convention) group, for over-cap rate,
+    p50, p95 and max.
+    - These rows cite no protocol, so they are OBSERVATIONS.
+    - `metric_direction` is recorded by the producer.
+    - The attestation is the log path plus the exact byte prefix read. The prefix sha256 is carried in
+      `extra`, never as a whole-file digest.
+    - An empty log yields no rows.
+  - Adapter: root `039a4f3b` on branch `sub/tooling-root-20260916` (merged at `719ac638`), `scripts/vidya/adapters/kb_rag_query_length.py`
+    plus `tests/vidya/test_kb_rag_query_length_adapter.py`: 12 passed, 1 skipped. The skip is the
+    live-producer drift guard, which skipped until the producer merged. Run by hand against the branch
+    producer, it passes. It projects only; no grading rule was added.
+- [x] **VB-KBRAG-QLEN-R — wire `cli.py ingest` for persisted reports once the producer branch merges.**
+  ✅ 2026-09-16 — `cli.py ingest kb-rag-qlen` (VB-WIRE-1, `sub-vidya-wire`, root merge `87109bb2`).
+  The first real tuples need live traffic after the merge, then a `query_length_report.py --out` snapshot.
+  Until then the adapter has no corpus. That is expected, not a gap.
+
+## VB-EVCONF2 — eval-tower confidence-source calibration axes (filed 2026-09-16, sub-evconf2)
+
+- [x] **VB-EVCONF2 — give `confidence_source_compare.py` a `belief_measurements` writer before the EV-CONF-2
+  math probe runs.** ✅ 2026-09-16 — root `c8c68662` (branch `sub/evconf2-root-20260916`, merged at `1e1de5fb`, fix `4fe47225`):
+  `scripts/vidya/adapters/confidence_source_capture.py` (writer and CLI, run right after `compare --out`) and
+  `confidence_source.py` (strict reader), with 15 tests; the conformance suite passes. It emits one row per
+  arm × source × {AUROC, ECE, reweighted ECE}. The resolved spec state is carried in `extra.spec` and stated
+  in the claim. The writer refuses when an identity's `eval_batch_id` does not match the report's sidecars.
+  The report is observation-grade, so `protocol_id` is empty and the shared ladder answers `Judged/Located`.
+  The probe runner preamble calls it (orchestrator `7cc118da`, merged at `88a2902d`). Original task text: Orchestrator branch `sub/evconf2-20260916`. Today the tool emits only an observation-grade
+  JSON report. Emit one row per run × role × confidence source, carrying:
+  - AUROC with its CI (higher is better) and ECE (lower is better, `closed_top_bin_stat_tests`)
+  - n, the sidecar sha256s, dataset sha256 and seed
+  - model/quant/kernel/serving identity
+  - the speculative-decoding placeholder fraction. A spec-on run's geomean is saturated by fake p=1.0 tokens,
+    so it must never read as the same measurement as a spec-off run.
+
+  Add a strict reader under `scripts/vidya/adapters/`. It only projects; the grading stays with
+  `claim_tuple.grade()`. The E7c and EV-4c aggregates are pre-hook: zero rows, never reconstructed on read.
+- [ ] **VB-EVCONF2-CAVEAT — attach a speculative-decoding caveat to every belief or citation built on
+  the E7c or EV-4c calibration numbers** (filed 2026-09-16, sub-evconf2-probe). Both runs took
+  token-probability confidence from servers with `draft-mtp` on:
+  - E7c: gemma-4-26B-A4B `draft_max=2`.
+  - EV-4c: frontdoor Qwen3.6-35B-A3B-MTP `draft_max=4`, plus worker_general gemma MTP.
+
+  llama.cpp reports p=1.0 for draft-accepted tokens. The effect differs by run:
+  - E7c is visibly saturated: 1528/1684 and 1485/1628 rows have confidence ≥ 0.999999.
+  - EV-4c is not saturated (0/820 and 2/817), so its contamination is real but unmeasured.
+
+  Scope: any `intake-*`/wiki/handoff claim, or a future adapter tuple, that cites math ECE
+  0.2114/0.2199 and AUROC 0.4013/0.4114, or code ECE 0.2532/0.3216 and AUROC 0.6337/0.5751, as
+  calibration evidence. Carry them as `spec-on, confidence void pending the EV-CONF-2 A-specoff arm`.
+  Where each is quoted is listed in `progress/2026-09/2026-09-16-sub-evconf2.md`. Do NOT edit P-CAL
+  or `MEASUREMENT.md`: that amendment is human-only. Its decision-capable uses (RLVR code
+  calibration, EV-5/EV-7 verifier promotion) currently gate on the EV-4c baseline.
+  - 2026-09-16 (`sub-pcal-ratify`): the caveats OUTSIDE the trust boundary landed (root `fbd40fec`, merge
+    `17619015`: ESC-7 draft, wiki `benchmark-methodology.md`, CURRENT-CAMPAIGN pointer, ledger caveat rows).
+    Box stays open for the P-CAL amendment itself (operator option (a)), which is prepared at root `17619015`
+    (`scripts/operator/run_pcal_ratify_20260916.sh`) and waits for the operator to run it.
+
 ## P5c promotion gate — requirement-4 evidence (executed 2026-08-26, gen-2 ledger)
 
 Verdict: **ITERATE (not promote).** Requirement 4 is now EXECUTED for the first time — the
@@ -2113,6 +2254,8 @@ was filed and built before the first GPU run, so that run will not fall in a pre
 Status of the 2026-09-16 filings, as of origin/main `c57b0b6c`. VB-KBRAG-QLEN, VB-PRB-T4,
 VB-REVIEW-F1, VB-SL2-STEPS, VB-HARNESS-AUDIT, VB-AP53-RATE and VB-EVCONF2 are so far written only in
 the /workspace working copy of this file. Their owners commit those boxes.
+*Update 2026-09-16 (wrap-up pass 2):* those boxes are now on origin/main (VB-GPU-PREP section and the
+sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a2902d`, root `1e1de5fb`).
 
 | task | adapter exists where | ingest wired | remaining |
 |---|---|---|---|

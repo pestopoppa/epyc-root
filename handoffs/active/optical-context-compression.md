@@ -59,6 +59,19 @@ mechanism for the same job; if it does not, that is a cheap negative result.
   QA recall, bitmap frames vs raw text. Requires a vision-capable local reader (see
   [`multimodal-pipeline.md`](multimodal-pipeline.md) for the live vision path). Gate everything else
   on this.
+  - 2026-09-16 scoping (zero inference): **GPU-only is feasible.** Reader = the served
+    Qwen3-VL-30B-A3B Q4_K_M + F16 `qwen3vl_merger` mmproj. The champion `ef81196d5` ships
+    `tools/mtmd/models/qwen3vl.cpp` and `libmtmd`, and clip has no backend restriction. The model
+    fits the MI210 in about 21 GB. Harness, launch script and recipe are in research `070db22a`→`e2c48c13`, which passed the Fable review fixes
+    (branch `sub/occ1-20260916`, `scripts/benchmark/occ1/README.md`), merged to research `main` at
+    `0d3ca467`; the SC85 belief writer merged with root `sub/occ1-root-20260916` (`1d5f5314`). The reader test
+    port is 18431 (`launch_reader.sh --port N`). Arms: text plus
+    5 frame arms, 1568-px-wide, resample-free. SQuAD dev: 39 chunks × 30 q = 1,165 paired
+    questions per arm, 234 requests, about 1.5 h of MI210 time. The full plan is pre-rendered at
+    `/mnt/raid0/llm/tmp/occ1-run-20260916` (suite `261d8ac1eaed`). Predicted image cost is 2,401
+    tokens per 6x10 frame, against about 8.7k text tokens per chunk. Next: GPU runner executes the
+    README recipe (pilot, then full).
+    Status 2026-09-16 (wrap-up): queued as **item 10** on the GPU queue; not run.
 - [x] **OCC-2 — record the provider image-billing asymmetry** as a cost-aware-routing input,
   independent of OCC-1's outcome, with the staleness caveat attached. ✅ 2026-08-25 — see the
   OCC-2 Record section below (all cells re-verified against provider docs; Anthropic drift

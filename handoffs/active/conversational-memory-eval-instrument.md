@@ -63,6 +63,10 @@ Build the two adapters M-12 needs and that our five-suite long-context roster la
       0 dropped. **Prompt length 404k–905k chars (median 581k)**: check it against the serving
       context before M-12a. A real judged run needs the orchestrator commit merged, because the
       research shim loads the main clone's `debug_scorer.py`.
+      *Note 2026-09-16 (`sub-m12-blockers`, B2, research `3f16537d`, merged at `cfbfa448`):* BEAM now has
+      three arms — `full`, `rag` (pair_chunk × BM25) and `trace` (pair_chunk via the trace store,
+      `order="relevance"`) — and the judge/scorer refuse an `--arm` that disagrees with the recorded
+      `context_mode_by_row`.
 - [x] **CME-2 — Make the FOLD an explicit, tested contract** (intake-1337#record): per question, mean
       of three-valued nugget verdicts; per ability, mean over questions; headline, unweighted mean
       of the reported ability columns. Emit the rubric-item micro-average and any binarised pass

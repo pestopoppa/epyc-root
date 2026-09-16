@@ -163,6 +163,13 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
       the live policy has a coupled hazard: the promotion override copies axis 1 into `speed` →
       `frontdoor_speed`, which would then hold q/h against the t/s 0.8× throughput floor (live
       `frontdoor_speed` today is 23.89, i.e. still t/s). Both must change together.
+      **2026-09-16 (`sub-gate-frontier`):** the coupled finding is fixed on orchestrator branch
+      `sub/gate-frontier-20260916` (on top of `sub/autopilot-safety-20260916`), **built, under review,
+      unmerged**; box stays open (the axis drop is still to do). Detail:
+      [`progress/2026-09/2026-09-16-sub-gate-frontier.md`](../../progress/2026-09/2026-09-16-sub-gate-frontier.md).
+      **Operator decision D2 (2026-09-16):** option (c) — journal clean trials so they can be frontier
+      representatives (today the candidate is journaled after `update_baseline`, so a clean trial never
+      is one) — with option (b), N≥3 reproductions, as the interim promotion rule until (c) lands.
 
 ### W6 — the eval instrument the rate axis is measured on (opened 2026-08-04)
 

@@ -503,6 +503,113 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
   a fresh instrumented probe. (c) Success gate: candidate source AUROC materially >0.5 on the math
   probe with ECE not degraded; then re-baseline math via a full arm and amend P-CAL. (d) Owner:
   eval-tower program, post-EV-BASELINE-E7 in priority order unless the operator promotes it.
+  - **2026-09-16 (sub-evconf2): blocker (b) closed on the capture side.** Orchestrator `b98dee18` on branch
+    `sub/evconf2-20260916`, merged to orchestrator `main` at `d8b915ee`.
+    - What landed:
+      - `scripts/autopilot/token_confidence.py` stores, per question-result sidecar row, the sampled-token logprob
+        vector and the truncated top-k entropy vector (u16 millinats, 2 B/token, capped at 8192 tokens by
+        keeping the head quarter plus the tail), plus the answer-span token indices from the SCORE-03/16
+        `debug_scorer` extractors.
+      - The key is additive (`token_logprobs`), so old sidecars stay readable. It is on by default;
+        `AUTOPILOT_EVAL_TOKEN_LOGPROBS=0` turns it off.
+      - Pure confidence sources: full/real-token/answer-span geomean, answer-span min, salient min-prob,
+        high-entropy top-10%, and mean-entropy. Entropy is available because `n_probs=5` →
+        `top_logprobs=5`. It is a lower bound from the top-k plus the lumped residual.
+      - Offline tool `scripts/analysis/confidence_source_compare.py`: AUROC plus bootstrap CI, closed-bin ECE,
+        paired ΔAUROC against the legacy geomean, and `--reweight-prevalence`.
+      - 21 tests pass. The neighbouring eval tests pass too (406).
+    - **FINDING (observation; source-read plus offline re-read of the E7c sidecar): the E7c math AUROC 0.40 is
+      probably a speculative-decoding instrument artifact, not length confounding.**
+      - llama.cpp `server-context.cpp` sets `result.prob = 1.0f; // set later` and `// TODO: set result.probs`
+        for every draft-accepted token. The same code is in v7 (the E7c kernel) and v9.
+      - E7c `worker_general`/`worker_math` both ran gemma-4-26B-A4B-it-ORIG-Q4_K_M with `draft-mtp`
+        (`draft_max=2`) on the 4 CPU quarters.
+      - In the E7c worker_general sidecar, 1335/1684 scored rows have `confidence == 1.0` at 6 d.p. and there
+        are only 52 distinct values. The implied total NLL of a ~330-token derivation has a median of
+        0.0005 nats, which real token probabilities cannot produce.
+      - Mechanism: the geomean ≈ a handful of real tokens diluted by p=1 placeholders, so longer outputs look
+        more confident. That matches the observed `-tokens_generated` AUROC of 0.58 (0.59 for worker_math).
+      - The rounding also moves the sidecar-derived AUROC to 0.437, against the in-memory 0.401. ECE
+        reproduces exactly.
+      - Implication: every confidence source is void on any spec-on run, including the EV-4c code AUROCs if
+        frontdoor ran MTP. The capture now marks placeholders (`n_placeholder`) and excludes them from the
+        real-token sources. A kernel fix (populating accepted-token probs from the verify batch) is
+        `llama.cpp-experimental` work.
+    - **Probe spec (the next step; needs inference, not run):**
+      - Rows: 200 math rows from the E7c dataset (sha256 `38e582cf…`, GSM8K+MATH-500). Draw 100 rows that E7c
+        worker_general scored wrong and 100 it scored right (qid join, seed 42), so AUROC has about 100
+        negatives. Score with `math_verify`, `production_temp_seed42`, `top_logprobs=20`.
+      - Arms, same rows in each, served serially from ONE server:
+        - **A, spec OFF.** This is the measurement.
+        - **B, the same GGUF with `draft-mtp` ON.** This is the artifact control: it should reproduce
+          AUROC < 0.5 with `n_placeholder` > 0.
+      - Model and role: to be comparable with E7c, use **gemma-4-26B-A4B-it-ORIG-Q4_K_M in the
+        worker_general role** with the E7c prompt path (`/v1/chat/completions`). Kernel and device differ
+        from E7c (v7 CPU vs v9 HIP), so comparability is WITHIN the probe. Arm B stands in for E7c's
+        instrument, and per-qid answer agreement with E7c is reported.
+      - Read: `confidence_source_compare.py question_results.<arm>.jsonl --reweight-prevalence 0.7886`.
+        Scoping (c) is read by a human from the per-source AUROC CI and ΔECE.
+      - Runner gap: `eval_batch_serving_evaltower_window.py --mode math_rebaseline --n 200` can only draw
+        unstratified rows, and only through the orchestrator role. A spec-off test port therefore needs
+        either a stratified-qid option plus a role→test-port override, or a small direct llama-server
+        driver that reuses the adapter, `score_answer_or_error` and `_EvalQuestionJsonlWriter`.
+    - **GPU feasibility:**
+      - Yes. gemma-4-26B-A4B Q4_K_M (16.8 GB) is proven correct on the MI210 HIP path, under MTP too
+        (observation, `project_mi210_hip_graph_capture`). About 72k generated tokens per arm means minutes,
+        not hours.
+      - Qwen3.8-27B-Q8_0 (the live architect_general/coder_escalation on :8083) and Qwen3.6-35B-A3B-MTP-Q8_0
+        (37.8 GB) also fit and are proven, but they are NOT E7c-comparable. Use them only as a
+        generalization arm, and only with spec OFF, because the live :8083 runs MTP.
+      - Serving on the GPU needs a spec-off test-port launch. That is an inference slot and a region claim,
+        not a stack change.
+  - **2026-09-16 (sub-evconf2-probe): runner gap closed and belief writer wired, zero inference.**
+    - Orchestrator `f2e9ee07` + `7cc118da` (branch `sub/evconf2-probe-20260916`, from `b98dee18`, merged to `main` at `88a2902d`):
+      `scripts/analysis/confidence_probe.py`, the direct driver.
+      - Sample: seeded stratified draw (100 E7c-wrong and 100 E7c-right worker_general rows, seed 42). Row ids and
+        qids are committed in `orchestration/reports/ev_conf2_probe/sample_manifest.json` (sample sha `66763b0b…`,
+        source 1684 scored at 0.7886). The driver refuses to run if the dataset sha drifts from E7c `38e582cf…` or
+        any qid drifts.
+      - Requests: any OpenAI-compatible `--endpoint` over `/v1/chat/completions`, with the worker_general
+        per-request sampling taken from the backend's own `_apply_deterministic_sampling` over the registry
+        (temp 0.3, top_k 40, top_p 0.95, rp 1.1, seed 42). The direct-stage cap (2048) and stop list are used,
+        the closing `</answer>` tag is restored, and `top_logprobs=20` is set. Scoring uses `math_verify`.
+      - Persistence: rows go through `_EvalQuestionJsonlWriter` with the `token_logprobs` capture plus a `probe`
+        key, one row at a time and resumable. `serving_identity.<arm>.json` records `/v1/models`, `/props` and
+        `/slots`. `/props` `speculative.*` is recorded but untrusted, because llama-server fills it from
+        sampling defaults.
+      - **Arm A fails closed (exit 3)** on `/slots` speculative=true, on `timings.draft_n>0`, or on any
+        placeholder token, and the offending row goes to `rejected.<arm>.jsonl`. Arm B refuses a server that
+        never speculates.
+      - Tests: 18 mocked-endpoint tests; the 342 neighbouring unit tests pass.
+    - **Capture fix in the same commit:** the direct stage stops on `</answer>`, so the token stream ends inside
+      the tag, and `locate_answer_span` then included the `<answer>` tag tokens in the "answer span". A new
+      `unterminated_answer_tag` rule mirrors `_restore_stripped_answer_stop`.
+    - **Runner recipes** (`confidence_probe.py --print-recipes`; NOT run):
+      - Common launch: `env -u HSA_OVERRIDE_GFX_VERSION LD_LIBRARY_PATH=<build-fold-ef81196d5/bin>
+        OMP_NUM_THREADS=1 taskset -c 184-191 …/build-fold-ef81196d5/bin/llama-server -m
+        gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf --device ROCm0 -ngl 99 --jinja --reasoning off -fa on -ctk q8_0
+        -ctv q8_0 -c 16384 -np 1 -t 8 -tb 8 -ub 512 --no-mmap --metrics --slots`.
+      - **A-specoff** runs on :18381 with the common launch unchanged.
+      - **B-mtp** runs on :18382 and adds `-md gemma-4-26B-A4B-it-assistant-v6-Q8_0.gguf -ngld 99 -devd ROCm0
+        --spec-type draft-mtp --spec-draft-n-max 2 --spec-draft-p-min 0.0`.
+      - Flag spellings were checked against the champion `libllama-common.so` strings.
+      - Order: re-hash the binary, run `verify_ggml_linkage.sh`, then the `--manifest-only` dry draw. Then for
+        each arm serially: launch, probe, `compare --out`, and the belief capture. Sample VRAM and KFD during
+        each arm, and kill only the captured PID.
+    - **Belief writer VB-EVCONF2:** root `c8c68662` (branch `sub/evconf2-root-20260916`, merged at root `1e1de5fb`, fix `4fe47225`). See
+      `vidya-belief-substrate-program.md`.
+    - **Contamination sweep:** the EV-4c code baselines were also served with `draft-mtp` on (frontdoor
+      `draft_max=4`), but show no 1.0 saturation (0/820, 2/817), so their contamination is unmeasured, not
+      absent. The citation list is in `progress/2026-09/2026-09-16-sub-evconf2.md`, and the caveat task is
+      VB-EVCONF2-CAVEAT.
+  - **2026-09-16 (wrap-up):** both orchestrator branches are merged (`d8b915ee`, `88a2902d`); the capture
+    takes effect at the next AutoPilot restart / API reload. The A-specoff / B-mtp probe itself is still
+    inference-gated and not run, so this box stays open.
+  - **P-CAL caveat — operator decision 2026-09-16, option (a):** the ratify script merged at root `17619015`
+    (`scripts/operator/ratify_pcal_specdec_contamination_20260916.sh`, wrapper
+    `scripts/operator/run_pcal_ratify_20260916.sh`). **Waiting on the operator to run
+    `run_pcal_ratify_20260916.sh`** (human-only trust boundary). Detail:
+    `progress/2026-09/2026-09-16-sub-pcal-ratify.md`.
 
 - [x] ✅ 2026-07-23 COMPLETE — reseed APPLIED by operator (12:45:07Z; backup autopilot_state.pre-reseed-20260723T124507Z.json; gate reads T1 1.6 / T2 1.891, era E7-eval-instrument; fail-closed hold lifted on same-era designed-core ground) **EV-BASELINE-E7 — post-E7 full-pool baseline sweep (reseed prerequisite; filed 2026-07-23)**:
   the granted era-fence reseed is UNDERDETERMINED by current data — `baseline_state` is tier-keyed

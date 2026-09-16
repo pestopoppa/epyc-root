@@ -84,6 +84,9 @@ so this is a **new active stub, not a reopen**.
       docs/src files, where both hits were real instance references. Open Question 2: keyed on ids plus
       prompt-hash qids (content hashes of text); image-bound qids are not included.
       `tests/unit/test_prompt_forge_leakage_and_risk.py` (73 tests).
+      Operability (loud fail-closed state: startup preflight, alarm after 3 consecutive
+      `eval_leakage_vocabulary_unavailable` rejections, runbook `docs/guides/meta-harness-operator-guide.md` § 7)
+      built on branch `sub/gate-frontier-20260916`, under review, unmerged (2026-09-16, `sub-gate-frontier`).
 - [ ] **MHS-4 — ANTI-OVERRIDE risk prior.** Rank/gate mutations by CONSTRAIN (add a check, block a bad
       path, re-prompt) vs REPLACE (rewrite/force an action, hard-code an answer). In the released
       corpus the REPLACE-before-CONSTRAIN ordering holds on all 23 valid patches (REPLACE 4/4 negative,

@@ -365,6 +365,18 @@ failure caught in amber.
       the only thing that will answer "does episodic retrieval help" with evidence.
   - **M-12 protocol (filed 2026-09-07 via research-intake; the run itself stays compute-gated).**
     Two instruments, run in this order, judge/scorer held fixed across every arm.
+  - **OP-42 readiness package (2026-09-16, zero inference):** token stats, GPU fit, run plan, blockers B1–B7 (B1 = 200ch/20ch Tulving id collision → silent wrong ground truth), options A–D → [`progress/2026-09/2026-09-16-sub-op42-readiness.md`](../../progress/2026-09/2026-09-16-sub-op42-readiness.md). OP-42 stays open; no operator action needed now (operator 2026-09-16).
+    - **Blocker status 2026-09-16 (`sub-m12-blockers`, [`progress`](../../progress/2026-09/2026-09-16-sub-m12-blockers.md)):**
+      - B1, B2, B3 closed on research `sub/m12-blockers-20260916` (`b69be5b2`, `3f16537d`, `ec7fb4ab`; review
+        fixes `06ae638d`), merged to research `main` at `cfbfa448`; root SC67/SC68 updates merged with
+        `sub/m12-blockers-root-20260916`.
+      - B4: judge = `gemma-4-26B-A4B-it-ORIG-Q8_0` (operator 2026-09-16), recipe
+        `eval/gemma-4-26b-a4b-orig-q8-gpu-judge-np4`.
+      - B5: recipe + smoke `a6491b9e`, `docs/m12-long-context-gpu-recipe.md`. **M-12 GPU window deferred by the
+        operator 2026-09-16**; `smoke_prefix_reuse.sh` (`a6491b9e`) is ready for when it resumes.
+      - B6: the merge list now also covers these two branches — both merged (research `cfbfa448`).
+      - B7: add `pandas` to the research `.venv` (`uv sync --extra benchmark`, which also realigns pyarrow to
+        24.0.0) — see M-12j.
   - [ ] **M-12a — Tulving 200ch/100K first** (intake-408#record). Variant `Udefault_Sdefault_seed0`,
         chapters=200 (`tulving_episodic_adapter.py:_select_target_qa_files` at :463 already resolves
         this to the 196ch parquet on disk). Three prompt-matched arms: memory-OFF (question +
@@ -374,12 +386,16 @@ failure caught in amber.
         Awareness separately as a diagnostic until the tau fix (M-12d) lands; report
         Entities/Times/Spaces separately from Event-contents/Full-details; identical list-only +
         "If none, say 'None'" contract on every arm. Deterministic scorer, no LLM judge.
+        *2026-09-16 (B1, merged `cfbfa448`):* the M-12a command must set `TULVING_CHAPTERS=200`;
+        `score_tulving_run --chapters` is now optional and must agree with the recorded rows.
   - [ ] **M-12b — BEAM 128K second, abstention EXCLUDED from the headline** (intake-1330#record).
         BEAM's Vanilla column = memory-off, its `pair_chunk` RAG column = naive-memory control,
         our trace/navigation surface = the only new arm. Report instruction_following,
         preference_following and event_ordering separately; headline on the five-ability
         discriminating core. Prompt-match all arms — do NOT give the memory arm a closed-book
         instruction the memory-off arm lacks.
+        *2026-09-16 (B2, merged `cfbfa448`):* arms are selected with `BEAM_CONTEXT_MODE=full|rag|trace`
+        and scored with `score_beam_run --arm full|rag|trace`.
   - [ ] **M-12c — pre-run do-not-copy checklist, seven items** (intake-1337#record, each traceable to
         a site in MemPalace issue #125): (1) report BEAM's own fold, never a binarised
         micro-average; (2) ingest BOTH roles, never user turns only; (3) no synthesis

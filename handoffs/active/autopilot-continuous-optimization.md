@@ -1713,6 +1713,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       human apply transaction `artifacts/operator/apply_e8_quality_baseline_state.py`, which is the
       only writer of `e8_quality_rebaseline.status`.
 - [ ] **E8 quality-baseline reseed — blocked on an operator source amendment pending since 2026-07-27.**
+      *Note 2026-09-16: superseded by operator ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json) (root `1ee8bd7c`). The ruling retires the E8 chain and re-anchors the reseed gate to the current eras; the gate binds only at promotion. The text below is historical, and closing this box is the owner's call.*
       The reseed preflight (`--prepare --t2-n 500`) returns `decision_grade: false` with five blockers,
       three of which are stack-shape (`24 unique selected ports`, `exactly five live frontdoors`,
       `both-mode endpoints healthy 6/6`) and two of which are the same missing operator receipt
@@ -3253,7 +3254,7 @@ Four rows, all zero-compute to write; one carries a compute-gated arm that is fi
       The caution itself is zero-compute and lands with this row. **The held-out arm on accepted
       mutations is COMPUTE-GATED: filed, never run here** — it needs eval compute and belongs to
       another session. `intake-1323#record` (dive actionable D3). Dependency: MHS-4.
-- [ ] **AP-53 — Harness-written rejected-mutation ledger.** Record
+- [x] **AP-53 — Harness-written rejected-mutation ledger.** Record
       `{target, mutation_type, unified diff, per-suite deltas, rejecting gate, timestamp}` on
       **every** reject path in `actions.py`, and feed it into `_build_mutation_prompt`.
       **Harness-written, never LLM-written.** `intake-1317#01`. Zero compute.
@@ -3263,12 +3264,106 @@ Four rows, all zero-compute to write; one carries a compute-gated arm that is fi
       (`experiment_journal.py:1028`, `autopilot.py:318`). Rejected-proposal feedback already exists via
       blacklist / last-invalid / journal (`autopilot.py:5593-5603, 4483-4547, 9297-9305, 4999-5061`).
       `intake-1348#record`.
+      - 2026-09-16 **measured** (zero compute; current run, trials 0–1505 across both shards,
+        2026-05-26 → 08-09; unit = one journal trial row). **133** trials re-ran a concrete config
+        that an earlier trial had already rejected: **9.7%** of 1372 trials, **31.3%** of the 425 trials
+        with a usable key (`config_fingerprint`). By type: structural_experiment 105, numeric_trial 15,
+        code_mutation 9, prompt_mutation 4. 73 had an earlier hard reject (safety/invalid/refuted) and
+        60 were dominated only. Only 8 were blacklisted at dispatch. Median gap from first rejection
+        was **91 trials** (IQR 42–208), far outside the 12-trial window; 78/133 (59%) were rejected
+        again. Examples: `user_modeling=true` safety-failed at #778, then #845/#848/#860/#874 were all
+        below the floor, and it was never blacklisted because the failures were not consecutive;
+        `graph_router=true` was re-proposed 11×.
+        Line-ref corrections: the planner summary is `experiment_journal.py:1179-1236`, the 12-row
+        limit is `autopilot.py:323`, and `9297-9305` is the EV-14e baseline pin, not a feedback path.
+        Method: scratchpad `ap53_reproposal.py` (not committed).
+      - 2026-09-16 **landed**, `epyc-orchestrator` `203cb6e2` (branch `sub/autopilot-evidence-20260916`,
+        merged to `main` at `753343f5`):
+        - `scripts/autopilot/rejected_mutation_ledger.py` plus 15 reject paths in `actions.py`
+          (prompt, GEPA and code × safety/simplicity/skill-efficacy/BSV-2, and the pre-eval
+          transfer-safety/syntax rejects) append harness-written records to
+          `orchestration/autopilot_rejected_mutations.jsonl` with the full field set; the diff is
+          stored with the SHA-256 of the full diff.
+        - `_build_mutation_context` puts the last 3 rejections of the same target at the front of the
+          failure context, so the ledger reaches `_build_mutation_prompt` without editing
+          `prompt_forge.py`.
+        - Because structural experiments dominate, the planner prompt also gets a journal-fold block
+          of still-standing hard-rejected configs. Replayed over the live journal, it would have
+          flagged 48 of 216 keyed trials (43 of them structural).
+        - Tests: `tests/unit/test_ap53_rejected_mutation_ledger.py` (13).
+        - Takes effect at the next AutoPilot restart.
 - [ ] **AP-54 — Asymmetric-access rule, executor half.** Answer **zero-compute first**: does the agent
       under evaluation read our compiled wiki during the same rollouts that feed the mutation
       proposer? If yes, this is a context-assembly fix. Only an ambiguous answer becomes a
       compute-gated A/B (filed, not run). Cross-referenced from EV-10a in
       [`eval-tower-verification.md`](eval-tower-verification.md). `intake-1317#02`. Zero compute for
       the question.
+      - 2026-09-16 **answer: AMBIGUOUS** (zero compute, structural). Nothing *injects* wiki content:
+        - No wiki/KB reader is registered for roles. `src/tools/knowledge.py:148,196` search
+          Wikipedia, not our wiki.
+        - `kb_rag`/federation, which index `/workspace/wiki` (`config/kb_rag_config.yaml:11`), are
+          imported only by tests and `scripts/kb_rag`.
+        - No prompt builder or memory stage pulls wiki text.
+
+        But the eval-time tools **can reach** it:
+        - Builtin `read_file`/`search_files`/`list_files` have no path check
+          (`src/builtin_tools.py:280-313, 317-345, 356-422`). `frontdoor` and `worker_general` hold
+          the `file` category (`orchestration/model_registry.yaml:1848-1853, 2359-2366`; enforced at
+          `src/registry/tool_registry.py:522`). A direct offline call of the builtin read
+          `/workspace/wiki/INDEX.md`.
+        - The REPL file tools allow anything under `/mnt/raid0/llm/`, which includes
+          `epyc-root/wiki` (`src/repl_environment/environment.py:99-113, 497-533`).
+        - `run_shell` allows cat/grep/find (`src/repl_environment/external_access.py:106-150`).
+        - `doc_search` indexes the orchestrator's `docs/**` and `handoffs`
+          (`scripts/nextplaid/index_codebase.py:33-40`).
+
+        Stored traces cannot settle it. Across 9,172 records (journals 05-26 → 08-09,
+        seeding_diagnostics, planner_archive), there are zero wiki/`doc_search`/`kb_*` references.
+        They contain 60 `search_files` and 3 `read_file` calls, but the journal keeps only the first
+        5 tool NAMES and no arguments (`scripts/autopilot/eval_tower.py:1362-1363`), and the API
+        response carries names only (`src/api/routes/chat_pipeline/repl_executor.py:774`).
+        Proposer side: PromptForge, the planner and meta_optimizer do not read the wiki.
+
+        Per this row, the ambiguous answer files a compute-gated A/B, **AP-54b** below (filed, not
+        run). The cheap structural fix needs an operator decision, because
+        `AUTOPILOT_TOOL_SENTINELS=1` is set on the production API unconditionally
+        (`scripts/server/orchestrator_stack.py:2289`), so gating on it would also fence production
+        chat. The recommendation is a per-request eval flag on `/chat` that arms a
+        `_knowledge_fence_denies(path)` check. It would sit in `src/repl_environment/task_root.py` and
+        be called from the three builtin file tools, `REPLEnvironment._validate_file_path` and the
+        path arguments of `_run_shell`, with a policy deny on `doc_search`. The per-question result
+        should also record tool arguments or touched paths, so a trace can prove absence. Both are
+        API-side changes and need an API reload.
+      - 2026-09-16 **fence BUILT** (operator decision: the fence goes live automatically at the next
+        ordinary API reload, and no flag, env or config change is needed). `epyc-orchestrator`
+        `a8bdb15f`, branch `sub/ap54-fence-20260916`, stacked on `sub/autopilot-evidence-20260916`.
+        Review fixes are in `80fa99aa`; kernel enforcement is in `0d3b6e26`, both on top of
+        `origin/main` merges. Not merged. **Live at the next API reload after merge.**
+        - 2026-09-16 (later, wrap-up): **under third review; Landlock enforcement** (`0d3b6e26`, level
+          active on this host = landlock). Box stays open until the branch merges
+          (`progress/2026-09/2026-09-16-sub-ap54-fence.md`).
+        - Arming: `ChatRequest.eval_fence` arms a per-request carrier in
+          `src/repl_environment/knowledge_fence.py`. `False` records paths without denying; that is
+          the AP-54b control arm, selected with `AUTOPILOT_EVAL_FENCE=0`. With the field absent,
+          behaviour is unchanged.
+        - EvalTower always sends the flag. Each row records `fence: active|control|absent` and
+          bounded `touched_paths`. The journal tuple carries `eval_fence`.
+        - Knowledge checkouts are discovered through `git worktree list` and a marker glob
+          (~327 checkouts / ~1145 fenced dirs).
+        - ARMED `run_python_code`/`run_shell` children run under kernel enforcement (Landlock here;
+          `mountns`, else `hook-only` fallback), inherited across fork/exec, which closes
+          ctypes/libc and `sh -c` indirection. The audit hook and shell checks are the recording and
+          hook-only layer. The level is recorded per row (`fence_enforcement`) and in the journal
+          tuple (`eval_fence_enforcement`).
+        - Ordering: a pre-fence API ignores the field. A pre-fence client stays unfenced, and the API
+          logs that as UNFENCED.
+        - Residual gaps, only under `hook-only`: `os.open(rel, dir_fd=)` and raw ctypes function
+          pointers. Under Landlock/mountns these are closed too.
+- [ ] **AP-54b — (COMPUTE-GATED, filed not run) wiki-fence A/B on eval rollouts.** Same eval suite
+      with the knowledge fence armed vs. unarmed, paired per question. Also record touched paths in
+      question results so the unarmed arm shows whether the wiki was read at all. Run only after the
+      fence and path-recording land and the operator picks the arming mechanism (see AP-54).
+      Owner: an eval-compute session.
 
 ## Research Intake Update — 2026-09-14 (intake-1346…1366)
 
@@ -3281,6 +3376,47 @@ Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake
       28-candidate GPT-OSS-20B OpenCode search was homogeneous within regime (χ² p=0.24, p=0.50), its
       only clear pooled shift (3.85% → 9.6%) coincided with provider rate limits disappearing, and
       same-commit re-runs fell 12.1% → 8.7%. Zero compute. Relates to AP-52. `intake-1362#record`.
+      - 2026-09-16 **(a) and (d) landed**, `epyc-orchestrator` `203cb6e2` (branch
+        `sub/autopilot-evidence-20260916`, merged to `main` at `753343f5`). (b) and (c) are still open, so this
+        box stays unticked.
+        - `src/autopilot_core/infra_fingerprint.py` digests six components separately, and a
+          comparison names which ones moved:
+          - orchestrator commit, plus a dirty flag and digest;
+          - evaluator sources and eval registry;
+          - kernel: the declared llama-server, plus the live server exe and mapped
+            libggml/libllama/libmtmd from `/proc/<pid>` for PIDs in the stack state file, with a
+            PID-reuse start-time guard and no name scan;
+          - recipe files (registry, launch manifest, topology);
+          - per-role model path, size and GGUF first-MiB digest;
+          - host: kernel, CPU, THP, NUMA balancing, governor.
+        - PIDs and start times are not in the digest. An unreadable side is `UNVERIFIED`, never
+          `COMPARABLE`.
+        - Trials record `infra_fingerprint` and `comparability`, which is COMPARABLE, NON_COMPARABLE
+          or UNVERIFIED against the fingerprint of the tier's promoted baseline. A regime change
+          between dispatch and eval also marks the trial NON_COMPARABLE.
+        - Where the regime is carried:
+          - `eval_details` gets the digest and status;
+          - `measurement` (the claim tuple) carries both;
+          - baseline-promotion events and a new daemon-owned `baseline_infra_fingerprints` state
+            field hold the reference;
+          - `group_by_infra_regime()` groups a candidate batch by regime, the prerequisite for (c).
+        - Legacy rows load unchanged and are never back-filled. Baselines promoted before this change
+          read UNVERIFIED until their next promotion.
+        - Live read-only smoke run: all 6 components readable. Most llama-server PIDs in
+          `logs/orchestrator_state.json` are stale or invisible from this namespace, so the kernel
+          component falls back to the declared binary.
+        - Tests: `tests/unit/test_ap55_infra_fingerprint.py` (19).
+        - Takes effect at the next AutoPilot restart.
+      - 2026-09-16 **(b)+(c) built, shadow-default — under review, unmerged** (`sub-ap55bc`): orchestrator
+        `sub/ap55bc-20260916` (`f057f1fb`, `e3e67696`), root `sub/ap55bc-root-20260916` (`febf56cd`).
+        Same-regime seed re-run leg + regime-triggered reference re-draw (`AUTOPILOT_AP55_SEED_RERUN` for
+        seq-off), chi-square batch homogeneity over the same-baseline-revision in-regime batch,
+        `AUTOPILOT_AP55_PROMOTION_GATE` shadow|enforce|strict. Declared-only kernel (PIDs invisible in the
+        container) compares UNVERIFIED, never COMPARABLE. Merge order: after `sub/ap54-fence-20260916`
+        (keep both blocks on conflict). Detail: `progress/2026-09/2026-09-16-sub-ap55bc.md`.
+      - 2026-09-16 **operator decision — gate mode A (shadow)**: run the next AutoPilot run in shadow;
+        **AP-55-ARM is pre-approved** to move the gate to `enforce` plus the seed re-runs after one
+        shadow run (read the counterfactual `eval_details.ap55_promotion_gate.hold` rate first).
 - [ ] **AP-56 — Determinism certification before N=1 promotion.** llama-server fixed seed and fixed
       slot count; replay the baseline action chain and require identical trajectories before trusting a
       single-run verdict. External, descriptive: promotion rate 7.9% (1,223 decisions) → 25.2% (131)

@@ -109,6 +109,21 @@ All edits above are on branch `spec-dec-mtp-refresh-2026-06-22` and are **uncomm
       caveat (§4) is that MoE batches worse than dense because distinct tokens hit distinct experts,
       so the dense result below does NOT transfer. The named targets — Q4_K gemma4-31B and Q8_0
       Qwen3.6-27B — remain unmeasured. Needs an owner and a GPU window.
+      - **Prep 2026-09-16 (sub-gpu-prep, zero-inference): BOTH named targets are DENSE** (GGUF headers):
+        `gemma-4-31B-it-Q4_K_M` arch=gemma4, no `expert_count`; `Qwen_Qwen3.6-27B-Q8_0` arch=qwen35 (the
+        MoE arch is `qwen35moe`), no expert keys. They become the dense same-family CONTROLS. Corrected MoE
+        targets (all fit 64 GB, `/mnt/raid0/llm/models/`): `gemma-4-26B-A4B-it-ORIG-Q4_K_M` (16.8 GB, 128/8)
+        + `-ORIG-Q8_0` (26.9 GB), `Qwen3.6-35B-A3B-MTP-Q8_0` (37.8 GB, qwen35moe 256/8); optional
+        `Qwen3-Coder-30B-A3B-Instruct-Q4_K_M` (18.6 GB, qwen3moe). Avoid `gemma-4-26B-A4B-it-Q4_K_M-current`
+        (header ftype=2 = Q4_0). Partial prior: 05c §3.3 gemma-26B-A4B Q8 vs bf16 (pre-v9). **Sweep spec:**
+        `/mnt/raid0/llm/llama.cpp/build-hip/bin/llama-batched-bench` (champion `ef81196d5` has no
+        batched-bench; LD_LIBRARY_PATH = that bin, prove with `verify_ggml_linkage.sh`), `-ngl 99 -fa on -ctk f16
+        -ctv f16 -c 16384 -b 2048 -ub 2048 -t 8`, `taskset -c 184-191`, `-npp 128 -ntg 128 -npl 1,2,4,8,16,32`;
+        n=3 launches/arm, rotated order (ABA), unit=launch; metric S_TG(B), S_TG(32)/S_TG(1), per-B Q4_K/Q8_0
+        ratio; residency sampled DURING each run. Proposed reading (pre-register before the run): PASS if MoE
+        Q4_K scaling ≥0.8× its dense sibling and the Q4_K/Q8_0 ratio does not fall B=1→32; FAIL if <0.5× →
+        L3-MoE MUL_MAT_ID/MMQ kernel gains ROI. Observation (speed only).
+      - **Thresholds drafted 2026-09-16 (sub-s5-thresholds, zero-inference; freeze before the run):** `progress/2026-09/2026-09-16-sub-s5-thresholds.md` — n=5, δ=8%, the kernel trigger is the Q4_K/Q8_0 erosion E=F(32)/F(1) (GO ≥0.92, NO-GO <0.84 and F(32)<1), the MoE/dense M2 0.8/0.5 test triggers profiling only.
 
 **What the dense half settled, and the one place it revises §6.** "Batching closes GAP-A for
 quantized" is **confirmed for the formats this document considered** — Q4_K_M reaches ~0.99 of the
