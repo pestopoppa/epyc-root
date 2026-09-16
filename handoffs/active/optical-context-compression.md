@@ -55,7 +55,7 @@ mechanism for the same job; if it does not, that is a cheap negative result.
 
 ## Progress Checklist
 
-- [ ] **OCC-1 — the decisive measurement.** Fixed history, one reader we serve: billed-token cost and
+- [x] **OCC-1 — the decisive measurement.** Fixed history, one reader we serve: billed-token cost and
   QA recall, bitmap frames vs raw text. Requires a vision-capable local reader (see
   [`multimodal-pipeline.md`](multimodal-pipeline.md) for the live vision path). Gate everything else
   on this.
@@ -72,11 +72,35 @@ mechanism for the same job; if it does not, that is a cheap negative result.
     tokens per 6x10 frame, against about 8.7k text tokens per chunk. Next: GPU runner executes the
     README recipe (pilot, then full).
     Status 2026-09-16 (wrap-up): queued as **item 10** on the GPU queue; not run.
+  - ✅ **RESULT 2026-09-16 15:41–16:16Z (sub-gpu-runner): OCC-1 is NEGATIVE under the pre-registration.**
+    Evidence: research `84dc568d`, `data/occ1-optical-compression-20260916/`, holding the summary, digests
+    and residency record, with no SQuAD text.
+    - **Instrument.** Reader Qwen3-VL-30B-A3B-Instruct Q4_K_M + F16 mmproj on the champion build
+      `b10301-ef81196d5`, MI210, n_ctx 16384.
+    - **Fixture and metrics.** History fixture: SQuAD dev suite `261d8ac1eaed`, 1165 paired questions per arm.
+      Billed tokens = server `usage.prompt_tokens`. Recall = SQuAD F1, with CIs from a chunk-clustered
+      bootstrap. No codified protocol exists, so these are observations capped at Judged/Located.
+    - **Text arm (BASELINE).** F1 **0.888**, EM 0.786, 9,286 prompt tok/req.
+    - **Image arms (CANDIDATE)**, as F1 / token ratio vs text / ΔF1 [95% CI]:
+      - 6x10-bw: 0.455 / 0.326 / −0.433 [−0.460, −0.407]
+      - 6x10-color: 0.456 / 0.326 / −0.432 [−0.462, −0.402]
+      - 8x8u-bw: 0.364 / 0.437 / −0.524 [−0.556, −0.489]
+      - 12x12u-bw: 0.363 / 0.437 / −0.525 [−0.556, −0.495]
+      - 8x13-bw: 0.536 / **0.516** / −0.351 [−0.375, −0.327]
+    - **Verdicts.** The first four arms are NOT_NONINFERIOR. 8x13-bw is NEGATIVE_COST, because its ratio is
+      above 0.5. Every EM McNemar p is below 1e-100.
+    - **Validity.** No VOID reason fired. Residency was proven: 1283/1283 in-flight samples high and in KFD,
+      peak +20.5 GiB. There were 0 cache hits. The 3-chunk pilot was also NEGATIVE.
+    - **Reading.** Frames save 48–67% of billed tokens but lose 35–53 F1 points on this reader. No arm seeds
+      OCC-3.
+    - **Belief kernel.** 22 rows ingested (`ingest occ1`).
 - [x] **OCC-2 — record the provider image-billing asymmetry** as a cost-aware-routing input,
   independent of OCC-1's outcome, with the staleness caveat attached. ✅ 2026-08-25 — see the
   OCC-2 Record section below (all cells re-verified against provider docs; Anthropic drift
   demonstrates the staleness caveat).
 - [ ] **OCC-3 — (only if OCC-1 is positive) re-derive the frame-shape table for our own readers.**
+  - 2026-09-16: **not triggered**, because OCC-1 was NEGATIVE (no arm was POSITIVE). The box stays open only as
+    the gated option; close or retire it at the next index pruning.
   The published shapes do not transfer.
 
 ## OCC-2 Record — Provider Image-Billing Asymmetry (2026-08-25)
