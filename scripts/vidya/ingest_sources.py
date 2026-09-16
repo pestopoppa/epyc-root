@@ -110,6 +110,16 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="OCC-1 run dirs (`run_occ1.py report` sidecars); VOID/pre-hook runs decline",
            task="SC85"),
+    Source("tale-budget", "tale_budget",
+           _files("*.beliefs.jsonl", "**/*.beliefs.jsonl"),
+           note="PRB-T4 `prb_t4_tale_gpu.py --out` dirs (`<results>.beliefs.jsonl` beside each "
+                "eval_tale_budget.py results file); pre-hook results decline",
+           task="VB-PRB-T4"),
+    Source("review-f1", "review_f1",
+           _files("_summary.semantic.*.beliefs.jsonl", "**/_summary.semantic.*.beliefs.jsonl"),
+           note="EV-13b `ev13b_run.py --out` dirs (one sidecar per judge beside "
+                "`_summary.semantic.<judge>.json`); pre-hook summaries decline",
+           task="VB-REVIEW-F1"),
     Source("memento-lora", "memento_lora",
            _files("stage*_belief_measurements.json", "**/stage*_belief_measurements.json"),
            task="SC20"),

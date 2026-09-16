@@ -547,7 +547,8 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
     "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
-    "chat-template-ab", "occ1", "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
+    "chat-template-ab", "occ1", "tale-budget", "review-f1",
+    "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
     "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
 )
 
