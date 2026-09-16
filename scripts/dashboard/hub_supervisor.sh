@@ -58,6 +58,9 @@ POLL_INTERVAL="${POLL_INTERVAL:-15}"     # seconds between healthy polls
 MAX_BACKOFF="${MAX_BACKOFF:-300}"        # cap on restart backoff (seconds)
 HEALTH_TIMEOUT="${HEALTH_TIMEOUT:-5}"    # per-probe curl timeout (seconds)
 STARTUP_TIMEOUT="${STARTUP_TIMEOUT:-30}" # wait for /health after a relaunch
+# Two-sample rule (agents/shared/INVARIANTS.md): a single failed probe is not
+# enough to kill a hub — re-probe once after this delay before restarting.
+HEALTH_CONFIRM_DELAY_S="${HEALTH_CONFIRM_DELAY_S:-3}"
 # Deployment sync: how often to look for dashboard code landed on origin/main.
 # A network fetch, so it is rate-limited independently of POLL_INTERVAL.
 DEPLOY_SYNC_INTERVAL_S="${DEPLOY_SYNC_INTERVAL_S:-300}"
@@ -103,6 +106,15 @@ health_ok() {
     *'"status"'*'ok'*) return 0 ;;
     *) return 1 ;;
   esac
+}
+
+# 0 iff /health fails on TWO probes HEALTH_CONFIRM_DELAY_S apart. A hub that is
+# merely slow for one probe (host under load) must not be SIGTERMed for it.
+hub_down_confirmed() {
+  health_ok && return 1
+  sleep "${HEALTH_CONFIRM_DELAY_S}"
+  health_ok && { log "transient /health failure — second probe healthy, no action"; return 1; }
+  return 0
 }
 
 wait_health() {
@@ -245,6 +257,38 @@ restart_hub() {
 # --------------------------------------------------------------------------- #
 # Single-instance guard — makes the daemon idempotent + nohup-safe
 # --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+# Checkout identity — refuse to supervise from a LINKED worktree
+# --------------------------------------------------------------------------- #
+# 2026-08-21 and again 2026-09-15: the supervisor was started with EPYC_ROOT set
+# to a lane worktree (a session exporting its own checkout). The hub then served
+# that lane's frozen handoffs/ while its badge read fresh, deploy-sync wrote
+# origin/main dashboard files INTO the lane's working tree (they show as modified
+# in that session's `git status`), and — because the lock is keyed on the PORT —
+# the canonical `once` could not correct it. The reverted 2026-08-24 guard read
+# /proc/<pid>/cwd and false-positived on a mount-namespace artifact; this probe
+# asks git instead: in the primary checkout --git-dir == --git-common-dir, in a
+# linked worktree they differ. Refuses only on POSITIVE detection; a root git
+# cannot describe (e.g. a test fixture) proceeds. Override for deliberate use:
+# HUB_ALLOW_LINKED_WORKTREE=1.
+root_is_linked_worktree() {
+  local dirs gd cdir
+  dirs="$(git -C "${EPYC_ROOT}" rev-parse --path-format=absolute \
+            --git-dir --git-common-dir 2>/dev/null || true)"
+  gd="$(printf '%s\n' "${dirs}" | sed -n 1p)"
+  cdir="$(printf '%s\n' "${dirs}" | sed -n 2p)"
+  [[ -n "${gd}" && -n "${cdir}" && "${gd}" != "${cdir}" ]]
+}
+
+refuse_linked_worktree() {
+  [[ "${HUB_ALLOW_LINKED_WORKTREE:-0}" == "1" ]] && return 0
+  if root_is_linked_worktree; then
+    log "REFUSING: EPYC_ROOT=${EPYC_ROOT} is a linked git worktree, not the primary checkout."
+    log "  Unset EPYC_ROOT (default /mnt/raid0/llm/epyc-root) or set HUB_ALLOW_LINKED_WORKTREE=1."
+    exit 3
+  fi
+}
+
 acquire_lock() {
   exec 9>"${LOCK_FILE}"
   if ! flock -n 9; then
@@ -471,23 +515,31 @@ check_hub_stale_source() {
   fi
   log "hub is serving code OLDER than dashboard/ — restarting so landed changes take effect"
   echo "${src}" > "${STALE_SRC_STATE}"
-  restart_hub
+  # Callers run this as a simple command under `set -e`; a bare failing
+  # restart_hub here used to terminate the LOOP daemon itself (and leave the hub
+  # killed). Report failure to the caller explicitly instead.
+  restart_hub || { log "stale-source restart FAILED — hub may be down"; return 1; }
 }
 
 cmd_once() {
+  refuse_linked_worktree
   acquire_lock
-  if health_ok; then
+  if ! hub_down_confirmed; then
     reconcile_hub_pid
+    # Same healthy-path sequence as cmd_loop (sync, then stale-source check), so a
+    # cron `once` covers the whole supervision surface while the daemon is dead.
+    sync_dashboard_from_origin
     # A HEALTHY hub can still be the wrong hub.
-    check_hub_stale_source
-    log "once: hub healthy — no action"
+    check_hub_stale_source || return 1
+    log "once: hub healthy — no restart needed"
     return 0
   fi
-  log "once: hub down — attempting restart"
+  log "once: hub down (confirmed by two probes) — attempting restart"
   restart_hub
 }
 
 cmd_loop() {
+  refuse_linked_worktree
   acquire_lock
   echo "$$" > "${SUP_PIDFILE}"
   trap 'log "supervisor exiting (pid $$)"; rm -f "${SUP_PIDFILE}"' EXIT
@@ -496,21 +548,24 @@ cmd_loop() {
   while true; do
     if health_ok; then
       reconcile_hub_pid
-      # DEPLOYMENT (2026-08-28). Both of these ran in `cmd_once` and NEITHER ran
-      # here — and `loop` is the mode the long-lived supervisor actually uses. So a
-      # healthy hub serving week-old code was never noticed by the running
-      # watchdog, only by the cron-style one-shot nobody invokes.
+      # DEPLOYMENT (2026-08-28). These were missing here while `loop` is the mode
+      # the long-lived supervisor actually uses. (2026-09-16: `cmd_once` now runs
+      # the same sequence — before that it lacked the sync.)
       #
       # Order matters: sync first so the stale-source check sees the new mtimes on
       # the same pass and restarts once, rather than noticing them a cycle later.
       sync_dashboard_from_origin
       # A HEALTHY hub can still be the wrong hub.
-      check_hub_stale_source
+      check_hub_stale_source || true   # failure: next poll takes the unhealthy path
       backoff="${POLL_INTERVAL}"
       sleep "${POLL_INTERVAL}"
       continue
     fi
-    log "hub UNHEALTHY — restarting"
+    if ! hub_down_confirmed; then
+      sleep "${POLL_INTERVAL}"
+      continue
+    fi
+    log "hub UNHEALTHY (confirmed by two probes) — restarting"
     if restart_hub; then
       backoff="${POLL_INTERVAL}"
       sleep "${POLL_INTERVAL}"
