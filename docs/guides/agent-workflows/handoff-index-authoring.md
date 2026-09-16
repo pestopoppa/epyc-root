@@ -44,6 +44,42 @@ Exactly one table shape, in every domain index:
    `handoffs/archived/<index>-history-through-YYYY-MM-DD.md` with a "historical ledger only" banner.
    Delete the row from the index; never strike it through in place.
 
+## Promote or inline? (a checkbox vs its own handoff + row)
+
+Derived 2026-09-16 (RTG-46) on the *shape* of intake-1309#record's table, with **our own constants**.
+The "size" is a top-level checkbox's line count: the box line plus its indented continuation lines.
+Measured over the 1,635 open top-level boxes in 173 active handoffs:
+
+| Lines | Open boxes | Handoffs | Rule |
+|---|---|---|---|
+| 1–3 (≤ p50) | 919 | 149 | **Inline.** Promote only on the isolation criterion (4). |
+| 4–11 (≤ p90) | 562 | 86 | **Inline** unless a signal from (2) applies. |
+| 12–31 | 136 | 43 | **Ambiguous band**: apply (2), then the tie-break (3). |
+| ≥ 32 (≥ p99) | 18 | 11 | **Promote.** A box this long is already an embedded handoff. |
+
+(Continuation-line percentiles for open boxes: p50 3, p75 6, p90 11, p95 16, p99 32, max 160. Only
+70 of 1,635 open boxes carry nested sub-boxes. Re-measure with the same definition before changing
+these bands. Do not use intake-1309#record's 10/40 constants: they are unmeasured and count Lean proof lines.)
+
+1. **Size metric.** Use the table above.
+2. **Promotion signals for the ambiguous band.** Any one is enough:
+   - it has, or needs, its own nested sub-boxes;
+   - another row would list it in `Deps`, or it waits on a different row than its parent does;
+   - a different session or lane would own it;
+   - it keeps accumulating narrative or evidence inside the box, which is history living in a row
+     in all but name;
+   - other handoffs link to it specifically.
+3. **Tie-break: promote when unsure.** intake-1309#record inlines when unsure because an uploaded theorem is
+   immutable and an inlined lemma can still be promoted later. That asymmetry does not hold here:
+   our rows and handoffs are freely editable and deletable, so both directions can be undone. What
+   stays asymmetric is **visibility**. An inlined item has no graph node, so it gets no `readiness`,
+   no liveness and no `Deps` edge, and a wrong inline fails silently. A wrong promotion shows up as a
+   tiny node on the hub. Fold it back when that happens: a handoff with ≤ 2 checkboxes is a
+   candidate to inline (10 of 173 active handoffs on 2026-09-16).
+4. **Failure isolation, independent of reuse.** Promote at any size when the item can be *blocked
+   on something its parent is not*, or its failure must not stall the parent. `readiness` is
+   derived per node, so a gate on an inline box either blocks the whole parent or is invisible.
+
 ## What this replaces, and why
 
 The previous contract required indices to *"extract all outstanding tasks from linked handoffs, ordered
