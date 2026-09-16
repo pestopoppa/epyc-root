@@ -1,0 +1,81 @@
+{
+  "schema": "epyc.measurement.protocol_amendment.v1",
+  "decision": "PCAL-SPECDEC-CONTAMINATION-SUSPEND",
+  "gate_id": "RATIFY-P-CAL-SPECDEC-20260916",
+  "ratified_at": "2026-09-16T15:01:28Z",
+  "operator": "pestopoppa",
+  "status": "ratified",
+  "protocol_id": "P-CAL",
+  "annex": "Q",
+  "operator_decision": "2026-09-16 option (a): caveat now, do not wait for the EV-CONF-2 GPU probe",
+  "patch": {
+    "path": "artifacts/operator/pcal-specdec-contamination-20260916.patch",
+    "sha256": "b3045b69a9fbb982ca6108a280bf457f6bc90eb93cc43adfa8eb3fbb13fa2691"
+  },
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "45c7e3a31ccc7c453d66b00124011a5bbbf9f44eaa90510d4cb3f75a1ae49dec",
+      "sha256_after": "9659d8c3bf66a06a215f7c2c5e5d6fd8eefe5e3f2c15d9656f0c8648bb720c4a"
+    },
+    "measurement/protocols/quality-eval.md": {
+      "sha256_before": "94a2726f1e5327c20854b574e22be4834d47866ca7a3350865873ed3b365ebff",
+      "sha256_after": "ec25a3ea2a483341bcac05ad956030148ebf5aa4567e64963388e4082dd1a644"
+    }
+  },
+  "values": [
+    {
+      "run": "E7c",
+      "domain": "math",
+      "arms": "worker_general/worker_math",
+      "ece": [
+        0.2114,
+        0.2199
+      ],
+      "auroc": [
+        0.4013,
+        0.4114
+      ],
+      "saturated_rows": [
+        "1528/1684",
+        "1485/1628"
+      ],
+      "verdict": "CONTAMINATED-INVALID"
+    },
+    {
+      "run": "EV-4c",
+      "domain": "code",
+      "arms": "frontdoor/worker_general",
+      "ece": [
+        0.2532,
+        0.3216
+      ],
+      "auroc": [
+        0.6337,
+        0.5751
+      ],
+      "saturated_rows": [
+        "0/820",
+        "2/817"
+      ],
+      "verdict": "CONTAMINATED-UNMEASURED-DEMOTED-TO-PRIOR"
+    }
+  ],
+  "suspended_uses": [
+    "rlvr_tiers RLVR code-reward calibration/discrimination",
+    "EV-5/EV-7 verifier promotion gate",
+    "math cross-arm ECE stability check"
+  ],
+  "rebaseline_rule": "confidence metrics admissible only from spec-off runs, or with draft-accepted placeholder tokens excluded and the excluded share reported",
+  "lift_condition": "EV-CONF-2 (spec-off GPU probe) reports; lifting is a further human amendment",
+  "historical_numbers": "preserved verbatim; nothing deleted or edited",
+  "evidence": {
+    "mechanism": "llama.cpp v7/v9 reports prob=1.0 with empty top-k for draft-accepted tokens",
+    "orchestrator_commits": {
+      "b98dee18": "token_confidence per-token trace + placeholder sentinel (merged 2026-09-16 via d8b915ee/88a2902d)",
+      "f2e9ee07": "EV-CONF-2 probe driver, spec-off fail-closed (merged 2026-09-16 via d8b915ee/88a2902d)"
+    },
+    "probe_spec": "handoffs/active/autopilot-decision-plane-audit-2026-07-22.md (EV-CONF-2 box)"
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_pcal_specdec_contamination_20260916.receipt.json",
+  "applied_by": "scripts/operator/ratify_pcal_specdec_contamination_20260916.sh"
+}

@@ -1,0 +1,237 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-09-16T15:01:28Z",
+  "evidence": [
+    {
+      "bytes": 3713587,
+      "citation": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_math_rebaseline_E7c/question_results.ev11-worker_general.jsonl",
+      "durability": {
+        "hint": "",
+        "severity": "ok",
+        "verdict": "OK"
+      },
+      "exists": true,
+      "label": null,
+      "resolved": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_math_rebaseline_E7c/question_results.ev11-worker_general.jsonl",
+      "sha256": "5705081e2b285b1ab6e1e9588f6566317853088c5727c19a4fad00d1e1919cab"
+    },
+    {
+      "bytes": 3603267,
+      "citation": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_math_rebaseline_E7c/question_results.ev11-worker_math.jsonl",
+      "durability": {
+        "hint": "",
+        "severity": "ok",
+        "verdict": "OK"
+      },
+      "exists": true,
+      "label": null,
+      "resolved": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_math_rebaseline_E7c/question_results.ev11-worker_math.jsonl",
+      "sha256": "50ece19a75f3c0bb1ee0e850705b7f13c35eb1df48f7b63460511cd6b255fdc1"
+    },
+    {
+      "bytes": 802483,
+      "citation": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/frontdoor_ev4c/question_results.cal-frontdoor.jsonl",
+      "durability": {
+        "hint": "",
+        "severity": "ok",
+        "verdict": "OK"
+      },
+      "exists": true,
+      "label": null,
+      "resolved": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/frontdoor_ev4c/question_results.cal-frontdoor.jsonl",
+      "sha256": "19e6f9ebddf7a68ff75c0036c38d61fe1282efa21135675ae76ff19cfca8f2ab"
+    },
+    {
+      "bytes": 873003,
+      "citation": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/worker_general_ev4c/question_results.cal-worker_general.jsonl",
+      "durability": {
+        "hint": "",
+        "severity": "ok",
+        "verdict": "OK"
+      },
+      "exists": true,
+      "label": null,
+      "resolved": "/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/eval_tower_calibration_baseline_HE-R+/worker_general_ev4c/question_results.cal-worker_general.jsonl",
+      "sha256": "7b8dc910c837ccdf27f7d9663e6ab69eeaeedc8957a3058a32d2c6b4fcc9a106"
+    }
+  ],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "db34a605e35b4b56e5da2505e3e6078fecaab817f51e01c587007bb07212a184"
+  },
+  "git_head_at_emit": "a292546d8db255327009283d8be8b9c27e2db534",
+  "git_head_before": "a292546d8db255327009283d8be8b9c27e2db534",
+  "operator": "pestopoppa",
+  "protocol_id": "P-CAL",
+  "ratification_id": "RATIFY-P-CAL-SPECDEC-20260916",
+  "ratify_script": {
+    "exists": true,
+    "path": "scripts/operator/ratify_pcal_specdec_contamination_20260916.sh",
+    "sha256": "4d5afeac6eacbc9e5e18804404126bf646a56da53ef988531a2cb49d82dd676b"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/worktrees/op-pcal-ratify-20260916",
+  "sections": {
+    "coherence": {
+      "data": {
+        "MEASUREMENT.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        },
+        "measurement/protocols/quality-eval.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-CAL present in MEASUREMENT.md",
+        "anchor present: | P-CAL | Verifier/answer calibration | ECE (\u2193) / AUROC (\u2191) | \u2705 2026-0",
+        "anchor present: - **2026-09-16 (v2.x)** \u2014 AMENDMENT (Annex Q, `P-CAL`): all four calib"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 13,
+      "lines_after": 582,
+      "lines_before": 570,
+      "lines_removed": 1,
+      "path": "MEASUREMENT.md",
+      "sha256_after": "9659d8c3bf66a06a215f7c2c5e5d6fd8eefe5e3f2c15d9656f0c8648bb720c4a",
+      "sha256_before": "45c7e3a31ccc7c453d66b00124011a5bbbf9f44eaa90510d4cb3f75a1ae49dec",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/MEASUREMENT.md",
+        "+++ b/MEASUREMENT.md",
+        "@@ -60,7 +60,7 @@",
+        " | P-QUAL-T1 | Autopilot trial-gate quality (production instrument card) | suite score | \u2705 | Q |",
+        " | P-QUAL-PROMO | Promotion / generalization quality | e-value | \u2705 | Q |",
+        " | P-AB-1 | Orchestrator A/B (routing, prompts, features) | paired effect | \u2705 | Q |",
+        "-| P-CAL | Verifier/answer calibration | ECE (\u2193) / AUROC (\u2191) | \u2705 2026-07-23 | Q |",
+        "+| P-CAL | Verifier/answer calibration | ECE (\u2193) / AUROC (\u2191) | \u2705 2026-07-23 \u00b7 \u26a0\ufe0f decision uses SUSPENDED 2026-09-16 (spec-dec contamination; pending EV-CONF-2) | Q |",
+        " | P-PAIRED | Paired A/B significance verdict (McNemar) | verdict (not delta) | \ud83d\udccb staged 2026-07-23 | Q |",
+        " | P-SMOKE-1 | Sanity check \u2014 unblocks work, gates nothing | pass/fail | \u2705 | Q |",
+        " | P-SPEED-OBJ | Autopilot throughput objective | task_rate (\u2191) | \u2705 | \u00a71 above |",
+        "@@ -276,6 +276,18 @@",
+        " ",
+        " ## CHANGELOG",
+        " ",
+        "+- **2026-09-16 (v2.x)** \u2014 AMENDMENT (Annex Q, `P-CAL`): all four calibration baselines are marked",
+        "+  **CONTAMINATED by speculative decoding**, and P-CAL's decision uses are **SUSPENDED** pending EV-CONF-2",
+        "+  (a spec-off GPU probe). llama.cpp v7/v9 reports `prob=1.0` with an empty top-k for draft-accepted",
+        "+  tokens, so the completion-probability geomean on `draft-mtp` servers averages placeholders. E7c math",
+        "+  is saturated and INVALID; EV-4c code is contaminated by an unmeasured amount and is demoted-to-prior.",
+        "+  RLVR code-reward calibration and EV-5/EV-7 verifier promotion may not gate on P-CAL until the",
+        "+  suspension is lifted. Standing re-baseline rule: confidence metrics are admissible only from spec-off",
+        "+  runs or with placeholder tokens excluded. Supersedes the \"geomean length confounding\" attribution",
+        "+  of math AUROC as its primary explanation, and the \u00a72 P-CAL status cell; no historical number is",
+        "+  deleted or edited. Evidence: epyc-orchestrator `b98dee18` and `f2e9ee07`. Operator decision",
+        "+  2026-09-16, option (a).",
+        "+",
+        " - **2026-09-08 (v2.x)** \u2014 AMENDMENT: three appendix blocks ratified as ONE decision out of the",
+        "   2026-09-08 champion / R23-58 / INF-70 campaign \u2014 **INSTRUMENT-CLASS-1** (a bench-surface number is",
+        "   never a serving number), **FLOOR-UNIT-1** (a floor carries its unit; n=10 on a tail statistic cannot"
+      ]
+    },
+    {
+      "lines_added": 39,
+      "lines_after": 151,
+      "lines_before": 113,
+      "lines_removed": 1,
+      "path": "measurement/protocols/quality-eval.md",
+      "sha256_after": "ec25a3ea2a483341bcac05ad956030148ebf5aa4567e64963388e4082dd1a644",
+      "sha256_before": "94a2726f1e5327c20854b574e22be4834d47866ca7a3350865873ed3b365ebff",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/measurement/protocols/quality-eval.md",
+        "+++ b/measurement/protocols/quality-eval.md",
+        "@@ -48,8 +48,46 @@",
+        " 2026-07-11]`. Fails \u2192 investigate. Passes \u2192 proceed, but a protocol-level claim is still",
+        " required before any keep/revert/deploy/promote decision.",
+        " ",
+        "-## P-CAL \u2014 Verifier/answer calibration (ECE / AUROC) [added 2026-07-23]",
+        "+## P-CAL \u2014 Verifier/answer calibration (ECE / AUROC) [added 2026-07-23; decision uses SUSPENDED 2026-09-16]",
+        " ",
+        "+- **SUSPENDED 2026-09-16 \u2014 speculative-decoding contamination** (amendment block; it deletes and",
+        "+  edits no historical number). Every baseline in this block was captured on `draft-mtp` servers:",
+        "+  E7c on worker_general/worker_math (gemma-4-26B-A4B MTP, `draft_max=2`); EV-4c on frontdoor",
+        "+  (Qwen3.6-35B-A3B-MTP, `draft_max=4`) and worker_general (gemma-4-26B-A4B MTP). For every",
+        "+  draft-accepted token, llama.cpp (v7 and v9) reports `prob=1.0` with an empty top-k. The",
+        "+  completion-probability geomean therefore averages placeholder values, not model probabilities,",
+        "+  over an unmeasured share of every answer. `confidence_is_real=True` does not clear this, because",
+        "+  the flag certifies the confidence SOURCE, not the absence of placeholders. Status by value:",
+        "+  - **E7c math** ECE 0.2114/0.2199, AUROC 0.4013/0.4114 (SUSPENDED): **CONTAMINATED, INVALID**",
+        "+    as a calibration measurement, kept as history. The rows are saturated: 1528/1684 and",
+        "+    1485/1628 carry confidence \u2265 0.999999 (observation, a recount of",
+        "+    `question_results.ev11-*.jsonl` on 2026-09-16). As the primary explanation of the",
+        "+    anti-discrimination, \"geomean length confounding\" (below) is superseded by the placeholder",
+        "+    artifact (observation, not a claim; EV-CONF-2 decides).",
+        "+  - **EV-4c code** ECE 0.2532/0.3216, AUROC 0.6337/0.5751 (SUSPENDED): **CONTAMINATED, size",
+        "+    unmeasured**, demoted-to-prior. The rows are not saturated: 0/820 and 2/817 sit at \u2265 0.999999",
+        "+    (observation). The placeholder share is diluted, not absent, and no row is known to be",
+        "+    placeholder-free.",
+        "+  - **Suspended decision uses, until EV-CONF-2 reports**: (a) the rlvr_tiers RLVR code-reward",
+        "+    calibration/discrimination components, and (b) the EV-5/EV-7 verifier-promotion gate, may not",
+        "+    gate on any P-CAL ECE or AUROC value; the math cross-arm ECE stability check is suspended",
+        "+    likewise. P-PAIRED verdicts on E7c are correctness-scored and are NOT affected.",
+        "+  - **Re-baseline rule (standing)**: a confidence metric (ECE, AUROC, or anything computed from",
+        "+    token probabilities) is admissible under P-CAL only from (i) a spec-off run (no draft model,",
+        "+    no MTP head, no n-gram/lookup drafting; serving identity recorded in the row), or (ii) a run",
+        "+    whose per-token trace marks draft-accepted placeholder tokens and excludes them, reporting the",
+        "+    excluded share. A row that meets neither condition is an observation, permanently.",
+        "+  - **Lift condition**: EV-CONF-2 (the spec-off GPU probe; spec in the EV-CONF-2 box of",
+        "+    `handoffs/active/autopilot-decision-plane-audit-2026-07-22.md`) reports. Restoring the",
+        "+    decision uses, or appending replacement baselines, is a further human amendment. The values",
+        "+    in the Baselines bullet below are never edited.",
+        "+  - **Evidence**: epyc-orchestrator `b98dee18` (per-token trace; placeholder tokens stored as a",
+        "+    sentinel and counted) and `f2e9ee07` (EV-CONF-2 probe driver; the spec-off arm fails closed",
+        "+    when a draft is present). Both were merged 2026-09-16 via d8b915ee/88a2902d (epyc-orchestrator",
+        "+    origin/main). Sidecars:",
+        "+    `orchestration/reports/eval_tower_math_rebaseline_E7c/` and",
+        "+    `orchestration/reports/eval_tower_calibration_baseline_HE-R+/*_ev4c/`. Operator decision",
+        "+    2026-09-16, option (a): caveat now rather than wait for the probe.",
+        " - **Instruments**: eval-tower.math-rebaseline (GSM8K+MATH-500, n=1,819/arm, math_verify,",
+        "   seed 42, production sampling; run E7c 2026-07-23) and eval-tower.calibration-baseline.v1",
+        "   (Scoring Verifiers HE-R+, n=820/arm, code_execution labels, seed 42; run EV-4c 2026-07-22)."
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "bash scripts/validate/check_claims_grammar.sh --files measurement/protocols/quality-eval.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "check_claims_grammar: 3 line(s) look like uncited claims (need [P-<ID>, n, date, attest] or an observation marker):",
+        "measurement/protocols/quality-eval.md:38:(the X-MAS lesson: a 20pp effect at N=25 collapsed to 4pp at N=100); every failure classified by",
+        "measurement/protocols/quality-eval.md:104:- **Baselines (era anchors)**: code ECE 0.2532/0.3216, AUROC 0.6337/0.5751 (frontdoor/",
+        "measurement/protocols/quality-eval.md:148:  \"indistinguishable\" (the ~0.2pp delta is inside the noise band). Ledger row:"
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

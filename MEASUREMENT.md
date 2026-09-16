@@ -60,7 +60,7 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-QUAL-T1 | Autopilot trial-gate quality (production instrument card) | suite score | ✅ | Q |
 | P-QUAL-PROMO | Promotion / generalization quality | e-value | ✅ | Q |
 | P-AB-1 | Orchestrator A/B (routing, prompts, features) | paired effect | ✅ | Q |
-| P-CAL | Verifier/answer calibration | ECE (↓) / AUROC (↑) | ✅ 2026-07-23 | Q |
+| P-CAL | Verifier/answer calibration | ECE (↓) / AUROC (↑) | ✅ 2026-07-23 · ⚠️ decision uses SUSPENDED 2026-09-16 (spec-dec contamination; pending EV-CONF-2) | Q |
 | P-PAIRED | Paired A/B significance verdict (McNemar) | verdict (not delta) | 📋 staged 2026-07-23 | Q |
 | P-SMOKE-1 | Sanity check — unblocks work, gates nothing | pass/fail | ✅ | Q |
 | P-SPEED-OBJ | Autopilot throughput objective | task_rate (↑) | ✅ | §1 above |
@@ -275,6 +275,18 @@ confers no authority beyond its own enumeration.
 4. **New measurements** — cite a protocol from §2. No protocol → observation, not claim.
 
 ## CHANGELOG
+
+- **2026-09-16 (v2.x)** — AMENDMENT (Annex Q, `P-CAL`): all four calibration baselines are marked
+  **CONTAMINATED by speculative decoding**, and P-CAL's decision uses are **SUSPENDED** pending EV-CONF-2
+  (a spec-off GPU probe). llama.cpp v7/v9 reports `prob=1.0` with an empty top-k for draft-accepted
+  tokens, so the completion-probability geomean on `draft-mtp` servers averages placeholders. E7c math
+  is saturated and INVALID; EV-4c code is contaminated by an unmeasured amount and is demoted-to-prior.
+  RLVR code-reward calibration and EV-5/EV-7 verifier promotion may not gate on P-CAL until the
+  suspension is lifted. Standing re-baseline rule: confidence metrics are admissible only from spec-off
+  runs or with placeholder tokens excluded. Supersedes the "geomean length confounding" attribution
+  of math AUROC as its primary explanation, and the §2 P-CAL status cell; no historical number is
+  deleted or edited. Evidence: epyc-orchestrator `b98dee18` and `f2e9ee07`. Operator decision
+  2026-09-16, option (a).
 
 - **2026-09-08 (v2.x)** — AMENDMENT: three appendix blocks ratified as ONE decision out of the
   2026-09-08 champion / R23-58 / INF-70 campaign — **INSTRUMENT-CLASS-1** (a bench-surface number is

@@ -48,8 +48,46 @@ one-shot output-extraction check. Grammar: `4/5 toolrunner sentinel pass [P-SMOK
 2026-07-11]`. Fails → investigate. Passes → proceed, but a protocol-level claim is still
 required before any keep/revert/deploy/promote decision.
 
-## P-CAL — Verifier/answer calibration (ECE / AUROC) [added 2026-07-23]
+## P-CAL — Verifier/answer calibration (ECE / AUROC) [added 2026-07-23; decision uses SUSPENDED 2026-09-16]
 
+- **SUSPENDED 2026-09-16 — speculative-decoding contamination** (amendment block; it deletes and
+  edits no historical number). Every baseline in this block was captured on `draft-mtp` servers:
+  E7c on worker_general/worker_math (gemma-4-26B-A4B MTP, `draft_max=2`); EV-4c on frontdoor
+  (Qwen3.6-35B-A3B-MTP, `draft_max=4`) and worker_general (gemma-4-26B-A4B MTP). For every
+  draft-accepted token, llama.cpp (v7 and v9) reports `prob=1.0` with an empty top-k. The
+  completion-probability geomean therefore averages placeholder values, not model probabilities,
+  over an unmeasured share of every answer. `confidence_is_real=True` does not clear this, because
+  the flag certifies the confidence SOURCE, not the absence of placeholders. Status by value:
+  - **E7c math** ECE 0.2114/0.2199, AUROC 0.4013/0.4114 (SUSPENDED): **CONTAMINATED, INVALID**
+    as a calibration measurement, kept as history. The rows are saturated: 1528/1684 and
+    1485/1628 carry confidence ≥ 0.999999 (observation, a recount of
+    `question_results.ev11-*.jsonl` on 2026-09-16). As the primary explanation of the
+    anti-discrimination, "geomean length confounding" (below) is superseded by the placeholder
+    artifact (observation, not a claim; EV-CONF-2 decides).
+  - **EV-4c code** ECE 0.2532/0.3216, AUROC 0.6337/0.5751 (SUSPENDED): **CONTAMINATED, size
+    unmeasured**, demoted-to-prior. The rows are not saturated: 0/820 and 2/817 sit at ≥ 0.999999
+    (observation). The placeholder share is diluted, not absent, and no row is known to be
+    placeholder-free.
+  - **Suspended decision uses, until EV-CONF-2 reports**: (a) the rlvr_tiers RLVR code-reward
+    calibration/discrimination components, and (b) the EV-5/EV-7 verifier-promotion gate, may not
+    gate on any P-CAL ECE or AUROC value; the math cross-arm ECE stability check is suspended
+    likewise. P-PAIRED verdicts on E7c are correctness-scored and are NOT affected.
+  - **Re-baseline rule (standing)**: a confidence metric (ECE, AUROC, or anything computed from
+    token probabilities) is admissible under P-CAL only from (i) a spec-off run (no draft model,
+    no MTP head, no n-gram/lookup drafting; serving identity recorded in the row), or (ii) a run
+    whose per-token trace marks draft-accepted placeholder tokens and excludes them, reporting the
+    excluded share. A row that meets neither condition is an observation, permanently.
+  - **Lift condition**: EV-CONF-2 (the spec-off GPU probe; spec in the EV-CONF-2 box of
+    `handoffs/active/autopilot-decision-plane-audit-2026-07-22.md`) reports. Restoring the
+    decision uses, or appending replacement baselines, is a further human amendment. The values
+    in the Baselines bullet below are never edited.
+  - **Evidence**: epyc-orchestrator `b98dee18` (per-token trace; placeholder tokens stored as a
+    sentinel and counted) and `f2e9ee07` (EV-CONF-2 probe driver; the spec-off arm fails closed
+    when a draft is present). Both were merged 2026-09-16 via d8b915ee/88a2902d (epyc-orchestrator
+    origin/main). Sidecars:
+    `orchestration/reports/eval_tower_math_rebaseline_E7c/` and
+    `orchestration/reports/eval_tower_calibration_baseline_HE-R+/*_ev4c/`. Operator decision
+    2026-09-16, option (a): caveat now rather than wait for the probe.
 - **Instruments**: eval-tower.math-rebaseline (GSM8K+MATH-500, n=1,819/arm, math_verify,
   seed 42, production sampling; run E7c 2026-07-23) and eval-tower.calibration-baseline.v1
   (Scoring Verifiers HE-R+, n=820/arm, code_execution labels, seed 42; run EV-4c 2026-07-22).
