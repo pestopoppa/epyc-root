@@ -559,6 +559,13 @@ class Wiring(unittest.TestCase):
 # --------------------------------------------------------------------------- #
 class Derived(_Fixture):
 
+    def test_decisive_regression_counts_as_measured_not_kept(self):
+        self.write(body(dispositions={"regression": 1}))
+        derived = S.loop_payload()["derived"]
+        self.assertEqual(derived["measured"], 1)
+        self.assertEqual(derived["never_measured"], 0)
+        self.assertEqual(derived["kept"], 0)
+
     def test_runtime_observations_are_measured_not_scientific_nulls_or_keeps(self):
         self.write(body(dispositions={"runtime_observed": 5}))
         derived = S.loop_payload()["derived"]
