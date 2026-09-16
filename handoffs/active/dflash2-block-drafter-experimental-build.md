@@ -61,12 +61,53 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       Qwopus-generated tokens (one rolling ~77 GB shard). GO at weighted acceptance ≥0.50; KILL below 0.45.
       **From scratch is REJECTED:** ~93 card-days of response generation, and the 41+ TB feature cache
       cannot fit in the 157 GB free.
-- [ ] **SL-1 (rtx6kpro intake 2026-09-07) — `--spec-draft-n-max` sweep {4,6,7,8} × `--spec-draft-p-min` {0,0.5}**
+- [x] **SL-1 (rtx6kpro intake 2026-09-07) — `--spec-draft-n-max` sweep {4,6,7,8} × `--spec-draft-p-min` {0,0.5}**
       under the canonical np4 recipe, 1/2/4/8 in-flight, >=5 alternating pairs, temp 0.6/seed 42; report
       `aggregate_tok_s` AND verifier steps/s. External per-position acceptance decay says positions 6–8
       carry 10–30%; external S6 says a BW-bound verifier LOSES tokens with shorter blocks — either answer
       is decision-grade. `p-min` has never been set on any GPU arm. n-max 7 makes the np1 verify batch
       exactly 8 = a confound-free test of seed 19's premise (verify runs MMQ at ne11 9..36).
+      ✅ 2026-09-16 (sub-gpu-runner). **Evidence:** research `sub/gpu-runner-20260916`, commit `6b585b58`,
+      `data/inf62-sl1-20260916/`; runner `scripts/benchmark/sl1_dflash2_nmax_pmin_sweep.py`.
+      **Setup.**
+      - Champion `ef81196d5` (`build-fold-ef81196d5`, llama-server sha `869effe5`). Canonical np4 recipe;
+        only these fields changed: in-flight = np ∈ {1,2,4,8}, temp 0.6, `--seed 42`, and the two swept flags.
+      - Each sample is one `serving.calibrate_floor(samples=1)` launch (unit = launch).
+      - 5 interleaved rounds with arm order shuffled per round: **160/160 launches ok, residency proven on
+        all** (peak VRAM 42.6 GiB), GPU claim held throughout.
+      - Verifier steps/s is an **estimate**: per slot, `predicted_n − 1 − draft_n_accepted` over
+        `predicted_ms`, teed from `/completion` timings. SL-2's server counter was not adopted.
+      **Source facts that shape the reading (`common/speculative.cpp` @ `ef81196d5`):**
+      - The drafter's `dflash.block_size` = 8, so n_draft_max = 7, and n-max 8 is **clamped to 7**
+        (`:1390-1395`). The canonical "n-max 8" is really 7, and seed 19's "n-max 7 = verify batch 8"
+        premise is identical to the canonical config.
+      - The `is_dflash2` draft branch (`:1657-1700`) **never reads `p_min`**, so p-min 0.5 is a no-op for
+        DFlash2.
+      - So the 8 arms are 3 distinct configs. Measurement confirms both facts: tokens/step is bit-identical
+        across n7/n8/p0/p0.5 at np1 and np2 (5.803 and 4.848), and the p0.5 medians sit within each arm's
+        own spread.
+      **Pooled medians (tok/s aggregate | est. verify steps/s)** — n4 (n=10) / n6 (n=10) / n7≡n8 (n=20):
+
+      | in-flight | n4 | n6 | n7≡n8 |
+      |---|---|---|---|
+      | 1 | 59.3 \| 13.6 | 70.4 \| 13.2 | **77.0** \| 13.2 |
+      | 2 | 93.5 \| 24.4 | 103.1 \| 23.5 | **113.4** \| 22.9 |
+      | 4 | 138.8 \| 34.8 | 153.2 \| 31.8 | **160.7** \| 30.2 |
+      | 8 | 168.2 \| 44.9 | 171.1 \| 37.8 | **177.2** \| 36.2 |
+
+      Per-arm p95_dev is 1–10%, with outliers: n8-p50-np1 at 18.6% (one launch at 62.8) and n4-p50-np8 at 13.4%.
+
+      **Reading.**
+      - **The longest block wins at every in-flight level.** Against n4 it gains +30% at np1, +21% at np2
+        and +16% at np4, all above the 7.9% launch floor. At np8 it gains +5%, which is inside the floor
+        and so unresolved.
+      - **Verifier steps/s falls as the block grows**, most strongly at np8 (44.9 → 36.2, −19%). This is the
+        external S6 "BW-bound verifier does more work per step" effect, and it is real here. Accepted
+        tokens per step grow faster, so tok/s still rises.
+      - **Decision: keep the canonical n-max 8 (≡7).** p-min is irrelevant to DFlash2 on this build.
+      - **A/A.** The n7 vs n8 identical-config medians differ by 0.4% (np1), 2.5% (np2), 2.2% (np4) and
+        0.6% (np8), all within the floor.
+      - **Belief kernel:** pre-hook, zero rows (VB-GPU-RUNNER).
 - [ ] **SL-2 — verifier steps/s in the serving keep gate** (`loop/serving.py`): emit sum-over-slots
       `n_draft_verif_steps`/wall (already counted at `server-context.cpp:295`) beside `aggregate_tok_s`.
       tok/s = steps/s × accepted/step; only steps/s is a kernel property. Our np4 floor 3.536% vs tg128
@@ -88,9 +129,37 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       after any prefill-heavy arm (external: cc64 read −15–20% after a 128k sweep; spec gain can collapse
       with context for some quants). Also gives a C8 sustained cell to confront the external
       "DFlash2 −19% at sustained C8 on Qwen3.8-27B" one-liner (contradicts our DF2-5 +47.8% at 8 in-flight).
-- [ ] **SL-5 — A/A control on the DF2-6 losslessness/coherence gate**: run the 12-prompt suite twice on
+- [x] **SL-5 — A/A control on the DF2-6 losslessness/coherence gate**: run the 12-prompt suite twice on
       the identical build and report the A/A pass distribution before reading 7/12 vs 5/12 (external
       identical-checkpoint control: 95.24 vs 90.69).
+      ✅ 2026-09-16 (sub-gpu-runner).
+      **Evidence:** research `sub/gpu-runner-20260916`, commit `416cd853`, `data/inf62-sl5-20260916/`
+      (`aa_report.json`); runner `scripts/benchmark/sl5_df26_aa_control.py`.
+      **Setup:**
+      - The unchanged `df2_greedy_parity.py` was run twice (runs A and B) on champion `ef81196d5`.
+      - Each run covered baseline, dflash2 and draft_simple on 12 prompts, with temp 0 / top_k 1 / seed 42.
+      - Every arm used a fresh process, with host threads pinned to 184-191.
+
+      **Results:**
+      - **The A/A distribution is degenerate: every arm reproduces itself byte-for-byte across fresh
+        processes.** baseline_A vs baseline_B, dflash2_A vs dflash2_B and draft_simple_A vs draft_simple_B
+        are each **12/12 identical**.
+      - Draft volumes are identical across runs: dflash2 draft_n 3912 (2490 accepted); draft_simple
+        11948 (1542 accepted).
+      - Negative controls are clean: the baseline drafted nothing, and both spec arms drafted.
+      - **The verdicts on this build are dflash2 6/12 and draft_simple 5/12, the same against either
+        run's baseline.**
+        - Both arms fail at identical indices on 4 prompts: 1659@128, 1938@247, 1664@238, and 1882
+          (34 for dflash2, 62 for draft_simple).
+        - dflash2's other failures are 1869@182 and 1662@212.
+        - draft_simple's other failures are 1818@193, 2415@36 and 1662@250.
+
+      **Reading:**
+      - The external "95.24 vs 90.69 on an identical checkpoint" run-to-run noise **does not exist on this
+        stack at temp 0**. Pass counts here are deterministic properties of (build, arm, prompt), so
+        7/12 → 6/12 (5c278648a → ef81196d5) is a build difference, not sampling noise.
+      - The cause is localised by the DF2-8 serial-exact confirmation below.
+      - Belief kernel: pre-hook, zero rows (VB-GPU-RUNNER).
 - [x] **DF2-RNG — diagnostic lead for the DF2-6 failures**: both DFlash2 AND `draft_simple` fail at the
       SAME first-differing indices (34/216/238) → a shared verify-path cause. External S24 names "draft
       RNG entangled with acceptance RNG" as exactly this shape. Check whether the drafter's sampling
@@ -220,7 +289,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       is backend-agnostic *by construction*.
       Reported onset is at **8 concurrent**, and 4 is healthy in every report including #27117 — so a
       sweep that stops at 4 cannot see the phenomenon at all. Our production role runs np up to 8.
-- [x] **DF2-6 — Greedy-parity check.** ✅ 2026-08-28 — non-parity CONFIRMED but NOT attributable to DFlash2; see below. dFlash2 claims losslessness; verify exact-token parity vs `--spec-type none`
+- [x] **DF2-6 — Greedy-parity check.** ✅ 2026-08-28 — non-parity CONFIRMED but NOT attributable to DFlash2; see below. *(2026-09-16 pointer: the cause is localised by the `LLAMA_SPEC_EXACT=serial` confirmation under **DF2-8**, research `7a876f23`, and the determinism of the pass counts is established by **SL-5**.)* dFlash2 claims losslessness; verify exact-token parity vs `--spec-type none`
       at temp 0, reusing the method preserved in
       [`deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md).
       *(2026-08-21, intake-1277: add a `draft-simple` control before concluding.)* Upstream #27407
@@ -284,7 +353,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       DF2-5 server recipe on any build and gates acceptance ≥0.58 / boost ≥1.5×; first run
       targets anchor-gen-014 at the boundary GPU seam (~2026-09-02T13:00Z), run-24 launch held on
       its PASS. Tracking + verdict live in `autokernel-rebuild-program.md` R23-17/R23-18.
-- [ ] **DF2-8 (B, blocked on DF2-6b / DF2-6c producing a non-parity result at all) — widen
+- [x] **DF2-8 (B, blocked on DF2-6b / DF2-6c producing a non-parity result at all) — widen
       `use_serial_speculative_verify` on the experimental branch to give DF2-6 a bit-exact
       reference.** *(2026-08-23, wave-2 plan B4.)* **Upstream item: DF2-6b's ngram arm and DF2-6c's
       protocol fixes. If parity holds across >=5 prompts once those land, this work is unnecessary
@@ -298,6 +367,31 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       **Experimental branch only**, branched from the current production tip per the four-step
       workflow. **Decline any v9 change outright**; frozen v9 is not modified for a diagnostic.
       [intake-1288#record]
+      ✅ 2026-09-16 (sub-gpu-runner): **Satisfied by the existing `LLAMA_SPEC_EXACT=serial` path (no widening
+      needed).**
+      - **Build and evidence.** `build-champion-c463f601b-hip-20260909`, llama-server sha256 `ed72d9d1…`.
+        It descends from champion `ef81196d5` and is identical to it in mmvq/mmq/fattn/sampling. It carries
+        INF-70 E2a's `LLAMA_SPEC_EXACT` and `LLAMA_SPEC_DIAG_ACCEPT`. Linkage PASS. Evidence is in research
+        `sub/gpu-runner-20260916` commit **`7a876f23`**, `data/inf62-df26-serial-exact-20260916/report.json`;
+        runner `scripts/benchmark/df26_serial_exact_confirmation.py`.
+      - **Protocol.** The DF2-6 argv on 12 prompts, temp 0 / top_k 1 / seed 42, 256 tokens, a fresh process
+        per arm, residency proven on every arm.
+      - **Results.**
+        - none A/A: 12/12 identical.
+        - **Serial arms are bit-exact:** draft-simple 12/12 and draft-dflash 12/12, with `draft_n` > 0 on
+          every prompt (1924–2004 and 266–386). Serial mode is confirmed by the server's own startup line.
+        - Unset arms reproduce the failures: draft-simple 5/12, draft-dflash 6/12.
+        - **At all 6 dflash first-differing tokens, the arm's 8-row verify row had the baseline's token as
+          its top-2**, with a top-1/top-2 logit margin of **0.005–0.079** (rows 1, 3 and 5).
+        - The draft-simple diag rows do not prefix-map to its emitted tokens, so those margins are recorded
+          as unmapped, not guessed.
+      - **Conclusion.** The DF2-6 non-parity is the **1-row vs multi-row numeric split** in batched
+        verification (MMVQ vs MMQ, GDN chunked vs autoregressive, FA vec vs rocWMMA). It is **not a DFlash2
+        defect**.
+      - **Instrument gap.** `GGML_CUDA_LOG_MMVQ_ROUTE=2` was set and is compiled in, yet emitted **0** route
+        lines. `LLAMA_SPEC_DIAG_ACCEPT` (plain `fprintf`) emitted thousands. The route logger writes through
+        `GGML_LOG_INFO`, which the server most likely filters. The next probe is `--verbose` on one arm.
+      - Belief kernel: pre-hook, zero rows (VB-GPU-RUNNER).
 
 - [ ] **DF2-6b-bis (new, 2026-08-28) — re-run the ngram arm at COMPARABLE DRAFT VOLUME.**
       The 2026-08-28 ngram arm drafted 218 tokens against dflash2's 4012 and draft_simple's 11951,

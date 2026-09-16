@@ -123,6 +123,38 @@ All edits above are on branch `spec-dec-mtp-refresh-2026-06-22` and are **uncomm
         ratio; residency sampled DURING each run. Proposed reading (pre-register before the run): PASS if MoE
         Q4_K scaling ≥0.8× its dense sibling and the Q4_K/Q8_0 ratio does not fall B=1→32; FAIL if <0.5× →
         L3-MoE MUL_MAT_ID/MMQ kernel gains ROI. Observation (speed only).
+      - **PRE-REGISTERED (operator-approved 2026-09-16), frozen 2026-09-16T09:57Z by sub-gpu-runner before
+        the first launch. Option A, verbatim from `progress/2026-09/2026-09-16-sub-s5-thresholds.md` §3–§6;
+        it supersedes the "proposed reading" above.**
+        - **Arms.** G4 `gemma-4-26B-A4B-it-ORIG-Q4_K_M` · G8 `-ORIG-Q8_0` · Q8m `Qwen3.6-35B-A3B-MTP-Q8_0` ·
+          Dg4 `gemma-4-31B-it-Q4_K_M` (dense control for G4) · **Dq8 `Qwen3.6-27B-MTP-Q8_0`** (dense control
+          for Q8m; the MTP twin, so both Qwen arms carry the same unused head). `--output-format jsonl`.
+          G4 and G8 launches are paired adjacently; rotated ABA order.
+        - **Metrics (all higher-better).** K(B) = S_TG(B)/S_TG(1) within one launch. F(B) = S_TG,G4(B)/S_TG,G8(B)
+          over paired adjacent launches. **E = F(32)/F(1)** is the Q-A verdict statistic.
+          **M2 = K_moe(32)/K_dense(32)**, per matched pair G4:Dg4 and Q8m:Dq8, is the Q-B verdict statistic.
+          Report the median, n, p95_dev_pct and min–max; B=16 is secondary; unit = launch.
+        - **n and noise.** n = 5 launches per arm, plus one pre-committed top-up (+5 at B∈{1,32}) only on
+          INCONCLUSIVE. δ_eff = max(8%, measured p95_dev of the verdict statistic). A statistic with
+          p95_dev > 16% makes that question **INVALID** (fix the instrument; do not top up).
+        - **Admissibility.** Residency proven on every launch; a linkage receipt; the v9 batched-bench sha256
+          recorded; sclk recorded; no other KFD process in the window. A failure makes that arm an observation.
+        - **Q-A (the only kernel trigger).**
+          - **GO** if E ≥ 1−δ_eff (≥ 0.92).
+          - **NO-GO** if E < 1−2δ_eff (< 0.84) **and** F(32) < 1.0.
+          - Otherwise **INCONCLUSIVE**: run the one top-up, then record a bounded null ("no erosion beyond 16%").
+        - **Q-B (triggers profiling, never a kernel).**
+          - **PASS** if M2 ≥ 0.80; **FAIL** if M2 < 0.50; otherwise **INCONCLUSIVE**.
+          - Also INCONCLUSIVE when M2 lies within δ_eff of 0.80 or 0.50.
+        - **Triggers.**
+          - GO + PASS: tick this box. §6.1 stands and the §8 pivot does not fire.
+          - GO + FAIL: profile the batched `MUL_MAT_ID` path (expert-gather/occupancy) before any kernel work.
+          - NO-GO (any Q-B): the §8 pivot fires. Run §5 #2 rocprof at B=32 on G4 before any kernel work.
+          - INCONCLUSIVE after the top-up: record a bounded null.
+          - INVALID: fix the instrument.
+          - The table is final after n=5 plus at most one top-up. No verdict changes a serving recipe or `np`.
+        - **Proxy.** batched-bench numbers are spec-off, category BASELINE, **never a headline**.
+        - **Runner.** Research `sub/gpu-runner-20260916` `scripts/benchmark/s5_moe_batched_np_sweep.py` (18d1d7c8).
       - **Thresholds drafted 2026-09-16 (sub-s5-thresholds, zero-inference; freeze before the run):** `progress/2026-09/2026-09-16-sub-s5-thresholds.md` — n=5, δ=8%, the kernel trigger is the Q4_K/Q8_0 erosion E=F(32)/F(1) (GO ≥0.92, NO-GO <0.84 and F(32)<1), the MoE/dense M2 0.8/0.5 test triggers profiling only.
 
 **What the dense half settled, and the one place it revises §6.** "Batching closes GAP-A for
