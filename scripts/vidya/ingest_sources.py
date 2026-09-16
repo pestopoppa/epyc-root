@@ -119,9 +119,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            project="project_g1", task="SC49"),
     Source("research-sweep-g234", "research_sweeps", _files("*.jsonl"),
            natives="native_rows_file", selector=_sweep_projection, task="SC49/SC50"),
-    Source("autopilot-journal", "autopilot_journal", lambda p: [p] if p.is_dir() else [],
+    Source("autopilot-journal", "autopilot_journal", lambda p: [p] if p.exists() else [],
            default=Path("/workspace"), frames="emit",
-           note="PATH is the epyc-root checkout (shards under repos/epyc-orchestrator)"),
+           note="PATH is an epyc-root checkout (shards under repos/epyc-orchestrator) "
+                "or one autopilot_journal*.jsonl shard"),
     Source("sealed-manifest", "sealed_manifest", _files("artifacts/**/manifest.json"),
            default=Path("/workspace/repos/epyc-inference-research"),
            frames="frames_for_manifest"),
@@ -147,7 +148,10 @@ def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
         raise ValueError(f"source {name!r} has no default location; pass --path")
     mod = src.load()
     adapter_id = mod.ADAPTER_ID
-    authority = getattr(mod, "AUTHORITY", "measurement")
+    authority = getattr(mod, "AUTHORITY", None)
+    if not authority:
+        # No silent default: the frame's authority scope is the adapter's declaration.
+        raise ValueError(f"adapter {src.module} declares no AUTHORITY")
 
     frames: list[dict] = []
     report: dict[str, Any] = {
@@ -161,14 +165,15 @@ def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
             report["missing"].append(str(root))
             continue
         for unit in src.units(root):
-            if limit is not None and report["rows_projected"] >= limit:
+            remaining = None if limit is None else limit - report["rows_projected"]
+            if remaining is not None and remaining <= 0:
                 break
             report["units_matched"] += 1
             try:
                 if src.frames:
                     fn = getattr(mod, src.frames)
                     if src.frames == "emit":
-                        got = list(fn(unit, as_of=as_of, limit=limit))
+                        got = list(fn(unit, as_of=as_of, limit=remaining))
                     else:
                         got = list(fn(unit, as_of=as_of))
                     rows = len({f["assertion"].get("claim_id") for f in got
@@ -176,6 +181,8 @@ def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
                 else:
                     got, rows = [], 0
                     for native in getattr(mod, src.natives)(unit):
+                        if remaining is not None and rows >= remaining:
+                            break
                         project = (src.selector(mod, native) if src.selector
                                    else getattr(mod, src.project))
                         got.extend(to_frames(project(native), as_of=as_of,

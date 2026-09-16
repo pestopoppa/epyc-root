@@ -33,6 +33,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from claim_tuple import ClaimTuple, ProjectionError, register  # noqa: E402
 
 ADAPTER_ID = "vidya.adapters.kb_rag_query_length/v1"
+#: Frame authority scope: traffic telemetry is a measurement-class OBSERVATION (no protocol).
+AUTHORITY = "measurement"
 PROJECTION_NAME = "kb_rag_query_length"
 REPORT_SCHEMA = "epyc.kb_rag.query_length_report.v1"
 BELIEF_SCHEMA = "epyc.kb_rag.query_length_belief.v1"
@@ -96,4 +98,4 @@ def project(native: Mapping[str, Any]) -> ClaimTuple:
         raise ProjectionError(f"KB-RAG query-length ClaimTuple grammar mismatch: {exc}") from exc
 
 
-__all__ = ["ADAPTER_ID", "BELIEF_SCHEMA", "METRICS", "REPORT_SCHEMA", "native_rows", "project"]
+__all__ = ["ADAPTER_ID", "AUTHORITY", "BELIEF_SCHEMA", "METRICS", "REPORT_SCHEMA", "native_rows", "project"]

@@ -267,3 +267,44 @@ def test_sealed_manifest_discovery_matches_its_own_walk(tmp_path):
     digest = hashlib.sha256(manifest.read_bytes()).hexdigest()
     assert digest  # an unsealed manifest is declined by frames_for_manifest, never graded
     assert sm.frames_for_manifest(manifest, as_of=AS_OF) == []
+
+
+def test_autopilot_journal_accepts_a_shard_file_and_declines_a_foreign_file(tmp_path, capsys):
+    """A shard path must not silently match nothing (review fix, 2026-09-16)."""
+    h = _helpers("test_autopilot_journal_adapter")
+    root = h.write_journal(tmp_path / "fx", [h.row(1), h.row(2)])
+    shard = next((root / "repos/epyc-orchestrator/orchestration").glob("autopilot_journal*.jsonl"))
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    rc, _ = _cli(tmp_path / "a", "autopilot-journal", root)
+    by_root = json.loads(capsys.readouterr().out)
+    rc2, _ = _cli(tmp_path / "b", "autopilot-journal", shard)
+    by_shard = json.loads(capsys.readouterr().out)
+    assert rc == rc2 == 0
+    assert by_shard["rows_projected"] == by_root["rows_projected"] == 2
+    assert by_shard["frames_emitted"] == by_root["frames_emitted"]
+
+    foreign = tmp_path / "notes.jsonl"
+    foreign.write_text(json.dumps({"hello": "world"}) + "\n")
+    (tmp_path / "c").mkdir()
+    rc3, _ = _cli(tmp_path / "c", "autopilot-journal", foreign)
+    report = json.loads(capsys.readouterr().out)
+    assert rc3 == 0 and report["rows_projected"] == 0
+    assert report["declined"] == [str(foreign)]
+
+
+def test_limit_is_a_global_row_limit(tmp_path, capsys):
+    a = _contention_gate(tmp_path / "a")
+    b = _contention_gate(tmp_path / "b")
+    ledger = tmp_path / "ledger.jsonl"
+    rc = cli.main(["--ledger", str(ledger), "--json", "ingest", "contention-gate",
+                   "--path", str(a), "--path", str(b), "--as-of", AS_OF, "--limit", "3",
+                   "--dry-run"])
+    assert rc == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["rows_projected"] == 3 and report["frames_emitted"] == 9
+
+
+def test_every_dispatched_adapter_declares_its_authority():
+    for src in ingest_sources.SOURCES.values():
+        assert getattr(src.load(), "AUTHORITY", None), src.name
