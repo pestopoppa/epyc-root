@@ -4,7 +4,7 @@
 # whenever free < TARGET, so the kernel must reclaim (TARGET - free) of page cache on that node. Verifies, 2 passes.
 set -u
 TARGET_GIB=${1:-40}
-B=/mnt/raid0/llm/tmp/inf70
+B=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)   # where_pages.py lives beside this script
 free_mb() { numactl -H | awk -v n="$1" '$1=="node" && $2==n && $3=="free:" {print $4}'; }
 for pass in 1 2; do
   for n in 0 1 2 3; do

@@ -14,17 +14,24 @@
 #   usage: evict_targeted.sh <target_gib> <file>...
 set -u
 TARGET_GIB=$1; shift
-H=/mnt/raid0/llm/tmp/inf70/agents/harness1
+H=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# tools/pagecache is built from tools/pagecache.c (the binary is not committed)
+PAGECACHE=${PAGECACHE_BIN:-$H/tools/pagecache}
+if [ ! -x "$PAGECACHE" ]; then
+  PAGECACHE=${INF70_BUILD_DIR:-/mnt/raid0/llm/tmp/inf70/harness1-build}/pagecache
+  [ -x "$PAGECACHE" ] || { mkdir -p "$(dirname "$PAGECACHE")" && cc -O2 -o "$PAGECACHE" "$H/tools/pagecache.c"; } \
+    || { echo "FATAL cannot build $PAGECACHE"; exit 2; }
+fi
 free_mb() { numactl -H | awk -v n="$1" '$1=="node" && $2==n && $3=="free:" {print $4}'; }
 pernode() { for n in 0 1 2 3; do printf "%d " $(( $(free_mb "$n") / 1024 )); done; }
 T0=$(date +%s)
 echo "$(date -u +%T) free/node GiB before: $(pernode)"
-"$H/tools/pagecache" drop "$@"
+"$PAGECACHE" drop "$@"
 echo "$(date -u +%T) free/node GiB after targeted drop: $(pernode)"
 short=0; for n in 0 1 2 3; do [ $(( $(free_mb "$n") / 1024 )) -ge "$TARGET_GIB" ] || short=1; done
 if [ "$short" = 1 ]; then
   echo "$(date -u +%T) FALLBACK: a node is still under ${TARGET_GIB} GiB -> allocation pressure"
-  bash /mnt/raid0/llm/tmp/inf70/evict_nodes_force.sh "$TARGET_GIB"
+  bash "$H/evict_nodes_force.sh" "$TARGET_GIB"
   echo "$(date -u +%T) free/node GiB after fallback: $(pernode)"
   echo "EVICT_MODE=targeted+fallback"
 else

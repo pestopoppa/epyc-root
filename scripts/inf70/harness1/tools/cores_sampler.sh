@@ -10,7 +10,7 @@
 #   usage: cores_sampler.sh <self_pid> <outfile> [bench_cpu_list=0-95] [interval=20]
 set -u
 ME=$1; OUTF=$2; BENCH=${3:-0-95}; IVAL=${4:-20}
-H=/mnt/raid0/llm/tmp/inf70/agents/harness1
+H=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 while :; do
   { echo "=== $(date -u +%T) load=$(cut -d' ' -f1-3 /proc/loadavg)"
     ps -eo pid,pcpu,comm --sort=-pcpu --no-headers | head -12 | while read -r p c cm; do

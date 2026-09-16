@@ -4,10 +4,17 @@
 #   env:   ARMENV="VAR=1 VAR2=0"  CTX=8192  EVICT_GIB=58  TRIES=3  PORT=18497
 # Derived verbatim in structure from speed-claim/arm.sh (the binary that produced the
 # claim-grade 23.16 t/s), plus: per-arm ARMENV, smaps_rollup THP readback, knob readback.
+# Promoted from /mnt/raid0/llm/tmp/inf70/agents/harness1 on 2026-09-16 (VB-WIRE-2). Paths are
+# now relative to this directory; run outputs still default to the scratch runs dir, which is
+# where `cli.py ingest inf70-arms` looks. At arm end it emits the SC75 belief row
+# (sc75_capture.sh); set GGUF_SHA256 or write <gguf>.sha256 or the capture refuses, loudly.
 set -u
 LABEL=$1; B=$2; shift 2
 EXTRA=("$@")
-OUT=/mnt/raid0/llm/tmp/inf70/agents/harness1/runs
+H=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+OUT=${INF70_RUNS:-/mnt/raid0/llm/tmp/inf70/agents/harness1/runs}
+MTPH=/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+. "$H/sc75_capture.sh"
 TRUNK=/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform/Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf
 PORT=${PORT:-18499}
 EVICT_GIB=${EVICT_GIB:-58}
@@ -18,7 +25,8 @@ T0=$(date +%s)
 mkdir -p "$OUT"
 say(){ echo "$(date -u +%T) +$(( $(date +%s)-T0 ))s $*" | tee -a "$OUT/$LABEL.timeline"; }
 say "ARM $LABEL bin=$B ctx=$CTX armenv=[${AENV[*]:-}] extra=[${EXTRA[*]:-}]"
-say "version: $(LD_LIBRARY_PATH="$B:${LD_LIBRARY_PATH:-}" "$B/llama-server" --version 2>&1 | head -2 | tr "\n" " ")"
+VERLINE=$(LD_LIBRARY_PATH="$B:${LD_LIBRARY_PATH:-}" "$B/llama-server" --version 2>&1 | head -2 | tr "\n" " ")
+say "version: $VERLINE"
 SPID=""; CPID=""
 stop(){ [ -n "$SPID" ] || return 0
         kill -TERM $SPID 2>/dev/null; j=0; while [ -d /proc/$SPID ] && [ $j -lt 120 ]; do sleep 0.5; j=$((j+1)); done
@@ -27,13 +35,13 @@ stop(){ [ -n "$SPID" ] || return 0
 die(){ stop; [ -n "${CPID:-}" ] && kill -TERM "$CPID" 2>/dev/null; say "ARM $LABEL end rc=$1 held $(( $(date +%s)-T0 ))s"; exit "$1"; }
 trap "kill -TERM \$SPID 2>/dev/null" EXIT
 
-cores_sampler(){ exec bash /mnt/raid0/llm/tmp/inf70/agents/harness1/tools/cores_sampler.sh "$1" "$OUT/$LABEL.coresidency" 0-95 20; }
+cores_sampler(){ exec bash "$H/tools/cores_sampler.sh" "$1" "$OUT/$LABEL.coresidency" 0-95 20; }
 
 for try in $(seq 1 "$TRIES"); do
   if [ "${EVICT_MODE:-old}" = "targeted" ]; then
-    bash /mnt/raid0/llm/tmp/inf70/agents/harness1/evict_targeted.sh "$EVICT_GIB" "$TRUNK" /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf > "$OUT/$LABEL.evict.$try" 2>&1
+    bash "$H/evict_targeted.sh" "$EVICT_GIB" "$TRUNK" "$MTPH" > "$OUT/$LABEL.evict.$try" 2>&1
   else
-    bash /mnt/raid0/llm/tmp/inf70/evict_nodes_force.sh "$EVICT_GIB" > "$OUT/$LABEL.evict.$try" 2>&1
+    bash "$H/evict_nodes_force.sh" "$EVICT_GIB" > "$OUT/$LABEL.evict.$try" 2>&1
   fi
   say "try $try evict done | free/node GiB: $(numactl -H | grep free | awk "{printf \"%d \", \$4/1024}")"
   i=0; until awk "{exit !(\$1<10)}" /proc/loadavg || [ $i -ge 60 ]; do sleep 5; i=$((i+1)); done
@@ -70,10 +78,17 @@ PY
   [ "$try" = "$TRIES" ] && { say "FATAL placement never converged"; die 3; }
 done
 
+# SC75 launch identity: once per launch, after placement is accepted, before the arm starts.
+LJ="$OUT/$LABEL.launch.json"
+say "$(sc75_launch_json "$LJ" "$LABEL-$(date -u -d "@$T0" +%Y%m%dT%H%M%SZ)-pid$SPID" "$SPID" "$TRUNK" "$VERLINE" \
+      "taskset -c 0-95; numactl --interleave=all; OMP_PROC_BIND=spread OMP_PLACES=cores; -t 48" "0-95")"
+A0=$(date +%s)
 cores_sampler "$SPID" & CPID=$!
-CLIENT_OUT="$OUT" python3 /mnt/raid0/llm/tmp/inf70/agents/harness1/client.py "$LABEL" "$PORT" 2>&1 | tee "$OUT/$LABEL.client.log"
+CLIENT_OUT="$OUT" python3 "$H/client.py" "$LABEL" "$PORT" 2>&1 | tee "$OUT/$LABEL.client.log"
 kill -TERM $CPID 2>/dev/null; CPID=""
 numastat -p $SPID > "$OUT/$LABEL.numastat.end" 2>&1
 say "placement end GB: $(awk "\$1==\"Total\"{printf \"%.2f %.2f %.2f %.2f\",\$2/1024,\$3/1024,\$4/1024,\$5/1024}" "$OUT/$LABEL.numastat.end")"
-say "coresidency: $(bash /mnt/raid0/llm/tmp/inf70/agents/harness1/tools/coresummary.sh "$OUT/$LABEL.coresidency")"
+say "coresidency: $(bash "$H/tools/coresummary.sh" "$OUT/$LABEL.coresidency")"
+# SC75 hook: capture-after-measure, immediately (the writer refuses > MAX_CAPTURE_LAG_S). Never aborts.
+say "$(sc75_capture_arm "$OUT" "$LABEL" "$LJ" "$A0")"
 die 0

@@ -5,14 +5,17 @@
 # Same server flags, same env stack, same client and same placement gate as champion3/arm.sh --
 # the ONLY differences are (a) targeted eviction and (b) knobs switched through the live control
 # page instead of the process environment, so each arm no longer pays a 92 GB load.
+# Promoted from /mnt/raid0/llm/tmp/inf70/agents/harness1 on 2026-09-16 (VB-WIRE-2); see
+# arm_cold.sh for the path and SC75 capture notes.
 set -u
 SESS=$1; B=$2; shift 2
 [ "$1" = "--" ] && shift
 ARMS=(); while [ $# -gt 0 ] && [ "$1" != "--" ]; do ARMS+=("$1"); shift; done
 [ "${1:-}" = "--" ] && shift
 EXTRA=("$@")
-H=/mnt/raid0/llm/tmp/inf70/agents/harness1
-OUT=$H/runs
+H=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+OUT=${INF70_RUNS:-/mnt/raid0/llm/tmp/inf70/agents/harness1/runs}
+. "$H/sc75_capture.sh"
 TRUNK=/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform/Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf
 MTPH=/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
 PORT=${PORT:-18499}; EVICT_GIB=${EVICT_GIB:-58}; CTX=${CTX:-8192}; TRIES=${TRIES:-3}
@@ -32,7 +35,8 @@ placement(){ numastat -p $SPID > "$OUT/$SESS.$1.numastat" 2>&1
 
 python3 "$H/tools/knobs.py" init "$KP" >/dev/null
 say "SESSION $SESS bin=$B ctx=$CTX arms=[${ARMS[*]}] extra=[${EXTRA[*]:-}] knobpage=$KP"
-say "version: $(LD_LIBRARY_PATH="$B:${LD_LIBRARY_PATH:-}" "$B/llama-server" --version 2>&1 | head -2 | tr "\n" " ")"
+VERLINE=$(LD_LIBRARY_PATH="$B:${LD_LIBRARY_PATH:-}" "$B/llama-server" --version 2>&1 | head -2 | tr "\n" " ")
+say "version: $VERLINE"
 
 for try in $(seq 1 "$TRIES"); do
   bash "$H/evict_targeted.sh" "$EVICT_GIB" "$TRUNK" "$MTPH" > "$OUT/$SESS.evict.$try" 2>&1
@@ -75,6 +79,12 @@ PY
   [ "$try" = "$TRIES" ] && { say "FATAL placement never converged"; die 3; }
 done
 
+# SC75 launch identity: once per launch (documented path $OUT/$SESS.launch.json), after placement
+# is accepted and before the first arm. Per-arm copies add the arm's knob-page payload.
+LJ="$OUT/$SESS.launch.json"
+say "$(sc75_launch_json "$LJ" "$SESS-$(date -u -d "@$T0" +%Y%m%dT%H%M%SZ)-pid$SPID" "$SPID" "$TRUNK" "$VERLINE" \
+      "taskset -c 0-95; numactl --interleave=all; OMP_PROC_BIND=spread OMP_PLACES=cores; -t 48; GGML_KNOB_FILE live page" "0-95")"
+
 for spec in "${ARMS[@]}"; do
   lbl=${spec%%:*}; kv=${spec#*:}; [ "$kv" = "$spec" ] && kv=""
   A0=$(date +%s)
@@ -92,6 +102,9 @@ for spec in "${ARMS[@]}"; do
   kill -TERM $CPID 2>/dev/null; CPID=""
   say "ARM $lbl done in $(( $(date +%s)-A0 ))s  $(tail -1 "$OUT/$lbl.client.log")"
   say "ARM $lbl coresidency: $(bash "$H/tools/coresummary.sh" "$OUT/$lbl.coresidency")"
+  # SC75 hook: capture-after-measure, immediately (the writer refuses > MAX_CAPTURE_LAG_S). Never aborts.
+  [ -f "$LJ" ] && sc75_arm_launch_json "$LJ" "$OUT/$lbl.launch.json" "$kv" >/dev/null
+  say "ARM $lbl $(sc75_capture_arm "$OUT" "$lbl" "$OUT/$lbl.launch.json" "$A0")"
   say "ARM $lbl knob readback: $(grep -a 'ggml knobs: seq=' "$OUT/$SESS.srv.log" | tail -1)"
   say "ARM $lbl placement GB: $(placement "$lbl")"
 done

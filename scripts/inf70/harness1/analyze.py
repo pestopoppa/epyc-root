@@ -2,7 +2,7 @@
 """INF-70 HARNESS-1 analysis. Same token-weighted metric as champion3/analyze.py
 (sum pred_n / sum pred_ms, pred_n>=16 floor) so the numbers are directly comparable."""
 import glob, json, os, re, statistics as st, sys, itertools
-R = "/mnt/raid0/llm/tmp/inf70/agents/harness1/runs"
+R = os.environ.get("INF70_RUNS", "/mnt/raid0/llm/tmp/inf70/agents/harness1/runs")
 FLOOR = 16
 
 def load(l, root=R):

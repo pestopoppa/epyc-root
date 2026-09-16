@@ -3,12 +3,13 @@
 max_tokens 200, cache_prompt false. Coherence classified BY REASON. Token-weighted rates
 computed in analyze.py (pred_n >= 16 floor)."""
 import json, os, sys, time, urllib.request
-sys.path.insert(0, "/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact")
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)  # classify.py, promoted from agents/gdn-rowexact on 2026-09-16
 from classify import classify
 
 OUT   = os.environ.get("CLIENT_OUT", "/mnt/raid0/llm/tmp/inf70/agents/harness1/runs")
 label = sys.argv[1]; port = sys.argv[2]
-prompts = json.load(open("/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/prompts.json"))
+prompts = json.load(open(os.path.join(HERE, "prompts.json")))  # from agents/e3-alpha
 items = [dict(id=p["id"], cls=p["class"], text=p["prompt"]) for p in prompts]
 
 def post(body, timeout=1800):
