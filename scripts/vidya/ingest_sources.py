@@ -121,6 +121,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="EV-13b `ev13b_run.py --out` dirs (one sidecar per judge beside "
                 "`_summary.semantic.<judge>.json`); pre-hook summaries decline",
            task="VB-REVIEW-F1"),
+    Source("opencode-shell", "opencode_shell_run", _run_dirs("opencode_shell_run.json"),
+           note="HS-4 OpenCode-shell run dirs (driver-written `opencode_shell_run.json` plus the "
+                "SC86 `opencode_shell_run.beliefs.jsonl`); a run dir without the belief sidecar "
+                "is pre-hook and declines",
+           task="SC86"),
     Source("memento-lora", "memento_lora",
            _files("stage*_belief_measurements.json", "**/stage*_belief_measurements.json"),
            task="SC20"),

@@ -2298,6 +2298,8 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 ## SC86 — HS-4 OpenCode-shell runs (filed 2026-09-16)
 
 - [ ] **SC86 — wire HS-4 shell runs on the WRITE side**: each run emits a ClaimTuple carrying the harness pin, plugin and config hash, Harness Card version, `x_memory` arm, and the HS-14 column set; locator = run. Must land before the first measured shell run (HS-4 P0.4). Design: `docs/design/hs4-shell-and-orchestrator-features-20260916.md` §4 (P0.5).
+  Status 2026-09-16 (`sub-sc86`, branch `sub/sc86-20260916`, unmerged): **adapter ready, producer pending (HS-4 P0.4 driver).** `adapters/opencode_shell_run_capture.py` (run-sidecar schema `epyc.hs4.opencode_shell_run.v1`, writer, `validate_row`), `adapters/opencode_shell_run.py` (strict reader), `cli.py ingest opencode-shell`, and `tests/vidya/test_opencode_shell_run_adapter.py` (32 pass, including writer → `cli.py ingest` → tuple). Rows: the four HS-14 columns, re-derived from recorded counts; refused on a missing pin or config hash and on pre-hook or backfilled runs. The P0.4 driver must write `opencode_shell_run.json` and call the writer at run end; that call is the HS-4 P0.4 owner's. Tick this box when the branch is merged and the driver calls the writer (the SC85 precedent).
+- [ ] **SC86b — codify the shell-run protocol** under `measurement/protocols/` (task suite, trials per task, serving at production `enable_thinking`, the HS-14 column definitions), and have the P0.4/HS-14 driver pass `protocol_id`. Until then, every OpenCode-shell tuple is `Judged/Located`.
 
 ## VB-NIAH-E1A — RLM E1 NIAH dual-scored arms (filed 2026-09-16, sub-e1a)
 
