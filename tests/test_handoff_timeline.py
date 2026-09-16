@@ -245,5 +245,94 @@ class DeleteIntervalTests(unittest.TestCase):
             self.assertNotIn("active/ephemeral", data["file_activity"])
 
 
+_HDR = "| ID | Track | Handoff | Next action | Deps |\n|----|----|----|----|----|\n"
+
+
+def _row(rid: str, action: str, deps: str = "—") -> str:
+    return f"| {rid} | track | [h.md](h.md) | {action} | {deps} |\n"
+
+
+class NextActionRepointTests(unittest.TestCase):
+    """RTG-46: a re-pointed ``Next action`` keeps its previous text and a reason.
+
+    Each positive case is paired with a negative that differs in exactly one thing
+    (same text, non-index file, row deleted, deps-only edit), so a pass cannot come
+    from an inert fixture.
+    """
+
+    def _repo(self, td):
+        root = Path(td)
+        repo = GitRepo(root)
+        repo.git("init", "-q")
+        (root / "handoffs" / "active").mkdir(parents=True)
+        return root, repo
+
+    def _commit(self, repo, date, msg):
+        repo.git("add", "-A")
+        repo.git("commit", "-m", msg, date=date)
+
+    def test_repoint_with_trailer_reason_and_subject_fallback(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, repo = self._repo(td)
+            idx = root / "handoffs" / "active" / "demo-index.md"
+            idx.write_text(_HDR + _row("DEM-01", "try path A") + _row("DEM-02", "do X"))
+            self._commit(repo, "2026-09-01T10:00:00", "seed")
+            idx.write_text(_HDR + _row("DEM-01", "try path B") + _row("DEM-02", "do Y"))
+            self._commit(repo, "2026-09-02T10:00:00",
+                         "indices: re-point two rows\n\n"
+                         "Repoint-Reason: DEM-01: path A measured null (n=24)\n")
+            data = bt.build_timeline(root)
+            ev = {e["id"]: e for e in data["next_action_repoints"]}
+            self.assertEqual(set(ev), {"DEM-01", "DEM-02"})
+            self.assertEqual(ev["DEM-01"]["from"], "try path A")
+            self.assertEqual(ev["DEM-01"]["to"], "try path B")
+            self.assertEqual(ev["DEM-01"]["reason"], "path A measured null (n=24)")
+            self.assertEqual(ev["DEM-01"]["reason_source"], "trailer")
+            self.assertEqual(ev["DEM-02"]["reason"], "indices: re-point two rows")
+            self.assertEqual(ev["DEM-02"]["reason_source"], "commit_subject")
+            self.assertEqual(ev["DEM-01"]["date"], "2026-09-02")
+            self.assertEqual(data["totals"]["next_action_repoints"], 2)
+            self.assertEqual(data["totals"]["repoints_with_trailer_reason"], 1)
+
+    def test_non_repoints_are_not_reported(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, repo = self._repo(td)
+            a = root / "handoffs" / "active" / "a-index.md"
+            b = root / "handoffs" / "active" / "b-index.md"
+            h = root / "handoffs" / "active" / "notes.md"   # not an index
+            a.write_text(_HDR + _row("DEM-01", "same") + _row("DEM-02", "gone soon")
+                         + _row("DEM-03", "keep"))
+            b.write_text(_HDR)
+            h.write_text(_HDR + _row("DEM-09", "old"))
+            self._commit(repo, "2026-09-01T10:00:00", "seed")
+            # DEM-01 re-homed unchanged; DEM-02 deleted; DEM-03 deps-only edit;
+            # DEM-09 changed but lives in a non-index file.
+            a.write_text(_HDR + _row("DEM-03", "keep", "DEM-01"))
+            b.write_text(_HDR + _row("DEM-01", "same"))
+            h.write_text(_HDR + _row("DEM-09", "new"))
+            self._commit(repo, "2026-09-02T10:00:00", "rehome")
+            data = bt.build_timeline(root)
+            self.assertEqual(data["next_action_repoints"], [])
+
+    def test_repoint_across_index_files_still_pairs(self):
+        with tempfile.TemporaryDirectory() as td:
+            root, repo = self._repo(td)
+            a = root / "handoffs" / "active" / "a-index.md"
+            b = root / "handoffs" / "active" / "b-index.md"
+            a.write_text(_HDR + _row("DEM-01", "old target"))
+            b.write_text(_HDR)
+            self._commit(repo, "2026-09-01T10:00:00", "seed")
+            a.write_text(_HDR)
+            b.write_text(_HDR + _row("DEM-01", "new target"))
+            self._commit(repo, "2026-09-02T10:00:00", "move and re-point")
+            ev = bt.build_timeline(root)["next_action_repoints"]
+            self.assertEqual([(e["id"], e["from"], e["to"], e["index"]) for e in ev],
+                             [("DEM-01", "old target", "new target", "b-index.md")])
+
+    def test_escaped_pipe_does_not_shift_cells(self):
+        self.assertEqual(bt._row_next_action(_row("DEM-01", r"a \| b")), r"a \| b")
+        self.assertIsNone(bt._row_next_action("| DEM-01 | only | three |"))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -261,6 +261,10 @@
   section.graph .gsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
   section.graph .gsw.ring{background:transparent;border:2.5px solid;border-radius:50%}
   section.graph .gsw.dot{border-radius:50%}
+  section.graph .gsw.hatch{border-radius:50%;background:repeating-linear-gradient(45deg,#8b949e 0 2px,#0d1117 2px 4px)}
+  section.graph .gsw.faded{border-radius:50%;background:#8b949e;opacity:.3}
+  section.graph .gsw.dash{background:transparent;border:1.6px dashed #f0f6fc;border-radius:50%}
+  section.graph .gsep{color:var(--line,#2a2f3a)}
   section.graph .gnote{font-size:12px;margin:0 0 8px;max-width:88ch}
   section.graph .gwrap{position:relative}
   section.graph .gzoom{position:absolute;top:8px;right:10px;z-index:20;display:flex;gap:6px;
@@ -1018,6 +1022,14 @@ async function loadTimeline(){
      fill   = which index owns it, BLENDED toward the domains it links into, so a
               handoff that straddles two areas reads as straddling them.
      ring   = liveness (days since a checkbox moved) — the signal indices never had.
+   A third, TEXTURE channel carries `readiness` (index_graph.v2), so it cannot
+   collide with either colour channel:
+     hatched disc = readiness "blocked" (some `dep` target still has open work)
+     faded disc   = readiness "no_open" (nothing dispatchable — NOT "done")
+     solid disc   = readiness "ready"
+   The page never derives readiness: it is read verbatim from the producer
+   (scripts/handoffs/index_state.py derive_readiness). A v1 sidecar has no
+   `readiness`, and the legend says so instead of guessing.
 
    The previous version packed each domain into a phyllotaxis disc sized
    `cellR/sqrt(n)*1.55`, which puts the outermost node at 1.55x the cell radius —
@@ -1032,6 +1044,11 @@ const IDX_COLOR = {
   "user-facing-harness":      "#bc8cff",
   "pipeline-integration":     "#f778ba",
   "reviewer-control-plane":   "#56d4dd",
+};
+const READINESS_STYLE = {
+  ready:   {sw:"dot",   label:"ready — no open dep target"},
+  blocked: {sw:"hatch", label:"blocked — a dep target still has open work"},
+  no_open: {sw:"faded", label:"no open work (not \u201cdone\u201d)"},
 };
 const RING = d => (d===null||d===undefined) ? '#6e7681'
               : d<=7 ? '#3fb950' : d<=30 ? '#d29922' : '#e5534b';
@@ -1057,12 +1074,65 @@ const _mix = (w, home) => {
   return `rgb(${hc.map((v,i)=>Math.round(v*HOME_W+nm[i]*(1-HOME_W))).join(",")})`;
 };
 
+// ---- node packing. Pure (items in, x/y out) so a test can run it without a DOM.
+// SEED INSIDE THE BAND, then relax. Pure relaxation from a collapsed start never
+// converged: the spring pulled nodes back together every step and dense bands
+// oscillated, leaving 26 halo pairs overlapping by up to 18px however long it ran.
+// A separated seed avoids that. But an EXACT grid seed was already separated, so
+// the relax never moved a node and the band read as a lattice — implied rows and
+// columns that mean nothing. So each seed cell is offset by a deterministic
+// per-id jitter (FNV-1a of the id: same graph -> same picture, no reshuffle on
+// the 2-minute refresh), rows are staggered half a cell, and the relax (push-only,
+// no spring, so it cannot oscillate) resolves the overlaps the jitter creates.
+// Test: tests/test_dashboard_handoff_graph_readiness.py (LayoutTests).
+const _unit = (s, salt) => { let h=0x811c9dc5^salt;
+  for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193); }
+  return ((h>>>0)%100000)/100000; };
+function packBands(items, colX, half, o){
+  const {W, BAND, PAD, SEP, RELAX, JITTER} = o;
+  const byDom={}; for(const it of items) (byDom[it.n.domain]||=[]).push(it);
+  for(const d in byDom){
+    const lst=byDom[d].sort((a,b)=> b.r-a.r || (a.n.id<b.n.id?-1:1));
+    const cell=2*Math.max(...lst.map(it=>it.r))+SEP, J=JITTER*cell;
+    const cols=Math.max(1, Math.floor((half[d]*2)/cell - 0.5));
+    const left=colX[d]-(cols*cell)/2+cell/4;
+    lst.forEach((it,k)=>{ const row=Math.floor(k/cols);
+      it.x=left+(k%cols)*cell+(row%2?cell/2:0)+(2*_unit(it.n.id,1)-1)*J;
+      it.y=BAND+J+row*cell+(2*_unit(it.n.id,2)-1)*J;
+      it.top=BAND+_unit(it.n.id,3)*J; });
+  }
+  for(let k=0;k<RELAX;k++){
+    let worst=0;
+    for(let a=0;a<items.length;a++){ const A=items[a];
+      for(let b=a+1;b<items.length;b++){ const B=items[b];
+        const dx=B.x-A.x, dy=B.y-A.y, md=A.r+B.r+SEP, d2=dx*dx+dy*dy;
+        if(d2===0){ B.x+=0.7; B.y+=0.7; continue; }
+        if(d2>=md*md) continue;
+        const dist=Math.sqrt(d2), push=(md-dist)/2, ux=dx/dist, uy=dy/dist;
+        A.x-=ux*push; A.y-=uy*push; B.x+=ux*push; B.y+=uy*push;
+        if(push>worst) worst=push; } }
+    for(const it of items){
+      // A shared floor would line the top row back up, so each node gets its own.
+      if(it.y<it.top) it.y=it.top;
+      const lo=PAD+it.r, hi=W-PAD-it.r;
+      if(it.x<lo) it.x=lo; if(it.x>hi) it.x=hi; }
+    if(worst<0.05) break;
+  }
+  return items;
+}
+
 async function loadGraph(){
   let g;
   try{ g = await getJSON("/api/handoff_graph"); }
   catch(e){ setBadge("#graph-badge","stale"); return; }
   const svg=$("#graph-svg"), tip=$("#graph-tip");
   while(svg.firstChild) svg.removeChild(svg.firstChild);
+  // Hatch for readiness "blocked": dark stripes OVER the domain fill, so the
+  // owning-index colour still reads through (a replacement colour would not).
+  const defs=svgEl("defs",{}), pat=svgEl("pattern",{id:"gate-hatch",
+    patternUnits:"userSpaceOnUse",width:4,height:4,patternTransform:"rotate(45)"});
+  pat.appendChild(svgEl("rect",{x:0,y:0,width:1.7,height:4,fill:"#0d1117","fill-opacity":0.8}));
+  defs.appendChild(pat); svg.appendChild(defs);
   if(!g.nodes||!g.nodes.length){
     setBadge("#graph-badge","stale");
     $("#graph-note").textContent = g.observation_notice || "no producer reported";
@@ -1083,6 +1153,26 @@ async function loadGraph(){
   doms.forEach(d=>{ const sp=document.createElement("span");
     sp.innerHTML=`<i class="gsw dot" style="background:${IDX_COLOR[d]}"></i>${d}`;
     key.appendChild(sp); });
+  // ---- readiness key: values + counts come from the producer, never recomputed here
+  const hasReadiness = g.nodes.some(n=>typeof n.readiness==="string");
+  const sep=document.createElement("span"); sep.className="gsep"; sep.textContent="|";
+  key.appendChild(sep);
+  if(hasReadiness){
+    const rc=g.readiness_counts||{};
+    for(const r in READINESS_STYLE){ const sp=document.createElement("span");
+      sp.className="gready"; sp.dataset.readiness=r;
+      if(g.readiness_values&&g.readiness_values[r]) sp.title=g.readiness_values[r];
+      sp.innerHTML=`<i class="gsw ${READINESS_STYLE[r].sw}"></i>${READINESS_STYLE[r].label}`
+        + (rc[r]!==undefined?` (${rc[r]})`:"");
+      key.appendChild(sp); }
+  } else {
+    const sp=document.createElement("span");
+    sp.textContent=`readiness not in this graph (schema ${g.schema||"unknown"}; needs index_graph.v2)`;
+    key.appendChild(sp);
+  }
+  const sd=document.createElement("span");
+  sd.innerHTML=`<i class="gsw dash"></i>file sits in handoffs/blocked/`;
+  key.appendChild(sd);
 
   // ---- neighbour map (reference edges, undirected for colour + hover)
   const nbr={};
@@ -1098,7 +1188,7 @@ async function loadGraph(){
   // SEP clears the HALO (outer edge r+2.2), not the disc: rA+rB+14 leaves ~9.6px
   // of background between neighbouring halos, which is what makes individual
   // nodes readable. Height is free — H is computed from the packing.
-  const W=1200, TOP=64, BAND=158, PAD=26, MINW=118, SEP=14, RELAX=120;
+  const W=1200, TOP=64, BAND=158, PAD=26, MINW=118, SEP=14, RELAX=400, JITTER=0.3;
   const doms2=doms.slice();
   const counts={}; doms2.forEach(d=>counts[d]=g.nodes.filter(n=>n.domain===d).length);
   const total=g.nodes.length||1, inner=W-2*PAD;
@@ -1115,34 +1205,7 @@ async function loadGraph(){
             r:Math.max(5, Math.min(15, 3.4+1.9*Math.sqrt(n.open)))};
   });
 
-  // SEED ON A GRID INSIDE THE BAND, then relax lightly. Pure relaxation from a
-  // collapsed start never converged: the spring pulled nodes back together every
-  // step and dense bands oscillated, leaving 26 halo pairs overlapping by up to
-  // 18px however long it ran. A grid seed starts already-separated so the relax
-  // only softens it — measured 0 overlaps, 9.6px minimum halo gap.
-  const byDom={}; for(const it of items) (byDom[it.n.domain]||=[]).push(it);
-  for(const d in byDom){
-    const lst=byDom[d].sort((a,b)=> b.r-a.r || (a.n.id<b.n.id?-1:1));
-    const cell=2*Math.max(...lst.map(it=>it.r))+SEP;
-    const cols=Math.max(1, Math.floor((half[d]*2)/cell));
-    const left=colX[d]-(cols*cell)/2+cell/2;
-    lst.forEach((it,k)=>{ it.x=left+(k%cols)*cell; it.y=BAND+Math.floor(k/cols)*cell; });
-  }
-  for(let k=0;k<RELAX;k++){
-    let moved=0;
-    for(let a=0;a<items.length;a++){ const A=items[a];
-      for(let b=a+1;b<items.length;b++){ const B=items[b];
-        const dx=B.x-A.x, dy=B.y-A.y, md=A.r+B.r+SEP, d2=dx*dx+dy*dy;
-        if(d2===0){ B.x+=0.7; B.y+=0.7; continue; }
-        if(d2>=md*md) continue;
-        const dist=Math.sqrt(d2), push=(md-dist)/2, ux=dx/dist, uy=dy/dist;
-        A.x-=ux*push; A.y-=uy*push; B.x+=ux*push; B.y+=uy*push; moved+=push; } }
-    for(const it of items){
-      if(it.y<BAND) it.y=BAND;
-      const lo=PAD+it.r, hi=W-PAD-it.r;
-      if(it.x<lo) it.x=lo; if(it.x>hi) it.x=hi; }
-    if(moved<0.5) break;
-  }
+  packBands(items, colX, half, {W, BAND, PAD, SEP, RELAX, JITTER});
   const H=Math.ceil(Math.max(...items.map(it=>it.y+it.r))+PAD);
   svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
 
@@ -1193,7 +1256,13 @@ async function loadGraph(){
     if(n.state==="blocked"){ halo.setAttribute("stroke-dasharray","3 2.5");
       halo.setAttribute("stroke","#f0f6fc"); }
     gNode.appendChild(halo);
-    const c=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill,class:"node"});
+    const c=svgEl("g",{class:"node","data-readiness":n.readiness||""});
+    const disc=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill});
+    if(n.readiness==="no_open") disc.setAttribute("fill-opacity",0.3);
+    c.appendChild(disc);
+    if(n.readiness==="blocked")
+      c.appendChild(svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:"url(#gate-hatch)",
+        "pointer-events":"none"}));
     c.addEventListener("mouseenter",()=>{
       const keep=new Set([n.id,...(nbr[n.id]||[])]);
       for(const k in circles) circles[k].classList.toggle("dimmed",!keep.has(k));
@@ -1207,6 +1276,8 @@ async function loadGraph(){
         + (n.next_action?`<div class="tna">${n.next_action}</div>`:"")
         + `<div class="tmeta">${n.open} open · ${n.closed} closed`
         + (n.blocked?` · ${n.blocked} blocked`:"")
+        + (n.readiness?`<br>readiness: <b>${n.readiness}</b>`
+            + ((n.blocked_by&&n.blocked_by.length)?` on ${n.blocked_by.join(", ")}`:""):"")
         + `<br>last advanced ${n.last_advanced||"never"}`
         + `<br>${linked.length} linked handoff${linked.length===1?"":"s"}`
         + (linked.length?`: ${linked.slice(0,12).join(", ")}${linked.length>12?"…":""}`:"")

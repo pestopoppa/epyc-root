@@ -39,6 +39,20 @@ recency signal. Note: ``git log -p`` shows no diff for merge commits (no ``-m``)
 so a handoff last touched only by a merge is dated by its prior non-merge commit;
 in practice such handoffs are also flagged git-dirty on pull and covered there.
 
+The same pass also emits ``next_action_repoints`` — every commit in which an index row's
+``Next action`` cell changed, with the PREVIOUS text and a ``reason`` (RTG-46, adapted from
+Prove2Me's mandatory re-link reason, intake-1299#record). Before this, re-pointing a row
+overwrote the cell with no trace, so why the previous target was abandoned was lost and the
+next session could re-walk a rejected path at full price. The reason lives HERE, in the
+sidecar, and never in the row (status and history never go in a row —
+``docs/guides/agent-workflows/handoff-index-authoring.md``). Its source, in order:
+
+* a ``Repoint-Reason: <ROW-ID>: <why>`` line in the commit message (row-specific);
+* else the commit subject (``reason_source: "commit_subject"`` — commit-level, weaker).
+
+A row that moves between index files with an unchanged ``Next action`` is a re-home, not a
+re-point, and is not reported; a row removed without a replacement is a deletion, likewise.
+
 Run: ``python3 scripts/handoffs/build_handoff_timeline.py``  (``--repo`` to override)
 """
 
@@ -68,6 +82,12 @@ _DATE_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
 _CHECK_DATE_RE = re.compile(r"✅\s*(\d{4}-\d{2}-\d{2})")
 
 _NON_HANDOFF_STEMS = {"BLOCKED", "README"}
+
+# Index-row lines in a diff: `-| INF-06 | … |` / `+| INF-06 | … |`. Same id shape and
+# unescaped-pipe split as index_state.py's thin-row parser.
+_ROW_LINE_RE = re.compile(r"^([+-])(\|\s*([A-Z]{3}-\d+)\s*\|.*)$")
+_CELL_SPLIT_RE = re.compile(r"(?<!\\)\|")
+_REPOINT_TRAILER_RE = re.compile(r"^\s*Repoint-Reason:\s*([A-Z]{3}-\d+)\s*[:—–-]\s*(.+?)\s*$")
 
 
 def _repo_root() -> Path:
@@ -137,6 +157,54 @@ def _run_git_log(repo: Path) -> str:
     return proc.stdout
 
 
+def _run_git_messages(repo: Path) -> dict[str, str]:
+    """``sha -> full commit message`` for every commit touching ``handoffs/``."""
+    cmd = ["git", "-C", str(repo), "log", "--no-color", "--format=%x00%H%x1f%B",
+           "--", "handoffs/"]
+    proc = subprocess.run(cmd, capture_output=True, text=True,
+                          errors="replace", check=False)
+    if proc.returncode != 0:
+        raise RuntimeError(f"git log (messages) failed: {proc.stderr.strip()[:400]}")
+    out = {}
+    for chunk in proc.stdout.split("\x00"):
+        if "\x1f" in chunk:
+            sha, msg = chunk.split("\x1f", 1)
+            out[sha.strip()] = msg.strip()
+    return out
+
+
+def repoints_for_commit(sha: str, day: str, blocks, message: str) -> list[dict]:
+    """Re-pointed rows in one commit: same id removed and re-added with a different
+    ``Next action``. Pairing is commit-wide so a row moved between indices still pairs."""
+    removed: dict[str, tuple[str, str]] = {}
+    added: dict[str, tuple[str, str]] = {}
+    for blk in blocks:
+        name = Path(blk.new_path).name
+        for rid, act in blk.rows_removed.items():
+            removed[rid] = (act, Path(blk.old_path).name)
+        for rid, act in blk.rows_added.items():
+            added[rid] = (act, name)
+    if not removed or not added:
+        return []
+    trailers = {}
+    for line in (message or "").splitlines():
+        m = _REPOINT_TRAILER_RE.match(line)
+        if m:
+            trailers[m.group(1)] = m.group(2)
+    subject = (message or "").splitlines()[0].strip() if message else ""
+    events = []
+    for rid in sorted(set(removed) & set(added)):
+        (old, _), (new, index) = removed[rid], added[rid]
+        if " ".join(old.split()) == " ".join(new.split()):
+            continue
+        reason, source = ((trailers[rid], "trailer") if rid in trailers
+                          else (subject or None, "commit_subject" if subject else None))
+        events.append({"id": rid, "date": day, "commit": sha[:12], "index": index,
+                       "from": old, "to": new, "reason": reason,
+                       "reason_source": source})
+    return events
+
+
 def _head_sha(repo: Path) -> str | None:
     proc = subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"],
                           capture_output=True, text=True, check=False)
@@ -147,7 +215,8 @@ class _Block:
     """One ``diff --git`` block within a commit."""
 
     __slots__ = ("old_path", "new_path", "is_new", "is_deleted", "rename_from",
-                 "rename_to", "checkboxes", "created_date", "updated_date")
+                 "rename_to", "checkboxes", "created_date", "updated_date",
+                 "rows_removed", "rows_added")
 
     def __init__(self, old_path: str, new_path: str) -> None:
         self.old_path = old_path
@@ -160,6 +229,21 @@ class _Block:
         self.checkboxes: list[tuple[str, str, str | None]] = []
         self.created_date: str | None = None   # from +**Created** (new-file adds)
         self.updated_date: str | None = None   # from +**Updated**
+        # index rows (index files only): row id -> Next action cell
+        self.rows_removed: dict[str, str] = {}
+        self.rows_added: dict[str, str] = {}
+
+
+def _is_index_path(path: str) -> bool:
+    return path.startswith("handoffs/") and path.endswith("index.md")
+
+
+def _row_next_action(row: str) -> str | None:
+    """``Next action`` cell of a 5-column thin row, else None (malformed/legacy rows)."""
+    cells = [c.strip() for c in _CELL_SPLIT_RE.split(row.strip())]
+    if cells and cells[0] == "":
+        cells = cells[1:-1]
+    return cells[3] if len(cells) == 5 else None
 
 
 def _parse_commits(log_text: str):
@@ -206,6 +290,13 @@ def _parse_commits(log_text: str):
                 elif field == "updated" and not current.updated_date:
                     current.updated_date = val
             continue
+        mrow = _ROW_LINE_RE.match(line)
+        if mrow and _is_index_path(current.new_path):
+            action = _row_next_action(mrow.group(2))
+            if action is not None:
+                side = current.rows_added if mrow.group(1) == "+" else current.rows_removed
+                side[mrow.group(3)] = action
+            continue
         mac = _ADDED_CHECKBOX_RE.match(line)
         if mac:
             current.checkboxes.append(
@@ -217,6 +308,8 @@ def _parse_commits(log_text: str):
 
 def build_timeline(repo: Path) -> dict:
     commits = _parse_commits(_run_git_log(repo))
+    messages: dict[str, str] | None = None   # fetched lazily, only if a re-point exists
+    repoints: list[dict] = []
 
     # Per-handoff lifecycle, keyed by the full ``state/stem`` path (migrated on
     # rename) so two distinct handoffs that share a basename across state dirs
@@ -253,6 +346,12 @@ def build_timeline(repo: Path) -> dict:
         except ValueError:
             continue
         commit_week = _iso_week(commit_day)
+
+        if any(b.rows_removed for b in blocks) and any(b.rows_added for b in blocks):
+            if messages is None:
+                messages = _run_git_messages(repo)
+            repoints.extend(repoints_for_commit(sha, commit_day, blocks,
+                                                messages.get(sha, "")))
 
         for blk in blocks:
             new_ss = _path_state_stem(blk.new_path)
@@ -374,6 +473,7 @@ def build_timeline(repo: Path) -> dict:
         "method": "git-log-p + in-file-date-seeding + file-activity",
         "series": series,
         "file_activity": file_activity,
+        "next_action_repoints": repoints,
         "tasks_weekly": [
             {"week": w, "tasks_completed": tasks_weekly.get(w, 0),
              "opened": opened_weekly.get(w, 0),
@@ -394,6 +494,9 @@ def build_timeline(repo: Path) -> dict:
             "tasks_opened": total_opened,
             "tasks_newly_filed": total_newly_filed,
             "commits_scanned": len(commits),
+            "next_action_repoints": len(repoints),
+            "repoints_with_trailer_reason": sum(
+                1 for e in repoints if e["reason_source"] == "trailer"),
             "earliest": series[0]["date"] if series else None,
         },
     }
