@@ -88,3 +88,11 @@ at 10:28:33 UTC as PID 845837. Live `/api/loop` then named v14's
 `loop-status.json`, selected by `current-serial-run.json`, with notice
 `failed`/`run_state=failed`; the stale v12 notice disappeared. A next-launch
 pointer rollover has not yet been exercised and remains open in AKU-09l.
+
+After the live dashboard correctly exposed v14's failure, the narrow serial
+abstention settlement fix was integrated and promoted to research `main` as
+`fb8a8273`. The exact v14 `complete/{abstained:1}` continuation now maps to
+`abstained`; nine focused tests pass. No measurement, keep, floor or retained
+store was changed. The loop is still stopped; relaunch and the dashboard's
+fresh-pointer rollover check await the operator's notice that shared GPU work
+has ended, so full-core confirmation can use a quiet measurement window.
