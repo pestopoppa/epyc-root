@@ -8,5 +8,5 @@ Audit the specified scope for exploitable security issues using the `security-re
 
 1. If `$ARGUMENTS` is empty, inspect the current diff first.
 2. Run the `security-review` skill against the specified scope.
-3. Report only findings that satisfy the exploit-path gates.
+3. Follow the skill's stage order: discover, dedup, GATE-0 production reachability, exploit gates, then mandatory refutation. Report only CONFIRMED findings.
 4. If no finding passes the gates, say so explicitly and include residual risk plus checks run.
