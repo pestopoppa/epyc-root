@@ -2809,6 +2809,14 @@ audits, `progress/2026-07/2026-07-22.md`):
   them back — and every eval role is a chat-completions role. One gap = every calibration void.
   First decision-grade rows (EV-4c HE-R+): frontdoor ECE 0.253/AUROC 0.634, worker 0.322/0.575,
   coherent ordering, triple-reproduced accuracy base (0.7085).
+  **Caveat (2026-09-16): SUSPENDED, spec-dec contaminated.** These rows, and the E7c math rows
+  (SUSPENDED likewise: ECE 0.211/0.220, AUROC 0.401/0.411), came from `draft-mtp` servers. llama.cpp v7/v9 reports
+  `prob=1.0` with an empty top-k for draft-accepted tokens, so the geomean confidence averages
+  placeholders. E7c is saturated (1528/1684 and 1485/1628 rows at ≥ 0.999999) and invalid. EV-4c is
+  unsaturated but contaminated by an unmeasured amount, so it is demoted-to-prior. Confidence
+  metrics are admissible only from spec-off runs, or with placeholder tokens excluded. The P-CAL
+  decision uses wait for EV-CONF-2. Evidence: epyc-orchestrator `b98dee18`, `f2e9ee07`;
+  `scripts/operator/ratify_pcal_specdec_contamination_20260916.sh`.
 - **Instrument-lies theme**: the run-progress display counted excluded error rows as wrong
   (53.8% panic that was really 76% + honest exclusions); the `/slots` busy-sampler undercounted
   (a "scoring-bound" theory died when sidecar timing showed gen 9.7s / scoring 23ms). Verify the

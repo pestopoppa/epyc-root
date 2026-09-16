@@ -165,7 +165,8 @@ as submission; an empty-normalised fragment matching every pane), 29 tests**; **
 > [FLIPPED LIVE 2026-07-23](wp12-fleet-layer-design.md) (merge `4ca6859a`, flag `a172d2dd`
 > attested in serving; rollback = flag-0 reload; **open**: case-10 live gate pending operator
 > inference grant + post-soak §5 cleanup — WP-13 interim retained as rollback substrate). First decision-grade
-> calibration rows (EV-4c) in the
+> calibration rows (EV-4c; **SUSPENDED 2026-09-16, spec-dec contaminated, pending EV-CONF-2**, see
+> `scripts/operator/ratify_pcal_specdec_contamination_20260916.sh`) in the
 > [ESC-7 draft](../../coordination/inference-batch/esc7-measurement-amendment-draft.md); math
 > columns fill from the overnight E7c run. Alias changes:
 > [runbook](https://github.com/pestopoppa/epyc-orchestrator/blob/main/docs/runbooks/role-alias-change-runbook.md).
