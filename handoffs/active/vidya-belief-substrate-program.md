@@ -1599,7 +1599,7 @@ does not read. Filed **immediately**, per the standing rule: wiring the write si
 retrofitting the read side is impossible. Source row added to
 [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
 
-- [ ] **SC75 (VB-INF70-ARMS) — wire the INF-70 serving-harness ARM records on the WRITE side, and make the
+- [x] **SC75 (VB-INF70-ARMS) — wire the INF-70 serving-harness ARM records on the WRITE side, and make the
       per-arm CONTENTION VERDICT the field the hook exists for.**
       **The load-bearing point:** the write-side hook that matters is **the per-arm contention verdict**. It
       is a property of the host *during* the arm and is **unrecoverable after the fact** — a verdict invented
@@ -1620,6 +1620,20 @@ retrofitting the read side is impossible. Source row added to
       retrofitted**, and both should be recognised as one failure mode rather than two coincidences.
       Trigger: the next serving-harness arm produced on either surface. Zero compute to file; the adapter is
       ~40 lines of projection.
+      ✅ 2026-09-16 — root `685a72bc` (branch `sub/memeval-root-20260916`): `inf70_serving_arm_capture.py`
+      (writer; CLI called at ARM END → `<label>.belief_measurements.jsonl`) + `inf70_serving_arm.py` (strict
+      reader, `inf70-serving-arm-measurement` under the shared `measurement` class). One tuple per arm
+      (`reps` = 1 launch), verdict CONTENDED/CLEAN with DIRECT and SMT-SIBLING counts kept separate, in the id
+      and the locator. The writer refuses: a missing or empty coresidency, CLASSIFY-ERROR, legacy sampler
+      vocabulary, an arm start before 2026-09-07, and a capture more than 1 h after the rows file was written.
+      A forged pre-fix row is voided on read. 36 tests. A mutation that disables the date gate fails 3 of them.
+      The real 2026-09-07 HARNESS-1 arms have no sidecar and project zero rows. **Producer hook still to
+      add:** the harness scripts are scratch-only (`/mnt/raid0/llm/tmp/inf70/agents/harness1/arm_{hot,cold}.sh`).
+      The next serving-harness author adds, after the per-arm `coresummary.sh` line, a single call:
+      `python3 <root>/scripts/vidya/adapters/inf70_serving_arm_capture.py --run-dir "$OUT" --label "$lbl"
+      --launch-json "$OUT/$SESS.launch.json" --arm-started-at "$(date -u -d @$A0 +%FT%TZ)"`. It needs a
+      `launch.json` written once per launch (launch_id, model_path, gguf_sha256, kernel_commit,
+      binary_version, launch_recipe{env,args}, pinning, bench_cpus).
 
 ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10)
 
