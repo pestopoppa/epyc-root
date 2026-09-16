@@ -17,7 +17,12 @@
 # Every function prints exactly one line on stdout, so arm scripts can put it in the timeline.
 
 SC75_HARNESS_DIR=${SC75_HARNESS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
-SC75_ROOT=${SC75_ROOT:-$(cd "$SC75_HARNESS_DIR/../../.." && pwd)}
+if [ -z "${SC75_ROOT:-}" ]; then
+  # in git: scripts/inf70/harness1 -> repo root. A scratch copy of this harness (the 2026-09-07
+  # HARNESS-1 location under /mnt/raid0/llm/tmp) falls back to the canonical root checkout.
+  SC75_ROOT=$(cd "$SC75_HARNESS_DIR/../../.." 2>/dev/null && pwd)
+  [ -f "$SC75_ROOT/scripts/vidya/adapters/inf70_serving_arm_capture.py" ] || SC75_ROOT=/workspace
+fi
 SC75_WRITER=${SC75_WRITER:-$SC75_ROOT/scripts/vidya/adapters/inf70_serving_arm_capture.py}
 SC75_PRODUCER=${SC75_PRODUCER:-inf70-serving-harness1}
 
