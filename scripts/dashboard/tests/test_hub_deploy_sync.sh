@@ -47,6 +47,11 @@ git -C "$REPO" fetch -q origin
 # --- load ONLY the sync machinery ------------------------------------------- #
 EPYC_ROOT="$REPO"
 LOG_DIR="$REPO/logs"
+# Since 2026-09-16 the sync targets the manifest's hub source (HUB_SRC). Here the
+# hub source is this primary checkout, already "resolved".
+HUB_SRC="$REPO"
+resolve_hub_spec() { :; }
+eval "$(sed -n '/^is_linked_worktree()/,/^}/p' "$SUP")"
 DEPLOY_SYNC_ENABLED=1
 DEPLOY_SYNC_INTERVAL_S=0
 # `log` must ECHO, not swallow: assertions below read its output, and a silent
@@ -146,6 +151,22 @@ DEPLOY_SYNC_ENABLED=0; DEPLOY_SYNC_INTERVAL_S=0; rm -f "$DEPLOY_SYNC_STATE"
 sync_dashboard_from_origin
 [[ "$(cat "$REPO/dashboard/static/loop.html")" == "$before_off" ]] || fail "disabled sync still ran"
 pass "DEPLOY_SYNC_ENABLED=0 disables it"
+
+# --- 7b. a LINKED-WORKTREE hub source is never written ----------------------- #
+# The manifest may point the hub at a lane (orchestrator f5476148). That lane is
+# owned by its session; the sync must skip it and log why.
+git -C "$REPO" worktree add -q "$TMP/lane" -b lane-fixture >/dev/null 2>&1
+echo "v9" > "$UP/dashboard/server.py"
+git -C "$UP" add -A; git -C "$UP" commit -qm v9; git -C "$REPO" fetch -q origin
+lane_before="$(cd "$TMP/lane" && find dashboard -type f -exec sha1sum {} + | sort)"
+HUB_SRC="$TMP/lane"; DEPLOY_SYNC_ENABLED=1; DEPLOY_SYNC_INTERVAL_S=0; rm -f "$DEPLOY_SYNC_STATE"
+out="$(sync_dashboard_from_origin 2>&1)"
+grep -q "SKIPPED .* linked worktree" <<<"$out" || fail "lane skip was not logged: $out"
+[[ "$(cd "$TMP/lane" && find dashboard -type f -exec sha1sum {} + | sort)" == "$lane_before" ]] \
+  || fail "sync wrote into a linked-worktree hub source"
+[[ -z "$(git -C "$TMP/lane" status --porcelain)" ]] || fail "lane working tree was modified"
+HUB_SRC="$REPO"
+pass "a linked-worktree hub source is skipped and left untouched"
 
 # --- 8. the loop actually calls it ------------------------------------------- #
 # The whole outage was a function that existed and was never invoked on the code
