@@ -449,6 +449,12 @@ tracked manifest is missing or unreadable rather than guessing.
      ```
      (`--touch` regenerates the tracked manifest from the current source set and advances
      `.last_compile`; commit the regenerated manifest so the watermark is shared.)
+   - **Compiled only part of the delta? Scope the touch** (OP-34, adopted 2026-09-16):
+     `compile_sources.py --touch <SCOPE>` (a source type, file, directory prefix or glob;
+     repeatable or comma-separated) or `--type <T> --touch` advances ONLY the in-scope manifest
+     entries, carries the rest unchanged so uncompiled sources stay in the next delta, and leaves
+     `.last_compile` alone. An unmatched scope exits 1. Bare `--touch` stays whole-manifest — use
+     it only when you compiled the entire delta.
 4. Keep compilation incremental — only process sources whose content hash differs from the
    tracked `wiki/source_manifest.json`.
 

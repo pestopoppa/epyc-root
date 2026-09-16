@@ -263,7 +263,7 @@ shared across worktrees and advances when the change is committed; a lane
 `--touch` refuses (exit 1) when no tracked manifest exists — establish the
 baseline with `--full --write-manifest` first.
 
-**Partial compile? Scope the touch** (OP-34 proposal). `--touch SCOPE`
+**Partial compile? Scope the touch** (OP-34, adopted 2026-09-16). `--touch SCOPE`
 (repeatable or comma-separated; a source type such as `research`, a file, a
 directory prefix, or a glob) — and `--type T --touch` — advance ONLY the
 in-scope manifest entries. Out-of-scope entries are carried unchanged, so

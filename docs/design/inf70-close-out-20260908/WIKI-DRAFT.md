@@ -13,7 +13,7 @@ compiled citations point at content that is not yet in `origin/main`):
 
 ---
 
-# ★ PART 4 — TWO BLOCKERS, READ BEFORE ANYTHING ELSE
+# ★ PART 4 — BLOCKERS (1 open, 1 lifted), READ BEFORE ANYTHING ELSE
 
 **BLOCKER 1 — the wiki `.last_compile` is STALE relative to the tracked manifest.**
 `wiki/.last_compile` (gitignored) reads **`2026-09-07T14:04:28Z`**; the **tracked**
@@ -23,12 +23,12 @@ compiled citations point at content that is not yet in `origin/main`):
 and therefore **unaffected** — but **the displayed watermark must not be quoted as the compile
 date**, and the stale file should be refreshed as part of whatever pass finally holds the lease.
 
-**BLOCKER 2 — `--touch` is FLEET-WIDE. This is open decision OP-34.**
-`compile_sources.py --touch` rewrites the shared watermark (`refresh_tracked_manifest` +
-`touch_last_compile`) for **every** session, not just this one. A single lane touching it advances
-the baseline for all consumers of the manifest. **Do not run `--touch` to land this draft** until
-OP-34 is ruled. Until then, paste the sections, run lint and `--check-manifest`, and leave the
-watermark alone.
+**~~BLOCKER 2~~ — LIFTED 2026-09-16: OP-34 ruled (option A, scoped `--touch`).**
+Bare `compile_sources.py --touch` still rewrites the shared watermark for **every** session. When
+landing this draft, advance only the two drafted sources:
+`compile_sources.py --touch progress/2026-09/2026-09-08-inf70-audit.md,handoffs/active/cpu-decode-roofline-program.md`
+(under the wrap-up lease). This carries every other manifest entry unchanged and leaves
+`.last_compile` alone. **Never use bare `--touch` for this partial compile.**
 
 ---
 ---
@@ -488,4 +488,4 @@ are the same measurement and are *not* separately superseded by name in the clos
    /`:2939` (41.90 TFLOP/s), `autonomous-research.md:528`/`:1020` and
    `hardware-optimization.md:277` (unrelated `60/60`).
 6. Then lint (`lint_wiki.py`, pass 6 structural) and `compile_sources.py --check-manifest`.
-   **Stop there — `--touch` is blocked on OP-34 (PART 4).**
+   Then advance the watermark with the **scoped** `--touch` from PART 4 (OP-34 ruled; never bare `--touch`).
