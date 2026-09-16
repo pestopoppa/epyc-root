@@ -41,6 +41,7 @@ SUMMARY = {
     "judge_prompt_version": "beam-unified-b2da22ea+question/v1",
     "question_in_judge_prompt": True,
     "checked_against_dataset": True,
+    "context_mode_by_row": {"full": 400},
     "fold": "beam_macro",
     "fold_version": 1,
     "headline": HEADLINE,
@@ -132,7 +133,9 @@ def test_identity_is_stable_and_separates_arms_and_judges(tmp_path):
     ids = {first}
     for i, arm in enumerate(sorted(capture.ARMS - {"full"})):
         ids.add(reader.project(reader.native_rows(
-            write_sidecar(make_run(tmp_path, name=f"r{i}"), arm=arm))[0]).measurement_id)
+            write_sidecar(make_run(tmp_path, name=f"r{i}"), arm=arm,
+                          summary={**SUMMARY, "context_mode_by_row": {arm: 400}}))[0]
+        ).measurement_id)
     ids.add(reader.project(reader.native_rows(write_sidecar(
         make_run(tmp_path, name="judge2"),
         summary={**SUMMARY, "judge_model": "gpt-4.1-mini"}))[0]).measurement_id)
@@ -331,3 +334,26 @@ def test_frames_go_through_the_shared_emitter(tmp_path):
     supports = [f for f in frames if f["frame_type"].endswith("evidence_supports_claim/v1")]
     assert len(supports) == 1
     assert supports[0]["assertion"]["grade"] == {"Q": "Witnessed", "T": "Attested"}
+
+
+# --- M-12 B2: the arm is what the rows record ------------------------------------------------
+
+def test_arm_vocabulary_is_the_m12b_arms():
+    assert capture.ARMS == {"full", "rag", "trace"}
+
+
+@pytest.mark.parametrize("by_row", [
+    {"rag": 400}, {"full": 200, "trace": 200}, {"unrecorded": 400}, None, {"full": 0},
+])
+def test_writer_refuses_an_arm_the_rows_do_not_record(tmp_path, by_row):
+    run = make_run(tmp_path)
+    with pytest.raises(capture.CaptureError, match="not what the result rows record"):
+        write_sidecar(run, summary={**SUMMARY, "context_mode_by_row": by_row})
+    assert not (run / capture.SIDECAR_NAME).exists()
+
+
+def test_reader_refuses_a_row_whose_arm_and_row_record_disagree(tmp_path):
+    sidecar = write_sidecar(make_run(tmp_path))
+    _rewrite(sidecar, lambda rows: rows[0]["extra"].update(context_mode_by_row={"rag": 400}),
+             rehash=True)
+    assert reader.native_rows(sidecar) == ()

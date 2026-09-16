@@ -34,6 +34,12 @@ Four refusals are the point of the hook:
   variant must be the ones the run actually used, and ``n`` is the count of questions that
   SCORED in the subset the metric is about — not the count attempted, and not the whole
   question set.
+* **Gold must be bound to the book (M-12 B1).** The 20ch and 200ch books share one question
+  index space, and before B1 the scorer silently graded against the 20ch gold. A summary is
+  admitted only when it carries ``gold_binding == "chapter_set_v1"`` (the research scorer
+  bound every row to a recorded chapter set, or verified its full-book prompt byte for byte).
+  ``chapters`` is the NOMINAL set (20 or 200) and must equal the one that binding resolved
+  (``summary.chapters``); the chapters actually on disk (19 / 196) ride as ``book_chapters``.
 
 Metric direction is recorded, never inferred: both headline metrics are higher-better, and
 ``chronological_awareness_score`` additionally carries its partial-coverage count, because a
@@ -68,6 +74,12 @@ ARMS = frozenset({"none", "retrieved", "full"})
 
 #: M-12e landed scorer version 2. Anything below it is a different quantity (see above).
 MIN_SCORER_VERSION = 2
+
+#: The two book sizes the paper defines. ``chapters`` is always one of these (the NOMINAL set,
+#: which is also part of the research question id); the count on disk is ``book_chapters``.
+CHAPTER_SETS = frozenset({20, 200})
+#: The research scorer's gold-binding contract (score_tulving_run.GOLD_BINDING, M-12 B1).
+GOLD_BINDING = "chapter_set_v1"
 
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _CATEGORIES = frozenset({"OPTIMUM", "BASELINE", "CANDIDATE"})
@@ -182,8 +194,18 @@ def validate_row(row: Any) -> list[str]:
                  "an A/B and is never inferred on read")
     if not _text(extra.get("variant")):
         p.append("extra.variant must name the dataset variant (e.g. Udefault_Sdefault_seed0)")
-    if not _nonneg_int(extra.get("chapters")) or extra.get("chapters") == 0:
-        p.append("extra.chapters must be the positive chapter count the run actually used")
+    if not _nonneg_int(extra.get("chapters")) or extra.get("chapters") not in CHAPTER_SETS:
+        p.append(f"extra.chapters must be the nominal chapter set the run used, one of "
+                 f"{sorted(CHAPTER_SETS)}")
+    if extra.get("gold_binding") != GOLD_BINDING:
+        p.append(f"extra.gold_binding must be {GOLD_BINDING!r}: a score whose gold was not bound "
+                 "to the run's chapter set may have graded 200ch answers against 20ch questions")
+    rb = extra.get("row_binding")
+    if not isinstance(rb, dict) or set(rb) != {"recorded"}:
+        p.append("extra.row_binding must show every row bound by its own recorded provenance "
+                 "(a pre-hook run emits zero rows)")
+    if not _nonneg_int(extra.get("book_chapters")) or extra.get("book_chapters") == 0:
+        p.append("extra.book_chapters must record the chapter count of the book on disk")
     if not _nonneg_int(extra.get("scorer_version")):
         p.append("extra.scorer_version must be recorded")
     elif extra["scorer_version"] < MIN_SCORER_VERSION:
@@ -321,6 +343,31 @@ def write_belief_measurements(
             f"summary.scorer_version must be >= {MIN_SCORER_VERSION} (post-M-12e); got "
             f"{scorer_version!r}. A pre-M-12e score is a different quantity under the same "
             "name and must never be projected as this metric.")
+    if summary.get("gold_binding") != GOLD_BINDING:
+        raise CaptureError(
+            f"summary.gold_binding is {summary.get('gold_binding')!r}, not {GOLD_BINDING!r}: "
+            "this score was not bound to the run's chapter set (pre-B1 scorer), so its ground "
+            "truth may belong to the other book")
+    if chapters not in CHAPTER_SETS:
+        raise CaptureError(f"chapters must be the nominal set, one of {sorted(CHAPTER_SETS)}; "
+                           f"got {chapters!r}")
+    if summary.get("chapters") != chapters:
+        raise CaptureError(
+            f"chapters={chapters!r} disagrees with the {summary.get('chapters')!r} chapter set "
+            "the scorer bound its gold to")
+    if summary.get("variant") not in (None, variant):
+        raise CaptureError(
+            f"variant={variant!r} disagrees with the scorer's {summary.get('variant')!r}")
+    row_binding = summary.get("row_binding")
+    if not isinstance(row_binding, Mapping) or set(row_binding) != {"recorded"}:
+        raise CaptureError(
+            f"summary.row_binding is {row_binding!r}: only a run whose every row recorded its "
+            "own chapter set is post-hook. Rows bound by prompt verification belong to a "
+            "pre-hook run, which emits zero rows")
+    book_chapters = summary.get("book_chapters")
+    if not _nonneg_int(book_chapters) or book_chapters == 0:
+        raise CaptureError("summary.book_chapters must record the chapter count of the book "
+                           "the gold came from")
 
     when = emitted_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     scored_sha256 = _file_sha256(scored)
@@ -334,6 +381,10 @@ def write_belief_measurements(
         "arm": arm,
         "variant": variant,
         "chapters": int(chapters),
+        "chapter_set": f"{int(chapters)}ch",
+        "book_chapters": int(book_chapters),
+        "gold_binding": GOLD_BINDING,
+        "row_binding": dict(summary.get("row_binding") or {}),
         "scorer_version": int(scorer_version),
         "model_role": str(summary.get("model_role") or ""),
         "config_name": str(summary.get("config_name") or ""),
