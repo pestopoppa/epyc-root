@@ -45,8 +45,11 @@ RUNTIME_CREATED: set[str] = set()
 #: `document.getElementById("foo")` and the `$("#foo")` / `$("#foo", root)` helper
 #: shape. Both, because the two pages this guard has covered used different ones and
 #: a scan that matches only the absent idiom reports "no lookups" as "no problems".
-_GET_BY_ID = re.compile(r'getElementById\(\s*"([A-Za-z0-9_-]+)"')
-_DOLLAR = re.compile(r'\$\(\s*"#([A-Za-z0-9_-]+)"')
+#: The literal must be the WHOLE argument (closing quote then `)` or `,`): a
+#: computed lookup such as `getElementById("serial-"+op)` names no static id, and
+#: matching its prefix reported a phantom `serial-` (2026-09-16).
+_GET_BY_ID = re.compile(r'getElementById\(\s*"([A-Za-z0-9_-]+)"\s*\)')
+_DOLLAR = re.compile(r'\$\(\s*"#([A-Za-z0-9_-]+)"\s*[,)]')
 
 
 def _page() -> str:

@@ -119,16 +119,17 @@ def test_explicit_experimental_scope_reaches_reader_and_page(tmp_path, monkeypat
     if experimental:
         assert "<dt>experimental candidate head</dt>" in ident
         assert "<dt>champion head</dt>" not in ident
-        assert "separate from the selected live experiment" in rendered["text_by_id"]["champ-scope"]
         assert "not measurements of the selected live experiment" in rendered["text_by_id"]["opgate-scope"]
     else:
         assert "<dt>champion head</dt>" in ident
         assert "<dt>experimental candidate head</dt>" not in ident
-    for panel, badge in (("champ", "champ-badgetxt"), ("opgate", "opgate-badgetxt")):
-        # Canonical measurements and their original supersession labels remain
-        # byte-for-byte visible; selecting a trial only adds subject separation.
-        assert rendered["by_id"][panel] == baseline["by_id"][panel]
-        assert rendered["text_by_id"][badge] == baseline["text_by_id"][badge]
+    # 7c1d96cb (2026-09-14) removed the champion summary card (`champ`,
+    # `champ-badge`, `champ-scope`) and the progress tiles; the champion renderer
+    # now fills only `champion-capabilities`. The canonical panels that remain
+    # must still be byte-for-byte identical with and without the trial label.
+    assert rendered["by_id"]["champion-capabilities"] == baseline["by_id"]["champion-capabilities"]
+    assert rendered["by_id"]["opgate"] == baseline["by_id"]["opgate"]
+    assert rendered["text_by_id"]["opgate-badgetxt"] == baseline["text_by_id"]["opgate-badgetxt"]
 
 
 @pytest.mark.parametrize("explicit_root", [False, True])
@@ -183,8 +184,9 @@ def test_both_producers_reach_rendered_output(tmp_path: Path) -> None:
     by_id = result["by_id"]
     assert result["rendered_chars"] > 500, "render produced almost no output"
 
-    # The loop's own half.
-    assert by_id.get("tiles"), "the loop progress tiles rendered nothing"
+    # The loop's own half. The progress tiles were removed by 7c1d96cb
+    # (2026-09-14); the loop body's accumulator card is their successor.
+    assert by_id.get("accumulator"), "the loop accumulator card rendered nothing"
     assert by_id.get("disp"), "the disposition list rendered nothing"
     assert by_id.get("ident"), "the identity block rendered nothing"
 

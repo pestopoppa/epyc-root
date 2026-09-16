@@ -4677,7 +4677,8 @@ def _discovery_product_contract(
         deployment_semantic_sha256: object,
         deployment_file_sha256: object, graph_sha256: object,
         graph_file_sha256_frozen: object,
-        q5_erratum_required: bool = False) -> dict | None:
+        q5_erratum_required: bool = False,
+        backup_critic_required: bool = False) -> dict | None:
     """Validate a sealed successor config/planner/graph without producer imports.
 
     The returned ``ready`` bit is true only when the graph matches the frozen
@@ -4701,9 +4702,12 @@ def _discovery_product_contract(
         "instrument": {"repo_path", "branch", "commit", "production_ancestor"},
         "controller": {"state_root", "evidence_root", "operations_root",
                        "build_root", "max_iterations", "nomination_threshold"},
+        # v27 (a7a88f4a) added the backup critic; v26 was sealed without it, so
+        # the key set is per-schema rather than the v27 set imposed on both.
         "actors": {"wrapper_path", "wrapper_sha256", "critic_path",
-                   "critic_sha256", "environment_profile_id",
-                   "backup_critic_path", "backup_critic_sha256"},
+                   "critic_sha256", "environment_profile_id"} | (
+                       {"backup_critic_path", "backup_critic_sha256"}
+                       if backup_critic_required else set()),
         "gpu": {"device_id", "claim_timeout_s", "inference_window_lock",
                 "inference_window_lease_id"},
         "source_plan": {"source_builder_id", "evidence_plan_id",
@@ -5061,7 +5065,8 @@ def _discovery_v27_contract(config_path: Path, config: object,
         deployment_file_sha256=_DISCOVERY_V27_DEPLOYMENT_FILE_SHA256,
         graph_sha256=_DISCOVERY_V27_GRAPH_SHA256,
         graph_file_sha256_frozen=_DISCOVERY_V27_GRAPH_FILE_SHA256,
-        q5_erratum_required=True)
+        q5_erratum_required=True,
+        backup_critic_required=True)
 
 
 def _discovery_v26_checkpoint(path: Path, *, now: float) -> dict | None:
@@ -13737,7 +13742,18 @@ def _discovery_live_read() -> tuple[dict, panels.Observation]:
                   str(operations_root / "live")),
         silence_budget_s=(activity.get("stall", {}).get("threshold_s")
                           if lock_held else None),
-        producer_idle=bool(state_view and state_view.get("complete") is True),
+        # No held controller lock means there is no live producer expected to
+        # advance this historical deployment.  A normal completed/stopped
+        # activity is therefore idle even when an older controller schema did
+        # not persist ``state.complete``.  Do not infer idle from that bit alone:
+        # terminal-integrity and supervisor failures can retain a complete state
+        # while the validated activity correctly reports ``failed``.
+        # (24b3a480; accidentally reverted by 2e1dd002, restored 2026-09-16.)
+        producer_idle=bool(
+            not lock_held
+            and activity.get("status") in {"complete", "idle", "stopped"}
+            and not (isinstance(activity.get("failure"), dict)
+                     and activity["failure"].get("detected") is True)),
         unreported=(("telemetry_stream_integrity",)
                     if telemetry_integrity["state"] in {"degraded", "conflict"}
                     else ()))
