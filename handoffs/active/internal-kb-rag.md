@@ -647,8 +647,15 @@ whether the delta is the TRAINING RECIPE rather than the idea._
       over 15 named tasks, provenance: BEIR table added `78d50a16` (2025-05-14), FiQA corrected
       `6605e431` (2025-09-10). Note that `54.75` also circulates from a different source with no stated
       denominator — see the conflict flagged on intake-430.
-- [ ] **C7 (Z) — fix the stale `:8089` model attribution** in `src/repl_environment/code_search.py:12`,
-      which still names an encoder retired 2026-02-20.
+- [x] **C7 (Z) — fix the stale `:8089` model attribution** in `src/repl_environment/code_search.py:12`,
+      which still names an encoder retired 2026-02-20. ✅ 2026-09-16
+      - Evidence: epyc-orchestrator `51b30f5e` on branch `sub/tooling-orch-20260916`, integrated by orchestrator merge `370dc715` (pushed in `753343f5`, 2026-09-16).
+      - The docstring now names GTE-ModernColBERT-v1 (149M, 128-dim), which is what
+        `orchestration/launch_manifest.yaml` `nextplaid-docs` mounts. It also points at the manifest as the
+        authority.
+      - The same stale name was also fixed in `scripts/nextplaid/index_codebase.py:9` and
+        `reindex_changed.py:9`.
+      - The change is comment-only. `test_code_search.py` passes 30/30.
 
 ### Code gaps (Z) — all three are small and one is blocking
 
@@ -800,7 +807,7 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       never *by how much* — any character-coverage figure must be re-derived by tokenizing with
       truncation disabled. Quantifying is zero-compute; the remedy arms need a full corpus re-embed
       and are **G13**.
-- [ ] **H2 (Z) — no query-length instrumentation exists anywhere in the retrieval path.** We cannot
+- [x] **H2 (Z) — no query-length instrumentation exists anywhere in the retrieval path.** We cannot
       today answer whether a live agent query has *ever* exceeded 48 tokens; every statement about the
       caps is inferred from a 90-case curated pool and never observed from traffic. Log the encoded
       query token count at the one call site that has it — `kb_rag.py:762`,
@@ -813,6 +820,22 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       truncation-disabled tokenization, or the metric measures the cap rather than the query. This is
       the only path by which the caps question becomes empirical instead of inferred, and it is what
       makes **B7** answerable at all.
+      ✅ 2026-09-16 — instrument and reporter landed. Evidence: epyc-orchestrator `32336445`, branch
+      `sub/tooling-orch-20260916`, integrated by orchestrator merge `370dc715` (pushed in `753343f5`, 2026-09-16). No measurement has been run.
+      - `colbert_encoder.count_tokens(text, role=)` tokenizes on a private copy with truncation and
+        padding off. It applies the same prefix, casing and specials as `encode()`, and never touches
+        the shared tokenizer.
+      - `kb_rag.query()` appends one record per query to `data/kb_rag/telemetry/query_lengths.jsonl`.
+        Set `KB_RAG_QUERY_LENGTH_LOG` to redirect it, or to `off` to disable it. Records carry the
+        query's sha256 and length, never its text. The test suite pins the log off.
+      - `scripts/kb_rag/query_length_report.py` reports nearest-rank p50, p95, max and the over-cap rate
+        per (encoder, cap, convention) group. An empty log reads UNKNOWN, not 0 %.
+      - Non-vacuity test: with the shared tokenizer capped at 8, the encode-path count is 8 and
+        `count_tokens` returns 32.
+      - Tests: `test_kb_rag_query_telemetry.py`, 15 passed. Combined with the retrieval suites, 62
+        passed.
+      - Belief kernel: VB-KBRAG-QLEN (adapter at root `039a4f3b`, root merge `719ac638`).
+      - Next step: once traffic accrues, run the reporter to answer B7.
 
 ### Compute-gated (G) — filed, not run; both compute planes were held by other sessions this wave
 

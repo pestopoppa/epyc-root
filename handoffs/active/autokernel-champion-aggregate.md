@@ -946,10 +946,11 @@ sclk flat 1700 MHz at *every* point. Unit: **LAUNCH**. Details and per-point `re
       **recorded decision, not an oversight**. Reopening costs ~2 launches × 2 points ≈ 12 min of exclusive
       GPU. Blocked on nothing but an operator go for the host. Until it is run, **never quote 310.96 tok/s
       as a maximum** — it is the highest measured point.
-- [ ] **HEAD-4 — promote the 35B sweep out of scratch into the research repo `data/`.** The 27B sweep was
-      promoted at `48a6f6f2`; the 35B raw JSON/logs are still only in
-      `/mnt/raid0/llm/tmp/maxperf-35b-20260908/`, which is not evidence anybody else can reach. Same
-      treatment, same commit shape. Blocked on nothing.
+- [x] **HEAD-4 — promote the 35B sweep out of scratch into the research repo `data/`.** ✅ 2026-09-16
+      Research `data/ak-champion-maxperf-35b-2026-09-08/` (JSON/logs/`sweep.py` at `8c5a9652`; the other two
+      as-executed scripts, `SHA256SUMS` and a README step correction at `1eb4a89b`). Files byte-identical to
+      scratch; every table value recomputed from the JSON and matched `docs/design/champion-max-performance-20260908.md` §6.
+      Belief-kernel write-side wiring filed as SC82 in `vidya-belief-substrate-program.md` (the 2026-09-08 sweeps are pre-hook).
 - [ ] **MTP-27B-1 — the 27B is ALSO MTP-capable, and that is the missing PROD-BASE-1 denominator.** The
       Qwen3.8-27B GGUF carries the MTP head (`blk.64.nextn.eh_proj/.enorm/.hnorm/.shared_head_norm`,
       `qwen35.nextn_predict_layers = 1`) — the same shape the 35B has at `blk.40`. It could not be expressed

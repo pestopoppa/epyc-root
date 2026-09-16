@@ -366,10 +366,10 @@ the missing denominator PROD-BASE-1 has been waiting for. Tracked in
 
 | artifact | location |
 |---|---|
-| raw sweep, 27B | `/mnt/raid0/llm/tmp/maxperf-20260908/sweep.json`, `sweep.log`, `sweep.py` |
-| raw sweep, 35B | `/mnt/raid0/llm/tmp/maxperf-35b-20260908/` — `sweep.json` (np 1,2,4,8), `sweep-hi.json` (np 12,16), `sweep-np1-n6.json` (np=1 at n=6), plus `.log`/`.py` for each |
+| raw sweep, 27B | `epyc-inference-research` → `data/ak-champion-maxperf-2026-09-08/` (`sweep.json`, `sweep.log`, `sweep.py`); scratch original `/mnt/raid0/llm/tmp/maxperf-20260908/` |
+| raw sweep, 35B | `epyc-inference-research` → `data/ak-champion-maxperf-35b-2026-09-08/` — `sweep.json` (np 1,2,4,8), `sweep-hi.json` (np 12,16), `sweep-np1-n6.json` (np=1 at n=6), `sweep.log`, `sweep-hi.log` (holds the np 12/16 **and** the chained np=1 n=6 console), the three `.py` as executed, and `SHA256SUMS`; scratch original `/mnt/raid0/llm/tmp/maxperf-35b-20260908/` |
 | 35B recipe + the self-draft fix | `epyc-inference-research` commit `c3e362a1` (recipe JSON, `serving.py`, `test_selfdraft_recipe.py`) |
-| promoted into git | `epyc-inference-research` commit `48a6f6f2` (`data/`) — **27B only; the 35B sweep is still in scratch and needs promoting** |
+| promoted into git | `epyc-inference-research` commits `48a6f6f2` (27B) and `8c5a9652` + `1eb4a89b` (35B; the second adds the two remaining scripts and `SHA256SUMS` and corrects a README step figure). 2026-09-16: every §6.1/§6.3/§6.6 figure, the §6.2 steps, the §7 ratios, the 24-launch / 2,952-sample / 736.8 s totals and the 19:37:30–20:14:00Z window were **recomputed from the committed JSON and matched**; the committed files are byte-identical to scratch. The np=1 headline 112.676 is a 6-run median (mean of 112.39 and 112.96), not an observed run; the §6.2 1 → 2 step uses that n=6 row (against the n=3 batch it is +17.17%) |
 | R23-58 (the per-surface ruling) | `/mnt/raid0/llm/tmp/r2358-shim-serving-20260908/` — `PREREGISTRATION.md` sha256 `0a72a0256a0c897768ce396fa20e21f7b969b42e588d28ebb54db8cb04c59d01`, frozen 2026-09-08T16:35:38Z |
 | owning handoff | `handoffs/active/autokernel-champion-aggregate.md` |
 | harness | `autokernel.loop.serving.calibrate_floor`, `autokernel.loop.residency.Sampler` |
