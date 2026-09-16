@@ -16,10 +16,26 @@ from gate import UsePolicy, evaluate
 from lattice import parse_grade
 
 
+def _research_root() -> Path:
+    """The research checkout that supplies the producer, or a skip with the reason.
+
+    Deliberately no default path: the producer must be the checkout under test, and a guessed
+    location (a stale shared clone) would pass or fail against the wrong code. Same convention as
+    the sibling producer-conformance tests (`test_autokernel_legacy_serving.py`, ...).
+    """
+    configured = os.environ.get("EPYC_RESEARCH_ROOT")
+    if not configured:
+        pytest.skip("set EPYC_RESEARCH_ROOT to the research checkout that supplies the serving producer")
+    research = Path(configured).resolve()
+    if not (research / "scripts/kernel_rnd/autokernel/loop/serving_beliefs.py").is_file():
+        pytest.skip(f"EPYC_RESEARCH_ROOT={research} lacks autokernel/loop/serving_beliefs.py")
+    return research
+
+
 @pytest.fixture
 def source(tmp_path, monkeypatch):
-    research = os.environ["EPYC_RESEARCH_ROOT"]
-    monkeypatch.syspath_prepend(str(Path(research) / "scripts/kernel_rnd"))
+    research = _research_root()
+    monkeypatch.syspath_prepend(str(research / "scripts/kernel_rnd"))
     from autokernel.loop import archive, serving_beliefs
     from autokernel.loop.test_serving_beliefs import comparison
     row, calls = comparison(monkeypatch, floor_pct=100.0)
@@ -109,7 +125,7 @@ def test_source_and_context_bounds_are_explicit(source, monkeypatch):
 
 
 def test_actual_run_installs_feedback_and_rebinds_scope_after_keep(monkeypatch):
-    research = Path(os.environ["EPYC_RESEARCH_ROOT"])
+    research = _research_root()
     monkeypatch.syspath_prepend(str(research / "scripts/kernel_rnd"))
     from autokernel.loop.test_existing_cpu_run import (
         test_existing_main_cpu_five_iterations_preserves_canonical_champion,
