@@ -1969,11 +1969,20 @@ are left to that still-running agent.
   `76f5132b`, on research `main` via `a280853d`): project `.jsonl` + `.meta.json` + `.summary.json` per suite×arm into ClaimTuples
   (accuracy; answer-only AND incl-estimator tokens/latency; budget_unit, temperature+seed, served GGUF identity,
   chat_template_kwargs) BEFORE the PRB-T4 run. Locator = the run×suite×arm, never per question. No new grading rule.
+  - 2026-09-16 (sub-runner-adapters): root writer + strict reader ported onto origin/main and wired as
+    `cli.py ingest tale-budget` (end-to-end test in `tests/vidya/test_ingest_sources.py`). The writer now also
+    emits answer-only latency. Rows project `protocol_id=""` (no TALE protocol is codified), so tuples cap at
+    `Judged/Located`. The writer reads the per-question `.jsonl` + `.meta.json`, not `.summary.json`; its formulas
+    match `summarize()`. Left unticked until the driver (research `sub/gpu-runner-20260916`) merges.
 - [ ] **VB-REVIEW-F1 — wire review_f1 `_summary.json` (EV-13b) at write time** (research `e70b6974` → `726e2676`;
   the `_summary.json` producer `ev13b_run.py` is on unmerged `sub/gpu-runner-ev13b-20260916`): micro
   P/R/F1 with n_runs≥3 and sd, reader AND judge identity, `golden_manifest_checksum`, matcher-spec sha,
   `cross_family_ok`, judge-swap delta. Refuse a summary with judge==reader or no manifest checksum. Locator =
   reader model/quant × judge × run, never per finding.
+  - 2026-09-16 (sub-runner-adapters): root writer + strict reader ported onto origin/main and wired as
+    `cli.py ingest review-f1` (end-to-end test). The field names match `semantic_judge.py score` at research
+    `0627a5d9`. Rows project `protocol_id=""`, so tuples cap at `Judged/Located`. Left unticked until
+    `ev13b_run.py` merges.
 - [ ] **VB-SL2-STEPS — decide whether the serving A/B's `target_sample_steps_est` block (INF-62 SL-2, research
   branch `sub/gpu-prep-20260916`) gets its own `belief_measurements` rows.** Today it rides inside the
   `serving_beliefs` native body (so `native_sha256` binds it) but only tok/s is projected. It is an ESTIMATE
@@ -2276,8 +2285,8 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 |---|---|---|---|
 | VB-KBRAG-QLEN | origin/main `kb_rag_query_length.py` | yes, `kb-rag-qlen --path <report.json>` | first traffic, then a `query_length_report.py --out` snapshot, then ingest |
 | SC75 / VB-INF70-ARMS | origin/main `inf70_serving_arm{,_capture}.py` | yes, `inf70-arms` | none: VB-WIRE-2 wired (root `3c5a4b30`); first real arm pending |
-| VB-PRB-T4 | `tale_budget{,_capture}.py`, uncommitted in /workspace (sub-gpu-runner) | no | producer is on unmerged research `sub/gpu-prep`/`sub/gpu-runner`; commit it, merge it, then add an ingest name |
-| VB-REVIEW-F1 | `review_f1{,_capture}.py`, uncommitted in /workspace | no | producer (`ev13b_run.py`) is on unmerged research `sub/gpu-runner-ev13b-20260916` |
+| VB-PRB-T4 | root `tale_budget{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `tale-budget --path <out dir>` | the calling driver `prb_t4_tale_gpu.py` is on unmerged research `sub/gpu-runner-20260916` and imports the writer from `/workspace/scripts/vidya`; merge it, then the first run |
+| VB-REVIEW-F1 | root `review_f1{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `review-f1 --path <out dir>` | the calling driver `ev13b_run.py` is on unmerged research `sub/gpu-runner-ev13b-20260916` (`0627a5d9`) and imports the writer from `/workspace/scripts/vidya`; merge it, then the first run |
 | VB-SL2-STEPS | n/a (a decision) | n/a | still a decision; the serving-belief reader `autokernel_legacy_serving.py` IS on origin/main now |
 | VB-EVCONF2 | none | no | `confidence_source_compare.py` is on unmerged orchestrator `sub/evconf2-20260916` |
 | VB-HARNESS-AUDIT | none | no | decision (a)/(b)/(c); the findings are handoff prose with no machine-readable record to project |

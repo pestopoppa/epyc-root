@@ -9,7 +9,8 @@ stated mechanically, was three separate mechanisms firing at once:
      index, so each of those commits swept whatever the other four had
      half-written into the same file (proven by `dada0bbc`);
   3. the genuinely shared, GENERATED surfaces (the master-index block,
-     `wiki/source_manifest.json`, `wiki/.last_compile`) are rewritten wholesale,
+     `wiki/source_manifest.json`, then also `wiki/.last_compile` -- retired by
+     KB-WM-4) are rewritten wholesale,
      so two concurrent regens mean one is simply lost.
 
 Phase 3's answers are, respectively: a per-agent daily progress file, a private

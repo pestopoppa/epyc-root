@@ -31,10 +31,10 @@ if [[ ! -f "$COMPILE_SOURCES" ]]; then
   exit 0
 fi
 
-# KB-RAG needs its own incremental cursor.  wiki/source_manifest.json and
-# wiki/.last_compile belong to the serialized full wrap-up transaction; using
-# either as a post-commit cursor lets an ordinary worker commit mutate or advance
-# wrap-up state.  The git common dir gives all lane worktrees one untracked,
+# KB-RAG needs its own incremental cursor.  wiki/source_manifest.json belongs
+# to the serialized full wrap-up transaction (the wiki/.last_compile file is
+# retired, KB-WM-4); using it as a post-commit cursor lets an ordinary worker
+# commit mutate or advance wrap-up state.  The git common dir gives all lane worktrees one untracked,
 # non-wrap cursor while the PostToolUse dispatcher enforces the single rebuilder.
 GIT_COMMON_DIR="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
 if [[ -z "$GIT_COMMON_DIR" ]]; then

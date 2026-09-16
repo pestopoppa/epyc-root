@@ -256,7 +256,7 @@ After successful compilation:
 ```
 
 `--touch` regenerates the tracked `wiki/source_manifest.json` from the
-current source set and advances `wiki/.last_compile`, so the next incremental
+current source set and stamps its `last_compile` field, so the next incremental
 scan reports nothing. Because the manifest is tracked, the watermark is
 shared across worktrees and advances when the change is committed; a lane
 `--touch` records the same content hashes a shared-clone `--touch` would.
@@ -267,8 +267,10 @@ baseline with `--full --write-manifest` first.
 (repeatable or comma-separated; a source type such as `research`, a file, a
 directory prefix, or a glob) — and `--type T --touch` — advance ONLY the
 in-scope manifest entries. Out-of-scope entries are carried unchanged, so
-sources you did not compile stay in the next incremental delta, and
-`.last_compile` is not advanced. A scope token that matches no source exits 1.
+sources you did not compile stay in the next incremental delta, and the
+manifest's `last_compile` is kept. The manifest's `last_compile` (ISO-8601 UTC) is
+the only compile timestamp: the gitignored `wiki/.last_compile` file is retired
+(KB-WM-4, 2026-09-16) and nothing reads or writes it. A scope token that matches no source exits 1.
 
 #### Compilation Principles
 

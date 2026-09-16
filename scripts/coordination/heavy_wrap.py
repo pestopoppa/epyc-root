@@ -500,8 +500,15 @@ def step_6_freshness(ctx: WrapContext) -> dict:
 
 def step_7_compile_wiki(ctx: WrapContext) -> dict:
     """The LAST documentation-content mutation. The real compiler (if any) runs
-    first; the mechanical manifest+watermark touch is the final write, exactly
-    the shared surface test_concurrent_wrapup treats as the wiki's identity."""
+    first; the mechanical manifest receipt merge is the final write, exactly
+    the shared surface test_concurrent_wrapup treats as the wiki's identity.
+
+    ``watermark`` ("<request_id> <iso>") is a RECEIPT carried in the wrap
+    result/packet only. It is no longer written to ``wiki/.last_compile``
+    (retired, KB-WM-4): that file was gitignored, so the step-8 pathspec commit
+    could not stage it, and its format disagreed with compile_sources.py. The
+    compile timestamp is the tracked manifest's ``last_compile``, owned by
+    compile_sources.py ``--touch``."""
     if ctx.wiki_compile_argv:
         if ctx.dry_run:
             compiled = {"command": ctx.wiki_compile_argv, "exit_code": 0,
@@ -543,7 +550,6 @@ def step_7_compile_wiki(ctx: WrapContext) -> dict:
     if not ctx.dry_run:
         ctx.write_atomic("wiki/source_manifest.json",
                          json.dumps(manifest, indent=2, sort_keys=True) + "\n")
-        ctx.write_atomic("wiki/.last_compile", watermark + "\n")
         manifest_sha256 = ctx.file_sha256("wiki/source_manifest.json")
     ctx.wiki_result = {"manifest_sha256": manifest_sha256, "watermark": watermark}
     return {"step": "compile_wiki", "compiled": compiled,

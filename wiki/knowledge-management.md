@@ -721,10 +721,10 @@ Self-reported headline numbers from Flywheel's README (HotpotQA 90.0% doc recall
 
 This page itself is a product of the `project-wiki` skill compile operation (`/workspace/.claude/skills/project-wiki/SKILL.md` Operation 3). The pipeline:
 
-1. **Source manifest scanner** (`compile_sources.py`) walks active handoffs, completed handoffs, research deep-dives, and progress logs since `.last_compile`. The scanner now has an explicit `project-wiki-source-manifest` v1 contract: `--full --write-manifest` persists `wiki/source_manifest.json`, `--check-manifest` reports added/changed/removed source drift against current content hashes, and `--changed-since-manifest` emits the added/changed subset that a future KB-RAG `update_files(...)` adapter can consume.
+1. **Source manifest scanner** (`compile_sources.py`) walks active handoffs, completed handoffs, research deep-dives, and progress logs, selecting sources whose content hash differs from the tracked `wiki/source_manifest.json`. The scanner now has an explicit `project-wiki-source-manifest` v1 contract: `--full --write-manifest` persists `wiki/source_manifest.json`, `--check-manifest` reports added/changed/removed source drift against current content hashes, and `--changed-since-manifest` emits the added/changed subset that a future KB-RAG `update_files(...)` adapter can consume.
 2. **Cluster by taxonomy** category from `wiki/SCHEMA.md`. Categories with 3+ substantive sources get a full compiled article; fewer get stub entries.
 3. **Synthesize** (this page is one such synthesis).
-4. **Touch** `.last_compile` with `compile_sources.py --touch`.
+4. **Touch** the tracked manifest with `compile_sources.py --touch` (stamps its `last_compile`; the `wiki/.last_compile` file is retired, KB-WM-4).
 
 Lint (`Operation 1`): orphan handoffs, stale entries (>30d ERROR, >14d WARNING), contradictory status, un-actioned intake (verdict `worth_investigating`/`new_opportunity` with no `handoffs_created` and `ingested_date` >7d old), broken cross-references. Run `/workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/lint_wiki.py` before nightshift runs and after handoff sweeps.
 

@@ -580,7 +580,7 @@ The compile was then run against the correct 51 and the watermark advanced norma
       watermark". That keeps the `f1717d80` untracking of `.last_compile` intact (still `.gitignore:44`)
       while making the shared watermark identical across lane worktrees, and it advances only when a
       `--touch` is committed. Residual → KB-WM-4.
-- [ ] **KB-WM-4 — Retire `wiki/.last_compile`, or give it one format.** Residual of KB-WM-1/2
+- [x] **KB-WM-4 — Retire `wiki/.last_compile`, or give it one format.** Residual of KB-WM-1/2
       (2026-09-16). It no longer drives selection, yet it still has two writers with **incompatible
       formats**: `compile_sources.py` `touch_last_compile()` writes an ISO timestamp, while
       `scripts/coordination/heavy_wrap.py` `step_7_compile_wiki` writes `"<request_id> <iso>"`. The
@@ -591,6 +591,25 @@ The compile was then run against the correct 51 and the watermark advanced norma
       both writers, and drop it from the shared-file lists in `worker_checkpoint.py`,
       `serialized_push.py`, `session_bus_coordinator.py` and `wrap-up.md`; or (b) keep it as the
       manifest's timestamp companion, with one ISO format that both writers share.
+      ✅ 2026-09-16 **RETIRED, option (a)** (`sub-kbwm4`, epyc-root `40034bf1`). A grep of root,
+      epyc-orchestrator and epyc-inference-research found one live reader: `build_manifest()` copied
+      the raw file text into every emitted manifest's `last_compile`. The shared clone's copy read
+      `2026-09-08T09:28:51Z` while the tracked manifest read `2026-09-16`. Removing that reader left
+      no dependents, so both writers are gone. The five file helpers are deleted, and
+      `build_manifest` reads the tracked manifest's `last_compile` through a tolerant ISO normalizer.
+      Bare `--touch` stamps it with the current time and scoped `--touch` keeps the saved value.
+      `heavy_wrap` keeps `watermark` only as a receipt field. Its file write had been failing in the
+      real repo: the path is gitignored, so step 8's `git add --intent-to-add` exits 1. The path is
+      dropped from the `worker_checkpoint`/`session_bus_coordinator` exact lists (their `wiki/`
+      prefix rule still refuses it) and from `serialized_push`, the post-commit hook, `wiki.yaml`,
+      `wrap-up.md`, the project-wiki `SKILL.md` and `wiki/knowledge-management.md`. `.gitignore`
+      keeps one deduplicated entry, so a leftover copy stays inert. Guards:
+      `test_stale_last_compile_file_never_leaks_into_manifest`,
+      `test_last_compile_file_helpers_are_retired` and `test_manifest_last_compile_is_normalized_iso`
+      failed before the fix (7 cases) and now pass, 31/31 in
+      `tests/skills/test_project_wiki_compile_sources.py`. `test_full_wrap_transaction_end_to_end`
+      asserts the file is never written or committed and failed before the fix. 97/97 pass across the
+      compile_sources, heavy_wrap, worker_checkpoint, post-commit-hook and concurrent_wrapup suites.
 - [ ] **KB-WM-3 — Same audit for the other three files untracked by `f1717d80`.** If `.last_compile`
       had this failure shape, its siblings from the same commit should be checked for it rather than
       assumed safe.

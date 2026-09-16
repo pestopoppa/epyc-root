@@ -2258,8 +2258,7 @@ def _checkpoint_path_problem(path: str, agent: str, progress_path: str) -> str |
                        "handoffs/active/inference-batch-loop.md",
                        "handoffs/active/.index-state.json",
                        "handoffs/active/.index-graph.json",
-                       "data/handoff_timeline.json", "wiki/source_manifest.json",
-                       "wiki/.last_compile"}
+                       "data/handoff_timeline.json", "wiki/source_manifest.json"}
     if (path in protected_exact or path == "wiki" or path.startswith("wiki/") or
             path == ".git" or path.startswith(".git/") or
             path == "repos" or path.startswith("repos/") or
