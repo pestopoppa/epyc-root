@@ -3265,6 +3265,12 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     per request, retaining `AUTOKERNEL_LOOP_STORE_ROOT` only as a legacy fallback; canonical champion
     and knowledge readers do not move. Acceptance requires the live `/api/loop` and rendered page
     to name the latest run's evidence and terminal reason, plus a fresh-launch pointer rollover.
+    - [x] **AKU-09l-v14 live correction** (2026-09-16): research `main` gained the guarded
+      producer pointer (`8b3b95f6`); root `main` gained the validating reader (`7ec9f779`).
+      The served linked-worktree dashboard file is byte-identical to root `main`, the owning
+      watchdog restarted the hub at 10:28:33 UTC, and live `/api/loop` now names v14's
+      terminal `failed` report rather than v12's stale `running` report. The 75-test dashboard
+      suite and 25 focused post-guard tests passed. No loop relaunch or benchmark was performed.
   - [x] **AKU-09c — existing hub consumes coherent management-v1 snapshots and direct controls**:
     explicit campaign/config selection, closed snapshot/ACK validation, monotonic stream fencing,
     separate producer/activity/science clocks and independently dated evidence cards.

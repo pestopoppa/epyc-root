@@ -77,3 +77,14 @@ artifact; the new reader reports that exact `failed` notice in a local
 integration check. Root dashboard tests passed 75 tests/8 subtests before the
 final trusted-root addition, then 25 focused tests passed. Live hub deployment
 and a future pointer rollover remain the acceptance checks in AKU-09l.
+
+The dashboard correction was published to research `main` (`8b3b95f6`) and root
+`main` (`7ec9f779`). The new watchdog intentionally would not synchronize a
+lane-owned served checkout; its old supervisor had exited. The exact published
+`dashboard/loop_status.py` blob was applied to the served lane (hash
+`780bd03f646f8644eb91dcbdeb3a4a23ef21fba3`, equal to root `main`), and the
+owning watchdog performed its normal source-change restart. The hub relaunched
+at 10:28:33 UTC as PID 845837. Live `/api/loop` then named v14's
+`loop-status.json`, selected by `current-serial-run.json`, with notice
+`failed`/`run_state=failed`; the stale v12 notice disappeared. A next-launch
+pointer rollover has not yet been exercised and remains open in AKU-09l.
