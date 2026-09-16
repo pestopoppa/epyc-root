@@ -425,6 +425,12 @@ failure caught in amber.
         `scripts/benchmark/test_score_tulving_run.py` + `test_tulving_episodic_adapter.py`. The four
         wiki paragraphs quoting SRS 0.5530 / CAS 0.1593 were refreshed in the same wrap-up; draft
         at `wiki/drafts/tulving-subset-scoring-and-tau-coverage.md`.
+        *Re-verified 2026-09-16 (sub-memeval, root `sub/memeval-root-20260916`):* 108/108 tests pass; an
+        independent offline re-score of the only stored Tulving run (`20260619_141212`) with the pre-fix
+        scorer (`dcb769c1^`) gives SRS 0.5530 / CAS 0.1593 and with v2 gives SRS 0.5684 (366 q) / CAS
+        0.1593 (37 partial). The fresh v2 summary is byte-for-byte identical to the committed rescore. Three
+        un-annotated SRS 0.5530 quotes remained in `bulk-inference-campaign.md` (:5, :83, :584). They now
+        carry the v2 value and the scorer note.
   - [ ] **M-12f — decide whether the paper's Chronological Order score excludes single-item questions before
         CAS is ever a headline**, since 30 of the 45 `chronological` questions in the 20ch set have fewer than
         two ground-truth items (15 have zero) so ordering is undefined and two thirds of the tau leg is
