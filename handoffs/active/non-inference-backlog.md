@@ -436,16 +436,10 @@ fast-forwarded to `7b5d1eb6`, tracked tree clean.
 All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (progress note
 `progress/2026-09/2026-09-15-noninf-roi-dispatch.md`).
 
-- [ ] **NIB2-72** (**HIGH**, host): **a coverage-harness `llama-cli` is stuck in interactive mode and has written
-      58.4 GB of `>` prompts.** `/mnt/raid0/llm/tmp/akx-p0c-w4-coverage/stdout-main-only.txt`, growing at a
-      **measured 24 GB/h** (144 MB / 20 s, 2026-09-15 22:10Z); writer pid 1699977
-      (`acceptance/akx-p0c-coverage-20260915/build-cpu-coverage/bin/llama-cli -m gemma-4-26B-A4B-it-ORIG-Q4_K_M
-      ... -t 96`), parent pid 1699975 (`python3 -`), started 19:50Z. At 282 GB free that fills the volume in ~12 h,
-      and it has held 96 threads since 19:50. The kill is the **operator's / the Codex AutoKernel session's** (not
-      our PID). The CODE fix is this task: the harness invokes `llama-cli` with neither `-no-cnv` nor a redirected
-      stdin, so any run that does not get its expected prompt hangs and spews forever — see
-      `feedback_llama_cli_repl_must_be_killed`. Add `-no-cnv` (or `< /dev/null`) plus an output-size cap, and make
-      the harness fail the cell when its child produces no measurable output.
+- [x] **NIB2-72** (**HIGH**, host): The 58.4 GB coverage-harness `llama-cli` interactive prompt runaway was
+      stopped by its owning session and the exact log reclaimed. The valid coverage rerun used `--single-turn`,
+      closed stdin, a 900-second timeout and a 16 MiB output cap, so the same unbounded REPL failure cannot recur
+      in that harness. This was disk-output growth, not evidence of a RAM leak.
 - [x] **NIB2-73** (MED): **the NIB2-65 deletion ledger cannot be committed to the MASTER registry** because the
       research repo's pre-commit evidence gate fails on **12 artifact citations that exist only as UNCOMMITTED files
       in the shared clone** (`artifacts/architect-bench-gpu-2026071{4,20}/...`, `data/ternary_q2_g64_quality_gate/...`,
@@ -525,13 +519,16 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       still resolves the NUMA mode fleet→env→`full`, the exact mismatch NIB2-69 removed from `check`; (b) the priors'
       `source_artifacts` hold absolute main-clone paths, so a `check` run in a worktree verifies the MAIN clone's
       files rather than its own — location-dependent by construction.
-- [ ] **NIB2-77** (MED): **the AutoKernel disk sweep is prepared but unapplied.** DRY-RUN manifest + script
-      (`scripts/system/autokernel_disk_sweep.py`) + design review `docs/design/autokernel-disk-hygiene-20260915.md`.
-      Of 607 GB scanned only 34.8 GB is REMOVE; **370 GB is dirty acceptance trees, 29 of them (48 GB) holding diffs
-      that exist nowhere else**, and 187 lane worktrees are registered against the FROZEN `llama.cpp` clone. Apply
-      needs a fresh host-root dry-run, operator review and interactive confirmation at a boundary the AutoKernel
-      owner picks. Highest-value design ask: register a cleanup handler where each worktree is created and make
-      acceptance end in commit-or-discard (`source_loo.py:173-176` creates and never removes).
+- [ ] **NIB2-77** (MED): **finish AutoKernel disk hygiene after the approved sweep and archive-backed retirement.**
+      The exact `a49053c273ee` manifest's prequalified REMOVE rows were approved and applied. A separate
+      content-addressed archive preserved all 224 reviewed dirty acceptance worktrees before their exact-path
+      retirement; 224/224 have removal receipts. Free space rose by 359,176,167,424 bytes (about 334.5 GiB).
+      Prospective acceptance cleanup and serial disk fail-close are published (`b65138a0` root;
+      `142fd1e3` research). The **187 lane worktrees registered against the frozen clone remain untouched**;
+      audit their ownership and migrate/retire only through an individually reviewed procedure. Verify the
+      prospective cleanup during the next completed acceptance run, rather than inferring it from unit tests.
+- [x] **NIB2-77a** (2026-09-16): Apply the approved safe sweep and archive-backed exact retirement of the
+      224 reviewed dirty acceptance worktrees; verify receipts, recovered space, and the frozen production tree.
 
 ## Cross-references
 
