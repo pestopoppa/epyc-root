@@ -2034,7 +2034,7 @@ which make a reviewer **false-accept rate** measurable from our own data for the
 every machine review to the exact inputs it was produced against. Filed at producer creation, per the
 standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
 
-- [ ] **SC83 — wire the negative-control FA rate on the WRITE side before the first decoy corpus is scored.**
+- [x] **SC83 — wire the negative-control FA rate on the WRITE side before the first decoy corpus is scored.**
       Class `measurement`, **rates only**. A single verdict or objection is categorical and must not be
       forced through `ClaimTuple` (the same call as the headless-audit row). Project
       `gold_annotations.FalseAcceptResult.as_dict()`: numerator, denominator, `lower_is_better`, and the
@@ -2048,6 +2048,22 @@ standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../sc
       Trigger: the first decoy rows plus a scored reviewer run. Zero compute to file.
       *2026-09-16 status:* `gold_annotations.py` and `review_envelope.py` are on orchestrator main, but
       no scoring run persists `FalseAcceptResult` yet. There is nothing to project until one does.
+      ✅ 2026-09-16 (sub-vb-writers), orchestrator `2789b56d` (branch `sub/vb-writers-orch-20260916`) plus the
+      root commit on `sub/vb-writers-root-20260916`. Neither is merged yet.
+      - Writer: `false_accept_record.py` plus `scripts/review/score_false_accept.py` append one self-hashed
+        `epyc.reviewer.false_accept_run.v1` line per scoring run to `data/reviewer_eval/false_accept_runs.jsonl`.
+        - The RA-12 filter runs BEFORE scoring. Stale verdicts are listed with their reasons and counted as
+          unscored.
+        - The endorsement is read only from the signed body.
+        - A run that mixes reviewer configs is refused.
+        - `n_decoys == scored + unscored + excluded` is checked before the line is written.
+        - A run with no scored decoy writes no row.
+      - Reader: `adapters/reviewer_false_accept.py`, dispatched as `cli.py ingest reviewer-fa`. It refuses a
+        dropped denominator, a re-bound stale id, edited lines or rows, and any `protocol_id`. It carries input
+        decay as `attestation_present=False`. The shared ladder grades each row `Judged/Located`.
+      - Tests: orchestrator 7; root 9, including a live cross-repo run of writer → CLI → ingest → tuple.
+      - Backfill: none possible, because no decoy corpus exists.
+      - Remaining trigger: the first decoy corpus plus a scored reviewer run, then `cli.py ingest reviewer-fa`.
 
 ## VB-WIRE — `cli.py ingest` wiring and reconciliation of the 2026-09-16 filings (sub-vidya-wire)
 
@@ -2071,6 +2087,30 @@ standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../sc
   - Also ported from the /workspace working copy, where both producers are already on orchestrator
     main: AP-55 `infra_fingerprint`/`comparability` in `autopilot_journal.py` and the RTG-35
     foreign-process gate in `contention_matrix.py`. Both are carried, never graded.
+- [x] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
+  per-window rates** (filed 2026-09-16 by sub-autopilot-evidence; the filing text is in the /workspace
+  working copy). ✅ 2026-09-16 (sub-vb-writers), orchestrator `2789b56d`, not merged.
+  - Writer: `scripts/autopilot/reproposal_rate.py`. `autopilot.py` calls it fail-open after both
+    `journal.record` sites. Its first call writes an `armed` record. Each closed 100-trial window then gets
+    one self-hashed line in `orchestration/autopilot_reproposal_rates.jsonl`. The line carries:
+    - counts split by action type and by standing rejection class;
+    - the planner fold's key, rejection classes and frontier clearing, pinned by `definition_sha256`, and a
+      test proving this fold equals `rejected_configs_from_entries`;
+    - the journal-shard and ledger prefix digests;
+    - rows for `all_trials`, `keyed_trials` and `diff_repeat_rate`, each with its numerator and denominator
+      stated. A zero denominator writes no row.
+  - Locator: the window.
+  - Reader: `adapters/autopilot_reproposal_rate.py`, dispatched as `cli.py ingest autopilot-reproposal-rate`.
+  - Tests: orchestrator 12; root 10, including a live cross-repo test.
+  - **Backfill: zero belief rows, per spec §4.7.** A pre-hook row is skipped, not back-filled: today's key
+    definition and supersessions are not the ones in force at those trials.
+    - `reproposal_rate.py backfill` writes `*.retrospective.jsonl`, labelled `retrospective: true` with
+      `belief_measurements: []`. The reader declines that file.
+    - The read-only run over trials 0-1505 (14 windows) found 48 re-proposals: 48 of 216 keyed trials and
+      48 of 1366 trials overall. This matches the AP-53 planner-fold replay.
+    - The one-off 133/1372 counted numeric trials, which this key excludes. It stays a non-gating
+      observation.
+  - Remaining trigger: an AutoPilot restart (already due for AP-53/AP-55/W3), then the first closed window.
 - [ ] **VB-WIRE-2 — SC75's producer does not call the hook yet.** `agents/harness1/arm_hot.sh` and
   `arm_cold.sh` under `/mnt/raid0/llm/tmp/inf70`, which are not in git, never invoke
   `inf70_serving_arm_capture.py`. Until they do, `ingest inf70-arms` will keep reading zero sidecars.
@@ -2089,7 +2129,7 @@ the /workspace working copy of this file. Their owners commit those boxes.
 | VB-SL2-STEPS | n/a (a decision) | n/a | still a decision; the serving-belief reader `autokernel_legacy_serving.py` IS on origin/main now |
 | VB-EVCONF2 | none | no | `confidence_source_compare.py` is on unmerged orchestrator `sub/evconf2-20260916` |
 | VB-HARNESS-AUDIT | none | no | decision (a)/(b)/(c); the findings are handoff prose with no machine-readable record to project |
-| VB-AP53-RATE | none for the rate; the AP-55 part is ported here | no | producer `rejected_mutation_ledger.py` is on orchestrator main, but no per-window rate row writer exists |
-| SC83 (was SC76, reviewer FA rate) | none | no | see SC83 above |
+| VB-AP53-RATE | `autopilot_reproposal_rate.py` (sub-vb-writers branch) | yes, `autopilot-reproposal-rate` | merge orchestrator `2789b56d` and the root branch, restart AutoPilot, wait for the first closed window |
+| SC83 (was SC76, reviewer FA rate) | `reviewer_false_accept.py` (sub-vb-writers branch) | yes, `reviewer-fa` | merge both branches; then the first decoy corpus plus a scored reviewer run |
 | VB-MHS-GATES | none | no | producer is on unmerged orchestrator `sub/autopilot-safety-20260916` |
 | VB-GPU-RUNNER | none | no | the sweeps are pre-hook; needs a producer hook in `calibrate_floor` |

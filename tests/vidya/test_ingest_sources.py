@@ -130,6 +130,14 @@ def _autopilot(tmp: Path) -> Path:
     return tmp
 
 
+def _reproposal_rate(tmp: Path) -> Path:
+    return _helpers("test_autopilot_reproposal_rate_adapter").write_fixture(tmp)
+
+
+def _reviewer_fa(tmp: Path) -> Path:
+    return _helpers("test_reviewer_false_accept_adapter").write_fixture(tmp)
+
+
 BUILDERS = {
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
@@ -145,6 +153,8 @@ BUILDERS = {
     "research-sweep-g1": _sweep_g1,
     "research-sweep-g234": _sweep_g234,
     "autopilot-journal": _autopilot,
+    "autopilot-reproposal-rate": _reproposal_rate,
+    "reviewer-fa": _reviewer_fa,
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.
