@@ -1,13 +1,15 @@
 # Hermes/OpenGauss as Outer Shell
 
-**Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + static validation wired; live Hermes validation pending)
+**Completion note (2026-09-16)**: moved to `handoffs/completed/`. **Decision (operator, HS-4, 2026-09-16): Hermes was not selected.** The shell is OpenCode (pi fallback), and the Hermes-style features are built inside the orchestrator ([`hs4-shell-and-orchestrator-features-20260916.md`](../../docs/design/hs4-shell-and-orchestrator-features-20260916.md)). Findings extracted to [`docs/reference/harness-candidates/hermes-evaluation-20260916.md`](../../docs/reference/harness-candidates/hermes-evaluation-20260916.md). The reusable Client Surface Audit (with the HS-1g call-verb check) is now [`docs/reference/harness-candidates/client-surface-audit.md`](../../docs/reference/harness-candidates/client-surface-audit.md). Open boxes were dispositioned on 2026-09-16: two were ticked on existing item-G evidence, the Hermes-only ones were closed SUPERSEDED, and the shell-agnostic `/v1` override validations moved to [`harness-selection-and-integration.md`](../active/harness-selection-and-integration.md) (HS-4 P0.4 carry box). The unpushed Hermes commit `532a49f1` is preserved as a patch under `docs/reference/harness-candidates/patches/`. Body text below is historical.
+
+**Status**: completed 2026-09-16 (closed, not selected). Previously: Phase 1 complete, Phase 2 routing API done, skills and static validation wired, live Hermes validation pending.
 **Created**: 2026-03-20 (split from user-facing-harness-index.md)
-**Updated**: 2026-07-16
-**Parent**: [user-facing-harness-index.md](user-facing-harness-index.md)
+**Updated**: 2026-09-16
+**Parent**: [user-facing-harness-index.md](../active/user-facing-harness-index.md)
 **Repos**: https://github.com/NousResearch/hermes-agent, https://github.com/math-inc/OpenGauss
 **Decision**: Vanilla Hermes (not OpenGauss) — OpenGauss is Lean 4-specific; Hermes has first-class custom endpoint support
 
-> **Scope (2026-07-16):** this handoff is the **Hermes-candidate** evaluation. The general orchestrator-vs-harness thesis — orthogonal backend moat (A) vs cooperation-requiring agent loop (B); the **open-source requirement**; and the OPEN harness choice across **Hermes / OpenCode / ACP-speakers** — plus the selection decision live in [`harness-selection-and-integration.md`](harness-selection-and-integration.md). Keep the general thesis + cross-candidate tasks THERE; keep Hermes-specific detail HERE. (Model IDs in the examples below — e.g. Qwen2.5-72B — are illustrative and dated; verify against the live registry, now Qwen3.5-122B-class.)
+> **Scope (2026-07-16):** this handoff is the **Hermes-candidate** evaluation. The general orchestrator-vs-harness thesis — orthogonal backend moat (A) vs cooperation-requiring agent loop (B); the **open-source requirement**; and the OPEN harness choice across **Hermes / OpenCode / ACP-speakers** — plus the selection decision live in [`harness-selection-and-integration.md`](../active/harness-selection-and-integration.md). Keep the general thesis + cross-candidate tasks THERE; keep Hermes-specific detail HERE. (Model IDs in the examples below — e.g. Qwen2.5-72B — are illustrative and dated; verify against the live registry, now Qwen3.5-122B-class.)
 
 ## Objective
 
@@ -186,12 +188,12 @@ hermes  # or: cd /mnt/raid0/llm/hermes-agent && python cli.py
 - Tool execution: **PASS** (terminal `ls` dispatches and returns)
 
 **Remaining tests**:
-- [ ] Multi-turn context (references prior answer)
-- [ ] Code execution (write + run Python)
-- [ ] Memory persistence (MEMORY.md across sessions)
-- [ ] Latency measurement (first-token, total)
-- [ ] Compression trigger (long conversation, verify compaction works with local model)
-- [ ] Delegation (subagent spawns, uses same local endpoint)
+- [x] Multi-turn context (references prior answer) ✅ 2026-07-21 — `live:multiturn` passed in `BULK-hermes-smokes-20260721T042834Z` (item G evidence)
+- [x] Code execution (write + run Python) ✅ 2026-09-16 CLOSED SUPERSEDED (not completed) — Hermes not selected (HS-4 operator decision 2026-09-16)
+- [x] Memory persistence (MEMORY.md across sessions) ✅ 2026-09-16 CLOSED SUPERSEDED (not completed) — Hermes not selected (HS-4 operator decision 2026-09-16); the feature is rebuilt server-side as HS-4 P2
+- [x] Latency measurement (first-token, total) ✅ 2026-09-16 CLOSED SUPERSEDED (not completed) — Hermes not selected (HS-4 operator decision 2026-09-16)
+- [x] Compression trigger (long conversation, verify compaction works with local model) ✅ 2026-09-16 CLOSED SUPERSEDED (not completed) — Hermes not selected (HS-4 operator decision 2026-09-16); shell compaction is off by design, server-side folding is HS-4 P1
+- [x] Delegation (subagent spawns, uses same local endpoint) ✅ 2026-07-21 — `live:subagent` passed (2/2 children on the same single-slot endpoint) in `BULK-hermes-smokes-20260721T042834Z` (item G evidence)
 
 **Known issues to fix during validation**:
 1. Think token overhead: burns context + wall-clock on trivial turns
@@ -249,9 +251,9 @@ Single-user only for now. No auth on any endpoint. When multi-user is needed, ad
 ### Remaining Phase 2 Work
 
 - [x] Write Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands — ✅ 2026-04-08. Three SKILL.md files with YAML frontmatter in `scripts/hermes/skills/`. Mapping tables included.
-- [ ] Validate streaming compatibility with new override params (needs inference)
-- [ ] Test `x_disable_repl` end-to-end (needs inference)
-- [ ] Test `x_max_escalation` with full graph (depends on LangGraph migration)
+- [x] Validate streaming compatibility with new override params (needs inference) ✅ 2026-09-16 CLOSED HERE, MOVED (not completed) — shell-agnostic `/v1` check; carried to [`harness-selection-and-integration.md`](../active/harness-selection-and-integration.md) HS-4 P0.4 carry box
+- [x] Test `x_disable_repl` end-to-end (needs inference) ✅ 2026-09-16 CLOSED HERE, MOVED (not completed) — shell-agnostic `/v1` check; carried to [`harness-selection-and-integration.md`](../active/harness-selection-and-integration.md) HS-4 P0.4 carry box
+- [x] Test `x_max_escalation` with full graph (depends on LangGraph migration) ✅ 2026-09-16 CLOSED HERE, MOVED (not completed) — shell-agnostic `/v1` check; carried to [`harness-selection-and-integration.md`](../active/harness-selection-and-integration.md) HS-4 P0.4 carry box; full-graph enforcement is also covered by HS-4 P4 routing parity
 
 #### Skills Authoring Rubric (added 2026-04-24 from intake-450 deep-dive)
 
@@ -277,7 +279,7 @@ Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../..
 
 #### Phase 2+ Enhancement (added 2026-04-24 from intake-454 deep-dive)
 
-Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`user-facing-harness-index.md`](user-facing-harness-index.md) P2.6.
+Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`user-facing-harness-index.md`](../active/user-facing-harness-index.md) P2.6.
 
 - [x] **F — Re-express `x_*` overrides as a namespaced Hermes plugin bundle** (4–6 h, depends on D) — DONE 2026-07-06
   - Upstream Hermes plugin-command plumbing was repaired in `/mnt/raid0/llm/hermes-agent`: `PluginContext.register_command()` now registers `CommandDef` entries, tracks canonical command handlers/aliases, exposes `invoke_plugin_command()`, passes CLI/gateway session context into plugin handlers, displays command counts in `/plugins`, and invokes mutable `pre_llm_call` hooks from chat-completions request construction.
@@ -309,7 +311,7 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Diff the audit table from N against the current `OpenAIChatRequest` extension fields (`x_orchestrator_role`, `x_max_escalation`, `x_force_model`, `x_disable_repl`, `x_show_routing`)
   - Flag any client need that has no current override path. Triage each gap as: (a) add new `x_*` field, (b) document a workaround, (c) reject as out of scope
   - Output: gap list + decision per gap
-- [ ] **P — Reference non-Hermes client wiring** (~2 h, depends on O; **may need inference if validating live**)
+- [x] **P — Reference non-Hermes client wiring** ✅ 2026-09-16 CLOSED HERE — the wiring helper and bounded live stream were done (sub-boxes below); the remaining live `--send` validation moved to `harness-selection-and-integration.md` HS-4 P0.4 carry box (~2 h, depends on O; **may need inference if validating live**)
   - Pick one non-Hermes client from N (recommend bare-metal Python script first — fewest moving parts) and stand it up against `localhost:8000/v1/chat/completions`
   - Verify the same override semantics behave identically vs Hermes (force-model, escalation cap, REPL disable)
   - Document the wiring recipe in this handoff so other client types can follow the same pattern
@@ -320,12 +322,12 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - [x] Repair the reference-client `max_tokens` Namespace fixture regression. ✅ 2026-07-28 — the
     parser owns the supported `--max-tokens` request cap; the stale test fixture now models its
     default/override contract and verifies payload omission/inclusion. Root `82b0858a`; 7 passed.
-  - [ ] Run live `--send` validation in a quiet window and verify role override, force-model, escalation cap, REPL disable, routing metadata, and streaming behavior against the current `/v1/chat/completions` endpoint.
+  - [x] Run live `--send` validation in a quiet window and verify role override, force-model, escalation cap, REPL disable, routing metadata, and streaming behavior against the current `/v1/chat/completions` endpoint. ✅ 2026-09-16 CLOSED HERE, MOVED (not completed) — shell-agnostic `/v1` check; carried to [`harness-selection-and-integration.md`](../active/harness-selection-and-integration.md) HS-4 P0.4 carry box
 - [x] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note) — recorded in `## Pros` above as the client/orchestrator separation rule.
   - Decision rule to record explicitly: per-client UX (slash commands, prompts, conversation memory) lives in the **client**, not the orchestrator. The orchestrator exposes overrides; clients map their UX to override values. This is the same discipline as the Hermes slash-command → `x_*` mapping — generalized as a principle, not a one-off
   - Output: 1-paragraph statement appended to the handoff's `## Pros` section so future contributors see it during refactor decisions
 
-**Cross-reference**: this work generalizes the Hermes-specific Phase 2 routing API into a multi-client contract. Coordinates with the new [`internal-kb-rag.md`](internal-kb-rag.md) — a KB-RAG client (e.g., Explore-subagent) that wants to call the orchestrator with retrieved context will use the same `/v1/chat/completions` + `x_*` surface; if anything is missing for that pattern, capture it as a gap in O.
+**Cross-reference**: this work generalizes the Hermes-specific Phase 2 routing API into a multi-client contract. Coordinates with the new [`internal-kb-rag.md`](../active/internal-kb-rag.md) — a KB-RAG client (e.g., Explore-subagent) that wants to call the orchestrator with retrieved context will use the same `/v1/chat/completions` + `x_*` surface; if anything is missing for that pattern, capture it as a gap in O.
 
 ### Client Surface Audit — 2026-07-04 (N/O)
 
@@ -376,7 +378,7 @@ calls) and llama.cpp's own README (`json_schema` example). Before scoring a clie
    blocks a "Sufficient" call until the path is disabled by config or patched.
 
 Results for all five HS-4 candidates are in
-[`harness-selection-and-integration.md`](harness-selection-and-integration.md) under HS-1g.
+[`harness-selection-and-integration.md`](../active/harness-selection-and-integration.md) under HS-1g.
 **Hermes result:** only the main loop honours the EPYC plugin's `extra_body`. Compression, the
 iteration-limit summary, `flush_memories` and `delegate_task` children bypass it, so the
 2026-07-17 HS-1b "≈0 patch" call holds only with `compression.enabled:false` and `delegate_task`
@@ -534,7 +536,7 @@ Two patterns lifted from `strukto-ai/mirage` source audit. Apply as design refer
   - **Reported results**: none — protocol spec, no benchmarks.
   - **Delta from current approach**: today the outer-shell exposes a single chat completions surface; A2A would let us advertise each specialist role (coder / architect / worker / etc.) as a separately-discoverable Agent Card while the orchestrator still owns routing internally. Not a fork or runtime adoption — protocol-compliance work on whichever surface we expose externally.
   - **Action**: when Path A (external exposure) becomes load-bearing, evaluate A2A SDK (Python, in-tree at github.com/a2aproject/a2a-python) for the Agent-Card surface. Until then: tracking only. Pair with intake-145 (Agent Protocol) — the two are alternative agent-interop standards; choose at exposure time.
-  - **Internal vs external A2A split (2026-05-31)**: external A2A adapter for outer-shell external exposure remains **deferred**; *internal* A2A-style semantics (Interaction lifecycle abstraction, Agent Card-style skill contracts in `orchestration/interaction_skills.yaml`) tracked in [`internal-interaction-lifecycle.md`](internal-interaction-lifecycle.md). When Path A external exposure becomes load-bearing, use the internal lifecycle schema to preserve interaction semantics across the A2A boundary (so the external surface is a thin adapter rather than a parallel substrate).
+  - **Internal vs external A2A split (2026-05-31)**: external A2A adapter for outer-shell external exposure remains **deferred**; *internal* A2A-style semantics (Interaction lifecycle abstraction, Agent Card-style skill contracts in `orchestration/interaction_skills.yaml`) tracked in [`internal-interaction-lifecycle.md`](../active/internal-interaction-lifecycle.md). When Path A external exposure becomes load-bearing, use the internal lifecycle schema to preserve interaction semantics across the A2A boundary (so the external surface is a thin adapter rather than a parallel substrate).
 
 ## Research Intake Update — 2026-06-20
 
@@ -552,7 +554,7 @@ Extends the 2026-07-04 audit from "can a client *drive* the overrides" to
 spawning, tool loop) be made to **DEFER** to the orchestrator's routing /
 context-folding / escalation". Source-only audit of `/mnt/raid0/llm/hermes-agent`
 @ `v2026.3.23-44-g532a49f1`. **No inference, no build, no run.** Template =
-HS-1a OpenHands pre-audit in [`harness-selection-and-integration.md`](harness-selection-and-integration.md).
+HS-1a OpenHands pre-audit in [`harness-selection-and-integration.md`](../active/harness-selection-and-integration.md).
 
 **Orchestrator contract is BODY-based (verified).** `OpenAIChatRequest` exposes
 all five `x_*` overrides as JSON **body** fields

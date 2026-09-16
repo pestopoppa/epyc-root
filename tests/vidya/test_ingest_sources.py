@@ -109,6 +109,12 @@ def _review_f1(tmp: Path) -> Path:
     return tmp
 
 
+def _opencode_shell(tmp: Path) -> Path:
+    h = _helpers("test_opencode_shell_run_adapter")
+    h.write_sidecar(h.make_run(tmp / "runs"))
+    return tmp / "runs"
+
+
 def _memento(tmp: Path) -> Path:
     h = _helpers("test_memento_lora_adapter")
     row = copy.deepcopy(h._load_fixture())
@@ -164,6 +170,7 @@ BUILDERS = {
     "occ1": _occ1,
     "tale-budget": _tale_budget,
     "review-f1": _review_f1,
+    "opencode-shell": _opencode_shell,
     "memento-lora": _memento,
     "pareval": _pareval,
     "eval-tower-band": _band,

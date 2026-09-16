@@ -129,7 +129,7 @@ existing writers (unchanged):
 ## Cross-References
 
 - **Autopilot memory** (peer, distinct concern): [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) § Memory Architecture (episodic store + skill bank + strategy store).
-- **Hermes conversation logs** (peer, distinct concern): [`hermes-outer-shell.md`](hermes-outer-shell.md) § Two-Layer Memory Architecture.
+- **Hermes conversation logs** (peer, distinct concern): [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md) § Two-Layer Memory Architecture.
 - **Existing audit infra**: `scripts/utils/agent_log.sh` (writer) + `scripts/utils/agent_log_analyze.sh` (current analysis CLI — narrower scope than the unified service).
 - **Routing & optimization index**: `routing-and-optimization-index.md` § Cross-Cutting Concerns 5 ("Conversation Logs Feed All Three") — the unified service operationalizes that cross-cutting concern.
 

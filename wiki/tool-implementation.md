@@ -21,7 +21,7 @@ A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered con
 
 ### New Findings (2026-07-16 — harness cooperation is now part of the tool-surface contract)
 
-- **Tool-output compression still lives at the orchestrator boundary, but its end-to-end value now depends on the harness not competing with its own compaction layer.** The new harness-selection index makes the boundary explicit: candidate user-facing harnesses can run their own prompt-cache, compaction, and subagent-spawn logic, which can partially negate Orch-side tool-output compression unless they defer. That is an implementation concern because it changes how much of the compression win survives to the model. Sources: [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+- **Tool-output compression still lives at the orchestrator boundary, but its end-to-end value now depends on the harness not competing with its own compaction layer.** The new harness-selection index makes the boundary explicit: candidate user-facing harnesses can run their own prompt-cache, compaction, and subagent-spawn logic, which can partially negate Orch-side tool-output compression unless they defer. That is an implementation concern because it changes how much of the compression win survives to the model. Sources: [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
 - **The MCP wrapper makes compression a reusable tool surface, not just a hook-side experiment.** Phase 4 now has a direct MCP-tool wrapper path for compression, which means the implementation can be consumed by tool-aware harnesses as a first-class tool rather than only as a shell hook. That keeps the compression path compatible with an open harness that defers to the Orch's policy layer. Sources: [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md).
 
@@ -412,7 +412,7 @@ The deep-dive surfaced three patterns from `mdfs/docs/` that have value for EPYC
 ### Sources
 
 - [intake-508](https://github.com/Hmbown/DeepSeek-TUI) DeepSeek TUI (Rust)
-- [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — full pattern audit
+- [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) Research Intake Update 2026-04-30 — full pattern audit
 
 ## Cross-runtime SKILL.md installer pattern is the going default (2026-04-30)
 
@@ -431,7 +431,7 @@ Adopt the `/setup-X-skills` per-repo config-bootstrap shape when we wire `script
 
 - [intake-509](https://github.com/mattpocock/skills) Skills For Real Engineers
 - intake-450 — veniceai/skills (sibling cross-runtime SKILL.md authoring rubric)
-- [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — installer pattern adoption note
+- [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) Research Intake Update 2026-04-30 — installer pattern adoption note
 
 ## GitNexus CLI-only operational posture (2026-05-22)
 

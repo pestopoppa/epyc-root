@@ -118,7 +118,7 @@ The HS-1g column records the call-verb check. Its source is the matrix under HS-
   - `delegate_task` gated off.
   - A small plugin/core patch that routes the iteration-limit summary and `flush_memories` through the override lever.
   - The pending upstream pin bump (hermes-outer-shell P2.6).
-- **Evidence:** HS-1b, HS-1g (a correction: the "≈0 patch" call holds only with that gating) and `hermes-outer-shell.md` → Call-verb check.
+- **Evidence:** HS-1b, HS-1g (a correction: the "≈0 patch" call holds only with that gating) and `hermes-outer-shell.md` → Call-verb check (that handoff is now [closed](../../handoffs/completed/hermes-outer-shell.md); the check lives in [`client-surface-audit.md`](../reference/harness-candidates/client-surface-audit.md)).
 - **Integration cost:**
   - LOW to start: the plugin is already landed, and the code is in-language (Python).
   - The recurring cost is keeping a small patch alive on a fast-moving upstream.
