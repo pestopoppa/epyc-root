@@ -114,6 +114,12 @@ def as_record(shard: Path, row: dict) -> dict:
         "protocol_id": meas.get("protocol_id") or "",
         "reps": meas.get("reps"),
         "reps_basis": basis,
+        # AP-55: the infra regime the trial ran in and its comparability with the baseline
+        # reference, as RECORDED by the writer. Carried, never graded here: a NON_COMPARABLE
+        # trial is annotated in the reasons, and the ladder in claim_tuple stays the one rule.
+        # Empty on rows written before 2026-09-16 (never back-filled).
+        "infra_fingerprint": str(meas.get("infra_fingerprint") or ""),
+        "comparability": str(meas.get("comparability") or ""),
         "attestation": {
             "path": f"{ORCH_REL}/orchestration/{shard.name}",
             "sha256": att.get("sha256"),
@@ -138,6 +144,10 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
         # n counted what was attempted, not what scored. Stated so the number is not read as a
         # scored denominator later.
         reasons = [*reasons, f"n is the ATTEMPTED count ({rec['reps_basis']}), not the scored one"]
+    if rec["comparability"] and rec["comparability"] != "COMPARABLE":
+        # Stated, not graded: the delta was measured against a baseline from a different (or
+        # unverified) infra regime (AP-55).
+        reasons = [*reasons, f"infra comparability vs baseline: {rec['comparability']}"]
     return [
         make_frame(
             frame_type=FT_SOURCE,
@@ -162,7 +172,9 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                        "grade": {"Q": q, "T": t}, "source_id": source_id,
                        "protocol_id": rec["protocol_id"], "reps": rec["reps"],
                        "category": rec["category"],
-                       "metric_direction": rec["metric_direction"]},
+                       "metric_direction": rec["metric_direction"],
+                       "infra_fingerprint": rec["infra_fingerprint"],
+                       "comparability": rec["comparability"]},
             provenance={"evidence": f"evd_ap_{ident}", "about": claim_id, "method": ADAPTER_ID,
                         "grade_reasons": reasons, "reps_basis": rec["reps_basis"]},
             actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,

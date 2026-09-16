@@ -201,6 +201,32 @@ def test_posthook_blocked_run_projects_with_blockers_carried(tmp_path):
 
 # --- the locator rule ----------------------------------------------------------------------
 
+def test_foreign_process_gate_is_carried_not_graded(tmp_path):
+    """RTG-35: only stamps carrying llama_processes_foreign excluded other tenants."""
+    legacy = reader.project(reader.native_rows(
+        write_run(tmp_path, "legacy-run", stamp=CLEAN_STAMP))[0])
+    assert legacy.extra["foreign_process_gate"] == "absent"
+    assert "predates the foreign-process gate" in legacy.claim
+
+    gated_stamp = dict(CLEAN_STAMP)
+    gated_stamp["host_provenance"] = dict(
+        CLEAN_STAMP["host_provenance"], llama_processes_lineup=3, llama_processes_foreign=[])
+    gated = reader.project(reader.native_rows(
+        write_run(tmp_path, "gated-run", stamp=gated_stamp))[0])
+    assert gated.extra["foreign_process_gate"] == "applied"
+    assert "predates the foreign-process gate" not in gated.claim
+    # Carried, never graded: the gate field does not move the ladder.
+    assert ct.grade(gated)[:2] == ct.grade(legacy)[:2]
+
+
+def test_decision_grade_with_foreign_processes_is_producer_corruption():
+    block = dict(CLEAN_STAMP)
+    block["host_provenance"] = {"llama_processes_foreign": [{"pid": "99", "port": 18361}]}
+    assert any("foreign-process gate" in p for p in reader.validate_block(block))
+    block["host_provenance"] = {"llama_processes_foreign": "99"}
+    assert any("must be a list" in p for p in reader.validate_block(block))
+
+
 def test_multi_entry_run_is_exactly_one_claim(tmp_path):
     """Two candidate sets + per_sample rows in one run = ONE witness, not many."""
     run = write_run(
