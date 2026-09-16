@@ -95,6 +95,20 @@ def _occ1(tmp: Path) -> Path:
     return h.write_sidecar(h.make_run(tmp))
 
 
+def _tale_budget(tmp: Path) -> Path:
+    h = _helpers("test_tale_budget_adapter")
+    h.emit(h.make_run(tmp))
+    return tmp
+
+
+def _review_f1(tmp: Path) -> Path:
+    h = _helpers("test_review_f1_adapter")
+    summary = h.write(tmp, h.summary())
+    h.capture.write_belief_measurements(summary, run_id="ev13b-ingest", producer="test",
+                                        emitted_at="2026-09-16T10:00:00Z")
+    return tmp
+
+
 def _memento(tmp: Path) -> Path:
     h = _helpers("test_memento_lora_adapter")
     row = copy.deepcopy(h._load_fixture())
@@ -144,6 +158,8 @@ BUILDERS = {
     "tulving": _tulving,
     "chat-template-ab": _chat_template,
     "occ1": _occ1,
+    "tale-budget": _tale_budget,
+    "review-f1": _review_f1,
     "memento-lora": _memento,
     "pareval": _pareval,
     "eval-tower-band": _band,
@@ -314,3 +330,42 @@ def test_limit_is_a_global_row_limit(tmp_path, capsys):
 def test_every_dispatched_adapter_declares_its_authority():
     for src in ingest_sources.SOURCES.values():
         assert getattr(src.load(), "AUTHORITY", None), src.name
+
+
+def test_tale_budget_pre_hook_results_are_declined_and_foreign_sidecars_too(tmp_path, capsys):
+    """A PRB-T4 dir with a pre-hook results file (no sidecar) projects nothing, and a review-F1
+    sidecar sitting in the same dir is declined by the TALE reader rather than coerced."""
+    t = _helpers("test_tale_budget_adapter")
+    r = _helpers("test_review_f1_adapter")
+    t.make_run(tmp_path)  # results + meta, never captured
+    stray = tmp_path / "stray.beliefs.jsonl"
+    stray.write_text("")
+    summary = r.write(tmp_path, r.summary())
+    r.capture.write_belief_measurements(summary, run_id="x", producer="t")
+    rc, ledger = _cli(tmp_path, "tale-budget", tmp_path)
+    assert rc == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["rows_projected"] == 0 and report["refused"] == []
+    assert len(report["declined"]) == 2
+    assert not ledger.exists() or len(Ledger(ledger).read_all()) == 0
+
+
+def test_review_f1_mutated_summary_still_ingests_as_an_unverified_observation(tmp_path, capsys):
+    r = _helpers("test_review_f1_adapter")
+    summary = r.write(tmp_path, r.summary())
+    r.capture.write_belief_measurements(summary, run_id="x", producer="t",
+                                        emitted_at="2026-09-16T10:00:00Z")
+    summary.write_text(summary.read_text() + " ")
+    (tmp_path / "l").mkdir()
+    rc, ledger = _cli(tmp_path / "l", "review-f1", tmp_path)
+    assert rc == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["rows_projected"] == 3
+    supports = [f for f in (x.frame for x in Ledger(ledger).read_all()) if f["frame_type"] == SUPPORT]
+    assert len(supports) == 3
+    assert {(f["assertion"]["grade"]["Q"], f["assertion"]["grade"]["T"]) for f in supports} == {
+        ("Judged", "Located")}
+    natives = ingest_sources.SOURCES["review-f1"].load().rows_for_summary(summary)
+    assert natives and all(
+        ingest_sources.SOURCES["review-f1"].load().project(n).attestation_present is False
+        for n in natives)
