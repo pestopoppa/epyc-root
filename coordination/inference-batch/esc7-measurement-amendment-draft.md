@@ -6,6 +6,21 @@ applies §2 by hand (human-amendment-only). Prepared 2026-07-21 per the standing
 
 ## 1. Evidence summary (code columns FILLED 2026-07-22 from EV-4c; math columns pending overnight E7c rerun)
 
+> **CAVEAT 2026-09-16: CONTAMINATED by speculative decoding (decision uses SUSPENDED pending EV-CONF-2).**
+> All four ECE/AUROC columns below were captured on `draft-mtp` servers. llama.cpp v7/v9 reports
+> `prob=1.0` with an empty top-k for draft-accepted tokens, so the completion-probability geomean averages
+> placeholders.
+>
+> - **E7c math is saturated**: 1528/1684 and 1485/1628 rows sit at confidence ≥ 0.999999 (observation).
+>   Its ECE/AUROC are INVALID, and the "length confounding" reading below is superseded.
+> - **EV-4c code is not saturated** (0/820, 2/817; observation). It is still contaminated by an unmeasured
+>   amount, so it is demoted-to-prior. The "first decision-grade calibration rows" and PASS readings below
+>   are withdrawn until a spec-off re-baseline.
+>
+> The P-CAL suspension is `scripts/operator/ratify_pcal_specdec_contamination_20260916.sh` (operator
+> decision 2026-09-16, option a). It takes effect in Annex Q when the operator applies it. Evidence:
+> epyc-orchestrator `b98dee18` and `f2e9ee07`. The values below are kept unedited as history.
+
 **Run provenance**: the code columns are **EV-4c** (`eval_tower_calibration_baseline_HE-R+/{frontdoor,worker_general}_ev4c/`),
 superseding EV-4b whose calibration was void (chat-path n_probs never reached llama — fixed `83f53382`) —
 EV-4b remains the accuracy-only record and reproduced EV-4 exactly. Both EV-4c arms: decision_grade=True,
