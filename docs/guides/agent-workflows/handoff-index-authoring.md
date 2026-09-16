@@ -23,6 +23,11 @@ Exactly one table shape, in every domain index:
 - **`Handoff`** — exactly one markdown link to the owning handoff.
 - **`Next action`** — one imperative line, **≤ 140 characters**. Seed it from the handoff's own first
   open dispatchable task. **Not** status, **not** history, **not** evidence.
+  **Re-pointing it to a different target? Put the reason in the commit message, never in the row:**
+  `Repoint-Reason: INF-06: <why the previous target was abandoned>` (one line per row).
+  `scripts/handoffs/build_handoff_timeline.py` records every re-point (old text, new text, reason) in
+  `data/handoff_timeline.json` → `next_action_repoints`, so the next session does not re-walk a
+  rejected path. Without the line, the reason falls back to the commit subject, which is weaker.
 - **`Deps`** — bare IDs, comma-separated, or `—`. These are the graph edges; a renderer needs nothing else.
 
 **Escape any literal `|` inside a cell as `\|`.** The checker splits on unescaped pipes.
