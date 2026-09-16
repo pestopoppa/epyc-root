@@ -36,6 +36,18 @@
 # If the manifest cannot be read, the pre-2026-09-16 behaviour applies
 # (cwd=EPYC_ROOT) and a loud warning is logged.
 #
+# READ-ONLY VIEW (2026-09-16, dashboard fix A). A lane served by the hub stops
+# advancing when the lane does (the AutoKernel lane sat 141 commits behind), so the
+# manifest now points the hub at a VIEW: a standalone clone (never a linked
+# worktree) carrying the marker file `.epyc-view-readonly`, detached at
+# origin/main. When the hub source is such a view, this supervisor runs the
+# sibling scripts/dashboard/refresh_hub_view.sh every HUB_VIEW_REFRESH_INTERVAL_S
+# (fetch + checkout --detach --force origin/main + regenerate the untracked index
+# graph/state and handoff timeline). Deploy-sync is skipped for a view (the
+# refresher already moves the whole tree). checkout rewrites only changed files,
+# so the stale-source check restarts the hub on a dashboard code change and not
+# on a handoff-only refresh.
+#
 # ---------------------------------------------------------------------------
 # ADOPTION (short note)
 # ---------------------------------------------------------------------------
@@ -62,7 +74,9 @@
 #
 #   Tunables (env overrides): HUB_PORT HUB_HOST HEALTH_PATH POLL_INTERVAL
 #   MAX_BACKOFF HEALTH_TIMEOUT STARTUP_TIMEOUT HUB_PYTHON EPYC_ROOT
-#   HUB_CANONICAL_ROOT HUB_LAUNCH_MANIFEST HUB_SERVICE_NAME.
+#   HUB_CANONICAL_ROOT HUB_LAUNCH_MANIFEST HUB_SERVICE_NAME
+#   HUB_VIEW_REFRESH_ENABLED HUB_VIEW_REFRESH_INTERVAL_S HUB_VIEW_MARKER
+#   HUB_VIEW_REFRESHER.
 # =============================================================================
 set -euo pipefail
 
@@ -91,6 +105,14 @@ HEALTH_CONFIRM_DELAY_S="${HEALTH_CONFIRM_DELAY_S:-3}"
 DEPLOY_SYNC_INTERVAL_S="${DEPLOY_SYNC_INTERVAL_S:-300}"
 # Set to 0 to disable the sync entirely (the watchdog keeps working without it).
 DEPLOY_SYNC_ENABLED="${DEPLOY_SYNC_ENABLED:-1}"
+# Read-only view refresh (see header). Runs only when the hub source carries the
+# marker and is not a linked worktree. Rate-limited like deploy-sync.
+HUB_VIEW_REFRESH_ENABLED="${HUB_VIEW_REFRESH_ENABLED:-1}"
+HUB_VIEW_REFRESH_INTERVAL_S="${HUB_VIEW_REFRESH_INTERVAL_S:-180}"
+HUB_VIEW_MARKER="${HUB_VIEW_MARKER:-.epyc-view-readonly}"
+# The supervisor's OWN sibling copy, never the view's: the refresher rewrites the
+# view's files, and bash reads a running script incrementally.
+HUB_VIEW_REFRESHER="${HUB_VIEW_REFRESHER:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/refresh_hub_view.sh}"
 
 LOG_DIR="${EPYC_ROOT}/logs"
 SUP_LOG="${LOG_DIR}/hub_supervisor.log"       # this supervisor's own log
@@ -280,6 +302,13 @@ is_linked_worktree() {
   gd="$(printf '%s\n' "${dirs}" | sed -n 1p)"
   cdir="$(printf '%s\n' "${dirs}" | sed -n 2p)"
   [[ -n "${gd}" && -n "${cdir}" && "${gd}" != "${cdir}" ]]
+}
+
+# 0 iff $1 is a read-only hub VIEW: carries the marker and is NOT a linked
+# worktree (a lane is never a view, whatever files it contains).
+is_hub_view() {
+  [[ -n "${1:-}" && -f "$1/${HUB_VIEW_MARKER}" ]] || return 1
+  ! is_linked_worktree "$1"
 }
 
 # --------------------------------------------------------------------------- #
@@ -519,6 +548,10 @@ sync_dashboard_from_origin() {
     log "deploy-sync: SKIPPED — hub source ${tree} is a linked worktree (lane-owned); stale-source check only"
     return 0
   fi
+  if is_hub_view "${tree}"; then
+    # The view refresher moves the WHOLE tree to origin/main; nothing to copy.
+    return 0
+  fi
 
   git -C "${tree}" fetch origin --quiet >/dev/null 2>&1 || {
     log "deploy-sync: fetch failed (offline?) — leaving the served tree alone"
@@ -588,6 +621,40 @@ sync_dashboard_from_origin() {
   return 0
 }
 
+# --------------------------------------------------------------------------- #
+# Read-only view refresh — advance the served VIEW to origin/main
+# --------------------------------------------------------------------------- #
+HUB_VIEW_REFRESH_STATE="${LOG_DIR}/hub_supervisor.view_refresh"
+
+view_refresh_age_s() {
+  local last now
+  last="$(cat "${HUB_VIEW_REFRESH_STATE}" 2>/dev/null || echo)"
+  [[ "${last}" =~ ^[0-9]+$ ]] || { echo 999999; return 0; }
+  now="$(date +%s)"
+  echo $(( now - last ))
+}
+
+# Returns 0 always: a refresh failure must never take the watchdog down. It only
+# ever acts on a marked, non-linked hub source, so a lane or the canonical root is
+# never force-checked-out.
+refresh_hub_view() {
+  [[ "${HUB_VIEW_REFRESH_ENABLED}" == "1" ]] || return 0
+  resolve_hub_spec
+  is_hub_view "${HUB_SRC}" || return 0
+  (( $(view_refresh_age_s) >= HUB_VIEW_REFRESH_INTERVAL_S )) || return 0
+  date +%s > "${HUB_VIEW_REFRESH_STATE}" 2>/dev/null || true
+  if [[ ! -x "${HUB_VIEW_REFRESHER}" ]]; then
+    log "view-refresh: refresher ${HUB_VIEW_REFRESHER} missing or not executable"
+    return 0
+  fi
+  local rc=0
+  HUB_VIEW_LOG="$([[ -d "${LOG_DIR}" ]] && echo "${SUP_LOG}" || echo "")" \
+  HUB_VIEW_MARKER="${HUB_VIEW_MARKER}" HUB_VIEW_PYTHON="${HUB_PYTHON}" \
+    "${HUB_VIEW_REFRESHER}" "${HUB_SRC}" </dev/null 9>&- || rc=$?
+  (( rc == 0 )) || log "view-refresh: refresher exited ${rc} for ${HUB_SRC} (hub keeps serving the last good view)"
+  return 0
+}
+
 check_hub_stale_source() {
   local src rc=0
   # Resolve in THIS shell: the mtime probe runs in command substitutions, and a
@@ -623,8 +690,9 @@ cmd_once() {
   acquire_lock
   if ! hub_down_confirmed; then
     reconcile_hub_pid
-    # Same healthy-path sequence as cmd_loop (sync, then stale-source check), so a
-    # cron `once` covers the whole supervision surface while the daemon is dead.
+    # Same healthy-path sequence as cmd_loop (view refresh, sync, then stale-source
+    # check), so a cron `once` covers the whole surface while the daemon is dead.
+    refresh_hub_view
     sync_dashboard_from_origin
     # A HEALTHY hub can still be the wrong hub.
     check_hub_stale_source || return 1
@@ -649,8 +717,9 @@ cmd_loop() {
       # the long-lived supervisor actually uses. (2026-09-16: `cmd_once` now runs
       # the same sequence — before that it lacked the sync.)
       #
-      # Order matters: sync first so the stale-source check sees the new mtimes on
-      # the same pass and restarts once, rather than noticing them a cycle later.
+      # Order matters: refresh/sync first so the stale-source check sees the new
+      # mtimes on the same pass and restarts once, rather than a cycle later.
+      refresh_hub_view
       sync_dashboard_from_origin
       # A HEALTHY hub can still be the wrong hub.
       check_hub_stale_source || true   # failure: next poll takes the unhealthy path
@@ -686,8 +755,13 @@ cmd_plan() {
   echo "env         : ${HUB_M_ENV[*]:-<none>}"
   if is_linked_worktree "${HUB_SRC}"; then
     echo "deploy-sync : SKIP (hub source is a linked worktree)"
+    echo "view-refresh: no (linked worktree is never a view)"
+  elif is_hub_view "${HUB_SRC}"; then
+    echo "deploy-sync : SKIP (hub source is a read-only view; the refresher owns it)"
+    echo "view-refresh: enabled=${HUB_VIEW_REFRESH_ENABLED} every ${HUB_VIEW_REFRESH_INTERVAL_S}s via ${HUB_VIEW_REFRESHER} (view HEAD $(git -C "${HUB_SRC}" rev-parse --short HEAD 2>/dev/null || echo '?'))"
   else
     echo "deploy-sync : enabled=${DEPLOY_SYNC_ENABLED} (primary checkout or non-git tree)"
+    echo "view-refresh: no (no ${HUB_VIEW_MARKER} marker)"
   fi
   live="$(hub_pids)"; live="${live%% *}"
   if [[ -n "${live}" ]]; then
@@ -718,7 +792,7 @@ hub_supervisor.sh — userspace watchdog for the :${HUB_PORT} dashboard hub
 
 Usage: hub_supervisor.sh [loop|once|status|plan|help]
   loop    (default) supervise forever: poll /health, restart on failure w/ backoff
-  once    one pass of loop: restart if down (two probes), else sync + stale check
+  once    one pass of loop: restart if down (two probes), else view refresh + sync + stale check
   status  print hub + supervisor liveness and exit
   plan    print the manifest-resolved launch spec and sync/stale verdicts (read-only)
   help    this message

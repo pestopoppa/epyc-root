@@ -299,6 +299,29 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
          "another supervisor already holds";
        - `fleet_watch.log` shows a fresh "fleet_watch started" line within 5 minutes.
     8. Tick this parent row and FW-3.
+  - **DASHBOARD FIX A — the hub serves a read-only origin/main VIEW (2026-09-16, `sub-hubview`;
+    operator-approved).** This supersedes step 4 above for the hub source. The lane that
+    `f5476148` served (`autokernel-unified-20260908`) was 141 commits behind origin/main, so pushed
+    handoff progress never reached :8100. The lane has no commits that main lacks, only
+    uncommitted WIP, which the operator accepts will no longer be served.
+    - **View:** `/mnt/raid0/llm/views/epyc-root-main`. It is a standalone `--reference` clone, never a
+      linked worktree, detached at origin/main. It carries the marker `.epyc-view-readonly`, and
+      nobody else writes to it.
+    - **Refresher:** `scripts/dashboard/refresh_hub_view.sh` (flock, marker-gated). It runs `fetch`,
+      then `checkout --detach --force origin/main`. It regenerates the gitignored
+      `.index-state.json`, `.index-graph.json` and `data/handoff_timeline.json`, then reverts
+      index_state's edit to the tracked master index.
+    - **Supervisor:** `hub_supervisor.sh` runs the refresher every `HUB_VIEW_REFRESH_INTERVAL_S` (180s)
+      from both `loop` and `once`. It does so only when the manifest hub source is a marked,
+      non-linked view. Deploy-sync is skipped for a view. The marker `HUB_SUPERVISOR_MANIFEST_LAUNCH_V1`
+      is kept.
+    - **Restarts:** checkout rewrites only changed files, so the stale-source check restarts the hub
+      on a dashboard code change and never on a handoff-only refresh. Test:
+      `scripts/dashboard/tests/test_hub_view_refresh.sh`.
+    - **Manifest:** orchestrator branch `sub/hubview-orch-20260916` changes `handoff_dashboard`
+      cwd/pythonpath to `{llm_root}/views/epyc-root-main`. The store env is unchanged:
+      `aku12a-glm53-five-loop-store` was re-verified live at 14:11, with no STOP.
+    - **Deploy sequence:** `progress/2026-09/2026-09-16-sub-hubview.md`.
   - [x] **Timeline artifact lags lane-worktree commits.** ✅ 2026-08-24 — `install_timeline_hook.sh`
     regen body now resolves the PRIMARY worktree (`git worktree list --porcelain` first entry;
     verified lanes resolve to `/mnt/raid0/llm/epyc-root`, same inode as `/workspace`) instead of
