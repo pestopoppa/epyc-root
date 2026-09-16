@@ -17,7 +17,11 @@ cd "$(dirname "$0")/../../.." || exit 1
 SUP=scripts/dashboard/hub_supervisor.sh
 TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
 mkdir -p "$TMP/dashboard"
-EPYC_ROOT="$TMP"
+# Since 2026-09-16 the mtimes come from the HUB SOURCE (manifest cwd), not
+# EPYC_ROOT; the spec is already "resolved" here.
+EPYC_ROOT="$TMP/home-not-the-source"
+HUB_SRC="$TMP"
+resolve_hub_spec() { :; }
 STALE_SRC_SKEW_S=5
 
 eval "$(sed -n '/^hub_newest_source_mtime()/,/^}/p;/^hub_source_is_newer()/,/^}/p' "$SUP")"
@@ -39,6 +43,10 @@ touch -d '2020-01-01' "$TMP/dashboard/server.py"
 rc=0; hub_source_is_newer || rc=$?; chk "source older than hub -> current" "$rc" 1
 touch -d '+1 hour' "$TMP/dashboard/server.py"
 rc=0; hub_source_is_newer || rc=$?; chk "source newer than hub -> STALE" "$rc" 0
+mkdir -p "$TMP/home-not-the-source/dashboard"
+touch -d '+2 hour' "$TMP/home-not-the-source/dashboard/server.py"
+touch -d '2020-01-01' "$TMP/dashboard/server.py"
+rc=0; hub_source_is_newer || rc=$?; chk "newer file in EPYC_ROOT only -> still current (hub source rules)" "$rc" 1
 
 echo "  ---- $pass passed, $fail failed"
 [ "$fail" -eq 0 ]

@@ -1562,13 +1562,14 @@ class TransportPlaneTest(unittest.TestCase):
 # 7. A supervised restart must import the checkout the supervisor names
 # --------------------------------------------------------------------------- #
 class SupervisorCheckoutIdentityTest(unittest.TestCase):
-    def test_start_hub_changes_to_epyc_root_before_python_imports(self):
+    def test_start_hub_changes_to_manifest_cwd_before_python_imports(self):
         """PYTHONPATH does not outrank ``sys.path[0]`` for ``python -m``.
 
         Without the explicit ``cd``, a supervisor launched from a stale shared
-        checkout logs ``cwd=$EPYC_ROOT`` while importing ``dashboard.server``
-        from its actual launch directory.  That made a healthy restart keep
-        serving the pre-deployment selector.
+        checkout logs one cwd while importing ``dashboard.server`` from its
+        actual launch directory.  That made a healthy restart keep serving the
+        pre-deployment selector.  Since 2026-09-16 the cwd and argv come from the
+        launch manifest (``HUB_M_CWD`` / ``HUB_M_ARGV``), not from EPYC_ROOT.
         """
         source = (Path(__file__).parents[1]
                   / "scripts/dashboard/hub_supervisor.sh").read_text()
@@ -1577,7 +1578,7 @@ class SupervisorCheckoutIdentityTest(unittest.TestCase):
         launch = source[start:record]
         self.assertRegex(
             launch,
-            r'cd "\$\{EPYC_ROOT\}"[\s\S]*setsid "\$\{HUB_PYTHON\}" -m dashboard\.server',
+            r'cd "\$\{HUB_M_CWD\}"[\s\S]*setsid "\$\{HUB_M_ARGV\[@\]\}"',
         )
 
     def test_hub_does_not_inherit_the_supervisor_lock(self):
@@ -1589,7 +1590,7 @@ class SupervisorCheckoutIdentityTest(unittest.TestCase):
         launch = source[start:record]
         self.assertRegex(
             launch,
-            r'setsid "\$\{HUB_PYTHON\}"[\s\S]*9>&-\s*&',
+            r'setsid "\$\{HUB_M_ARGV\[@\]\}"[\s\S]*9>&-\s*&',
         )
 
     def test_documented_daemon_launch_creates_a_new_session(self):
