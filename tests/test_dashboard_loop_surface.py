@@ -23,11 +23,13 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 import json
+import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 
 REPO = Path(__file__).resolve().parents[1]
@@ -164,7 +166,9 @@ class _Fixture(unittest.TestCase):
         import tempfile
         self._tmp = tempfile.mkdtemp(prefix="loop-status-fixture-")
         self._prior = os.environ.get(loop_status.STORE_ROOT_ENV)
+        self._prior_pointer = os.environ.get(loop_status.CURRENT_SERIAL_RUN_ENV)
         os.environ[loop_status.STORE_ROOT_ENV] = self._tmp
+        os.environ[loop_status.CURRENT_SERIAL_RUN_ENV] = str(Path(self._tmp) / "no-current-run.json")
         self.root = Path(self._tmp)
         self.target = self.root / loop_status.STATUS_FILENAME
         # The watchdog's memory is process-global; a watermark left by another
@@ -179,6 +183,10 @@ class _Fixture(unittest.TestCase):
             os.environ.pop(loop_status.STORE_ROOT_ENV, None)
         else:
             os.environ[loop_status.STORE_ROOT_ENV] = self._prior
+        if self._prior_pointer is None:
+            os.environ.pop(loop_status.CURRENT_SERIAL_RUN_ENV, None)
+        else:
+            os.environ[loop_status.CURRENT_SERIAL_RUN_ENV] = self._prior_pointer
         shutil.rmtree(self._tmp, ignore_errors=True)
 
     def write(self, content) -> None:
@@ -188,6 +196,69 @@ class _Fixture(unittest.TestCase):
 
     def absent(self) -> None:
         self.target.unlink(missing_ok=True)
+
+
+class CurrentSerialRunPointer(unittest.TestCase):
+    def test_pointer_overrides_stale_hub_environment_per_request(self):
+        with tempfile.TemporaryDirectory(prefix="loop-pointer-") as tmp:
+            base = Path(tmp)
+            old = base / "old"
+            latest = base / "latest"
+            old.mkdir()
+            latest.mkdir()
+            (old / loop_status.STATUS_FILENAME).write_text(
+                json.dumps(body(age_s=9000)), encoding="utf-8")
+            failed = body(age_s=9000, state="failed")
+            (latest / loop_status.STATUS_FILENAME).write_text(
+                json.dumps(failed), encoding="utf-8")
+            pointer = base / "current-serial-run.json"
+            pointer.write_text(json.dumps({
+                "schema": loop_status.CURRENT_SERIAL_RUN_SCHEMA,
+                "state_dir": str(latest),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "run_id": "new-run",
+            }), encoding="utf-8")
+            prior_root = os.environ.get(loop_status.STORE_ROOT_ENV)
+            prior_pointer = os.environ.get(loop_status.CURRENT_SERIAL_RUN_ENV)
+            prior_trusted = os.environ.get(loop_status.CURRENT_SERIAL_RUN_TRUSTED_ROOT_ENV)
+            try:
+                os.environ[loop_status.STORE_ROOT_ENV] = str(old)
+                os.environ[loop_status.CURRENT_SERIAL_RUN_ENV] = str(pointer)
+                os.environ[loop_status.CURRENT_SERIAL_RUN_TRUSTED_ROOT_ENV] = str(base)
+                selected, provenance = loop_status._selected_live_root()
+                self.assertEqual(selected, latest)
+                self.assertEqual(provenance["kind"], "current_serial_run_pointer")
+                pointer.unlink()
+                self.assertEqual(loop_status._selected_live_root()[0], old)
+            finally:
+                if prior_root is None:
+                    os.environ.pop(loop_status.STORE_ROOT_ENV, None)
+                else:
+                    os.environ[loop_status.STORE_ROOT_ENV] = prior_root
+                if prior_pointer is None:
+                    os.environ.pop(loop_status.CURRENT_SERIAL_RUN_ENV, None)
+                else:
+                    os.environ[loop_status.CURRENT_SERIAL_RUN_ENV] = prior_pointer
+                if prior_trusted is None:
+                    os.environ.pop(loop_status.CURRENT_SERIAL_RUN_TRUSTED_ROOT_ENV, None)
+                else:
+                    os.environ[loop_status.CURRENT_SERIAL_RUN_TRUSTED_ROOT_ENV] = prior_trusted
+
+    def test_malformed_pointer_does_not_masquerade_as_a_run(self):
+        with tempfile.TemporaryDirectory(prefix="loop-pointer-") as tmp:
+            pointer = Path(tmp) / "current-serial-run.json"
+            pointer.write_text('{"schema":"wrong","state_dir":"/tmp"}', encoding="utf-8")
+            prior = os.environ.get(loop_status.CURRENT_SERIAL_RUN_ENV)
+            try:
+                os.environ[loop_status.CURRENT_SERIAL_RUN_ENV] = str(pointer)
+                selected, provenance = loop_status._selected_live_root()
+                self.assertEqual(selected, loop_status.store_root())
+                self.assertIn("pointer_error", provenance)
+            finally:
+                if prior is None:
+                    os.environ.pop(loop_status.CURRENT_SERIAL_RUN_ENV, None)
+                else:
+                    os.environ[loop_status.CURRENT_SERIAL_RUN_ENV] = prior
 
 
 # --------------------------------------------------------------------------- #
