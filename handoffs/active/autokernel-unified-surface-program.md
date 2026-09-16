@@ -3259,7 +3259,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     ✅ 2026-09-09 — missing/stale/legacy magnitudes remain labelled history; membership/cadence remain
     visible. Stale threshold signals are producer-reported/unverified, not fresh warrant. Main's Node
     DOM harness covers these combinations (69 tests, 5 subtests); this is not a browser or live-soak test.
-  - [ ] **AKU-09l — follow the current serial run, not a stale hub environment pin**:
+  - [x] **AKU-09l — follow the current serial run, not a stale hub environment pin**:
     the serial supervisor publishes a durable current-run pointer at startup and terminal, guarded
     against an older run overwriting a newer selection. The hub validates and follows that pointer
     per request, retaining `AUTOKERNEL_LOOP_STORE_ROOT` only as a legacy fallback; canonical champion
@@ -3271,6 +3271,15 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       watchdog restarted the hub at 10:28:33 UTC, and live `/api/loop` now names v14's
       terminal `failed` report rather than v12's stale `running` report. The 75-test dashboard
       suite and 25 focused post-guard tests passed. No loop relaunch or benchmark was performed.
+    - [x] **AKU-09l live rollover and page rendering** (2026-09-16): the deployed
+      `/api/loop` followed successive v15, v16 and v17 state directories through the
+      durable pointer; v16's terminal `complete` did not masquerade as a stale
+      running report, and v17's active child stage is fresh and exact-joined.
+      The page JavaScript DOM harness rendered the live v17 API response without
+      an exception and named its state directory, target and child evidence.
+      Headline stage now reflects the joined child's profile/A/B stage rather
+      than the router's generic step (`6e85d3b5`); canonical champion and
+      knowledge readers remain on their original root.
   - [x] **AKU-09c — existing hub consumes coherent management-v1 snapshots and direct controls**:
     explicit campaign/config selection, closed snapshot/ACK validation, monotonic stream fencing,
     separate producer/activity/science clocks and independently dated evidence cards.
