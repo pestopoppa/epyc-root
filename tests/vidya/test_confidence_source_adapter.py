@@ -162,6 +162,27 @@ def test_spec_off_arm_contract_refuses(tmp_path, kw, match):
     assert not capture.sidecar_path(w["report"]).exists()
 
 
+def test_missing_slots_declaration_with_clean_trace_is_unknown_not_off(tmp_path):
+    # /slots declared nothing and no placeholders were seen: absence of evidence is not "off".
+    side = tmp_path / "q.jsonl"
+    _sidecar(side, "b", 10)
+    report = _report(side, n=10, placeholders=0)
+    state, evidence = capture.resolve_spec_state(report, [None])
+    assert state == "unknown"
+    assert "slots.speculative per segment=[None]" in evidence
+    # a mixed declaration (one segment silent) is not "off" either
+    assert capture.resolve_spec_state(report, [False, None])[0] == "unknown"
+    # the full-evidence case still resolves off
+    assert capture.resolve_spec_state(report, [False])[0] == "off"
+
+
+def test_spec_off_arm_with_missing_declaration_is_refused(tmp_path):
+    w = _world(tmp_path, declared=None)
+    with pytest.raises(capture.CaptureError, match="must resolve to spec 'off', not 'unknown'"):
+        _write(w)
+    assert not capture.sidecar_path(w["report"]).exists()
+
+
 def test_mtp_arm_that_never_speculated_is_refused(tmp_path):
     w = _world(tmp_path, arm="B-mtp", placeholders=0, declared=False)
     with pytest.raises(capture.CaptureError, match="must resolve to spec 'on'"):

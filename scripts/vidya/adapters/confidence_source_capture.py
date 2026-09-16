@@ -352,6 +352,10 @@ def resolve_spec_state(report: Mapping[str, Any], declared: list[Any]) -> tuple[
                            "the identity does not describe the server that produced these rows")
     if with_ph > 0 or declared_on:
         return "on", evidence
+    if not declared_off:
+        # A clean placeholder census alone never proves spec off: the server must also have
+        # declared speculative=false on every segment. A missing declaration is unknown.
+        return "unknown", evidence
     if with_trace == 0 or with_trace < n_scored:
         return "unknown", evidence
     return "off", evidence
