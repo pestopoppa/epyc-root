@@ -674,7 +674,7 @@ the gate's home; promoting it to policy grammar would be an operator action, not
 
 ### The standing budget-matching gap on the harness-vs-weights axis (`intake-1339`)
 
-Three papers now sit on the harness-versus-weights axis — Harness-R1 (`intake-1323`),
+Three papers now sit on the harness-versus-weights axis — Harness-R1 (`intake-1323#record`),
 `intake-1339`'s source, and the arXiv:2607.12227 critique carried via `intake-921` — and **none of
 them is budget-matched**. `intake-1339`'s source indicts prior work *twice* for hiding
 harness-design cost and then prices only its own training side (~1,800 H200 GPU-hours).

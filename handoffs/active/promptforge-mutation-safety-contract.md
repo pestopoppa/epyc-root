@@ -25,7 +25,7 @@ so this is a **new active stub, not a reopen**.
 - [x] **MHS-1 — Typed return-effect contract.** Constrain what a mutation may DO (a closed per-site
       effect enum, host-normalized and truncated), not only which FILES it may touch. Reference
       implementation: Harness-R1 `code_runner.py:31-34` + `_normalize_hook_result`, ~50 lines.
-      *Highest value, cheapest.* `intake-1323#00`. Zero compute. ✅ 2026-09-14 — `MutationEffect`
+      *Highest value, cheapest.* `intake-1323#record` (dive actionable D0). Zero compute. ✅ 2026-09-14 — `MutationEffect`
       (`inert|constrain|expand|replace|unsafe|unknown`) with total `normalize()` (aliases in, unrecognised ⇒
       `UNKNOWN`, tokens truncated at 32 chars, reasons at 240); `CodeMutation.effect`/`.effect_reason`; both
       `apply_code_mutation*()` refuse `UNSAFE` and report `effect`. CONSTRAIN/REPLACE derived mechanically
@@ -40,7 +40,7 @@ so this is a **new active stub, not a reopen**.
       dunder/underscore `Name` + `Attribute` rejection over `new_file` proposals, modelled on
       `code_runner.py:64-103` and `:170-176`, so inertness is **compile-time, not a promise**. MH-9's
       own row already anticipated this ("keep edit-only allowlist until a stronger isolation story
-      exists") — this IS that story. `intake-1323#01`. Zero compute. **Depends on MHS-1** (the effect
+      exists") — this IS that story. `intake-1323#record` (dive actionable D1). Zero compute. **Depends on MHS-1** (the effect
       enum is the denylist's contract). ✅ 2026-09-14 — the repo-write + in-process `importlib` step
       (`origin/main` `prompt_forge.py:1149`/`:1157`) is GONE; validation is static-only
       (`screen_static_safety`), with the ratified strict node denylist + underscore/dunder rejection for
@@ -56,7 +56,7 @@ so this is a **new active stub, not a reopen**.
       `FORBIDDEN_TEXT_PATTERNS` (`harness_r1_patch.py:233-238`) rejects **UNDER**-generalization (a
       patch naming a specific eval task id / sample index / item id). We have **no** guard against a
       mutation memorising the eval set by naming its instances. Add an anti-leakage pattern set over
-      accepted mutation text keyed to our suite/task identifiers. `intake-1323#02`. Zero compute.
+      accepted mutation text keyed to our suite/task identifiers. `intake-1323#record` (dive actionable D2). Zero compute.
       **Structural form (2026-09-15):** the refusal lives in _transfer_safety_verdict and returns
       valid=False when a mutation's added text — prompt mutations AND code_mutation mutated_content
       (string literals, comparisons) — shares a verbatim ≥8-token n-gram with, or an exact expected
@@ -86,9 +86,13 @@ so this is a **new active stub, not a reopen**.
       `tests/unit/test_prompt_forge_leakage_and_risk.py` (73 tests).
 - [ ] **MHS-4 — ANTI-OVERRIDE risk prior.** Rank/gate mutations by CONSTRAIN (add a check, block a bad
       path, re-prompt) vs REPLACE (rewrite/force an action, hard-code an answer). In the released
-      corpus **every** catastrophic held-out regression came from an override patch; the trained
-      editor converged constrain-only across all 9 patches and all 3 seeds. Encode as a mutation-type
-      risk weight. `intake-1323#04`. Zero compute. Consumer: AP-52 in
+      corpus the REPLACE-before-CONSTRAIN ordering holds on all 23 valid patches (REPLACE 4/4 negative,
+      mean −8.4 pp; CONSTRAIN n=19, mean +3.9 pp), but the worst single patch is CONSTRAIN (−16.9 pp,
+      hint-only), so the prior ranks risk and does not certify safety (MHS-5, orchestrator `4f28e6c3`);
+      the trained editor converged constrain-only across all 9 patches and all 3 seeds. Encode as a
+      mutation-type risk weight. `intake-1323#record` (dive actionable D4; the 2026-09-07 wording
+      "every catastrophic regression came from an override" was refuted by MHS-5).
+      Orchestrator `4f28e6c3` is on branch `sub/autopilot-safety-20260916`, pending merge. Zero compute. Consumer: AP-52 in
       [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md).
       **IMPLEMENTED 2026-09-16, NOT YET ON MAIN — flip on merge** (`sub-autopilot-safety`, orchestrator `8219d8e8`, branch `sub/autopilot-safety-20260916`, unmerged): `MUTATION_EFFECT_RISK`
       (inert 0.05 < constrain 0.25 < expand 0.50 < replace 0.90 < unknown 1.0 < unsafe ∞), carried as
@@ -104,7 +108,7 @@ so this is a **new active stub, not a reopen**.
       validation errors, rescued/regressed counts over 1,270 held-out tasks; Apache-2.0.
       Discriminating features already extracted by the dive: effect kind, hook-set stability,
       benchmark-scaled length, rescue:regression ratio. MH-7's contrastive-trace capture is the
-      existing consumer. Feeds MHS-4. `intake-1323#07`. Zero compute.
+      existing consumer. Feeds MHS-4. `intake-1323#record` (dive actionable D7). Zero compute.
       **IMPLEMENTED 2026-09-16, NOT YET ON MAIN — flip on merge** (`sub-autopilot-safety`, orchestrator `4f28e6c3`, branch `sub/autopilot-safety-20260916`, unmerged): sparse-fetched
       Harness-R1 @ `411bb548` (the dive-verified revision). `scripts/autopilot/species/heldout_effect_corpus.py`
       derives `orchestration/datasets/harness_r1_heldout_effect_corpus.json` with labels only, no patch
@@ -117,9 +121,14 @@ so this is a **new active stub, not a reopen**.
       hint-only (`inject_hint`). A block-only patch also lost 34 (−6.9 pp). 4 of 19 CONSTRAIN patches
       regressed. Confound: 9 of the 19 CONSTRAIN patches come from the trained Harness-R1 editor.
       Consequence: the MHS-4 weights stay ordinal; the gate ranks risk, it does not certify safety
-      (code comment and operator guide updated). **Belief-kernel note for the owning session:** this
-      contradicts the MHS-4 row's own rationale text, which is `intake-1323#04`; that claim should be
-      recorded as refuted or qualified. `tests/unit/test_heldout_effect_corpus.py` (15 tests) pins
+      (code comment and operator guide updated). **Belief-kernel note — APPLIED 2026-09-16 (`sub-own`):** the refuted text was
+      the MHS-4 row's own rationale, not key claim 04 of the entry (the handoff's `#NN` numbers indexed
+      the dive actionables ledger, so `#04` was a mis-anchor; claim 04 is the true transductive-scope
+      claim). Recorded in `research/intake_index.yaml` (`intake-1323#record`) as `dive_corrections` item (13) and
+      a `dive_entry_corrections` row (effect `narrowed` on dive item (6)); claim 04's `claim_corrections`
+      note re-examined, still `unaffected`. Evidence cited as orchestrator `4f28e6c3` on
+      `sub/autopilot-safety-20260916` (pending merge), corpus sha256 `09ae7365…efbc71`. The MHS-4 row now
+      cites `intake-1323#record` with the qualified wording. `tests/unit/test_heldout_effect_corpus.py` (15 tests) pins
       both the ordering and the refutation. MH-7 wiring was not done (out of scope for this row).
 - [ ] **MHS-6 (record, no work) — Optimizer budget shape.** Record it as **"constant in training-set
       size, LARGE constant"**: 1 + T_ReAct calls/iteration, T_ReAct 10–20 at B = N_train ⇒ 11–21
@@ -157,7 +166,7 @@ Notes and named inside the open **MHS-6** box.*
 
 **Cost yardstick (DERIVED-FROM-CONFIG, never a measurement)**: *"one engineer update ≈ one full sweep
 of your eval suite"* — a reusable rule of thumb for pricing ANY outcome-grounded editor loop. It kills
-this class of proposal on this host before anyone builds a design doc. `intake-1323#09` (handoff half;
+this class of proposal on this host before anyone builds a design doc. `intake-1323#record` (dive actionable D9; handoff half;
 the wiki half is queued for the compilation sweep).
 
 ## Open Questions
