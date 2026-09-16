@@ -43,7 +43,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 
 | Handoff | Path | Status | Priority | Last Updated |
 |---------|------|--------|----------|-------------|
-| [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 2 routing API done, skills + authoring rubric + drift guard + override overview done, streaming validated (Package E). Auth deferred. | LOW | 2026-06-14 |
+| [hermes-outer-shell.md](../completed/hermes-outer-shell.md) | A — User-Facing Shell | Phase 2 routing API done, skills + authoring rubric + drift guard + override overview done, streaming validated (Package E). Auth deferred. | LOW | 2026-06-14 |
 | [orchestrator-conversation-management.md](../completed/orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | ALL COMPLETE (B1-B7 + integration wiring) | Done | 2026-04-05 |
 | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Local image generation plugin | Refreshed 2026-05-28: `image_generate` resolves to self-hosted ERNIE/sd-server path; active follow-up is operational QA, not backend loading | MEDIUM | 2026-05-28 |
 | ~~[open_source_orchestrator.md](../archived/open_source_orchestrator.md)~~ | Future | ARCHIVED (dormant stub, 71 days) | — | 2026-02-02 |
@@ -97,8 +97,8 @@ Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../researc
   - [ ] ChatCompletions transport refactor probe: hit our orchestrator's `/v1/chat/completions` with the new client — **REQUIRES INFERENCE — Wave 2**
   - [ ] Compressor fallback-chain interaction: confirm the new fallback chain does not conflict with our `provider: "main"` auxiliary config; inspect config-loading order
 - [x] **P2.6.3 — Downstream port to compressor** — see [`tool-output-compression.md`](tool-output-compression.md) Phase 3d / Phase 4. **DONE 2026-06-14**: P3d.1 audit found the upstream commits map to context-compaction patterns rather than a direct bash-compressor port; P4a-b landed the downstream MCP wrapper and compressor middleware in `epyc-orchestrator` `fe64140`. Remaining measurement/registration work lives in `tool-output-compression.md` P4c-P4e.
-- [ ] **P2.6.4 — Downstream refactor of `x_*` overrides** — see [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2+ Enhancement (F)
-- [ ] **P2.6.5 — Subagent + single-slot llama-server validation** — see [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 Validation (G); **REQUIRES INFERENCE — Wave 2**
+- [ ] **P2.6.4 — Downstream refactor of `x_*` overrides** — see [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md) Phase 2+ Enhancement (F)
+- [ ] **P2.6.5 — Subagent + single-slot llama-server validation** — see [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md) Phase 2 Validation (G); **REQUIRES INFERENCE — Wave 2**
 
 ### P4 — Open-Source Orchestrator (future)
 

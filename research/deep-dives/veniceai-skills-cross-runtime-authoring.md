@@ -31,7 +31,7 @@ Representative skill sizing (from fetched samples):
 
 ### Key design patterns worth adopting
 
-1. **≤500-line authoring rubric with fixed section order.** Short lead paragraph → "When to use" → endpoint/parameter tables → curl + one SDK example → gotchas → cross-navigation links. Enforced by convention + CI line-count check. Our `scripts/hermes/skills/` files already approximate this (the `use/`, `escalation/`, `nocode/` SKILL.md files are ~40 lines each with a "Usage" + "API Mapping table" + "Notes" pattern) but we have no written rubric — new skills will drift unless we codify it. **Mapping**: a `scripts/hermes/skills/TEMPLATE.md` + a short rubric section in `handoffs/active/hermes-outer-shell.md` is ~30 minutes of work and converts a de-facto convention into an enforceable one.
+1. **≤500-line authoring rubric with fixed section order.** Short lead paragraph → "When to use" → endpoint/parameter tables → curl + one SDK example → gotchas → cross-navigation links. Enforced by convention + CI line-count check. Our `scripts/hermes/skills/` files already approximate this (the `use/`, `escalation/`, `nocode/` SKILL.md files are ~40 lines each with a "Usage" + "API Mapping table" + "Notes" pattern) but we have no written rubric — new skills will drift unless we codify it. **Mapping**: a `scripts/hermes/skills/TEMPLATE.md` + a short rubric section in `handoffs/completed/hermes-outer-shell.md` is ~30 minutes of work and converts a de-facto convention into an enforceable one.
 
 2. **Overview/index skill as entry point.** `venice-api-overview` is explicitly a roadmap skill that points at the 15 others. We have no equivalent for `scripts/hermes/skills/` — a new user (or agent) reading our three skills in isolation cannot tell what the override API looks like overall. **Mapping**: add a `scripts/hermes/skills/overview/SKILL.md` that enumerates every `x_*` override parameter, links to the three command-specific skills, and points at the hermes-outer-shell handoff. Pairs naturally with the rubric.
 
@@ -80,7 +80,7 @@ Priority-ordered, each tied to an existing handoff:
 
 2. **[hermes-outer-shell, new P2 task, ~2 hr]** Write `scripts/hermes/skills/check_drift.py`: parse the `x_*` fields on `OpenAIChatRequest` in `src/api/models/openai.py` (via `ast` or importing the Pydantic model), regex-scan `scripts/hermes/skills/*.md` for each field name, produce a two-way diff (API fields without skill coverage + skill references to removed fields), exit 1 on mismatch with a human-readable report, exit 0 clean. Add `--json` flag mirroring Venice's script for CI consumption. Wire into `scripts/hooks/` as a pre-commit hook that fires when either `src/api/models/openai.py` or `scripts/hermes/skills/` is touched. The concrete failure mode this closes: Phase 2 added `x_max_escalation` / `x_force_model` / `x_disable_repl` and the skills were written three days later — there is currently nothing preventing the next `x_*` field from shipping without a skill update.
 
-3. **[hermes-outer-shell, new P2 task, ~30 min]** Author `scripts/hermes/skills/overview/SKILL.md` — the entry-point skill that enumerates every `x_*` override, links to `use/`, `escalation/`, `nocode/`, and points at `handoffs/active/hermes-outer-shell.md`. Apply the rubric from action 1 as its first consumer.
+3. **[hermes-outer-shell, new P2 task, ~30 min]** Author `scripts/hermes/skills/overview/SKILL.md` — the entry-point skill that enumerates every `x_*` override, links to `use/`, `escalation/`, `nocode/`, and points at `handoffs/completed/hermes-outer-shell.md`. Apply the rubric from action 1 as its first consumer.
 
 4. **[intake-454 evaluation, deferred]** When the hermes-agent v0.11.0 merge task begins (cf. intake-454 "plugin surface evaluation"), reference Venice's `.claude-plugin/` manifest layout as the concrete template for packaging our `x_*` overrides as a namespaced Hermes bundle instead of a fork patch-set. Do not pre-build; just cross-reference.
 
@@ -128,6 +128,6 @@ This is ~80 lines of Python. The enum-tracking phase is strictly additive and wo
   - https://raw.githubusercontent.com/veniceai/skills/main/skills/venice-api-overview/SKILL.md
   - https://raw.githubusercontent.com/veniceai/skills/main/scripts/sync_from_swagger.py
 - Related deep-dives: `research/deep-dives/opengauss-architecture-analysis.md`, `research/deep-dives/context-mode-tool-compression-patterns.md`
-- Related handoffs: `handoffs/active/user-facing-harness-index.md`, `handoffs/active/hermes-outer-shell.md`
+- Related handoffs: `handoffs/active/user-facing-harness-index.md`, `handoffs/completed/hermes-outer-shell.md`
 - Related intakes: intake-117 (Hermes Agent), intake-277 (Hermes LLM Wiki skill), intake-327 (Hermes self-evolution), intake-337 (addyosmani/agent-skills rubric), intake-454 (hermes-agent v0.11.0 namespaced skill bundles)
 - Local skill corpora: `scripts/hermes/skills/{use,escalation,nocode}/SKILL.md`; `.claude/skills/{research-intake,agent-file-architecture,gitnexus,project-wiki,claude-md-accounting}/`

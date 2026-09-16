@@ -4,7 +4,7 @@
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
-**Related**: [`delegation-context-preassembly.md`](delegation-context-preassembly.md), [`routing-intelligence.md`](routing-intelligence.md), [`hermes-outer-shell.md`](hermes-outer-shell.md), intake-655
+**Related**: [`delegation-context-preassembly.md`](delegation-context-preassembly.md), [`routing-intelligence.md`](routing-intelligence.md), [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md), intake-655
 **Provenance**: 2026-05-31 deep-dive on intake-655 (A2A protocol). Two-question framing: adopt A2A *lifecycle semantics* internally; defer A2A *wire transport*.
 
 ## Objective

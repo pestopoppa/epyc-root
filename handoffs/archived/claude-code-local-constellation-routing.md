@@ -6,7 +6,7 @@
 **Priority**: LOW (stub — only a thin MCP shim remains relevant)
 **Scope**: Integrate Claude Code UX/runtime entrypoints with this repo's local orchestration stack for optimized routing + delegation across multiple locally-hosted models.
 
-> **2026-04-11 audit note**: Hermes outer shell ([hermes-outer-shell.md](hermes-outer-shell.md)) is the primary frontend. It already uses `/v1/chat/completions` with routing override params (`x_force_model`, `x_max_escalation`, `x_disable_repl`). Phases 1-3 of this handoff (reliability hardening, route explainability, advanced delegation) are shared orchestrator infrastructure driven by Hermes, not Claude Code-specific. The only remaining value is a minimal MCP tool (`orchestrator_chat`) that forwards to the same OpenAI-compat endpoint — Pattern B from this document, a thin shim.
+> **2026-04-11 audit note**: Hermes outer shell ([hermes-outer-shell.md](../completed/hermes-outer-shell.md)) is the primary frontend. It already uses `/v1/chat/completions` with routing override params (`x_force_model`, `x_max_escalation`, `x_disable_repl`). Phases 1-3 of this handoff (reliability hardening, route explainability, advanced delegation) are shared orchestrator infrastructure driven by Hermes, not Claude Code-specific. The only remaining value is a minimal MCP tool (`orchestrator_chat`) that forwards to the same OpenAI-compat endpoint — Pattern B from this document, a thin shim.
 
 ## Executive Summary
 

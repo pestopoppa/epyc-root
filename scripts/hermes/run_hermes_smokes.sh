@@ -15,7 +15,7 @@ set -euo pipefail
 # checks out, installs, starts a server, or sends inference traffic unless the
 # live gate is explicitly set.
 #
-# Owning handoff: handoffs/active/hermes-outer-shell.md
+# Owning handoff: handoffs/completed/hermes-outer-shell.md
 #   item G — "Validate subagent + single-slot llama-server interaction"
 # Also covers: hermes-agent-index.md "Live Hermes end-to-end smoke checklist".
 #
