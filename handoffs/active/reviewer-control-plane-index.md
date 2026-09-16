@@ -15,7 +15,7 @@
 | REV-05 | reviewer escalation and human gate policy | [reviewer-escalation-and-human-gate-policy.md](reviewer-escalation-and-human-gate-policy.md) | HG-1 — Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain). | UFH-01 |
 | REV-06 | reviewer latency and sampling budget | [reviewer-latency-and-sampling-budget.md](reviewer-latency-and-sampling-budget.md) | LB-1 — Reproduce + attribute the regression: which calls dominate (plan-review prompt count vs prompt length vs architect queueing) on the… | — |
 | REV-07 | reviewer model ablations | [reviewer-model-ablations.md](reviewer-model-ablations.md) | RM-2 — Anchor arms (guaranteed confirmation-tier): A0 gates-only (objective-verifier floor); A1 self-review (status quo alias); A3 same-fam… | REV-02 |
-| REV-09 | reviewer typed artifacts | [reviewer-typed-artifacts.md](reviewer-typed-artifacts.md) | Adopt benchmrk's annotation envelope as the dual-gold schema. Its status:"invalid" decoys give us a negative-control axis we do not have an… | — |
+| REV-09 | reviewer typed artifacts | [reviewer-typed-artifacts.md](reviewer-typed-artifacts.md) | RA-13a — run the N=20 blind read-back pilot (harness built; inference-gated) | — |
 
 ## Cross-domain
 

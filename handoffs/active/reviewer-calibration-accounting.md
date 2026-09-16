@@ -53,6 +53,12 @@ Two dive results reshape the report's design. First, **overcorrection dominates*
     (intake-875 Table 5). Any A/B here must hold framing byte-identical across arms and say so.
   - **Standing constraint (RC-6a):** until the operator PR merges, every number this row produces is an
     **observation** and MUST NOT gate any keep/revert/deploy/promote decision in H5/H7.
+  - **Precondition check 2026-09-16 (sub-reviewer): NOT startable offline.** `data/trace/review_ledger.sqlite`
+    `review_ledger` stores one scalar `confidence` and no score-token distribution: there are no logprob,
+    K-vector or `retained_mass` columns. `scripts/analysis/reviewer_corpus_ledger_run.py` also records that
+    the reviewer probe captures no per-decision logprob. The existing ledger cannot supply the expectation
+    arm, so RC-10 needs a NEW capture run: inference, with the SC43 write-side fields emitted from the first
+    call.
 - [x] **RC-11 — report false-accept and false-reject SEPARATELY** (intake-1307; 2026-09-07). A single
   aggregate accuracy does not satisfy this plane's gate. Where one side is not computable — typically
   false-reject, because a rejected item has no ground truth — **say so explicitly and report the cause

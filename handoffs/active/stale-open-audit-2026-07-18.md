@@ -182,6 +182,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
     summary-pointer boxes remain unclassified. `backlog_live_uncertified =
     935` for this dated read-through slice; `backlog_not_a_task = 36` is
     unchanged.
+    *(Note 2026-09-16: the E8 gate is superseded by operator ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json), root `1ee8bd7c`. The ruling retires the E8 chain and re-anchors the gate to the current eras; the gate binds only at promotion.)*
   - **READ-CERTIFIED 2026-07-29 (mainB, 4 rows):**
     `batched-edit-parallel-apply.md` has no current independent dispatch:
     BEP-2 is inference-gated, BEP-3 is conditional on its result, BEP-5 is a

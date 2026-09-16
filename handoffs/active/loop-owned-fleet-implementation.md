@@ -636,3 +636,4 @@ be satisfied (era advanced to E9, source evidence destroyed), and the file conta
 occurrences of "E9". OP-19's ruling should answer BOTH the B9/B10 disposition and the gate's
 restatement against E9 — answering the narrow question alone leaves the unsatisfiable gate
 binding. Master-index OP-19 row amended to say so.
+*Note 2026-09-16: OP-19 was ruled in [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json) (root `1ee8bd7c`). The ruling retires the E8 chain and re-anchors the reseed gate to the current eras; the gate binds only at promotion.*

@@ -319,6 +319,7 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   both directions by `scripts/coordination/tests/test_fleet_watch.sh` and mutation-tested (removing
   the guard turns the suite red). Generalising it is what closes this row.
 - [ ] **OBS-10** (LOW): **Two E8 operator ratifiers gate on an argv pattern.**
+  *Note 2026-09-16: the E8 chain these ratifiers served is retired by operator ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json) (root `1ee8bd7c`). The ruling re-anchors the reseed gate to the current eras; the gate binds only at promotion.*
   `artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh` and
   `ratify_e8_empty_frontier_bootstrap_20260726.sh` both use
   `pgrep -f '[s]cripts/autopilot/autopilot.py start'` — same start-adjacency fragility. The newer

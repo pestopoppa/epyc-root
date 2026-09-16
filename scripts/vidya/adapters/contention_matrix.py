@@ -155,7 +155,29 @@ def validate_block(data: Any) -> list[str]:
         problems.append(
             "block.decision_grade=true with status != clean or non-empty blockers "
             "violates the producer's fail-safe contract")
+    provenance = data.get("host_provenance")
+    foreign = provenance.get("llama_processes_foreign") if isinstance(provenance, dict) else None
+    if foreign is not None and not isinstance(foreign, list):
+        problems.append("block.host_provenance.llama_processes_foreign must be a list when present")
+    elif grade is True and foreign:
+        problems.append(
+            "block.decision_grade=true with foreign llama processes recorded violates the "
+            "producer's foreign-process gate (orchestrator RTG-35)")
     return problems
+
+
+def _foreign_process_gate(block: dict) -> str:
+    """Whether the stamp's decision_grade excluded FOREIGN llama processes.
+
+    Carried, never graded. Stamps written before the RTG-35 producer change waived
+    every llama process as the instrument, so their decision_grade says nothing about
+    another tenant on the shared host; only the presence of the producer-written
+    ``llama_processes_foreign`` provenance key marks a gated stamp.
+    """
+    provenance = block.get("host_provenance")
+    if isinstance(provenance, dict) and "llama_processes_foreign" in provenance:
+        return "applied"
+    return "absent"
 
 
 def _load_json(path: Path) -> dict | None:
@@ -311,6 +333,7 @@ def project(native: Any) -> ClaimTuple:
     warnings = [str(w) for w in block.get("host_health_warnings") or []]
     status = str(block.get("host_health_status") or "unknown")
     run_name = native["run_name"]
+    foreign_gate = _foreign_process_gate(block)
     # SC69: the reader sha256s the artifact bytes the moment it reads them, and the tuple's
     # attested digest IS that recompute — carried in the tuple so the ladder stays pure. A file
     # that moved between the read and the projection is tampering, not decay: refuse.
@@ -343,6 +366,12 @@ def project(native: Any) -> ClaimTuple:
             f"samples={headline['samples']}, cv={headline['cv']}) at {headline['measured_at']}. "
             + _scope_limit()
             + f" Host health {status}, decision_grade={str(decision_grade).lower()}."
+            + (
+                ""
+                if foreign_gate == "applied"
+                else " Stamp predates the foreign-process gate: decision_grade did not "
+                     "exclude other tenants' llama processes."
+            )
             + disposition
         ),
         # The ratio is parallel/seq aggregate TPS: higher is better, and the producer's
@@ -386,6 +415,7 @@ def project(native: Any) -> ClaimTuple:
             "decision_grade_blockers": blockers,
             "host_health_warnings": warnings,
             "host_provenance": block.get("host_provenance"),
+            "foreign_process_gate": foreign_gate,
             "manifest_sha256": native["manifest_sha256"],
             "result_sha256": native["result_sha256"],
             "block_sha256": native["block_sha256"],

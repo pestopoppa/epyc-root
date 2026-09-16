@@ -172,10 +172,29 @@ fleet models.** No inference runs without the standing region claim; no at-scale
 - [ ] **CJ-1d. Wire a representative sample** — the adapters exist (`gpqa_diamond`,
       `gpqa_diamond_cot` in `scripts/benchmark/dataset_adapters.py`). Decide n (full 198 vs a seeded
       subset) against the cold-start budget rule above.
+      DONE ON BRANCH, pending integration (sub/gpu-prep-20260916 is based on the autokernel lane; needs a cherry-pick onto origin/main):
+      2026-09-16 (sub-gpu-prep, offline) — research `b1c7dedb` on `sub/gpu-prep-20260916`:
+      `scripts/benchmark/cj_gpqa_sample.py` writes the pinned `--questions-in` manifest for
+      `v7_quality_gate_runner.py` (`gpqa_diamond_cot` only; letter-only refused; population id-set must equal
+      the 2026-08-25 EVL-08 pin; no question text committed). **n = 198 (full set)**: measured MI210 cost
+      75.3 s/item (Qwen3.8-27B), 20.7 s/item (35B-A3B) → ≤5.3 GPU-h/model; ±5.5pp CI at 81% vs ±7.7pp at
+      n=100, and paired sign-test power for a 7pp gap at 18% discordance is only 0.59 at 198 (0.30 at 100) —
+      a subset saves 2–3 GPU-h and loses the ranking. Tests `test_cj_gpqa_sample.py` 19/19; sample block
+      flows into `v7_quality_gate_beliefs.py` (`extra.prompt_set.sample`). Design + recipes:
+      `docs/design/cj1-gpqa-sample-and-cj1e-gpu-pair.md`.
 - [ ] **CJ-1e. Verify discrimination across ≥2 fleet models** — vendor keys already span the fleet
       (27B 0.878 / 35B-A3B 0.860 / 122B 0.866 / Next-80B 0.729 / gemma4 0.823), so the local run's
       job is to confirm the ORDERING survives our Q8_0 + `enable_thinking=false` serving posture.
       Emit as `local_benchmarks.gpqa_diamond` under the same key as the vendor column.
+      - **GPU pair + recipes prepared 2026-09-16 (run open):** champion `ef81196d5` binary
+        `/mnt/raid0/llm/tmp/build-fold-ef81196d5/bin/llama-server` (sha256 `869effe5…`, under tmp/ — re-hash
+        before launch), `env -u HSA_OVERRIDE_GFX_VERSION LD_LIBRARY_PATH=<that bin> taskset -c 184-191`.
+        Arm A :18371 Qwen3.8-27B-Q8_0 + `-md Qwen3.8-27B-DFlash2-Q8_0 -ngld 99 --spec-type draft-dflash
+        --spec-draft-n-max 8`; Arm B :18372 Qwen3.6-35B-A3B-MTP-Q8_0 `--spec-type draft-mtp --spec-draft-n-max 4`;
+        both `-np 4 -c 49152 -t 8 -tb 8 -b 2048 -ub 2048 -ctk f16 -ctv f16 --device ROCm0 -ngl 99 -fa on
+        --metrics --slots --no-kv-unified` (c=49152, not 16384, so each slot holds 8192-token answers — VRAM
+        unmeasured; fall back to np=1). Thinking off via chat endpoint; assert `reasoning_chars == 0`. Full text in
+        the design doc above.
 
 ### CJ-2 — LiveCodeBench (contamination-resistant via date-windowing; all six models publish it)
 
@@ -227,6 +246,11 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       they are different instruments and must not share a key. The tool-call parser is already pinned
       (`epyc-orchestrator` `22c476dd`; Qwen XML deliberately unparsed so a parse failure cannot
       masquerade as a quality gap).
+      - **CJ-3d instrument choice, 2026-09-16 (sub-gpu-prep):** NOT an operator decision at this stage —
+        default = native function-call path under key `bfcl_v3` (checker-only; the only path comparable to
+        the published keys, which is CJ-3e's purpose); the production REPL path may be added later under its
+        own key (e.g. `bfcl_v3_repl_local`). Adoption stays with the operator at CJ-GATE. Rationale: §3 of
+        `docs/design/cj1-gpqa-sample-and-cj1e-gpu-pair.md` (research `b1c7dedb`). Sample still unwired.
 - [ ] **CJ-3e. Verify discrimination across ≥2 fleet models** — this is the highest-value fix in the
       set: the published BFCL evidence is **unrankable today** (122B reports `bfcl_v4` 0.722,
       Next-80B reports `bfcl_v3` 0.703 — two keys, no comparison). A single local run under ONE key

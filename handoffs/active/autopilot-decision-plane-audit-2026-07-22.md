@@ -220,7 +220,11 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   Original text retained: the hold is fail-closed BY DESIGN — it blocks automated quality
   promote/revert until a post-era baseline exists; reseeding baseline quality values is a
   measurement action across the human-amendment trust boundary.
-- [ ] **E8 RE-ARM (2026-07-26) — AutoPilot E8 baseline reseed = the gating task of the post-v8
+- [x] **E8 RE-ARM (2026-07-26)** ✅ 2026-09-16 **CLOSED SUPERSEDED, not completed**, per operator
+  ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json)
+  (root `1ee8bd7c`). The ruling retires the E8 chain and re-anchors the reseed gate to the current eras
+  (cpu_bench E9, eval_quality E16). The gate binds only at promotion. The E8-successor boxes below close
+  under the same ruling. Original text retained: — **AutoPilot E8 baseline reseed = the gating task of the post-v8
   campaign (operator-directed; CPU lane, runs FIRST).** The v8 E8 era fence
   (`epyc-root/artifacts/operator/ratify_v8_era_fence_20260725.json`) demotes all pre-boundary
   speed/frontier evidence to historical prior AND requires **16 fresh v8-era numeric trials
@@ -295,7 +299,7 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   `epyc.e8_quality_writer_abort.v1`, `terminal_aborted_no_admission`, with
   `no_auto_retry=true` and `no_admission=true`. The namespace remains immutable audit evidence,
   not final-C1 evidence.
-- [ ] **E8 lineage-composition deterministic completion successor** — repair the completion
+- [x] **E8 lineage-composition deterministic completion successor** ✅ 2026-09-16 CLOSED SUPERSEDED (not completed) per `ruling_op19_e8_chain_20260827.json` (root `1ee8bd7c`; see E8 RE-ARM above) — repair the completion
   helper so its complete sealed 500-row journal resolves all authoritative immutable sidecars,
   rather than reading only its latest recovery sidecars. The failed capacity-fix namespace has an
   exact missing set of `418` ordinal provenances: `112` `imported_generation`, `295`
@@ -303,17 +307,17 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
   source/abort/sidecar pins, strict qid/question-id and nonpartial/nondegraded validation,
   byte-identical journal responses, atomic publication, and a typed success/failure run seal;
   leave the aborted source untouched.
-- [ ] **E8 universal abort terminalization** — wire the copy-only terminalizer into the
+- [x] **E8 universal abort terminalization** ✅ 2026-09-16 CLOSED SUPERSEDED (not completed) per `ruling_op19_e8_chain_20260827.json` (root `1ee8bd7c`; see E8 RE-ARM above) — wire the copy-only terminalizer into the
   `except` epilogue of every E8 runner (`v5`, reseed, resume, race-retry, mixed-tail repair,
   final-C1, and finalizer), with tests proving each injected failure publishes a durable terminal
   `run_seal.json`. The bounded offline terminal bridge is insufficient: each future abort would
   otherwise create another unsealed namespace requiring a bespoke recovery ceremony.
-- [ ] **E8 staged-input eligibility and race-retry layout repair** — prohibit finalization from
+- [x] **E8 staged-input eligibility and race-retry layout repair** ✅ 2026-09-16 CLOSED SUPERSEDED (not completed) per `ruling_op19_e8_chain_20260827.json` (root `1ee8bd7c`; see E8 RE-ARM above) — prohibit finalization from
   accepting an unsealed `.staging-*` namespace merely because it is hash-pinned, and classify/fix
   the published race-retry layout that is structurally unvalidatable as committed. Confirm the
   live publication path before any successor/finalizer run; do not treat review prose as a
   runtime seal.
-- [ ] **E8 c1 required race/finalizer path** — execute only the protocol-required race/finalizer
+- [x] **E8 c1 required race/finalizer path** ✅ 2026-09-16 CLOSED SUPERSEDED (not completed) per `ruling_op19_e8_chain_20260827.json` (root `1ee8bd7c`; see E8 RE-ARM above) — execute only the protocol-required race/finalizer
   path against the repaired, revalidated instrument. **Structured timeout provenance and final-C1/
   finalizer inference remain open.** A c1 retry timeout remains a governed 300-second-budget
   decision; do not silently raise its timeout. This task does not authorize baseline application or
@@ -397,8 +401,9 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
     `answer_hash` but never `answer`). debugbench: **20 rows excluded-and-flagged by ordinal**,
     11 of them stored `true`; the oracle rebuild is scorer-side only — **0 pool rows use
     `code_patch`**, so all 4,253 debugbench pool rows remain vacuous.
-  - [ ] **Repair the historical producer-pin and abort-terminalization recurrence before final
-    E8 promotion** — independent review found that older producer namespaces can still be selected
+  - [x] **Repair the historical producer-pin and abort-terminalization recurrence before final** ✅ 2026-09-16
+    CLOSED SUPERSEDED (not completed) per `ruling_op19_e8_chain_20260827.json` (root `1ee8bd7c`); there is no final
+    E8 promotion to gate. Original text retained: — **...before final E8 promotion** — independent review found that older producer namespaces can still be selected
     without a runtime `run_seal.json`, and the offline one-namespace terminal bridge does not make
     future producer aborts terminal by construction. Wire the copy-only terminalizer into each
     producer abort epilogue and require a pinned source seal for admission; verify the live
@@ -407,7 +412,7 @@ the era registry or MEASUREMENT.md was made or is needed for this fix.**
     ratified receipt binds the original producer helper while the live audit requires the current
     helper hash. Preserve the historical receipt pin and bind the runtime helper separately; never
     weaken or replace the original provenance check.
-- [ ] **E8 quality baseline reseed/apply** — human-only protocol/source/apply scripts are
+- [x] **E8 quality baseline reseed/apply** ✅ 2026-09-16 CLOSED SUPERSEDED (not completed) per `ruling_op19_e8_chain_20260827.json` (root `1ee8bd7c`). No E8 baseline was ever applied or published, and any future quality reseed runs against the current eval_quality era and binds at promotion — human-only protocol/source/apply scripts are
   prepared and parked. The earlier v4 collection is historical, non-decision evidence after the
   fixed-vector context defect. A first v5 launch failed before inference because its detached
   runtime root was wrong; the targeted fix is `43600480` on pushed branch

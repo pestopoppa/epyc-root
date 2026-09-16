@@ -494,7 +494,7 @@ quality tradeoff.
   tokenization the per-token tail reaches 1.98e-02 on a single outlier token; production does not use
   that regime and FP32 parity attributes it to quantization.
 
-- [ ] **PREFIX-1 — the encoder never applies the trained `[Q]`/`[D]` prefix tokens, and this is
+- [x] **PREFIX-1 — the encoder never applies the trained `[Q]`/`[D]` prefix tokens, and this is
   larger than everything else on this page.** `colbert_encoder.encode(text, max_tokens)` has **no
   query/document parameter at all**, so it cannot express the distinction even in principle; it feeds
   raw tokenized text straight to the graph. Both LateOn and the deployed GTE declare
@@ -523,6 +523,18 @@ quality tradeoff.
   move together. Tests 51 → 74 passed, encoder mocked, four guards mutation-tested
   (`TestRoleContract`, `TestTokenCaps`, `TestNoDuplicatedEncoder`). **Still open**: the KB corpus
   re-embed (OP-24) — this changes nothing about that decision.
+  ✅ 2026-09-16 — verified landed on both sides (sub-tooling, read-only checks, zero inference):
+  - **KB side:** `fe55b228` ("kb-rag OP-24: require explicit ColBERT role…"). `encode()` now takes a
+    required keyword-only `role=`, and `index_meta.prefix_convention` decides both sides.
+  - **Web side:** `f876d989` ("web reranker PREFIX-1…"). `colbert_reranker.py:198,213` encodes the query
+    with `role=query_role` and the documents with `role=doc_role`, through the shared encoder.
+  - **Both are merged:** `git merge-base --is-ancestor` confirms each commit is on epyc-orchestrator `main`.
+  - **Re-embedding done:** the live store `data/kb_rag/index-qd-v1/catalog.sqlite` (the `DEFAULT_INDEX_DIR`)
+    was opened read-only.
+    - `index_meta` shows `prefix_convention=qd-v1`, `query_prefix='[Q] '`, `document_prefix='[D] '`,
+      the `gte-moderncolbert-v1-onnx` / `model_int8.onnx` encoder, and `stamped_at=2026-08-12T21:32:15Z`.
+    - The store holds 29,611 chunks, and the prefix-free `index/` store is kept as the rollback.
+  - PREFIX-2, whether published BEIR deltas transfer, stays open. It is a separate question.
 
 - [ ] **PREFIX-2 — confirm whether the published BEIR deltas transfer before banking any model swap.**
   The BEIR figures on this page (GTE 54.67, ColBERT-Zero 55.43, and the LateOn delta) are **published

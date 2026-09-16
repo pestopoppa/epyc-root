@@ -186,7 +186,7 @@ One of those two is worth understanding before you "fix" it:
 
 ### P0 — unblocks the commit (4 tasks)
 
-- [ ] **P0-0 (NEW 2026-08-11, `mainB`) — derived `stack_priors.yaml` has DROPPED the `NUMA_FULL`
+- [x] **P0-0 (NEW 2026-08-11, `mainB`) — derived `stack_priors.yaml` has DROPPED the `NUMA_FULL`
       instance of every quarterable fleet. Owner: the stack owner (`inference`), NOT this lane.**
       This is the single root cause of **7 of the 9 currently-failing unit tests**, and P0-1 cannot
       close until it is fixed. **It must not be fixed in the tests.**
@@ -232,6 +232,23 @@ One of those two is worth understanding before you "fix" it:
       `test_fleet_layer_build::test_case1_real_worker_fleet_realizes_full_plus_quarters`,
       `test_kv_compress_adaptive::test_production_ports_use_live_role_names`,
       `test_stack_templates_v2::TestDefaultYamlRoundTrip::test_default_yaml_loads_and_validates`.
+      ✅ **VERIFIED RESOLVED 2026-09-16 (`sub-sweep`), zero source or test edits by this pass.**
+      Git evidence: the fulls reappear in `orchestration/derived/stack_priors.yaml` at orchestrator
+      `7483d7fb` / `0d145f4f` (2026-08-21, "regen under production fleet mode (both)"). The
+      preceding compile `969244d8` (2026-08-11) has no `port: 8072` entry; the regen has 4. On main
+      `92bbeb06` (compiled 2026-09-03) the launch entries are frontdoor 8070 full + 8080/8180 half;
+      worker_general 8072 full + 8082/8182 half; ingest_long_context 8085 full + 8185/8285 half.
+      **Standing prediction held:** all 7 named tests pass (`-k` slice over the 5 files: 159 passed).
+      The only later edit to those files, NIB2-69 `4055dba0`, isolates dashboard label resolution
+      from host fleet markers. It does not relax a topology expectation.
+      **E8-era guard (the other named failure class):** leave it as it is. `ruling_op19_e8_chain_20260827`
+      (root `1ee8bd7c`) RETIRES the chain; it does not re-pin the runner. It cites the `:1313` v8-pin
+      firing as evidence that the instrument is dead on the current tree. Re-pinning that guard to v9
+      would re-base a retired measurement era, which is human-only. The test side was already made
+      hermetic on main by NIB2-69 `89b30eb5`: host provenance is stubbed with the runner's own v8
+      constants, the identity check is untouched, and 12 sealed-bundle tests are skipped with a
+      named owner. All `tests/unit/test_e8*.py`: 386 passed, 28 skipped. The "16 failures" count in
+      P0-1 below is therefore historical.
 - [x] **P0-1. Fix the 30 net-new breaking tests across 14 files**, including the
       two in `PROMOTION_GATE_TARGETS` (both in
       `tests/unit/test_build_server_command_helpers.py`). Retire

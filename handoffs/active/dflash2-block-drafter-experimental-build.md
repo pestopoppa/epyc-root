@@ -72,6 +72,18 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       tok/s = steps/s × accepted/step; only steps/s is a kernel property. Our np4 floor 3.536% vs tg128
       0.638% is mostly acceptance-trajectory variance. Re-calibrate the floor on both; keep gate on
       steps/s, headline on tok/s. Lands at a run boundary (changes the calibrated metric).
+      - **Partial 2026-09-16 (sub-gpu-prep; NOT the exact metric, box stays open):** research `5368766b` on
+        `sub/gpu-prep-20260916` (base `lane/autokernel-unified-20260908`). The champion server (`ef81196d5`,
+        server-context.cpp:343/4216) counts `n_draft_verif_steps` but does **not** export it in `timings`
+        (only `draft_n`/`draft_n_accepted`). So `loop/serving.py` emits `target_sample_steps_est` =
+        `predicted_n - draft_n_accepted` per slot (= verify steps + plain steps incl. the prefill-sampled
+        token), rated over each slot's `predicted_ms` and summed like `aggregate_tok_s`
+        (`aggregate_target_sample_steps_s_est`; a server-exported counter is preferred when present). It appears
+        per arm in `compare()` and as an A/A floor in `calibrate_floor()` (legacy + matched, inside the seal);
+        reporting only, gate unchanged. Exact SL-2 needs `n_draft_verif_steps` added to `result_timings` in
+        the champion tree (champion boundary). Pins `_measure_once`'s callable identity → integrate at a run
+        boundary via the owning autokernel session. Tests: `test_serving_target_steps_est.py` 22/22; affected loop
+        suite shows no new failures vs lane tip (1162 pass; 31 pre-existing fail/error on the unmodified base).
 - [ ] **SL-4 — serving-gate hygiene**: add one long-context cell (~32k prompt) and randomise arm order
       after any prefill-heavy arm (external: cc64 read −15–20% after a 128k sweep; spec gain can collapse
       with context for some quants). Also gives a C8 sustained cell to confront the external
@@ -79,10 +91,19 @@ shipped MTP (1.5×) is a floor, not the ceiling.
 - [ ] **SL-5 — A/A control on the DF2-6 losslessness/coherence gate**: run the 12-prompt suite twice on
       the identical build and report the A/A pass distribution before reading 7/12 vs 5/12 (external
       identical-checkpoint control: 95.24 vs 90.69).
-- [ ] **DF2-RNG — diagnostic lead for the DF2-6 failures**: both DFlash2 AND `draft_simple` fail at the
+- [x] **DF2-RNG — diagnostic lead for the DF2-6 failures**: both DFlash2 AND `draft_simple` fail at the
       SAME first-differing indices (34/216/238) → a shared verify-path cause. External S24 names "draft
       RNG entangled with acceptance RNG" as exactly this shape. Check whether the drafter's sampling
       advances the target's RNG stream under `--spec-type draft-dflash`/`draft-simple` at temp 0.6.
+      ✅ 2026-09-16 (sub-akfix, **source reading at `ef81196d5`**, no run) — **NO; the RNG hypothesis is ruled out.**
+      - The drafters own separate samplers (`common/speculative.cpp:236-241`, `:1401-1407`) and always take
+        `cur_p->data[0]` (`:1731,1744`).
+      - The DFlash2 selector RNG is private and used only at temp > 0 (`:1662-1690`).
+      - Verify at temp > 0 uses a separate `speculative_rng` (`common/sampling.cpp:411-422`).
+      - DF2-6 ran at temp 0 / top_k 1 (`df2_greedy_parity.py:148-152`), where the dist sampler draws nothing
+        (`src/llama-sampler.cpp:1046-1049`).
+      - The shared indices 34/216/238 are better explained by the **batch-shape numeric split** (see DF2-2).
+      - Details and the GPU confirmation experiment: `progress/2026-09/2026-09-16-sub-akfix.md`.
 - [ ] **RULE-RESCOPE — "all spec-dec levers are a single-stream story" is now contradicted by two
       sources**: external MTP +51.5% C1 → +52.3% C32 (flat), and our own DF2-5 (+28%→+48% from 1→8
       in-flight, flat per-slot acceptance). The rule (fable5 lever-category matrix) was derived on
@@ -146,9 +167,25 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
 - [x] **DF2-1 — Build.** Fresh production tip → `llama.cpp-experimental`, apply PR #27342, build HIP/gfx90a.
       Forward-port our local gfx90a patches into the candidate, **notably `a6b4b5263`** (routes small Q8_0
       MTP-verify batches to MMQ, `ne11<=1`, +17.4% single-stream MTP on MI210).
-- [ ] **DF2-2 — Check the MMQ patch still fires.** `a6b4b5263` is *MTP-verify-shaped* (`ne11<=1`); a dFlash2
+- [x] **DF2-2 — Check the MMQ patch still fires.** `a6b4b5263` is *MTP-verify-shaped* (`ne11<=1`); a dFlash2
       block verify has `ne11≈8` and may land on a less-tuned path. **This is the single most likely cause of a
       disappointing first number** — confirm before attributing any shortfall to dFlash2 itself.
+      ✅ 2026-09-16 (sub-akfix, **source reading at `ef81196d5`**, no run; `a6b4b5263` is an ancestor) — **the patch
+      does not decide the route for a block verify.**
+      - **Verify batch shape.** A batch at n_max 8 has 9 rows (`tools/server/server-context.cpp:516-520`).
+      - **Route at 9 rows.** 9 > `MMVQ_MAX_BATCH_SIZE` = 8 (`ggml-cuda/mmvq.cuh:3`), so the batch takes
+        **MMQ with or without the patch** (`mmq.cu:303`, `ggml-cuda.cu:1898-1906`).
+      - **Plain 1-row decode** takes MMVQ.
+      - **Current form of the patch rule.** At `ef81196d5` it is `ne11 <= 4` (`b0eb4fab4`, `mmvq.cu:747-758`).
+        The old `mmvq.cu:341-344` citation is valid only at `5c278648a`.
+      - **Two more 1-row vs multi-row kernel splits:**
+        - GDN autoregressive vs chunked (`src/models/delta-net-base.cpp:435-446,573-577`);
+        - FA vec vs rocWMMA (`fattn.cu:556-559`).
+      - **This is the likely DF2-6 cause (medium-high confidence).** It is not a DFlash2 defect. Its impact scales
+        with draft volume: ngram drafted 218 tokens vs 4012 for dflash2 and 11951 for draft_simple. ngram's single
+        failure is at the same prompt 2127, index 183.
+      - **Confirmation needs the GPU.** Arms `LLAMA_SPEC_EXACT=serial` vs unset, plus an A/A pair; the
+        experiment is in `progress/2026-09/2026-09-16-sub-akfix.md`.
 - [x] **DF2-3 — No-regression validation vs v9** (GPU + CPU) before any comparison is quoted.
 - [x] **DF2-4 — Matched comparison.** Replay the exact protocol above (same 12 prompts, np=1, 2048 cap) with
       `--spec-type draft-dflash` + `incoai/Qwen3.8-27B-DFlash2-GGUF:Q8_0`

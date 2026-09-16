@@ -136,6 +136,33 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
       the positional consumers above. Doing it means fixing `safety_gate.py:2303` and
       `pareto_archive.py`'s `[2]`/`[3]` reads to be axis-NAME-driven rather than positional.
       Until then `-cost` stays a dominance axis and the frontier is wider than intended.
+      **2026-09-16 (`sub-autopilot-safety`) — the positional-consumer blocker is REMOVED; the axis
+      drop itself is NOT done (box stays open).** Orchestrator `635a3467`, branch
+      `sub/autopilot-safety-20260916`, unmerged. `TierSpec.axes`
+      (`quality, rate, neg_cost, reliability`) plus `tier_specs.objective_value()`, which raises
+      `ObjectiveShapeError` on a wrong-shape tuple. Converted: every `pareto_archive.py` semantic read
+      (summary, summary_text, tier_overview, stepping stones + text, geometry + text, BT tiebreak key,
+      parent utility), and in `safety_gate.py` `_pareto_frontier_context` and the reproduced-promotion
+      override (now `promotion_fields_from_objectives`, which refuses any shape mismatch, not just
+      `len < 4`). Behaviour is identical on real archives: `tests/unit/test_w3e_axis_name_reads.py`
+      replays `legacy_4d_v1` + `task_rate_4d_v1` archives reconstructed from the stored journal
+      (361 entries each) against golden values captured with the pre-W3e code (frontier ids, full
+      dominance-pair sha256, every read), plus a forward test with a cost-less 3-axis tier.
+      Targeted suites: 301 passed.
+      **Remaining to finish W3e:** a new objective policy whose `TierSpec` drops `neg_cost` (axes +
+      `objectives_from` + 3-D reference point), with its instrument-era stamp and frontier epoch
+      fence. Positional `[0]`/`[1]`-only readers remain; they are unaffected by dropping axis 2:
+      `journal_reconstruction.py:282` (deinflate), `progress_plots.py`, `dashboard.html`
+      (`paretoDominates4` loops over 4 slots; a 3-D tuple still compares correctly, since both
+      missing values read as 0).
+      **Finding (not changed; this lane kept behaviour identical):**
+      `safety_gate._pareto_archive_for_safety_guard` replays the journal under the DEFAULT
+      `LEGACY_OBJECTIVE_POLICY` with no `exclude_before_ts`. So the archive-max guard and the
+      "source trial is a same-tier frontier representative" promotion check run on the legacy t/s
+      frontier, not the live `task_rate_4d` frontier, and over pre-flip rows too. Moving the guard to
+      the live policy has a coupled hazard: the promotion override copies axis 1 into `speed` →
+      `frontdoor_speed`, which would then hold q/h against the t/s 0.8× throughput floor (live
+      `frontdoor_speed` today is 23.89, i.e. still t/s). Both must change together.
 
 ### W6 — the eval instrument the rate axis is measured on (opened 2026-08-04)
 

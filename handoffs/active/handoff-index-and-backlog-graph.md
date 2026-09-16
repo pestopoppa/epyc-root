@@ -185,7 +185,9 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
     is byte-identical to pre-attempt. The wrong-checkout class therefore remains visible only via
     the manual `/api/health` + board-mtime comparison. Options if it recurs: compare the hub's
     serving evidence (`handoffs/` mtime deltas) instead of /proc.
-  - **OPERATOR DECISION PACKAGE (2026-08-24, prepared — decision is yours):** the parent row above
+  - **SUPERSEDED 2026-09-16 by the joint OP-9 + FW-3 package below.** Its cron line is defective:
+    installed on the host as written, it would run outside the devcontainer.
+    **OPERATOR DECISION PACKAGE (2026-08-24, prepared — decision is yours):** the parent row above
     (nothing restarts `hub_supervisor.sh` if it dies) still needs the cron ruling. Options:
     **(a) cron `once` form (recommended)** — add `*/2 * * * * /mnt/raid0/llm/epyc-root/scripts/dashboard/hub_supervisor.sh once`
     to the host crontab. `acquire_lock` is flock-based and self-exits when the daemon already runs,
@@ -196,6 +198,107 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
     the script's own docstring rules it out as host-config territory. **Recommendation: (a).** On
     approval: add the crontab line, verify `hub_supervisor.sh once` exits 0 against the healthy hub,
     tick the parent row.
+  - **JOINT OPERATOR DECISION PACKAGE — OP-9 (`hub_supervisor.sh`) + FW-3 (`fleet_watch.sh`), 2026-09-16
+    (`sub-harness`; prepared, the ruling is yours; one pass covers both).**
+    **Decision needed:** may we add supervision lines to the HOST crontab? This is host config, so it is operator-only.
+    **Facts, verified read-only 2026-09-16:**
+    1. **Both failure modes are live now.**
+       - `fleet_watch.sh` is **not running**. Its log (`logs/fleet_watch.log`) was last written
+         2026-08-18T12:54:29Z with no "stopping" line. That matches the devcontainer restart ("Up 4 weeks"):
+         the fleet has been unwatched for ~29 days, and nothing noticed.
+       - The canonical hub supervisor exited 2026-09-14T09:23:50Z.
+       - A replacement (pid 996612) was started 2026-09-15 **from lane worktree
+         `worktrees/mains/autokernel-unified-20260908` with `EPYC_ROOT` set to that lane**. The live hub
+         (pid 2070612) therefore serves the lane's checkout: cwd and PYTHONPATH are the lane. **CORRECTION
+         2026-09-16: that is INTENDED, not a misconfiguration.** Orchestrator `f5476148` (2026-09-09) sets
+         `launch_manifest.yaml` `handoff_dashboard` cwd/pythonpath to that lane, which carries 8+ dashboard
+         commits root main lacks. The actual defects: the supervisor ignored the manifest (it hard-coded
+         `cwd=EPYC_ROOT`), and deploy-sync wrote into a lane. Live drift: the hub runs with
+         `AUTOKERNEL_LOOP_STORE_ROOT=…/aku-glm53-continuous-20260915-v12`, but the manifest says
+         `…/aku12a-glm53-five-loop-store`, so a manifest-driven relaunch switches store.
+       - Deploy-sync has written origin/main dashboard files **into that lane's working tree**:
+         - The lane's own `logs/hub_supervisor.log` shows writes on 09-10, 09-11 and 09-14, and on
+           09-15T20:53Z (`README.md`, `registry.json`, `server.py`, `static/cockpit.html`). So lane-rooted
+           supervisors have run on and off since at least 09-10.
+         - The lane's `git status` shows ` M dashboard/{README.md,registry.json,server.py}` and
+           `?? dashboard/static/cockpit.html`.
+    2. **Everything runs inside the devcontainer `epyc-root`.** It has its own mount namespace, and its `/tmp`
+       and uv python are private. The only cron is the host's `cron.service`; the container has no `cron`
+       or `crontab`. The 08-24 line, installed as written, would run on the host:
+       - the host `/tmp` lock cannot see the container daemon's lock, so the "self-exits when the daemon
+         runs" guarantee does not hold;
+       - the venv python symlink dangles on the host, so a host `python3` hub would start under a host uid
+         that container sessions cannot signal.
+       **The command must enter the container with `docker exec`.**
+    3. **Is `hub_supervisor.sh once` a sound restart primitive? Yes, after the fixes below (code read).**
+       - It is idempotent through `flock` on `/tmp/hub_supervisor_8100.lock`, which is valid inside the
+         container.
+       - It never matches a process by name. It kills only the pid that owns `:8100` (`ss`, then `lsof`),
+         excludes `$$`, escalates SIGTERM→SIGKILL and verifies the death.
+       - The hub is launched with `9>&-`, so it never inherits the lock.
+       - **Four defects are fixed on branch `sub/harness-evidence-20260916`, commit `034dccbe`, reworked in
+         `31d95ad8`.** (i) is superseded: the supervisor now launches from the manifest (cwd/env/argv),
+         skips deploy-sync into a linked-worktree hub source, and refuses only a non-canonical `EPYC_ROOT`
+         (its home). Marker: `HUB_SUPERVISOR_MANIFEST_LAUNCH_V1`. Read-only check: `hub_supervisor.sh plan`.
+         (worktree `/mnt/raid0/llm/worktrees/sub-harness-epyc-root`; new test 10/10, existing supervisor
+         tests green, 147 dashboard pytest pass):
+         - (i) It now **refuses a linked-worktree `EPYC_ROOT`**, checked with `git --git-dir` vs
+           `--git-common-dir`. This is namespace-independent, unlike the reverted `/proc` probe; exit 3;
+           override `HUB_ALLOW_LINKED_WORKTREE=1`. Without this fix, a cron `once` meets the lane daemon's
+           lock, exits, and the wrong-root hub stays forever.
+         - (ii) A failed stale-source restart used to **abort the loop daemon under `set -e`**, leaving
+           the hub killed and unsupervised. That failure is now reported instead.
+         - (iii) A kill now needs **two failed `/health` probes**, 3 s apart.
+         - (iv) `once` now runs the same deploy-sync → stale-source sequence as `loop`.
+    4. **`fleet_watch.sh --once` is NOT a restart primitive.** It is a diagnostic that raises nothing.
+       The restart primitive is the bare daemon launch. Its `flock` on `logs/.fleet_watch.lock` is
+       bind-mounted and worktree-invariant, so a duplicate exits 3.
+    **Options:**
+    - **(a) Host crontab, entering the container (RECOMMENDED).**
+      - Pros: one `crontab -e` covers both daemons. It recovers within 2 or 5 minutes from a single death
+        **and** from a container restart (the failure that killed `fleet_watch` on 08-18). While the
+        container is down, `docker exec` just fails, harmlessly. Cost is about 1 s every 2 minutes; the
+        deploy-sync fetch stays rate-limited by its shared state file.
+      - Cons: a host change. It depends on the container keeping the name `epyc-root` (set in
+        `.devcontainer/devcontainer.json` `runArgs`) and on the host user being in the `docker` group.
+    - **(b) systemd user units on the host** (`Restart=always`, `ExecStart=docker exec -u node epyc-root …`
+      running the loop daemons).
+      - Pros: restarts in seconds and logs to the journal.
+      - Cons: more host config, including `loginctl enable-linger`. The unit's lifetime is tied to a
+        foreground `docker exec`. The scripts' docstrings already treat this as the heavier path.
+    - **(c) Devcontainer `postStartCommand` launching the tier.**
+      - Pros: no host change.
+      - Cons: covers container restarts only, not a single daemon's death. It needs a container rebuild,
+        and `devcontainer.json` currently carries another session's uncommitted edits.
+    - **(d) Leave as-is.**
+      - Pros: zero change.
+      - Cons: the observed cost continues — 29 days with no `fleet_watch`, and a hub serving a lane
+        checkout right now.
+    **Recommendation: (a),** installed only after `31d95ad8` is merged and the supervisor is relaunched
+    from the canonical home; otherwise cron's `once` defers to a daemon that ignores the manifest. Exact lines for the host user's crontab:
+    ```cron
+    # EPYC supervision tier (OP-9 / FW-3). Runs INSIDE the devcontainer; both targets are flock-idempotent.
+    */2 * * * * docker exec -u node epyc-root /mnt/raid0/llm/epyc-root/scripts/dashboard/hub_supervisor.sh once >>/mnt/raid0/llm/epyc-root/logs/cron_supervision.log 2>&1
+    */5 * * * * docker exec -d -u node -e PATH=/opt/rocm/bin:/usr/local/bin:/usr/bin:/bin epyc-root setsid -f /mnt/raid0/llm/epyc-root/scripts/coordination/fleet_watch.sh
+    ```
+    An optional third line gives the same coverage to the rest of the tier (reboot-gated row 4):
+    `*/2 * * * * docker exec -u node epyc-root /mnt/raid0/llm/epyc-root/scripts/coordination/bus_supervisor.sh once >>/mnt/raid0/llm/epyc-root/logs/cron_supervision.log 2>&1`.
+    **Sequence on approval (main session schedules the process steps; none were done here):**
+    1. Merge `034dccbe` + `31d95ad8`.
+    2. Coordinate with the `autokernel-unified-20260908` owner, then stop supervisor pid 996612.
+       The hub stays up, because it is setsid-detached.
+    3. Relaunch it canonically with `EPYC_ROOT` unset:
+       `nohup setsid -f /mnt/raid0/llm/epyc-root/scripts/dashboard/hub_supervisor.sh > /mnt/raid0/llm/epyc-root/logs/hub_supervisor.out 2>&1 &`.
+    4. ~~Move the hub to the canonical root~~ **Withdrawn 2026-09-16:** the lane hub is the manifest's
+       intent (`f5476148`). Do not move it. Resolve the loop-store env drift in the manifest instead.
+    5. Tell the lane owner that the dashboard files listed above were written into their tree by deploy-sync,
+       not by them, so they must not ride into a lane commit.
+    6. The operator installs the lines above.
+    7. Verify:
+       - `docker exec -u node epyc-root …/hub_supervisor.sh once; echo $?` → `0`, and the log says
+         "another supervisor already holds";
+       - `fleet_watch.log` shows a fresh "fleet_watch started" line within 5 minutes.
+    8. Tick this parent row and FW-3.
   - [x] **Timeline artifact lags lane-worktree commits.** ✅ 2026-08-24 — `install_timeline_hook.sh`
     regen body now resolves the PRIMARY worktree (`git worktree list --porcelain` first entry;
     verified lanes resolve to `/mnt/raid0/llm/epyc-root`, same inode as `/workspace`) instead of

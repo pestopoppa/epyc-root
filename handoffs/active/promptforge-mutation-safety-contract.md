@@ -71,18 +71,56 @@ so this is a **new active stub, not a reopen**.
       (intake-1395#record). One leakage checker serves prompt and code mutations. Instruction text
       ("don't overfit") is not the fix (intake-1379#record; intake-1395#record, where validity
       prompting moved -6.2 pp). EvilGenie partial-hardcoding class (intake-1387#record).
+      ⏳ PARTIAL 2026-09-16 (`sub-autopilot-safety`, orchestrator `8219d8e8` on branch
+      `sub/autopilot-safety-20260916`, NOT yet merged; box stays open: the id-vocabulary guard below does
+      not yet cover the 2026-09-15 structural form's n-gram / expected-answer / source-identity refusals): `EvalIdVocabulary` + `eval_leakage_reason()`
+      in `prompt_forge.py`, applied to the ADDED text of prompt, code and GEPA mutations. The vocabulary
+      comes from eval data, not a hand list: research `question_pool.jsonl` (required), `core_*.jsonl`
+      and the sentinel YAMLs → 153,450 ids (pool ids, nested core qids, prompt-hash qids), 295 id
+      families derived from them, and suite/id-stem anchored references, plus a qualified generic
+      pattern (`sample #12`, `task_id == 17`). **Fail-closed**: a missing or unreadable pool rejects
+      every mutation (`eval_leakage_vocabulary_unavailable`). Measured false positives: 0 over all 33
+      current prompt + allowlisted code targets (a regression test pins this), and 1 file of 444
+      docs/src files, where both hits were real instance references. Open Question 2: keyed on ids plus
+      prompt-hash qids (content hashes of text); image-bound qids are not included.
+      `tests/unit/test_prompt_forge_leakage_and_risk.py` (73 tests).
 - [ ] **MHS-4 — ANTI-OVERRIDE risk prior.** Rank/gate mutations by CONSTRAIN (add a check, block a bad
       path, re-prompt) vs REPLACE (rewrite/force an action, hard-code an answer). In the released
       corpus **every** catastrophic held-out regression came from an override patch; the trained
       editor converged constrain-only across all 9 patches and all 3 seeds. Encode as a mutation-type
       risk weight. `intake-1323#04`. Zero compute. Consumer: AP-52 in
       [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md).
+      **IMPLEMENTED 2026-09-16, NOT YET ON MAIN — flip on merge** (`sub-autopilot-safety`, orchestrator `8219d8e8`, branch `sub/autopilot-safety-20260916`, unmerged): `MUTATION_EFFECT_RISK`
+      (inert 0.05 < constrain 0.25 < expand 0.50 < replace 0.90 < unknown 1.0 < unsafe ∞), carried as
+      `effect_risk` on both `CodeMutation` and `PromptMutation`. Prompt text is now classified too
+      (`classify_prompt_effect`). `rank_mutations_by_risk()` orders candidates safest-first. The gate
+      `AUTOPILOT_MUTATION_RISK_GATE` (default 1.0 refuses only unclassified effects; 0.9 means
+      constrain/expand-only; it can only be tightened) runs at propose time and again at both code
+      apply paths, and the proposer prompt now carries the anti-override rule. **Weights are an ordinal
+      prior, uncalibrated**. MHS-5 below supports the ordering but shows CONSTRAIN is not
+      regression-free. Same test file.
 - [ ] **MHS-5 — Mine `examples/heldout_generalization/` as a labelled contrastive corpus.** 23
       patches, 3 editors, identical 10-failure evidence, 3 seeds, per-patch sha256, hook sets,
       validation errors, rescued/regressed counts over 1,270 held-out tasks; Apache-2.0.
       Discriminating features already extracted by the dive: effect kind, hook-set stability,
       benchmark-scaled length, rescue:regression ratio. MH-7's contrastive-trace capture is the
       existing consumer. Feeds MHS-4. `intake-1323#07`. Zero compute.
+      **IMPLEMENTED 2026-09-16, NOT YET ON MAIN — flip on merge** (`sub-autopilot-safety`, orchestrator `4f28e6c3`, branch `sub/autopilot-safety-20260916`, unmerged): sparse-fetched
+      Harness-R1 @ `411bb548` (the dive-verified revision). `scripts/autopilot/species/heldout_effect_corpus.py`
+      derives `orchestration/datasets/harness_r1_heldout_effect_corpus.json` with labels only, no patch
+      code: 27 cells, sha256-verified, effect kinds read by AST and mapped onto `MutationEffect`, plus
+      hooks, code length, delta, and rescued/regressed counts. **Result (23 valid patches):** the MHS-4
+      ORDERING holds. All 4 REPLACE patches regressed (mean −8.4 pp, rescue:regression 0.21); the 19
+      CONSTRAIN patches averaged +3.9 pp (1.65). **But the claim "every catastrophic held-out
+      regression came from an override patch" does NOT hold on this corpus.** The single worst valid
+      patch (DeepSeek-V4-Pro alfworld seed 20260721, −83 on 490 = −16.9 pp, 130 regressed) is
+      hint-only (`inject_hint`). A block-only patch also lost 34 (−6.9 pp). 4 of 19 CONSTRAIN patches
+      regressed. Confound: 9 of the 19 CONSTRAIN patches come from the trained Harness-R1 editor.
+      Consequence: the MHS-4 weights stay ordinal; the gate ranks risk, it does not certify safety
+      (code comment and operator guide updated). **Belief-kernel note for the owning session:** this
+      contradicts the MHS-4 row's own rationale text, which is `intake-1323#04`; that claim should be
+      recorded as refuted or qualified. `tests/unit/test_heldout_effect_corpus.py` (15 tests) pins
+      both the ordering and the refutation. MH-7 wiring was not done (out of scope for this row).
 - [ ] **MHS-6 (record, no work) — Optimizer budget shape.** Record it as **"constant in training-set
       size, LARGE constant"**: 1 + T_ReAct calls/iteration, T_ReAct 10–20 at B = N_train ⇒ 11–21
       metered calls, vs EvoSkill 2N/B and SkillOpt K_opt·N/B (K_opt 6–8). At our split sizes this is

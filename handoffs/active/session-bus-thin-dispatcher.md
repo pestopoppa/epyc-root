@@ -1946,6 +1946,7 @@ slate, it produces a fleet of stale artifacts that every liveness predicate read
   stick: the next tick re-presents them. **This is not cosmetic. It asks a human to sign something
   they already signed**, and the E8 gate is the one whose ratified work then aborted, so a re-signature
   would look like authorisation for a cross-era re-run.
+  *Note 2026-09-16: the E8 gate is superseded by operator ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json) (root `1ee8bd7c`). The ruling retires the E8 chain and re-anchors the reseed gate to the current eras; the gate binds only at promotion.*
   Note this became reachable only *because* C27 works: the presentation path is live at
   `authority: manual` now, so a defect in what it presents is newly visible.
   **FIXED, and NOT YET LIVE — see the deploy box below.** Three parts:
@@ -2932,6 +2933,14 @@ from that seat.
   quiet log is what a healthy fleet also looks like. The `flock` single-instance guard is in place,
   so a supervisor can safely relaunch it unconditionally. `bus_supervisor.sh` is the pattern; it was
   not extended from this seat because it has a live owner in a parallel session.
+  - **2026-09-16 (`sub-harness`): the risk has materialised, and the fix is in a joint decision package.**
+    `fleet_watch.sh` is not running. Its last log write was 2026-08-18T12:54:29Z, with no "stopping" line,
+    which matches the devcontainer restart. The fleet has gone about 29 days without a watcher.
+    `--once` cannot serve as the restart primitive, because it is a diagnostic that raises nothing. The bare
+    launch can, because its `flock` sits in the bind-mounted `logs/` directory. The cron line
+    (`docker exec -d … setsid -f …/fleet_watch.sh`, every 5 minutes) is in the **joint OP-9 + FW-3 package**
+    in [`handoff-index-and-backlog-graph.md`](handoff-index-and-backlog-graph.md), next to OP-9. The
+    operator's ruling there closes this row.
 - [x] **WT-1 — the five `.orphan-20260812T1035Z` backup checkouts could write into the LIVE lanes.**
       ✅ 2026-08-12 — neutralised, non-destructively. Each backup dir's `.git` file still held the
       OLD RELATIVE pointer (`../../../../../../workspace/.git/worktrees/<id>`), which resolves to the

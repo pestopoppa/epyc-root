@@ -491,6 +491,15 @@ Formalized from the 2026-07-14 backlog ROI audit ([backlog-roi-audit-2026-07-14.
 - [ ] **EV-13 — review-finding-F1 suite** (M; intake-658, audit RE-3, formalizes the EV-NEW prose below): local code-review benchmark per the Factory-methodology deep-dive (Augment v1 145-bug golden set, ~80-LOC scorer, local models via /v1/chat/completions, ≤2pp judge-swap as first concrete EV-6 cross-family instance); feeds coder-pool composition + Strand Phase C.
   - [x] **EV-13a — build leg** ✅ 2026-07-17: NEW `epyc-inference-research/scripts/benchmark/review_f1/` (clean-room micro-avg P/R/F1 scorer w/ low-severity-neither rule + Mean-F1/StdDev ≥3-run protocol; /v1 harness w/ per-PR atomic incremental persistence + resume, model/quant indexing, judge-swap plumbing, mock/--dry-run transports; assemble_golden_set.py + checksum) + 22 self-contained tests. No inference, no unlicensed vendoring; run-leg CLI documented in review_f1/README.md.
   - [ ] **EV-13b — run leg (INFERENCE → batch-manifest entry)**: source Augment-v1 145-bug set (github.com/ai-code-review-evaluations/golden_comments; raw items lack structured criterion/location → semantic-matcher rides the run leg) + 5 PR diffs; assemble golden_set.json; run the documented harness CLI over local models (≥3 runs) + EV-6 ≤2pp cross-family judge-swap; index by model/quant.
+    - **Sourcing 2026-09-16 (sub-gpu-prep; run still open):** research `e70b6974` on `sub/gpu-prep-20260916`.
+      **Upstream has NO licence** (`license: null`), so no data is committed: `scripts/benchmark/review_f1/fetch_augment_v1.py`
+      fetches into git-ignored `data/external/review_f1/augment_v1/`, pinned by `data/review_f1/augment_v1_manifest.json`
+      (upstream `3f2c8ab794b4`, 50 PR head/base SHAs + diff sha256). **Actual set = 137 bugs (97 scored) / 50 PRs,
+      not 145 / 5.** Goldens carry no file/line; 114/137 name an identifier in their diff. Matcher spec (judge ≠ reader,
+      swap leg, controls ≥95%): `data/review_f1/SEMANTIC_MATCHER_SPEC.md`; `harness.py` judge_config gains
+      `judge_distinct_from_reader`/`cross_family_ok`. Qwen-on-Qwen is not cross-family: the EV-6 ≤2pp leg needs a
+      non-Qwen judge (e.g. gemma4). Tests: `tests/test_augment_v1_manifest.py` 5/5, `test_harness.py` 13/13.
+    - **OPERATOR RULING 2026-09-16:** internal use of the unlicensed Augment-v1 golden set is APPROVED. Data stays out of git (fetch script + manifest only, research `e70b6974`); do not redistribute. Run leg released to the GPU runner with a gemma4 cross-family judge (reader Qwen3.8-27B, judge gemma-4-26B-A4B).
 
 ## Research Intake Update — 2026-06-03
 

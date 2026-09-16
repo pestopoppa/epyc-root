@@ -323,7 +323,7 @@ changed live is that the answer is now *derived* and every exclusion names its r
 
 ### Still open here
 
-- [ ] **`enumerate_feasible` gating was a category error** — it hard-refused on a stale matrix, but
+- [x] **`enumerate_feasible` gating was a category error** — it hard-refused on a stale matrix, but
       the feasibility model reads no measured cell. Now warns and proceeds, stamping
       `consumed_by_this_model: false`. The N-way path still refuses, correctly.
       **2026-08-12 (`mainB`) — VERIFIED ALREADY IMPLEMENTED; this box appears EARNED BUT UNFLIPPED.
@@ -339,6 +339,13 @@ changed live is that the answer is now *derived* and every exclusion names its r
       what the measured evidence looked like."*
       Verified by reading the implementation, not by matching the prose. If the owner agrees, this
       is a one-character flip with the evidence already written above it.
+      ✅ **FLIPPED 2026-09-16 (`sub-sweep`)** — git evidence: the code landed in orchestrator
+      `a517793c` (2026-08-01, "W1 cutover code half…"; `git merge-base --is-ancestor a517793c main`
+      → true), and still stands on main `92bbeb06` in `cmd_enumerate` (`contention_matrix.py` ~:1671-1694,
+      stamp ~:1719). It had no test, so it is now pinned on branch `sub/nextaction-sweep-20260916`
+      `e1c06f72` (integrated by orchestrator merge `864c3b3b`): `test_stale_matrix_does_not_refuse_feasibility_enumeration` (rc 0,
+      `consumed_by_this_model: false`, status ≠ ok) and `test_stale_matrix_still_refuses_nway_enumeration`
+      (rc 2, no manifest written). `tests/unit/test_contention_device_model.py` 27 passed.
 - [x] **Bridge residual 1** — echo `GateDecision` (`admitted`/`waited_s`/`decision`/
       `candidate_topology_idx`) into `/chat` response metadata so the ROUTE-A1 smoke MEASURES the
       verdict instead of inferring it from a 503 timeout.

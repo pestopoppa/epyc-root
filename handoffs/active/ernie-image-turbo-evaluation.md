@@ -142,4 +142,11 @@ enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor
 - [ ] Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs
 - [ ] Run 20-prompt local LongTextBench-style EN/ZH typography spot-check to validate 0.9655 self-report
 - [ ] GPU/MI210 rebench of the 8-step distilled DiT via ROCm/HIP path (operator-approved, measure-not-extrapolate)
+  - **Build ready 2026-09-16 (sub-gpu-prep; run still open):** sd.cpp worktree
+    `/mnt/raid0/llm/worktrees/sub-gpu-prep-stable-diffusion.cpp` (`sub/gpu-prep-20260916` @ `a54f50c`, base `90e87bc`),
+    build `build-rocm-gpuprep-20260916` (shared ggml, HIP gfx90a, ROCm 6.2; sd-server sha256 `5335caad…4862`),
+    carrying the ggml FP8 guard and a ROCm f32 fix on ERNIE `to_out.0`/`linear_fc2` (`SD_ERNIE_ROCM_F32=0` disables it
+    for A/B). `verify_ggml_linkage.sh` PASS (all four ggml libs inside the build dir). Runner recipe (port 18190,
+    768–1024² × 8 steps × 3 repeats, fix on/off, blank-PNG metric, VRAM sampled during the run):
+    `RUNNER_RECIPE.md` in the worktree. Prod `build/` and `build-hip/` untouched.
 - [ ] Re-litigate FLUX.1-schnell alternative if bilingual long-form in-image text not needed by product

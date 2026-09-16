@@ -353,6 +353,34 @@ Gap decisions:
 | `x_max_escalation` is metadata/pass-through only in this route | Keep documented as partial until full graph enforcement is verified | This was already called out in Phase 2; P should validate behavior live before marking the end-to-end command complete. |
 | Clients unable to send nonstandard JSON fields | Document workaround/proxy | The stable contract is typed API fields. Per-client command syntax belongs at the edge. |
 
+#### Call-verb check (HS-1g, added 2026-09-16) — required for every client audited with this instrument
+
+A lever that sits in a config descriptor ("put `x_*` in the body") can be read on one call path and
+**silently ignored** on another. This has now happened in oh-my-pi (`providerOptions`), pi-ai
+(`Model.samplingParams` on low-level `stream()`/`complete()`), Hermes (auxiliary, summary and child
+calls) and llama.cpp's own README (`json_schema` example). Before scoring a client "Sufficient":
+
+1. **List every place the client sends an LLM request** in the pinned tree: low- and high-level
+   verbs (`stream`/`complete`, `streamSimple`/`completeSimple`, `streamText`/`generateObject`,
+   `chat.completions.create`, raw `fetch`). Classify each as main loop, compaction/summary,
+   sub-agent, or auxiliary (title, memory, classifier), and record its path:line.
+2. **Trace each one to the code that builds the JSON body.** Record where the lever is read (hook,
+   options merge, `Object.assign`), and whether that code is reachable from this verb, API mode and
+   model source.
+3. **Check scope and shape.** Does the lever's state reach this call? Check session/agent keys,
+   child agents, aux clients and small/title models. Does the key arrive **top-level and
+   unrenamed**? Watch for namespace unwrapping, camelCase conversion and known-key filters.
+4. **Mark each (request path × lever) cell** HONOURED / SILENT-NO-OP / N/A / UNVERIFIED with
+   `repo@sha path:line`. A SILENT-NO-OP on a path that runs **by default** (compaction, children)
+   blocks a "Sufficient" call until the path is disabled by config or patched.
+
+Results for all five HS-4 candidates are in
+[`harness-selection-and-integration.md`](harness-selection-and-integration.md) under HS-1g.
+**Hermes result:** only the main loop honours the EPYC plugin's `extra_body`. Compression, the
+iteration-limit summary, `flush_memories` and `delegate_task` children bypass it, so the
+2026-07-17 HS-1b "≈0 patch" call holds only with `compression.enabled:false` and `delegate_task`
+gated off.
+
 ### Hermes Upstream Pin Audit — 2026-07-06
 
 `scripts/hermes/hermes_pin_audit.py` is now the no-inference P2.6 checklist.
