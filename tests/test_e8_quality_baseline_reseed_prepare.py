@@ -21,6 +21,14 @@ RUNNER = ORCH / "scripts/benchmark/run_e8_quality_baseline_reseed.py"
 RATIFIER = ROOT / "artifacts/operator/ratify_e8_quality_baseline_protocol_repair_20260727.sh"
 RECEIPT_NAME = "ratify_e8_quality_baseline_protocol_repair_20260727.json"
 
+import pytest
+
+# The runner under test is an epyc-orchestrator script that imports httpx at
+# module scope; that package lives in the orchestrator venv, not the system
+# interpreter root tests usually run under. Skip, with the reason, rather than
+# erroring the whole collection.
+pytest.importorskip("httpx", reason="the E8 runner needs httpx (orchestrator venv)")
+
 _RUNNER_SPEC = importlib.util.spec_from_file_location("e8_root_test_runner", RUNNER)
 assert _RUNNER_SPEC is not None and _RUNNER_SPEC.loader is not None
 runner = importlib.util.module_from_spec(_RUNNER_SPEC)

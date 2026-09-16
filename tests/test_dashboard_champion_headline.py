@@ -66,6 +66,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
@@ -190,6 +191,20 @@ class _Store(unittest.TestCase):
         prior = os.environ.get(loop_status.STORE_ROOT_ENV)
         os.environ[loop_status.STORE_ROOT_ENV] = str(self.root)
         self.addCleanup(self._restore_env, loop_status.STORE_ROOT_ENV, prior)
+
+        # HERMETIC SEAMS (2026-09-16). Since 028d7c3d the canonical champion and
+        # knowledge readers resolve DEFAULT_STORE_ROOT directly (a live trial in
+        # the hub env must not relocate canonical history), and since a1cb667f
+        # the live status follows the host's current-serial-run pointer. Both
+        # would read the REAL host store instead of this fixture, so redirect
+        # both at the module seam — the reader under test is unchanged.
+        patcher = mock.patch.object(loop_status, "DEFAULT_STORE_ROOT", self.root)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        prior_ptr = os.environ.get(loop_status.CURRENT_SERIAL_RUN_ENV)
+        os.environ[loop_status.CURRENT_SERIAL_RUN_ENV] = str(
+            self.root / "no-current-serial-run.json")
+        self.addCleanup(self._restore_env, loop_status.CURRENT_SERIAL_RUN_ENV, prior_ptr)
         self.prod_tree = self.root / "frozen-tree"
         self.prod_sha = make_production_repo(self.prod_tree)
         prior_tree = os.environ.get(loop_status.FROZEN_TREE_ENV)

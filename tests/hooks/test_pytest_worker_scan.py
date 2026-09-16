@@ -18,11 +18,17 @@ generous about position so wrappers (`timeout`, `python -m`, `xargs`) stay caugh
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 
 import pytest
 
 SCANNER = Path(__file__).resolve().parents[2] / "scripts" / "hooks" / "pytest_worker_scan.py"
+# The scanner imports its sibling `shell_scan` (split out 2026-08-18). As a hook it
+# runs as a script, so its own directory is on sys.path; loading it by file path
+# here does not do that, so add it explicitly.
+if str(SCANNER.parent) not in sys.path:
+    sys.path.insert(0, str(SCANNER.parent))
 _spec = importlib.util.spec_from_file_location("pytest_worker_scan", SCANNER)
 assert _spec and _spec.loader
 scan = importlib.util.module_from_spec(_spec)

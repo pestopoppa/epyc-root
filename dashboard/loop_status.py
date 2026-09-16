@@ -1536,27 +1536,12 @@ MANUAL_KEEP_HISTORY = Path(__file__).with_name("data") / "autokernel-manual-reta
 # The original tg128 campaign predates model identity in experiment payloads.
 # Its exact retained commit set is joined to the contemporaneous run record,
 # rather than guessed from a later checkpoint that happens to share a commit.
-_LEGACY_DEEPSEEK_KEEP_COMMITS = frozenset({
-    "61d007867c43cc80ff9c54290a5a45b06b3fa900",
-    "5582ebccfc0cd901e69209277a0c004ae52150d4",
-    "042cb2e41e3886f5498d761d21e6de22064142f8",
-    "bbbce33c8b92d5889d14000b8970c8d6968c0e2d",
-    "2a52f805f0e6234bce0a9ebb21d9bfbee7eb7192",
-    "b04fad244cd69da363c6e5267f145fd0fe3e14cc",
-    "b65e4c524102ef8efb9f0c1c5f8fe5c0f3953e7a",
-    "432e501ff8631efb2f0684ae06285eb658ab8cbd",
-    "63e15dfb99e1b0f8855540106bf19e6c4f1f8f18",
-    "5c68bf1261ca499771c69b488472c1954f3bf6cf",
-    "f972b93b803501eb2f0a02f4a3a501dce0aed1e4",
-    "80f399b706111b9af6079c812aaffdf92b4794d3",
-    "9a115b947292755d2fadd46535762597f0526514",
-    "6e231b07c58d4716fa65d4ac7c8505b36b410ba1",
-    "55101b7e354786f4f26192acdf115bc828016573",
-    "5ad3e36dfb3acc9eda3dd3d5e137dce69a629cdd",
-    "dd161d519d07c0012ab95be6627f1ff63f9383cf",
-    "4925b2084accf03776dddc4931957f06b3d32a77",
-    "732389d6d9d08338fe2ad2457bf8f44205914a7f",
-})
+LEGACY_DEEPSEEK_KEEP_COMMITS_FILE = (Path(__file__).with_name("data")
+                                    / "autokernel-legacy-deepseek-keep-commits.v1.json")
+# Loaded strictly: the file ships with the reader, and a silently empty set
+# would drop the legacy keeps from the trajectory without saying so.
+_LEGACY_DEEPSEEK_KEEP_COMMITS = frozenset(json.loads(
+    LEGACY_DEEPSEEK_KEEP_COMMITS_FILE.read_text(encoding="utf-8"))["commits"])
 _LEGACY_DEEPSEEK_MODEL = "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M"
 _LEGACY_DEEPSEEK_RUN_EVIDENCE = "/mnt/raid0/llm/tmp/run21.log:2"
 _LEGACY_DEEPSEEK_CONFLICT_EVIDENCE = \

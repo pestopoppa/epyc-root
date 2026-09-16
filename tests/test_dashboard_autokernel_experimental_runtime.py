@@ -197,7 +197,14 @@ class ExperimentalRuntimeDashboardApiTest(unittest.TestCase):
         self.assertFalse(activity["gpu"]["expected_now"])
         self.assertTrue(activity["runtime_campaign"]
                         ["excluded_from_kernel_frontier"])
-        self.assertNotIn("champion", json.dumps(initial).lower())
+        # `operator_gates` is a SEPARATE producer (operator-gated manual research,
+        # added beside every campaign receipt by 91da1172) whose own vocabulary is
+        # champion-relative; the claim under test is that the RUNTIME CAMPAIGN is
+        # never labelled a champion, so the sibling block is excluded by key — it
+        # must still be present and still be its own block.
+        self.assertIn("operator_gates", initial)
+        campaign_only = {k: v for k, v in initial.items() if k != "operator_gates"}
+        self.assertNotIn("champion", json.dumps(campaign_only).lower())
         self.assertEqual([row["id"] for row in activity["pipeline"]],
                          list(STAGES))
 
