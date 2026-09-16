@@ -130,7 +130,6 @@ Most of this routine is now private to your lane. Four things are not, because t
 | the master index's generated block | 3 | regenerated from every index; last writer wins |
 | `python3 scripts/handoffs/index_state.py` regen | 3 | rewrites `.index-state.json` + `.index-graph.json`, which nobody authors |
 | `wiki/source_manifest.json` | 5 | one tracked manifest + shared watermark of the whole repo's sources |
-| `wiki/.last_compile` | 5 | untracked timestamp companion of the manifest; two writers lose one session's compile |
 | the promotion merge to `main` | 7 | two merges racing the same branch tip |
 
 Take a lease around **those steps only** — not the whole wrap-up. Steps 1, 2, 4 and your own
@@ -429,8 +428,8 @@ Compile any loose knowledge into the project wiki so findings don't stay buried 
 `wrapup_lease_release`):
 `wiki/source_manifest.json` is the tracked, shared watermark — one for the entire repo,
 regardless of which worktree the scanner runs from (selection is a content-hash diff
-against it, never filesystem mtimes). `wiki/.last_compile` is its untracked timestamp
-companion. Two sessions compiling concurrently means the second `--touch` regenerates the
+against it, never filesystem mtimes); its `last_compile` field is the only compile
+timestamp (the gitignored `wiki/.last_compile` file is retired, KB-WM-4). Two sessions compiling concurrently means the second `--touch` regenerates the
 watermark past sources the first never wrote pages for — the loss is silent and only shows
 up as knowledge that never got compiled. The scanner refuses loudly (exit 1) when the
 tracked manifest is missing or unreadable rather than guessing.
@@ -448,12 +447,12 @@ tracked manifest is missing or unreadable rather than guessing.
      /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py --touch
      ```
      (`--touch` regenerates the tracked manifest from the current source set and advances
-     `.last_compile`; commit the regenerated manifest so the watermark is shared.)
+     its `last_compile`; commit the regenerated manifest so the watermark is shared.)
    - **Compiled only part of the delta? Scope the touch** (OP-34, adopted 2026-09-16):
      `compile_sources.py --touch <SCOPE>` (a source type, file, directory prefix or glob;
      repeatable or comma-separated) or `--type <T> --touch` advances ONLY the in-scope manifest
-     entries, carries the rest unchanged so uncompiled sources stay in the next delta, and leaves
-     `.last_compile` alone. An unmatched scope exits 1. Bare `--touch` stays whole-manifest — use
+     entries, carries the rest unchanged so uncompiled sources stay in the next delta, and keeps
+     the manifest's `last_compile`. An unmatched scope exits 1. Bare `--touch` stays whole-manifest — use
      it only when you compiled the entire delta.
 4. Keep compilation incremental — only process sources whose content hash differs from the
    tracked `wiki/source_manifest.json`.

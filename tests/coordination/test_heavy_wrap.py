@@ -297,15 +297,21 @@ def test_full_wrap_transaction_end_to_end(fleet):
                for a in actions)
     # 5. structural validation passed; 6. freshness shard written
     assert result["steps"]["regenerate"]["validations"][0]["exit_code"] == 0
-    shard = fleet["lane"] / f"progress/{MONTH}/{DAY}-{AGENT}.md"
-    assert shard.exists()
+    # step_6 stamps the shard with the wall clock, not the fixture DAY
+    shards = sorted((fleet["lane"] / "progress").glob(f"*/*-{AGENT}.md"))
+    assert len(shards) == 1, shards
+    shard = shards[0]
     assert f"## Heavy wrap `wr-full`" in shard.read_text(encoding="utf-8")
-    # 7. wiki compiled LAST with the manifest + watermark
+    # 7. wiki compiled LAST with the manifest; the watermark is a receipt only
     manifest = json.loads((fleet["lane"] / "wiki" / "source_manifest.json").read_text())
     assert manifest["compiled_by"] == ["wr-full"]
-    watermark = (fleet["lane"] / "wiki" / ".last_compile").read_text().strip()
+    watermark = result["wiki"]["watermark"]
     assert watermark.startswith("wr-full ")
-    assert result["wiki"]["watermark"] == watermark
+    # KB-WM-4: wiki/.last_compile is retired — never written, never committed
+    # (it is gitignored in the real repo, so staging it made step 8 fail)
+    assert (fleet["lane"] / "wiki" / ".last_compile").exists() is False
+    assert "wiki/.last_compile" not in _git(
+        fleet["lane"], "log", "--all", "--name-only", "--format=").stdout.split()
     # 8. commit + push + packet
     assert result["steps"]["commit_push"]["pushed"] is True
     packet = json.loads((fleet["lane"] / "artifacts" / "wrap" / "wr-full-packet.json").read_text())

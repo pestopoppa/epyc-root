@@ -43,7 +43,6 @@ FORBIDDEN_EXACT = frozenset({
     "handoffs/active/inference-batch-loop.md",
     "data/handoff_timeline.json",
     "wiki/source_manifest.json",
-    "wiki/.last_compile",
 })
 
 

@@ -35,12 +35,12 @@ tmp/*
 .gitnexus
 core
 .coverage
-.last_compile
 
 # Local test/compile cruft
 .coverage
 .coverage.*
 coverage.json
+# wiki/.last_compile is RETIRED (KB-WM-4); kept ignored so a stale local copy stays inert
 .last_compile
 
 # Backup artifacts (bundles, archives — never commit binaries)

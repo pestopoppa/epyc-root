@@ -239,8 +239,8 @@ def repo_key(repo: os.PathLike | str) -> str:
 #
 # Added 2026-08-12 (phase 3, task C3) for the WRAP-UP LEASE: concurrent wrap-ups in
 # five lane worktrees collide on a small set of genuinely shared surfaces (the
-# master-index generated block, wiki/source_manifest.json, wiki/.last_compile, the
-# index_state.py regen) and on the promotion merge. That needs the same primitive as
+# master-index generated block, wiki/source_manifest.json, the index_state.py
+# regen) and on the promotion merge. That needs the same primitive as
 # the push lock — O_EXCL create, holder named in the file, no silent expiry, keyed on
 # the git common dir so every worktree of one clone contends — but it is NOT the push
 # lock: holding one must not block the other, and a wrap-up lease is held for minutes

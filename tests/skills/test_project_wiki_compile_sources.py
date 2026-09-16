@@ -30,7 +30,6 @@ def _load_module():
 def _configure_temp_project(module, root: Path) -> None:
     module.ROOT = root
     module.CONFIG = {
-        "last_compile": "wiki/.last_compile",
         "source_manifest": "wiki/source_manifest.json",
         "skip_filenames": ["INDEX.md"],
         "skip_patterns": ["*-index.md"],
@@ -39,7 +38,6 @@ def _configure_temp_project(module, root: Path) -> None:
             {"path": "progress", "type": "progress", "recurse": True},
         ],
     }
-    module.LAST_COMPILE_PATH = root / "wiki" / ".last_compile"
     module.SOURCE_MANIFEST_PATH = root / "wiki" / "source_manifest.json"
     module.SKIP_FILENAMES = set(module.CONFIG["skip_filenames"])
     module.SKIP_PATTERNS = module.CONFIG["skip_patterns"]
@@ -353,9 +351,10 @@ def test_refresh_tracked_manifest_advances_watermark(tmp_path: Path) -> None:
     stored = json.loads(module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8"))
     assert stored["source_set_hash"] == refreshed["source_set_hash"]
     assert stored["kind"] == module.MANIFEST_KIND
-    last_compile = module.LAST_COMPILE_PATH.read_text(encoding="utf-8").strip()
-    assert last_compile.endswith("Z")
-    assert last_compile == stored["last_compile"]
+    assert stored["last_compile"].endswith("Z")
+    assert refreshed["last_compile"] == stored["last_compile"]
+    # KB-WM-4: the retired watermark file is never written
+    assert not (tmp_path / "wiki" / ".last_compile").exists()
     assert module.incremental_since_tracked_manifest(None)["total_new"] == 0
 
 
@@ -391,8 +390,7 @@ def test_scoped_touch_by_type_leaves_other_types_pending(tmp_path: Path) -> None
     module = _load_module()
     _configure_temp_project(module, tmp_path)
     alpha, _beta, gamma = _three_source_baseline(module, tmp_path)
-    module.touch_last_compile()
-    watermark = module.LAST_COMPILE_PATH.read_text(encoding="utf-8")
+    module.refresh_tracked_manifest()  # a full compile stamps last_compile
     saved_last_compile = json.loads(
         module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8")
     )["last_compile"]
@@ -406,8 +404,8 @@ def test_scoped_touch_by_type_leaves_other_types_pending(tmp_path: Path) -> None
     assert refreshed["last_touch"]["scope_types"] == ["handoff-active"]
     assert refreshed["last_touch"]["advanced"] == {"added": 0, "changed": 1, "removed": 0}
     assert _delta_paths(module) == ["progress/2026-06/gamma.md"]
-    # the fleet-wide watermark is not advanced by a partial compile
-    assert module.LAST_COMPILE_PATH.read_text(encoding="utf-8") == watermark
+    # the compile timestamp is not advanced by a partial compile
+    assert saved_last_compile is not None
     assert refreshed["last_compile"] == saved_last_compile
 
 
@@ -491,7 +489,8 @@ def test_cli_bare_touch_keeps_unscoped_behaviour(tmp_path: Path, monkeypatch, ca
     stored = json.loads(module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8"))
     assert stored["mode"] == "touch"
     assert "last_touch" not in stored
-    assert module.LAST_COMPILE_PATH.exists()
+    assert stored["last_compile"].endswith("Z")
+    assert not (tmp_path / "wiki" / ".last_compile").exists()
     assert _delta_paths(module) == []
 
 
@@ -503,8 +502,13 @@ def test_cli_touch_with_type_or_scope_is_scoped(tmp_path: Path, monkeypatch, cap
     _write(beta, "# Beta\n\nChanged.\n")
     _write(gamma, "# Gamma\n\nChanged.\n")
 
+    saved_last_compile = json.loads(
+        module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8")
+    )["last_compile"]
     assert _run_main(module, monkeypatch, ["--type", "progress", "--touch"]) == 0
-    assert not module.LAST_COMPILE_PATH.exists()
+    assert json.loads(
+        module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8")
+    )["last_compile"] == saved_last_compile
     assert _delta_paths(module) == ["handoffs/active/alpha.md", "handoffs/active/beta.md"]
 
     assert _run_main(
@@ -514,3 +518,69 @@ def test_cli_touch_with_type_or_scope_is_scoped(tmp_path: Path, monkeypatch, cap
 
     assert _run_main(module, monkeypatch, ["--touch", "no-such-type-or-path"]) == 1
     assert "matches no saved or current source" in capsys.readouterr().err
+
+
+# --- KB-WM-4: wiki/.last_compile is retired ---------------------------------
+
+
+def test_last_compile_file_helpers_are_retired() -> None:
+    module = _load_module()
+    for name in ("LAST_COMPILE_PATH", "get_last_compile", "get_last_compile_iso",
+                 "get_last_compile_source", "touch_last_compile"):
+        assert not hasattr(module, name), name
+
+
+def test_stale_last_compile_file_never_leaks_into_manifest(tmp_path: Path) -> None:
+    """A leftover heavy_wrap-format file must not become the manifest's timestamp.
+
+    Before KB-WM-4, build_manifest copied the raw text of wiki/.last_compile
+    (heavy_wrap wrote "<request_id> <iso>") into every emitted manifest.
+    """
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    _write_baseline(module, tmp_path, [(alpha, "# Alpha\n")])
+    stored = json.loads(module.SOURCE_MANIFEST_PATH.read_text(encoding="utf-8"))
+    stored["last_compile"] = "2026-09-01T00:00:00Z"
+    module.SOURCE_MANIFEST_PATH.write_text(json.dumps(stored), encoding="utf-8")
+    stale = tmp_path / "wiki" / ".last_compile"
+    stale.write_text("wr-stale 2026-09-15T10:00:00+00:00\n", encoding="utf-8")
+
+    emitted = module.build_manifest(module.scan_sources(0.0, None), "full")
+    assert emitted["last_compile"] == "2026-09-01T00:00:00Z"
+
+    refreshed = module.refresh_tracked_manifest()
+    assert refreshed["last_compile"] != "2026-09-01T00:00:00Z"
+    assert refreshed["last_compile"].endswith("Z")
+    # the stale file is left untouched (inert), never rewritten
+    assert stale.read_text(encoding="utf-8") == "wr-stale 2026-09-15T10:00:00+00:00\n"
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("2026-09-01T00:00:00Z", "2026-09-01T00:00:00Z"),
+        ("2026-09-01T02:00:00+02:00", "2026-09-01T00:00:00Z"),
+        ("2026-09-01T00:00:00", "2026-09-01T00:00:00Z"),
+        ("wr-full 2026-09-01T00:00:00+00:00", None),
+        ("", None),
+        (None, None),
+        (12345, None),
+    ],
+)
+def test_manifest_last_compile_is_normalized_iso(tmp_path: Path, raw, expected) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    module.SOURCE_MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
+    module.SOURCE_MANIFEST_PATH.write_text(
+        json.dumps({"last_compile": raw}), encoding="utf-8"
+    )
+    assert module._manifest_last_compile_iso() == expected
+
+
+def test_manifest_last_compile_tolerates_non_dict_manifest(tmp_path: Path) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    module.SOURCE_MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
+    module.SOURCE_MANIFEST_PATH.write_text("[1, 2]", encoding="utf-8")
+    assert module._manifest_last_compile_iso() is None

@@ -16,12 +16,19 @@ from the current source set after the reported delta has been compiled, so
 the next incremental run reports nothing; the manifest is tracked, so a lane
 --touch records the same content hashes a shared-clone --touch would.
 
+The compile timestamp lives ONLY in the tracked manifest's ``last_compile``
+field (ISO-8601 UTC, ``YYYY-MM-DDTHH:MM:SSZ``). The former gitignored
+``wiki/.last_compile`` watermark file is RETIRED (KB-WM-4, 2026-09-16): it
+no longer drove selection, it had two writers with incompatible formats, and
+a stale copy leaked verbatim into every emitted manifest. Nothing reads or
+writes it; a leftover copy in a checkout is inert and may be deleted.
+
 Adapted for epyc-root's flat directory layout (no per-user nesting).
 
 Usage (run with the orchestrator venv interpreter — PyYAML is required):
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py  # incremental (content-hash diff vs tracked manifest)
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --full  # all sources regardless of the baseline
-    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --touch  # advance the tracked manifest + .last_compile after compiling the delta
+    /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --touch  # advance the tracked manifest (and its last_compile) after compiling the delta
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --touch research --touch progress/2026-09  # scoped: advance only those entries (OP-34)
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --type research  # filter by source type
     /workspace/repos/epyc-orchestrator/.venv/bin/python compile_sources.py --since 2026-04-01  # explicit mtime since-date override (not the default selection)
@@ -82,7 +89,6 @@ def load_config() -> dict:
     config_path = ROOT / "wiki.yaml"
     defaults = {
         "output_dir": "wiki",
-        "last_compile": "wiki/.last_compile",
         "source_manifest": "wiki/source_manifest.json",
         "skip_filenames": ["INDEX.md", "README.md", "master-handoff-index.md"],
         "skip_patterns": ["*-index.md"],
@@ -111,7 +117,6 @@ def load_config() -> dict:
 
 
 CONFIG = load_config()
-LAST_COMPILE_PATH = ROOT / CONFIG["last_compile"]
 SOURCE_MANIFEST_PATH = ROOT / CONFIG.get("source_manifest", "wiki/source_manifest.json")
 SKIP_FILENAMES = set(CONFIG["skip_filenames"])
 SKIP_PATTERNS = CONFIG["skip_patterns"]
@@ -157,62 +162,36 @@ def should_skip(filename: str) -> bool:
 
 
 def _manifest_last_compile_iso() -> str | None:
-    """The tracked manifest's own `last_compile`, or None.
+    """The tracked manifest's own ``last_compile`` (ISO-8601 UTC), or None.
 
-    `.last_compile` is GITIGNORED, so `git worktree add` never populates it and a
-    linked worktree reports an epoch watermark — which the scanner cannot tell apart
-    from "never compiled". Measured 2026-09-03: that made a real drift of 52 sources
-    report as 928, an 18x overstatement, and the fiction had persisted long enough to
-    be mistaken for a standing backlog. The manifest IS tracked and carries the
-    watermark of the compile that wrote it, so it is the correct fallback: strictly
-    monotone-improving, and it can never advance past a real watermark.
+    This is the only compile timestamp. The retired ``wiki/.last_compile`` file
+    (KB-WM-4) is never consulted: it was gitignored, so lane worktrees never had
+    it, and its two writers disagreed on format. A value that does not parse as
+    ISO-8601 is reported as None rather than copied forward.
     """
     try:
         with open(SOURCE_MANIFEST_PATH) as fh:
-            return (json.load(fh) or {}).get("last_compile") or None
-    except (OSError, ValueError):
+            value = (json.load(fh) or {}).get("last_compile")
+    except (OSError, ValueError, AttributeError):
         return None
+    return _normalize_iso(value)
 
 
-def get_last_compile_source() -> str:
-    """Which basis get_last_compile() used: last_compile_file | source_manifest | none."""
-    if LAST_COMPILE_PATH.exists() and LAST_COMPILE_PATH.read_text().strip():
-        return "last_compile_file"
-    return "source_manifest" if _manifest_last_compile_iso() else "none"
-
-
-def get_last_compile() -> float:
-    """Read .last_compile timestamp, falling back to the tracked manifest. 0.0 if neither."""
-    text = ""
+def _normalize_iso(value: object) -> str | None:
+    """Return ``value`` as a canonical ``YYYY-MM-DDTHH:MM:SSZ`` string, or None."""
+    if not isinstance(value, str) or not value.strip():
+        return None
     try:
-        if LAST_COMPILE_PATH.exists():
-            text = LAST_COMPILE_PATH.read_text().strip()
-    except OSError:
-        text = ""
-    if not text:
-        text = _manifest_last_compile_iso() or ""
-    if not text:
-        return 0.0
-    try:
-        dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
-        return dt.timestamp()
+        dt = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
     except ValueError:
-        return 0.0
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def get_last_compile_iso() -> str | None:
-    """Read .last_compile as ISO string, falling back to the tracked manifest's."""
-    if not LAST_COMPILE_PATH.exists():
-        return _manifest_last_compile_iso()
-    text = LAST_COMPILE_PATH.read_text().strip()
-    return text if text else None
-
-
-def touch_last_compile() -> None:
-    """Write current UTC timestamp to .last_compile."""
-    LAST_COMPILE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    LAST_COMPILE_PATH.write_text(ts + "\n")
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def extract_title(path: Path) -> str:
@@ -346,7 +325,7 @@ def build_manifest(sources: list[dict], mode: str) -> dict:
     return {
         "schema_version": MANIFEST_SCHEMA_VERSION,
         "kind": MANIFEST_KIND,
-        "last_compile": get_last_compile_iso(),
+        "last_compile": _manifest_last_compile_iso(),
         "scan_time": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "mode": mode,
         "sources": sources,
@@ -529,8 +508,8 @@ def refresh_tracked_manifest() -> dict:
             f"no tracked baseline manifest at {SOURCE_MANIFEST_PATH}; "
             "run --full --write-manifest first (nothing is recorded compiled)"
         )
-    touch_last_compile()
     full = build_manifest(scan_sources(0.0, None), "touch")
+    full["last_compile"] = _utc_now_iso()
     write_manifest(SOURCE_MANIFEST_PATH, full)
     return full
 
@@ -588,9 +567,8 @@ def refresh_tracked_manifest_scoped(types: set[str], paths: set[str]) -> dict:
     In-scope entries are replaced by the current scan (added, changed, and
     removed sources all land); out-of-scope entries are carried over from the
     saved manifest byte-for-byte, so another lane's uncompiled delta stays
-    visible to the next incremental scan. The fleet-wide ``.last_compile``
-    watermark is NOT advanced and the manifest's ``last_compile`` is kept —
-    a partial compile is not a compile of everything. The scope that was
+    visible to the next incremental scan. The manifest's ``last_compile`` is
+    kept — a partial compile is not a compile of everything. The scope that was
     applied is recorded under ``last_touch`` for review.
 
     Raises ValueError when no baseline exists or a scope token matches no
@@ -640,9 +618,9 @@ def refresh_tracked_manifest_scoped(types: set[str], paths: set[str]) -> dict:
             merged.append(source)
 
     manifest = build_manifest(merged, "touch:scoped")
-    manifest["last_compile"] = saved.get("last_compile")
+    manifest["last_compile"] = _normalize_iso(saved.get("last_compile"))
     manifest["last_touch"] = {
-        "at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "at": _utc_now_iso(),
         "scope_types": sorted(types),
         "scope_paths": sorted(paths),
         "advanced": touched,
@@ -679,10 +657,10 @@ def main() -> int:
         help=(
             "After compiling the reported delta, advance the tracked source "
             "manifest. Bare --touch (without --type) regenerates the whole "
-            "manifest and advances .last_compile. --touch SCOPE (repeatable, "
+            "manifest and advances its last_compile. --touch SCOPE (repeatable, "
             "or comma-separated; a source type, a path, a directory prefix or "
             "a glob) and --touch --type T advance ONLY the in-scope entries "
-            "and leave .last_compile alone."
+            "and keep the manifest's last_compile."
         ),
     )
     parser.add_argument(
@@ -828,14 +806,14 @@ def main() -> int:
                 f"touch (scoped: {', '.join(scope_tokens)}): advanced "
                 f"{SOURCE_MANIFEST_PATH} for in-scope sources only "
                 f"(+{adv['added']} ~{adv['changed']} -{adv['removed']}); "
-                f"{LAST_COMPILE_PATH} left unchanged",
+                "last_compile left unchanged",
                 file=sys.stderr,
             )
         else:
             print(
                 f"touch: regenerated {SOURCE_MANIFEST_PATH} from the current "
-                f"source set ({len(refreshed['sources'])} sources) and advanced "
-                f"{LAST_COMPILE_PATH}",
+                f"source set ({len(refreshed['sources'])} sources); "
+                f"last_compile={refreshed['last_compile']}",
                 file=sys.stderr,
             )
 
