@@ -8,6 +8,7 @@ Spec: docs/design/vidya-pilot-spec.md §15.2 (pilot commands), §11 (ledger and 
     vidya checkpoint [--emit]          compute (and optionally publish) an L1 checkpoint
     vidya verify                       verify the chain, and the checkpoint history if present
     vidya ingest     intake [--limit]  run the research-intake adapter (read-only source)
+    vidya ingest     <file source> [--path P]  run a file-shaped adapter (ingest_sources.py)
 
 Every command prints the ledger frontier and the fold/policy versions it used, because an answer
 without its frontier is not reproducible. Every command is machine-readable with --json.
@@ -542,6 +543,13 @@ def cmd_binding_emit(args) -> int:
 
 AUTOKERNEL_CORPUS_ROOT = Path("/mnt/raid0/llm/autokernel")
 INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
+# Kept literal (not imported) so `cli.py --help` stays cheap; test_ingest_sources pins it
+# equal to ingest_sources.SOURCES.
+_FILE_SOURCES = (
+    "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
+    "chat-template-ab", "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
+    "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
+)
 
 
 def _ingest_autokernel(args) -> int:
@@ -614,7 +622,24 @@ def _ingest_inf70(args) -> int:
     return _emit(report, args.json, "\n".join(human))
 
 
+def _ingest_file_source(args) -> int:
+    """The file-shaped adapters (``ingest_sources.SOURCES``): KB-RAG query length, SC75
+    INF-70 serving arms, and every sidecar reader that had no ingest name before 2026-09-16."""
+    import ingest_sources  # noqa: PLC0415
+
+    paths = [Path(p) for p in (args.path or [])] or ([Path(args.root)] if args.root else None)
+    try:
+        report = ingest_sources.ingest(_ledger(args), args.adapter, paths, as_of=args.as_of,
+                                       limit=args.limit, dry_run=args.dry_run)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    return _emit(report, args.json, ingest_sources.human(report))
+
+
 def cmd_ingest(args) -> int:
+    if args.adapter in _FILE_SOURCES:
+        return _ingest_file_source(args)
     if args.adapter == "autokernel":
         return _ingest_autokernel(args)
     if args.adapter == "inf70":
@@ -786,7 +811,9 @@ def build_parser() -> argparse.ArgumentParser:
     be.set_defaults(func=cmd_binding_emit)
 
     i = sub.add_parser("ingest", help="run a source adapter")
-    i.add_argument("adapter", choices=["intake", "autokernel", "inf70"])
+    i.add_argument("adapter", choices=["intake", "autokernel", "inf70", *_FILE_SOURCES])
+    i.add_argument("--path", action="append",
+                   help="file or directory for a file-shaped source (repeatable)")
     i.add_argument("--index", help="path to intake_index.yaml")
     i.add_argument("--root", help="corpus root for the autokernel adapter "
                                   f"(default {AUTOKERNEL_CORPUS_ROOT}) or for the "

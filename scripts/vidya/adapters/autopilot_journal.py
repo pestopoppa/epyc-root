@@ -54,20 +54,25 @@ def shards(root: Path | None = None) -> list[Path]:
 def iter_measured_rows(root: Path | None = None) -> Iterator[tuple[Path, dict]]:
     """Yield (shard, row) for trial rows that recorded a measurement tuple."""
     for shard in shards(root):
-        with open(shard, errors="ignore") as fh:
-            for line in fh:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    row = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                if not isinstance(row, dict) or "trial_id" not in row:
-                    continue
-                meas = row.get("measurement")
-                if isinstance(meas, dict) and meas and not meas.get("capture_error"):
-                    yield shard, row
+        yield from iter_shard_rows(shard)
+
+
+def iter_shard_rows(shard: Path) -> Iterator[tuple[Path, dict]]:
+    """The same filter as `iter_measured_rows`, over ONE journal shard file."""
+    with open(shard, errors="ignore") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(row, dict) or "trial_id" not in row:
+                continue
+            meas = row.get("measurement")
+            if isinstance(meas, dict) and meas and not meas.get("capture_error"):
+                yield shard, row
 
 
 def _attestation_verified(row: dict) -> bool:
@@ -114,6 +119,16 @@ def as_record(shard: Path, row: dict) -> dict:
         "protocol_id": meas.get("protocol_id") or "",
         "reps": meas.get("reps"),
         "reps_basis": basis,
+        # AP-55: the infra regime the trial ran in and its comparability with the baseline
+        # reference, as RECORDED by the writer. Carried, never graded here: a NON_COMPARABLE
+        # trial is annotated in the reasons, and the ladder in claim_tuple stays the one rule.
+        # Empty on rows written before 2026-09-16 (never back-filled).
+        "infra_fingerprint": str(meas.get("infra_fingerprint") or ""),
+        "comparability": str(meas.get("comparability") or ""),
+        # AP-54: whether the eval rollouts ran behind the knowledge fence ("active" | "absent" |
+        # "mixed"), as RECORDED by the writer from the API echo. Carried, never graded. Empty on
+        # rows written before the fence existed, which must be read as unfenced.
+        "eval_fence": str(meas.get("eval_fence") or ""),
         "attestation": {
             "path": f"{ORCH_REL}/orchestration/{shard.name}",
             "sha256": att.get("sha256"),
@@ -138,6 +153,10 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
         # n counted what was attempted, not what scored. Stated so the number is not read as a
         # scored denominator later.
         reasons = [*reasons, f"n is the ATTEMPTED count ({rec['reps_basis']}), not the scored one"]
+    if rec["comparability"] and rec["comparability"] != "COMPARABLE":
+        # Stated, not graded: the delta was measured against a baseline from a different (or
+        # unverified) infra regime (AP-55).
+        reasons = [*reasons, f"infra comparability vs baseline: {rec['comparability']}"]
     return [
         make_frame(
             frame_type=FT_SOURCE,
@@ -162,7 +181,10 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                        "grade": {"Q": q, "T": t}, "source_id": source_id,
                        "protocol_id": rec["protocol_id"], "reps": rec["reps"],
                        "category": rec["category"],
-                       "metric_direction": rec["metric_direction"]},
+                       "metric_direction": rec["metric_direction"],
+                       "infra_fingerprint": rec["infra_fingerprint"],
+                       "comparability": rec["comparability"],
+                       "eval_fence": rec["eval_fence"]},
             provenance={"evidence": f"evd_ap_{ident}", "about": claim_id, "method": ADAPTER_ID,
                         "grade_reasons": reasons, "reps_basis": rec["reps_basis"]},
             actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,
@@ -188,7 +210,10 @@ def summarize(root: Path | None = None) -> dict:
 
 
 def emit(root: Path | None = None, *, as_of: str, limit: int | None = None) -> Iterable[dict]:
-    for i, (shard, row) in enumerate(iter_measured_rows(root)):
+    """Frames for every measured row. `root` is an epyc-root checkout, or one shard file."""
+    rows = (iter_shard_rows(root) if root is not None and Path(root).is_file()
+            else iter_measured_rows(root))
+    for i, (shard, row) in enumerate(rows):
         if limit is not None and i >= limit:
             return
         yield from frames_for_row(shard, row, as_of=as_of)

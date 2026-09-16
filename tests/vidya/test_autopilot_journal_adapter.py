@@ -134,6 +134,43 @@ def test_an_attempted_denominator_is_flagged_in_the_reasons(tmp_path):
     assert any("ATTEMPTED" in x for x in sup["provenance"]["grade_reasons"])
 
 
+def test_infra_comparability_is_carried_not_graded(tmp_path):
+    """AP-55: the writer's fingerprint and NON_COMPARABLE mark reach the frame; the grade is the
+    ladder's alone, identical to the same row without the mark."""
+    plain = row()
+    marked = row(measurement={**row()["measurement"], "infra_fingerprint": "f" * 64,
+                              "comparability": "NON_COMPARABLE"})
+    (shard, got_plain), = list(apj.iter_measured_rows(write_journal(tmp_path / "a", [plain])))
+    (shard_m, got_marked), = list(apj.iter_measured_rows(write_journal(tmp_path / "b", [marked])))
+    sup = [f for f in apj.frames_for_row(shard_m, got_marked, as_of="t")
+           if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    sup_plain = [f for f in apj.frames_for_row(shard, got_plain, as_of="t")
+                 if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    assert sup["assertion"]["infra_fingerprint"] == "f" * 64
+    assert sup["assertion"]["comparability"] == "NON_COMPARABLE"
+    assert sup["assertion"]["grade"] == sup_plain["assertion"]["grade"]
+    assert any("NON_COMPARABLE" in x for x in sup["provenance"]["grade_reasons"])
+    assert sup_plain["assertion"]["comparability"] == ""
+    assert not any("comparability" in x for x in sup_plain["provenance"]["grade_reasons"])
+
+
+def test_eval_fence_state_is_carried_not_graded(tmp_path):
+    """AP-54: the writer's fence state reaches the support frame; the grade is unchanged, and a
+    row written before the fence carries an empty state (read as unfenced)."""
+    plain = row()
+    fenced = row(measurement={**row()["measurement"], "eval_fence": "active"})
+    (shard, got_plain), = list(apj.iter_measured_rows(write_journal(tmp_path / "a", [plain])))
+    (shard_f, got_fenced), = list(apj.iter_measured_rows(write_journal(tmp_path / "b", [fenced])))
+    sup = [f for f in apj.frames_for_row(shard_f, got_fenced, as_of="t")
+           if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    sup_plain = [f for f in apj.frames_for_row(shard, got_plain, as_of="t")
+                 if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    assert sup["assertion"]["eval_fence"] == "active"
+    assert sup_plain["assertion"]["eval_fence"] == ""
+    assert sup["assertion"]["grade"] == sup_plain["assertion"]["grade"]
+    assert sup["provenance"]["grade_reasons"] == sup_plain["provenance"]["grade_reasons"]
+
+
 def test_a_trial_is_always_a_candidate(tmp_path):
     """A trial is a proposed change being measured — never the standing baseline or an optimum."""
     shard, r = next(apj.iter_measured_rows(write_journal(tmp_path, [row()])))
@@ -146,6 +183,7 @@ def test_a_trial_is_always_a_candidate(tmp_path):
                     reason="orchestrator repo not present")
 def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
     sys.path.insert(0, str(ORCH / "scripts" / "autopilot"))
+    sys.path.insert(0, str(ORCH))  # the writer imports `src.autopilot_core.*`
     from experiment_journal import ExperimentJournal, JournalEntry
 
     d = tmp_path / apj.ORCH_REL / "orchestration"
