@@ -155,6 +155,44 @@ All edits above are on branch `spec-dec-mtp-refresh-2026-06-22` and are **uncomm
           - The table is final after n=5 plus at most one top-up. No verdict changes a serving recipe or `np`.
         - **Proxy.** batched-bench numbers are spec-off, category BASELINE, **never a headline**.
         - **Runner.** Research `sub/gpu-runner-20260916` `scripts/benchmark/s5_moe_batched_np_sweep.py` (18d1d7c8).
+      - **RUN 2026-09-16, 14:01–14:21Z (sub-gpu-runner; collected by sub-gpu-collect). Result: Q-A GO, Q-B
+        INCONCLUSIVE on both pairs. Box NOT ticked**, because the tick needs GO + PASS.
+        - **Evidence.** Research main `6cbdd856`, `data/s5-moe-batched-np-20260916/`
+          (`summary.json`, `launches.jsonl`, per-launch jsonl, prereg sha256 `94a05eea…`).
+        - **Admissibility.**
+          - 25/25 launches ok (5 arms × n=5), rotated ABA, under the GPU claim.
+          - Residency proven on every launch: ≥102 VRAM samples each, peak 25.2–38.7 GiB, peak KFD count 1.
+          - The batched-bench sha256 `5801cd74…` matches the prereg.
+          - **The runner took no linkage receipt.** One was taken after the run with the same env
+            (`LD_LIBRARY_PATH=build-hip/bin:/opt/rocm/lib`, ldd). It PASSes: all four ggml libs resolve in
+            `build-hip/bin`. That is static linkage only; the dlopened HIP backend is covered by the VRAM/KFD
+            residency.
+          - **sclk recorded.** 19/25 launches dipped below 1700 MHz; the minimum was 1440 MHz, mostly on the
+            dense arms.
+        - **Q-A (kernel trigger): GO.**
+          - E = F(32)/F(1): median **1.021**, n=5 pairs, range 0.993–1.063, p95_dev 4.06%, so δ_eff = 8% and
+            the GO line is ≥0.92.
+          - F(1) median 1.028. F(32) median 1.064. Secondary E(16) = 0.991.
+          - Q4_K does not erode against Q8_0 under batch on gemma-4-26B-A4B.
+        - **Q-B (profiling trigger): INCONCLUSIVE ×2.** Both values sit mid-band, not within δ_eff of either edge.
+          - G4:Dg4: M2(32) = **0.602**. K32 median is 7.77 (MoE) vs 12.89 (dense); K32 p95_dev 6.0% / 2.8%.
+            M2(16) = 0.527.
+          - Q8m:Dq8: M2(32) = **0.648**. K32 is 3.43 vs 5.29; p95_dev 3.8% / 2.0%. M2(16) = 0.577.
+          - MoE batch scaling reaches about 60–65% of its dense sibling.
+        - **Median S_TG (B=1 → B=32), tok/s, n=5.** Proxy, spec-off, never a headline.
+
+          | arm | B=1 | B=32 |
+          |---|---|---|
+          | G4 | 88.7 | 690.2 |
+          | G8 | 84.0 | 647.9 |
+          | Dg4 | 29.9 | 385.9 |
+          | Q8m | 100.0 | 340.0 |
+          | Dq8 | 30.3 | 158.8 |
+
+        - **Next (main session).** The prereg's one pre-committed top-up (+5 launches at B∈{1,32}) applies to
+          Q-B. The runner did not run it. After the top-up the table is final: a still-INCONCLUSIVE Q-B records
+          a bounded null. GO means the §8 pivot does not fire.
+        - **Belief kernel.** No write hook; covered by VB-GPU-RUNNER.
       - **Thresholds drafted 2026-09-16 (sub-s5-thresholds, zero-inference; freeze before the run):** `progress/2026-09/2026-09-16-sub-s5-thresholds.md` — n=5, δ=8%, the kernel trigger is the Q4_K/Q8_0 erosion E=F(32)/F(1) (GO ≥0.92, NO-GO <0.84 and F(32)<1), the MoE/dense M2 0.8/0.5 test triggers profiling only.
 
 **What the dense half settled, and the one place it revises §6.** "Batching closes GAP-A for
