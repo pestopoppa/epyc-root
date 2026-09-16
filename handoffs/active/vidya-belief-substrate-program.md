@@ -2057,6 +2057,23 @@ standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../sc
       *2026-09-16 status:* `gold_annotations.py` and `review_envelope.py` are on orchestrator main, but
       no scoring run persists `FalseAcceptResult` yet. There is nothing to project until one does.
 
+## SC85 — OCC-1 optical-compression runs (filed 2026-09-16)
+
+Source: `optical-context-compression.md` OCC-1. The harness is `epyc-inference-research`
+`scripts/benchmark/occ1/` (branch `sub/occ1-20260916`), and it compares bitmap frames with raw text on
+the served Qwen3-VL-30B-A3B reader. The source row is in `scripts/vidya/adapters/README.md`. The hook
+was filed and built before the first GPU run, so that run will not fall in a pre-hook era.
+
+- [ ] **SC85 — wire OCC-1 on the WRITE side, plus a strict reader.** Root side (branch
+  `sub/occ1-root-20260916`): `adapters/occ1_optical_compression_capture.py` (writer and `validate_row`),
+  `adapters/occ1_optical_compression.py` (reader), the `cli.py ingest occ1` source, and
+  `tests/vidya/test_occ1_optical_compression_adapter.py`. The rows per arm are F1, EM, the paired
+  F1 delta with its CI and verdict, and the prompt-token ratio. The locator is the run, a VOID run is
+  refused, and `claim_tuple.grade()` decides (no new ladder). The research side is `run_occ1.py
+  report`, which writes the sidecar by default. Both sides still need to be merged.
+- [ ] **SC85b — codify the OCC protocol** under `measurement/protocols/`, and have the runner pass
+  `--protocol-id`. Until then, every OCC-1 tuple is `Judged/Located`.
+
 ## VB-WIRE — `cli.py ingest` wiring and reconciliation of the 2026-09-16 filings (sub-vidya-wire)
 
 - [x] **VB-WIRE-1 — give every file-shaped adapter an `ingest` name.** ✅ 2026-09-16
