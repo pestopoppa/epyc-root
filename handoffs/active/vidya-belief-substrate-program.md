@@ -2294,3 +2294,7 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 | SC83 (was SC76, reviewer FA rate) | none | no | see SC83 above |
 | VB-MHS-GATES | none | no | producer is on unmerged orchestrator `sub/autopilot-safety-20260916` |
 | VB-GPU-RUNNER | none | no | the sweeps are pre-hook; needs a producer hook in `calibrate_floor` |
+
+## SC86 — HS-4 OpenCode-shell runs (filed 2026-09-16)
+
+- [ ] **SC86 — wire HS-4 shell runs on the WRITE side**: each run emits a ClaimTuple carrying the harness pin, plugin and config hash, Harness Card version, `x_memory` arm, and the HS-14 column set; locator = run. Must land before the first measured shell run (HS-4 P0.4). Design: `docs/design/hs4-shell-and-orchestrator-features-20260916.md` §4 (P0.5).
