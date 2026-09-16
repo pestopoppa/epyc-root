@@ -550,7 +550,7 @@ verdict is the current production shape.
       as a clean host without the explicit refusal. 17 pytest-collected tests, **13/13 mutations
       detected**, 151 contention tests green, purely additive (690 insertions, 0 deletions).
 
-- [ ] **Tighten the llama-process waiver: it cannot tell a lineup member from a FOREIGN server.**
+- [x] **Tighten the llama-process waiver: it cannot tell a lineup member from a FOREIGN server.**
       `77e5a214` records `existing llama processes present during attestation` as a warning but waives it
       from *gating*, and that waiver is correct in principle — a contention matrix benches the live
       stack, so those processes are the **instrument**, not contamination; gating on them would make
@@ -564,6 +564,17 @@ verdict is the current production shape.
       current waiver makes it invisible to the gate. Fix: compare the observed process set against the
       expected lineup (stack manifest / `stack_priors`) and gate on the UNEXPECTED remainder rather than
       waiving the whole class. Until then the documented limit stands and is recorded in the artifact.
+      ✅ **2026-09-16 (`sub-sweep`) — IMPLEMENTED AND INTEGRATED** (orchestrator merge `864c3b3b`, pushed in `753343f5`):
+      orchestrator branch `sub/nextaction-sweep-20260916` `e1c06f72`. `_host_health_probe` now
+      waives only processes whose `--port` is in `_expected_lineup_ports()` (launch-manifest
+      `PORT_MAP` ∪ every `NUMA_CONFIG` instance ∪ `EMBEDDER_PORTS`); the unexpected remainder
+      (undeclared port, or no attributable port — llama-bench/llama-cli) stays in the gating
+      attestation, so the rule owner's own process warning fires there, plus a blocker naming
+      `pid (port)`. An unresolvable lineup waives nothing; an empty host never resolves it.
+      Provenance gains `llama_processes_lineup` / `llama_processes_foreign`. The explicit-only GPU
+      shadow lane (:18100) is deliberately NOT lineup. Tests: contention suite 164 passed; a mutation
+      restoring the whole-class waiver fails 5 new tests. Live relevance: a read-only `ps` on
+      2026-09-16 showed a llama-server on `--port 18361`, which the old waiver would have hidden.
 - [ ] **Retire the stale `q*` nomenclature on half-sized instances** — a reader seeing `q0` on a
       48-thread instance infers a quarter. It already caused one agent to describe this live defect as
       a legacy one.

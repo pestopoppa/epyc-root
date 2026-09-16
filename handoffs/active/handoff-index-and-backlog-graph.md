@@ -31,7 +31,15 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   diamonds-are-not-cycles, and the real INF-06/INF-64 shape plus its fixed form. **Why this was
   invisible before:** `BAD DEP` validates that a dep points at a *known* row, which every edge in a
   cycle does — each individual edge is well-formed, and only the closure is broken.
-- [ ] **Derive per-node `ready` / `blocked` in the graph builder** — blocked ⟺ some `dep` target
+- [x] **Derive per-node `ready` / `blocked` in the graph builder** — ✅ 2026-09-16 (`sub-rtg46`;
+  branch `sub/rtg46-readiness-20260916` @ `ec7dfaf7`, integrated into root `main` by merge `e0a600a5` 2026-09-16; **hub deploy pending**).
+  Derivation landed in `457abd40` (`index_graph.v2`); the missing half was rendering, since
+  `dashboard/static/handoffs.html` never read `readiness`. Now: blocked = hatch over the domain
+  fill, `no_open` = faded, ready = solid; legend with the producer's `readiness_counts`; tooltip
+  names `blocked_by`. Nothing is computed in the page, and a v1 sidecar renders no hatch and says
+  so. Tests: `tests/test_dashboard_handoff_graph_readiness.py` (5 tests: structural, plus
+  `loadGraph` executed under node with a v1 mutation pair; verified to fail when the hatch is
+  removed). Live sidecar at tick time: 29 blocked / 135 ready / 9 no_open. Blocked ⟺ some `dep` target
   still has `open > 0`. Bump the schema to `index_graph.v2` and render blocked nodes distinctly on
   the `:8100` backlog graph. Do **not** add a hand-authored field: this is derived, exactly like
   `open` and `last_advanced`. **Measured baseline 2026-09-07: 24 of 160 open rows gated, 136 ready,
@@ -46,14 +54,29 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   hand. Adapted from Prove2Me's `open-leaves` endpoint (intake-1299#record), with the caveat that
   their readiness is *free* from a decomposition invariant (a leaf has no children, therefore no
   unsatisfied prerequisites) while ours must actually be computed.
-- [ ] **Preserve the reason when a row's `Next action` is re-pointed.** The cell is overwritten with
+- [x] **Preserve the reason when a row's `Next action` is re-pointed.** ✅ 2026-09-16 (`sub-rtg46`;
+  branch `sub/rtg46-readiness-20260916` @ `a0700b2a`, integrated into root `main` by merge `e0a600a5` 2026-09-16). The check came back
+  negative: `build_handoff_timeline.py` tracked checkbox lines only and never index rows. It now pairs
+  removed/added rows per commit and emits `next_action_repoints` (id, date, commit, index, from, to,
+  reason, reason_source) into `data/handoff_timeline.json`. The reason comes from a
+  `Repoint-Reason: <ID>: <why>` commit-message line, or falls back to the commit subject; the
+  convention is documented in the authoring guide. Over real history: **370 re-points recovered,
+  all subject-sourced**. 4 tests in `tests/test_handoff_timeline.py`, with the negative case
+  mutation-checked. The cell is overwritten with
   no trace, so *why the previous target was abandoned* is destroyed and the next session can re-walk
   a rejected path at full price. First check whether `build_handoff_timeline.py` already captures
   enough; if not, the `reason` belongs in the timeline sidecar — **never in the row**, because status
   and history never go in a row (`docs/guides/agent-workflows/handoff-index-authoring.md`). Precedent:
   Prove2Me requires a `reason` on every milestone re-link precisely so solvers avoid rejected paths,
   and exposes the history publicly as its highest-signal governance artifact (intake-1299#record).
-- [ ] **Derive an EPYC promote-vs-inline rule for backlog rows**, on the *shape* of intake-1309's
+- [x] **Derive an EPYC promote-vs-inline rule for backlog rows** — ✅ 2026-09-16 (`sub-rtg46`;
+  branch `sub/rtg46-readiness-20260916` @ `aed468bb`, integrated into root `main` by merge `e0a600a5` 2026-09-16). Now in
+  `docs/guides/agent-workflows/handoff-index-authoring.md` → *Promote or inline?*. Measured first
+  over 1,635 open top-level boxes: p50 3 / p90 11 / p99 32 lines. Bands: ≤ 11 inline; 12–31
+  ambiguous (136 rows, decided by named signals); ≥ 32 promote (18 rows in 11 handoffs). The
+  tie-break is re-derived as *promote when unsure*: an inline item has no graph node, so a wrong
+  inline fails silently. The rule also carries a failure-isolation criterion. Reproduce with
+  `scripts/handoffs/row_size_distribution.py`. Original row text: on the *shape* of intake-1309#record's
   table: (i) a mechanical size metric, (ii) a named promotion-signal list for the ambiguous band,
   (iii) an explicit tie-break under uncertainty, (iv) a failure-isolation criterion independent of
   reuse. **Measure our own row-size distribution FIRST — do not import their 10/40 line constants.**
@@ -120,8 +143,8 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
 - [ ] **Graph layout reads as a lattice.** At the spacing that makes nodes distinguishable, the grid
   seed shows through. Loosening the relax convergence threshold would reintroduce irregularity at
   some cost to the clean separation. Cosmetic; only worth doing if the regularity actually misleads.
-  - [x] **Seed de-latticed; visual verdict still open.** 2026-09-16 — `sub-rtg46-layout`, SHA
-    pending integration (branch `sub/rtg46-readiness-20260916`). Packing extracted to a pure
+  - [x] **Seed de-latticed; visual verdict still open.** 2026-09-16 — `sub-rtg46-layout`, commit
+    `4cd106c2`, integrated by root merge `e0a600a5` 2026-09-16 (branch `sub/rtg46-readiness-20260916`). Packing extracted to a pure
     `packBands()` in `dashboard/static/handoffs.html`: staggered seed + deterministic per-id jitter
     (0.3 cell, FNV-1a, stable across refreshes) + push-only relax. Offline, live `.index-graph.json`
     (173 nodes): row-aligned nodes 98% -> 6%, column-aligned 89% -> 0%, 0 halo overlaps both,
@@ -227,7 +250,7 @@ current rows by TASK TEXT; the old queue's `file:line` anchors were ~60% rotted.
   sessions touch them. Filing 133 copy-edits as tasks would be busywork, and their staleness is a
   backlog-hygiene question (are these handoffs still wanted?) rather than a wording one.
 
-- **Checkbox-level dependency edges** (considered and declined 2026-09-07, intake-1299). Prove2Me's
+- **Checkbox-level dependency edges** (considered and declined 2026-09-07, intake-1299#record). Prove2Me's
   unit of work is the leaf, not the file, which is what makes its frontier meaningful; our `dep`
   edges are handoff-to-handoff (170 files) while dispatch actually happens on ~1,528 checkbox rows,
   so the granularities do not line up. Adding per-row deps is a schema change to the thin-row
