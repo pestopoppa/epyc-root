@@ -261,6 +261,10 @@
   section.graph .gsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
   section.graph .gsw.ring{background:transparent;border:2.5px solid;border-radius:50%}
   section.graph .gsw.dot{border-radius:50%}
+  section.graph .gsw.hatch{border-radius:50%;background:repeating-linear-gradient(45deg,#8b949e 0 2px,#0d1117 2px 4px)}
+  section.graph .gsw.faded{border-radius:50%;background:#8b949e;opacity:.3}
+  section.graph .gsw.dash{background:transparent;border:1.6px dashed #f0f6fc;border-radius:50%}
+  section.graph .gsep{color:var(--line,#2a2f3a)}
   section.graph .gnote{font-size:12px;margin:0 0 8px;max-width:88ch}
   section.graph .gwrap{position:relative}
   section.graph .gzoom{position:absolute;top:8px;right:10px;z-index:20;display:flex;gap:6px;
@@ -1018,6 +1022,14 @@ async function loadTimeline(){
      fill   = which index owns it, BLENDED toward the domains it links into, so a
               handoff that straddles two areas reads as straddling them.
      ring   = liveness (days since a checkbox moved) — the signal indices never had.
+   A third, TEXTURE channel carries `readiness` (index_graph.v2), so it cannot
+   collide with either colour channel:
+     hatched disc = readiness "blocked" (some `dep` target still has open work)
+     faded disc   = readiness "no_open" (nothing dispatchable — NOT "done")
+     solid disc   = readiness "ready"
+   The page never derives readiness: it is read verbatim from the producer
+   (scripts/handoffs/index_state.py derive_readiness). A v1 sidecar has no
+   `readiness`, and the legend says so instead of guessing.
 
    The previous version packed each domain into a phyllotaxis disc sized
    `cellR/sqrt(n)*1.55`, which puts the outermost node at 1.55x the cell radius —
@@ -1032,6 +1044,11 @@ const IDX_COLOR = {
   "user-facing-harness":      "#bc8cff",
   "pipeline-integration":     "#f778ba",
   "reviewer-control-plane":   "#56d4dd",
+};
+const READINESS_STYLE = {
+  ready:   {sw:"dot",   label:"ready — no open dep target"},
+  blocked: {sw:"hatch", label:"blocked — a dep target still has open work"},
+  no_open: {sw:"faded", label:"no open work (not \u201cdone\u201d)"},
 };
 const RING = d => (d===null||d===undefined) ? '#6e7681'
               : d<=7 ? '#3fb950' : d<=30 ? '#d29922' : '#e5534b';
@@ -1063,6 +1080,12 @@ async function loadGraph(){
   catch(e){ setBadge("#graph-badge","stale"); return; }
   const svg=$("#graph-svg"), tip=$("#graph-tip");
   while(svg.firstChild) svg.removeChild(svg.firstChild);
+  // Hatch for readiness "blocked": dark stripes OVER the domain fill, so the
+  // owning-index colour still reads through (a replacement colour would not).
+  const defs=svgEl("defs",{}), pat=svgEl("pattern",{id:"gate-hatch",
+    patternUnits:"userSpaceOnUse",width:4,height:4,patternTransform:"rotate(45)"});
+  pat.appendChild(svgEl("rect",{x:0,y:0,width:1.7,height:4,fill:"#0d1117","fill-opacity":0.8}));
+  defs.appendChild(pat); svg.appendChild(defs);
   if(!g.nodes||!g.nodes.length){
     setBadge("#graph-badge","stale");
     $("#graph-note").textContent = g.observation_notice || "no producer reported";
@@ -1083,6 +1106,26 @@ async function loadGraph(){
   doms.forEach(d=>{ const sp=document.createElement("span");
     sp.innerHTML=`<i class="gsw dot" style="background:${IDX_COLOR[d]}"></i>${d}`;
     key.appendChild(sp); });
+  // ---- readiness key: values + counts come from the producer, never recomputed here
+  const hasReadiness = g.nodes.some(n=>typeof n.readiness==="string");
+  const sep=document.createElement("span"); sep.className="gsep"; sep.textContent="|";
+  key.appendChild(sep);
+  if(hasReadiness){
+    const rc=g.readiness_counts||{};
+    for(const r in READINESS_STYLE){ const sp=document.createElement("span");
+      sp.className="gready"; sp.dataset.readiness=r;
+      if(g.readiness_values&&g.readiness_values[r]) sp.title=g.readiness_values[r];
+      sp.innerHTML=`<i class="gsw ${READINESS_STYLE[r].sw}"></i>${READINESS_STYLE[r].label}`
+        + (rc[r]!==undefined?` (${rc[r]})`:"");
+      key.appendChild(sp); }
+  } else {
+    const sp=document.createElement("span");
+    sp.textContent=`readiness not in this graph (schema ${g.schema||"unknown"}; needs index_graph.v2)`;
+    key.appendChild(sp);
+  }
+  const sd=document.createElement("span");
+  sd.innerHTML=`<i class="gsw dash"></i>file sits in handoffs/blocked/`;
+  key.appendChild(sd);
 
   // ---- neighbour map (reference edges, undirected for colour + hover)
   const nbr={};
@@ -1193,7 +1236,13 @@ async function loadGraph(){
     if(n.state==="blocked"){ halo.setAttribute("stroke-dasharray","3 2.5");
       halo.setAttribute("stroke","#f0f6fc"); }
     gNode.appendChild(halo);
-    const c=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill,class:"node"});
+    const c=svgEl("g",{class:"node","data-readiness":n.readiness||""});
+    const disc=svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:it.fill});
+    if(n.readiness==="no_open") disc.setAttribute("fill-opacity",0.3);
+    c.appendChild(disc);
+    if(n.readiness==="blocked")
+      c.appendChild(svgEl("circle",{cx:it.x,cy:it.y,r:it.r,fill:"url(#gate-hatch)",
+        "pointer-events":"none"}));
     c.addEventListener("mouseenter",()=>{
       const keep=new Set([n.id,...(nbr[n.id]||[])]);
       for(const k in circles) circles[k].classList.toggle("dimmed",!keep.has(k));
@@ -1207,6 +1256,8 @@ async function loadGraph(){
         + (n.next_action?`<div class="tna">${n.next_action}</div>`:"")
         + `<div class="tmeta">${n.open} open · ${n.closed} closed`
         + (n.blocked?` · ${n.blocked} blocked`:"")
+        + (n.readiness?`<br>readiness: <b>${n.readiness}</b>`
+            + ((n.blocked_by&&n.blocked_by.length)?` on ${n.blocked_by.join(", ")}`:""):"")
         + `<br>last advanced ${n.last_advanced||"never"}`
         + `<br>${linked.length} linked handoff${linked.length===1?"":"s"}`
         + (linked.length?`: ${linked.slice(0,12).join(", ")}${linked.length>12?"…":""}`:"")
