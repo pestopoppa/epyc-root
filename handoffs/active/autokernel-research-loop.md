@@ -64,9 +64,11 @@ experimental branches wholesale: every later launch candidate below still has a 
 - [x] **AK-V27-RCV — keep ordinary governed refusals out of cumulative-terminal recovery.** Exact
       regression commit `caa22f42389fd744bac6f9213fb863504849d888`; the six former
       `KeyError: disposition` cases pass. ✅ 2026-08-22
+  - **Branch-only note 2026-09-16 (sub-closure-fix; annotation only):** `caa22f42` and `cffb98d3` are **not on root `origin/main`**. They exist only on the `codex/autokernel-v27-*` branches (33 commits unmerged; 0 of their added lines are on main). AK-V27-C6 lists them as foundations to reuse, so treat them as branch-only until promoted. Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #8).
 - [x] **AK-V27-CMP — authenticate the frozen-v9 comparator without executing production artifacts.**
       Independent audit GO at `cffb98d3eb06aa81e8bdf990e22520444fd94adb`; 21 runtime objects and
       the approved `readelf` identity are pinned and rechecked. ✅ 2026-08-22
+  - **Branch-only note 2026-09-16 (sub-closure-fix; annotation only):** `caa22f42` and `cffb98d3` are **not on root `origin/main`**. They exist only on the `codex/autokernel-v27-*` branches (33 commits unmerged; 0 of their added lines are on main). AK-V27-C6 lists them as foundations to reuse, so treat them as branch-only until promoted. Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #8).
 - [ ] **AK-V27-C6 — finish the live C6 trust boundary before launch.** `8a0ffc7d` is only a bounded
       checkpoint: retain its C6-before-targeted ordering, recursive restart, Q5_0 route, >=11 S1
       capacity, float64 precision gate, derived seed, source recheck, and roofline cap; replace the
@@ -3269,6 +3271,7 @@ evaluator or its own scope, and T1 may legally guide search.
     regenerates all proposal-dependent hashes/frames, and preserves v3 history under
     `inputs/superseded/`. Both exact dry runs exit zero with 12 steps, `state=dry_run_composed`, and
     `executed=false`; the independent full suite passed **5,606 tests** with one expected failure.
+    - **Provenance note 2026-09-16 (sub-closure-fix; annotation only, box state untouched):** the cited anchor `a4cb04ca8` (`a4cb04ca8f92fa4d665684490f609b380f9b5e96`) **exists on no ref**. It is absent from all llama.cpp `fork` refs (`ls-remote`), from the canonical tree and from every local clone (`git cat-file` fails). The equivalent hardening lineage is llama.cpp `974b5fcb3` ("llama-bench: harden AutoKernel measurement instrument", sole parent frozen v9 `0db32c06`). It is the tip of `fork/experimental-v9-autokernel-t1-hardening-final`, **not** of `fork/experimental-v9-autokernel-t1-hardening` (tip `0492c2319`, a separate one-parent commit). Descendants include `d9fdc17bd`. Live manifests still pin the missing SHA: `/mnt/raid0/llm/autokernel/iqk-*.json` (6 files, e.g. `iqk-bootstrap-intervention-r3-execute.json`). The owner should re-point the pin and re-hash the manifest. Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #1).
 
 
   - [x] **Require a bound typed hypothesis before a completed proposal may enter the archive.** ✅
@@ -3664,6 +3667,7 @@ future sweep.)*
       claim. The all-PASS preflight is
       `/mnt/raid0/llm/autokernel/probes/ak-v9-final-preflight-20260812-r1/preflight.json`, SHA-256
       `0baf7b73055f028c5c493afd9a4ab8c9950d3c088ed79f3751102ddff71fdefd`.
+  - **Provenance note 2026-09-16 (sub-closure-fix; annotation only, box state untouched):** the cited anchor `a4cb04ca8` (`a4cb04ca8f92fa4d665684490f609b380f9b5e96`) **exists on no ref**. It is absent from all llama.cpp `fork` refs (`ls-remote`), from the canonical tree and from every local clone (`git cat-file` fails). The equivalent hardening lineage is llama.cpp `974b5fcb3` ("llama-bench: harden AutoKernel measurement instrument", sole parent frozen v9 `0db32c06`). It is the tip of `fork/experimental-v9-autokernel-t1-hardening-final`, **not** of `fork/experimental-v9-autokernel-t1-hardening` (tip `0492c2319`, a separate one-parent commit). Descendants include `d9fdc17bd`. Live manifests still pin the missing SHA: `/mnt/raid0/llm/autokernel/iqk-*.json` (6 files, e.g. `iqk-bootstrap-intervention-r3-execute.json`). The owner should re-point the pin and re-hash the manifest. Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #1).
 
 - [x] **Run the five fixed controls (§15.2) before any real search**: positive, neutral, negative,
       A/A, and the **historical-win replay — the iqk port, which MUST promote**. The negative control

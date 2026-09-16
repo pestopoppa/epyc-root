@@ -107,6 +107,8 @@ research-intake pipeline (Stage 4) both run it.
 ## Related
 
 - Checkbox discipline and the dashboard axiom: `agents/shared/SESSION_LIFECYCLE.md`
+- Whether a ticked box is TRUE (its cited code exists on main), which `--check` cannot see:
+  `docs/guides/agent-workflows/handoff-closure-audit.md`
 - On handoff completion: extract findings to docs, `git mv` to `handoffs/completed/`, and **delete** its
   index row — terminal rows do not stay in the queue (`agents/shared/WORKFLOWS.md`)
 - Operator decisions go in the master index's operator queue, because a form-screen cannot detect

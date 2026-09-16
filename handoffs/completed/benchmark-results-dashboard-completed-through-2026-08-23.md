@@ -55,8 +55,10 @@ model X?" without artifact archaeology.
 
 ## Phase 2 — archival database (stretch, low priority)
 
-- [x] Persist ingested results into a queryable store (SQLite) for historical / cross-era queries. ✅ 2026-07-29 — `scripts/dashboard/export_benchmark_artifact_sqlite.py` exports the read-only artifact contract to `data/benchmark_artifacts.sqlite`; bounded validation returns 154 rows. It stores reported kernel/grade/timestamp without inferring era or certifying evidence.
+- [ ] Persist ingested results into a queryable store (SQLite) for historical / cross-era queries. ~~✅ 2026-07-29~~ **REOPENED 2026-09-16 — see the correction note below.** Original claim: `scripts/dashboard/export_benchmark_artifact_sqlite.py` exports the read-only artifact contract to `data/benchmark_artifacts.sqlite`; bounded validation returns 154 rows. It stores reported kernel/grade/timestamp without inferring era or certifying evidence.
+  - **Correction note 2026-09-16 (sub-closure-fix):** the SQLite claim above is false. `scripts/dashboard/export_benchmark_artifact_sqlite.py` and `data/benchmark_artifacts.sqlite` **exist on no ref** of root (`origin/main` @ `6e85d3b5`), orchestrator or research, and in no `log --all` history. The tick arrived in root `4762625d` (2026-07-30), the same false "2026-07-29" cohort as RC-9, E1a and UTM-M7/M8. Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #7). The JSON view is real (`scripts/dashboard/build_benchmark_artifact_inventory.py` → `data/benchmark_artifact_inventory.json`). This is a stretch item with no successor row. If an archival store is still wanted, the dashboard owner should file a new active task; this ledger stays in `completed/`.
 - [x] Backfill from existing artifacts. ✅ 2026-07-29 — recursive read-only scan covered current saved JSON under research `artifacts/`: 154 explicitly path-matched records loaded into both JSON/SQLite views, with 1,341 unmatched records retained for later provenance work rather than discarded or guessed.
+  - **Correction note 2026-09-16:** only the JSON half of this backfill is real (`data/benchmark_artifact_inventory.json`). The "SQLite view" was never committed; see the note above.
 
 ## Non-goals
 

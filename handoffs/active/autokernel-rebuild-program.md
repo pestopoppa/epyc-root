@@ -2642,6 +2642,7 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       bench already run.
       **Landed:** research `13f8e63a` / main `81fbd472` passes one per-candidate hardening seed to
       every arm and refuses every receipt reason before constructing a `Comparison`.
+  - **Provenance note 2026-09-16 (sub-closure-fix; annotation only, box state untouched):** the cited anchor `a4cb04ca8` (`a4cb04ca8f92fa4d665684490f609b380f9b5e96`) **exists on no ref**. It is absent from all llama.cpp `fork` refs (`ls-remote`), from the canonical tree and from every local clone (`git cat-file` fails). The equivalent hardening lineage is llama.cpp `974b5fcb3` ("llama-bench: harden AutoKernel measurement instrument", sole parent frozen v9 `0db32c06`). It is the tip of `fork/experimental-v9-autokernel-t1-hardening-final`, **not** of `fork/experimental-v9-autokernel-t1-hardening` (tip `0492c2319`, a separate one-parent commit). Descendants include `d9fdc17bd`. Live manifests still pin the missing SHA: `/mnt/raid0/llm/autokernel/iqk-*.json` (6 files, e.g. `iqk-bootstrap-intervention-r3-execute.json`). The owner should re-point the pin and re-hash the manifest. Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md` (top-10 #1).
 - [x] **R24-2 — measure with a TRUSTED instrument and review the WHOLE tree.** ✅ 2026-09-15
       (i) Build both arms' `llama-bench` from a pinned instrument commit; today `loop/run.py:414-415` builds it from the
       candidate's own tree.

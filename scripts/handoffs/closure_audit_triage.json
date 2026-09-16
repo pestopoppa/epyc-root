@@ -1,0 +1,2057 @@
+{
+ "_doc": "Manual triage overrides for scripts/handoffs/closure_audit.py --triage. Seeded from the 2026-09-16 audit (progress/2026-09/2026-09-16-sub-closure-audit.md) and the sub-closure-fix follow-up. Keys: see load_triage(). Append; do not rewrite history rows.",
+ "sha_equiv": {
+  "268115ad": "446a1c31",
+  "4320d83a": "5dfd14ad",
+  "677a2eec": "35f10715",
+  "ae8e5ef9": "ccbfe1b8",
+  "88b1160d": "04124a54",
+  "b8d8c409": "9609b686",
+  "3f0cb392": "d96e8704",
+  "1434ed1a": "d72dd81c",
+  "9c40429d": "765fc6bb",
+  "5568478f": "ac158841",
+  "a7d7bdb6": "c61b8184",
+  "c7f6c7fa": "70b49926",
+  "6dd3248d": "3f4b0918",
+  "2a83b176": "d6201045",
+  "6c9cad04": "20b1826b"
+ },
+ "overrides": [
+  {
+   "key": "agent-collab-rnd-harness.md|context_agent.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "agent-collab-rnd-harness.md|eb.py",
+   "class": "a (path removed from main, historical)",
+   "action": "no action"
+  },
+  {
+   "key": "agent-world-env-synthesis.md|benchmark.py",
+   "class": "ok (promoted to main during the audit run)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|1649715a975b9022c84b5279c88aaef0b73b28dc",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|1c053e02383d12937f144923bcc1faa82fa7788f",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|268115ad",
+   "class": "ok-equiv (same-subject commit 446a1c31 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|26ebfbe7",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|4320d83a",
+   "class": "ok-equiv (same-subject commit 5dfd14ad is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|4dcb5080b0f56d0b655ec8c8c9509b8e3ba0382c",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|4ffba15a55f250816598b4e27eb56ca40a699cea",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|5107c7e4",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|53c8fab9a5e8fab2c86610d24fbec5067f90e115",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|declared_traffic",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|perf_knowledge/hardware/cdna2_mi200/",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "agentic-rocm-kernel-authoring.md|~/.claude/.claude.json",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "architect-model-selection-bench.md|21b6668",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "architect-model-selection-bench.md|dl_27b_q8.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "architect-model-selection-bench.md|docs/validation.md",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "architect-model-selection-bench.md|leetcode_3451",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "architect-model-selection-bench.md|run_arm.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "architect-model-selection-bench.md|run_budget.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "attention-matching-kv-compaction.md|radix_cache.py",
+   "class": "a (path removed from main, historical)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-champion-aggregate.md|pestopoppa/llama.cpp",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-cross-workload-keep-gate.md|evaluator/surface.derive_affected_surface",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|2fa07724",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|55f783de",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|6bac92af",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|7337b4bb",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|9c40429d",
+   "class": "ok-equiv (same-subject commit 765fc6bb is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|a4cb04ca8",
+   "class": "c (SHA gone; lineage lives at llama.cpp 974b5fcb3, parent 0db32c06, fork/experimental-v9-autokernel-t1-hardening)",
+   "action": "point at the live branch: a4cb04ca8 (\"clean, pushed\") is on none of the 850 fork refs and in no local clone"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|autokernel/loop-memory/serving-floor.qwen3.8-27b-q8-gpu-dflash2-np4.json",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|build_dflash2_conv",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|dashboard/static/kernel.html",
+   "class": "a (kernel.html deleted e0ceada9, as intended)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-rebuild-program.md|~/.codex/config.toml",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|251bff28859af2ed2d5bdf14034175f03cafffc7",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|268115ad",
+   "class": "ok-equiv (same-subject commit 446a1c31 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "autokernel-research-loop.md|677a2eec",
+   "class": "ok-equiv (same-subject commit 35f10715 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "autokernel-research-loop.md|980faee8",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|9e75be5d9e435739b086aee928736fc241e77a4a",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|TransitionRecorder",
+   "class": "a (deleted 2d89e90b); box closed as superseded",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|a4cb04ca",
+   "class": "c (SHA gone; lineage lives at llama.cpp 974b5fcb3, parent 0db32c06, fork/experimental-v9-autokernel-t1-hardening)",
+   "action": "point at the live branch: a4cb04ca8 (\"clean, pushed\") is on none of the 850 fork refs and in no local clone"
+  },
+  {
+   "key": "autokernel-research-loop.md|a4cb04ca8f92fa4d665684490f609b380f9b5e96",
+   "class": "c (SHA gone; lineage lives at llama.cpp 974b5fcb3, parent 0db32c06, fork/experimental-v9-autokernel-t1-hardening)",
+   "action": "point at the live branch: a4cb04ca8 (\"clean, pushed\") is on none of the 850 fork refs and in no local clone"
+  },
+  {
+   "key": "autokernel-research-loop.md|caa22f42389fd744bac6f9213fb863504849d888",
+   "class": "a (branch-only by design: codex/autokernel-v27-*; 33 commits unmerged)",
+   "action": "point at the branch and state \"not on main\" in the box"
+  },
+  {
+   "key": "autokernel-research-loop.md|capability.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|cffb98d3eb06aa81e8bdf990e22520444fd94adb",
+   "class": "a (branch-only by design: codex/autokernel-v27-*; 33 commits unmerged)",
+   "action": "point at the branch and state \"not on main\" in the box"
+  },
+  {
+   "key": "autokernel-research-loop.md|hip_kernel_llm_lab",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|openmle_gym/sandbox_exec.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|tools/math-tools/external/eigen/",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|tools/math-tools/external/odeint/",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-research-loop.md|xrt_overall",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-restart-and-strip.md|claude/versions/2.1.231",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-unified-surface-program.md|ad87bdec",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-unified-surface-program.md|ae8e5ef9",
+   "class": "ok-equiv (same-subject commit ccbfe1b8 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "autokernel-unified-surface-program.md|campaign_manifest_digest",
+   "class": "FP (design-item schema fields; box closes a design)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-unified-surface-program.md|conflict_rules",
+   "class": "FP (design-item schema fields; box closes a design)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-unified-surface-program.md|ledger_digest",
+   "class": "FP (design-item schema fields; box closes a design)",
+   "action": "no action"
+  },
+  {
+   "key": "autokernel-unified-surface-program.md|pestopoppa/llama.cpp",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|ap53_reproposal.py",
+   "class": "FP (box says scratchpad, not committed)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|bt_tiebreak_hint",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|config/stack_templates/",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|config/stack_templates/default.yaml",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|fable5_gate_report.py",
+   "class": "c (de-FABLE rename, 06c19cf6)",
+   "action": "no action (historical run record)"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|gepa/proposer/reflective_mutation/reflective_mutation.py:66-67",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|orchestration/authority_consent.json",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|orchestration/autopilot_rejected_mutations.jsonl",
+   "class": "a (historical / off-main, non-code evidence)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|orchestration/autopilot_state.json",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|provenance.py:72-157",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|sample_135",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|scripts/autopilot/start_fable_authority_daemon.py",
+   "class": "c (de-FABLE rename, 06c19cf6)",
+   "action": "no action (historical run record)"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|start_fable_authority_daemon.py",
+   "class": "c (de-FABLE rename, 06c19cf6)",
+   "action": "no action (historical run record)"
+  },
+  {
+   "key": "autopilot-continuous-optimization.md|stopping.py:238-263",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-dashboard-fidelity-audit-2026-07-22.md|test_port_hints_follow_current_full_mode_priors",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-decision-plane-audit-2026-07-22.md|3f734141",
+   "class": "a (audit-only commit on an integrate branch)",
+   "action": "no action"
+  },
+  {
+   "key": "autopilot-decision-plane-audit-2026-07-22.md|5568478f",
+   "class": "ok-equiv (same-subject commit ac158841 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "batched-decode-measurement.md|replay_candidates.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "batched-decode-measurement.md|tokens/token-queue.md",
+   "class": "FP (bus runtime state, untracked by C45)",
+   "action": "no action"
+  },
+  {
+   "key": "batched-decode-measurement.md|trimmed_window_empty",
+   "class": "FP (recommendation text in a decision package)",
+   "action": "no action"
+  },
+  {
+   "key": "batched-edit-parallel-apply.md|packages/hashline/src/format.ts:112-121",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "bep-dcp-falsification-harness.md|530128b7",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "canonical-judge-suite-revamp.md|1715e6c3",
+   "class": "a (lane/mainD bookkeeping commit; the box text itself is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "canonical-judge-suite-revamp.md|8c23b9cbb",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "capability-registry-and-promotion.md|b62946d",
+   "class": "ok-equiv (about 95% of the lines are on main)",
+   "action": "re-point b62946d"
+  },
+  {
+   "key": "contention-model-device-and-load-axes-rider.md|orchestration/runtime_flags.json",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "conversational-memory-eval-instrument.md|3205395e",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "conversational-memory-eval-instrument.md|b2da22ea",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "conversational-memory-eval-instrument.md|report_results.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "conversational-memory-eval-instrument.md|src/trace/query.query",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "coordinator-role-failure-modes-and-refactor.md|source_msg_id",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|9e43dcbc8",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|agents/b4/gen_arm.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|agents/prof/",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|agents/speed-claim/REPORT.md:87",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|apply_binary_op",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|apply_unary_op",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|apply_unary_op_functor",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|bench_stream3.cpp",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|build_attn_qsa",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|build_hc_mix",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|build_qsa_top_k",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|byte_pair_ok",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|c5_followup.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|compare_gen.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|concat_transpose_dim0",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|d_p2100_n3",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|evict_nodes.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|evict_nodes_force.sh",
+   "class": "ok (promoted to main during the audit run)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|feedback_measure_alpha_before_specdec_investment",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|feedback_measurement_attribution_hygiene",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|feedback_never_edit_running_shell_script",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|feedback_page_cache_defeats_numa_interleave",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|flash_attn_ext",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|gdn_state_cache",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|get_rowcol_split",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml-org/llama.cpp",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_compute_forward_repeat_f16",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_compute_forward_repeat_f32",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_cpu_tiny_solo_max",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_flash_attn_ext",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_get_n_tasks",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_get_n_tasks()",
+   "class": "d (llama.cpp symbols); related: research local `main` has 3 unpushed commits (1780fa7b INF-70 upstream patches, 37 files)",
+   "action": "push the research shared-clone main (the INF-70 evidence is not on origin)"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_get_rows_split_init()",
+   "class": "d (llama.cpp symbols); related: research local `main` has 3 unpushed commits (1780fa7b INF-70 upstream patches, 37 files)",
+   "action": "push the research shared-clone main (the INF-70 evidence is not on origin)"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_v_sigmoid",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_v_silu",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|ggml_vec_sigmoid_f32",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|gguf_inv.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|graph_plan",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|hc_inject",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|mincore()",
+   "class": "ok (promoted to main during the audit run)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|model_shared",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|move_pages(2)",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|output_hc_down",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|output_hc_norm",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|output_hc_up",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|pick.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|reanchor2/arm.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|scan_builds.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|set_input_qsa",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|skip_barrier",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|thr_mean",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-decode-roofline-program.md|turboderp/Qwen3.8-Flash-Next-exl3",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-prefill-compute-large-models.md|597017da07b7fbe219d04036e9ca30d46654951b",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-prefill-compute-large-models.md|ffn_moe_router_weights",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-prefill-compute-large-models.md|ggml_build_forward_expand",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "cpu-prefill-compute-large-models.md|ssm_state",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "dashboard-architecture-restructure.md|static/kernel.html",
+   "class": "a (kernel.html deleted e0ceada9, as intended)",
+   "action": "no action"
+  },
+  {
+   "key": "decision-aware-routing.md|SwarmCompletion(success=False, error=...)",
+   "class": "a (deleted from main 771348c8, 2026-06-16)",
+   "action": "SUPERSEDED/REMOVED 2026-09-16 (sub-closure-fix); DAR-6.5 dependency note added"
+  },
+  {
+   "key": "decision-aware-routing.md|SwarmFanoutResult",
+   "class": "a (deleted from main 771348c8, 2026-06-16)",
+   "action": "SUPERSEDED/REMOVED 2026-09-16 (sub-closure-fix); DAR-6.5 dependency note added"
+  },
+  {
+   "key": "decision-aware-routing.md|bradley_terry_aggregate(pairwise_scorer)",
+   "class": "a (deleted from main 771348c8, 2026-06-16)",
+   "action": "SUPERSEDED/REMOVED 2026-09-16 (sub-closure-fix); DAR-6.5 dependency note added"
+  },
+  {
+   "key": "decision-aware-routing.md|dispatch_swarm_fanout",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "decision-aware-routing.md|dispatch_swarm_fanout(request, targets, ...)",
+   "class": "a (deleted from main 771348c8, 2026-06-16)",
+   "action": "SUPERSEDED/REMOVED 2026-09-16 (sub-closure-fix); DAR-6.5 dependency note added"
+  },
+  {
+   "key": "decision-aware-routing.md|length_proxy_aggregator",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "decision-aware-routing.md|outbox/mainB.jsonl",
+   "class": "FP (bus runtime state, untracked by C45)",
+   "action": "SUPERSEDED/REMOVED 2026-09-16 (sub-closure-fix); DAR-6.5 dependency note added"
+  },
+  {
+   "key": "decision-aware-routing.md|src/swarm_fanout.py",
+   "class": "a (deleted from main 771348c8, 2026-06-16)",
+   "action": "SUPERSEDED/REMOVED 2026-09-16 (sub-closure-fix); DAR-6.5 dependency note added"
+  },
+  {
+   "key": "delegation-context-preassembly.md|BudgetBands.codemap/editable/tests/task",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "dflash2-block-drafter-experimental-build.md|416cd853",
+   "class": "a (unmerged sub/gpu-runner-20260916, landed 2026-09-16; owner to merge)",
+   "action": "owner: merge research sub/gpu-runner-20260916"
+  },
+  {
+   "key": "dflash2-block-drafter-experimental-build.md|6b585b58",
+   "class": "a (unmerged sub/gpu-runner-20260916, landed 2026-09-16; owner to merge)",
+   "action": "owner: merge research sub/gpu-runner-20260916"
+  },
+  {
+   "key": "dflash2-block-drafter-experimental-build.md|7a876f23",
+   "class": "a (unmerged sub/gpu-runner-20260916, landed 2026-09-16; owner to merge)",
+   "action": "owner: merge research sub/gpu-runner-20260916"
+  },
+  {
+   "key": "dflash2-block-drafter-experimental-build.md|869effe5",
+   "class": "FP (llama-server binary digest)",
+   "action": "no action"
+  },
+  {
+   "key": "dflash2-block-drafter-experimental-build.md|is_dflash2",
+   "class": "a (unmerged sub/gpu-runner-20260916, landed 2026-09-16; owner to merge)",
+   "action": "owner: merge research sub/gpu-runner-20260916"
+  },
+  {
+   "key": "dflash2-block-drafter-experimental-build.md|scripts/benchmark/df26_serial_exact_confirmation.py",
+   "class": "a (unmerged sub/gpu-runner-20260916, landed 2026-09-16; owner to merge)",
+   "action": "owner: merge research sub/gpu-runner-20260916"
+  },
+  {
+   "key": "dflash2-block-drafter-experimental-build.md|scripts/benchmark/sl1_dflash2_nmax_pmin_sweep.py",
+   "class": "a (unmerged sub/gpu-runner-20260916, landed 2026-09-16; owner to merge)",
+   "action": "owner: merge research sub/gpu-runner-20260916"
+  },
+  {
+   "key": "dflash2-block-drafter-experimental-build.md|scripts/benchmark/sl5_df26_aa_control.py",
+   "class": "a (unmerged sub/gpu-runner-20260916, landed 2026-09-16; owner to merge)",
+   "action": "owner: merge research sub/gpu-runner-20260916"
+  },
+  {
+   "key": "dflash2-block-drafter-experimental-build.md|speculative_rng",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "document-parser-table-bench.md|layout_detection_model_name",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "document-parser-table-bench.md|merge_layout_blocks",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "document-parser-table-bench.md|paddleocr.PaddleOCRVL(...)",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "document-parser-table-bench.md|use_layout_detection",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "document-parser-table-bench.md|vl_rec_backend",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "document-parser-table-bench.md|vl_rec_server_url",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "episodic-memory-integrity.md|remove_ids",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "episodic-memory-integrity.md|wiki/drafts/tulving-subset-scoring-and-tau-coverage.md",
+   "class": "a (wiki draft removed in the 25f95aa90 wiki sweep)",
+   "action": "no action"
+  },
+  {
+   "key": "eval-benchmark-cost-reduction.md|build_paired_comparison",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "eval-benchmark-cost-reduction.md|mcnemar_exact_p",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "eval-tower-architecture-audit-2026-07-20.md|88b1160d",
+   "class": "ok-equiv (same-subject commit 04124a54 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "evidence-plane-event-sourcing-and-narrative.md|69a41f7",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-event-sourcing-and-narrative.md|ExperimentJournal.apply_scrub()",
+   "class": "a (retired intentionally, 2cb89f82 / STM cutover)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-event-sourcing-and-narrative.md|TrialOutcome",
+   "class": "a (retired intentionally, 2cb89f82 / STM cutover)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-event-sourcing-and-narrative.md|missing_state_baseline",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-event-sourcing-and-narrative.md|orchestration/autopilot_short_term_memory.md",
+   "class": "a (retired intentionally, 2cb89f82 / STM cutover)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-event-sourcing-and-narrative.md|scripts/autopilot/short_term_memory.md",
+   "class": "a (retired intentionally, 2cb89f82 / STM cutover)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-instrument-repair.md|cb577e0",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-instrument-repair.md|orchestration/autopilot_state.json",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-instrument-repair.md|vl_ocr_0124",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-ledger-and-sequential-verdicts.md|3c17460",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "evidence-plane-ledger-and-sequential-verdicts.md|c67575b",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "fable5-window2-findings-03-portfolio-and-master-queue.md|core_v2_ledger_20260703_min5",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "fable5-window2-findings-05c-mi210-lever-category-matrix.md|a8afd338",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "frontier-f2-self-running-lab.md|450a366",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "frontier-f2-self-running-lab.md|5fad61d",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "frontier-f2-self-running-lab.md|8b4b24b",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "frontier-f3-data-flywheel.md|grad_norm",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "gemma-challenge-kernel-techniques-v7.md|511b09642bb324401f15f97cc23bc67e8f0a291d",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "gemma-challenge-kernel-techniques-v7.md|PaddlePaddle/PaddleOCR-VL-1.6-GGUF",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "gemma-challenge-kernel-techniques-v7.md|docs/development/k28-fused-chunked-gdn-prototype.md",
+   "class": "a (staged, never committed, in the llama.cpp-k28-prototype-20260720 worktree)",
+   "action": "point at the worktree; commit on an experimental branch"
+  },
+  {
+   "key": "gemma-challenge-kernel-techniques-v7.md|feedback_measure_alpha_before_specdec_investment",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "gemma-challenge-kernel-techniques-v7.md|ggml-org/llama.cpp",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "gemma-challenge-kernel-techniques-v7.md|llama.cpp-experimental/lever-a-shape-key.patch",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "gemma-challenge-kernel-techniques-v7.md|q8_0_8x8",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "gemma-challenge-kernel-techniques-v7.md|v7_quality_gate",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "glm52-reviewer-capability-gates.md|RewardBench",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "glm53-flash-evaluation.md|e8c93f6c",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "gpu-cot-scaffold-sidecar.md|f35ea1502056a2886dd88fb8a29272f8f3c9c3a5",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "gpu-serving-tie-in-program.md|../../coordination/session-bus/outbox/mainB.jsonl",
+   "class": "FP (bus runtime state, untracked by C45)",
+   "action": "no action"
+  },
+  {
+   "key": "gpu-serving-tie-in-program.md|get_numactl_prefix",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "gpu-serving-tie-in-program.md|get_supported_compute_types('cuda')",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "gpu-serving-tie-in-program.md|test_model_descriptors_schema",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|LlmAdapter",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|PiAiModelProfile",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|api_mode",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|catalog.ts:246",
+   "class": "d (external dsh repo path)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|delegate_task",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|external_directory",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|openai-completions.ts:1733",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|opencode_env",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|packages/ai/src/providers/openai-shared.ts:721-722",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|packages/coding-agent/src/config/models-config-schema-bundle.ts:47",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|packages/opencode/src/session/llm/request.ts:114-146",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|packages/opencode/src/session/overflow.ts:28",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|packages/opencode/src/tool/task.ts",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|run_agent.py:4213",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|runner/model.ts:188-213",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|simple-options.js:11-12",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "harness-selection-and-integration.md|weight_transfer.py:25",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "hermes-outer-shell.md|CommandDef",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "hermes-outer-shell.md|feedback_handoff_driven_tracking",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "hermes-outer-shell.md|invoke_plugin_command()",
+   "class": "a (local-only commit 532a49f1 in the upstream NousResearch clone /mnt/raid0/llm/hermes-agent; no fork remote)",
+   "action": "point at the clone; push to a fork or it can be lost"
+  },
+  {
+   "key": "hermes-outer-shell.md|sync_from_swagger.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "hermes-outer-shell.md|tests/hermes_cli/test_commands.py",
+   "class": "a (local-only commit 532a49f1 in the upstream NousResearch clone /mnt/raid0/llm/hermes-agent; no fork remote)",
+   "action": "point at the clone; push to a fork or it can be lost"
+  },
+  {
+   "key": "hermes-outer-shell.md|tests/test_cli_prefix_matching.py",
+   "class": "a (local-only commit 532a49f1 in the upstream NousResearch clone /mnt/raid0/llm/hermes-agent; no fork remote)",
+   "action": "point at the clone; push to a fork or it can be lost"
+  },
+  {
+   "key": "hermes-outer-shell.md|tests/test_plugins.py",
+   "class": "a (local-only commit 532a49f1 in the upstream NousResearch clone /mnt/raid0/llm/hermes-agent; no fork remote)",
+   "action": "point at the clone; push to a fork or it can be lost"
+  },
+  {
+   "key": "hermes-outer-shell.md|x_not_real_override",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "hermes-outer-shell.md|~/.hermes/skills/epyc/",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "intake-derived-work-2026-07-25.md|649ece1",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "intake-derived-work-2026-07-25.md|BaseParser",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "intake-derived-work-2026-07-25.md|benchmark_claim_without_dflash_runtime",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "intake-derived-work-2026-07-25.md|find_best_method",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "intake-derived-work-2026-07-25.md|gepa/proposer/reflective_mutation/reflective_mutation.py:66-67",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "intake-derived-work-2026-07-25.md|output_best_chunks",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "intake-derived-work-2026-07-25.md|reflective_mutation.py:67",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "intake-derived-work-2026-07-25.md|src/gepa/lm.py:49",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "intake-derived-work-2026-07-25.md|z-lab/Qwen3.5-122B-A10B-DFlash",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "internal-interaction-lifecycle.md|coder_wall_p50",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "internal-interaction-lifecycle.md|consult_denied",
+   "class": "c (spec event name; implemented as ConsultationDenied + consult_events dicts)",
+   "action": "no action"
+  },
+  {
+   "key": "internal-interaction-lifecycle.md|interaction_events",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "internal-interaction-lifecycle.md|latency_budget_remaining",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "internal-interaction-lifecycle.md|recent_failure_history",
+   "class": "FP (spec bullet; done note cites ConsultSignals recent failure pressure)",
+   "action": "no action"
+  },
+  {
+   "key": "internal-interaction-lifecycle.md|review_advisory",
+   "class": "c (spec event name; implemented as consult_events dicts)",
+   "action": "no action"
+  },
+  {
+   "key": "internal-kb-rag.md|edba4d9",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "internal-kb-rag.md|reranking.py:62",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "internal-kb-rag.md|wiki/.last_compile",
+   "class": "a (historical / off-main, non-code evidence)",
+   "action": "no action"
+  },
+  {
+   "key": "iqk-iquant-enablement.md|project_zen5_vnni_vs_maddubs",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "learned-routing-controller.md|51aae08a",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "learned-routing-controller.md|531f4890",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "learned-routing-controller.md|80d975c1",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "learned-routing-controller.md|a30ba0aa",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "learned-routing-controller.md|orchestration/autopilot_journal.jsonl",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "learned-routing-controller.md|orchestration/repl_memory/sessions/",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "learned-routing-controller.md|orchestration/repl_memory/training_data.npz",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "learned-routing-controller.md|orchestration/repl_memory/verifier_head_weights.npz",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "learned-routing-controller.md|test_e8_quality_baseline_reseed",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "log-linear-gated-deltanet-readiness.md|HGatedDeltaNetForCausalLM(…, GenerationMixin)",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "log-linear-gated-deltanet-readiness.md|hattention/recurrent.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "loop-owned-fleet-implementation.md|/workspace/repos/",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "loop-owned-fleet-implementation.md|worktrees/pool/lane0..lane3",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "loops-and-dashboards-audit-2026-07-05.md|test_default_yaml_allows_generated_alias_ports",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|ChunkGatedDeltaRuleFunction",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|chunk_fwd_o",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|chunk_gated_delta_rule_fwd",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|chunk_gated_delta_rule_fwd_h",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|chunk_local_cumsum",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|fla/chunk.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|fla/chunk_delta_h.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|fla/chunk_o.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|fla/cumsum.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|fla/wy_fast.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|kernels/fused-prefetch-NEGATIVE.patch",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|linear_attn_total",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-big-model-and-acceleration-roadmap.md|recompute_w_u_fwd",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-q8-dequant-gemv-roofline.md|s_branch",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-q8-dequant-gemv-roofline.md|s_cbranch_execz",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-q8-dequant-gemv-roofline.md|v_bfe_i32",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-q8-dequant-gemv-roofline.md|v_dot4c_i32_i8",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-q8-dequant-gemv-roofline.md|v_lshlrev_b16",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-q8-dequant-gemv-roofline.md|v_or_b32_sdwa",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "mi210-q8-dequant-gemv-roofline.md|v_sub_i16",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "model-capability-descriptors.md|578eb8a",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "model-capability-descriptors.md|orchestration/model_quality_signatures.yaml",
+   "class": "a (legacy YAML deleted a517793c, as intended)",
+   "action": "no action"
+  },
+  {
+   "key": "multimodal-pipeline.md|qwentts.cpp",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "multimodal-pipeline.md|worker_tts",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "multiscreen-attention-evaluation.md|epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md",
+   "class": "a (untracked doc on disk in research)",
+   "action": "commit docs/gdn2-low-rank-static-analysis-2026-08-25.md"
+  },
+  {
+   "key": "non-inference-backlog.md|63ec9f53",
+   "class": "a (rescue branch by design)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|858f3b5e04bf24aca3a1a113ea1889a4de9ed4ef",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|DelegateOne",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|KaniDelegated",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|WinnerTableLoader",
+   "class": "c (built as `WinnerTable.winner_for`)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|eval_locomo.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|eval_memoryagentbench.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|orchestration/.autopilot.lock",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|parallel_seeding.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|project_worker_general_swap_2026_05_08",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|seed_specialist_routing[_v2].py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|seeding_port_sets.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|trigger_to_reactivate",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|trim_segment(segment_id)",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "non-inference-backlog.md|~/.local/share/uv/python/",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "numa-topology-cutover-resume-20260730.md|171f86f9",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "numa-topology-cutover-resume-20260730.md|6dd3248d",
+   "class": "ok-equiv (same-subject commit 3f4b0918 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "numa-topology-cutover-resume-20260730.md|feedback_ngram_fills_weak_drafter_headroom",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "numa-topology-cutover-resume-20260730.md|llama.cpp/build/bin",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "numa-topology-cutover-resume-20260730.md|pestopoppa/qwentts.cpp",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "numa-topology-cutover-resume-20260730.md|pestopoppa/whisper.cpp",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "numa-topology-cutover-resume-20260730.md|qwentts.cpp",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "numa-topology-cutover-resume-20260730.md|scratchpad/editlist.md",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "numa-topology-cutover-resume-20260730.md|test_eval_batch_frontdoor_command_uses_pbench3_serving_shape",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "objective-task-rate-goodput.md|min_quality",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "orchestration-robustness-audit-2026-07-11.md|fable5_gate_report.py",
+   "class": "c (de-FABLE rename, 06c19cf6)",
+   "action": "no action (historical run record)"
+  },
+  {
+   "key": "orchestration-robustness-audit-2026-07-11.md|orchestration/authority_consent.json",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "orchestration-robustness-audit-2026-07-11.md|scripts/autopilot/start_fable_authority_daemon.py",
+   "class": "c (de-FABLE rename, 06c19cf6)",
+   "action": "no action (historical run record)"
+  },
+  {
+   "key": "orchestration-robustness-audit-2026-07-11.md|start_fable_authority_daemon.py",
+   "class": "c (de-FABLE rename, 06c19cf6)",
+   "action": "no action (historical run record)"
+  },
+  {
+   "key": "orchestration-robustness-audit-2026-07-11.md|test_authority_consent",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "orchestration-robustness-audit-2026-07-11.md|test_autopilot_phase_status",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "orchestration-robustness-audit-2026-07-11.md|test_autopilot_startup_attestation",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "per-request-reasoning-budget.md|Qwen/Qwen3.8-27B",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "per-request-reasoning-budget.md|StopSignal",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "promptforge-mutation-safety-contract.md|code_runner.py:31-34",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "promptforge-mutation-safety-contract.md|code_runner.py:64-103",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "qwen38-27b-replace-qwen36.md|ShortConvolution",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "rao-redel-substrate-spike.md|child_index",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rao-redel-substrate-spike.md|parent_rid",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "reasoning-effort-levels.md|probe_reppen.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "reasoning-effort-levels.md|run_budget.sh",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "repl-session-memory-maturity.md|BlockManager",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "repl-session-memory-maturity.md|_new_Index(cls, d)",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "repl-turn-efficiency.md|intake_entry_notes",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "reviewer-calibration-accounting.md|per_item_grades",
+   "class": "b TRUE",
+   "action": "REOPENED 2026-09-16 (sub-closure-fix)"
+  },
+  {
+   "key": "reviewer-calibration-accounting.md|per_item_grades_json",
+   "class": "b TRUE",
+   "action": "REOPENED 2026-09-16 (sub-closure-fix)"
+  },
+  {
+   "key": "reviewer-calibration-accounting.md|rationale_vs_gold_cause",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "reviewer-calibration-accounting.md|rubric_json",
+   "class": "b TRUE",
+   "action": "REOPENED 2026-09-16 (sub-closure-fix)"
+  },
+  {
+   "key": "reviewer-escalation-and-human-gate-policy.md|protected_action",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rlm-contested-claims-self-evaluation.md|scripts/benchmark/niah_scorer.py",
+   "class": "**b TRUE**",
+   "action": "REOPENED 2026-09-16 (sub-closure-fix)"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|2dbbf1d3",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|4320d83a",
+   "class": "ok-equiv (same-subject commit 5dfd14ad is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|7c1dfca1",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|ShortConvolution",
+   "class": "d/FP (external library or paper symbol, or a design-only name in a box closed otherwise)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|a4cb04ca8",
+   "class": "c (SHA gone; lineage lives at llama.cpp 974b5fcb3, parent 0db32c06, fork/experimental-v9-autokernel-t1-hardening)",
+   "action": "point at the live branch: a4cb04ca8 (\"clean, pushed\") is on none of the 850 fork refs and in no local clone"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|a4cb04ca8f92fa4d665684490f609b380f9b5e96",
+   "class": "c (SHA gone; lineage lives at llama.cpp 974b5fcb3, parent 0db32c06, fork/experimental-v9-autokernel-t1-hardening)",
+   "action": "point at the live branch: a4cb04ca8 (\"clean, pushed\") is on none of the 850 fork refs and in no local clone"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|b8d8c409",
+   "class": "ok-equiv (same-subject commit 9609b686 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|bc3b101dcb713ddc5bd8924b66754eb68b5ccf89",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|chunk_gated_delta_rule",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|conv/triton/kernels.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|energy_count",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|fused_kl_div.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|fused_linear_cross_entropy.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|ggml_backend_graph_compute",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|kernels.py:16",
+   "class": "a (path removed from main, historical)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|padding_option",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|power1_cap_max",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|power_average",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|profile_common",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|provenance.py:72-157",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|render_fuse_table_for_stage",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|render_kernel_table_for_stage",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|render_overlap_table_for_stage",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|rocprofiler_configure_pc_sampling_service",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|scripts/analyze_llm_torch_profile.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|triage_kernel_helpers",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "rocm-verify-profile-backend.md|triage_overlap_helpers",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "scorer-fork-drift-audit-2026-07-22.md|feedback_verify_negatives_before_concluding_absence",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "scoring-infra-standardization.md|/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl",
+   "class": "FP (gitignored runtime state)",
+   "action": "no action"
+  },
+  {
+   "key": "scoring-infra-standardization.md|score_benchmarks",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "searxng-search-backend.md|7bd7f66de8a5b9dc391eae2fe382d3392631c3c3",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "session-bus-thin-dispatcher.md|c7f6c7fa",
+   "class": "ok-equiv (same-subject commit 70b49926 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "session-bus-thin-dispatcher.md|coordination/session-bus/tasks/mainD-c-own-delivery-plane.md",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "session-bus-thin-dispatcher.md|heartbeats/coordinator-daemon.json",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "session-bus-thin-dispatcher.md|inbox/coordinator-agent.jsonl",
+   "class": "FP (bus runtime state, untracked by C45)",
+   "action": "no action"
+  },
+  {
+   "key": "session-bus-thin-dispatcher.md|outbox/claude-gpu-lane.jsonl",
+   "class": "FP (bus runtime state, untracked by C45)",
+   "action": "no action"
+  },
+  {
+   "key": "session-bus-thin-dispatcher.md|test_c2_no_relay_kinds_are_not_fanned_out",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "session-bus-thin-dispatcher.md|tokens/token-queue.md",
+   "class": "FP (bus runtime state, untracked by C45)",
+   "action": "no action"
+  },
+  {
+   "key": "session-bus-thin-dispatcher.md|tokens/token-queue.md:365",
+   "class": "FP (bus runtime state, untracked by C45)",
+   "action": "no action"
+  },
+  {
+   "key": "shape-keyed-contention-gating.md|171f86f9",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "shape-keyed-contention-gating.md|a7d7bdb6",
+   "class": "ok-equiv (same-subject commit c61b8184 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "speculative-decoding-mtp-refresh.md|a1d36daf",
+   "class": "ok-equiv (lean view with runtime_switchability is on orch main under another SHA)",
+   "action": "re-point a1d36daf"
+  },
+  {
+   "key": "speculative-decoding-mtp-refresh.md|unsloth/Qwen3.5-9B-MTP-GGUF",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "speculative-decoding-mtp-refresh.md|z-lab/Qwen3.5-122B-A10B-DFlash",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "standardized-stack-update-pipeline-finalization.md|src/features",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "standardized-stack-update-pipeline-finalization.md|src/runtime_flag_spec",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "tool-output-compression.md|token_observed_turns",
+   "class": "b TRUE (session_log token totals on no ref)",
+   "action": "REOPENED 2026-09-16 (sub-closure-fix strict sweep)"
+  },
+  {
+   "key": "tool-use-eval-contract.md|c98a1680",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "tool-use-eval-contract.md|fd5a107aedb8971c346fc0e85d4789bf510e3f5f",
+   "class": "FP (upstream pin / HF revision / digest / store row / GC'd pre-cherry-pick SHA whose landed twin is on main)",
+   "action": "no action"
+  },
+  {
+   "key": "tool-use-eval-contract.md|legal_agent_bench/agents/toolcall_json_repair.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "tq3-quantization-evaluation.md|feedback_cpu_decode_bw_bound",
+   "class": "FP (memory-file name)",
+   "action": "no action"
+  },
+  {
+   "key": "unified-trace-memory-service.md|action_list",
+   "class": "a (vendored llama.cpp symbol on a research branch, or later-deleted code/test; historical)",
+   "action": "no action"
+  },
+  {
+   "key": "unified-trace-memory-service.md|build_text_eval_prompt",
+   "class": "c (rename/similar name; not a phantom)",
+   "action": "no action"
+  },
+  {
+   "key": "unified-trace-memory-service.md|induce_memory.py",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "unified-trace-memory-service.md|memory_items",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "unified-trace-memory-service.md|select_budgeted_records",
+   "class": "ok (landed orch 74418b3c / merge d748b4c7, 2026-09-16)",
+   "action": "no action; box already cites the landing SHA"
+  },
+  {
+   "key": "unified-trace-memory-service.md|think_list",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "vidya-belief-substrate-program.md|1434ed1a",
+   "class": "ok-equiv (same-subject commit d72dd81c is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "vidya-belief-substrate-program.md|2a83b176",
+   "class": "ok-equiv (same-subject commit d6201045 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "vidya-belief-substrate-program.md|3f0cb392",
+   "class": "ok-equiv (same-subject commit d96e8704 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "vidya-belief-substrate-program.md|6c9cad04",
+   "class": "ok-equiv (same-subject commit 20b1826b is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "vidya-belief-substrate-program.md|a7d7bdb6",
+   "class": "ok-equiv (same-subject commit c61b8184 is on main)",
+   "action": "re-point (cosmetic)"
+  },
+  {
+   "key": "vidya-belief-substrate-program.md|coresummary.sh",
+   "class": "ok (promoted to main during the audit run)",
+   "action": "no action"
+  },
+  {
+   "key": "vidya-belief-substrate-program.md|epyc.vidya/frame/claim_statement_binding/v1",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "vidya-belief-substrate-program.md|serving-beliefs/feedback-ledger.jsonl",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  },
+  {
+   "key": "vidya-belief-substrate-program.md|test_autokernel_serving_feedback",
+   "class": "FP (strict-idents: external/upstream symbol, config key, run id, or design text)",
+   "action": "no action"
+  },
+  {
+   "key": "wrap-up-division-of-labor-policy.md|coordination/session-bus/compute_ready.json",
+   "class": "FP (external repo path, scratch script, runtime artifact, or prose)",
+   "action": "no action"
+  }
+ ]
+}

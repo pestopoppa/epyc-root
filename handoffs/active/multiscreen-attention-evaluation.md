@@ -606,3 +606,4 @@ See also the fifth GDN branch-map row in
       note complete: `epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md`
       (rank/parameter arithmetic + Kimi-Linear precedent; see the note for the verdict and what the
       B9 compute gate would need).
+  - **Untracked-evidence note 2026-09-16 (sub-closure-fix; annotation only):** the cited `epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md` is **untracked** in the research shared clone (`git status`: `??`) and is on no ref, yet it informs B9. The owner should commit it. Evidence: `progress/2026-09/2026-09-16-sub-closure-audit.md`.
