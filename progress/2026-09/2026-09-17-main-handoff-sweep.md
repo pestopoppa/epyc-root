@@ -177,3 +177,61 @@ wiki sweep (`f6a55b2b`), index pruning (`030d3c5f`) and archival (`1a70988e`). T
   - the restart is already the precondition of AP-55-ARM and VB-MHS-OPS-HOOK.
 - The champion and qwen4exp promotions are an operator plan, recorded in `moe-spec-cpu-spec-dec-integration.md`,
   and were not filed as tasks.
+
+## Evening (after pass-2 wrap-up) — zero-inference batch, landing audit, operator rulings
+
+### Zero-inference work landed
+
+Every item below passed the new landing gate: `git cherry origin/main <branch>` is empty in each repo.
+
+| Task | Result | Commits |
+|---|---|---|
+| HS-4 P0-MCP-b | all 11 MCP tools take `session_id`; the P0.4 acceptance runner is prepared but not run | orch `54b6439d`, root `76917360` |
+| HS-4 P0-MCP-a | root `.mcp.json` now uses the orchestrator venv. The operator applied the edit; the venv interpreter exists only inside the container | root `ed1dfd57` |
+| HS-4 P0.4 preflight | operator installed `opencode-ai@1.18.31`. The Dockerfile pin is filed as a follow-up | root `de71a69a` |
+| AP-63(a) | journal rows carry `run_manifest` and an explicit `lineage` parent | orch `0286c170`, root `df295516` |
+| AP-55-ARM prep | `would_hold_enforce`/`would_hold_strict` recorded in shadow mode; `ap55_shadow_review.py`; shadow pinned in AUTHORITY_ENV. Not flipped | orch `cd79b80e` |
+| AP-57 B (operator ruled B) | `speed_axis_reseed` ledger event, once per trial, replayed by `reconcile_baseline_ledger`, loud on write failure; the belief kernel deliberately does not project it | orch `01906607`, root `1d5f8cba`/`2d8ff334` |
+| VB-AP-PROMO-RULE, VB-RUNNER-PATHS | adapter carries promotion_rule/frontier_admission/promotion_committed; `belief_capture.py` refuses a missing EPYC_ROOT | root `f71277f7`, research `0b295a25` |
+| VB-RUNNER-PATHS-2 | tulving/occ1/beam scorers refuse loudly | research `ae92ac5c` |
+| D-f | cross-process SQLite session lease with fencing (6 procs × 8 RMW = 48/48; 8/48 without the lease) | orch `0d6d1dd2` |
+| D-f3 | graph snapshots were silently lost (signature mismatch); they now have their own `graph_snapshots` table and fail with a warning | orch `f853764f` |
+| ETR-4/5/6/7 | guard test, `quality_unmeasured`, mock `tokens_generated`, dead imports | orch `1097a392`, `0399c3fe` |
+| UTM-P1 | trace schema v2 pairing keys (harness/seed/turn_ordinal/task_key) | orch `dd24ed10` |
+| EPD-3-R5/R6/R8 | routing cleanups | orch `d3f6062c` |
+| NIB2-79 | 4 dead `archive_*` registry entries removed; a resolve test added | orch `0c03e658` |
+| NIB2-78 | one warning line instead of a traceback storm; graph `close()` lock-release fix; `graph` extra. Operator ruled **A: kuzu stays uninstalled** | orch `61793b38`, root `1d5f8cba` |
+| OBS-12, KB-WM-3 | skill interpreter hardening; index-graph provenance; audit-log gitignore fix | root `afb9745c`, `4120af69` |
+| VB-PRB-T4 | closed by the main session (capture ran; driver on research main) | root `5d7a81fd` |
+
+### Landing audit: 09-16 work that never reached main
+
+A worktree cleanup found committed 09-16 work that had been reported and ticked but never landed.
+The per-task wrap-ups had not verified landing.
+
+| What | Resolution |
+|---|---|
+| 3 root vidya adapter branches (AP-54 fence, AP-55 gate, VB-AP53-RATE + SC83; about 1.3k lines) | landed as root `52b12f09` (merges `7d1ed3a5`/`48dc08b3`/`3671df47` plus `9d3d4f82`); 1391 vidya tests pass. Early ticks were corrected: VB-AP53-RATE and SC83 re-dated, AP-54 and AP-55 given notes |
+| Research GPU evidence (SL-1/SL-5/DF2-6/CJ-1e/§5 pre-reg) | already on main under the collector commits `8146880b`/`6cbdd856`; 43 citations annotated (root `85af3ae4`) |
+| INF-61 fence fix | missing from main's driver port, so main could not reproduce its own evidence; ported as research `c6e63877` |
+| INF-70 evidence docs | landed as research `56ef1404` |
+| 7 one-off drivers, 2 raw completion files, SL-2 (autokernel-owned) | declined; backed up as `preserve/2026-09-17/gpu-runner-20260916` and `gpu-prep-20260916` on research origin |
+
+About 54 merged worktrees were removed (root plus orchestrator). A new standing rule was saved to
+memory (`feedback_wrapup_must_verify_branch_landed`): a task is done only when `git cherry` is empty.
+
+### Operator actions and rulings
+
+- The v10 episodic re-pin was RATIFIED (root `810a6a82`), closing MHS-3d. The eval-leak cleanup is
+  therefore complete on every store: live, offline, and pinned production_best.
+- OP-KUZU was ruled A and OP-AP57 ruled B; both rows were removed (root `bee2f36a`).
+- OP-AP57 had been filed in root `52dfc3cc` after the ap57 agent found that "B" was only a recommendation.
+
+### State at close
+
+- The API is DOWN (operator request) and AutoPilot is stopped.
+- No GPU work until the operator signals. Ready at that point: INF-61 A/B/A, the OP-INF40 confirm on
+  qwen4exp with the champion, the HS-4 P0.4 live acceptance (API reload first), the PRB-T4 re-run, and
+  the ERNIE next hypothesis.
+- Branches deliberately still off main: research `sub/akfix-20260916` (held AutoKernel fix `38d82ebe`,
+  owner decision), plus the preserved one-off drivers.

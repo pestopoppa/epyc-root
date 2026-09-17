@@ -2,8 +2,127 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-17 (afternoon: the AutoPilot merge train is on orchestrator main, and AP-54/AP-55/MHS-4/MHS-5 are closed; AP-55-ARM waits on one shadow run); earlier 2026-09-17 (later pass: the Dream-RSI intake wave files 14 offline rows, the promotion guard's served-config identity and empty-frontier rule are built, AP-55's seed re-run gains its arming flag, the merge train guards every `update_baseline` call site, and the harness-null-pool evidence reaches HS-4; earlier incremental: AP-53 rejected-mutation ledger, AP-54 Landlock eval fence, AP-55 infra fingerprint + shadow promotion gate, live-frontier promotion guard, MHS-3/4/5 with the override-rationale refutation, E8 chain retired); earlier: 2026-09-16 (AutoKernel guard wiring, cross-workload refusal, and archived dirty-worktree retirement; earlier dated findings retained below)
-**Sources**: 130+ documents (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through)
+**Last compiled**: 2026-09-17 (evening: AP-57 B `speed_axis_reseed` receipt, AP-63(a) run_manifest/lineage, AP-55-ARM counterfactual shadow review, ETR-5/6/7, AutoKernel v21 stop / v22 bounded relaunch); earlier 2026-09-17 (afternoon: the AutoPilot merge train is on orchestrator main, and AP-54/AP-55/MHS-4/MHS-5 are closed; AP-55-ARM waits on one shadow run); earlier 2026-09-17 (later pass: the Dream-RSI intake wave files 14 offline rows, the promotion guard's served-config identity and empty-frontier rule are built, AP-55's seed re-run gains its arming flag, the merge train guards every `update_baseline` call site, and the harness-null-pool evidence reaches HS-4; earlier incremental: AP-53 rejected-mutation ledger, AP-54 Landlock eval fence, AP-55 infra fingerprint + shadow promotion gate, live-frontier promotion guard, MHS-3/4/5 with the override-rationale refutation, E8 chain retired); earlier: 2026-09-16 (AutoKernel guard wiring, cross-workload refusal, and archived dirty-worktree retirement; earlier dated findings retained below)
+**Sources**: 130+ documents (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
+
+## Compiled Update — 2026-09-17 (evening): the speed-axis reseed gets a ledger receipt, journal rows record their manifest and parent, and the shadow gate now records what enforce would have done
+
+**Confidence: verified**: orchestrator commits and focused test runs recorded in the sub-lane logs. No
+inference ran. AutoPilot and the API stayed stopped, so none of this has run live yet.
+
+### Key findings
+
+- **"Option B" was only a recommendation until the operator ruled.** The first AP-57 attempt stopped
+  without implementing anything. The only record of RTG-02's "prepared decision package" was one sentence,
+  "decision package prepared, recommendation B". The package text was never saved, and no ruling existed in
+  the operator queue, `artifacts/operator/`, the bus or the wrap-up commits. Filing a box and re-pointing an
+  index cell are not rulings. The operator then ruled **OP-AP57 = B** (root `bee2f36a` removed the queue
+  row). [sub-ap57](../progress/2026-09/2026-09-17-sub-ap57.md),
+  [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md)
+- **AP-57 B landed (orchestrator `01906607`).** On the eval-quality re-baseline refusal path, RTG-02
+  re-anchors `frontdoor_speed` and `autopilot_speed_era`. Before this change, that state write had no
+  journal receipt, because `_append_baseline_promotion_event()` returned early for `updated=False`.
+  - A new `speed_axis_reseed` event sits in the same ledger as `baseline_promotion`. It carries the source
+    trial, old and new speed and era, `reason=quality_refusal` with the gate token, the eval-quality era,
+    the AP-63(a) run-manifest digest, the post-write `baseline_state` and a timestamp.
+  - The event is written once per trial. A failed append logs a WARNING and sets
+    `state.speed_axis_reseed_journal_error`, and the state save still happens.
+  - `reconcile_baseline_ledger` replays promotions and reseeds in append order. `baseline_promotion_events()`
+    is unchanged, so promotion counters never count a reseed.
+  - Fixed along the way: a reseed decided on a row the journal does not hold was kept, while a promotion in
+    the same position was rolled back. Both are now rolled back.
+  - Tests: 9 new (collection fails on the old code), plus 333 + 78 in the focused suites.
+  - [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md)
+- **AP-63(a) landed (orchestrator `0286c170`).**
+  - **`run_manifest` on journal rows.** Main-loop rows, dispatcher-skip rows and the AUTOPILOT_KILLED
+    placeholder now copy the in-flight WAL marker's manifest onto the row. Before, the manifest was cleared
+    after the row was written. A trial that was never dispatched, or whose marker is mismatched or legacy,
+    gets `{}`. Nothing is back-filled.
+  - **`lineage`, an explicit stored parent.** The rule is `latest_committed_baseline_promotion_same_species`:
+    the newest same-species trial that has a `baseline_promotion` ledger event. With no accepted parent, the
+    id is `None`, never a fallback.
+  - **Nothing downstream changes yet.** The old heuristic is recorded alongside and still drives
+    `parent_trial`, so config_diff, PEAF, BSV and Pareto do not change.
+  - **Follow-ups.** AP-63c checks the first post-restart row. AP-63d decides whether consumers switch to
+    `lineage.parent_trial_id`. AP-63(b) stays blocked on OP-41.
+  - Tests: 17.
+  - [sub-ap57](../progress/2026-09/2026-09-17-sub-ap57.md)
+- **AP-55-ARM is prepared but not flipped (orchestrator `cd79b80e`).** The planned review step could not
+  have worked: in shadow mode `_holds()` returns `[]`, so the recorded `hold` is False on every row, and its
+  rate reads 0% whatever enforce would have done.
+  - Each trial now also records `would_hold_enforce` (with reasons) and `would_hold_strict`, using the
+    same rule.
+  - `start_authority_daemon.py` pins `AUTOPILOT_AP55_PROMOTION_GATE=shadow` and
+    `AUTOPILOT_AP55_SEED_RERUN=0`, so an inherited variable cannot arm the shadow run.
+  - `scripts/autopilot/ap55_shadow_review.py --since <ts>` is read-only. Exit 3 means the window holds no
+    shadow verdict. On the live journal today it finds 0 gated rows and exits 3.
+  - The switch is two `AUTHORITY_ENV` lines followed by a restart through the wrapper.
+  - [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md)
+- **ETR-5/6/7 closed (orchestrator `0399c3fe`).**
+  - ETR-5 adds `SafetyVerdict.quality_unmeasured` as a **sibling** field. A `retry_not_revert` property
+    combines it with `reliability_blocked`, and the consecutive-failure guard reads that property. The
+    ETR-2 test pins that an unmeasured quality is not the REL-1 path.
+  - ETR-6 makes mock mode set `tokens_generated=0` explicitly. The two no-decode shapes differed only under
+    `exclude_unset` or a field-presence check.
+  - ETR-7 deletes the dead `INBAND_ERROR_PREFIX` imports. ETR-1 stays open as an operator decision.
+  - [eval-tower-loop-robustness-audit](../handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md),
+    [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md)
+
+### AutoKernel Dream-RSI follow-through (facts as the shards state them)
+
+- **RB-lineage telemetry is closed on the experimental lane.** The journal commit is `85c7b91e`, and the
+  prospective evidence sidecar is `a6288858`. The fields are nullable, and no search policy changed. SC87
+  records the write side, and its strict reader is still pending.
+  [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md), intake-1439#record
+- **The research-loop rows stay open, with a stated boundary.**
+  - **Archives.** They keep final attempt and round counts, but not per-idea contexts. A five-idea cap, a
+    summarize-every-20 comparison or an ancestor-revert A/B therefore cannot be scored retrospectively.
+  - **C6 scanner.** It now refuses explicit benchmark and capture-phase probes (`84aaaf8d`).
+  - **Fresh-input checks.** They are opt-in and report-only.
+  - [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md)
+- **AK-integrity audit: the existing guards cover the basics, and one narrower gap remains.**
+  - **What exists.** Hardened `llama-bench` receipts need distinct per-repetition input digests and rotated
+    addresses. A versioned reward-hack scan covers the whole candidate diff.
+  - **The gap.** The timed GPU receipt checks output invariance across addresses. It does not compare the
+    candidate's output with a trusted reference on that same fresh input.
+  - **What was added.** `loop/fresh_correctness.py` (`6c5bd9bb`) and an opt-in `fresh_check` observer in
+    `loop/bench.py` (`091e3eb0`) are default-off and have no live caller. The observer refuses
+    `calibrated=True`, and its verdict stays `decisive=None` until the exact protocol has its own A/A.
+  - [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md),
+    intake-1454#record, intake-1447#record
+- **Historical keeps cannot be labelled same-prompt replayable.** `_run_agent` does not save the prompt
+  bytes, so no N=10 replay or BO ceiling result is claimed. A default-off prompt receipt, capped at 1 MiB,
+  is specified but not implemented. [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md),
+  intake-1451#record
+- **The GLM loop: v21 was stopped, and v22 was relaunched with a bounded runtime preflight.**
+  - **Why v21 stopped.** Its batch 1 admitted a runtime arm whose default calibration
+    (`CampaignControls(200,...)`) needed **800 full GLM launches** before the first comparison. It was
+    stopped as an invalidly sized setup, not scored. The shard records that TERM did not end the child and
+    server promptly, and that KILL was needed on the captured PIDs.
+  - **The fix.** Research `8d45cb44` offers no runtime treatment unless a runtime statistical declaration
+    is made in advance, and a declared runtime arm must state its full launch budget before claiming
+    resources.
+  - **v22.** It started at 14:27 UTC from source tip `614ff2ba02e0` and the same store, with 28 keeps.
+  - **What is not claimed.** No new keep, and no measured candidate from v22. Production v9 and the champion
+    are unchanged.
+  - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md)
+
+### Open questions
+
+- AP-63d: should config diffs be measured against the stored `lineage` parent instead of the heuristic?
+- AP-55-ARM: what committed-promotion would-hold rate does the first shadow run produce?
+
+### Source References (2026-09-17 evening)
+
+- [sub-ap57](../progress/2026-09/2026-09-17-sub-ap57.md): AP-57 stop, AP-63(a), AP-55-ARM prep.
+- [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md): AP-57 B implementation and the non-projection decision.
+- [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md): ETR-5/6/7.
+- [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md): AP-57, AP-55-ARM runbook, AP-63(a)–(d).
+- [eval-tower-loop-robustness-audit](../handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md): ETR-5/6/7 ticks.
+- [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md): Dream-RSI checkpoint, v21 stop, v22 relaunch.
+- [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md): integrity and promotion-control audit.
+- [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md), [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md): row checkpoints.
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): evening landing table and rulings.
 
 ## Compiled Update — 2026-09-17 (afternoon): the merge train landed, and the next gate is one shadow run
 

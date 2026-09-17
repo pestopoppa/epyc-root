@@ -2,8 +2,63 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (afternoon: the live episodic store lost exactly the 4 leaked memories; the graph retriever has never been live because kuzu is missing; a fenced cross-process session lease; cross-harness trace pairing keys); earlier 2026-09-17 (later pass: the dead `/v1` `recall()` is fixed and its open item closed; earlier incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
-**Sources**: 39+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, the 2026-06-28 W4/W6 reboot-readiness checkpoint, the RAO/ReDel substrate spike, and the BEAM/Tulving M-12 instrument set) (added 2026-09-17: OP-42 readiness, M-12 blockers, memeval, Hermes-memory, UTM-M7/M8 and trace-bm25 logs, plus the CME/UTM/episodic handoff deltas)
+**Last compiled**: 2026-09-17 (evening: D-f3 graph snapshots persist in their own fenced table; OP-KUZU ruled A; v10 episodic re-pin RATIFIED); earlier 2026-09-17 (afternoon: the live episodic store lost exactly the 4 leaked memories; the graph retriever has never been live because kuzu is missing; a fenced cross-process session lease; cross-harness trace pairing keys); earlier 2026-09-17 (later pass: the dead `/v1` `recall()` is fixed and its open item closed; earlier incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Sources**: 39+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, the 2026-06-28 W4/W6 reboot-readiness checkpoint, the RAO/ReDel substrate spike, and the BEAM/Tulving M-12 instrument set) (added 2026-09-17: OP-42 readiness, M-12 blockers, memeval, Hermes-memory, UTM-M7/M8 and trace-bm25 logs, plus the CME/UTM/episodic handoff deltas) (added 2026-09-17 evening: sub-df3-etr, sub-nib2-7879, the repl-session-memory/non-inference-backlog deltas, and the v10 ratification record)
+
+## Compiled Update — 2026-09-17 (evening): graph snapshots finally persist, kuzu stays uninstalled, and the v10 re-pin is ratified
+
+**Confidence: verified**: orchestrator commits, focused tests and the root ratification commit. No
+inference ran, and the production `kuzu_db` files were only copied, never opened in place.
+
+### Key findings
+
+- **D-f3 is fixed (orchestrator `f853764f`).**
+  - **The defect.** Both graph snapshot writers had been losing every snapshot. They called
+    `save_checkpoint` with keyword arguments the store never accepted, and the `TypeError` was swallowed
+    at DEBUG.
+  - **Why the snapshots do not go into `checkpoints`.** `get_latest_checkpoint()` is the REPL restore
+    source, so a snapshot row would shadow the real globals checkpoint.
+  - **The fix.**
+    - A new append-only `graph_snapshots` table is written by `save_graph_snapshot(run_id, data,
+      snapshot_type, *, session_id, fencing_token)`.
+    - A session-scoped write runs D-f's `check_fence` inside the insert transaction.
+    - `_execute_repl` sets the session id and token only while the turn holds the lease. Otherwise the
+      snapshot is run-scoped.
+    - Both error paths now log at WARNING.
+  - **Tests.** 9 cases, 8 of which fail on the old code. They include an AST guard over every
+    `save_checkpoint` call in `src/`.
+  - **Follow-up (D-f3a).** Nothing reads the table, and with `STATE_HISTORY_SNAPSHOTS` on it grows by one
+    row per turn.
+  - [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md),
+    [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md)
+- **The graph layer stays dormant: the operator ruled OP-KUZU = A.**
+  - **Code changes (orchestrator `61793b38`).** A missing kuzu is now one WARNING line with no traceback,
+    and so is lock contention from another process. The `[graph]` extra pins `kuzu==0.11.3`.
+  - **A pre-existing bug.** Every graph class's `close()` was `pass`, so the file lock was never released
+    in-process.
+  - **What the on-disk graphs hold** (read from copies). The failure and hypothesis graphs have the schema
+    and 0 rows. The routing graph has 7 LLMRole, 17 QueryCluster and 17 TaskType nodes.
+  - **Why A was recommended.**
+    - Kuzu takes an exclusive per-file lock even for `read_only=True`. Of 6 uvicorn workers, only the first
+      would get graph scoring, so routing would depend on the worker.
+    - Upstream kuzu was archived on 2025-10-10.
+  - **What remains.** NIB2-78c, a single-owner graph process, applies only if the layer is revived.
+  - [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md),
+    [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
+- **The v10 episodic re-pin is RATIFIED (root `810a6a82`), which closes MHS-3d.**
+  `multitier_v10_20260810/checkpoint_meta.json` now pins the purged files. `memory_count` went from 63925 to
+  63921, and `checkpoint_sha256` from `a604276f` to `3b457d98`. The eval-leak cleanup is therefore complete on
+  the live, offline and pinned production_best stores.
+  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+
+### Source References (2026-09-17 evening)
+
+- [sub-df3-etr](../progress/2026-09/2026-09-17-sub-df3-etr.md): D-f3 defect, design and tests.
+- [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md): D-f3 tick and D-f3a.
+- [sub-nib2-7879](../progress/2026-09/2026-09-17-sub-nib2-7879.md): kuzu dependents, lock behaviour, decision package.
+- [non-inference-backlog](../handoffs/active/non-inference-backlog.md): NIB2-78/78a/78b/78c.
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the v10 ratification and OP-KUZU ruling.
+- [ratify_v10_episodic_repin_20260917.json](../artifacts/operator/ratify_v10_episodic_repin_20260917.json): the ratification record.
 
 ## Compiled Update — 2026-09-17 (afternoon): four memories out, and a retriever layer that was never on
 
