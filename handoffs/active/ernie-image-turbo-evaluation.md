@@ -207,4 +207,8 @@ enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor
       - Recipe §5 is exhausted. The next hypothesis has to lie outside those linears, for example the VAE decode
         or the attention/FA path at the larger sequence length. It needs a new build plus prep, not a re-run.
     - **Belief kernel.** No write hook; covered by VB-GPU-RUNNER.
+  - [ ] **ERNIE-ROCM-NEXT — prepare the next ≥1024² white-output hypothesis outside the DiT linears** (VAE
+        decode, or the attention/FA path at the larger sequence length): a new sd.cpp build and a
+        pre-registered A/B, zero-inference prep first. The run waits for the operator to lift the 2026-09-17
+        GPU hold. Filed 2026-09-17 from recipe §5 being exhausted (`2026-09-16-sub-s5-topup.md`).
 - [ ] Re-litigate FLUX.1-schnell alternative if bilingual long-form in-image text not needed by product

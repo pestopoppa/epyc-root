@@ -395,6 +395,13 @@ quarantine entries and its issue #124.
       date, and the failure surfaces at the worst moment — when someone finally runs the thing.
       DTAP's answer was `python3 -m harness attest`; this pin set has no equivalent.
 
+- [x] **v7 runner re-seal (sibling pins, not laguna's)** ✅ 2026-09-16 — operator decision RE-SEAL, applied as
+      research `6d010a92` ("RATIFIED: re-seal v7 runner pins 6dea92dd/79721927 -> 20a97fbd"). It re-pins
+      `dflash2_followups.py` `EXPECTED.runner_sha256` and the P3 bake-off manifest. The request bytes were
+      identical in 6/6 stub scenarios, and the only output difference is two keys added by `baf36757`.
+      laguna's `EXPECTED_RAW_EVALUATOR_SHA256` was **left on 79721927 on purpose** (a completed campaign), so
+      the box above is unaffected. Detail: `progress/2026-09/2026-09-16-sub-v7-repin.md`.
+
 - [ ] **Generalize a pin-staleness checker across the benchmark tree.** One script walks every
       `EXPECTED_*_SHA256` / `file_identity()`-style declared pin under `scripts/benchmark/` and
       reports staleness as its OWN reportable condition (like `python3 -m harness attest`),

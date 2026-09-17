@@ -72,8 +72,7 @@ so this is a **new active stub, not a reopen**.
       ("don't overfit") is not the fix (intake-1379#record; intake-1395#record, where validity
       prompting moved -6.2 pp). EvilGenie partial-hardcoding class (intake-1387#record).
       ⏳ PARTIAL 2026-09-16 (`sub-autopilot-safety`, orchestrator `8219d8e8` on branch
-      `sub/autopilot-safety-20260916`, NOT yet merged; box stays open: the id-vocabulary guard below does
-      not yet cover the 2026-09-15 structural form's n-gram / expected-answer / source-identity refusals): `EvalIdVocabulary` + `eval_leakage_reason()`
+      `sub/autopilot-safety-20260916`, NOT yet merged; box stays open: structural form completed on `sub/mhs3-complete-20260916`, see below): `EvalIdVocabulary` + `eval_leakage_reason()`
       in `prompt_forge.py`, applied to the ADDED text of prompt, code and GEPA mutations. The vocabulary
       comes from eval data, not a hand list: research `question_pool.jsonl` (required), `core_*.jsonl`
       and the sentinel YAMLs → 153,450 ids (pool ids, nested core qids, prompt-hash qids), 295 id
@@ -87,6 +86,36 @@ so this is a **new active stub, not a reopen**.
       Operability (loud fail-closed state: startup preflight, alarm after 3 consecutive
       `eval_leakage_vocabulary_unavailable` rejections, runbook `docs/guides/meta-harness-operator-guide.md` § 7)
       built on branch `sub/gate-frontier-20260916`, under review, unmerged (2026-09-16, `sub-gate-frontier`).
+      **Structural form built 2026-09-16 (`sub-mhs3b`, orchestrator `6df6f0d8` on branch
+      `sub/mhs3-complete-20260916`, built on `sub/gate-frontier-20260916`; carried by the AutoPilot merge train
+      `sub/autopilot-train-20260916`, not yet on main; flip the box when it lands):** `_transfer_safety_verdict`
+      and the GEPA path now also refuse, over the ADDED text: `eval_content_ngram_overlap` (verbatim >=8-token
+      overlap with the pool/cores/sentinels or the rendered trace bank; hashed shingles packed with row id,
+      ~1.3e-7 FP per shingle, template df >=32 dropped, anchor-or-15-token-run rule),
+      `eval_expected_answer_leakage` (name-shaped 1-7 token answers), `eval_source_identity_leakage` (trace
+      blocks resolved to question/sentinel ids; >=3 shared rare tokens, paraphrase-proof) and
+      `eval_suite_special_casing` (keyed/phrase/mention, in-suite included). Matched source id in every reason.
+      Same pass, cache and fail-closed state as the id vocabulary; harness text (prompts, src/, original) is never
+      blamed. Real pool: 16 s cold, +590 MB RSS (index 173 MB, 1.37 GB transient peak), ~9 ms per edit. FP: 0/33
+      live targets; content 0/91 historical mutations (special-casing 2/91 borderline); 2.4% of 467 whole
+      src/docs files. Coverage 1998/2000 verbatim pool prompts. Runbook § 7 extended.
+      `tests/unit/test_prompt_forge_content_leakage.py` (51 tests). Detail:
+      `progress/2026-09/2026-09-16-sub-mhs3b.md`.
+  - [x] **MHS-3a — remove the pool leak MHS-3 found in live harness text** ✅ 2026-09-16 (orchestrator
+        `09bdb998` on main). Pool row `simpleqa_general_00912` (Aschoff / Bonn) was a worked example in
+        `orchestration/prompts/rules.md` Example 4b and `DEFAULT_ROOT_LM_RULES`; both now use a synthetic
+        example, and a dormant HumanEval/55 copy in `src/prompts/coder_system.txt` was replaced too. Takes
+        effect at the next API reload (owned by the session that owns inference).
+        Detail: `progress/2026-09/2026-09-16-sub-leak00912.md`.
+  - [ ] **MHS-3b — close the rewind hole: operator RATIFY of the checkpoint prompt re-pin.** Operator chose
+        option A (2026-09-16). Ten AutoPilot checkpoints, including production_best (multitier_v10), still
+        carry the leaked `rules.md` (`b250c227…`), and `restore_checkpoint()` copies it back. Script landed on
+        root main (`0e2bbc33`); the operator runs
+        `bash -c 'bash <(git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/run_ckpt_leak_ratify_20260916.sh) --operator pestopoppa'`
+        and types RATIFY (refuses while AutoPilot holds its lock). Detail: `progress/2026-09/2026-09-16-sub-ckpt-leak.md`.
+  - [ ] **MHS-3c — clean the out-of-scope leak copies** that MHS-3b leaves: 4 HumanEval/55 task memories in
+        `episodic.db` (in every checkpoint and the live store) and Aschoff in `autopilot_state*.bak*`
+        `last_traces`. Cleanup prep was in progress on 2026-09-17.
 - [ ] **MHS-4 — ANTI-OVERRIDE risk prior.** Rank/gate mutations by CONSTRAIN (add a check, block a bad
       path, re-prompt) vs REPLACE (rewrite/force an action, hard-code an answer). In the released
       corpus the REPLACE-before-CONSTRAIN ordering holds on all 23 valid patches (REPLACE 4/4 negative,

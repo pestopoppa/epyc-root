@@ -170,6 +170,12 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
       **Operator decision D2 (2026-09-16):** option (c) — journal clean trials so they can be frontier
       representatives (today the candidate is journaled after `update_baseline`, so a clean trial never
       is one) — with option (b), N≥3 reproductions, as the interim promotion rule until (c) lands.
+      **(c)+(b) built 2026-09-16 (operator decision; branch `sub/gate-frontier-20260916`, in the AutoPilot
+      merge train, not yet on main):** clean trials are journaled as frontier representatives and handed to
+      the promotion guard before the decision; an empty live frontier needs >= 3 comparable reproductions
+      (`AUTOPILOT_EMPTY_FRONTIER_MIN_REPRO`); `promotion_rule` is recorded per trial; the guard fails closed on
+      an unreadable archive. Served-config identity: explicit deltas, and for mutations the mutated-file sha
+      (`f083a0cd`). Next restart: every tier starts under rule (b). The W3e axis drop itself is still open.
 
 ### W6 — the eval instrument the rate axis is measured on (opened 2026-08-04)
 
