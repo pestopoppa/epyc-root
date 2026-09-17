@@ -1,4 +1,33 @@
 {
+  "amendments": [
+    {
+      "checkpoint_meta_sha256_after": "54224ec71905b7e628284262579dec1f8da59d0c9d63855fada878ec78305746",
+      "checkpoint_meta_sha256_before": "e9d8538560e2a1435d073513e642465d7d384ef0ace7aafb6d636278f2a79ab8",
+      "checkpoint_sha256_after": "a604276fcd053e7590bd391f846334f5fd4616f7cd9ebe78196b8f6305f1d218",
+      "checkpoint_sha256_before": "c60364f1295a931a4b4e806d4dffd2138696537f49b15a3a6881c50737c02b19",
+      "checkpoints_patched": [
+        "20260716_062336",
+        "20260727_005741",
+        "20260727_030219",
+        "20260803_120918",
+        "20260803_130944",
+        "20260804_104155",
+        "20260804_152401",
+        "20260808_184245",
+        "20260809_115107",
+        "multitier_v10_20260810"
+      ],
+      "date": "2026-09-16",
+      "decision_receipt": "artifacts/operator/ratify_checkpoint_prompt_leak_20260916.json",
+      "file": "prompts/rules.md",
+      "gate_id": "RATIFY-CKPT-PROMPT-LEAK-20260916",
+      "kind": "eval_leak_few_shot_replacement",
+      "reason": "few-shot Example 4b copied eval pool row simpleqa_general_00912 verbatim; replaced with the synthetic example from epyc-orchestrator 09bdb998 (only the few-shot example changed)",
+      "sha256_after": "18f8ea018234605002459cd98e59a9aaeddec235d8e022ff59f6ebd67766d607",
+      "sha256_before": "b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e",
+      "source_commit": "09bdb998f27fd13a13f3a4908f924626f886ef3a"
+    }
+  ],
   "autopilot_started": false,
   "boundary": "2026-08-10T16:23:03.880697Z",
   "eras": {
@@ -35,7 +64,20 @@
   "objective_policy": "task_rate_4d_v7_physical_cohort_exclusion",
   "production_checkpoint": {
     "metadata": {
-      "checkpoint_sha256": "c60364f1295a931a4b4e806d4dffd2138696537f49b15a3a6881c50737c02b19",
+      "amendments": [
+        {
+          "date": "2026-09-16",
+          "decision_receipt": "artifacts/operator/ratify_checkpoint_prompt_leak_20260916.json",
+          "file": "prompts/rules.md",
+          "gate_id": "RATIFY-CKPT-PROMPT-LEAK-20260916",
+          "kind": "eval_leak_few_shot_replacement",
+          "reason": "few-shot Example 4b copied eval pool row simpleqa_general_00912 verbatim; replaced with the synthetic example from epyc-orchestrator 09bdb998 (only the few-shot example changed)",
+          "sha256_after": "18f8ea018234605002459cd98e59a9aaeddec235d8e022ff59f6ebd67766d607",
+          "sha256_before": "b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e",
+          "source_commit": "09bdb998f27fd13a13f3a4908f924626f886ef3a"
+        }
+      ],
+      "checkpoint_sha256": "a604276fcd053e7590bd391f846334f5fd4616f7cd9ebe78196b8f6305f1d218",
       "config_snapshot": {
         "baseline_bundle_sha256": "6006061e66463bd59a9cc124a7191f0c1172575f75e0717fb2cb27b6e006492b",
         "execution_instrument_id": "resource_lanes_v10_history_scoped_quiescence",
@@ -73,7 +115,7 @@
         "prompts/roles/worker_math.md": "e0e4caa3ce8e65e61a7ea3837fca9afd210f314d20969a8b6e11577c23361b57",
         "prompts/roles/worker_vision.md": "2930f9d621c0da606491d043e64146a74c20dcb8bd254df248be41184294004b",
         "prompts/root_lm_system.md": "07ee95a143edde00cca053d86cdad80d2980729613c552adb7f15e8d54767628",
-        "prompts/rules.md": "b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e",
+        "prompts/rules.md": "18f8ea018234605002459cd98e59a9aaeddec235d8e022ff59f6ebd67766d607",
         "prompts/task_decomposition.md": "9b436cd0ca94027ba97718ff9292aeb6738c25d8cf3359775e2dc71792118c6a",
         "prompts/tools.md": "39a9184faa54ea24035875c256395b69a409396e1ba123282b8b9f9b1dfe4c06",
         "routing_classifier_weights.npz": "3e1e972c0eb2a953fdbd5c047fd0455ca202557a329ed14668338fc5c2a9beab",
