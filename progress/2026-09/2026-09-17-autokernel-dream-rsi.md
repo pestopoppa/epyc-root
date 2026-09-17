@@ -57,3 +57,34 @@ arms were also blocked by four campaign-ID-prefix checks. Isolated workers
 are implementing exact-identity profile reuse/full-scope routing and
 prospective lineage/correctness receipts. No relaunch or new measured
 candidate is claimed at this checkpoint. The 28 retained keeps remain intact.
+
+## Implementation follow-through, 13:53 UTC
+
+- The research lane now contains exact-identity CPU profile continuation
+  (`91e63313`), spawn-lineage journal and prospective receipt (`85c7b91e`,
+  `a6288858`), opt-in nonpromotable GPU fresh-input observation (`64fd67f3`,
+  `dd5d612f`), and named-campaign runtime admission with a durable evaluator
+  parent/subcampaign join (`ef51369c`). None changes the production kernel or
+  adopts a variance-based runtime keep rule. The direct runtime suite returned
+  36 passed and one pre-existing tiny-bench fixture failure (missing hardened
+  sample fields); the combined earlier suite returned 207 passed and four
+  broader fixtures not yet attributed to these changes.
+- The root lane contains the offline line-level lineage detector, task audits,
+  and a bounded epoch-local observed-momentum reporter. After discovering the
+  v1/v2 schema mismatch, the corrected reporter admitted all 87 measured
+  native serving A/B rows into 24 separate instrument/anchor epochs and wrote
+  a self-hashed provenance receipt. This is an observed diagnostic only: no
+  cross-epoch gain, cost-credit score, ancestor A/B, or policy uplift. Artifact:
+  `/mnt/raid0/llm/tmp/ak-glm-observed-momentum-20260917-v1.json` and its
+  `.provenance.json` sidecar.
+- RB-lineage telemetry and SimpleTES ROCm port-input registration are closed
+  in their handoffs. AR-RPUCG remains open because the native MI210 r19 archive
+  lacks the evaluated parent DAG and visit state needed for an honest selector
+  A/B. Prompt-replay receipt code is isolated and unintegrated: its actor
+  callsite lacks a prospective turn/outcome identity, so no N=10 replay is
+  claimed.
+- At 13:53 UTC the GLM serial supervisor was relaunched as v21 with
+  `rounds=0` on the retained worktree/store. First batch was profiling at this
+  checkpoint; `running` is a process state, not yet proof of a healthy measured
+  candidate path or a new keep. Monitor and repair any actual failure before
+  claiming loop health. Production v9 and champion-of-record remain unchanged.
