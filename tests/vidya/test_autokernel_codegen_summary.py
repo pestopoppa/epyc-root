@@ -98,6 +98,22 @@ def cpu_sidecar():
     return doc
 
 
+def embedded_hip_sidecar():
+    doc = sidecar()
+    row = doc["objects"][0]
+    row.update(relative_path="bin/libggml-hip.so#fatbin-4096.co",
+               container_path="bin/libggml-hip.so",
+               container_sha256="e" * 64, container_bytes=8192,
+               container_offset=4096)
+    doc["summary_core_sha256"] = digest({
+        key: value for key, value in doc.items()
+        if key not in {"summary_core_sha256", "belief_claim_tuple"}})
+    extra = doc["belief_claim_tuple"]["extra"]
+    extra["summary_core_sha256"] = doc["summary_core_sha256"]
+    extra["code_objects"][0]["relative_path"] = row["relative_path"]
+    return doc
+
+
 def legacy_cpu_unavailable_sidecar():
     """The original v1 CPU producer wrote no library/symbol evidence."""
     doc = sidecar()
@@ -139,6 +155,28 @@ def test_valid_sidecar_projects_advisory_tuple():
     assert row.value == 1
     assert result[0] == "Judged"
     assert result[1] == "Located"
+
+
+def test_embedded_hip_object_projects_only_with_bounded_container_identity():
+    assert grade(project(embedded_hip_sidecar()))[:2] == ("Judged", "Located")
+
+
+@pytest.mark.parametrize("change", [
+    {"container_path": "bin/other.so"},
+    {"container_sha256": "invalid"},
+    {"container_bytes": 100},
+    {"container_offset": 4080},
+    {"container_offset": 9000},
+])
+def test_embedded_hip_container_mismatch_refused(change):
+    doc = embedded_hip_sidecar()
+    doc["objects"][0].update(change)
+    doc["summary_core_sha256"] = digest({
+        key: value for key, value in doc.items()
+        if key not in {"summary_core_sha256", "belief_claim_tuple"}})
+    doc["belief_claim_tuple"]["extra"]["summary_core_sha256"] = doc["summary_core_sha256"]
+    with pytest.raises(ProjectionError):
+        project(doc)
 
 
 def test_cpu_library_symbol_summary_projects_advisory_tuple():

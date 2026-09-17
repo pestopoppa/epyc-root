@@ -17,6 +17,7 @@ _SHA = re.compile(r"[0-9a-f]{64}\Z")
 _OID = re.compile(r"[0-9a-f]{40}\Z")
 _MIX = ("scalar", "vector", "matrix", "memory", "other")
 _CPU_ELF = re.compile(r"bin/libggml-cpu\.so(?:\.[0-9]+)*\Z")
+_EMBEDDED_HIP = re.compile(r"(bin/libggml-hip\.so(?:\.[0-9]+)*)#fatbin-([0-9]+)\.co\Z")
 _CPU_SYMBOLS = (
     "ggml_compute_forward_gated_delta_net", "ggml_vec_dot_q4_K_q8_K",
     "ggml_vec_dot_q5_K_q8_K", "ggml_vec_dot_q6_K_q8_K",
@@ -128,6 +129,24 @@ def native_rows(document: dict, *, receipt_locator: str = "",
                     else relative.endswith((".hsaco", ".co")))):
             raise ProjectionError("codegen object path is invalid or repeated")
         seen_paths.add(relative)
+        embedded = _EMBEDDED_HIP.fullmatch(relative) if backend == "llama_gpu" else None
+        container_fields = {"container_path", "container_sha256",
+                            "container_bytes", "container_offset"}
+        if embedded:
+            container_path, offset_text = embedded.groups()
+            _sha(row.get("container_sha256"), "container_sha256")
+            if (set(row).intersection(container_fields) != container_fields
+                    or row["container_path"] != container_path
+                    or type(row["container_bytes"]) is not int
+                    or not 0 < row["container_bytes"] <= 96 * 1024 * 1024
+                    or type(row["container_offset"]) is not int
+                    or row["container_offset"] != int(offset_text)
+                    or row["container_offset"] < 0
+                    or type(row.get("bytes")) is not int
+                    or row["container_offset"] + row["bytes"] > row["container_bytes"]):
+                raise ProjectionError("embedded HIP object lacks bounded container identity")
+        elif set(row).intersection(container_fields):
+            raise ProjectionError("container identity on non-embedded object")
         if not isinstance(row.get("disassembly_status"), str):
             raise ProjectionError("codegen object disassembly status is missing")
         if "sha256" in row:
