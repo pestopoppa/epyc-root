@@ -177,7 +177,34 @@ enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor
       - 960² is now non-blank with the patch ON, where the 2026-07-19 build was blank at ≥960². Patch OFF was
         not run at 960², so that change cannot be attributed to the patch.
       - Per the recipe, no headline speedup is computed.
-    - **Next (recipe §5).** Widen f32 to `to_q/k/v`, `gate_proj/up_proj` and `final_linear`, or use the
-      `z_image.hpp:51` out-proj `set_scale(1/16)` pattern. Then add a patch-OFF 960² cell.
+    - **Belief kernel.** No write hook; covered by VB-GPU-RUNNER.
+  - **Recipe §5 follow-ups A/B, 2026-09-17, 02:30–02:55Z (sub-s5-topup chain8; sd.cpp `f3a7fe95`, build
+    `build-rocm-variants-20260916`, sd-server sha `d33cbe6f…`, RUNNER_RECIPE §8). Result: NO variant FIXES.**
+    Box NOT ticked: there is still no valid 1024² GPU number.
+    - **Evidence.** Research main `ca8c63d6`, `data/gpu-mi210/ernie-image-turbo-hip-variants-20260917/`
+      (`verdict.json`, `requests.jsonl`; PNGs not committed).
+    - **Admissibility.**
+      - 55/55 requests returned HTTP 200, with the same prompt and seed as `cf05eefc`.
+      - All 5 servers were resident, and each knob echo matched its variant.
+      - Each teardown was a SIGTERM on the driver's own PID, confirmed dead.
+      - Prod CPU sd-server pid 910274 was untouched and is still alive.
+    - **Pre-registered verdict.** FIX requires 1024² and 832×1248 non-blank on every rep, AND 768–960² good.
+
+      | variant | 1024² + 832×1248 non-blank | 768–960² guard | verdict | 896² gen s vs off (19.44) |
+      |---|---|---|---|---|
+      | off (`F32=0`) | 0/6 | 768 ✓, 896 ✓×3, **960 blank ×3** | BASELINE (defect reproduced) | — |
+      | f32 (narrow, default) | 0/6 | not run | DOES-NOT-FIX | — |
+      | wide | 0/6 | 768 ✓, 896 ✓, 960 blank | DOES-NOT-FIX | 27.66 (**1.42×**) |
+      | outscale (1/16) | 0/6 | 768 ✓, 896 ✓, 960 blank | DOES-NOT-FIX | 19.70 (**1.01×**) |
+      | wide+outscale | 0/6 | 768 ✓, 896 ✓, 960 blank | DOES-NOT-FIX | 1 rep 27.89 (≈1.43×, not the 3-rep cost cell) |
+
+    - **Reading.**
+      - The missing cell, patch-OFF 960², is blank. With the same seed and prompt, the 2026-09-16 narrow-ON
+        960² was good. So the narrow f32 patch moved the blank threshold from 960² to 1024², a cross-build
+        comparison on the same default code path.
+      - Neither the wider f32 set nor the out-proj scale extends that shift. Both are blank at 960² again.
+      - The white output at ≥1024² is not fixed by any precision change on the DiT linears.
+      - Recipe §5 is exhausted. The next hypothesis has to lie outside those linears, for example the VAE decode
+        or the attention/FA path at the larger sequence length. It needs a new build plus prep, not a re-run.
     - **Belief kernel.** No write hook; covered by VB-GPU-RUNNER.
 - [ ] Re-litigate FLUX.1-schnell alternative if bilingual long-form in-image text not needed by product
