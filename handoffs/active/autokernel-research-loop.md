@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** V27 PRE-LAUNCH / SCIENCE 0 OF 10 / FINAL TRUST GATES OPEN — updated 2026-08-22
+**Status:** Active — GLM v26 first scheduled CPU A/B in flight at the 2026-09-17 20:10 UTC checkpoint; separate v27 trust gates below remain open.
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -17,6 +17,10 @@
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+## Current execution pointer — 2026-09-17
+
+The immediate next task is **AK-SERIAL-26** near the end of this handoff: verify one completed v26 child settles exactly one scheduled research iteration, then continue the operator-requested 20-loop health watch. At 20:10 UTC the v26 controller and retained GLM store had fresh `running` heartbeats; the first child was measuring full-target CPU A/B, with zero settled iterations. This is not a keep or a champion advance. The completed AK-PORT-1/2/3 implementation and bounded evidence policy are recorded beside that task. The v27 restart checkpoint below is an older, separate trust-gate program; its `0/10` science count is not the live GLM v26 counter. See the [session progress report](../../progress/2026-09/2026-09-17-autokernel-porting-implementation.md) for exact run identities and tests.
 
 ## Restart checkpoint — 2026-08-22
 
