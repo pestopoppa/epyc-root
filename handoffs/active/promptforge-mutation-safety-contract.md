@@ -122,9 +122,16 @@ so this is a **new active stub, not a reopen**.
           was cut off by a caller timeout at item 19 with no damage (the original was intact); the re-run finished.
     - [x] Live store purged ✅ 2026-09-17 during the API stop window (API down, verified): 4 memories removed,
           health OK, `--verify --include-live` PASS. The reloaded API reported 64,204 entries (was 64,208).
-    - [ ] Pinned production_best (multitier_v10) store: `--apply --include-pinned` is unlocked by MHS-3b.
-          Awaiting an operator choice: purge now and ratify the episodic re-pin it proposes, or bundle both later.
-          Until then, a v10 rewind restores the 4 memories.
+    - [x] Pinned production_best (multitier_v10) store ✅ 2026-09-17: purged with operator approval, 4 rows + FAISS, health OK, verify PASS incl. live+pinned.
+          The new hashes are in `pinned_repin_proposal.json`. The v10 pins still name the pre-purge
+          bytes until MHS-3d is ratified.
+  - [ ] **MHS-3d — operator RATIFY of the v10 episodic re-pin** (`RATIFY-V10-EPISODIC-REPIN-20260917`). From a host terminal:
+        `docker exec -it -u node epyc-root bash -c 'bash <(git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/run_v10_episodic_repin_ratify_20260917.sh) --operator pestopoppa'`
+        and type RATIFY. It re-pins `checkpoint_meta.json` (the three episodic file hashes and
+        memory_count 63925 -> 63921; checkpoint_sha256 `a604276f` -> `3b457d98`) and the v10 receipt
+        mirror, adds the amendments entries, and refuses while AutoPilot holds its lock. The dry-run
+        preflight is clean against the real checkpoint. Its `--verify` supersedes the MHS-3b script's
+        `--verify`, which the purge broke. Detail: `progress/2026-09/2026-09-17-sub-v10-repin.md`.
 - [ ] **MHS-4 — ANTI-OVERRIDE risk prior.** Rank/gate mutations by CONSTRAIN (add a check, block a bad
       path, re-prompt) vs REPLACE (rewrite/force an action, hard-code an answer). In the released
       corpus the REPLACE-before-CONSTRAIN ordering holds on all 23 valid patches (REPLACE 4/4 negative,
