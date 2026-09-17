@@ -11,7 +11,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | RTG-01 | agent world env synthesis | [agent-world-env-synthesis.md](agent-world-env-synthesis.md) | Run the AW-6 48h bootstrap discovery (≥50 envs / ≥500 tools / ≥500 tasks) with incremental persistence | — |
-| RTG-02 | autopilot continuous optimization | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | AP-57 — journal the speed-axis reseed (option B), then AP-63(a) stamp the AP-1510 run manifest onto journal rows | — |
+| RTG-02 | autopilot continuous optimization | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | AP-57 journal-receipt ruling (operator, A/B); after first shadow run: ap55_shadow_review.py → AP-55-ARM flip; AP-63c | — |
 | RTG-03 | autopilot dashboard fidelity audit 2026 07 2 | [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md) | C1 fix #2 Manifest writer intent-not-realized gap — writer lives in | — |
 | RTG-04 | batched edit parallel apply | [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md) | BEP-2 / J8 — Optional CPU latency A/B for the legacy patchset path: batch-edit mode vs interleaved Root LM loop on an edit workload | — |
 | RTG-05 | bep dcp falsification harness | [bep-dcp-falsification-harness.md](bep-dcp-falsification-harness.md) | DCP-6 — At a host-quiet window, clear the feature-flag intent diffs, then run inference; record top-up rate, token overhead, success deltas | — |
@@ -57,7 +57,7 @@
 | RTG-51 | wrap up division of labor policy | [wrap-up-division-of-labor-policy.md](wrap-up-division-of-labor-policy.md) | Wire compute blocker/window events and the receipt-cut heavy-wrap executor; then shadow the complete lifecycle | RTG-34, RTG-48 |
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 — adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture | RTG-34, RTG-48 |
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
-| RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3c — purge the pinned multitier_v10 episodic store and ratify its re-pin (operator choice pending); then MHS-12 | RTG-02 |
+| RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 
 ## Cross-domain
 
