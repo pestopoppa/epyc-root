@@ -152,8 +152,17 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
   Research `37d326ac` also requires native per-case reference metrics for
   admitted GPU source edits, while `53bc979c` retains observed errors from
   the existing Q4_K/Q5_K scalar CPU fixture without changing its thresholds.
-  Neither provides a universal cosine/PSNR policy; the full AK-PORT-1/3
-  wording remains open.
+  The operator accepted the existing validated per-operation comparator for
+  AK-PORT-1 and a bounded native-code diagnostic or explicit unavailable
+  record on each new source keep for AK-PORT-3. These close the two tasks
+  without claiming universal cosine/PSNR or exhaustive per-kernel occupancy.
+  v25 subsequently retained a second observation (NUMA round-robin −3.176%,
+  also inside the floor), then its serial controller refused the two-iteration
+  child as a one-iteration scheduling unit. That controller failure is separate
+  from the completed porting-method scope decision. Research `67c90866`
+  refuses multi-iteration resolved-campaign children before launch; v26 began
+  with one iteration per child and its first full CPU profile active. A completed
+  v26 stage and the requested 20-loop watch remain unverified.
   [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
 
 ### Open questions
