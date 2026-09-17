@@ -57749,7 +57749,7 @@
   - '2402.13291'
   handoffs_created: []
   handoffs_updated:
-  - handoffs/active/security-review-skill.md
+  - handoffs/completed/security-review-skill.md
   - handoffs/active/reviewer-typed-artifacts.md
   cross_references:
     chapters: []
@@ -58666,7 +58666,7 @@
   referenced_arxiv_ids: []
   handoffs_created: []
   handoffs_updated:
-  - handoffs/active/security-review-skill.md
+  - handoffs/completed/security-review-skill.md
   - handoffs/active/reviewer-typed-artifacts.md
   cross_references:
     chapters: []
@@ -61471,7 +61471,7 @@
   handoffs_created: []
   handoffs_updated:
   - handoffs/active/architect-model-selection-bench.md
-  - handoffs/active/security-review-skill.md
+  - handoffs/completed/security-review-skill.md
   - handoffs/active/reviewer-typed-artifacts.md
   cross_references:
     chapters:

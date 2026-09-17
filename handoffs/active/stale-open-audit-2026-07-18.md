@@ -64,7 +64,7 @@ Caveat: this audits only the **22 flagged** handoffs (those whose Status/Priorit
 | [unified-trace-memory-service](unified-trace-memory-service.md) | 3 | 0 | PARKED | split — close landed T1–T6 nav parent; keep T7 (Hermes-daily-use gate, unfired) + consolidation parked |
 | [frontier-f2-self-running-lab](frontier-f2-self-running-lab.md) | 2 | 2 | LIVE | keep — W3 accumulating now (real quiet-window batches producing verdicts), W4 sequenced |
 | [sliders-local-validation](sliders-local-validation.md) | 8 | 0 | PARKED | **reactivate signal** — KB-RAG K7 reopen precondition FIRED 2026-06-13; surface to operator (still needs explicit ask; else keep parked, LOW/speculative) |
-| [security-review-skill](security-review-skill.md) | 1 | 0 | PARKED | close — skill shipped + in production; keep CI-gate as a deferred backlog note |
+| [security-review-skill](../completed/security-review-skill.md) | 1 | 0 | PARKED | close — skill shipped + in production; keep CI-gate as a deferred backlog note |
 
 ## Cross-cutting findings
 

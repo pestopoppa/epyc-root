@@ -37,7 +37,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-27 | ~20 unselected Stage-2b sources from the Hawkeye batch — QiMeng-Xpiler `2505.02146` highest-value (only AMD/HIP-touching artifact in the line): select dives or decline | [research-intake session record, `git show c927e943:.research-session.json`] | 2026-08-21 |
 | OP-33 | Disk reclaim: minimal set + GLM-5.2 + the 22-artifact zero-consumer purge all EXECUTED (743 G free). REMAINING: 7 ambiguous artifacts (~128 G) needing a call — chiefly a 70 G Qwen3.5-122B copy the lean registry calls PRODUCTION while the served path points elsewhere (a registry defect, not a disk question); plus the 4 rollback-anchor holds. `opencode.db` **RESOLVED 2026-09-07: 236.1 GB → 11.4 GB** (event change-feed pruned to 7-day retention, content tables untouched, `quick_check` ok, +225 GB reclaimed) | [2026-08-31-disk-reclaim-menu.md](../../progress/2026-08/2026-08-31-disk-reclaim-menu.md) §EXECUTED | 2026-08-31 |
 | OP-42 | Admit BEAM 128K and Tulving 200ch/100K as M-12's instruments and grant one inference window: M-12a (Tulving) first, M-12b (BEAM) second. Eval-pool registration is a separate decision from adoption as an instrument (CJ-GATE precedent; MEASUREMENT.md is human-amendment-only) | [episodic-memory-integrity.md](episodic-memory-integrity.md) M-12 | 2026-09-07 |
-| OP-9 | Nothing restarts `hub_supervisor.sh` if it dies — cron `once` form vs leave as-is (host-level) | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
+| OP-9 | B chosen 2026-09-17 — operator runs the pinned-copy host install; then delete this row | [handoff-index-and-backlog-graph.md](handoff-index-and-backlog-graph.md) | 2026-08-10 |
 | OP-38 | **P-KLD divergence protocol** — we have NO ratified KLD/PPL/coherence protocol (`MEASUREMENT.md` §2 has zero divergence terms) while two campaigns now quote divergence numbers. Distilled annex ready: full-vocab only, fp64 sums, declared estimand, bootstrap by document cluster, no universal bands, fail-closed runner + receipts, and a route-pinned cell before attributing KLD to the codec on a MoE. **Human-amendment-only trust boundary → needs an operator-run `ratify_*.sh`, not a session edit** | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) → R23-47 | 2026-09-07 |
 | OP-41 | **CPU co-tenancy: serialize or regress.** RULED 2026-09-08: operator owns admission-control design/implementation after champion finalised → promotion → host reboot. Clarify whether the new implementation instruction delegates broker-code work now; live activation gates remain unchanged. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → §3.4, AKU-11 | 2026-09-08 |
 | OP-AKU-HELD | Approve the additional versioned provider-held-cost lifecycle event and replay/settlement recovery (HIGH: 22 upstream, three processes). Descendant-event approval is already granted but does not include this addition; no live grant or measurement-policy change. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-07j | 2026-09-09 |
@@ -49,7 +49,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-AKU-A2 | Approve versioned native A2 intent/one-shot permit/diagnostic terminal semantics (HIGH: transition validator, 17 upstream). Preserves legacy events and forbids replayed intent from authorizing relaunch; no measurement-policy change or fabricated witness passes. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-04f | 2026-09-09 |
 | OP-AKU-REFRESH | Approve explicit versioned profile-request and PROFILE_VERIFIED successor records with original predecessor/settlement joins (HIGH: actor event validator, 16 upstream). Required for autonomous profile renewal; preserves legacy refusal, original validity, production freeze and measurement policy. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → AKU-06i | 2026-09-09 |
 | OP-AKU-U3 | Select the variance-only RUNTIME_CONFIG keep rule: recommend log downside-semideviation ratio, paired-bootstrap one-sided 95% upper bound <0, n≥14/arm, with throughput LCB above −session floor; or name another estimand/test/N/mean guard. This is scientific admission authority, not implementation detail. | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) → U3-SEED, S3-AKU-04 | 2026-09-15 |
-| OP-INF40 | Enable `moe_spec_budget: 128` on architect_critic (+10.7% t/s, n=3, α −2.4pp)? **(A)** 5-rep A/B/A/B confirm first (~1.5–2 h CPU window, recommended); **(B)** apply now with a revert trigger; **(C)** leave at 0 and close. Default with no ruling: stays 0 | [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) INF-40 | 2026-09-14 |
 | OP-12 | Approve or decline one experimental commit for the one-file IQ2_XXS one-row VPOPCNT dispatch; screening A/B is +5.733% at n=1 and parity at n=512 | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
 | OP-13 | Ratify a P2-5j placement amendment or require a full P-BENCH-PLACEMENT-1 composite; the old four-arm design is observation-only | [gpu-serving-tie-in-program.md](gpu-serving-tie-in-program.md) P2-5j | 2026-08-11 |
 | OP-15 | Approve or decline one experimental commit for the Q4_K branchless scale/min decoder before a clean governed replay | [mi210-q8-dequant-gemv-roofline.md](mi210-q8-dequant-gemv-roofline.md) INF-37 | 2026-08-11 |
@@ -81,12 +80,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 56 | 753 | 15 | 2026-07-29 |
+| inference-research | 56 | 754 | 15 | 2026-07-29 |
 | pipeline-integration | 5 | 70 | 1 | 2026-07-29 |
 | research-evaluation | 43 | 422 | 10 | 2026-07-29 |
 | reviewer-control-plane | 6 | 27 | 12 | 2026-07-29 |
 | routing-and-optimization | 48 | 472 | 19 | 2026-07-29 |
-| user-facing-harness | 7 | 47 | 2 | 2026-07-29 |
+| user-facing-harness | 6 | 46 | 2 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

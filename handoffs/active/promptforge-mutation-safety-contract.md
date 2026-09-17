@@ -51,7 +51,7 @@ so this is a **new active stub, not a reopen**.
       `test_strict_profile_rejects_denylisted_nodes` (11 cases),
       `test_noop_mutation_of_every_allowlisted_file_passes`, `test_prompt_shape_example_passes_the_strict_screen`,
       `test_old_class_shaped_proposal_is_rejected_by_the_strict_screen`. Selection 40 → 140 passed.
-- [ ] **MHS-3 — Missing half of the transfer guard.** `_UNIVERSAL_TRANSFER_RE`
+- [x] **MHS-3 — Missing half of the transfer guard.** ✅ 2026-09-17 (landed with the AutoPilot merge train, orchestrator `a1a0251a` on main, which contains `6df6f0d8`; the notes below that say "not yet on main" predate the landing). `_UNIVERSAL_TRANSFER_RE`
       (`prompt_forge.py:83-88`) rejects OVER-generalization (`always|never|all tasks`); Harness-R1's
       `FORBIDDEN_TEXT_PATTERNS` (`harness_r1_patch.py:233-238`) rejects **UNDER**-generalization (a
       patch naming a specific eval task id / sample index / item id). We have **no** guard against a
@@ -107,7 +107,7 @@ so this is a **new active stub, not a reopen**.
         example, and a dormant HumanEval/55 copy in `src/prompts/coder_system.txt` was replaced too. Takes
         effect at the next API reload (owned by the session that owns inference).
         Detail: `progress/2026-09/2026-09-16-sub-leak00912.md`.
-  - [ ] **MHS-3b — close the rewind hole: operator RATIFY of the checkpoint prompt re-pin.** Operator chose
+  - [x] **MHS-3b — close the rewind hole: operator RATIFY of the checkpoint prompt re-pin.** ✅ 2026-09-17 RATIFIED by the operator (root `b8379d42`): all 10 checkpoint copies re-pinned to `18f8ea01`, originals in `/mnt/raid0/llm/backups/ckpt-leak-20260916/`. Operator chose
         option A (2026-09-16). Ten AutoPilot checkpoints, including production_best (multitier_v10), still
         carry the leaked `rules.md` (`b250c227…`), and `restore_checkpoint()` copies it back. Script landed on
         root main (`0e2bbc33`); the operator runs
@@ -115,7 +115,16 @@ so this is a **new active stub, not a reopen**.
         and types RATIFY (refuses while AutoPilot holds its lock). Detail: `progress/2026-09/2026-09-16-sub-ckpt-leak.md`.
   - [ ] **MHS-3c — clean the out-of-scope leak copies** that MHS-3b leaves: 4 HumanEval/55 task memories in
         `episodic.db` (in every checkpoint and the live store) and Aschoff in `autopilot_state*.bak*`
-        `last_traces`. Cleanup prep was in progress on 2026-09-17.
+        `last_traces`. Purge tool: orchestrator `41baad2b` (`scripts/maintenance/purge_eval_leak_memories_20260917.sh`),
+        backups and receipt in `/mnt/raid0/llm/backups/episodic-leak-20260917/`.
+    - [x] Offline stores and state backups purged ✅ 2026-09-17: 11 checkpoint/backup `episodic.db` copies
+          (4 rows + FAISS entries each, health OK) and 15 state backups redacted. `--verify` PASS. The first run
+          was cut off by a caller timeout at item 19 with no damage (the original was intact); the re-run finished.
+    - [x] Live store purged ✅ 2026-09-17 during the API stop window (API down, verified): 4 memories removed,
+          health OK, `--verify --include-live` PASS. The reloaded API reported 64,204 entries (was 64,208).
+    - [ ] Pinned production_best (multitier_v10) store: `--apply --include-pinned` is unlocked by MHS-3b.
+          Awaiting an operator choice: purge now and ratify the episodic re-pin it proposes, or bundle both later.
+          Until then, a v10 rewind restores the 4 memories.
 - [ ] **MHS-4 — ANTI-OVERRIDE risk prior.** Rank/gate mutations by CONSTRAIN (add a check, block a bad
       path, re-prompt) vs REPLACE (rewrite/force an action, hard-code an answer). In the released
       corpus the REPLACE-before-CONSTRAIN ordering holds on all 23 valid patches (REPLACE 4/4 negative,
