@@ -297,6 +297,8 @@ sequential gate** box at `:249`, an operator decision, and the observation adds 
       are not forecasts; all are historical-`core_v1` priors and cannot be continued
       without the SEQ-3a bridge ruling or the clean SEQ-3b E8 restart.
 
+- [ ] **SEQ-4 — zero-inference allocation replay: would a bandit allocator have reached confirm_e on the stored pool?** Re-fold the 141 stored candidates / 393 trials under (a) BaSE-style UCB/Thompson routing (intake-1456) and (b) fluid-style portfolio AUC objective (intake-1457); compare against the fixed budget=8 heuristic; report AUC-frontier vs endpoint. Offline only — does not touch the human-amendment-only SEQ-3/SEQ-B1 decision or re-arm any gate.
+
 ## Rider — retroactive objective change: what survives it, what does not (2026-08-11)
 
 **Operator position, 2026-08-11, ACCEPTED**: as long as results and progress are tracked diligently,

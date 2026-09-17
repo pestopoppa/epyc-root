@@ -164867,3 +164867,2071 @@
   - '2026-09-15 research-intake Stage-4 (operator-approved plan): filed as P1b chunked-GDN sub-bullet, G16a, G16b, G16 in-place
     correction, G15 wording fix in autokernel-unified-surface-program.md, log-linear-gated-deltanet-readiness.md, mi210-big-model-and-acceleration-roadmap.md'
   - 2026-09-15 synthesis written to research/deep-dives/mlsys26-contest-loops-vs-autokernel.md
+
+- id: intake-1435
+  arxiv_id: '2609.14858'
+  url: https://arxiv.org/html/2609.14858v1
+  source_type: paper
+  title: 'Dream-RSI: Recursive Self-Improvement through Evolving Worlds'
+  authors:
+  - Tong Zheng
+  - Xidong Wu
+  - Zheng Zhang
+  - Zhankui He
+  - Chaoyi Zhang
+  - Benjamin Coleman
+  - Ruoqiao Wei
+  - Di Bai
+  - Haolin Liu
+  - Rui Liu
+  - Xue Wang
+  - Yue Zhuan
+  - Wang-Cheng Kang
+  - Renkai Xiang
+  - Heng Huang
+  - Xinwu Cheng
+  - Yunsong Guo
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - hardware_optimization
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-09-16'
+  credibility_score: 2
+  key_claims:
+  - 'Completed discovery histories (discovery trees of generation-evaluation attempts carrying saved workspaces, observations, diagnostics and scores) can serve as
+    an empirical replay simulator: alternative exploration policies are evaluated off-policy over recorded trees at zero execution cost, without rerunning the discovery
+    agent or evaluator.'
+  - Exploration is made explicit and programmable through a lightweight orchestration layer (batch/portfolio selection over legal nodes, branching, parallel width
+    W, stopping) while the underlying coding agent, evaluator and execution interface stay unchanged; only the exploration-policy code changes between rounds.
+  - 'The meta-layer loop is recursive: deploy the best replay-evaluated policy online, append the resulting discovery tree to history (expanding the simulator pool),
+    then dream again; because the candidate set includes the current policy, the selected policy is no worse than the current one in average replay score on the fixed
+    history.'
+  - 'Replay comparison uses a prefix-only policy interface: a policy sees only revealed cells and must not use unrevealed scores, true optima, hardcoded winning cell
+    ids, absolute score targets or internal trace data; a batch of k probes costs ceil(k/W) effective sequential rounds, and the replay objective trades best-score
+    quality against probe count plus a parallelism bonus.'
+  - 'KernelBench case study: comparable final kernel performance with 2.43x (VGG16) and 1.79x (LayerNorm) fewer generations, and 2.09x (ConvDiv) / 1.44x (ConvMax)
+    higher performance at similar generation budgets, versus a Recursive Fixed Exploration baseline.'
+  - 'Lasso-path case study: lower average downstream runtime at lower discovery cost than Recursive Fixed Exploration and about two orders of magnitude fewer discovery-agent
+    calls than SimpleTES; math-optimization tasks match or surpass strong baselines within about 1k generations.'
+  - 'Negative finding: injecting history as explicit high-level semantic guidance (directional insights in the prompt) consistently underperforms the same system
+    without guidance under equal budget on ConvDiv (Section 5.1).'
+  techniques:
+  - replay simulator / dreaming over historical discovery trees
+  - discovery tree
+  - prefix-only exploration policy
+  - dynamic portfolio batching
+  - beta schedule (fixed within an episode, adaptive across cycles)
+  - grid planning (branch_count/refine_count)
+  - policy-development agent
+  - zero-gradient policy improvement
+  reported_results:
+  - 'Lasso path (six held-out datasets, average runtime in ms, as reported): Dream-RSI Gemini-3.1-Pro 2931.0 at 317 discovery calls vs Recursive Fixed Exploration
+    3587.1 at 550; Gemini-3.7-Flash 2350.6 at 1879 vs 2516.7 at 3200; reported sklearn 44180.3 and glmnet 13767.5.'
+  - 'SimpleTES comparison as reported: 51,200 generations for gpt-oss-120b vs Dream-RSI using low-hundreds-to-low-thousands of discovery-agent calls.'
+  - 'Math optimization (reported): Sum-Difference 1.145427 vs SimpleTES 1.143975; Circle Packing 2.635983 (matches best reported); Autocorrelation 1.456375 (competitive;
+    SimpleTES 1.453675 at 51,200 generations).'
+  - 'KernelBench (reported): 2.43x / 1.79x fewer generations for comparable performance on VGG16 and LayerNorm; 2.09x / 1.44x higher performance at similar budget
+    on ConvDiv and ConvMax.'
+  - 'Companion README/project-page aggregates (project''s own claims; attribution corrected at the 2026-09-17 dive: ''up to 162x'' and ''8 tasks across 3 domains''
+    are in the paper, while ''1.22x faster downstream runtime'', ''1.74x less discovery compute'' and ''Zero gradient steps on the coding agent'' appear ONLY in companion
+    materials): 1.22x faster downstream runtime, 1.74x less discovery compute, 162x fewer calls than SimpleTES; 8 tasks across 3 domains; Gemini-3.1-Pro; ''Zero gradient
+    steps on the coding agent''.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - autokernel-rebuild-program.md
+    - autokernel-unified-surface-program.md
+    - autopilot-continuous-optimization.md
+    - harness-selection-and-integration.md
+    - user-facing-harness-index.md
+    - agentic-rocm-kernel-authoring.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-244
+    - intake-673
+    - intake-1246
+    - intake-772
+    - intake-1069
+    - intake-779
+    - intake-978
+    - intake-664
+    - intake-885
+    - intake-1437
+    - intake-1436
+    - intake-1439
+    - intake-1440
+    - intake-1442
+    intake_entry_notes:
+    - intake-244 (Meta-Harness - harness/policy separation and safe mutation lineage)
+    - intake-673 (K-Search - co-evolving intrinsic world model for kernel generation; the research repo carries a ported K-Search controller)
+    - intake-1246 (AutoKernel - iterative agent-driven kernel search)
+    - intake-772 (Darwin Godel Machine - self-referential meta-optimizer boundaries)
+    - intake-1069 (Hyperagents)
+    - intake-779 (ShinkaEvolve)
+    - intake-978 (MLEvolve)
+    - intake-664 (KernelBench - declined as artifact for gfx90a; cited here as eval context)
+    - intake-885 (OpenHyra - already tracks the SimpleTES sum-difference reference)
+    - 'intake-1437 (EvoX - closest prior: online meta-evolution of search strategies)'
+    - intake-1436 (companion repo - code 'being prepared' as of 2026-09-16)
+    - intake-1439 (SwarmResearch - orchestrator-subagent harness, adaptive parallelism)
+    - intake-1440 (PACEvolve - progress-aware memory and backtracking)
+    - intake-1442 (DeltaEvolve - semantic-delta history representation)
+  recommended_actions:
+  - 'Stage-2 dive: read v1 primary source (sections 3, 4, Appendix B) and settle the replay-simulator guarantee, the prefix-only constraint, and the KernelBench/Lasso
+    numbers before any plan or task cites them.'
+  - Map the discovery-tree/replay pattern onto autokernel recorded proposal histories and onto autopilot archived trials; check the fixed search policy (P-AK-SEARCH-1-A2)
+    and the random-choices species selector as the likely policy-layer candidates.
+  - Evaluate the 'policy as editable artifact' shape against the HS-7/HS-8 policy-document pattern and the measurement trust boundary before proposing any self-rewriting
+    policy loop.
+  notes: 'STAGE-1 (unverified). Provenance: arXiv HTML v1 route (not PDF), fetched 2026-09-16, raw sha256 47c94e404db74649df55ef643e1b08b6a4117517661368d9d79a86d5e21da6db;
+    52-entry bibliography extracted from the rendering. Companion artifacts: github.com/zhengkid/Dream-RSI exists but contains NO code as of 2026-09-16 (README marks
+    full codebase / reproduction scripts / discovered programs as ''being prepared''; CITATION.cff still placeholder); project page dream-rsi.com exists. Aggregators:
+    HuggingFace papers page (274 upvotes), officechai/aiweekly/x posts - restatement, NOT independent evidence. Tier-2b bounded contradiction search found no criticism/replication
+    (paper 2 days old) - provisional. Self-stated limit from the project page: ''a policy can only be dreamt where history actually went'' (replay support is bounded
+    by realized history). Repo cross-reference (subagent, 2026-09-16): closest existing assets are autokernel-research-loop.md (fixed search policy P-AK-SEARCH-1-A2,
+    planner prose + constants), autopilot-continuous-optimization.md (species selector is a bare random.choices, L1264-1269; AB-MCTS replacement proposed), autopilot-sequential-allocation.md
+    and decision-aware-routing.md (precedents: zero-inference re-folding of recorded trials under a changed decision rule), harness-selection-and-integration.md HS-7/HS-8
+    (''policy as an editable document, mechanisms in code''), and completed/meta-harness-optimization.md (MH-10/MH-12; replay view was accounting, not simulation).
+    Conflict to respect: an LLM rewriting and redeploying its own exploration policy collides with the ratified boundary that autopilot/meta-harness may not edit
+    its own eval methodology, scoring, gates or measurement policy (autopilot-continuous-optimization.md:1317,1365; autokernel-unified-surface-program.md:885) - the
+    compatible adoption shape is a policy layer BELOW that trust boundary, replay-evaluated offline before any live flip. Operator steering (Stage 1, verbatim in
+    steering_ledger): distill insights/gaps vs autopilot/autokernel and inform a future autoharness loop for the user-facing harness. | STAGE-2 DIVE (2026-09-17,
+    v1 HTML, source_revision arXiv:2609.14858v1): verified substance of all claims; K4/K5/K6 narrowed as recorded in claim_corrections. Companion repo still code-free
+    (stars ~410; issue #1 HF artifact request open); README still lists the codebase as ''being prepared''. Adversarial: zero independent replication or criticism
+    found (provisional; one channel DDG/S2 unreachable). Anchors recorded for claims 0,2,3,4,5,6.'
+  reader_should_conclude: 'Dive-verified against arXiv:2609.14858v1 (2026-09-17). You may cite the mechanism and the reported numbers WITH their caveats: the implemented
+    replay reward is Appendix B.2''s pareto.auc - lambda*parallel_penalty (not Eq. 1); KernelBench ratios are figure-derived with no numeric table or tolerance; the
+    Lasso comparison mixes models and harness units (generations vs agent calls) and its SimpleTES dagger row is unexplained; the no-worse guarantee is fixed-history
+    replay only. NEVER cite ''1.22x'', ''1.74x'' or ''zero gradient steps on the coding agent'' as paper claims (companion-README-only), and do not describe github.com/zhengkid/Dream-RSI
+    as containing code (none as of 2026-09-17).'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'CONFIRMED at v1: replay reads recorded outcomes without rerunning the agent/evaluator; App. B.2 bounds replay to the frozen trace''s recorded branch/refine
+      counts.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED: orchestration layer + shared decision interface; only the exploration-policy code changes.'
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED verbatim; the guarantee is over average replay score on the fixed history only - it is never stated as live/online no-regression.
+  - claim_index: 3
+    effect: narrowed
+    note: 'Composite sources: the prefix-only prohibition and ceil(k/W) are Appendix B.2 prompt text; the Eq. (1) objective is main text. The IMPLEMENTED replay reward
+      is ''pareto.reward = pareto.auc - lambda * parallel_penalty'' (App. B.2), a different functional form - any port must use the implemented reward, not Eq. (1)
+      verbatim.'
+  - claim_index: 4
+    effect: narrowed
+    note: 'CONFIRMED verbatim from the Figure 4 caption, but figure-derived: no numeric table and no stated ''comparable'' tolerance.'
+  - claim_index: 5
+    effect: narrowed
+    note: 'Numbers exact (Fig. 3a / Section 4.1) but cross-model and cross-harness: SimpleTES generations vs Dream-RSI agent calls (unit mismatch); the SimpleTES
+      dagger row (8318.4 avg) vs published 3804.8 is unexplained; the headline uses the better published row.'
+  - claim_index: 6
+    effect: unaffected
+    note: CONFIRMED; scope is ConvDiv only (Figure 5) - 'consistently' is within that single task.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section 1 paragraph 'To address these bottlenecks...' / Section 3 'Discovery trees and the shared decision interface'
+    quote: evaluating a new strategy requires only reading past records without rerunning the underlying discovery agent or evaluator
+    quote_sha256: e95d69a82c7a65f51674b9bbf0794c2d459af3840ab4820ffa1dc9cd98991268
+    source_revision: arXiv:2609.14858v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section 3 'Policy improvement and selection'
+    quote: Because the candidate set includes the current policy, this selection satisfies V^{m⋆} ≥ V^0
+    quote_sha256: 35d473139161902e0f174f7d00cb5583980c775ddcacd66e9b39033012fc45f2
+    source_revision: arXiv:2609.14858v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'Appendix B.2 ''Objective: quality, work, and parallelism'''
+    quote: pareto.reward = pareto.auc - lambda * parallel_penalty
+    quote_sha256: d82dcc303e6a1e0dba15c6410bbb028f3d8663e6639e7721d49588ceb3d65764
+    source_revision: arXiv:2609.14858v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Figure 4 caption
+    quote: On VGG16 and LayerNorm, Dream-RSI reaches comparable performance with 2.43× and 1.79× fewer generations, respectively. On ConvDiv and ConvMax, it achieves
+      2.09× and 1.44× higher performance under comparable discovery budgets.
+    quote_sha256: 469137607efab9609f5c6aa9821f63bddad3443afb3cabc9df24c48595f9fc21
+    source_revision: arXiv:2609.14858v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Section 4.1 'Main Results'
+    quote: from 3587.1 ms to 2931.0 ms while using only 317 discovery-agent calls, compared with 550 calls
+    quote_sha256: dd7821ee51ba5ee1dcfffd1e64b0894788c109117b29bb6119b2a386ee7ebb3f
+    source_revision: arXiv:2609.14858v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Section 5.1
+    quote: explicit directional guidance consistently underperforms its unguided counterpart across both paradigms under equivalent discovery budgets
+    quote_sha256: 33410e41a44d7bc20d3a394e0a3f0e6c4def150e5f17bdfd85e69dff6ed9ac37
+    source_revision: arXiv:2609.14858v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  dive_corrections: '2026-09-17 Stage-2 dive (v1 current; no v2): all seven claims confirmed in substance; K4 narrowed (implemented reward vs Eq. 1); K5 narrowed
+    (figure-only); K6 narrowed (cross-model/cross-harness, unit mismatch, unexplained SimpleTES dagger row). Attribution split for the companion aggregates: ''up
+    to 162x'' and ''8 tasks across 3 domains'' are paper claims; ''1.22x'', ''1.74x'' and ''Zero gradient steps on the coding agent'' are companion-README-only (zero
+    hits in the paper). Companion repo still has NO code as of 2026-09-17 (push unchanged 2026-09-16T10:32:18Z; stars 166 -> ~410). Adversarial pass: no independent
+    replication, discussion or criticism found (provisional; paper 3 days old). Operator Stage-2 close-out (declined-by-omission, reversible): MetaSkill-Evolve 2607.05297,
+    R-Zero (ICLR, no arXiv id), AgenticRecTune 2604.26969, Dream-RSI PDF build and repo issue #1 (provenance/operational).'
+  depends_on:
+  - entry: intake-1438
+    claim_index: 5
+    why: The Lasso comparison's '51,200 generations' figure and the SimpleTES per-dataset times it reuses are SimpleTES's own reported budget/results; retracting
+      intake-1438's budget claim would change this entry's K6.
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): AK-WM-3 offline exploration-policy replay over recorded proposal archives filed in autokernel-research-loop.md.'
+
+- id: intake-1436
+  arxiv_id: null
+  url: https://github.com/zhengkid/Dream-RSI
+  source_type: repo
+  title: zhengkid/Dream-RSI - official companion repo (scaffold; code 'being prepared', 2026-09-16)
+  authors:
+  - Tong Zheng
+  categories:
+  - autonomous_research
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-09-16'
+  credibility_score: null
+  key_claims:
+  - Official companion repository for the Dream-RSI paper; as of 2026-09-16 it contains only .gitignore, CITATION.cff, README.md, assets/ and papers/Dream-RSI.pdf
+    - no Python, harness, policy, or reproduction code.
+  - README release table marks 'Full codebase', 'Reproduction scripts' and 'Discovered programs' as 'Being prepared'; CITATION.cff still carries the placeholder arXiv
+    id.
+  - 'README headline claims (repo''s own, unverified): ''1.22x faster downstream runtime, 1.74x less discovery compute, 162x fewer calls than SimpleTES''; 8 tasks
+    across 3 domains; Gemini-3.1-Pro; ''Zero gradient steps on the coding agent''.'
+  - Repo created 2026-09-13; latest push 2026-09-16T10:32:18Z (commit 4149ea9181); ~166 stars; no license; one open issue from the Hugging Face open-source team requesting
+    artifact release on Hugging Face.
+  techniques: []
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    experiments: []
+    intake_entries:
+    - intake-1435
+    intake_entry_notes:
+    - intake-1435 (Dream-RSI paper - this repo is its companion artifact)
+  recommended_actions:
+  - Monitor for the code release ('being prepared' as of 2026-09-16); re-check before any implementation item depends on the Dream-RSI harness.
+  notes: 'STAGE-1 (unverified). Tier-3 implementation discovery from intake-1435. Repo metadata read 2026-09-16 via GitHub API and raw README (main and master identical).
+    A companion artifact is a distinct source, not a duplicate of intake-1435. Project page dream-rsi.com also exists (method walkthrough, results tables, in-page
+    demo animation; no extra downloadable artifacts). | STAGE-2 REFRESH (2026-09-17, from the intake-1435 dive): still no code; latest push unchanged 2026-09-16T10:32:18Z
+    (commit 4149ea9181); stars 166 -> ~410, forks 26; issue #1 (request to release artifacts on Hugging Face) still open. README still marks codebase/reproduction/discovered
+    programs as ''being prepared''; CITATION.cff still carries the placeholder arXiv id.'
+  reader_should_conclude: Unverified companion scaffold. Do not treat this repo as containing Dream-RSI code until the release table changes; its README numbers are
+    the project's own claims and are mirrored into intake-1435 as reported-not-verified. Re-check at the next intake touching Dream-RSI.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - Companion repo still ships no code (verified 2026-09-17); revisit when the README release table changes.
+
+- id: intake-1437
+  arxiv_id: '2602.23413'
+  url: https://arxiv.org/abs/2602.23413
+  source_type: paper
+  title: 'EvoX: Meta-Evolution for Automated Discovery'
+  authors:
+  - Shu Liu
+  - Shubham Agarwal
+  - Monishwaran Maheswaran
+  - Mert Cemri
+  - Zhifei Li
+  - Qiuyang Mang
+  - et al. (17 authors)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1435
+  verdict: worth_investigating
+  ingested_date: '2026-09-16'
+  credibility_score: 2
+  key_claims:
+  - Most LLM-driven evolutionary discovery systems rely on fixed search strategies with predefined knobs (e.g. explore-exploit ratios) that stay static during execution,
+    which fails to adapt across tasks or within a task as the search space changes.
+  - EvoX jointly evolves candidate solutions and the search strategies that generate them, continuously updating how prior solutions are selected and varied based
+    on progress - meta-evolution of the search process itself.
+  - Across nearly 200 real-world optimization tasks, EvoX reportedly outperforms AlphaEvolve, OpenEvolve, GEPA and ShinkaEvolve on the majority of tasks.
+  techniques:
+  - meta-evolution
+  - adaptive search strategies
+  - joint solution/strategy evolution
+  - LLM-rewritten executable search-strategy class (EvolvedProgramDatabase implementing add/sample), stagnation-triggered strategy switch
+  reported_results:
+  - 'Reported: outperforms AlphaEvolve, OpenEvolve, GEPA, ShinkaEvolve on the majority of ~200 real-world optimization tasks (abstract; not independently verified).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-1435
+    intake_entry_notes:
+    - intake-1435 (Dream-RSI - cites EvoX as the closest prior work optimizing search strategies online)
+  notes: 'STAGE-1 (unverified). Reference-chased from intake-1435 (bibliography, arXiv:2602.23413; v2 dated 2026-03-16). Central design distinction for us: EvoX adapts
+    the search strategy ONLINE during evolution, while Dream-RSI evaluates candidate policies OFFLINE by replaying recorded histories. A dive should map EvoX''s strategy
+    representation onto our autokernel search policy (P-AK-SEARCH-1-A2) before any adoption claim. | STAGE-2 DIVE (2026-09-17, v2 HTML): venue now COLM 2026 (repo
+    news); code at github.com/skydiscover-ai/skydiscover; ''nearly 200'' = 196 exact; online-only strategy evaluation (no offline screen - contrast with Dream-RSI''s
+    replay); one strategy child per stagnation event on a ~10% budget window; cost figure <$1 is one task only (Heilbronn). Anchors recorded for claims 0,1,2.'
+  reader_should_conclude: Unverified. Do not cite the ~200-task comparison until dived. Treat EvoX as the online-adaptation counterpoint in the design fork; its value
+    here is the comparison, not yet a component.
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  - harness-selection-and-integration.md
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim (abstract; Section 1).
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED; mechanism clarified: the evolved object is executable Python code implementing the SearchStrategy interface, LLM-mutated only when progress
+      delta falls below stagnation threshold tau after a ~10%-budget window; one child strategy per stagnation event; switching never resets the solution population.'
+  - claim_index: 2
+    effect: narrowed
+    note: 196 tasks exactly (8 math + 6 systems + 10 ALE-Bench-Lite + 172 Frontier-CS). AlphaEvolve was not re-run (its numbers are imported from its own paper and
+      cover 5/7 math tasks); the 'majority' rests on aggregate mean/median and '96% of the math and system optimization benchmarks', not a per-task tally across all
+      196.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract; Section 1 paragraph 3
+    quote: most existing methods rely on fixed search strategies with predefined knobs (e.g., explore–exploit ratios) that remain static throughout execution
+    quote_sha256: bb54aa3100564246d9640af149c864643978fcfad514976201dd9b01aec638ac
+    source_revision: arXiv:2602.23413v2 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section 4.3
+    quote: Mutations modify the components of a strategy (e.g., parent selection rules, construction of the inspiration set, or preferences over variation operators
+      π).
+    quote_sha256: 2c6da1e8d97644c9c57b1a86cfa927a8d4acfa17d5325230a25535e486f23d13
+    source_revision: arXiv:2602.23413v2 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section 6.1
+    quote: EvoX matches or exceeds AlphaEvolve on 5 out of 7 tasks
+    quote_sha256: c894e45136fed66d16892aa6861eadb5e054b6d3b318e23d196dce840a95548d
+    source_revision: arXiv:2602.23413v2 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  dive_corrections: '2026-09-17 Stage-2 dive (v2 current): K1/K2 confirmed; K3 narrowed (196 tasks; AlphaEvolve imported, not re-run). Decisive for the design fork:
+    EvoX scores a strategy ONLY by deploying it online (no replay, world model or offline evaluation anywhere in the text); strategy updates are LLM mutations of
+    executable policy code triggered by stagnation. Code released: github.com/skydiscover-ai/skydiscover (Apache-2.0; EvoX ships as --search evox; accepted to COLM
+    2026). Adversarial: no failed reproduction or direct criticism found (provisional); several citing works criticise cost-blind credit generally (see dive-surfaced
+    sources). Operator Stage-2 close-out (declined-by-omission): Evolution Fine-Tuning 2606.29082 (weights-axis training, out of stack).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): AK-adaptive policy panel (EvoX arm) filed; its harness-null-pool evidence row landed as HS-E1.'
+
+- id: intake-1438
+  arxiv_id: '2604.19341'
+  url: https://arxiv.org/abs/2604.19341
+  source_type: paper
+  title: Structured Scaling of AI Discovery Across Diverse Scientific Domains (SimpleTES)
+  authors:
+  - Haotian Ye
+  - Haowei Lin
+  - Jingyi Tang
+  - Yizhen Luo
+  - Rahul Thapa
+  - Caiyin Yang
+  - et al. (33 authors)
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1435
+  verdict: worth_investigating
+  ingested_date: '2026-09-16'
+  credibility_score: 2
+  key_claims:
+  - SimpleTES (Simple Test-time Evaluation-driven Scaling) organizes evaluator queries across independent trajectories, iterative refinement, local candidate selection,
+    and selective reuse of evaluated histories so that evaluation signals compound over time.
+  - Using a single open-source GPT-OSS model, it reports new state-of-the-art solutions across 28 open-ended problems in quantum physics, astronomy, biology, AI and
+    mathematics.
+  - Reported specific wins include a 2.17x faster lasso-path solver and the fastest reported TriMul kernel.
+  techniques:
+  - structured test-time scaling
+  - independent trajectories
+  - local candidate selection
+  - selective reuse of evaluated histories
+  reported_results:
+  - 'Reported: 24.5% reduction in quantum circuit compilation overhead; up to 23% lower deep-space trajectory propulsive cost; 2.17x faster lasso-path solver; 8.5%
+    lower-error whole-brain neural-activity predictor; fastest reported TriMul kernel (abstract; not independently verified).'
+  - 'Scope corrections (2026-09-17 dive): 24.5% is the Q20 circuit case vs LightSABRE; 8.5% is the H=32 horizon for the neural predictor; ''up to 23%'' is vs same-evaluator
+    reconstructed references, not flown mission budgets; 2.17x is a mean of per-dataset ratios.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-1435
+    - intake-885
+    intake_entry_notes:
+    - intake-1435 (Dream-RSI - uses SimpleTES as the reported 51,200-generation baseline)
+    - intake-885 (OpenHyra - already carries a SimpleTES sum-difference reference number)
+  notes: 'STAGE-1 (unverified). Reference-chased from intake-1435. Version drift to confirm in a dive: Dream-RSI''s bibliography cites this as ''Evaluation-driven
+    scaling for scientific discovery'', while the current arXiv v2 (2026-07-27) is titled ''Structured Scaling of AI Discovery Across Diverse Scientific Domains''.
+    Its ''selective reuse of evaluated histories'' is the locally relevant part - a cheaper cousin of Dream-RSI''s replay simulator.'
+  reader_should_conclude: Dive-verified against v2 (v1 read for provenance). Cite the v2 title and the 51.2K evaluator-query budget derivation; do NOT call its numbers
+    'generations' (Dream-RSI's relabeling) and do not treat 'selective reuse of evaluated histories' as replay (it is RPUCG selection only). The codebase is public
+    (wq-will/SimpleTES).
+  verification: dive-verified
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - autokernel-research-loop.md
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED at v2.
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED at v2 (28 problems; v1 had 21 - version scope recorded in notes).
+  - claim_index: 2
+    effect: narrowed
+    note: '2.17x is a mean of per-dataset ratios (Supp. Table 16: 2502.3 ms vs glmnet 4139.4 ms); TriMul ''fastest'' is scoped to compared AI methods and public GPUMode
+      Triton submissions.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: v2 Abstract / Section 'Overview of SimpleTES'
+    quote: organizing evaluator queries across independent trajectories, iterative refinement, local candidate selection, and the selective reuse of evaluated histories
+    quote_sha256: 3672b3456df88fabf51efed489e9991f19f94cd2a73fbb9e2961fbf60d07a9f2
+    source_revision: arXiv:2604.19341v2 (HTML rendering; v1 also read, 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: v1 Section 'SimpleTES Settings'
+    quote: global width C = 32, refinement depth L = 100, and local sample size K = 16, resulting in a total evaluation budget of N = 51.2K
+    quote_sha256: 7a12e21c3ab8cbbca246485e14ee74f79b7f208ce4cf79654426fccd7931d7da
+    source_revision: arXiv:2604.19341v2 (HTML rendering; v1 also read, 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: v2 Section 'SimpleTES discovers better scientific algorithms'
+    quote: 2.17× faster than glmnet on average
+    quote_sha256: 607c5b41d2cf8ccde4f06e0ac442c5c1538df1ad567026b8d498a393fc168add
+    source_revision: arXiv:2604.19341v2 (HTML rendering; v1 also read, 2026-09-17)
+    verified_by: research-intake/stage2
+  dive_corrections: '2026-09-17 Stage-2 dive (v2 current; v1 read for provenance): title drift RESOLVED - v1 ''Evaluation-driven Scaling for Scientific Discovery''
+    (2026-04-21) was retitled at v2 ''Structured Scaling of AI Discovery Across Diverse Scientific Domains'' (2026-07-27); Dream-RSI cites the v1 title under the
+    same arXiv ID. Budget provenance: 51.2K = C32 x L100 x K16 evaluator queries (v1 prints the product; v2 prints only the config); ''generations'' is Dream-RSI''s
+    relabeling. Scoping corrections: 24.5% = Q20 case vs LightSABRE (topology average 14.9%); 8.5% = H=32 only; 23% vs same-evaluator reconstructed references. Code
+    released: github.com/wq-will/SimpleTES. ''Selective reuse of evaluated histories'' is RPUCG selection over a DAG of already-evaluated nodes - selection-only,
+    not replay or re-execution. Own ablation F.1: selection-heuristic gains are modest vs evaluation-budget scaling. Adversarial: no replication or criticism found
+    (provisional). Operator Stage-2 close-out (declined-by-omission): libsvmdata and task-provenance tooling.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): RPUCG selection A/B filed as AR-RPUCG; evaluator hardening imported via AK-integrity pack (code
+    repo intake-1454).'
+
+- id: intake-1439
+  arxiv_id: '2607.02807'
+  url: https://arxiv.org/abs/2607.02807
+  source_type: paper
+  title: 'SwarmResearch: Orchestrating Coding Agents for Open-Ended Discovery'
+  authors:
+  - Yuvraj Virk
+  - Zack Edds
+  - Chunqiu Steven Xia
+  - Lingming Zhang
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - swarm_techniques
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1435
+  verdict: adopt_patterns
+  ingested_date: '2026-09-16'
+  credibility_score: 2
+  key_claims:
+  - 'Long-running coding agents tend to converge on a single high-level approach and then make low-level edits, missing other superior approaches; the paper hypothesizes
+    two harness-level causes: accumulating context in a single long-running agent, and exposing only a single program state to edit.'
+  - SwarmResearch is an orchestrator-subagent harness in which a Shepherd Agent uses global context to steer a population of Search Agents, each operating with local
+    context in its own git branch.
+  - It reports better or comparable solutions to state-of-the-art LLM-guided evolution and multi-agent techniques on 13/15 open-ended optimization tasks, driven by
+    higher-level exploration.
+  - Orchestrator-guided parallelism adapts at different search depths and reportedly beats fixed serial/parallel scaling.
+  techniques:
+  - shepherd agent
+  - git-branch-isolated search agents
+  - global-vs-local context split
+  - orchestrator-guided adaptive parallelism
+  reported_results:
+  - 'Reported: better/comparable than SOTA on 13/15 open-ended optimization tasks; adaptive parallelism beats fixed scaling (abstract; not independently verified).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - harness-selection-and-integration.md
+    - user-facing-harness-index.md
+    - autokernel-rebuild-program.md
+    - agent-collab-rnd-harness.md
+    experiments: []
+    intake_entries:
+    - intake-1435
+    intake_entry_notes:
+    - intake-1435 (Dream-RSI - cites SwarmResearch as multi-branch orchestration prior art)
+    - agent-collab-rnd-harness.md (population harness for kernel/autopilot R&D - closest existing owner for the branch-per-agent pattern)
+  notes: 'STAGE-1 (unverified). Reference-chased from intake-1435. Harness-level (not algorithm-level) contribution: bears directly on the operator''s autoharness
+    interest (context isolation per agent, global shepherd context) and on the autokernel lane-pool orchestration (adaptive parallelism vs fixed W). | STAGE-2 DIVE
+    (2026-09-17, v1 HTML): 13/15 threshold-ambiguous; adaptive parallelism is LLM judgement with no programmed signal; reproduction repo exists with per-task configs/trajectories;
+    single-run protocol and $1700 benchmark cost recorded in Appendix B. Anchors recorded for claims 0,2,3.'
+  reader_should_conclude: Unverified. Use as a design reference for harness-level context isolation and adaptive parallelism only after a dive checks its comparison
+    protocol; do not quote 13/15 as settled.
+  verification: dive-verified
+  handoffs_updated:
+  - agent-collab-rnd-harness.md
+  - autokernel-rebuild-program.md
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED (abstract; Section 1; Section 2).
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED; harness contract extracted (worktree+branch per agent, fresh-context explorers, forked-session optimizers, lineage findings.md, isolation guardrails,
+      non-descriptive branch names).
+  - claim_index: 2
+    effect: narrowed
+    note: 'Threshold-ambiguous: the abstract says 13/15; Section 3.2 reports EvoX exceed 13 + match 1, CORAL exceed 10 + match 2, then 8 + 5 ''similar''. Table 1
+      arithmetic supports 12/15 better-or-equal vs CORAL (losses MMD-14-3, EPLB, AHC026). The aggregation rule is never stated.'
+  - claim_index: 3
+    effect: narrowed
+    note: 4/5 tasks only; minimal Pi harness; single run per task; 'optimal fixed' = best of 5 (n,k) configs at 60 iterations; the orchestrator model is stronger
+      than its subagents (acknowledged by the paper).
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: accumulating context in a single long-running agent and only exposing a single program state to edit
+    quote_sha256: 66fdc3e3a7b7bfe27f8136bd26b8040ce1cf04a1ef8c8fc7b36e8ef8c4390530
+    source_revision: arXiv:2607.02807v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section 3.2
+    quote: 13/15 tasks and matches it on 1 task
+    quote_sha256: 16e16a2e57da4bdb9abb77c3cd2e73f22cbc63377756ac9a81db1f4a2c4677f7
+    source_revision: arXiv:2607.02807v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Abstract; Section 3.4
+    quote: Compared with fixed scaling of serial and parallel agents, SwarmResearch's orchestrator-guided scaling discovers better-performing solutions by adapting
+      parallelism at different search depths.
+    quote_sha256: 5970b384e4a28c926f70f4bf874b67363987e41202edc41b2e86c56e6719ddd4
+    source_revision: arXiv:2607.02807v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  dive_corrections: '2026-09-17 Stage-2 dive (v1 current): K1/K2 confirmed; K3/K4 narrowed (13/15 arithmetic ambiguous; fixed-scaling study on 5 tasks, 1 run each,
+    ~$1700 for the full benchmark). No programmed parallelism signal exists - adaptation is LLM judgement over summaries constrained by invariants (25-explorer budget,
+    one live optimizer per parent). Code released: github.com/SwarmResearch/SwarmResearch + swarmresearch-paper-reproduce (configs, trajectories). Adversarial: no
+    independent replication or criticism found (provisional). Operator Stage-2 close-out (declined-by-omission): karpathy/autoresearch and earendil-works/pi (already
+    known), author blog (restatement), ADRS 2510.06189 and ALE-Bench task provenance.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): AC-branch-per-agent harness spec + RB-lineage telemetry filed.'
+
+- id: intake-1440
+  arxiv_id: '2601.10657'
+  url: https://arxiv.org/abs/2601.10657
+  source_type: paper
+  title: 'PACEvolve: Enabling Progress-Aware Consistent Evolution'
+  authors:
+  - Minghao Yan
+  - Bo Peng
+  - Benjamin Coleman
+  - Ziqi Chen
+  - Zhouhang Xie
+  - Shuo Chen
+  - et al. (16 authors)
+  categories:
+  - autonomous_research
+  - context_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1435
+  verdict: adopt_patterns
+  ingested_date: '2026-09-16'
+  credibility_score: 2
+  key_claims:
+  - 'Self-evolving LLM agents suffer two core failure modes: reasoning anchored to the local context of current hypotheses (overemphasizing low-level details, neglecting
+    the broader search landscape), and context pollution / mode collapse that repeatedly revisits flawed hypotheses.'
+  - PACEvolve addresses these with Hierarchical Context Management (structures historical trajectories, dynamically prunes branches to keep high-signal memory), Momentum-Based
+    Backtracking (monitors optimization progress to escape local minima), and a self-adaptive Collaborative Evolution policy balancing intra-trajectory refinement
+    with inter-trajectory knowledge transfer.
+  - It decouples high-level idea generation from low-level code evaluation to maintain a global view of search momentum and reports state-of-the-art results.
+  techniques:
+  - Hierarchical Context Management (K_idea=5, K_hyp=20)
+  - Momentum-Based Backtracking (beta=0.85, eps_rel=0.001, power-law alpha=1.5)
+  - Collaborative Evolution policy (Absolute Progress weighting)
+  - idea generation / idea selection decoupling
+  reported_results:
+  - Reported state-of-the-art on the paper's evaluated domains (abstract); no specific numbers extracted at Stage 1.
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-1435
+    - intake-1441
+    intake_entry_notes:
+    - intake-1435 (Dream-RSI - cites PACEvolve as long-horizon progress prior art; shared author overlap)
+    - intake-1441 (PACEvolve++ - successor by the same group)
+  notes: 'STAGE-1 (unverified). Reference-chased from intake-1435. Version note: v3 updated 2026-09-10 - a dive must read the current version. Author overlap with
+    Dream-RSI (Benjamin Coleman appears in both author lists) suggests a related research line; verify affiliations in a dive rather than assuming. | STAGE-2 DIVE
+    (2026-09-17, v3 HTML): three failure modes (not two); thresholds recorded in techniques; known-target-r constraint recorded; official code google/pacevolve; three-author
+    Dream-RSI overlap (Coleman, He, Kang); title drift Long-Horizon dropped at v3. Anchors recorded for claims 0 and 1.'
+  reader_should_conclude: Unverified. The locally relevant part is the failure-mode taxonomy (local-context anchoring, context pollution, mode collapse) and its remedies
+    - check those against autokernel observations before adoption; do not cite SOTA claims.
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: The two recorded failure modes are abstract-level; the body enumerates THREE core failure modes (Context Pollution, Mode Collapse, Weak Collaboration).
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED with concrete values extracted: K_idea=5, K_hyp=20 (summarize/replace on overflow), beta=0.85, eps_rel=0.001, power-law alpha=1.5. Porting constraint:
+      MBB and CE require a KNOWN target lower bound r (autokernel has none). Momentum is a per-island EWMA - the abstract''s ''global view'' is framing, not a global
+      signal. Freeze-period duration is not stated anywhere in v3.'
+  - claim_index: 2
+    effect: narrowed
+    note: SOTA is self-reported; the ablation is qualitative (Figure 4 boxplots, no numeric deltas); the decoupling in the implementation is idea generation vs idea
+      SELECTION (the abstract's 'code evaluation' is a looser gloss).
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: v3 Abstract
+    quote: the model's reasoning becomes anchored to the local context of current hypotheses, overemphasizing low-level details while neglecting the broader search
+      landscape
+    quote_sha256: b1617796887a740cb9c8bb7af8f1ea9026f50e72f1684eca163f001a922d0885
+    source_revision: arXiv:2601.10657v3 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: v3 Abstract
+    quote: Hierarchical Context Management (HCM), which structures historical trajectories while dynamically pruning branches to preserve a high-signal memory state
+    quote_sha256: fdbcf5d5ecc3b46b3ab8847381dba8ab5469d477ad247ba2685e097f3ff226eb
+    source_revision: arXiv:2601.10657v3 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: v3 Appendix B.2 idea-generation template
+    quote: fewer than or equal to 5 ideas, you should try to think outside the box
+    quote_sha256: c323cec03ee41ee4af6bc738e16b18fa7728687d1984812247591c2b071be6d8
+    source_revision: arXiv:2601.10657v3 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  dive_corrections: '2026-09-17 Stage-2 dive (v3, 2026-09-10): confirmed with scoping. Concrete thresholds: K_idea=5, K_hyp=20, beta=0.85, eps_rel=0.001, power-law
+    alpha=1.5; freeze period unspecified. MBB and CE presuppose a known target lower bound r (porting constraint). Official code: github.com/google/pacevolve. Three-author
+    overlap with Dream-RSI (Coleman, He, Kang) - same Google DeepMind line; Dream-RSI cites PACEvolve, which predates it. Title drift: v1/v2 carried ''Long-Horizon'',
+    dropped at v3. Adversarial: no replication or criticism found (provisional); the KernelBench numbers are self-reported. Operator Stage-2 close-out (declined-by-omission):
+    unofficial PACEvolve forks (hassenhamdi/OpenPACEvolve, yudduy/pacevolve-pp) and the alphaxiv replicate URL.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): AK-plateau pack (HCM caps, momentum detector, power-law revert) filed; constants ground-truthed
+    via intake-1446.'
+
+- id: intake-1441
+  arxiv_id: '2605.07039'
+  url: https://arxiv.org/abs/2605.07039
+  source_type: paper
+  title: 'PACEvolve++: Improving Test-time Learning for Evolutionary Search Agents'
+  authors:
+  - Minghao Yan
+  - Bo Peng
+  - Benjamin Coleman
+  - Ziqi Chen
+  - Zhouhang Xie
+  - Shuo Chen
+  - et al. (14 authors)
+  categories:
+  - autonomous_research
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1435
+  verdict: worth_investigating
+  ingested_date: '2026-09-16'
+  credibility_score: 2
+  key_claims:
+  - Most evolutionary search systems use a fixed, prompt-elicited policy to sample next candidates, limiting adaptation where evaluations are expensive.
+  - 'PACEvolve++ trains an advisor model via reinforcement learning for test-time policy adaptation: the advisor generates, assesses and selects hypotheses while
+    a stronger frontier model translates selected hypotheses into executable candidates.'
+  - A phase-adaptive training approach adapts the advisor's optimization strategy to evolution phases (group-relative feedback early; best-of-k frontier contribution
+    later, as reward gaps compress).
+  techniques:
+  - advisor-model RL
+  - phase-adaptive optimization
+  - strategic/implementation decoupling
+  reported_results:
+  - 'Reported: outperforms SOTA evolutionary search with frontier models on expert-parallel load balancing, sequential recommendation, and protein fitness extrapolation
+    (abstract; not independently verified).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-1435
+    - intake-1440
+    intake_entry_notes:
+    - intake-1435 (Dream-RSI - cites PACEvolve++ in related work)
+    - intake-1440 (PACEvolve - predecessor, prompt-policy version)
+  notes: 'STAGE-1 (unverified). Reference-chased from intake-1435. Contrast worth noting: Dream-RSI advertises zero gradient steps on the coding agent, while PACEvolve++
+    trains an advisor - the RL machinery is likely infrastructure-heavy for our CPU-only, no-weight-update stack. Relevance is the phase-adaptive policy idea, not
+    the training path.'
+  reader_should_conclude: Unverified. Do not propose training an advisor model from this entry; treat it as context for the PACEvolve line and cite only after a dive.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - Overlaps intake-1440; its RL-trained advisor path is infrastructure-heavy for the CPU-only, no-weight-update stack.
+
+- id: intake-1442
+  arxiv_id: '2602.02919'
+  url: https://arxiv.org/abs/2602.02919
+  source_type: paper
+  title: 'DeltaEvolve: Accelerating Scientific Discovery through Momentum-Driven Evolution'
+  authors:
+  - Jiachen Jiang
+  - Tianyu Ding
+  - Zhihui Zhu
+  categories:
+  - autonomous_research
+  - context_management
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1435
+  verdict: worth_investigating
+  ingested_date: '2026-09-16'
+  credibility_score: 1
+  key_claims:
+  - Formalizes LLM evolutionary agents as an Expectation-Maximization framework (E-step samples candidate programs; M-step updates the control context from evaluation
+    feedback); constructing context from full-code snapshots is a suboptimal M-step because redundant implementation detail dilutes core algorithmic ideas.
+  - DeltaEvolve replaces full-code history with structured semantic deltas that capture how and why modifications between successive nodes affect performance; deltas
+    are organized in a multi-level database with progressive disclosure to reduce input tokens.
+  - Reports better solutions with less token consumption than full-code-based evolution.
+  techniques:
+  - semantic delta history
+  - multi-level delta database
+  - progressive disclosure
+  - EM framing of evolutionary agents
+  reported_results:
+  - 'Reported: better solutions with lower token consumption vs full-code-history evolution (abstract; no numbers extracted at Stage 1).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - context-folding-progressive.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-1435
+    intake_entry_notes:
+    - intake-1435 (Dream-RSI - cites DeltaEvolve for structured evolutionary history)
+  notes: 'STAGE-1 (unverified). Reference-chased from intake-1435. Bears on how autokernel proposal histories are represented and on tool-output compression: delta-of-proposal
+    rather than full artifacts. Only 3 authors, no venue evidence - credibility floor (recency only). | STAGE-2 DIVE (2026-09-17, v1 HTML): qualitative-delta contract
+    recorded; 36.79% = mean of 10 per-cell reductions; code stub only; 0 citations. Anchors recorded for claims 1 and 2.'
+  reader_should_conclude: Unverified. Extract the semantic-delta representation idea if a dive is run; do not cite its efficiency claims.
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED (EM formalization in Section 3.2, Eqs. 2-4).
+  - claim_index: 1
+    effect: narrowed
+    note: 'The outcome half of a delta is QUALITATIVE by contract (Eq. 7: ''Improved or Degraded''), not a numeric change; numeric results appear only in the example
+      artifacts. Deltas are co-generated by the mutating LLM at generation time, not extracted post hoc from finished artifacts.'
+  - claim_index: 2
+    effect: narrowed
+    note: 36.79% is an unweighted mean of 10 per-cell relative reductions (not a total-token ratio, which is ~29.5%); scores are max-of-3-seeds with no variance/CI;
+      the baseline is an OpenEvolve reproduction of AlphaEvolve; 0 citations as of 2026-09-17.
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section 4.1 Eq. 7
+    quote: a qualitative performance shift (e.g., 'Improved or Degraded') rather than a precise numerical change
+    quote_sha256: c63b29c7b5c64666e660934935c6cf4d5726db993e925207f20c3e792182f513
+    source_revision: arXiv:2602.02919v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section 1
+    quote: reducing total token consumption by approximately 36.79% on average
+    quote_sha256: d2158d6097439d0d46dfac6ef0a7aa5c4e83d0574779ee8ca7ad209c686cc2fe
+    source_revision: arXiv:2602.02919v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2
+  dive_corrections: '2026-09-17 Stage-2 dive (v1 current): K1 confirmed; K2/K3 narrowed (qualitative outcome by contract; 36.79% derivation). Official code repo is
+    an empty stub (''Coming Soon...''; ICML26 claim appears only there, unverifiable from the paper). Adversarial: zero citations (OpenAlex) and no replication or
+    criticism found - single-paper evidence, provisional. Operator Stage-2 close-out (declined-by-omission): DeltaEvolve stub repo (monitor), GigaEvo/ThetaEvolve/CodeEvolve
+    (low incremental value), AlgoTune task provenance 2507.15887.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): Semantic-delta proposal rendering folded into AK-lineage diagnostics.'
+
+- id: intake-1443
+  arxiv_id: '2608.24735'
+  url: https://arxiv.org/abs/2608.24735
+  source_type: paper
+  title: 'Meta^n: Recursive Self-Improvement through Emergent Depth'
+  authors:
+  - Zae Myung Kim
+  - Young-Jun Lee
+  - Seungyeon Jwa
+  - Dongyeop Kang
+  categories:
+  - autonomous_research
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1435
+  verdict: worth_investigating
+  ingested_date: '2026-09-16'
+  credibility_score: 2
+  key_claims:
+  - Self-improving LLM agents refine answers, not the process that produces them; systems that add a meta-level keep it fixed, and self-editing systems must leave
+    part of their editing machinery untouched, capping realized meta-depth at roughly two.
+  - 'Meta^n keeps the meta-operation fixed and recurses on its input: the operation reads traces of the solver stack below plus the code that produced them, then
+    writes the next layer as a strategic pre-process plus a library of callable helpers.'
+  - Because the meta-operation never changes it cannot destabilize the system; depth is set by convergence rather than fixed in advance, and an evolutionary archive
+    searches over layer chains.
+  techniques:
+  - fixed meta-operation recursion
+  - layer chains
+  - strategic pre-process + helper library
+  - evolutionary archive over layers
+  reported_results:
+  - 'Reported: outperforms prior self-improving agents on all eight benchmark families; alone above zero on ARC-AGI-2 in their comparison (abstract; not independently
+    verified).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - autokernel-rebuild-program.md
+    experiments: []
+    intake_entries:
+    - intake-1435
+    - intake-772
+    intake_entry_notes:
+    - intake-1435 (Dream-RSI - cites Meta^n in the self-evolving-agents related work)
+    - intake-772 (Darwin Godel Machine - the self-referential counterpoint whose boundary problem Meta^n addresses)
+  notes: 'STAGE-1 (unverified). Reference-chased from intake-1435. Code: github.com/minnesotanlp/meta-n. Conceptual value: ''fix the meta-operation, recurse on input''
+    is a stability-preserving alternative to self-referential policy rewriting, and is the shape most compatible with our measurement trust boundary (no self-editing
+    of measurement/gates).'
+  reader_should_conclude: Unverified. Treat as the stability argument for bounded meta-recursion; do not quote benchmark placements. Verify the fixed-meta-operation
+    pattern against our trust-boundary rules in a dive before any adoption.
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Fixed-meta-operation recursion retained as the stability argument for bounded meta-recursion; no adoptable artifact for the current loops.
+
+- id: intake-1444
+  arxiv_id: '2607.18235'
+  url: https://arxiv.org/html/2607.18235v1
+  source_type: paper
+  title: Automated Discovery Has No Universally Superior Harness
+  authors:
+  - Akshat Gupta
+  - Jermaine Lei
+  - Alexander Lu
+  - Gopala Anumanchipalli
+  - Leshem Choshen
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-09-17'
+  credibility_score: 2
+  key_claims:
+  - '30 budget-matched harnesses across 12 model-problem pairs, 4 models (3B-120B), more than 3.1M LLM rollouts: no tested fixed harness is significantly better than
+    a simple baseline, and the strongest observed harness varies across settings (best candidate loses significance after Holm correction).'
+  - 'More machinery is not better: full OpenEvolve-style configurations produce nominally significant gains only for GPT-OSS-20B on Heilbronn Triangle while often
+    reducing performance elsewhere.'
+  - 'Early progress predicts final performance: at the 50% checkpoint, correlation with final performance exceeds 0.70 for 11 of 12 model-problem pairs (weak-to-moderate,
+    0.000-0.474, at 10%).'
+  - 'Adaptive allocation beats fixed commitment at equal budget: a 3-stage 12->5->2->1 checkpoint-pruned portfolio scored 85.75% vs 84.54% unpruned, 82.49% single-harness
+    commitment, 84.35% five Sequential BoN runs; it beats the unpruned portfolio on 11 of 12 pairs.'
+  techniques:
+  - budget-matched harness comparison
+  - checkpoint-pruned harness portfolio
+  - early-progress predictor
+  - null distributions from released run pools
+  reported_results:
+  - 3.1M+ rollouts, 30 harnesses, 12 model-problem pairs (Qwen2.5-3B, Qwen3-4B, GPT-OSS-20B/120B x circle packing, Heilbronn triangle, 2nd autocorrelation).
+  - Adaptive margin +1.40pp over single-harness commitment (mean score, SE 0.02); budget = 5 full-run equivalents, 100k resampling trials.
+  - 'Best fixed harness (epsilon-greedy K=1, epsilon=20%): P=0.914, cross p=0.023 -> p=0.678 after Holm correction (not significant).'
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - autopilot-sequential-allocation.md
+    - autokernel-research-loop.md
+    intake_entries:
+    - intake-1437
+    - intake-1439
+    - intake-1453
+    intake_entry_notes:
+    - intake-1437 (EvoX - harness/baseline context)
+    - intake-1439 (SwarmResearch - adaptive scaling parallel)
+    - intake-1453 (skydiscover - one of the compared harness families)
+  notes: 'STAGE-2b ingest-and-dive (2026-09-17, v1 only): K1-K4 verified with quotes; code github.com/akshat57/harness-generalization (MIT, first-party; README stale
+    with placeholder arXiv id); run pools advertised at huggingface.co/datasets/harness-generalization/dataset (link not independently verified). Independent convergent
+    work: arXiv:2607.24647 (Yang & Cao) reaches ''no single search structure is consistently most efficient'' in a different setting. Caveats: budgets matched only
+    within model-problem; +1.40pp margin is small; no third-party replication (provisional).'
+  dive_corrections: 'Born dive-verified at Stage-2b. Quote-verified K1/K2/K3/K4. The earlier surfaced gloss ''no universally superior harness'' is accurate; the precise
+    title is ''Automated Discovery Has No Universally Superior Harness''. Bearing for HS-4/HS-14 evidence and for the adaptive-vs-fixed question in our loops. Gate-2
+    declines (2026-09-17): HARBOR and Meta-Harness (no identifiers resolvable from source).'
+  verification: dive-verified
+  handoffs_updated:
+  - harness-selection-and-integration.md
+  - agent-collab-rnd-harness.md
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract; Section 3.1
+    quote: We evaluate more than 3.1 million LLM rollouts across 30 harnesses, covering 12 model--problem pairs across models ranging from 3B to 120B parameters.
+    quote_sha256: 9a209cf9b50bf4770a7d9b3a5c99e7676128069521152b3ec5a0027f3d15fc5e
+    source_revision: arXiv:2607.18235v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section 5.2
+    quote: the strongest policy improving the average score from 84.35% to 85.75%.
+    quote_sha256: 1d78f8a145612a0ec52f4c1b18bfd8b48554debd785ba02f37811a4cf47c1a75
+    source_revision: arXiv:2607.18235v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): HS-E1 evidence packet filed; checkpoint-pruned portfolio evidence folded into AC-branch-per-agent.'
+
+- id: intake-1445
+  arxiv_id: '2607.26828'
+  url: https://arxiv.org/html/2607.26828v3
+  source_type: paper
+  title: Budget-Aware LLM Discovery via Cost-Calibrated Frontier Utility (CostAda)
+  authors:
+  - Yansen Zhang
+  - Yilu Liu
+  - Tianyu Liu
+  - Jiamin Chen
+  - Xiaokun Zhang
+  - Kai Xie
+  - Xue Liu
+  - Yiyan Qi
+  - Chen Ma
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-09-17'
+  credibility_score: 1
+  key_claims:
+  - 'Theorem (Prop. 1): cost-blind credit can forfeit all but a vanishing fraction of attainable quality as frontiers multiply and costs diverge; on a K-frontier
+    instance every cost-blind controller attains at most (1/K + 1/kappa)(1+o(1)) OPT whereas ranking frontiers by gain per realized cost attains (1-o(1)) OPT.'
+  - 'CostAda''s cost-calibrated frontier utility divides progress by a remaining-budget-conditioned realized-cost term (u_t = (lambda_t g_t + (1-lambda_t) delta_t)/d_t
+    with d_t = 1 + lambda_t^c log(1+ctilde_t)) and drives three controls: local exploration intensity, UCB frontier allocation, and budgeted tactic intervention.'
+  - Reports reaching the same quality for at most half the search-side dollar cost on 12 of 16 benchmark-backbone pairs (8 benchmarks x GLM-5 / GPT-5.4), and the
+    strongest mean final quality on all eight benchmarks (two single-run ties with EvoX).
+  techniques:
+  - cost-calibrated frontier utility
+  - remaining-budget-conditioned credit
+  - UCB frontier allocation
+  - budgeted tactic intervention
+  reported_results:
+  - 'Quality at <=half budget on 12/16 pairs; benchmark set: Circle Packing (x2), Heilbronn (x2), MinMaxDist (x2), Third Autocorrelation, Signal Processing; budgets
+    B=$1 and B=$5 provider-priced search-side cost (evaluator execution excluded).'
+  - 'Signal Processing separation +7.0% (GLM-5: 0.7054 vs EvoX 0.6592) and +13.6% (GPT-5.4: 0.7965 vs AdaEvolve 0.7011).'
+  - Prop. 1 bound is an existence result (K frontiers, one at cost c, others at kappa*c, B/c -> infinity); Appendix A states it characterises cost-blind controllers,
+    not CostAda's measured loss.
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    - autopilot-continuous-optimization.md
+    intake_entries:
+    - intake-1437
+    - intake-1448
+    intake_entry_notes:
+    - intake-1437 (EvoX - its score-only Eq. 2 is the class this paper critiques)
+    - intake-1448 (AdaEvolve - baseline and fellow Berkeley controller)
+  notes: 'STAGE-2b ingest-and-dive (2026-09-17, v3 current; v1/v2 had 343KB->99KB churn): claims verified with quotes and scope. Advertised code github.com/Forrest-Stone/CostAda
+    returns 404 as of 2026-09-17 -> constants unverifiable; OpenAlex cites 0; no independent replication (provisional). The ''critique of EvoX Eq. 2'' linkage is
+    materially correct (EvoX''s J is score-only) but is OUR attribution - CostAda itself cites EvoX only as a baseline, not as the equation being critiqued.'
+  dive_corrections: 'Born dive-verified at Stage-2b. K1 verified as a theorem with narrow existence scope; K2/K3 verified as claims with unreleased code; EvoX-Eq-2
+    framing corrected to our attribution, not the paper''s citation. Bearing for autokernel cost-credit design (and for any gate that scores progress without cost).
+    Gate-2 declines (2026-09-17): 2507.02076 test-time-compute survey; Badanidiyuru et al. 2013 Bandits with Knapsacks (classical provenance only).'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: We prove that cost-blind credit can forfeit all but a vanishing fraction of attainable quality as frontiers multiply and costs diverge.
+    quote_sha256: 7094ea994e98ffd44a78c74a0b8c6e0b9c73a3deaed8ccae9c30ccd18ed52c8c
+    source_revision: arXiv:2607.26828v3 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section 5.3
+    quote: In total, CostAda reaches the same quality for at most half the search-side dollar cost on twelve of sixteen benchmark--backbone pairs.
+    quote_sha256: 2ee2f04d6bce0ee50939a685dec6772d21f8e088d41fcf6993070f755913b1f2
+    source_revision: arXiv:2607.26828v3 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): AK-cost-credit (cost-calibrated frontier utility, offline re-score) filed.'
+
+- id: intake-1446
+  arxiv_id: null
+  url: https://github.com/google/pacevolve
+  source_type: repo
+  title: google/pacevolve - official PACEvolve code (main @ 22798d9f, 2026-02-25; analysis branch @ e9dff63, 2026-03-21)
+  authors:
+  - Google (official repository)
+  categories:
+  - autonomous_research
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_component
+  ingested_date: '2026-09-17'
+  credibility_score: null
+  key_claims:
+  - 'Freeze period: CLI default 15, implemented as a per-island rolling cooldown (reset after every crossover/backtrack), not a boot-only freeze; no launcher pins
+    the paper-run value, so the paper''s freeze duration remains unrecorded (run_experiment.py:193-198,325,332,337; parallel_runner.py:433-437).'
+  - 'Constants ground-truthed: summarize_freq default 20 (periodic compression; off-by-one vs Algorithm 1''s hard cap), idea_cap default 5, beta 0.85, eps 0.001,
+    power_alpha 1.5 (run_experiment.py:123-144; crossover_utils.py:33-34; idea_select_utils.py:566-655).'
+  - Momentum is initialized to 0.0 in code while Algorithm 2 says m <- 1.0, so a stagnant island triggers as soon as the freeze gate opens.
+  - 'Persistent failure memory is NOT implemented: dropped ideas are deleted, and the repetition filter is off by default (use_idea_filter=False) (workflow_utils.py:541-543;
+    run_experiment.py:167-171).'
+  - 'All 17 shipped main configs are num_islands: 1 (no 2-island config shipped; analysis branch uses 4); CE weights match Appendix B.3 equation-for-equation (crossover_utils.py:154-220).'
+  - The paper's Section 4.2 substrate lives only on the non-default analysis branch (reward-hack-hardened parameter_golf, not modded-nanogpt); main is dormant since
+    2026-02-25.
+  techniques:
+  - HCM two-level caps (idea cap 5, summarize every 20)
+  - MBB momentum (beta 0.85, eps 0.001, power-law alpha 1.5)
+  - CE absolute-progress weighting
+  - multi-island parallel runner
+  reported_results: []
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    intake_entries:
+    - intake-1440
+    intake_entry_notes:
+    - intake-1440 (PACEvolve paper - this repo is its official code)
+  notes: 'STAGE-2b artifact dive (read 2026-09-17; commit pinned): Apache-2.0, 10 stars, 12 commits, no CI, no tags; entrypoint workflows/run_experiment.py with configs
+    under tasks/<task>/config/. Ollama support exists in llm_utils.py; KernelBench/LLM-SR need third-party environments. Main-branch code is the ground truth for
+    the porting split: HCM is portable, MBB/CE carry the known-target-r requirement. Commit SHA recorded for the external-citation provenance contract.'
+  dive_corrections: 'Born dive-verified at Stage-2b. Ground-truth table against intake-1440 recorded in claims: freeze=15 rolling, summarize_freq 20, idea_cap 5,
+    beta 0.85, eps 0.001, alpha 1.5, m0 code=0.0 vs paper=1.0, no persistent failure log, single-island defaults. Paper Section 4.2 not runnable from main.'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): Ground-truth table consumed by AK-plateau pack; repo commit pinned (22798d9f).'
+
+- id: intake-1447
+  arxiv_id: '2606.15834'
+  url: https://arxiv.org/html/2606.15834v2
+  source_type: paper
+  title: 'AIChilles: Automatically Uncovering Hidden Weaknesses in AI-Evolved Systems'
+  authors:
+  - Yajie Zhou
+  - Ao Li
+  - Ashwin Silla
+  - Zaoxing Liu
+  - Vyas Sekar
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-09-17'
+  credibility_score: 2
+  key_claims:
+  - 'Across five system applications and 30 AI-evolved programs (3 frameworks x 2 LLMs x 5 apps, including AdaEvolve-derived winners), AIChilles finds 49 distinct
+    hidden weaknesses: 25 execution-time, 11 execution-memory, 7 correctness, 6 optimality (instances, not deduplicated triggers).'
+  - 'Mechanism: the original human-written program is a differential oracle for the AI-evolved program; deterministic workload-parameter extraction plus agent-based
+    constraint inference build an input grammar, and divergence search (one sub-agent per weakness type, MAP-Elites trajectory coverage) searches it.'
+  - It finds more distinct weaknesses than all fuzzer baselines across all four weakness types within a 6-hour budget (2.4 CPU-h + $8.95 tokens vs naive-agent 1.2
+    h + $10.24), with no baseline finding any optimality weakness.
+  - 'In-loop use as a gate removes the found weaknesses but costs the headline gain: prompt patching alone is insufficient, and robust gating reverted Prism to 0%
+    improvement and TXN-Sched from 49% to 3.9%.'
+  techniques:
+  - differential oracle vs human baseline
+  - workload-parameter extraction + constraint inference
+  - grammar-based divergence search
+  - MAP-Elites trajectory coverage archive
+  reported_results:
+  - 49 weaknesses / 5 apps / 30 evolved programs; 5 seeds; converges in 20-30 min on 3 apps.
+  - 'Gate tradeoff: Prism 0% improvement and TXN-Sched 3.9% (from 19% / 49%) when evaluated robustly.'
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    - rocm-verify-profile-backend.md
+    intake_entries:
+    - intake-1437
+    - intake-1448
+    intake_entry_notes:
+    - intake-1437 (EvoX - the family of evolved systems this instruments)
+    - intake-1448 (AdaEvolve - one tested framework)
+  notes: 'STAGE-2b ingest-and-dive (2026-09-17, v2 current): quotes verified; code lesleychou/aichilles (Apache-2.0) ships 30 best_program.py artifacts + persistent
+    knowledge base with warm-start. Caveats: count is instance-based; Section III-B says ''6 applications'' vs five elsewhere; the agent ''may only describe a nearby
+    symptom instead of identify the actual root cause''. Exactly 1 citing paper, no replication (provisional).'
+  dive_corrections: 'Born dive-verified at Stage-2b. Verifies the adoption-gate claim with the concrete 49-weakness result and the gate tradeoff. Bearing: evaluator-score-only
+    promotion of evolved candidates is gameable; robust acceptance needs adversarial divergence probes vs the human baseline. Gate-2 declines (2026-09-17): BeDivFuzz
+    / SlowFuzz / PerfFuzz and MAP-Elites 1504.04909 (prior-art techniques - cite inside a dive if ever ported); ''Self-evolving network verifiers'' (no arXiv id).'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: Across five system applications and 30 AI-evolved programs, AIChilles finds 49 distinct hidden weaknesses.
+    quote_sha256: 189bd2ecbba225d5eee651f0e2831153e41fcf0d217fa1e01e6192568e8155b6
+    source_revision: arXiv:2606.15834v2 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section V-D
+    quote: 'prompt patching is not enough: the generated programs still contain all weakness types'
+    quote_sha256: 8289cc7710919018d7080e460dc344d774170101bb0764300588d9fca1afef67
+    source_revision: arXiv:2606.15834v2 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): AIChilles divergence probes scoped inside AK-integrity pack with the Section V-D tradeoff pre-registered.'
+
+- id: intake-1448
+  arxiv_id: '2602.20133'
+  url: https://arxiv.org/html/2602.20133v1
+  source_type: paper
+  title: 'AdaEvolve: Adaptive LLM Driven Zeroth-Order Optimization'
+  authors:
+  - Mert Cemri
+  - Shubham Agrawal
+  - Akshat Gupta
+  - Shu Liu
+  - Audrey Cheng
+  - Qiuyang Mang
+  - Ashwin Naren
+  - Lutfi Eren Erdogan
+  - Koushik Sen
+  - Matei Zaharia
+  - Alex Dimakis
+  - Ion Stoica
+  categories:
+  - autonomous_research
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-09-17'
+  credibility_score: 2
+  key_claims:
+  - AdaEvolve requires only the LLM name and iteration count from the user; one accumulated-improvement signal unifies adaptation across three levels - no code rewriting.
+  - 'L1 local: per-island exploration intensity I_t in [I_min=0.1, I_max=0.7]; L2 global: decayed-reward UCB budget routing across islands plus ring migration and
+    dynamic island spawning on stagnation; L3 meta-guidance: an LLM generates solution-tactic text injected into mutation prompts on deeper stalling, rotating alternatives
+    on failure.'
+  - Global normalization fixes 'poor island bias' - locally normalized rewards are biased toward islands with low baseline fitness making trivial refinements.
+  - Stagnation thresholds tau_S=0.02 (island spawn) and tau_M=0.12 (meta-guidance); meta-guidance is the highest-value component by ablation.
+  - Evaluation is online-only (evaluator invoked exactly once per generated child; no replay or offline screening anywhere).
+  techniques:
+  - three-level adaptation on one signal
+  - decayed-reward UCB island routing
+  - exploration intensity I_t
+  - meta-guidance tactic injection
+  reported_results:
+  - 'Reported: outperforms open baselines across 185 open-ended optimization problems (abstract); Tau_S=0.02 and Tau_M=0.12 fixed for all experiments.'
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    - autopilot-continuous-optimization.md
+    intake_entries:
+    - intake-1437
+    - intake-1452
+    - intake-1453
+    intake_entry_notes:
+    - intake-1437 (EvoX - sibling algorithm, same team and repo)
+    - intake-1452 (SkyDiscover - the framework)
+    - intake-1453 (skydiscover repo - ground-truthed constants)
+  notes: 'STAGE-2b ingest-and-dive (2026-09-17, v1 only): code is skydiscover-ai/skydiscover --search adaevolve (Apache-2.0). Code-vs-paper deltas recorded: rho=0.9
+    and migration M=50/15 exist only in code; shipped config uses I=0.15/0.5 and W=10/tau=0.12 vs code defaults 30/0.05. Reproduction issue #57 (plateau 2.5414 vs
+    paper 2.629) was closed as a missing scipy ''math'' extra; 2.5414 equals the paper''s own pre-breakthrough stall point. AdaEvolve v1 does not cite EvoX. No independent
+    replication (provisional).'
+  dive_corrections: 'Born dive-verified at Stage-2b. Mechanism confirmed as scalar/control adaptation (not code evolution); online-only evaluation; constants resolved
+    from intake-1453. Bearing: settings-adaptation counterpoint to EvoX''s code-rewrite, and directly comparable to our fixed HYPOTHESIS_ROUNDS/PATCH_ROUNDS constants.'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section 1 paragraph 6
+    quote: AdaEvolve requires only the LLM name and iteration count from the user.
+    quote_sha256: 4294e50f2f1b2a72897728c5487c3fb363543836fa13acd17de255642c4bbcea
+    source_revision: arXiv:2602.20133v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section 3.3
+    quote: biases selection toward islands with low baseline fitness making trivial refinements (this can also be called as 'poor island bias')
+    quote_sha256: 375c8ca326aa5b6866e58a97875eb35435640261f8e58c4ed9259dfdec0a7f35
+    source_revision: arXiv:2602.20133v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): AdaEvolve arm (I_t, UCB, tau 0.02/0.12) filed in AK-adaptive policy panel.'
+
+- id: intake-1449
+  arxiv_id: '2604.01658'
+  url: https://arxiv.org/html/2604.01658v3
+  source_type: paper
+  title: 'CORAL: Towards Autonomous Multi-Agent Evolution for Open-Ended Discovery'
+  authors:
+  - Ao Qu
+  - Han Zheng
+  - Zijian Zhou
+  - Yihao Yan
+  - Yihong Tang
+  - Shao Yong Ong
+  - et al. (17 authors; Paul Pu Liang senior)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - swarm_techniques
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-09-17'
+  credibility_score: 2
+  key_claims:
+  - 'Architecture: a population of asynchronous agents coordinated primarily through shared persistent memory, with no role specialization and no islands in the paper;
+    multi-agent experiments use 4 identically initialized agents with matched wall-clock time.'
+  - 'Removes the fixed evolutionary pipeline (predefined parent-selection heuristics + prompt + mutation): the agent owns retrieve/propose/pivot decisions; it reports
+    outperforming EvoX (the strongest adaptive-strategy baseline) on every task.'
+  - Reports the best final score on all 11 suite tasks, establishing new SOTA on 8 tasks (the abstract says 10 - an internal inconsistency); four co-evolving agents
+    push the Kernel Engineering score from 1,363 to 1,103 cycles (18.3% vs the 1-agent 1,350, not vs official 1,363).
+  - 'Knowledge artifacts and co-evolution matter: ablating the knowledge base regresses 1350->1601 cycles, and co-evolution beats an equal-compute best-of-4-independent
+    control on all three tasks.'
+  techniques:
+  - shared persistent memory coordination
+  - heartbeat triggers (reflect/consolidate/pivot)
+  - agent-owned retrieve/propose/pivot
+  - 4-agent co-evolution vs independent control
+  reported_results:
+  - '11-task suite (6 math + 5 systems): best final on all 11; SOTA on 8 per body (10 per abstract).'
+  - 'Cost: ~$30-60 per 3-hour single-agent run; 4-agent runs ~3-4x that.'
+  - 'Knowledge-off ablation: 1350 -> 1601 cycles (18.6% regression).'
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - agent-collab-rnd-harness.md
+    intake_entries:
+    - intake-1439
+    - intake-1437
+    - intake-1453
+    intake_entry_notes:
+    - intake-1439 (SwarmResearch - same 15-task comparison regime, CORAL is its stronger baseline)
+    - intake-1437 (EvoX - baseline)
+    - intake-1453 (skydiscover - shared task suite)
+  notes: 'STAGE-2b ingest-and-dive (2026-09-17, v3 current): quotes verified. Code Human-Agent-Society/CORAL (Apache-2.0, OpenCode/Claude Code runtimes, COLM 2026);
+    repo HEAD has post-v3 features (islands since v0.6.0, 2026-06-06) so any reproduction must pin a tag/commit. Appendix D.3 discloses 4 fixes to ADRS/SkyDiscover
+    evaluator bugs -> head-to-head on those suites inherits their patch set. Internal inconsistencies recorded (10 vs 8 SOTA; 2.5x vs 3-10x; 596 vs 663 attempts).
+    No third-party replication (provisional).'
+  dive_corrections: 'Born dive-verified at Stage-2b. Confirms shared-memory multi-agent topology (no shepherd) and the equal-compute control arm result. Bearing:
+    closest published mechanism to the agent-collab-rnd-harness objective (persistent shared workspace + leaderboard). Gate-2 declines (2026-09-17): Anthropic VLIW
+    kernel-engineering task (external benchmark, not EPYC kernel evidence). Correction from the companion-repo dive: islands existed since v0.6.0 (2026-06-05) - they
+    PREDATE paper v3 and are simply absent from it; pin v0.7.20 (bbae4f72) for paper-era or v0.7.21 (896655d5) for runnable.'
+  verification: dive-verified
+  handoffs_updated:
+  - agent-collab-rnd-harness.md
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section 3.3
+    quote: coordination between agents occurs primarily through shared persistent memory
+    quote_sha256: 11e72fbfbe81f99d45efe18bd77e13a790ec09df8df00720241712ef15e69a9e
+    source_revision: arXiv:2604.01658v3 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section 4.2 / Table 1 caption
+    quote: CORAL achieves the best final score on all 11 tasks, establishing new SOTA on 8 tasks
+    quote_sha256: 738404fcf7d40f21c98cfebfffd93f3482956701f7575e9acffa8de7e67af3b6
+    source_revision: arXiv:2604.01658v3 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): AC-CORAL pinned-tag spike against orchestrator /v1 filed.'
+
+- id: intake-1450
+  arxiv_id: null
+  url: https://github.com/SwarmResearch/swarmresearch-paper-reproduce
+  source_type: repo
+  title: SwarmResearch/swarmresearch-paper-reproduce - reproduction data/configs (no baseline runs; 13/15 NOT resolvable)
+  authors:
+  - Yuvraj Virk (author-run)
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-09-17'
+  credibility_score: null
+  key_claims:
+  - The release contains SwarmResearch runs only (session JSONL transcripts, prompts, task configs, final working directories, log_all_oneline.txt with per-commit
+    scores); there are NO EvoX/CORAL/SOTA per-task baseline scores, so the 13/15 count cannot be arbitrated from the repository.
+  - 'Repo arithmetic against CORAL: 10 better / 2 equal / 3 worse (losses MMD-14-3, EPLB, AHC026), matching Section 3.2''s ''10+2''; against EvoX it gives 12 better
+    / 1 equal / 2 worse, which does not match the paper''s ''exceeds 13 + matches 1''.'
+  - 'The paper''s $50-cutoff snapshots are not reproducible from the release: there is no per-commit cost data and the run git repositories were not released (only
+    final working directories).'
+  - 'The repo ships a superset of the 15 tasks (26 task.yaml: 11 math, 5 ADRS, 10 ALE-Bench-Lite); AHC raw AtCoder scores do not map to the paper''s 0-3500 column
+    (conversion absent).'
+  techniques:
+  - per-task run archives
+  - shepherd + pi-swarm agent configs
+  - containerized task evaluators
+  reported_results: []
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - agent-collab-rnd-harness.md
+    - harness-selection-and-integration.md
+    intake_entries:
+    - intake-1439
+    - intake-1449
+    intake_entry_notes:
+    - intake-1439 (SwarmResearch paper - this is its reproduction release)
+    - intake-1449 (CORAL - the stronger baseline whose numbers are missing)
+  notes: 'STAGE-2b artifact dive (read 2026-09-17; commit e848d8d5760065714c38fa7558f0298573db17ab, 2026-07-02; no license; 2 commits; 1 star). Author-run -> not
+    independent. Runnability blockers recorded: clone dir must be named swarmresearch_reproduce; deps unpinned; container_eval.py references a missing ALE-Bench Dockerfile;
+    Bedrock + Docker/GPU required; ~$100/task actual vs $50 reported. Net: 13/15 remains unresolved; paper body ambiguity stands.'
+  dive_corrections: 'Born dive-verified at Stage-2b. Resolution attempt outcome: NOT RESOLVED from the repro repo (baseline runs absent). Bearing: closes the ''check
+    the repro repo'' loop for intake-1439''s 13/15 question; the discrepancy is recorded, not arbitrated. Gate-2 declines (2026-09-17): ALE-Bench repo/dataset (SakanaAI),
+    ADRS dataset 2510.06189, deepseek-ai/EPLB issue #12, ck0123 fork (divergence unchecked).'
+  verification: dive-verified
+  handoffs_updated:
+  - agent-collab-rnd-harness.md
+  - harness-selection-and-integration.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): Repro-harness reuse folded into AC-branch-per-agent; 13/15 unverifiable finding filed in HS-E1.'
+
+- id: intake-1451
+  arxiv_id: '2605.20086'
+  url: https://arxiv.org/html/2605.20086v1
+  source_type: paper
+  title: What Do Evolutionary Coding Agents Evolve?
+  authors:
+  - Nico Pelleriti
+  - Sree Harsha Nelaturu
+  - Zhanke Zhou
+  - Zongze Li
+  - Max Zimmer
+  - Bo Han
+  - Sebastian Pokutta
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-09-17'
+  credibility_score: 2
+  key_claims:
+  - 'Mechanistic edit taxonomy (9 labels) over 4 frameworks (OpenEvolve, GEPA, EvoX, ShinkaEvolve), 5 models, 16 tasks, 121 runs, 10,672 programs: hyperparameter
+    tuning is the most frequent label, but gains come from rare edit types - external dependency 3.58x odds ratio for positive score change, efficiency 1.61x, architectural
+    change 1.55x.'
+  - 'Deterministic cycling: roughly 30% of code lines added during evolutionary search are byte-identical to lines previously deleted in the same lineage, and the
+    cycling rate grows monotonically in 118 of 121 cases (median 5 iterations between delete and re-add), stable across all four frameworks, both languages, all five
+    models.'
+  - 'Breakthroughs are structural, not lexical: same-prompt replays produce runnable programs but essentially never the original (median exact-match 0.00) while recovering
+    a median 0.76 of the original score from different programs.'
+  - 'Tuning gap: on math tasks, post-hoc Bayesian optimization over one intermediate program''s exposed constants matches or exceeds the run''s final best on 13 of
+    15 intermediate programs (median delta +0.025; worst case 0.521 -> 0.886, 1.70x).'
+  - Public-vs-private overfit is predicted by problem identity more than framework identity; two of four frameworks overfit on at least 30% of scored problems.
+  techniques:
+  - LLM-as-judge edit taxonomy
+  - byte-level cycling detector
+  - same-prompt replay control
+  - post-hoc tuning ceiling (BO over exposed constants)
+  reported_results:
+  - 121 runs / 10,672 programs / 18,400 LLM calls; judge validated on 200 blind human re-annotations (macro kappa 0.77, micro-F1 0.90).
+  - Cycling ~30% of added lines; monotone growth 118/121 runs.
+  - EvoX aligned 0/8 private runs, GEPA 1/7, OpenEvolve 4/9, ShinkaEvolve 4/6 on the overfit check.
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    - autopilot-continuous-optimization.md
+    intake_entries:
+    - intake-1437
+    - intake-1448
+    - intake-1438
+    intake_entry_notes:
+    - intake-1437 (EvoX - one of the four studied frameworks)
+    - intake-1448 (AdaEvolve - adjacent Berkeley framework)
+    - intake-1438 (SimpleTES - related evaluation-driven line)
+  notes: 'STAGE-2b ingest-and-dive (2026-09-17, v1 only): quotes verified. Code ZIB-IOL/EvoReplay (Apache-2.0) + dataset ZIB-IOL/EvoTrace. No author overlap with
+    the studied frameworks. Caveat: the collection/replay substrate is SkyDiscover (framework of the EvoX team, one of the studied systems) but the findings cut against
+    EvoX (0/8 aligned) with no conflict-of-interest statement in the paper. No reward-hack taxonomy label exists in the paper; evaluator overfitting is measured separately.
+    No replication (provisional).'
+  dive_corrections: 'Born dive-verified at Stage-2b. Confirms a mechanistic study of exactly our loop class; three cheap diagnostics identified: cycling detection,
+    per-edit-type yield, tuning-ceiling resampling control. Gate-2 declines (2026-09-17): 2602.16805 Simple Baselines; 2603.23994 iterative-optimization challenges;
+    2608.19703 Loreley; 2608.09874 ArchAgent v2 (citation-surfaced, not decision-bearing now).'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  - harness-selection-and-integration.md
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section 5.2
+    quote: Roughly 30% of code lines added during evolutionary search are byte-identical to lines previously deleted in the same lineage, and the cycling rate grows
+      monotonically over the run in 118 of 121 cases
+    quote_sha256: 5ad2ce1dcc1438ed39498032a8206d47ba1fe9d3b65ae3ec7ab321eeff8b698d
+    source_revision: arXiv:2605.20086v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section 5.4
+    quote: BO matches or exceeds it on 13 of 15 intermediate programs (median delta +0.025)
+    quote_sha256: 54ea66e16fc0e413998cb8255bd76249a9d670c71c8d75ab87ace86066da80f1
+    source_revision: arXiv:2605.20086v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): Cycling detector + edit taxonomy + promotion controls filed (AK-lineage diagnostics, AK-promotion
+    controls); EvoTrace confound filed in HS-E1.'
+
+- id: intake-1452
+  arxiv_id: null
+  url: https://doi.org/10.1145/3786335.3813221
+  source_type: paper
+  title: 'SkyDiscover: A Flexible, Adaptive Framework for AI-Driven Scientific and Algorithmic Discovery'
+  authors:
+  - Shu Liu
+  - Mert Cemri
+  - Shubham Agarwal
+  - Alexander Krentsel
+  - Ashwin Naren
+  - Qiuyang Mang
+  - Zhifei Li
+  - Akshat Gupta
+  - Monishwaran Maheswaran
+  - Audrey Cheng
+  - Melissa Pan
+  - Ethan Boneh
+  - Kannan Ramchandran
+  - Koushik Sen
+  - Matei Zaharia
+  - Alexandros G. Dimakis
+  - Ion Stoica
+  categories:
+  - autonomous_research
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-09-17'
+  credibility_score: 2
+  key_claims:
+  - The framework decomposes the discovery loop into four reusable components - Context Builder, Solution Generator, Evaluator, Solution Selector - while exposing
+    the control logic above them as a programmable interface (abstract; paper body not retrievable).
+  - Its two search algorithms, AdaEvolve and EvoX, are claimed to achieve the strongest open-source results across ~200 benchmarks (repo README, self-reported).
+  - 'Repo-verified: EvoX can evolve using AdaEvolve as its starting strategy, claimed best on 3 of 4 benchmarks (repo-only claim).'
+  techniques:
+  - four-component discovery decomposition
+  - programmable control logic above components
+  reported_results:
+  - 'Repo/blog self-reported: matches or exceeds AlphaEvolve and human SOTA on 6/6 systems and 6/8 math tasks; ~34% higher median score (Frontier-CS).'
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    intake_entries:
+    - intake-1437
+    - intake-1448
+    - intake-1453
+    intake_entry_notes:
+    - intake-1437 (EvoX - ships in this framework)
+    - intake-1448 (AdaEvolve - ships in this framework)
+    - intake-1453 (skydiscover repo - the living artifact)
+  notes: 'STAGE-2b ingest-and-dive (2026-09-17): paper body NOT RETRIEVABLE - no arXiv id; ACM DL landing and PDF return 403; Unpaywall 422. Only the abstract (via
+    Semantic Scholar/OpenAlex DOI records) and the framework repo/README/blog were accessible; claims above are labelled by source. CAIS ''26 Industrial Spotlight,
+    pp. 1223-1227, gold OA CC-BY per OpenAlex. Any number from this entry is repo/blog self-report, not paper-verified. Repo commit pinned in intake-1453.'
+  dive_corrections: 'Born dive-verified at Stage-2b (limited: abstract + repo only). Retrievability recorded so future readers know the paper text was never read;
+    do not attribute repo/blog claims to the peer-reviewed paper. Gate-2 declines (2026-09-17): Prism 2505.04021, SkySynth companions and FlashML FreeToken (serving-side,
+    out of current scope).'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract (via Semantic Scholar / OpenAlex DOI record)
+    quote: 'SkyDiscover decomposes the discovery loop into four reusable components: Context Builder, Solution Generator, Evaluator, and Solution Selector, while
+      exposing the control logic above them as a programmable interface.'
+    quote_sha256: 6de53509068b38c1f13f99e2e9a7c6072a62f27952aee8d08941772483966920
+    source_revision: DOI 10.1145/3786335.3813221 abstract layer (paper body not retrievable; read 2026-09-17)
+    verified_by: research-intake/stage2b
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): SkyDiscover-Optimize assessed as AK-WM-3 policy-comparison vehicle (abstract-level only; paper body
+    unretrievable).'
+
+- id: intake-1453
+  arxiv_id: null
+  url: https://github.com/skydiscover-ai/skydiscover
+  source_type: repo
+  title: skydiscover-ai/skydiscover - framework + EvoX/AdaEvolve implementations (Apache-2.0)
+  authors:
+  - SkyDiscover authors (UC Berkeley)
+  categories:
+  - autonomous_research
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_component
+  ingested_date: '2026-09-17'
+  credibility_score: null
+  key_claims:
+  - 'EvoX implemented as a hot-swappable EvolvedProgramDatabase: LLM meta-prompt improves the class, generation/validation/hot-swap with fallback restore; the score
+    formula matches the paper exactly (search_scorer.py:67-69); stagnation window W = 10% of iterations with tau=0.01 present only in repo/README (controller.py:47-48,164-166).'
+  - AdaEvolve intensity formula exact match (I_min/I_max defaults 0.1/0.7; shipped config 0.15/0.5); UCB C=1.41 with min_visits=3; windowed meta-guidance trigger
+    rather than the paper's G<=tau_M; code defaults W=30/tau=0.05 vs shipped config W=10/tau=0.12; rho=0.9 and migration M=50/15 exist only in code (adaevolve/adaptation.py;
+    configs/adaevolve.yaml).
+  - '12 --search choices: evox, adaevolve, best_of_n, beam_search, topk, openevolve_native, openevolve, shinkaevolve, gepa, gepa_native, alphaevolve, claude_code
+    (4 are external wrappers) (optimize/cli.py:23-36).'
+  - 'Reproduction issue #57 (AdaEvolve plateau 2.5414 vs paper 2.629) is CLOSED as a missing scipy ''math'' extra; 2.5414 equals the paper''s own pre-breakthrough
+    stall point; issues #18 and #102 were fixed by merged PRs (#22, #103).'
+  techniques:
+  - EvolvedProgramDatabase hot-swap
+  - multi-algorithm --search registry
+  - PyPI packaging
+  - evaluator contract
+  reported_results: []
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    intake_entries:
+    - intake-1437
+    - intake-1448
+    - intake-1452
+    intake_entry_notes:
+    - intake-1437 (EvoX - implemented here)
+    - intake-1448 (AdaEvolve - implemented here)
+    - intake-1452 (SkyDiscover paper - this is its artifact)
+  notes: 'STAGE-2b artifact dive (read 2026-09-17; commit 0d932b690670a7e544388ad362e9876c8bd256a0, 2026-09-14; Apache-2.0; 678 stars; PyPI skydiscover 0.1.0). OPEN
+    issue #79: hardcoded OpenAI defaults cause silent failures/unexpected cost on non-OpenAI setups (config.py:155; evox/utils/variation_operator_generator.py:516)
+    - the HS-1g silent-no-op class; must pin --api-base locally and audit fallback sites before any run. Commit SHA recorded for the provenance contract.'
+  dive_corrections: 'Born dive-verified at Stage-2b. Ground-truth deltas vs intake-1437/1448 recorded; issue #57 resolved as environment. This repo is the installable
+    artifact behind both algorithms. Gate-2 declines (2026-09-17): zia1138/rayevolve (unofficial note-only).'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): Repo ground-truth constants consumed by AK-adaptive policy panel; local-run hazard (issue #79) noted.'
+
+- id: intake-1454
+  arxiv_id: null
+  url: https://github.com/wq-will/SimpleTES
+  source_type: repo
+  title: wq-will/SimpleTES - official codebase (RPUCG selector, released artifacts, ROCm path)
+  authors:
+  - SimpleTES authors
+  categories:
+  - autonomous_research
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_component
+  ingested_date: '2026-09-17'
+  credibility_score: null
+  key_claims:
+  - 'RPUCG selector implemented (rpucg.py:48,202): selection-only over a DAG of already-evaluated nodes - bottom-up V with discount, percentile-rank Q/P, 1-hop anti-inbreeding,
+    visit counts updated after batch commit; selected nodes only feed prompt construction, never re-execution.'
+  - 'Released artifacts: 28 dirs including the Lasso C++ solver and the TriMul kernel; Lasso evaluator uses a fresh randomized correctness instance and per-repeat
+    fresh data, with a docstring noting cache inflation cannot raise the score; circle-packing tolerance tightened to 1e-12.'
+  - 'Budget defaults differ from the paper: CLI defaults are num_chains=4/k_candidates=4/max_generations=100; the paper''s C=32/L=100/K=16 maps to --num-chains 32
+    --k-candidates 16 --max-generations 51200 (config.py:119-170).'
+  - ROCm path exists in code (AMD requirements rocm6.2.4; run_eval.py routes runtime=='ROCm' to profile_program_roc) but the README documents NVIDIA only; server_info.yaml
+    ships private 172.169.x.x hosts.
+  - 'Issue #6: partial non-reproduction on MI300 - the released TriMul artifact (~1390us) is close to the paper''s 1352us, while a full search reached ~1841us; authors
+    restate the reported config as C=32/K=8/L=200 plus one best-restart second search, with high variance.'
+  techniques:
+  - RPUCG graph-PUCT selection
+  - hardened task evaluators
+  - per-task environment packaging
+  - ROCm eval path
+  reported_results: []
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    - agentic-rocm-kernel-authoring.md
+    intake_entries:
+    - intake-1438
+    - intake-1435
+    intake_entry_notes:
+    - intake-1438 (SimpleTES paper - this is its official code)
+    - intake-1435 (Dream-RSI - uses SimpleTES as the reported baseline)
+  notes: STAGE-2b artifact dive (read 2026-09-17; commit 47d3413da1d85dc24341219d47452d2601e56a57, 2026-08-20; AGPL-3.0-or-later; 176 stars; 2 open issues). Repo
+    description still says 21 problems vs 28 in README/paper. No glmnet/R harness -> Supp. Table 16 glmnet column not reproducible offline; dataset generation needs
+    network/libsvmdata. Commit SHA recorded.
+  dive_corrections: 'Born dive-verified at Stage-2b. Verifies selection-only RPUCG (not replay) and the evaluator hardenings; records budget-default mapping and the
+    MI300 partial non-reproduction. Operator close-out: AlgoTune (2507.15887) declined - task-class provenance only; revisit if a kernel-efficiency benchmark port
+    is scoped.'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  - agentic-rocm-kernel-authoring.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): Evaluator hardening imported via AK-integrity pack; RPUCG A/B and ROCm eval path filed as AR-RPUCG/AR-ROCm-eval.'
+
+- id: intake-1455
+  arxiv_id: null
+  url: https://github.com/Human-Agent-Society/CORAL
+  source_type: repo
+  title: Human-Agent-Society/CORAL - companion code (main @ 0123dfb9; pin v0.7.20 bbae4f72 for paper-era)
+  authors:
+  - Ao Qu et al. (CORAL authors)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_component
+  ingested_date: '2026-09-17'
+  credibility_score: null
+  key_claims:
+  - 'Shared persistent state: .coral/public/ holds attempts/*.json (atomic tmp+rename, readers poll), notes/*.md with structured claim/evidence/status frontmatter,
+    skills/, and heartbeat/; these are symlinked into each worktree''s native agent dir (.claude/.codex/.opencode); .coral/private/ (grader venv, answer keys) is
+    denied to agents (coral/hub/attempts.py:1-21; coral/hub/notes.py:1-40; coral/workspace/worktree.py:189-268,452-489).'
+  - 'Heartbeat: manager polls attempts every 5 s and interrupts with SIGINT + --resume + combined prompt; defaults reflect=1 (local interval), consolidate=10 (global),
+    pivot=5 (local plateau) match paper Table 7; lint_wiki=10 is a fourth action not in Table 7 (coral/config.py:241-246; coral/agent/heartbeat.py:65-204).'
+  - 'Runtimes: claude_code (default), codex, cursor_agent, dsh, kiro, opencode, pi; the OpenAI-speaking runtimes can target our orchestrator /v1 via baseURL or the
+    embedded LiteLLM gateway (api_base), while claude_code needs the gateway for Messages<->Chat translation (builtin/opencode.py:165; coral/gateway/config.py:8-35).'
+  - The paper's best-of-4-independent control arm is NOT shipped as a mode (the sharing config has zero code readers); multi-island exists since v0.6.0 but defaults
+    to count=1 and is absent from paper v3 (coral/config.py:315-320,420-437).
+  - 'Pin discipline: v0.7.17+ fixes silent broken worktrees (#238, merged 2cabff4); v0.7.20 is the paper-era tag and v0.7.21 the safer runnable tag.'
+  techniques:
+  - shared persistent memory hub
+  - heartbeat interrupt triggers
+  - LiteLLM gateway base-url injection
+  - grader daemon in private venv
+  - worktree isolation with agent-native symlinks
+  reported_results: []
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - agent-collab-rnd-harness.md
+    - autopilot-continuous-optimization.md
+    intake_entries:
+    - intake-1449
+    - intake-1439
+    - intake-1453
+    intake_entry_notes:
+    - intake-1449 (CORAL paper)
+    - intake-1439 (SwarmResearch - the contrasting shepherd topology)
+    - intake-1453 (skydiscover - related local-runtime harness)
+  notes: 'STAGE-2b artifact dive (read 2026-09-17; Apache-2.0; 996 stars; commit 0123dfb939b35228cf2c1fde224cd0561e727408). Local-run answer: OpenAI-compatible runtimes
+    can target our /v1; not smoke-tested here. Evaluator: per-task grader venv; SWE-bench/terminal-bench examples shell out to Harbor in Docker (CORAL itself must
+    not run in Docker). Commit SHA recorded.'
+  dive_corrections: 'Born dive-verified at Stage-2b. Mechanism ground-truth recorded; local endpoint path identified; best-of-N control arm absent; island feature
+    default-off and predates v3. Third-round surfaces (recommend decline, operator-pending): Harbor github.com/corca-ai/harbor, GEPA 2507.19457, karpathy/autoresearch,
+    TTT-Discover 2601.16175, OpenEvolve (already indexed).'
+  verification: dive-verified
+  handoffs_updated:
+  - agent-collab-rnd-harness.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): CORAL shared-state mechanism + pin discipline filed as AC-CORAL.'
+
+- id: intake-1456
+  arxiv_id: '2605.29268'
+  url: https://arxiv.org/html/2605.29268v3
+  source_type: paper
+  title: 'Compute Allocation for Self-Evolving LLMs: From Depth-Breadth to Multi-Armed Bandits'
+  authors:
+  - Sixue Xing
+  - Haoyu He
+  - Kerui Wu
+  - Zhuo Yang
+  - Haozheng Luo
+  - Tianfan Fu
+  - Aarthy Nagarajan
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-09-17'
+  credibility_score: 2
+  key_claims:
+  - 'Formalizes allocation as a depth-breadth split under fixed budget: C = T*N, so a run is fully specified by how many generations T of N children each; T=1 is
+    best-of-N, T=C pure sequential, and the target is the compute-optimal depth T*(C) (Section 3, eq. 1, Alg. 1).'
+  - 'Two regularities: a fitness-compute envelope (capability ordering largely collapses when measured in effective FLOPs; R^2 0.94 MMD 4B/8B/14B, 0.93 CP 8B/14B)
+    and a capability-gated bilinear depth-breadth fit (R^2 0.75-0.92).'
+  - 'BaSE: a multi-armed bandit (UCB1 / EXP3.P / Thompson routes the next call) over K parallel trajectories, K=10 default.'
+  - Reported +12.3% mean fitness over the strongest island-protocol baseline across 8 (model, task) cells, largest gains on high-variance settings; arm pool K in
+    5-20 strongest, K=50 dilutes.
+  - BaSE operates at trajectory granularity and is explicitly orthogonal to parent sampling, composing with OpenEvolve, CodeEvolve and ShinkaEvolve; no checkpoint
+    pruning, harness portfolio or cost term was tested (composition with intake-1444/1445 is NOT-FOUND-IN-SOURCE).
+  techniques:
+  - depth-breadth budget formalization
+  - effective-FLOPs accounting
+  - BaSE bandit trajectory routing (UCB/EXP3.P/Thompson)
+  reported_results:
+  - 'BaSE +12.3% mean over strongest island baseline across 8 cells (aggregation basis not reproducible from Table 2: pooled best-vs-best gives +7.6%, mean-of-ratios
+    +27% dominated by Llama-HT +190%).'
+  - HT Qwen3-8B Thompson 0.8736 vs best non-BaSE 0.7379; MMD tau=0.95 UCB 92 generations vs greedy 485; setup C in {8..512}, 10 seeds/cell, Qwen3 1.7B-14B + Llama-3.1-8B,
+    one H100, vLLM fp8.
+  - Effective-FLOPs accounting (2*P_active*(p_prompt-p_cached+p_out)) tracks reported FLOPs within 15% (R^2 >= 0.94).
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autopilot-sequential-allocation.md
+    - autopilot-continuous-optimization.md
+    - autokernel-research-loop.md
+    intake_entries:
+    - intake-1444
+    - intake-1445
+    - intake-1448
+    intake_entry_notes:
+    - intake-1444 (harness null pools - allocation axis)
+    - intake-1445 (CostAda - cost-calibrated credit)
+    - intake-1448 (AdaEvolve - island-level UCB routing)
+  notes: 'STAGE-2b ingest-and-dive (2026-09-17, v3 current; citation working title differs from the arXiv title). Code keruiwu/self-evolving-allocation @ ae7b5da1db39c0fd826adda7893c99d5bda5ac1b
+    (MIT, 8 commits, no tags; README title lags and says vLLM 0.10 vs paper''s v0.18). Headline aggregation basis NOT-FOUND; authors'' own limits: 3 geometric tasks,
+    N=10, descriptive bilinear fit, regret bounds open. No replication (provisional).'
+  dive_corrections: 'Born dive-verified at Stage-2b. Composition answer recorded: BaSE is orthogonal to parent sampling but its interaction with checkpoint pruning
+    (1444) and cost-calibrated credit (1445) is untested; the cannibalization channel is the shared call budget. Third-round surface (recommend decline, operator-pending):
+    2501.09891 ''Evolving deeper LLM thinking'' and fixed-budget best-arm-identification refs (no arXiv ids).'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  - autopilot-sequential-allocation.md
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section 6.1
+    quote: improves mean fitness by 12.3% over the strongest island-protocol baseline across 8 (model, task) cells, with the largest gains on high-variance settings
+    quote_sha256: c042510ca2cc43cdafd03d12aaa190739e8bf5de72fad9398bebd025c09b4aa5
+    source_revision: arXiv:2605.29268v3 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Abstract
+    quote: a fitness--compute envelope along which capability ordering largely collapses when measured in effective FLOPs, and a bilinear depth--breadth fit with
+      task-specific interaction; both are gated by model--task capability
+    quote_sha256: 58ff1dbdde5e50466353f48711ff0725093d74905f392de74efc9af17d2e1af7
+    source_revision: arXiv:2605.29268v3 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): BaSE arm-routing evidence folded into AK-adaptive policy panel; allocation replay filed as SEQ-4.'
+
+- id: intake-1457
+  arxiv_id: '2607.24647'
+  url: https://arxiv.org/html/2607.24647v1
+  source_type: paper
+  title: Efficiency Matters in Autonomous Research
+  authors:
+  - Haiqian Yang
+  - Yuan Cao
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-09-17'
+  credibility_score: 1
+  key_claims:
+  - No single search structure is consistently the most efficient; efficiency (AUC-style convergence) and final outcome are distinct axes (Pearson r=0.40 between
+    outcome and convergence ratio).
+  - 'Setup: 12 systems-optimization tasks from AutoLab, fixed proposer Qwen3-Coder-480B (FP8), budget 500 evaluations, 3 seeds per task, frontier width 64.'
+  - 'fluid search: a budget-adaptive portfolio bandit over a forest of hill-climbing chains (UCB rule U_k = rho_k + w q_k + c*sqrt(ln(n+1)/(n_k+1)); selects the highest-scoring
+    idle chain; five levers incl. archive/crash-stall reseeds, crashed-parent adoption, merge-softening, warm-start ramp 16->64 chains).'
+  - 'Measured: normalized AUC 0.780 vs best fixed policy beam 0.718, and essentially matching the per-task efficiency oracle 0.784 (same-sample selection caveat;
+    no significance test reported).'
+  techniques:
+  - fluid search portfolio bandit
+  - AUC-based efficiency metric
+  - budget-adaptive allocation principle
+  reported_results:
+  - Normalized AUC 0.780 vs beam 0.718 vs oracle 0.784 (3 seeds/task, 500 evaluations, 12 AutoLab systems tasks).
+  - Outcome-vs-convergence correlation Pearson r=0.40 (efficiency is a distinct axis from final outcome).
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autopilot-sequential-allocation.md
+    - autokernel-research-loop.md
+    intake_entries:
+    - intake-1444
+    - intake-1456
+    intake_entry_notes:
+    - intake-1444 (Gupta et al. - the paper itself declares convergence with it)
+    - intake-1456 (BaSE - the sibling bandit-allocation result)
+  notes: 'STAGE-2b ingest-and-dive (2026-09-17, v1 only): quotes verified. Code github.com/HaiqianYang-MechE/AREK (MIT; 1 commit; specs/fixed-policies.toml = 144
+    runs, fluid.toml = 36 runs; README states absolute rewards are machine-relative; same model routed via OpenRouter). Independence: author-disjoint from the Berkeley
+    groups; no affiliation block in the source (MIT-domain email only); declares its own consistency with intake-1444. 0 citations (OpenAlex), no replication (provisional).'
+  dive_corrections: 'Born dive-verified at Stage-2b. Confirms an independent, different-domain instance of the no-superior-structure finding plus a bandit allocation
+    margin over fixed policies. Third-round surfaces (recommend decline, operator-pending): AutoLab 2606.05080 + repo, Toledo 2507.02554, AREK repo itself (companion
+    artifact; 1 commit).'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  - harness-selection-and-integration.md
+  - autopilot-sequential-allocation.md
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section 6 final paragraph
+    quote: It achieves a normalized AUC reward of 0.780, outperforming beam, the strongest fixed policy at 0.718, and essentially matching the per-task efficiency
+      oracle at 0.784.
+    quote_sha256: e0d7eea3d9b69c576b5470942a177731ce418a0b4080923ae370285ebc77153e
+    source_revision: arXiv:2607.24647v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: We find that no single search structure is consistently the most efficient.
+    quote_sha256: c8738fdf93fca972c2e9a6df2ae104363135d7d3c5efc3113eeae720a4c9bcbf
+    source_revision: arXiv:2607.24647v1 (HTML rendering, read 2026-09-17)
+    verified_by: research-intake/stage2b
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): AUC-frontier reporting folded into AK-WM-3; independent convergence filed in HS-E1; fluid allocation
+    replay filed as SEQ-4.'
+
+- id: intake-1458
+  arxiv_id: null
+  url: https://github.com/ZIB-IOL/EvoReplay
+  source_type: repo
+  title: ZIB-IOL/EvoReplay - companion diagnostics code (line-level cycling detector, edit-taxonomy judge, replay, BO ceiling)
+  authors:
+  - Nico Pelleriti (ZIB-IOL)
+  categories:
+  - autonomous_research
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_component
+  ingested_date: '2026-09-17'
+  credibility_score: null
+  key_claims:
+  - 'The cycling detector is LINE-level, not byte-level (the paper''s ''byte-identical lines'' phrasing is line-level in code): lines are normalised (comments/whitespace/number-collapse)
+    and diffed with difflib; a cycle is a line removed at iteration i and re-added at j>i, nearest prior removal; classes literal/tuning/trivial; deterministic, no
+    LLM, and the core functions accept a plain dict lineage (cycling/detect_cycling.py:44-56,131-162,210-324; cycling/classify_cycles.py:66-79).'
+  - 'Edit-taxonomy judge: 9 multi-label categories, unified-diff input with 16k truncation, content-addressed cache, default model deepseek/deepseek-chat, OpenAI-compatible
+    endpoint required; gold set of 19 hand-labelled examples plus agreement/kappa tooling (edit_taxonomy/rubric.py:27-263; judge.py:25-31,102-136; gold/examples.jsonl).'
+  - Same-prompt replay harness hard-imports the external skydiscover framework and needs run_config.yaml + logs/llm_calls.jsonl; likely not runnable out-of-box on
+    the anonymised tree (breakthrough_replay/counterfactuals.py:26-43).
+  - Tuning-ceiling script rewrites source as a PARAMS dict and runs skopt.gp_minimize against a caller-supplied evaluator (not shipped); it always maximises, so lower-is-better
+    targets need inversion (agentic_tuning/run_bo.py:186-315).
+  - Static analyses (8 paper figures/tables) are reproducible from EvoTrace alone with numpy/matplotlib (static/paper_stats.py).
+  techniques:
+  - deterministic line-level cycle detection
+  - LLM-as-judge edit taxonomy with cache
+  - same-prompt replay counterfactuals
+  - post-hoc BO tuning ceiling
+  reported_results: []
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    - autopilot-continuous-optimization.md
+    intake_entries:
+    - intake-1451
+    - intake-1459
+    intake_entry_notes:
+    - intake-1451 (the study this code accompanies)
+    - intake-1459 (EvoTrace - the dataset it consumes)
+  notes: 'STAGE-2b artifact dive (read 2026-09-17; commit 1773db16c589b0ab8d3c0453b607844d133ef05e, 2026-05-20; Apache-2.0; 5 stars; 3 commits; zero issues/PRs).
+    Applicability to autokernel: C++/Python first-class; needs a ~40-line adapter emitting programs.jsonl + blobs/ from campaign journals; taxonomy needs a new gold
+    set; score direction handling required. Per AGENTS.md belief-kernel rules, adoption obliges a vidya adapter row + write-side measurement hook BEFORE the first
+    run.'
+  dive_corrections: 'Born dive-verified at Stage-2b. Tooling boundaries recorded (line-level not byte-level; replay not runnable out-of-box; BO evaluator external).
+    Third-round surfaces (recommend decline, operator-pending): skydiscover PyPI (already intake-1453), EvoX eScholarship copy, backend frameworks (indexed).'
+  verification: dive-verified
+  handoffs_updated:
+  - autokernel-research-loop.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - '2026-09-17 research-intake Stage-4 (operator-approved plan): Cycling detector + taxonomy tooling filed in AK-lineage diagnostics (vidya hook first).'
+
+- id: intake-1459
+  arxiv_id: null
+  url: https://huggingface.co/datasets/ZIB-IOL/EvoTrace
+  source_type: repo
+  title: ZIB-IOL/EvoTrace - trace dataset for the EvoReplay study (121 runs / 10,672 programs / 18,341 blobs)
+  authors:
+  - Nico Pelleriti (ZIB-IOL)
+  categories:
+  - autonomous_research
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-09-17'
+  credibility_score: null
+  key_claims:
+  - '1.77 GB, 121 runs / 10,672 program records / 18,341 blobs / 21,283 files; backends: openevolve_native 44, evox 30, gepa_native 29, shinkaevolve 18.'
+  - 'Per run: meta.json, programs.jsonl (id, parent_id, other_context_ids, iteration_found, metrics.combined_score, language, status, model_name, solution_sha256,
+    prompts_sha256), iterations.jsonl, iter_scalars.jsonl, blobs/ (source + prompts), best/, logs/llm_calls.jsonl; diffs are NOT stored (derived from parent/child
+    sources); all timestamps nulled.'
+  - 'Labels: llm_edit_taxonomy.* on 45 runs (shinka 15, gepa 14, evox 14, openevolve 2); non-LLM edit_classification + cycle_classes on 80; cycles_raw.csv on 26;
+    bo_runs/ on 1.'
+  - Cycling reproducibility is possible (recompute from programs.jsonl + blobs and compare against shipped cycles_raw.csv), but there is no independent ground truth
+    (no human cycle labels; shipped outputs come from the same code family).
+  techniques:
+  - content-addressed blob store
+  - per-run program lineage JSONL
+  - shipped analysis outputs
+  reported_results: []
+  cross_references:
+    chapters: []
+    experiments: []
+    handoffs:
+    - autokernel-research-loop.md
+    intake_entries:
+    - intake-1451
+    - intake-1458
+    intake_entry_notes:
+    - intake-1451 (the study)
+    - intake-1458 (EvoReplay - the code that consumes this dataset)
+  notes: 'STAGE-2b artifact dive (dataset card read 2026-09-17; license cc-by-4.0; last modified 2026-05-20; sha 349117b04832b681ccf69ea2518c31a579853b3e; 328 downloads/month,
+    3 likes, 0 discussions). Card-vs-tree mismatches recorded: ALE runs 56 by the card''s own rule (card says 62; 62+65=127 != 121); taxonomy applied to only 2/26
+    openevolve runs; run_config.yaml on 42/121 runs. No splits/features (file-tree dataset).'
+  dive_corrections: 'Born dive-verified at Stage-2b. Usable to validate the line-level cycling detector against shipped outputs; cannot independently validate it
+    (same provenance). Third-round surfaces: none new (backends already indexed).'
+  verification: dive-verified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Dataset retained as validation substrate for the AK-lineage diagnostics detector (same-provenance validation only); no task filed.

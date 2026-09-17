@@ -2838,3 +2838,7 @@ kernel/AutoKernel surfaces; each item below was raised, then dropped on purpose.
   *reproduction* was available. Proof's cost grows with the number of steps and has no stopping
   condition; reproduction costs one re-run. A `llama-bench` re-run costs 90 seconds and the tree is a
   git commit — proving a run was honest cost 3,869 lines to deliver one float.
+
+## Research Intake Update — 2026-09-17 (spawn-lineage telemetry, intake-1439)
+
+- [ ] **RB-lineage telemetry — record spawn parent, branch id, and width×depth trajectory per autokernel run artifact.** Journal columns only so branch-per-agent/adaptive-width experiments can be scored later; no behavior change. Source: intake-1439.

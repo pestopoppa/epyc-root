@@ -1127,3 +1127,8 @@ KLineage and Kernel-Smith release **nothing at all**. Public-and-unlicensed is n
 ## Research Intake Update — 2026-09-15 (search-strategy confound)
 
 - [ ] **S3-INF03-01 — record that the eight-arm panel ranks WHOLE AGENTS, not search strategies.** Each arm brings its own editor/actor and there is no trivial search-policy arm (arm 1 is the no-authoring start state). Write this into the campaign contract, and add OR explicitly decline a greedy hill-climber arm that uses an existing actor as editor. intake-1375#00.
+
+## Research Intake Update — 2026-09-17 (SimpleTES code: RPUCG + ROCm eval path, intake-1454)
+
+- [ ] **AR-RPUCG — A/B SimpleTES's RPUCG DAG parent-selection as a controller candidate in the MI210 verify+profile loop.** Selection-only over evaluated candidates (no re-execution; code @ `47d3413d`); compare against the current selection heuristic on one nonpromotable task; no NVIDIA-strategy import. Source: intake-1454.
+- [ ] **AR-ROCm-eval — register SimpleTES's ROCm eval path (AMD_REQUIREMENTS rocm6.2.4; `profile_program_roc`) and issue #6 MI300 config as gfx90a port input.** Study-only; no external-benchmark re-measure (AK-RB-1). Source: intake-1454.
