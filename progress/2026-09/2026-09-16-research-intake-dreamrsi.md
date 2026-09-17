@@ -59,3 +59,16 @@ HS/DAR/TOC domain mismatches, external re-measurements, and the 13/15 re-run (�
 - **Wiki compilation sweep** (operator cadence): two passes compiled the residual drift into `wiki/{autonomous-research,benchmark-methodology,agent-architecture,knowledge-management,safety,hardware-optimization,speculative-decoding,ssm-hybrid,multimodal,tool-implementation}.md`; watermark advanced via `--touch` under lease after all drift was folded.
 - **Agent log**: session not logging-driven; no open `agent_task_end` to close.
 - **Commits/promotion**: see the wrap-up output block in the session response (root repo only; no child-repo changes).
+
+## Commits & promotion (2026-09-17)
+
+| Repo | Branch | Commit | Pushed | Promoted to main | Message |
+|------|--------|--------|--------|------------------|---------|
+| epyc-root | intake/dreamrsi-20260916 | 1e418919 | ✅ | ✅ via 5f6d4f1d | research-intake (Dream-RSI batch): intake-1435..1459, 14 task rows across 6 handoffs |
+| epyc-root | intake/dreamrsi-20260916 | ffe490cb | ✅ | ✅ via 5f6d4f1d | Merge origin/main into intake/dreamrsi-20260916 |
+| epyc-root | intake/dreamrsi-20260916 | a9d329de | ✅ | ✅ via 5f6d4f1d | wrap-up: wiki compilation sweep (fleet drift), progress close-out |
+| epyc-root | intake/dreamrsi-20260916 | ada8168b | ✅ | ✅ via 5f6d4f1d | Merge origin/main into intake/dreamrsi-20260916 |
+| epyc-root | intake/dreamrsi-20260916 | 31146958 | ✅ | ✅ via 5f6d4f1d | wrap-up: advance wiki manifest after merge (post-sync --touch) |
+| epyc-root | intake/dreamrsi-20260916 | 5f6d4f1d | — | ✅ (merge commit on main) | Merge intake/dreamrsi-20260916 into main (wrap-up promotion 2026-09-17) |
+
+Promotion published with the attributed push-guard hatch (`EPYC_ALLOW_UNSERIALIZED_PUSH`, wrap-up lease held, no push-lock holder). Local `main` pointer in the shared clone was left as-is (branch checked out there; remote main is authoritative).
