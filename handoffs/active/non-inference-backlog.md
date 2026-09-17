@@ -562,7 +562,7 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
 - [x] **NIB2-77a** (2026-09-16): Apply the approved safe sweep and archive-backed exact retirement of the
       224 reviewed dirty acceptance worktrees; verify receipts, recovered space, and the frozen production tree.
 
-- [ ] **NIB2-78** (MED): **the graph-enhanced retriever never runs in the production API: `kuzu` is not installed.**
+- [x] **NIB2-78** (MED) ✅ 2026-09-17 (decided: operator ruled A on NIB2-78b, so kuzu stays uninstalled and the graph layer stays dormant with its one-line degrade from NIB2-78a; only the conditional NIB2-78c remains): **the graph-enhanced retriever never runs in the production API: `kuzu` is not installed.**
       Every API start logs `GraphEnhancedRetriever init failed, falling back to TwoPhaseRetriever: kuzu not
       installed` (474 occurrences in `epyc-orchestrator/logs/orchestrator.log`, including the 2026-09-17 reload).
       The failure-graph and hypothesis-graph tools (`model_registry.yaml:212-217`, `FailureGraph()`) are silently
@@ -570,16 +570,17 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       (`autopilot-decision-plane-audit-2026-07-22.md`). Decide between declaring and installing `kuzu` in the
       orchestrator venv, and retiring the graph layer with a lazy, logged-once degrade; then make the startup
       state explicit (one WARNING line, not a traceback per call site). Zero inference. Filed 2026-09-17 (wrap-up pass 2).
-      Open only on NIB2-78b (the install is a stack change, so the operator decides). Decision package:
+      The install was a stack change, so the operator decided it (NIB2-78b, ruled A 2026-09-17). Decision package:
       `progress/2026-09/2026-09-17-sub-nib2-7879.md` §3.
 - [x] **NIB2-78a** ✅ 2026-09-17 (orchestrator `61793b38`): declare the `[graph]` extra (`kuzu==0.11.3`; uv.lock
       adds only kuzu) and make the missing-kuzu path one WARNING line with no traceback. Kuzu per-file lock
       contention is also one line. The graph classes' `close()` was a no-op and now releases the file lock.
       Tests: 117 passed in a throwaway venv with kuzu; 148 passed and 7 skipped in the prod venv without it.
-- [ ] **NIB2-78b** (OPERATOR, next stack window): install `kuzu==0.11.3` into the orchestrator venv, or leave the
+- [x] **NIB2-78b** ✅ 2026-09-17 decided (operator ruled A 2026-09-17: kuzu stays uninstalled; revisit only with NIB2-78c): install `kuzu==0.11.3` into the orchestrator venv, or leave the
       graph layer dormant. Upstream kuzudb/kuzu is archived (final release 0.11.3). Only one of the 6 uvicorn
       workers can hold each graph file. Options and recommendation: shard §3.
-- [ ] **NIB2-78c** (MED, only if NIB2-78b = install): give the Kuzu graphs a single owner (one process owns
+- [ ] **NIB2-78c** (OPTIONAL, conditional; dormant since NIB2-78b was ruled A = do not install): take this up only if
+      the graph layer is revived, and re-open the install decision together with it. Give the Kuzu graphs a single owner (one process owns
       `kuzu_db/*`; the others reach it over IPC) so graph scoring does not vary by which worker serves a
       request. Then re-evaluate the backend against maintained Kuzu forks, since upstream is archived.
 - [x] **NIB2-79** (LOW) ✅ 2026-09-17 (orchestrator `0c03e658`): **four `archive_*` tool-registry entries point at handlers that do not exist.** Every API start

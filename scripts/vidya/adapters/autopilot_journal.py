@@ -56,6 +56,11 @@ FT_SUPPORT = "epyc.vidya/frame/evidence_supports_claim/v1"
 PROMOTION_FIELDS = ("promotion_rule", "promotion_status", "frontier_admission")
 PROMOTION_PENDING = "pending_commit"
 BASELINE_PROMOTION_EVENT = "baseline_promotion"
+# AP-57 (orchestrator `01906607`): the `speed_axis_reseed` ledger event is deliberately NOT
+# projected. It is a baseline_state receipt (the speed axis re-anchored on a refused promotion),
+# not a measurement: the trial row it cites is already projected with its speed. It is never a
+# promotion commit, and it is appended AFTER the row, so carrying it on the frame would need its
+# own settle rule for every refused newest-trial row. The index below ignores it on purpose.
 
 
 def shards(root: Path | None = None) -> list[Path]:
