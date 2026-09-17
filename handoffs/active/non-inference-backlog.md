@@ -531,6 +531,22 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
 - [x] **NIB2-77a** (2026-09-16): Apply the approved safe sweep and archive-backed exact retirement of the
       224 reviewed dirty acceptance worktrees; verify receipts, recovered space, and the frozen production tree.
 
+- [ ] **NIB2-78** (MED): **the graph-enhanced retriever never runs in the production API: `kuzu` is not installed.**
+      Every API start logs `GraphEnhancedRetriever init failed, falling back to TwoPhaseRetriever: kuzu not
+      installed` (474 occurrences in `epyc-orchestrator/logs/orchestrator.log`, including the 2026-09-17 reload).
+      The failure-graph and hypothesis-graph tools (`model_registry.yaml:212-217`, `FailureGraph()`) are silently
+      inert. `kuzu` is not declared in `pyproject.toml`. First noted 2026-07-23 as "unowned, left open"
+      (`autopilot-decision-plane-audit-2026-07-22.md`). Decide between declaring and installing `kuzu` in the
+      orchestrator venv, and retiring the graph layer with a lazy, logged-once degrade; then make the startup
+      state explicit (one WARNING line, not a traceback per call site). Zero inference. Filed 2026-09-17 (wrap-up pass 2).
+- [ ] **NIB2-79** (LOW): **four `archive_*` tool-registry entries point at handlers that do not exist.** Every API start
+      logs `Could not load handler for tool 'archive_open' / 'archive_extract' / 'archive_file' / 'archive_search':
+      module 'src.services.archive_extractor' has no attribute …`. `orchestration/tool_registry.yaml:715+` names
+      `src.services.archive_extractor.<fn>`, but that module defines only the `ArchiveExtractor` class. The working
+      implementations are the REPL mixin methods in `src/repl_environment/archive_tools.py` (`_archive_open` …).
+      Repoint the four entries at a real callable, or drop them from the registry path (REPL builtins cover them),
+      and add a test that every registry `function` resolves. Zero inference. Filed 2026-09-17 (wrap-up pass 2).
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):

@@ -3302,7 +3302,7 @@ Four rows, all zero-compute to write; one carries a compute-gated arm that is fi
           flagged 48 of 216 keyed trials (43 of them structural).
         - Tests: `tests/unit/test_ap53_rejected_mutation_ledger.py` (13).
         - Takes effect at the next AutoPilot restart.
-- [ ] **AP-54 — Asymmetric-access rule, executor half.** Answer **zero-compute first**: does the agent
+- [x] **AP-54 — Asymmetric-access rule, executor half.** ✅ 2026-09-17 (fence merged with the AutoPilot train, orchestrator `a1a0251a` contains `a8bdb15f`/`80fa99aa`/`0d3b6e26`; `src/api/routes/chat.py` imports `knowledge_fence`, and the API was reloaded on that code and verified on 2026-09-17, then stopped at the operator's request. The fence is live whenever the API runs. AP-54b stays open.) Answer **zero-compute first**: does the agent
       under evaluation read our compiled wiki during the same rollouts that feed the mutation
       proposer? If yes, this is a context-assembly fix. Only an ambiguous answer becomes a
       compute-gated A/B (filed, not run). Cross-referenced from EV-10a in
@@ -3379,7 +3379,7 @@ Four rows, all zero-compute to write; one carries a compute-gated arm that is fi
 
 Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake-1348 (dive-verified, AP-53 note above).
 
-- [ ] **AP-55 — Measurement gate for code-mutation / harness-search promotion.** (a) per-unit infra
+- [x] **AP-55 — Measurement gate for code-mutation / harness-search promotion.** ✅ 2026-09-17 ((a)–(d) all on orchestrator main via the train merge `a1a0251a`, which contains `203cb6e2`, `f057f1fb`, `e3e67696` and `f76e65cd`; the gate runs in shadow mode. Arming it is AP-55-ARM below, still open.) (a) per-unit infra
       fingerprint (orchestrator commit, evaluator digest, model/server identity); (b) mandatory seed
       re-run inside the same infra regime before any candidate comparison; (c) homogeneity test across
       the candidate batch before naming a winner; (d) explicit NON_COMPARABLE marking. Evidence: a public
