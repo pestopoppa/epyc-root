@@ -96,3 +96,19 @@ launched and killed by this session):
 Belief-kernel write side wired first (VB-TDP-1): `scripts/vidya/adapters/typed_decisions_measurement.py` +
 source row + CLI ingest; 5 measurement receipts projected → 11 claims / 33 frames (bench report refused as
 non-measurement). `metric_direction` write-side gap fixed in the producer.
+
+## Implementation round 2 — TD-1b + TD-5 + worker-model measurements
+
+- TD-1b (tokenizer-aware native candidates) and TD-5 (routing shadow) implemented in `epyc-orchestrator`
+  branch `intake/jev-typed-decisions-20260917`; 167 focused tests; commit `53000834`.
+- Live round on the production worker (`Qwen_Qwen3.6-35B-A3B-Q8_0.gguf`, MI210, v9 HIP server, 55% VRAM,
+  launched/killed by this session): native arm mechanically fixed — 0 unknown-candidate failures, 8/24
+  unsupported by tokenization design, 16/24 resolved, **18.9x faster** (1.03 s vs 19.4 s), but agreement
+  11/16 and native accuracy 68.8% vs JSON 91.7% on the overlap -> TD-1c filed (semantic parity).
+- Long-context fan-out (three 40k-char states): **3.22x** (33.9 s batched vs 109.2 s singleton) vs 1.54x at
+  small state; agreement there uninterpretable (content-neutral probe) -> TD-3b filed.
+- TD-5 shadow smoke passed (one JSONL record, bounded daemon, fail-open); enablement for a labeled window is next.
+- Operator steerings this round: "lets do this" (TD-1b), "agreed" (TD-5 shadow), and the reminder that Jev's
+  advantage is speed/reliability, not correctness — now stated in the plan framing.
+- 6 measurement receipts projected into the belief kernel (16 claims / 48 frames cumulative); bench reports
+  correctly refused as non-measurements.

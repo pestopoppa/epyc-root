@@ -1,0 +1,151 @@
+{
+  "counts": {
+    "agreeing_pairs": 4,
+    "batched_calls": 3,
+    "comparable_pairs": 12,
+    "disagreements": 8,
+    "questions_per_state": 4,
+    "singleton_calls": 12,
+    "states": 3,
+    "unresolved_pairs": 0
+  },
+  "mode": "json",
+  "prompt_sha256": [
+    "54cf9c121b001bfa4a291cdd9dda1d282499bfa7cd608652292de106313bffa0",
+    "75f38f4fa1da1b699fee1255c1db63911d25aa4ea39267acecea30cce624d57a",
+    "374b3712aed43c8878f99995bfa8e72bb28e2950174952e44e8fdbfda415005a",
+    "007b968219662ea20da6200c13fec15c07ef99d4043f96bad61a22d4c64caefb",
+    "7bcbbb62e394b6de3a6cb29524fc99cf89b39b5c34299d64ba1a60cb5cc0dc6b",
+    "6528f0af74c0b289ccea6176b0455fb7b4020704b209d08b2810d9cad4e01ecc",
+    "07928adc8e12f9ab904693611391ed9b9b2dfd31bceb709bfc743e0a7c47e857",
+    "563de5b0b4f377b3f3988429c6c1936e6b1f42423e8546f413d46fe52a3bd085",
+    "8a80980406716cfa7f5ce707d2eac47b8c3236365ed37033426efb9a363dbdbc",
+    "729c1192da9276d6fea9e02ea37d06201af5bbf57a101a23dda9050fd32d1df8",
+    "e2f3665c0ac04c0335089c75136753f95d7a7f6165de1fc0c39512e52154188e",
+    "5a9ec29bb37827ea4d70fe29508c85d240a432212e93f61c2b633f1c007f1af2",
+    "28e05f55cddcc58e87bf97405ae3675a0175352fa2cc930c6e35ae9dbffe01a1",
+    "a568b15f5b73c509dc23f367d2795626091f20aeaa6a9e993d4ff4aada666e9d",
+    "93e668067be998c2d48ec7706c3ca0f8054d1001597129c29d53a670b1dbc485"
+  ],
+  "receipt_path": "/mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917/artifacts/typed_decisions/run_20260917/fanout-long-worker.json",
+  "results": {
+    "agreement_rate": 0.3333333333333333,
+    "batched": {
+      "calls": 3,
+      "calls_with_token_meta": 3,
+      "per_call_ms": [
+        10858.838886022568,
+        12097.777383867651,
+        10986.987554933876
+      ],
+      "serial_sum_ms": 33943.603824824095,
+      "tokens_generated": 662.0,
+      "wall_ms": 33944.36942413449
+    },
+    "batched_speedup_serial": 3.218472721597514,
+    "batched_speedup_wall": 3.218479080079095,
+    "disagreements": [
+      {
+        "batched_value": false,
+        "question_id": "fanout-000",
+        "singleton_value": true,
+        "state_index": 0
+      },
+      {
+        "batched_value": "hold",
+        "question_id": "fanout-001",
+        "singleton_value": "ship",
+        "state_index": 0
+      },
+      {
+        "batched_value": 1,
+        "question_id": "fanout-002",
+        "singleton_value": 0,
+        "state_index": 0
+      },
+      {
+        "batched_value": 1,
+        "question_id": "fanout-002",
+        "singleton_value": 0,
+        "state_index": 1
+      },
+      {
+        "batched_value": true,
+        "question_id": "fanout-003",
+        "singleton_value": false,
+        "state_index": 1
+      },
+      {
+        "batched_value": false,
+        "question_id": "fanout-000",
+        "singleton_value": true,
+        "state_index": 2
+      },
+      {
+        "batched_value": "hold",
+        "question_id": "fanout-001",
+        "singleton_value": "ship",
+        "state_index": 2
+      },
+      {
+        "batched_value": 1,
+        "question_id": "fanout-002",
+        "singleton_value": 0,
+        "state_index": 2
+      }
+    ],
+    "metric_directions": {
+      "agreement_rate": "higher_better",
+      "batched_speedup_serial": "higher_better",
+      "batched_speedup_wall": "higher_better"
+    },
+    "per_question_agreement": {
+      "fanout-000": {
+        "agreeing": 1,
+        "compared": 3
+      },
+      "fanout-001": {
+        "agreeing": 1,
+        "compared": 3
+      },
+      "fanout-002": {
+        "agreeing": 0,
+        "compared": 3
+      },
+      "fanout-003": {
+        "agreeing": 2,
+        "compared": 3
+      }
+    },
+    "questions": [
+      "fanout-000",
+      "fanout-001",
+      "fanout-002",
+      "fanout-003"
+    ],
+    "singleton": {
+      "calls": 12,
+      "calls_with_token_meta": 12,
+      "per_call_ms": [
+        8901.898311916739,
+        9192.058828193694,
+        9186.853255145252,
+        8877.41022882983,
+        9131.80592097342,
+        8950.595671776682,
+        9387.463637162,
+        8994.164973963052,
+        9143.714002799243,
+        9216.20383206755,
+        9172.47589211911,
+        9091.91842796281
+      ],
+      "serial_sum_ms": 109246.56298290938,
+      "tokens_generated": 811.0,
+      "wall_ms": 109249.24287805334
+    }
+  },
+  "role": "frontdoor",
+  "study": "fanout",
+  "timestamp": "2026-09-17T19:54:04.472882+00:00"
+}
