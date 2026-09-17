@@ -2841,4 +2841,4 @@ kernel/AutoKernel surfaces; each item below was raised, then dropped on purpose.
 
 ## Research Intake Update — 2026-09-17 (spawn-lineage telemetry, intake-1439)
 
-- [ ] **RB-lineage telemetry — record spawn parent, branch id, and width×depth trajectory per autokernel run artifact.** Journal columns only so branch-per-agent/adaptive-width experiments can be scored later; no behavior change. Source: intake-1439.
+- [x] **RB-lineage telemetry — record spawn parent, branch id, and width×depth trajectory per autokernel run artifact.** Journal columns only so branch-per-agent/adaptive-width experiments can be scored later; no behavior change. Source: intake-1439. Implemented on the experimental lane in `85c7b91e` with prospective evidence sidecar `a6288858`; focused journal, run-artifact and sidecar tests pass. Nullable fields preserve old rows, and no search policy changed.

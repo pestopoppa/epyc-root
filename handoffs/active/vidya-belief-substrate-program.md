@@ -2470,7 +2470,7 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 
 ## SC87 — AutoKernel spawn-lineage write-side capture (filed 2026-09-17)
 
-- [ ] **SC87 — wire RB-lineage telemetry on the WRITE side before its first run.** The AutoKernel journal/run producer emits a producer-authored, self-hashed ClaimTuple-shaped sidecar binding run id, parent/run identity, logical branch id, ordered width×depth trajectory, source commit, and immutable run-artifact digest. A strict reader may consume only post-hook sidecars and delegates grading to the existing `claim_tuple.grade()` ladder; it must not reconstruct missing tuples from old journals. This is a verified lineage finding, not a performance measurement or promotion warrant. Source: `autokernel-rebuild-program.md` RB-lineage telemetry (intake-1439#record).
+- [x] **SC87 — wire RB-lineage telemetry on the WRITE side before its first run.** The AutoKernel journal/run producer emits a producer-authored, self-hashed ClaimTuple-shaped sidecar binding run id, parent/run identity, logical branch id, ordered width×depth trajectory, source commit, and immutable run-artifact digest. A strict reader may consume only post-hook sidecars and delegates grading to the existing `claim_tuple.grade()` ladder; it must not reconstruct missing tuples from old journals. This is a verified lineage finding, not a performance measurement or promotion warrant. Source: `autokernel-rebuild-program.md` RB-lineage telemetry (intake-1439#record). Write-side producer `a6288858` is tested; the separate strict read-side consumer remains pending.
 
 ## SC88 — AutoKernel fresh seeded operation correctness (filed 2026-09-17)
 
