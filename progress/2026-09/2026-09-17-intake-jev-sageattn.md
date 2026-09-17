@@ -112,3 +112,15 @@ non-measurement). `metric_direction` write-side gap fixed in the producer.
   advantage is speed/reliability, not correctness — now stated in the plan framing.
 - 6 measurement receipts projected into the belief kernel (16 claims / 48 frames cumulative); bench reports
   correctly refused as non-measurements.
+
+## Implementation round 3 — TD-1c parity, TD-3b real fan-out, TD-4 pilot
+
+- TD-1c: native parity root-caused (only the first answer was grounded on the prompt; later positions conditioned on prior
+  answer tokens -> noul false-collapse) and fixed with tokenized cue replay per question. Live: agreement 15/16 (93.75%),
+  native 15/16 correct on the overlap, 8.1 s vs 16.9 s (2.08x). Speed recovery filed as TD-1d.
+- TD-3b: real-catalogue fan-out — 87.5% agreement (21/24) at 2.2x (17.2 s vs 37.9 s) on the worker.
+- TD-4: closed-set tool arguments 18/18 exact (0 failures) vs free-form 6/18 (12 parse/schema failures) at 10.2x wall
+  (116.6 s vs 11.4 s). Exact tool use is the closed-set arm's strength.
+- Belief kernel: adapter extended to the tool_args_pilot study (7 claims per receipt, directions verbatim); 8 receipts
+  projected cumulatively -> 28 claims / 84 frames; 3 bench reports correctly refused.
+- Live rounds ran on the worker (Qwen3.6-35B-A3B, MI210) and were torn down after each; VRAM returned to 0.

@@ -1,0 +1,1106 @@
+{
+  "counts": {
+    "agreement_agreeing": 6,
+    "agreement_compared": 6,
+    "cases": 18,
+    "closed_set_exact_match": 18,
+    "closed_set_failures": 0,
+    "closed_set_resolved": 18,
+    "free_form_exact_match": 6,
+    "free_form_failures": 12,
+    "free_form_resolved": 6,
+    "tools": 3
+  },
+  "metric_directions": {
+    "agreement": "higher_better",
+    "exact_match": "higher_better",
+    "per_arg_exact_match": "higher_better",
+    "wall_ms": "lower_better"
+  },
+  "mode": "closed_set_vs_free_form",
+  "prompt_sha256": [
+    "2b5cedf0343d402352cfb25f2572d4ee05493b0382ab475902f452b4ae0cba7c",
+    "a007124c68c298cfdfc21d01dfcdea48e75d673a5d6b11041a2f4b9fc76d2c39",
+    "69118d9918ce33fe78e3e4f1ff1fe6f90dfe7feca73c4589c0b6e4cce23db2cc",
+    "b7af60ac2bc99974b713fc626520bc59c8356a9dcef7e76f5d60080d21fd4491",
+    "2f647931cbc22454297d025ceac80d14666d06bf658bf69bff7fdad95afabcaa",
+    "8474bb00a4b43121ec18af10f179c57710cd185f9145115e948f9c4d23475af2",
+    "51ece9439c147f3a3c89c2538c665c22dd914f8aa0d53f6275cee6a8bd9f7a10",
+    "52ef02ee372f68d06fc19965b9e99d520be128843ce13af7cfb5db608e7b638c",
+    "4ccb8a7ac8273852d4b614528c145297a60a65621bc750eb23704c8a7a552984",
+    "96fc7d6bada14fd30745f49f609c757271ae4b8c429ec9c8bd02dc196c731e77",
+    "7f2c87b431b87416fcb636b51cd884f42e7226101aca9991f8a5607fb43bb89b",
+    "933c0b4d9b8416a744506753f50928522dd70539c0dccff2c254f4d1ec56a1a9",
+    "ee8c2d46dabc264ec33ac9e8ba9cac061adbc9be8a9c8c186a9f7d4c83726ed6",
+    "fbadbffd64eddc6a384b49a0b774c62f0b47a32a228e0113e7808f6c90b3acf3",
+    "133c4c1c5b90d1b2e45d52fe92e7e8bec531550a7496e697480e8e3ac68822e4",
+    "e0196e95d303e5084cf2de086740fd28c7bf687f5c8befd74a980f143545d2be",
+    "1c988fdf27eaf87e3b484984b698d90a74829bce98a859181818197e9e0f4610",
+    "ed5d0a70a78daea546f6b3bd363c775cb8238d8eafc427fa8ec3520a82e984b6",
+    "e326c3acb229f6a861e6a580305137066f278ac55ef6ef33a285702ee00c9463",
+    "d205062d6ab288ca53d3441da0e660f9e9f479cd9cc5999633e911cdc627a03d",
+    "4cb8f5537bf8bc3063e6811a85709f938e9c4e50062b28f89c50d943a52ad8e6",
+    "fc8c4ef0df297d1775340627ca93b09b55b0b8aa7fd714e23544d035b4390464",
+    "f8d4ae2649723e224748a89d6842075e3180281354e7098e6d141f572098886a",
+    "68b0f44e7ed68d712a27cfad260163c5a11b7d878d7fdff90fe90ea290e6a0f7",
+    "e9c62f1bd96dafd5dbdfd7c8c390ef527bd22e87ae1960cd17b7c68bdb38499b",
+    "14ae0143b9790c52c41b6efd11398cf511276133c090f62af68828feefab848b",
+    "6f49e943f833b96b263a6d193be6f959f26b3b89e0e170afe988784c9988c0b1",
+    "62ebed28a7667a1f91a076d74574497f2223710705af19a34cea8d2e761ac2f1",
+    "d9f7a462a2d4b7e0338314b3314f79e84eef5d0cd48916b01458b4035bd787c8",
+    "990c2c5d0bebc6559b84b9907d880e8900f61bf82fe8fa96481e5199d2d4612a",
+    "f7799dd5f7a9b3bbe5262ed2f0832f2eaa672296f9eeaed06c2abe6268ba5df4",
+    "351462ec1861ca60068f93c37df0679de4962dd2877a17c6d7575b9e2efedf6f",
+    "187a70aabe9bb5f98e3ee905e3d8dd65bbff077687e8dec6b72cf09bc5940d22",
+    "5eb854dcddea65872f0fd61512d266c06662afb1c6e015f7898d0c0280466b22",
+    "9e70f7ff1694ec3487115b91844fc0df5ca847922987a8f9e6072512d5b22203",
+    "d4c7f69f7c25ec0e11e49226d037e8ecd72a5c970d3475cc34e33d5db696a469"
+  ],
+  "receipt_path": "/mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917/artifacts/typed_decisions/run_20260917/tool-args-pilot-worker.json",
+  "results": {
+    "agreement": {
+      "agreeing": 6,
+      "compared": 6,
+      "rate": 1.0
+    },
+    "arms": {
+      "closed_set": {
+        "calls_with_token_meta": 18,
+        "cases": 18,
+        "decode": "typed_json",
+        "exact_match": 18,
+        "exact_match_rate": 1.0,
+        "failures": 0,
+        "per_arg_exact_match": 66,
+        "per_arg_exact_match_rate": 1.0,
+        "per_arg_total": 66,
+        "per_case_ms": [
+          5515.592579264194,
+          5809.7313051112,
+          6130.01066679135,
+          5678.7576377391815,
+          5880.083748605102,
+          6109.01047475636,
+          5904.790759086609,
+          7589.6515948697925,
+          5832.072541117668,
+          5170.690186787397,
+          5106.999670155346,
+          5103.617154061794,
+          9205.141476821154,
+          9700.003946665674,
+          6592.10189897567,
+          5669.436061754823,
+          9070.792775135487,
+          6520.737343002111
+        ],
+        "per_case_tokens": [
+          136.0,
+          153.0,
+          159.0,
+          136.0,
+          136.0,
+          149.0,
+          392.0,
+          204.0,
+          390.0,
+          393.0,
+          392.0,
+          393.0,
+          238.0,
+          238.0,
+          447.0,
+          447.0,
+          262.0,
+          447.0
+        ],
+        "resolved": 18,
+        "tokens_generated": 5112.0,
+        "wall_ms": 116590.17779305577
+      },
+      "free_form": {
+        "calls_with_token_meta": 18,
+        "cases": 18,
+        "decode": "free_form_text",
+        "exact_match": 6,
+        "exact_match_rate": 0.3333333333333333,
+        "failures": 12,
+        "per_arg_exact_match": 24,
+        "per_arg_exact_match_rate": 0.36363636363636365,
+        "per_arg_total": 66,
+        "per_case_ms": [
+          531.7268208600581,
+          417.4046930857003,
+          578.1439100392163,
+          473.11788192018867,
+          461.7497520521283,
+          482.1603689342737,
+          1051.3502499088645,
+          485.09608674794436,
+          574.9348560348153,
+          474.5462331920862,
+          903.1299310736358,
+          409.96965765953064,
+          1027.441422920674,
+          413.64189283922315,
+          946.615097578615,
+          915.4852661304176,
+          403.442001901567,
+          888.8039658777416
+        ],
+        "per_case_tokens": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          43.0,
+          1.0,
+          1.0,
+          1.0,
+          43.0,
+          1.0,
+          45.0,
+          1.0,
+          45.0,
+          45.0,
+          1.0,
+          37.0
+        ],
+        "resolved": 6,
+        "tokens_generated": 270.0,
+        "wall_ms": 11440.160401165485
+      }
+    },
+    "cases": [
+      {
+        "case_id": "meeting-01",
+        "closed_set": {
+          "arguments": {
+            "duration_hours": 2,
+            "priority": "urgent",
+            "send_invite": true
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "2b5cedf0343d402352cfb25f2572d4ee05493b0382ab475902f452b4ae0cba7c",
+          "question_ids": [
+            "priority",
+            "send_invite",
+            "duration_hours"
+          ],
+          "resolved": true,
+          "skipped": [
+            "topic: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 136.0,
+          "wall_ms": 5515.592579264194
+        },
+        "expected": {
+          "duration_hours": 2,
+          "priority": "urgent",
+          "send_invite": true
+        },
+        "family": "schedule_meeting",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "e326c3acb229f6a861e6a580305137066f278ac55ef6ef33a285702ee00c9463",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 531.7268208600581
+        },
+        "tool": "schedule_meeting"
+      },
+      {
+        "case_id": "meeting-02",
+        "closed_set": {
+          "arguments": {
+            "duration_hours": 8,
+            "priority": "low",
+            "send_invite": false
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "a007124c68c298cfdfc21d01dfcdea48e75d673a5d6b11041a2f4b9fc76d2c39",
+          "question_ids": [
+            "priority",
+            "send_invite",
+            "duration_hours"
+          ],
+          "resolved": true,
+          "skipped": [
+            "topic: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 153.0,
+          "wall_ms": 5809.7313051112
+        },
+        "expected": {
+          "duration_hours": 8,
+          "priority": "low",
+          "send_invite": false
+        },
+        "family": "schedule_meeting",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "d205062d6ab288ca53d3441da0e660f9e9f479cd9cc5999633e911cdc627a03d",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 417.4046930857003
+        },
+        "tool": "schedule_meeting"
+      },
+      {
+        "case_id": "meeting-03",
+        "closed_set": {
+          "arguments": {
+            "duration_hours": 1,
+            "priority": "normal",
+            "send_invite": true
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "69118d9918ce33fe78e3e4f1ff1fe6f90dfe7feca73c4589c0b6e4cce23db2cc",
+          "question_ids": [
+            "priority",
+            "send_invite",
+            "duration_hours"
+          ],
+          "resolved": true,
+          "skipped": [
+            "topic: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 159.0,
+          "wall_ms": 6130.01066679135
+        },
+        "expected": {
+          "duration_hours": 1,
+          "priority": "normal",
+          "send_invite": true
+        },
+        "family": "schedule_meeting",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "4cb8f5537bf8bc3063e6811a85709f938e9c4e50062b28f89c50d943a52ad8e6",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 578.1439100392163
+        },
+        "tool": "schedule_meeting"
+      },
+      {
+        "case_id": "meeting-04",
+        "closed_set": {
+          "arguments": {
+            "duration_hours": 4,
+            "priority": "high",
+            "send_invite": false
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "b7af60ac2bc99974b713fc626520bc59c8356a9dcef7e76f5d60080d21fd4491",
+          "question_ids": [
+            "priority",
+            "send_invite",
+            "duration_hours"
+          ],
+          "resolved": true,
+          "skipped": [
+            "topic: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 136.0,
+          "wall_ms": 5678.7576377391815
+        },
+        "expected": {
+          "duration_hours": 4,
+          "priority": "high",
+          "send_invite": false
+        },
+        "family": "schedule_meeting",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "fc8c4ef0df297d1775340627ca93b09b55b0b8aa7fd714e23544d035b4390464",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 473.11788192018867
+        },
+        "tool": "schedule_meeting"
+      },
+      {
+        "case_id": "meeting-05",
+        "closed_set": {
+          "arguments": {
+            "duration_hours": 5,
+            "priority": "urgent",
+            "send_invite": false
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "2f647931cbc22454297d025ceac80d14666d06bf658bf69bff7fdad95afabcaa",
+          "question_ids": [
+            "priority",
+            "send_invite",
+            "duration_hours"
+          ],
+          "resolved": true,
+          "skipped": [
+            "topic: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 136.0,
+          "wall_ms": 5880.083748605102
+        },
+        "expected": {
+          "duration_hours": 5,
+          "priority": "urgent",
+          "send_invite": false
+        },
+        "family": "schedule_meeting",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "f8d4ae2649723e224748a89d6842075e3180281354e7098e6d141f572098886a",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 461.7497520521283
+        },
+        "tool": "schedule_meeting"
+      },
+      {
+        "case_id": "meeting-06",
+        "closed_set": {
+          "arguments": {
+            "duration_hours": 3,
+            "priority": "low",
+            "send_invite": true
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "8474bb00a4b43121ec18af10f179c57710cd185f9145115e948f9c4d23475af2",
+          "question_ids": [
+            "priority",
+            "send_invite",
+            "duration_hours"
+          ],
+          "resolved": true,
+          "skipped": [
+            "topic: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 149.0,
+          "wall_ms": 6109.01047475636
+        },
+        "expected": {
+          "duration_hours": 3,
+          "priority": "low",
+          "send_invite": true
+        },
+        "family": "schedule_meeting",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "68b0f44e7ed68d712a27cfad260163c5a11b7d878d7fdff90fe90ea290e6a0f7",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 482.1603689342737
+        },
+        "tool": "schedule_meeting"
+      },
+      {
+        "case_id": "deploy-01",
+        "closed_set": {
+          "arguments": {
+            "canary": true,
+            "environment": "production",
+            "labels": [
+              "green"
+            ],
+            "replicas": 4
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "51ece9439c147f3a3c89c2538c665c22dd914f8aa0d53f6275cee6a8bd9f7a10",
+          "question_ids": [
+            "environment",
+            "canary",
+            "replicas",
+            "labels__blue",
+            "labels__green",
+            "labels__red"
+          ],
+          "resolved": true,
+          "skipped": [
+            "notes: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 392.0,
+          "wall_ms": 5904.790759086609
+        },
+        "expected": {
+          "canary": true,
+          "environment": "production",
+          "labels": [
+            "green"
+          ],
+          "replicas": 4
+        },
+        "family": "deploy_service",
+        "free_form": {
+          "arguments": {
+            "canary": true,
+            "environment": "production",
+            "labels": [
+              "green"
+            ],
+            "replicas": 4
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "e9c62f1bd96dafd5dbdfd7c8c390ef527bd22e87ae1960cd17b7c68bdb38499b",
+          "question_ids": null,
+          "resolved": true,
+          "skipped": [],
+          "tokens": 43.0,
+          "wall_ms": 1051.3502499088645
+        },
+        "tool": "deploy_service"
+      },
+      {
+        "case_id": "deploy-02",
+        "closed_set": {
+          "arguments": {
+            "canary": false,
+            "environment": "staging",
+            "labels": [],
+            "replicas": 1
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "52ef02ee372f68d06fc19965b9e99d520be128843ce13af7cfb5db608e7b638c",
+          "question_ids": [
+            "environment",
+            "canary",
+            "replicas",
+            "labels__blue",
+            "labels__green",
+            "labels__red"
+          ],
+          "resolved": true,
+          "skipped": [
+            "notes: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 204.0,
+          "wall_ms": 7589.6515948697925
+        },
+        "expected": {
+          "canary": false,
+          "environment": "staging",
+          "labels": [],
+          "replicas": 1
+        },
+        "family": "deploy_service",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "14ae0143b9790c52c41b6efd11398cf511276133c090f62af68828feefab848b",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 485.09608674794436
+        },
+        "tool": "deploy_service"
+      },
+      {
+        "case_id": "deploy-03",
+        "closed_set": {
+          "arguments": {
+            "canary": false,
+            "environment": "production",
+            "labels": [
+              "blue"
+            ],
+            "replicas": 6
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "4ccb8a7ac8273852d4b614528c145297a60a65621bc750eb23704c8a7a552984",
+          "question_ids": [
+            "environment",
+            "canary",
+            "replicas",
+            "labels__blue",
+            "labels__green",
+            "labels__red"
+          ],
+          "resolved": true,
+          "skipped": [
+            "notes: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 390.0,
+          "wall_ms": 5832.072541117668
+        },
+        "expected": {
+          "canary": false,
+          "environment": "production",
+          "labels": [
+            "blue"
+          ],
+          "replicas": 6
+        },
+        "family": "deploy_service",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "6f49e943f833b96b263a6d193be6f959f26b3b89e0e170afe988784c9988c0b1",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 574.9348560348153
+        },
+        "tool": "deploy_service"
+      },
+      {
+        "case_id": "deploy-04",
+        "closed_set": {
+          "arguments": {
+            "canary": true,
+            "environment": "staging",
+            "labels": [],
+            "replicas": 2
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "96fc7d6bada14fd30745f49f609c757271ae4b8c429ec9c8bd02dc196c731e77",
+          "question_ids": [
+            "environment",
+            "canary",
+            "replicas",
+            "labels__blue",
+            "labels__green",
+            "labels__red"
+          ],
+          "resolved": true,
+          "skipped": [
+            "notes: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 393.0,
+          "wall_ms": 5170.690186787397
+        },
+        "expected": {
+          "canary": true,
+          "environment": "staging",
+          "labels": [],
+          "replicas": 2
+        },
+        "family": "deploy_service",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "62ebed28a7667a1f91a076d74574497f2223710705af19a34cea8d2e761ac2f1",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 474.5462331920862
+        },
+        "tool": "deploy_service"
+      },
+      {
+        "case_id": "deploy-05",
+        "closed_set": {
+          "arguments": {
+            "canary": true,
+            "environment": "production",
+            "labels": [
+              "red"
+            ],
+            "replicas": 5
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "7f2c87b431b87416fcb636b51cd884f42e7226101aca9991f8a5607fb43bb89b",
+          "question_ids": [
+            "environment",
+            "canary",
+            "replicas",
+            "labels__blue",
+            "labels__green",
+            "labels__red"
+          ],
+          "resolved": true,
+          "skipped": [
+            "notes: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 392.0,
+          "wall_ms": 5106.999670155346
+        },
+        "expected": {
+          "canary": true,
+          "environment": "production",
+          "labels": [
+            "red"
+          ],
+          "replicas": 5
+        },
+        "family": "deploy_service",
+        "free_form": {
+          "arguments": {
+            "canary": true,
+            "environment": "production",
+            "labels": [
+              "red"
+            ],
+            "replicas": 5
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "d9f7a462a2d4b7e0338314b3314f79e84eef5d0cd48916b01458b4035bd787c8",
+          "question_ids": null,
+          "resolved": true,
+          "skipped": [],
+          "tokens": 43.0,
+          "wall_ms": 903.1299310736358
+        },
+        "tool": "deploy_service"
+      },
+      {
+        "case_id": "deploy-06",
+        "closed_set": {
+          "arguments": {
+            "canary": false,
+            "environment": "staging",
+            "labels": [
+              "blue"
+            ],
+            "replicas": 3
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "933c0b4d9b8416a744506753f50928522dd70539c0dccff2c254f4d1ec56a1a9",
+          "question_ids": [
+            "environment",
+            "canary",
+            "replicas",
+            "labels__blue",
+            "labels__green",
+            "labels__red"
+          ],
+          "resolved": true,
+          "skipped": [
+            "notes: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 393.0,
+          "wall_ms": 5103.617154061794
+        },
+        "expected": {
+          "canary": false,
+          "environment": "staging",
+          "labels": [
+            "blue"
+          ],
+          "replicas": 3
+        },
+        "family": "deploy_service",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "990c2c5d0bebc6559b84b9907d880e8900f61bf82fe8fa96481e5199d2d4612a",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 409.96965765953064
+        },
+        "tool": "deploy_service"
+      },
+      {
+        "case_id": "ticket-01",
+        "closed_set": {
+          "arguments": {
+            "categories": [
+              "data"
+            ],
+            "effort_points": 5,
+            "escalate": false,
+            "severity": "p2"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "ee8c2d46dabc264ec33ac9e8ba9cac061adbc9be8a9c8c186a9f7d4c83726ed6",
+          "question_ids": [
+            "severity",
+            "escalate",
+            "effort_points",
+            "categories__infra",
+            "categories__ui",
+            "categories__data"
+          ],
+          "resolved": true,
+          "skipped": [
+            "assignee: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 238.0,
+          "wall_ms": 9205.141476821154
+        },
+        "expected": {
+          "categories": [
+            "data"
+          ],
+          "effort_points": 5,
+          "escalate": false,
+          "severity": "p2"
+        },
+        "family": "file_ticket",
+        "free_form": {
+          "arguments": {
+            "categories": [
+              "data"
+            ],
+            "effort_points": 5,
+            "escalate": false,
+            "severity": "p2"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "f7799dd5f7a9b3bbe5262ed2f0832f2eaa672296f9eeaed06c2abe6268ba5df4",
+          "question_ids": null,
+          "resolved": true,
+          "skipped": [],
+          "tokens": 45.0,
+          "wall_ms": 1027.441422920674
+        },
+        "tool": "file_ticket"
+      },
+      {
+        "case_id": "ticket-02",
+        "closed_set": {
+          "arguments": {
+            "categories": [],
+            "effort_points": 8,
+            "escalate": true,
+            "severity": "p1"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "fbadbffd64eddc6a384b49a0b774c62f0b47a32a228e0113e7808f6c90b3acf3",
+          "question_ids": [
+            "severity",
+            "escalate",
+            "effort_points",
+            "categories__infra",
+            "categories__ui",
+            "categories__data"
+          ],
+          "resolved": true,
+          "skipped": [
+            "assignee: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 238.0,
+          "wall_ms": 9700.003946665674
+        },
+        "expected": {
+          "categories": [],
+          "effort_points": 8,
+          "escalate": true,
+          "severity": "p1"
+        },
+        "family": "file_ticket",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "351462ec1861ca60068f93c37df0679de4962dd2877a17c6d7575b9e2efedf6f",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 413.64189283922315
+        },
+        "tool": "file_ticket"
+      },
+      {
+        "case_id": "ticket-03",
+        "closed_set": {
+          "arguments": {
+            "categories": [
+              "ui"
+            ],
+            "effort_points": 0,
+            "escalate": false,
+            "severity": "p4"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "133c4c1c5b90d1b2e45d52fe92e7e8bec531550a7496e697480e8e3ac68822e4",
+          "question_ids": [
+            "severity",
+            "escalate",
+            "effort_points",
+            "categories__infra",
+            "categories__ui",
+            "categories__data"
+          ],
+          "resolved": true,
+          "skipped": [
+            "assignee: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 447.0,
+          "wall_ms": 6592.10189897567
+        },
+        "expected": {
+          "categories": [
+            "ui"
+          ],
+          "effort_points": 0,
+          "escalate": false,
+          "severity": "p4"
+        },
+        "family": "file_ticket",
+        "free_form": {
+          "arguments": {
+            "categories": [
+              "ui"
+            ],
+            "effort_points": 0,
+            "escalate": false,
+            "severity": "p4"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "187a70aabe9bb5f98e3ee905e3d8dd65bbff077687e8dec6b72cf09bc5940d22",
+          "question_ids": null,
+          "resolved": true,
+          "skipped": [],
+          "tokens": 45.0,
+          "wall_ms": 946.615097578615
+        },
+        "tool": "file_ticket"
+      },
+      {
+        "case_id": "ticket-04",
+        "closed_set": {
+          "arguments": {
+            "categories": [
+              "infra"
+            ],
+            "effort_points": 3,
+            "escalate": true,
+            "severity": "p3"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "e0196e95d303e5084cf2de086740fd28c7bf687f5c8befd74a980f143545d2be",
+          "question_ids": [
+            "severity",
+            "escalate",
+            "effort_points",
+            "categories__infra",
+            "categories__ui",
+            "categories__data"
+          ],
+          "resolved": true,
+          "skipped": [
+            "assignee: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 447.0,
+          "wall_ms": 5669.436061754823
+        },
+        "expected": {
+          "categories": [
+            "infra"
+          ],
+          "effort_points": 3,
+          "escalate": true,
+          "severity": "p3"
+        },
+        "family": "file_ticket",
+        "free_form": {
+          "arguments": {
+            "categories": [
+              "infra"
+            ],
+            "effort_points": 3,
+            "escalate": true,
+            "severity": "p3"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "5eb854dcddea65872f0fd61512d266c06662afb1c6e015f7898d0c0280466b22",
+          "question_ids": null,
+          "resolved": true,
+          "skipped": [],
+          "tokens": 45.0,
+          "wall_ms": 915.4852661304176
+        },
+        "tool": "file_ticket"
+      },
+      {
+        "case_id": "ticket-05",
+        "closed_set": {
+          "arguments": {
+            "categories": [
+              "infra"
+            ],
+            "effort_points": 6,
+            "escalate": false,
+            "severity": "p1"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 1,
+          "prompt_sha256": "1c988fdf27eaf87e3b484984b698d90a74829bce98a859181818197e9e0f4610",
+          "question_ids": [
+            "severity",
+            "escalate",
+            "effort_points",
+            "categories__infra",
+            "categories__ui",
+            "categories__data"
+          ],
+          "resolved": true,
+          "skipped": [
+            "assignee: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 262.0,
+          "wall_ms": 9070.792775135487
+        },
+        "expected": {
+          "categories": [
+            "infra"
+          ],
+          "effort_points": 6,
+          "escalate": false,
+          "severity": "p1"
+        },
+        "family": "file_ticket",
+        "free_form": {
+          "arguments": null,
+          "error": "no balanced JSON object found",
+          "exact_match": false,
+          "failure_count": 0,
+          "prompt_sha256": "9e70f7ff1694ec3487115b91844fc0df5ca847922987a8f9e6072512d5b22203",
+          "question_ids": null,
+          "resolved": false,
+          "skipped": [],
+          "tokens": 1.0,
+          "wall_ms": 403.442001901567
+        },
+        "tool": "file_ticket"
+      },
+      {
+        "case_id": "ticket-06",
+        "closed_set": {
+          "arguments": {
+            "categories": [],
+            "effort_points": 1,
+            "escalate": true,
+            "severity": "p2"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "ed5d0a70a78daea546f6b3bd363c775cb8238d8eafc427fa8ec3520a82e984b6",
+          "question_ids": [
+            "severity",
+            "escalate",
+            "effort_points",
+            "categories__infra",
+            "categories__ui",
+            "categories__data"
+          ],
+          "resolved": true,
+          "skipped": [
+            "assignee: unsupported JSON-schema type 'string'"
+          ],
+          "tokens": 447.0,
+          "wall_ms": 6520.737343002111
+        },
+        "expected": {
+          "categories": [],
+          "effort_points": 1,
+          "escalate": true,
+          "severity": "p2"
+        },
+        "family": "file_ticket",
+        "free_form": {
+          "arguments": {
+            "categories": [],
+            "effort_points": 1,
+            "escalate": true,
+            "severity": "p2"
+          },
+          "error": null,
+          "exact_match": true,
+          "failure_count": 0,
+          "prompt_sha256": "d4c7f69f7c25ec0e11e49226d037e8ecd72a5c970d3475cc34e33d5db696a469",
+          "question_ids": null,
+          "resolved": true,
+          "skipped": [],
+          "tokens": 37.0,
+          "wall_ms": 888.8039658777416
+        },
+        "tool": "file_ticket"
+      }
+    ]
+  },
+  "role": "frontdoor",
+  "study": "tool_args_pilot",
+  "timestamp": "2026-09-17T20:30:05.192219+00:00"
+}

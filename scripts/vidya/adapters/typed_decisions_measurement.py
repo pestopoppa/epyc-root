@@ -23,6 +23,12 @@ The declared metrics, one ClaimTuple per (receipt, metric):
   resolved in BOTH arms; the batched and singleton wall times (reps = the calls
   each arm actually timed); and the producer's own serial-sum and wall-clock
   speedups (reps = the states the pairing covers). Per-call arrays stay samples.
+* ``tool_args_pilot`` (TD-2): per arm (``closed_set`` / ``free_form``) the
+  ``exact_match_rate`` and ``per_arg_exact_match_rate`` (reps = the arm's cases
+  and the argument slots it scored), the arm ``wall_ms`` (reps = the arm's timed
+  cases), and the closed-vs-free ``agreement`` rate (reps = the cases resolved in
+  both arms). The receipt carries a per-metric ``metric_directions`` map for these
+  and it is read verbatim; per-case arrays and token sums stay samples.
 
 An unknown ``study``, a missing declared metric field, or a malformed number is
 REFUSED by name — a mapping miss is not silently fewer rows (the README's
@@ -38,16 +44,18 @@ The receipt schema predates VB-TDP-1 and carries no ClaimTuple labels:
    studies yet, and none is invented here: the shared ladder grades every tuple
    an OBSERVATION (``Judged/Located``), correctly. If a protocol is codified
    later the same receipts lift without re-projection.
-2. **No ``metric_direction``, per metric or per receipt.** The adapter reads a
-   direction ONLY from explicit receipt fields (a per-metric ``metrics`` block,
-   a ``metric_directions`` map, or a top-level ``metric_direction``) and never
-   infers one from a metric name. ``ClaimTuple`` has no direction-less path, so
-   when the receipt carries none the field is left at the carrier structural
-   default, ``extra.metric_direction_present`` is ``False``, and the claim text
-   carries a verbatim clause saying the label is NOT a recorded fact and the
-   number must not be compared directionally. The producer should record a
-   direction per metric (and restate it in the receipt) before any consumer
-   reads these numbers as directional.
+2. **No ``metric_direction`` in the TD-2/TD-3 receipts, per metric or per
+   receipt.** The adapter reads a direction ONLY from explicit receipt fields (a
+   per-metric ``metrics`` block, a ``metric_directions`` map, or a top-level
+   ``metric_direction``) and never infers one from a metric name. The
+   ``tool_args_pilot`` receipt DOES carry a top-level ``metric_directions`` map,
+   whose values are projected verbatim; the earlier studies do not, and for them
+   ``ClaimTuple`` has no direction-less path, so when the receipt carries none the
+   field is left at the carrier structural default, ``extra.metric_direction_present``
+   is ``False``, and the claim text carries a verbatim clause saying the label is NOT
+   a recorded fact and the number must not be compared directionally. The producer
+   should record a direction per metric (and restate it in the receipt) before any
+   consumer reads these numbers as directional.
 3. **No ``category``.** The adapter assigns ``BASELINE`` (the studies
    characterize the status-quo plane; no arm of a study is a promotion
    candidate) and flags ``extra.category_source``.
@@ -63,9 +71,11 @@ The receipt schema predates VB-TDP-1 and carries no ClaimTuple labels:
    the bytes it reads; the producer should write receipts under a committed
    artifacts directory before these numbers are cited outside the session.
 7. **``reps`` / ``reps_basis`` are not receipt fields.** They are extracted from
-   the receipt's own ``counts`` (the SCORED denominators) with the basis stated
-   verbatim; a producer-authored ``reps`` / ``reps_basis`` pair would remove the
-   mapping.
+   the receipt's own counts (the SCORED denominators: ``counts.comparable_pairs``,
+   ``counts.scored``, ``counts.batched_calls`` / ``counts.singleton_calls``, the
+   tool-args arm ``cases`` / ``per_arg_total`` and ``results.agreement.compared``)
+   with the basis stated verbatim; a producer-authored ``reps`` / ``reps_basis``
+   pair would remove the mapping.
 
 ``receipt_path`` is deliberately NOT trusted as an attestation source: the
 digest is recomputed from the bytes this adapter reads, and
@@ -92,7 +102,7 @@ AUTHORITY = "measurement"
 PROJECTION_NAME = "typed_decisions_measurement"
 SOURCE_KIND = "typed-decisions-measurement"
 PRODUCER = "epyc-orchestrator src/typed_decisions/measure.py"
-STUDIES = ("contamination", "calibration", "fanout")
+STUDIES = ("contamination", "calibration", "fanout", "tool_args_pilot")
 _ID_SCHEME = "vidya.typed-decisions-measurement/v1"
 
 _DIRECTIONS = frozenset({"higher_better", "lower_better"})
@@ -111,7 +121,14 @@ DIRECTION_ABSENT_CLAUSE = (
 
 @dataclass(frozen=True)
 class Metric:
-    """One declared measurement of a receipt: value, scored denominator, and labels."""
+    """One declared measurement of a receipt: value, scored denominator, and labels.
+
+    ``direction_key`` is the key this metric is declared under in the receipt's
+    per-metric direction map when it differs from the claim key — the two arms of
+    one study share one direction label (``exact_match``, ``wall_ms``) while their
+    claims must stay distinct. It is an adapter-declared structural alias; the
+    direction VALUE is still read only from the receipt.
+    """
 
     key: str
     metric: str
@@ -120,6 +137,7 @@ class Metric:
     unit: str
     reps: int
     reps_basis: str
+    direction_key: str | None = None
 
 
 # ── receipt loading and validation ───────────────────────────────────────────
@@ -236,6 +254,63 @@ def _study_metrics(receipt: Mapping) -> tuple[Metric, ...]:
                                ("brier", "Brier score"))
         )
 
+    if study == "tool_args_pilot":
+        arms = _mapping(results.get("arms"), "results.arms")
+        agreement = _mapping(results.get("agreement"), "results.agreement")
+        metrics = []
+        for arm_key, arm_label in (("closed_set", "closed-set"),
+                                   ("free_form", "free-form")):
+            arm = _mapping(arms.get(arm_key), f"results.arms.{arm_key}")
+            cases = _positive_int(arm.get("cases"), f"results.arms.{arm_key}.cases")
+            metrics.extend((
+                Metric(
+                    key=f"{arm_key}_exact_match_rate",
+                    direction_key="exact_match",
+                    metric=f"typed_decisions.tool_args_pilot_{arm_key}_exact_match_rate",
+                    label=f"{arm_label} exact-match rate",
+                    value=_finite(arm.get("exact_match_rate"),
+                                  f"results.arms.{arm_key}.exact_match_rate"),
+                    unit="fraction",
+                    reps=cases,
+                    reps_basis=f"scored: {arm_label} cases attempted by the arm",
+                ),
+                Metric(
+                    key=f"{arm_key}_per_arg_exact_match_rate",
+                    direction_key="per_arg_exact_match",
+                    metric=("typed_decisions.tool_args_pilot_"
+                            f"{arm_key}_per_arg_exact_match_rate"),
+                    label=f"{arm_label} per-argument exact-match rate",
+                    value=_finite(arm.get("per_arg_exact_match_rate"),
+                                  f"results.arms.{arm_key}.per_arg_exact_match_rate"),
+                    unit="fraction",
+                    reps=_positive_int(arm.get("per_arg_total"),
+                                       f"results.arms.{arm_key}.per_arg_total"),
+                    reps_basis=("scored: argument slots scored across the "
+                                f"{arm_label} arm's cases"),
+                ),
+                Metric(
+                    key=f"{arm_key}_wall_ms",
+                    direction_key="wall_ms",
+                    metric=f"typed_decisions.tool_args_pilot_{arm_key}_wall_ms",
+                    label=f"{arm_label} arm wall time",
+                    value=_finite(arm.get("wall_ms"), f"results.arms.{arm_key}.wall_ms"),
+                    unit="ms",
+                    reps=cases,
+                    reps_basis=f"scored: {arm_label} arm cases timed in the run",
+                ),
+            ))
+        metrics.append(Metric(
+            key="agreement_rate",
+            direction_key="agreement",
+            metric="typed_decisions.tool_args_pilot_agreement_rate",
+            label="closed-set/free-form agreement rate",
+            value=_finite(agreement.get("rate"), "results.agreement.rate"),
+            unit="fraction",
+            reps=_positive_int(agreement.get("compared"), "results.agreement.compared"),
+            reps_basis="scored: cases resolved in both the closed-set and free-form arms",
+        ))
+        return tuple(metrics)
+
     # fanout
     batched = _mapping(results.get("batched"), "results.batched")
     singleton = _mapping(results.get("singleton"), "results.singleton")
@@ -309,8 +384,17 @@ def _category(value: Any, label: str) -> str:
     return str(value)
 
 
-def _explicit_direction(receipt: Mapping, metric_key: str) -> str | None:
-    """The receipt's own direction for this metric, or None. No name-based fallback."""
+def _explicit_direction(receipt: Mapping, metric_key: str,
+                        direction_key: str | None = None) -> str | None:
+    """The receipt's own direction for this metric, or None. No name-based fallback.
+
+    ``direction_key`` is the key this claim's direction is declared under in the
+    receipt's per-metric map when it differs from the claim key (two arms sharing
+    one label). The VALUE is still whatever the receipt records there; the alias
+    only says WHERE to read it, and it comes from the adapter's declaration, not
+    from the metric name.
+    """
+    lookup = direction_key or metric_key
     blocks = receipt.get("metrics")
     if isinstance(blocks, Mapping):
         block = blocks.get(metric_key)
@@ -320,8 +404,8 @@ def _explicit_direction(receipt: Mapping, metric_key: str) -> str | None:
     per_metric = receipt.get("metric_directions")
     if per_metric is not None:
         per_metric = _mapping(per_metric, "receipt.metric_directions")
-        if metric_key in per_metric:
-            return _direction(per_metric[metric_key], f"metric_directions.{metric_key}")
+        if lookup in per_metric:
+            return _direction(per_metric[lookup], f"metric_directions.{lookup}")
     if "metric_direction" in receipt:
         return _direction(receipt["metric_direction"], "receipt.metric_direction")
     return None
@@ -417,6 +501,22 @@ def _claim(receipt: Mapping, metric: Metric, *, protocol_id: str,
             f"bins; {counts.get('unlabeled')} unlabeled, "
             f"{counts.get('unresolved')} unresolved)."
         )
+    elif study == "tool_args_pilot":
+        closed = results["arms"]["closed_set"]
+        free = results["arms"]["free_form"]
+        agreement = results["agreement"]
+        head = (
+            f"TD-2 typed-decision tool-args pilot study (mode {mode}, role {role}): "
+            f"{counts.get('tools')} tool(s) x {counts.get('cases')} case(s), "
+            f"closed-set decode {closed.get('decode')!r} vs free-form decode "
+            f"{free.get('decode')!r}; {metric.label} {_fmt(metric.value)} "
+            f"({closed.get('exact_match')}/{closed.get('cases')} closed-set exact over "
+            f"{closed.get('per_arg_total')} argument slot(s), "
+            f"{free.get('exact_match')}/{free.get('cases')} free-form exact over "
+            f"{free.get('per_arg_total')} argument slot(s); agreement "
+            f"{_fmt(agreement.get('rate'))} over {agreement.get('compared')} comparable "
+            f"case(s), {agreement.get('agreeing')} agreeing)."
+        )
     else:
         batched = results["batched"]
         singleton = results["singleton"]
@@ -457,7 +557,7 @@ def native_rows(receipt: str | Path | Mapping[str, Any]) -> tuple[dict[str, Any]
     # front instead of surfacing mid-ingest; nothing is defaulted into the document.
     _explicit_protocol(doc)
     for metric in metrics:
-        _explicit_direction(doc, metric.key)
+        _explicit_direction(doc, metric.key, metric.direction_key)
         _explicit_category(doc, metric.key)
     return tuple({
         "receipt": doc,
@@ -484,7 +584,7 @@ def project(native: Any) -> ClaimTuple:
             f"receipt does not carry the declared metric {metric_key!r}; declared: "
             f"{sorted(metrics)}")
 
-    direction = _explicit_direction(receipt, metric_key)
+    direction = _explicit_direction(receipt, metric_key, metric.direction_key)
     category, category_source = _explicit_category(receipt, metric_key)
     protocol_id = _explicit_protocol(receipt)
     path = str(native.get("receipt_path") or "")

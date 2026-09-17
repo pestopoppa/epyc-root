@@ -8,7 +8,9 @@ Pinned:
   stable on replay, and the REAL receipt corpus does not collapse distinct claims;
 * absence is not back-filled: a receipt with no ``protocol_id`` yields no invented
   protocol, and a receipt with no ``metric_direction`` yields no direction inferred
-  from a metric name (ECE must NOT come out ``lower_better``);
+  from a metric name (ECE must NOT come out ``lower_better``; the tool-args pilot's
+  real ``metric_directions`` map projects verbatim, and the same receipt with the
+  map deleted keeps the absent clause);
 * the extractor does not understate coverage: every declared metric of every study
   projects, and a receipt missing a declared field is REFUSED by name, never
   silently shorter;
@@ -36,6 +38,9 @@ ADAPTER_SOURCE = HERE.parents[1] / "scripts" / "vidya" / "adapters" \
     / "typed_decisions_measurement.py"
 #: The producer's own default receipt location (epyc-orchestrator measure.py).
 REAL_CORPUS = Path(tempfile.gettempdir()) / "typed_decisions"
+#: The live tool-args pilot receipt committed under this worktree's artifacts.
+REAL_TOOL_ARGS_RECEIPT = (HERE.parents[1] / "artifacts" / "typed_decisions"
+                          / "run_20260917" / "tool-args-pilot-worker.json")
 AS_OF = "2026-09-17T18:00:00Z"
 
 #: Declared coverage, study -> metric keys. The adapter's map is the contract; this
@@ -45,6 +50,10 @@ DECLARED = {
     "calibration": ("ece", "brier"),
     "fanout": ("agreement_rate", "batched_wall_ms", "singleton_wall_ms",
                "batched_speedup_serial", "batched_speedup_wall"),
+    "tool_args_pilot": ("agreement_rate", "closed_set_exact_match_rate",
+                        "closed_set_per_arg_exact_match_rate", "closed_set_wall_ms",
+                        "free_form_exact_match_rate",
+                        "free_form_per_arg_exact_match_rate", "free_form_wall_ms"),
 }
 
 
@@ -132,6 +141,46 @@ def fanout_receipt(**over) -> dict:
     return receipt
 
 
+def tool_args_pilot_receipt(**over) -> dict:
+    receipt = {
+        "study": "tool_args_pilot",
+        "timestamp": "2026-09-17T20:30:05.192219+00:00",
+        "mode": "closed_set_vs_free_form",
+        "role": "frontdoor",
+        "metric_directions": {"exact_match": "higher_better",
+                              "per_arg_exact_match": "higher_better",
+                              "agreement": "higher_better",
+                              "wall_ms": "lower_better"},
+        "counts": {"tools": 2, "cases": 4, "closed_set_resolved": 4,
+                   "closed_set_failures": 0, "free_form_resolved": 2,
+                   "free_form_failures": 2, "agreement_agreeing": 2,
+                   "agreement_compared": 2},
+        "results": {
+            "arms": {
+                "closed_set": {"decode": "typed_json", "cases": 4, "resolved": 4,
+                               "exact_match": 4, "exact_match_rate": 1.0,
+                               "per_arg_exact_match": 10, "per_arg_total": 10,
+                               "per_arg_exact_match_rate": 1.0, "failures": 0,
+                               "wall_ms": 120.0, "tokens_generated": 200.0,
+                               "calls_with_token_meta": 4,
+                               "per_case_ms": [], "per_case_tokens": []},
+                "free_form": {"decode": "free_form_text", "cases": 4, "resolved": 2,
+                              "exact_match": 2, "exact_match_rate": 0.5,
+                              "per_arg_exact_match": 6, "per_arg_total": 10,
+                              "per_arg_exact_match_rate": 0.6, "failures": 2,
+                              "wall_ms": 40.0, "tokens_generated": 30.0,
+                              "calls_with_token_meta": 4,
+                              "per_case_ms": [], "per_case_tokens": []},
+            },
+            "agreement": {"agreeing": 2, "compared": 2, "rate": 1.0},
+            "cases": [],
+        },
+        "prompt_sha256": _prompts(8, "tool-args"),
+    }
+    receipt.update(over)
+    return receipt
+
+
 def write(receipt: dict, tmp_path: Path, name: str = "receipt.json") -> Path:
     path = tmp_path / name
     path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
@@ -189,6 +238,7 @@ def test_identity_is_unique_per_run_and_per_metric(tmp_path):
         write(contamination_receipt(), tmp_path, "contamination.json"),
         write(calibration_receipt(), tmp_path, "calibration.json"),
         write(fanout_receipt(), tmp_path, "fanout.json"),
+        write(tool_args_pilot_receipt(), tmp_path, "tool-args-pilot.json"),
     ]
     tuples = [tup for path in paths for tup in tuples_for(path)]
     expected = sum(len(keys) for keys in DECLARED.values())
@@ -226,6 +276,64 @@ def test_real_corpus_replay_does_not_collapse_distinct_claims():
     assert len(ids) == rows, "distinct receipts/metrics collapsed into one claim id"
 
 
+@pytest.mark.skipif(not REAL_TOOL_ARGS_RECEIPT.is_file(),
+                    reason="no live tool-args pilot receipt on disk")
+def test_real_tool_args_pilot_receipt_projects_with_recorded_directions():
+    """The live producer receipt: every declared metric, every direction from the
+    receipt's own metric_directions map, unique identity, no invented direction."""
+    natives = adapter.native_rows(REAL_TOOL_ARGS_RECEIPT)
+    assert {n["metric_key"] for n in natives} == set(DECLARED["tool_args_pilot"])
+    tuples = [adapter.project(n) for n in natives]
+    assert len(tuples) == len(DECLARED["tool_args_pilot"]) > 0
+    assert len({t.measurement_id for t in tuples}) == len(tuples)
+
+    by_metric = {t.extra["metric_key"]: t for t in tuples}
+    for tup in tuples:
+        assert tup.extra["metric_direction_present"] is True
+        assert tup.extra["metric_direction_source"] == "receipt"
+        assert tup.metric_direction in ("higher_better", "lower_better")
+        assert adapter.DIRECTION_ABSENT_CLAUSE not in tup.claim
+    for key in ("closed_set_exact_match_rate", "closed_set_per_arg_exact_match_rate",
+                "free_form_exact_match_rate", "free_form_per_arg_exact_match_rate",
+                "agreement_rate"):
+        assert by_metric[key].metric_direction == "higher_better"
+    for key in ("closed_set_wall_ms", "free_form_wall_ms"):
+        assert by_metric[key].metric_direction == "lower_better"
+
+    # values and scored denominators come from the receipt, not from a name
+    assert by_metric["closed_set_exact_match_rate"].value == 1.0
+    assert by_metric["closed_set_exact_match_rate"].reps == 18
+    assert by_metric["closed_set_per_arg_exact_match_rate"].reps == 66
+    assert by_metric["free_form_exact_match_rate"].value == pytest.approx(1 / 3)
+    assert by_metric["free_form_per_arg_exact_match_rate"].value == pytest.approx(24 / 66)
+    assert by_metric["closed_set_wall_ms"].value == pytest.approx(116590.17779305577)
+    assert by_metric["free_form_wall_ms"].value == pytest.approx(11440.160401165485)
+    assert by_metric["agreement_rate"].value == 1.0
+    assert by_metric["agreement_rate"].reps == 6
+
+
+def test_tool_args_pilot_directions_are_read_from_the_receipt_not_from_names(tmp_path):
+    """Flip every recorded direction: the claims must follow the receipt, not habit."""
+    flipped = tool_args_pilot_receipt(metric_directions={
+        "exact_match": "lower_better", "per_arg_exact_match": "lower_better",
+        "agreement": "lower_better", "wall_ms": "higher_better"})
+    path = write(flipped, tmp_path)
+    by_metric = {t.extra["metric_key"]: t for t in tuples_for(path)}
+    assert by_metric["closed_set_exact_match_rate"].metric_direction == "lower_better"
+    assert by_metric["free_form_per_arg_exact_match_rate"].metric_direction \
+        == "lower_better"
+    assert by_metric["agreement_rate"].metric_direction == "lower_better"
+    assert by_metric["closed_set_wall_ms"].metric_direction == "higher_better"
+    assert by_metric["free_form_wall_ms"].metric_direction == "higher_better"
+
+
+def test_a_recorded_invalid_tool_args_direction_is_refused_never_repaired(tmp_path):
+    path = write(tool_args_pilot_receipt(metric_directions={"wall_ms": "smaller"}),
+                 tmp_path)
+    with pytest.raises(ct.ProjectionError, match="metric_directions.wall_ms"):
+        tuple(adapter.native_rows(path))
+
+
 # --- absence is not back-filled -----------------------------------------------------------
 
 def test_missing_protocol_id_is_not_filled_with_a_guess(tmp_path):
@@ -246,6 +354,20 @@ def test_missing_metric_direction_is_not_inferred_from_the_metric_name(tmp_path)
             assert tup.extra["metric_direction_source"].startswith("absent")
             assert tup.metric_direction == default
             assert adapter.DIRECTION_ABSENT_CLAUSE in tup.claim
+
+
+def test_tool_args_pilot_without_metric_directions_keeps_the_absent_clause(tmp_path):
+    receipt = tool_args_pilot_receipt()
+    del receipt["metric_directions"]
+    path = write(receipt, tmp_path)
+    tuples = tuples_for(path)
+    assert len(tuples) == len(DECLARED["tool_args_pilot"])
+    default = ct.ClaimTuple.__dataclass_fields__["metric_direction"].default
+    for tup in tuples:
+        assert tup.extra["metric_direction_present"] is False
+        assert tup.extra["metric_direction_source"].startswith("absent")
+        assert tup.metric_direction == default
+        assert adapter.DIRECTION_ABSENT_CLAUSE in tup.claim
 
 
 def test_an_explicit_receipt_direction_is_projected_verbatim(tmp_path):
@@ -281,7 +403,8 @@ def test_mapping_input_claims_no_attestation(tmp_path):
 
 def test_every_declared_metric_of_every_study_projects(tmp_path):
     builders = {"contamination": contamination_receipt,
-                "calibration": calibration_receipt, "fanout": fanout_receipt}
+                "calibration": calibration_receipt, "fanout": fanout_receipt,
+                "tool_args_pilot": tool_args_pilot_receipt}
     for study, builder in builders.items():
         path = write(builder(), tmp_path, f"{study}.json")
         natives = adapter.native_rows(path)
@@ -311,6 +434,9 @@ def test_a_foreign_document_or_unknown_study_is_refused():
         adapter.native_rows({"schema": "something.else"})
     with pytest.raises(ct.ProjectionError, match="not a typed-decision"):
         adapter.native_rows(fanout_receipt(study="something"))
+    # a near-miss on the new study is still refused, by name and with the roster
+    with pytest.raises(ct.ProjectionError, match="study='tool_args'"):
+        adapter.native_rows(tool_args_pilot_receipt(study="tool_args"))
     with pytest.raises(ct.ProjectionError, match="not JSON"):
         adapter.native_rows(__file__)
 

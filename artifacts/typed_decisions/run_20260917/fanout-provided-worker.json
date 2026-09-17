@@ -1,0 +1,242 @@
+{
+  "counts": {
+    "agreeing_pairs": 21,
+    "batched_calls": 1,
+    "comparable_pairs": 24,
+    "disagreements": 3,
+    "questions_per_state": 24,
+    "singleton_calls": 24,
+    "states": 1,
+    "unresolved_pairs": 0
+  },
+  "mode": "json",
+  "probe_source": "provided",
+  "prompt_sha256": [
+    "3f99d613ae11f507857bffc72de01d589e1747134ceb9dbbb004242f673215d1",
+    "7f0946fbe6a0146767c59608758cfd0993601fc9741e0bd785644ccf47bf64a0",
+    "e95c2291a737803cb5e3cbdef4c807db6aaa4722b0403259e27ca23c7d2317b6",
+    "40802bbcc7d65d5da99422f00c45ae855e9b1aa03e4d9398e8d319830a0a3cf7",
+    "ea2614dc2b19946db506e0f32117ea08c7ffd00fc14be0285d2ca84bddfbbfc9",
+    "ee729f75f79eccf55da4cfc8a42fc0d0622102adbaf45e1432f8b01e66757608",
+    "6fe30cc02e89efb68dcb86d4cf88b5c9390e898208c134cef72f4cd7b0e07b25",
+    "e4d1b89cb2cb8ffe09c90dca711e397bb147cdff6bf0736100435e3c42e8714c",
+    "afdb26375db3fd24e484729ea8253e478c9573077d43346ecbc78e33781fe0a9",
+    "7fa53bd12d734dacc4872250d35d608451360d6d9d34ff9bc30a6f7aadba9723",
+    "3b17b4ba133303caef6908c61aaa458da978fde0255a25a44029274cadf008cd",
+    "e32ba350694e8e05b260613ee6cf0be57f0f593fa3d623dd7b2e5aa7ab99aeb3",
+    "169079287ecefdc463171a7463a32f58c79e28d8dfc80dcf492b11d76ce9e4e4",
+    "f0c27d2078393ecf73925239d9c8f498cd210ab36f2adcf02a8ad1ab2f8f95fc",
+    "ca72c7a60d1e3d01d86030781912bbaac1f5ba895017aa28dfa8e9cb5c8640b6",
+    "4684327a546b40760a893d9059d3115c2cc2a86de3da0870e22aaaa2fa5d60d1",
+    "6d712c8bcb5732703dd82751a8d067f70d12f0d2575eee2d1d345db11180dfff",
+    "f7694e46875dd4d4c2132bfd6ab4adc9ab7bac11babf99b341a0df7c845b57c8",
+    "00db136e252ba220f2580c7e0989545baeae5698095081083919973fbcac3a43",
+    "ad385e04bf2d4b1735806e061119c6332418b92bf2e9af091ce32c2372310dc9",
+    "351ebc5ee238a5e179f0640ecbaa9b1226a807b91c2839dd94225d35d9fcd0cb",
+    "3041fb11c400b748a36401b5dbf9231715e96130ceac70241cb52d5e8e484368",
+    "e4e2d04e336882e8b19a099424d1e49196d7e25f5b91303ad95ecfb70ee2c6bb",
+    "dce5e376b0413002b841b5bd5f2de49ea6390e703b311698fc24fe8c60a841ae",
+    "c889914520007e4ed022de5e0382ee865d4f3b5a188d3d8f7c5d6c28bf776447"
+  ],
+  "receipt_path": "/mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917/artifacts/typed_decisions/run_20260917/fanout-provided-worker.json",
+  "results": {
+    "agreement_rate": 0.875,
+    "batched": {
+      "calls": 1,
+      "calls_with_token_meta": 1,
+      "per_call_ms": [
+        17234.181113075465
+      ],
+      "serial_sum_ms": 17234.181113075465,
+      "tokens_generated": 1055.0,
+      "wall_ms": 17235.011860262603
+    },
+    "batched_speedup_serial": 2.196319558013546,
+    "batched_speedup_wall": 2.196398532891416,
+    "disagreements": [
+      {
+        "batched_value": 2,
+        "question_id": "s01",
+        "singleton_value": 3,
+        "state_index": 0
+      },
+      {
+        "batched_value": 1,
+        "question_id": "s04",
+        "singleton_value": 3,
+        "state_index": 0
+      },
+      {
+        "batched_value": 1,
+        "question_id": "s08",
+        "singleton_value": 3,
+        "state_index": 0
+      }
+    ],
+    "metric_directions": {
+      "agreement_rate": "higher_better",
+      "batched_speedup_serial": "higher_better",
+      "batched_speedup_wall": "higher_better"
+    },
+    "per_question_agreement": {
+      "c01": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "c02": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "c03": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "c04": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "c05": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "c06": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "c07": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "c08": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "n01": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "n02": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "n03": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "n04": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "n05": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "n06": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "n07": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "n08": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "s01": {
+        "agreeing": 0,
+        "compared": 1
+      },
+      "s02": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "s03": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "s04": {
+        "agreeing": 0,
+        "compared": 1
+      },
+      "s05": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "s06": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "s07": {
+        "agreeing": 1,
+        "compared": 1
+      },
+      "s08": {
+        "agreeing": 0,
+        "compared": 1
+      }
+    },
+    "questions": [
+      "n01",
+      "n02",
+      "n03",
+      "n04",
+      "n05",
+      "n06",
+      "n07",
+      "n08",
+      "c01",
+      "c02",
+      "c03",
+      "c04",
+      "c05",
+      "c06",
+      "c07",
+      "c08",
+      "s01",
+      "s02",
+      "s03",
+      "s04",
+      "s05",
+      "s06",
+      "s07",
+      "s08"
+    ],
+    "singleton": {
+      "calls": 24,
+      "calls_with_token_meta": 24,
+      "per_call_ms": [
+        2039.100975729525,
+        1310.568818822503,
+        1324.9945659190416,
+        1284.356159158051,
+        1380.928246770054,
+        1289.899358060211,
+        1297.1051512286067,
+        1294.3681268952787,
+        1767.631993163377,
+        1649.0424028597772,
+        1670.3865798190236,
+        1729.9537830986083,
+        1679.0567268617451,
+        1732.2000730782747,
+        1665.2599046938121,
+        1684.6270863898098,
+        1651.2701329775155,
+        1607.5163492932916,
+        1646.4488408528268,
+        1649.3912166915834,
+        1584.310325793922,
+        1627.9017687775195,
+        1679.6039142645895,
+        1605.8465437963605
+      ],
+      "serial_sum_ms": 37851.76904499531,
+      "tokens_generated": 2058.0,
+      "wall_ms": 37854.95476424694
+    }
+  },
+  "role": "frontdoor",
+  "study": "fanout",
+  "timestamp": "2026-09-17T20:27:51.401527+00:00"
+}
