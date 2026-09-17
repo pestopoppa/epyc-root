@@ -144,8 +144,8 @@ wiki sweep (`f6a55b2b`), index pruning (`030d3c5f`) and archival (`1a70988e`). T
    `--verify` passes on all of them. Backups, run logs, the receipt and `pinned_repin_proposal.json` are in
    `/mnt/raid0/llm/backups/episodic-leak-20260917/`. A caller timeout cut the first offline run off at item 19
    with no damage (the original was intact); the re-run finished it. v10's `checkpoint_meta.json` still pins
-   the pre-purge digests. The ratify script for that re-pin (MHS-3d) is being built in worktree
-   `sub-v10-repin`.
+   the pre-purge digests. The ratify script for that re-pin is ready (root `b4744e00`, MHS-3d,
+   `scripts/operator/run_v10_episodic_repin_ratify_20260917.sh`) and **awaits the operator's RATIFY**.
 5. **Operator rulings.**
    - **OP-INF40: A.**
      - The ruling queued the confirm after the AutoKernel window (`d3449013`, row `75d5e2a7`).
@@ -169,8 +169,7 @@ wiki sweep (`f6a55b2b`), index pruning (`030d3c5f`) and archival (`1a70988e`). T
   - AP-54 and AP-55 (AP-55-ARM and AP-54b stay open);
   - the RTG-47 "rationalize supervision with OP-9's resolution" task, done in this pass as a
     *Lifecycle and supervision* section in `dashboard/README.md`.
-- New tasks:
-  - MHS-3d (v10 episodic re-pin RATIFY);
+- New tasks (MHS-3d was drafted here too, but `b4744e00` filed it first, so this pass kept that version):
   - NIB2-78 (`kuzu` missing, so GraphEnhancedRetriever never runs);
   - NIB2-79 (dead `archive_*` registry handlers).
 - The API being DOWN and the AutoPilot restart are not filed as tasks:

@@ -122,16 +122,16 @@ so this is a **new active stub, not a reopen**.
           was cut off by a caller timeout at item 19 with no damage (the original was intact); the re-run finished.
     - [x] Live store purged ✅ 2026-09-17 during the API stop window (API down, verified): 4 memories removed,
           health OK, `--verify --include-live` PASS. The reloaded API reported 64,204 entries (was 64,208).
-    - [x] Pinned production_best (multitier_v10) store purged ✅ 2026-09-17 with operator approval
-          (`--apply --include-pinned`, after MHS-3b): 4 memories removed, `--verify` PASS. The tool wrote
-          `/mnt/raid0/llm/backups/episodic-leak-20260917/pinned_repin_proposal.json` (episodic.db
-          `24cff074…` → `8ff84e9d…`, plus `embeddings.faiss` and `id_map.npy`). v10's `checkpoint_meta.json`
-          still pins the pre-purge digests until MHS-3d is ratified.
-  - [ ] **MHS-3d — operator RATIFY of the v10 episodic re-pin.** Build a ratify script (same shape as
-        `scripts/operator/run_ckpt_leak_ratify_20260916.sh`) that re-pins `episodic.db`, `embeddings.faiss` and
-        `id_map.npy` in the multitier_v10 `checkpoint_meta.json` and receipt to the `file_sha256_after` values in
-        `pinned_repin_proposal.json`; then the operator types RATIFY. Human-only amendment. Script build in
-        progress 2026-09-17 (worktree `sub-v10-repin`, branch `sub/v10-episodic-repin-20260917`).
+    - [x] Pinned production_best (multitier_v10) store ✅ 2026-09-17: purged with operator approval, 4 rows + FAISS, health OK, verify PASS incl. live+pinned.
+          The new hashes are in `pinned_repin_proposal.json`. The v10 pins still name the pre-purge
+          bytes until MHS-3d is ratified.
+  - [ ] **MHS-3d — operator RATIFY of the v10 episodic re-pin** (`RATIFY-V10-EPISODIC-REPIN-20260917`). From a host terminal:
+        `docker exec -it -u node epyc-root bash -c 'bash <(git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/run_v10_episodic_repin_ratify_20260917.sh) --operator pestopoppa'`
+        and type RATIFY. It re-pins `checkpoint_meta.json` (the three episodic file hashes and
+        memory_count 63925 -> 63921; checkpoint_sha256 `a604276f` -> `3b457d98`) and the v10 receipt
+        mirror, adds the amendments entries, and refuses while AutoPilot holds its lock. The dry-run
+        preflight is clean against the real checkpoint. Its `--verify` supersedes the MHS-3b script's
+        `--verify`, which the purge broke. Detail: `progress/2026-09/2026-09-17-sub-v10-repin.md`.
 - [x] **MHS-4 — ANTI-OVERRIDE risk prior.** ✅ 2026-09-17 (landed with the AutoPilot merge train: orchestrator `8219d8e8` and `4f28e6c3` are on main via `a1a0251a`; the "pending merge" and "NOT YET ON MAIN" notes below predate that). Rank/gate mutations by CONSTRAIN (add a check, block a bad
       path, re-prompt) vs REPLACE (rewrite/force an action, hard-code an answer). In the released
       corpus the REPLACE-before-CONSTRAIN ordering holds on all 23 valid patches (REPLACE 4/4 negative,

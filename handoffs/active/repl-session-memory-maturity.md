@@ -313,13 +313,40 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
 
 ## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010)
 
-- [ ] **D-f — Add a cross-process session lease with fencing, not a process-local mutex.** Acquire
+- [x] **D-f — Add a cross-process session lease with fencing, not a process-local mutex.** ✅ 2026-09-17 —
+  `epyc-orchestrator` `0d6d1dd2`. New `src/session/lease.py`: a `session_leases` table in the existing
+  session DB (holder, host, boot id, PID + `/proc` start ticks, monotonic per-session fencing token,
+  acquired/heartbeat/expires/released timestamps); acquire runs under `BEGIN IMMEDIATE`; a live lease is
+  reclaimable only on expiry or PROVEN owner death (PID gone, PID reused, host rebooted), and a
+  foreign-host owner can only expire; heartbeat refuses an expired or reclaimed lease; release is
+  idempotent and never frees a successor. `SQLiteSessionStore.update_session`/`save_checkpoint`/
+  `delete_session` take `fencing_token` and check it inside the write transaction (a live lease refuses
+  unfenced writes; with no live lease they still work), and `save_checkpoint` now bumps
+  `last_checkpoint_at` in the same transaction. `_execute_repl` holds the lease for the whole turn and
+  fences its save; a session owned elsewhere past the wait budget (`ORCHESTRATOR_SESSION_LEASE_WAIT_S`,
+  default 30 s; TTL `..._TTL_S`, 60 s) runs stateless and reports `lease_error`. The sessions API maps
+  refusals to 409; reads are untouched. 15 tests in `tests/unit/test_session_lease.py` run the
+  mandatory fixtures in real forked processes (6-way simultaneous acquire → one winner; 6 processes ×
+  8 leased read-modify-writes → 48/48, where an unleased control kept 8/48; owner crash; delayed stale
+  writer refused with no half-write), plus PID reuse / reboot / foreign host via seams and 2 executor
+  cases. Original task text: Acquire
   ownership transactionally in the existing SQLite session store using `session_id`, owner identity,
   PID plus process-start identity, monotonically increasing fencing token, heartbeat/expiry, and
   acquired/released timestamps. Every mutating checkpoint/session write must present the current
   fencing token. A stale lease may be reclaimed only after liveness/expiry reconciliation; PID reuse,
   simultaneous acquire, owner crash, delayed stale writer, and idempotent release are mandatory
   regression fixtures. Preserve read-only concurrent inspection.
+  - [ ] **D-f1 — Verify the lease under the live 6-worker API** once the API is back up: two concurrent
+    `/chat` requests on one `session_id` must serialize (second reports a later `lease_token`, both
+    checkpoints land, none lost), and `session_leases` must show no live row after both return.
+  - [ ] **D-f2 — Decide whether findings, documents and tags are fenced too.** D-f fences the session row,
+    checkpoints and delete only; `add_finding`/`add_tag`/`add_document` remain unfenced append-style
+    writes. Either fence them or record why concurrent appends are safe.
+  - [ ] **D-f3 — Fix the graph snapshot writers that never land.** `src/graph/persistence.py:_write` and
+    `src/graph/helpers.py` (turn snapshot) call `store.save_checkpoint(session_id=..., data=...,
+    checkpoint_type=...)`, a signature `SQLiteSessionStore.save_checkpoint(checkpoint)` has never had;
+    the `TypeError` is swallowed at debug level, so those snapshots are silently dropped (pre-existing,
+    found 2026-09-17). Route them through a real snapshot write (fenced) or delete the dead calls.
 
 - [ ] **D-g — Journal uncertain external side effects before resume can replay them.** Add a durable
   per-action record with stable action/idempotency key, tool and normalized arguments hash, attempt

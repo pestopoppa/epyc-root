@@ -1979,12 +1979,30 @@ are left to that still-running agent.
     24 rows, 0 refused. The livecodebench sidecar was withheld because its accuracy uses the vacuous
     `substring 'def '` scorer. This needs a tuple-level exclusion or a scorer fix; do not ingest it as-is.
     Still unticked: the driver has not merged.
-- [ ] **VB-RUNNER-PATHS — make the GPU-runner capture call sites portable and loud** (filed 2026-09-17 from
+  - 2026-09-17 (sub-vb-wire): **the driver blocker is cleared.** `prb_t4_tale_gpu.py` is on research main
+    (`0b295a25`, VB-RUNNER-PATHS), and the harness now refuses the vacuous code oracle. Left for the owner
+    to close.
+- [x] **VB-RUNNER-PATHS — make the GPU-runner capture call sites portable and loud** (filed 2026-09-17 from
   `2026-09-16-sub-runner-adapters.md`). Research `scripts/benchmark/review_f1/ev13b_run.py:197` (on research main)
   hard-codes `sys.path.insert(0, "/workspace/scripts/vidya")`, as does the unmerged PRB-T4 driver
   `prb_t4_tale_gpu.py` (`sub/gpu-runner-20260916`). Both swallow a capture failure into their log. Resolve the
   root checkout from `EPYC_ROOT` (or refuse), and make a failed capture visible. Then port `prb_t4_tale_gpu.py`
   to research main without its tmp-path literals. VB-PRB-T4 cannot close until that driver merges.
+  ✅ 2026-09-17
+  - Done (sub-vb-wire, research `0b295a25`). The new `scripts/benchmark/belief_capture.py` resolves the
+    capture writer from `EPYC_ROOT` and refuses if it is unset or wrong. It loads the writer by file path.
+    - Both drivers resolve the writer before the GPU claim, and refuse with exit 2 if they cannot.
+    - A failed capture prints a stderr banner, is recorded under `belief_capture`, and makes the exit
+      code 3.
+    - `prb_t4_tale_gpu.py` was ported from `91d66725`. It runs the harness from its own checkout,
+      which has the stratified sampler. `--pool` and `--python` are checked before the server starts.
+    - Tests: `scripts/benchmark/test_belief_capture.py`, 10 passed.
+  - [ ] **VB-RUNNER-PATHS-2 — convert the remaining guessed-root capture loaders** (filed 2026-09-17,
+    sub-vb-wire). Research `scripts/benchmark/score_tulving_run.py` (`_ROOT_CANDIDATES`) and
+    `scripts/benchmark/occ1/run_occ1.py` (`ROOT_CANDIDATES`) fall back to `/mnt/raid0/llm/epyc-root`
+    and then `/workspace` when `EPYC_ROOT` is unset. They are loud when nothing resolves, but they can
+    silently pick a checkout other than the intended one. Move both to `belief_capture.load_capture`.
+    Their tests (`test_score_tulving_run.py`, `test_beam_adapter.py`) must set `EPYC_ROOT`.
 - [ ] **VB-PRB-T4-CAVEAT — mark the 24 ingested PRB-T4 TALE rows as sample-scoped (filed 2026-09-17,
   sub-scorer-fix).**
   - **Affected rows.** The ledger holds 24 `vidya.adapters.tale_budget/v1` claims from run
@@ -2096,11 +2114,29 @@ are left to that still-running agent.
   and `mhs-guard-ops`** (filed 2026-09-16, `sub-vbmhsops`). Waiting on an external event: the merge
   and the restart. Until the epoch is set, the verdict source declines every unit, because nothing
   persisted marks a clean window as screened, so pre-hook data must get zero rows.
-- [ ] **VB-AP-PROMO-RULE — project `eval_details.promotion_rule` and `eval_details.frontier_admission` from the
+- [x] **VB-AP-PROMO-RULE — project `eval_details.promotion_rule` and `eval_details.frontier_admission` from the
   AutoPilot trial journal into the support frame** (filed 2026-09-17 from `2026-09-16-sub-gate-frontier.md`). Both
   fields come from gate-frontier (c)+(b) (orchestrator `sub/gate-frontier-20260916`, in the AutoPilot merge train).
   The change is additive for the `autopilot_journal` adapter and changes no grade. Do it once the train is on
-  orchestrator main.
+  orchestrator main. ✅ 2026-09-17
+  - Done (sub-vb-wire, root `f71277f7`, against orchestrator main `a1a0251a`).
+    - The support frame carries `promotion_rule` (`frontier` / `empty_frontier_repro` / `seed` /
+      `archive_unavailable_no_baseline` / `refused_guard_unavailable`), `promotion_status`
+      (`pending_commit` / `refused`) and `frontier_admission` (`representative`), all verbatim.
+    - It also carries `promotion_committed`. This is True only when a `pending_commit` row has its
+      `baseline_promotion` ledger event in the same shard. An uncommitted pending row gets a stated
+      "NOT promoted" reason.
+    - A pending row on the shard's newest trial is held back until its state is final, because the
+      commit event is appended after the row.
+    - Keys are absent on rows that lack them, so pre-train frames stay byte-identical. Grade unchanged.
+  - Tests: `tests/vidya/test_autopilot_journal_adapter.py`, 17 passed, including an end-to-end run
+    against the real writer (`EPYC_ORCH_ROOT`).
+  - Ingest: 0 rows. The live journal (`autopilot_journal{,_1}.jsonl`) was last written 2026-08-09, so
+    it has no measured rows and no decision fields. The dry run matched 1 unit, projected 0 and
+    declined 1.
+  - [ ] **VB-AP-PROMO-RULE-INGEST — run `cli.py ingest autopilot-journal` after AutoPilot restarts on
+    orchestrator main** (filed 2026-09-17, sub-vb-wire). Blocked on an external event: the first
+    post-restart trials. Report how many rows carry `frontier_admission` and `promotion_rule`.
 - [ ] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
   per-window rates** (filed 2026-09-16, sub-autopilot-evidence; orchestrator `203cb6e2`, merged at `753343f5`).
   - Producers:
@@ -2347,8 +2383,8 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 |---|---|---|---|
 | VB-KBRAG-QLEN | origin/main `kb_rag_query_length.py` | yes, `kb-rag-qlen --path <report.json>` | first traffic, then a `query_length_report.py --out` snapshot, then ingest |
 | SC75 / VB-INF70-ARMS | origin/main `inf70_serving_arm{,_capture}.py` | yes, `inf70-arms` | none: VB-WIRE-2 wired (root `3c5a4b30`); first real arm pending |
-| VB-PRB-T4 | root `tale_budget{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `tale-budget --path <out dir>` | the calling driver `prb_t4_tale_gpu.py` is on unmerged research `sub/gpu-runner-20260916` and imports the writer from `/workspace/scripts/vidya`; merge it, then the first run |
-| VB-REVIEW-F1 | root `review_f1{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `review-f1 --path <out dir>` | the calling driver `ev13b_run.py` is on unmerged research `sub/gpu-runner-ev13b-20260916` (`0627a5d9`) and imports the writer from `/workspace/scripts/vidya`; merge it, then the first run |
+| VB-PRB-T4 | root `tale_budget{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `tale-budget --path <out dir>` | none: the first run landed (24 rows), and the driver is on research main at `0b295a25` with an `EPYC_ROOT` loader (2026-09-17) |
+| VB-REVIEW-F1 | root `review_f1{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `review-f1 --path <out dir>` | none: the driver merged (`59d0bc73`), the first run landed (6 rows), and its loader uses `EPYC_ROOT` since research `0b295a25` (2026-09-17) |
 | VB-SL2-STEPS | n/a (a decision) | n/a | still a decision; the serving-belief reader `autokernel_legacy_serving.py` IS on origin/main now |
 | VB-EVCONF2 | none | no | `confidence_source_compare.py` is on unmerged orchestrator `sub/evconf2-20260916` |
 | VB-HARNESS-AUDIT | none | no | decision (a)/(b)/(c); the findings are handoff prose with no machine-readable record to project |
@@ -2361,6 +2397,7 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 
 - [ ] **SC86 — wire HS-4 shell runs on the WRITE side**: each run emits a ClaimTuple carrying the harness pin, plugin and config hash, Harness Card version, `x_memory` arm, and the HS-14 column set; locator = run. Must land before the first measured shell run (HS-4 P0.4). Design: `docs/design/hs4-shell-and-orchestrator-features-20260916.md` §4 (P0.5).
   Status 2026-09-16 (`sub-sc86`, branch `sub/sc86-20260916`, unmerged): **adapter ready, producer pending (HS-4 P0.4 driver).** `adapters/opencode_shell_run_capture.py` (run-sidecar schema `epyc.hs4.opencode_shell_run.v1`, writer, `validate_row`), `adapters/opencode_shell_run.py` (strict reader), `cli.py ingest opencode-shell`, and `tests/vidya/test_opencode_shell_run_adapter.py` (32 pass, including writer → `cli.py ingest` → tuple). Rows: the four HS-14 columns, re-derived from recorded counts; refused on a missing pin or config hash and on pre-hook or backfilled runs. The P0.4 driver must write `opencode_shell_run.json` and call the writer at run end; that call is the HS-4 P0.4 owner's. Tick this box when the branch is merged and the driver calls the writer (the SC85 precedent).
+  - 2026-09-17 (`sub-hs4-mcp`): the P0.4 driver now calls the writer. `scripts/harness/hs4_p04_acceptance.py verify` writes the run sidecar and `attempts.jsonl`, then calls `write_belief_measurements`, and its tests run `validate_run_sidecar`/`validate_row` on the output. The adapter is on main (`934317b2`). The tick condition is met, so the SC86 owner can tick this box.
 - [ ] **SC86b — codify the shell-run protocol** under `measurement/protocols/` (task suite, trials per task, serving at production `enable_thinking`, the HS-14 column definitions), and have the P0.4/HS-14 driver pass `protocol_id`. Until then, every OpenCode-shell tuple is `Judged/Located`.
 
 ## VB-NIAH-E1A — RLM E1 NIAH dual-scored arms (filed 2026-09-16, sub-e1a)
