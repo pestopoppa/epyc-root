@@ -11,22 +11,21 @@
   "last_compile": "2026-09-17T14:48:38Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
+      "added": 0,
       "changed": 2,
       "removed": 0
     },
-    "at": "2026-09-17T16:35:42Z",
+    "at": "2026-09-17T17:12:34Z",
     "scope_paths": [
       "handoffs/active/autokernel-research-loop.md",
-      "handoffs/active/vidya-belief-substrate-program.md",
       "progress/2026-09/2026-09-17-autokernel-porting-implementation.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-17T16:35:42Z",
+  "scan_time": "2026-09-17T17:12:34Z",
   "schema_version": 1,
-  "source_set_hash": "6068b39d4c2c96da341efdda42835da85a3636732891d5545334f4b59bf31c3d",
+  "source_set_hash": "b42a64c168f53300f25e538727d11b1bc6b622f4807290d2b1ee0373a2491025",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -125,10 +124,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "60b3f3f4401e10412f52cfcd141bb0969db01caa31b9196fdaf6a56c3c486d7c",
-      "modified": "2026-09-17T16:34:07Z",
+      "content_hash": "3f889ec8e63be93c32e7f5710f8118ea8979732af9c9bc3d63a37f670cf7b2f3",
+      "modified": "2026-09-17T17:12:22Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 466137,
+      "size": 467631,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -7629,10 +7628,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "7425625dc1fa6a05bba0f6539c0a9bf72dc41f70cdef05d1eca5e054ecb14e9f",
-      "modified": "2026-09-17T16:34:28Z",
+      "content_hash": "84cad316cd750588354eb709e3561f9b8ef7f5da1792233645d8022eaae6c1b9",
+      "modified": "2026-09-17T17:12:22Z",
       "path": "progress/2026-09/2026-09-17-autokernel-porting-implementation.md",
-      "size": 4117,
+      "size": 7112,
       "title": "AutoKernel porting-method implementation \u2014 2026-09-17",
       "type": "progress"
     },

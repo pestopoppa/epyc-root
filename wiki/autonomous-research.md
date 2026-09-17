@@ -127,10 +127,23 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
   [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
 - **Codegen evidence is diagnostic and prospective.** Research `09bc8fc3` writes
   bounded build-scoped source-KEEP summaries with producer-authored ClaimTuples;
-  root `7e46f3ca` verifies their bindings on read. CPU machine code and embedded-only
-  HIP assembly are still unavailable, and no spill, occupancy, correctness or
-  throughput claim follows from instruction counts. A continuous v23 GLM controller
-  started from the same 28-keep tip at 16:32 UTC; its startup is not a measured keep.
+  root `7e46f3ca` verifies their bindings on read. Research `44c3dae1` now
+  extracts a bounded CPU-library symbol mix, verified by root `36c378c6`;
+  embedded-only HIP assembly remains unavailable. No spill, occupancy,
+  correctness or throughput claim follows from instruction counts. A v23 GLM controller started
+  from the same 28-keep tip at 16:32 UTC. Batch 0 abstained before authoring:
+  IQK was the higher-ROI identified path but lacked a case-level edited-function
+  witness. It stopped cleanly at 16:45 UTC after batch 1 ended during profiling;
+  neither batch measured or kept a candidate. A narrow Q4_K/Q5_K IQK helper
+  witness and independent fixed-shape scalar comparison were then published as
+  research `795f9e5a`/`54b72f40`; continuous v24 launched at 16:58 UTC. This
+  proves only selected helper entry and tested numerical shapes, not all branches
+  or production-shape correctness. v24 profiled but again abstained before
+  authoring: the top 41.60% synchronization family required a broader lever,
+  while the runtime probe was disabled without strict statistical preparation.
+  The loop stopped cleanly after its next full-target profile, with zero new
+  measurements or keeps. A narrow observation-only runtime A/B route is next;
+  observations do not select recipes or promote champions.
   [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
 
 ### Open questions
