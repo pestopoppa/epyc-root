@@ -437,8 +437,8 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
       substitutes because the 2026-07-03 prompts were never persisted — documented honestly in the artifact
       and absent everywhere else (`data/moe-spec-bsweep-2026-08-25/plan.json`) (found 2026-09-14, noninf
       sweep).
-- [ ] **Operator decision prepared, awaiting ruling — the reconciliation is done and the GPU row is
-      void.** Reconciled 2026-09-14 (INF-40, zero-inference, structural): the **−2.92%** row was
+- [x] **Operator decision RULED 2026-09-17 — Option A (confirm first). The reconciliation is done and the GPU row is
+      void.** ✅ 2026-09-17 Reconciled 2026-09-14 (INF-40, zero-inference, structural): the **−2.92%** row was
       measured on **Qwen3.8-27B-Q8_0, a DENSE model** — `general.architecture qwen35`, **0 of 866**
       tensors match `*exps*`/`ffn_gate_inp`, and the GGUF carries **no `*.expert_count` key**
       (`model_registry.yaml:1596,1707` also say "dense"). `--moe-spec-budget` masks inside
@@ -490,3 +490,48 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
 
       **Default if no ruling: status quo — `moe_spec_budget` stays 0 everywhere**, the patch stays
       prepared-not-applied, and INF-40 stays open on this box. No autonomous registry write.
+
+      **OPERATOR RULING 2026-09-17: Option A.** Run the 5-rep alternating A/B/A/B confirm of
+      `moe_spec_budget` ∈ {0,128} on `architect_critic` (122B Q4_K_M, CPU), **queued until the AutoKernel
+      quiet window ends; the operator must say go before it runs.** `moe_spec_budget` stays 0 until the
+      confirm reports. Registry writes stay gated as above.
+
+      **Fact the package missed (verified 2026-09-17):** frozen production v9 (`0db32c06e`) contains **no
+      MoE-Spec code** (`git grep moe_spec 0db32c06e` is empty). The +10.7% ran on
+      `/mnt/raid0/llm/tmp/inf40-build` = v9 + MoE-Spec `c7c37a0d9` (`plan.json` `binary_commit`), and the
+      champion `ef81196d5` carries it (`src/llama-graph.cpp:1985`). A registry key therefore takes effect
+      only on a serving binary that contains MoE-Spec (the champion, or a future production version) —
+      on the v9 binary `--moe-spec-budget` does not exist. The confirm must run on the binary the role
+      would actually serve from.
+
+      **Operator question (2026-09-17): could the confirm run on Qwen3.8-Flash-Next (qwen4exp) instead,
+      since it should be faster? Answer: not as a substitute.** Checked against
+      [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) and this handoff; two of the
+      three reasons first drafted were wrong and are corrected here.
+      1. **The deploy decision is per model.** The ruling is about a key on `architect_critic`; a
+         qwen4exp result does not license it. The budget scale does not transfer either: B=128 is
+         n_expert/2 on the 122B (256 experts) but n_expert/4 on qwen4exp (512 experts × 10 used), and
+         the frontdoor/worker rows above already show the sign flipping across models.
+      2. ~~qwen4exp has no speculative verification path, so the mask never fires~~ — **corrected: it
+         does have one, on the experimental champion.** Axis E ran E1–E3 early (E2 ported the qwen4exp
+         MTP path 2026-09-02; E3 measured α), and champion `ef81196d5` serves MTP at 82.1% acceptance
+         with `--spec-draft-n-max` 3 (fleet) / 4 (coding). A verification batch is therefore 4–5 tokens,
+         which meets `moe_spec_min_batch` = 4 (`common/common.h:475`, `src/llama-context.cpp:272` in
+         `ef81196d5`), so the `build_moe_ffn` mask **would** fire there. Only plain batch-1 decode
+         (1 token < 4) never triggers it. Frozen production v9 has neither the qwen4exp arch nor MoE-Spec.
+      3. ~~qwen4exp is ~95 ms/token (≈10.5 t/s), no faster than the 122B~~ — **corrected: the ~95 ms
+         token is the 2026-09-02 audit-day baseline, which the roofline header marks as not the current
+         state.** The consolidated champion measures **27.893 t/s plain / 43.281 t/s MTP** (18-launch
+         close-out, hot harness, 24-prompt mix), i.e. ~2.6–4× the 122B's 10.84 t/s. It **would** be a
+         faster run, but speed does not answer reason 1. It is also a CPU inference run on the champion,
+         so it needs the same quiet window.
+- [ ] **INF-40 confirm run (operator Option A, 2026-09-17) — GATED: waits for the end of the AutoKernel quiet
+      window AND an explicit operator go.** 5-rep alternating A/B/A/B of `moe_spec_budget` ∈ {0,128} on
+      `architect_critic` (122B Q4_K_M, CPU), on a binary that contains MoE-Spec (see the fact above),
+      same posture as the E9 run. Declare the noise floor in t/s and % of mean, keep the gate-skip
+      mechanism-fire control, re-measure α, and register a protocol-id so the result is a claim. Then
+      apply or retire `registry_patch_proposal.yaml` on the result.
+- [ ] **Optional follow-up — qwen4exp MoE-Spec measurement.** Not a substitute for the confirm above. The
+      qwen4exp MTP path exists only on the experimental champion, so a production-meaningful measurement
+      needs that drafter path to reach a serving binary (INF-70 Axis E). It needs its own B sweep
+      (512 experts), at `--spec-draft-n-max` ≥ 3 so the verification batch meets `min_batch` 4.
