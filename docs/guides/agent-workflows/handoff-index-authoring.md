@@ -104,6 +104,29 @@ python3 scripts/handoffs/index_state.py --check    # coverage, schema, freshness
 Run it after **any** index edit and before committing. The wrap-up routine (Step 3) and the
 research-intake pipeline (Stage 4) both run it.
 
+## The check `--check` cannot do: a well-formed row pointing at finished work
+
+`--check` gates every *structural* property of a row. It cannot tell whether the row is still
+NEEDED — and a row that names a task someone ticked weeks ago is well-formed, passes every gate,
+and mis-dispatches the next session that reads it. This is the row-level face of the standing rule
+that a screener proves WELL-FORMED, never STILL-NEEDED
+([`OPERATING_CONSTRAINTS.md` → *Dispatching Backlog Work*](../../../agents/shared/OPERATING_CONSTRAINTS.md#dispatching-backlog-work--the-task-text-is-the-identity)).
+
+```bash
+python3 scripts/handoffs/stale_next_action.py      # reporter; exit 1 if any row names only ticked tasks
+```
+
+It flags a row only when **every** task id its `Next action` names resolves to a box in the owning
+handoff and **all** of them are ticked. A row naming one done and one open task is not flagged — the
+open one is still a live instruction. A row naming no resolvable id is not flagged either, because
+prose next actions are legitimate and guessing at them manufactures false positives (the way the
+`open == 0` prune heuristic did: 13 of 15 candidates were wrong, 2026-08-18).
+
+It is a **reporter, not a gate**: a flagged row is occasionally correct, e.g. when the next action
+deliberately records that a phase closed and an operator decision is owed. Read the handoff before
+rewriting the cell. Measured on introduction (2026-09-17): 7 of the then-current rows were stale,
+one of them naming a task ticked five weeks earlier.
+
 ## Related
 
 - Checkbox discipline and the dashboard axiom: `agents/shared/SESSION_LIFECYCLE.md`
