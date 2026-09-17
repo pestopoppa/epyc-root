@@ -2,8 +2,33 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (incremental: rtx6kpro steals measured: p-min no-op on DFlash2, longest block wins, A/A noise absent at temp 0, RNG lead ruled out, steps/s only estimated); earlier: 2026-09-08 (the rtx6kpro intake — a same-class 96 GB single-GPU local-inference field wiki read for stealable hypotheses: p-min sweep, steps/s keep gate, long-context + sustained-C8 cells, A/A losslessness control, the RNG-entanglement lead, and the contradictions/non-transferables vs our record; earlier 2026-07-31 note: adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
-**Sources**: 36 documents (added 2026-09-17: dflash2 handoff, sub-akfix, sub-gpu-prep, gpu-candidates)
+**Last compiled**: 2026-09-17 (research-intake delta: PAW compiled specialists on the frozen v9 stack, the license-scope ruling, and the honest local one-pass speedup; incremental: rtx6kpro steals measured: p-min no-op on DFlash2, longest block wins, A/A noise absent at temp 0, RNG lead ruled out, steps/s only estimated); earlier: 2026-09-08 (the rtx6kpro intake — a same-class 96 GB single-GPU local-inference field wiki read for stealable hypotheses: p-min sweep, steps/s keep gate, long-context + sustained-C8 cells, A/A losslessness control, the RNG-entanglement lead, and the contradictions/non-transferables vs our record; earlier 2026-07-31 note: adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
+**Sources**: 39 documents (added 2026-09-17 research-intake: paw-compiled-specialists, typed-decision-plane, vidya-belief-substrate VB-TDP-1, and the intake session record) (added 2026-09-17: dflash2 handoff, sub-akfix, sub-gpu-prep, gpu-candidates)
+
+## Compiled Update — 2026-09-17 (research-intake delta: compiled specialists on the frozen stack, and the honest one-pass speedup)
+
+**Confidence: verified** for the filings and the license ruling; **external** for the intake figures (dive-verified primary sources; the 5.21x was measured on a 3090, not this host). The re-opened PAW line and the local typed-decision readout both target the frozen v9 stack.
+
+### Key findings
+
+- **PAW is artifact-available but not officially self-hostable.** Compiler weights (2026-06-07) and FuzzyBench eval data (2026-02-17) both predate the 2026-07-11 "compiler is CLOSED" blocker recorded in intake-811 — the re-open trigger is MET on availability. An unofficial MIT self-hosted compile server compiles for the default Qwen3 compiler (intake-1481), with no ROCm proof, and the Compact GPT-2 SDK-compat claim was overturned. Independent eval on one adversarial task: standard 94 / finetuned 97 / compact 85 (n=100, author labels); semantic abstention 98.9% on decided cases while logit-confidence thresholding fails (intake-1482). ([paw-compiled-specialists](../handoffs/active/paw-compiled-specialists.md))
+- **License scope is resolved for internal work only.** Operator ruling (OP-43 closed 2026-09-17): "everything we do is internal research" — the unlicensed weights, the FuzzyBench dataset (43,128 + 7,550 rows, no train split) and the 7,226-program corpus are usable internally; no redistribution, no deployed-service use, no shipping of outputs. Distribution would re-open the question.
+- **The local target question is open on economics, not capability.** PAW-2 must prove one end-to-end compile to a GGUF-ZIP `.paw` and one local call, including whether CPU-only is workable before MI210; whether the Qwen3-0.6B interpreter (594 MB Q6_K) is fast enough per call for always-on loops versus the current cheap-first models is filed as an open question.
+- **The local one-pass readout's real numbers.** A fully local pinned implementation measures **5.21x vs same-model JSON on a 3090** and 20.03 decisions/s under parallel reuse (intake-1487); the honest pattern range is **3.4–7.9x**, not the vendor's 40–200x (intake-1474). Reuse drifts 5–6 of 777 argmaxes under BF16 — acceptable only where the consumer tolerates it.
+- **No gate before calibration.** Candidate-softmax confidence is uncalibrated: 65% of a 7B's wrong fields scored >0.90 (intake-1474), and the owner stub makes local ECE/reliability (TD-2) the prerequisite for any gated use.
+- **Write-side wiring precedes the first PAW/TD measurement run** — one self-hashed ClaimTuple per run at the vidya source table (VB-TDP-1). ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
+
+### Open questions
+
+- Compile-once economics without an accelerator: compile wall time vs adapter lifetime on this host.
+- Does intake-1482's abstention finding transfer to our task slices, or is it task-specific?
+
+### Source References (2026-09-17 research-intake delta)
+
+- [paw-compiled-specialists.md](../handoffs/active/paw-compiled-specialists.md) — availability, license scope, PAW-2/PAW-3, and the open economics.
+- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — the local one-pass mechanism (TD-1a) and the TD-2 calibration gate.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side requirement.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session's verified findings of record.
 
 ## Compiled Update — 2026-09-17: the rtx6kpro steals, measured — two held, one was a no-op, one was ruled out, and one external noise figure does not exist here
 
