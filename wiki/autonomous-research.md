@@ -142,8 +142,11 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
   authoring: the top 41.60% synchronization family required a broader lever,
   while the runtime probe was disabled without strict statistical preparation.
   The loop stopped cleanly after its next full-target profile, with zero new
-  measurements or keeps. A narrow observation-only runtime A/B route is next;
-  observations do not select recipes or promote champions.
+  measurements or keeps. Research `bf9b85ae` then opened a full-target,
+  observation-only runtime A/B path; observations do not select recipes or
+  promote champions. Continuous v25 produced its first real observation at
+  18:00 UTC: 32 threads estimated −4.487% versus the original 48-thread
+  recipe, inside the 6.351% full-target floor, with no keep or champion move.
   [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
 
 ### Open questions
