@@ -5504,6 +5504,17 @@ _Via /research-intake Stage 4 (operator-approved plan 2026-09-17; Stage-2/2b/2b2
 
 **2026-09-17 implementation checkpoint (rows remain open).** The epoch-local observed-momentum diagnostic already exists (`b86fd838`, `5e8179ba`); the archive retains final attempts/round counts but not per-idea contexts or summaries, so a five-idea cap, summarize-every-20 comparison, and ancestor-revert A/B cannot be scored retrospectively. Do not turn those into a live search-policy change by default. Capture prospective per-idea state with an explicit nonpromotable-lane comparison first. The C6 pre-build scanner now refuses explicit benchmark/capture-phase probes (`84aaaf8d`, 46 focused tests on the isolated patch); legitimate counter-derived state continues to require held-out confirmation rather than blanket refusal. Fresh-input checks are opt-in/report-only, not live C6 authority; the sealed-anchor shape grammar and divergence search remain unimplemented. No retrospective same-prompt replay or counterfactual adaptive/cost-policy score is claimed from incomplete archives.
 
+### v22 bounded outcome — wrap-up checkpoint 2026-09-17
+
+- [x] **Record v22 batch-0 and batch-1 candidate-only outcomes.** HALF-scope was **+0.296%** and FULL-target was **+0.064%**; both remained `keep_candidate`, with no source keep, champion advance, or promotion claim. ✅ 2026-09-17
+- [x] **Record the v22 batch-2 stop boundary and preserve prior state.** STOP was requested because the generic `MUL_MAT` operation oracle does not match the GDN/row-tiled source edit; the 28 prior keeps and source tip `614ff2ba02e0` remain authoritative. This is an invalid evidence path, not a measured null or healthy-loop proof. ✅ 2026-09-17
+
+The oracle/source mismatch is already owned by the existing AK-PORT-1/2 implementation
+work; no extra handoff or index row is filed here. Resume only after source-aware operation
+routing restores the compile → correctness → matched timing ladder. These two candidate-only
+observations must not be promoted or reused as a keep, and v22 does not establish 20 healthy
+loops.
+
 ## Research Intake Update — 2026-09-17 (verifiable porting loop; operator directive — no port numbers filed)
 
 The operator directed (2026-09-17) that the agentic kernel-porting methodology be adopted into autokernel. The three items below are generic engineering practices (standard CUDA/CUTLASS tooling docs); the operator digest of the source threads (intake-1461#record) and its consolidating essay (intake-1480#record) remain stage1-unverified and their port speed/latency claims are NON-CITABLE.
