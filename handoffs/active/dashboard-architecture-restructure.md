@@ -313,10 +313,22 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
 - [ ] Re-eyeball the tap's ACTIVE/streaming card path + live ↑/↓ counters once inference actually
       runs (`slot_progress` verified attaching live on poll + now on SSE; full live render still
       unobserved by a human).
-- [ ] Data plane (small): tap writer records terminal `n_prompt_tokens` per request so completed
+- [x] Data plane (small): tap writer records terminal `n_prompt_tokens` per request so completed
       requests carry TRUE prompt tokens even when never observed mid-run (today: chars fallback).
-- [ ] Data plane (small): manifest-declared substrate for non-running `expected-stack-server`
+      ✅ 2026-09-17 (orchestrator `75e68b0b`, hub render root `see this commit`): `InferenceResult.prompt_tokens`
+      threaded from the three llama_server sites that already had the value; `None` when the server did not
+      report, **never estimated**. The tap stamps `prompt_tokens_source="server_terminal"` alongside the count
+      and the card renders `↑ N tok` only for that source — the chars fallback still renders as `prompt Nc`, so
+      an estimate and a measurement are no longer indistinguishable. Follows the existing direction-dependent
+      source rule (terminal count wins over a retained mid-run total, clears ambiguity). 7 tests.
+- [x] Data plane (small): manifest-declared substrate for non-running `expected-stack-server`
       nodes (no process evidence exists for them; today they fall to the page heuristic).
+      ✅ 2026-09-17 (same commits): substrate comes from the manifest declaration (ROCm0 → gpu; a master row
+      with the device omitted → cpu; an **unknown role declares nothing** rather than guessing), and every node
+      carries `substrate_source` = `process` | `role-kind` | `manifest` (+ `substrate_declared_by`) so observed
+      and declared cannot be confused; declared nodes get their own chip and title. Embedder roles have no
+      master row, so the manifest declares nothing for them and they stay on the heuristic — an honest unknown,
+      not a fabricated declaration. 4 tests.
 
 ### Phase 2 additions from buildout findings (rows, not yet started)
 

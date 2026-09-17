@@ -121,11 +121,27 @@ existing writers (unchanged):
     `subtask_id`** ("S1" recurs across unrelated tasks; a fabricated key would silently pair unrelated runs,
     which is worse than an empty pairing). `src/trace/` needed no change. 24 tests, including two harnesses
     pairing through a real store and legacy v1 rows reading back unstamped beside new ones.
-    - [ ] **UTM-P1a.2 — second producer, so `paired_runs()` is cross-harness on real data.** Three named
+    - [x] **UTM-P1a.2 — second producer, so `paired_runs()` is cross-harness on real data.** Three named
       candidates: `review_replay_50.py` passing `harness="review_replay"` + `task_key=q["task_id"]` (needs
       `review_candidate` to accept `task_key`) so replay pairs against live on the corpus id; the delegator
       passing its review-iteration index as `turn_ordinal`; and UTM-P1b's Hermes ingest using the same
       `TaskIR.task_id` convention. One producer alone can only pair a harness against itself.
+      ✅ 2026-09-17 (orchestrator `7887e7ae`) — candidates 1 and 2 wired; UTM-P1b dropped from scope (Hermes was
+      not selected). Replay stamps `harness="review_replay"` + `task_key` = the corpus `task_id`; the delegator
+      passes its per-step review-iteration index as `turn_ordinal`. Deliberately NOT stamped: the RD-10b
+      final-aggregate review and the parallel step executor, both one-shot — a `0` there would be an invented
+      ordinal, so they stay NULL. 8 tests, incl. a real temp store where `paired_runs("rr50-001")` returns both
+      harnesses; 302 passed across the adjacent slices.
+      - [ ] **UTM-P1a.3 — make the pairing reachable on REAL data.** The keys are now stamped on both sides, but
+        three things still stand between that and a real pairing, and none is a stamping problem:
+        (a) **separate stores** — replay writes its own `--trace-db` and `run_shadow` *unlinks* a pre-existing DB
+        under the TM-8 fresh-run rule, while `paired_runs()` reads ONE `db_path`; needs a non-destructive replay
+        mode or a merge/attach step, and the destructive default is the part to decide first;
+        (b) **no shared ids** — live tasks carry TaskIR/uuid ids, not `rr50-NNN`, so nothing feeds the pinned
+        corpus through the live path;
+        (c) **turn alignment** — delegator rows land on ordinals 0..n and replay rows on NULL, so a real pairing
+        would be cross-harness but not turn-aligned until replay drives a looped review.
+        Running the replay itself needs inference, so this is gated on a window.
 
   - [ ] **UTM-P1b — T7 (Hermes ingest) must stamp `harness="hermes"` plus `task_key`/`seed`/`turn_ordinal`** when it lands, or Hermes rows cannot be one side of a pair.
 

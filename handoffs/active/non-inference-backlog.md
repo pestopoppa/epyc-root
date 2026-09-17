@@ -615,10 +615,24 @@ Canonical sources (always verify status in these files first):
   min, pid `/mnt/raid0/llm/tmp/opencode-reaper.pid`, log `/mnt/raid0/llm/tmp/opencode-reaper.log`). First reap: 680
   idle sessions, 232k events; 5.6k events / 12.7 GB (2 live sessions) kept; integrity ok. No cron/systemd in the
   container, so the daemon must be re-launched after a reboot — **operator: add to the post-reboot checklist**.
-- [ ] **NI-OC-a — adopt `observer_guard.sh` (three-state probe) in `scripts/system/opencode_event_reaper.sh`**: the reaper's
+- [x] **NI-OC-a — adopt `observer_guard.sh` (three-state probe) in `scripts/system/opencode_event_reaper.sh`**: the reaper's
   `pgrep -x opencode` presence probe is registered `unadopted` in `observer_registry.json`; its consumer (the VACUUM
   decision) already fails CLOSED. Adoption replaces the name probe with the guard's channels so a drifted argv cannot
   read as 'absent'. Owner: whoever next touches the reaper; not urgent (no kill path, fail-closed).
+  ✅ 2026-09-17 (root `49e85ab7`) — adopted at contract v1. Three states with the destructive branch gated on
+  certainty: `present` and `unobservable` both WITHHOLD `--vacuum` (the latter with an alarm breadcrumb that
+  clears on the next sighting); only `absent` permits it. Two read-only channels, neither a kill target:
+  `proc_scan` matches `"opencode "` **with the trailing space**, so the reaper's own argv and `opencode.db`
+  cannot self-match, and `db_fd` walks `/proc/*/fd` for an open descriptor on the event DB — argv-independent,
+  and the thing VACUUM actually cares about. A missing DB is `unavailable`, never `absent`. New `observe`
+  subcommand reports state/why/vacuum without touching anything. 15 tests + 1 skip; census OK (17 observers).
+  - [ ] **NI-OC-a.1 — restart the reaper daemon so the adopted script is the one running (OPERATOR / owning
+    session).** The live daemon (pid from `/mnt/raid0/llm/tmp/opencode-reaper.pid`) holds its script open from
+    **another lane's worktree** (`worktrees/mains/ak-rebuild-20260828/...`, a different inode from the tracked
+    file), so it is still executing the OLD two-state code and will keep doing so until someone restarts it
+    from the tracked path. Deliberately not done here: this session did not start that process, and the house
+    rule is to kill only PIDs you captured yourself. It is also the second instance of a daemon serving a
+    stale copy of its own script from a lane worktree — worth a look at how these are launched.
 - [ ] **NIB2-80** (MED): **the `EARLY_ABORT` escalation path bypasses its own budget gate.** In
   `epyc-orchestrator/src/graph/nodes.py:235-241` an `ErrorCategory.EARLY_ABORT` bumps
   `state.escalation_count`, records the role change and returns `CoderEscalationNode()` **without
