@@ -101,7 +101,7 @@ run boundary. No handoff checkbox is flipped by this document.
 
 ## Follow-up implementation (same day)
 
-Research branch `sub/ak-integrity-promotion-20260917` commit `f1655ffb`
+Research branch `sub/ak-integrity-promotion-20260917` commit `6c5bd9bb`
 adds `loop/fresh_correctness.py` and hermetic fixtures. The helper is opt-in
 and report-only: it accepts a runner from the resource-owning caller and has
 no live loop callsite. It refuses a swapped binary or modified test instrument
@@ -110,6 +110,9 @@ capabilities; then uses the existing `t0_provider` constructor and strict
 console parser. Its separate status/verdict fields distinguish a reviewed
 GPU-source structured reference (`reference_valid`), independent host property
 only (`property_only`), and missing capability/evidence (`oracle_unavailable`).
+With no usable oracle, even a nonzero suite exit remains an operational fact,
+not a correctness verdict. The suite's documented `--help` exit code is 1;
+strict help-banner and flag parsing establishes capabilities instead.
 It does not claim token-level parity, alter ranked requests, or relax the
 unresolved CPU cross-build oracle limitation above. Focused adjacent suites:
-258 passed and 19 subtests; Ruff and diff checks clean. No hardware was run.
+259 passed and 19 subtests; Ruff and diff checks clean. No hardware was run.
