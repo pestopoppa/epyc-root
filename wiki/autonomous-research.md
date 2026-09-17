@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-17 (AutoKernel source-aware correctness, codegen provenance, v23 relaunch; earlier evening: AP-57 B `speed_axis_reseed` receipt, AP-63(a) run_manifest/lineage, AP-55-ARM counterfactual shadow review, ETR-5/6/7, AutoKernel v21 stop / v22 bounded relaunch); earlier 2026-09-17 (afternoon: the AutoPilot merge train is on orchestrator main, and AP-54/AP-55/MHS-4/MHS-5 are closed; AP-55-ARM waits on one shadow run); earlier 2026-09-17 (later pass: the Dream-RSI intake wave files 14 offline rows, the promotion guard's served-config identity and empty-frontier rule are built, AP-55's seed re-run gains its arming flag, the merge train guards every `update_baseline` call site, and the harness-null-pool evidence reaches HS-4; earlier incremental: AP-53 rejected-mutation ledger, AP-54 Landlock eval fence, AP-55 infra fingerprint + shadow promotion gate, live-frontier promotion guard, MHS-3/4/5 with the override-rationale refutation, E8 chain retired); earlier: 2026-09-16 (AutoKernel guard wiring, cross-workload refusal, and archived dirty-worktree retirement; earlier dated findings retained below)
+**Last compiled**: 2026-09-17 (AutoKernel embedded-HIP diagnostic and source reference-metric receipts; earlier: AutoKernel source-aware correctness, codegen provenance, v23 relaunch; earlier evening: AP-57 B `speed_axis_reseed` receipt, AP-63(a) run_manifest/lineage, AP-55-ARM counterfactual shadow review, ETR-5/6/7, AutoKernel v21 stop / v22 bounded relaunch); earlier 2026-09-17 (afternoon: the AutoPilot merge train is on orchestrator main, and AP-54/AP-55/MHS-4/MHS-5 are closed; AP-55-ARM waits on one shadow run); earlier 2026-09-17 (later pass: the Dream-RSI intake wave files 14 offline rows, the promotion guard's served-config identity and empty-frontier rule are built, AP-55's seed re-run gains its arming flag, the merge train guards every `update_baseline` call site, and the harness-null-pool evidence reaches HS-4; earlier incremental: AP-53 rejected-mutation ledger, AP-54 Landlock eval fence, AP-55 infra fingerprint + shadow promotion gate, live-frontier promotion guard, MHS-3/4/5 with the override-rationale refutation, E8 chain retired); earlier: 2026-09-16 (AutoKernel guard wiring, cross-workload refusal, and archived dirty-worktree retirement; earlier dated findings retained below)
 **Sources**: 130+ documents (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
 
 ## Compiled Update — 2026-09-17 (evening): the speed-axis reseed gets a ledger receipt, journal rows record their manifest and parent, and the shadow gate now records what enforce would have done
@@ -94,11 +94,11 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
   bytes, so no N=10 replay or BO ceiling result is claimed. A default-off prompt receipt, capped at 1 MiB,
   is specified but not implemented. [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md),
   intake-1451#record
-- **Retained-variant codegen summaries require prospective provenance.** The newly filed
-  VB-AK-CODEGEN write-side task binds any future diagnostic summary to the exact keep,
-  retained tree, backend, toolchain, recipe and object hashes. Disassembly counts are
-  neither a throughput result nor an occupancy or correctness claim. This wiring is
-  still open; old keeps cannot acquire it retrospectively.
+- **Retained-variant codegen summaries require prospective provenance.** The
+  VB-AK-CODEGEN write/read side now binds a source-KEEP diagnostic to its exact
+  keep, retained tree, backend, toolchain, recipe and object hashes. Disassembly
+  counts are neither a throughput result nor an occupancy or correctness claim;
+  old keeps cannot acquire this producer receipt retrospectively.
   [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
 - **The GLM loop: v21 was stopped, and v22 was relaunched with a bounded runtime preflight.**
   - **Why v21 stopped.** Its batch 1 admitted a runtime arm whose default calibration
@@ -128,8 +128,10 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
 - **Codegen evidence is diagnostic and prospective.** Research `09bc8fc3` writes
   bounded build-scoped source-KEEP summaries with producer-authored ClaimTuples;
   root `7e46f3ca` verifies their bindings on read. Research `44c3dae1` now
-  extracts a bounded CPU-library symbol mix, verified by root `36c378c6`;
-  embedded-only HIP assembly remains unavailable. No spill, occupancy,
+  extracts a bounded CPU-library symbol mix, verified by root `36c378c6`.
+  Research `004de151` samples embedded gfx90a code objects from a HIP DSO,
+  with container/offset consistency enforced by root `2f49a783`. This is not
+  a complete fatbin census or per-kernel attribution. No spill, occupancy,
   correctness or throughput claim follows from instruction counts. A v23 GLM controller started
   from the same 28-keep tip at 16:32 UTC. Batch 0 abstained before authoring:
   IQK was the higher-ROI identified path but lacked a case-level edited-function
@@ -147,6 +149,11 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
   promote champions. Continuous v25 produced its first real observation at
   18:00 UTC: 32 threads estimated −4.487% versus the original 48-thread
   recipe, inside the 6.351% full-target floor, with no keep or champion move.
+  Research `37d326ac` also requires native per-case reference metrics for
+  admitted GPU source edits, while `53bc979c` retains observed errors from
+  the existing Q4_K/Q5_K scalar CPU fixture without changing its thresholds.
+  Neither provides a universal cosine/PSNR policy; the full AK-PORT-1/3
+  wording remains open.
   [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
 
 ### Open questions
