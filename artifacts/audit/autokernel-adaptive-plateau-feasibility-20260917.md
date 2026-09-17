@@ -72,3 +72,27 @@ This seam captures facts while they exist; it does not add a planner mode,
 policy selector, measurement window, or new promotion authority. It should
 reuse the existing journal/resource receipts rather than create a second
 accounting ledger.
+
+### Dispatch-seam correction — 2026-09-17
+
+The serial target scheduler is **not** the research-policy choice boundary.
+At `epyc-inference-research/scripts/kernel_rnd/autokernel/loop/serial_run.py`
+near the call to `serial_scheduling.select_target`, the owner has the eligible
+**target IDs** and already persists the chosen `Selection`/digest in
+`scheduler-selection.json`, with that digest linked to held-claim receipts.
+Adding another sidecar there would duplicate an existing target-scheduling
+record and would not capture the planner's proposal or parent decision.
+
+The actual proposal boundary is `loop/loop.py:477`: after the current
+`working` context and prior critic rejections are assembled, it calls
+`planner.propose(working)` before formation guard and authoring. The default
+`AgentPlanner.propose` at `loop/actors.py:616-670` renders that context into a
+prompt, invokes one external agent, and returns **one** `Hypothesis` or
+`Abstain`; `loop/run.py:1674` later records the outcome as an attempt. Today
+there is no frozen, prefix-visible eligible proposal pool or parent-choice
+set at that boundary. A future write-side receipt should hash the exact
+rendered prompt/context and record the emitted hypothesis/abstention before
+authoring, then link to the existing attempt ID. It must leave eligible
+alternatives **unknown**, not infer them from subsequent proposals or the
+mechanism catalogue. An RPUCG/AK-WM-3 policy A/B needs a separate genuine
+candidate-generation/pool record, not this target-scheduler receipt.
