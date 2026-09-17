@@ -161,8 +161,10 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
   child as a one-iteration scheduling unit. That controller failure is separate
   from the completed porting-method scope decision. Research `67c90866`
   refuses multi-iteration resolved-campaign children before launch; v26 began
-  with one iteration per child and its first full CPU profile active. A completed
-  v26 stage and the requested 20-loop watch remain unverified.
+  with one iteration per child. At the 20:10 UTC wrap-up checkpoint its first
+  child was still measuring full-target CPU A/B, with fresh controller/store
+  heartbeats but zero settled scheduler iterations. A completed v26 stage and
+  the requested 20-loop watch remain unverified.
   [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
 
 ### Open questions
