@@ -22,8 +22,9 @@ search policy, or the running loop.
 
 ## Handoff and checklist sync
 
-`handoffs/active/autokernel-research-loop.md` now records two completed, dated v22
-checkpoint items: the two candidate-only values and the batch-2 stop boundary. Existing
+`handoffs/active/autokernel-research-loop.md` now records the two candidate-only
+values and the batch-2 stop boundary as evidence, without inventing completed
+research tasks merely for recording them. Existing
 AK-PORT-1/2 owns the source-aware oracle repair; no duplicate handoff or index row was
 filed. The RB-lineage and AR-ROCm-eval items already had their completed checkbox state
 on the fetched main. No active handoff was archived or compacted.
@@ -31,11 +32,12 @@ on the fetched main. No active handoff was archived or compacted.
 ## Validation and boundaries
 
 - `git diff --check` passes for this documentation-only patch.
-- The README check was run; it emitted the linked-worktree mtime warning, so its
-  incremental basis is invalid in this lane. No README was changed.
-- The read-only wiki source scan found `total_new: 1`: the v22 progress source is newer
-  than `wiki/source_manifest.json`. The operator-invoked wiki compilation step remains
-  for the parent/next controlled wrap-up; no manifest or watermark was mutated here.
+- The README freshness check was clean; no README was changed. The incremental
+  wiki scanner warned that linked-worktree mtimes are invalid, so only its
+  content-hash drift should be used.
+- The delegated read-only wiki scan found one newly drifted source at its
+  checkpoint. The parent will run the controlled compilation/manifest update
+  after integrating concurrent work; no manifest or watermark was mutated here.
 - Index rows and generated index state were not edited. Proposed parent-owned next-action
   refreshes are reported separately with this checkpoint.
 

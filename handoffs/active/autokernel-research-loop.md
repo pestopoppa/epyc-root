@@ -5506,8 +5506,7 @@ _Via /research-intake Stage 4 (operator-approved plan 2026-09-17; Stage-2/2b/2b2
 
 ### v22 bounded outcome — wrap-up checkpoint 2026-09-17
 
-- [x] **Record v22 batch-0 and batch-1 candidate-only outcomes.** HALF-scope was **+0.296%** and FULL-target was **+0.064%**; both remained `keep_candidate`, with no source keep, champion advance, or promotion claim. ✅ 2026-09-17
-- [x] **Record the v22 batch-2 stop boundary and preserve prior state.** STOP was requested because the generic `MUL_MAT` operation oracle does not match the GDN/row-tiled source edit; the 28 prior keeps and source tip `614ff2ba02e0` remain authoritative. This is an invalid evidence path, not a measured null or healthy-loop proof. ✅ 2026-09-17
+Batch 0 HALF-scope was **+0.296%** and batch 1 FULL-target was **+0.064%**; both remained `keep_candidate`, with no source keep, champion advance, or promotion claim. Batch-2 STOP was requested because the generic `MUL_MAT` operation oracle does not match the GDN/row-tiled source edit. The 28 prior keeps and source tip `614ff2ba02e0` remain authoritative. This is an invalid evidence path, not a measured null or healthy-loop proof.
 
 The oracle/source mismatch is already owned by the existing AK-PORT-1/2 implementation
 work; no extra handoff or index row is filed here. Resume only after source-aware operation
