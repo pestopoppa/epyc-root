@@ -2,8 +2,36 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (later pass: the dead `/v1` `recall()` is fixed and its open item closed; earlier incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Last compiled**: 2026-09-17 (afternoon: the live episodic store lost exactly the 4 leaked memories; the graph retriever has never been live because kuzu is missing); earlier 2026-09-17 (later pass: the dead `/v1` `recall()` is fixed and its open item closed; earlier incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 **Sources**: 39+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, the 2026-06-28 W4/W6 reboot-readiness checkpoint, the RAO/ReDel substrate spike, and the BEAM/Tulving M-12 instrument set) (added 2026-09-17: OP-42 readiness, M-12 blockers, memeval, Hermes-memory, UTM-M7/M8 and trace-bm25 logs, plus the CME/UTM/episodic handoff deltas)
+
+## Compiled Update — 2026-09-17 (afternoon): four memories out, and a retriever layer that was never on
+
+**Confidence: verified**: purge receipt, `--verify` integrity output, and the API log.
+
+### Key findings
+
+- **The eval-leak purge removed exactly 4 HumanEval/55 task memories from every store that held them.**
+  - The signature was 190 leak shingles plus anchors. It flagged 4 ids and nothing else: 0 false positives
+    across about 5.7k generic Fibonacci rows.
+  - The live store went from 64,208 to 64,204 entries. The post-purge integrity check is HEALTHY:
+    `id_map` in sync, 500/500 round-trips, and a vector diversity ratio of 1.187.
+  - [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md), [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md)
+- **The pinned production_best (v10) store is purged too**, but its manifest still pins the old digests
+  until the MHS-3d re-pin is ratified. A v10 rewind no longer restores the memories.
+  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- **`GraphEnhancedRetriever` has not been running in the production API.** `kuzu` is neither installed nor
+  declared, so every start falls back to `TwoPhaseRetriever`, and the failure-graph and hypothesis-graph
+  stores (`model_registry.yaml:212-217`) are inert. Any past reading that credits graph-enhanced retrieval
+  describes code that did not run. The decision is filed as NIB2-78.
+  [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
+
+### Source References (2026-09-17 afternoon)
+
+- [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md)
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md)
+- [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
 
 ## Compiled Update — 2026-09-17: M-12 is run-ready except for the GPU window, Hermes memory is complementary in data but competing in mechanism, and a budget primitive ticked in July never existed
 
