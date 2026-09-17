@@ -1593,7 +1593,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
 ## SC75 — VB-INF70-ARMS: the INF-70 serving-harness arm records (filed 2026-09-08)
 
 Source: **INF-70** (CPU decode roofline) closed 2026-09-08 and its evidence base is now in git —
-`data/inf70-retest1-2026-09-08/` in `epyc-inference-research` at commit `1780fa7b`, branch
+`data/inf70-retest1-2026-09-08/` in `epyc-inference-research` at commit `1780fa7b` (on main as `56ef1404`), branch
 `inf70/evidence-2026-09-08`. Its serving-harness **arm records** are a measurement source this substrate
 does not read. Filed **immediately**, per the standing rule: wiring the write side is cheap and permanent,
 retrofitting the read side is impossible. Source row added to
@@ -1994,7 +1994,7 @@ are left to that still-running agent.
     - Both drivers resolve the writer before the GPU claim, and refuse with exit 2 if they cannot.
     - A failed capture prints a stderr banner, is recorded under `belief_capture`, and makes the exit
       code 3.
-    - `prb_t4_tale_gpu.py` was ported from `91d66725`. It runs the harness from its own checkout,
+    - `prb_t4_tale_gpu.py` was ported from `91d66725` (on main as `0b295a25`). It runs the harness from its own checkout,
       which has the stratified sampler. `--pool` and `--python` are checked before the server starts.
     - Tests: `scripts/benchmark/test_belief_capture.py`, 10 passed.
   - [x] **VB-RUNNER-PATHS-2 — convert the remaining guessed-root capture loaders** (filed 2026-09-17,

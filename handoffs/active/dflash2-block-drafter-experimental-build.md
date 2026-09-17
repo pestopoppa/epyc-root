@@ -67,7 +67,7 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       carry 10–30%; external S6 says a BW-bound verifier LOSES tokens with shorter blocks — either answer
       is decision-grade. `p-min` has never been set on any GPU arm. n-max 7 makes the np1 verify batch
       exactly 8 = a confound-free test of seed 19's premise (verify runs MMQ at ne11 9..36).
-      ✅ 2026-09-16 (sub-gpu-runner). **Evidence:** research `sub/gpu-runner-20260916`, commit `6b585b58`,
+      ✅ 2026-09-16 (sub-gpu-runner). **Evidence:** research `sub/gpu-runner-20260916`, commit `6b585b58` (on main as `8146880b`),
       `data/inf62-sl1-20260916/`; runner `scripts/benchmark/sl1_dflash2_nmax_pmin_sweep.py`.
       **Setup.**
       - Champion `ef81196d5` (`build-fold-ef81196d5`, llama-server sha `869effe5`). Canonical np4 recipe;
@@ -133,7 +133,7 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       the identical build and report the A/A pass distribution before reading 7/12 vs 5/12 (external
       identical-checkpoint control: 95.24 vs 90.69).
       ✅ 2026-09-16 (sub-gpu-runner).
-      **Evidence:** research `sub/gpu-runner-20260916`, commit `416cd853`, `data/inf62-sl5-20260916/`
+      **Evidence:** research `sub/gpu-runner-20260916`, commit `416cd853` (on main as `8146880b`), `data/inf62-sl5-20260916/`
       (`aa_report.json`); runner `scripts/benchmark/sl5_df26_aa_control.py`.
       **Setup:**
       - The unchanged `df2_greedy_parity.py` was run twice (runs A and B) on champion `ef81196d5`.
@@ -289,7 +289,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       is backend-agnostic *by construction*.
       Reported onset is at **8 concurrent**, and 4 is healthy in every report including #27117 — so a
       sweep that stops at 4 cannot see the phenomenon at all. Our production role runs np up to 8.
-- [x] **DF2-6 — Greedy-parity check.** ✅ 2026-08-28 — non-parity CONFIRMED but NOT attributable to DFlash2; see below. *(2026-09-16 pointer: the cause is localised by the `LLAMA_SPEC_EXACT=serial` confirmation under **DF2-8**, research `7a876f23`, and the determinism of the pass counts is established by **SL-5**.)* dFlash2 claims losslessness; verify exact-token parity vs `--spec-type none`
+- [x] **DF2-6 — Greedy-parity check.** ✅ 2026-08-28 — non-parity CONFIRMED but NOT attributable to DFlash2; see below. *(2026-09-16 pointer: the cause is localised by the `LLAMA_SPEC_EXACT=serial` confirmation under **DF2-8**, research `7a876f23` (on main as `8146880b`), and the determinism of the pass counts is established by **SL-5**.)* dFlash2 claims losslessness; verify exact-token parity vs `--spec-type none`
       at temp 0, reusing the method preserved in
       [`deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md).
       *(2026-08-21, intake-1277: add a `draft-simple` control before concluding.)* Upstream #27407
@@ -372,7 +372,7 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       - **Build and evidence.** `build-champion-c463f601b-hip-20260909`, llama-server sha256 `ed72d9d1…`.
         It descends from champion `ef81196d5` and is identical to it in mmvq/mmq/fattn/sampling. It carries
         INF-70 E2a's `LLAMA_SPEC_EXACT` and `LLAMA_SPEC_DIAG_ACCEPT`. Linkage PASS. Evidence is in research
-        `sub/gpu-runner-20260916` commit **`7a876f23`**, `data/inf62-df26-serial-exact-20260916/report.json`;
+        `sub/gpu-runner-20260916` commit **`7a876f23`** (on main as `8146880b`), `data/inf62-df26-serial-exact-20260916/report.json`;
         runner `scripts/benchmark/df26_serial_exact_confirmation.py`.
       - **Protocol.** The DF2-6 argv on 12 prompts, temp 0 / top_k 1 / seed 42, 256 tokens, a fresh process
         per arm, residency proven on every arm.

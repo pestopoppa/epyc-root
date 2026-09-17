@@ -60,7 +60,7 @@ No change was needed. On root `origin/main`, both boxes already cite orchestrato
   `llama.cpp-k28-prototype-20260720` (branch `k28/prototype-20260720`).
 - **Z12:** `docs/gdn2-low-rank-static-analysis-2026-08-25.md` is untracked (`??`) in research.
 - **INF-70** (`cpu-decode-roofline-program.md`, under "Tasks filed from the 2026-09-08 findings"): the
-  research clone is 3 commits ahead of origin: `1780fa7b`, merge `6ab403ed`, and `ae8e5ef9`, whose
+  research clone is 3 commits ahead of origin: `1780fa7b` (on main as `56ef1404`), merge `6ab403ed`, and `ae8e5ef9`, whose
   twin `ccbfe1b8` is on main.
   - **Correction:** `1780fa7b` *is* on the pushed branches `origin/inf70/evidence-2026-09-08` and
     `origin/lane/autokernel-status-bounding-20260914`. It is unmerged, not unpushed.
@@ -122,7 +122,7 @@ Other new untriaged rows:
 - **K28 prototype:** commit the staged scaffold.
 - **Research:**
   - commit the Z12 doc;
-  - land `1780fa7b` on main;
+  - land `1780fa7b` (on main as `56ef1404`) on main;
   - merge `sub/gpu-runner-20260916` (dflash2 SL1/SL5 evidence).
 - **Reviewer-calibration and RLM owners:** RC-9 and E1a are open work again.
 - **Dashboard owner:** decide whether to file a successor for the SQLite archival store.

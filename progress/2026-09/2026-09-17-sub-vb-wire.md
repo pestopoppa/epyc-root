@@ -35,7 +35,7 @@ This was zero-inference work. Nothing was started, stopped or killed.
   - `CaptureLog` prints a stderr banner, records a `belief_capture` block, and sets exit code 3.
 - **`review_f1/ev13b_run.py`:** the `/workspace/scripts/vidya` literal and the exception swallow are
   gone.
-- **`prb_t4_tale_gpu.py`**, ported to main from `sub/gpu-runner-20260916` (`91d66725`):
+- **`prb_t4_tale_gpu.py`**, ported to main from `sub/gpu-runner-20260916` (`91d66725` (on main as `0b295a25`)):
   - The tmp worktree literal is gone.
   - The harness runs from its own checkout, which has the stratified sampler.
   - `--pool` and `--python` are checked before the server starts.

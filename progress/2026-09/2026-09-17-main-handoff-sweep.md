@@ -12,9 +12,9 @@ detail is in its own shard, `progress/2026-09/2026-09-16-sub-*.md` and `2026-09-
 | Item | Result | Evidence |
 |---|---|---|
 | INF-62 SL-1 (`--spec-draft-n-max` × `p-min`) | **Keep n-max 8.** The DFlash2 block_size 8 clamps it to 7. p-min is ignored on the DFlash2 branch. | research `6b585b58` → main `8146880b` |
-| INF-62 SL-5 (DF2-6 A/A) | **Deterministic.** 12/12 identical per arm across fresh processes, so run-to-run noise is zero at temp 0. | research `416cd853` |
-| DF2-6 serial-exact confirmation | **Serial-exact passes 12/12** on both drafters. Non-parity is the 1-row vs multi-row numeric split, not a DFlash2 defect. | research `7a876f23` |
-| CJ-1e GPQA-Diamond pair | **Unresolved.** 152 vs 158 of 198, sign test p = 0.405. The box stays with the owner; CJ-GATE decides adoption. | research `c72e5ad2` |
+| INF-62 SL-5 (DF2-6 A/A) | **Deterministic.** 12/12 identical per arm across fresh processes, so run-to-run noise is zero at temp 0. | research `416cd853` (on main as `8146880b`) |
+| DF2-6 serial-exact confirmation | **Serial-exact passes 12/12** on both drafters. Non-parity is the 1-row vs multi-row numeric split, not a DFlash2 defect. | research `7a876f23` (on main as `8146880b`) |
+| CJ-1e GPQA-Diamond pair | **Unresolved.** 152 vs 158 of 198, sign test p = 0.405. The box stays with the owner; CJ-GATE decides adoption. | research `c72e5ad2` (on main as `8146880b`) |
 | fable5 §5 #1 MoE batched `-np` | **Q-A GO** (E = 1.021). **Q-B bounded null:** M2(32) = 0.619 / 0.655 after the pre-registered top-up. **CLOSED** as a bounded null on 09-17; operator: "no more levers". | research `6cbdd856`, `f5179054` |
 | ERNIE MI210 ROCm | **Fix refuted.** All 4 precision variants (off, narrow f32, wide, outscale) leave ≥1024² blank. | research `cf05eefc`, `ca8c63d6` |
 | EV-13b review-F1 | **Fails the EV-6 judge-swap gate:** 2.94pp vs the 2pp limit. Leg B was not run. The operator **PARKED** it on 09-17 (root `007e4092`); it resumes when HG-9 needs a judge-stable ranking. | research `aac025a4` |

@@ -31,7 +31,7 @@ each runner for its whole window. No KFD process was present at start; no CPU in
 
 - **Run.** `scripts/benchmark/sl1_dflash2_nmax_pmin_sweep.py`, 09:27–10:53Z. **160/160 launches ok**, with
   residency proven on every launch and the GPU claim held.
-- **Evidence.** Research `6b585b58` `data/inf62-sl1-20260916/`; scratch `/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/sl1/`.
+- **Evidence.** Research `6b585b58` (on main as `8146880b`) `data/inf62-sl1-20260916/`; scratch `/mnt/raid0/llm/tmp/sub-gpu-runner-20260916/sl1/`.
 - **Source findings (champion `ef81196d5`).**
   - The DFlash2 drafter's block_size is 8, so n-max 8 is clamped to 7.
   - The `is_dflash2` branch ignores `p_min`.
@@ -66,7 +66,7 @@ each runner for its whole window. No KFD process was present at start; no CPU in
   - 34 review_f1 tests pass.
   - The Augment-v1 set was fetched and verified in git-ignored `data/external`: 50 PRs, 137 goldens,
     97 scored; checksum `fa0aba78…` matches the manifest.
-- **§5 MoE runner.** Moved to Option A (18d1d7c8). The thresholds are frozen verbatim in the
+- **§5 MoE runner.** Moved to Option A (18d1d7c8 (pre-registration on main as `6cbdd856`)). The thresholds are frozen verbatim in the
   fable5-window2-05 §5 #1 box as operator-approved, at 09:57Z. An approval file gates the runner.
 - **Serialized chains.**
   - chain1: SL-1 → SL-5 → INF-61.
@@ -82,7 +82,7 @@ each runner for its whole window. No KFD process was present at start; no CPU in
 - **Verdicts on this build.** dflash2 6/12, draft_simple 5/12. Both fail at the same index on 4 prompts.
 - **Conclusion.** DF2-6 pass counts are deterministic at temp 0, so run-to-run noise is zero. The earlier
   7/12 came from `5c278648a`, a different build.
-- **Evidence.** Research `416cd853` `data/inf62-sl5-20260916/`.
+- **Evidence.** Research `416cd853` (on main as `8146880b`) `data/inf62-sl5-20260916/`.
 - **Belief kernel.** Pre-hook, zero rows.
 
 ## 4. INF-61 first attempt: FAILED; re-queued
@@ -91,7 +91,7 @@ each runner for its whole window. No KFD process was present at start; no CPU in
   only via `taskset` at exec; the codified v8 `fence_threads` also re-applies `taskset -apc` after launch,
   and my driver did not.
 - **Capacity skips (genuine).** np32 at L2048 and L8192: `failed to allocate ROCm0 buffer`.
-- **Fix.** Research `0608f2f2`. Re-queued as chain5, after OCC-1.
+- **Fix.** Research `0608f2f2` (fence on main as `c6e63877`). Re-queued as chain5, after OCC-1.
 - **Order deviation, stated.** INF-61 now runs after items 5–10.
 
 ## 5. DF2-6 serial-exact confirmation: DONE, hypothesis SUPPORTED (no box ticked)
@@ -106,14 +106,14 @@ each runner for its whole window. No KFD process was present at start; no CPU in
     0.005–0.079.
 - **Instrument gap.** `GGML_CUDA_LOG_MMVQ_ROUTE=2` still gives zero lines; the log channel is likely
   filtered.
-- **Evidence.** Research `7a876f23`. The note is under DF2-8 in the DFlash2 handoff, unticked, for the
+- **Evidence.** Research `7a876f23` (on main as `8146880b`). The note is under DF2-8 in the DFlash2 handoff, unticked, for the
   main session to judge.
 
 ## 6. PRB-T4 first attempt: FAILED at start; re-queued
 
 - **Failure.** `eval_tale_budget.py` needs `httpx`, and system python lacks it. All 4 suites exited rc=1
   within 2 s. The server was stopped cleanly, and no results were written.
-- **Fix.** Research `91d66725` runs the harness under the research repo `.venv`, which has httpx and imports
+- **Fix.** Research `91d66725` (on main as `0b295a25`) runs the harness under the research repo `.venv`, which has httpx and imports
   cleanly. Failed-attempt logs are in `prbt4/attempt1-httpx-missing/`.
 - **Re-queued.** chain6, after INF-61.
 
@@ -138,7 +138,7 @@ each runner for its whole window. No KFD process was present at start; no CPU in
   the reverse of the vendor ordering, but it is not resolvable.
 - **Thinking off.** reasoning_chars = 0 and no `<think>` on all 396 rows.
 - **Belief kernel.** The SC32 rows were written by the runner.
-- **Evidence.** Research `c72e5ad2`, summaries only (canary-safe). The note is in the root patch under
+- **Evidence.** Research `c72e5ad2` (on main as `8146880b`), summaries only (canary-safe). The note is in the root patch under
   canonical-judge-suite-revamp CJ-1e; the box is left for the owner.
 
 ---
@@ -157,7 +157,7 @@ each runner for its whole window. No KFD process was present at start; no CPU in
   `a454b7fd`, `e70b6974` and `b1c7dedb`.
   - Tests: review_f1 34/34, plus tale and cj_gpqa 33/33.
   - The Augment manifest is metadata only (checksums, PR titles); no golden text.
-- **Runner scripts not merged.** `c2204c21`, `18d1d7c8`, `0608f2f2` and `91d66725` hard-code tmp paths.
+- **Runner scripts not merged.** `c2204c21`, `18d1d7c8` (pre-registration on main as `6cbdd856`), `0608f2f2` (fence on main as `c6e63877`) and `91d66725` (on main as `0b295a25`) hard-code tmp paths.
 
 ## 8. §5 #1 MoE batched -np sweep: Q-A GO, Q-B INCONCLUSIVE ×2 (box NOT ticked)
 

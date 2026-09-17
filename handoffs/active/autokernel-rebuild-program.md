@@ -1885,7 +1885,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         refuses if the text is already present, if a target is dirty, or if a target has moved.
         Evidence, all committed (no scratch paths): research `data/ak-r2358-shim-serving-2026-09-08/`
         and `data/ak-champion-maxperf-2026-09-08/` (research main `7020bb94`),
-        `data/inf70-retest1-2026-09-08/` (`1780fa7b`), root
+        `data/inf70-retest1-2026-09-08/` (`1780fa7b` (on main as `56ef1404`)), root
         `docs/design/champion-max-performance-20260908.md`. Cross-ref:
         `autokernel-champion-aggregate.md` → *METHODOLOGICAL CAUTION*.
 
@@ -1962,7 +1962,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
 
         Evidence: `data/inf70-retest1-2026-09-08/CHAMPION-DIVERGENCE.md` and
         `data/inf70-retest1-2026-09-08/CHAMPION-LAUNCH-TABLE.md` in `epyc-inference-research` at commit
-        `1780fa7b` (branch `inf70/evidence-2026-09-08`).
+        `1780fa7b` (on main as `56ef1404`) (branch `inf70/evidence-2026-09-08`).
         **Cross-ref R23-57, which stays OPEN on this basis.**
       - [ ] **R23-57 — CHAMPION LAUNCH-TO-LAUNCH INSTABILITY: ~12% spread on an IDENTICAL configuration, and
         it moves ONLY the champion arm. UNEXPLAINED — no headline may be quoted from one session.**
@@ -2002,7 +2002,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         **ON never was** — so the shim looks like it removes a downside *tail*, not that it shifts the mean.
         **All 9 launches in the champion-spread table were shim-OFF**, so the champion may have been
         characterised in its high-variance configuration all along. This is a **LEAD, NOT A CONCLUSION** (n=6,
-        the spread table is unpaired). Evidence: `data/inf70-retest1-2026-09-08/CHAMPION-LAUNCH-TABLE.md` (`epyc-inference-research` `1780fa7b`)
+        the spread table is unpaired). Evidence: `data/inf70-retest1-2026-09-08/CHAMPION-LAUNCH-TABLE.md` (`epyc-inference-research` `1780fa7b` (on main as `56ef1404`))
         (9 launches, between-launch sd **5.081%** quiet-host-only n=7, range **12.55%**; `bin-h1` at defaults and
         `bin-r1` at champion knob state proven the SAME configuration — 24/24 byte-identical, identical
         `ggml/src/ggml-cpu` tree hash `040d43aa`). Restricting to a quiet host slightly **widens** the spread, so
