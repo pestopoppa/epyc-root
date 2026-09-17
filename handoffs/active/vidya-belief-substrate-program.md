@@ -1771,6 +1771,7 @@ retrofitting the read side is impossible. Source row added to
     an A2 nomination as a keep, validation or release result.
 
   - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.**
+    - [ ] **2026-09-17 sampled-location extension, before first live GLM use:** write bounded per-TID×symbol-family×sampled-CPU/NUMA-location period fields and the `perf --sample-cpu` capture identity in the original immutable profile receipt. Project only native sampled fields through the existing measurement ladder; old captures remain location-unknown, and CPU location alone cannot establish remote memory traffic or a throughput gain.
     - [x] **Direct existing-loop CPU observation/corpus and actor read-side connection**:
       ✅ 2026-09-10. `loop_cpu_profile.v1` binds the producer's original compact capture,
       actual execution/frozen-request identity and sampled-period measurement. The existing
