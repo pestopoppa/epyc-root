@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 104,
-    "handoff-active": 166,
+    "handoff-active": 165,
     "handoff-blocked": 2,
-    "handoff-completed": 194,
-    "progress": 446,
+    "handoff-completed": 195,
+    "progress": 447,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-17T12:10:12Z",
+  "last_compile": "2026-09-17T12:10:39Z",
   "mode": "touch",
-  "scan_time": "2026-09-17T12:10:12Z",
+  "scan_time": "2026-09-17T12:10:39Z",
   "schema_version": 1,
-  "source_set_hash": "cb1e20ccb2d905f5192bed50ab3773e13130ce4205ee72134f84ca1be892a187",
+  "source_set_hash": "69e97007c9c2cb7511ce8b09cd7737af24e19948542c1a9f4a5bcb011c240c5b",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -335,10 +335,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9d87b859f6cbd8fa4afdbc8865ea82dfaf44e61c376ad8ae431efd4e05f64ed1",
-      "modified": "2026-09-16T15:05:49Z",
+      "content_hash": "edb17642e4c673d6ab3690e6a38535593189e32d492b1323a744714ec48a7ff5",
+      "modified": "2026-09-17T12:10:26Z",
       "path": "handoffs/active/design-backlog-triage-2026-07-23.md",
-      "size": 81138,
+      "size": 81196,
       "title": "Design-Backlog Triage (2026-07-23)",
       "type": "handoff-active"
     },
@@ -583,10 +583,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "362fece1f27f422c93a86093a9c8507b6e045b9ff4252b9b98239d850fa6b509",
-      "modified": "2026-09-17T11:58:08Z",
+      "content_hash": "a67ae3a22000be6316f2c280c645a16f5f3fdc97c18046132620875be80367e8",
+      "modified": "2026-09-17T12:10:26Z",
       "path": "handoffs/active/handoff-index-and-backlog-graph.md",
-      "size": 34327,
+      "size": 37290,
       "title": "Handoff Index Restructure + Backlog Graph \u2014 residuals",
       "type": "handoff-active"
     },
@@ -815,10 +815,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d90885d0a77a1396dea92daabab1b8ed0b0c12e59348e397d84756eb50b40ac7",
-      "modified": "2026-09-16T15:05:49Z",
+      "content_hash": "20a5920212f6a010775d66898facb57972acf0d365e9739def1f16a3ff824e4f",
+      "modified": "2026-09-17T12:10:26Z",
       "path": "handoffs/active/moe-spec-cpu-spec-dec-integration.md",
-      "size": 50654,
+      "size": 54726,
       "title": "MoE-Spec \u2014 CPU Speculative-Decoding Verification with Budgeted Expert Selection",
       "type": "handoff-active"
     },
@@ -847,10 +847,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6d3fb94cde4688da7f162ee82cb7717f597c04211c1488728897c2a235c22875",
-      "modified": "2026-09-16T15:05:49Z",
+      "content_hash": "acc151ec0fa56c2d77559741829ba289e5fdd091e2f0c8d995878b9c3b3dc4d1",
+      "modified": "2026-09-17T12:10:26Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 84487,
+      "size": 84500,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -919,10 +919,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "99cd0d76606f3f8be7b5f59413a143fd4366f04c022c50c434a076efbf35c729",
-      "modified": "2026-09-17T11:58:08Z",
+      "content_hash": "512ff301ca798ce0aff2cf1eba37ada4da056988285215fd66f020c904a6e130",
+      "modified": "2026-09-17T12:10:26Z",
       "path": "handoffs/active/promptforge-mutation-safety-contract.md",
-      "size": 20122,
+      "size": 21443,
       "title": "PromptForge mutation safety contract (RTG-55)",
       "type": "handoff-active"
     },
@@ -1063,10 +1063,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bb6af05dd3e06e00336823115667a125575da9fcaf6573d99c493e0f0a19f817",
-      "modified": "2026-09-16T15:05:49Z",
+      "content_hash": "46b9925c40effce2656e8a7a96ab1cf9b2cf94fc50128b71fb5e7bb3bc3f2a6d",
+      "modified": "2026-09-17T12:10:26Z",
       "path": "handoffs/active/reviewer-typed-artifacts.md",
-      "size": 20385,
+      "size": 20398,
       "title": "Reviewer Control Plane \u2014 Typed Artifact Schemas (H2)",
       "type": "handoff-active"
     },
@@ -1135,14 +1135,6 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0d44ef0113557e616295a2c92a05c15b1e35079063bd24e2e869bc5fc2f7ff8b",
-      "modified": "2026-09-16T15:05:49Z",
-      "path": "handoffs/active/security-review-skill.md",
-      "size": 9083,
-      "title": "Security-Review Skill (two-pass STRIDE + OWASP)",
-      "type": "handoff-active"
-    },
-    {
       "content_hash": "9c996ed15b8bd44ff2d5080b655e1f2b209b9d41df9038a1229c28c222ab24e0",
       "modified": "2026-09-16T15:05:49Z",
       "path": "handoffs/active/session-bus-thin-dispatcher.md",
@@ -1183,10 +1175,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a3c54b93db8b8ed09be9e38820260367e8e77c6a91f40de5b81b96078e083f0c",
-      "modified": "2026-09-16T15:05:49Z",
+      "content_hash": "81ad990f690c8b633f8e8e1fd3a1d8fba5a8082a662b876e08827a8bc53c4236",
+      "modified": "2026-09-17T12:10:26Z",
       "path": "handoffs/active/stale-open-audit-2026-07-18.md",
-      "size": 34873,
+      "size": 34886,
       "title": "Stale-Open Backlog Audit \u2014 2026-07-18",
       "type": "handoff-active"
     },
@@ -2732,6 +2724,14 @@
       "path": "handoffs/completed/searxng-bash-websearch-bridge.md",
       "size": 7803,
       "title": "SearxNG as a Bash-Issued Web Search Channel for Claude Code Sessions",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "3cb2b5c1c5def5d714a893a96337a6c275e3117b45eb11c4f767fb2588f9c32e",
+      "modified": "2026-09-17T12:10:26Z",
+      "path": "handoffs/completed/security-review-skill.md",
+      "size": 10125,
+      "title": "Security-Review Skill (two-pass STRIDE + OWASP)",
       "type": "handoff-completed"
     },
     {
@@ -7591,6 +7591,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "d8a288e87587f77da73841dd2f9fd9b9f3976bc48ec8399cf52c63767e7398f0",
+      "modified": "2026-09-17T12:10:26Z",
+      "path": "progress/2026-09/2026-09-17-sub-op-decisions.md",
+      "size": 6917,
+      "title": "2026-09-17 \u2014 sub-op-decisions (three operator rulings applied; zero inference)",
+      "type": "progress"
+    },
+    {
       "content_hash": "ff97ede3047d7c73f4e8c07c65df01666166fd9269df5272f09dddd9f4f15fc4",
       "modified": "2026-09-17T11:58:08Z",
       "path": "progress/2026-09/2026-09-17-sub-scorer-fix.md",
@@ -8431,7 +8439,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1052,
+  "total_new": 1053,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
