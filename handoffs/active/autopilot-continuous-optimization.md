@@ -1815,7 +1815,7 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       `chat_pipeline/stages.py:288` feeds the **process-global, never-cleared**
       `tool_registry.get_invocation_log()` into the durable record, so one request persists another
       request's tool calls. `clear_invocation_log` has zero callers in `src/`.
-- [ ] **AP-57 — journal the speed-axis reseed** (option B of RTG-02's prepared decision package, the
+- [x] **AP-57 — journal the speed-axis reseed** ✅ 2026-09-17 — operator ruled B 2026-09-17; orchestrator `01906607`, root `1d5f8cba` (option B of RTG-02's prepared decision package, the
       recommended one): `_append_baseline_promotion_event()` returns early for `updated=False`, so a
       speed-axis reseed — a real state write — is journaled nowhere (`scripts/autopilot/autopilot.py:10365-10375`)
       (found 2026-09-14, noninf sweep).
@@ -1828,6 +1828,14 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
         append-only journal receipt? (A) No, `autopilot_state.json` alone stays the record; (B) yes, a
         ledger event (recommended; a state write with no receipt cannot be audited or replayed). The
         call site is now `_append_baseline_promotion_event()`'s `updated=False` early return.
+      - 2026-09-17 **done (operator ruled B 2026-09-17).** The refused-promotion path now appends a
+        `speed_axis_reseed` ledger event, once per trial. It carries the trial id, old/new `frontdoor_speed`,
+        old/new `autopilot_speed_era`, `reason=quality_refusal`, the eval-quality era, the AP-63(a) run-manifest
+        digest, the post-write `baseline_state` and a timestamp. A failed append logs a WARNING and sets
+        `state.speed_axis_reseed_journal_error`, and the state save still happens. The baseline ledger fold
+        replays reseeds in append order. A journal/row mismatch rolls a reseed back like a promotion. The vidya
+        adapter does not project the event (README row). Tests: `tests/unit/test_ap57_speed_axis_reseed_journal.py`.
+        Shard: `progress/2026-09/2026-09-17-sub-ap57b.md`.
 - [ ] **AP-58 — decide whether to reseed the speed axis on ANY eligible in-era frontier measurement**, since
       the same unreachability shape survives on the other early-return paths (`seq_inputs_unavailable`,
       `seq_not_confirmed`, the monotonic skip and the new `quality_not_measured`), so the speed fence stays
