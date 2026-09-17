@@ -26,6 +26,42 @@
       "sha256_after": "18f8ea018234605002459cd98e59a9aaeddec235d8e022ff59f6ebd67766d607",
       "sha256_before": "b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e",
       "source_commit": "09bdb998f27fd13a13f3a4908f924626f886ef3a"
+    },
+    {
+      "checkpoint_meta_sha256_after": "5af445d8568b08e62085ae7c68354851d36e27043efeb8cbf5760d656ce28b23",
+      "checkpoint_meta_sha256_before": "54224ec71905b7e628284262579dec1f8da59d0c9d63855fada878ec78305746",
+      "checkpoint_sha256_after": "3b457d981cc42907abf25f47d13d7827e6c08821ce588e2405075bcf8ea73375",
+      "checkpoint_sha256_before": "a604276fcd053e7590bd391f846334f5fd4616f7cd9ebe78196b8f6305f1d218",
+      "date": "2026-09-17",
+      "decision_receipt": "artifacts/operator/ratify_v10_episodic_repin_20260917.json",
+      "deleted_memory_ids": [
+        "500740fe-8e32-44ef-bbe5-e9c9d0d946f8",
+        "9f75290f-abec-4826-b285-588cd47a2ee8",
+        "d2ddc823-bd8a-4b44-809f-c4ed7593323e",
+        "e344a27c-111e-4acd-b142-72cf011ba80e"
+      ],
+      "files": {
+        "embeddings.faiss": {
+          "sha256_after": "e067815db2388fca7537a4d3aba7186c9186097b89ead43c14e575f4c1f06740",
+          "sha256_before": "4537f9179b5a318da59ba4e1fc2bb709d0f13335a0ac6295e4f600f3fa09d8d3"
+        },
+        "episodic.db": {
+          "sha256_after": "8ff84e9d1e6bc5708ecda62247c05b214789b1c9b65e14935f48d1dba0ae69f5",
+          "sha256_before": "24cff0744a4ea47f316f5ed8781dc35ce8e843ce555234829c21e88f4a0ffa75"
+        },
+        "id_map.npy": {
+          "sha256_after": "af4098d88990d656bbb4327c08f86bf95947569ce0e15ccf9bdfcefa881ca498",
+          "sha256_before": "d6b791548b1d5c88c68a28c97e3cce8bc7f38496aa93cbb9daa98d446ceaffaf"
+        }
+      },
+      "gate_id": "RATIFY-V10-EPISODIC-REPIN-20260917",
+      "kind": "eval_leak_memory_purge",
+      "memory_count_after": 63921,
+      "memory_count_before": 63925,
+      "purge_backup": "/mnt/raid0/llm/backups/episodic-leak-20260917/mnt__raid0__llm__epyc-orchestrator__orchestration__autopilot_checkpoints__multitier_v10_20260810__episodic.db",
+      "reason": "the 4 memories whose context carried the HumanEval/55 problem text were removed by the operator-approved eval-leak purge PURGE-EVAL-LEAK-MEMORIES-20260917 (epyc-orchestrator 41baad2b); only those rows and their FAISS vectors changed",
+      "source_commit": "41baad2b9e1bc86cd73c4f582c97358934bd8326",
+      "source_script": "scripts/maintenance/purge_eval_leak_memories_20260917.py"
     }
   ],
   "autopilot_started": false,
@@ -75,9 +111,41 @@
           "sha256_after": "18f8ea018234605002459cd98e59a9aaeddec235d8e022ff59f6ebd67766d607",
           "sha256_before": "b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e",
           "source_commit": "09bdb998f27fd13a13f3a4908f924626f886ef3a"
+        },
+        {
+          "date": "2026-09-17",
+          "decision_receipt": "artifacts/operator/ratify_v10_episodic_repin_20260917.json",
+          "deleted_memory_ids": [
+            "500740fe-8e32-44ef-bbe5-e9c9d0d946f8",
+            "9f75290f-abec-4826-b285-588cd47a2ee8",
+            "d2ddc823-bd8a-4b44-809f-c4ed7593323e",
+            "e344a27c-111e-4acd-b142-72cf011ba80e"
+          ],
+          "files": {
+            "embeddings.faiss": {
+              "sha256_after": "e067815db2388fca7537a4d3aba7186c9186097b89ead43c14e575f4c1f06740",
+              "sha256_before": "4537f9179b5a318da59ba4e1fc2bb709d0f13335a0ac6295e4f600f3fa09d8d3"
+            },
+            "episodic.db": {
+              "sha256_after": "8ff84e9d1e6bc5708ecda62247c05b214789b1c9b65e14935f48d1dba0ae69f5",
+              "sha256_before": "24cff0744a4ea47f316f5ed8781dc35ce8e843ce555234829c21e88f4a0ffa75"
+            },
+            "id_map.npy": {
+              "sha256_after": "af4098d88990d656bbb4327c08f86bf95947569ce0e15ccf9bdfcefa881ca498",
+              "sha256_before": "d6b791548b1d5c88c68a28c97e3cce8bc7f38496aa93cbb9daa98d446ceaffaf"
+            }
+          },
+          "gate_id": "RATIFY-V10-EPISODIC-REPIN-20260917",
+          "kind": "eval_leak_memory_purge",
+          "memory_count_after": 63921,
+          "memory_count_before": 63925,
+          "purge_backup": "/mnt/raid0/llm/backups/episodic-leak-20260917/mnt__raid0__llm__epyc-orchestrator__orchestration__autopilot_checkpoints__multitier_v10_20260810__episodic.db",
+          "reason": "the 4 memories whose context carried the HumanEval/55 problem text were removed by the operator-approved eval-leak purge PURGE-EVAL-LEAK-MEMORIES-20260917 (epyc-orchestrator 41baad2b); only those rows and their FAISS vectors changed",
+          "source_commit": "41baad2b9e1bc86cd73c4f582c97358934bd8326",
+          "source_script": "scripts/maintenance/purge_eval_leak_memories_20260917.py"
         }
       ],
-      "checkpoint_sha256": "a604276fcd053e7590bd391f846334f5fd4616f7cd9ebe78196b8f6305f1d218",
+      "checkpoint_sha256": "3b457d981cc42907abf25f47d13d7827e6c08821ce588e2405075bcf8ea73375",
       "config_snapshot": {
         "baseline_bundle_sha256": "6006061e66463bd59a9cc124a7191f0c1172575f75e0717fb2cb27b6e006492b",
         "execution_instrument_id": "resource_lanes_v10_history_scoped_quiescence",
@@ -88,9 +156,9 @@
         "autopilot_short_term_memory.md": "44f176eeff87a5d8d27050d2e45cb873f16a8d2d37a82be8aa0dbeb083f76f77",
         "autopilot_state.json": "0cbaa64770e510b3982bafbf7097d881eb94ad800191774d14693817e7bd1abf",
         "classifier_config.yaml": "e408c615319607f50cb0bff3b734bb6a82d0caf5f4d38b61c24011b75008b37e",
-        "embeddings.faiss": "4537f9179b5a318da59ba4e1fc2bb709d0f13335a0ac6295e4f600f3fa09d8d3",
-        "episodic.db": "24cff0744a4ea47f316f5ed8781dc35ce8e843ce555234829c21e88f4a0ffa75",
-        "id_map.npy": "d6b791548b1d5c88c68a28c97e3cce8bc7f38496aa93cbb9daa98d446ceaffaf",
+        "embeddings.faiss": "e067815db2388fca7537a4d3aba7186c9186097b89ead43c14e575f4c1f06740",
+        "episodic.db": "8ff84e9d1e6bc5708ecda62247c05b214789b1c9b65e14935f48d1dba0ae69f5",
+        "id_map.npy": "af4098d88990d656bbb4327c08f86bf95947569ce0e15ccf9bdfcefa881ca498",
         "prompts/architect_investigate.md": "82dcf9d0cdece2e22f621ba9fe181001e6524a11f7dc2bb7e23f7414da902090",
         "prompts/architect_synthesis.md": "742a0f6b10a756b94cd565278e0d7544bce4f3cc8b608f4f16f062f8823fea46",
         "prompts/compaction_index.md": "f6cfbd58a2aa8e6aca5e854319690b41d61c6731af3cc0869c86a3c4da923583",
@@ -127,7 +195,7 @@
       },
       "hypervolume": 0.0,
       "is_production_best": true,
-      "memory_count": 63925,
+      "memory_count": 63921,
       "notes": "Operator-ratified clean T1/T2/T3 v10 incumbent baseline",
       "schema_version": "epyc.autopilot_checkpoint.v2",
       "timestamp": "multitier_v10_20260810",

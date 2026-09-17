@@ -11,7 +11,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | RTG-01 | agent world env synthesis | [agent-world-env-synthesis.md](agent-world-env-synthesis.md) | Run the AW-6 48h bootstrap discovery (≥50 envs / ≥500 tools / ≥500 tasks) with incremental persistence | — |
-| RTG-02 | autopilot continuous optimization | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | AP-57 — journal the speed-axis reseed (option B), then AP-63(a) stamp the AP-1510 run manifest onto journal rows | — |
+| RTG-02 | autopilot continuous optimization | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | AP-57 journal-receipt ruling (operator, A/B); after first shadow run: ap55_shadow_review.py → AP-55-ARM flip; AP-63c | — |
 | RTG-03 | autopilot dashboard fidelity audit 2026 07 2 | [autopilot-dashboard-fidelity-audit-2026-07-22.md](autopilot-dashboard-fidelity-audit-2026-07-22.md) | C1 fix #2 Manifest writer intent-not-realized gap — writer lives in | — |
 | RTG-04 | batched edit parallel apply | [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md) | BEP-2 / J8 — Optional CPU latency A/B for the legacy patchset path: batch-edit mode vs interleaved Root LM loop on an edit workload | — |
 | RTG-05 | bep dcp falsification harness | [bep-dcp-falsification-harness.md](bep-dcp-falsification-harness.md) | DCP-6 — At a host-quiet window, clear the feature-flag intent diffs, then run inference; record top-up rate, token overhead, success deltas | — |
@@ -30,7 +30,7 @@
 | RTG-19 | model stack single source update pipeline | [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md) | Keep as holder of the seven standing single-source constraints; no dispatchable task by design | — |
 | RTG-20 | model stack update pipeline audit | [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md) | Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient | — |
 | RTG-21 | multi file coding completion capability | [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | MF-VBS-1 — measure the verify-before-stop failure rate from existing BEP/REPL traces before building any gate | — |
-| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | OBS-12 — audit the other .claude/skills for bare-python3 interpreter calls, starting with lint_wiki.py's PyYAML failure | — |
+| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | OBS-12a — system-python3 PyYAML check in health_check.sh and the venv in CLAUDE.md bus commands | — |
 | RTG-23 | objective task rate goodput | [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | W3e — merge sub/autopilot-safety, then add an objective policy whose TierSpec drops neg_cost (3-D ref point, era stamp, fence) | — |
 | RTG-24 | orchestration robustness audit 2026 07 11 | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | P0.1 operator run/pause decision on autopilot candidate species | — |
 | RTG-27 | prompt construction determinism | [prompt-construction-determinism.md](prompt-construction-determinism.md) | D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3 | — |
@@ -45,7 +45,7 @@
 | RTG-38 | standardized stack update pipeline finalizat | [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md) | W4 swap-CI — prove representative stack changes move generated descriptors, priors and gate execution together | — |
 | RTG-39 | swarm dataset distillation | [../blocked/swarm-dataset-distillation.md](../blocked/swarm-dataset-distillation.md) | BLOCKED on strand Phase B — correct the premise first: distillation objective is ~2pp, the teacher-prompting change is ~38pp | EVL-45 |
 | RTG-40 | tri role coordinator architecture | [tri-role-coordinator-architecture.md](tri-role-coordinator-architecture.md) | TR-4.1 — Compose role with model selection in routing.py; frozen until the DAR-regret and per-question-vector gates reopen routing | — |
-| RTG-41 | unified trace memory service | [unified-trace-memory-service.md](unified-trace-memory-service.md) | UTM-P1 — add harness identity, seed and turn-ordinal pairing keys to the trace event schema (src/trace/store.py) | — |
+| RTG-41 | unified trace memory service | [unified-trace-memory-service.md](unified-trace-memory-service.md) | UTM-P1a — wire a live producer (autopilot_live / eval tower) to stamp harness, seed, turn_ordinal and task_key | — |
 | RTG-42 | within role placement state machine | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) | WP-6/WP-7 ratification: inference-gated, awaiting operator. WP-9 superseded by burst_prefer_split; WP-10 fixed at W1 cutover (OP-45) | — |
 | RTG-43 | wp12 fleet layer design | [wp12-fleet-layer-design.md](wp12-fleet-layer-design.md) | Post-soak §5 cleanup — retire the legacy per-role build path; waits on the operator retiring the ORCHESTRATOR_FLEET_LAYER rollback | — |
 | RTG-45 | x mas text routing | [x-mas-text-routing.md](x-mas-text-routing.md) | Monitor post-enable X-MAS telemetry for domain/latency regressions or guard bypasses; rollback is `xmas_routing.mode: off` + API reload | — |
@@ -57,7 +57,7 @@
 | RTG-51 | wrap up division of labor policy | [wrap-up-division-of-labor-policy.md](wrap-up-division-of-labor-policy.md) | Wire compute blocker/window events and the receipt-cut heavy-wrap executor; then shadow the complete lifecycle | RTG-34, RTG-48 |
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 — adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture | RTG-34, RTG-48 |
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
-| RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3c — purge the pinned multitier_v10 episodic store and ratify its re-pin (operator choice pending); then MHS-12 | RTG-02 |
+| RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-1 — implement the local typed-decision call path over the frozen v9 server, then TD-2 calibration before any gate | — |
 
 ## Cross-domain

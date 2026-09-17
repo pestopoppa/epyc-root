@@ -196,7 +196,7 @@ fleet models.** No inference runs without the standing region claim; no at-scale
         unmeasured; fall back to np=1). Thinking off via chat endpoint; assert `reasoning_chars == 0`. Full text in
         the design doc above.
       - **RUN 2026-09-16 (sub-gpu-runner), 11:28–14:01Z. Result: the ORDERING IS NOT RESOLVED at n=198.**
-        **Evidence:** research `sub/gpu-runner-20260916`, commit `c72e5ad2`, `data/cj1e-gpqa-pair-20260916/`.
+        **Evidence:** research `sub/gpu-runner-20260916`, commit `c72e5ad2` (on main as `8146880b`), `data/cj1e-gpqa-pair-20260916/`.
         Only summaries are committed; the GPQA question text and manifest stay out of git (canary).
         Runner `scripts/benchmark/cj1e_gpu_pair.py`, which drives `v7_quality_gate_runner.py` at `b1c7dedb`.
         **Setup:**

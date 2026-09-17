@@ -1,0 +1,119 @@
+# AutoKernel Dream-RSI handoff implementation checkpoint — 2026-09-17
+
+Reviewed the new Dream-RSI rows in `autokernel-research-loop.md`, RB-lineage
+telemetry in `autokernel-rebuild-program.md`, and AR-RPUCG/AR-ROCm-eval in
+`agentic-rocm-kernel-authoring.md` before assigning code. These rows are
+offline/observe-only except for later, explicitly gated measurements; no live
+search-policy or promotion gate was changed at this checkpoint.
+
+## GLM CPU recipe diagnosis
+
+At retained experimental tip `614ff2ba02e095b3ed11d7ed5e85ca3b1e2efeb3`,
+the same frozen GLM-5.3-Flash request and CPU-only build were measured under
+held q0–q3 CPU and MI210-exclusion claims. Five alternating 24-vs-48 thread
+pairs produced a median 24-thread effect of **−6.391%** versus 48; the
+48-thread median was 8.835 tok/s. A clean 48/32/48 rescreen, after the
+initial 32-thread arm overlapped indexing, found 8.714 tok/s at 32 versus
+8.957 tok/s for the two bracketing 48-thread arms (−2.713%). The original
+96-thread screen overlapped a brief worktree checkout and is not promoted to
+clean evidence. This is a runtime-recipe diagnostic, not a matched-process
+champion gate; lifecycle telemetry reports placement/foreign-load validity
+as `unproven`. No source keep, recipe change, or champion advancement follows
+from these numbers. Evidence:
+`/mnt/raid0/llm/tmp/aku-glm53-thread-sweep-20260917/summary.json` and
+`clean32-summary.json` beside it.
+
+## Reviewed task outcomes
+
+- Added prospective Vidya source rows/tasks SC87 and VB-AK-LINEAGE before any
+  real lineage diagnostic run. The offline line-level detector was integrated
+  on an isolated root lane and its six fixture tests pass. The prospective
+  source-capture producer and journal/outcome join remain separate; no
+  historical overwritten patch is used to claim a cycling rate.
+- Audited AK-WM-3, adaptive policy, plateau, and cost-credit prerequisites.
+  The AK-WM-2a real archive is not materialized: the inspected r49 IQK
+  intervention ends in `state:error` and its control journal is empty. The
+  strict builder exists, but even a future matched archive would not contain
+  prefix-visible choice/cost state needed for honest counterfactual replay.
+  No policy uplift was computed.
+- Audited AR-RPUCG and SimpleTES ROCm evaluation. No same-task evaluated DAG
+  plus incumbent selector trace was identified for the selection A/B; the
+  pinned SimpleTES path uses `rocprofv3` pftrace/CSV while this host's governed
+  profiler seam is ROCm 6.2.0 v1/v2. No GPU evaluation or executable adapter
+  was registered.
+- Audited existing C6 integrity and promotion controls. GPU hardened input
+  rotation and prebuild static scanning already run; their residual is the
+  absence of an independent reference check for each new timed content vector.
+  Exact author prompts are not retained, so historical keeps cannot be
+  represented as same-prompt replay results. N=10 and BO remain future
+  metered, report-only controls, not promotion conditions.
+
+## Live-loop repair in progress
+
+The GLM v20 serial child reprofiled the unchanged anchor on each one-batch
+startup and carried no profile into continuation. Its preplanner defaulted to
+HALF scope before seeing the observed synchronization-heavy profile; runtime
+arms were also blocked by four campaign-ID-prefix checks. Isolated workers
+are implementing exact-identity profile reuse/full-scope routing and
+prospective lineage/correctness receipts. No relaunch or new measured
+candidate is claimed at this checkpoint. The 28 retained keeps remain intact.
+
+## Implementation follow-through, 13:53 UTC
+
+- The research lane now contains exact-identity CPU profile continuation
+  (`91e63313`), spawn-lineage journal and prospective receipt (`85c7b91e`,
+  `a6288858`), opt-in nonpromotable GPU fresh-input observation (`64fd67f3`,
+  `dd5d612f`), and named-campaign runtime admission with a durable evaluator
+  parent/subcampaign join (`ef51369c`). None changes the production kernel or
+  adopts a variance-based runtime keep rule. The direct runtime suite returned
+  36 passed and one pre-existing tiny-bench fixture failure (missing hardened
+  sample fields); the combined earlier suite returned 207 passed and four
+  broader fixtures not yet attributed to these changes.
+- The root lane contains the offline line-level lineage detector, task audits,
+  and a bounded epoch-local observed-momentum reporter. After discovering the
+  v1/v2 schema mismatch, the corrected reporter admitted all 87 measured
+  native serving A/B rows into 24 separate instrument/anchor epochs and wrote
+  a self-hashed provenance receipt. This is an observed diagnostic only: no
+  cross-epoch gain, cost-credit score, ancestor A/B, or policy uplift. Artifact:
+  `/mnt/raid0/llm/tmp/ak-glm-observed-momentum-20260917-v1.json` and its
+  `.provenance.json` sidecar.
+- RB-lineage telemetry and SimpleTES ROCm port-input registration are closed
+  in their handoffs. AR-RPUCG remains open because the native MI210 r19 archive
+  lacks the evaluated parent DAG and visit state needed for an honest selector
+  A/B. Prompt-replay receipt code is isolated and unintegrated: its actor
+  callsite lacks a prospective turn/outcome identity, so no N=10 replay is
+  claimed.
+- At 13:53 UTC the GLM serial supervisor was relaunched as v21 with
+  `rounds=0` on the retained worktree/store. First batch was profiling at this
+  checkpoint; `running` is a process state, not yet proof of a healthy measured
+  candidate path or a new keep. Monitor and repair any actual failure before
+  claiming loop health. Production v9 and champion-of-record remain unchanged.
+
+## v21 stop: runtime calibration work explosion, 14:10 UTC
+
+Batch 0 produced a sealed half-scope profile but the planner abstained honestly:
+47.32% sampled-period synchronization did not distinguish per-thread work
+imbalance from CPU/NUMA placement. Batch 1 selected full scope, profiled, and
+reached a real runtime-treatment correctness path. The newly admitted runtime
+arm then opened the default direct calibration: `CampaignControls(200,...)`
+requires four A/A/neutral launches per block, or **800 full GLM launches**
+before its first candidate comparison. This was stopped as an invalidly sized
+research setup, not scored as a measured null or keep.
+
+The operator-owned v21 supervisor PID 4108590, child 4127859 and server
+2032360 were captured, signalled, and verified gone. A STOP sentinel was
+published first; TERM did not terminate the active child/server promptly, so
+the exact server and child PIDs required KILL. The serial supervisor exited
+`complete` with `stop_requested=true` and a `failed_targets` entry: the killed
+post-claim child lacks normal released-held evidence. The direct-calibration
+checkpoint has zero completed launches, one failed launch and an unresolved
+`pending` member. This is retained as evidence, not cleared or reused. No
+champion change occurred; the source worktree remains at `614ff2ba02e0` and
+the 28 prior keeps remain in the same store. A separate recovery audit and a
+bounded-runtime preflight fix are in progress before any relaunch.
+
+## v22 relaunch and handoff follow-through, 14:28 UTC
+
+The bounded preflight landed on the research lane as `8d45cb44`: without an explicit prospective runtime statistical declaration the planner offers source work but no runtime treatment; an unsolicited runtime proposal is a reasoned abstention, not a provider failure. A declared runtime arm must name its complete A/A-plus-neutral launch budget before a resource claim, and derives a separate runtime epoch. The failed v21 zero-valid-launch checkpoint remains intact; no pending member was cleared and no old floor was reused. The narrow C6 pre-build explicit phase-probe refusal landed as `84aaaf8d`. Together, 80 focused tests passed. Broader runtime fixture coverage has an unrelated shared-host cadence-gap failure and is not described as wholly green.
+
+The v22 serial controller started at 14:27 UTC from the unchanged source worktree tip `614ff2ba02e0` and the same store with 28 keeps. Its dry run passed. Initial status was `running` in CPU observational profiling with `runtime_preparation.status=unavailable`, **not** an 800-launch calibration. Supervisor PID 2092647 and child PID 2092755 were captured for this run. The selected dashboard pointer now names v22; the read-only dashboard view refreshed to root `f1cfe152` and the hub restarted at PID 2092203 under its managed supervisor. This establishes relaunch and current reporting only; it is not yet evidence of a completed measured candidate, a new keep, or 20 healthy loops. Production v9 and champion-of-record remain unchanged.

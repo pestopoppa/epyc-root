@@ -10,8 +10,10 @@ __pycache__/
 # Runtime
 logs/*.log
 # agent_audit.log (legacy, frozen) + agent_audit-<agent-id>.log (per-writer
-# shards, 2026-08-12 — scripts/utils/agent_log.sh). One glob, both kept tracked.
-!logs/agent_audit*.log
+# shards, 2026-08-12 — scripts/utils/agent_log.sh) are covered by the line above.
+# Neither is tracked (C45, f1717d80). They used to be re-included here, which left
+# the live shards untracked but NOT ignored: a plain `git clean -fd` deleted them
+# and `git add -A` re-tracked them (KB-WM-3).
 *.db
 
 # IDE

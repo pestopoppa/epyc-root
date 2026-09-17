@@ -156,7 +156,7 @@ All edits above are on branch `spec-dec-mtp-refresh-2026-06-22` and are **uncomm
           - INVALID: fix the instrument.
           - The table is final after n=5 plus at most one top-up. No verdict changes a serving recipe or `np`.
         - **Proxy.** batched-bench numbers are spec-off, category BASELINE, **never a headline**.
-        - **Runner.** Research `sub/gpu-runner-20260916` `scripts/benchmark/s5_moe_batched_np_sweep.py` (18d1d7c8).
+        - **Runner.** Research `sub/gpu-runner-20260916` `scripts/benchmark/s5_moe_batched_np_sweep.py` (18d1d7c8 (pre-registration on main as `6cbdd856`)).
       - **RUN 2026-09-16, 14:01–14:21Z (sub-gpu-runner; collected by sub-gpu-collect). Result: Q-A GO, Q-B
         INCONCLUSIVE on both pairs. Box NOT ticked**, because the tick needs GO + PASS.
         - **Evidence.** Research main `6cbdd856`, `data/s5-moe-batched-np-20260916/`

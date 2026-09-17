@@ -42,7 +42,7 @@ inference and no process management.
 - `sub/nextaction-sweep-20260916`: **only 88b1160d was integrated.** It was cherry-picked as
   `04124a54`, then merged with `--no-ff` as `9777a3d5`.
 - Why: the branch is based on the stale local `main`, so a plain merge would also have published
-  `1780fa7b`. That commit holds 37 unreviewed INF-70 evidence files, which belong to the inf70 lane.
+  `1780fa7b` (on main as `56ef1404`). That commit holds 37 unreviewed INF-70 evidence files, which belong to the inf70 lane.
   The branch's `ae8e5ef9` is already upstream by patch-id.
 - Tests: `scripts/benchmark/test_question_pool.py` + `test_dataset_adapters.py`: **8 passed**.
 - Not merged: the gpu-prep, gpu-runner, memeval and akfix branches.

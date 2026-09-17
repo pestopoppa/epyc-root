@@ -1593,7 +1593,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
 ## SC75 — VB-INF70-ARMS: the INF-70 serving-harness arm records (filed 2026-09-08)
 
 Source: **INF-70** (CPU decode roofline) closed 2026-09-08 and its evidence base is now in git —
-`data/inf70-retest1-2026-09-08/` in `epyc-inference-research` at commit `1780fa7b`, branch
+`data/inf70-retest1-2026-09-08/` in `epyc-inference-research` at commit `1780fa7b` (on main as `56ef1404`), branch
 `inf70/evidence-2026-09-08`. Its serving-harness **arm records** are a measurement source this substrate
 does not read. Filed **immediately**, per the standing rule: wiring the write side is cheap and permanent,
 retrofitting the read side is impossible. Source row added to
@@ -1771,6 +1771,7 @@ retrofitting the read side is impossible. Source row added to
     an A2 nomination as a keep, validation or release result.
 
   - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.**
+    - [ ] **2026-09-17 sampled-location extension, before first live GLM use:** write bounded per-TID×symbol-family×sampled-CPU/NUMA-location period fields and the `perf --sample-cpu` capture identity in the original immutable profile receipt. Project only native sampled fields through the existing measurement ladder; old captures remain location-unknown, and CPU location alone cannot establish remote memory traffic or a throughput gain.
     - [x] **Direct existing-loop CPU observation/corpus and actor read-side connection**:
       ✅ 2026-09-10. `loop_cpu_profile.v1` binds the producer's original compact capture,
       actual execution/frozen-request identity and sampled-period measurement. The existing
@@ -1965,7 +1966,7 @@ Ported by wrap-up pass 2 from the /workspace working copy. The sub-gpu-prep prod
 the SL-2 commit `5368766b` did not. The sub-gpu-runner notes (the TALE capture wiring and VB-GPU-RUNNER)
 are left to that still-running agent.
 
-- [ ] **VB-PRB-T4 — wire `eval_tale_budget.py` at write time** (research `a454b7fd`, ported as
+- [x] **VB-PRB-T4 — wire `eval_tale_budget.py` at write time** ✅ 2026-09-17 (closed by the main session: write-time capture ran through the hook on the first PRB-T4 run, 24 rows ingested, and the driver is on research main `0b295a25`. The sample-scope caveat is tracked separately in VB-PRB-T4-CAVEAT.) (research `a454b7fd`, ported as
   `76f5132b`, on research `main` via `a280853d`): project `.jsonl` + `.meta.json` + `.summary.json` per suite×arm into ClaimTuples
   (accuracy; answer-only AND incl-estimator tokens/latency; budget_unit, temperature+seed, served GGUF identity,
   chat_template_kwargs) BEFORE the PRB-T4 run. Locator = the run×suite×arm, never per question. No new grading rule.
@@ -1979,12 +1980,53 @@ are left to that still-running agent.
     24 rows, 0 refused. The livecodebench sidecar was withheld because its accuracy uses the vacuous
     `substring 'def '` scorer. This needs a tuple-level exclusion or a scorer fix; do not ingest it as-is.
     Still unticked: the driver has not merged.
-- [ ] **VB-RUNNER-PATHS — make the GPU-runner capture call sites portable and loud** (filed 2026-09-17 from
+  - 2026-09-17 (sub-vb-wire): **the driver blocker is cleared.** `prb_t4_tale_gpu.py` is on research main
+    (`0b295a25`, VB-RUNNER-PATHS), and the harness now refuses the vacuous code oracle. Left for the owner
+    to close.
+- [x] **VB-RUNNER-PATHS — make the GPU-runner capture call sites portable and loud** (filed 2026-09-17 from
   `2026-09-16-sub-runner-adapters.md`). Research `scripts/benchmark/review_f1/ev13b_run.py:197` (on research main)
   hard-codes `sys.path.insert(0, "/workspace/scripts/vidya")`, as does the unmerged PRB-T4 driver
   `prb_t4_tale_gpu.py` (`sub/gpu-runner-20260916`). Both swallow a capture failure into their log. Resolve the
   root checkout from `EPYC_ROOT` (or refuse), and make a failed capture visible. Then port `prb_t4_tale_gpu.py`
   to research main without its tmp-path literals. VB-PRB-T4 cannot close until that driver merges.
+  ✅ 2026-09-17
+  - Done (sub-vb-wire, research `0b295a25`). The new `scripts/benchmark/belief_capture.py` resolves the
+    capture writer from `EPYC_ROOT` and refuses if it is unset or wrong. It loads the writer by file path.
+    - Both drivers resolve the writer before the GPU claim, and refuse with exit 2 if they cannot.
+    - A failed capture prints a stderr banner, is recorded under `belief_capture`, and makes the exit
+      code 3.
+    - `prb_t4_tale_gpu.py` was ported from `91d66725` (on main as `0b295a25`). It runs the harness from its own checkout,
+      which has the stratified sampler. `--pool` and `--python` are checked before the server starts.
+    - Tests: `scripts/benchmark/test_belief_capture.py`, 10 passed.
+  - [x] **VB-RUNNER-PATHS-2 — convert the remaining guessed-root capture loaders** (filed 2026-09-17,
+    sub-vb-wire). Research `scripts/benchmark/score_tulving_run.py` (`_ROOT_CANDIDATES`) and
+    `scripts/benchmark/occ1/run_occ1.py` (`ROOT_CANDIDATES`) fall back to `/mnt/raid0/llm/epyc-root`
+    and then `/workspace` when `EPYC_ROOT` is unset. They are loud when nothing resolves, but they can
+    silently pick a checkout other than the intended one. Move both to `belief_capture.load_capture`.
+    Their tests (`test_score_tulving_run.py`, `test_beam_adapter.py`) must set `EPYC_ROOT`.
+    ✅ 2026-09-17 (`sub-small-audits`, research `ae92ac5c`).
+    - **Converted.** `score_tulving_run.py`, `occ1/run_occ1.py` and `score_beam_run.py` (the same
+      shape, and the loader that `test_beam_adapter.py` tests) now call
+      `belief_capture.load_capture`.
+      - An unset or wrong `EPYC_ROOT` is refused through each script's existing `SystemExit`. So is
+        a module that lacks `write_belief_measurements`.
+      - Nothing falls back to `/mnt/raid0/llm/epyc-root` or `/workspace`. That fallback was live
+        risk: the shared clone is behind origin/main and lacks these capture modules.
+    - **Tests.** The loader and round-trip tests set `EPYC_ROOT` explicitly. 10 new cases fail on
+      the old code.
+      - With `EPYC_ROOT` unset: 118 passed, 11 skipped.
+      - With `EPYC_ROOT` set to root origin/main: 124 passed, 5 skipped (pyarrow).
+    - [ ] **VB-RUNNER-PATHS-3 — audit the other hard-coded root defaults in research** (filed
+      2026-09-17).
+      - **Belief write paths:** `scripts/kernel_rnd/autokernel/loop/serving_beliefs.py:148`,
+        `claim.py:40` and `serial_run.py:393` default `EPYC_ROOT_REPO` to `/workspace`.
+      - **Fixed roots:** `k35_vision_matrix_runner.py:30`, `run_batch_entry.py:86`,
+        `laguna_pgpu1_dflash_runner.py:69` and `op2_quiet_window_prep.py:30` pin
+        `/mnt/raid0/llm/epyc-root`.
+      - **Candidate list:** `scripts/validate/check_evidence_durability.py:168` walks the same
+        candidate list.
+      - **Action.** Decide per site whether it writes belief rows or governs a decision, and if so
+        route it through `belief_capture.root_checkout`. AutoKernel sites need its quiet window.
 - [ ] **VB-PRB-T4-CAVEAT — mark the 24 ingested PRB-T4 TALE rows as sample-scoped (filed 2026-09-17,
   sub-scorer-fix).**
   - **Affected rows.** The ledger holds 24 `vidya.adapters.tale_budget/v1` claims from run
@@ -2096,13 +2138,31 @@ are left to that still-running agent.
   and `mhs-guard-ops`** (filed 2026-09-16, `sub-vbmhsops`). Waiting on an external event: the merge
   and the restart. Until the epoch is set, the verdict source declines every unit, because nothing
   persisted marks a clean window as screened, so pre-hook data must get zero rows.
-- [ ] **VB-AP-PROMO-RULE — project `eval_details.promotion_rule` and `eval_details.frontier_admission` from the
+- [x] **VB-AP-PROMO-RULE — project `eval_details.promotion_rule` and `eval_details.frontier_admission` from the
   AutoPilot trial journal into the support frame** (filed 2026-09-17 from `2026-09-16-sub-gate-frontier.md`). Both
   fields come from gate-frontier (c)+(b) (orchestrator `sub/gate-frontier-20260916`, in the AutoPilot merge train).
   The change is additive for the `autopilot_journal` adapter and changes no grade. Do it once the train is on
-  orchestrator main.
-- [ ] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
-  per-window rates** (filed 2026-09-16, sub-autopilot-evidence; orchestrator `203cb6e2`, merged at `753343f5`).
+  orchestrator main. ✅ 2026-09-17
+  - Done (sub-vb-wire, root `f71277f7`, against orchestrator main `a1a0251a`).
+    - The support frame carries `promotion_rule` (`frontier` / `empty_frontier_repro` / `seed` /
+      `archive_unavailable_no_baseline` / `refused_guard_unavailable`), `promotion_status`
+      (`pending_commit` / `refused`) and `frontier_admission` (`representative`), all verbatim.
+    - It also carries `promotion_committed`. This is True only when a `pending_commit` row has its
+      `baseline_promotion` ledger event in the same shard. An uncommitted pending row gets a stated
+      "NOT promoted" reason.
+    - A pending row on the shard's newest trial is held back until its state is final, because the
+      commit event is appended after the row.
+    - Keys are absent on rows that lack them, so pre-train frames stay byte-identical. Grade unchanged.
+  - Tests: `tests/vidya/test_autopilot_journal_adapter.py`, 17 passed, including an end-to-end run
+    against the real writer (`EPYC_ORCH_ROOT`).
+  - Ingest: 0 rows. The live journal (`autopilot_journal{,_1}.jsonl`) was last written 2026-08-09, so
+    it has no measured rows and no decision fields. The dry run matched 1 unit, projected 0 and
+    declined 1.
+  - [ ] **VB-AP-PROMO-RULE-INGEST — run `cli.py ingest autopilot-journal` after AutoPilot restarts on
+    orchestrator main** (filed 2026-09-17, sub-vb-wire). Blocked on an external event: the first
+    post-restart trials. Report how many rows carry `frontier_admission` and `promotion_rule`.
+- [x] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
+  per-window rates** (filed 2026-09-16, sub-autopilot-evidence; orchestrator `203cb6e2`, merged at `753343f5`). ✅ 2026-09-17
   - Producers:
     - `orchestration/autopilot_rejected_mutations.jsonl`, harness-written, one record per reject;
     - the journal fold `rejected_mutation_ledger.rejected_configs_from_entries()`.
@@ -2117,11 +2177,37 @@ are left to that still-running agent.
     11 passed, including a fixed `sys.path` in the end-to-end test).
   - The AP-54 structural answer (AMBIGUOUS, file-tool reachability of the wiki) is a pinned
     source-read finding of the VB-HARNESS-AUDIT kind; route it through that decision.
-  - 2026-09-16 (`sub-vb-writers`): durable writers built — orchestrator `sub/vb-writers-orch-20260916`
-    + root `sub/vb-writers-root-20260916`, **under review, unmerged** (merge orch first). Rows appear after
-    the AutoPilot restart, at most ~200 trials later. The SC83 writer is on the same branches; SC83 has
-    nothing to backfill (no decoy corpus or scored reviewer run exists). Detail:
+  - 2026-09-16 (`sub-vb-writers`): durable writers built on orchestrator `sub/vb-writers-orch-20260916`
+    and root `sub/vb-writers-root-20260916`. The SC83 writer is on the same branches. Detail:
     `progress/2026-09/2026-09-16-sub-vb-writers.md`.
+  - **Landed 2026-09-17.** The orchestrator side is on orchestrator main (`2789b56d` + review fix `e93edfdb`,
+    merged in the AutoPilot train `a1a0251a`). The root side is on root main via the `sub-land-vidya`
+    merge of `sub/vb-writers-root-20260916`. It was ticked on the branch on 2026-09-16 but had not reached
+    root main until then. Detail: `progress/2026-09/2026-09-17-sub-land-vidya.md`.
+  - Writer: `scripts/autopilot/reproposal_rate.py`. `autopilot.py` calls it fail-open after both
+    `journal.record` sites. Its first call writes an `armed` record. Each closed 100-trial window then gets
+    one self-hashed line in `orchestration/autopilot_reproposal_rates.jsonl`. The line carries:
+    - counts split by action type and by standing rejection class;
+    - the planner fold's key, rejection classes and frontier clearing, pinned by `definition_sha256`, and a
+      test proving this fold equals `rejected_configs_from_entries`;
+    - the journal-shard and ledger prefix digests;
+    - rows for `all_trials`, `keyed_trials` and `diff_repeat_rate`, each with its numerator and denominator
+      stated. A zero denominator writes no row.
+  - Locator: the window.
+  - Rewind guard (Fable review fix): an emitted window whose recorded journal prefix digest no longer
+    matches rotates the file to `*.rewound-<utc>` and re-arms.
+  - Reader: `adapters/autopilot_reproposal_rate.py`, dispatched as `cli.py ingest autopilot-reproposal-rate`.
+  - Tests: orchestrator 12; root 10, including a live cross-repo test.
+  - **Backfill: zero belief rows, per spec §4.7.** A pre-hook row is skipped, not back-filled: today's key
+    definition and supersessions are not the ones in force at those trials.
+    - `reproposal_rate.py backfill` writes `*.retrospective.jsonl`, labelled `retrospective: true` with
+      `belief_measurements: []`. The reader declines that file.
+    - The read-only run over trials 0-1505 (14 windows) found 48 re-proposals: 48 of 216 keyed trials and
+      48 of 1366 trials overall. This matches the AP-53 planner-fold replay.
+    - The one-off 133/1372 counted numeric trials, which this key excludes. It stays a non-gating
+      observation.
+  - Remaining trigger: an AutoPilot restart on orchestrator main (already due for AP-53/AP-55/W3), then the
+    first closed window.
 
 ## VB-KBRAG-QLEN — KB-RAG live query-length telemetry (filed 2026-09-16, sub-tooling)
 
@@ -2269,7 +2355,7 @@ which make a reviewer **false-accept rate** measurable from our own data for the
 every machine review to the exact inputs it was produced against. Filed at producer creation, per the
 standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
 
-- [ ] **SC83 — wire the negative-control FA rate on the WRITE side before the first decoy corpus is scored.**
+- [x] **SC83 — wire the negative-control FA rate on the WRITE side before the first decoy corpus is scored.**
       Class `measurement`, **rates only**. A single verdict or objection is categorical and must not be
       forced through `ClaimTuple` (the same call as the headless-audit row). Project
       `gold_annotations.FalseAcceptResult.as_dict()`: numerator, denominator, `lower_is_better`, and the
@@ -2283,6 +2369,25 @@ standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../sc
       Trigger: the first decoy rows plus a scored reviewer run. Zero compute to file.
       *2026-09-16 status:* `gold_annotations.py` and `review_envelope.py` are on orchestrator main, but
       no scoring run persists `FalseAcceptResult` yet. There is nothing to project until one does.
+      ✅ 2026-09-17: landed. Built 2026-09-16 (sub-vb-writers) as orchestrator `2789b56d` + `e93edfdb`, which are on
+      orchestrator main via `a1a0251a`, plus root `sub/vb-writers-root-20260916`. That root branch reached root main
+      only on 2026-09-17, via the `sub-land-vidya` merge (`progress/2026-09/2026-09-17-sub-land-vidya.md`).
+      - Writer: `false_accept_record.py` plus `scripts/review/score_false_accept.py` append one self-hashed
+        `epyc.reviewer.false_accept_run.v1` line per scoring run to `data/reviewer_eval/false_accept_runs.jsonl`.
+        - The RA-12 filter runs BEFORE scoring. Stale verdicts are listed with their reasons and counted as
+          unscored.
+        - The endorsement is read only from the signed body.
+        - A run that mixes reviewer configs is refused.
+        - A stale verdict on a decoy awaiting arbitration is listed in `stale_excluded`, not `stale`
+          (Fable review fix). The reader checks it against `excluded_for_arbitration`.
+        - `n_decoys == scored + unscored + excluded` is checked before the line is written.
+        - A run with no scored decoy writes no row.
+      - Reader: `adapters/reviewer_false_accept.py`, dispatched as `cli.py ingest reviewer-fa`. It refuses a
+        dropped denominator, a re-bound stale id, edited lines or rows, and any `protocol_id`. It carries input
+        decay as `attestation_present=False`. The shared ladder grades each row `Judged/Located`.
+      - Tests: orchestrator 7; root 9, including a live cross-repo run of writer → CLI → ingest → tuple.
+      - Backfill: none possible, because no decoy corpus exists.
+      - Remaining trigger: the first decoy corpus plus a scored reviewer run, then `cli.py ingest reviewer-fa`.
 
 ## SC85 — OCC-1 optical-compression runs (filed 2026-09-16)
 
@@ -2347,13 +2452,13 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 |---|---|---|---|
 | VB-KBRAG-QLEN | origin/main `kb_rag_query_length.py` | yes, `kb-rag-qlen --path <report.json>` | first traffic, then a `query_length_report.py --out` snapshot, then ingest |
 | SC75 / VB-INF70-ARMS | origin/main `inf70_serving_arm{,_capture}.py` | yes, `inf70-arms` | none: VB-WIRE-2 wired (root `3c5a4b30`); first real arm pending |
-| VB-PRB-T4 | root `tale_budget{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `tale-budget --path <out dir>` | the calling driver `prb_t4_tale_gpu.py` is on unmerged research `sub/gpu-runner-20260916` and imports the writer from `/workspace/scripts/vidya`; merge it, then the first run |
-| VB-REVIEW-F1 | root `review_f1{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `review-f1 --path <out dir>` | the calling driver `ev13b_run.py` is on unmerged research `sub/gpu-runner-ev13b-20260916` (`0627a5d9`) and imports the writer from `/workspace/scripts/vidya`; merge it, then the first run |
+| VB-PRB-T4 | root `tale_budget{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `tale-budget --path <out dir>` | none: the first run landed (24 rows), and the driver is on research main at `0b295a25` with an `EPYC_ROOT` loader (2026-09-17) |
+| VB-REVIEW-F1 | root `review_f1{,_capture}.py` (ported 2026-09-16, branch `sub/runner-adapters-20260916`) | yes, `review-f1 --path <out dir>` | none: the driver merged (`59d0bc73`), the first run landed (6 rows), and its loader uses `EPYC_ROOT` since research `0b295a25` (2026-09-17) |
 | VB-SL2-STEPS | n/a (a decision) | n/a | still a decision; the serving-belief reader `autokernel_legacy_serving.py` IS on origin/main now |
 | VB-EVCONF2 | none | no | `confidence_source_compare.py` is on unmerged orchestrator `sub/evconf2-20260916` |
 | VB-HARNESS-AUDIT | none | no | decision (a)/(b)/(c); the findings are handoff prose with no machine-readable record to project |
-| VB-AP53-RATE | none for the rate; the AP-55 part is ported here | no | producer `rejected_mutation_ledger.py` is on orchestrator main, but no per-window rate row writer exists |
-| SC83 (was SC76, reviewer FA rate) | none | no | see SC83 above |
+| VB-AP53-RATE | origin/main `autopilot_reproposal_rate.py` (landed 2026-09-17) | yes, `autopilot-reproposal-rate` | restart AutoPilot on orchestrator main, then wait for the first closed window |
+| SC83 (was SC76, reviewer FA rate) | origin/main `reviewer_false_accept.py` (landed 2026-09-17) | yes, `reviewer-fa` | the first decoy corpus plus a scored reviewer run |
 | VB-MHS-GATES | none | no | producer is on unmerged orchestrator `sub/autopilot-safety-20260916` |
 | VB-GPU-RUNNER | none | no | the sweeps (INF-62 SL-1/SL-5, DF2-6, §5 MoE batched, ERNIE, INF-61) are pre-hook; each needs a producer hook (`calibrate_floor`, batched-bench, sd-server and np-grid wrappers) |
 
@@ -2361,7 +2466,24 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 
 - [ ] **SC86 — wire HS-4 shell runs on the WRITE side**: each run emits a ClaimTuple carrying the harness pin, plugin and config hash, Harness Card version, `x_memory` arm, and the HS-14 column set; locator = run. Must land before the first measured shell run (HS-4 P0.4). Design: `docs/design/hs4-shell-and-orchestrator-features-20260916.md` §4 (P0.5).
   Status 2026-09-16 (`sub-sc86`, branch `sub/sc86-20260916`, unmerged): **adapter ready, producer pending (HS-4 P0.4 driver).** `adapters/opencode_shell_run_capture.py` (run-sidecar schema `epyc.hs4.opencode_shell_run.v1`, writer, `validate_row`), `adapters/opencode_shell_run.py` (strict reader), `cli.py ingest opencode-shell`, and `tests/vidya/test_opencode_shell_run_adapter.py` (32 pass, including writer → `cli.py ingest` → tuple). Rows: the four HS-14 columns, re-derived from recorded counts; refused on a missing pin or config hash and on pre-hook or backfilled runs. The P0.4 driver must write `opencode_shell_run.json` and call the writer at run end; that call is the HS-4 P0.4 owner's. Tick this box when the branch is merged and the driver calls the writer (the SC85 precedent).
+  - 2026-09-17 (`sub-hs4-mcp`): the P0.4 driver now calls the writer. `scripts/harness/hs4_p04_acceptance.py verify` writes the run sidecar and `attempts.jsonl`, then calls `write_belief_measurements`, and its tests run `validate_run_sidecar`/`validate_row` on the output. The adapter is on main (`934317b2`). The tick condition is met, so the SC86 owner can tick this box.
 - [ ] **SC86b — codify the shell-run protocol** under `measurement/protocols/` (task suite, trials per task, serving at production `enable_thinking`, the HS-14 column definitions), and have the P0.4/HS-14 driver pass `protocol_id`. Until then, every OpenCode-shell tuple is `Judged/Located`.
+
+## SC87 — AutoKernel spawn-lineage write-side capture (filed 2026-09-17)
+
+- [x] **SC87 — wire RB-lineage telemetry on the WRITE side before its first run.** The AutoKernel journal/run producer emits a producer-authored, self-hashed ClaimTuple-shaped sidecar binding run id, parent/run identity, logical branch id, ordered width×depth trajectory, source commit, and immutable run-artifact digest. A strict reader may consume only post-hook sidecars and delegates grading to the existing `claim_tuple.grade()` ladder; it must not reconstruct missing tuples from old journals. This is a verified lineage finding, not a performance measurement or promotion warrant. Source: `autokernel-rebuild-program.md` RB-lineage telemetry (intake-1439#record). Write-side producer `a6288858` is tested; the separate strict read-side consumer remains pending.
+
+## SC88 — AutoKernel fresh seeded operation correctness (filed 2026-09-17)
+
+- [ ] **SC88 — wire fresh seeded operation correctness on the WRITE side before first real invocation.** The opt-in producer emits a self-hashed ClaimTuple-shaped receipt joining arm ID, selected candidate source/binary and trusted instrument digests, serving recipe, suite seed, console evidence, and per-case reference/property residuals. `reference_valid`, `property_only`, and `oracle_unavailable` retain their exact provenance; CPU candidate-local references cannot be upgraded to independent anchor correctness. Strict read-side projection accepts only post-hook receipts and delegates grading to `claim_tuple.grade()` without a new ladder. Report-only: no ranked-time or promotion authority. Source: `autokernel-research-loop.md` AK-integrity pack (intake-1454#record).
+
+## SC89 — AutoKernel observed plateau diagnostic provenance (filed 2026-09-17)
+
+- [ ] **SC89 — bind the read-only AK-plateau reporter on the WRITE side before its first real-store report.** Author a self-hashed ClaimTuple-shaped receipt with immutable input experiment row IDs/payload digests, exact anchor epoch/metric/direction/surface/recipe/request grouping, reporter version/parameters, and output digest. The strict reader delegates grading to `claim_tuple.grade()` and cannot infer a causal policy improvement, cost-credit score, or champion gain from an observed historical trajectory. Source: `autokernel-research-loop.md` AK-plateau pack (intake-1440#record, intake-1446#record).
+
+## VB-AK-LINEAGE — AutoKernel code-lineage diagnostic capture (filed 2026-09-17)
+
+- [ ] **VB-AK-LINEAGE — finish prospective AutoKernel lineage source/outcome binding before the first real diagnostic run.** The default-off source/patch capture helper and offline line-level detector do not themselves authorize a run. At authoring, the producer must mint a durable attempt ID, bind it to the original outcome row, capture immutable parent/child source bytes and patch, and export verified `programs.jsonl`/blobs/capture receipts. Add strict read-side ClaimTuple projection of producer-authored diagnostic measurements; never backfill from overwritten `<mechanism>.<lane>.patch` paths or tree hashes. No live search-policy or promotion authority. Source: `autokernel-research-loop.md` AK-lineage diagnostics (intake-1451#record, intake-1458#record, intake-1442#record).
 
 ## VB-NIAH-E1A — RLM E1 NIAH dual-scored arms (filed 2026-09-16, sub-e1a)
 

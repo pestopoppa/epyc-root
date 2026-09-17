@@ -3273,10 +3273,10 @@ def _serial_snapshot(body: Mapping[str, Any], *, now: float | None, root=None) -
         if state not in RUN_STATES:
             raise ValueError("unknown serial lifecycle state")
         if state in (RUN_COMPLETE, RUN_FAILED):
-            result["state"] = ("stopped" if stopped else
-                               "all_failed" if routing and len(failures) == routing["target_count"] else
+            result["state"] = ("all_failed" if routing and len(failures) == routing["target_count"] else
                                "failed" if state == RUN_FAILED else
-                               "complete_with_failures" if failures else "complete")
+                               "complete_with_failures" if failures else
+                               "stopped" if stopped else "complete")
             if root is not None and routing is not None:
                 result["completed"] = _serial_completed(body, root, now=now)
             return result

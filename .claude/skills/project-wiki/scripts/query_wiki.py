@@ -22,7 +22,11 @@ from pathlib import Path
 try:
     import yaml
 except ImportError:
-    print("ERROR: PyYAML not installed. Run: pip install pyyaml", file=sys.stderr)
+    print(
+        "ERROR: PyYAML is not installed in " + sys.executable + ". Run this script with the "
+        "orchestrator venv: /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/query_wiki.py",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 ROOT = Path(__file__).resolve().parents[4]  # epyc-root

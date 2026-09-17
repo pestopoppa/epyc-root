@@ -20,6 +20,19 @@
 # since `agent_audit*.log` matches the empty infix as well as `-<id>`.
 # Order is NOT chronological across files — callers needing global order MUST
 # use agent_log_merged, not this list directly.
+# Warn on stderr when the frozen legacy monolith is missing from $dir. Its absence
+# silently shrinks every summary to post-cutover history (KB-WM-3): the file is
+# untracked since f1717d80, so a checkout that moves past that commit loses it.
+# Returns 0 always; the warning is the signal.
+agent_log_legacy_check() {
+  local dir="${1:-${LOG_DIR:-.}}"
+  if [[ ! -f "$dir/agent_audit.log" ]]; then
+    printf '%s\n' "WARNING: legacy audit log $dir/agent_audit.log is missing, so pre-2026-08-12 history is not included." \
+      "  Restore it with: git show f1717d80^:logs/agent_audit.log > $dir/agent_audit.log" >&2
+  fi
+  return 0
+}
+
 agent_log_files() {
   local dir="${1:-${LOG_DIR:-.}}"
   local f

@@ -25,6 +25,7 @@ source "${SCRIPT_DIR}/agent_log_read.sh"
 LOG_FILE="$(mktemp "${TMPDIR:-/tmp}/agent_audit_merged.XXXXXX")"
 trap 'rm -f "$LOG_FILE"' EXIT
 agent_log_merged "${LOG_DIR}" >"$LOG_FILE"
+agent_log_legacy_check "${LOG_DIR}"
 
 if [[ ! -s "$LOG_FILE" ]]; then
   echo "No audit log entries found under ${LOG_DIR} (checked $(agent_log_files "${LOG_DIR}" | wc -l) file(s))"

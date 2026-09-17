@@ -2,8 +2,57 @@
 
 **Category**: `safety`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (later pass: the eval fence gains write/execute denial and an inherited-TMPDIR fix, the pool leak is chased into the checkpoints, and the MHS-3 structural refusals are built; earlier incremental: security-review GATE-0 before exploitability, mandatory refutation and a CWE-keyed dedup; one gold schema in the reviewer plane; the closure audit's false closures; the OP-20 fail-open argument); earlier: 2026-09-15 (mutation safety: override is a distinct risk class from constrain — every catastrophic held-out regression in the released corpus came from an override patch — and under-generalization has no guard yet; the apply gate is not yet "only screened effects apply"; earlier: 2026-09-14 (noninf sweep: PromptForge's Tier-2 mutation validator was writing the model-generated candidate over the live repo file and importing it in-process, so every proposal's module top level executed unsandboxed with the autopilot's authority — layer 4 is now a static `ast` screen with three denylist profiles, original-file grandfathering, and a closed fail-closed `MutationEffect` enum; an enforced denylist against a prompt asking for the forbidden shape would have made the MH-9 lane propose only rejects, silently, so the shape example now ships as a module constant screened in CI. ETR-2 on this page is now CLOSED — see benchmark-methodology.md); earlier: 2026-08-25 (the agent-security eval fixture is in-tree — TU-DTAP-1 done: a reviewed Apache-2.0 DTAP subset in a disposable local runner with deterministic state judges, typed failure outcomes, immutable trace replay, and target-disjoint attack payloads; and the PII fixture/allowlist drift that left the root candidate gate red for 22 days was surfaced with the L5 closeout)
+**Last compiled**: 2026-09-17 (afternoon: every leak copy is purged, including the pinned v10 store; the checkpoint prompt re-pin is RATIFIED; the eval fence is on main and ran on a live API); earlier 2026-09-17 (later pass: the eval fence gains write/execute denial and an inherited-TMPDIR fix, the pool leak is chased into the checkpoints, and the MHS-3 structural refusals are built; earlier incremental: security-review GATE-0 before exploitability, mandatory refutation and a CWE-keyed dedup; one gold schema in the reviewer plane; the closure audit's false closures; the OP-20 fail-open argument); earlier: 2026-09-15 (mutation safety: override is a distinct risk class from constrain — every catastrophic held-out regression in the released corpus came from an override patch — and under-generalization has no guard yet; the apply gate is not yet "only screened effects apply"; earlier: 2026-09-14 (noninf sweep: PromptForge's Tier-2 mutation validator was writing the model-generated candidate over the live repo file and importing it in-process, so every proposal's module top level executed unsandboxed with the autopilot's authority — layer 4 is now a static `ast` screen with three denylist profiles, original-file grandfathering, and a closed fail-closed `MutationEffect` enum; an enforced denylist against a prompt asking for the forbidden shape would have made the MH-9 lane propose only rejects, silently, so the shape example now ships as a module constant screened in CI. ETR-2 on this page is now CLOSED — see benchmark-methodology.md); earlier: 2026-08-25 (the agent-security eval fixture is in-tree — TU-DTAP-1 done: a reviewed Apache-2.0 DTAP subset in a disposable local runner with deterministic state judges, typed failure outcomes, immutable trace replay, and target-disjoint attack payloads; and the PII fixture/allowlist drift that left the root candidate gate red for 22 days was surfaced with the L5 closeout)
 **Sources**: 23 documents (added 2026-09-17: security-review-skill GATE-0/refutation/dedup, the closure-audit guide, and the 2026-09-16 sub-closure-fix/sub-cleanup/sub-cleanup2/sub-hubview/sub-integrate/main progress logs) (added 2026-09-17 later pass: the sub-ap54-fence Landlock/TMPDIR follow-up, MHS-3 structural refusals, and the leak00912/ckpt-leak records) (added 2026-09-14 the PromptForge mutation-safety cluster: the self-writing validator, the three denylist profiles, grandfathering, the total effect-enum normalization, and the prompt/denylist drift guard) (added 2026-08-25 the agent-security eval fixture + PII-gate drift cluster; added 2026-08-16 the promotion-gate integrity cluster: warrant-blind acceptance, the no-op it cannot see, and a dead second "SafetyGate") (added 2026-08-16 the promotion-gate integrity cluster: warrant-blind acceptance, the no-op it cannot see, and a dead second "SafetyGate")
+
+## Compiled Update — 2026-09-17 (afternoon): the leak is out of every store, and v10's re-pin is the last step
+
+**Confidence: verified**: purge receipts, `--verify` output, git ancestry and the reloaded API's own checks.
+
+This answers the previous pass's first open question. **MHS-3b was RATIFIED** (root `b8379d42`): all 10
+checkpoint prompt copies were re-pinned to `18f8ea01`, so a rewind no longer restores the leaked `rules.md`.
+**MHS-3c purged the out-of-scope copies**, using orchestrator tool `41baad2b`. It covered:
+- 11 offline `episodic.db` copies and 15 state backups;
+- the live store, purged while the API was stopped (64,208 → 64,204 entries);
+- the pinned `multitier_v10` store, with operator approval.
+
+`--verify` passes on all of them, and backups plus the receipt are in
+`/mnt/raid0/llm/backups/episodic-leak-20260917/`.
+
+### Key findings
+
+- **A purge of a pinned store produces a ratification debt, not a finished state.** v10's
+  `checkpoint_meta.json` pins `episodic.db`, `embeddings.faiss` and `id_map.npy`. After the purge the tool
+  writes `pinned_repin_proposal.json` (episodic.db `24cff074…` → `8ff84e9d…`), and the meta keeps the old
+  digests until the human-only re-pin (MHS-3d) is ratified.
+  [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md)
+- **The purge treats the historical desync as data to preserve, not repair.** `repair_faiss_id_map.diagnose()`
+  serves as the oracle, and `repair()` is never called. The 20260716 store keeps its pre-existing +32 FAISS
+  desync, with exact diagnose deltas. A timeout that cut the first offline run at item 19 left the originals
+  intact, and the re-run completed. [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md)
+- **The AP-54 fence is on main and ran live.** The AutoPilot merge train (orchestrator `a1a0251a`) carries
+  `a8bdb15f`, `80fa99aa` and `0d3b6e26`. The 2026-09-17 reload confirmed that `chat.py` imports
+  `knowledge_fence`, so each eval request arms the fence. The API was stopped afterwards at the operator's
+  request. [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+
+- **The v10 re-pin ratifier is ready and awaits the operator (root `b4744e00`).**
+  - **What it re-pins:** the three file hashes, `memory_count` (63925 → 63921), the derived
+    `checkpoint_sha256` (`a604276f` → `3b457d98`), and the v10 receipt mirror.
+  - **What the checker audit found:** the purge had already broken the MHS-3b ratifier's `--verify`. That
+    script's own sha is attested in its receipt, so it cannot be edited. The new `--verify` therefore re-runs
+    every check the old one made, at the chained post-state, and the decision receipt records the
+    supersession.
+  - **How it is tested:** a dry-run against the real checkpoint is clean and wrote nothing. The 16 fixture
+    tests are mutation-checked: removing the rollback, or the lock, turns a test red.
+  - [sub-v10-repin](../progress/2026-09/2026-09-17-sub-v10-repin.md)
+
+### Source References (2026-09-17 afternoon)
+
+- [sub-v10-repin](../progress/2026-09/2026-09-17-sub-v10-repin.md)
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): Afternoon section: the RATIFY, API reload checks, purge scope.
+- [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md): inventory, design notes, test matrix.
+- [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md): MHS-3b/3c/3d state.
+- [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md): AP-54 closure note.
 
 ## Compiled Update — 2026-09-17 (later): the fence denies writes and execution, an inherited TMPDIR pointed armed code into a fenced tree, and the pool leak was in the prompts themselves
 
@@ -58,7 +107,7 @@ The security-review skill now has three stages, placed in the pipeline order tak
 
 ### Sources
 
-- [handoffs/active/security-review-skill.md](../handoffs/completed/security-review-skill.md): GATE-0, mandatory refutation, the dedup key, and the single reviewer-plane gold schema and gold-sanity gate.
+- [handoffs/completed/security-review-skill.md](../handoffs/completed/security-review-skill.md): GATE-0, mandatory refutation, the dedup key, and the single reviewer-plane gold schema and gold-sanity gate.
 - [docs/guides/agent-workflows/handoff-closure-audit.md](../docs/guides/agent-workflows/handoff-closure-audit.md): the audit and its phantom-handling policy.
 - [progress/2026-09/2026-09-16-sub-closure-fix.md](../progress/2026-09/2026-09-16-sub-closure-fix.md): the reopened false closures and the sixth phantom.
 - [progress/2026-09/2026-09-16-sub-cleanup.md](../progress/2026-09/2026-09-16-sub-cleanup.md): the OP-20 decision package and its fail-open argument.

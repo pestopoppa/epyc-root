@@ -24,6 +24,7 @@ Two properties matter and are pinned by tests:
 
 from __future__ import annotations
 
+import functools
 import hashlib
 import json
 import sys
@@ -44,6 +45,22 @@ JOURNAL_GLOB = "orchestration/autopilot_journal*.jsonl"
 FT_SOURCE = "epyc.vidya/frame/source_observed/v1"
 FT_CLAIM = "epyc.vidya/frame/claim_proposed/v1"
 FT_SUPPORT = "epyc.vidya/frame/evidence_supports_claim/v1"
+
+# VB-AP-PROMO-RULE: decision fields the archive stage stamps into ``eval_details`` (orchestrator
+# `scripts/autopilot/autopilot.py`, gate-frontier (b)+(c), on main since `a1a0251a`). Values are
+# the writer's vocabulary, carried verbatim and never re-decided here:
+#   promotion_rule     frontier | empty_frontier_repro | seed | archive_unavailable_no_baseline |
+#                      refused_guard_unavailable  (safety_gate.py `_select_promotion_rule`)
+#   promotion_status   pending_commit | refused   (present only when a promotion was decided)
+#   frontier_admission representative            (absent unless the trial is a clean frontier point)
+PROMOTION_FIELDS = ("promotion_rule", "promotion_status", "frontier_admission")
+PROMOTION_PENDING = "pending_commit"
+BASELINE_PROMOTION_EVENT = "baseline_promotion"
+# AP-57 (orchestrator `01906607`): the `speed_axis_reseed` ledger event is deliberately NOT
+# projected. It is a baseline_state receipt (the speed axis re-anchored on a refused promotion),
+# not a measurement: the trial row it cites is already projected with its speed. It is never a
+# promotion commit, and it is appended AFTER the row, so carrying it on the frame would need its
+# own settle rule for every refused newest-trial row. The index below ignores it on purpose.
 
 
 def shards(root: Path | None = None) -> list[Path]:
@@ -94,6 +111,112 @@ def _attestation_verified(row: dict) -> bool:
     return recomputed == claimed
 
 
+def committed_promotions(shard: Path) -> frozenset[int]:
+    """Source trial ids of the ``baseline_promotion`` ledger events in ONE shard.
+
+    The writer journals a promoting trial as ``promotion_status="pending_commit"`` BEFORE the
+    promotion commits; the commit record is the ledger event with that ``source_trial_id``,
+    appended to the same shard with the final state save. A pending row without it must be read
+    as NOT promoted (autopilot.py, re-review B3). Joined within the shard, because trial ids are
+    only unique per shard.
+    """
+    return _shard_index(shard)[0]
+
+
+def last_trial_id(shard: Path) -> int:
+    """Highest trial id journaled in ONE shard (-1 when it holds none)."""
+    return _shard_index(shard)[1]
+
+
+def _shard_index(shard: Path) -> tuple[frozenset[int], int]:
+    st = shard.stat()
+    return _index_shard(str(shard), st.st_mtime_ns, st.st_size)
+
+
+@functools.lru_cache(maxsize=16)
+def _index_shard(path: str, _mtime_ns: int, _size: int) -> tuple[frozenset[int], int]:
+    ids: set[int] = set()
+    last = -1
+    with open(path, errors="ignore") as fh:
+        for line in fh:
+            try:
+                ev = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(ev, dict):
+                continue
+            if "trial_id" in ev:
+                try:
+                    last = max(last, int(ev["trial_id"]))
+                except (TypeError, ValueError):
+                    pass
+            elif ev.get("type") == BASELINE_PROMOTION_EVENT:
+                try:
+                    ids.add(int(ev.get("source_trial_id")))
+                except (TypeError, ValueError):
+                    continue
+    return frozenset(ids), last
+
+
+def promotion_unsettled(shard: Path, row: dict, decision: dict) -> bool:
+    """A pending promotion on the shard's newest trial whose commit event may still be coming.
+
+    The commit event is appended AFTER the row, so reading between the two would persist
+    ``promotion_committed=False`` into an append-only ledger for a promotion that then commits.
+    Such a row is not projected yet; once a later trial is journaled the state is final.
+    """
+    return (decision.get("promotion_status") == PROMOTION_PENDING
+            and not decision["promotion_committed"]
+            and int(row["trial_id"]) >= last_trial_id(shard))
+
+
+def promotion_decision(shard: Path, row: dict) -> dict:
+    """The promotion/frontier decision the trial row recorded, plus its commit state.
+
+    Only keys the row actually carries are returned, so a row written before the fields existed
+    projects byte-identical frames (never back-filled). ``promotion_committed`` is added only for
+    a decided promotion: True when a ``pending_commit`` row has its ledger commit event, False
+    otherwise (a ``refused`` row, or a pending row whose commit never landed).
+    """
+    ed = row.get("eval_details")
+    if not isinstance(ed, dict):
+        return {}
+    out = {k: str(ed[k]) for k in PROMOTION_FIELDS if isinstance(ed.get(k), str) and ed[k]}
+    if "promotion_status" in out:
+        out["promotion_committed"] = (
+            out["promotion_status"] == PROMOTION_PENDING
+            and int(row["trial_id"]) in committed_promotions(shard))
+    return out
+
+
+#: AP-55-ARM (orchestrator ``cd79b80e``): what each BINDING mode would have held on the same legs,
+#: recorded at write time in ``eval_details.ap55_promotion_gate`` (``gate_summary``).
+AP55_COUNTERFACTUAL_FIELDS = (("would_hold_enforce", bool),
+                              ("would_hold_enforce_reasons", list),
+                              ("would_hold_strict", bool))
+
+
+def _ap55_gate(raw, eval_details=None) -> dict:
+    """The writer's AP-55 gate block, copied field by field; ``{}`` when absent.
+
+    The shadow-mode counterfactual keys are copied verbatim from ``eval_details.ap55_promotion_gate``
+    only when the row recorded them. They are never re-derived here: a row written before the
+    counterfactual existed carries no such key, and ``ap55_shadow_review`` owns the reconstruction.
+    """
+    if not isinstance(raw, dict) or not raw:
+        return {}
+    out = {"mode": str(raw.get("mode") or ""),
+           "seed_rerun": str(raw.get("seed_rerun") or ""),
+           "batch_homogeneity": str(raw.get("batch_homogeneity") or ""),
+           "hold": bool(raw.get("hold"))}
+    summary = (eval_details or {}).get("ap55_promotion_gate") if isinstance(eval_details, dict) else None
+    if isinstance(summary, dict):
+        for key, typ in AP55_COUNTERFACTUAL_FIELDS:
+            if isinstance(summary.get(key), typ):
+                out[key] = list(summary[key]) if typ is list else summary[key]
+    return out
+
+
 def as_record(shard: Path, row: dict) -> dict:
     """Shape a journal row into the record `measurement_record.grade()` consumes."""
     meas = row["measurement"]
@@ -125,10 +248,23 @@ def as_record(shard: Path, row: dict) -> dict:
         # Empty on rows written before 2026-09-16 (never back-filled).
         "infra_fingerprint": str(meas.get("infra_fingerprint") or ""),
         "comparability": str(meas.get("comparability") or ""),
+        # AP-55 (b)+(c): the promotion-gate legs as RECORDED by the writer — the same-regime
+        # seed re-run verdict, the candidate-batch homogeneity verdict, the gate mode and
+        # whether it held the promotion, plus the AP-55-ARM would_hold_* counterfactual when the
+        # row recorded it. Carried, never graded. Empty on rows written before the gate existed
+        # (never back-filled).
+        "ap55_gate": _ap55_gate(meas.get("ap55_gate"), row.get("eval_details")),
         # AP-54: whether the eval rollouts ran behind the knowledge fence ("active" | "absent" |
         # "mixed"), as RECORDED by the writer from the API echo. Carried, never graded. Empty on
         # rows written before the fence existed, which must be read as unfenced.
         "eval_fence": str(meas.get("eval_fence") or ""),
+        # AP-54 kernel enforcement level behind an active fence: landlock | mountns | hook-only.
+        # Carried, never graded. Empty when the fence was not active or the row predates it.
+        "eval_fence_enforcement": str(meas.get("eval_fence_enforcement") or ""),
+        # AP-63(a): the AP-1510 run-manifest digest the trial was dispatched under, as RECORDED
+        # by the writer (sources + task + evaluator). Carried, never graded. Empty on rows written
+        # before 2026-09-17 and on rows that never dispatched (never back-filled).
+        "run_manifest": str(meas.get("run_manifest") or ""),
         "attestation": {
             "path": f"{ORCH_REL}/orchestration/{shard.name}",
             "sha256": att.get("sha256"),
@@ -147,6 +283,13 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
     rec = as_record(shard, row)
     q, t, reasons = grade(rec)
     ident = rec["measurement_id"]
+    decision = promotion_decision(shard, row)
+    if promotion_unsettled(shard, row, decision):
+        return []
+    if decision.get("promotion_status") == PROMOTION_PENDING and not decision["promotion_committed"]:
+        # Stated, not graded: the row claims a pending promotion that no ledger event commits.
+        reasons = [*reasons, "promotion pending_commit has no baseline_promotion commit event: "
+                             "read as NOT promoted"]
     source_id = f"src_ap_{ident}"
     claim_id = f"clm_ap_{ident}"
     if rec.get("reps_basis", "").startswith("attempted"):
@@ -184,7 +327,12 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                        "metric_direction": rec["metric_direction"],
                        "infra_fingerprint": rec["infra_fingerprint"],
                        "comparability": rec["comparability"],
-                       "eval_fence": rec["eval_fence"]},
+                       "ap55_gate": rec["ap55_gate"],
+                       "eval_fence": rec["eval_fence"],
+                       "eval_fence_enforcement": rec["eval_fence_enforcement"],
+                       "run_manifest": rec["run_manifest"],
+                       # VB-AP-PROMO-RULE: carried verbatim, never graded; absent keys stay absent.
+                       **decision},
             provenance={"evidence": f"evd_ap_{ident}", "about": claim_id, "method": ADAPTER_ID,
                         "grade_reasons": reasons, "reps_basis": rec["reps_basis"]},
             actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,

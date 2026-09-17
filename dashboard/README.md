@@ -92,6 +92,23 @@ a managed service by `epyc-orchestrator/scripts/server/orchestrator_stack.py`
 of the stack. No third-party dependencies — it runs under any `python3` (≥3.9);
 the orchestrator's venv is **not** required.
 
+### Lifecycle and supervision (the one story; OP-9 resolved 2026-09-17)
+
+The hub has four layers, and each one has a single job:
+
+| Layer | What | Job |
+|---|---|---|
+| Launch spec | `handoff_dashboard` in `epyc-orchestrator/orchestration/launch_manifest.yaml` | Holds the only definition of argv, cwd, pythonpath and env. The cwd is the read-only view `/mnt/raid0/llm/views/epyc-root-main` (detached at origin/main; never a lane). |
+| Managed service | `orchestrator_stack.py` (`reload handoff_dashboard`) | Starts and stops the hub from that spec as part of stack operations. |
+| Watchdog | `scripts/dashboard/hub_supervisor.sh` (daemon, inside the container) | Polls `/health` and relaunches the hub from the **same** spec when it dies between stack operations. Refreshes the view every 180 s and restarts on a stale dashboard source. |
+| Watchdog of the watchdog | Host cron, every 2 min, tag `# epyc-op9-hub-supervisor` | Runs `hub_supervisor.sh once` from a **pinned, read-only copy** at `/mnt/raid0/llm/ops/hub-supervisor/<sha>/`. If the daemon holds `/tmp/hub_supervisor_8100.lock`, the pass exits. Otherwise it does one full pass (restart if down, else view refresh, sync and stale check), so the surface stays covered while the daemon is dead. Log: `logs/cron_supervision.log`. |
+
+The cron is operator territory. It is installed on the host by
+`scripts/operator/install_supervision_cron_20260916.sh --all`, and moving the pin to a newer
+supervisor means re-running that installer. The cron never runs the mutable shared clone or the
+view. Before a FULL stack reload, stop the daemon (or run `once` afterwards) so the two do not race
+for `:8100`. Neither layer touches the orchestrator API (`:8000`).
+
 ## Layout
 
 | File | Role |
