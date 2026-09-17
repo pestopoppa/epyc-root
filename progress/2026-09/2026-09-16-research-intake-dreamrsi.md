@@ -50,3 +50,12 @@ HS/DAR/TOC domain mismatches, external re-measurements, and the 13/15 re-run (�
 - `cite-check` exit 0 (clean).
 - Intake entries: `handoffs_updated` + `integration_disposition` + `disposition_evidence` set on 1435–1459.
 - All writes in the worktree; `handoffs/` edits are the six files above plus the generated master index.
+
+## Wrap-up (operator-invoked /wrap-up, 2026-09-17)
+
+- **Checklist-sync gate**: 0 checkbox flips this session (intake session files new work, executes none); 14 new unchecked rows added (verified by diff count); derived-actionables gate satisfied at Stage 3/4 (26 explicit declines recorded in the approved plan; every dive-ledger row filed or declined).
+- **Handoff index**: `index_state.py` + `--check` exit 0 under the wrap-up lease; prune screen ran in the operator-cadence step — **0 candidates**, nothing archived/compacted; `Next action` cells of the six advanced handoffs reviewed, no cell changes required (new rows are additive/observe-only and do not supersede their current next actions).
+- **README freshness**: checker silent (all pass); no refreshes needed.
+- **Wiki compilation sweep** (operator cadence): two passes compiled the residual drift into `wiki/{autonomous-research,benchmark-methodology,agent-architecture,knowledge-management,safety,hardware-optimization,speculative-decoding,ssm-hybrid,multimodal,tool-implementation}.md`; watermark advanced via `--touch` under lease after all drift was folded.
+- **Agent log**: session not logging-driven; no open `agent_task_end` to close.
+- **Commits/promotion**: see the wrap-up output block in the session response (root repo only; no child-repo changes).

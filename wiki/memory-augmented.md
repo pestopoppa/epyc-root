@@ -2,7 +2,7 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Last compiled**: 2026-09-17 (later pass: the dead `/v1` `recall()` is fixed and its open item closed; earlier incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 **Sources**: 39+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, the 2026-06-28 W4/W6 reboot-readiness checkpoint, the RAO/ReDel substrate spike, and the BEAM/Tulving M-12 instrument set) (added 2026-09-17: OP-42 readiness, M-12 blockers, memeval, Hermes-memory, UTM-M7/M8 and trace-bm25 logs, plus the CME/UTM/episodic handoff deltas)
 
 ## Compiled Update — 2026-09-17: M-12 is run-ready except for the GPU window, Hermes memory is complementary in data but competing in mechanism, and a budget primitive ticked in July never existed
@@ -94,6 +94,14 @@ describe code that was never committed.
   exception is swallowed, so **`recall()` is silently dead for every `/v1` client.** Also,
   `hermes-config.yaml` declares a `mempalace:` block that Hermes never reads, so the claimed "H-8
   MemPalace memory" is not wired ([Hermes memory](../progress/2026-09/2026-09-16-sub-hermes-memory.md)).
+  **Both are fixed (orchestrator `83c7ed2f`, root `91d56181`):** `/v1` REPLs now receive the shared
+  retriever and `hybrid_router`, and the legacy fallback calls the real `embed_exploration` +
+  `retrieve_by_similarity` instead of the non-existent methods; a failure logs at ERROR and returns
+  `status:"unavailable"`, so an empty result is distinguishable from a broken one, and `STUCK()` skips
+  unavailable payloads. The inert `mempalace:` block is commented out, because MCP servers are read
+  only from `mcp_servers:`. The `/v1`-should-have-recall decision is **yes** — `recall()` is a tool of
+  the orchestrator's own REPL, not client access to the store
+  ([sub-recall](../progress/2026-09/2026-09-16-sub-recall.md)).
 - **UTM-M7/M8 were a phantom tick, now fixed.** The 2026-07-29 ✅ said `select_budgeted_records()`
   existed in `src/trace/navigation.py`. `git log --all -S` finds it on no orchestrator or research
   ref. The text arrived as a staged-file ride-along in an unrelated commit. The function was
@@ -115,14 +123,15 @@ describe code that was never committed.
   prompts? The smoke test is ready (`a6491b9e`) but waits on the deferred GPU window.
 - M-12f/g/i still block citing CAS or a cross-book SRS, though not running.
 - UTM-M9, the no-memory control arm in the eval tower, remains an operator-gated trust-boundary ask.
-- Owners still need to fix the dead `/v1` `recall()` and to decide the precedence rule (does an
-  explicit `x_*` override beat Hermes profile prose?).
+- The precedence rule is still undecided: does an explicit `x_*` override beat Hermes profile prose?
+  (The dead `/v1` `recall()` half of this item is closed — see above.)
 
 ### Sources
 
 - [episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md): the M-12 blocker status, M-12a/b command changes, M-12e re-verification, M-12j progress
 - [conversational-memory-eval-instrument](../handoffs/active/conversational-memory-eval-instrument.md): the CME-1 and CME-4 closures and the BEAM arm gate
 - [unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md): the UTM-M7/M8 re-implementation and the bm25 note
+- [2026-09-16-sub-recall.md](../progress/2026-09/2026-09-16-sub-recall.md): the `/v1` recall fix, its tests and the inert `mempalace:` block
 - [2026-09-16-sub-op42-readiness](../progress/2026-09/2026-09-16-sub-op42-readiness.md): token statistics, KV/GPU fit, prefill estimates, blockers B1–B7, OP-42 options A–D
 - [2026-09-16-sub-m12-blockers](../progress/2026-09/2026-09-16-sub-m12-blockers.md): the B1/B2/B3/B5 fixes, B1 verification, review fixes
 - [2026-09-16-sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md): M-12e re-score, the SC67 recoverability finding, CME-1/4 detail
