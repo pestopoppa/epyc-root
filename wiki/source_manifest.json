@@ -15,7 +15,7 @@
       "changed": 2,
       "removed": 0
     },
-    "at": "2026-09-17T18:13:27Z",
+    "at": "2026-09-17T18:16:07Z",
     "scope_paths": [
       "handoffs/active/autokernel-research-loop.md",
       "progress/2026-09/2026-09-17-autokernel-porting-implementation.md"
@@ -23,9 +23,9 @@
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-17T18:13:27Z",
+  "scan_time": "2026-09-17T18:16:07Z",
   "schema_version": 1,
-  "source_set_hash": "70eacaffdfbe7b1522535db223c8b06fda1168d4f98ca132a06120c4743d234b",
+  "source_set_hash": "e00a9c60b2ab7dfc71bd7104ffc9260afdad80d62934b39a93566f35b0499a0a",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -124,10 +124,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6e4171c0ddc4f5cbd7bb9777fcba6d268772eef1261888283db8992a8067f423",
-      "modified": "2026-09-17T18:11:53Z",
+      "content_hash": "d02cd8e77d5ad7d9be7e45d6a58ee4af7372424c411abf55be2a8fe3bbe06329",
+      "modified": "2026-09-17T18:16:01Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 469152,
+      "size": 469897,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -7628,10 +7628,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "54de78a3da4196b81e8df30205a847606df51ff5f572de6dbf5a01c58c0bebdd",
-      "modified": "2026-09-17T18:11:41Z",
+      "content_hash": "2c2a10fc64106331a881ae8a273cee5a20fb11fe4f672fbda69711b3978278a1",
+      "modified": "2026-09-17T18:15:50Z",
       "path": "progress/2026-09/2026-09-17-autokernel-porting-implementation.md",
-      "size": 10239,
+      "size": 10961,
       "title": "AutoKernel porting-method implementation \u2014 2026-09-17",
       "type": "progress"
     },
