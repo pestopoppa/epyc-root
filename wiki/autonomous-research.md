@@ -110,6 +110,7 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
     champion. The 28 prior keeps, production v9, and champion are unchanged; v22 is not evidence of
     20 healthy loops.
   - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md)
+  - [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md)
 
 ### Open questions
 
@@ -124,6 +125,7 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
 - [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md): AP-57, AP-55-ARM runbook, AP-63(a)–(d).
 - [eval-tower-loop-robustness-audit](../handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md): ETR-5/6/7 ticks.
 - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md): Dream-RSI checkpoint, v21 stop, v22 relaunch.
+- [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md): v22 candidate-only outcomes and clean stop boundary.
 - [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md): integrity and promotion-control audit.
 - [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md), [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md): row checkpoints.
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): evening landing table and rulings.
