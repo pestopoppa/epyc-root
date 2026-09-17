@@ -2,8 +2,45 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-09-17 (later pass: the ported runner adapters project an empty `protocol_id`, the VB writers survive Fable review, the hub serves a deployed origin/main view, SC85 closes both sides, and two citation/identity defects are filed and fixed; earlier incremental: belief-kernel ingest dispatcher (15 names), SC75/VB-WIRE-2 producer hook, AP-53/SC83/MHS-guard writers with zero-row pre-hook rule, PRB-T4 and spec-on calibration caveats, intake-1323 mis-anchor fix, `.last_compile` retired (KB-WM-4), OP-34 scoped touch, W3 snapshot scope fixes); earlier: 2026-09-15 (the belief-substrate carrier contract — adapters project into a `ClaimTuple`, one ladder per source class, `grade()` the sole rule — plus the citation gate, the attested-was-unverified fix, the 32/62 surviving-mutation audit, and the claim-grammar publication gate with the new append-only social-conversation ledger; earlier: 2026-09-08 (late): **a long-unruled operator-queue row goes bad in two different ways — STALE and MISFILED — and the screen is "what state changes when the operator answers this?", never "is this old?"**; one row retired and archived with every executable premise expired (and executing it would have re-introduced a fixed defect), its sibling row DELETED as misfiled while its document stayed active (~80% live premises, 12 present-tense citations, maintained the day before) because the question it posed was unanswerable; plus the general rule that **a record's correction carries more information than the original claim** — keep the superseded framing beside it, name the heuristic that produced the error, and give every closed item its re-open condition; earlier: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
+**Last compiled**: 2026-09-17 (afternoon: AutoPilot promotion rules reach the belief-kernel adapter with a commit join; runner capture paths are resolved, not guessed); earlier 2026-09-17 (later pass: the ported runner adapters project an empty `protocol_id`, the VB writers survive Fable review, the hub serves a deployed origin/main view, SC85 closes both sides, and two citation/identity defects are filed and fixed; earlier incremental: belief-kernel ingest dispatcher (15 names), SC75/VB-WIRE-2 producer hook, AP-53/SC83/MHS-guard writers with zero-row pre-hook rule, PRB-T4 and spec-on calibration caveats, intake-1323 mis-anchor fix, `.last_compile` retired (KB-WM-4), OP-34 scoped touch, W3 snapshot scope fixes); earlier: 2026-09-15 (the belief-substrate carrier contract — adapters project into a `ClaimTuple`, one ladder per source class, `grade()` the sole rule — plus the citation gate, the attested-was-unverified fix, the 32/62 surviving-mutation audit, and the claim-grammar publication gate with the new append-only social-conversation ledger; earlier: 2026-09-08 (late): **a long-unruled operator-queue row goes bad in two different ways — STALE and MISFILED — and the screen is "what state changes when the operator answers this?", never "is this old?"**; one row retired and archived with every executable premise expired (and executing it would have re-introduced a fixed defect), its sibling row DELETED as misfiled while its document stayed active (~80% live premises, 12 present-tense citations, maintained the day before) because the question it posed was unanswerable; plus the general rule that **a record's correction carries more information than the original claim** — keep the superseded framing beside it, name the heuristic that produced the error, and give every closed item its re-open condition; earlier: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
 **Sources**: 55+ documents (added 2026-09-17: vidya program SC75/VB-WIRE/VB-MHS/VB-EVCONF2 sections, internal-kb-rag KB-WM closures, evidence-plane W3, seven 2026-09-16 subagent logs) (added 2026-09-17 later pass: sub-vb-writers review fixes, sub-runner-adapters, the vidya SC85/VB-RUNNER-PATHS/VB-AP-PROMO-RULE updates, handoff-index-and-backlog-graph deployment, sub-rtg46, sub-misc)
+
+## Compiled Update — 2026-09-17 (afternoon): a promotion is a claim only once its commit is seen
+
+**Confidence: verified**: adapter code and tests against the real `ExperimentJournal`. The first live ingest
+yielded 0 rows because the journal has no post-hook trials yet.
+
+### Key findings
+
+- **VB-AP-PROMO-RULE (root `f71277f7`).** Orchestrator main now stamps three fields on journal rows:
+  - `frontier_admission = "representative"`;
+  - `promotion_rule`, one of `frontier`, `empty_frontier_repro`, `seed`, `archive_unavailable_no_baseline` or
+    `refused_guard_unavailable`;
+  - `promotion_status`, either `pending_commit` or `refused`.
+
+  The adapter carries all three verbatim. It confirms a `pending_commit` only by joining a later
+  `baseline_promotion` ledger event with the same `source_trial_id`. It holds back a pending row on the
+  shard's newest trial, so the append-only ledger never records "uncommitted" while the commit is still being
+  written. The grade is unchanged, and absent keys stay absent.
+  [sub-vb-wire](../progress/2026-09/2026-09-17-sub-vb-wire.md)
+- **Capture must fail loudly at preflight, not silently after the GPU claim.** In research `0b295a25`, the new
+  `scripts/benchmark/belief_capture.py` does four things:
+  - it resolves the root from `EPYC_ROOT` and refuses when that is wrong;
+  - it loads capture modules by path;
+  - it runs `preflight()` before the claim;
+  - it sets exit code 3 on a failed capture.
+
+  The `/workspace/scripts/vidya` literal and the exception swallow in `ev13b_run.py` are gone, and
+  `prb_t4_tale_gpu.py` was ported to main.
+  [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
+- Follow-ups: VB-RUNNER-PATHS-2 (two scripts still use guessed-root fallbacks) and VB-AP-PROMO-RULE-INGEST
+  (first real ingest after AutoPilot restarts on main).
+
+### Source References (2026-09-17 afternoon)
+
+- [sub-vb-wire](../progress/2026-09/2026-09-17-sub-vb-wire.md)
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the train landing that the producer shape was verified on.
 
 ## Compiled Update — 2026-09-17 (later): a reader's consistency check can void a correct writer, and an identifier rename is a tripwire event
 

@@ -4,15 +4,15 @@
     "handoff-active": 165,
     "handoff-blocked": 2,
     "handoff-completed": 195,
-    "progress": 448,
+    "progress": 453,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-17T12:34:40Z",
+  "last_compile": "2026-09-17T12:37:49Z",
   "mode": "touch",
-  "scan_time": "2026-09-17T12:34:40Z",
+  "scan_time": "2026-09-17T12:37:49Z",
   "schema_version": 1,
-  "source_set_hash": "1c6326fab4d10aaae12fe26c1c563ee0a31a4e825bc2b197b1fb816b851de975",
+  "source_set_hash": "7164f879a099ee5678e14fe8bdcfb43a7634b593a8aed34f283028b29ef329e2",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -136,7 +136,7 @@
     },
     {
       "content_hash": "48949586f81a9021362c89050fc677c646db298ae26d8156817a5a83b6406599",
-      "modified": "2026-09-17T12:25:59Z",
+      "modified": "2026-09-17T12:35:25Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
       "size": 393922,
       "title": "AutoPilot: Continuous Recursive Optimization",
@@ -296,7 +296,7 @@
     },
     {
       "content_hash": "afa203b13aca4cdfaded60916d977dfb5a48fd47b5c682469b7f1ce463ba0bd1",
-      "modified": "2026-09-17T12:27:55Z",
+      "modified": "2026-09-17T12:35:25Z",
       "path": "handoffs/active/dashboard-architecture-restructure.md",
       "size": 34689,
       "title": "Dashboard Architecture Restructure \u2014 audit + action plan",
@@ -407,10 +407,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ba1165bc5b26acdf52b00fa6a9707f7520db643404ab209481d8b3b082804730",
-      "modified": "2026-09-17T12:23:54Z",
+      "content_hash": "3919557b5f7fb279b47e688ac5a9a5a1fe9002873e13912df68577f848a8ed8b",
+      "modified": "2026-09-17T12:35:40Z",
       "path": "handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md",
-      "size": 36425,
+      "size": 36894,
       "title": "Eval-Tower / Inference-Batch-Loop Robustness Audit (2026-07-20)",
       "type": "handoff-active"
     },
@@ -599,10 +599,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "220c19a64d438edac1273da1f1529198ef611a09b20aee91b1ca4b511292ce24",
-      "modified": "2026-09-17T12:23:54Z",
+      "content_hash": "4dd95b0cef7fa20b37b2242c0d242001d8254d4b8a39217cea7f0dff5d833b11",
+      "modified": "2026-09-17T12:35:40Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 95236,
+      "size": 99048,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -679,10 +679,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "985ddecb1541a91f1fc82bd1ba3a2b55aad93b11b27b5472c217416d086a94fb",
-      "modified": "2026-09-17T12:23:54Z",
+      "content_hash": "57cb2022a8d1af9e71c8728eac072258924dfbf7b0f53742d25b02bc1455778b",
+      "modified": "2026-09-17T12:35:40Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 167686,
+      "size": 169161,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -848,7 +848,7 @@
     },
     {
       "content_hash": "ee392fe2b7a0dd9cc6b88901244990995693edae5d2d1fbd6feb619ae0c80f09",
-      "modified": "2026-09-17T12:29:22Z",
+      "modified": "2026-09-17T12:35:25Z",
       "path": "handoffs/active/non-inference-backlog.md",
       "size": 86212,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
@@ -919,10 +919,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cb2e94b0588e7e0d8d195c4a18b2f8f68c449617a271f3b90be22366136d502c",
-      "modified": "2026-09-17T12:25:46Z",
+      "content_hash": "a8d4893c72c0853d7c2271a7995ad5907741fd42700e89dc4747d27b5dc95db1",
+      "modified": "2026-09-17T12:35:49Z",
       "path": "handoffs/active/promptforge-mutation-safety-contract.md",
-      "size": 22565,
+      "size": 22661,
       "title": "PromptForge mutation safety contract (RTG-55)",
       "type": "handoff-active"
     },
@@ -999,10 +999,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e9ff6bc672ad85694b46d1288d2d1d6cd9f8118ac172d6ea2db52e9ce0c374fb",
-      "modified": "2026-09-17T12:23:54Z",
+      "content_hash": "337cccfe287daa68f932d8a2d3e4f65659d46169498f902f1300a12c5c6703a3",
+      "modified": "2026-09-17T12:35:40Z",
       "path": "handoffs/active/repl-session-memory-maturity.md",
-      "size": 24291,
+      "size": 26943,
       "title": "REPL Session Memory \u2014 Maturity Deltas",
       "type": "handoff-active"
     },
@@ -1271,10 +1271,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "971a901577fc3b986623b3593e7909c7acb68d79e5e3b192385e21aaf82f387d",
-      "modified": "2026-09-17T12:23:54Z",
+      "content_hash": "e65f4db78ee4a7429006d2abee45bdeba0a2acb9487cbb25d65d406215622027",
+      "modified": "2026-09-17T12:35:40Z",
       "path": "handoffs/active/unified-trace-memory-service.md",
-      "size": 43345,
+      "size": 44842,
       "title": "Unified Trace / Memory Service",
       "type": "handoff-active"
     },
@@ -1287,10 +1287,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b8430822c9a72f34b6dfa2b7715fe2a4b0390566ffcbccdec427e51cdff0c87d",
-      "modified": "2026-09-17T12:23:54Z",
+      "content_hash": "43507566dcd30592ffcae1b13315a86670501ac2bd03e917960d6b1d8c493fa2",
+      "modified": "2026-09-17T12:35:40Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 211869,
+      "size": 215192,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -7583,19 +7583,35 @@
       "type": "progress"
     },
     {
-      "content_hash": "c231b31dd86418cb3ad84bd64fdff23dae04dfeef6d873385fb5d6618f30441f",
-      "modified": "2026-09-17T12:29:51Z",
+      "content_hash": "4d9b6a9cff3ab09298b5cb2e629220a1ffd3a6693e928f3f698b43d6d620476e",
+      "modified": "2026-09-17T12:36:02Z",
       "path": "progress/2026-09/2026-09-17-main-handoff-sweep.md",
-      "size": 11696,
+      "size": 11830,
       "title": "2026-09-16/17 \u2014 main session: handoff sweep (zero-inference fan-out + GPU queue)",
       "type": "progress"
     },
     {
       "content_hash": "ddf98f3d5b206afa62c834ac652bdc9befd6bca0fec6b72a2d5e0f77c0eb991c",
-      "modified": "2026-09-17T12:29:51Z",
+      "modified": "2026-09-17T12:35:25Z",
       "path": "progress/2026-09/2026-09-17-sub-episodic-leak.md",
       "size": 3785,
       "title": "2026-09-17 \u2014 sub-episodic-leak: prepared the purge of the HumanEval/55 and Aschoff leaks from memory and state backups",
+      "type": "progress"
+    },
+    {
+      "content_hash": "07d9069c8e15b4387a28e79d90c60e6f6b3834ddfabd3e602960388c36f42868",
+      "modified": "2026-09-17T12:35:40Z",
+      "path": "progress/2026-09/2026-09-17-sub-hs4-mcp.md",
+      "size": 4627,
+      "title": "2026-09-17 \u2014 sub-hs4-mcp: HS-4 P0-MCP-a/b and P0.4 zero-inference prep",
+      "type": "progress"
+    },
+    {
+      "content_hash": "357afe03b480bfdc3bc862711fba42b57e433e146da29e75290a92ff94ecb755",
+      "modified": "2026-09-17T12:35:40Z",
+      "path": "progress/2026-09/2026-09-17-sub-lease-etr4.md",
+      "size": 3433,
+      "title": "2026-09-17 \u2014 sub lease-etr4: D-f session lease + ETR-4 test",
       "type": "progress"
     },
     {
@@ -7612,6 +7628,30 @@
       "path": "progress/2026-09/2026-09-17-sub-scorer-fix.md",
       "size": 9233,
       "title": "2026-09-17 \u2014 sub-scorer-fix (PRB-T4 scorer, gold and sampler defects; zero inference)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c05bf7f1b90cba99f16c397adc967de94d34a72bbc9787677acefea4e01dc39d",
+      "modified": "2026-09-17T12:35:40Z",
+      "path": "progress/2026-09/2026-09-17-sub-utm-epd.md",
+      "size": 2834,
+      "title": "2026-09-17 \u2014 sub-utm-epd: UTM-P1 pairing keys + EPD-3-R5/R6/R8",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0dd5b74fa579b18d375afc9f474b22bbcc7fc00956f283095c6e79406f65a4a7",
+      "modified": "2026-09-17T12:35:40Z",
+      "path": "progress/2026-09/2026-09-17-sub-v10-repin.md",
+      "size": 4978,
+      "title": "2026-09-17 \u2014 sub-v10-repin: operator ratification for the v10 episodic re-pin (MHS-3d)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "58b9f110edf504c777fbf185009fba87b756f09dd3dae11667801b18f8ae3d3c",
+      "modified": "2026-09-17T12:35:40Z",
+      "path": "progress/2026-09/2026-09-17-sub-vb-wire.md",
+      "size": 2905,
+      "title": "2026-09-17 \u2014 sub-vb-wire (VB-AP-PROMO-RULE, VB-RUNNER-PATHS)",
       "type": "progress"
     },
     {
@@ -8447,7 +8487,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1054,
+  "total_new": 1059,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

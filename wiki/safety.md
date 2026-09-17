@@ -35,8 +35,20 @@ checkpoint prompt copies were re-pinned to `18f8ea01`, so a rewind no longer res
   `knowledge_fence`, so each eval request arms the fence. The API was stopped afterwards at the operator's
   request. [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
 
+- **The v10 re-pin ratifier is ready and awaits the operator (root `b4744e00`).**
+  - **What it re-pins:** the three file hashes, `memory_count` (63925 → 63921), the derived
+    `checkpoint_sha256` (`a604276f` → `3b457d98`), and the v10 receipt mirror.
+  - **What the checker audit found:** the purge had already broken the MHS-3b ratifier's `--verify`. That
+    script's own sha is attested in its receipt, so it cannot be edited. The new `--verify` therefore re-runs
+    every check the old one made, at the chained post-state, and the decision receipt records the
+    supersession.
+  - **How it is tested:** a dry-run against the real checkpoint is clean and wrote nothing. The 16 fixture
+    tests are mutation-checked: removing the rollback, or the lock, turns a test red.
+  - [sub-v10-repin](../progress/2026-09/2026-09-17-sub-v10-repin.md)
+
 ### Source References (2026-09-17 afternoon)
 
+- [sub-v10-repin](../progress/2026-09/2026-09-17-sub-v10-repin.md)
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): Afternoon section: the RATIFY, API reload checks, purge scope.
 - [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md): inventory, design notes, test matrix.
 - [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md): MHS-3b/3c/3d state.

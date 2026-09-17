@@ -2,7 +2,7 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (afternoon: the live episodic store lost exactly the 4 leaked memories; the graph retriever has never been live because kuzu is missing); earlier 2026-09-17 (later pass: the dead `/v1` `recall()` is fixed and its open item closed; earlier incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
+**Last compiled**: 2026-09-17 (afternoon: the live episodic store lost exactly the 4 leaked memories; the graph retriever has never been live because kuzu is missing; a fenced cross-process session lease; cross-harness trace pairing keys); earlier 2026-09-17 (later pass: the dead `/v1` `recall()` is fixed and its open item closed; earlier incremental: M-12 zero-compute blockers closed (B1 silent id collision), BEAM "100K" runs to 191K tokens, OP-42 readiness package, CME-1/CME-4 closed, Hermes-vs-orchestrator memory verdict MIXED, dead `/v1` recall(), UTM-M7/M8 phantom tick re-implemented, trace bm25 fix); earlier: 2026-09-08 (the never-run memory-on/memory-off A/B acquired instruments and an operator gate — M-12's protocol admits BEAM 128K and Tulving 200ch/100K under OP-42 (M-12a Tulving first, M-12b BEAM second, one inference window, eval-pool registration a separate decision), the CME-1..4 adapter rows and BEAM harness-defect note are filed as the EVL-50 stub, the scorer's two prerequisites (M-12e) flag this page's own SRS/CAS paragraphs for offline re-scoring, the trace/memory read surface was corrected from "zero consumers" to exactly one (UTM-B1) and became the retrieval backend for both arms (UTM-B2/B4), and the memento/context-folding riders banked the sawtooth correction with its accuracy-per-second axis; earlier: 2026-08-25 (rao-redel substrate sweep — the episodic store's decision-labelling axis landed structurally with zero producers, the SkyRL rollout-tree accounting design was scoped behind an independent review, and the halo RLM-trace-loop deep-dive was re-checked and found already compiled on Agent Architecture; see the bottom section; earlier 2026-08-08 note: K-MEM/Tulving measurement context plus the 2026-06-28 W4/W6 reboot-readiness checkpoint)
 **Sources**: 39+ documents (2 deep-dives, 28+ intake entries, active handoffs, progress logs, K-MEM/Tulving measurement context, the 2026-06-28 W4/W6 reboot-readiness checkpoint, the RAO/ReDel substrate spike, and the BEAM/Tulving M-12 instrument set) (added 2026-09-17: OP-42 readiness, M-12 blockers, memeval, Hermes-memory, UTM-M7/M8 and trace-bm25 logs, plus the CME/UTM/episodic handoff deltas)
 
 ## Compiled Update — 2026-09-17 (afternoon): four memories out, and a retriever layer that was never on
@@ -26,8 +26,34 @@
   describes code that did not run. The decision is filed as NIB2-78.
   [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
 
+- **Session state needed a cross-process lease with fencing, not a mutex (D-f, orchestrator `0d6d1dd2`).**
+  uvicorn runs 6 API workers. Two `/chat` turns for one session on different workers restored the same
+  checkpoint, and the later save erased the earlier turn.
+  - A `session_leases` row carries holder, host, boot id, PID and `/proc` start ticks, plus a monotonic
+    fencing token. It is acquired under `BEGIN IMMEDIATE`.
+  - The lease can be taken over only on expiry or when the owner is proven dead. Session, checkpoint and
+    delete writes check the token inside their own transaction. A refused write returns 409.
+  - Measured in real forked processes: 6 × 8 leased read-modify-writes kept 48 of 48 updates. The
+    **negative control without the lease kept 8 of 48**.
+  - Found on the way (D-f3): the graph snapshot writers call `save_checkpoint` with a signature it never had,
+    and the `TypeError` is swallowed at debug level, so those snapshots are silently dropped.
+  - [sub-lease-etr4](../progress/2026-09/2026-09-17-sub-lease-etr4.md),
+    [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md)
+- **Trace events can now pair runs across harnesses (UTM-P1, `dd24ed10`).** Schema v2 adds nullable
+  `harness`, `seed`, `turn_ordinal` and `task_key`, plus a per-row `schema_version`, via an additive migration
+  with no back-fill. A NULL version means the keys were never captured. `paired_runs()` groups by turn and
+  harness, and pre-v2 content keys stay byte-identical. No live producer stamps the keys yet (UTM-P1a).
+  [sub-utm-epd](../progress/2026-09/2026-09-17-sub-utm-epd.md),
+  [unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md)
+- **One embedding-segment assembler (EPD-3-R8, `d3f6062c`).** It is byte-identical to the old serializers
+  over 3,000 randomized cases, except that texts over 2,000 chars are now capped and a None-valued failure key
+  no longer embeds `None`. No re-embed is needed. `seed_memory` now raises after flushing a partial load (R6).
+  [learned-routing-controller](../handoffs/active/learned-routing-controller.md)
+
 ### Source References (2026-09-17 afternoon)
 
+- [sub-lease-etr4](../progress/2026-09/2026-09-17-sub-lease-etr4.md)
+- [sub-utm-epd](../progress/2026-09/2026-09-17-sub-utm-epd.md)
 - [sub-episodic-leak](../progress/2026-09/2026-09-17-sub-episodic-leak.md)
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
 - [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md)
