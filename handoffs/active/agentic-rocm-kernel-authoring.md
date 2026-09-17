@@ -1183,3 +1183,7 @@ reports a released TriMul artifact near 1.390 ms but an independently run
 MI300 search near 1.841 ms; its search-budget/variance/configuration question
 is a warning against importing a headline or default budget as an MI210
 expectation. No external benchmark was re-measured here.
+
+## Research Intake Update — 2026-09-17 (cross-ISA port evidence; intake-1491)
+
+**Cross-ISA port evidence (2026-09-17)**: a HIP-native SageAttention port exists but targets RDNA2/RDNA3 (gfx103x/gfx110x, WMMA/V_DOT — absent on CDNA2/MFMA); cite only as existence proof for cross-ISA porting, never as gfx90a evidence (intake-1491). CuTeDSL remains NVIDIA/CUTLASS-only and must not be imported (standing rule).

@@ -534,3 +534,8 @@ MEASUREMENT.md and may never be stated as measurements of this deployment; the s
 disclosure standard in `scoring-infra-standardization.md` applies to any external coding figure
 quoted here. See [[feedback_eval_saturation_masks_model_gap]],
 [[feedback_parse_failure_rate_is_a_scoring_artifact]], [[feedback_model_not_role_indexing]].
+
+## Research Intake Update — 2026-09-17 (independent judge evidence; intake-1475/1486/1490)
+
+- [ ] **CJ-13 — Two-cheap-readers redundancy arm (typed judge + local LLM judge).** Report pairwise agreement and human-disagreement cost per the intake-1475/1486 methodology; label "agreement is not accuracy"; no adoption decision (CJ-GATE remains the operator's).
+- [ ] **CJ-14 — Adopt the dinostomp measurement discipline for new judge instruments:** hashed manifests/run records, a blind probe as the lower bound, pre-registered per-item distributions (intake-1490).

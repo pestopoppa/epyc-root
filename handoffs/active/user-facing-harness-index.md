@@ -16,6 +16,7 @@
 | UFH-05 | reasoning compression | [reasoning-compression.md](reasoning-compression.md) | If validated: implement enforce mode (route easy→worker, hard→architect) | — |
 | UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | P4e — once P4c telemetry has enough calls, decide per command whether run_bash_compressed is promoted, kept optional, or dropped | — |
 | UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | HIL-1 — once HS-4 Phase 0 is integrated, list which feature-map homes are loop-friendly (mutable as files, deterministic to eval) | UFH-01 |
+| UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | FW-1 — sketch the two-layer workflow example and record what the GUI must expose | UFH-01, RTG-56 |
 
 ## Cross-domain
 

@@ -2494,3 +2494,7 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inference-research `scripts/benchmark/niah_scorer.py` (branch `sub/e1a-niah-20260916` `d8fab068`, pending merge). The source row is in `scripts/vidya/adapters/README.md`. No E1 arm has run, so nothing is pre-hook.
 
 - [ ] **VB-NIAH-E1A — wire E1 NIAH arms on the WRITE side before the first E1 run.** One self-hashed ClaimTuple per arm (Base / D1 / D2) with strict and lenient accuracy together, `format_gap`, `scorer_id`, n/undecidable counts, reps, and latency and tokens as separate fields; refuse a row with only one accuracy. Locator = run × arm. Adapter projects; `claim_tuple.grade()` decides (no new ladder).
+
+## Research Intake Update — 2026-09-17 (typed-decision / PAW measurement wiring)
+
+- [ ] **VB-TDP-1 — Wire the write side before the first typed-decision / PAW measurement run.** One self-hashed ClaimTuple per TD-2/TD-3/PAW-3 run at the source table (scripts/vidya/adapters/README.md row + this task); a tuple invented on read cannot gate a decision. (Covers `typed-decision-plane.md` RTG-56 and `paw-compiled-specialists.md` INF-76.)

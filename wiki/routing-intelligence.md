@@ -2,8 +2,34 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (incremental: DAR-6 swarm fan-out code deleted and flag inert; A9 livecodebench stratum labels vacuous); earlier: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
-**Sources**: 84+ documents (added 2026-09-17: DAR-6 removal note, A9 livecodebench caveat, sub-scorer-fix consumer map)
+**Last compiled**: 2026-09-17 (research-intake delta: RI-14/LRC-TD-1 file a candidate-scoring arm for the routing classifier, gated on TD-2 calibration; incremental: DAR-6 swarm fan-out code deleted and flag inert; A9 livecodebench stratum labels vacuous); earlier: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
+**Sources**: 84+ documents (added 2026-09-17 research-intake: RI-14, LRC-TD-1, the typed-decision-plane stub, and the intake session record) (added 2026-09-17: DAR-6 removal note, A9 livecodebench caveat, sub-scorer-fix consumer map)
+
+## Compiled Update — 2026-09-17 (research-intake delta: a candidate-scoring fast path for the routing classifier, gated on calibration)
+
+**Confidence: verified** for the filings; **external** for the intake figures (dive-verified primary sources, none measured on this host).
+
+The learned-routing stack gets a second, cheaper candidate arm: a one-pass typed-decision call that scores the closed set of routes in a single readout. Both routing owners filed it, and both gate it on the same measurement — TD-2 calibration.
+
+### Key findings
+
+- **RI-14: evaluate a Choice-style candidate-logit call as the routing classifier fast path.** Once TD-2 calibration lands; never gate on uncalibrated confidence; report agreement + calibration + wall time against the current classifier. Owner stub `typed-decision-plane.md` (RTG-56). ([routing-intelligence](../handoffs/active/routing-intelligence.md))
+- **LRC-TD-1: the learned controller gets the same arm against its recorded routing corpus** — per-call label-set pattern (option-as-query head intake-1462, or native token logits intake-1487) vs the current MLP. Unadopted until TD-2 reports calibration. ([learned-routing-controller](../handoffs/active/learned-routing-controller.md))
+- **Why the gate is calibration and not latency.** Candidate-softmax confidence is uncalibrated: 65% of a 7B's wrong fields scored >0.90 (intake-1474). The local mechanism measures **5.21x vs same-model JSON** and 20.03 decisions/s under parallel reuse, with reuse drifting 5–6 of 777 argmaxes under BF16 (intake-1487) — a real speed lever with a known confidence hazard.
+- **The quality axis is not a warranty either.** An independent reproduction ties the reference reranker with Cohere Pro (0.692 vs 0.691, CI crosses 0) at **24.7% order sensitivity** (intake-1486); the vendor's own evals put it behind Sol/Opus (intake-1471, corrected). A one-pass reader earns its route on measured agreement, not on its guarantee language.
+- **TD-2 is the precondition, not a formality**: question-order permutation on one batched call vs singleton calls (report top-answer flips) plus ECE/reliability per model and schema. TD-5 (one shadow surface) stays blocked until it lands. The current MLP is staged, not live (81.0% val acc; thresholded ≥0.8 precision 94.4% over 61.6% coverage), so the candidate arm's comparator is a staged surface, not a production authority.
+
+### Open questions
+
+- Does the staged classifier's accuracy/coverage leave enough headroom for a candidate-scoring arm to matter?
+- Does question-order contamination reproduce the 24.7% external figure at our batch sizes?
+
+### Source References (2026-09-17 research-intake delta)
+
+- [routing-intelligence.md](../handoffs/active/routing-intelligence.md) — RI-14 and its evidence list.
+- [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md) — LRC-TD-1 and the staged-fast-path context.
+- [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-2's protocol and the TD-5 gate.
+- [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — the session record with the verified calibration/speed figures.
 
 ## Compiled Update — 2026-09-17: the DAR-6 swarm fan-out no longer exists, and the livecodebench routing stratum has no correctness signal
 
