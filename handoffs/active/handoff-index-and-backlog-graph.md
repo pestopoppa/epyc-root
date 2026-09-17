@@ -152,7 +152,7 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
     `tests/test_dashboard_handoff_graph_readiness.py`): near-neighbour alignment < 0.2 with a
     zero-jitter mutation > 0.8, zero crowding below SEP, domains inside their band, deterministic.
     **Parent stays open: "does it still read as a lattice" is a human look at :8100 (deployed 2026-09-16).**
-- [ ] **OPERATOR: nothing restarts `hub_supervisor.sh` if it dies.** It was found dead on 2026-08-10
+- [x] **OPERATOR: nothing restarts `hub_supervisor.sh` if it dies.** ✅ 2026-09-17 (resolved by OP-9 option B, host cron installed; see below) It was found dead on 2026-08-10
   (recorded pid 543919 not running), which is why the hub sat on stale code unnoticed. Its own
   docstring rules out a systemd unit ("host config is operator territory"); the documented alternative
   is the cron form `*/2 * * * * hub_supervisor.sh once`, which is idempotent and self-exits when a
@@ -176,7 +176,7 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
       read-only 2026-09-17), so each cron pass exits 0 with "another supervisor already holds".
     - Test: `scripts/dashboard/tests/test_install_supervision_cron.sh` (40/40, fake docker/crontab).
       The `fleet_watch` line is unchanged.
-  - [ ] **Operator runs the pinned-copy host install (OP-9 option B)** — on the HOST, after the branch
+  - [x] **Operator runs the pinned-copy host install (OP-9 option B)** ✅ 2026-09-17: the operator ran it. Verified: pin `/mnt/raid0/llm/ops/hub-supervisor/1b138d36bc35…` exists (read-only), and `logs/cron_supervision.log` shows "another supervisor already holds … exiting (idempotent)" at 12:16 and 12:18 with daemon pid 639194 alive. — on the HOST, after the branch
     is on origin/main. Refresh the shared clone's refs first, or `origin/main` still serves the old,
     unpinned installer: `docker exec -u node epyc-root git -C /mnt/raid0/llm/epyc-root fetch origin`.
     Then run `bash <(git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/install_supervision_cron_20260916.sh) --all --dry-run`.

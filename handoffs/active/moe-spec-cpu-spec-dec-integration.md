@@ -525,13 +525,23 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
          close-out, hot harness, 24-prompt mix), i.e. ~2.6–4× the 122B's 10.84 t/s. It **would** be a
          faster run, but speed does not answer reason 1. It is also a CPU inference run on the champion,
          so it needs the same quiet window.
-- [ ] **INF-40 confirm run (operator Option A, 2026-09-17) — GATED: waits for the end of the AutoKernel quiet
-      window AND an explicit operator go.** 5-rep alternating A/B/A/B of `moe_spec_budget` ∈ {0,128} on
-      `architect_critic` (122B Q4_K_M, CPU), on a binary that contains MoE-Spec (see the fact above),
-      same posture as the E9 run. Declare the noise floor in t/s and % of mean, keep the gate-skip
+      **OPERATOR PLAN 2026-09-17 (retargets the confirm; nothing acted on here).** The plan is to promote
+      the AutoKernel champion (`ef81196d5`) to production and to promote Qwen3.8-Flash-Next (qwen4exp) to
+      `architect_critic`. That resolves both blockers above: the role's future model is qwen4exp (reason 1),
+      and its future serving binary contains MoE-Spec (the v9 fact). So the confirm runs **directly on
+      qwen4exp + the champion binary** when a CPU window opens, not on the 122B, which is leaving the role.
+      The E9 122B +10.7% stays on record as the motivating observation only. No stack, registry or
+      launcher change is made by this ruling; the registry key waits for the promotion AND the confirm.
+- [ ] **INF-40 confirm run (operator Option A, retargeted 2026-09-17) — GATED: waits for the end of the
+      AutoKernel quiet window AND an explicit operator go.** On qwen4exp (Qwen3.8-Flash-Next) served by
+      champion `ef81196d5`, with MTP on at `--spec-draft-n-max` ≥ 3 so verification batches meet
+      `moe_spec_min_batch` = 4. Sweep `moe_spec_budget` for 512 experts × 10 used (e.g. {0, 64, 128, 256};
+      pre-register the grid and the pass rule before running). 5-rep alternating A/B/A/B per arm against 0,
+      same-window, with the champion's production recipe. Declare the noise floor in t/s and % of mean, keep the gate-skip
       mechanism-fire control, re-measure α, and register a protocol-id so the result is a claim. Then
       apply or retire `registry_patch_proposal.yaml` on the result.
-- [ ] **Optional follow-up — qwen4exp MoE-Spec measurement.** Not a substitute for the confirm above. The
+- **(Folded 2026-09-17 into the retargeted confirm above; kept for the record.)** Former optional
+      follow-up — qwen4exp MoE-Spec measurement. Not a substitute for the confirm above. The
       qwen4exp MTP path exists only on the experimental champion, so a production-meaningful measurement
       needs that drafter path to reach a serving binary (INF-70 Axis E). It needs its own B sweep
       (512 experts), at `--spec-draft-n-max` ≥ 3 so the verification batch meets `min_batch` 4.
