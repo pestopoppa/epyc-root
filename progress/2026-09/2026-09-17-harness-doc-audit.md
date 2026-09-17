@@ -58,9 +58,45 @@ instead, and the P0.4 live gate is still theirs to flip.
 - Unknown `x_*` keys are still silently ignored (`extra="ignore"`), and `/v1` B2 compression still
   fails open to the unfolded history. Both recorded, neither fixed here.
 - The archive/promotion proposal for this handoff (≈340 history lines → `archived/`, Harness Cards →
-  `docs/reference/`) was **not** applied; it needs an operator call.
+  `docs/reference/`) was escalated as an operator call and **approved in-session** — applied in Part 2 below.
 
 ## Validation
 
 `python3 scripts/handoffs/index_state.py --check` exit 0 · `vidya cite-check` clean (106 citations,
 0 problems; the `unknown` rows are pre-existing unanchored claims).
+
+---
+
+## Part 2 — operator-approved restructure (same session, 2026-09-17)
+
+The audit's structure finding was approved and applied: `harness-selection-and-integration.md` went
+from **468 lines to 153** by moving closed history out and standing material up.
+
+| Destination | Content | Why there |
+|---|---|---|
+| `handoffs/archived/harness-selection-history-through-2026-09-16.md` (229 lines) | 2026-07 intake updates, HS-1 cooperation-surface and HS-2 ACP-ROI findings, trainability + Stage-4 sections, HS-4 external instruments, the closed `/v1` seam defects (HS-OD-1/2), 2026-09-14 intake rows | Closed, and written while the selection was still open — a candidate comparison that weighs alternatives now decided |
+| `docs/reference/harness-candidates/harness-card.md` | HS-6 editable-vs-code-owned card, HS-6c conformant ETCSOVG card | `HARNESS_RUN_POLICY.md` requires a run report to cite "the applicable Harness Card"; it needed a docs home, not a handoff section |
+| `docs/reference/harness-candidates/harness-doctrine.md` | HS-7 re-targetability, HS-10 evaluation-side randomization | Standing criteria, cited by the HS-4 feature map and by the improvement loop's mutation bound |
+| `docs/reference/v1-structured-output-capability.md` | HS-13 two-layer record + the kernel-README silent no-op | A kernel+seam capability record cited by instruments unrelated to harness selection |
+| `docs/reference/harness-candidates/client-surface-audit.md` | HS-1g call-verb matrix (5 candidates) | The instrument and its results belong together |
+
+**Three open boxes moved UP, not out** — HS-5b (freeze-before-tuning ordering), HS-9 (open-weight
+interpreter probe) and HS-E1 (harness-null-pool evidence) were embedded in archived sections and are
+now top-level rows in the task list.
+
+**Conservation check.** Every substantive line of the 468-line original was matched against the six
+destination files; the only 8 unmatched are boxes deliberately re-pointed (their "see below" targets
+moved). A relative-link pass over the touched set found 4 broken sibling links — the archived file
+inherited `](sibling.md)` links that needed `../active/` once it moved down a directory — now fixed.
+
+## Operator decisions recorded this session
+
+- **Shell confirmed: OpenCode** ("flexible enough to mold into what we want"). The 2026-09-16 record
+  had attributed the pick to the operator, who had in fact chosen the *posture* and named "OpenCode
+  or oh-my-pi"; the design pass settled the shell. Gap closed in commit `927d44cb`.
+- **Phase-0 split approved, gated.** Moving Phase 0 into its own `opencode-shell-integration.md`
+  with a `UFH-NN` row is approved but deliberately waits for the P0.4 live run to land — that run is
+  owned by another session and must not be moved under it mid-flight. Filed as `HS-4 P0-split`.
+- **Not a handoff item:** the operator's 09-17 remark about small models reviewing bugs and a larger
+  model recommending fixes was a thought about a bug-fix research task under discussion, not work to
+  file. Recorded here so the next audit does not re-raise it as a dropped item.
