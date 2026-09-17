@@ -24,6 +24,18 @@ No replay score, policy gain, or plateau-trigger verdict is asserted here.
   schema contains matched outcome/diagnostic receipts, not a policy-choice
   trace or all alternatives available at each choice point.
 
+The strict archive builder and atomic receipt projector already exist. The
+latest inspected IQK intervention journal at
+`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-decode-20260813-r49`
+ends in `state:error`; its matched control journal at
+`/mnt/raid0/llm/autokernel/campaigns/ak-iqk-v9-aa-control-decode-20260813-r49`
+is empty. The separate r32 pair result records `campaign_executed:false`,
+`inference_started:false`, and null held-out outcomes. These are distinct
+records, not a completed pair. Earlier r3 manifests pin a missing source
+commit, but r49 pins existing `f744cc220`; a pin repair alone cannot create
+the clean, hypothesis-bound measured pair AK-WM-2a requires. This audit did
+not modify a journal or launch a run.
+
 ## What is and is not identifiable
 
 | Question | Existing record | Result |
