@@ -119,7 +119,7 @@ unresolved CPU cross-build oracle limitation above. Focused adjacent suites:
 
 ## Opt-in GPU comparison seam (same day)
 
-Research commit `adc5e2a4` adds a `fresh_check` observer to the existing
+Research commit `091e3eb0` adds a `fresh_check` observer to the existing
 `loop/bench.py` GPU A/B comparison. It is default-off, has no live caller, and
 runs only after each measured `llama-bench` invocation, not warmups. The
 resource-owning caller supplies the full receipt writer/collector; the
@@ -131,5 +131,5 @@ its effect is diagnostic and `decisive=None` until a separate A/A calibration
 of that exact protocol exists. Default comparisons are unchanged. Hermetic
 fixtures cover real receipt collection through the seam, warmup exclusion,
 default-off behavior, observer failure, and nonpromotability. Focused suites:
-262 passed and 19 subtests; Ruff and diff checks clean. No GPU or CPU inference
+263 passed and 19 subtests; Ruff and diff checks clean. No GPU or CPU inference
 was run.
