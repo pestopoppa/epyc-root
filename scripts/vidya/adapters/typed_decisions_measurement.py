@@ -29,6 +29,17 @@ The declared metrics, one ClaimTuple per (receipt, metric):
   cases), and the closed-vs-free ``agreement`` rate (reps = the cases resolved in
   both arms). The receipt carries a per-metric ``metric_directions`` map for these
   and it is read verbatim; per-case arrays and token sums stay samples.
+* ``parallel_fanout`` (TD-3b): per arm (``batched`` / ``sequential_singleton`` /
+  ``concurrent_singleton``) the ``wall_ms`` and ``serial_sum_ms`` (reps = the calls
+  each arm actually timed), the producer's two named speedups (reps = the states
+  whose paired arms were timed), and the three pairwise agreement rates (reps =
+  each comparison's own ``comparable_pairs``; a bare float rate — the other shape
+  the producer may write — is projected with the run's (state, question) pair
+  universe as a stated basis, never a reconstructed count). The receipt's single
+  ``agreement_rate_vs_batched`` direction entry is its label for the agreement
+  family and is read verbatim for all three; ``prompt_sha256`` is a per-arm map
+  here and the identity payload carries it whole. Per-call arrays and token sums
+  stay samples.
 
 An unknown ``study``, a missing declared metric field, or a malformed number is
 REFUSED by name — a mapping miss is not silently fewer rows (the README's
@@ -48,14 +59,15 @@ The receipt schema predates VB-TDP-1 and carries no ClaimTuple labels:
    receipt.** The adapter reads a direction ONLY from explicit receipt fields (a
    per-metric ``metrics`` block, a ``metric_directions`` map, or a top-level
    ``metric_direction``) and never infers one from a metric name. The
-   ``tool_args_pilot`` receipt DOES carry a top-level ``metric_directions`` map,
-   whose values are projected verbatim; the earlier studies do not, and for them
-   ``ClaimTuple`` has no direction-less path, so when the receipt carries none the
-   field is left at the carrier structural default, ``extra.metric_direction_present``
-   is ``False``, and the claim text carries a verbatim clause saying the label is NOT
-   a recorded fact and the number must not be compared directionally. The producer
-   should record a direction per metric (and restate it in the receipt) before any
-   consumer reads these numbers as directional.
+   ``tool_args_pilot`` and ``parallel_fanout`` receipts DO carry a top-level
+   ``metric_directions`` map, whose values are projected verbatim; the earlier
+   studies do not, and for them ``ClaimTuple`` has no direction-less path, so when
+   the receipt carries none the field is left at the carrier structural default,
+   ``extra.metric_direction_present`` is ``False``, and the claim text carries a
+   verbatim clause saying the label is NOT a recorded fact and the number must not
+   be compared directionally. The producer should record a direction per metric
+   (and restate it in the receipt) before any consumer reads these numbers as
+   directional.
 3. **No ``category``.** The adapter assigns ``BASELINE`` (the studies
    characterize the status-quo plane; no arm of a study is a promotion
    candidate) and flags ``extra.category_source``.
@@ -76,6 +88,12 @@ The receipt schema predates VB-TDP-1 and carries no ClaimTuple labels:
    tool-args arm ``cases`` / ``per_arg_total`` and ``results.agreement.compared``)
    with the basis stated verbatim; a producer-authored ``reps`` / ``reps_basis``
    pair would remove the mapping.
+8. **The ``parallel_fanout`` direction map labels the whole agreement family with
+   one ``agreement_rate_vs_batched`` key**, including the concurrent-vs-sequential
+   pair the name does not describe, and its ``prompt_sha256`` is a per-arm object
+   where the earlier studies wrote a flat list. Per-comparison direction keys and
+   a stable hash-field shape would remove both structural aliases; until then the
+   aliases are declared here and only the direction VALUE comes from the receipt.
 
 ``receipt_path`` is deliberately NOT trusted as an attestation source: the
 digest is recomputed from the bytes this adapter reads, and
@@ -102,7 +120,7 @@ AUTHORITY = "measurement"
 PROJECTION_NAME = "typed_decisions_measurement"
 SOURCE_KIND = "typed-decisions-measurement"
 PRODUCER = "epyc-orchestrator src/typed_decisions/measure.py"
-STUDIES = ("contamination", "calibration", "fanout", "tool_args_pilot")
+STUDIES = ("contamination", "calibration", "fanout", "tool_args_pilot", "parallel_fanout")
 _ID_SCHEME = "vidya.typed-decisions-measurement/v1"
 
 _DIRECTIONS = frozenset({"higher_better", "lower_better"})
@@ -171,6 +189,11 @@ def _fmt(value: Any) -> str:
     return str(value)
 
 
+def _agreement_value(value: Any) -> Any:
+    """The rate an agreement block carries: the nested field, or the bare float itself."""
+    return value.get("agreement_rate") if isinstance(value, Mapping) else value
+
+
 def _load_receipt(receipt: str | Path | Mapping[str, Any]) -> tuple[dict, str, str, bool | None]:
     """Return (document, source path, sha256 over the bytes read, artifact present).
 
@@ -206,8 +229,9 @@ def _validate_receipt(receipt: Mapping) -> str:
     if timestamp is not None and (not isinstance(timestamp, str) or not timestamp.strip()):
         raise ProjectionError("receipt.timestamp must be non-empty text when present")
     prompts = receipt.get("prompt_sha256")
-    if prompts is not None and not isinstance(prompts, list):
-        raise ProjectionError("receipt.prompt_sha256 must be a list when present")
+    if prompts is not None and not isinstance(prompts, (list, Mapping)):
+        raise ProjectionError(
+            "receipt.prompt_sha256 must be a list or an object when present")
     return str(study)
 
 
@@ -309,6 +333,89 @@ def _study_metrics(receipt: Mapping) -> tuple[Metric, ...]:
             reps=_positive_int(agreement.get("compared"), "results.agreement.compared"),
             reps_basis="scored: cases resolved in both the closed-set and free-form arms",
         ))
+        return tuple(metrics)
+
+    if study == "parallel_fanout":
+        arms = _mapping(results.get("arms"), "results.arms")
+        agreement = _mapping(results.get("agreement"), "results.agreement")
+        metrics = []
+        for arm_key, arm_label, calls_key in (
+            ("batched", "batched", "batched_calls"),
+            ("sequential_singleton", "sequential-singleton",
+             "sequential_singleton_calls"),
+            ("concurrent_singleton", "concurrent-singleton",
+             "concurrent_singleton_calls"),
+        ):
+            arm = _mapping(arms.get(arm_key), f"results.arms.{arm_key}")
+            calls = _positive_int(counts.get(calls_key), f"counts.{calls_key}")
+            for suffix, direction_key, what in (
+                ("wall_ms", "wall_ms", "wall time"),
+                ("serial_sum_ms", "serial_sum_ms", "serial-sum time"),
+            ):
+                metrics.append(Metric(
+                    key=f"{arm_key}_{suffix}",
+                    direction_key=direction_key,
+                    metric=f"typed_decisions.parallel_fanout_{arm_key}_{suffix}",
+                    label=f"{arm_label} arm {what}",
+                    value=_finite(arm.get(suffix), f"results.arms.{arm_key}.{suffix}"),
+                    unit="ms",
+                    reps=calls,
+                    reps_basis=f"scored: {arm_label} calls timed in the run",
+                ))
+        states = _positive_int(counts.get("states"), "counts.states")
+        for key, baseline, candidate in (
+            ("speedup_concurrent_vs_batched", "batched", "concurrent-singleton"),
+            ("speedup_concurrent_vs_sequential", "sequential-singleton",
+             "concurrent-singleton"),
+        ):
+            value = results.get(key)
+            if value is None:
+                # The producer's own explicit "could not divide": the quantity was
+                # not measured. Absence is recorded, never filled.
+                continue
+            metrics.append(Metric(
+                key=key,
+                metric=f"typed_decisions.parallel_fanout_{key}",
+                label=f"{candidate}/{baseline} wall-clock speedup",
+                value=_finite(value, f"results.{key}"),
+                unit="ratio",
+                reps=states,
+                reps_basis=(f"scored: states over which the {baseline} and {candidate} "
+                            "arms were timed (paired wall-clock comparison)"),
+            ))
+        for comparison, baseline, candidate in (
+            ("concurrent_vs_batched", "batched", "concurrent-singleton"),
+            ("sequential_vs_batched", "batched", "sequential-singleton"),
+            ("concurrent_vs_sequential", "sequential-singleton", "concurrent-singleton"),
+        ):
+            raw = agreement.get(comparison)
+            if isinstance(raw, Mapping):
+                rate = _finite(raw.get("agreement_rate"),
+                               f"results.agreement.{comparison}.agreement_rate")
+                reps = _positive_int(raw.get("comparable_pairs"),
+                                     f"results.agreement.{comparison}.comparable_pairs")
+                basis = (f"scored: (state, question) pairs resolved in both the {baseline} "
+                         f"and {candidate} arms")
+            else:
+                # The other shape the producer writes: a bare rate with no
+                # comparable-pair count beside it. The rate is read as carried; the
+                # denominator is the run's own pair universe, stated as such.
+                rate = _finite(raw, f"results.agreement.{comparison}")
+                reps = (states * _positive_int(counts.get("questions_per_state"),
+                                               "counts.questions_per_state"))
+                basis = (f"covered: the run's (state, question) pair universe; the receipt "
+                         f"carries a bare rate for the {baseline}/{candidate} comparison, so "
+                         "the comparable-pair count is not recorded")
+            metrics.append(Metric(
+                key=f"{comparison}_agreement_rate",
+                direction_key="agreement_rate_vs_batched",
+                metric=f"typed_decisions.parallel_fanout_{comparison}_agreement_rate",
+                label=f"{candidate}/{baseline} agreement rate",
+                value=rate,
+                unit="fraction",
+                reps=reps,
+                reps_basis=basis,
+            ))
         return tuple(metrics)
 
     # fanout
@@ -463,7 +570,9 @@ def _identity(receipt: Mapping, metric_key: str) -> str:
         receipt.get("mode"),
         receipt.get("role"),
         metric_key,
-        list(receipt.get("prompt_sha256") or []),
+        # Carried whole: a flat list for the TD-2/TD-3 studies, a per-arm object for
+        # parallel_fanout. Copying it to a list would silently drop the hashes.
+        receipt.get("prompt_sha256") or [],
     ]
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"),
                            ensure_ascii=True, default=str)
@@ -516,6 +625,29 @@ def _claim(receipt: Mapping, metric: Metric, *, protocol_id: str,
             f"{free.get('per_arg_total')} argument slot(s); agreement "
             f"{_fmt(agreement.get('rate'))} over {agreement.get('compared')} comparable "
             f"case(s), {agreement.get('agreeing')} agreeing)."
+        )
+    elif study == "parallel_fanout":
+        arms = results["arms"]
+        agreement = results["agreement"]
+        concurrent_vs_batched = _agreement_value(agreement.get("concurrent_vs_batched"))
+        sequential_vs_batched = _agreement_value(agreement.get("sequential_vs_batched"))
+        concurrent_vs_sequential = _agreement_value(
+            agreement.get("concurrent_vs_sequential"))
+        head = (
+            f"TD-3b typed-decision parallel fan-out study (mode {mode}, role {role}): "
+            f"{counts.get('states')} state(s) x {counts.get('questions_per_state')} probe "
+            f"question(s) over {counts.get('workers')} concurrent worker(s); {metric.label} "
+            f"{_fmt(metric.value)} (batched wall {_fmt(arms['batched'].get('wall_ms'))} ms over "
+            f"{counts.get('batched_calls')} call(s), sequential-singleton wall "
+            f"{_fmt(arms['sequential_singleton'].get('wall_ms'))} ms over "
+            f"{counts.get('sequential_singleton_calls')} call(s), concurrent-singleton wall "
+            f"{_fmt(arms['concurrent_singleton'].get('wall_ms'))} ms over "
+            f"{counts.get('concurrent_singleton_calls')} call(s); speedups "
+            f"{_fmt(results.get('speedup_concurrent_vs_batched'))}x concurrent/batched and "
+            f"{_fmt(results.get('speedup_concurrent_vs_sequential'))}x concurrent/sequential; "
+            f"agreement {_fmt(concurrent_vs_batched)} concurrent/batched, "
+            f"{_fmt(sequential_vs_batched)} sequential/batched, "
+            f"{_fmt(concurrent_vs_sequential)} concurrent/sequential)."
         )
     else:
         batched = results["batched"]

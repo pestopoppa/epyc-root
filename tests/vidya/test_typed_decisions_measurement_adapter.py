@@ -9,8 +9,8 @@ Pinned:
 * absence is not back-filled: a receipt with no ``protocol_id`` yields no invented
   protocol, and a receipt with no ``metric_direction`` yields no direction inferred
   from a metric name (ECE must NOT come out ``lower_better``; the tool-args pilot's
-  real ``metric_directions`` map projects verbatim, and the same receipt with the
-  map deleted keeps the absent clause);
+  and the parallel fan-out's real ``metric_directions`` maps project verbatim, and
+  the same receipt with the map deleted keeps the absent clause);
 * the extractor does not understate coverage: every declared metric of every study
   projects, and a receipt missing a declared field is REFUSED by name, never
   silently shorter;
@@ -41,6 +41,9 @@ REAL_CORPUS = Path(tempfile.gettempdir()) / "typed_decisions"
 #: The live tool-args pilot receipt committed under this worktree's artifacts.
 REAL_TOOL_ARGS_RECEIPT = (HERE.parents[1] / "artifacts" / "typed_decisions"
                           / "run_20260917" / "tool-args-pilot-worker.json")
+#: The live TD-3b parallel fan-out (4 workers) receipt from the same run dir.
+REAL_PARALLEL_FANOUT_RECEIPT = (HERE.parents[1] / "artifacts" / "typed_decisions"
+                                / "run_20260917" / "parallel-fanout-w4.json")
 AS_OF = "2026-09-17T18:00:00Z"
 
 #: Declared coverage, study -> metric keys. The adapter's map is the contract; this
@@ -54,6 +57,16 @@ DECLARED = {
                         "closed_set_per_arg_exact_match_rate", "closed_set_wall_ms",
                         "free_form_exact_match_rate",
                         "free_form_per_arg_exact_match_rate", "free_form_wall_ms"),
+    "parallel_fanout": ("batched_wall_ms", "batched_serial_sum_ms",
+                        "sequential_singleton_wall_ms",
+                        "sequential_singleton_serial_sum_ms",
+                        "concurrent_singleton_wall_ms",
+                        "concurrent_singleton_serial_sum_ms",
+                        "speedup_concurrent_vs_batched",
+                        "speedup_concurrent_vs_sequential",
+                        "concurrent_vs_batched_agreement_rate",
+                        "sequential_vs_batched_agreement_rate",
+                        "concurrent_vs_sequential_agreement_rate"),
 }
 
 
@@ -181,6 +194,63 @@ def tool_args_pilot_receipt(**over) -> dict:
     return receipt
 
 
+def parallel_fanout_receipt(**over) -> dict:
+    receipt = {
+        "study": "parallel_fanout",
+        "timestamp": "2026-09-17T23:24:56.139097+00:00",
+        "mode": "json",
+        "role": "frontdoor",
+        "metric_directions": {
+            "agreement_rate_vs_batched": "higher_better",
+            "speedup_concurrent_vs_batched": "higher_better",
+            "speedup_concurrent_vs_sequential": "higher_better",
+            "wall_ms": "lower_better",
+            "serial_sum_ms": "lower_better",
+        },
+        "counts": {"states": 1, "questions_per_state": 4, "workers": 2,
+                   "batched_calls": 1, "sequential_singleton_calls": 4,
+                   "concurrent_singleton_calls": 4},
+        "results": {
+            "questions": ["c01", "c02", "n01", "s01"],
+            "arms": {
+                "batched": {"calls": 1, "wall_ms": 1000.0, "serial_sum_ms": 900.0,
+                            "per_call_ms": [900.0], "tokens_generated": 100.0,
+                            "calls_with_token_meta": 1},
+                "sequential_singleton": {"calls": 4, "wall_ms": 2000.0,
+                                         "serial_sum_ms": 1950.0,
+                                         "per_call_ms": [500.0, 480.0, 480.0, 490.0],
+                                         "tokens_generated": 100.0,
+                                         "calls_with_token_meta": 4},
+                "concurrent_singleton": {"calls": 4, "wall_ms": 800.0,
+                                         "serial_sum_ms": 1960.0,
+                                         "per_call_ms": [500.0, 480.0, 490.0, 490.0],
+                                         "tokens_generated": 100.0,
+                                         "calls_with_token_meta": 4},
+            },
+            "agreement": {
+                "concurrent_vs_batched": {"agreement_rate": 0.75, "comparable_pairs": 4,
+                                          "agreeing_pairs": 3, "unresolved_pairs": 0,
+                                          "disagreements": [], "per_question": {}},
+                "sequential_vs_batched": {"agreement_rate": 0.5, "comparable_pairs": 4,
+                                          "agreeing_pairs": 2, "unresolved_pairs": 0,
+                                          "disagreements": [], "per_question": {}},
+                "concurrent_vs_sequential": {"agreement_rate": 1.0, "comparable_pairs": 4,
+                                             "agreeing_pairs": 4, "unresolved_pairs": 0,
+                                             "disagreements": [], "per_question": {}},
+            },
+            "speedup_concurrent_vs_batched": 1.25,
+            "speedup_concurrent_vs_sequential": 2.5,
+        },
+        "prompt_sha256": {
+            "batched": _prompts(1, "parallel-batched"),
+            "sequential_singleton": _prompts(4, "parallel-seq"),
+            "concurrent_singleton": _prompts(4, "parallel-conc"),
+        },
+    }
+    receipt.update(over)
+    return receipt
+
+
 def write(receipt: dict, tmp_path: Path, name: str = "receipt.json") -> Path:
     path = tmp_path / name
     path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
@@ -192,6 +262,7 @@ def write_corpus(tmp_path: Path) -> Path:
     root = tmp_path / "typed_decisions"
     root.mkdir(parents=True, exist_ok=True)
     write(fanout_receipt(), root, "fanout-20260917T162623965948Z.json")
+    write(parallel_fanout_receipt(), root, "parallel-fanout-20260917T232456139097Z.json")
     return root
 
 
@@ -239,6 +310,7 @@ def test_identity_is_unique_per_run_and_per_metric(tmp_path):
         write(calibration_receipt(), tmp_path, "calibration.json"),
         write(fanout_receipt(), tmp_path, "fanout.json"),
         write(tool_args_pilot_receipt(), tmp_path, "tool-args-pilot.json"),
+        write(parallel_fanout_receipt(), tmp_path, "parallel-fanout.json"),
     ]
     tuples = [tup for path in paths for tup in tuples_for(path)]
     expected = sum(len(keys) for keys in DECLARED.values())
@@ -258,6 +330,29 @@ def test_identity_is_unique_per_run_and_per_metric(tmp_path):
     assert ids_a == ids_a_again
     assert set(ids_a).isdisjoint(ids_b)
     assert len(set(ids_a) | set(ids_b)) == 2 * len(DECLARED["fanout"])
+
+
+def test_parallel_fanout_identity_is_unique_across_runs_differing_only_by_timestamp(
+        tmp_path):
+    """Two receipts of the same shape, same counts, only the timestamp moved: two runs."""
+    first = write(parallel_fanout_receipt(), tmp_path, "run-a.json")
+    second = write(parallel_fanout_receipt(timestamp="2026-09-17T23:24:57.000000+00:00"),
+                   tmp_path, "run-b.json")
+    ids_a = [t.measurement_id for t in tuples_for(first)]
+    ids_b = [t.measurement_id for t in tuples_for(second)]
+    assert len(ids_a) == len(DECLARED["parallel_fanout"])
+    assert set(ids_a).isdisjoint(ids_b)
+    assert len(set(ids_a) | set(ids_b)) == 2 * len(DECLARED["parallel_fanout"])
+
+
+def test_parallel_fanout_identity_keeps_the_per_arm_prompt_map(tmp_path):
+    """Same timestamp and counts, different per-arm prompts: still two runs."""
+    first = write(parallel_fanout_receipt(), tmp_path, "run-a.json")
+    changed = parallel_fanout_receipt()
+    changed["prompt_sha256"]["concurrent_singleton"] = _prompts(4, "parallel-conc-b")
+    second = write(changed, tmp_path, "run-b.json")
+    assert set(t.measurement_id for t in tuples_for(first)).isdisjoint(
+        t.measurement_id for t in tuples_for(second))
 
 
 @pytest.mark.skipif(not REAL_CORPUS.is_dir(),
@@ -310,6 +405,81 @@ def test_real_tool_args_pilot_receipt_projects_with_recorded_directions():
     assert by_metric["free_form_wall_ms"].value == pytest.approx(11440.160401165485)
     assert by_metric["agreement_rate"].value == 1.0
     assert by_metric["agreement_rate"].reps == 6
+
+
+@pytest.mark.skipif(not REAL_PARALLEL_FANOUT_RECEIPT.is_file(),
+                    reason="no live parallel-fanout receipt on disk")
+def test_real_parallel_fanout_receipt_projects_with_recorded_directions():
+    """The live TD-3b receipt: every declared metric, every direction from the
+    receipt's own metric_directions map, unique identity, no invented direction."""
+    natives = adapter.native_rows(REAL_PARALLEL_FANOUT_RECEIPT)
+    assert {n["metric_key"] for n in natives} == set(DECLARED["parallel_fanout"])
+    tuples = [adapter.project(n) for n in natives]
+    assert len(tuples) == len(DECLARED["parallel_fanout"]) > 0
+    assert len({t.measurement_id for t in tuples}) == len(tuples)
+
+    by_metric = {t.extra["metric_key"]: t for t in tuples}
+    for tup in tuples:
+        assert tup.extra["metric_direction_present"] is True
+        assert tup.extra["metric_direction_source"] == "receipt"
+        assert tup.metric_direction in ("higher_better", "lower_better")
+        assert adapter.DIRECTION_ABSENT_CLAUSE not in tup.claim
+    for key in ("batched_wall_ms", "batched_serial_sum_ms",
+                "sequential_singleton_wall_ms", "sequential_singleton_serial_sum_ms",
+                "concurrent_singleton_wall_ms", "concurrent_singleton_serial_sum_ms"):
+        assert by_metric[key].metric_direction == "lower_better"
+    for key in ("speedup_concurrent_vs_batched", "speedup_concurrent_vs_sequential",
+                "concurrent_vs_batched_agreement_rate",
+                "sequential_vs_batched_agreement_rate",
+                "concurrent_vs_sequential_agreement_rate"):
+        assert by_metric[key].metric_direction == "higher_better"
+
+    # values and scored denominators come from the receipt, not from a name
+    assert by_metric["batched_wall_ms"].value == pytest.approx(19277.868238743395)
+    assert by_metric["batched_wall_ms"].reps == 1
+    assert by_metric["batched_serial_sum_ms"].value == pytest.approx(19277.38899597898)
+    assert by_metric["sequential_singleton_wall_ms"].value == pytest.approx(
+        37404.752407222986)
+    assert by_metric["sequential_singleton_wall_ms"].reps == 24
+    assert by_metric["concurrent_singleton_wall_ms"].value == pytest.approx(
+        29907.042782288045)
+    assert by_metric["concurrent_singleton_serial_sum_ms"].value == pytest.approx(
+        112194.45946859196)
+    assert by_metric["concurrent_singleton_serial_sum_ms"].reps == 24
+    assert by_metric["speedup_concurrent_vs_batched"].value == pytest.approx(
+        0.6445929267924944)
+    assert by_metric["speedup_concurrent_vs_sequential"].value == pytest.approx(
+        1.2507004680976126)
+    assert by_metric["concurrent_vs_batched_agreement_rate"].value == pytest.approx(0.875)
+    assert by_metric["concurrent_vs_batched_agreement_rate"].reps == 24
+    assert by_metric["sequential_vs_batched_agreement_rate"].value == pytest.approx(0.875)
+    assert by_metric["concurrent_vs_sequential_agreement_rate"].value == 1.0
+    assert by_metric["concurrent_vs_sequential_agreement_rate"].reps == 24
+
+
+def test_parallel_fanout_directions_are_read_from_the_receipt_not_from_names(tmp_path):
+    """Flip the receipt's own agreement-family and time labels: the claims follow it."""
+    flipped = parallel_fanout_receipt(metric_directions={
+        "agreement_rate_vs_batched": "lower_better",
+        "speedup_concurrent_vs_batched": "lower_better",
+        "speedup_concurrent_vs_sequential": "lower_better",
+        "wall_ms": "higher_better", "serial_sum_ms": "higher_better"})
+    path = write(flipped, tmp_path)
+    by_metric = {t.extra["metric_key"]: t for t in tuples_for(path)}
+    for key in ("batched_wall_ms", "sequential_singleton_wall_ms",
+                "concurrent_singleton_serial_sum_ms"):
+        assert by_metric[key].metric_direction == "higher_better"
+    for key in ("speedup_concurrent_vs_sequential",
+                "concurrent_vs_batched_agreement_rate",
+                "concurrent_vs_sequential_agreement_rate"):
+        assert by_metric[key].metric_direction == "lower_better"
+
+
+def test_a_recorded_invalid_parallel_fanout_direction_is_refused_never_repaired(tmp_path):
+    path = write(parallel_fanout_receipt(metric_directions={"wall_ms": "faster"}),
+                 tmp_path)
+    with pytest.raises(ct.ProjectionError, match="metric_directions.wall_ms"):
+        tuple(adapter.native_rows(path))
 
 
 def test_tool_args_pilot_directions_are_read_from_the_receipt_not_from_names(tmp_path):
@@ -404,7 +574,8 @@ def test_mapping_input_claims_no_attestation(tmp_path):
 def test_every_declared_metric_of_every_study_projects(tmp_path):
     builders = {"contamination": contamination_receipt,
                 "calibration": calibration_receipt, "fanout": fanout_receipt,
-                "tool_args_pilot": tool_args_pilot_receipt}
+                "tool_args_pilot": tool_args_pilot_receipt,
+                "parallel_fanout": parallel_fanout_receipt}
     for study, builder in builders.items():
         path = write(builder(), tmp_path, f"{study}.json")
         natives = adapter.native_rows(path)
@@ -429,14 +600,56 @@ def test_an_unmeasured_speedup_is_omitted_not_filled(tmp_path):
     assert keys == set(DECLARED["fanout"]) - {"batched_speedup_wall"}
 
 
+def test_a_parallel_fanout_missing_arm_is_refused_by_name_not_silently_short(tmp_path):
+    receipt = parallel_fanout_receipt()
+    del receipt["results"]["arms"]["concurrent_singleton"]
+    path = write(receipt, tmp_path)
+    with pytest.raises(ct.ProjectionError,
+                       match=r"results\.arms\.concurrent_singleton"):
+        adapter.native_rows(path)
+
+
+def test_a_parallel_fanout_missing_agreement_rate_is_refused_by_name(tmp_path):
+    receipt = parallel_fanout_receipt()
+    del receipt["results"]["agreement"]["sequential_vs_batched"]["agreement_rate"]
+    path = write(receipt, tmp_path)
+    with pytest.raises(ct.ProjectionError,
+                       match=r"results\.agreement\.sequential_vs_batched\.agreement_rate"):
+        adapter.native_rows(path)
+
+
+def test_a_parallel_fanout_unmeasured_speedup_is_omitted_not_filled(tmp_path):
+    receipt = parallel_fanout_receipt()
+    receipt["results"]["speedup_concurrent_vs_sequential"] = None
+    path = write(receipt, tmp_path)
+    keys = {n["metric_key"] for n in adapter.native_rows(path)}
+    assert keys == set(DECLARED["parallel_fanout"]) - {
+        "speedup_concurrent_vs_sequential"}
+
+
+def test_a_bare_float_parallel_fanout_agreement_rate_is_projected_as_carried(tmp_path):
+    """The other shape the producer may write: a bare rate, no comparable-pair count."""
+    receipt = parallel_fanout_receipt()
+    receipt["results"]["agreement"]["sequential_vs_batched"] = 0.5
+    path = write(receipt, tmp_path)
+    by_metric = {t.extra["metric_key"]: t for t in tuples_for(path)}
+    tup = by_metric["sequential_vs_batched_agreement_rate"]
+    assert tup.value == 0.5
+    assert tup.reps == 4  # states x questions_per_state, both the receipt's own counts
+    assert tup.reps_basis.startswith("covered")
+    assert tup.metric_direction == "higher_better"
+
+
 def test_a_foreign_document_or_unknown_study_is_refused():
     with pytest.raises(ct.ProjectionError, match="not a typed-decision"):
         adapter.native_rows({"schema": "something.else"})
     with pytest.raises(ct.ProjectionError, match="not a typed-decision"):
         adapter.native_rows(fanout_receipt(study="something"))
-    # a near-miss on the new study is still refused, by name and with the roster
+    # a near-miss on a study name is still refused, by name and with the roster
     with pytest.raises(ct.ProjectionError, match="study='tool_args'"):
         adapter.native_rows(tool_args_pilot_receipt(study="tool_args"))
+    with pytest.raises(ct.ProjectionError, match="study='parallel-fanout'"):
+        adapter.native_rows(parallel_fanout_receipt(study="parallel-fanout"))
     with pytest.raises(ct.ProjectionError, match="not JSON"):
         adapter.native_rows(__file__)
 
