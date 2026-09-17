@@ -1132,3 +1132,54 @@ KLineage and Kernel-Smith release **nothing at all**. Public-and-unlicensed is n
 
 - [ ] **AR-RPUCG — A/B SimpleTES's RPUCG DAG parent-selection as a controller candidate in the MI210 verify+profile loop.** Selection-only over evaluated candidates (no re-execution; code @ `47d3413d`); compare against the current selection heuristic on one nonpromotable task; no NVIDIA-strategy import. Source: intake-1454.
 - [ ] **AR-ROCm-eval — register SimpleTES's ROCm eval path (AMD_REQUIREMENTS rocm6.2.4; `profile_program_roc`) and issue #6 MI300 config as gfx90a port input.** Study-only; no external-benchmark re-measure (AK-RB-1). Source: intake-1454.
+
+### AR-RPUCG/AR-ROCm-eval implementation intake — 2026-09-17
+
+**AR-RPUCG data admission.** At SimpleTES `47d3413d`,
+`simpletes/policies/rpucg.py` selects *already evaluated* nodes from a
+parent→child DAG. Its selection uses each node's raw score, creation order,
+chain membership, per-chain visit counts/total expansions, and one-hop
+parent/child exclusions; the default policy parameters are `c=1`, `gamma=0.8`.
+The current MI210 r19 archive is not such a dataset: the admitted first
+actor cell's checkpoint records four broker evaluations and a final score,
+while its individual `controller-evaluation-windows/*-result.json` receipts
+carry source hashes and scores but no candidate/parent IDs, chain or visit
+state. An exact JSON search of r19's cell receipts found no `parent_ids`,
+`parent_candidate_id`, `chain_idx`, or `visit_counts`. Do not invent a DAG by
+ordering these revisions, and do not describe a fixture comparison as the
+requested A/B. The r19 archive remains diagnostic/nonpromotable under its
+own campaign rules.
+
+The minimum prospective, nonpromotable capture for **one named MI210 task** is
+an immutable pre-selection snapshot: task and evaluator/recipe identities;
+candidate ID, source hash, parent IDs, creation order, chain ID, valid
+correctness and direction-normalized reward for *every eligible evaluated*
+node; the exact incumbent eligibility set, choice and tie rule; and RPUCG
+visit/expansion state before choice. Compare both selectors on precisely
+that frozen pool, with equal inspiration count and no evaluator call from the
+selector. Record chosen IDs, overlap, score/lineage of each choice and
+selector cost. This is a **selection disagreement** result only; one logged
+history cannot establish counterfactual downstream kernel quality. That
+requires separately governed paired continuations with equal budget and
+the standard correctness/timing claims. No live selector switch follows an
+offline disagreement.
+
+**AR-ROCm-eval port register (study-only).** Source pin: SimpleTES
+`47d3413da1d85dc24341219d47452d2601e56a57`, AGPL-3.0-or-later,
+`datasets/gpukernel/server/tasks/libkernelbot/run_eval.py`:
+`profile_program_roc` wraps the supplied call in `rocprofv3`, requests
+HIP/kernel/RCCL/marker/memory-copy/scratch traces in pftrace and CSV, and
+packages traces/code objects. `run_eval.py` dispatches to it when the
+detected runtime is `ROCm`. This is a profiler/artifact seam, **not** a
+replacement for our parent-owned evaluator, sealed reference, claims or
+promotion gate. The source's `server_info.yaml` points at private hosts and
+must not be imported as a runnable service configuration. The source's AMD
+environment note names ROCm 6.2.4, while this host's `hipcc` reports ROCm
+6.2.0; our own `rocm-verify-profile-backend.md` records a side-loaded,
+version-matched `rocprofv3`. A future port must pin the actual executable,
+runtime and trace schema and validate gfx90a compatibility rather than infer
+it from MI300. [SimpleTES issue #6](https://github.com/wq-will/SimpleTES/issues/6)
+reports a released TriMul artifact near 1.390 ms but an independently run
+MI300 search near 1.841 ms; its search-budget/variance/configuration question
+is a warning against importing a headline or default budget as an MI210
+expectation. No external benchmark was re-measured here.
