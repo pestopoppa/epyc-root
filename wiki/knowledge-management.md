@@ -2,8 +2,112 @@
 
 **Category**: `knowledge_management`
 **Confidence**: inferred
-**Last compiled**: 2026-09-17 (afternoon: AutoPilot promotion rules reach the belief-kernel adapter with a commit join; runner capture paths are resolved, not guessed); earlier 2026-09-17 (later pass: the ported runner adapters project an empty `protocol_id`, the VB writers survive Fable review, the hub serves a deployed origin/main view, SC85 closes both sides, and two citation/identity defects are filed and fixed; earlier incremental: belief-kernel ingest dispatcher (15 names), SC75/VB-WIRE-2 producer hook, AP-53/SC83/MHS-guard writers with zero-row pre-hook rule, PRB-T4 and spec-on calibration caveats, intake-1323 mis-anchor fix, `.last_compile` retired (KB-WM-4), OP-34 scoped touch, W3 snapshot scope fixes); earlier: 2026-09-15 (the belief-substrate carrier contract — adapters project into a `ClaimTuple`, one ladder per source class, `grade()` the sole rule — plus the citation gate, the attested-was-unverified fix, the 32/62 surviving-mutation audit, and the claim-grammar publication gate with the new append-only social-conversation ledger; earlier: 2026-09-08 (late): **a long-unruled operator-queue row goes bad in two different ways — STALE and MISFILED — and the screen is "what state changes when the operator answers this?", never "is this old?"**; one row retired and archived with every executable premise expired (and executing it would have re-introduced a fixed defect), its sibling row DELETED as misfiled while its document stayed active (~80% live premises, 12 present-tense citations, maintained the day before) because the question it posed was unanswerable; plus the general rule that **a record's correction carries more information than the original claim** — keep the superseded framing beside it, name the heuristic that produced the error, and give every closed item its re-open condition; earlier: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
-**Sources**: 55+ documents (added 2026-09-17: vidya program SC75/VB-WIRE/VB-MHS/VB-EVCONF2 sections, internal-kb-rag KB-WM closures, evidence-plane W3, seven 2026-09-16 subagent logs) (added 2026-09-17 later pass: sub-vb-writers review fixes, sub-runner-adapters, the vidya SC85/VB-RUNNER-PATHS/VB-AP-PROMO-RULE updates, handoff-index-and-backlog-graph deployment, sub-rtg46, sub-misc)
+**Last compiled**: 2026-09-17 (evening: three ticked vidya adapter branches landed and the closure-inflation audit, the `git cherry` landing rule, `speed_axis_reseed` not projected, VB-RUNNER-PATHS-2, SC87-89, KB-WM-3, OBS-12); earlier 2026-09-17 (afternoon: AutoPilot promotion rules reach the belief-kernel adapter with a commit join; runner capture paths are resolved, not guessed); earlier 2026-09-17 (later pass: the ported runner adapters project an empty `protocol_id`, the VB writers survive Fable review, the hub serves a deployed origin/main view, SC85 closes both sides, and two citation/identity defects are filed and fixed; earlier incremental: belief-kernel ingest dispatcher (15 names), SC75/VB-WIRE-2 producer hook, AP-53/SC83/MHS-guard writers with zero-row pre-hook rule, PRB-T4 and spec-on calibration caveats, intake-1323 mis-anchor fix, `.last_compile` retired (KB-WM-4), OP-34 scoped touch, W3 snapshot scope fixes); earlier: 2026-09-15 (the belief-substrate carrier contract — adapters project into a `ClaimTuple`, one ladder per source class, `grade()` the sole rule — plus the citation gate, the attested-was-unverified fix, the 32/62 surviving-mutation audit, and the claim-grammar publication gate with the new append-only social-conversation ledger; earlier: 2026-09-08 (late): **a long-unruled operator-queue row goes bad in two different ways — STALE and MISFILED — and the screen is "what state changes when the operator answers this?", never "is this old?"**; one row retired and archived with every executable premise expired (and executing it would have re-introduced a fixed defect), its sibling row DELETED as misfiled while its document stayed active (~80% live premises, 12 present-tense citations, maintained the day before) because the question it posed was unanswerable; plus the general rule that **a record's correction carries more information than the original claim** — keep the superseded framing beside it, name the heuristic that produced the error, and give every closed item its re-open condition; earlier: 2026-09-08 (incremental: the vidya register's SC47/48 decline verdicts applied to the rows that kept rendering open, the gen-2 ledger holding at frontier 13,141 after the SC73 fail-open closure, and the backlog graph deriving per-node ready/blocked (`index_graph.v2`, 136 ready / 24 blocked / 10 no_open at first measure) with `dep_cycles()` gating the cycle class that had been invisible; also: **the watermark saga closed as a fix, not a workaround — scanner selection is now a content-hash diff against the TRACKED `wiki/source_manifest.json`, mtime never consulted, `--touch` advances the tracked manifest lane-safely (`0ea91f3e`, NIB2-68/OBS-13), the 942-phantom mechanism is dead, and the first-run reconcile is 87 genuinely-pending sources at the next operator wrap-up — plus the compile-receipt fix that stopped `heavy_wrap` from overwriting the very manifest the scanner now keys on**; earlier: 2026-09-07 (incremental: **WikiSkill concedes no wiki pruning and its window — at most 8 iterations, 6.3–8.9 patterns — does not overlap the degradation phenomenon `intake-899`/`intake-1129` describe, so it CORROBORATES our clean-window compile rule rather than licensing an unbounded knowledge layer**; earlier: 2026-09-03: the retarget-vs-close split when an evaluation subject is killed; the compile watermark's third failure shape — the gitignored watermark and the mtime-basis collapse that manufacture a fictional whole-repo backlog in any worktree; earlier compiled findings remain below))
+**Sources**: 55+ documents (added 2026-09-17: vidya program SC75/VB-WIRE/VB-MHS/VB-EVCONF2 sections, internal-kb-rag KB-WM closures, evidence-plane W3, seven 2026-09-16 subagent logs) (added 2026-09-17 later pass: sub-vb-writers review fixes, sub-runner-adapters, the vidya SC85/VB-RUNNER-PATHS/VB-AP-PROMO-RULE updates, handoff-index-and-backlog-graph deployment, sub-rtg46, sub-misc) (added 2026-09-17 evening: sub-land-vidya, sub-small-audits, sub-ap57b, and the vidya/internal-kb-rag/non-inference-backlog deltas)
+
+## Compiled Update — 2026-09-17 (evening): three ticked adapter branches had never landed, a task is done only when `git cherry` is empty, and a receipt that is not a measurement stays unprojected
+
+**Confidence: verified**: `git cherry`, the merge commits and the vidya test runs recorded in the
+sub-lane logs.
+
+### Key findings
+
+- **Three root vidya branches had been reported and ticked, but were not on root main.**
+  - **What was missing.** `sub/ap54-root-20260916` (`eval_fence_enforcement`),
+    `sub/ap55bc-root-20260916` (`ap55_gate`) and `sub/vb-writers-root-20260916` (VB-AP53-RATE and SC83).
+    Their orchestrator halves were already on main in the AutoPilot train (`a1a0251a`). `git cherry` listed
+    every root commit as missing, and a grep of root main found none of the content.
+  - **How it landed.** Merges `7d1ed3a5`, `48dc08b3` and `3671df47`, plus `9d3d4f82`, which carries the
+    `cd79b80e` `would_hold_*` counterfactual verbatim. The adapter copies those keys only when a row
+    recorded them, and never reconstructs them. The shard note is in root `52b12f09`.
+  - **Tests.** 1391 vidya tests pass, and the real-writer end-to-end adapter tests pass 22/22.
+  - [sub-land-vidya](../progress/2026-09/2026-09-17-sub-land-vidya.md)
+- **Closure inflation: four boxes were ticked on evidence that included an unlanded half.**
+  - **Premature ticks, now re-dated to the landing.** VB-AP53-RATE had a duplicate ticked box on the
+    branch, now folded into main's box. SC83 was ticked with the note "Neither is merged yet".
+  - **Unchanged boxes that got a dated note.** AP-54 and AP-55 are ticked on orchestrator evidence that
+    names a root carry that had not landed.
+  - **Not premature.** VB-MHS-OPS, because `mhs_guard.py` is on root main.
+  - **Also found.** `vidya-belief-substrate-program.md` auto-merged into a wrong result, with two
+    VB-AP53-RATE boxes. A clean auto-merge is not a correct one.
+  - **The standing rule that followed.** A task is done only when `git cherry origin/main <branch>` is
+    empty in every repo it touched. The evening landing table was checked against that gate.
+  - [sub-land-vidya](../progress/2026-09/2026-09-17-sub-land-vidya.md),
+    [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- **VB-AP53-RATE and SC83 are wired, and both have zero rows today.**
+  - **Re-proposal rate.** `reproposal_rate.py` writes one self-hashed line per closed 100-trial window. A
+    rewound journal rotates the file.
+    - A read-only backfill over trials 0–1505 found 48 re-proposals, which is 48/216 keyed trials and
+      48/1366 overall. It writes only a `retrospective: true` file that the reader declines.
+    - The earlier one-off 133/1372 counted numeric trials, which this key excludes, so it stays a
+      non-gating observation.
+  - **SC83.** It writes one `false_accept_run.v1` line per scoring run, and its reader grades rows
+    `Judged/Located`. Nothing can be backfilled, because no decoy corpus exists.
+  - **Dry runs.** `ingest autopilot-reproposal-rate` and `ingest reviewer-fa` both matched 0 units. The
+    triggers are an AutoPilot restart on main and the first scored decoy corpus.
+  - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
+- **`speed_axis_reseed` is deliberately not projected (root `1d5f8cba`).** It records a state write, not a
+  measurement. Its trial row is already projected, and it never commits a promotion. Projecting it would
+  need a new settle rule for every refused newest-trial row. A test pins that frames are identical with and
+  without the event. AP-63(a)'s manifest digest *is* carried, ungraded (root `df295516`).
+  [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md)
+- **VB-RUNNER-PATHS-2 is closed (research `ae92ac5c`).**
+  - `score_tulving_run.py`, `occ1/run_occ1.py` and `score_beam_run.py` now load capture through
+    `belief_capture.load_capture`, which reads `EPYC_ROOT` only.
+  - The removed fallback was a live risk: the shared root clone is behind origin/main and lacks all three
+    capture modules.
+  - Tests: 10 new cases fail on the old code.
+  - VB-RUNNER-PATHS-3 lists the remaining hard-coded roots. Among them, the AutoKernel belief writers
+    default `EPYC_ROOT_REPO` to `/workspace`.
+  - [sub-small-audits](../progress/2026-09/2026-09-17-sub-small-audits.md)
+- **More AutoKernel sources were filed before their first run.**
+  - SC87 covers spawn lineage. Its write side is done (`a6288858`), and its reader is pending.
+  - SC88 covers fresh seeded correctness, SC89 the plateau reporter's provenance, and VB-AK-LINEAGE code
+    lineage. All three are write-side first, and none may be backfilled.
+  - VB-AK-UNIFIED-PROFILE gains a sampled CPU/NUMA-location extension. Old captures stay location-unknown.
+  - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md),
+    intake-1439#record, intake-1454#record, intake-1440#record, intake-1446#record, intake-1451#record,
+    intake-1458#record, intake-1442#record
+- **KB-WM-3 is closed (root `4120af69`).**
+  - **`.index-state.json`: SAFE.** It is derived from tracked sources and never read back.
+  - **`.index-graph.json`: PARTIAL.**
+    - Absence was indistinguishable from "not blocked", so `index_graph_status()` now records
+      `ok`/`absent`/`unreadable`/`no_nodes`/`no_readiness` in the premise screener's provenance.
+    - `blocked/` handoffs looked for a graph that exists only in `active/`.
+    - A graph that parsed as valid JSON but was not an object crashed the reader.
+  - **`logs/agent_audit.log`: PARTIAL.**
+    - `.gitignore` re-included the 46 live shards, so `git clean -fd` would have deleted them. The
+      negation is removed.
+    - The legacy monolith was already missing from the shared checkout. It was restored from `f1717d80^`
+      (4402 lines).
+  - **Follow-ups.** KB-WM-5 (`logs/.current_session` is shared by every agent) and KB-WM-6 (graph freshness
+    is unchecked; the recommendation keeps it provenance-only, with a `--check` warning).
+  - [internal-kb-rag](../handoffs/active/internal-kb-rag.md)
+- **OBS-12 is closed (root `afb9745c`).**
+  - **Method.** `python3 -s` reproduces the interpreter left after a rebuild wipes `~/.local`.
+  - **Silent config loss.** Under it, `compile_sources` silently ignored `wiki.yaml`, which dropped
+    `SCHEMA.md` from `skip_filenames`. `wiki_writer_review` also ignored its config block. Both now raise.
+  - **Other fixes.** Six scripts now refuse with the venv command, and `coordinator-agent/SKILL.md` names
+    the venv.
+  - **Guard.** 18 cases, 16 of which fail before the fix.
+  - **Follow-ups.** OBS-12a covers the CLAUDE.md bus commands, which need PyYAML through a `python3`
+    shebang. OBS-12b (dangling `security-review-skill.md` links) was already fixed by the pass-2 compile.
+  - [non-inference-backlog](../handoffs/active/non-inference-backlog.md)
+
+### Open questions
+
+- KB-WM-6: should a stale or missing readiness graph ever reach the screener's prompt (reversing AIR-13)?
+- OBS-12a: venv in the doctrine commands, a PyYAML-free roster read, or a `health_check.sh` check?
+
+### Source References (2026-09-17 evening)
+
+- [sub-land-vidya](../progress/2026-09/2026-09-17-sub-land-vidya.md): landing, conflicts, closure-inflation audit.
+- [sub-small-audits](../progress/2026-09/2026-09-17-sub-small-audits.md): OBS-12, KB-WM-3, VB-RUNNER-PATHS-2.
+- [sub-ap57b](../progress/2026-09/2026-09-17-sub-ap57b.md): the non-projection decision.
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): VB-AP53-RATE, SC83, SC87–89, VB-AK-LINEAGE, VB-RUNNER-PATHS-2/3.
+- [internal-kb-rag](../handoffs/active/internal-kb-rag.md): KB-WM-3/5/6.
+- [non-inference-backlog](../handoffs/active/non-inference-backlog.md): OBS-12/12a/12b.
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): the landing audit and the `git cherry` rule.
 
 ## Compiled Update — 2026-09-17 (afternoon): a promotion is a claim only once its commit is seen
 
