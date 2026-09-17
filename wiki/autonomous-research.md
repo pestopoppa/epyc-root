@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-17 (evening: AP-57 B `speed_axis_reseed` receipt, AP-63(a) run_manifest/lineage, AP-55-ARM counterfactual shadow review, ETR-5/6/7, AutoKernel v21 stop / v22 bounded relaunch); earlier 2026-09-17 (afternoon: the AutoPilot merge train is on orchestrator main, and AP-54/AP-55/MHS-4/MHS-5 are closed; AP-55-ARM waits on one shadow run); earlier 2026-09-17 (later pass: the Dream-RSI intake wave files 14 offline rows, the promotion guard's served-config identity and empty-frontier rule are built, AP-55's seed re-run gains its arming flag, the merge train guards every `update_baseline` call site, and the harness-null-pool evidence reaches HS-4; earlier incremental: AP-53 rejected-mutation ledger, AP-54 Landlock eval fence, AP-55 infra fingerprint + shadow promotion gate, live-frontier promotion guard, MHS-3/4/5 with the override-rationale refutation, E8 chain retired); earlier: 2026-09-16 (AutoKernel guard wiring, cross-workload refusal, and archived dirty-worktree retirement; earlier dated findings retained below)
+**Last compiled**: 2026-09-17 (AutoKernel source-aware correctness, codegen provenance, v23 relaunch; earlier evening: AP-57 B `speed_axis_reseed` receipt, AP-63(a) run_manifest/lineage, AP-55-ARM counterfactual shadow review, ETR-5/6/7, AutoKernel v21 stop / v22 bounded relaunch); earlier 2026-09-17 (afternoon: the AutoPilot merge train is on orchestrator main, and AP-54/AP-55/MHS-4/MHS-5 are closed; AP-55-ARM waits on one shadow run); earlier 2026-09-17 (later pass: the Dream-RSI intake wave files 14 offline rows, the promotion guard's served-config identity and empty-frontier rule are built, AP-55's seed re-run gains its arming flag, the merge train guards every `update_baseline` call site, and the harness-null-pool evidence reaches HS-4; earlier incremental: AP-53 rejected-mutation ledger, AP-54 Landlock eval fence, AP-55 infra fingerprint + shadow promotion gate, live-frontier promotion guard, MHS-3/4/5 with the override-rationale refutation, E8 chain retired); earlier: 2026-09-16 (AutoKernel guard wiring, cross-workload refusal, and archived dirty-worktree retirement; earlier dated findings retained below)
 **Sources**: 130+ documents (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
 
 ## Compiled Update — 2026-09-17 (evening): the speed-axis reseed gets a ledger receipt, journal rows record their manifest and parent, and the shadow gate now records what enforce would have done
@@ -117,6 +117,21 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
     20 healthy loops.
   - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md)
   - [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md)
+- **A source-aware oracle now protects prospective GDN edits.** The old default `MUL_MAT`
+  gate did not exercise a GDN change. Research commits `b4f08d6d`–`c8e79e4c`
+  resolve the changed operation, require a nonempty selected CPU suite, and compare
+  16,896 exactly representable F32 outputs with an independent scalar GDN reference
+  before timing. Unsupported new CPU quant/graph paths refuse before a build;
+  historical keeps remain historical rather than being retroactively regraded.
+  The existing anchor binary passed 38/38 selected GDN cases and the scalar probe.
+  [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
+- **Codegen evidence is diagnostic and prospective.** Research `09bc8fc3` writes
+  bounded build-scoped source-KEEP summaries with producer-authored ClaimTuples;
+  root `7e46f3ca` verifies their bindings on read. CPU machine code and embedded-only
+  HIP assembly are still unavailable, and no spill, occupancy, correctness or
+  throughput claim follows from instruction counts. A continuous v23 GLM controller
+  started from the same 28-keep tip at 16:32 UTC; its startup is not a measured keep.
+  [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md)
 
 ### Open questions
 
@@ -132,6 +147,7 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
 - [eval-tower-loop-robustness-audit](../handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md): ETR-5/6/7 ticks.
 - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md): Dream-RSI checkpoint, v21 stop, v22 relaunch.
 - [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md): v22 candidate-only outcomes and clean stop boundary.
+- [autokernel-porting-implementation](../progress/2026-09/2026-09-17-autokernel-porting-implementation.md): source-aware gate, codegen evidence, v23 start and remaining coverage limits.
 - [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md): integrity and promotion-control audit.
 - [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md), [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md): row checkpoints.
 - [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): prospective codegen write-side task.

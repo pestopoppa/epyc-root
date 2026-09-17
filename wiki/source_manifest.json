@@ -4,27 +4,29 @@
     "handoff-active": 168,
     "handoff-blocked": 2,
     "handoff-completed": 195,
-    "progress": 464,
+    "progress": 465,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-17T14:48:38Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 1,
+      "added": 1,
+      "changed": 2,
       "removed": 0
     },
-    "at": "2026-09-17T16:17:46Z",
+    "at": "2026-09-17T16:35:42Z",
     "scope_paths": [
-      "handoffs/active/vidya-belief-substrate-program.md"
+      "handoffs/active/autokernel-research-loop.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "progress/2026-09/2026-09-17-autokernel-porting-implementation.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-17T16:17:46Z",
+  "scan_time": "2026-09-17T16:35:42Z",
   "schema_version": 1,
-  "source_set_hash": "3c2c22ce5b1e2cda20db3232c0058d95487fd768c526b45d818e680c71d3555b",
+  "source_set_hash": "6068b39d4c2c96da341efdda42835da85a3636732891d5545334f4b59bf31c3d",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -123,10 +125,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0a838fd645ff925b5b03d87a987af53e9e21c015e956889b9f0d3edd01bdec60",
-      "modified": "2026-09-17T16:06:27Z",
+      "content_hash": "60b3f3f4401e10412f52cfcd141bb0969db01caa31b9196fdaf6a56c3c486d7c",
+      "modified": "2026-09-17T16:34:07Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 464844,
+      "size": 466137,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -1323,10 +1325,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a33a1f3168e9ea05783f67eb604248c415640d96369bb8eb82114233f22d33d8",
-      "modified": "2026-09-17T16:06:13Z",
+      "content_hash": "99dab041019675a1877690abccc78f4755b2bcde1d19f87dd8058cb54be4bfc5",
+      "modified": "2026-09-17T16:33:50Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 226121,
+      "size": 226430,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -7627,6 +7629,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "7425625dc1fa6a05bba0f6539c0a9bf72dc41f70cdef05d1eca5e054ecb14e9f",
+      "modified": "2026-09-17T16:34:28Z",
+      "path": "progress/2026-09/2026-09-17-autokernel-porting-implementation.md",
+      "size": 4117,
+      "title": "AutoKernel porting-method implementation \u2014 2026-09-17",
+      "type": "progress"
+    },
+    {
       "content_hash": "de64785a08f785cd3c1f52822a8bc4aa417fed2d5aab7f378ff5b0973dccfc9a",
       "modified": "2026-09-17T14:46:25Z",
       "path": "progress/2026-09/2026-09-17-intake-jev-sageattn.md",
@@ -8611,7 +8621,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1073,
+  "total_new": 1074,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
