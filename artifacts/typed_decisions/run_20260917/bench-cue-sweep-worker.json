@@ -1,0 +1,1692 @@
+{
+  "agreement": {
+    "agreeing": 15,
+    "agreement_rate": 0.9375,
+    "comparable": 16,
+    "disagreeing": 1,
+    "disagreements": [
+      {
+        "question_id": "n01",
+        "values": {
+          "json": false,
+          "native:full": true,
+          "native:id_only": true,
+          "native:short": true
+        }
+      }
+    ],
+    "modes": [
+      "json",
+      "native:full",
+      "native:short",
+      "native:id_only"
+    ],
+    "per_question": [
+      {
+        "agreeing": false,
+        "comparable": true,
+        "question_id": "n01",
+        "values": {
+          "json": false,
+          "native:full": true,
+          "native:id_only": true,
+          "native:short": true
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "n02",
+        "values": {
+          "json": true,
+          "native:full": true,
+          "native:id_only": true,
+          "native:short": true
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "n03",
+        "values": {
+          "json": false,
+          "native:full": false,
+          "native:id_only": false,
+          "native:short": false
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "n04",
+        "values": {
+          "json": true,
+          "native:full": true,
+          "native:id_only": true,
+          "native:short": true
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "n05",
+        "values": {
+          "json": false,
+          "native:full": false,
+          "native:id_only": false,
+          "native:short": false
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "n06",
+        "values": {
+          "json": true,
+          "native:full": true,
+          "native:id_only": true,
+          "native:short": true
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "n07",
+        "values": {
+          "json": true,
+          "native:full": true,
+          "native:id_only": true,
+          "native:short": true
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "n08",
+        "values": {
+          "json": false,
+          "native:full": false,
+          "native:id_only": false,
+          "native:short": false
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native:full",
+          "native:short",
+          "native:id_only"
+        ],
+        "question_id": "c01",
+        "values": {
+          "json": "fish"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native:full",
+          "native:short",
+          "native:id_only"
+        ],
+        "question_id": "c02",
+        "values": {
+          "json": "bird"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native:full",
+          "native:short",
+          "native:id_only"
+        ],
+        "question_id": "c03",
+        "values": {
+          "json": "reptile"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native:full",
+          "native:short",
+          "native:id_only"
+        ],
+        "question_id": "c04",
+        "values": {
+          "json": "mammal"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native:full",
+          "native:short",
+          "native:id_only"
+        ],
+        "question_id": "c05",
+        "values": {
+          "json": "oregon"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native:full",
+          "native:short",
+          "native:id_only"
+        ],
+        "question_id": "c06",
+        "values": {
+          "json": "vermont"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native:full",
+          "native:short",
+          "native:id_only"
+        ],
+        "question_id": "c07",
+        "values": {
+          "json": "arizona"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native:full",
+          "native:short",
+          "native:id_only"
+        ],
+        "question_id": "c08",
+        "values": {
+          "json": "alaska"
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "s01",
+        "values": {
+          "json": 2,
+          "native:full": 2,
+          "native:id_only": 2,
+          "native:short": 2
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "s02",
+        "values": {
+          "json": 3,
+          "native:full": 3,
+          "native:id_only": 3,
+          "native:short": 3
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "s03",
+        "values": {
+          "json": 1,
+          "native:full": 1,
+          "native:id_only": 1,
+          "native:short": 1
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "s04",
+        "values": {
+          "json": 1,
+          "native:full": 1,
+          "native:id_only": 1,
+          "native:short": 1
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "s05",
+        "values": {
+          "json": 1,
+          "native:full": 1,
+          "native:id_only": 1,
+          "native:short": 1
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "s06",
+        "values": {
+          "json": 2,
+          "native:full": 2,
+          "native:id_only": 2,
+          "native:short": 2
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "s07",
+        "values": {
+          "json": 3,
+          "native:full": 3,
+          "native:id_only": 3,
+          "native:short": 3
+        }
+      },
+      {
+        "agreeing": true,
+        "comparable": true,
+        "question_id": "s08",
+        "values": {
+          "json": 1,
+          "native:full": 1,
+          "native:id_only": 1,
+          "native:short": 1
+        }
+      }
+    ],
+    "unresolved_pairs": 8
+  },
+  "agreements": {
+    "native:full": {
+      "agreeing": 15,
+      "agreement_rate": 0.9375,
+      "comparable": 16,
+      "disagreeing": 1,
+      "disagreements": [
+        {
+          "question_id": "n01",
+          "values": {
+            "json": false,
+            "native:full": true
+          }
+        }
+      ],
+      "modes": [
+        "json",
+        "native:full"
+      ],
+      "per_question": [
+        {
+          "agreeing": false,
+          "comparable": true,
+          "question_id": "n01",
+          "values": {
+            "json": false,
+            "native:full": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n02",
+          "values": {
+            "json": true,
+            "native:full": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n03",
+          "values": {
+            "json": false,
+            "native:full": false
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n04",
+          "values": {
+            "json": true,
+            "native:full": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n05",
+          "values": {
+            "json": false,
+            "native:full": false
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n06",
+          "values": {
+            "json": true,
+            "native:full": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n07",
+          "values": {
+            "json": true,
+            "native:full": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n08",
+          "values": {
+            "json": false,
+            "native:full": false
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:full"
+          ],
+          "question_id": "c01",
+          "values": {
+            "json": "fish"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:full"
+          ],
+          "question_id": "c02",
+          "values": {
+            "json": "bird"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:full"
+          ],
+          "question_id": "c03",
+          "values": {
+            "json": "reptile"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:full"
+          ],
+          "question_id": "c04",
+          "values": {
+            "json": "mammal"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:full"
+          ],
+          "question_id": "c05",
+          "values": {
+            "json": "oregon"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:full"
+          ],
+          "question_id": "c06",
+          "values": {
+            "json": "vermont"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:full"
+          ],
+          "question_id": "c07",
+          "values": {
+            "json": "arizona"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:full"
+          ],
+          "question_id": "c08",
+          "values": {
+            "json": "alaska"
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s01",
+          "values": {
+            "json": 2,
+            "native:full": 2
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s02",
+          "values": {
+            "json": 3,
+            "native:full": 3
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s03",
+          "values": {
+            "json": 1,
+            "native:full": 1
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s04",
+          "values": {
+            "json": 1,
+            "native:full": 1
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s05",
+          "values": {
+            "json": 1,
+            "native:full": 1
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s06",
+          "values": {
+            "json": 2,
+            "native:full": 2
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s07",
+          "values": {
+            "json": 3,
+            "native:full": 3
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s08",
+          "values": {
+            "json": 1,
+            "native:full": 1
+          }
+        }
+      ],
+      "unresolved_pairs": 8
+    },
+    "native:id_only": {
+      "agreeing": 15,
+      "agreement_rate": 0.9375,
+      "comparable": 16,
+      "disagreeing": 1,
+      "disagreements": [
+        {
+          "question_id": "n01",
+          "values": {
+            "json": false,
+            "native:id_only": true
+          }
+        }
+      ],
+      "modes": [
+        "json",
+        "native:id_only"
+      ],
+      "per_question": [
+        {
+          "agreeing": false,
+          "comparable": true,
+          "question_id": "n01",
+          "values": {
+            "json": false,
+            "native:id_only": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n02",
+          "values": {
+            "json": true,
+            "native:id_only": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n03",
+          "values": {
+            "json": false,
+            "native:id_only": false
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n04",
+          "values": {
+            "json": true,
+            "native:id_only": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n05",
+          "values": {
+            "json": false,
+            "native:id_only": false
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n06",
+          "values": {
+            "json": true,
+            "native:id_only": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n07",
+          "values": {
+            "json": true,
+            "native:id_only": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n08",
+          "values": {
+            "json": false,
+            "native:id_only": false
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:id_only"
+          ],
+          "question_id": "c01",
+          "values": {
+            "json": "fish"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:id_only"
+          ],
+          "question_id": "c02",
+          "values": {
+            "json": "bird"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:id_only"
+          ],
+          "question_id": "c03",
+          "values": {
+            "json": "reptile"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:id_only"
+          ],
+          "question_id": "c04",
+          "values": {
+            "json": "mammal"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:id_only"
+          ],
+          "question_id": "c05",
+          "values": {
+            "json": "oregon"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:id_only"
+          ],
+          "question_id": "c06",
+          "values": {
+            "json": "vermont"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:id_only"
+          ],
+          "question_id": "c07",
+          "values": {
+            "json": "arizona"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:id_only"
+          ],
+          "question_id": "c08",
+          "values": {
+            "json": "alaska"
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s01",
+          "values": {
+            "json": 2,
+            "native:id_only": 2
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s02",
+          "values": {
+            "json": 3,
+            "native:id_only": 3
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s03",
+          "values": {
+            "json": 1,
+            "native:id_only": 1
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s04",
+          "values": {
+            "json": 1,
+            "native:id_only": 1
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s05",
+          "values": {
+            "json": 1,
+            "native:id_only": 1
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s06",
+          "values": {
+            "json": 2,
+            "native:id_only": 2
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s07",
+          "values": {
+            "json": 3,
+            "native:id_only": 3
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s08",
+          "values": {
+            "json": 1,
+            "native:id_only": 1
+          }
+        }
+      ],
+      "unresolved_pairs": 8
+    },
+    "native:short": {
+      "agreeing": 15,
+      "agreement_rate": 0.9375,
+      "comparable": 16,
+      "disagreeing": 1,
+      "disagreements": [
+        {
+          "question_id": "n01",
+          "values": {
+            "json": false,
+            "native:short": true
+          }
+        }
+      ],
+      "modes": [
+        "json",
+        "native:short"
+      ],
+      "per_question": [
+        {
+          "agreeing": false,
+          "comparable": true,
+          "question_id": "n01",
+          "values": {
+            "json": false,
+            "native:short": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n02",
+          "values": {
+            "json": true,
+            "native:short": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n03",
+          "values": {
+            "json": false,
+            "native:short": false
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n04",
+          "values": {
+            "json": true,
+            "native:short": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n05",
+          "values": {
+            "json": false,
+            "native:short": false
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n06",
+          "values": {
+            "json": true,
+            "native:short": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n07",
+          "values": {
+            "json": true,
+            "native:short": true
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "n08",
+          "values": {
+            "json": false,
+            "native:short": false
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:short"
+          ],
+          "question_id": "c01",
+          "values": {
+            "json": "fish"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:short"
+          ],
+          "question_id": "c02",
+          "values": {
+            "json": "bird"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:short"
+          ],
+          "question_id": "c03",
+          "values": {
+            "json": "reptile"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:short"
+          ],
+          "question_id": "c04",
+          "values": {
+            "json": "mammal"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:short"
+          ],
+          "question_id": "c05",
+          "values": {
+            "json": "oregon"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:short"
+          ],
+          "question_id": "c06",
+          "values": {
+            "json": "vermont"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:short"
+          ],
+          "question_id": "c07",
+          "values": {
+            "json": "arizona"
+          }
+        },
+        {
+          "comparable": false,
+          "missing_modes": [
+            "native:short"
+          ],
+          "question_id": "c08",
+          "values": {
+            "json": "alaska"
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s01",
+          "values": {
+            "json": 2,
+            "native:short": 2
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s02",
+          "values": {
+            "json": 3,
+            "native:short": 3
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s03",
+          "values": {
+            "json": 1,
+            "native:short": 1
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s04",
+          "values": {
+            "json": 1,
+            "native:short": 1
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s05",
+          "values": {
+            "json": 1,
+            "native:short": 1
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s06",
+          "values": {
+            "json": 2,
+            "native:short": 2
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s07",
+          "values": {
+            "json": 3,
+            "native:short": 3
+          }
+        },
+        {
+          "agreeing": true,
+          "comparable": true,
+          "question_id": "s08",
+          "values": {
+            "json": 1,
+            "native:short": 1
+          }
+        }
+      ],
+      "unresolved_pairs": 8
+    }
+  },
+  "arms": {
+    "json": {
+      "candidate_slice_sum_range": [
+        1.0,
+        1.0
+      ],
+      "candidate_slice_sums": [
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n01"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n02"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n03"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n04"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n05"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n06"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n07"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n08"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c01"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c02"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c03"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c04"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c05"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c06"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c07"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c08"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s01"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s02"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s03"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s04"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s05"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s06"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s07"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s08"
+        }
+      ],
+      "completion_reason": "eos",
+      "cue_style": null,
+      "decisions": 24,
+      "elapsed_ms": 19321.457643061876,
+      "failures": [],
+      "mode": "json",
+      "prompt_sha256": "3f99d613ae11f507857bffc72de01d589e1747134ceb9dbbb004242f673215d1",
+      "raw_text_chars": 2642,
+      "resolved": {
+        "c01": "fish",
+        "c02": "bird",
+        "c03": "reptile",
+        "c04": "mammal",
+        "c05": "oregon",
+        "c06": "vermont",
+        "c07": "arizona",
+        "c08": "alaska",
+        "n01": false,
+        "n02": true,
+        "n03": false,
+        "n04": true,
+        "n05": false,
+        "n06": true,
+        "n07": true,
+        "n08": false,
+        "s01": 2,
+        "s02": 3,
+        "s03": 1,
+        "s04": 1,
+        "s05": 1,
+        "s06": 2,
+        "s07": 3,
+        "s08": 1
+      },
+      "tokens_generated": 1354,
+      "wall_ms": 19321.86780590564
+    },
+    "native:full": {
+      "candidate_slice_sum_range": [
+        0.9999999999999999,
+        1.0
+      ],
+      "candidate_slice_sums": [
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n01"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n02"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n03"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 0.9999999999999999,
+          "question_id": "n04"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n05"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n06"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n07"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n08"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s01"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s02"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 0.9999999999999999,
+          "question_id": "s03"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 0.9999999999999999,
+          "question_id": "s04"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s05"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s06"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s07"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s08"
+        }
+      ],
+      "completion_reason": "limit",
+      "cue_style": "full",
+      "decisions": 16,
+      "elapsed_ms": 7235.448905732483,
+      "failures": [
+        {
+          "detail": "question 'c01': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c02': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c03': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c04': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c05': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c06': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c07': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c08': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "mode": "native:full",
+      "prompt_sha256": "fb962ed60b3c25b16b4f5590a7bf72a27e47a8a8cc3af1197b8f708e88e6bec4",
+      "raw_text_chars": 1374,
+      "resolved": {
+        "n01": true,
+        "n02": true,
+        "n03": false,
+        "n04": true,
+        "n05": false,
+        "n06": true,
+        "n07": true,
+        "n08": false,
+        "s01": 2,
+        "s02": 3,
+        "s03": 1,
+        "s04": 1,
+        "s05": 1,
+        "s06": 2,
+        "s07": 3,
+        "s08": 1
+      },
+      "tokens_generated": 523,
+      "wall_ms": 7259.801752399653
+    },
+    "native:id_only": {
+      "candidate_slice_sum_range": [
+        0.9999999999999999,
+        1.0
+      ],
+      "candidate_slice_sums": [
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n01"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n02"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n03"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n04"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n05"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n06"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n07"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n08"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 0.9999999999999999,
+          "question_id": "s01"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s02"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s03"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s04"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 0.9999999999999999,
+          "question_id": "s05"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s06"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s07"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s08"
+        }
+      ],
+      "completion_reason": "limit",
+      "cue_style": "id_only",
+      "decisions": 16,
+      "elapsed_ms": 1598.137527704239,
+      "failures": [
+        {
+          "detail": "question 'c01': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c02': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c03': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c04': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c05': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c06': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c07': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c08': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "mode": "native:id_only",
+      "prompt_sha256": "fb962ed60b3c25b16b4f5590a7bf72a27e47a8a8cc3af1197b8f708e88e6bec4",
+      "raw_text_chars": 148,
+      "resolved": {
+        "n01": true,
+        "n02": true,
+        "n03": false,
+        "n04": true,
+        "n05": false,
+        "n06": true,
+        "n07": true,
+        "n08": false,
+        "s01": 2,
+        "s02": 3,
+        "s03": 1,
+        "s04": 1,
+        "s05": 1,
+        "s06": 2,
+        "s07": 3,
+        "s08": 1
+      },
+      "tokens_generated": 112,
+      "wall_ms": 1612.5129731371999
+    },
+    "native:short": {
+      "candidate_slice_sum_range": [
+        0.9999999999999999,
+        1.0
+      ],
+      "candidate_slice_sums": [
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n01"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n02"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n03"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n04"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n05"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n06"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 0.9999999999999999,
+          "question_id": "n07"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n08"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s01"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s02"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s03"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s04"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s05"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s06"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 0.9999999999999999,
+          "question_id": "s07"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s08"
+        }
+      ],
+      "completion_reason": "limit",
+      "cue_style": "short",
+      "decisions": 16,
+      "elapsed_ms": 3206.256413832307,
+      "failures": [
+        {
+          "detail": "question 'c01': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c02': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c03': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c04': candidate labels ['mammal', 'reptile'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c05': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c06': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c07': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        },
+        {
+          "detail": "question 'c08': candidate labels ['oregon', 'vermont', 'arizona', 'alaska'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "mode": "native:short",
+      "prompt_sha256": "fb962ed60b3c25b16b4f5590a7bf72a27e47a8a8cc3af1197b8f708e88e6bec4",
+      "raw_text_chars": 667,
+      "resolved": {
+        "n01": true,
+        "n02": true,
+        "n03": false,
+        "n04": true,
+        "n05": false,
+        "n06": true,
+        "n07": true,
+        "n08": false,
+        "s01": 2,
+        "s02": 3,
+        "s03": 1,
+        "s04": 1,
+        "s05": 1,
+        "s06": 2,
+        "s07": 3,
+        "s08": 1
+      },
+      "tokens_generated": 239,
+      "wall_ms": 3221.1928539909422
+    }
+  },
+  "benchmark": "typed_decisions_modes",
+  "cue_styles": [
+    "full",
+    "short",
+    "id_only"
+  ],
+  "modes": [
+    "json",
+    "native"
+  ],
+  "questions": [
+    "n01",
+    "n02",
+    "n03",
+    "n04",
+    "n05",
+    "n06",
+    "n07",
+    "n08",
+    "c01",
+    "c02",
+    "c03",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c08",
+    "s01",
+    "s02",
+    "s03",
+    "s04",
+    "s05",
+    "s06",
+    "s07",
+    "s08"
+  ],
+  "role": "frontdoor",
+  "state_sha256": "aa712da1656ad7c552cca2a3f595bcd9618767844098e1320a1c001db1a9ab88",
+  "timestamp": "2026-09-17T23:43:21.123749+00:00"
+}
