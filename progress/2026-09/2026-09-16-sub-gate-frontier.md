@@ -148,3 +148,225 @@ verdicts" candidate row:
 Task to add to `handoffs/active/vidya-belief-substrate-program.md`: **VB-MHS-OPS**. Project the
 `eval_leakage_guard` ledger events into claim tuples (an instrument-unavailable interval), and
 have VB-MHS-GATES consume them as the denominator exclusion.
+
+## Follow-up — operator decisions (c)+(b) and the Fable review (MERGE-AFTER-FIX)
+
+Same branch, new commits. No restart, no push.
+
+- **(c) Clean trials become frontier representatives.**
+  - The loop fixes the row it will journal before the promotion decision
+    (`_provisional_trial_row`: same timestamp and objective fields). It passes that row to
+    every `update_baseline` call (`pending_journal_rows`), so the guard's live archive includes
+    the candidate.
+  - Clean rows are stamped `eval_details.frontier_admission = "representative"` and cluster by
+    config fingerprint. One predicate (`row_is_representative_member`) serves replay, the
+    snapshot tail fold, recovery re-import and reproduction counting. The live archive uses
+    `upsert_representative`.
+  - Outside multitier mode, within-noise reproductions now reach `update_baseline` as well.
+  - Nothing is persisted between the decision and `journal.record` (pinned by a test). After
+    the record, a mismatch between the provisional row and the recorded row logs an ERROR.
+  - No back-fill. Switch: `AUTOPILOT_CLEAN_TRIAL_REPRESENTATIVES` (default on).
+- **(b) Interim empty-frontier rule.**
+  - Applies while the tier's live frontier holds no config other than the candidate's and the
+    tier has a baseline.
+  - Needs N comparable live-regime reproductions: `AUTOPILOT_EMPTY_FRONTIER_MIN_REPRO`,
+    default 3; values below 2 are refused and fall back to 3.
+  - NON_COMPARABLE rows are excluded (`src/autopilot_core/live_reproductions.py`). The
+    promoted fields are the median over those reproductions, and that median must still clear
+    the quantum.
+  - `promotion_rule` (`frontier` / `empty_frontier_repro` / `seed`) is logged, returned, and
+    written to the trial row and the `baseline_promotion` event.
+- **Review fixes.**
+  - (1) The replay `compare()` now restores the logger level.
+  - (2) `fix_text` no longer mentions git; it pins the pool's sha256 and size and says to never
+    rebuild. A test covers it.
+  - (3) Fail-closed: a provider exception or an unreadable archive refuses promotion over an
+    existing baseline (`refused_guard_unavailable`). The reviewer's reproduction is a test.
+  - (4) The live archive is built once per `update_baseline` call, down from up to 4 (tested).
+- **Replay goldens regenerated**, with paths `old` / `live` / `live_c` and a forward simulation.
+  - `old` vs `live`: identical promotions; 4 refusal-reason changes.
+  - `live_c` (what-if): 27 promotions against 2 on the other paths (3 seeds, 22 under rule
+    (b), 2 under the frontier rule). It still refuses 66 on the quantum and 23 on the
+    reproduction count.
+  - Forward simulation from the live state: the first decision falls under rule (b) and is
+    refused (1 of 3), the T1 frontier fills to 5 points, and every later decision uses the
+    frontier rule. No config in that window reproduced 3 times, so nothing promotes.
+- **Live restart consequence** (recorded in the decision note): T1, T2 and T3 have baselines and
+  0 rows fall after the fence, so each tier starts under rule (b). No promotion happens until a
+  config has 3 comparable reproductions in the new epoch.
+- **AP-55.** Mode A (shadow) remains the default: `gate_mode()` maps anything unknown to
+  `shadow` on `sub/ap55bc-20260916`, and the launcher does not set
+  `AUTOPILOT_AP55_PROMOTION_GATE`. That gate is not on this branch.
+- **Blast radius: MEDIUM-HIGH.** This touches loop ordering at the decision point (in memory
+  only), a new journal field (additive), reconstruction clustering for newly stamped rows, the
+  snapshot tail fold (stamped rows force full replay), recovery re-import, the rule dispatch in
+  `update_baseline` (its signature gains a keyword-only argument), and fixtures.
+
+### New handoff task (for the wrap-up agent to add; not applied here)
+
+In `handoffs/active/autopilot-continuous-optimization.md` (or the AP-55 owner's handoff), add:
+
+```
+- [ ] **AP-55-ARM** — after one AutoPilot run in shadow (mode A), report how often enforce
+      would have held a promotion (from the recorded shadow verdicts), then arm enforce plus
+      seed re-runs (`AUTOPILOT_AP55_PROMOTION_GATE=enforce`, `AUTOPILOT_AP55_SEED_RERUN=1`).
+      The operator pre-approved option B for after that review (2026-09-16).
+```
+
+Also append to the W3e note in `objective-task-rate-goodput.md`:
+
+```
+      **(c)+(b) ✅ 2026-09-16 (operator decision; branch `sub/gate-frontier-20260916`):** clean
+      trials are journaled as frontier representatives and handed to the promotion guard before
+      the decision; an empty live frontier needs >= 3 comparable reproductions
+      (`AUTOPILOT_EMPTY_FRONTIER_MIN_REPRO`); `promotion_rule` recorded per trial. Guard fails
+      closed on an unreadable archive. Next restart: every tier starts under rule (b).
+```
+
+Belief kernel: the `autopilot trial journal` adapter should project `eval_details.promotion_rule`
+and `frontier_admission` into the support frame. Add this to the VB-MHS-OPS task note; the
+change is additive and involves no grade change.
+
+### Commits and integration notes (follow-up)
+
+- `5d3a7a37`: fix_text (review finding 2).
+- `239ac5b8`: (c)+(b), fail-closed guard, per-call cache, replay logger restore, goldens, and
+  the decision note.
+- Merging `origin/main` (88a2902d) into this branch is clean (`git merge-tree`).
+- Merging `sub/ap55bc-20260916` into this branch gives ONE conflict, in `autopilot.py` next to
+  `eval_details_dict["infra_comparability"]`. Resolve it by keeping both blocks: the
+  `frontier_admission` and `promotion_rule` stamps, and `ap55_promotion_gate`.
+- **Integration must-do:** ap55bc adds an `ap55_gate.get("hold")` guard to the clean and
+  final_t1 promotion call sites. The within-noise call site added here (non-multitier mode) needs
+  the same `and not ap55_gate.get("hold")` condition, or AP-55-ARM (enforce) will not bind on
+  that path. In shadow mode it makes no difference.
+- Tests, full unit suite (`-n 16`, with `GATE_FRONTIER_FULL_REPLAY=1`): 13312 passed and 4
+  failed. 3 of the failures were already present before this work (config_consolidation,
+  dashboard_helpers embedder bucket, mutation_ledger_tripwire, the last being fixed on main).
+  The 4th was the stale full-replay golden, which has since been regenerated, and the full
+  replay now passes.
+- Tests, single process (the review subset plus ev14c): 1621 passed and 2 failed. The failures
+  are `test_model_server_extended` (it also fails on origin/main because of the environment)
+  and the tripwire test.
+- Tests, combined process (live_scope + c_and_b + operability + ev14c, full replay on): 90
+  passed.
+
+## Re-review of 239ac5b8 (MERGE-AFTER-FIX), fixed in `53dea5aa`
+
+- **B1 (blocking), fixed: served-config identity.**
+  - Reproductions were keyed by the ACTION hash. For `seed_batch` and `deep_eval` that hash
+    is not the served config: `{"type":"seed_batch","n_questions":10}` covered 394 rows, and
+    all 22 what-if promotions under rule (b) were such runs.
+  - New `action_identity.row_config_identity` identifies a served config only from an explicit
+    delta (`structural_experiment` flags, `numeric_trial` resolved params), plus the AP-55
+    infra digest when the row records one.
+  - Rule (b) counts reproductions by that identity, and only identity-bearing clean rows are
+    stamped as representatives. A candidate without an identity cannot promote under either
+    rule, though a tier with no baseline can still seed.
+  - Prompt, code and GEPA mutations stay non-promotable until the loop records a content
+    identity for them. Open item for the operator: the mutated-file sha, or the post-commit
+    orchestrator HEAD.
+- **What-if replay after the fix.**
+  - 4 promotions: 3 seeds, plus trial 755 (`structural_experiment`) under the frontier rule.
+  - **Rule (b) promotes nothing.**
+  - 441 decisions are refused for having no served-config identity: seed_batch 331,
+    numeric_trial with empty params 72, deep_eval 18, and 20 others.
+  - Forward simulation: nothing promotes. 1472 is refused under (b) (1 of 3 reproductions);
+    the numeric_trial candidates are refused for too few reproductions or for not being
+    representatives; the 2 seed_batch runs are refused for having no identity.
+- **B2, fixed.** The loop deep-copies the baseline before the decision. After `journal.record`,
+  `_reconcile_promotion_with_journal` restores it on any mismatch and turns the update into a
+  refusal, so no promotion event and no promoted `baseline_state` are written. Tested.
+- **B3, fixed (the simpler option).** The row carries
+  `promotion_status: pending_commit|refused`. The `baseline_promotion` event is the commit
+  record, so a pending row with no event means "not promoted", and recovery needs no action.
+  Documented in the decision note.
+- **AP-55.** A TODO at the within-noise promotion call asks the merge train to add the
+  `ap55_gate.get("hold")` guard.
+- **Tests.**
+  - Combined process (live_scope + c_and_b + operability + ev14c, full replay on): 106 passed.
+  - Full suite (`-n 16`): 13,320 passed and 11 failed. All 11 fail identically on the unchanged
+    base commit 239ac5b8, because of the environment: model_server_extended ×5,
+    orchestrator_stack_reload ×3, config_consolidation, dashboard embedder bucket, and
+    mutation_ledger_tripwire.
+  - Single process, related subset: 1,532 passed and 1 failed (model_server_extended, the same
+    environment failure).
+
+## Operator decision: the mutated-file sha is the content identity, plus the 53dea5aa verification notes (`f083a0cd`)
+
+- **Scope and recording.**
+  - `prompt_mutation`, `code_mutation` and `gepa_optimize` are identified by
+    `eval_details.served_content = {"files": {path: sha256}}`.
+  - The handler hashes the served file after the write and before the eval, and leaves the
+    record in loop state. The loop clears it before each dispatch and pops it into the row.
+  - The sha is never on the action, so fingerprints and signatures are unchanged for old and
+    new rows (tested).
+- **Identity.** The sorted (path, sha) set plus `infra_regime_digest`. Rows without a sha stay
+  non-promotable; nothing is back-filled.
+- **What-if replay.** Byte-identical to the previous goldens: no stored row carries a sha.
+- **Regime digest (verification note 1).** It is the AP-55 digest without the orchestrator
+  HEAD/dirty component, and it keeps the evaluator, kernel, recipe, models and host. So an
+  unrelated orchestrator commit no longer splits a cluster, while a kernel, model, recipe, host
+  or evaluator change does.
+  - **Deviation from the reviewer's list:** the evaluator is kept, because it is the scoring
+    instrument.
+- **Other verification notes.** Note 2: the sha is taken from the served file at eval time.
+  Note 3: it is stored as a dict. Note 4: fingerprints are unchanged. Note 5: the TODO and its
+  test are removed.
+- **Standing limitation (pre-existing).** Multitier staging accepts only numeric and structural
+  candidates, so under the live multitier launcher a mutation can promote only outside
+  multitier mode. `structural_prune` stays non-promotable.
+- **Tests.**
+  - Combined process (live_scope, c_and_b, operability, ev14c, ap55 infra fingerprint, full
+    replay): 143 passed.
+  - Full suite `-n 16`: 13,348 passed and 1 failed (mutation_ledger_tripwire, known and fixed
+    on main).
+  - Single-process related subset: 1,755 passed and 1 failed (the same tripwire test).
+
+## Operator decision: mutation candidates in multitier (`c12f17f5`)
+
+- **Staging and replay.** Prompt, code and GEPA mutation candidates with a `served_content` sha
+  and an exact restore preimage can now be staged under multitier. The seq fresh-eval and
+  replay paths still block mutations, and numeric/structural behaviour is unchanged.
+- **Content checks.** Every forced stage re-hashes the served files before the eval (a change or
+  missing file means refuse and roll back) and again after it (a match becomes the row's
+  identity; a change rejects the candidate and withholds identity).
+- **Promotion and hold guards.** Promotion goes through the existing final_t1 call, so there are
+  still exactly 3 `update_baseline` call sites and the AP-55 merge-train guards cover it.
+- **Rollback.** It writes the preimage back through the forge's revert and attests the restored
+  sha; a rejected `new_file` must end up absent. It fails closed otherwise.
+- **Out of scope.** `structural_prune`.
+- **Tests.** `tests/unit/test_multitier_mutation_candidates.py`, 21 tests.
+  - Full suite `-n 16`: 13,371 passed and 1 failed (the known tripwire test).
+  - Single-process related subset: 1,229 passed and 1 failed (the same tripwire test).
+  - While writing the tests, I fixed a pollution bug in my own new test: it had left a live
+    promotion-guard provider installed.
+- The Fable review of f083a0cd was still pending when this was written.
+
+## Fable review of c12f17f5 (MERGE-AFTER-FIX), fixed in `25c8e913`
+
+1. **Scoped rollback.** A mutation-candidate rollback skips the checkpoint's prompt copytree
+   (`restore_prompts=False`) and attests the file's final on-disk state. Tests: an unrelated
+   prompt edit survives (using the real StructuralLab restore), and a later overwrite is caught.
+2. **External changes survive.** The preimage is written only if the file's current sha equals
+   the served sha. Otherwise nothing is written, the candidate is retired as
+   `rejected_external_change`, logged at ERROR, and raises the alarm
+   `autopilot-multitier-rollback-external-change`.
+3. **No commit sweep.** All PromptForge commits are path-limited
+   (`git add -A -- p` + `git commit --only -- p`). Tests use real git repos: a staged
+   unrelated file stays out, and a pathless prompt commit is refused.
+4. **Preimage does not linger.** It is stripped from the last_rejected and last_accepted
+   snapshots and from rollback contexts.
+5. **Attempt cap.** It is at least max(configured, 3, AUTOPILOT_EMPTY_FRONTIER_MIN_REPRO)
+   (tested).
+6. **Bounded rollback retries.** After 3 failures the rollback is no longer forced, staging is
+   refused, and the critical alarm `autopilot-multitier-rollback-stalled` is raised
+   (implemented and tested).
+
+**Tests.**
+- Combined single process (mutation_candidates, c_and_b, live_scope with full replay,
+  multitier wiring, all `test_safety_gate*`): 305 passed.
+- Full suite `-n 16`: 13,383 passed and 1 failed (the known tripwire test).
+
+**Pre-existing, not changed.** Numeric and structural rollbacks still copytree the checkpoint
+prompts.

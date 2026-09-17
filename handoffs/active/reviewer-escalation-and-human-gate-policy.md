@@ -36,6 +36,20 @@ Convert calibration evidence into policy: confidence thresholds from reliability
 - [ ] **HG-6 — OPTIONAL single two-sided rebuttal round** (pre-escalation): architect rebuts AND verifier/original position restates; reviewer re-judges the contrastive pair; hard cap 2 rounds; **restricted to latent-evidence disagreements** (something checkable to surface — never style/preference); enabled per task-class ONLY after an offline A/B shows **signed net-flip Δ>0** (wrong→right ≫ right→wrong; the right→wrong tail is the safety metric, tracked continuously). Never one-sided; never multi-round-to-convergence.
 - [ ] **HG-7 — Harness-side UX**: FROZEN pointer until HS-4 resolves — state the gate, do no work.
 - [ ] **HG-8 — Policy A/B** under P-AB-1 + P-REV-1; promotion per H-LB LB-6.
+- [ ] **HG-9 — Detect/repair split topology (operator idea 2026-09-17)**: small models REVIEW (find bugs), and a
+  larger model is consulted only to RECOMMEND FIXES for the findings. This is an escalation/consultation edge that
+  AutoPilot should learn rather than a fixed pipeline. It is the Verifier→Worker handoff of
+  `tri-role-coordinator-architecture.md` (TR-4.4 runs in parallel with the review pipeline) with the roles split by
+  sub-task (detection vs repair) instead of by confidence.
+  - Step 1 (no inference): write the topology as a routing/escalation option AutoPilot can mutate (detector role
+    pool, fixer role, trigger = "finding emitted"). Check the reuse of the existing escalation path and the TR role
+    axis before designing anything new.
+  - Step 2 (inference, after an EV-13b resume, see `eval-tower-verification.md`): measure detection F1 of the
+    small-model pool on the Augment-v1 suite. This needs a judge-stable score first, because EV-6 failed at
+    2.94pp on 2026-09-16.
+  - Step 3: A/B the split against single-model review under P-AB-1 (fix acceptance plus cost), promoting per LB-6.
+  - The source the operator read is not recorded yet; if it is a paper or post, run it through research intake
+    before citing it.
 
 ## Dependency Graph
 
@@ -43,6 +57,7 @@ Convert calibration evidence into policy: confidence thresholds from reliability
 H4 curves + H5 winners → HG-1 → HG-2/HG-3 → HG-8
 HG-4 operator cadence (OP bundle) → escalation-precision measurable
 HG-5 server-side (anytime after H3) ; HG-6 gated on its own offline A/B ; HG-7 frozen on HS-4
+HG-9 step 1 (anytime) → EV-13b resume → HG-9 step 2 → HG-9 step 3
 ```
 
 ## Cross-Cutting Concerns

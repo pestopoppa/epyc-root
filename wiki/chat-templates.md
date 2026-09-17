@@ -1,7 +1,7 @@
 # Chat Templates — Per-Model Turn Markers and Routing Endpoints
 
 **Category**: `chat_templates`
-**Last compiled**: 2026-08-23
+**Last compiled**: 2026-09-17 (incremental: CT-series mmlu_pro cells under-scored by the A–H scorer; re-score estimates); earlier: 2026-08-23
 
 > Quick reference for which chat template each production model uses, which
 > orchestrator code path applies the template (client-side vs server-side
@@ -15,6 +15,40 @@
 `progress/2026-05/2026-05-22.md`, `progress/2026-05/2026-05-23.md`,
 `progress/2026-06/2026-06-15.md`,
 `handoffs/active/model-stack-single-source-update-pipeline.md`
+
+---
+
+## Compiled Update — 2026-09-17: every CT-series mmlu_pro cell is under-scored
+
+**Confidence: verified** for the cause, which was checked on the full MMLU-Pro corpus. The re-scored numbers are **estimates**: an offline re-score of the recorded 200-character `answer_tail`, not re-runs.
+
+CT-1, CT-1b, CT-E7 and CT-E7b all scored mmlu_pro through the shared pool with `scoring_config={}`, before CJ-8, and the scorer's letter range was A–H. Ten of the 40 pinned items have gold I or J, so they were forced False whatever the model answered. The same 40 ids were used in every arm. So the directions and paired flips keep their sign, and the other suites are unaffected. But the absolute mmlu_pro levels quoted on this page are too low. The inline caveat in the 2026-08-23 (evening) section below already flags this. This section records the corrected estimates.
+
+### Key findings
+
+- **The re-scored estimates run about 10–12.5 pp above the recorded cells.** They use the fixed scorer (`choice_labels`, orchestrator `f0015306`, branch only).
+
+  | cell | recorded | re-scored |
+  |---|---|---|
+  | CT-1 arm0 | 37.5% | ~47.5% |
+  | CT-1 arm1 | 37.5% | ~47.5% |
+  | CT-1b arm2 | 40.0% | ~52.5% |
+  | E-7 frontdoor | 37.5% | ~50.0% |
+  | E-7 architect_general | 27.5% | ~40.0% |
+
+  ([qwen-chat-template-evaluation](../handoffs/active/qwen-chat-template-evaluation.md), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md))
+- **The CT-E7b master-registry values carry the under-score, and so do the E-7 belief sidecars.** The registry values are 37.5 for frontdoor and 27.5 for architect_general. The sidecars (`/workspace/tmp/e7-recal/*/belief_measurements.jsonl`) were never ingested into the ledger. Correcting both needs a re-stamp on the fixed scorer, which means inference. ([qwen-chat-template-evaluation](../handoffs/active/qwen-chat-template-evaluation.md), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md))
+- **Not every mmlu_pro number was affected.** `v7_quality_gate_runner`, the architect bench and the 56.7% Qwen3.8 mmlu_pro figure used `extract_letter_answer`, which handles A–J. Only `debug_scorer` consumers of pool rows were hit. ([sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md), [Benchmark Methodology](benchmark-methodology.md))
+
+### Open questions
+
+- When does the registry re-stamp run for frontdoor and architect_general mmlu_pro? It needs inference on the fixed scorer, which must first land on orchestrator `main`.
+
+### Sources
+
+- [qwen-chat-template-evaluation.md](../handoffs/active/qwen-chat-template-evaluation.md): the CAVEAT 2026-09-17 block, with the re-score table and the list of what still holds.
+- [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): the scorer root cause, the consumers, and the affected-results table.
+- [per-request-reasoning-budget.md](../handoffs/active/per-request-reasoning-budget.md): the PRB-T4 mmlu_pro crash that exposed the A–H limit.
 
 ---
 

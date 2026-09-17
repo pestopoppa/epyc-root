@@ -115,6 +115,10 @@ results slot straight into this row.
       under n-max 8.
     - **Consequence.** Do not ship these cells as "best config" without a same-window n-max 4 vs 8 ABA at
       np≥2. The single-stream n-max 8 optimum may not hold for batched serving.
+- [ ] **INF-61-ABA — same-window MTP n-max 4 vs 8 ABA at np>=2 on Qwen3.8-27B** before any grid cell ships.
+  The re-collected n-max 8 grid (research `0a711890`) sits below the withdrawn n-max 4 grid at np>=2, but only
+  across sessions. The A/B/A is operator-approved; it waits for the operator to lift the 2026-09-17 GPU hold.
+  Filed 2026-09-17.
 - [ ] **Depth-sweep the other arms (A4, A3, A1, FF, Laguna)** — none was ever draft-depth swept, so
   their published figures are best-KNOWN, not best-POSSIBLE. Qwen3.8 gained 8.7% from its sweep
   alone; the same headroom plausibly exists here and would change cross-arm ranking.

@@ -3427,6 +3427,12 @@ Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake
       - 2026-09-16 **operator decision — gate mode A (shadow)**: run the next AutoPilot run in shadow;
         **AP-55-ARM is pre-approved** to move the gate to `enforce` plus the seed re-runs after one
         shadow run (read the counterfactual `eval_details.ap55_promotion_gate.hold` rate first).
+      - [ ] **AP-55-ARM** — after one AutoPilot run in shadow (mode A), report how often enforce
+            would have held a promotion (from the recorded shadow verdicts), then arm enforce plus
+            seed re-runs (`AUTOPILOT_AP55_PROMOTION_GATE=enforce`, `AUTOPILOT_AP55_SEED_RERUN=1`).
+            The operator pre-approved option B for after that review (2026-09-16). Needs the AutoPilot
+            merge train (`sub/autopilot-train-20260916`, which carries the within-noise AP-55 hold fix
+            `f76e65cd`) on orchestrator main first. Filed 2026-09-17 from `2026-09-16-sub-gate-frontier.md`.
 - [ ] **AP-56 — Determinism certification before N=1 promotion.** llama-server fixed seed and fixed
       slot count; replay the baseline action chain and require identical trajectories before trusting a
       single-run verdict. External, descriptive: promotion rate 7.9% (1,223 decisions) → 25.2% (131)

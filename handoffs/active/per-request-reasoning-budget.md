@@ -438,7 +438,7 @@ n=500 per arm × 3 arms = 1,500 generations + 500 estimator calls ≈ 2,000 requ
         - **Belief kernel.** `ingest tale-budget` wrote 24 rows for math and olympiadbench. The livecodebench
           sidecar was deliberately NOT ingested, because its accuracy rows come from the vacuous scorer.
       - **Defects 1–3 FIXED 2026-09-17 (sub-scorer-fix, offline; box still open).** Research `52595b9b`;
-        orchestrator `f0015306` (branch `sub/scorer-fix-orch-20260917`; landing on main is blocked by the held orchestrator push lock). Details: `progress/2026-09/2026-09-17-sub-scorer-fix.md`.
+        orchestrator `f0015306` (on orchestrator main as of 2026-09-17). Details: `progress/2026-09/2026-09-17-sub-scorer-fix.md`.
         - **Root causes.** None of the three is in TALE's own scoring.
           - livecodebench: the live `question_pool.jsonl` (built 2026-07-27) predates the 2026-08-12
             executable-oracle rebuild and was never regenerated. 2,349 rows still score `substring 'def '`.

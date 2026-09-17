@@ -1979,6 +1979,12 @@ are left to that still-running agent.
     24 rows, 0 refused. The livecodebench sidecar was withheld because its accuracy uses the vacuous
     `substring 'def '` scorer. This needs a tuple-level exclusion or a scorer fix; do not ingest it as-is.
     Still unticked: the driver has not merged.
+- [ ] **VB-RUNNER-PATHS — make the GPU-runner capture call sites portable and loud** (filed 2026-09-17 from
+  `2026-09-16-sub-runner-adapters.md`). Research `scripts/benchmark/review_f1/ev13b_run.py:197` (on research main)
+  hard-codes `sys.path.insert(0, "/workspace/scripts/vidya")`, as does the unmerged PRB-T4 driver
+  `prb_t4_tale_gpu.py` (`sub/gpu-runner-20260916`). Both swallow a capture failure into their log. Resolve the
+  root checkout from `EPYC_ROOT` (or refuse), and make a failed capture visible. Then port `prb_t4_tale_gpu.py`
+  to research main without its tmp-path literals. VB-PRB-T4 cannot close until that driver merges.
 - [ ] **VB-PRB-T4-CAVEAT — mark the 24 ingested PRB-T4 TALE rows as sample-scoped (filed 2026-09-17,
   sub-scorer-fix).**
   - **Affected rows.** The ledger holds 24 `vidya.adapters.tale_budget/v1` claims from run
@@ -2066,6 +2072,10 @@ are left to that still-running agent.
   proposed and of accepted mutations, which is the AP-52 read) into ClaimTuples. Hold
   vocabulary-unavailable rejections out of the leakage denominator. No new grading rule. The locator
   is the window, never the proposal. README row: "PromptForge mutation-safety gate verdicts".
+  - Note 2026-09-16 (`sub-mhs3b`, additive): MHS-3's structural refusals (`eval_content_ngram_overlap`,
+    `eval_expected_answer_leakage`, `eval_source_identity_leakage`, `eval_suite_special_casing`) write to the same
+    `gate_detail` ledger, and each reason string now carries the matched source id. A projection can key on that id.
+    No new adapter row is needed.
 - [x] **VB-MHS-OPS — project the `eval_leakage_guard` ledger events into claim tuples** (filed 2026-09-16,
   `sub-gate-frontier`; producer on orchestrator `sub/gate-frontier-20260916`, under review, unmerged). Each
   `preflight_failed`/`alarm_raised`→`alarm_cleared` interval is an instrument-unavailable interval;
@@ -2086,6 +2096,11 @@ are left to that still-running agent.
   and `mhs-guard-ops`** (filed 2026-09-16, `sub-vbmhsops`). Waiting on an external event: the merge
   and the restart. Until the epoch is set, the verdict source declines every unit, because nothing
   persisted marks a clean window as screened, so pre-hook data must get zero rows.
+- [ ] **VB-AP-PROMO-RULE — project `eval_details.promotion_rule` and `eval_details.frontier_admission` from the
+  AutoPilot trial journal into the support frame** (filed 2026-09-17 from `2026-09-16-sub-gate-frontier.md`). Both
+  fields come from gate-frontier (c)+(b) (orchestrator `sub/gate-frontier-20260916`, in the AutoPilot merge train).
+  The change is additive for the `autopilot_journal` adapter and changes no grade. Do it once the train is on
+  orchestrator main.
 - [ ] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
   per-window rates** (filed 2026-09-16, sub-autopilot-evidence; orchestrator `203cb6e2`, merged at `753343f5`).
   - Producers:
@@ -2276,7 +2291,7 @@ Source: `optical-context-compression.md` OCC-1. The harness is `epyc-inference-r
 the served Qwen3-VL-30B-A3B reader. The source row is in `scripts/vidya/adapters/README.md`. The hook
 was filed and built before the first GPU run, so that run will not fall in a pre-hook era.
 
-- [ ] **SC85 — wire OCC-1 on the WRITE side, plus a strict reader.** Root side (branch
+- [x] **SC85 — wire OCC-1 on the WRITE side, plus a strict reader.** ✅ 2026-09-16 (both sides on origin/main: root `1d5f5314`, research `2f053f61` + `e2c48c13`) Root side (branch
   `sub/occ1-root-20260916`): `adapters/occ1_optical_compression_capture.py` (writer and `validate_row`),
   `adapters/occ1_optical_compression.py` (reader), the `cli.py ingest occ1` source, and
   `tests/vidya/test_occ1_optical_compression_adapter.py`. The rows per arm are F1, EM, the paired

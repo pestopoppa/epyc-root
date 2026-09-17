@@ -105,7 +105,7 @@ All edits above are on branch `spec-dec-mtp-refresh-2026-06-22` and are **uncomm
       Goedel-8B, 8 rungs, one f16 source, frozen production quantizer `0db32c06e`/10125. Receipt:
       `artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`. Filed as
       `autokernel-research-loop.md` §22.
-- [ ] **§5 measurement #1, MoE half — STILL OPEN and still a genuine go/no-go.** This handoff's own
+- [x] **§5 measurement #1, MoE half — STILL OPEN and still a genuine go/no-go.** ✅ 2026-09-17 closed as bounded null (Q-B 0.619/0.655; operator: no more levers; Q-A GO stands). This handoff's own
       caveat (§4) is that MoE batches worse than dense because distinct tokens hit distinct experts,
       so the dense result below does NOT transfer. The named targets — Q4_K gemma4-31B and Q8_0
       Qwen3.6-27B — remain unmeasured. Needs an owner and a GPU window.
