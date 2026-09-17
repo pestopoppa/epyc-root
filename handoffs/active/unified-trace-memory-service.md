@@ -109,7 +109,24 @@ existing writers (unchanged):
 - [x] **T6: Cross-source join recipes** — Document 3–4 high-value recipes in the handoff body or a `docs/` page: (a) "all events for trial N" (autopilot + agent_audit by time range), (b) "session timeline for date D" (progress + agent_audit), (c) "all failures + their preceding 5 actions". ~1 h. **2026-06-28 refresh**: `trial_context(...)` and `python3 -m src.trace.cli trial-context --trial N` now provide the primary trial recipe directly, with exact trial events and configurable nearby agent/progress/autopilot context.
 - [ ] **T7 (optional): Hermes session ingest** — Walk `~/.hermes/sessions/*.json` if present, normalize into events. Gated on whether Hermes goes into production use (currently CLI-only validation). ~2 h. Defer until Hermes outer-shell graduates from validation to daily use.
 - [x] **UTM-P1 — Add pairing keys to the unified trace event schema**: harness identity, seed, and a horizon/turn ordinal, at `src/trace/store.py:94-197`. Today **two runs cannot be paired on the same task across harnesses at all**, and `EventSource.HERMES_SESSION` (`store.py:36`) is a declared constant with **no ingester and no producer** — the dead constant is T7's stub. This blocks ANY cross-harness comparison, not just one metric, and it bites the moment HS-4 closes and a second harness goes live (soft-blocks HS-4 follow-through). **Schema-only change, no inference.** `intake-1341#04`. Zero compute. ✅ 2026-09-17 — orchestrator `dd24ed10` (on `origin/main`): event schema v2 adds nullable `harness` / `seed` / `turn_ordinal` / `task_key` plus a per-row `schema_version` (`src/trace/store.py` `EVENT_SCHEMA_VERSION`, `EVENT_PAIRING_COLUMNS`, `migrate_event_pairing_columns`). v1 stores migrate by idempotent additive ALTER with no back-fill (legacy rows read `schema_version` NULL = "never captured"); `query()` NULL-projects the columns on an unmigrated store and gains pairing filters; new `paired_runs(task_key, seed=...)` returns `{turn_ordinal: {harness: [events]}}`; the live-emit content key includes the pairing keys only when set (pre-v2 keys unchanged); `ReviewTracingProcessor` threads `harness`/`seed`/`task_key` from `Trace.metadata` and `turn_ordinal` from span data. `task_key` was added beyond the three named keys because "same task" has no other cross-harness identity. Tests: `tests/unit/test_trace_pairing_keys.py` (13); 180 adjacent trace/ledger tests green.
-  - [ ] **UTM-P1a — wire producers to stamp the pairing keys**: no live producer sets `harness`/`seed`/`turn_ordinal`/`task_key` yet (the AutoPilot live push `autopilot_live` and the eval tower are the first candidates; the file ingesters have nothing to stamp). Until one does, `paired_runs()` returns `{}` on the real store. Zero compute.
+  - [x] **UTM-P1a — wire producers to stamp the pairing keys**: no live producer sets `harness`/`seed`/`turn_ordinal`/`task_key` yet (the AutoPilot live push `autopilot_live` and the eval tower are the first candidates; the file ingesters have nothing to stamp). Until one does, `paired_runs()` returns `{}` on the real store. Zero compute.
+    ✅ 2026-09-17 (orchestrator `9a7181f2`) — **first producer wired: the review plane**
+    (`ArchitectReviewService`, all 12 emit sites, source `review_plane`). Chosen as the cheapest HONEST
+    producer after checking the two the box named: `autopilot_live` can stamp only `harness` (a `JournalEntry`
+    has no RNG seed, no turn index, and `trial_id` is autopilot-only), and the eval tower emits no trace events
+    at all today. The review plane already emits live AND carries a real cross-harness identity in
+    `TaskIR.task_id`. Stamps `harness` on every row (injectable; `None` → NULL), `task_key` on `review()` as
+    pass-through of `spec["task_id"]`, and `turn_ordinal` from `step_index` on `build_plan_reminder`.
+    Everything else stays NULL = "never captured" — in particular **`task_key` is never derived from
+    `subtask_id`** ("S1" recurs across unrelated tasks; a fabricated key would silently pair unrelated runs,
+    which is worse than an empty pairing). `src/trace/` needed no change. 24 tests, including two harnesses
+    pairing through a real store and legacy v1 rows reading back unstamped beside new ones.
+    - [ ] **UTM-P1a.2 — second producer, so `paired_runs()` is cross-harness on real data.** Three named
+      candidates: `review_replay_50.py` passing `harness="review_replay"` + `task_key=q["task_id"]` (needs
+      `review_candidate` to accept `task_key`) so replay pairs against live on the corpus id; the delegator
+      passing its review-iteration index as `turn_ordinal`; and UTM-P1b's Hermes ingest using the same
+      `TaskIR.task_id` convention. One producer alone can only pair a harness against itself.
+
   - [ ] **UTM-P1b — T7 (Hermes ingest) must stamp `harness="hermes"` plus `task_key`/`seed`/`turn_ordinal`** when it lands, or Hermes rows cannot be one side of a pair.
 
 ## Open Questions
