@@ -539,13 +539,28 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       (`autopilot-decision-plane-audit-2026-07-22.md`). Decide between declaring and installing `kuzu` in the
       orchestrator venv, and retiring the graph layer with a lazy, logged-once degrade; then make the startup
       state explicit (one WARNING line, not a traceback per call site). Zero inference. Filed 2026-09-17 (wrap-up pass 2).
-- [ ] **NIB2-79** (LOW): **four `archive_*` tool-registry entries point at handlers that do not exist.** Every API start
+      Open only on NIB2-78b (the install is a stack change, so the operator decides). Decision package:
+      `progress/2026-09/2026-09-17-sub-nib2-7879.md` §3.
+- [x] **NIB2-78a** ✅ 2026-09-17 (orchestrator `61793b38`): declare the `[graph]` extra (`kuzu==0.11.3`; uv.lock
+      adds only kuzu) and make the missing-kuzu path one WARNING line with no traceback. Kuzu per-file lock
+      contention is also one line. The graph classes' `close()` was a no-op and now releases the file lock.
+      Tests: 117 passed in a throwaway venv with kuzu; 148 passed and 7 skipped in the prod venv without it.
+- [ ] **NIB2-78b** (OPERATOR, next stack window): install `kuzu==0.11.3` into the orchestrator venv, or leave the
+      graph layer dormant. Upstream kuzudb/kuzu is archived (final release 0.11.3). Only one of the 6 uvicorn
+      workers can hold each graph file. Options and recommendation: shard §3.
+- [ ] **NIB2-78c** (MED, only if NIB2-78b = install): give the Kuzu graphs a single owner (one process owns
+      `kuzu_db/*`; the others reach it over IPC) so graph scoring does not vary by which worker serves a
+      request. Then re-evaluate the backend against maintained Kuzu forks, since upstream is archived.
+- [x] **NIB2-79** (LOW) ✅ 2026-09-17 (orchestrator `0c03e658`): **four `archive_*` tool-registry entries point at handlers that do not exist.** Every API start
       logs `Could not load handler for tool 'archive_open' / 'archive_extract' / 'archive_file' / 'archive_search':
       module 'src.services.archive_extractor' has no attribute …`. `orchestration/tool_registry.yaml:715+` names
       `src.services.archive_extractor.<fn>`, but that module defines only the `ArchiveExtractor` class. The working
       implementations are the REPL mixin methods in `src/repl_environment/archive_tools.py` (`_archive_open` …).
       Repoint the four entries at a real callable, or drop them from the registry path (REPL builtins cover them),
       and add a test that every registry `function` resolves. Zero inference. Filed 2026-09-17 (wrap-up pass 2).
+      Done: the entries were removed. The functions never existed in git history (the entries were added dead
+      in `882d97d4`), and the stateful, sandboxed REPL builtins cannot serve as stateless handlers.
+      `tests/unit/test_tool_registry_handlers_resolve.py` gates every handler; against the old YAML it fails 6 tests.
 
 ## Cross-references
 
