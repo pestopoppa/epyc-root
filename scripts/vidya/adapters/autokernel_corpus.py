@@ -39,6 +39,7 @@ from claim_tuple import ClaimTuple, ProjectionError, to_frames
 
 from adapters import (
     autokernel_aux_receipt,
+    autokernel_codegen_summary,
     autokernel_evaluation_event,
     autokernel_governed_receipt,
     autokernel_gpu_screening,
@@ -55,6 +56,7 @@ ADAPTER_ID = "vidya.adapters.autokernel_corpus/v1"
 # Call-shape A: strict receipt readers taking a locator, a file digest and an
 # attestation flag.
 _RECEIPT_ADAPTERS = (
+    autokernel_codegen_summary,
     autokernel_legacy_serving,
     autokernel_gpu_screening,
     autokernel_aux_receipt,
