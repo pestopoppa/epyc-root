@@ -2,7 +2,7 @@
 
 **Owner handoff:** [`handoffs/active/harness-selection-and-integration.md`](../../../handoffs/active/harness-selection-and-integration.md), HS-4, Phase 0 step P0.3
 **Spec:** [`docs/design/hs4-shell-and-orchestrator-features-20260916.md`](../../design/hs4-shell-and-orchestrator-features-20260916.md) §4, P0.3
-**Instrument:** the HS-1g call-verb check in [`handoffs/active/hermes-outer-shell.md`](../../../handoffs/active/hermes-outer-shell.md), "Call-verb check (HS-1g)"
+**Instrument:** the HS-1g call-verb check, [`client-surface-audit.md`](client-surface-audit.md) Step 3 (originally written in the Hermes handoff, now [`handoffs/completed/hermes-outer-shell.md`](../../../handoffs/completed/hermes-outer-shell.md))
 **Prepared by:** `sub-hs4-p03`. Zero inference. Nothing was sent to any model endpoint and OpenCode was never run. The only network use was the clone and pinned npm tarballs for offline tests.
 
 ## 1. Pin
@@ -73,7 +73,7 @@ Lever = the `epyc-orchestrator` plugin's `chat.params` (`x_session_id`, `x_user_
 
 So a stamp prefix is an **MCP server name plus `_`**. `orchestrator_` matches every tool of an MCP server named `orchestrator` (for example `orchestrator_orchestrator_chat`), and `memory_` matches a future `memory` server.
 
-**Server-side residual:** the orchestrator's FastMCP (`mcp` 1.27.0 in the orchestrator venv) validates with a pydantic `ArgModelBase` that has no `extra="forbid"` (`mcp/server/fastmcp/utilities/func_metadata.py:47`). An **undeclared `session_id` is silently dropped**, so each `orchestrator_*`/`memory_*` tool that needs the session must declare a `session_id` parameter (P2/P3 work).
+**Server-side residual:** the orchestrator's FastMCP (`mcp` 1.27.0 in the orchestrator venv) validates with a pydantic `ArgModelBase` that has no `extra="forbid"` (`mcp/server/fastmcp/utilities/func_metadata.py:47`). An **undeclared `session_id` is silently dropped**, so each `orchestrator_*`/`memory_*` tool that needs the session must declare a `session_id` parameter (P2/P3 work; done: orch `54b6439d` / `ed554da2`). *Correction 2026-09-17: the "silently dropped" claim is wrong at our pin. The orchestrator pins `fastmcp>=3,<4` (`pyproject.toml`), and FastMCP 3.x REFUSES a call carrying an undeclared argument rather than dropping it; `tests/unit/test_mcp_undeclared_args_refused.py` pins that behaviour. The conclusion stands for the opposite reason: a stamped `session_id` on a tool that does not declare it fails the call, so every stamped tool must declare it. All `@mcp.tool()` functions in `src/mcp_server.py` now do (`54b6439d`).*
 
 ## 4. "No model-fallback" grep
 
@@ -98,7 +98,9 @@ So a stamp prefix is an **MCP server name plus `_`**. `orchestrator_` matches ev
    - **Mitigation in the plugin:** `server()` never throws. A bad configuration makes our provider's `chat.params` and stamped tool calls reject, so the turn errors visibly (unit-tested).
    - **Residual:** a plugin that is **absent** (wrong path, `OPENCODE_PURE`) still sends unkeyed requests.
    - **Recommended P0.2 tripwire (orchestrator side):** when a request carries `User-Agent: opencode/…` or `X-Session-Id` but no `x_session_id` body key, refuse it with 422. This also covers E11 and E12.
-2. **`:8000` currently drops unknown `x_*` keys silently.** `OpenAIChatRequest` uses pydantic's default `extra="ignore"`, and only `response_format` has an explicit refusal (`src/api/models/openai.py:41`). Until P0.2 types `x_session_id`/`x_user_id`/`x_tool_mode`, the plugin's keys are accepted and ignored. P0.4 must run after P0.2.
+   - **Landed (2026-09-17 note):** orch `ed554da2`, feature flag `v1_client_session_guard` (registry default on), guard in `src/api/routes/openai_compat.py`.
+2. **`:8000` currently drops unknown `x_*` keys silently.** `OpenAIChatRequest` uses pydantic's default `extra="ignore"`, and only `response_format` has an explicit refusal (`src/api/models/openai.py:41`). Until P0.2 types `x_session_id`/`x_user_id`/`x_tool_mode`, the plugin's keys are accepted and ignored (done: orch `54b6439d` / `ed554da2`). P0.4 must run after P0.2.
+   - **Landed (2026-09-17 note):** typed keys `x_session_id`/`x_user_id`/`x_memory`/`x_tool_mode` in `src/api/models/openai.py` (orch `ed554da2` + `b44ab3a8`), 422 on bad values. Unknown `x_*` keys outside that set are still ignored (`extra="ignore"` unchanged).
 3. **`permission.task:"deny"` does not close user-typed `@agent` subtasks (E8).** The template adds `subagent_depth:0` and disables `general`/`explore`, and the lint enforces all three.
 4. **HS-1g missed the v2 session runner (E12).** Add "v2 `/api/session/*/prompt` still unused by TUI/run/ACP" to the per-bump checklist.
 5. **Title is now keyed (E3).** The HS-1g "title call swaps in `smallOptions`" caveat no longer applies. It is disabled anyway.

@@ -119,3 +119,33 @@ The bounded preflight landed on the research lane as `8d45cb44`: without an expl
 The v22 serial controller started at 14:27 UTC from the unchanged source worktree tip `614ff2ba02e0` and the same store with 28 keeps. Its dry run passed. Initial status was `running` in CPU observational profiling with `runtime_preparation.status=unavailable`, **not** an 800-launch calibration. Supervisor PID 2092647 and child PID 2092755 were captured for this run. The selected dashboard pointer now names v22; the read-only dashboard view refreshed to root `f1cfe152` and the hub restarted at PID 2092203 under its managed supervisor. This establishes relaunch and current reporting only; it is not yet evidence of a completed measured candidate, a new keep, or 20 healthy loops. Production v9 and champion-of-record remain unchanged.
 
 At 14:48 UTC, the first v22 source candidate passed both critic passes, the pre-build gate, compilation, and CPU `test-backend-ops`, then entered the matched A/B arm. Its source change is a row-tiled gated-delta-net CPU computation in `ggml/src/ggml-cpu/ops.cpp`; no gain or keep is claimed before the A/B completes. The first iteration spent about five minutes profiling, several minutes in actor calls, and roughly five minutes in CPU correctness before the fresh-process A/B. This explains the observed slow absolute loop rate; whether profile reuse removes startup cost in batch 2 and what the paired-launch time costs remain to be measured. Status still shows zero completed v22 iterations and zero measured candidate outcomes at this checkpoint.
+
+## v22 bounded outcome and stop boundary — 2026-09-17
+
+The first two v22 source arms produced **keep-candidate observations only**: the batch-0
+HALF-scope screen was **+0.296%**, and the batch-1 FULL-target screen was **+0.064%**.
+Neither result is a source keep, a champion advance, or a promotion claim. The retained
+state remains the 28 prior keeps at source tip `614ff2ba02e0`.
+
+Before batch 2 could be treated as evidence, the controller requested STOP because the
+generic operation oracle still runs `MUL_MAT` for this GDN/row-tiled source edit. That
+oracle/source mismatch invalidates any resulting timing interpretation; it is not a
+measured null and not evidence that GDN is unproductive. The AK-PORT implementation
+workers own the source-aware oracle repair. Resume requires their repair plus the normal
+compile → correctness → matched timing ladder, with no reuse of these two candidate-only
+observations as a keep. The v22 run therefore does not establish 20 healthy loops.
+
+## Wrap-up dispositions
+
+- No adaptive-policy, cost-credit, plateau, or counterfactual uplift was computed: the
+  archived AK-WM-2a attempt is `state:error` with an empty control journal and lacks
+  prefix-visible choice/cost state.
+- No RPUCG selector A/B was claimed: the MI210 r19 archive lacks candidate parent IDs,
+  chain/visit state, and an evaluated DAG. The minimum prospective snapshot is already
+  specified in `agentic-rocm-kernel-authoring.md`.
+- No same-prompt replay result was claimed: the historical actor callsite has no
+  prospective turn/outcome identity. No historical patch path or tree hash was used to
+  invent a lineage measurement.
+- No additional handoff/index row was filed for the oracle mismatch: it is already owned
+  by the existing AK-PORT-1/2 work, while this checkpoint records only the evidence
+  boundary and stop reason.

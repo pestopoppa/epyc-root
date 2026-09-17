@@ -4,27 +4,28 @@
     "handoff-active": 168,
     "handoff-blocked": 2,
     "handoff-completed": 195,
-    "progress": 463,
+    "progress": 465,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-17T14:48:38Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 0,
+      "added": 0,
+      "changed": 2,
       "removed": 0
     },
-    "at": "2026-09-17T14:55:41Z",
+    "at": "2026-09-17T18:16:07Z",
     "scope_paths": [
-      "progress/2026-09/2026-09-17-intake-jev-sageattn.md"
+      "handoffs/active/autokernel-research-loop.md",
+      "progress/2026-09/2026-09-17-autokernel-porting-implementation.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-17T14:55:41Z",
+  "scan_time": "2026-09-17T18:16:07Z",
   "schema_version": 1,
-  "source_set_hash": "d55a34eb884a19f919fcde5b71d3fdbca8a46ca0eaa608924e3f00c44692e1ea",
+  "source_set_hash": "e00a9c60b2ab7dfc71bd7104ffc9260afdad80d62934b39a93566f35b0499a0a",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -123,10 +124,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ea473d35982b148cc54c85c950ba4e3592b09ff6e22c642268ce34165bb26027",
-      "modified": "2026-09-17T14:47:36Z",
+      "content_hash": "d02cd8e77d5ad7d9be7e45d6a58ee4af7372424c411abf55be2a8fe3bbe06329",
+      "modified": "2026-09-17T18:16:01Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 463972,
+      "size": 469897,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -1323,10 +1324,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3381b78c915293d52e223c533d6a90fbca4a212575645c97bf794de882638dd3",
-      "modified": "2026-09-17T14:47:14Z",
+      "content_hash": "99dab041019675a1877690abccc78f4755b2bcde1d19f87dd8058cb54be4bfc5",
+      "modified": "2026-09-17T16:33:50Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 225315,
+      "size": 226430,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -7619,11 +7620,19 @@
       "type": "progress"
     },
     {
-      "content_hash": "d9611676985307870299c64b4b3cdfb820ba3d265f273e861b0b2da10e7de6ab",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "9134ead726f343dea0c90c4e7199bdb29c44fd3d5e36c27f98f834914ae040e0",
+      "modified": "2026-09-17T16:06:17Z",
       "path": "progress/2026-09/2026-09-17-autokernel-dream-rsi.md",
-      "size": 8641,
+      "size": 11247,
       "title": "AutoKernel Dream-RSI handoff implementation checkpoint \u2014 2026-09-17",
+      "type": "progress"
+    },
+    {
+      "content_hash": "2c2a10fc64106331a881ae8a273cee5a20fb11fe4f672fbda69711b3978278a1",
+      "modified": "2026-09-17T18:15:50Z",
+      "path": "progress/2026-09/2026-09-17-autokernel-porting-implementation.md",
+      "size": 10961,
+      "title": "AutoKernel porting-method implementation \u2014 2026-09-17",
       "type": "progress"
     },
     {
@@ -7640,6 +7649,14 @@
       "path": "progress/2026-09/2026-09-17-main-handoff-sweep.md",
       "size": 16667,
       "title": "2026-09-16/17 \u2014 main session: handoff sweep (zero-inference fan-out + GPU queue)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "42f65a8137727a0d2dc098211342add2d3096896b07f8ffcf921f6f31eb1eb09",
+      "modified": "2026-09-17T16:06:54Z",
+      "path": "progress/2026-09/2026-09-17-previous_work_wrapup.md",
+      "size": 5768,
+      "title": "Previous AutoKernel Dream-RSI / v22 wrap-up \u2014 2026-09-17",
       "type": "progress"
     },
     {
@@ -8603,7 +8620,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1072,
+  "total_new": 1074,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
