@@ -318,6 +318,7 @@ def mechanical_screen(row: dict) -> dict:
         "lineno": None,
         "classify_exit": None,
         "classify_reasons": [],
+        "index_graph": None,
         "children": [],
         "note": None,
     }
@@ -404,6 +405,13 @@ def mechanical_screen(row: dict) -> dict:
         result["classify_reasons"] = list(reasons)
     except Exception as exc:
         result["classify_error"] = f"{type(exc).__name__}: {exc}"
+
+    # Provenance only, never shown to the model: an empty INDEX-GRAPH advisory
+    # means "not blocked" only when this says `ok` (KB-WM-3).
+    try:
+        result["index_graph"] = brc.index_graph_status(path)
+    except Exception as exc:
+        result["index_graph"] = {"status": "error", "error": f"{type(exc).__name__}: {exc}"}
 
     if state == "x":
         # The ONE mechanically decisive signal. The dashboard counts checkbox
