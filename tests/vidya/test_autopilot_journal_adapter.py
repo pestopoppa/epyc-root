@@ -215,6 +215,30 @@ def test_ap55_gate_legs_are_carried_not_graded(tmp_path):
     assert sup["provenance"]["grade_reasons"] == sup_plain["provenance"]["grade_reasons"]
 
 
+def test_ap55_would_hold_counterfactual_is_carried_verbatim(tmp_path):
+    """AP-55-ARM (cd79b80e): the recorded would_hold_* keys ride along unchanged. A row that
+    predates them carries none, and nothing is reconstructed here."""
+    gate = {"mode": "shadow", "seed_rerun": "MISSING", "batch_homogeneity": "HOMOGENEOUS",
+            "hold": False}
+    summary = {**gate, "hold_reasons": [], "would_hold_enforce": True,
+               "would_hold_enforce_reasons": ["seed_rerun:MISSING"], "would_hold_strict": True}
+    old = row(measurement={**row()["measurement"], "ap55_gate": gate},
+              eval_details={"ap55_promotion_gate": {**gate, "hold_reasons": []}})
+    new = row(measurement={**row()["measurement"], "ap55_gate": gate},
+              eval_details={"ap55_promotion_gate": summary})
+    (s_old, r_old), = list(apj.iter_measured_rows(write_journal(tmp_path / "a", [old])))
+    (s_new, r_new), = list(apj.iter_measured_rows(write_journal(tmp_path / "b", [new])))
+    sup = lambda s, r: [f for f in apj.frames_for_row(s, r, as_of="t")  # noqa: E731
+                        if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    assert sup(s_old, r_old)["assertion"]["ap55_gate"] == gate
+    assert sup(s_new, r_new)["assertion"]["ap55_gate"] == {
+        **gate, "would_hold_enforce": True,
+        "would_hold_enforce_reasons": ["seed_rerun:MISSING"], "would_hold_strict": True}
+    assert sup(s_new, r_new)["assertion"]["grade"] == sup(s_old, r_old)["assertion"]["grade"]
+    assert (sup(s_new, r_new)["provenance"]["grade_reasons"]
+            == sup(s_old, r_old)["provenance"]["grade_reasons"])
+
+
 def _writer_emits_ap55_gate() -> bool:
     src = WRITER / "scripts" / "autopilot" / "experiment_journal.py"
     return src.exists() and '"ap55_gate"' in src.read_text()
@@ -231,17 +255,30 @@ def test_ap55_gate_end_to_end_against_the_real_writer(tmp_path):
     d.mkdir(parents=True)
     gate = {"mode": "enforce", "hold": True, "hold_reasons": ["seed_rerun:MISSING"],
             "seed_rerun": {"status": "MISSING"},
-            "batch_homogeneity": {"status": "INSUFFICIENT", "members": {}}}
+            "batch_homogeneity": {"status": "INSUFFICIENT", "members": {}},
+            "counterfactual": {"enforce": {"hold": True, "hold_reasons": ["seed_rerun:MISSING"]},
+                               "strict": {"hold": True, "hold_reasons": ["seed_rerun:MISSING"]}}}
+    eval_details = {"details": {"quality_denominator": 30}}
+    try:  # the eval_details summary autopilot.py writes (orchestrator cd79b80e)
+        from src.autopilot_core.ap55_promotion_gate import gate_summary
+    except ImportError:
+        gate_summary = None
+    if gate_summary is not None:
+        eval_details["ap55_promotion_gate"] = gate_summary(gate)
     ExperimentJournal(journal_dir=d).record(JournalEntry(
         trial_id=1, timestamp="2026-09-16T10:00:00+00:00", species="s",
         action_type="numeric_trial", tier=1, quality=0.5, speed=1.0, cost=2.0,
         reliability=0.9, pareto_status="candidate", harness_metrics={"schema_version": 1},
-        eval_details={"details": {"quality_denominator": 30}},
+        eval_details=eval_details,
         comparability={"status": "UNVERIFIED", "promotion_gate": gate}))
     (shard, r), = list(apj.iter_measured_rows(tmp_path))
-    assert apj.as_record(shard, r)["ap55_gate"] == {
-        "mode": "enforce", "seed_rerun": "MISSING",
-        "batch_homogeneity": "INSUFFICIENT", "hold": True}
+    legs = {"mode": "enforce", "seed_rerun": "MISSING",
+            "batch_homogeneity": "INSUFFICIENT", "hold": True}
+    got = apj.as_record(shard, r)["ap55_gate"]
+    if "would_hold_enforce" in (eval_details.get("ap55_promotion_gate") or {}):
+        legs.update(would_hold_enforce=True, would_hold_enforce_reasons=["seed_rerun:MISSING"],
+                    would_hold_strict=True)
+    assert got == legs
 
 
 def test_a_trial_is_always_a_candidate(tmp_path):

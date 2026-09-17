@@ -184,14 +184,32 @@ def promotion_decision(shard: Path, row: dict) -> dict:
     return out
 
 
-def _ap55_gate(raw) -> dict:
-    """The writer's AP-55 gate block, copied field by field; ``{}`` when absent."""
+#: AP-55-ARM (orchestrator ``cd79b80e``): what each BINDING mode would have held on the same legs,
+#: recorded at write time in ``eval_details.ap55_promotion_gate`` (``gate_summary``).
+AP55_COUNTERFACTUAL_FIELDS = (("would_hold_enforce", bool),
+                              ("would_hold_enforce_reasons", list),
+                              ("would_hold_strict", bool))
+
+
+def _ap55_gate(raw, eval_details=None) -> dict:
+    """The writer's AP-55 gate block, copied field by field; ``{}`` when absent.
+
+    The shadow-mode counterfactual keys are copied verbatim from ``eval_details.ap55_promotion_gate``
+    only when the row recorded them. They are never re-derived here: a row written before the
+    counterfactual existed carries no such key, and ``ap55_shadow_review`` owns the reconstruction.
+    """
     if not isinstance(raw, dict) or not raw:
         return {}
-    return {"mode": str(raw.get("mode") or ""),
-            "seed_rerun": str(raw.get("seed_rerun") or ""),
-            "batch_homogeneity": str(raw.get("batch_homogeneity") or ""),
-            "hold": bool(raw.get("hold"))}
+    out = {"mode": str(raw.get("mode") or ""),
+           "seed_rerun": str(raw.get("seed_rerun") or ""),
+           "batch_homogeneity": str(raw.get("batch_homogeneity") or ""),
+           "hold": bool(raw.get("hold"))}
+    summary = (eval_details or {}).get("ap55_promotion_gate") if isinstance(eval_details, dict) else None
+    if isinstance(summary, dict):
+        for key, typ in AP55_COUNTERFACTUAL_FIELDS:
+            if isinstance(summary.get(key), typ):
+                out[key] = list(summary[key]) if typ is list else summary[key]
+    return out
 
 
 def as_record(shard: Path, row: dict) -> dict:
@@ -227,9 +245,10 @@ def as_record(shard: Path, row: dict) -> dict:
         "comparability": str(meas.get("comparability") or ""),
         # AP-55 (b)+(c): the promotion-gate legs as RECORDED by the writer — the same-regime
         # seed re-run verdict, the candidate-batch homogeneity verdict, the gate mode and
-        # whether it held the promotion. Carried, never graded. Empty on rows written before
-        # the gate existed (never back-filled).
-        "ap55_gate": _ap55_gate(meas.get("ap55_gate")),
+        # whether it held the promotion, plus the AP-55-ARM would_hold_* counterfactual when the
+        # row recorded it. Carried, never graded. Empty on rows written before the gate existed
+        # (never back-filled).
+        "ap55_gate": _ap55_gate(meas.get("ap55_gate"), row.get("eval_details")),
         # AP-54: whether the eval rollouts ran behind the knowledge fence ("active" | "absent" |
         # "mixed"), as RECORDED by the writer from the API echo. Carried, never graded. Empty on
         # rows written before the fence existed, which must be read as unfenced.
