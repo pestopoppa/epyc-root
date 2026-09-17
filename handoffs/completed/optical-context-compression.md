@@ -1,6 +1,8 @@
 # Optical (Bitmap-Frame) Context Compression
 
-**Status**: stub
+**Completion note (2026-09-17)**: moved to `handoffs/completed/`. **Decision (operator, 2026-09-17): close — OCC-1 came back NEGATIVE.** On the served Qwen3-VL-30B-A3B reader the text arm scored SQuAD F1 0.888, while the five bitmap-frame arms scored 0.36–0.54 at billed-token ratios 0.33–0.52. No arm was non-inferior, so OCC-3 was never triggered and is closed SUPERSEDED. Evidence: research `84dc568d` (`data/occ1-optical-compression-20260916/`) and root `844a0502`. The findings (result, harness and re-run recipe for a better vision reader, pre-registered rule, belief rows) are extracted to [`wiki/context-management.md`](../../wiki/context-management.md) → *Compiled Update — 2026-09-17*. The OCC-2 billing record below stays here as the time-pinned reference that `wiki/cost-aware-routing.md` cites. The one still-open follow-up, SC85b (codify an OCC protocol), already lives in [`vidya-belief-substrate-program.md`](../active/vidya-belief-substrate-program.md). Body text below is historical.
+
+**Status**: completed 2026-09-17 (closed, NEGATIVE). Previously: stub
 **Created**: 2026-08-18 (via research intake, operator-approved 2026-08-18)
 **Categories**: context_management, multimodal, cost_aware_routing, tool_implementation
 
@@ -12,8 +14,8 @@ compaction we run today — **on a reader we actually serve**.
 
 ## Why this is a distinct track
 
-Our compaction ([`tool-output-compression.md`](tool-output-compression.md),
-[`context-folding-progressive.md`](context-folding-progressive.md)) is LLM-mediated: it costs a model
+Our compaction ([`tool-output-compression.md`](../active/tool-output-compression.md),
+[`context-folding-progressive.md`](../active/context-folding-progressive.md)) is LLM-mediated: it costs a model
 call, adds latency, and is nondeterministic — the failure surface our prompt-determinism work exists
 to contain. Optical compaction is **local, deterministic, and inference-free**: no model call, no API
 key, no latency beyond rasterization. If the recall/cost tradeoff holds it is a strictly better
@@ -57,7 +59,7 @@ mechanism for the same job; if it does not, that is a cheap negative result.
 
 - [x] **OCC-1 — the decisive measurement.** Fixed history, one reader we serve: billed-token cost and
   QA recall, bitmap frames vs raw text. Requires a vision-capable local reader (see
-  [`multimodal-pipeline.md`](multimodal-pipeline.md) for the live vision path). Gate everything else
+  [`multimodal-pipeline.md`](../active/multimodal-pipeline.md) for the live vision path). Gate everything else
   on this.
   - 2026-09-16 scoping (zero inference): **GPU-only is feasible.** Reader = the served
     Qwen3-VL-30B-A3B Q4_K_M + F16 `qwen3vl_merger` mmproj. The champion `ef81196d5` ships
@@ -98,7 +100,7 @@ mechanism for the same job; if it does not, that is a cheap negative result.
   independent of OCC-1's outcome, with the staleness caveat attached. ✅ 2026-08-25 — see the
   OCC-2 Record section below (all cells re-verified against provider docs; Anthropic drift
   demonstrates the staleness caveat).
-- [ ] **OCC-3 — (only if OCC-1 is positive) re-derive the frame-shape table for our own readers.**
+- [x] **OCC-3 — (only if OCC-1 is positive) re-derive the frame-shape table for our own readers.** ✅ 2026-09-17 CLOSED SUPERSEDED (not completed) — its gate failed: OCC-1 was NEGATIVE (root `844a0502`), and the operator closed the handoff 2026-09-17.
   - 2026-09-16: **not triggered**, because OCC-1 was NEGATIVE (no arm was POSITIVE). The box stays open only as
     the gated option; close or retire it at the next index pruning.
   The published shapes do not transfer.
@@ -128,7 +130,7 @@ time-pinned external reference, not a measurement claim under MEASUREMENT.md.
 ### Cost-aware-routing consumer
 
 One-line pointer (nothing consumes this today): treat this table as a per-provider cost-shape
-prior for the live cost-aware-routing surface in [`decision-aware-routing.md`](decision-aware-routing.md)
+prior for the live cost-aware-routing surface in [`decision-aware-routing.md`](../active/decision-aware-routing.md)
 §DAR-4b — the inference-time preference vector `ω_cost` and cost-scaling `τ` at the retriever
 selection score (`epyc-orchestrator/orchestration/repl_memory/retriever.py`,
 `_scalarized_selection_score` :46, `_retrieve` :225-368) — **if and only if** a hosted vision

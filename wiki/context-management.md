@@ -2,8 +2,105 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Last compiled**: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
 primary sources with the staleness caveat demonstrated; edit-format rules from hashline/aider/Cursor
+
+## Compiled Update — 2026-09-17: optical compaction is NEGATIVE on the reader we serve (OCC-1 closed)
+
+**Confidence: observation (`Judged/Located`)**. The run was pre-registered, paired, residency-proven and not
+VOID. No OCC protocol is codified under `measurement/protocols/`, so its belief rows cannot grade above
+`Judged/Located` (SC85b). Evidence: `epyc-inference-research@84dc568d`
+(`data/occ1-optical-compression-20260916/`: summary, digests and residency record, no SQuAD text) and
+root `844a0502`. The operator closed the track 2026-09-17.
+
+**Result.** Rendering history into pixel-font frames (the `@oh-my-pi/snapcompact` idea, see
+intake-1159#record and the 2026-08-18 section below) saves billed tokens but costs far more recall than
+it saves.
+
+- **Claim, in MEASUREMENT.md grammar.**
+  - Reader: Qwen3-VL-30B-A3B-Instruct Q4_K_M + F16 `qwen3vl_merger` mmproj, champion build
+    `b10301-ef81196d5`, MI210, n_ctx 16384, 1 slot.
+  - Fixture: SQuAD v1.1 dev, suite `261d8ac1eaed`, 39 chunks of 40,716 chars, 1,165 paired questions per arm.
+  - Billed tokens: server `usage.prompt_tokens`, with the prompt cache off (0 cache hits).
+  - Recall: SQuAD F1, with the CI from a chunk-clustered bootstrap.
+  - Run date: 2026-09-16, 15:41–16:16Z.
+
+| arm | F1 | billed-token ratio vs text | ΔF1 vs text [95% CI] | verdict |
+|---|---|---|---|---|
+| `text` (baseline) | **0.888** (EM 0.786, 9,286 prompt tok/req) | 1.00 | — | — |
+| `img-6x10-bw` | 0.455 | 0.326 | −0.433 [−0.460, −0.407] | NOT_NONINFERIOR |
+| `img-6x10-color` | 0.456 | 0.326 | −0.432 [−0.462, −0.402] | NOT_NONINFERIOR |
+| `img-8x8u-bw` | 0.364 | 0.437 | −0.524 [−0.556, −0.489] | NOT_NONINFERIOR |
+| `img-12x12u-bw` | 0.363 | 0.437 | −0.525 [−0.556, −0.495] | NOT_NONINFERIOR |
+| `img-8x13-bw` | 0.536 | 0.516 | −0.351 [−0.375, −0.327] | NEGATIVE_COST |
+
+Frames cut billed tokens by 48–67% and lose 35–53 F1 points. Every EM McNemar p is below 1e-100, and the
+3-chunk pilot was also NEGATIVE. The legibility control (12x12) did no better than 8x8, so bigger glyphs
+alone did not help on this reader. The published frame-shape table targets hosted frontier readers
+and **did not transfer** to this reader. For a local reader, billed input tokens are only a proxy anyway:
+the real cost is compute, not a provider invoice (see the OCC-2 record in
+[cost-aware-routing](cost-aware-routing.md)).
+
+**Pre-registered rule** (`run_occ1.py::PREREG`, frozen into `plan.json` at plan time; `report` grades
+with the plan's copy, so a later threshold edit cannot change a verdict):
+
+- An arm is **POSITIVE** if its token ratio is ≤ 0.50 **and** the lower bound of its 95% CI on the paired F1
+  delta is > −0.05. The CI is a percentile bootstrap over whole chunks, 10,000 iterations, seed 0.
+- Otherwise an arm is **NEGATIVE_COST** (ratio > 0.50) or **NOT_NONINFERIOR**.
+- OCC-1 is POSITIVE if any arm is POSITIVE, and that arm would have seeded OCC-3 (re-deriving the shape
+  table for our readers). No arm was POSITIVE, so OCC-3 was closed SUPERSEDED.
+- **VOID** conditions: text F1 < 0.60, an incomplete run, unrepaired transport or body errors, any
+  prompt-cache hit, a server-identity mismatch, suite/frame/Pillow drift, pre-registration drift, or
+  unproven GPU residency. None fired. Residency: 1283/1283 in-flight samples were high and in KFD, with a
+  peak rise of +20.5 GiB.
+
+**Harness** (`epyc-inference-research` `scripts/benchmark/occ1/`, on research `main`; the README there is the
+recipe):
+
+- `run_occ1.py plan|run|report`.
+- `fixture.py` handles SQuAD flow and EM/F1, and `render.py` does BDF/HEX glyph blitting. Both are adapted from
+  snapcompact under MIT.
+- `costs.py` is the Qwen3-VL `smart_resize` token predictor, and `stats.py` does the bootstrap and McNemar.
+- `launch_reader.sh` is the GPU-only reader on test port 18431.
+- The tests use a mocked server and need no inference.
+- The run driver `occ1_gpu_driver.py` is on the unmerged research branch `sub/gpu-runner-20260916`.
+
+**Re-running with a better vision reader.** The negative result is about *this reader*, not about the
+idea. A re-run is a new measurement with a fresh plan directory, never a resume of the 2026-09-16 run.
+Steps:
+
+1. Point `launch_reader.sh` (`MODEL`, `MMPROJ`, `BIN_DIR`, and `-c` if the prompts differ) and the constants
+   `EXPECTED_MODEL` / `EXPECTED_BUILD` in `run_occ1.py` at the new reader. `--expect-build` overrides the
+   build at run time. The identity check otherwise refuses the run.
+2. If the new reader's vision encoder uses a different patch size, merge factor or token bounds, add a
+   `ReaderGrid` to `costs.py`. Then re-check that the arm frame sizes are multiples of its alignment, so
+   the frames are not resampled. For Qwen3-VL the alignment is 16×2 = 32 px.
+3. Re-set `MIN_VRAM_RISE_GIB` to the new reader's resident size. Otherwise residency either cannot be
+   proven or is proven vacuously.
+4. Keep `PREREG` unchanged, so the verdicts stay comparable. Run `plan` into a new `--out`, then the
+   3-chunk pilot, then the full `run` and `report`, exactly as in the README. Take the GPU region claim,
+   record the VRAM baseline first, and kill only your own server PID.
+5. Consider codifying the OCC protocol (SC85b) first, so the new rows can grade above `Judged/Located`.
+
+**Belief rows.** `report` wrote 22 rows to `belief_measurements.jsonl`, and they were ingested with
+`python3 scripts/vidya/cli.py ingest occ1 --path <run dir>` (adapter pair
+`scripts/vidya/adapters/occ1_optical_compression{,_capture}.py`, SC85):
+
+- Per arm, SQuAD F1 and EM: 12 rows. The text arm is BASELINE and the image arms are CANDIDATE.
+- Per image arm, the paired F1 delta with CI, McNemar p and verdict, plus the billed prompt-token ratio
+  (lower is better): 10 rows.
+- Every row carries the suite fingerprint, the `/props` serving identity and the pre-registration digest
+  `85d5d29e…6a58`. The locator is the run, never a question.
+- `protocol_id` is empty, which caps the grade at `Judged/Located`.
+
+### Source References (2026-09-17 OCC-1)
+
+- [`optical-context-compression.md`](../handoffs/completed/optical-context-compression.md) — the OCC-1 result
+  block, OCC-3's SUPERSEDED closure, and the OCC-2 billing record.
+- `epyc-inference-research` `data/occ1-optical-compression-20260916/summary.md` and
+  `scripts/benchmark/occ1/README.md` — the run summary and the recipe.
+- [`scripts/vidya/adapters/README.md`](../scripts/vidya/adapters/README.md) — the OCC-1 source row.
+- [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — SC85 and SC85b.
 
 ## Compiled Update — 2026-09-14: code that feeds an edit should be sliced, never summarised, and a compression A/B that logs only completion cannot see its cost
 
@@ -153,7 +250,7 @@ lever.
 - [`progress/2026-08/2026-08-25-mainA-rtg53.md`](../progress/2026-08/2026-08-25-mainA-rtg53.md) —
   the four-claim verification table with primary-source citations, the Anthropic drift finding, and
   the DAR-4b consumer pointer.
-- [`optical-context-compression.md`](../handoffs/active/optical-context-compression.md) — the OCC-2
+- [`optical-context-compression.md`](../handoffs/completed/optical-context-compression.md) — the OCC-2
   owning handoff section this record was drafted for (text prepared; main thread applies).
 - [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) — DAR-4b, the live
   cost-aware-routing surface the billing facts feed.
@@ -725,5 +822,5 @@ for any budget-driven context assembly that assumes relevance implies benefit.
 - `research/intake_index.yaml` intake-1159 (`@oh-my-pi/snapcompact`) — mechanism, per-provider billing table, and the missing eval results
 - `research/intake_index.yaml` intake-1152 (EDIT-Bench, arXiv:2511.04486) — the context-ablation table quoted above
 - `research/intake_index.yaml` intake-1148#record (oh-my-pi) — the parent harness whose compaction pipeline this serves
-- [Optical context compression](../handoffs/active/optical-context-compression.md) — OCC-1, the decisive measurement on a reader we serve
+- [Optical context compression](../handoffs/completed/optical-context-compression.md) — OCC-1, the decisive measurement on a reader we serve
 - [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record

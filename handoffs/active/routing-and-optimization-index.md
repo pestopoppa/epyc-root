@@ -56,7 +56,6 @@
 | RTG-50 | decomposition to batch mapping | [decomposition-to-batch-mapping.md](decomposition-to-batch-mapping.md) | DB-1 — establish whether a task decomposition can be expressed as np-batch slots across CPU and GPU instances | RTG-49 |
 | RTG-51 | wrap up division of labor policy | [wrap-up-division-of-labor-policy.md](wrap-up-division-of-labor-policy.md) | Wire compute blocker/window events and the receipt-cut heavy-wrap executor; then shadow the complete lifecycle | RTG-34, RTG-48 |
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 gate runs to 08-23; meanwhile: rule-11 text per D4 ack, relay-ledger 296-row adjudication, monitor:file starvation fix | RTG-34, RTG-48 |
-| RTG-53 | optical context compression | [optical-context-compression.md](optical-context-compression.md) | OCC-2 DONE 2026-08-25 (billing-asymmetry record); next: OCC-1 — billed-token cost vs QA recall, bitmap frames vs raw text | UFH-07, INF-41 |
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-E7b + CT-9 done 2026-08-23; re-observe the pilot under real traffic | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3 structural leakage refusal (prompt+code) and MHS-12 eval-identity screen; then MHS-5 contrastive corpus | RTG-02 |
 
