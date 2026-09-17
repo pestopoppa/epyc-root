@@ -404,6 +404,39 @@ n=500 per arm × 3 arms = 1,500 generations + 500 estimator calls ≈ 2,000 requ
       `architect_general`, plus the `frontdoor` CPU-decode overhead replicate, and apply the fixed
       decision rule. On completion the run produces measurements → file the belief-kernel adapter
       wiring task at the same boundary (source row in `scripts/vidya/adapters/README.md`).
+      - **GPU RUN 2026-09-16 19:10Z – 09-17 02:22Z (sub-gpu-runner; box NOT ticked). Verdict under the fixed rule,
+        on 3 of 4 suites: INCONCLUSIVE.** Evidence: research `b4d38ebc`, `data/prb-t4-tale-gpu-20260916/`, with no
+        question text.
+        - **Setup.** Qwen3.8-27B-Q8_0 served on v9 `b10125-0db32c06e`; the GGUF was verified via `/props`.
+          Production architect_general argv (np 2, 32k per slot, MTP n-max 8), temperature 0.1, seed 42, token
+          budgets, `enable_thinking=false`.
+        - **Validity.** Residency proven: 25,869 samples, KFD 1, peak 36.1 GiB. Category CANDIDATE with no
+          codified protocol, so these are observations. CIs are paired bootstraps.
+
+        | suite (n) | baseline acc / tok | tale acc Δ | tale net tok Δ | static acc Δ | static net tok Δ |
+        |---|---|---|---|---|---|
+        | math (150) | 97.3% / 266 | +0.7pp [0.0, +2.0] | **−58.4%** [−55.5, −61.0] | −0.7pp | −72.2% |
+        | olympiadbench (100) | 32.0% / 6,688 | −1.0pp [−8, +6] | −26.6% [−20.7, −32.5] | **−12.0pp** [−20, −4] | −77.7% |
+        | livecodebench (100) | 100% / 205 | 0.0pp | −18.6% | 0.0pp | −27.9% (static wins) |
+
+        - **Rule application.**
+          - Only math meets ≥30% net and ≥−1pp, so ADOPT fails.
+          - static does not win everywhere, so ADOPT_STATIC_INSTEAD fails.
+          - The worst suite is −1.0pp and the mean net reduction is 34.6%, so DECLINE fails.
+          - The result is INCONCLUSIVE. The rule's next step is a re-run at n=400 per suite.
+        - **Defects to fix before the re-run:**
+          1. **mmlu_pro never ran** (rc=1 at q1). `debug_scorer` raised `ScoringUnavailableError` because the
+             multiple-choice gold is 'I' with 0 configured choices; the pool join lacks the A–J choices.
+             With mmlu_pro missing, ADOPT is impossible. Only a loss >3pp on mmlu_pro could turn the verdict
+             into DECLINE; the mean net reduction stays above 15% even at 0% on mmlu_pro.
+          2. **livecodebench accuracy is vacuous.** The pool's `scoring_method` is `substring` with `'def '`, so
+             100% on every arm is a scorer artifact. Only its token and latency deltas carry information.
+          3. **All 150 sampled `math` items are `gsm8k_*` ids.** The "no gsm8k in our pool" premise above is
+             wrong for this sample, but this is a different model, so it is still not a replication of
+             intake-1215#record.
+          4. The CPU `frontdoor` replicate was not run (a GPU-only window).
+        - **Belief kernel.** `ingest tale-budget` wrote 24 rows for math and olympiadbench. The livecodebench
+          sidecar was deliberately NOT ingested, because its accuracy rows come from the vacuous scorer.
       - **Pre-run gaps closed 2026-09-16 (sub-gpu-prep, offline; run still open):** research `a454b7fd`
         (ported as `76f5132b`, on research `main` via merge `a280853d`) — estimator tokens/time charged
         (`*_incl_estimator` beside answer-only), TALE-EP token budgets (`--budget-unit tokens` default),

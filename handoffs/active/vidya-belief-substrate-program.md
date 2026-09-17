@@ -1974,6 +1974,11 @@ are left to that still-running agent.
     emits answer-only latency. Rows project `protocol_id=""` (no TALE protocol is codified), so tuples cap at
     `Judged/Located`. The writer reads the per-question `.jsonl` + `.meta.json`, not `.summary.json`; its formulas
     match `summarize()`. Left unticked until the driver (research `sub/gpu-runner-20260916`) merges.
+  - 2026-09-17 (sub-gpu-collect2): **first run emitted through the hook.** PRB-T4 wrote 3 per-suite
+    `.beliefs.jsonl` sidecars (research `b4d38ebc`). `ingest tale-budget` projected math and olympiadbench:
+    24 rows, 0 refused. The livecodebench sidecar was withheld because its accuracy uses the vacuous
+    `substring 'def '` scorer. This needs a tuple-level exclusion or a scorer fix; do not ingest it as-is.
+    Still unticked: the driver has not merged.
 - [ ] **VB-GPU-RUNNER — write hooks for the sub-gpu-runner recipe sweeps (filed 2026-09-16, sub-gpu-runner).**
   These 2026-09-16 runs are PRE-HOOK and emit zero rows. None has a write hook: `serving_beliefs` fires only
   inside `serving.compare`. Do not project their JSONL on read.
