@@ -103,8 +103,12 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
     is made in advance, and a declared runtime arm must state its full launch budget before claiming
     resources.
   - **v22.** It started at 14:27 UTC from source tip `614ff2ba02e0` and the same store, with 28 keeps.
-  - **What is not claimed.** No new keep, and no measured candidate from v22. Production v9 and the champion
-    are unchanged.
+    Batch 0 screened +0.296% on HALF scope and batch 1 screened +0.064% on the FULL target; both
+    remained candidate-only observations, not keeps. It stopped cleanly at the batch-2 boundary after
+    review found that the default `MUL_MAT` correctness test did not exercise the candidate's GDN edit.
+  - **What is not claimed.** Neither screen establishes a GDN-correct candidate or an advancing
+    champion. The 28 prior keeps, production v9, and champion are unchanged; v22 is not evidence of
+    20 healthy loops.
   - [autokernel-dream-rsi](../progress/2026-09/2026-09-17-autokernel-dream-rsi.md)
 
 ### Open questions
