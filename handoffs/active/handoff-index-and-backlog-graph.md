@@ -32,7 +32,7 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   invisible before:** `BAD DEP` validates that a dep points at a *known* row, which every edge in a
   cycle does — each individual edge is well-formed, and only the closure is broken.
 - [x] **Derive per-node `ready` / `blocked` in the graph builder** — ✅ 2026-09-16 (`sub-rtg46`;
-  branch `sub/rtg46-readiness-20260916` @ `ec7dfaf7`, integrated into root `main` by merge `e0a600a5` 2026-09-16; **hub deploy pending**).
+  branch `sub/rtg46-readiness-20260916` @ `ec7dfaf7`, integrated into root `main` by merge `e0a600a5` 2026-09-16; **hub deployed 2026-09-16**: `:8100` serves the read-only origin/main view `/mnt/raid0/llm/views/epyc-root-main`, per root `d66e125c` and orchestrator `3e967e27`).
   Derivation landed in `457abd40` (`index_graph.v2`); the missing half was rendering, since
   `dashboard/static/handoffs.html` never read `readiness`. Now: blocked = hatch over the domain
   fill, `no_open` = faded, ready = solid; legend with the producer's `readiness_counts`; tooltip
@@ -151,7 +151,7 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
     min halo gap 9.60 -> 9.57px, height 603 -> 669px. Proxy criterion (`LayoutTests` in
     `tests/test_dashboard_handoff_graph_readiness.py`): near-neighbour alignment < 0.2 with a
     zero-jitter mutation > 0.8, zero crowding below SEP, domains inside their band, deterministic.
-    **Parent stays open: "does it still read as a lattice" is a human look at :8100 after deploy.**
+    **Parent stays open: "does it still read as a lattice" is a human look at :8100 (deployed 2026-09-16).**
 - [ ] **OPERATOR: nothing restarts `hub_supervisor.sh` if it dies.** It was found dead on 2026-08-10
   (recorded pid 543919 not running), which is why the hub sat on stale code unnoticed. Its own
   docstring rules out a systemd unit ("host config is operator territory"); the documented alternative
@@ -300,7 +300,7 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
        - `fleet_watch.log` shows a fresh "fleet_watch started" line within 5 minutes.
     8. Tick this parent row and FW-3.
   - **DASHBOARD FIX A — the hub serves a read-only origin/main VIEW (2026-09-16, `sub-hubview`;
-    operator-approved).** This supersedes step 4 above for the hub source. The lane that
+    operator-approved). DEPLOYED 2026-09-16** (root `87152356`, merged `d66e125c`; orchestrator `3e967e27`). This supersedes step 4 above for the hub source. The lane that
     `f5476148` served (`autokernel-unified-20260908`) was 141 commits behind origin/main, so pushed
     handoff progress never reached :8100. The lane has no commits that main lacks, only
     uncommitted WIP, which the operator accepts will no longer be served.
@@ -318,7 +318,7 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
     - **Restarts:** checkout rewrites only changed files, so the stale-source check restarts the hub
       on a dashboard code change and never on a handoff-only refresh. Test:
       `scripts/dashboard/tests/test_hub_view_refresh.sh`.
-    - **Manifest:** orchestrator branch `sub/hubview-orch-20260916` changes `handoff_dashboard`
+    - **Manifest:** orchestrator branch `sub/hubview-orch-20260916` (on orchestrator main as `3e967e27`) changes `handoff_dashboard`
       cwd/pythonpath to `{llm_root}/views/epyc-root-main`. The store env is unchanged:
       `aku12a-glm53-five-loop-store` was re-verified live at 14:11, with no STOP.
     - **Deploy sequence:** `progress/2026-09/2026-09-16-sub-hubview.md`.
