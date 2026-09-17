@@ -5,9 +5,75 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+**Last compiled**: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
 `0.0`/`0.058` TEDS figures are formally voided and a three-stage instrument with a supported (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge) (2026-08-30: MiniMax-H3 lands as the page's first video-generation candidate — EVL-32: 33B dense H3-Omni-Transformer + Qwen3-VL-32B encoder, Ref2VA/FL2VA variants, 768p local / 2K API-only, 24 FPS 32 kHz stereo audio, a 56-model community quantization landscape, NSFW-capability finetune evidence, Ref2VA + beta4 INT8 ~165 GB deployment path, and an Excluded-Territories license; operator scope decision is the first gate before any download)
-**Sources**: 2 documents (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
+**Sources**: 2 documents (added 2026-09-17: ERNIE evaluation MI210 run blocks, sub-occ1 progress log, ERNIE deep-dive link fix, completed OCC handoff) (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
+
+## Compiled Update — 2026-09-17: the ROCm f32 fix does not clear the MI210 ≥1024² white-image defect, and the local vision-reader inventory
+
+**Confidence**: verified (`locally-measured`: two MI210 runs with residency proven and results committed; the
+reader inventory comes from a zero-inference scoping pass over code, binaries and weights on disk).
+
+The *Candidate FIX for the MI210 1024² blank-PNG defect* (the 2026-07-29 section below) has now been built and
+run twice, and it **is refuted**. A ROCm-guarded f32 force on ERNIE-Image-Turbo's `to_out.0`/`linear_fc2`
+does not stop 1024² and 832×1248 outputs coming back uniform white. Neither does a wider f32 set, a 1/16
+out-projection scale, or both together. The only effect that can be attributed is on the default code path:
+the narrow patch moved the blank threshold from 960² up to 1024². This **supersedes the older inference
+that the evidence "points away from the VAE"**. With every precision change on the DiT linears ruled out, the
+next hypotheses are the VAE decode and the attention/FA path at the longer sequence length. Testing either one
+needs a new build and prep, not a re-run. The handoff box stays unticked because there is still no valid
+1024² GPU number. Separately, scoping for OCC-1 (see [context-management](context-management.md)) listed
+which vision readers can actually run locally.
+
+### Key findings
+- **Run 1 (2026-09-16, 14:21–14:30Z)** used the sd.cpp worktree build `build-rocm-gpuprep-20260916` (shared
+  ggml, HIP gfx90a, ROCm 6.2, carrying the ggml FP8 guard). The run was admissible: 23/23 requests returned
+  HTTP 200, the server pid was in KFD in every sample, peak VRAM was 25.5 GiB with the patch on and
+  19.0 GiB with it off, and the linkage receipt passed. At 8 steps and n=3, every cell was bit-identical
+  across its reps. Generation times with the patch ON: 768² 16.3 s, 896² 23.0 s, 960² 26.9 s (good),
+  1024² 30.2 s (white), 832×1248 30.4 s (white). 1024² with the patch OFF took 26.5 s and was also white.
+  At 896² the patch costs about 13% (23.0 vs 20.3 s). Evidence: research `cf05eefc`.
+  [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md)
+- **Run 2, the recipe §5 variants (2026-09-17, 02:30–02:55Z, build `build-rocm-variants-20260916`)**: 55/55
+  requests returned HTTP 200 with the same prompt and seed. None of the variants passed the pre-registered
+  FIX rule (1024² and 832×1248 non-blank on every rep, and 768–960² good). Results for 1024² plus
+  832×1248: 0/6 non-blank for off, narrow f32, wide, outscale and wide+outscale alike. Patch-OFF was blank
+  at 960² in all 3 reps. Cost at 896² against off (19.44 s): wide 1.42×, outscale 1.01×. Evidence: research
+  `ca8c63d6` (`verdict.json`). [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md)
+- **Recipe §5 is used up.** Neither the wide set nor outscale keeps the narrow patch's 960² gain: both are
+  blank at 960² again. Per the recipe, no headline GPU speedup is computed. Neither run has a belief-kernel
+  write hook; VB-GPU-RUNNER covers both.
+  [ernie-image-turbo-evaluation](../handoffs/active/ernie-image-turbo-evaluation.md)
+- **Local vision-reader inventory (2026-09-16, zero inference).**
+  - Qwen3-VL-30B-A3B Q4_K_M + F16 `qwen3vl_merger` mmproj is the served `worker_vision` reader. It runs on
+    champion `ef81196d5` (`PROJECTOR_TYPE_QWEN3VL`, `tools/mtmd/models/qwen3vl.cpp`), and the libmtmd
+    binary is newer than that commit.
+  - `clip.cpp` has no backend gate, and the GPU flag is `--device ROCm0`.
+  - Qwen2.5-VL-7B (6.0 GB) is kept as a rollback only. Qwopus3.8-27B-Flash Q8_0 fits (29.7 GB) but is not
+    served as a vision reader.
+  - **Qwen3.8-Flash-Next + F16 mmproj (88–92 GB) does not fit the 64 GB MI210.**
+  - **The gemma-4 models have no mmproj on disk**, so they cannot do vision locally.
+  - Qwen3-VL-2B and 1B-Merged have an empty directory or no mmproj.
+  - LightOnOCR-2-1B, PaddleOCR-VL-1.6 and Unlimited-OCR are transcribers only, not QA readers.
+
+  [sub-occ1 progress](../progress/2026-09/2026-09-16-sub-occ1.md)
+- **Vision token cost.** Qwen3-VL uses a 32 px cell (patch 16 × merge 2) with token bounds (8, 4096).
+  Production passes `--image-min-tokens 1024`, so a 1568×1568 frame costs 2,401 tokens.
+  [sub-occ1 progress](../progress/2026-09/2026-09-16-sub-occ1.md)
+- **Link fix.** The ERNIE deep dive now links the Hermes outer-shell handoff under `completed/`, where
+  `image_generate (FAL)` is still disabled and ERNIE is its self-hosted replacement.
+  [ernie deep dive](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md)
+
+### Open questions
+- Is the ≥1024² white output caused by the VAE decode, or by the attention/FA path at the larger sequence
+  length? Either test needs a new build plus prep.
+- The 960² change is attributed only across builds, because the Run 1 build never ran patch-OFF at 960².
+
+### Sources
+- [ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md) — both MI210 run blocks: build, admissibility, result tables and reading.
+- [2026-09-16-sub-occ1.md](../progress/2026-09/2026-09-16-sub-occ1.md) — the local vision-reader candidate table and the Qwen3-VL token-cost arithmetic.
+- [ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the re-pointed Hermes link (link change only).
+- [optical-context-compression.md](../handoffs/completed/optical-context-compression.md) — confirms the served Qwen3-VL reader's GPU fit (about 21 GB) on the champion.
 
 ## Compiled Update — 2026-08-12: the TTS wiring task was already done ten days earlier, and the box was the only thing missing
 

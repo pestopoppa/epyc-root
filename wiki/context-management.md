@@ -2,8 +2,78 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Last compiled**: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
 primary sources with the staleness caveat demonstrated; edit-format rules from hashline/aider/Cursor
+
+## Compiled Update — 2026-09-17: spilled output can now be recalled exactly, and the "total tokens per episode" telemetry never existed
+
+**Confidence**: verified. Both findings rest on code and git evidence: a merged commit with tests, and a
+`git log --all -G` search that found nothing.
+
+Two changes to the tool-output compression track. First, **TOC-SP-2 landed**. The 2026-09-14 section below
+lists it as a pattern still to port: `peek` read from byte 0, spills kept only the head, and spill names
+were overwritten. All three gaps are now closed on orchestrator main. Second, **a claimed closure turned out
+to be false**. The 2026-07-29 tick for per-episode total-token telemetry in `src/graph/session_log.py` does
+not exist on any ref, and the handoff box is reopened. That **supersedes two statements on this page**: the
+2026-08-12 section says "the related telemetry primitive — total tokens per episode, not peak — landed
+earlier and stands", and *Instrument TOTAL tokens per episode, not peak* implies the instrument exists. The
+rule is still right, but no instrument implements it yet. Any compression A/B that needs total tokens per
+episode is blocked until the primitive is actually built. The 2026-09-14 finding that compression cost shows
+up as re-fetches makes that gap more costly.
+
+### Key findings
+- **TOC-SP-2 is done (2026-09-16).** Orchestrator commit `af89c864`, merged in `370dc715` and pushed in
+  `753343f5`.
+  - `peek(n, file_path=None, offset=0)` pages by character offset, and a negative offset counts from the
+    end. It reads with `newline=""`, so offsets are exact on CR/CRLF files. At offset 0 the behaviour is
+    unchanged.
+  - `_spill_if_truncated` now returns head + tail, with an executable `peek(..., offset=<head_len>)` marker
+    between them, and the result stays within `max_chars`.
+  - Spill files are named `{task}_{label}_{sha256[:16]}.txt`, written atomically and never overwritten.
+    Legacy `_t{turn}` files still resolve.
+  - `tests/unit/test_output_spill.py` has 13 tests, and 50/50 pass together with the peek and spill suites.
+    GitNexus rates the impact LOW.
+  - Still open: the `root_lm_system.txt` peek doc, which is a prompt change left to its owner.
+
+  [tool-output-compression](../handoffs/active/tool-output-compression.md)
+- **The total-token telemetry closure is false (reopened 2026-09-16).**
+  - The `closure_audit.py --strict-idents` sweep found no per-turn `input_tokens`/`output_tokens` in
+    `session_log.py` on orchestrator `origin/main` @ `88a2902d`.
+  - It also found no `total_tokens`/`token_observed_turns` aggregation and no matching test.
+  - No commit on any branch ever added them.
+  - The false tick came from root `08e9d60d`, part of the same "2026-07-29" codex-lane closure wave as
+    RC-9/E1a. This is another example of closure inflation.
+
+  [tool-output-compression](../handoffs/active/tool-output-compression.md)
+- **OCC-1 scoping chose GPU-only.** It was chosen before the run reported in the next section down.
+  - The reader was the served Qwen3-VL-30B-A3B, not a larger model: Qwen3.8-Flash-Next + mmproj (88–92 GB)
+    does not fit the 64 GB MI210, and the gemma-4 models have no mmproj on disk.
+  - An "OCR → text" arm was left out of scope because it cannot save billed tokens.
+  - Predicted tokens per chunk: text ~8,732, 6x10 2,401 (~0.31), 8x8u 3,430 (~0.42), 8x13 4,165 (~0.50),
+    12x12u 5,831 (~0.68). These predictions ran slightly optimistic: measured ratios were 0.326, 0.437 and
+    0.516, against 9,286 text prompt tokens.
+
+  [sub-occ1 progress](../progress/2026-09/2026-09-16-sub-occ1.md), [optical-context-compression](../handoffs/completed/optical-context-compression.md)
+- **The OCC-1 harness was hardened in Fable review** (research `e2c48c13`).
+  - Pre-registration drift VOIDs the run: `report` grades with `plan.json`'s `prereg`.
+  - A malformed 200 body is retried once. If it is still unrepaired, the run is VOID.
+  - `pillow==12.3.0` is pinned and recorded, and a mismatch refuses the run.
+  - GPU residency is sampled in flight. Proof needs at least 2 samples ≥16 GiB above the baseline plus a
+    KFD context for the server pid.
+  - Re-planning left the fingerprints unchanged (`261d8ac1eaed`, `e4cbd4448e91`).
+  - These guards are why the NEGATIVE verdict below is admissible.
+
+  [sub-occ1 progress](../progress/2026-09/2026-09-16-sub-occ1.md)
+
+### Open questions
+- Who builds the real per-episode total-token primitive, and when? It gates every compression A/B.
+- TOC-SP-3 (a verified-quote receipt for the spill summary) and the `root_lm_system.txt` peek doc update
+  are still open.
+
+### Sources
+- [tool-output-compression.md](../handoffs/active/tool-output-compression.md) — the TOC-SP-2 evidence and tests, and the reopen note for the false total-token closure.
+- [2026-09-16-sub-occ1.md](../progress/2026-09/2026-09-16-sub-occ1.md) — the OCC-1 GPU-only scoping, the predicted token table and the Fable review hardening.
+- [optical-context-compression.md](../handoffs/completed/optical-context-compression.md) — the measured prompt-token ratios and the closure note.
 
 ## Compiled Update — 2026-09-17: optical compaction is NEGATIVE on the reader we serve (OCC-1 closed)
 
