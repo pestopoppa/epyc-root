@@ -107,3 +107,26 @@ back-filled". It is followed exactly.
    at most about 200 trials later.
 3. SC83's trigger is the first RA-9 decoy corpus plus a scored reviewer run:
    `score_false_accept.py`, then `cli.py ingest reviewer-fa`.
+
+## Fable review fixes (MERGE-AFTER-FIX; orchestrator `e93edfdb`)
+
+1. **SC83 stale arbitration decoys.** The writer listed every stale decoy under `stale`, including
+   `needs_arbitration` decoys that `false_accept_rate` routes to `excluded_for_arbitration`. The
+   reader's `stale <= unscored` check then voided the whole file. Now:
+   - `stale` holds settled decoys only;
+   - stale arbitration decoys go in a new `stale_excluded`, and the reader checks it against
+     `excluded_for_arbitration`;
+   - tests on both sides; fixture run `fixture-r3` comes from the real writer, and the reviewer's
+     repro now projects.
+2. **AP-53 journal rewind.** Before writing, `record_closed_windows` checks each emitted window's
+   recorded journal prefix digests against the current shards. The check makes one hashing pass per
+   shard, memoised by inode; a size check runs first, so in-place truncation is still caught. On a
+   mismatch it renames the file to `*.rewound-<utc>`, logs a warning, and re-arms. Tests cover a
+   rewind followed by a re-run window, and an in-place edit that keeps size and inode.
+3. The source-identity key was renamed `mutation_ledger` → `rejected_mutation_ledger`. The BSV-3
+   tripwire (`test_mutation_ledger_tripwire.py`) greps tracked files for the whole identifier
+   `mutation_ledger`, so the committed file tripped it.
+
+Checks after the fixes:
+- orchestrator: 897 passed across the new and adjacent suites;
+- root: `tests/vidya` 1305 passed, 80 skipped.
