@@ -1997,12 +1997,35 @@ are left to that still-running agent.
     - `prb_t4_tale_gpu.py` was ported from `91d66725`. It runs the harness from its own checkout,
       which has the stratified sampler. `--pool` and `--python` are checked before the server starts.
     - Tests: `scripts/benchmark/test_belief_capture.py`, 10 passed.
-  - [ ] **VB-RUNNER-PATHS-2 — convert the remaining guessed-root capture loaders** (filed 2026-09-17,
+  - [x] **VB-RUNNER-PATHS-2 — convert the remaining guessed-root capture loaders** (filed 2026-09-17,
     sub-vb-wire). Research `scripts/benchmark/score_tulving_run.py` (`_ROOT_CANDIDATES`) and
     `scripts/benchmark/occ1/run_occ1.py` (`ROOT_CANDIDATES`) fall back to `/mnt/raid0/llm/epyc-root`
     and then `/workspace` when `EPYC_ROOT` is unset. They are loud when nothing resolves, but they can
     silently pick a checkout other than the intended one. Move both to `belief_capture.load_capture`.
     Their tests (`test_score_tulving_run.py`, `test_beam_adapter.py`) must set `EPYC_ROOT`.
+    ✅ 2026-09-17 (`sub-small-audits`, research `ae92ac5c`).
+    - **Converted.** `score_tulving_run.py`, `occ1/run_occ1.py` and `score_beam_run.py` (the same
+      shape, and the loader that `test_beam_adapter.py` tests) now call
+      `belief_capture.load_capture`.
+      - An unset or wrong `EPYC_ROOT` is refused through each script's existing `SystemExit`. So is
+        a module that lacks `write_belief_measurements`.
+      - Nothing falls back to `/mnt/raid0/llm/epyc-root` or `/workspace`. That fallback was live
+        risk: the shared clone is behind origin/main and lacks these capture modules.
+    - **Tests.** The loader and round-trip tests set `EPYC_ROOT` explicitly. 10 new cases fail on
+      the old code.
+      - With `EPYC_ROOT` unset: 118 passed, 11 skipped.
+      - With `EPYC_ROOT` set to root origin/main: 124 passed, 5 skipped (pyarrow).
+    - [ ] **VB-RUNNER-PATHS-3 — audit the other hard-coded root defaults in research** (filed
+      2026-09-17).
+      - **Belief write paths:** `scripts/kernel_rnd/autokernel/loop/serving_beliefs.py:148`,
+        `claim.py:40` and `serial_run.py:393` default `EPYC_ROOT_REPO` to `/workspace`.
+      - **Fixed roots:** `k35_vision_matrix_runner.py:30`, `run_batch_entry.py:86`,
+        `laguna_pgpu1_dflash_runner.py:69` and `op2_quiet_window_prep.py:30` pin
+        `/mnt/raid0/llm/epyc-root`.
+      - **Candidate list:** `scripts/validate/check_evidence_durability.py:168` walks the same
+        candidate list.
+      - **Action.** Decide per site whether it writes belief rows or governs a decision, and if so
+        route it through `belief_capture.root_checkout`. AutoKernel sites need its quiet window.
 - [ ] **VB-PRB-T4-CAVEAT — mark the 24 ingested PRB-T4 TALE rows as sample-scoped (filed 2026-09-17,
   sub-scorer-fix).**
   - **Affected rows.** The ledger holds 24 `vidya.adapters.tale_budget/v1` claims from run

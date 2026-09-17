@@ -254,7 +254,38 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   which documents that scope limit explicitly. Replace with pid-scoped termination or delete.
 
 - [x] **OBS-11** (MED): **A devcontainer rebuild silently disabled every venv-backed gate.** ✅ 2026-08-19 — `~/.local/share/uv/python/` was recreated empty on 2026-08-18 14:36, so `repos/epyc-orchestrator/.venv/bin/python` (a symlink to a uv-managed CPython 3.11) became dangling while its 367 site-packages stayed intact. `scripts/validate/validate_intake.sh` and `kb-search` then failed per-session with no owner, and the repair path was itself blocked: the rebuild left `~/.cache/uv/{archive-v0,interpreter-v4}` root-owned, so `uv python install` died on `Permission denied` before it could fix anything. Repaired (chown + `uv python install 3.11` → 3.11.16; `validate_intake.sh` green, 1162 entries). `health_check.sh` gains a **Tooling Interpreters** section that resolves the orchestrator + research venv interpreters **and** checks uv-cache writability, each failing with its exact repair command; both mutation-tested against synthetic breakage. Blast radius derived structurally (every `pyvenv.cfg` under `/workspace` + `/mnt/raid0/llm`, testing whether its `home` resolves), not from the observed symptom: only this venv.
-- [ ] **OBS-12** (LOW): **`.claude/skills/kb-search/SKILL.md` documented an interpreter that cannot work — audit the other skills for the same shape.** Fixed for kb-search on 2026-08-19 (it told every session to run bare `python3`, which has no `numpy` and dies in `colbert_encoder.py`, independent of OBS-11); the hooks and batch scripts already used the venv. **A second instance is already confirmed**: `.claude/skills/project-wiki/scripts/lint_wiki.py` exits with `ERROR: PyYAML not installed` under bare `python3` and runs clean under the orchestrator venv — found incidentally while linting, not by any check. The open work is the sweep: nothing ties a skill's documented command to an interpreter that actually has the imports, so the remaining instances stay invisible until a session hits one.
+- [x] **OBS-12** (LOW): **`.claude/skills/kb-search/SKILL.md` documented an interpreter that cannot work — audit the other skills for the same shape.** Fixed for kb-search on 2026-08-19 (it told every session to run bare `python3`, which has no `numpy` and dies in `colbert_encoder.py`, independent of OBS-11); the hooks and batch scripts already used the venv. **A second instance is already confirmed**: `.claude/skills/project-wiki/scripts/lint_wiki.py` exits with `ERROR: PyYAML not installed` under bare `python3` and runs clean under the orchestrator venv — found incidentally while linting, not by any check. The open work is the sweep: nothing ties a skill's documented command to an interpreter that actually has the imports, so the remaining instances stay invisible until a session hits one.
+  ✅ 2026-09-17 (`sub-small-audits`, root `afb9745c`). Today bare `python3` imports PyYAML and numpy
+  only from `~/.local`, which a devcontainer rebuild can wipe. The sweep therefore ran every skill
+  script and every documented bare-`python3` target under `python3 -s`, which ignores that
+  directory.
+  - **Wrong install hints.** `lint_wiki`, `query_wiki`, `seed_index` and `validate_intake` told
+    the user to `pip install pyyaml`. `backfill_dispositions` and `resolve_intake_id` died with a
+    raw ImportError. All six now refuse and name the venv command.
+  - **Silent config loss.** Without PyYAML, `compile_sources` and `wiki_writer_review` ignored
+    `wiki.yaml`. For `compile_sources` that changed source selection: `SCHEMA.md` dropped out of
+    `skip_filenames`. Both now raise instead.
+  - **`coordinator-agent/SKILL.md`** ran bare `python3` for three scripts that need PyYAML:
+    `tmux_adapter` crashes, `merge_gate` refuses, and `session_bus` needs it for its roster. All
+    of its Python commands now name the venv.
+  - **`research-intake/references/taxonomy.md`** now points at `validate_intake.sh`.
+  - **Guard:** `tests/skills/test_skill_interpreters.py`, 18 cases; 16 fail before the fix.
+  - **Verification:** each fixed invocation was run under the venv, and none failed on an import.
+  - [ ] **OBS-12a** (LOW, filed 2026-09-17): **the same shape outside `.claude/skills`.**
+    CLAUDE.md's bus drain (`scripts/coordination/session_bus.py drain ...`) and heartbeat `append`
+    run through the `#!/usr/bin/env python3` shebang. Both call `_require_roster_id`, which needs
+    PyYAML (`session_bus.py:235-252`), so after a rebuild that wipes `~/.local` every session's
+    drain would fail.
+    - **Options:**
+      - (a) point the CLAUDE.md, BUS_PROTOCOL and SESSION_LIFECYCLE commands at the venv;
+      - (b) have `session_bus.py` read the roster without PyYAML;
+      - (c) add a system-interpreter PyYAML check to `health_check.sh` next to the OBS-11 checks.
+    - **Recommendation:** (c) now, plus (a). Editing CLAUDE.md is a fleet-doctrine change, so the
+      owning session makes it.
+  - [ ] **OBS-12b** (LOW, filed 2026-09-17): `lint_wiki.py` reports two dangling links:
+    `wiki/agent-architecture.md:2254` and `wiki/tool-implementation.md:278,321` still point at
+    `../handoffs/active/security-review-skill.md`, which moved to `completed/` in `9804fec9`.
+    `wiki/` is written by the serialized wrap-up, so fix it in the next compile.
 - [x] **OBS-3a** (LOW, follow-up 2026-08-23): add a mutation case to `scripts/nightshift/tests/test_inference_guard.sh` for "MemAvailable unreadable → `failed`" (awk-shim pattern as used in the OBS-3 fix scratch harness) — the existing suite predates the mem-channel fail-closed semantics. ✅ 2026-08-23 — mutation M-D added (PATH-shimmed `/bin/false` awk): asserts state=failed, RSS channel still measured 0 while failed, MEMAVAIL_GB=unknown, ACTIVE unset, "MEASUREMENT FAILED" wording, and no all-clear printed. Suite 15 → 21 passed; guard untouched.
 - [x] **NIB2-58b** (LOW, follow-up 2026-08-23): re-point `smoke_test_llama_v3.sh` / `prove_paged_attention.sh` binary paths from the extinct `build/bin` to the named experimental build dirs (`build-v9-cpu` / `build-v9-hip`) — operator-flagged convention change; the scripts currently fail fast with a clear message, which is correct behavior until then. ✅ 2026-08-23 — ground truth: `build-v9-cpu` is the only named CPU dir with the full binary set (llama-server/cli/bench/completion); both scripts re-pointed to it (CPU-oriented), verifier expected-roots updated; fail-fast preserved; live `verify_ggml_linkage.sh` runs on all four binaries PASS (exit 0).
 - [ ] **OBS-13** (MED, found 2026-08-30): **the wiki source scanner is blind in every lane worktree,

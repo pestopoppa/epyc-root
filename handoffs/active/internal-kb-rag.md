@@ -610,9 +610,55 @@ The compile was then run against the correct 51 and the watermark advanced norma
       `tests/skills/test_project_wiki_compile_sources.py`. `test_full_wrap_transaction_end_to_end`
       asserts the file is never written or committed and failed before the fix. 97/97 pass across the
       compile_sources, heavy_wrap, worker_checkpoint, post-commit-hook and concurrent_wrapup suites.
-- [ ] **KB-WM-3 — Same audit for the other three files untracked by `f1717d80`.** If `.last_compile`
+- [x] **KB-WM-3 — Same audit for the other three files untracked by `f1717d80`.** If `.last_compile`
       had this failure shape, its siblings from the same commit should be checked for it rather than
       assumed safe.
+      ✅ 2026-09-17 (`sub-small-audits`, root `4120af69`). Verdicts:
+      - **`handoffs/active/.index-state.json`: SAFE.**
+        - `index_state.py` builds it from tracked sources and `git log` only. It never reads the
+          old copy.
+        - No production code reads it. `refresh_hub_view.sh` regenerates it when it is missing.
+      - **`handoffs/active/.index-graph.json`: PARTIAL.** The dashboard and `compute_ready` handle
+        absence correctly: the dashboard shows it as degraded, and `compute_ready` refuses to run.
+        - `backlog_row_check.index_graph_readiness` stays silent on an unusable graph by design
+          (AIR-13). An empty result therefore meant either "not blocked" or "not screened".
+          `index_graph_status()` now records `ok`, `absent`, `unreadable`, `no_nodes` or
+          `no_readiness` in the premise screener's mechanical provenance. The model prompt is
+          unchanged.
+        - Handoffs in `blocked/` looked for the graph in their own directory. The only graph is in
+          `active/`, so the advisory never fired for them. They now read `active/`.
+        - A graph that was valid JSON but not an object crashed the reader.
+        - 6 new tests, all failing before the fix.
+      - **`logs/agent_audit.log`: PARTIAL.** Writers resolve `LOG_DIR` to the shared checkout from
+        any lane worktree (`scripts/lib/env.sh`), so entries survive worktree removal.
+        - `.gitignore` re-included `logs/agent_audit*.log`. The 46 live shards were untracked but
+          not ignored, so a plain `git clean -fd` would delete them and `git add -A` would re-track
+          them. The negation is removed.
+        - The frozen legacy monolith was already gone from the shared checkout. It was restored from
+          `f1717d80^` (4402 lines).
+        - `agent_log_analyze.sh` now warns when that file is missing, where the loss was silent.
+        - Also fixed: stale comments and docs (`agent_log.sh`, `session_init.sh`,
+          `WORKTREE_MIGRATION.md`).
+        - `test_agent_log_merge_format.sh` gains 6 checks and passes 11/11.
+- [ ] **KB-WM-5 — `logs/.current_session` is one file shared by every agent** (filed 2026-09-17,
+      KB-WM-3 audit). Every writer puts its session id in the same `LOG_DIR` file
+      (`scripts/utils/agent_log.sh`: `AGENT_SESSION_FILE`). Concurrent agents therefore log under
+      each other's session ids, and `agent_session_end` deletes the file for everyone. Shard it per
+      `AGENT_ID` like the log itself, with a test that runs two writers.
+- [ ] **KB-WM-6 — `.index-graph.json` freshness is unchecked** (filed 2026-09-17, KB-WM-3 audit).
+      - **What is unchecked.** Neither `index_state.py --check` nor
+        `backlog_row_check.index_graph_readiness` compares the graph with the checkout it describes.
+        Lane worktrees hold copies generated between 2026-08-12 and 2026-09-17, and five are still
+        `index_graph.v1`.
+      - **What to decide.** Should the premise screener show the model "graph not screened"
+        (option a below)? That reverses AIR-13's documented silent-on-absence rule, which
+        `test_no_graph_file_adds_no_reasons` pins.
+      - **Options:**
+        - (a) add an advisory reason;
+        - (b) keep it provenance-only (as now), and add a non-fatal `--check` warning when the graph
+          is missing or differs from `build_graph(state)`;
+        - (c) read one canonical graph from the hub view through an environment variable.
+      - **Recommendation:** (b).
 
 ## Research Intake Update — 2026-08-21 — is the ColBERT index earning its keep? (`intake-1239`)
 
