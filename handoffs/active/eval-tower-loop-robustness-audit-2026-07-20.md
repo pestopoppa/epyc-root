@@ -181,13 +181,13 @@ correct purely because the orchestrator API was down), explicitly naming
 - [x] **ETR-4 — guard the unguarded `r.rubric_threshold_source` read** ✅ 2026-09-17 — the `getattr` guard had already landed in `epyc-orchestrator` `4055dba0` (NIB2-69, 2026-09-15) without a test; `1097a392` adds `tests/unit/test_etr4_rubric_threshold_source_guard.py` (4 cases: a duck-typed row without the attribute compacts and omits the key, a row with it still serializes it, empty/None is omitted, and an AST check that refuses any bare `r.rubric_threshold_source` read — it flags the two in the pre-fix source). Original text: in `_compact_question_result`, which
       breaks the documented duck-typed-row contract and is a real defect for any legacy or foreign row;
       one-line `getattr` (`scripts/autopilot/eval_tower.py:1413`) (found 2026-09-14, noninf sweep).
-- [ ] **ETR-5 — expose ETR-2's state as the first-class `SafetyVerdict.reliability_blocked` field** instead of
+- [x] **ETR-5 — expose ETR-2's state as the first-class `SafetyVerdict.reliability_blocked` field** ✅ 2026-09-17 — `epyc-orchestrator` `0399c3fe`. This was implemented as a SIBLING field, not by overloading `reliability_blocked`. `SafetyVerdict.quality_unmeasured: bool` carries ETR-2's state. A `retry_not_revert` property folds it with REL-1's `reliability_blocked` for consumers that only need "retry, not revert", and the consecutive-failure guard now reads that property. The two causes stay distinguishable, because the ETR-2 test deliberately pins "NOT the REL-1 path". No `src/`/`scripts/` consumer read `reliability_blocked`, so nothing else changes. Asserts were added to `tests/unit/test_safety_gate_quality_measured.py`. Original text: instead of
       only as the `quality_not_measured` category string, so a downstream consumer can branch on it
       (`scripts/autopilot/safety_gate.py`) (found 2026-09-14, noninf sweep).
-- [ ] **ETR-6 — make the two "no decode" cases serialize identically**: mock-mode `ChatResponse` omits
+- [x] **ETR-6 — make the two "no decode" cases serialize identically** ✅ 2026-09-17 — `epyc-orchestrator` `0399c3fe`. `_execute_mock` now sets `tokens_generated=0` explicitly. Because of the model default, both shapes already dumped as 0 in a plain `model_dump()`; they differed only under `exclude_unset` or a field-presence check (ETR-3's `"tokens_generated" in resp`). `tests/unit/test_etr6_no_decode_wire_shape.py` has 2 cases, and both fail on the old code. Original text: mock-mode `ChatResponse` omits
       `tokens_generated` entirely while `vision_stage.py:194` sets it to `0`, an inconsistent wire contract for
       any future structural check (`src/api/routes/chat_pipeline/stages.py:115`) (found 2026-09-14, noninf
       sweep).
-- [ ] **ETR-7 — delete the unused `INBAND_ERROR_PREFIX` imports (pre-existing `ruff F401`), or state the
-      re-export intent**, one line in each of `scripts/autopilot/eval_tower.py:1142` and
+- [x] **ETR-7 — delete the unused `INBAND_ERROR_PREFIX` imports** ✅ 2026-09-17 — `epyc-orchestrator` `0399c3fe`. Deleted in both files. No caller, test or `__all__` entry referenced the private `_INBAND_ERROR_PREFIX` alias, and `ruff --select F401` is now clean on both. Original text: delete the unused `INBAND_ERROR_PREFIX` imports (pre-existing `ruff F401`), or state the
+      re-export intent, one line in each of `scripts/autopilot/eval_tower.py:1142` and
       `scripts/benchmark/seeding_scoring.py:133` (found 2026-09-14, noninf sweep).

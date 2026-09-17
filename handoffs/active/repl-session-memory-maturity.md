@@ -342,11 +342,29 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
   - [ ] **D-f2 — Decide whether findings, documents and tags are fenced too.** D-f fences the session row,
     checkpoints and delete only; `add_finding`/`add_tag`/`add_document` remain unfenced append-style
     writes. Either fence them or record why concurrent appends are safe.
-  - [ ] **D-f3 — Fix the graph snapshot writers that never land.** `src/graph/persistence.py:_write` and
+  - [x] **D-f3 — Fix the graph snapshot writers that never land.** ✅ 2026-09-17 — `epyc-orchestrator`
+    `f853764f`. The snapshots were NOT routed into `checkpoints`: `get_latest_checkpoint()` drives REPL
+    restore, so a snapshot row would shadow the real globals checkpoint, and the turn snapshot is keyed on
+    `task_id`, not a session. Instead, a new append-only `graph_snapshots` table has its own writer,
+    `SQLiteSessionStore.save_graph_snapshot(run_id, data, snapshot_type, *, session_id, fencing_token)`
+    (plus `get_graph_snapshots`). A session-scoped write runs `check_fence` inside the insert
+    transaction. `TaskDeps` gains `session_id`/`session_fencing_token`, which `_execute_repl` sets only
+    while the turn holds the lease; otherwise snapshots are run-scoped. `SQLiteStatePersistence` takes an
+    optional `fencing_token`. Both swallowed-error paths now log at WARNING. A repo-wide grep found no
+    other mismatched `save_checkpoint` caller (`PersistenceManager.save_checkpoint(repl_env)` is a
+    different API). Tests: `tests/unit/test_df3_graph_snapshot_writes.py` has 9 cases, and 8 fail on the
+    old code; one is an AST guard over every `save_checkpoint` call in `src/`. Also updated: the two
+    adapter mock tests that asserted the broken call, and the two D-f executor cases, which now pin the
+    deps wiring. Original text: `src/graph/persistence.py:_write` and
     `src/graph/helpers.py` (turn snapshot) call `store.save_checkpoint(session_id=..., data=...,
     checkpoint_type=...)`, a signature `SQLiteSessionStore.save_checkpoint(checkpoint)` has never had;
     the `TypeError` is swallowed at debug level, so those snapshots are silently dropped (pre-existing,
     found 2026-09-17). Route them through a real snapshot write (fenced) or delete the dead calls.
+    - [ ] **D-f3a — Give `graph_snapshots` a reader or a retention bound.** Nothing reads the table yet
+      (`SQLiteStatePersistence.load_next()` is still `None` by design, TM-7). With
+      `STATE_HISTORY_SNAPSHOTS` on, it grows by one row per turn without bound. Either wire a consumer
+      (trace/debug view) or add a prune (keep the last N runs), and confirm the volume on the live
+      API as part of D-f1.
 
 - [ ] **D-g — Journal uncertain external side effects before resume can replay them.** Add a durable
   per-action record with stable action/idempotency key, tool and normalized arguments hash, attempt
