@@ -1,0 +1,83 @@
+{
+  "schema": "epyc.autopilot.checkpoint_episodic_repin.v1",
+  "decision": "V10-EPISODIC-REPIN",
+  "gate_id": "RATIFY-V10-EPISODIC-REPIN-20260917",
+  "ratified_at": "2026-09-17T13:10:08Z",
+  "operator": "pestopoppa",
+  "status": "ratified",
+  "operator_decision": "2026-09-17: purge the HumanEval/55 eval-leak memories from every store including the pinned production_best (v10), then re-pin v10",
+  "purge": {
+    "gate_id": "PURGE-EVAL-LEAK-MEMORIES-20260917",
+    "orchestrator_commit": "41baad2b9e1bc86cd73c4f582c97358934bd8326",
+    "script": "scripts/maintenance/purge_eval_leak_memories_20260917.{sh,py}",
+    "checkpoint": "orchestration/autopilot_checkpoints/multitier_v10_20260810 (production_best)",
+    "deleted_memory_ids": [
+      "500740fe-8e32-44ef-bbe5-e9c9d0d946f8",
+      "9f75290f-abec-4826-b285-588cd47a2ee8",
+      "d2ddc823-bd8a-4b44-809f-c4ed7593323e",
+      "e344a27c-111e-4acd-b142-72cf011ba80e"
+    ],
+    "memory_count": {
+      "before": 63925,
+      "after": 63921
+    },
+    "backup_dir": "/mnt/raid0/llm/backups/episodic-leak-20260917",
+    "proposal": {
+      "path": "/mnt/raid0/llm/backups/episodic-leak-20260917/pinned_repin_proposal.json",
+      "sha256": "00aecc8751c1021b19f66fa7ac43ed20b8c46030000806426bbed04f493ccde2"
+    },
+    "receipt": {
+      "path": "/mnt/raid0/llm/backups/episodic-leak-20260917/receipt.json",
+      "sha256_at_ratification": "0b6f9c24aabb3d6cd4c88c4b7b822a8f19674ff51280965d6ba217cd59c3b94c"
+    }
+  },
+  "equivalence": "Only the 4 HumanEval/55 memories (and their memories_appendonly_legacy rows and FAISS vectors) changed; every other v10 checkpoint file is byte-identical to its existing pin, which the full manifest check proves. rules.md stays at the RATIFY-CKPT-PROMPT-LEAK-20260916 pin.",
+  "state": {
+    "multitier_v10_20260810 episodic files": {
+      "embeddings.faiss": {
+        "sha256_before": "4537f9179b5a318da59ba4e1fc2bb709d0f13335a0ac6295e4f600f3fa09d8d3",
+        "sha256_after": "e067815db2388fca7537a4d3aba7186c9186097b89ead43c14e575f4c1f06740"
+      },
+      "episodic.db": {
+        "sha256_before": "24cff0744a4ea47f316f5ed8781dc35ce8e843ce555234829c21e88f4a0ffa75",
+        "sha256_after": "8ff84e9d1e6bc5708ecda62247c05b214789b1c9b65e14935f48d1dba0ae69f5"
+      },
+      "id_map.npy": {
+        "sha256_before": "d6b791548b1d5c88c68a28c97e3cce8bc7f38496aa93cbb9daa98d446ceaffaf",
+        "sha256_after": "af4098d88990d656bbb4327c08f86bf95947569ce0e15ccf9bdfcefa881ca498"
+      }
+    },
+    "multitier_v10_20260810/checkpoint_meta.json": {
+      "sha256_before": "54224ec71905b7e628284262579dec1f8da59d0c9d63855fada878ec78305746",
+      "sha256_after": "5af445d8568b08e62085ae7c68354851d36e27043efeb8cbf5760d656ce28b23"
+    },
+    "multitier_v10_20260810 checkpoint_sha256": {
+      "before": "a604276fcd053e7590bd391f846334f5fd4616f7cd9ebe78196b8f6305f1d218",
+      "after": "3b457d981cc42907abf25f47d13d7827e6c08821ce588e2405075bcf8ea73375"
+    },
+    "artifacts/operator/ratify_multitier_baseline_v10_20260810.json": {
+      "sha256_before": "e6682b2fe9cbe88d21b9f6f075a40a38a8b2dd23f40641049578f6c496dc9a03",
+      "sha256_after": "10ea11843d28c3bb13d0b31ef33cc4551a28d595d7b8c20647d1bdee32623464"
+    }
+  },
+  "backup": {
+    "dir": "/mnt/raid0/llm/backups/v10-episodic-repin-20260917",
+    "sha256sums": "b87d9d224f6747b0215144ee355a01060c762065f290461b88d51fafad9de34f"
+  },
+  "pins_and_checkers": {
+    "pins": [
+      "checkpoint_meta.json file_sha256[episodic.db, embeddings.faiss, id_map.npy] and memory_count",
+      "checkpoint_sha256 (canonical JSON over file_sha256 + the meta's own hash)",
+      "ratify_multitier_baseline_v10_20260810.json production_checkpoint.metadata (mirror of both)"
+    ],
+    "checkers": {
+      "scripts/operator/ratify_v10_episodic_repin_20260917.sh --verify": "authoritative post-state check from now on",
+      "scripts/operator/ratify_checkpoint_prompt_leak_20260916.sh --verify": "SUPERSEDED as a validation command: it pins the pre-purge meta/receipt hashes, and its script hash is attested in its consolidated receipt, so it is not edited. Every check it made is re-run by this gate's --verify.",
+      "epyc-orchestrator purge_eval_leak_memories_20260917.py": "classifies v10 as pinned by 'episodic.db' in file_sha256 and requires rules.md 18f8ea01; both still hold",
+      "epyc-orchestrator ratify_and_apply_multitier_baseline_v10.py": "writes the pins once at v10 ratification, never re-reads them; its checkpoint_sha256 and memory_count formulas are reused here",
+      "StructuralLab.restore_checkpoint / decision_cockpit.read_checkpoint": "verify no hash"
+    }
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_v10_episodic_repin_20260917.receipt.json",
+  "applied_by": "scripts/operator/ratify_v10_episodic_repin_20260917.sh"
+}

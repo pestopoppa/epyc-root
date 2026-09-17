@@ -97,6 +97,25 @@ legacy_only_lines="$(wc -l <"$TMP/logs/agent_audit.log" | tr -d ' ')"
 chk "legacy-only line count is NOT what the merge returns (sanity on the fixture itself)" \
   "$([ "$legacy_only_lines" != "$merged_lines" ] && echo differ || echo same)" "differ"
 
+# 6. KB-WM-3: the audit files are untracked runtime state, so they must be
+#    IGNORED, not merely untracked. Otherwise a plain `git clean -fd` deletes the
+#    live shards and `git add -A` re-tracks them. check-ignore reads .gitignore
+#    only; the paths need not exist.
+for p in logs/agent_audit.log logs/agent_audit-mainA.log logs/agent_audit-unattributed.log; do
+  chk "$p is gitignored" "$(git check-ignore -q "$p" && echo ignored || echo not-ignored)" "ignored"
+done
+
+# 7. KB-WM-3: a missing legacy monolith is announced, not silently dropped
+#    from every summary.
+chk "legacy check is silent while the legacy file exists" \
+  "$(agent_log_legacy_check "$TMP/logs" 2>&1)" ""
+rm -f "$TMP/logs/agent_audit.log"
+legacy_warn="$(agent_log_legacy_check "$TMP/logs" 2>&1 >/dev/null)"
+chk "legacy check warns on stderr when the legacy file is missing" \
+  "$(grep -q 'legacy audit log .* is missing' <<<"$legacy_warn" && grep -q 'git show f1717d80' <<<"$legacy_warn" && echo warned || echo silent)" "warned"
+chk "agent_log_analyze.sh surfaces the warning" \
+  "$(ORCHESTRATOR_PATHS_LOG_DIR="$TMP/logs" scripts/utils/agent_log_analyze.sh --summary 2>&1 >/dev/null | grep -c 'legacy audit log')" "1"
+
 echo
 echo "pass=$pass fail=$fail"
 [ "$fail" -eq 0 ]

@@ -362,6 +362,76 @@ class IndexGraphAdvisoryTests(_HandoffDirMixin, unittest.TestCase):
         self.assertFalse(any("INDEX-GRAPH" in r for r in reasons),
                          "a missing graph must not manufacture reasons")
 
+    # KB-WM-3: the graph is gitignored, so a checkout may lack it or hold a
+    # pre-v2 copy. "No reason" must stay distinguishable from "not screened".
+
+    def _screen(self):
+        client = RecordingClient(reply("still-needed", "the expiry code is absent"))
+        out = ps.screen_premise(
+            {"task_text": "QQ-2 Teach the widget cache to expire entries "
+                          "older than a week"},
+            client=client,
+        )
+        return out, client
+
+    def test_absent_graph_is_recorded_in_provenance_but_not_prompted(self):
+        out, client = self._screen()
+        status = out["provenance"]["mechanical"]["index_graph"]
+        self.assertEqual(status["status"], "absent")
+        self.assertEqual(status["path"], str(self.dir / ".index-graph.json"))
+        self.assertEqual(client.n_calls, 1)
+        self.assertNotIn("index_graph", client.calls[0],
+                         "the status is provenance; the model prompt stays unchanged")
+
+    def test_readable_graph_is_ok(self):
+        self._write_blocked_graph()
+        out, _ = self._screen()
+        self.assertEqual(out["provenance"]["mechanical"]["index_graph"]["status"], "ok")
+
+    def test_pre_v2_graph_without_readiness_is_flagged(self):
+        (self.dir / ".index-graph.json").write_text(json.dumps({
+            "schema": "index_graph.v1",
+            "nodes": [{"id": "QQ-9", "handoff": "fake-handoff.md", "open": 1}],
+            "edges": [],
+        }), encoding="utf-8")
+        status = brc.index_graph_status(self.dir / "fake-handoff.md")
+        self.assertEqual(status["status"], "no_readiness")
+        self.assertEqual(status["schema"], "index_graph.v1")
+
+    def test_corrupt_graph_is_unreadable_not_absent(self):
+        (self.dir / ".index-graph.json").write_text("{not json", encoding="utf-8")
+        self.assertEqual(brc.index_graph_status(self.dir / "fake-handoff.md")["status"],
+                         "unreadable")
+        self.assertEqual(brc.index_graph_readiness(self.dir / "fake-handoff.md"), [])
+
+    def test_non_object_graph_adds_no_reasons(self):
+        (self.dir / ".index-graph.json").write_text("[]", encoding="utf-8")
+        self.assertEqual(brc.index_graph_readiness(self.dir / "fake-handoff.md"), [])
+        self.assertEqual(brc.index_graph_status(self.dir / "fake-handoff.md")["status"],
+                         "no_nodes")
+
+    def test_blocked_dir_handoff_reads_the_active_graph(self):
+        """index_state.py writes one graph, under active/, that covers blocked/ too."""
+        active = self.dir / "active"
+        blocked = self.dir / "blocked"
+        active.mkdir()
+        blocked.mkdir()
+        handoff = blocked / "fake-handoff.md"
+        handoff.write_text((self.dir / "fake-handoff.md").read_text(encoding="utf-8"),
+                           encoding="utf-8")
+        (active / ".index-graph.json").write_text(json.dumps({
+            "schema": "index_graph.v2",
+            "nodes": [{"id": "QQ-9", "handoff": "fake-handoff.md", "open": 1,
+                       "readiness": "blocked", "blocked_by": ["QQ-8"]}],
+            "edges": [],
+        }), encoding="utf-8")
+        exit_code, reasons = brc.classify(handoff, 6, " ",
+                                          "QQ-2 Teach the widget cache to expire "
+                                          "entries older than a week", "Phase 0")
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(any("INDEX-GRAPH" in r and "QQ-8" in r for r in reasons))
+        self.assertEqual(brc.index_graph_status(handoff)["status"], "ok")
+
 
 # --------------------------------------------- 3. failure is always unknown
 

@@ -2,8 +2,38 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-17 (later pass: the Dream-RSI intake wave files 14 offline rows, the promotion guard's served-config identity and empty-frontier rule are built, AP-55's seed re-run gains its arming flag, the merge train guards every `update_baseline` call site, and the harness-null-pool evidence reaches HS-4; earlier incremental: AP-53 rejected-mutation ledger, AP-54 Landlock eval fence, AP-55 infra fingerprint + shadow promotion gate, live-frontier promotion guard, MHS-3/4/5 with the override-rationale refutation, E8 chain retired); earlier: 2026-09-16 (AutoKernel guard wiring, cross-workload refusal, and archived dirty-worktree retirement; earlier dated findings retained below)
+**Last compiled**: 2026-09-17 (afternoon: the AutoPilot merge train is on orchestrator main, and AP-54/AP-55/MHS-4/MHS-5 are closed; AP-55-ARM waits on one shadow run); earlier 2026-09-17 (later pass: the Dream-RSI intake wave files 14 offline rows, the promotion guard's served-config identity and empty-frontier rule are built, AP-55's seed re-run gains its arming flag, the merge train guards every `update_baseline` call site, and the harness-null-pool evidence reaches HS-4; earlier incremental: AP-53 rejected-mutation ledger, AP-54 Landlock eval fence, AP-55 infra fingerprint + shadow promotion gate, live-frontier promotion guard, MHS-3/4/5 with the override-rationale refutation, E8 chain retired); earlier: 2026-09-16 (AutoKernel guard wiring, cross-workload refusal, and archived dirty-worktree retirement; earlier dated findings retained below)
 **Sources**: 130+ documents (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through)
+
+## Compiled Update — 2026-09-17 (afternoon): the merge train landed, and the next gate is one shadow run
+
+**Confidence: verified**: git ancestry on orchestrator `origin/main`.
+
+### Key findings
+
+- **Orchestrator main is `a1a0251a`, and it contains the whole AutoPilot safety and evidence train.** That
+  covers:
+  - MHS-3 structural refusals (`6df6f0d8`);
+  - MHS-4 risk prior and MHS-5 corpus (`8219d8e8`, `4f28e6c3`);
+  - the AP-54 fence;
+  - AP-55 (a)–(d) (`203cb6e2`, `f057f1fb`, `e3e67696`, `f76e65cd`);
+  - gate-frontier (c)+(b), and the W3e axis-name reads (`635a3467`).
+
+  The "unmerged / flip on merge" notes in the handoffs predate this, and the boxes are now ticked.
+  [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md),
+  [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md)
+- **Everything landed is shadow or restart-gated.** AP-55's gate runs in shadow mode. AP-55-ARM (enforce plus
+  seed re-runs, pre-approved) needs one AutoPilot run in shadow first, and so do VB-MHS-OPS-HOOK and W3e's
+  axis drop. AutoPilot has not been restarted on the new code, and the API is stopped.
+  [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
+- **W3e remains open.** The positional-consumer blocker is gone, but the policy that drops `neg_cost` is
+  still unwritten. [objective-task-rate-goodput](../handoffs/active/objective-task-rate-goodput.md)
+
+### Source References (2026-09-17 afternoon)
+
+- [autopilot-continuous-optimization](../handoffs/active/autopilot-continuous-optimization.md)
+- [promptforge-mutation-safety-contract](../handoffs/active/promptforge-mutation-safety-contract.md)
+- [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md)
 
 ## Compiled Update — 2026-09-17 (later): the Dream-RSI intake files 14 offline rows, and "same candidate" gets a content identity
 

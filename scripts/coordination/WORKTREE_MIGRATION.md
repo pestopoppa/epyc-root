@@ -61,7 +61,7 @@ are not staging into the same index anymore.
 
 **Canonical runtime plane — `/workspace`, one instance, never forked.**
 The session bus (`coordination/session-bus/`), `tokens/token-queue.md`,
-`logs/agent_audit.log`, and any other live coordination sidecar. This plane
+the audit log shards `logs/agent_audit*.log`, and any other live coordination sidecar. This plane
 is *state*, not *work* — it describes what agents are doing and what they
 are waiting on, right now, and there can only ever be one live copy of
 "right now". Item 1 of this task exists because a naive worktree rollout
@@ -274,7 +274,7 @@ session.
    "The two planes"):
    - **Runtime plane, `/workspace` only, never forked**: the session bus
      (`coordination/session-bus/`), `tokens/token-queue.md`,
-     `logs/agent_audit.log`. Read and write these at their canonical
+     `logs/agent_audit*.log` (`scripts/lib/env.sh` resolves `LOG_DIR` there from any lane worktree). Read and write these at their canonical
      `/workspace` path regardless of which lane worktree you are sitting
      in — do not expect or create a per-lane copy.
    - **Work plane, your lane worktree**: code, docs, handoffs, progress

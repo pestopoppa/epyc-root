@@ -1227,7 +1227,7 @@ it. If someone needs one of these done, it needs an owner first.
 
 | item | what it is | pointer |
 |---|---|---|
-| **PROD-1** | canonical recipe as **importable constants** (not prose). It must now also carry the **THP knob with its unit** and its **distinctness from `GGML_NOHUGEPAGE`** — the two are not the same knob and a recipe that conflates them is wrong. Draft promoted to git | `data/inf70-prod1-recipe-draft-2026-09-08/` (`epyc-inference-research`, commit `1780fa7b`) |
+| **PROD-1** | canonical recipe as **importable constants** (not prose). It must now also carry the **THP knob with its unit** and its **distinctness from `GGML_NOHUGEPAGE`** — the two are not the same knob and a recipe that conflates them is wrong. Draft promoted to git | `data/inf70-prod1-recipe-draft-2026-09-08/` (`epyc-inference-research`, commit `1780fa7b` (the draft is on main as `scripts/lib/qwen38_flash_next_recipe.py`, `fc8c44de`; retest1 and upstream patches on main as `56ef1404`)) |
 | **MEAS-2** | adopt `build_locked.sh` as the standing build idiom and promote it out of scratch — **19 of 21 build scripts are still unlocked** | `cpu-decode-roofline-program.md` -> MEAS-2 |
 | **MEAS-3** | retention row: the `sync16` scratch directory is a **cross-campaign dependency**, not spent scratch | `cpu-decode-roofline-program.md` -> MEAS-3 |
 | **MEAS-4** | the instrument **reserves 96 cores to run 48 threads**, and blocks a second agent while doing it | `cpu-decode-roofline-program.md` -> MEAS-4 |
@@ -1237,7 +1237,7 @@ it. If someone needs one of these done, it needs an owner first.
 | **NOFOLD-1** | `feature/tree-draft-v6` **MUST NOT FOLD**; the constraint existed nowhere in `handoffs/active/` until INF-70 recorded it | `cpu-decode-roofline-program.md` -> NOFOLD-1 |
 | **HYG-2b** | the commit-hygiene hook **still misparses compound shell commands** (and blocks its own idiom) | `cpu-decode-roofline-program.md` -> HYG-2b |
 | **G2-CONC** | blocking promotion gate — **must run on the PROMOTION CANDIDATE binary, never inherited from an ancestor** | `cpu-decode-roofline-program.md` -> G2-CONC |
-| **UP-1 / UP-2** | **four upstream ggml contributions**, patches **ready and UNSUBMITTED**. Promoted to git so they survive a scratch sweep; submission has no owner | `data/inf70-upstream-patches-2026-09-08/` (`epyc-inference-research`, commit `1780fa7b`) |
+| **UP-1 / UP-2** | **four upstream ggml contributions**, patches **ready and UNSUBMITTED**. Promoted to git so they survive a scratch sweep; submission has no owner | `data/inf70-upstream-patches-2026-09-08/` (`epyc-inference-research`, commit `1780fa7b` (on main as `56ef1404`)) |
 
 Two items from INF-70 were **transferred and ARE owned here** and are deliberately absent from the table
 above: **OP-40** (folded into OP-41, §3.4) and the **champion divergence** (filed as **R23-62** in

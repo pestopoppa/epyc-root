@@ -19,7 +19,7 @@ The lane base `142fd1e3` is already an ancestor of origin/main, so the ported co
   - ernie_rocm_rebench: sd.cpp gpu-prep worktree build
   - prb_t4_tale_gpu: TALE worktree
   - sl1_dflash2_nmax_pmin_sweep and sl5_df26_aa_control: tmp build-fold
-  - s5_moe_batched_np_sweep (incl. 18d1d7c8): tmp APPROVED gate file + a run-specific pre-registration
+  - s5_moe_batched_np_sweep (incl. 18d1d7c8 (pre-registration on main as `6cbdd856`)): tmp APPROVED gate file + a run-specific pre-registration
 
 ## Tests
 - test_eval_tale_budget, test_cj_gpqa_sample, test_augment_v1_manifest, test_harness: 51 passed.

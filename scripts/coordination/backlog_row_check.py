@@ -609,6 +609,55 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple
 _INDEX_GRAPH_NAME = ".index-graph.json"
 
 
+def _index_graph_path(path: Path) -> Path:
+    """Where the graph describing ``path`` lives.
+
+    `index_state.py` writes ONE graph, under `handoffs/active/`, covering both
+    `active/` and `blocked/` handoffs (`index_state.handoff_paths`). A handoff in
+    `blocked/` therefore reads its sibling `active/` directory's graph; looking
+    next to it found nothing, so the advisory never fired there (KB-WM-3).
+    """
+    if path.parent.name == "blocked":
+        return path.parent.parent / "active" / _INDEX_GRAPH_NAME
+    return path.parent / _INDEX_GRAPH_NAME
+
+
+def index_graph_status(path: Path) -> dict:
+    """Whether the graph `index_graph_readiness` consults could be read at all.
+
+    `index_graph_readiness` is deliberately silent when the graph is unusable
+    (AIR-13), so its `[]` means either "not blocked" or "not screened". The graph
+    is gitignored (`f1717d80`), so every lane worktree has its own copy or none.
+    This status keeps the two cases apart in the premise screener's provenance
+    without adding a reason (KB-WM-3). `status` is one of `ok`, `absent`,
+    `unreadable`, `no_nodes` or `no_readiness` (a pre-v2 graph).
+    """
+    out: dict = {"status": "absent", "path": None, "schema": None, "generated_at": None}
+    if not isinstance(path, Path):
+        return out
+    graph_path = _index_graph_path(path)
+    out["path"] = str(graph_path)
+    if not graph_path.exists():
+        return out
+    try:
+        raw = json.loads(graph_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+        out["status"] = "unreadable"
+        out["error"] = f"{type(exc).__name__}: {exc}"
+        return out
+    if not isinstance(raw, dict) or not isinstance(raw.get("nodes"), list):
+        out["status"] = "no_nodes"
+        return out
+    out["schema"] = raw.get("schema")
+    out["generated_at"] = raw.get("generated_at")
+    nodes = [n for n in raw["nodes"] if isinstance(n, dict)]
+    if nodes and not any("readiness" in n for n in nodes):
+        out["status"] = "no_readiness"
+        return out
+    out["status"] = "ok"
+    return out
+
+
 def index_graph_readiness(path: Path) -> list[str]:
     """ADVISORY readiness reasons for a handoff file, or [].
 
@@ -631,10 +680,12 @@ def index_graph_readiness(path: Path) -> list[str]:
     """
     if not isinstance(path, Path):
         return []
-    graph_path = path.parent / _INDEX_GRAPH_NAME
+    graph_path = _index_graph_path(path)
     try:
         raw = json.loads(graph_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return []
+    if not isinstance(raw, dict):
         return []
     nodes = raw.get("nodes")
     if not isinstance(nodes, list):

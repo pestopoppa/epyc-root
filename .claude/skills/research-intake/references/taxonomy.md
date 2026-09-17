@@ -37,4 +37,4 @@ Each intake entry has a `categories` list (1 or more values from the keys above)
 
 ## Adding Categories
 
-Add new entries to `research/taxonomy.yaml`. Run `scripts/validate_intake.py` to verify integrity.
+Add new entries to `research/taxonomy.yaml`. Run `scripts/validate/validate_intake.sh` (it uses the orchestrator venv; the validator needs PyYAML, so never bare `python3`) to verify integrity.

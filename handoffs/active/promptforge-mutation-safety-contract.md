@@ -113,7 +113,7 @@ so this is a **new active stub, not a reopen**.
         root main (`0e2bbc33`); the operator runs
         `bash -c 'bash <(git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/run_ckpt_leak_ratify_20260916.sh) --operator pestopoppa'`
         and types RATIFY (refuses while AutoPilot holds its lock). Detail: `progress/2026-09/2026-09-16-sub-ckpt-leak.md`.
-  - [ ] **MHS-3c — clean the out-of-scope leak copies** that MHS-3b leaves: 4 HumanEval/55 task memories in
+  - [x] **MHS-3c — clean the out-of-scope leak copies** ✅ 2026-09-17 (all three scopes purged; `--verify` PASS on each) that MHS-3b leaves: 4 HumanEval/55 task memories in
         `episodic.db` (in every checkpoint and the live store) and Aschoff in `autopilot_state*.bak*`
         `last_traces`. Purge tool: orchestrator `41baad2b` (`scripts/maintenance/purge_eval_leak_memories_20260917.sh`),
         backups and receipt in `/mnt/raid0/llm/backups/episodic-leak-20260917/`.
@@ -122,10 +122,17 @@ so this is a **new active stub, not a reopen**.
           was cut off by a caller timeout at item 19 with no damage (the original was intact); the re-run finished.
     - [x] Live store purged ✅ 2026-09-17 during the API stop window (API down, verified): 4 memories removed,
           health OK, `--verify --include-live` PASS. The reloaded API reported 64,204 entries (was 64,208).
-    - [ ] Pinned production_best (multitier_v10) store: `--apply --include-pinned` is unlocked by MHS-3b.
-          Awaiting an operator choice: purge now and ratify the episodic re-pin it proposes, or bundle both later.
-          Until then, a v10 rewind restores the 4 memories.
-- [ ] **MHS-4 — ANTI-OVERRIDE risk prior.** Rank/gate mutations by CONSTRAIN (add a check, block a bad
+    - [x] Pinned production_best (multitier_v10) store ✅ 2026-09-17: purged with operator approval, 4 rows + FAISS, health OK, verify PASS incl. live+pinned.
+          The new hashes are in `pinned_repin_proposal.json`. The v10 pins still name the pre-purge
+          bytes until MHS-3d is ratified.
+  - [ ] **MHS-3d — operator RATIFY of the v10 episodic re-pin** (`RATIFY-V10-EPISODIC-REPIN-20260917`). From a host terminal:
+        `docker exec -it -u node epyc-root bash -c 'bash <(git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/run_v10_episodic_repin_ratify_20260917.sh) --operator pestopoppa'`
+        and type RATIFY. It re-pins `checkpoint_meta.json` (the three episodic file hashes and
+        memory_count 63925 -> 63921; checkpoint_sha256 `a604276f` -> `3b457d98`) and the v10 receipt
+        mirror, adds the amendments entries, and refuses while AutoPilot holds its lock. The dry-run
+        preflight is clean against the real checkpoint. Its `--verify` supersedes the MHS-3b script's
+        `--verify`, which the purge broke. Detail: `progress/2026-09/2026-09-17-sub-v10-repin.md`.
+- [x] **MHS-4 — ANTI-OVERRIDE risk prior.** ✅ 2026-09-17 (landed with the AutoPilot merge train: orchestrator `8219d8e8` and `4f28e6c3` are on main via `a1a0251a`; the "pending merge" and "NOT YET ON MAIN" notes below predate that). Rank/gate mutations by CONSTRAIN (add a check, block a bad
       path, re-prompt) vs REPLACE (rewrite/force an action, hard-code an answer). In the released
       corpus the REPLACE-before-CONSTRAIN ordering holds on all 23 valid patches (REPLACE 4/4 negative,
       mean −8.4 pp; CONSTRAIN n=19, mean +3.9 pp), but the worst single patch is CONSTRAIN (−16.9 pp,
@@ -144,7 +151,7 @@ so this is a **new active stub, not a reopen**.
       apply paths, and the proposer prompt now carries the anti-override rule. **Weights are an ordinal
       prior, uncalibrated**. MHS-5 below supports the ordering but shows CONSTRAIN is not
       regression-free. Same test file.
-- [ ] **MHS-5 — Mine `examples/heldout_generalization/` as a labelled contrastive corpus.** 23
+- [x] **MHS-5 — Mine `examples/heldout_generalization/` as a labelled contrastive corpus.** ✅ 2026-09-17 (orchestrator `4f28e6c3` on main via the train merge `a1a0251a`; the "unmerged" notes below predate that). 23
       patches, 3 editors, identical 10-failure evidence, 3 seeds, per-patch sha256, hook sets,
       validation errors, rescued/regressed counts over 1,270 held-out tasks; Apache-2.0.
       Discriminating features already extracted by the dive: effect kind, hook-set stability,

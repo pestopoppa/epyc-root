@@ -54,8 +54,14 @@ def load_writer_config() -> dict:
     """Load writer config from wiki.yaml, with conservative defaults."""
     config = dict(DEFAULT_WRITER_CONFIG)
     path = ROOT / "wiki.yaml"
-    if not HAS_YAML or not path.exists():
+    if not path.exists():
         return config
+    if not HAS_YAML:
+        # OBS-12: refuse rather than silently ignore wiki.yaml's wiki_writer block.
+        raise RuntimeError(
+            f"PyYAML is not installed in {sys.executable}, so {path} cannot be read. "
+            f"Run with the orchestrator venv: /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/wiki_writer_review.py"
+        )
     try:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     except Exception:

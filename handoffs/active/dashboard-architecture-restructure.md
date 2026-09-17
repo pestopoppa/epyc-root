@@ -368,8 +368,10 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       `health_path`, and the envelope is real (37 `absence_means`/`warn_s` sites in
       `dashboard/panels.py`). CLAUDE.md gains a four-line `## Dashboards` pointer — it had none.
       `tests/test_dashboard_static_js.py` 4 passed.
-- [ ] Rationalize supervision with OP-9's resolution: one documented lifecycle story for the hub
-      (managed service + watchdog roles stated once, in one repo's docs).
+- [x] Rationalize supervision with OP-9's resolution: one documented lifecycle story for the hub
+      (managed service + watchdog roles stated once, in one repo's docs). ✅ 2026-09-17: OP-9 was resolved
+      as option B (a pinned host cron). The story is now `dashboard/README.md` → *Lifecycle and supervision*
+      (launch spec → managed service → watchdog daemon → pinned cron `once`). The BLOCKED note below is historical.
       *BLOCKED, noted 2026-08-11 by `mainD`: this reads "with OP-9's **resolution**", and OP-9 —
       "nothing restarts the supervisor itself" — is still an OPEN operator decision (a cron entry is
       a host-level change). Writing the lifecycle story now would document a supervision model whose

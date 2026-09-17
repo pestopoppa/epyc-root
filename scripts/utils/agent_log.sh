@@ -29,7 +29,9 @@ _AGENT_LOG_SHARD_ID="${_AGENT_LOG_SHARD_ID//[^A-Za-z0-9_.-]/_}"
 AGENT_LOG_FILE="${AGENT_LOG_DIR}/agent_audit-${_AGENT_LOG_SHARD_ID}.log"
 unset _AGENT_LOG_SHARD_ID
 # Legacy monolithic log: frozen (no longer written) as of the shard cutover,
-# kept on disk and in git for pre-cutover history. Readers still see it via
+# kept on disk for pre-cutover history. It is gitignored and untracked since
+# f1717d80, so a checkout that moves past that commit loses it; recover it with
+# `git show f1717d80^:logs/agent_audit.log`. Readers still see it via
 # agent_log_files/agent_log_merged (agent_audit*.log glob), never via this var.
 AGENT_LOG_LEGACY_FILE="${AGENT_LOG_DIR}/agent_audit.log"
 AGENT_SESSION_FILE="${AGENT_LOG_DIR}/.current_session"
