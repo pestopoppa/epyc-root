@@ -29,6 +29,8 @@
 
 These are the HS-1g clones. Orchestrator paths below are relative to the repo root. Shell paths are relative to each clone.
 
+*Superseded pin (2026-09-16): P0.3 re-audited OpenCode at tip and pinned `350c726aa8b6` (v1.18.31, 700 commits past `4bffbb655`), see [`opencode-p03-audit-20260916.md`](../reference/harness-candidates/opencode-p03-audit-20260916.md) §1. The §1 analysis below was written against `4bffbb655` and is left as recorded; the P0.3 audit confirms its verdict holds at the new pin.*
+
 ---
 
 ## 1. Shell choice: OpenCode vs oh-my-pi
@@ -146,7 +148,7 @@ MCP tools are added to `src/mcp_server.py` (FastMCP, stdio). The plugin's `tool.
   - Frozen-snapshot injection in `PromptBuilder.get_system_prompt` (`src/prompt_builders/builder.py:640-647`).
   - Feature flag `user_modeling` is off in both test and prod (`src/features.py:186`).
 - **The gap:**
-  - **The injection is dead code.** `get_system_prompt()` has **no serving caller**. Its only callers are `scripts/analysis/token_audit.py:255` and a character count at `scripts/autopilot/eval_tower.py:5985`. Turning the flag on would inject nothing.
+  - **The injection is dead code.** `get_system_prompt()` has **no serving caller**. Its only callers are `scripts/analysis/token_audit.py:255` and a character count at `scripts/autopilot/eval_tower.py:5985` (`:6098` at orchestrator `origin/main` `01906607`, 2026-09-17). Turning the flag on would inject nothing.
   - So the work is:
     1. inject the snapshot on `/v1`, once per `x_session_id`, frozen at session start so the prefix cache is preserved;
     2. key the profile on `x_user_id`;
@@ -313,7 +315,8 @@ MCP tools are added to `src/mcp_server.py` (FastMCP, stdio). The plugin's `tool.
 ## 5. Recording and index drafts
 
 - **Recorded:** the operator decision and a pointer to this doc are added to the HS-4 box in `harness-selection-and-integration.md`, and its Status line is updated. The HS-4 checkbox itself is left for the owning session to tick when it applies the index change below.
-- **Drafted, not applied.** The owning session applies these, per ruling (b).
+- **Drafted, not applied.** The owning session applies these, per ruling (b). **Applied 2026-09-16** (root `ce48f2e1`, `9b5090be`, `c63947f5`).
+- **P0.1/P0.2 landed (note added 2026-09-17):** on epyc-orchestrator `origin/main` as `ed554da2` + `b44ab3a8`. The `sub/hs4-p0-20260916` shard's `68f6761a`/`24e7f244` were rebased onto main and exist on no ref; the shard branch and worktree are gone. The live loop (P0.4) is still owed.
 
 **`master-handoff-index.md`: delete the `OP-HS4` row.** The shell choice is settled (OpenCode), and no operator sub-choice remains (`task` is denied by design; pi is a fallback, not an open choice).
 ```

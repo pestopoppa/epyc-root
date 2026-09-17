@@ -3,7 +3,8 @@
 **Purpose.** Decide whether a client (a user-facing harness, an SDK script, an IDE plugin) can
 drive, and defer to, the orchestrator's `/v1/chat/completions` + `x_*` override contract.
 **Owner of live use:** [`harness-selection-and-integration.md`](../../../handoffs/active/harness-selection-and-integration.md).
-HS-4 P0.3 re-runs this instrument on OpenCode at its current tip.
+HS-4 P0.3 re-ran this instrument on OpenCode at its current tip (2026-09-16, pin `350c726a`
+v1.18.31): [`opencode-p03-audit-20260916.md`](opencode-p03-audit-20260916.md) §3.
 **Origin:** first written in the Hermes handoff on 2026-07-04 (items N/O), extended on 2026-07-17
 (HS-1b, deference surface) and 2026-09-16 (HS-1g, call-verb check). That handoff closed on
 2026-09-16 and is now [`handoffs/completed/hermes-outer-shell.md`](../../../handoffs/completed/hermes-outer-shell.md).
@@ -114,4 +115,5 @@ Gap decisions from the same audit:
 The full matrix for Hermes, OpenCode, oh-my-pi, deepseek-harness and pi is in
 [`harness-selection-and-integration.md`](../../../handoffs/active/harness-selection-and-integration.md)
 under HS-1g. The Hermes row and its extensions are in
-[`hermes-evaluation-20260916.md`](hermes-evaluation-20260916.md) §3.
+[`hermes-evaluation-20260916.md`](hermes-evaluation-20260916.md) §3. The OpenCode re-audit at
+`350c726a` (E1–E15, P0.3) is in [`opencode-p03-audit-20260916.md`](opencode-p03-audit-20260916.md) §3.

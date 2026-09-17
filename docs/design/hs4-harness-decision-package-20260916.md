@@ -5,6 +5,8 @@
 **Status:** DECISION PACKAGE. The choice belongs to the operator (the handoff's Reporting Instructions: "Any change to the orthogonality posture … is an operator decision").
 **Contract:** [`agents/shared/OPERATING_CONSTRAINTS.md` → Operator Decision Requests](../../agents/shared/OPERATING_CONSTRAINTS.md#operator-decision-requests).
 
+> **Outcome (2026-09-16): the operator chose Option A (OpenCode), with pi (Option B) as the fallback.** The follow-through is in [`hs4-shell-and-orchestrator-features-20260916.md`](hs4-shell-and-orchestrator-features-20260916.md) §0 and §4. Everything below this banner is the pre-decision package, preserved as written; its "HS-4 is still open" framing and the §9 default (Option F) are superseded by this outcome. *(Banner added 2026-09-17.)*
+
 ## 1. Context
 
 HS-4 is still open. Every input it waits on is now in place:
@@ -20,7 +22,7 @@ The one input still missing is HS-1f.1, a single live request (see §7). The cho
 
 > **HS-4 — Harness-selection decision gate:** Hermes vs OpenCode vs an ACP-speaker, gated on HS-1 + HS-2. Default outcome preserved: (A) stays orthogonal; no bespoke harness unless a specific research-demo differentiator justifies it.
 
-Since that line was written, the field has grown. HS-5 folds in oh-my-pi (omp), HS-1e folds in deepseek-harness (dsh), and HS-1f adds `earendil-works/pi`. The "ACP-speaker" arm is closed on cooperation grounds: HS-2's verdict is LOW, and HS-3 was not triggered. That arm reappears only as a dormant UI adapter. Neither the orthogonality default nor the "no bespoke harness" default is in question here.
+Since that line was written, the field has grown. HS-5c folds in oh-my-pi (omp), HS-1e folds in deepseek-harness (dsh), and HS-1f adds `earendil-works/pi`. The "ACP-speaker" arm is closed on cooperation grounds: HS-2's verdict is LOW, and HS-3 was not triggered. That arm reappears only as a dormant UI adapter. Neither the orthogonality default nor the "no bespoke harness" default is in question here.
 
 ### The primary axis, and what does not count
 
@@ -39,7 +41,7 @@ The HS-1g column records the call-verb check. Its source is the matrix under HS-
 | **HS-1g: default egress honours the lever** | **All paths.** Main loop, compaction and `task` children use `streamText`. Keys land top-level (`openai-compatible-chat-language-model.ts:231-240`). | **All in-tree paths.** Main loop and compaction use the simple verbs (`core/sdk.ts:314/324`, `compaction.ts:594-597`). Extensions must avoid `ModelRegistry.stream()/complete()`. | **All paths.** `compat.extraBody` is merged independently of the verb (`openai-shared.ts:717-722`). | **Main loop only.** The compressor (`context_compressor.py:346-355`), the iteration-limit summary (`run_agent.py:5297-5350`), `flush_memories` (`:4497`) and `delegate_task` children (`delegate_tool.py:207`) all bypass `extra_body`. | **No lever on the pi-ai route** (`config.ts:254-335`). Only the native `llm-deepseek` route has one. |
 | **Lever** | `chat.params` plugin, or per-model `options` | `models.json` `samplingParams`, with no code | `compat.extraBody`, with no code | `pre_llm_call` plugin (already landed) | a schema/materializer patch (HS-1e) |
 | **Silent-no-op traps** | camelCased models.dev `provider.body`; provider-level `options`; `agent create` / `generateObject`; the title call's `smallOptions` | low-level registry verbs; `samplingParams` on non-completions providers | `providerOptions`; v2 remote compaction (Responses API only) | the four bypasses above | nested `chatTemplateKwargs` |
-| **Own layer-(B) loop** | `compaction.auto` (can be switched off); static per-agent model; depth-limited `task` sub-agents (can be gated) | static model; no sub-agents; `compaction.enabled=false` disables threshold and overflow folding (HS-1f) | 10 intent roles with `retry.fallbackChains` (HS-1d), which is **a second model router**; deterministic `snapcompact` (HS-5); a large feature surface (`advisor/`, `autolearn/`, `autoresearch/`, `goals/` under `packages/coding-agent/src/`) | large: compression, memory, `delegate_task`, iteration summaries; every part needs config or toolset gating | its own loop with typed in-process interception (intake-1186#record) |
+| **Own layer-(B) loop** | `compaction.auto` (can be switched off); static per-agent model; depth-limited `task` sub-agents (can be gated) | static model; no sub-agents; `compaction.enabled=false` disables threshold and overflow folding (HS-1f) | 10 intent roles with `retry.fallbackChains` (HS-1d), which is **a second model router**; deterministic `snapcompact` (HS-5c); a large feature surface (`advisor/`, `autolearn/`, `autoresearch/`, `goals/` under `packages/coding-agent/src/`) | large: compression, memory, `delegate_task`, iteration summaries; every part needs config or toolset gating | its own loop with typed in-process interception (intake-1186#record) |
 | **Orthogonality / minimum imports** | medium | **strongest audited** (HS-1f) | weakest of the three open TS shells (its own router, largest surface) | weak (heavy loop); HS-4b token shape of 139.7K tokens / 22.6 turns, a shape only, `intake-1332#record` | medium |
 | **MCP (HS-2 tool contract)** | yes: `packages/opencode/src/mcp/`; ACP too (`src/acp/`) | **no core MCP** (HS-1f) | yes (`packages/coding-agent/src/mcp/`) and ACP (HS-1d) | yes: `tools/mcp_tool.py`; ACP via `acp_adapter/` | not audited |
 | **Permission / sandbox** | `ask\|allow\|deny` gate. `external_directory` defaults to ask, and `opencode run` auto-rejects asks. Bash arguments are not path-gated, so the layer is **porous but real** (`intake-1353#02`). | **none**, so it must be containerised (HS-1f) | not audited here | toolset gating; no audited sandbox | not audited |
@@ -103,7 +105,7 @@ The HS-1g column records the call-verb check. Its source is the matrix under HS-
   - `models.yml` with `compat.extraBody` (config only).
   - Install via npm/Homebrew/Nix, never `curl | sh`.
   - Its 10-role `retry.fallbackChains` must be collapsed to the single orchestrator model, or it competes with orchestrator routing.
-- **Evidence:** HS-1d (the strongest config surface at the time) and the HS-1g row. The HS-5 facts are the unsigned install path and the deterministic `snapcompact`.
+- **Evidence:** HS-1d (the strongest config surface at the time) and the HS-1g row. The HS-5c facts are the unsigned install path and the deterministic `snapcompact`.
 - **Integration cost:** LOW for cooperation. It is MEDIUM for containment, because the feature surface to audit and disable is large.
 - **Risks:**
   - It imports a second router and a large autonomous-feature surface. That is Cross-Cutting Concern 1 instantiated.
@@ -223,15 +225,16 @@ Reasoning:
   - If A is chosen, the one OpenCode request plays that role.
 - The bake-off happens after selection by construction: HS-5b requires the harness to be frozen first.
 
-## 8. What the decision then requires (HS-5 / HS-5b and follow-through)
+## 8. What the decision then requires (HS-5c / HS-5b and follow-through)
 
-- **HS-5 (fold omp into the packet)** is satisfied by §2 and §3-C. **HS-1e** (fold dsh) is satisfied by §3-E. **HS-14** (external rows) is satisfied by §5.
+- **HS-5c (fold omp into the packet)** is satisfied by §2 and §3-C. **HS-1e** (fold dsh) is satisfied by §3-E. **HS-14** (external rows) is satisfied by §5.
 - **HS-5b (binding ordering):** freeze the selected harness at a pinned SHA *before* anything is trained or tuned against it. A harness or tool-schema change afterwards discards the training (`intake-1323#record`, `intake-1339#record`). Editor-side trainability is scored only after that freeze.
 - **HS-7:** the criterion is not yet fully scored for any candidate. §2 shows document-based policy surfaces exist for A and B, but HS-7 also requires two further steps at acceptance: identify the policy-document version and a separate model-adaptation manifest, then republish the Harness Card for the realized configuration. That scoring is zero-inference work for the chosen candidate.
 - **Per-option follow-through:**
   - **A:**
     - write the `chat.params` plugin (it must use custom-provider mode);
     - pin `4bffbb6` or a re-audited successor, re-running the HS-1g check on any bump;
+      *(Superseded 2026-09-16: P0.3 re-audited and pinned `350c726aa8b6` (v1.18.31), see [`opencode-p03-audit-20260916.md`](../reference/harness-candidates/opencode-p03-audit-20260916.md) §1. The §2 matrix above was written against `4bffbb6` and is left as recorded.)*
     - set `compaction.auto:false`;
     - decide keep-or-deny for `task`;
     - make a container/worktree jail;
@@ -257,7 +260,7 @@ Reasoning:
     - send one live request.
 - **Cross-cutting, for every option:**
   - UTM-P1 pairing keys (`unified-trace-memory-service.md`) before any second harness goes live;
-  - HS-6 contract rewording ("capability, not field name");
+  - HS-15 contract rewording ("capability, not field name");
   - a JSON-mode seam task only if the chosen harness uses `response_format`;
   - update this index's Status line and the candidate leaf handoffs (Reporting Instructions).
 

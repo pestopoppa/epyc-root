@@ -134,3 +134,9 @@ Eval contamination is fenced today by construction (private trace DBs; M-12 does
    - fix the dead `/v1` `recall()` (`routing.py:165`, `search_similar` does not exist);
    - remove or correct the inert `mempalace:` block (`hermes-config.yaml:115-120`);
    - flip `compression.enabled` to false in `hermes-config.yaml:45`, per HS-1b.
+
+## Correction (2026-09-17)
+
+- **The `recall()` defect is FIXED** (orch `83c7ed2f`). `/v1` now passes the shared retriever / `hybrid_router` into the REPL (`_repl_memrl_kwargs`, `src/api/routes/openai_compat.py`); `_recall_legacy` (`routing.py`) uses `embed_exploration` + `retrieve_by_similarity` instead of the nonexistent `EpisodicStore.search_similar`, and errors surface as `status:"unavailable"` rather than silently returning nothing. Test: `tests/unit/test_repl_recall_v1.py` (asserts `search_similar` does not exist, loud failure, `/v1` route recall).
+- **The inert `mempalace:` block is commented out** with an INERT note (root `91d56181`, `scripts/hermes/hermes-config.yaml`).
+- **`compression.enabled: true`** is still set in `scripts/hermes/hermes-config.yaml`. Not flipped: Hermes was not selected (HS-4, 2026-09-16), so recommendation 4 is moot unless `scripts/hermes/` is run again.
