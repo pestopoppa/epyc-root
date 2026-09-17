@@ -17,7 +17,10 @@ sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 
 from adapters import autopilot_journal as apj  # noqa: E402
 
-ORCH = ROOT / "repos" / "epyc-orchestrator"
+import os  # noqa: E402
+
+# A worktree has no `repos/` symlinks; EPYC_ORCH_ROOT points the real-writer tests at a checkout.
+ORCH = Path(os.environ.get("EPYC_ORCH_ROOT") or ROOT / "repos" / "epyc-orchestrator")
 
 
 def write_journal(tmp_path: Path, rows: list[dict]) -> Path:
@@ -209,3 +212,111 @@ def test_end_to_end_against_the_real_writer(tmp_path, monkeypatch):
         assert measurement_record.grade(rec)[:2] == ("Witnessed", "Attested")
     finally:
         measurement_record.REPO_ROOT = orig
+
+
+# --- VB-AP-PROMO-RULE: promotion rule and frontier admission ------------------------------
+
+def _support(shard, r):
+    frames = apj.frames_for_row(shard, r, as_of="t")
+    return [f for f in frames if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+
+
+def _promo_event(source_trial_id):
+    # The ledger event shape `append_baseline_promotion_event` writes (no trial_id key).
+    return {"type": "baseline_promotion", "source_trial_id": source_trial_id, "tier": 1,
+            "timestamp": "2026-09-17T00:00:00+00:00"}
+
+
+def test_rows_without_decision_fields_project_unchanged_frames(tmp_path):
+    """Pre-train rows must not gain empty keys: their persisted frames stay byte-identical."""
+    shard, r = next(apj.iter_measured_rows(write_journal(tmp_path, [row()])))
+    sup = _support(shard, r)
+    for key in (*apj.PROMOTION_FIELDS, "promotion_committed"):
+        assert key not in sup["assertion"]
+
+
+def test_frontier_admission_and_rule_are_carried_not_graded(tmp_path):
+    plain = row(1)
+    marked = row(1, eval_details={"frontier_admission": "representative",
+                                  "promotion_rule": "empty_frontier_repro",
+                                  "promotion_status": "refused"})
+    (sp, gp), = list(apj.iter_measured_rows(write_journal(tmp_path / "a", [plain, row(2)])))[:1]
+    (sm, gm), = list(apj.iter_measured_rows(write_journal(tmp_path / "b", [marked, row(2)])))[:1]
+    sup, sup_plain = _support(sm, gm), _support(sp, gp)
+    assert sup["assertion"]["frontier_admission"] == "representative"
+    assert sup["assertion"]["promotion_rule"] == "empty_frontier_repro"
+    assert sup["assertion"]["promotion_status"] == "refused"
+    assert sup["assertion"]["promotion_committed"] is False
+    assert sup["assertion"]["grade"] == sup_plain["assertion"]["grade"]
+    assert sup["provenance"]["grade_reasons"] == sup_plain["provenance"]["grade_reasons"]
+
+
+def test_a_pending_promotion_is_committed_only_by_its_ledger_event(tmp_path):
+    pending = {"promotion_rule": "frontier", "promotion_status": "pending_commit"}
+    rows = [row(1, eval_details=pending), _promo_event(1),
+            row(2, eval_details=pending), row(3)]
+    got = {r["trial_id"]: _support(s, r) for s, r in apj.iter_measured_rows(
+        write_journal(tmp_path, rows))}
+    assert got[1]["assertion"]["promotion_committed"] is True
+    assert got[2]["assertion"]["promotion_committed"] is False
+    assert any("NOT promoted" in x for x in got[2]["provenance"]["grade_reasons"])
+    assert not any("NOT promoted" in x for x in got[1]["provenance"]["grade_reasons"])
+    assert got[1]["assertion"]["grade"] == got[3]["assertion"]["grade"]
+
+
+def test_commit_events_from_another_shard_do_not_commit(tmp_path):
+    d = tmp_path / apj.ORCH_REL / "orchestration"
+    d.mkdir(parents=True)
+    pending = {"promotion_rule": "frontier", "promotion_status": "pending_commit"}
+    (d / "autopilot_journal.jsonl").write_text(
+        json.dumps(row(5, eval_details=pending)) + "\n" + json.dumps(row(6)) + "\n")
+    (d / "autopilot_journal_1.jsonl").write_text(json.dumps(_promo_event(5)) + "\n")
+    (shard, r), _ = list(apj.iter_measured_rows(tmp_path))
+    assert _support(shard, r)["assertion"]["promotion_committed"] is False
+
+
+def test_an_unsettled_pending_promotion_on_the_newest_trial_is_not_projected(tmp_path):
+    """The commit event follows the row; persisting `committed=False` in between is permanent."""
+    pending = {"promotion_rule": "seed", "promotion_status": "pending_commit"}
+    root = write_journal(tmp_path, [row(1), row(2, eval_details=pending)])
+    (_, _), (shard, r) = list(apj.iter_measured_rows(root))
+    assert apj.frames_for_row(shard, r, as_of="t") == []
+    with open(shard, "a") as fh:
+        fh.write(json.dumps(_promo_event(2)) + "\n")
+    assert _support(shard, r)["assertion"]["promotion_committed"] is True
+
+
+@pytest.mark.skipif(not (ORCH / "scripts" / "autopilot" / "experiment_journal.py").exists(),
+                    reason="orchestrator repo not present")
+def test_decision_fields_end_to_end_against_the_real_writer(tmp_path):
+    """The writer's vocabulary and the ledger event shape, produced by the real journal code."""
+    sys.path.insert(0, str(ORCH / "scripts" / "autopilot"))
+    sys.path.insert(0, str(ORCH))
+    from experiment_journal import ExperimentJournal, JournalEntry
+    from safety_gate import PROMOTION_RULE_FRONTIER
+    from src.autopilot_core.learning_exclusions import (
+        FRONTIER_ADMISSION_KEY, FRONTIER_ADMISSION_REPRESENTATIVE)
+
+    d = tmp_path / apj.ORCH_REL / "orchestration"
+    d.mkdir(parents=True)
+    j = ExperimentJournal(journal_dir=d)
+    for tid in (1, 2):
+        j.record(JournalEntry(
+            trial_id=tid, timestamp="2026-09-17T10:00:00+00:00", species="s",
+            action_type="numeric_trial", tier=1, quality=0.5, speed=1.0, cost=2.0,
+            reliability=0.9, pareto_status="candidate", harness_metrics={"schema_version": 1},
+            eval_details={"details": {"quality_denominator": 30},
+                          FRONTIER_ADMISSION_KEY: FRONTIER_ADMISSION_REPRESENTATIVE,
+                          "promotion_rule": PROMOTION_RULE_FRONTIER,
+                          "promotion_status": "pending_commit"}))
+    j.append_baseline_promotion_event(
+        source_trial_id=1, tier=1, previous_quality=0.4, new_quality=0.5, reason="t",
+        proof={}, result_metrics={}, baseline_state={})
+
+    got = {r["trial_id"]: (s, r) for s, r in apj.iter_measured_rows(tmp_path)}
+    sup = _support(*got[1])
+    assert sup["assertion"]["frontier_admission"] == "representative"
+    assert sup["assertion"]["promotion_rule"] == "frontier"
+    assert sup["assertion"]["promotion_committed"] is True
+    # Trial 2 is the newest row and its commit never landed: held back, not projected.
+    assert apj.frames_for_row(*got[2], as_of="t") == []
