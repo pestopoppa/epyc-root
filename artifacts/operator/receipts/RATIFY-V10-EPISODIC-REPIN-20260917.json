@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-V10-EPISODIC-REPIN-20260917",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_v10_episodic_repin_20260917.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
