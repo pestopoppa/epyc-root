@@ -35,6 +35,9 @@ yielded 0 rows because the journal has no post-hook trials yet.
   [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
 - Follow-ups: VB-RUNNER-PATHS-2 (two scripts still use guessed-root fallbacks) and VB-AP-PROMO-RULE-INGEST
   (first real ingest after AutoPilot restarts on main).
+- **VB-PRB-T4 is closed.** Write-time capture ran through the hook on the first PRB-T4 run and ingested 24
+  rows, and the driver is on research main `0b295a25`. The sample-scope caveat is tracked separately as
+  VB-PRB-T4-CAVEAT. [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
 
 ### Source References (2026-09-17 afternoon)
 

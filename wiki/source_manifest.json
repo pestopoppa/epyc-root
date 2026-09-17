@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-17T12:37:49Z",
+  "last_compile": "2026-09-17T12:38:22Z",
   "mode": "touch",
-  "scan_time": "2026-09-17T12:37:49Z",
+  "scan_time": "2026-09-17T12:38:22Z",
   "schema_version": 1,
-  "source_set_hash": "7164f879a099ee5678e14fe8bdcfb43a7634b593a8aed34f283028b29ef329e2",
+  "source_set_hash": "84e23efdf75b61b098e1f023522528bca2456f8a8ddd512a1d7edecfa4f4d7e8",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -1287,10 +1287,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "43507566dcd30592ffcae1b13315a86670501ac2bd03e917960d6b1d8c493fa2",
-      "modified": "2026-09-17T12:35:40Z",
+      "content_hash": "c111c3c950ff6e7257e9a2edac22dba7f5f26f009344af7c5011281a994366e8",
+      "modified": "2026-09-17T12:38:01Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 215192,
+      "size": 215434,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
