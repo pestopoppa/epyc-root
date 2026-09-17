@@ -308,21 +308,35 @@ routing classifier's own training labels, and skill-bank effectiveness.
         `reseed_episodic_store.py:473` refuses without `--i-understand-this-re-embeds`. Sequence
         when the window is granted: land R2+R3 -> drop `priority` from the builder -> reseed ->
         re-run the EP-3 probe to confirm the writer-path AUC actually collapses.
-  - [ ] **EPD-3-R5 — kill or annotate the deprecated copy of the hard-coded
+  - [x] **EPD-3-R5 — kill or annotate the deprecated copy of the hard-coded
         `type:chat | objective:{task_description[:200]}` convention**, since a deprecated tree is still the copy
         a future author greps and cargo-cults (`scripts/benchmark/deprecated/seed_specialist_routing_v1.py:1501`)
         (found 2026-09-14, noninf sweep).
-  - [ ] **EPD-3-R6 — make the seed write loop fail closed**: it catches every `Exception` and only prints, so a
+        ✅ 2026-09-17 — orchestrator `d3f6062c` (on `origin/main`): ANNOTATED, not killed (docs and the
+        `question_pool` shadow-copy cleanup still reference the file). The site (`:1500-1507`) now carries an
+        `EPD-3-R5` do-not-copy block pointing at `embedding_text_for`; `tests/unit/test_epd3_r5_r6_r8.py`
+        fails if any `objective:{` f-string under a `deprecated/` tree lacks the marker.
+  - [x] **EPD-3-R6 — make the seed write loop fail closed**: it catches every `Exception` and only prints, so a
         total embed failure reports `loaded: 0, failed: N` and still exits 0 even though the tests now assert
         `failed == 0` (`orchestration/repl_memory/seed_loader.py:~495`) (found 2026-09-14, noninf sweep).
+        ✅ 2026-09-17 — orchestrator `d3f6062c`: the loop still records-and-continues (one run names every bad
+        row) and flushes what loaded, then raises `SeedLoadError` (stats + `failures` list); the CLI exits 1 with
+        `SEEDING FAILED`. Tests: total outage, partial failure (flush-then-raise), clean run, CLI exit code.
   - [ ] **EPD-3-R7 — decide the fate of the 200-char objective truncation at the payload level**, i.e. the
         2026-07-27 audit's defect #2 (12.6% of rows at the cap, 96.9% objective collision) still live on the
         eval-injection path, where changing it changes what is *stored* and not only what is embedded
         (`scripts/benchmark/seeding_injection.py:189,287`) (found 2026-09-14, noninf sweep).
-  - [ ] **EPD-3-R8 — route the three remaining unguarded convention builders through the shared builder**
+  - [x] **EPD-3-R8 — route the three remaining unguarded convention builders through the shared builder**
         (`_serialize_failure_context:279`, `_serialize_exploration:299`, `_serialize_classification_prompt:305`)
         — single-writer today so no drift yet, but the same shape EPD-3-R2/R3 just fixed
         (`orchestration/repl_memory/embedder.py`) (found 2026-09-14, noninf sweep).
+        ✅ 2026-09-17 — orchestrator `d3f6062c`: new `memory_record.join_embedding_segments` is the one
+        `key:value | …` assembler (None drops a segment, `""` keeps a mandatory one, cap `EMBED_TEXT_MAX_CHARS`);
+        `MemoryRecord.embedding_text` and all three serializers call it. Output byte-identical to the old
+        serializers on goldens and a 3,000-case randomized differential (only texts >2,000 chars differ, now cut
+        at the shared cap; unreachable for real failure contexts), except a present-but-`None` failure key no
+        longer embeds the literal `None`. Spy tests assert the CALL, plus a scan forbidding hand-joined segments in
+        `embedder.py`. No re-embed needed (R1 untouched).
 
 **Why this is the real result — REVISED 2026-07-27.** The probe asked "is failure decodable?" and
 got 0.726, which was refuted. The follow-up audit then established that EPD-1 and EPD-2 are much
