@@ -523,6 +523,13 @@ Formalized from the 2026-07-14 backlog ROI audit ([backlog-roi-audit-2026-07-14.
       - **Still open.** The SPEC's leg B (the Qwen3.6 reader) was not run, so this is one reader and not
         "local models". The swap gate failure needs a decision: widen n, change the judge, or record EV-6 as
         failing for this pair.
+    - [x] **EV-13b decision: PARKED (operator 2026-09-17)** ✅ 2026-09-17. The operator chose "park it" over the
+      other two options (widen n plus run leg B on GPU, or change the judge). EV-13b stays open and is not
+      dispatchable. No GPU time is spent on it, and the batch entry should not be scheduled. EV-6 is recorded as
+      FAILING for the reader=Qwen3.8-27B, judge=gemma-4-26B-A4B vs Qwen3.6-35B-A3B pair at n=3 (2.94pp).
+      **Resume trigger:** a consumer needs a judge-stable review-F1 ranking. The first expected consumer is the
+      detect/repair split in `reviewer-escalation-and-human-gate-policy.md` HG-9, whose small-model detection
+      leg is what this suite measures. On resume, choose widen-n or judge-swap before running anything.
 
 ## Research Intake Update — 2026-06-03
 
