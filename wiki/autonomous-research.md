@@ -94,6 +94,12 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
   bytes, so no N=10 replay or BO ceiling result is claimed. A default-off prompt receipt, capped at 1 MiB,
   is specified but not implemented. [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md),
   intake-1451#record
+- **Retained-variant codegen summaries require prospective provenance.** The newly filed
+  VB-AK-CODEGEN write-side task binds any future diagnostic summary to the exact keep,
+  retained tree, backend, toolchain, recipe and object hashes. Disassembly counts are
+  neither a throughput result nor an occupancy or correctness claim. This wiring is
+  still open; old keeps cannot acquire it retrospectively.
+  [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
 - **The GLM loop: v21 was stopped, and v22 was relaunched with a bounded runtime preflight.**
   - **Why v21 stopped.** Its batch 1 admitted a runtime arm whose default calibration
     (`CampaignControls(200,...)`) needed **800 full GLM launches** before the first comparison. It was
@@ -128,6 +134,7 @@ inference ran. AutoPilot and the API stayed stopped, so none of this has run liv
 - [previous-work wrap-up](../progress/2026-09/2026-09-17-previous_work_wrapup.md): v22 candidate-only outcomes and clean stop boundary.
 - [sub-ak-integrity-promotion](../progress/2026-09/2026-09-17-sub-ak-integrity-promotion.md): integrity and promotion-control audit.
 - [autokernel-research-loop](../handoffs/active/autokernel-research-loop.md), [autokernel-rebuild-program](../handoffs/active/autokernel-rebuild-program.md): row checkpoints.
+- [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md): prospective codegen write-side task.
 - [main-handoff-sweep](../progress/2026-09/2026-09-17-main-handoff-sweep.md): evening landing table and rulings.
 
 ## Compiled Update — 2026-09-17 (afternoon): the merge train landed, and the next gate is one shadow run
