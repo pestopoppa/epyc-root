@@ -393,6 +393,27 @@ def test_an_unsettled_pending_promotion_on_the_newest_trial_is_not_projected(tmp
     assert _support(shard, r)["assertion"]["promotion_committed"] is True
 
 
+def test_a_speed_axis_reseed_event_is_neither_a_commit_nor_projected(tmp_path):
+    """AP-57: the reseed receipt is a state receipt, not a promotion commit or a measurement."""
+    reseed = {"type": "speed_axis_reseed", "source_trial_id": 1, "tier": 1,
+              "previous_speed": 100.0, "new_speed": 42.0, "reason": "quality_refusal",
+              "timestamp": "2026-09-17T00:00:00+00:00"}
+    pending = {"promotion_rule": "frontier", "promotion_status": "pending_commit"}
+    refused = {"promotion_rule": "frontier", "promotion_status": "refused"}
+    with_ev = write_journal(tmp_path / "a", [row(1, eval_details=pending), reseed,
+                                             row(2, eval_details=refused), row(3)])
+    without = write_journal(tmp_path / "b", [row(1, eval_details=pending),
+                                             row(2, eval_details=refused), row(3)])
+    got = [(s, r) for s, r in apj.iter_measured_rows(with_ev)]
+    base = [(s, r) for s, r in apj.iter_measured_rows(without)]
+    assert [r["trial_id"] for _, r in got] == [1, 2, 3]
+    assert _support(*got[0])["assertion"]["promotion_committed"] is False
+    for (s1, r1), (s2, r2) in zip(got, base):
+        a, b = _support(s1, r1), _support(s2, r2)
+        assert a["assertion"] == b["assertion"]
+        assert a["provenance"]["grade_reasons"] == b["provenance"]["grade_reasons"]
+
+
 @pytest.mark.skipif(not (ORCH / "scripts" / "autopilot" / "experiment_journal.py").exists(),
                     reason="orchestrator repo not present")
 def test_decision_fields_end_to_end_against_the_real_writer(tmp_path):
