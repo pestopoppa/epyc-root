@@ -96,3 +96,29 @@ authoring, then link to the existing attempt ID. It must leave eligible
 alternatives **unknown**, not infer them from subsequent proposals or the
 mechanism catalogue. An RPUCG/AK-WM-3 policy A/B needs a separate genuine
 candidate-generation/pool record, not this target-scheduler receipt.
+
+### Bounded native momentum slice — 2026-09-17
+
+The existing GLM store's `experiments.db` has 195 attempt rows. A read-only
+scalar/JSON-key audit found 78 measured serving A/B candidates under one
+exact `aggregate_tok_s` surface, `recipe_hash` and `request_digest`, spread
+across 20 distinct anchor epochs; one epoch has 29 candidates and eight have
+only one. `loop/serving.py` defines the metric as predicted tokens per wall
+time and computes effect as candidate/anchor−1, establishing higher-better
+direction. Each comparison records `candidate_tok_s`, its anchor rate and
+pair count. These facts permit only an **observed, within-epoch** relative
+best-improvement EWMA: reset when `epoch_sha256` changes, retain native
+`recorded_at`, and never join epoch endpoints into a cumulative gain.
+
+`scripts/audit/autokernel_observed_momentum.py` implements that bounded
+read-only slice with β=0.85 and ε_rel=0.001 as an observation; it emits no
+`PLATEAU_STOP`, ancestor-revert decision, champion action or cross-epoch gain.
+This is not PACEvolve's known-optimum momentum rule because no kernel target
+lower bound `r` is recorded. The same DB has no realized-action-cost column;
+its sampled measured-attempt payload has no cost key. Serial held-time
+receipts do not carry an exact attempt-ID join to those rows, and historical
+AK-D32 phase/decision state is not present in the experiment row. Therefore
+CostAda-style cost credit and a comparison with AK-D32 remain unavailable,
+not zero. The real store has not yet been run through the new reporter pending
+write-side Vidya source registration by the owning main thread; fixture-only
+tests establish the projection's bounds and epoch reset.
