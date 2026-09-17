@@ -2160,8 +2160,8 @@ are left to that still-running agent.
   - [ ] **VB-AP-PROMO-RULE-INGEST — run `cli.py ingest autopilot-journal` after AutoPilot restarts on
     orchestrator main** (filed 2026-09-17, sub-vb-wire). Blocked on an external event: the first
     post-restart trials. Report how many rows carry `frontier_admission` and `promotion_rule`.
-- [ ] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
-  per-window rates** (filed 2026-09-16, sub-autopilot-evidence; orchestrator `203cb6e2`, merged at `753343f5`).
+- [x] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
+  per-window rates** (filed 2026-09-16, sub-autopilot-evidence; orchestrator `203cb6e2`, merged at `753343f5`). ✅ 2026-09-17
   - Producers:
     - `orchestration/autopilot_rejected_mutations.jsonl`, harness-written, one record per reject;
     - the journal fold `rejected_mutation_ledger.rejected_configs_from_entries()`.
@@ -2176,11 +2176,37 @@ are left to that still-running agent.
     11 passed, including a fixed `sys.path` in the end-to-end test).
   - The AP-54 structural answer (AMBIGUOUS, file-tool reachability of the wiki) is a pinned
     source-read finding of the VB-HARNESS-AUDIT kind; route it through that decision.
-  - 2026-09-16 (`sub-vb-writers`): durable writers built — orchestrator `sub/vb-writers-orch-20260916`
-    + root `sub/vb-writers-root-20260916`, **under review, unmerged** (merge orch first). Rows appear after
-    the AutoPilot restart, at most ~200 trials later. The SC83 writer is on the same branches; SC83 has
-    nothing to backfill (no decoy corpus or scored reviewer run exists). Detail:
+  - 2026-09-16 (`sub-vb-writers`): durable writers built on orchestrator `sub/vb-writers-orch-20260916`
+    and root `sub/vb-writers-root-20260916`. The SC83 writer is on the same branches. Detail:
     `progress/2026-09/2026-09-16-sub-vb-writers.md`.
+  - **Landed 2026-09-17.** The orchestrator side is on orchestrator main (`2789b56d` + review fix `e93edfdb`,
+    merged in the AutoPilot train `a1a0251a`). The root side is on root main via the `sub-land-vidya`
+    merge of `sub/vb-writers-root-20260916`. It was ticked on the branch on 2026-09-16 but had not reached
+    root main until then. Detail: `progress/2026-09/2026-09-17-sub-land-vidya.md`.
+  - Writer: `scripts/autopilot/reproposal_rate.py`. `autopilot.py` calls it fail-open after both
+    `journal.record` sites. Its first call writes an `armed` record. Each closed 100-trial window then gets
+    one self-hashed line in `orchestration/autopilot_reproposal_rates.jsonl`. The line carries:
+    - counts split by action type and by standing rejection class;
+    - the planner fold's key, rejection classes and frontier clearing, pinned by `definition_sha256`, and a
+      test proving this fold equals `rejected_configs_from_entries`;
+    - the journal-shard and ledger prefix digests;
+    - rows for `all_trials`, `keyed_trials` and `diff_repeat_rate`, each with its numerator and denominator
+      stated. A zero denominator writes no row.
+  - Locator: the window.
+  - Rewind guard (Fable review fix): an emitted window whose recorded journal prefix digest no longer
+    matches rotates the file to `*.rewound-<utc>` and re-arms.
+  - Reader: `adapters/autopilot_reproposal_rate.py`, dispatched as `cli.py ingest autopilot-reproposal-rate`.
+  - Tests: orchestrator 12; root 10, including a live cross-repo test.
+  - **Backfill: zero belief rows, per spec §4.7.** A pre-hook row is skipped, not back-filled: today's key
+    definition and supersessions are not the ones in force at those trials.
+    - `reproposal_rate.py backfill` writes `*.retrospective.jsonl`, labelled `retrospective: true` with
+      `belief_measurements: []`. The reader declines that file.
+    - The read-only run over trials 0-1505 (14 windows) found 48 re-proposals: 48 of 216 keyed trials and
+      48 of 1366 trials overall. This matches the AP-53 planner-fold replay.
+    - The one-off 133/1372 counted numeric trials, which this key excludes. It stays a non-gating
+      observation.
+  - Remaining trigger: an AutoPilot restart on orchestrator main (already due for AP-53/AP-55/W3), then the
+    first closed window.
 
 ## VB-KBRAG-QLEN — KB-RAG live query-length telemetry (filed 2026-09-16, sub-tooling)
 
@@ -2328,7 +2354,7 @@ which make a reviewer **false-accept rate** measurable from our own data for the
 every machine review to the exact inputs it was produced against. Filed at producer creation, per the
 standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md).
 
-- [ ] **SC83 — wire the negative-control FA rate on the WRITE side before the first decoy corpus is scored.**
+- [x] **SC83 — wire the negative-control FA rate on the WRITE side before the first decoy corpus is scored.**
       Class `measurement`, **rates only**. A single verdict or objection is categorical and must not be
       forced through `ClaimTuple` (the same call as the headless-audit row). Project
       `gold_annotations.FalseAcceptResult.as_dict()`: numerator, denominator, `lower_is_better`, and the
@@ -2342,6 +2368,25 @@ standing rule. Source row added to [`scripts/vidya/adapters/README.md`](../../sc
       Trigger: the first decoy rows plus a scored reviewer run. Zero compute to file.
       *2026-09-16 status:* `gold_annotations.py` and `review_envelope.py` are on orchestrator main, but
       no scoring run persists `FalseAcceptResult` yet. There is nothing to project until one does.
+      ✅ 2026-09-17: landed. Built 2026-09-16 (sub-vb-writers) as orchestrator `2789b56d` + `e93edfdb`, which are on
+      orchestrator main via `a1a0251a`, plus root `sub/vb-writers-root-20260916`. That root branch reached root main
+      only on 2026-09-17, via the `sub-land-vidya` merge (`progress/2026-09/2026-09-17-sub-land-vidya.md`).
+      - Writer: `false_accept_record.py` plus `scripts/review/score_false_accept.py` append one self-hashed
+        `epyc.reviewer.false_accept_run.v1` line per scoring run to `data/reviewer_eval/false_accept_runs.jsonl`.
+        - The RA-12 filter runs BEFORE scoring. Stale verdicts are listed with their reasons and counted as
+          unscored.
+        - The endorsement is read only from the signed body.
+        - A run that mixes reviewer configs is refused.
+        - A stale verdict on a decoy awaiting arbitration is listed in `stale_excluded`, not `stale`
+          (Fable review fix). The reader checks it against `excluded_for_arbitration`.
+        - `n_decoys == scored + unscored + excluded` is checked before the line is written.
+        - A run with no scored decoy writes no row.
+      - Reader: `adapters/reviewer_false_accept.py`, dispatched as `cli.py ingest reviewer-fa`. It refuses a
+        dropped denominator, a re-bound stale id, edited lines or rows, and any `protocol_id`. It carries input
+        decay as `attestation_present=False`. The shared ladder grades each row `Judged/Located`.
+      - Tests: orchestrator 7; root 9, including a live cross-repo run of writer → CLI → ingest → tuple.
+      - Backfill: none possible, because no decoy corpus exists.
+      - Remaining trigger: the first decoy corpus plus a scored reviewer run, then `cli.py ingest reviewer-fa`.
 
 ## SC85 — OCC-1 optical-compression runs (filed 2026-09-16)
 
@@ -2411,8 +2456,8 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 | VB-SL2-STEPS | n/a (a decision) | n/a | still a decision; the serving-belief reader `autokernel_legacy_serving.py` IS on origin/main now |
 | VB-EVCONF2 | none | no | `confidence_source_compare.py` is on unmerged orchestrator `sub/evconf2-20260916` |
 | VB-HARNESS-AUDIT | none | no | decision (a)/(b)/(c); the findings are handoff prose with no machine-readable record to project |
-| VB-AP53-RATE | none for the rate; the AP-55 part is ported here | no | producer `rejected_mutation_ledger.py` is on orchestrator main, but no per-window rate row writer exists |
-| SC83 (was SC76, reviewer FA rate) | none | no | see SC83 above |
+| VB-AP53-RATE | origin/main `autopilot_reproposal_rate.py` (landed 2026-09-17) | yes, `autopilot-reproposal-rate` | restart AutoPilot on orchestrator main, then wait for the first closed window |
+| SC83 (was SC76, reviewer FA rate) | origin/main `reviewer_false_accept.py` (landed 2026-09-17) | yes, `reviewer-fa` | the first decoy corpus plus a scored reviewer run |
 | VB-MHS-GATES | none | no | producer is on unmerged orchestrator `sub/autopilot-safety-20260916` |
 | VB-GPU-RUNNER | none | no | the sweeps (INF-62 SL-1/SL-5, DF2-6, §5 MoE batched, ERNIE, INF-61) are pre-hook; each needs a producer hook (`calibrate_floor`, batched-bench, sd-server and np-grid wrappers) |
 

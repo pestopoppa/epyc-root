@@ -159,6 +159,14 @@ def _mhs_guard(tmp: Path) -> Path:
     return _helpers("test_mhs_guard_adapter").copy_fixture(tmp)
 
 
+def _reproposal_rate(tmp: Path) -> Path:
+    return _helpers("test_autopilot_reproposal_rate_adapter").write_fixture(tmp)
+
+
+def _reviewer_fa(tmp: Path) -> Path:
+    return _helpers("test_reviewer_false_accept_adapter").write_fixture(tmp)
+
+
 BUILDERS = {
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
@@ -180,6 +188,8 @@ BUILDERS = {
     "autopilot-journal": _autopilot,
     "mhs-guard-verdicts": _mhs_guard,
     "mhs-guard-ops": _mhs_guard,
+    "autopilot-reproposal-rate": _reproposal_rate,
+    "reviewer-fa": _reviewer_fa,
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.

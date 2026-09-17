@@ -86,6 +86,7 @@ def _sweep_projection(mod, native: dict) -> Callable:
 
 ORCH_JOURNAL_DIR = Path("/workspace/repos/epyc-orchestrator/orchestration")
 INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
+ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
     Source("kb-rag-qlen", "kb_rag_query_length",
@@ -152,6 +153,16 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            default=Path("/workspace"), frames="emit",
            note="PATH is an epyc-root checkout (shards under repos/epyc-orchestrator) "
                 "or one autopilot_journal*.jsonl shard"),
+    Source("autopilot-reproposal-rate", "autopilot_reproposal_rate",
+           _files("autopilot_reproposal_rates*.jsonl"),
+           default=ORCHESTRATOR / "orchestration" / "autopilot_reproposal_rates.jsonl",
+           note="per-window rows from AutoPilot's record_closed_windows hook; the "
+                "*.retrospective.jsonl backfill is accepted and projects zero rows",
+           task="VB-AP53-RATE"),
+    Source("reviewer-fa", "reviewer_false_accept",
+           _files("*false_accept_runs*.jsonl", "**/*false_accept_runs*.jsonl"),
+           default=ORCHESTRATOR / "data" / "reviewer_eval" / "false_accept_runs.jsonl",
+           note="scripts/review/score_false_accept.py scoring-run lines", task="SC83"),
     Source("sealed-manifest", "sealed_manifest", _files("artifacts/**/manifest.json"),
            default=Path("/workspace/repos/epyc-inference-research"),
            frames="frames_for_manifest"),
