@@ -8,39 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-17T14:48:38Z",
-  "last_touch": {
-    "advanced": {
-      "added": 4,
-      "changed": 13,
-      "removed": 0
-    },
-    "at": "2026-09-17T19:49:09Z",
-    "scope_paths": [
-      "docs/design/hs4-harness-decision-package-20260916.md",
-      "docs/design/hs4-shell-and-orchestrator-features-20260916.md",
-      "docs/reference/harness-candidates/client-surface-audit.md",
-      "docs/reference/harness-candidates/harness-card.md",
-      "docs/reference/harness-candidates/harness-doctrine.md",
-      "docs/reference/harness-candidates/opencode-p03-audit-20260916.md",
-      "docs/reference/v1-structured-output-capability.md",
-      "handoffs/active/fuzzy-workflow-authoring-gui.md",
-      "handoffs/active/harness-improvement-loop.md",
-      "handoffs/active/harness-selection-and-integration.md",
-      "handoffs/active/typed-decision-plane.md",
-      "handoffs/completed/hermes-outer-shell.md",
-      "progress/2026-09/2026-09-16-sub-hermes-memory.md",
-      "progress/2026-09/2026-09-16-sub-hs4-p0.md",
-      "progress/2026-09/2026-09-16-sub-hs4-p03.md",
-      "progress/2026-09/2026-09-17-harness-doc-audit.md",
-      "progress/2026-09/2026-09-17-intake-jev-sageattn.md"
-    ],
-    "scope_types": []
-  },
-  "mode": "touch:scoped",
-  "scan_time": "2026-09-17T19:49:09Z",
+  "last_compile": "2026-09-17T20:15:32Z",
+  "mode": "touch",
+  "scan_time": "2026-09-17T20:15:32Z",
   "schema_version": 1,
-  "source_set_hash": "55456aa70abca19812509a0325dfe99d39552bfd1c3683235d795218585e6649",
+  "source_set_hash": "2c432545fce16ef6ad84b9d60bdc9f42caee4fda613e3dd89a471c3f821b80aa",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -139,10 +111,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "5ceb34037158884dc9311284014ec7e78be9ab2c7f1e6d001331bca9a5977112",
-      "modified": "2026-09-17T19:42:52Z",
+      "content_hash": "8c69280f73c325f8a16494b471f553507ec8c5508cab0cd1119756146932d652",
+      "modified": "2026-09-17T20:13:10Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 471622,
+      "size": 472525,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -1315,10 +1287,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "aae183e15b180cdb4a967eaf290f1e3c4758844e4a7914b1e72bf3f010e02f68",
-      "modified": "2026-09-17T19:30:15Z",
+      "content_hash": "2ee44d3437da5585bfe47da71f9b659343cb59020fd613a7babe417bf037d7e6",
+      "modified": "2026-09-17T20:10:01Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 8319,
+      "size": 10245,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },
@@ -7643,10 +7615,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "e82443c3cd7dc4403a7c593c3fa058aa94ab6bdbf149d0a8192245b6fbf28304",
-      "modified": "2026-09-17T19:41:21Z",
+      "content_hash": "180af408b01143a4a7bb5dd3e350d8f4affa92f69787e60151c585cd2361fe32",
+      "modified": "2026-09-17T20:11:08Z",
       "path": "progress/2026-09/2026-09-17-autokernel-porting-implementation.md",
-      "size": 13325,
+      "size": 13972,
       "title": "AutoKernel porting-method implementation \u2014 2026-09-17",
       "type": "progress"
     },
@@ -7659,10 +7631,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "4d9b30de20b3f7a3ddb6b35e540b6c81ecf516d4c07d66ceae1a24d57c437efb",
-      "modified": "2026-09-17T19:30:15Z",
+      "content_hash": "1e66307b2f195f73d6bd9fd411060e510e17bb623e0a995929c5a5383d876be0",
+      "modified": "2026-09-17T20:10:01Z",
       "path": "progress/2026-09/2026-09-17-intake-jev-sageattn.md",
-      "size": 7788,
+      "size": 9118,
       "title": "2026-09-17 \u2014 research-intake session `intake-jev-sageattn` (full wrap-up)",
       "type": "progress"
     },

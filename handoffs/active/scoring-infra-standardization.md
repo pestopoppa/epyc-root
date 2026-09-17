@@ -109,6 +109,22 @@ already has bare-letter handling).
       per-request `allow_delegation=True`. (c) `debug_scorer.py:269-272` last-standalone-letter fallback is a
       false-*POSITIVE* (score-inflation) risk vs the canonical lib — re-score a recent eval batch before/after
       consolidation to quantify. (d) Decide fate of dead `ChatRequest.tools` (consume or remove).
+      **(b) DONE ✅ 2026-09-17** (orchestrator `9a7181f2`): the prefix cut is replaced by
+      `ArchitectReviewService.condense_output()` — head 60% + tail 40% with an explicit marker naming the
+      elided character count, so the reviewer sees the conclusion instead of an unfinished fragment, and the
+      gap is legible as ours rather than the model's. Budget is config (`review_output_max_chars`, default
+      4000); `quick_mode`'s silent `[:200]` now goes through the same helper. Prompt templates byte-identical.
+      The site had drifted from `:420` to `:538` — anchor rot; the task TEXT resolved it. Cost established
+      before the fix: the old cut was mid-record with no signal to the reviewer, and nothing downstream
+      depended on the cap (all three callers consume only the `ArchitectReview`). 8 new tests, verified
+      failing pre-change.
+      **(d) DONE ✅ 2026-09-17** (same commit) — **deprecated, deliberately not removed.** `ChatRequest.tools`
+      / `tool_choice` are confirmed dead (the only `request.tools` consumers read `OpenAIChatRequest`, and no
+      client sends them to `/chat`), but they are part of a PUBLISHED `/chat` schema and the model's
+      `extra='ignore'` would swallow them silently on removal — identical runtime, worse visibility. They are
+      now marked `deprecated` in the schema, the description no longer falsely claims REPL `CALL()` exposure,
+      and `/chat` logs a warning when a caller sets them. Removal becomes safe once the log shows no callers.
+      6 new tests.
 - [ ] **1d. Pin a runnable test environment for the research repo's eval-scorer tests.** Found 2026-08-12
       (suite-retirement lane): `test_score_with_claude.py` uses pytest fixtures with no stdlib fallback, but
       NO pytest exists in system python, `.venv-exec`, or user site — a stale `__pycache__` pyc proves pytest

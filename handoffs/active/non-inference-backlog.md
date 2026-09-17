@@ -619,3 +619,20 @@ Canonical sources (always verify status in these files first):
   `pgrep -x opencode` presence probe is registered `unadopted` in `observer_registry.json`; its consumer (the VACUUM
   decision) already fails CLOSED. Adoption replaces the name probe with the guard's channels so a drifted argv cannot
   read as 'absent'. Owner: whoever next touches the reaper; not urgent (no kill path, fail-closed).
+- [ ] **NIB2-80** (MED): **the `EARLY_ABORT` escalation path bypasses its own budget gate.** In
+  `epyc-orchestrator/src/graph/nodes.py:235-241` an `ErrorCategory.EARLY_ABORT` bumps
+  `state.escalation_count`, records the role change and returns `CoderEscalationNode()` **without
+  calling `_should_escalate`**. Every other escalation site in that file gates on it
+  (`nodes.py:250, 284, 364, 481`), and the gate is what enforces `cfg.max_escalations`, the
+  no-escalate categories and the retry precondition (`src/graph/decision_gates.py:27-47`). So a
+  run that keeps early-aborting can escalate past `max_escalations`, and the budget it is
+  charged against is never read. **Two candidate readings, and the fix differs:** if immediate
+  escalation on early-abort is deliberate, the bound is still missing (escalate only while
+  `escalation_count < cfg.max_escalations`, else fall through to the normal failure path); if it is
+  an oversight, the call belongs behind `_should_escalate` like its four siblings. Surfaced
+  2026-09-17 while writing the FW-1 loop-block sketch — the block made it visible because it forces
+  every gate and every rejection destination to be named
+  ([`fuzzy-workflow-authoring-gui.md`](fuzzy-workflow-authoring-gui.md) § FW-1 sketch, finding F-1).
+  **Not fixed here: it changes graph control flow on a path evals traverse, so it wants its own
+  before/after test and the owning session's judgement on which reading is right.** Zero inference
+  to verify (unit tests with a fake backend); zero compute.
