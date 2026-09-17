@@ -1819,6 +1819,15 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
       recommended one): `_append_baseline_promotion_event()` returns early for `updated=False`, so a
       speed-axis reseed — a real state write — is journaled nowhere (`scripts/autopilot/autopilot.py:10365-10375`)
       (found 2026-09-14, noninf sweep).
+      - 2026-09-17 **not implemented: no operator ruling is recorded.** "Option B" is only the
+        erastamp session's *recommendation* (`progress/2026-09/2026-09-14-noninf-backlog.md` §RTG-02:
+        "decision package prepared, recommendation B"). The package text was never persisted, and no
+        ruling exists in the operator queue, `artifacts/operator/`, the bus or the 2026-09-14/17 wrap-up
+        commits (filing the box and repointing the index are not rulings). **Decision needed (operator):**
+        should an autonomous provenance write (the speed-axis reseed on the quality-refusal path) emit an
+        append-only journal receipt? (A) No, `autopilot_state.json` alone stays the record; (B) yes, a
+        ledger event (recommended; a state write with no receipt cannot be audited or replayed). The
+        call site is now `_append_baseline_promotion_event()`'s `updated=False` early return.
 - [ ] **AP-58 — decide whether to reseed the speed axis on ANY eligible in-era frontier measurement**, since
       the same unreachability shape survives on the other early-return paths (`seq_inputs_unavailable`,
       `seq_not_confirmed`, the monotonic skip and the new `quality_not_measured`), so the speed fence stays
@@ -3433,6 +3442,28 @@ Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake
             The operator pre-approved option B for after that review (2026-09-16). Needs the AutoPilot
             merge train (`sub/autopilot-train-20260916`, which carries the within-noise AP-55 hold fix
             `f76e65cd`) on orchestrator main first. Filed 2026-09-17 from `2026-09-16-sub-gate-frontier.md`.
+            - 2026-09-17 **prepared, not flipped** (orchestrator `cd79b80e`; the train is on main as
+              `a1a0251a`). **Gap closed:** in shadow mode `_holds()` returns `[]`, so the recorded
+              `eval_details.ap55_promotion_gate.hold` is False on every row and its rate reads 0% no
+              matter what. Each trial now also records `would_hold_enforce` (plus reasons) and
+              `would_hold_strict`, using the same rule; an errored gate would hold.
+              `start_authority_daemon.py` now pins `AUTOPILOT_AP55_PROMOTION_GATE=shadow` and
+              `AUTOPILOT_AP55_SEED_RERUN=0`, so an inherited variable cannot arm the shadow run.
+              **Runbook:**
+              1. Run `python3 scripts/autopilot/ap55_shadow_review.py --since <shadow-run start ISO ts>`.
+                 It is read-only and reports would-hold count and rate over gated trials, attempted
+                 promotions and committed promotions, plus a reason histogram. Exit 3 means no shadow
+                 verdict is in the window, so flip nothing. Rows written before the counterfactual
+                 field are re-derived and labelled `reconstructed`.
+              2. Report the committed-promotion figure.
+              3. **The switch:** in `start_authority_daemon.py` `AUTHORITY_ENV`, set
+                 `AUTOPILOT_AP55_PROMOTION_GATE` `"shadow"` → `"enforce"` and `AUTOPILOT_AP55_SEED_RERUN`
+                 `"0"` → `"1"`.
+              4. Restart through the wrapper; it binds only from then.
+
+              Runbook copy: orchestrator `docs/autopilot/gate-frontier-live-scope-2026-09-16.md`.
+              Live journal today: 0 gated rows, exit 3 (no shadow run yet). Tests:
+              `test_ap55_arm_review.py` (7) and a launcher pin test.
 - [ ] **AP-56 — Determinism certification before N=1 promotion.** llama-server fixed seed and fixed
       slot count; replay the baseline action chain and require identical trajectories before trusting a
       single-run verdict. External, descriptive: promotion rate 7.9% (1,223 decisions) → 25.2% (131)
@@ -3450,6 +3481,27 @@ Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake
       contention. OP-41 forbids any broker/scheduler/admission daemon until champion finalised →
       production promotion → host reboot, and the operator owns the design. (a) is unblocked
       zero-compute work; (b) is blocked on that named external sequence. intake-883#record.
+      - [x] **AP-63(a)** ✅ 2026-09-17 — orchestrator `0286c170`. JournalEntry gains `run_manifest`,
+            copied from the in-flight WAL marker for the same trial on main-loop rows, dispatcher-skip
+            rows and the AUTOPILOT_KILLED placeholder. Undispatched rows and a mismatched or legacy
+            marker get `{}`: nothing is built at write time, nothing is back-filled, and the claim tuple
+            carries the digest. The same commit adds `lineage`, an explicit stored parent under rule
+            `latest_committed_baseline_promotion_same_species`: the newest same-species trial with a
+            `baseline_promotion` ledger event. A pending, bug-corrupted (also by supersession),
+            other-species or later row never qualifies, and no accepted parent gives `None`, never a
+            fallback. The old heuristic is recorded alongside and still drives `parent_trial`, so
+            config_diff, PEAF, BSV and Pareto are unchanged. Root `scripts/vidya` carries the digest on
+            autopilot-journal frames, ungraded. Tests: `test_ap63_run_manifest_lineage.py` (17). Takes
+            effect at the next AutoPilot restart.
+      - [ ] **AP-63(b)** — lane-arbiter precondition: blocked on the OP-41 sequence above (champion
+            finalised → production promotion → host reboot, operator-owned design).
+      - [ ] **AP-63c** — after the first post-restart trial, check (read-only) that its journal row
+            carries a non-empty `run_manifest` whose `manifest_sha256` matches the in-flight marker it
+            was dispatched under, plus a `lineage` block. A pre-dispatch skip must carry `{}`.
+      - [ ] **AP-63d** — decide whether `parent_trial`'s consumers (config_diff, PEAF surprise r²,
+            BSV-3 dependency rows) should switch from the same-species heuristic to
+            `lineage.parent_trial_id`. This is a design choice for the orx refill shape, not a defect:
+            it changes what a config diff is measured against.
 - [ ] **AP-64 (S3-AP-02) — apply the OP-20 task_failed ruling to BOTH producers** (eval_tower and
       the seeding path), per the operator's ruling at the 2026-09-15 Stage-3 plan approval (S3-OP-01
       option a: non-infra task_failed → WRONG in both producers, infra → EXCLUDED in both), with a
