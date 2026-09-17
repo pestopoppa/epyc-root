@@ -79,7 +79,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 56 | 752 | 15 | 2026-07-29 |
+| inference-research | 56 | 751 | 15 | 2026-07-29 |
 | pipeline-integration | 5 | 71 | 1 | 2026-07-29 |
 | research-evaluation | 43 | 420 | 10 | 2026-07-29 |
 | reviewer-control-plane | 6 | 27 | 12 | 2026-07-29 |
