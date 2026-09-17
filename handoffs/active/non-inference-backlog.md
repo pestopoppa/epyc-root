@@ -619,7 +619,7 @@ Canonical sources (always verify status in these files first):
   `pgrep -x opencode` presence probe is registered `unadopted` in `observer_registry.json`; its consumer (the VACUUM
   decision) already fails CLOSED. Adoption replaces the name probe with the guard's channels so a drifted argv cannot
   read as 'absent'. Owner: whoever next touches the reaper; not urgent (no kill path, fail-closed).
-  ✅ 2026-09-17 (root `PLACEHOLDER`) — adopted at contract v1. Three states with the destructive branch gated on
+  ✅ 2026-09-17 (root `49e85ab7`) — adopted at contract v1. Three states with the destructive branch gated on
   certainty: `present` and `unobservable` both WITHHOLD `--vacuum` (the latter with an alarm breadcrumb that
   clears on the next sighting); only `absent` permits it. Two read-only channels, neither a kill target:
   `proc_scan` matches `"opencode "` **with the trailing space**, so the reaper's own argv and `opencode.db`

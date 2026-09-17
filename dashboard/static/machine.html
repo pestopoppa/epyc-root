@@ -625,14 +625,27 @@ function renderTopology(snap) {
      service can be GPU-resident too (whisper / tts / sd_server), and the
      operator reads substrate off the colour before reading anything else. */
   const gpuChip = '<span class="chip gpu">GPU</span>';
+  /* A manifest-DECLARED substrate (expected-but-not-running nodes: no process
+     exists, so the producer reads the stack manifest and says so via
+     substrate_source) must not read as observed: the chip says "declared" and
+     the title names the declaration. */
+  const gpuChipDeclared = '<span class="chip gpu" title="GPU substrate — manifest-declared, not observed (server not running)">GPU <span class="dimtx">declared</span></span>';
+  const substrateNote = n => {
+    const s = String(n.substrate == null ? "" : n.substrate).toLowerCase();
+    if (!s) return "";
+    const src = String(n.substrate_source || "");
+    if (src === "manifest") return ` · ${s.toUpperCase()} substrate DECLARED by manifest (${n.substrate_declared_by || "declaration"}), not observed`;
+    return s === "gpu" ? " · GPU substrate" : "";
+  };
   const card = n => {   // still used for expected/services/control-plane sections
     const st = nodeState(n);
     const busy = busyByRole[n.role];
     const gpu = isGpuNode(n);
+    const declared = String(n.substrate_source || "") === "manifest";
     const bits = (n.kind === "llama-server" || n.kind === "expected-stack-server") ? instBits(n) : [];
     const alias = Array.isArray(n.aliases) && n.aliases.length ? ` <span class="dimtx">+${esc(n.aliases.join(","))}</span>` : "";
-    return `<div class="node ${st.cls}${gpu ? " gpu" : ""}${num(busy) && busy > 0 ? " busy" : ""}" title="${esc(n.id || "")} · ${esc(n.model || "")}${gpu ? " · GPU substrate" : ""}">
-      <div class="nh"><span class="nm">${esc(n.label || n.role || n.id)}</span>${gpu ? gpuChip : ""}<span class="np">:${esc(n.port)}</span></div>
+    return `<div class="node ${st.cls}${gpu ? " gpu" : ""}${num(busy) && busy > 0 ? " busy" : ""}" title="${esc(n.id || "")} · ${esc(n.model || "")}${esc(substrateNote(n))}">
+      <div class="nh"><span class="nm">${esc(n.label || n.role || n.id)}</span>${gpu ? (declared ? gpuChipDeclared : gpuChip) : ""}<span class="np">:${esc(n.port)}</span></div>
       <div class="nmod">${esc(trunc(n.model || "—", 46))}${alias}</div>
       <div class="nst"><span class="${st.cls === "st-bad" ? "bad" : st.cls === "st-up" ? "good" : "dimtx"}">${esc(st.label)}</span>${bits.join("")}</div>
     </div>`;
@@ -1388,11 +1401,17 @@ function normTapReq(r, nowS, idx) {
   const response = String(r.response == null ? "" : r.response);
   const pl = num(r.prompt_len) ? r.prompt_len : prompt.length;
   const rl = num(r.response_len) ? r.response_len : response.length;
-  /* The producer publishes GENERATED tokens (timings_raw.tokens) but no prompt
-     token count — only prompt_ms and a character length. So the card reports
-     prompt size in characters and generation in tokens, each labelled; it does
-     not invent a processed-token number the payload never carried. */
+  /* The producer publishes GENERATED tokens (timings_raw.tokens). For the
+     PROMPT it publishes either a MEASURED terminal count — `prompt_tokens`
+     with `prompt_tokens_source: "server_terminal"`, llama-server's own
+     tokens_evaluated recorded by the tap writer at completion (RTG-47 data
+     plane) — or nothing but a character length (`prompt_tokens_source:
+     "chars_estimate"`). Only the measured form may render as tokens; the
+     estimate stays in characters, labelled "c", so the two are never
+     indistinguishable on the card. Nothing here invents a token number. */
   const gen = num(tr.tokens) ? tr.tokens : null;
+  const ptMeasured = (num(r.prompt_tokens) && r.prompt_tokens > 0 &&
+    String(r.prompt_tokens_source || "") === "server_terminal") ? r.prompt_tokens : null;
   const tps = (num(tr.tps) && tr.tps > 0) ? tr.tps
     : ((num(r.tps_live) && r.tps_live > 0) ? r.tps_live : null);
   const endEp = num(r.ended_at_epoch) ? r.ended_at_epoch : null;
@@ -1411,9 +1430,19 @@ function normTapReq(r, nowS, idx) {
      wipe a counter the operator is watching. */
   const spFresh = slotProgressOf(r);
   if (spFresh) retainSlotProgress(key, spFresh);
-  const sp = spRetain.get(key) || spFresh || null;
-  const spStale = !spFresh && !!sp;      // rendering a remembered sample, not this frame's
-  const sampleAge = (spStale && sp && num(sp.sampledAt)) ? Math.max(0, nowS - sp.sampledAt) : null;
+  const spSeen = spRetain.get(key) || spFresh || null;
+  const spStale = !spFresh && !!spSeen;  // rendering a remembered sample, not this frame's
+  const sampleAge = (spStale && spSeen && num(spSeen.sampledAt)) ? Math.max(0, nowS - spSeen.sampledAt) : null;
+  /* Direction-dependent ↑ source, mirroring ↓: mid-run the slot sample is the
+     only prompt figure there is; at completion the server's TERMINAL count is
+     authoritative over a retained mid-run total (a sample taken during prefill
+     can under-read a prompt that was still being ingested). A completed request
+     the sampler never saw therefore still gets its true `↑ N tok` — from the
+     measurement, not from a character estimate. */
+  const sp = (act.terminal && ptMeasured != null)
+    ? Object.assign({}, spSeen || { done: null, decoded: null, processing: false, ambiguous: false, sampledAt: null },
+        { total: ptMeasured, ambiguous: false })
+    : spSeen;
   const prog = progressBits(sp, gen, r.chunk_count, act.terminal);
   /* Say how old a remembered sample is, rather than presenting it as live. A
      finished request needs no such caveat on the line — its figure is final by
@@ -1437,7 +1466,9 @@ function normTapReq(r, nowS, idx) {
     (sp ? " · slot" + (sp.ambiguous ? " (port-level, several busy slots)" : "") +
       (sp.total != null ? " prompt " + (sp.done != null ? sp.done + "/" : "") + sp.total + " tok" : "") +
       (sp.decoded != null ? " · decoded " + sp.decoded + " tok" : "") : "") +
-    (sp && act.terminal ? " · prompt tokens as observed mid-run (a completed record carries no slot sample)" : "") +
+    (act.terminal && ptMeasured != null ? " · prompt " + ptMeasured + " tok MEASURED (server terminal count)" :
+      (sp && act.terminal ? " · prompt tokens as observed mid-run (a completed record carries no slot sample)" :
+        (act.terminal ? " · prompt size is a CHARACTER estimate (server reported no token count)" : ""))) +
     (sampleAge != null ? " · slot sampled " + fmtAge(sampleAge) + " ago" : "");
 
   const meta = [];
