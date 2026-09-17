@@ -88,3 +88,26 @@ candidate is claimed at this checkpoint. The 28 retained keeps remain intact.
   checkpoint; `running` is a process state, not yet proof of a healthy measured
   candidate path or a new keep. Monitor and repair any actual failure before
   claiming loop health. Production v9 and champion-of-record remain unchanged.
+
+## v21 stop: runtime calibration work explosion, 14:10 UTC
+
+Batch 0 produced a sealed half-scope profile but the planner abstained honestly:
+47.32% sampled-period synchronization did not distinguish per-thread work
+imbalance from CPU/NUMA placement. Batch 1 selected full scope, profiled, and
+reached a real runtime-treatment correctness path. The newly admitted runtime
+arm then opened the default direct calibration: `CampaignControls(200,...)`
+requires four A/A/neutral launches per block, or **800 full GLM launches**
+before its first candidate comparison. This was stopped as an invalidly sized
+research setup, not scored as a measured null or keep.
+
+The operator-owned v21 supervisor PID 4108590, child 4127859 and server
+2032360 were captured, signalled, and verified gone. A STOP sentinel was
+published first; TERM did not terminate the active child/server promptly, so
+the exact server and child PIDs required KILL. The serial supervisor exited
+`complete` with `stop_requested=true` and a `failed_targets` entry: the killed
+post-claim child lacks normal released-held evidence. The direct-calibration
+checkpoint has zero completed launches, one failed launch and an unresolved
+`pending` member. This is retained as evidence, not cleared or reused. No
+champion change occurred; the source worktree remains at `614ff2ba02e0` and
+the 28 prior keeps remain in the same store. A separate recovery audit and a
+bounded-runtime preflight fix are in progress before any relaunch.
