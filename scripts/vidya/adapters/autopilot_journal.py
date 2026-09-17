@@ -219,6 +219,10 @@ def as_record(shard: Path, row: dict) -> dict:
         # "mixed"), as RECORDED by the writer from the API echo. Carried, never graded. Empty on
         # rows written before the fence existed, which must be read as unfenced.
         "eval_fence": str(meas.get("eval_fence") or ""),
+        # AP-63(a): the AP-1510 run-manifest digest the trial was dispatched under, as RECORDED
+        # by the writer (sources + task + evaluator). Carried, never graded. Empty on rows written
+        # before 2026-09-17 and on rows that never dispatched (never back-filled).
+        "run_manifest": str(meas.get("run_manifest") or ""),
         "attestation": {
             "path": f"{ORCH_REL}/orchestration/{shard.name}",
             "sha256": att.get("sha256"),
@@ -282,6 +286,7 @@ def frames_for_row(shard: Path, row: dict, *, as_of: str) -> list[dict]:
                        "infra_fingerprint": rec["infra_fingerprint"],
                        "comparability": rec["comparability"],
                        "eval_fence": rec["eval_fence"],
+                       "run_manifest": rec["run_manifest"],
                        # VB-AP-PROMO-RULE: carried verbatim, never graded; absent keys stay absent.
                        **decision},
             provenance={"evidence": f"evd_ap_{ident}", "about": claim_id, "method": ADAPTER_ID,

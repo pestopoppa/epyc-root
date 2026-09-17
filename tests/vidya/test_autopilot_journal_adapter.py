@@ -174,6 +174,23 @@ def test_eval_fence_state_is_carried_not_graded(tmp_path):
     assert sup["provenance"]["grade_reasons"] == sup_plain["provenance"]["grade_reasons"]
 
 
+def test_run_manifest_digest_is_carried_not_graded(tmp_path):
+    """AP-63(a): the writer's run-manifest digest reaches the support frame; the grade and the
+    reasons are unchanged, and a row written before the stamp carries an empty digest."""
+    plain = row()
+    stamped = row(measurement={**row()["measurement"], "run_manifest": "a" * 64})
+    (shard, got_plain), = list(apj.iter_measured_rows(write_journal(tmp_path / "a", [plain])))
+    (shard_s, got_stamped), = list(apj.iter_measured_rows(write_journal(tmp_path / "b", [stamped])))
+    sup = [f for f in apj.frames_for_row(shard_s, got_stamped, as_of="t")
+           if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    sup_plain = [f for f in apj.frames_for_row(shard, got_plain, as_of="t")
+                 if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    assert sup["assertion"]["run_manifest"] == "a" * 64
+    assert sup_plain["assertion"]["run_manifest"] == ""
+    assert sup["assertion"]["grade"] == sup_plain["assertion"]["grade"]
+    assert sup["provenance"]["grade_reasons"] == sup_plain["provenance"]["grade_reasons"]
+
+
 def test_a_trial_is_always_a_candidate(tmp_path):
     """A trial is a proposed change being measured — never the standing baseline or an optimum."""
     shard, r = next(apj.iter_measured_rows(write_journal(tmp_path, [row()])))
