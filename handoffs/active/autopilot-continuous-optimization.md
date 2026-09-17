@@ -3361,6 +3361,10 @@ Four rows, all zero-compute to write; one carries a compute-gated arm that is fi
         - 2026-09-16 (later, wrap-up): **under third review; Landlock enforcement** (`0d3b6e26`, level
           active on this host = landlock). Box stays open until the branch merges
           (`progress/2026-09/2026-09-16-sub-ap54-fence.md`).
+        - 2026-09-17 (`sub-land-vidya`): the root half, root `sub/ap54-root-20260916` (`7280da63`), is now
+          on root main. It makes the vidya `autopilot_journal` adapter carry `eval_fence_enforcement`. It
+          had not landed when this box was ticked; only the orchestrator half had. Detail:
+          `progress/2026-09/2026-09-17-sub-land-vidya.md`.
         - Arming: `ChatRequest.eval_fence` arms a per-request carrier in
           `src/repl_environment/knowledge_fence.py`. `False` records paths without denying; that is
           the AP-54b control arm, selected with `AUTOPILOT_EVAL_FENCE=0`. With the field absent,
@@ -3433,6 +3437,10 @@ Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake
         `AUTOPILOT_AP55_PROMOTION_GATE` shadow|enforce|strict. Declared-only kernel (PIDs invisible in the
         container) compares UNVERIFIED, never COMPARABLE. Merge order: after `sub/ap54-fence-20260916`
         (keep both blocks on conflict). Detail: `progress/2026-09/2026-09-16-sub-ap55bc.md`.
+        - 2026-09-17 (`sub-land-vidya`): the root half, `sub/ap55bc-root-20260916` (`febf56cd`), is now on
+          root main. It makes the vidya adapter carry `ap55_gate`, and now also the `cd79b80e` `would_hold_*`
+          keys verbatim. It had not landed when this box was ticked, which rested on orchestrator
+          `a1a0251a` alone. Detail: `progress/2026-09/2026-09-17-sub-land-vidya.md`.
       - 2026-09-16 **operator decision — gate mode A (shadow)**: run the next AutoPilot run in shadow;
         **AP-55-ARM is pre-approved** to move the gate to `enforce` plus the seed re-runs after one
         shadow run (read the counterfactual `eval_details.ap55_promotion_gate.hold` rate first).
