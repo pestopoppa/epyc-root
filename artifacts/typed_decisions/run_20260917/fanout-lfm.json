@@ -1,0 +1,102 @@
+{
+  "counts": {
+    "agreeing_pairs": 12,
+    "batched_calls": 3,
+    "comparable_pairs": 12,
+    "disagreements": 0,
+    "questions_per_state": 4,
+    "singleton_calls": 12,
+    "states": 3,
+    "unresolved_pairs": 0
+  },
+  "mode": "json",
+  "prompt_sha256": [
+    "c299ad8fa9b6b65146c661be15bfbb517040e493b42c3f32115c63908730f400",
+    "bdfcf205a2e96cfc3e9941abf581e4f95d4294e0484f48f374c821cd4cf3ed1f",
+    "d919342fcece5062c4cc33a68b535b674d048b6780680c1afcf878c72c1210f5",
+    "f403b1d819bd5d3ef67dab2fe41aedf76ca56a2be312f4db83af6cae637edfd7",
+    "0a06180016d4f84b75ab0e367c227d3d0c51f90a1c6eeb1ab975549f1311a544",
+    "c30217d044c24521dc36d252ef4557fafe9101e2eced2a3b5c5bd464122d8e28",
+    "92e3b5fa19cd2d87e7c0f2686f065f04a2eaf8ef4efea88ea805d6a2ffa2d1dc",
+    "0cb3c02f121d3b9725903a64eaa30c6ecee7589af3df062a3fb1d93c63f443da",
+    "982fee79be2f7629e3990f1a8da6df5297eb6d38363d489871311ba7af8d6631",
+    "058bf15fe38944c685fa2bc15dbc75ac10af040d9221a5209149f507239c93ea",
+    "2692e72b10bb2ab338d5b56a5a5d2ab7dabcce18a04bf5f43aa7cc42fab627c6",
+    "50579a15c57c44fa888991d9f0b9b7f17582cb2a05ed553acb157db5dfe0f1a6",
+    "c88b46b29a16ea873ec817f118b67a1d620f27d4a76ce11e5ea21dfa55c601c3",
+    "5cc00f502e4380e7207a7ad9f0e25abd8b422f871453e4fcacefd9745b324a64",
+    "a3d3280b7259e31a53dd6355c468208c09fee2e161759c6c9c35c15fdff9fc16"
+  ],
+  "receipt_path": "/mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917/artifacts/typed_decisions/run_20260917/fanout-lfm.json",
+  "results": {
+    "agreement_rate": 1.0,
+    "batched": {
+      "calls": 3,
+      "calls_with_token_meta": 3,
+      "per_call_ms": [
+        1471.9321648590267,
+        1595.356488134712,
+        1286.9398458860815
+      ],
+      "serial_sum_ms": 4354.22849887982,
+      "tokens_generated": 625.0,
+      "wall_ms": 4354.778575245291
+    },
+    "batched_speedup_serial": 1.5433158682928612,
+    "batched_speedup_wall": 1.5433648282854258,
+    "disagreements": [],
+    "metric_directions": {
+      "agreement_rate": "higher_better",
+      "batched_speedup_serial": "higher_better",
+      "batched_speedup_wall": "higher_better"
+    },
+    "per_question_agreement": {
+      "fanout-000": {
+        "agreeing": 3,
+        "compared": 3
+      },
+      "fanout-001": {
+        "agreeing": 3,
+        "compared": 3
+      },
+      "fanout-002": {
+        "agreeing": 3,
+        "compared": 3
+      },
+      "fanout-003": {
+        "agreeing": 3,
+        "compared": 3
+      }
+    },
+    "questions": [
+      "fanout-000",
+      "fanout-001",
+      "fanout-002",
+      "fanout-003"
+    ],
+    "singleton": {
+      "calls": 12,
+      "calls_with_token_meta": 12,
+      "per_call_ms": [
+        557.0304547436535,
+        554.109366144985,
+        624.8361943289638,
+        529.0251709520817,
+        534.2700439505279,
+        545.1685548759997,
+        641.721264924854,
+        531.9003509357572,
+        530.8330901898444,
+        533.6668281815946,
+        619.2792169749737,
+        518.1094002909958
+      ],
+      "serial_sum_ms": 6719.949936494231,
+      "tokens_generated": 649.0,
+      "wall_ms": 6721.0120880045
+    }
+  },
+  "role": "frontdoor",
+  "study": "fanout",
+  "timestamp": "2026-09-17T19:11:23.781108+00:00"
+}

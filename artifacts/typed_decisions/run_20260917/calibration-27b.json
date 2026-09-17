@@ -1,0 +1,295 @@
+{
+  "counts": {
+    "failures": 0,
+    "labeled": 24,
+    "questions": 24,
+    "resolved": 24,
+    "scored": 24,
+    "unknown_labels": 0,
+    "unlabeled": 0,
+    "unresolved": 0
+  },
+  "metric_directions": {
+    "accuracy": "higher_better",
+    "brier": "lower_better",
+    "ece": "lower_better"
+  },
+  "mode": "json",
+  "prompt_sha256": [
+    "3f99d613ae11f507857bffc72de01d589e1747134ceb9dbbb004242f673215d1"
+  ],
+  "receipt_path": "/mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917/artifacts/typed_decisions/run_20260917/calibration-27b.json",
+  "results": {
+    "elapsed_ms": 48755.31951105222,
+    "failures": [],
+    "metrics": {
+      "accuracy": 0.9166666666666666,
+      "brier": 0.07838333333333333,
+      "ece": 0.0625,
+      "mean_confidence": 0.8875000000000001,
+      "metric_direction": {
+        "accuracy": "higher_better",
+        "brier": "lower_better",
+        "ece": "lower_better"
+      },
+      "n": 24,
+      "n_bins": 10
+    },
+    "reliability_bins": [
+      {
+        "accuracy": null,
+        "bin_index": 0,
+        "count": 0,
+        "lower": 0.0,
+        "mean_confidence": null,
+        "upper": 0.1
+      },
+      {
+        "accuracy": null,
+        "bin_index": 1,
+        "count": 0,
+        "lower": 0.1,
+        "mean_confidence": null,
+        "upper": 0.2
+      },
+      {
+        "accuracy": null,
+        "bin_index": 2,
+        "count": 0,
+        "lower": 0.2,
+        "mean_confidence": null,
+        "upper": 0.3
+      },
+      {
+        "accuracy": null,
+        "bin_index": 3,
+        "count": 0,
+        "lower": 0.3,
+        "mean_confidence": null,
+        "upper": 0.4
+      },
+      {
+        "accuracy": null,
+        "bin_index": 4,
+        "count": 0,
+        "lower": 0.4,
+        "mean_confidence": null,
+        "upper": 0.5
+      },
+      {
+        "accuracy": null,
+        "bin_index": 5,
+        "count": 0,
+        "lower": 0.5,
+        "mean_confidence": null,
+        "upper": 0.6
+      },
+      {
+        "accuracy": null,
+        "bin_index": 6,
+        "count": 0,
+        "lower": 0.6,
+        "mean_confidence": null,
+        "upper": 0.7
+      },
+      {
+        "accuracy": 1.0,
+        "bin_index": 7,
+        "count": 2,
+        "lower": 0.7,
+        "mean_confidence": 0.7,
+        "upper": 0.8
+      },
+      {
+        "accuracy": 0.8,
+        "bin_index": 8,
+        "count": 10,
+        "lower": 0.8,
+        "mean_confidence": 0.8400000000000001,
+        "upper": 0.9
+      },
+      {
+        "accuracy": 1.0,
+        "bin_index": 9,
+        "count": 12,
+        "lower": 0.9,
+        "mean_confidence": 0.9583333333333334,
+        "upper": 1.0
+      }
+    ],
+    "rows": [
+      {
+        "confidence": 0.8999999999999999,
+        "correct": false,
+        "kind": "noul",
+        "question_id": "n01",
+        "value": false
+      },
+      {
+        "confidence": 0.8999999999999999,
+        "correct": true,
+        "kind": "noul",
+        "question_id": "n02",
+        "value": true
+      },
+      {
+        "confidence": 0.8999999999999999,
+        "correct": true,
+        "kind": "noul",
+        "question_id": "n03",
+        "value": false
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "noul",
+        "question_id": "n04",
+        "value": true
+      },
+      {
+        "confidence": 0.94,
+        "correct": true,
+        "kind": "noul",
+        "question_id": "n05",
+        "value": false
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "noul",
+        "question_id": "n06",
+        "value": true
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "noul",
+        "question_id": "n07",
+        "value": true
+      },
+      {
+        "confidence": 0.8999999999999999,
+        "correct": true,
+        "kind": "noul",
+        "question_id": "n08",
+        "value": false
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "choice",
+        "question_id": "c01",
+        "value": "fish"
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "choice",
+        "question_id": "c02",
+        "value": "bird"
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "choice",
+        "question_id": "c03",
+        "value": "reptile"
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "choice",
+        "question_id": "c04",
+        "value": "mammal"
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "choice",
+        "question_id": "c05",
+        "value": "oregon"
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "choice",
+        "question_id": "c06",
+        "value": "vermont"
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "choice",
+        "question_id": "c07",
+        "value": "arizona"
+      },
+      {
+        "confidence": 0.96,
+        "correct": true,
+        "kind": "choice",
+        "question_id": "c08",
+        "value": "alaska"
+      },
+      {
+        "confidence": 0.8,
+        "correct": true,
+        "kind": "score",
+        "question_id": "s01",
+        "value": 2
+      },
+      {
+        "confidence": 0.7,
+        "correct": true,
+        "kind": "score",
+        "question_id": "s02",
+        "value": 3
+      },
+      {
+        "confidence": 0.8,
+        "correct": true,
+        "kind": "score",
+        "question_id": "s03",
+        "value": 1
+      },
+      {
+        "confidence": 0.8,
+        "correct": false,
+        "kind": "score",
+        "question_id": "s04",
+        "value": 1
+      },
+      {
+        "confidence": 0.8,
+        "correct": true,
+        "kind": "score",
+        "question_id": "s05",
+        "value": 1
+      },
+      {
+        "confidence": 0.8,
+        "correct": true,
+        "kind": "score",
+        "question_id": "s06",
+        "value": 2
+      },
+      {
+        "confidence": 0.7,
+        "correct": true,
+        "kind": "score",
+        "question_id": "s07",
+        "value": 3
+      },
+      {
+        "confidence": 0.8,
+        "correct": true,
+        "kind": "score",
+        "question_id": "s08",
+        "value": 1
+      }
+    ],
+    "unknown_label_ids": []
+  },
+  "role": "frontdoor",
+  "study": "calibration",
+  "timestamp": "2026-09-17T19:15:58.456562+00:00"
+}

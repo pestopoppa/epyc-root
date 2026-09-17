@@ -26,6 +26,7 @@ single reassuring number hides the one that needs a fix:
 from __future__ import annotations
 
 import importlib
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Iterable
@@ -92,6 +93,14 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
     Source("kb-rag-qlen", "kb_rag_query_length",
            _files("*query_length*.json", "**/*query_length*.json"),
            note="persisted `query_length_report.py --out` snapshots", task="VB-KBRAG-QLEN-R"),
+    Source("typed-decisions-measurement", "typed_decisions_measurement",
+           _files("*.json", "**/*.json"),
+           default=Path(tempfile.gettempdir()) / "typed_decisions",
+           note="TD-2/TD-3 `measure.py` receipts (`<study>-<utc-stamp>.json`); the default "
+                "location is the producer's tmp dir, so `--path` a durable copy before citing "
+                "these numbers. A foreign document is refused by name; a receipt missing a "
+                "declared metric is refused, never silently under-produced",
+           task="VB-TDP-1"),
     Source("inf70-arms", "inf70_serving_arm",
            _files("*.belief_measurements.jsonl", "*/runs/*.belief_measurements.jsonl"),
            default=INF70_AGENT_RUNS,

@@ -551,7 +551,7 @@ _FILE_SOURCES = (
     "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
     "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
     "mhs-guard-verdicts", "mhs-guard-ops",
-    "autopilot-reproposal-rate", "reviewer-fa",
+    "autopilot-reproposal-rate", "reviewer-fa", "typed-decisions-measurement",
 )
 
 

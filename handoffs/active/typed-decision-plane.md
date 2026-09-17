@@ -1,6 +1,6 @@
 # Typed Decision Plane — one-pass typed decisions over the local stack
 
-**Status**: stub
+**Status**: in progress — **Owner: research-intake session `intake-jev-sageattn`** (operator-assigned 2026-09-17). Implementation lives in `epyc-orchestrator` on branch `intake/jev-typed-decisions-20260917` (worktree `/mnt/raid0/llm/worktrees/sub-jev-tdp-orch`).
 **Created**: 2026-09-17 (via research intake, operator-approved 2026-09-17)
 **Categories**: routing_intelligence, cost_aware_routing, inference_serving, tool_implementation, agent_architecture
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
@@ -29,7 +29,7 @@ episodic memory writing."
 
 ## Tasks
 
-- [ ] **TD-1 — Implement the local typed-decision call path over the frozen v9 server.** Per-request JSON-Schema
+- [x] **TD-1 — Implement the local typed-decision call path over the frozen v9 server.** ✅ 2026-09-17 (epyc-orchestrator branch `intake/jev-typed-decisions-20260917`: `src/typed_decisions/` types/schema/runner/confidence, flag `typed_decisions` default off, not wired to any route; 31 unit tests green; native mode deliberately deferred to TD-1a). Per-request JSON-Schema
   generation from declared questions (choice/score/noul), one chat completion with `response_format
   json_schema`, client-side decode + validation with corrective retry, expected-value scoring, local confidence
   statistics (fixed formulas + one documented alternative), and a per-call diagnostics record. Cite intake-1472
@@ -41,21 +41,21 @@ episodic memory writing."
   questions into as few requests as the server allows. Benchmark it against TD-1's JSON-schema generation path —
   wall time, output tokens, argmax agreement, and cache-reuse drift (intake-1487 measures 5-6/777 argmax flips
   under BF16 reuse; intake-1474 measures 3.4-7.9x for the pattern vs same-model naive JSON). Acceptance: our own
-  speedup and drift numbers; TD-5 remains gated on TD-2 calibration regardless of the speed result.
-- [ ] **TD-2 — Measure cross-question contamination and confidence calibration before any gate.** On a frozen
+  **2026-09-17 live validation (27B, MI210): IMPLEMENTED BUT NOT YET USABLE.** The native arm fails closed — 1/24 decisions, 23 typed `native_unknown_candidate` failures (emitted tokens 'fal'/'set' are not the declared candidate strings) because candidate strings were presumed single-token without tokenizer access; the JSON arm ran 24/24 clean in 36.7 s. No speedup number may be claimed until candidate matching is tokenizer-aware (TD-1b).
+- [x] **TD-2 — Measure cross-question contamination and confidence calibration before any gate.** On a frozen
   EPYC decision set: (a) question-order permutation on one batched call vs single-question calls, report
   top-answer flips; (b) ECE / reliability of the local confidence statistic per model and schema. Acceptance:
-  contamination and calibration numbers recorded in a measurement artifact; TD-5 is BLOCKED until this lands.
-- [ ] **TD-3 — Measure speculative fan-out locally.** Fixed state, N batched questions in one call vs N
-  singleton calls, cache-warm; report serial-sum and concurrent wall-clock plus token cost. Acceptance: our own
-  numbers replace any vendor batching multiplier in internal documents.
+  ✅ 2026-09-17 measured on MI210 (GPU, frozen-v9 HIP server; receipts + vidya frames ingested; metric_direction recorded): contamination flip rate 6.25% (27B, 3/48 pairs) vs 37.5% (LFM2.5-2.6B, 18/48) on the 24-question decision set; calibration accuracy 91.7% / mean confidence 0.8875 / ECE 0.0625 / Brier 0.078 (27B) vs 50.0% / 0.567 / 0.267 / 0.313 (LFM) — one 27B miss at ~0.90 confidence, so the tail is not empty. TD-5 gate: SATISFIED for a first shadow.
+- [x] **TD-3 — Measure speculative fan-out locally.** Fixed state, N batched questions in one call vs N
+  singleton calls, cache-warm; report serial-sum and concurrent wall-clock plus token cost. ✅ 2026-09-17 measured on the GPU (LFM2.5-2.6B): 3 batched calls vs 12 singleton calls over 3 states x 4 questions = 1.54x serial/wall speedup at 100% agreement; the saving is per-call overhead at this small state size. Vendor multipliers stay banned.
+- [ ] **TD-1b — Tokenizer-aware native candidates.** Obtain each candidate's token id(s) from the server (`/tokenize`) or a tokenizer before building the native grammar and matching probabilities; native mode must not presume single tokens, and multi-token candidates must fall back to JSON mode explicitly. Acceptance: native arm reproduces the JSON arm's argmax on the 24-question set with >=20/24 resolved and a measured speedup on the same server.
 - [ ] **TD-4 — Closed-set tool-argument selection pilot.** Map tool arguments to closed sets (Literal → Choice,
   list[Literal] → multi-choice, bool → Noul) with per-argument confidence; compare against the current
   free-form tool-call path on exact-match argument correctness and wall time. Citation: intake-1472 pattern,
-  intake-1473 adapter. Coordinate with `tool-use-eval-contract.md` (TU-TD-1 there).
+  intake-1473 adapter. Implementation + 19 unit tests landed 2026-09-17 (`src/typed_decisions/tool_args.py`); the live pilot against the free-form path is the remaining step. Coordinate with `tool-use-eval-contract.md` (TU-TD-1 there).
 - [ ] **TD-5 — One shadow integration after TD-2 passes.** Wire the typed-decision call into exactly one live
   surface as a shadow arm (routing classifier or judge, chosen by the owning handoff), gated on TD-2's
-  calibration result. Acceptance: shadow agreement + calibration reported; no enforcement without operator approval.
+  calibration result. **2026-09-17: TD-2 gate SATISFIED** (first calibration + contamination measured). Next: choose the one live surface (routing classifier or judge) with its owning handoff and wire the shadow arm; no enforcement without operator approval.
 
 ## Open Questions
 

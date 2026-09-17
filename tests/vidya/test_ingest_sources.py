@@ -167,6 +167,10 @@ def _reviewer_fa(tmp: Path) -> Path:
     return _helpers("test_reviewer_false_accept_adapter").write_fixture(tmp)
 
 
+def _typed_decisions(tmp: Path) -> Path:
+    return _helpers("test_typed_decisions_measurement_adapter").write_corpus(tmp)
+
+
 BUILDERS = {
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
@@ -190,6 +194,7 @@ BUILDERS = {
     "mhs-guard-ops": _mhs_guard,
     "autopilot-reproposal-rate": _reproposal_rate,
     "reviewer-fa": _reviewer_fa,
+    "typed-decisions-measurement": _typed_decisions,
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.

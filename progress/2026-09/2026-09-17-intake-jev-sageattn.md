@@ -76,3 +76,23 @@ autokernel. Nine URLs were supplied; the two digests were inline material.
   and their numbers non-citable (recorded).
 - The full wrap-up's operator-cadence steps (index pruning, wiki compilation sweep) were invoked by the
   operator for this run and are executed below.
+
+## Implementation round — typed-decision plane (operator: "take ownership and implement")
+
+TD-1/TD-1a/TD-2/TD-3/TD-4 implemented in `epyc-orchestrator` on branch `intake/jev-typed-decisions-20260917`
+(worktree `/mnt/raid0/llm/worktrees/sub-jev-tdp-orch`): new `src/typed_decisions/` package (types, Draft 2020-12
+schema, JSON runner with typed failures + corrective retry, adapter-verified confidence formulas, native
+candidate-scoring path, bench harness, contamination/calibration/fanout studies with receipts, closed-set
+tool-arg mapping), flag `typed_decisions` default off, 87 unit tests.
+
+Live measurements on the MI210 GPU (frozen-v9 HIP server; small window between autokernel CPU runs; server
+launched and killed by this session):
+- contamination: 6.25% flip rate (Qwen3.8-27B-Q8_0, 3/48 pairs) vs 37.5% (LFM2.5-2.6B, 18/48).
+- calibration: 91.7% acc / ECE 0.0625 / Brier 0.078 (27B) vs 50.0% / 0.267 / 0.313 (LFM).
+- fan-out: 1.54x (3 batched vs 12 singleton calls, 100% agreement, LFM).
+- native (TD-1a) live validation FAILED CLOSED: 23/24 `native_unknown_candidate` from non-tokenizer-mapped
+  candidate strings → new task TD-1b (tokenizer-aware candidates) filed; no speedup claim.
+
+Belief-kernel write side wired first (VB-TDP-1): `scripts/vidya/adapters/typed_decisions_measurement.py` +
+source row + CLI ingest; 5 measurement receipts projected → 11 claims / 33 frames (bench report refused as
+non-measurement). `metric_direction` write-side gap fixed in the producer.

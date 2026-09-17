@@ -1,0 +1,502 @@
+{
+  "counts": {
+    "canonical_unresolved": 0,
+    "comparable_pairs": 48,
+    "flips": 3,
+    "orderings": 3,
+    "questions": 24,
+    "unresolved_pairs": 0
+  },
+  "metric_directions": {
+    "flip_rate": "lower_better"
+  },
+  "mode": "json",
+  "prompt_sha256": [
+    "3f99d613ae11f507857bffc72de01d589e1747134ceb9dbbb004242f673215d1",
+    "011b6992bc0ee80de0377562426b4c7e4d1012294a2dc1bb3a1cbeb5fa723d7b",
+    "75db4b8c8d007ff62f3607b6f51ca571246a1a2a328682cd2c6a49bf553f88bd"
+  ],
+  "receipt_path": "/mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917/artifacts/typed_decisions/run_20260917/contamination-27b.json",
+  "results": {
+    "canonical": {
+      "elapsed_ms": 47525.31041111797,
+      "failure_count": 0,
+      "failures": [],
+      "is_canonical": true,
+      "mode": "json",
+      "order": [
+        "n01",
+        "n02",
+        "n03",
+        "n04",
+        "n05",
+        "n06",
+        "n07",
+        "n08",
+        "c01",
+        "c02",
+        "c03",
+        "c04",
+        "c05",
+        "c06",
+        "c07",
+        "c08",
+        "s01",
+        "s02",
+        "s03",
+        "s04",
+        "s05",
+        "s06",
+        "s07",
+        "s08"
+      ],
+      "order_index": 0,
+      "prompt_sha256": "3f99d613ae11f507857bffc72de01d589e1747134ceb9dbbb004242f673215d1",
+      "resolved": {
+        "c01": "fish",
+        "c02": "bird",
+        "c03": "reptile",
+        "c04": "mammal",
+        "c05": "oregon",
+        "c06": "vermont",
+        "c07": "arizona",
+        "c08": "alaska",
+        "n01": false,
+        "n02": true,
+        "n03": false,
+        "n04": true,
+        "n05": false,
+        "n06": true,
+        "n07": true,
+        "n08": false,
+        "s01": 2,
+        "s02": 3,
+        "s03": 1,
+        "s04": 1,
+        "s05": 1,
+        "s06": 2,
+        "s07": 3,
+        "s08": 1
+      }
+    },
+    "canonical_unresolved_ids": [],
+    "flip_rate": 0.0625,
+    "per_question": [
+      {
+        "canonical_resolved": true,
+        "canonical_value": false,
+        "compared": 2,
+        "flip_rate": 0.5,
+        "flips": 1,
+        "permuted_values": [
+          true,
+          false
+        ],
+        "question_id": "n01"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": true,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          true,
+          true
+        ],
+        "question_id": "n02"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": false,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          false,
+          false
+        ],
+        "question_id": "n03"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": true,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          true,
+          true
+        ],
+        "question_id": "n04"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": false,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          false,
+          false
+        ],
+        "question_id": "n05"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": true,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          true,
+          true
+        ],
+        "question_id": "n06"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": true,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          true,
+          true
+        ],
+        "question_id": "n07"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": false,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          false,
+          false
+        ],
+        "question_id": "n08"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": "fish",
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          "fish",
+          "fish"
+        ],
+        "question_id": "c01"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": "bird",
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          "bird",
+          "bird"
+        ],
+        "question_id": "c02"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": "reptile",
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          "reptile",
+          "reptile"
+        ],
+        "question_id": "c03"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": "mammal",
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          "mammal",
+          "mammal"
+        ],
+        "question_id": "c04"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": "oregon",
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          "oregon",
+          "oregon"
+        ],
+        "question_id": "c05"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": "vermont",
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          "vermont",
+          "vermont"
+        ],
+        "question_id": "c06"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": "arizona",
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          "arizona",
+          "arizona"
+        ],
+        "question_id": "c07"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": "alaska",
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          "alaska",
+          "alaska"
+        ],
+        "question_id": "c08"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": 2,
+        "compared": 2,
+        "flip_rate": 0.5,
+        "flips": 1,
+        "permuted_values": [
+          2,
+          1
+        ],
+        "question_id": "s01"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": 3,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          3,
+          3
+        ],
+        "question_id": "s02"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": 1,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          1,
+          1
+        ],
+        "question_id": "s03"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": 1,
+        "compared": 2,
+        "flip_rate": 0.5,
+        "flips": 1,
+        "permuted_values": [
+          3,
+          1
+        ],
+        "question_id": "s04"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": 1,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          1,
+          1
+        ],
+        "question_id": "s05"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": 2,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          2,
+          2
+        ],
+        "question_id": "s06"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": 3,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          3,
+          3
+        ],
+        "question_id": "s07"
+      },
+      {
+        "canonical_resolved": true,
+        "canonical_value": 1,
+        "compared": 2,
+        "flip_rate": 0.0,
+        "flips": 0,
+        "permuted_values": [
+          1,
+          1
+        ],
+        "question_id": "s08"
+      }
+    ],
+    "permutations": [
+      {
+        "elapsed_ms": 44479.25795102492,
+        "failure_count": 0,
+        "failures": [],
+        "is_canonical": false,
+        "mode": "json",
+        "order": [
+          "c08",
+          "n04",
+          "c05",
+          "n08",
+          "s05",
+          "n06",
+          "n03",
+          "c01",
+          "c04",
+          "n05",
+          "c02",
+          "c07",
+          "s08",
+          "s06",
+          "c06",
+          "n02",
+          "n07",
+          "s03",
+          "n01",
+          "s07",
+          "s04",
+          "c03",
+          "s01",
+          "s02"
+        ],
+        "order_index": 1,
+        "prompt_sha256": "011b6992bc0ee80de0377562426b4c7e4d1012294a2dc1bb3a1cbeb5fa723d7b",
+        "resolved": {
+          "c01": "fish",
+          "c02": "bird",
+          "c03": "reptile",
+          "c04": "mammal",
+          "c05": "oregon",
+          "c06": "vermont",
+          "c07": "arizona",
+          "c08": "alaska",
+          "n01": true,
+          "n02": true,
+          "n03": false,
+          "n04": true,
+          "n05": false,
+          "n06": true,
+          "n07": true,
+          "n08": false,
+          "s01": 2,
+          "s02": 3,
+          "s03": 1,
+          "s04": 3,
+          "s05": 1,
+          "s06": 2,
+          "s07": 3,
+          "s08": 1
+        }
+      },
+      {
+        "elapsed_ms": 48790.870694909245,
+        "failure_count": 0,
+        "failures": [],
+        "is_canonical": false,
+        "mode": "json",
+        "order": [
+          "s01",
+          "c04",
+          "n02",
+          "s07",
+          "s04",
+          "c01",
+          "s05",
+          "c06",
+          "n03",
+          "n01",
+          "n07",
+          "s02",
+          "c03",
+          "s08",
+          "n04",
+          "c08",
+          "c05",
+          "c02",
+          "c07",
+          "n08",
+          "s03",
+          "s06",
+          "n05",
+          "n06"
+        ],
+        "order_index": 2,
+        "prompt_sha256": "75db4b8c8d007ff62f3607b6f51ca571246a1a2a328682cd2c6a49bf553f88bd",
+        "resolved": {
+          "c01": "fish",
+          "c02": "bird",
+          "c03": "reptile",
+          "c04": "mammal",
+          "c05": "oregon",
+          "c06": "vermont",
+          "c07": "arizona",
+          "c08": "alaska",
+          "n01": false,
+          "n02": true,
+          "n03": false,
+          "n04": true,
+          "n05": false,
+          "n06": true,
+          "n07": true,
+          "n08": false,
+          "s01": 1,
+          "s02": 3,
+          "s03": 1,
+          "s04": 1,
+          "s05": 1,
+          "s06": 2,
+          "s07": 3,
+          "s08": 1
+        }
+      }
+    ]
+  },
+  "role": "frontdoor",
+  "study": "contamination",
+  "timestamp": "2026-09-17T19:15:03.077362+00:00"
+}

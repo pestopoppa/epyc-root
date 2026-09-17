@@ -1,0 +1,3 @@
+{
+  "state": "Workshop log (answer every question from this log alone). Items: Item A is a salmon (animal type: fish; shipping region: oregon). Item B is the number 51. Item C is a robin (animal type: bird; shipping region: vermont). Item D is the number 97. Item E is a gecko (animal type: reptile; shipping region: arizona). Item F is the number 64. Item G is a whale (animal type: mammal; shipping region: alaska). Item H is the number 29. Number priority rules: a number divisible by 3 has priority high (2); a prime number has priority critical (3); any other number has priority normal (1). Animal priority table: fish=1, bird=2, mammal=1, reptile=3."
+}

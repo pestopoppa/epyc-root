@@ -1,0 +1,580 @@
+{
+  "agreement": {
+    "agreeing": 0,
+    "agreement_rate": 0.0,
+    "comparable": 1,
+    "disagreeing": 1,
+    "disagreements": [
+      {
+        "question_id": "n06",
+        "values": {
+          "json": true,
+          "native": false
+        }
+      }
+    ],
+    "modes": [
+      "json",
+      "native"
+    ],
+    "per_question": [
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "n01",
+        "values": {
+          "json": false
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "n02",
+        "values": {
+          "json": true
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "n03",
+        "values": {
+          "json": false
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "n04",
+        "values": {
+          "json": true
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "n05",
+        "values": {
+          "json": false
+        }
+      },
+      {
+        "agreeing": false,
+        "comparable": true,
+        "question_id": "n06",
+        "values": {
+          "json": true,
+          "native": false
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "n07",
+        "values": {
+          "json": true
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "n08",
+        "values": {
+          "json": false
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "c01",
+        "values": {
+          "json": "fish"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "c02",
+        "values": {
+          "json": "bird"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "c03",
+        "values": {
+          "json": "reptile"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "c04",
+        "values": {
+          "json": "mammal"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "c05",
+        "values": {
+          "json": "oregon"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "c06",
+        "values": {
+          "json": "vermont"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "c07",
+        "values": {
+          "json": "arizona"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "c08",
+        "values": {
+          "json": "alaska"
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "s01",
+        "values": {
+          "json": 2
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "s02",
+        "values": {
+          "json": 3
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "s03",
+        "values": {
+          "json": 1
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "s04",
+        "values": {
+          "json": 1
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "s05",
+        "values": {
+          "json": 1
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "s06",
+        "values": {
+          "json": 2
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "s07",
+        "values": {
+          "json": 3
+        }
+      },
+      {
+        "comparable": false,
+        "missing_modes": [
+          "native"
+        ],
+        "question_id": "s08",
+        "values": {
+          "json": 1
+        }
+      }
+    ],
+    "unresolved_pairs": 23
+  },
+  "arms": {
+    "json": {
+      "candidate_slice_sum_range": [
+        1.0,
+        1.0
+      ],
+      "candidate_slice_sums": [
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n01"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n02"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n03"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n04"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n05"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n06"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n07"
+        },
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n08"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c01"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c02"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c03"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c04"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c05"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c06"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c07"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "c08"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s01"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s02"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s03"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s04"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s05"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s06"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s07"
+        },
+        {
+          "candidates": 4,
+          "probability_sum": 1.0,
+          "question_id": "s08"
+        }
+      ],
+      "completion_reason": "eos",
+      "decisions": 24,
+      "elapsed_ms": 36690.94886397943,
+      "failures": [],
+      "mode": "json",
+      "prompt_sha256": "3f99d613ae11f507857bffc72de01d589e1747134ceb9dbbb004242f673215d1",
+      "raw_text_chars": 2325,
+      "resolved": {
+        "c01": "fish",
+        "c02": "bird",
+        "c03": "reptile",
+        "c04": "mammal",
+        "c05": "oregon",
+        "c06": "vermont",
+        "c07": "arizona",
+        "c08": "alaska",
+        "n01": false,
+        "n02": true,
+        "n03": false,
+        "n04": true,
+        "n05": false,
+        "n06": true,
+        "n07": true,
+        "n08": false,
+        "s01": 2,
+        "s02": 3,
+        "s03": 1,
+        "s04": 1,
+        "s05": 1,
+        "s06": 2,
+        "s07": 3,
+        "s08": 1
+      },
+      "tokens_generated": 1045,
+      "wall_ms": 36691.43196800724
+    },
+    "native": {
+      "candidate_slice_sum_range": [
+        1.0,
+        1.0
+      ],
+      "candidate_slice_sums": [
+        {
+          "candidates": 2,
+          "probability_sum": 1.0,
+          "question_id": "n06"
+        }
+      ],
+      "completion_reason": "limit",
+      "decisions": 1,
+      "elapsed_ms": 2828.937032725662,
+      "failures": [
+        {
+          "detail": "position 1 question 'n01': none of the declared candidate tokens appears in the captured top probabilities",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 2 question 'n02': emitted token 'fal' is not one of the declared candidates ['true', 'false']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 3 question 'n03': emitted token 'set' is not one of the declared candidates ['true', 'false']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 4 question 'n04': emitted token 'r' is not one of the declared candidates ['true', 'false']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 5 question 'n05': emitted token 'ue' is not one of the declared candidates ['true', 'false']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 7 question 'n07': emitted token 'fal' is not one of the declared candidates ['true', 'false']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 8 question 'n08': emitted token 'set' is not one of the declared candidates ['true', 'false']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 9 question 'c01': emitted token 'ru' is not one of the declared candidates ['fish', 'bird', 'mammal', 'reptile']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 10 question 'c02': emitted token 'etr' is not one of the declared candidates ['fish', 'bird', 'mammal', 'reptile']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 11 question 'c03': emitted token 'ue' is not one of the declared candidates ['fish', 'bird', 'mammal', 'reptile']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 12 question 'c04': emitted token 'false' is not one of the declared candidates ['fish', 'bird', 'mammal', 'reptile']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 13 question 'c05': emitted token 'fish' is not one of the declared candidates ['oregon', 'vermont', 'arizona', 'alaska']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 14 question 'c06': emitted token 'bird' is not one of the declared candidates ['oregon', 'vermont', 'arizona', 'alaska']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 15 question 'c07': emitted token 're' is not one of the declared candidates ['oregon', 'vermont', 'arizona', 'alaska']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 16 question 'c08': emitted token 'pt' is not one of the declared candidates ['oregon', 'vermont', 'arizona', 'alaska']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 17 question 's01': emitted token 'ile' is not one of the declared candidates ['0', '1', '2', '3']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 18 question 's02': emitted token 'm' is not one of the declared candidates ['0', '1', '2', '3']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 19 question 's03': emitted token 'amm' is not one of the declared candidates ['0', '1', '2', '3']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 20 question 's04': emitted token 'al' is not one of the declared candidates ['0', '1', '2', '3']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 21 question 's05': emitted token 'ore' is not one of the declared candidates ['0', '1', '2', '3']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 22 question 's06': emitted token 'gon' is not one of the declared candidates ['0', '1', '2', '3']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 23 question 's07': emitted token 'ver' is not one of the declared candidates ['0', '1', '2', '3']",
+          "reason": "native_unknown_candidate"
+        },
+        {
+          "detail": "position 24 question 's08': emitted token 'mont' is not one of the declared candidates ['0', '1', '2', '3']",
+          "reason": "native_unknown_candidate"
+        }
+      ],
+      "mode": "native",
+      "prompt_sha256": "2fd3a41cf0fd123bd1f6306612c4c3e1b61e7f9ec4c2fbd00311ecec943f9e51",
+      "raw_text_chars": 71,
+      "resolved": {
+        "n06": false
+      },
+      "tokens_generated": 24,
+      "wall_ms": 2829.1317648254335
+    }
+  },
+  "benchmark": "typed_decisions_modes",
+  "modes": [
+    "json",
+    "native"
+  ],
+  "questions": [
+    "n01",
+    "n02",
+    "n03",
+    "n04",
+    "n05",
+    "n06",
+    "n07",
+    "n08",
+    "c01",
+    "c02",
+    "c03",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c08",
+    "s01",
+    "s02",
+    "s03",
+    "s04",
+    "s05",
+    "s06",
+    "s07",
+    "s08"
+  ],
+  "role": "frontdoor",
+  "state_sha256": "aa712da1656ad7c552cca2a3f595bcd9618767844098e1320a1c001db1a9ab88",
+  "timestamp": "2026-09-17T19:16:48.326895+00:00"
+}

@@ -1,0 +1,28 @@
+{
+  "questions": [
+    {"id": "n01", "kind": "noul", "text": "Item B is divisible by 3."},
+    {"id": "n02", "kind": "noul", "text": "Item D is a prime number."},
+    {"id": "n03", "kind": "noul", "text": "Item F is a prime number."},
+    {"id": "n04", "kind": "noul", "text": "Item A is a fish."},
+    {"id": "n05", "kind": "noul", "text": "Item G is a bird."},
+    {"id": "n06", "kind": "noul", "text": "Item E is a reptile."},
+    {"id": "n07", "kind": "noul", "text": "The shipping region of Item C is vermont."},
+    {"id": "n08", "kind": "noul", "text": "Item H is divisible by 3."},
+    {"id": "c01", "kind": "choice", "text": "What is the animal type of Item A?", "options": ["fish", "bird", "mammal", "reptile"]},
+    {"id": "c02", "kind": "choice", "text": "What is the animal type of Item C?", "options": ["fish", "bird", "mammal", "reptile"]},
+    {"id": "c03", "kind": "choice", "text": "What is the animal type of Item E?", "options": ["fish", "bird", "mammal", "reptile"]},
+    {"id": "c04", "kind": "choice", "text": "What is the animal type of Item G?", "options": ["fish", "bird", "mammal", "reptile"]},
+    {"id": "c05", "kind": "choice", "text": "What is the shipping region of Item A?", "options": ["oregon", "vermont", "arizona", "alaska"]},
+    {"id": "c06", "kind": "choice", "text": "What is the shipping region of Item C?", "options": ["oregon", "vermont", "arizona", "alaska"]},
+    {"id": "c07", "kind": "choice", "text": "What is the shipping region of Item E?", "options": ["oregon", "vermont", "arizona", "alaska"]},
+    {"id": "c08", "kind": "choice", "text": "What is the shipping region of Item G?", "options": ["oregon", "vermont", "arizona", "alaska"]},
+    {"id": "s01", "kind": "score", "text": "Using the number priority rules, what is the priority of Item B?", "levels": [0, 1, 2, 3]},
+    {"id": "s02", "kind": "score", "text": "Using the number priority rules, what is the priority of Item D?", "levels": [0, 1, 2, 3]},
+    {"id": "s03", "kind": "score", "text": "Using the number priority rules, what is the priority of Item F?", "levels": [0, 1, 2, 3]},
+    {"id": "s04", "kind": "score", "text": "Using the number priority rules, what is the priority of Item H?", "levels": [0, 1, 2, 3]},
+    {"id": "s05", "kind": "score", "text": "Using the animal priority table, what is the priority of Item A?", "levels": [0, 1, 2, 3]},
+    {"id": "s06", "kind": "score", "text": "Using the animal priority table, what is the priority of Item C?", "levels": [0, 1, 2, 3]},
+    {"id": "s07", "kind": "score", "text": "Using the animal priority table, what is the priority of Item E?", "levels": [0, 1, 2, 3]},
+    {"id": "s08", "kind": "score", "text": "Using the animal priority table, what is the priority of Item G?", "levels": [0, 1, 2, 3]}
+  ]
+}
