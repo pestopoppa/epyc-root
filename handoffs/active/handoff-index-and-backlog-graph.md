@@ -157,6 +157,37 @@ Contract: `docs/guides/agent-workflows/handoff-index-authoring.md`.
   docstring rules out a systemd unit ("host config is operator territory"); the documented alternative
   is the cron form `*/2 * * * * hub_supervisor.sh once`, which is idempotent and self-exits when a
   daemon is already running. Host-level change → operator's call.
+  - **OPERATOR RULING 2026-09-17 — OP-9 option B: the host cron runs a PINNED copy of
+    `hub_supervisor.sh`, never the mutable shared clone `/mnt/raid0/llm/epyc-root`.** Nor does it run
+    the hub view `/mnt/raid0/llm/views/epyc-root-main`, which is force-checked-out every 180 s. Built on
+    branch `sub/op-decisions-20260917` (`scripts/operator/install_supervision_cron_20260916.sh`):
+    - `--all` fetches origin in the shared clone (refs only) and resolves origin/main to a full sha
+      (`--pin-sha` overrides it). It then `git archive`s the supervisor's closure (`hub_supervisor.sh`,
+      `hub_launch_spec.py`, `refresh_hub_view.sh`) into
+      `/mnt/raid0/llm/ops/hub-supervisor/<sha>/scripts/dashboard/` inside the container. Each file is
+      checked byte-for-byte against the commit and stamped (`PINNED.txt`, `SHA256SUMS`). The pin is made
+      read-only and renamed into place atomically. A re-run reuses a pin only if it still verifies.
+    - The cron line is
+      `*/2 * * * * docker exec -u node -e EPYC_ROOT=/mnt/raid0/llm/epyc-root -e HUB_CANONICAL_ROOT=/mnt/raid0/llm/epyc-root -e HUB_LAUNCH_MANIFEST=/mnt/raid0/llm/epyc-orchestrator/orchestration/launch_manifest.yaml epyc-root /mnt/raid0/llm/ops/hub-supervisor/<sha>/scripts/dashboard/hub_supervisor.sh once >>/mnt/raid0/llm/epyc-root/logs/cron_supervision.log 2>&1 # epyc-op9-hub-supervisor`.
+      The supervisor's data locations (home, manifest) are explicit, and the hub source still comes
+      from the manifest.
+    - Single instance needed no code change. `once` and the daemon both `flock -n` the same
+      `/tmp/hub_supervisor_8100.lock` inside the container; the live daemon holds it on fd 9 (verified
+      read-only 2026-09-17), so each cron pass exits 0 with "another supervisor already holds".
+    - Test: `scripts/dashboard/tests/test_install_supervision_cron.sh` (40/40, fake docker/crontab).
+      The `fleet_watch` line is unchanged.
+  - [ ] **Operator runs the pinned-copy host install (OP-9 option B)** — on the HOST, after the branch
+    is on origin/main. Refresh the shared clone's refs first, or `origin/main` still serves the old,
+    unpinned installer: `docker exec -u node epyc-root git -C /mnt/raid0/llm/epyc-root fetch origin`.
+    Then run `bash <(git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/install_supervision_cron_20260916.sh) --all --dry-run`.
+    The output must show a `pin: <sha> -> /mnt/raid0/llm/ops/hub-supervisor/<sha>` line. If it does,
+    run the same command without `--dry-run`. The `<(…)` form needs bash or zsh; from fish, wrap it
+    in `bash -c '…'`. Verify:
+    - `crontab -l` has exactly one `# epyc-op9-hub-supervisor` line, and it names the pin;
+    - `docker exec -u node epyc-root cat /mnt/raid0/llm/ops/hub-supervisor/<sha>/PINNED.txt`
+      shows the sha;
+    - within 2 minutes, `logs/cron_supervision.log` shows "another supervisor already holds".
+    Then tick this box and the parent row.
   - [x] **The "sat on stale code unnoticed" half is closed; the cron half is not.** ✅ 2026-08-11 —
     `mainD`. `hub_supervisor.sh` now detects a hub serving code OLDER than `dashboard/` and restarts
     it, ported from the bus supervisor's **C42**. `health_ok` only asks whether :8100 answers 200,
