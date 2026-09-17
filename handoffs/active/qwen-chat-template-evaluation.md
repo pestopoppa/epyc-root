@@ -408,7 +408,7 @@ anything.
       terseness block, sha256 `1443ea9ab4bb…4551`, injection-free by construction) vs arm 0
       (embedded), same 160 pinned ids, fixed 900-token budget (artifacts
       `ab-cpu-20260821/ct1b-terse/`). Per-suite at the production operating point: math 80.0=80.0%
-      (flips 1:1) at **−34% tokens**; mmlu_pro 37.5→40.0% (4:5) at **−99%** (mean 2.0 tokens — the
+      (flips 1:1) at **−34% tokens**; mmlu_pro 37.5→40.0% [under-scored, see CAVEAT 2026-09-17 below] (4:5) at **−99%** (mean 2.0 tokens — the
       model finally obeys "letter only"); gpqa_diamond 42.5→**60.0%** (flips **0:7**, McNemar
       p≈0.016 — the one significant cell) at −99.5%; cruxeval 27.5→30.0% (3:4) at −36% with
       truncation 21→12. DECOMPOSITION (per the locked rule): the gpqa gain is mostly
@@ -466,6 +466,27 @@ anything.
       architect_general + the qwen38 role row). Deliberately NOT rushed at session end —
       master surgery earned a near-miss today; do it fresh with the compile chain run + check green,
       sourcing the numbers from CT-E7 and the belief sidecars.
+      - **CAVEAT 2026-09-17 (sub-scorer-fix): every mmlu_pro cell in CT-1, CT-1b, CT-E7 and CT-E7b is
+        UNDER-SCORED.** All four ran before CJ-8 on the shared pool with `scoring_config={}`.
+        - **Cause.** The scorer's letter range was A–H. So the 10/40 pinned items whose gold is I or J were
+          forced False regardless of the answer. The same 40 ids were used in every arm.
+        - **Offline re-score** of the recorded `answer_tail` (last 200 chars) with the fixed scorer
+          (`choice_labels`, orchestrator `f0015306` (branch `sub/scorer-fix-orch-20260917`; landing on main is blocked by the held orchestrator push lock)). These are estimates, not re-runs:
+
+          | cell | recorded | re-scored |
+          |---|---|---|
+          | CT-1 arm0 | 37.5% | ~47.5% |
+          | CT-1 arm1 | 37.5% | ~47.5% |
+          | CT-1b arm2 | 40.0% | ~52.5% |
+          | E-7 frontdoor | 37.5% | ~50.0% |
+          | E-7 architect_general | 27.5% | ~40.0% |
+
+        - **What still holds.** Directions and paired flips are unchanged in sign, and the other suites are
+          unaffected.
+        - **What is wrong.** The master-registry `mmlu_pro` quality values (37.5 / 27.5) and the E-7 belief
+          sidecars (`/workspace/tmp/e7-recal/*/belief_measurements.jsonl`, not in the ledger) carry the
+          under-scored value. Correcting them needs a re-stamp on the fixed scorer. See
+          `progress/2026-09/2026-09-17-sub-scorer-fix.md`.
 - [x] **CT-9 ✅ 2026-08-23 — PILOT ADOPTION DECISION (post-observation, one line per role):
       HOLD all three pilot roles; no fleet-wide extension; nothing reverted.** Decision
       basis = production behavior over the ~18 h window (2026-08-22 13:55Z →

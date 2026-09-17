@@ -1367,6 +1367,12 @@ The second-pass entry below recorded the livecodebench rebuild as "engineering, 
 
 **Verdict: 704 rows rebuilt, 1,656 retired** (coverage 29.83%; distinct `expected` values go **1 → 670**). Of the 11 `code_execution` rows, 1 was regenerated and 10 retired — every retirement a linked-list / tree / quad-tree / class-design problem for which no case can be manufactured from this snapshot. Before the rebuild, the shipped oracle passed a do-nothing stub AND passed echoing the prompt at 100% — the strongest form of the vacuity claim.
 
+> **Caveat (2026-09-17).** "Landed" meant the ADAPTER. The live `question_pool.jsonl` (built
+> 2026-07-27) was never regenerated, so livecodebench kept scoring `substring 'def '` until the
+> shared scorer began refusing that shape (PRB-T4 follow-up). Any livecodebench number drawn from the
+> live pool after 2026-08-12 is as vacuous as the ones before it. Source:
+> [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md).
+
 ### Upstream is partly misaligned — references solve the WRONG problem
 
 A finding the original audit did not contain: `greengerong/leetcode` reference solutions are frequently the solution to a *different* problem — `flip-equivalent-binary-trees` ships `partitionDisjoint`, `basic-calculator-ii` ships calculator-I. A function name matching its own slug occurs on only **40.08%** of rows, and it is not a constant offset (every shift −4..+8 scores worse than 0). That is why ungated reference-fail sits at 53.26% — an upstream property, not a parsing defect — and it constrains any future work on this suite: the reference corpus can never serve as an answer key.

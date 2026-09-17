@@ -1979,6 +1979,28 @@ are left to that still-running agent.
     24 rows, 0 refused. The livecodebench sidecar was withheld because its accuracy uses the vacuous
     `substring 'def '` scorer. This needs a tuple-level exclusion or a scorer fix; do not ingest it as-is.
     Still unticked: the driver has not merged.
+- [ ] **VB-PRB-T4-CAVEAT — mark the 24 ingested PRB-T4 TALE rows as sample-scoped (filed 2026-09-17,
+  sub-scorer-fix).**
+  - **Affected rows.** The ledger holds 24 `vidya.adapters.tale_budget/v1` claims from run
+    `prb_t4_gpu_20260916_191049`: 12 `math`, 12 `olympiadbench`. They are
+    `tale_suite_accuracy`, `tale_mean_answer_tokens`, `tale_mean_tokens_incl_estimator` and
+    `tale_mean_latency_s_incl_estimator` × baseline/static/tale.
+  - **Defect.** The harness sampled the first n rows in file order.
+    - The `math` claims describe **GSM8K only** (150/150 `gsm8k_*`), not the math suite, which also
+      has 500 MATH-500 rows.
+    - The `olympiadbench` claims come from a subject-skewed draw: geometry 15/300 trials against a
+      19% population share.
+  - **Status.** The sampler is fixed (research `52595b9b`). The rows are real measurements of that
+    sample, not scorer artifacts.
+  - **Action.** Record a correction/scope frame through the kernel's correction path, never by editing
+    the ledger. It should narrow the suite label (math → gsm8k subset; olympiadbench → skewed subset),
+    or supersede the rows with the PRB-T4-RERUN rows once they exist.
+  - **Other affected results (not in the ledger).**
+    - The livecodebench sidecar stays withheld. Its accuracy is vacuous, and the stale rows are now
+      refused by the scorer.
+    - The CT-1/CT-1b/E-7 `mmlu_pro` cells are under-scored (`qwen-chat-template-evaluation.md`,
+      CAVEAT 2026-09-17). Their sidecars under `/workspace/tmp/e7-recal/` must not be ingested
+      without that correction.
 - [ ] **VB-GPU-RUNNER — write hooks for the sub-gpu-runner recipe sweeps (filed 2026-09-16, sub-gpu-runner).**
   These 2026-09-16 runs are PRE-HOOK and emit zero rows. None has a write hook: `serving_beliefs` fires only
   inside `serving.compare`. Do not project their JSONL on read.

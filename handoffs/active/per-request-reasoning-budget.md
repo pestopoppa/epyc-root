@@ -437,6 +437,40 @@ n=500 per arm × 3 arms = 1,500 generations + 500 estimator calls ≈ 2,000 requ
           4. The CPU `frontdoor` replicate was not run (a GPU-only window).
         - **Belief kernel.** `ingest tale-budget` wrote 24 rows for math and olympiadbench. The livecodebench
           sidecar was deliberately NOT ingested, because its accuracy rows come from the vacuous scorer.
+      - **Defects 1–3 FIXED 2026-09-17 (sub-scorer-fix, offline; box still open).** Research `52595b9b`;
+        orchestrator `f0015306` (branch `sub/scorer-fix-orch-20260917`; landing on main is blocked by the held orchestrator push lock). Details: `progress/2026-09/2026-09-17-sub-scorer-fix.md`.
+        - **Root causes.** None of the three is in TALE's own scoring.
+          - livecodebench: the live `question_pool.jsonl` (built 2026-07-27) predates the 2026-08-12
+            executable-oracle rebuild and was never regenerated. 2,349 rows still score `substring 'def '`.
+          - mmlu_pro: the source gold is correct (`answer == LABELS[answer_index]` on 12,032/12,032 rows).
+            The adapter emitted `scoring_config={}` for an A–J suite, and the shared scorer knew only A–H, so
+            the 2,053 I/J-gold rows (17.1%) were unscoreable.
+          - math: `load_questions` took the first n rows in file order, which is 1,319 gsm8k rows before the
+            500 MATH-500 rows. olympiadbench drew geometry at 5% against a population share of 19%.
+        - **Fixes.**
+          - Shared scorer: `choice_labels`, and a refusal for substring on code rows.
+          - The adapter re-derives gold from the pinned snapshot.
+          - Seeded source-stratified sampling (`--sample-seed`).
+          - A pre-inference oracle preflight (exit 2).
+          - Three-valued scoring.
+          - `question_pool.py --refresh-suites`.
+        - **Re-run input.** `benchmarks/prompts/question_pool.prbt4-refresh-20260917.jsonl` (gitignored,
+          sha256 `3c3b498a…`): livecodebench is 704 rows, all `code_execution`; mmlu_pro is 12,032 rows. Every
+          sampled row passes the preflight. The **live** pool is unchanged.
+      - [ ] **PRB-T4-RERUN — GPU re-run of livecodebench + mmlu_pro (and math/olympiadbench at n=400)** after the
+        fix.
+        - GPU-only, exclusive MI210 window. NOT run by sub-scorer-fix.
+        - Command: `eval_tale_budget.py --pool benchmarks/prompts/question_pool.prbt4-refresh-20260917.jsonl
+          --suites math olympiadbench mmlu_pro livecodebench --n-questions 400 --sample-seed 42`, with the
+          same serving args as the 2026-09-16 run.
+        - Pre-condition: the shared orchestrator clone must carry the scorer fix. Otherwise the preflight
+          refuses mmlu_pro (fail-closed, by design).
+        - The 2026-09-16 livecodebench accuracy (100%) and the missing mmlu_pro cell are superseded by this
+          re-run.
+        - **Caveat on the 2026-09-16 rows already quoted above.**
+          - The "math" cells measure **GSM8K only** (150/150 `gsm8k_*`), not the math suite.
+          - The olympiadbench cells come from a subject-skewed draw (geometry 15/300 trials).
+          - Neither may be read as the suite-level number.
       - **Pre-run gaps closed 2026-09-16 (sub-gpu-prep, offline; run still open):** research `a454b7fd`
         (ported as `76f5132b`, on research `main` via merge `a280853d`) — estimator tokens/time charged
         (`*_incl_estimator` beside answer-only), TALE-EP token budgets (`--budget-unit tokens` default),
