@@ -1,30 +1,46 @@
 {
   "by_type": {
-    "docs": 104,
+    "docs": 107,
     "handoff-active": 168,
     "handoff-blocked": 2,
     "handoff-completed": 195,
-    "progress": 465,
+    "progress": 466,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-17T14:48:38Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 1,
+      "added": 4,
+      "changed": 13,
       "removed": 0
     },
-    "at": "2026-09-17T19:43:00Z",
+    "at": "2026-09-17T19:49:09Z",
     "scope_paths": [
-      "handoffs/active/autokernel-research-loop.md"
+      "docs/design/hs4-harness-decision-package-20260916.md",
+      "docs/design/hs4-shell-and-orchestrator-features-20260916.md",
+      "docs/reference/harness-candidates/client-surface-audit.md",
+      "docs/reference/harness-candidates/harness-card.md",
+      "docs/reference/harness-candidates/harness-doctrine.md",
+      "docs/reference/harness-candidates/opencode-p03-audit-20260916.md",
+      "docs/reference/v1-structured-output-capability.md",
+      "handoffs/active/fuzzy-workflow-authoring-gui.md",
+      "handoffs/active/harness-improvement-loop.md",
+      "handoffs/active/harness-selection-and-integration.md",
+      "handoffs/active/typed-decision-plane.md",
+      "handoffs/completed/hermes-outer-shell.md",
+      "progress/2026-09/2026-09-16-sub-hermes-memory.md",
+      "progress/2026-09/2026-09-16-sub-hs4-p0.md",
+      "progress/2026-09/2026-09-16-sub-hs4-p03.md",
+      "progress/2026-09/2026-09-17-harness-doc-audit.md",
+      "progress/2026-09/2026-09-17-intake-jev-sageattn.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-17T19:43:00Z",
+  "scan_time": "2026-09-17T19:49:09Z",
   "schema_version": 1,
-  "source_set_hash": "1abb9fc788a7dac71d6ee6d9028b45bbf8e6a7e7fa35b148f7464d3947dd01df",
+  "source_set_hash": "55456aa70abca19812509a0325dfe99d39552bfd1c3683235d795218585e6649",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -531,10 +547,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "382bbc14215702857b2b258d82776a3ab83eeb755931ccc2a0ab5faa6e9c0efd",
-      "modified": "2026-09-17T14:03:40Z",
+      "content_hash": "2b2fb6758edb4e40ffc2d9d15880c562f648a3c61049964a98783273accefbe4",
+      "modified": "2026-09-17T19:08:01Z",
       "path": "handoffs/active/fuzzy-workflow-authoring-gui.md",
-      "size": 2220,
+      "size": 6256,
       "title": "Fuzzy Workflow Authoring GUI \u2014 deterministic flow, fuzzy steps, one canvas",
       "type": "handoff-active"
     },
@@ -611,18 +627,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "848a21c865917e96b9eaefeecea95ea0128138c6eb73d4d3a8e259a116f5ea06",
-      "modified": "2026-09-17T12:30:10Z",
+      "content_hash": "c7dfa4de3d15ed168d0286e72ed63d24b6116dd79cc21878c2998cafffae6855",
+      "modified": "2026-09-17T19:08:30Z",
       "path": "handoffs/active/harness-improvement-loop.md",
-      "size": 4346,
+      "size": 6277,
       "title": "Harness Improvement Loop \u2014 self-improvement for orchestrator-side harness features",
       "type": "handoff-active"
     },
     {
-      "content_hash": "4c3fa63b80281544bce6d2a9532e5dc41ba0d22ddc15330d008f8c4c339ef250",
-      "modified": "2026-09-17T14:47:14Z",
+      "content_hash": "82b67886e6302523bea659f480f4bf6cc3bfb9cc1aa65e8e8af0336f27ee0fd9",
+      "modified": "2026-09-17T19:40:52Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 99838,
+      "size": 47226,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -1299,10 +1315,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "65f1446696434fad59e102c89e01a35db9614c8eaac5b0c07514ebfa97249859",
-      "modified": "2026-09-17T14:03:40Z",
+      "content_hash": "aae183e15b180cdb4a967eaf290f1e3c4758844e4a7914b1e72bf3f010e02f68",
+      "modified": "2026-09-17T19:30:15Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 6201,
+      "size": 8319,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },
@@ -2075,10 +2091,10 @@
       "type": "handoff-completed"
     },
     {
-      "content_hash": "cd7886dcc10ebe74bc029830bb95912002b09971c1d034b80f4fcde3b3d09a08",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "8fe0572bf4178f94b43ccfc5a5445d8f1552f3d927bdac9f3b3839aeff9baccc",
+      "modified": "2026-09-17T19:07:15Z",
       "path": "handoffs/completed/hermes-outer-shell.md",
-      "size": 70561,
+      "size": 70544,
       "title": "Hermes/OpenGauss as Outer Shell",
       "type": "handoff-completed"
     },
@@ -7339,26 +7355,26 @@
       "type": "progress"
     },
     {
-      "content_hash": "9273b610e9b8e1db92ea9d2c7a09f8ba22295c353345690899b2dfdb9879ae41",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "9b7a26a859345e742e4799faa440c6f3d4a59f9818d9c8fb7485c8242e88aa74",
+      "modified": "2026-09-17T19:07:30Z",
       "path": "progress/2026-09/2026-09-16-sub-hermes-memory.md",
-      "size": 18498,
+      "size": 19397,
       "title": "Hermes memory vs orchestrator episodic memory \u2014 HS-4 input (sub-hermes-memory, 2026-09-16)",
       "type": "progress"
     },
     {
-      "content_hash": "fa1446c2e581f4baf655916c7655b9823575b7656c4ea7a38ae1b81746b52b62",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "dae84095d016b73ca3a4f6379d49caf9c6e2e3afb385fecda7c1adb7b26811c4",
+      "modified": "2026-09-17T19:07:30Z",
       "path": "progress/2026-09/2026-09-16-sub-hs4-p0.md",
-      "size": 10189,
+      "size": 10867,
       "title": "2026-09-16 \u2014 sub-hs4-p0 (HS-4 P0.1 + P0.2: `/v1` client tool mode, typed request keys)",
       "type": "progress"
     },
     {
-      "content_hash": "846dea24eec23bb5513830813c045bb86132c7c12137e8439d1ecc77f99fe71d",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "ae4b84b9d8c16c645104645bc26775502be36c758fae90bcf12f2c273259022d",
+      "modified": "2026-09-17T19:07:30Z",
       "path": "progress/2026-09/2026-09-16-sub-hs4-p03.md",
-      "size": 3115,
+      "size": 3991,
       "title": "2026-09-16: sub-hs4-p03 (HS-4 P0.3: OpenCode re-audit and plugin skeleton)",
       "type": "progress"
     },
@@ -7635,10 +7651,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "de64785a08f785cd3c1f52822a8bc4aa417fed2d5aab7f378ff5b0973dccfc9a",
-      "modified": "2026-09-17T14:46:25Z",
+      "content_hash": "41476e3f8cb13d335c52bf2c93797edf2e820db48192a8e3e484efd418f38ee0",
+      "modified": "2026-09-17T19:43:01Z",
+      "path": "progress/2026-09/2026-09-17-harness-doc-audit.md",
+      "size": 7528,
+      "title": "2026-09-17 \u2014 HS-4 document audit: decision-record refresh, fuzzy-workflow hardening",
+      "type": "progress"
+    },
+    {
+      "content_hash": "4d9b30de20b3f7a3ddb6b35e540b6c81ecf516d4c07d66ceae1a24d57c437efb",
+      "modified": "2026-09-17T19:30:15Z",
       "path": "progress/2026-09/2026-09-17-intake-jev-sageattn.md",
-      "size": 6295,
+      "size": 7788,
       "title": "2026-09-17 \u2014 research-intake session `intake-jev-sageattn` (full wrap-up)",
       "type": "progress"
     },
@@ -7851,18 +7875,18 @@
       "type": "docs"
     },
     {
-      "content_hash": "0805fbf2932ec95a899d6608e2ce39b53b299d3d3b52770a926544c0f18bf1db",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "f0a869a58bd9453c8fa83157288822ba31b8aaca76eaac41cb17678c314c7eca",
+      "modified": "2026-09-17T19:08:27Z",
       "path": "docs/design/hs4-harness-decision-package-20260916.md",
-      "size": 20667,
+      "size": 21393,
       "title": "HS-4 Harness-Selection Decision Package \u2014 2026-09-16",
       "type": "docs"
     },
     {
-      "content_hash": "300143ae068eeae6f1bfba48029995ce0326c926be01e01e90ae36c7ac805046",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "598f1ab77041aeaec8471c57da1978bab57b2d6922da1a9a197e66adae65a5f1",
+      "modified": "2026-09-17T19:06:42Z",
       "path": "docs/design/hs4-shell-and-orchestrator-features-20260916.md",
-      "size": 34788,
+      "size": 35582,
       "title": "HS-4 Follow-Through: Shell Choice and Where the Hermes Features Live (2026-09-16)",
       "type": "docs"
     },
@@ -8299,11 +8323,27 @@
       "type": "docs"
     },
     {
-      "content_hash": "d2430c44c736e28c9506d84ef5dedc96a708d50491acab897cac8c03fae3f2b8",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "e6dceb8be016a1c499d7f54e53ace53fe5519906eba1410d84b225b0f296bb09",
+      "modified": "2026-09-17T19:32:06Z",
       "path": "docs/reference/harness-candidates/client-surface-audit.md",
-      "size": 8381,
+      "size": 13360,
       "title": "Client Surface Audit \u2014 reusable instrument",
+      "type": "docs"
+    },
+    {
+      "content_hash": "f8f695270e3ad61271f6f4bfe8cf48936fe2b6986dd8b44ae5215521a632ace8",
+      "modified": "2026-09-17T19:32:06Z",
+      "path": "docs/reference/harness-candidates/harness-card.md",
+      "size": 17462,
+      "title": "Harness Cards \u2014 EPYC layer-B disclosure",
+      "type": "docs"
+    },
+    {
+      "content_hash": "67e70364fb1bf065e4b809848dd8c5c981d2d385d271301ebb69135ef1b9a55a",
+      "modified": "2026-09-17T19:32:06Z",
+      "path": "docs/reference/harness-candidates/harness-doctrine.md",
+      "size": 4113,
+      "title": "Harness doctrine \u2014 re-targetability and evaluation-side randomization",
       "type": "docs"
     },
     {
@@ -8315,10 +8355,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "10c1c8b6d5e4800a1d2430095d3bf61206567d54db1034bae5d738623898a312",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "03cff717b9ca464ce9a05923db569cdd653ba64c353ca34a0350cdeb3cf0b8de",
+      "modified": "2026-09-17T19:07:01Z",
       "path": "docs/reference/harness-candidates/opencode-p03-audit-20260916.md",
-      "size": 21975,
+      "size": 23077,
       "title": "OpenCode Re-Audit at Tip: HS-4 P0.3 (2026-09-16)",
       "type": "docs"
     },
@@ -8464,6 +8504,14 @@
       "path": "docs/reference/quant-asymmetric-self-spec-serving-design-2026-07-20.md",
       "size": 9077,
       "title": "Quant-Asymmetric Self-Spec Serving Design",
+      "type": "docs"
+    },
+    {
+      "content_hash": "c911a3081bb2e34e1454f3ea2618c17c3f89fc2744368ef86f955610a58becb0",
+      "modified": "2026-09-17T19:32:06Z",
+      "path": "docs/reference/v1-structured-output-capability.md",
+      "size": 3614,
+      "title": "Structured output across the kernel and the `/v1` seam",
       "type": "docs"
     },
     {
@@ -8619,7 +8667,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1074,
+  "total_new": 1078,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
