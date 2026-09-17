@@ -1965,7 +1965,7 @@ Ported by wrap-up pass 2 from the /workspace working copy. The sub-gpu-prep prod
 the SL-2 commit `5368766b` did not. The sub-gpu-runner notes (the TALE capture wiring and VB-GPU-RUNNER)
 are left to that still-running agent.
 
-- [ ] **VB-PRB-T4 — wire `eval_tale_budget.py` at write time** (research `a454b7fd`, ported as
+- [x] **VB-PRB-T4 — wire `eval_tale_budget.py` at write time** ✅ 2026-09-17 (closed by the main session: write-time capture ran through the hook on the first PRB-T4 run, 24 rows ingested, and the driver is on research main `0b295a25`. The sample-scope caveat is tracked separately in VB-PRB-T4-CAVEAT.) (research `a454b7fd`, ported as
   `76f5132b`, on research `main` via `a280853d`): project `.jsonl` + `.meta.json` + `.summary.json` per suite×arm into ClaimTuples
   (accuracy; answer-only AND incl-estimator tokens/latency; budget_unit, temperature+seed, served GGUF identity,
   chat_template_kwargs) BEFORE the PRB-T4 run. Locator = the run×suite×arm, never per question. No new grading rule.
