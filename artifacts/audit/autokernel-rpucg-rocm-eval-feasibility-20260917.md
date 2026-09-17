@@ -54,10 +54,16 @@ profiler seam. [AMD's ROCm 6.2.4 compatibility matrix](https://rocm.docs.amd.com
 lists gfx90a support, but that establishes platform support, not this
 application's profiler correctness or equivalence.
 
-The safe port input is a field mapping on paper: identify whether
-`profile_program_roc` invokes v1, v2, or a custom parser; enumerate its
-metrics, units, kernel-name matching, and tool output; compare those fields
-against our governed v1 attribution and v2 deterministic C4 report. Resolve
+The profiler route is **identified**, not open: pinned
+[`run_eval.py:375-447`](https://github.com/wq-will/SimpleTES/blob/47d3413da1d85dc24341219d47452d2601e56a57/datasets/gpukernel/server/tasks/libkernelbot/run_eval.py#L375-L447)
+defines `profile_program_roc`, calls `rocprofv3 --output-format pftrace csv`
+at :383-410, then combines `*.pftrace`, moves `_code_object*.o`, and zips a
+`ProfileResult` at :424-447. Our established C4 readers use governed v1
+attribution and v2 deterministic reports (with omniperf/RPD tracked as
+separate candidates), so SimpleTES's v3 pftrace/CSV package is **not** a
+drop-in profiler receipt. The remaining study is a field mapping on paper:
+enumerate its metrics, units, kernel-name matching, and package identities
+against our C4 report before proposing any adapter. Resolve
 6.2.4-vs-6.2.0-66 dependency drift without replacing the shared `/opt/rocm`
 bind mount. Keep executable registration and external-benchmark remeasurement
 out of scope under AK-RB-1 until that review is complete.
