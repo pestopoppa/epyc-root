@@ -66,6 +66,66 @@ def sidecar():
     return summary
 
 
+def cpu_sidecar():
+    doc = sidecar()
+    doc["backend"] = "llama_cpu"
+    toolchain = {**doc["toolchain"], "cpu_objdump_stat": {
+        "path": "/usr/bin/x86_64-linux-gnu-objdump", "device": 1,
+        "inode": 2, "bytes": 1024, "mtime_ns": 3}}
+    doc["toolchain"] = toolchain
+    doc["objects"][0]["relative_path"] = "bin/libggml-cpu.so.0.16.0"
+    doc["objects"][0]["symbols"] = [{
+        "name": "ggml_compute_forward_gated_delta_net",
+        "instruction_mix": dict(doc["objects"][0]["instruction_mix"])}]
+    doc["build_frame"]["backend"] = "llama_cpu"
+    doc["build_frame"]["toolchain"] = toolchain
+    frame_sha = digest(doc["build_frame"])
+    doc["build_frame_sha256"] = frame_sha
+    doc["artifact_ref"] = f"codegen/{doc['champion_head']}.llama_cpu.{frame_sha}.json"
+    doc["summary_core_sha256"] = digest({
+        key: value for key, value in doc.items()
+        if key not in {"summary_core_sha256", "belief_claim_tuple"}})
+    row = doc["belief_claim_tuple"]
+    row["measurement_id"] = f"ak-codegen:attempt-42:{frame_sha}"
+    row["attestation_locator"] = doc["artifact_ref"]
+    row["extra"].update(
+        backend="llama_cpu", toolchain=toolchain,
+        build_frame_sha256=frame_sha,
+        summary_core_sha256=doc["summary_core_sha256"],
+        code_objects=[{"relative_path": doc["objects"][0]["relative_path"],
+                       "sha256": "c" * 64}],
+        disassembled_symbols=["ggml_compute_forward_gated_delta_net"])
+    return doc
+
+
+def legacy_cpu_unavailable_sidecar():
+    """The original v1 CPU producer wrote no library/symbol evidence."""
+    doc = sidecar()
+    doc["backend"] = "llama_cpu"
+    doc["objects"] = []
+    doc["instruction_mix"] = None
+    doc["status"] = "unavailable"
+    doc["reason"] = "CPU machine-code analysis is not implemented"
+    doc["build_frame"]["backend"] = "llama_cpu"
+    doc["build_frame"]["object_sha256s"] = []
+    frame_sha = digest(doc["build_frame"])
+    doc["build_frame_sha256"] = frame_sha
+    doc["artifact_ref"] = f"codegen/{doc['champion_head']}.llama_cpu.{frame_sha}.json"
+    doc["summary_core_sha256"] = digest({
+        key: value for key, value in doc.items()
+        if key not in {"summary_core_sha256", "belief_claim_tuple"}})
+    row = doc["belief_claim_tuple"]
+    row["measurement_id"] = f"ak-codegen:attempt-42:{frame_sha}"
+    row["value"] = 0
+    row["claim"] = "Bounded native code-object disassembly was unavailable for this retained build"
+    row["attestation_locator"] = doc["artifact_ref"]
+    row["extra"].update(
+        backend="llama_cpu", build_frame_sha256=frame_sha,
+        summary_core_sha256=doc["summary_core_sha256"],
+        code_objects=[], instruction_mix=None)
+    return doc
+
+
 def project(document):
     path = Path("/tmp/store") / document["artifact_ref"]
     rows = adapter.native_rows(document, receipt_locator=f"autokernel:{path}",
@@ -79,6 +139,42 @@ def test_valid_sidecar_projects_advisory_tuple():
     assert row.value == 1
     assert result[0] == "Judged"
     assert result[1] == "Located"
+
+
+def test_cpu_library_symbol_summary_projects_advisory_tuple():
+    row = project(cpu_sidecar())
+    assert row.value == 1
+    assert row.extra["disassembled_symbols"] == ["ggml_compute_forward_gated_delta_net"]
+    assert grade(row)[:2] == ("Judged", "Located")
+
+
+def test_original_cpu_unavailable_sidecar_remains_projectable():
+    doc = legacy_cpu_unavailable_sidecar()
+    assert "disassembled_symbols" not in doc["belief_claim_tuple"]["extra"]
+    row = project(doc)
+    assert row.value == 0
+    assert grade(row)[:2] == ("Judged", "Located")
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda d: d["objects"][0].update(relative_path="../../libggml-cpu.so.0.16.0"),
+    lambda d: d["objects"][0]["symbols"][0].update(name="not_an_allowlisted_symbol"),
+    lambda d: d["objects"][0]["symbols"][0]["instruction_mix"].update(vector=2),
+    lambda d: d["objects"][0].update(sha256="f" * 64),
+    lambda d: d["objects"][0].update(symbols=[]),
+    lambda d: d["toolchain"].update(cpu_objdump_stat=None),
+])
+def test_cpu_symbol_and_identity_tampering_refused(mutate):
+    doc = cpu_sidecar()
+    mutate(doc)
+    # Re-seal the local JSON envelope so these exercise the CPU-specific
+    # validator, not merely the generic summary-core mismatch.
+    doc["summary_core_sha256"] = digest({
+        key: value for key, value in doc.items()
+        if key not in {"summary_core_sha256", "belief_claim_tuple"}})
+    doc["belief_claim_tuple"]["extra"]["summary_core_sha256"] = doc["summary_core_sha256"]
+    with pytest.raises(ProjectionError):
+        project(doc)
 
 
 def test_prehook_sidecar_is_not_reconstructed():

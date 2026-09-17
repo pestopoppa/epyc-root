@@ -16,6 +16,11 @@ SOURCE_SCHEMA = "epyc.autokernel.codegen_summary.v1"
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 _OID = re.compile(r"[0-9a-f]{40}\Z")
 _MIX = ("scalar", "vector", "matrix", "memory", "other")
+_CPU_ELF = re.compile(r"bin/libggml-cpu\.so(?:\.[0-9]+)*\Z")
+_CPU_SYMBOLS = (
+    "ggml_compute_forward_gated_delta_net", "ggml_vec_dot_q4_K_q8_K",
+    "ggml_vec_dot_q5_K_q8_K", "ggml_vec_dot_q6_K_q8_K",
+)
 
 
 def _digest(value: Any) -> str:
@@ -100,6 +105,17 @@ def native_rows(document: dict, *, receipt_locator: str = "",
     object_refs: list[dict] = []
     totals = dict.fromkeys(_MIX, 0)
     seen_paths: set[str] = set()
+    disassembled_symbols: list[str] = []
+    cpu_symbol_summary = backend == "llama_cpu" and "cpu_objdump_stat" in toolchain
+    if backend == "llama_cpu":
+        stat = toolchain.get("cpu_objdump_stat")
+        if stat is not None and (not isinstance(stat, dict)
+                or not isinstance(stat.get("path"), str) or not stat["path"]
+                or any(type(stat.get(key)) is not int or stat[key] < 0 for key in
+                       ("device", "inode", "bytes", "mtime_ns"))):
+            raise ProjectionError("CPU disassembler identity is invalid")
+        if len(objects) > 1 or (objects and not cpu_symbol_summary):
+            raise ProjectionError("CPU codegen requires one bounded library and tool identity")
     for index, row in enumerate(objects):
         if not isinstance(row, dict):
             raise ProjectionError("codegen object row is invalid")
@@ -107,7 +123,9 @@ def native_rows(document: dict, *, receipt_locator: str = "",
         if (not isinstance(relative, str) or not relative
                 or PurePosixPath(relative).is_absolute()
                 or ".." in PurePosixPath(relative).parts
-                or relative in seen_paths or not relative.endswith((".hsaco", ".co"))):
+                or relative in seen_paths or not (
+                    bool(_CPU_ELF.fullmatch(relative)) if backend == "llama_cpu"
+                    else relative.endswith((".hsaco", ".co")))):
             raise ProjectionError("codegen object path is invalid or repeated")
         seen_paths.add(relative)
         if not isinstance(row.get("disassembly_status"), str):
@@ -121,6 +139,29 @@ def native_rows(document: dict, *, receipt_locator: str = "",
         elif "bytes" in row or "instruction_mix" in row:
             raise ProjectionError("unhashed code object claims bytes or instructions")
         mix = _mix(row.get("instruction_mix"), f"objects[{index}].instruction_mix")
+        if backend == "llama_cpu":
+            symbols = row.get("symbols")
+            if not isinstance(symbols, list) or len(symbols) > len(_CPU_SYMBOLS):
+                raise ProjectionError("CPU symbol list is invalid")
+            symbol_totals = dict.fromkeys(_MIX, 0)
+            for symbol in symbols:
+                if not isinstance(symbol, dict) or set(symbol) != {"name", "instruction_mix"}:
+                    raise ProjectionError("CPU symbol row is invalid")
+                name = symbol["name"]
+                if (name not in _CPU_SYMBOLS or name in disassembled_symbols or
+                        (disassembled_symbols and
+                         _CPU_SYMBOLS.index(name) <= _CPU_SYMBOLS.index(disassembled_symbols[-1]))):
+                    raise ProjectionError("CPU symbol is not allowlisted or is out of order")
+                symbol_mix = _mix(symbol["instruction_mix"], "CPU symbol instruction_mix")
+                if symbol_mix is None or not any(symbol_mix.values()):
+                    raise ProjectionError("CPU symbol lacks parsed instructions")
+                disassembled_symbols.append(name)
+                for key in _MIX:
+                    symbol_totals[key] += symbol_mix[key]
+            if mix != (symbol_totals if symbols else None):
+                raise ProjectionError("CPU library mix does not match selected symbols")
+        elif "symbols" in row:
+            raise ProjectionError("GPU code object cannot claim CPU symbols")
         if mix is not None:
             if row["disassembly_status"] != "ok":
                 raise ProjectionError("instruction mix lacks successful disassembly")
@@ -134,6 +175,8 @@ def native_rows(document: dict, *, receipt_locator: str = "",
     status = document.get("status")
     if status != ("partial" if mix is not None else "unavailable"):
         raise ProjectionError("codegen status does not match native evidence")
+    if cpu_symbol_summary and status == "partial" and toolchain["cpu_objdump_stat"] is None:
+        raise ProjectionError("CPU disassembly lacks identified objdump")
     if (document.get("authority") != "diagnostic_only"
             or document.get("ptx_sass_cubin") != "unavailable: non-CUDA backend"
             or any(document.get(key) is not None for key in
@@ -176,6 +219,8 @@ def native_rows(document: dict, *, receipt_locator: str = "",
             "ptx_sass_cubin": document["ptx_sass_cubin"],
         },
     }
+    if cpu_symbol_summary:
+        expected["extra"]["disassembled_symbols"] = disassembled_symbols
     if tuple_row != expected:
         raise ProjectionError("producer ClaimTuple does not bind codegen summary")
     return [{"document": document, "tuple": tuple_row, "receipt_locator": receipt_locator,
