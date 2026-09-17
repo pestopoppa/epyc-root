@@ -7,6 +7,7 @@ sitting, which is exactly when that mistake is easiest to make and hardest to se
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -17,10 +18,11 @@ sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 
 from adapters import autopilot_journal as apj  # noqa: E402
 
-import os  # noqa: E402
-
 # A worktree has no `repos/` symlinks; EPYC_ORCH_ROOT points the real-writer tests at a checkout.
 ORCH = Path(os.environ.get("EPYC_ORCH_ROOT") or ROOT / "repos" / "epyc-orchestrator")
+# A writer-side branch not yet on the default clone can be checked against this reader by
+# pointing VIDYA_ORCH_WRITER_ROOT at its worktree.
+WRITER = Path(os.environ.get("VIDYA_ORCH_WRITER_ROOT") or ORCH)
 
 
 def write_journal(tmp_path: Path, rows: list[dict]) -> Path:
@@ -192,6 +194,54 @@ def test_run_manifest_digest_is_carried_not_graded(tmp_path):
     assert sup_plain["assertion"]["run_manifest"] == ""
     assert sup["assertion"]["grade"] == sup_plain["assertion"]["grade"]
     assert sup["provenance"]["grade_reasons"] == sup_plain["provenance"]["grade_reasons"]
+
+
+def test_ap55_gate_legs_are_carried_not_graded(tmp_path):
+    """AP-55 (b)+(c): the writer's gate block reaches the support frame unchanged; the grade and
+    the reasons are the ladder's alone; a row written before the gate carries ``{}``."""
+    gate = {"mode": "shadow", "seed_rerun": "MISSING", "batch_homogeneity": "HOMOGENEOUS",
+            "hold": False}
+    plain = row()
+    gated = row(measurement={**row()["measurement"], "ap55_gate": gate})
+    (shard, got_plain), = list(apj.iter_measured_rows(write_journal(tmp_path / "a", [plain])))
+    (shard_g, got_gated), = list(apj.iter_measured_rows(write_journal(tmp_path / "b", [gated])))
+    sup = [f for f in apj.frames_for_row(shard_g, got_gated, as_of="t")
+           if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    sup_plain = [f for f in apj.frames_for_row(shard, got_plain, as_of="t")
+                 if f["frame_type"].endswith("evidence_supports_claim/v1")][0]
+    assert sup["assertion"]["ap55_gate"] == gate
+    assert sup_plain["assertion"]["ap55_gate"] == {}
+    assert sup["assertion"]["grade"] == sup_plain["assertion"]["grade"]
+    assert sup["provenance"]["grade_reasons"] == sup_plain["provenance"]["grade_reasons"]
+
+
+def _writer_emits_ap55_gate() -> bool:
+    src = WRITER / "scripts" / "autopilot" / "experiment_journal.py"
+    return src.exists() and '"ap55_gate"' in src.read_text()
+
+
+@pytest.mark.skipif(not _writer_emits_ap55_gate(),
+                    reason="orchestrator writer does not emit ap55_gate (set VIDYA_ORCH_WRITER_ROOT)")
+def test_ap55_gate_end_to_end_against_the_real_writer(tmp_path):
+    sys.path.insert(0, str(WRITER / "scripts" / "autopilot"))
+    sys.path.insert(0, str(WRITER))
+    from experiment_journal import ExperimentJournal, JournalEntry
+
+    d = tmp_path / apj.ORCH_REL / "orchestration"
+    d.mkdir(parents=True)
+    gate = {"mode": "enforce", "hold": True, "hold_reasons": ["seed_rerun:MISSING"],
+            "seed_rerun": {"status": "MISSING"},
+            "batch_homogeneity": {"status": "INSUFFICIENT", "members": {}}}
+    ExperimentJournal(journal_dir=d).record(JournalEntry(
+        trial_id=1, timestamp="2026-09-16T10:00:00+00:00", species="s",
+        action_type="numeric_trial", tier=1, quality=0.5, speed=1.0, cost=2.0,
+        reliability=0.9, pareto_status="candidate", harness_metrics={"schema_version": 1},
+        eval_details={"details": {"quality_denominator": 30}},
+        comparability={"status": "UNVERIFIED", "promotion_gate": gate}))
+    (shard, r), = list(apj.iter_measured_rows(tmp_path))
+    assert apj.as_record(shard, r)["ap55_gate"] == {
+        "mode": "enforce", "seed_rerun": "MISSING",
+        "batch_homogeneity": "INSUFFICIENT", "hold": True}
 
 
 def test_a_trial_is_always_a_candidate(tmp_path):
