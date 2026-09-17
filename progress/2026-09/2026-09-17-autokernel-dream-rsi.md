@@ -111,3 +111,9 @@ checkpoint has zero completed launches, one failed launch and an unresolved
 champion change occurred; the source worktree remains at `614ff2ba02e0` and
 the 28 prior keeps remain in the same store. A separate recovery audit and a
 bounded-runtime preflight fix are in progress before any relaunch.
+
+## v22 relaunch and handoff follow-through, 14:28 UTC
+
+The bounded preflight landed on the research lane as `8d45cb44`: without an explicit prospective runtime statistical declaration the planner offers source work but no runtime treatment; an unsolicited runtime proposal is a reasoned abstention, not a provider failure. A declared runtime arm must name its complete A/A-plus-neutral launch budget before a resource claim, and derives a separate runtime epoch. The failed v21 zero-valid-launch checkpoint remains intact; no pending member was cleared and no old floor was reused. The narrow C6 pre-build explicit phase-probe refusal landed as `84aaaf8d`. Together, 80 focused tests passed. Broader runtime fixture coverage has an unrelated shared-host cadence-gap failure and is not described as wholly green.
+
+The v22 serial controller started at 14:27 UTC from the unchanged source worktree tip `614ff2ba02e0` and the same store with 28 keeps. Its dry run passed. Initial status was `running` in CPU observational profiling with `runtime_preparation.status=unavailable`, **not** an 800-launch calibration. Supervisor PID 2092647 and child PID 2092755 were captured for this run. The selected dashboard pointer now names v22; the read-only dashboard view refreshed to root `f1cfe152` and the hub restarted at PID 2092203 under its managed supervisor. This establishes relaunch and current reporting only; it is not yet evidence of a completed measured candidate, a new keep, or 20 healthy loops. Production v9 and champion-of-record remain unchanged.
