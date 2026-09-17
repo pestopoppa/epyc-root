@@ -401,3 +401,7 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
 - [ ] **TU-GR-1 — Grader isolation clause.** Graders and reference artifacts must be structurally unreachable from the agent (container mount or separate uid, outside any git worktree containing the workspace), plus a transcript grep for grader-path access as a tripwire. `intake-1353#record`.
 - [ ] **TU-TM-1 — Timeout-censoring check.** Whenever a wall-clock cap exists, report pass rate among finished units and the timeout share beside the overall pass rate (external case: 25.0% overall vs 45.1% among finished). `intake-1352#03`.
 - [ ] **TU-LED-1 — Solve-failure ledger (observe-only).** Buckets ran-out-of-time / failed-verification / no-valid-tool-call, with gains AND give-backs; first-try-valid-call %, repair-recovery %, tokens spent on still-failing tasks. `intake-1355#record`.
+
+## Research Intake Update — 2026-09-17 (closed-set tool arguments; intake-1472/1473)
+
+- [ ] **TU-TD-1 — Closed-set tool-argument arm.** Add an evaluation arm where tool arguments are selected from closed sets with per-argument confidence (Literal→Choice, list[Literal]→multi-choice, bool→Noul), scored on exact-match argument correctness vs the free-form path.

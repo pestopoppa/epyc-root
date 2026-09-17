@@ -1132,3 +1132,7 @@ KLineage and Kernel-Smith release **nothing at all**. Public-and-unlicensed is n
 
 - [ ] **AR-RPUCG — A/B SimpleTES's RPUCG DAG parent-selection as a controller candidate in the MI210 verify+profile loop.** Selection-only over evaluated candidates (no re-execution; code @ `47d3413d`); compare against the current selection heuristic on one nonpromotable task; no NVIDIA-strategy import. Source: intake-1454.
 - [ ] **AR-ROCm-eval — register SimpleTES's ROCm eval path (AMD_REQUIREMENTS rocm6.2.4; `profile_program_roc`) and issue #6 MI300 config as gfx90a port input.** Study-only; no external-benchmark re-measure (AK-RB-1). Source: intake-1454.
+
+## Research Intake Update — 2026-09-17 (cross-ISA port evidence; intake-1491)
+
+**Cross-ISA port evidence (2026-09-17)**: a HIP-native SageAttention port exists but targets RDNA2/RDNA3 (gfx103x/gfx110x, WMMA/V_DOT — absent on CDNA2/MFMA); cite only as existence proof for cross-ISA porting, never as gfx90a evidence (intake-1491). CuTeDSL remains NVIDIA/CUTLASS-only and must not be imported (standing rule).

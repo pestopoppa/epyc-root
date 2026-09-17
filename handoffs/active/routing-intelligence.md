@@ -157,3 +157,7 @@ Terminal-Bench by about 3.6 resolution bands.**
 worth about as much as an entire frontier-model optimization campaign, and should be treated as a
 **first-class routing dimension rather than a fixed substrate**. Cite `intake-1140#record`, never as
 "model > harness".
+
+## Research Intake Update — 2026-09-17 (Jev typed-decision cluster; intake-1472/1473/1474/1487)
+
+- [ ] **RI-14 — Typed-decision fast path for closed-set routing questions.** Once TD-2 calibration lands, evaluate a Choice-style candidate-logit call as the routing classifier fast path; never gate on uncalibrated confidence; report agreement + calibration + wall time vs the current classifier. (Evidence: intake-1472/1473/1474/1487; owner stub `typed-decision-plane.md`, RTG-56.)

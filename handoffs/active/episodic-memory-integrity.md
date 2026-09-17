@@ -536,3 +536,7 @@ Common cause of 2 and 3: **asserting a negative without checking the alternative
 
 M-10/M-10a are closed with the durable cosine result above. Next memory work is M-11a, M-12,
 M-15, and M-16; do not reopen the reseed unless a new evidence-backed integrity failure appears.
+
+## Research Intake Update — 2026-09-17 (typed memory writes; intake-1472/1473/1474)
+
+- [ ] **M-19 — Typed decision records + confidence gate design (blocked on TD-2).** Specify a memory-write record carrying per-question probabilities and a caller-computed confidence statistic; the gate threshold must come from TD-2 calibration (owner stub `typed-decision-plane.md`, RTG-56), never from candidate softmax (intake-1474 measured 65% of 7B wrong fields above 0.90 confidence).
