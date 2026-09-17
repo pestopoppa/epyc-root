@@ -12,6 +12,18 @@ The Hermes-specific results are in [`hermes-evaluation-20260916.md`](hermes-eval
 
 ## 1. The contract being audited
 
+- **State the contract as a CAPABILITY, never as a field name** (HS-15, 2026-09-17). What a
+  candidate must have is: *config-declarable arbitrary top-level body keys on the
+  openai-completions path, on the call verb the harness actually uses.* The name that capability
+  ships under is incidental and differs per client — `extra_body` (OpenAI SDK), `compat.extraBody`
+  (oh-my-pi), `Model.samplingParams` (pi / pi-ai), `chat.params` → `options` (OpenCode),
+  `provider.<id>.models.<m>.options` (OpenCode static config). Two forks of ONE repository
+  independently grew the same primitive under different names on different objects, so a contract
+  written against a name mis-scored candidates twice in a single batch. The three qualifiers are
+  each load-bearing: *config-declarable* (not a source patch), *top-level* (a nested blob the
+  server never reads is not the capability — see the `providerOptions` and `chat_template_kwargs`
+  traps), and *on the call verb the harness actually uses* (Step 3; a lever honoured only on a verb
+  the harness never calls is a silent no-op).
 - The orchestrator contract is **body-based**. `OpenAIChatRequest`
   (`epyc-orchestrator/src/api/models/openai.py`) takes the standard `model`, `messages`,
   `temperature`, `max_tokens`, `stream`, `tools` and `tool_choice` fields, plus the extension fields
@@ -42,6 +54,12 @@ cap, REPL disable, routing metadata, streaming, native tools and `tool_choice`. 
 `extra_body`, a JSON body field, a plugin hook, or per-model config. Score each control as
 Sufficient, Workaround (document it at the edge, for example a small proxy), or Gap. Triage every
 Gap as: (a) add a new `x_*` field, (b) document a workaround, or (c) reject as out of scope.
+
+Search for the **capability** (§1), not for a known field name: grep the client for whatever it
+spreads into the outgoing request body on the openai-completions path, then check that the spread is
+unfiltered and lands at the top level. A candidate that scores Gap because it lacks
+`extra_body` by that name, while shipping the same primitive as `samplingParams`, has been
+mis-scored — that is the exact error HS-15 exists to prevent.
 
 ### Step 2 — Defer: can the client's own layer-(B) loop be made to defer?
 

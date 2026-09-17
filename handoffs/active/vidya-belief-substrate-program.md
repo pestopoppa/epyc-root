@@ -2498,3 +2498,18 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
 ## Research Intake Update — 2026-09-17 (typed-decision / PAW measurement wiring)
 
 - [ ] **VB-TDP-1 — Wire the write side before the first typed-decision / PAW measurement run.** One self-hashed ClaimTuple per TD-2/TD-3/PAW-3 run at the source table (scripts/vidya/adapters/README.md row + this task); a tuple invented on read cannot gate a decision. (Covers `typed-decision-plane.md` RTG-56 and `paw-compiled-specialists.md` INF-76.)
+
+## VB-FW-1 — GUI-authored fuzzy workflows (filed 2026-09-17, FW-4)
+
+- [ ] **VB-FW-1 — wire the write side before the first GUI-authored workflow run.** Source row added to
+  [`scripts/vidya/adapters/README.md`](../../scripts/vidya/adapters/README.md) the day the GUI was designed, not the
+  day it runs: the read side cannot be retrofitted, so a run that executes before the hook exists can never gate a
+  decision. Each run of a workflow document emits **one** self-hashed `ClaimTuple` carrying: the workflow-document
+  hash (the canvas is the unit of identity, not the session), the node types actually executed, each fuzzy node's
+  model pin **and** question catalogue (both, because FW-1's L2 lift is per `(model pin, catalogue)` — a calibration
+  record keyed on one of them is unusable), and the per-gate outcomes with their rejection destinations. A fuzzy
+  node's confidence is **recorded and never read by an edge** (FW-1 L2), so the tuple carries it as evidence, not as
+  a gate input. **Project, do not grade:** the adapter emits the tuple and `claim_tuple.grade()` decides — no new
+  ladder (`docs/design/vidya-pilot-spec.md` §4.7). Lands with the FW-2 executor; the adapter has nothing to read
+  until then, which is exactly why the row is filed now. Owner: whoever builds the FW-2 executor.
+  Locator = run. Zero inference to author.
