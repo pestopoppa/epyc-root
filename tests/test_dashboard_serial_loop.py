@@ -221,6 +221,33 @@ def test_terminal_distinctions_do_not_claim_batch_iterations(sources, tmp_path, 
     assert rendered["by_id"]["champ"] and rendered["by_id"]["know"]
 
 
+@pytest.mark.parametrize("phase,failures,label", [
+    ("complete", {}, "stopped"),
+    ("complete", {"0": "failed"}, "complete_with_failures"),
+    ("complete", {"0": "failed", "1": "failed"}, "all_failed"),
+    ("failed", {"0": "failed", "1": "failed"}, "all_failed"),
+])
+def test_terminal_failed_targets_take_precedence_over_stop_without_hiding_it(
+        sources, tmp_path, phase, failures, label):
+    _canonical, router, _child, _active, _routing = sources
+
+    def change(body):
+        body["state"] = phase
+        body["target"] = {"stop_requested": True, "failed_targets": failures}
+        body["routing"].update(stop_requested=True, failed_targets=failures, next_batch=4)
+
+    _rewrite(router / "loop-status.json", change)
+    wire = loop_status.snapshot()[0]
+    assert wire["serial"]["state"] == label
+    rendered = _run(_page_js(), wire, tmp_path, ["renderSerial"])
+    assert rendered["threw"] == []
+    detail = rendered["by_id"]["serial"]
+    assert "STOP REQUESTED" in detail
+    assert ("Failed targets:" in detail) is bool(failures)
+    assert {"stopped": "STOPPED", "complete_with_failures": "COMPLETE WITH FAILED TARGETS",
+            "all_failed": "ALL TARGETS FAILED"}[label] in detail
+
+
 def test_old_router_has_unknown_totals_and_malformed_fields_are_visible(sources):
     _canonical, router, _child, _active, _routing = sources
     _rewrite(router / "loop-status.json", lambda b: b.pop("routing"))
