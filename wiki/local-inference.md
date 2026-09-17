@@ -2,8 +2,35 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-09-08 (the rtx6kpro intake — a same-class 96 GB single-GPU local-inference field wiki read for stealable hypotheses: p-min sweep, steps/s keep gate, long-context + sustained-C8 cells, A/A losslessness control, the RNG-entanglement lead, and the contradictions/non-transferables vs our record; earlier 2026-07-31 note: adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
-**Sources**: 36 documents
+**Last compiled**: 2026-09-17 (incremental: rtx6kpro steals measured: p-min no-op on DFlash2, longest block wins, A/A noise absent at temp 0, RNG lead ruled out, steps/s only estimated); earlier: 2026-09-08 (the rtx6kpro intake — a same-class 96 GB single-GPU local-inference field wiki read for stealable hypotheses: p-min sweep, steps/s keep gate, long-context + sustained-C8 cells, A/A losslessness control, the RNG-entanglement lead, and the contradictions/non-transferables vs our record; earlier 2026-07-31 note: adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
+**Sources**: 36 documents (added 2026-09-17: dflash2 handoff, sub-akfix, sub-gpu-prep, gpu-candidates)
+
+## Compiled Update — 2026-09-17: the rtx6kpro steals, measured — two held, one was a no-op, one was ruled out, and one external noise figure does not exist here
+
+**Confidence: verified** for our own runs on champion `ef81196d5` (unit = launch, residency proven on every launch). The external figures they answer keep their `external` grade from the 09-08 section below.
+
+Four of the five hypotheses this page took from the rtx6kpro field wiki on 2026-09-08 now have local answers. The pattern is that the external observations transfer only after they are checked against our own source tree. A knob can be clamped or ignored by our build, and a noise band measured on another stack can be zero on ours.
+
+### Key findings
+
+- **The p-min half of the n-max × p-min sweep was a no-op.** On our DFlash2 build the drafter's block size is 8, so `--spec-draft-n-max 8` is clamped to 7, and the DFlash2 draft branch never reads `p_min`. The external per-position acceptance-decay argument therefore did not apply as posed. The longest block still wins at every in-flight level: +30% vs n4 at np1, +21% at np2, +16% at np4, and +5% (inside the floor) at np8. Verifier steps/s falls 19% at np8, as the external S6 predicted, but tokens/step rises faster. ([dflash2 handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md))
+- **The A/A losslessness control: the external identical-checkpoint noise (95.24 vs 90.69) does not exist here at temp 0.** Every arm reproduces itself 12/12 byte-for-byte across fresh processes. Pass counts are deterministic per (build, arm, prompt). ([dflash2 handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md))
+- **The RNG-entanglement lead is ruled out.** The drafter and verify samplers are separate objects, and at temp 0 / top_k 1 no RNG is drawn. The shared failing indices come instead from the batched-verify numeric split. Under a 1-row serial verify (`LLAMA_SPEC_EXACT=serial`), both spec arms are 12/12 bit-exact. The divergent tokens had top-1/top-2 logit margins of only 0.005–0.079. ([sub-akfix](../progress/2026-09/2026-09-16-sub-akfix.md), [dflash2 handoff](../handoffs/active/dflash2-block-drafter-experimental-build.md))
+- **The steps/s keep-gate metric is only partly available.** The champion server counts verify steps but does not export them, so the loop reports an estimate (`predicted_n − draft_n_accepted`) and the gate is unchanged. ([sub-gpu-prep](../progress/2026-09/2026-09-16-sub-gpu-prep.md))
+- **The long-context and sustained-C8 cell (SL-4) is still unrun**, so the external "DFlash2 −19% at sustained C8" vs our +47.8% contradiction stays open.
+- **The same caution applies to MTP.** On production v9, the Qwen3.8 MTP n-max 8 grid came out below the older n-max 4 grid at np≥2 (cross-session observation). A single-stream depth optimum is therefore not assumed to hold for batched local serving. See [Inference Serving](inference-serving.md). ([gpu-candidates](../handoffs/active/gpu-candidates-surface-qwen38-update.md))
+
+### Open questions
+
+- SL-4: the ~32k context cell and the sustained-C8 cell.
+- A same-window MTP n-max 4 vs 8 ABA at np≥2.
+
+### Sources
+
+- [dflash2-block-drafter-experimental-build.md](../handoffs/active/dflash2-block-drafter-experimental-build.md): the SL-1, SL-5 and DF2-8 results.
+- [2026-09-16-sub-akfix.md](../progress/2026-09/2026-09-16-sub-akfix.md): the DF2-RNG source reading.
+- [2026-09-16-sub-gpu-prep.md](../progress/2026-09/2026-09-16-sub-gpu-prep.md): the SL-2 estimator.
+- [gpu-candidates-surface-qwen38-update.md](../handoffs/active/gpu-candidates-surface-qwen38-update.md): the MTP n-max 8 grid.
 
 ## Compiled Update — 2026-09-08: the rtx6kpro intake — a same-class local-GPU field wiki, read for our hypotheses
 

@@ -65,9 +65,20 @@ this repo, and settle two that nobody owns at all.
       move in opposite directions with depth, so a combined cost metric would hide the finding.
       Pre-declare n, reps and the kill criterion before running; n=20 single-run cannot resolve these
       effect sizes.
-  - [ ] E1a — Use a **format-robust scorer**, or score twice (strict + lenient) and report both. The
+  - [x] E1a — Use a **format-robust scorer**, or score twice (strict + lenient) and report both. The
         single most-cited number in this literature is a formatting artifact; do not reproduce that
-        mistake. **REOPENED 2026-09-16** — the 2026-07-29 closure below is false.
+        mistake. ✅ 2026-09-16 — **implemented for real (sub-e1a)**: epyc-inference-research branch
+        `sub/e1a-niah-20260916` @ `d8fab068`, **pending merge**. `scripts/benchmark/niah_scorer.py`
+        (no equivalent existed under another name — searched research/orchestrator/root; the RULER and
+        Needle adapters only emit `exact_match`). strict = raw exact match (outer whitespace only);
+        lenient = NFKC + format-char strip + casefold + whitespace-collapse, word-boundary substring;
+        strict ⇒ lenient is property-tested; an empty reference is undecidable and leaves both
+        denominators. The summary always carries `strict_accuracy` and `lenient_accuracy` (higher is
+        better) plus `format_gap` (diagnostic, no direction). CLI replays saved JSONL outputs with
+        configurable field names (fast-rlm output or `RULERAdapter` NIAH prompts, no converter),
+        byte-deterministic. Tests: `scripts/benchmark/test_niah_scorer.py` (29, synthetic haystacks, no
+        inference). Belief-kernel write side filed as VB-NIAH-E1A. **REOPENED 2026-09-16** — the
+        2026-07-29 closure below was false; superseded by this implementation.
         ~~✅ 2026-07-29~~ — `scripts/benchmark/niah_scorer.py` provides raw exact-match strict
         scoring plus documented Unicode/case/whitespace-normalized substring lenient scoring; both
         results are returned for every response and must be reported together.

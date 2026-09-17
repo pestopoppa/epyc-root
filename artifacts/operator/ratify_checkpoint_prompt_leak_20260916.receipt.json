@@ -1,0 +1,187 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-09-17T11:53:53Z",
+  "evidence": [
+    {
+      "bytes": 1350221880,
+      "citation": "benchmarks/prompts/question_pool.jsonl",
+      "durability": {
+        "hint": "",
+        "severity": "ok",
+        "verdict": "OK"
+      },
+      "exists": true,
+      "label": "eval pool; row simpleqa_general_00912 is the leaked few-shot example",
+      "resolved": "/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl",
+      "sha256": "64218c27e07400acf3b10a3cac05a410d5ee67814f353788ab75a19c84dde584"
+    },
+    {
+      "bytes": null,
+      "citation": "/mnt/raid0/llm/backups/ckpt-leak-20260916",
+      "durability": {
+        "hint": "",
+        "severity": "ok",
+        "verdict": "OK"
+      },
+      "exists": true,
+      "file_count": 14,
+      "is_directory": true,
+      "label": "byte-exact originals of every rewritten file, with SHA256SUMS",
+      "resolved": "/mnt/raid0/llm/backups/ckpt-leak-20260916",
+      "sha256": null,
+      "sha256sums": "3323802ca811afd166e6193137262aec7affe2434d84533eb98c151fd7fa1bea"
+    }
+  ],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "db34a605e35b4b56e5da2505e3e6078fecaab817f51e01c587007bb07212a184"
+  },
+  "git_head_at_emit": "960a97c916b35ba2a6c8fbad629f03f8b716dab2",
+  "git_head_before": "960a97c916b35ba2a6c8fbad629f03f8b716dab2",
+  "operator": "pestopoppa",
+  "protocol_id": "P-QUAL-T1",
+  "ratification_id": "RATIFY-CKPT-PROMPT-LEAK-20260916",
+  "ratify_script": {
+    "exists": true,
+    "path": "scripts/operator/ratify_checkpoint_prompt_leak_20260916.sh",
+    "sha256": "1c958a0c3ab3334dc7d2d2a484f2998f6d3cc4ec4848ad0dc1b5a773b6af6fe5"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/worktrees/op-ckpt-leak-ratify-20260916",
+  "sections": {
+    "coherence": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-QUAL-T1 present in MEASUREMENT.md"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 44,
+      "lines_after": 167,
+      "lines_before": 125,
+      "lines_removed": 2,
+      "path": "artifacts/operator/ratify_multitier_baseline_v10_20260810.json",
+      "sha256_after": "e6682b2fe9cbe88d21b9f6f075a40a38a8b2dd23f40641049578f6c496dc9a03",
+      "sha256_before": "3e18e7fdd5039f01fc84f7993a4d2a9568fd02a570b8fcac73fd55ba6b44e251",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/artifacts/operator/ratify_multitier_baseline_v10_20260810.json",
+        "+++ b/artifacts/operator/ratify_multitier_baseline_v10_20260810.json",
+        "@@ -1,4 +1,33 @@",
+        " {",
+        "+  \"amendments\": [",
+        "+    {",
+        "+      \"checkpoint_meta_sha256_after\": \"54224ec71905b7e628284262579dec1f8da59d0c9d63855fada878ec78305746\",",
+        "+      \"checkpoint_meta_sha256_before\": \"e9d8538560e2a1435d073513e642465d7d384ef0ace7aafb6d636278f2a79ab8\",",
+        "+      \"checkpoint_sha256_after\": \"a604276fcd053e7590bd391f846334f5fd4616f7cd9ebe78196b8f6305f1d218\",",
+        "+      \"checkpoint_sha256_before\": \"c60364f1295a931a4b4e806d4dffd2138696537f49b15a3a6881c50737c02b19\",",
+        "+      \"checkpoints_patched\": [",
+        "+        \"20260716_062336\",",
+        "+        \"20260727_005741\",",
+        "+        \"20260727_030219\",",
+        "+        \"20260803_120918\",",
+        "+        \"20260803_130944\",",
+        "+        \"20260804_104155\",",
+        "+        \"20260804_152401\",",
+        "+        \"20260808_184245\",",
+        "+        \"20260809_115107\",",
+        "+        \"multitier_v10_20260810\"",
+        "+      ],",
+        "+      \"date\": \"2026-09-16\",",
+        "+      \"decision_receipt\": \"artifacts/operator/ratify_checkpoint_prompt_leak_20260916.json\",",
+        "+      \"file\": \"prompts/rules.md\",",
+        "+      \"gate_id\": \"RATIFY-CKPT-PROMPT-LEAK-20260916\",",
+        "+      \"kind\": \"eval_leak_few_shot_replacement\",",
+        "+      \"reason\": \"few-shot Example 4b copied eval pool row simpleqa_general_00912 verbatim; replaced with the synthetic example from epyc-orchestrator 09bdb998 (only the few-shot example changed)\",",
+        "+      \"sha256_after\": \"18f8ea018234605002459cd98e59a9aaeddec235d8e022ff59f6ebd67766d607\",",
+        "+      \"sha256_before\": \"b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e\",",
+        "+      \"source_commit\": \"09bdb998f27fd13a13f3a4908f924626f886ef3a\"",
+        "+    }",
+        "+  ],",
+        "   \"autopilot_started\": false,",
+        "   \"boundary\": \"2026-08-10T16:23:03.880697Z\",",
+        "   \"eras\": {",
+        "@@ -35,7 +64,20 @@",
+        "   \"objective_policy\": \"task_rate_4d_v7_physical_cohort_exclusion\",",
+        "   \"production_checkpoint\": {",
+        "     \"metadata\": {",
+        "-      \"checkpoint_sha256\": \"c60364f1295a931a4b4e806d4dffd2138696537f49b15a3a6881c50737c02b19\",",
+        "+      \"amendments\": [",
+        "+        {",
+        "+          \"date\": \"2026-09-16\",",
+        "+          \"decision_receipt\": \"artifacts/operator/ratify_checkpoint_prompt_leak_20260916.json\",",
+        "+          \"file\": \"prompts/rules.md\",",
+        "+          \"gate_id\": \"RATIFY-CKPT-PROMPT-LEAK-20260916\",",
+        "+          \"kind\": \"eval_leak_few_shot_replacement\",",
+        "+          \"reason\": \"few-shot Example 4b copied eval pool row simpleqa_general_00912 verbatim; replaced with the synthetic example from epyc-orchestrator 09bdb998 (only the few-shot example changed)\",",
+        "+          \"sha256_after\": \"18f8ea018234605002459cd98e59a9aaeddec235d8e022ff59f6ebd67766d607\",",
+        "+          \"sha256_before\": \"b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e\",",
+        "+          \"source_commit\": \"09bdb998f27fd13a13f3a4908f924626f886ef3a\"",
+        "+        }",
+        "+      ],",
+        "+      \"checkpoint_sha256\": \"a604276fcd053e7590bd391f846334f5fd4616f7cd9ebe78196b8f6305f1d218\",",
+        "       \"config_snapshot\": {",
+        "         \"baseline_bundle_sha256\": \"6006061e66463bd59a9cc124a7191f0c1172575f75e0717fb2cb27b6e006492b\",",
+        "         \"execution_instrument_id\": \"resource_lanes_v10_history_scoped_quiescence\",",
+        "@@ -73,7 +115,7 @@",
+        "         \"prompts/roles/worker_math.md\": \"e0e4caa3ce8e65e61a7ea3837fca9afd210f314d20969a8b6e11577c23361b57\",",
+        "         \"prompts/roles/worker_vision.md\": \"2930f9d621c0da606491d043e64146a74c20dcb8bd254df248be41184294004b\",",
+        "         \"prompts/root_lm_system.md\": \"07ee95a143edde00cca053d86cdad80d2980729613c552adb7f15e8d54767628\",",
+        "-        \"prompts/rules.md\": \"b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e\",",
+        "+        \"prompts/rules.md\": \"18f8ea018234605002459cd98e59a9aaeddec235d8e022ff59f6ebd67766d607\",",
+        "         \"prompts/task_decomposition.md\": \"9b436cd0ca94027ba97718ff9292aeb6738c25d8cf3359775e2dc71792118c6a\",",
+        "         \"prompts/tools.md\": \"39a9184faa54ea24035875c256395b69a409396e1ba123282b8b9f9b1dfe4c06\",",
+        "         \"routing_classifier_weights.npz\": \"3e1e972c0eb2a953fdbd5c047fd0455ca202557a329ed14668338fc5c2a9beab\","
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "bash scripts/operator/ratify_checkpoint_prompt_leak_20260916.sh --verify",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "ok    18f8ea018234  20260716_062336/prompts/rules.md",
+        "  ok    18f8ea018234  20260727_005741/prompts/rules.md",
+        "  ok    18f8ea018234  20260727_030219/prompts/rules.md",
+        "  ok    18f8ea018234  20260803_120918/prompts/rules.md",
+        "  ok    18f8ea018234  20260803_130944/prompts/rules.md",
+        "  ok    18f8ea018234  20260804_104155/prompts/rules.md",
+        "  ok    18f8ea018234  20260804_152401/prompts/rules.md",
+        "  ok    18f8ea018234  20260808_184245/prompts/rules.md",
+        "  ok    18f8ea018234  20260809_115107/prompts/rules.md",
+        "  ok    18f8ea018234  multitier_v10_20260810/prompts/rules.md",
+        "  ok    54224ec71905  multitier_v10_20260810/checkpoint_meta.json",
+        "  ok    e6682b2fe9cb  /mnt/raid0/llm/worktrees/op-ckpt-leak-ratify-20260916/artifacts/operator/ratify_multitier_baseline_v10_20260810.json",
+        "  ok    v10 manifest matches every file; checkpoint_sha256 a604276fcd05",
+        "  ok    no leak marker in any checkpoint text copy",
+        "VERIFIED: post-state holds"
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

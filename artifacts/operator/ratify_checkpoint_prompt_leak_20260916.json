@@ -1,0 +1,66 @@
+{
+  "schema": "epyc.autopilot.checkpoint_prompt_repin.v1",
+  "decision": "CKPT-PROMPT-LEAK-REPIN",
+  "gate_id": "RATIFY-CKPT-PROMPT-LEAK-20260916",
+  "ratified_at": "2026-09-17T11:53:50Z",
+  "operator": "pestopoppa",
+  "status": "ratified",
+  "operator_decision": "2026-09-16 option A: close the eval-leak rewind hole",
+  "leak": {
+    "pool_row": "simpleqa_general_00912",
+    "pool_row_text": "At which university did Jurgen Aschoff study medicine? -> University of Bonn.",
+    "related_pool_row": "simpleqa_general_00795 (second Aschoff row; no shingle in any checkpoint)",
+    "file": "orchestration/prompts/rules.md, Example 4b (question line and web_research query line)",
+    "mechanism": "StructuralLab.restore_checkpoint() copies <checkpoint>/prompts/ over the live prompts; production_best -> multitier_v10_20260810 carried the leaked copy, so any rollback re-introduced it"
+  },
+  "evidence": {
+    "orchestrator_commit": "09bdb998f27fd13a13f3a4908f924626f886ef3a",
+    "orchestrator_commit_note": "replaced the example in the tracked rules.md and DEFAULT_ROOT_LM_RULES; merged in epyc-orchestrator origin/main (preflight-verified)",
+    "question_pool": {
+      "path": "/mnt/raid0/llm/epyc-inference-research/benchmarks/prompts/question_pool.jsonl",
+      "sha256": "64218c27e07400acf3b10a3cac05a410d5ee67814f353788ab75a19c84dde584"
+    },
+    "backup_dir": "/mnt/raid0/llm/backups/ckpt-leak-20260916",
+    "backup_sha256sums": "3323802ca811afd166e6193137262aec7affe2434d84533eb98c151fd7fa1bea",
+    "scan": "grep for Aschoff / University of Bonn / HumanEval/55 solution code, plus 8-token shingles (MHS-3 tokenisation, pool DF<32) of simpleqa_general_00912, simpleqa_general_00795 and sv_HE-R{,+}_HumanEval/55::sol0-4 over every checkpoint file and the live strategy store"
+  },
+  "equivalence": "Only the few-shot example changed. Each patched rules.md differs from its original in exactly two lines, both inside Example 4b (synthetic 'Halvard Oskeberg' / chemistry, same structure and token count), and is byte-identical to epyc-orchestrator 09bdb998:orchestration/prompts/rules.md, i.e. to production at that snapshot with only the example swapped (the checkpoint copies equal 09bdb998^ byte for byte).",
+  "state": {
+    "checkpoint_rules_md": {
+      "paths": [
+        "20260716_062336/prompts/rules.md",
+        "20260727_005741/prompts/rules.md",
+        "20260727_030219/prompts/rules.md",
+        "20260803_120918/prompts/rules.md",
+        "20260803_130944/prompts/rules.md",
+        "20260804_104155/prompts/rules.md",
+        "20260804_152401/prompts/rules.md",
+        "20260808_184245/prompts/rules.md",
+        "20260809_115107/prompts/rules.md",
+        "multitier_v10_20260810/prompts/rules.md"
+      ],
+      "sha256_before": "b250c22770e999d5ef2092a3689247af8725f6cf1d5f01ed37b6296ea568456e",
+      "sha256_after": "18f8ea018234605002459cd98e59a9aaeddec235d8e022ff59f6ebd67766d607"
+    },
+    "multitier_v10_20260810/checkpoint_meta.json": {
+      "sha256_before": "e9d8538560e2a1435d073513e642465d7d384ef0ace7aafb6d636278f2a79ab8",
+      "sha256_after": "54224ec71905b7e628284262579dec1f8da59d0c9d63855fada878ec78305746"
+    },
+    "multitier_v10_20260810 checkpoint_sha256": {
+      "before": "c60364f1295a931a4b4e806d4dffd2138696537f49b15a3a6881c50737c02b19",
+      "after": "a604276fcd053e7590bd391f846334f5fd4616f7cd9ebe78196b8f6305f1d218"
+    },
+    "artifacts/operator/ratify_multitier_baseline_v10_20260810.json": {
+      "sha256_before": "3e18e7fdd5039f01fc84f7993a4d2a9568fd02a570b8fcac73fd55ba6b44e251",
+      "sha256_after": "e6682b2fe9cbe88d21b9f6f075a40a38a8b2dd23f40641049578f6c496dc9a03"
+    }
+  },
+  "rewind_verification": "restore_checkpoint() verifies no hash; the re-pinned manifest and v10 receipt are attestation. Post-state is checked by the ratify script's --verify (full v10 manifest, checkpoint_sha256, receipt mirror, leak scan).",
+  "out_of_scope": [
+    "episodic.db (every checkpoint and live): 4 memories whose context carries the HumanEval/55 problem text; eval-task routing memory, not a prompt copy",
+    "orchestration/autopilot_state*.bak* and archived_backups/*: last_traces mention Aschoff; manual backups that no code path restores",
+    "20260727_053326: no prompts/ directory, no hit"
+  ],
+  "consolidated_receipt": "artifacts/operator/ratify_checkpoint_prompt_leak_20260916.receipt.json",
+  "applied_by": "scripts/operator/ratify_checkpoint_prompt_leak_20260916.sh"
+}

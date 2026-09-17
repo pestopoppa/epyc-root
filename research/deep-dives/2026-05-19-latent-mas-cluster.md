@@ -3,7 +3,7 @@
 Cluster authored: 2026-05-19 by deep-dive #2 of 8 (Phase 6).
 Scope: intake-544 (RMAS), intake-555 (LatentMAS), intake-556 (Thought Communication), intake-557 (X-MAS), intake-558 (Dead Weights, Live Signals).
 Index: `/workspace/research/intake_index.yaml`
-Cross-refs: handoffs/active/hermes-outer-shell.md, handoffs/completed/meta-harness-optimization.md, tri-role-coordinator-architecture.md, dynamic-stack-concurrency.md, tool-output-compression.md, repl-turn-efficiency.md.
+Cross-refs: handoffs/completed/hermes-outer-shell.md, handoffs/completed/meta-harness-optimization.md, tri-role-coordinator-architecture.md, dynamic-stack-concurrency.md, tool-output-compression.md, repl-turn-efficiency.md.
 
 ---
 
@@ -144,7 +144,7 @@ Both RMAS and LatentMAS report speedups against a text-MAS baseline, not against
 
 **Our actual production baseline:** single-server text orchestration with prefix-cache reuse. The orchestrator tool-call surface (no recursion, no debate, no aggregation pipeline) routes each request to one model, gets text back, returns to user. For the bulk of REPL turns (`handoffs/active/repl-turn-efficiency.md`) this is one llama-server call with full prefix-cache hit. Latent-MAS speedups vanish against this baseline because we already don't pay the text-MAS overhead they're optimizing against.
 
-**Where latent could actually help:** the cases where our production path already does multi-turn agent reasoning — Hermes outer-shell agent loops (`handoffs/active/hermes-outer-shell.md`), tri-role coordinator (`handoffs/active/tri-role-coordinator-architecture.md`). For these, current cost is N text turns through the same or different models. If we replaced text turns with latent hand-offs:
+**Where latent could actually help:** the cases where our production path already does multi-turn agent reasoning — Hermes outer-shell agent loops (`handoffs/completed/hermes-outer-shell.md`), tri-role coordinator (`handoffs/active/tri-role-coordinator-architecture.md`). For these, current cost is N text turns through the same or different models. If we replaced text turns with latent hand-offs:
 
 - **Token savings**: RMAS-claimed 34-75% token reduction maps to direct decode-time savings (our decode is 49-76 t/s; halving emitted tokens halves wall-time linearly).
 - **Quality**: RMAS +8.7pp on MATH500 over text-MAS is meaningful if applicable, but our current Hermes loop is not "recursive text-MAS" — it's a different topology. The gain may not transfer.
@@ -199,7 +199,7 @@ Three sequenced spikes, cheapest first. Each spike has explicit success criteria
 2. Run 10-20 representative tasks per (domain × function) cell across our 4 production models (qwen3.6 frontdoor, gemma4-26B-A4B worker_general, coder-30B, Qwen3-1.7B drafter). Total: ~1000-2000 evals.
 3. Build a 5×5 winner-model table for our specific stack. Compare to X-MAS published winners — sanity check that our results have similar shape.
 4. Modify orchestrator routing: each incoming task gets a coarse (domain, function) classification, looks up the winner, routes accordingly. Fall back to current routing on unclassified tasks.
-5. Hermes outer-shell agent uses the same routing for sub-task delegation (`handoffs/active/hermes-outer-shell.md`).
+5. Hermes outer-shell agent uses the same routing for sub-task delegation (`handoffs/completed/hermes-outer-shell.md`).
 
 **Success criteria:**
 - Routing table shows ≥ 2 distinct winners across the 5×5 = 25 cells (i.e., heterogeneity actually exists in our stack).
@@ -283,7 +283,7 @@ The cluster-level picture meaningfully changes the per-intake priorities, mostly
 **Net cluster scoring revision:** the original aggregation across the 5 intakes implied a serious latent-MAS engineering program. The cluster picture suggests one immediate spike (X-MAS) and one validation spike (Dead Weights replication) — total ~1 month of engineering — followed by a binary decision on the larger LatentMAS-on-llama.cpp investment.
 
 **Connection to existing handoffs:**
-- `handoffs/active/hermes-outer-shell.md` — Spike 1 directly applies; X-MAS routing can be Hermes's sub-task dispatcher.
+- `handoffs/completed/hermes-outer-shell.md` — Spike 1 directly applies; X-MAS routing can be Hermes's sub-task dispatcher.
 - `handoffs/completed/meta-harness-optimization.md` — X-MAS function definitions (Plan/QA/Revise/Aggregate/Evaluate) align with meta-harness role primitives; cross-pollinate.
 - `handoffs/active/tri-role-coordinator-architecture.md` — three-role coordinator is a special case of X-MAS topology; the (domain × function) lookup could inform role assignment.
 - `handoffs/active/dynamic-stack-concurrency.md` — X-MAS heterogeneity-helps result reinforces dynamic-stack rationale.

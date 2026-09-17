@@ -2,8 +2,93 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
+**Last compiled**: 2026-09-17 (incremental: H2 query-length instrument landed (unmeasured), PREFIX-1 verified on both consumers with live qd-v1 index at 29,611 chunks, C7 attribution fix, trace FTS recency-vs-bm25 fix, lexical memory-eval arms); earlier: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
 (measured 25× more perturbing than INT8 quantization, 62.5% top-1 agreement, OP-24 decision), the (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
+**Sources**: see per-section source lists (added 2026-09-17: internal-kb-rag H2/C7, colbert-reranker PREFIX-1 verification, trace-bm25 and tooling logs, CME retrieval arms)
+
+## Compiled Update — 2026-09-17: the query-length instrument exists, PREFIX-1 is verified on both consumers, and trace FTS finally ranks by bm25
+
+**Confidence: verified** for the code, commits and tests, and for the read-only inspection of the
+live index. **No query-length measurement has run yet**: the instrument landed, but it has no
+traffic.
+
+Three retrieval gaps recorded on this page closed on 2026-09-16:
+- **The caps question now has an instrument.** The 2026-08 finding that "no query-length
+  instrumentation exists anywhere in the retrieval path" is **superseded**. A non-vacuous counter
+  and a reporter now exist, although the answer to B7 still waits on live traffic.
+- **PREFIX-1 now covers both consumers.** The 2026-09-14 section here found that the web reranker
+  had never moved onto the shared encoder. It has now been verified as migrated: the web reranker
+  encodes through the shared encoder with explicit roles.
+- **Trace full-text search ranks by relevance.** It had been ordering by recency. The two memory-eval
+  retrieval arms that depend on lexical ranking were built so the bug could not reach them.
+
+### Key findings
+
+- **H2 landed as a non-vacuous query-length instrument** (orchestrator `32336445`, merged
+  `370dc715`).
+  - `colbert_encoder.count_tokens(text, role=)` tokenizes on a private copy with truncation and
+    padding off. It applies the same prefix, casing and specials as `encode()`.
+  - Non-vacuity test: with the shared tokenizer capped at 8, the encode-path count is 8 and
+    `count_tokens` returns 32.
+  - `kb_rag.query()` appends one record per query: the sha256 and the length, never the text.
+  - `query_length_report.py` gives nearest-rank p50/p95/max and the over-cap rate per (encoder, cap,
+    convention). An empty log reads UNKNOWN, not 0 %.
+  - Tests: 15 new; 62 pass across the retrieval suites. The belief-kernel adapter is VB-KBRAG-QLEN,
+    ingested as `cli.py ingest kb-rag-qlen`
+    ([internal-kb-rag](../handoffs/active/internal-kb-rag.md),
+    [sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md)).
+- **PREFIX-1 verified on both sides with read-only checks.**
+  - KB side, `fe55b228`: `encode()` requires a keyword-only `role=`.
+  - Web side, `f876d989`: `colbert_reranker.py:198,213` encodes with `role=query_role` / `doc_role`
+    through the shared encoder.
+  - Both commits are ancestors of orchestrator `main`.
+  - The live `data/kb_rag/index-qd-v1/catalog.sqlite` is stamped `prefix_convention=qd-v1` with `[Q] `
+    / `[D] ` prefixes, the `gte-moderncolbert-v1-onnx` int8 encoder, and
+    `stamped_at=2026-08-12T21:32:15Z`. It holds **29,611 chunks**, and the prefix-free `index/` store is
+    kept for rollback.
+  - PREFIX-2 (do published BEIR deltas transfer?) stays open
+    ([colbert reranker](../handoffs/active/colbert-reranker-web-research.md),
+    [sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md)).
+- **C7: the stale `:8089` attribution is fixed** (`51b30f5e`, comment-only). The docstring now names
+  GTE-ModernColBERT-v1 (149M, 128-dim), which is what `launch_manifest.yaml` `nextplaid-docs` mounts.
+  The same stale name was fixed in both `scripts/nextplaid` indexers
+  ([internal-kb-rag](../handoffs/active/internal-kb-rag.md)).
+- **Trace FTS ordered by recency despite its bm25 docstring.** `src/trace/query.query(text=...)` ran
+  `ORDER BY ts_utc DESC`. A LIMITed search therefore returned the newest matches, and RRF fused a
+  recency rank as if it were a relevance rank.
+  - The fix (`6302b381`, merged `21172688`) applies bm25 through an `event_fts` join before LIMIT.
+  - An explicit `order="recency"` is available (CLI `--order`), and asking for relevance without
+    `text` raises.
+  - Filter-only callers now pass recency explicitly.
+  - No recorded result used the old ordering
+    ([sub-trace-bm25](../progress/2026-09/2026-09-16-sub-trace-bm25.md),
+    [UTM handoff](../handoffs/active/unified-trace-memory-service.md)).
+- **Memory-eval retrieval arms are lexical and self-ranking.**
+  - Tulving `retrieved` indexes one trace `Event` per chapter in a private store, searches through
+    `navigation.search_records`, and re-ranks every match by bm25 itself. That is why the ordering
+    bug could not affect it.
+  - BEAM gained a `rag` arm (pair_chunk × BM25) and a `trace` arm (pair_chunk via the trace store,
+    `order="relevance"`).
+  - The retrieved Tulving prompt is about ≤ 4.1K tokens (top-5 chapters), against about 104.7K for
+    the full book
+    ([CME instrument](../handoffs/active/conversational-memory-eval-instrument.md),
+    [OP-42 readiness](../progress/2026-09/2026-09-16-sub-op42-readiness.md)).
+
+### Open questions
+
+- B7: has a live agent query ever exceeded the 48-token cap? This becomes answerable once traffic
+  accrues and `query_length_report.py --out` is run.
+- PREFIX-2 and the OP-24 decision remain open.
+
+### Sources
+
+- [internal-kb-rag](../handoffs/active/internal-kb-rag.md): the H2 instrument and C7 fix
+- [colbert-reranker-web-research](../handoffs/active/colbert-reranker-web-research.md): PREFIX-1 verification and the live index stamp
+- [unified-trace-memory-service](../handoffs/active/unified-trace-memory-service.md): the trace bm25 fix note
+- [conversational-memory-eval-instrument](../handoffs/active/conversational-memory-eval-instrument.md): the Tulving retrieved arm and BEAM rag/trace arms
+- [2026-09-16-sub-tooling](../progress/2026-09/2026-09-16-sub-tooling.md): H2, C7 and PREFIX-1 implementation detail
+- [2026-09-16-sub-trace-bm25](../progress/2026-09/2026-09-16-sub-trace-bm25.md): bug reproduction, fix and caller audit
+- [2026-09-16-sub-op42-readiness](../progress/2026-09/2026-09-16-sub-op42-readiness.md): retrieved-arm prompt-size bound
 
 ## Compiled Update — 2026-09-14: code-context discovery gets a zero-decode instrument, and graph neighbours attach to lexical hits instead of forming a stage
 

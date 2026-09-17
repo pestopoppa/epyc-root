@@ -2,8 +2,174 @@
 
 **Category**: `agent_architecture`
 **Confidence**: inferred
-**Last compiled**: 2026-09-14 (incremental, noninf sweep: process-global mutable state read as if it were per-request — one `ToolRegistry` per API process whose shared `_invocation_log` four request-scoped readers mistook for their own, so a durable episodic row recorded another request's tools and two SSE emitters streamed another request's tool events; scoping is structural (`REPLEnvironment._invoked_tools`) rather than temporal, because clearing a shared log is the same defect with a narrower race window; plus the paired write half — a find-or-update path that returns before the only site that writes `assigned_role`/`work`, an import-time flag that makes the production branch untestable by default, and a self-annotating bounding function that was not idempotent and so destroyed its own provenance); earlier: 2026-09-14 (incremental: harness rank tracks model class, not benchmark — Spearman −0.05 between a 744B MoE and a 26B MoE on one grid, +0.76 between the 26B and a 30B dense on a different benchmark — and thinking mode alone can remove ~2/3 of a harness's score; a delegation hand-off the architect cannot follow is a silent confident-wrong path, and user-facing delegation returns now carry the full report; `earendil-works/pi` and `badlogic/pi-mono` are one repository; hand-written procedural guidance hurt until a validation gate repaired it); earlier: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
-**Sources**: 100+ documents (added 2026-09-14 noninf sweep: RTG-02 per-request telemetry scope, the dropped find-or-update metadata write, and the non-idempotent work sanitizer — `epyc-orchestrator` `d65a4e93` + `b69bda61`)
+**Last compiled**: 2026-09-17 (incremental: HS-4 decided — thin OpenCode shell with pi fallback, Hermes features rebuilt inside the orchestrator; `/v1` never emits `tool_calls` (P0.1 blocker); HS-1g call-verb check made a standing instrument and it narrowed Hermes to main-loop-only; OpenCode re-audited at `350c726aa` with plugin merged; Hermes handoff closed); earlier: 2026-09-14 (incremental, noninf sweep: process-global mutable state read as if it were per-request — one `ToolRegistry` per API process whose shared `_invocation_log` four request-scoped readers mistook for their own, so a durable episodic row recorded another request's tools and two SSE emitters streamed another request's tool events; scoping is structural (`REPLEnvironment._invoked_tools`) rather than temporal, because clearing a shared log is the same defect with a narrower race window; plus the paired write half — a find-or-update path that returns before the only site that writes `assigned_role`/`work`, an import-time flag that makes the production branch untestable by default, and a self-annotating bounding function that was not idempotent and so destroyed its own provenance); earlier: 2026-09-14 (incremental: harness rank tracks model class, not benchmark — Spearman −0.05 between a 744B MoE and a 26B MoE on one grid, +0.76 between the 26B and a 30B dense on a different benchmark — and thinking mode alone can remove ~2/3 of a harness's score; a delegation hand-off the architect cannot follow is a silent confident-wrong path, and user-facing delegation returns now carry the full report; `earendil-works/pi` and `badlogic/pi-mono` are one repository; hand-written procedural guidance hurt until a validation gate repaired it); earlier: 2026-09-08 (incremental: premise screening became the dispatch path's first-class citizen — AIR-11's censuses answered "already-satisfied/blocked-on-row" as SCREENING failures, and AIR-12/13/14 (`945c8820`) shipped the four-verdict `premise_screener` ladder, the advisory `.index-graph` read and the nullable `screen_result` queue field; the fan-out waste figure is now a measured BAND, not a point (token waste 86.5–99.7%, head-count 40.0–95.5%, enforced as a `Bound` in the belief kernel by SC62), FM-6 measured the orphan rate at 35.0% (declared width 1,187 → measured 928); the heavy-wrap receipt stopped destroying the tracked manifest it must preserve (`af4c5c63`); and WS-1..4 filed the delivery-plane residuals; earlier: 2026-09-07 (incremental: freezing the weights is what buys the robustness — the untrained Qwen2.5-7B goes UP under a strong tool-schema shift, 7.4 → 13.5, while the same model post-trained under h-low falls to 2.7 and a GiGPO arm collapses 81.0 → 33.2, so every MCP tool rename, parameter-key change or consolidation behind one dispatcher with an `action` parameter IS that shift and costs our frozen fleet approximately nothing — OBSERVATION-grade, external, one benchmark; plus the DERIVED-FROM-CONFIG cost yardstick "one engineer update ≈ one full sweep of your eval suite"; and an in-place correction to the harness-decomposition passage — ETCSOVG is a DIFFERENT PARTITION, not a superset that adds Observability and Governance (it adds four and drops two), and only arXiv 2605.23950 proposes a Harness Card, the six-dimension decomposition being intake-921 MemoHarness, which has none) · earlier: 2026-09-03 (incremental: the pseudocode-first loop-design convention and the two defects that motivated it — a rejection channel filtering on a status the controller never wrote, 22 events to 1, and a critic revision charged to the authoring-strike budget — plus reproduction-over-proof, and a FOURTH shared-tree custody shape: a stale untracked file at a path origin also tracks; earlier: 2026-08-30, the two kernel dashboards merged into one — `/loop` titled Kernel R&D, `/kernel` a 301, `kernel.html` deleted — and every defect the merge found was the surface agreeing with itself instead of with the producer: a fixture that invented the READER's field spelling let a GPU panel stay dark under 41 passing tests; a mutation survived because the harness exposed only `innerHTML`/`textContent` so the assertion was unwritable; two headline numbers had no rendered freshness envelope; compliant silence carries no age, so a 16.8-day export reads `observed`; and a dead-producer rule applied to a QUIESCENT one produced a wrong staleness verdict; earlier: 2026-08-25 FM-1 fan-out corpus measurement: 2428 workflows/4727 subagents, 52 deep-dispatch workflows hold 81% of subagents) · (evening hygiene sweep: the filesystem-containment guard unified into ONE scanner with every other surface derived — generated opencode permission blocks, `--check-path` shared by Write|Edit and opencode plugins, parity tests failing on drift, codex bridge wired with firing unproven, shipped-empty operator allowlist with hook-env-only ack; earlier evening tier-1 pass: the harness/API fail-open family closed one layer deeper — `LLMPrimitives.llm_call` returns `[ERROR: ...]` strings instead of raising, and those in-band failures were reaching clients as HTTP 200 assistant content with `finish_reason: "stop"`; now 502 / terminal SSE `error` + `finish_reason: "error"` via the canonical `inband_error_text()` rule, REPL path checked before auto-wrap — see bottom sections; earlier same-day: agent-file compression metric corrected to words, and the exceeds-corpus-maximum claim withdrawn; vacuous-pass test suites became a named, enforced convention; previously 2026-08-19: stale fixtures misattributed as a resolution-cascade defect; previously 2026-08-18: close-out of the 2026-08-16→18 reconciliation: reachable-from-origin is not merged — 19 stranded lane patches, two recurrence guards, the `-s ours` refutation, the `git clean` damage signature, and a 51-message bus triage read message-by-message)
+**Sources**: 100+ documents (added 2026-09-17: HS-4 decision package and shell/feature design docs, `docs/reference/harness-candidates/` (client-surface audit, Hermes evaluation, OpenCode P0.3 audit), harness-improvement-loop stub, closed hermes-outer-shell; added 2026-09-14 noninf sweep: RTG-02 per-request telemetry scope, the dropped find-or-update metadata write, and the non-idempotent work sanitizer — `epyc-orchestrator` `d65a4e93` + `b69bda61`)
+
+## Compiled Update — 2026-09-17: HS-4 decided — a thin OpenCode shell, Hermes features rebuilt inside the orchestrator, and the seam blocker no audit had looked for
+
+**Confidence: verified** for source-level facts at pinned SHAs (OpenCode `350c726aa`/`4bffbb655`, oh-my-pi
+`37eee719`, pi `ceea48f5`, Hermes `532a49f1`, dsh `0d1f5000`, orchestrator `83c7ed2f`/`92bbeb06`, kernel
+`0db32c06e`) and for the offline plugin tests. **inferred** for the design choices and phase ordering. External
+harness rankings stay OBSERVATION-grade and were explicitly kept out of the selection.
+
+**The decision.** On 2026-09-16 the operator closed HS-4. The shell is a **thin off-the-shelf harness: OpenCode,
+with pi as fallback**. The Hermes features we want (user-profile memory, notes, `session_search`, delegation,
+background review, compaction) are built **inside the orchestrator**, as implicit `/v1` behaviour plus MCP tools.
+The rule is one memory system, one router, and no shell patches to carry. The shell carries one first-party
+plugin that stamps session identity onto each request. It is written against OpenCode's documented hook API,
+so it counts as an integration, not a fork. Hermes was not selected, and its handoff moved to `completed/`.
+**This supersedes two older passages on this page:** the 2026-07-16 bullet saying OpenCode and ACP speakers
+"remain open candidates", and the Hermes/OpenGauss coordinating-handoff paragraph ("design + intake; no
+production deployment yet"). Hermes is now a closed, reference-only evaluation.
+
+**How the package was argued.** The zero-inference decision package scored five options (A OpenCode, B pi,
+C oh-my-pi, D Hermes, E dsh) plus F, defer. The primary axis was whether every *default* request path honours
+a config-declarable top-level body key. Trainability and external benchmark numbers were excluded as selection
+evidence. It recommended A: OpenCode was the only candidate combining lever coverage on all default paths,
+native MCP, a real (if porous) permission layer, headless JSON output, and config switches for each of its own
+layer-(B) behaviours. The A-vs-B tie-break was whether the frontend must consume orchestrator tools over MCP
+natively. The follow-through design then rejected oh-my-pi, for three reasons: its `retry.fallbackChains` is a
+second model router, switchable off only by one boolean (`retry.modelFallback:false`) that must be re-audited on
+every bump; its approval default is `yolo`; and about 73% of its recent commits come from one maintainer and his
+bot. *A router that does not exist beats one that is disabled.* Building the features server-side won on every
+criterion. Routing compliance holds by construction because side calls go through `LLMPrimitives`. M-12 and the
+belief kernel can see the state. A shell swap loses nothing (HS-7).
+
+**The HS-1g call-verb check became a standing instrument, and it changed the Hermes verdict.** A lever in a config
+descriptor can be honoured on one call path and silently ignored on another. The class has now been seen in
+oh-my-pi, pi-ai, Hermes and llama.cpp's own README. The check was run on all five candidates. Findings:
+
+- OpenCode, oh-my-pi and pi honour the lever on every default path.
+- dsh exposes no lever on its pi-ai route.
+- Hermes honours it on the **main loop only**. Compaction, the iteration-limit summary, `flush_memories`,
+  `delegate_task` children, background review and the `session_search` summary all bypass it.
+
+**This corrects the 2026-07-17 HS-1b "SUFFICIENT, patch cost ≈ 0" verdict**, which holds only with compression
+off and `delegate_task` gated. The memory audit grew Hermes's patch surface from four paths to six, and that was
+a material input against Hermes. The instrument now lives in a standalone Client Surface Audit. It adds a fifth
+step: a competing-router grep. It also states the design rules: client UX stays in the client, and a typed `x_*`
+field always beats memory prose.
+
+**A seam blocker no earlier audit caught.** HS-1 and HS-1g audited only the *request* direction. At `83c7ed2f`,
+`/v1/chat/completions` **never returns `tool_calls`**. Client tools are rewritten into prompt text for the
+internal REPL's `CALL()`, which resolves names against the orchestrator's own registry. Against today's
+`:8000`, every agentic shell degrades to a chat window with no working tools. The fix is P0.1, an opt-in
+client-executed tool mode (`x_tool_mode="client"`) that forwards `tools` and tool history to the backend
+chat-completions path and returns `finish_reason:"tool_calls"`. The REPL bridge stays the default, so the eval
+tower does not change.
+
+**P0.3: OpenCode re-audited at its tip, and the plugin shipped.** OpenCode was re-audited at `350c726aa`
+(v1.18.31, MIT, 700 commits past the HS-1g pin). The check covered 15 request paths. All default paths honour
+`chat.params`. The top-level, unrenamed wire shape was proven offline against the pinned
+`@ai-sdk/openai-compatible@2.0.41` using a capturing fake fetch. A no-fallback grep found no runtime router. Five
+findings changed the P0 plan:
+
+1. A user-typed `@agent` subtask bypasses `permission.task:"deny"`. The template therefore also needs
+   `subagent_depth:0` and disabled `general`/`explore` agents, and the lint enforces all three.
+2. HS-1g missed the **v2 session runner** (`/api/session/:id/prompt`). It has no plugin hook, so it is a silent
+   no-op. No in-tree client uses it, and it is now a per-bump watch item.
+3. A plugin that fails to load is only logged upstream, and `OPENCODE_PURE` skips all plugins. The plugin fails
+   closed at hook time. The residual (an *absent* plugin) needs an orchestrator-side 422 tripwire for
+   OpenCode-marked requests that lack `x_session_id`. P0.3b added a `User-Agent` marker so the guard can also
+   fire on SDK calls outside `prepare`.
+4. `:8000` currently accepts unknown `x_*` keys and ignores them (pydantic `extra="ignore"`), so P0.4 must
+   follow P0.2.
+5. FastMCP silently drops an undeclared `session_id`, so every session-aware MCP tool must declare one.
+
+The title call is now keyed, which retires an HS-1g caveat, and it stays disabled anyway. The plugin, config
+template, env file, lint and tests are merged under `harness/opencode-plugin/`. The recorded runs are 40/40
+with the SDK contract enabled, and 45/45 after P0.3b.
+
+**Where each feature lives, and what the audit found already exists.**
+
+- **User-profile injection is dead code.** `PromptBuilder.get_system_prompt()` has no serving caller.
+- **`derive_preferences()` has no caller** outside its tests.
+- **B2 compression is wired on `/v1` but off.** It is also stateless per request, which defeats the prefix
+  cache, and it fails open. So server-side folding with a session fold cache is P1: once shell compaction is
+  off, long sessions fail without it.
+- **Phase order:** P2 is profile + notes, P3 is `session_search` through a `/v1` transcript write side (ranked
+  snippets, no per-search LLM summary), P4 is an `orchestrator_delegate` MCP tool plus `/v1` routing parity,
+  and P5 is proposal-only background review.
+- **Deliberately not rebuilt:** Honcho, session re-keying, per-search summaries, autonomous skill creation
+  (it breaks HS-7 and the HS-5b freeze-before-tuning order) and the iteration-limit summary. The multi-platform
+  gateway was flagged for operator interest rather than dismissed.
+- **Memory:** why Hermes memory and the episodic store are complementary in data but compete in mechanism is
+  covered in [Memory-Augmented](memory-augmented.md).
+
+**Structured output and the Harness Card.**
+
+- **HS-13** records the structured-output seam as two layers. The frozen kernel does grammar-constrained JSON
+  through `json_schema_to_grammar`. `:8000` refuses `response_format` with a 422, by decision. The native
+  `/chat` REPL path is parse-and-retry, and its flag is off by default. The kernel `README.md:1239` example puts
+  the schema at the wrong nesting and silently yields unconstrained JSON.
+- **HS-6c** published a conformant ETCSOVG Harness Card for the eval tower (`epyc-orchestrator@92bbeb06`). It
+  names 13 undisclosed or unfixed fields, including no REPL/scorer isolation, no eval-wide network-off switch and
+  auto-approve. So any cross-harness comparison on the tower is locked-harness only, and whichever shell is
+  chosen runs in an operator-provisioned jail.
+- **HS-6b** corrected one card row: harness compaction "can defer" only where the compaction path honours the
+  lever or compaction is off.
+
+**Improvement loop: a stub, deferred.** Moving the features server-side makes them files that improvement
+machinery can mutate and measure. The preferred shape is a sibling loop that reuses AutoPilot's journal, gate,
+guards and fingerprints (option B). A fully separate loop is not recommended, because it would re-live the
+fail-open, stale-frontier, leakage and comparability bugs already fixed.
+
+### Key findings
+
+- Operator decision: OpenCode shell (pi fallback), Hermes-style features inside the orchestrator, one memory
+  system and one router, P0–P5 plan ([harness-selection](../handoffs/active/harness-selection-and-integration.md),
+  [hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
+- The package recommends A OpenCode, with pi as the minimal-import alternative and a native-MCP tie-break. The
+  live requests are acceptance checks for the chosen harness, not discriminators between candidates
+  ([hs4-decision-package](../docs/design/hs4-harness-decision-package-20260916.md),
+  [progress sub-hs4](../progress/2026-09/2026-09-16-sub-hs4.md)).
+- `/v1` never emits `tool_calls` (`openai_compat.py:228,322-331` @ `83c7ed2f`), so client-executed tool mode is
+  P0.1 for every shell ([hs4-shell-and-features](../docs/design/hs4-shell-and-orchestrator-features-20260916.md)).
+- HS-1g call-verb matrix: Hermes main loop only (six bypass paths once the memory audit is counted), which
+  corrects HS-1b's "≈0 patch"; the dsh pi-ai pin bump is already upstream, which corrects HS-1e
+  ([harness-selection](../handoffs/active/harness-selection-and-integration.md),
+  [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md),
+  [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md)).
+- OpenCode at `350c726aa`: 15 paths audited, with two silent no-ops (E11 `agent create`, E12 v2 runner) that are
+  unused by our clients; `@agent` bypasses the `task` deny; unknown `x_*` keys are silently ignored at `:8000`;
+  FastMCP drops an undeclared `session_id`
+  ([opencode-p03-audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md),
+  [progress sub-hs4-p03](../progress/2026-09/2026-09-16-sub-hs4-p03.md)).
+- The reusable audit instrument now has Steps 1–4 plus a competing-router grep; client UX stays in the client,
+  and typed `x_*` beats prose ([client-surface-audit](../docs/reference/harness-candidates/client-surface-audit.md)).
+- Hermes closure: 11 open boxes dispositioned (2 ticked on item-G evidence, 4 superseded, 5 moved to the HS-4
+  P0.4 carry box); the local-only commit `532a49f1` preserved as a patch; config lesson: a key no code reads
+  (`mempalace:`) fails silently, so grep the pinned tree before calling a feature wired
+  ([hermes-outer-shell](../handoffs/completed/hermes-outer-shell.md),
+  [progress sub-close-ufh02](../progress/2026-09/2026-09-16-sub-close-ufh02.md),
+  [hermes-evaluation](../docs/reference/harness-candidates/hermes-evaluation-20260916.md)).
+- HS-13 two-layer structured-output record and the kernel-README silent no-op; HS-6c conformant card with 13
+  named gaps; HS-6b one-row correction
+  ([harness-selection](../handoffs/active/harness-selection-and-integration.md)).
+- Harness-improvement loop: option B (sibling loop on the shared AutoPilot substrate) is preferred; HIL-1..5
+  are not started ([harness-improvement-loop](../handoffs/active/harness-improvement-loop.md)).
+
+### Open questions
+
+- P0.1, P0.2, P0.4 and P0.5 are not landed. P0.4 (live top-level arrival, a republished Harness Card, and the
+  pin freeze) needs inference and must follow P0.2. SC86 belief-kernel write-side wiring must precede any
+  measured shell run.
+- E12, the OpenCode v2 session runner, has no hook and is not shown to receive the `User-Agent` marker. It stays
+  a per-bump watch item, alongside the native-runtime provider gate.
+- HS-1f.1 (one live pi request) is still unrun. It becomes an adoption gate only if the fallback is ever taken.
+- The HS-14 local bake-off happens after the freeze and needs a region claim.
+
+### Sources
+
+- [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md) — HS-4 decision and P0–P5 boxes, the HS-1g matrix, HS-13, HS-6b/6c, HS-5/HS-1e/HS-14 packet folds.
+- [hs4-harness-decision-package-20260916.md](../docs/design/hs4-harness-decision-package-20260916.md) — options, evidence matrix, sandboxing, recommendation and tie-break.
+- [hs4-shell-and-orchestrator-features-20260916.md](../docs/design/hs4-shell-and-orchestrator-features-20260916.md) — shell choice, the `tool_calls` blocker, feature map, phased plan.
+- [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the 15-path re-audit, P0 findings, plugin tests, P0.3b User-Agent marker.
+- [client-surface-audit.md](../docs/reference/harness-candidates/client-surface-audit.md) — the reusable instrument and design rules.
+- [hermes-evaluation-20260916.md](../docs/reference/harness-candidates/hermes-evaluation-20260916.md) — Hermes bypass paths, plugin behaviour, config lessons.
+- [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md) — closure note and box dispositions.
+- [harness-improvement-loop.md](../handoffs/active/harness-improvement-loop.md) — improvement-loop options.
+- [progress sub-harness](../progress/2026-09/2026-09-16-sub-harness.md), [sub-hs4](../progress/2026-09/2026-09-16-sub-hs4.md), [sub-hs4-p03](../progress/2026-09/2026-09-16-sub-hs4-p03.md), [sub-close-ufh02](../progress/2026-09/2026-09-16-sub-close-ufh02.md) — session records for the above.
 
 ## Compiled Update — 2026-09-14: harness rank tracks model class, and a hand-off the architect cannot follow is a silent confident-wrong path
 
@@ -1830,9 +1996,9 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ### New Findings (2026-07-16 — open-source harness selection became a first-class architecture gate)
 
-- **The user-facing harness is now treated as a selectable open-source integration point, not a hardcoded frontend.** The new parent index makes the load-bearing split explicit: the orchestrator keeps the backend moat behind `/v1/chat/completions` + `x_*`, while the harness must cooperate with routing, context folding, and escalation. Closed harnesses are excluded because that cooperation cannot be enforced externally. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+- **The user-facing harness is now treated as a selectable open-source integration point, not a hardcoded frontend.** The new parent index makes the load-bearing split explicit: the orchestrator keeps the backend moat behind `/v1/chat/completions` + `x_*`, while the harness must cooperate with routing, context folding, and escalation. Closed harnesses are excluded because that cooperation cannot be enforced externally. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
-- **Hermes remains the candidate track, not the general decision.** Hermes/OpenGauss is still the most concrete open harness surface, but the new selection index means the Hermes outer shell should stay scoped to Hermes-specific validation and packaging. OpenCode and ACP-speaking harnesses remain open candidates until HS-1/HS-2 settle the cooperation-surface and ACP ROI questions. Sources: [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md).
+- **Hermes remains the candidate track, not the general decision.** Hermes/OpenGauss is still the most concrete open harness surface, but the new selection index means the Hermes outer shell should stay scoped to Hermes-specific validation and packaging. OpenCode and ACP-speaking harnesses remain open candidates until HS-1/HS-2 settle the cooperation-surface and ACP ROI questions. Sources: [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [user-facing-harness-index.md](../handoffs/active/user-facing-harness-index.md).
 
 ## 2026-07-19 Update — reviewer control plane is additive and release-decoupled
 
@@ -1863,7 +2029,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - [Session Bus + Thin Coordinator](../handoffs/active/session-bus-thin-dispatcher.md) — M3
   decision-property acceptance, C7/C8 coverage, and guard self-idiom regression.
-- [Hermes/OpenGauss as Outer Shell](../handoffs/active/hermes-outer-shell.md) — reference-client
+- [Hermes/OpenGauss as Outer Shell](../handoffs/completed/hermes-outer-shell.md) — reference-client
   parser and payload contract regression.
 - [Repo-Readiness Scorer](../handoffs/active/repo-readiness-scorer.md) — file-level evidence
   requirement and empty-directory regression.
@@ -1872,7 +2038,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ### New Findings (2026-07-06 — Hermes boundary generalized to multi-client contract)
 
-- **Hermes is now framed as one client of a shared orchestrator contract, not a special routing path.** The active Hermes handoff now records the governing boundary: client-specific UX stays at the edge, while the orchestrator owns the stable OpenAI-compatible `/v1/chat/completions` plus `x_*` override surface. The July 2026 audit closed the non-Hermes client sufficiency pass: bare SDK/curl, Hermes, coding-agent proxies, IDE clients, and KB-RAG/retrieved-context clients can all express current needs through standard OpenAI fields plus `x_orchestrator_role`, `x_max_escalation`, `x_force_model`, `x_disable_repl`, and `x_show_routing`. Remaining live work is validation and packaging, not new orchestrator policy: test `x_disable_repl` end-to-end, verify `x_max_escalation` when full graph enforcement is available, and optionally repackage the skills as a namespaced Hermes plugin bundle. Sources: [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md), [progress 2026-07-02](../progress/2026-07/2026-07-02.md), [progress 2026-07-04](../progress/2026-07/2026-07-04.md).
+- **Hermes is now framed as one client of a shared orchestrator contract, not a special routing path.** The active Hermes handoff now records the governing boundary: client-specific UX stays at the edge, while the orchestrator owns the stable OpenAI-compatible `/v1/chat/completions` plus `x_*` override surface. The July 2026 audit closed the non-Hermes client sufficiency pass: bare SDK/curl, Hermes, coding-agent proxies, IDE clients, and KB-RAG/retrieved-context clients can all express current needs through standard OpenAI fields plus `x_orchestrator_role`, `x_max_escalation`, `x_force_model`, `x_disable_repl`, and `x_show_routing`. Remaining live work is validation and packaging, not new orchestrator policy: test `x_disable_repl` end-to-end, verify `x_max_escalation` when full graph enforcement is available, and optionally repackage the skills as a namespaced Hermes plugin bundle. Sources: [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [progress 2026-07-02](../progress/2026-07/2026-07-02.md), [progress 2026-07-04](../progress/2026-07/2026-07-04.md).
 
 ### New Findings (2026-07-06 — operator-facing optimization brief now explains rejected search space)
 
@@ -1942,7 +2108,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ### New Findings (2026-06-20 — agent-harness intake cluster: mostly-covered, three net-new deltas)
 
-- **The only net-new primitive from Centaur (intake-696) is a placeholder-credential egress proxy — the agent process never holds live secrets.** Centaur (paradigmxyz, MIT, self-hosted "multiplayer" Slack agents) lets agents see only placeholder strings; a mitmproxy-style "iron-proxy" swaps the real secret in only on authorized outbound requests (with 1Password runtime resolution). This is a credential-hygiene design note worth recording: a prompt-injection exfiltration attempt leaks only placeholders, not live secrets. Centaur's other primitives are duplicative — its harness-adapter abstraction is already covered by HOS-Pattern-S (5-file adapter shim), its durable child-agent workflow by the A2A internal/external split and the child-agent delegation/swarm "Key Questions", and its per-conversation k3s sandbox is out-of-scope on single-host EPYC (no Kubernetes substrate). [intake-696 → [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md) agent-harness cluster] `external`
+- **The only net-new primitive from Centaur (intake-696) is a placeholder-credential egress proxy — the agent process never holds live secrets.** Centaur (paradigmxyz, MIT, self-hosted "multiplayer" Slack agents) lets agents see only placeholder strings; a mitmproxy-style "iron-proxy" swaps the real secret in only on authorized outbound requests (with 1Password runtime resolution). This is a credential-hygiene design note worth recording: a prompt-injection exfiltration attempt leaks only placeholders, not live secrets. Centaur's other primitives are duplicative — its harness-adapter abstraction is already covered by HOS-Pattern-S (5-file adapter shim), its durable child-agent workflow by the A2A internal/external split and the child-agent delegation/swarm "Key Questions", and its per-conversation k3s sandbox is out-of-scope on single-host EPYC (no Kubernetes substrate). [intake-696 → [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md) agent-harness cluster] `external`
 
 - **eve (intake-697) carries no net-new architectural lift — it is the productized successor of vercel-labs/open-agents (intake-397).** Vercel's "Next.js for agents" framework packages durable park/resume, hierarchical subagent delegation, zero-registration tools, conditional skills, and eval-on-deploy. Every one of those patterns was already enumerated in the vercel-open-agents deep-dive and carried through the hermes-outer-shell / tool-output-compression / tool-use-eval-contract Phase 2 work. The packaging is new; the techniques are not, and they mirror EPYC's own thin-map + skills + subagent harness. [intake-697, intake-397] `external`
 
@@ -1952,7 +2118,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - **The child structured-return contract is already shipped for the batched and single-delegate REPL paths.** Re-reading intake-693 (RLM schema-constrained subagent returns as an "external attention mask") against the code confirms the *parent* contract (schema-normalize → contract-at-step-0 → validate-on-`FINAL` → retry-with-errors) shipped 2026-05-20 under flag `final_schema_validation`, the *batched child* path shipped in commit `18b5ceb` ("Validate batched child LLM schemas", 2026-06-14), and the single-delegate REPL path shipped in commit `6426dd4` ("Add schema validation for single delegates", 2026-06-27). This supersedes the earlier "~30–40 LoC still-open" framing for child schemas; remaining deltas are parallel-delegation schema support only if a fan-out-heavy eval proves a gap, plus native-tools sentinel/parity and cost-aware cheaper-worker delegation. [commits `18b5ceb`/`6426dd4`, intake-693, [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md)] `verified`
 
-**Sources**: [intake-696](https://centaur.run/) Centaur (paradigmxyz, MIT) · [intake-697](https://vercel.com/eve) eve · [intake-700](https://github.com/ruvnet/ruflo) ruflo · [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) OpenRouter subagent server tool · handoffs [hermes-outer-shell](../handoffs/active/hermes-outer-shell.md) (agent-harness cluster), [tool-use-eval-contract](../handoffs/active/tool-use-eval-contract.md) (intake-705 update) · epyc-orchestrator `src/api/routes/chat_delegation.py`, `src/repl_environment/combined_ops.py` (commit `18b5ceb`)
+**Sources**: [intake-696](https://centaur.run/) Centaur (paradigmxyz, MIT) · [intake-697](https://vercel.com/eve) eve · [intake-700](https://github.com/ruvnet/ruflo) ruflo · [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) OpenRouter subagent server tool · handoffs [hermes-outer-shell](../handoffs/completed/hermes-outer-shell.md) (agent-harness cluster), [tool-use-eval-contract](../handoffs/active/tool-use-eval-contract.md) (intake-705 update) · epyc-orchestrator `src/api/routes/chat_delegation.py`, `src/repl_environment/combined_ops.py` (commit `18b5ceb`)
 
 ### New Findings (2026-05-31 — A2A semantics adopted internally, transport deferred)
 
@@ -1960,7 +2126,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - **Consultation is a distinct interaction shape from delegation and deserves a first-class primitive.** Delegation = callee finishes & returns; consult = caller integrates advice & finishes itself; bounded sub-question vs whole-task; often multi-turn vs one-shot; pays input-only tokens vs full callee inference. Today this pattern (e.g., a coder role drafts → `architect_general` reviews → coder finalizes) gets kludged as full delegation we under-utilize. The new four-phase plan adds a typed-output `consult()` entrypoint with skill registry, `kind="consult"` namespacing on `delegation_cache.make_key()` additively, scheduler-policy default to `priority=background` + `max_queue_wait_ms=0` (skip-or-admit semantics verified native in `epyc-orchestrator/src/scheduling/contention_gate.py:346-399` — the `is None` check at `:366` does NOT catch `0`, so the loop runs one `evaluate()` then admits-or-times-out with `waited_s ≈ 0`), and `ConsultationDenied` internal exception (no HTTP/503 mapping in v1). First consult site = code-edit drafting requester → `architect_general` `review_before_commit`, with the exact attach point gated on a P2-0 discovery subtask (candidates: `force_mode="edit"`, batched-edit pipeline, REPL final-answer hook, `worker_coder`, `coder_escalation`). [internal-interaction-lifecycle.md P2] `planning`
 
-**Sources**: [intake-655](https://github.com/a2aproject/A2A) A2A Protocol v1.0.1 LF · [intake-318] Agentnetes (uses A2A Agent Card) · [intake-394] Evolver (uses A2A hub) · [intake-145] Agent Protocol (alternative interop standard) · handoffs [internal-interaction-lifecycle](../handoffs/active/internal-interaction-lifecycle.md) · [hermes-outer-shell](../handoffs/active/hermes-outer-shell.md) Path-A external exposure · [delegation-context-preassembly](../handoffs/active/delegation-context-preassembly.md) (DCP-4 reused for P2 consult context packaging)
+**Sources**: [intake-655](https://github.com/a2aproject/A2A) A2A Protocol v1.0.1 LF · [intake-318] Agentnetes (uses A2A Agent Card) · [intake-394] Evolver (uses A2A hub) · [intake-145] Agent Protocol (alternative interop standard) · handoffs [internal-interaction-lifecycle](../handoffs/active/internal-interaction-lifecycle.md) · [hermes-outer-shell](../handoffs/completed/hermes-outer-shell.md) Path-A external exposure · [delegation-context-preassembly](../handoffs/active/delegation-context-preassembly.md) (DCP-4 reused for P2 consult context packaging)
 
 ### New Findings (2026-05-27 - edit-transaction protocol fix)
 
@@ -2144,7 +2310,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [tool-output-compression.md](../handoffs/active/tool-output-compression.md) -- 7-handler output compression, 60-90% token reduction per tool output
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- 4-species architecture, safety gates, evolution manager, GEPA optimizer
 - [claude-code-local-constellation-routing.md](../handoffs/archived/claude-code-local-constellation-routing.md) -- MCP tool delegation, deterministic routing overrides
-- [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md) -- two-layer architecture with deterministic routing override flags, cross-layer preference propagation; 2026-04-17 update cross-references open-agents intake-397
+- [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md) -- two-layer architecture with deterministic routing override flags, cross-layer preference propagation; 2026-04-17 update cross-references open-agents intake-397
 - [claude-mem-persistent-memory.md](../research/deep-dives/claude-mem-persistent-memory.md) -- observer-sidecar pattern, 7-hook lifecycle taxonomy, structured XML observation schema with mode-defined taxonomy, `<private>` tag edge-layer stripping, six-field Stop-hook summary schema, batched-ID MCP tool for progressive disclosure; AGPL-3.0, no code adoption
 - [genericagent-minimal-framework.md](../research/deep-dives/genericagent-minimal-framework.md) -- L0-L4 flat-file memory taxonomy, L1 ≤30-line always-in-context insight index, content-in-reply-body tool pattern, `no_tool` recovery handler, generator-based tool dispatch, L4 session archiver cron, LLM-driven promotion via SOP discipline; no sandbox, CN-market-first, not portable wholesale
 - [vercel-open-agents-durable-workflow.md](../research/deep-dives/vercel-open-agents-durable-workflow.md) -- workflow event log for durable reconnect (portable pattern), typed Sandbox interface (exec/execDetached/read/write), scoped `task` subagent contract with summary-only return, large-output-to-FS convention; Vercel Sandbox is FS-only snapshot not memory hibernate, CRIU not viable for REPL with llama-server sockets
@@ -2358,7 +2524,7 @@ Three new agent-file-specific risks: (a) directive polarity (`must`/`must not`/`
 - intake-301 — AXI: Agent eXperience Interface (TOON encoding — orthogonal layer)
 - [`handoffs/active/tool-output-compression.md`](../handoffs/active/tool-output-compression.md) Research Intake Update 2026-04-30 — TOON-orthogonality reframe + 3-risk register
 - [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) Research Intake Update 2026-04-30 — persistence-clause caveat
-- [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — Pocock skills installer pattern as per-repo bootstrap
+- [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) Research Intake Update 2026-04-30 — Pocock skills installer pattern as per-repo bootstrap
 - [`handoffs/active/agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md) NEW — `/agent-file-compress` skill + per-model deployment gate
 
 ## DeepSeek-TUI vocabulary + snapshot-store port recipe (2026-04-30)
@@ -2400,13 +2566,13 @@ Source review (`crates/tui/src/snapshot/{repo.rs, paths.rs}`) confirms:
 ### Sources
 
 - [intake-508](https://github.com/Hmbown/DeepSeek-TUI) DeepSeek TUI — Terminal-native coding agent for DeepSeek V4 (Rust, closed-API-only)
-- [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — flat-enum disclosure + snapshot port recipe
+- [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) Research Intake Update 2026-04-30 — flat-enum disclosure + snapshot port recipe
 
 ## Hermes/OpenGauss outer shell (2026-05-06)
 
-Coordinating handoff [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md) tracks integration of Hermes (Nous Research agent frontend, upstream at /mnt/raid0/llm/hermes-agent) with OpenGauss as a possible outer-shell coordination layer above the EPYC orchestrator. Architecture pattern: Hermes handles user-facing dialogue + planning; orchestrator handles role routing + LLM dispatch; OpenGauss provides persistence for episodic memory + cross-session state. Status: design + intake; no production deployment yet.
+Coordinating handoff [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md) tracks integration of Hermes (Nous Research agent frontend, upstream at /mnt/raid0/llm/hermes-agent) with OpenGauss as a possible outer-shell coordination layer above the EPYC orchestrator. Architecture pattern: Hermes handles user-facing dialogue + planning; orchestrator handles role routing + LLM dispatch; OpenGauss provides persistence for episodic memory + cross-session state. Status: design + intake; no production deployment yet.
 
-Source: [handoffs/active/hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md).
+Source: [handoffs/completed/hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md).
 
 ## Per-model agent-file prose compression as a deployment gate (2026-05-06)
 
@@ -2478,7 +2644,7 @@ P2-0 discovery is complete: the first consult seam is `epyc-orchestrator/src/edi
 
 **2026-07-05 update**: P1 landed 2026-06-28 (`18956892`, byte-equal diagnostics proof + clean affinity preflight), and the whole P2 consult v1 — skill spec, schema-constrained `consult()`, cache-key namespacing, `log_consult()`, DCP-packer reuse via `dcp_for_consult` (`4183522f`), and the wired edit-transaction consult site behind `review_before_commit_consult` (`0e555822`) — is staged default-off. Live J17 behavior stays locked on the ≥48h bake (38.04h/48h as of 2026-07-05). Full detail in the 2026-07-05 New Findings section above.
 
-**Sources**: [`internal-interaction-lifecycle.md`](../handoffs/active/internal-interaction-lifecycle.md) · [`hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) intake-655 update · [`routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) subsystem row · `research/intake_index.yaml` intake-655 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
+**Sources**: [`internal-interaction-lifecycle.md`](../handoffs/active/internal-interaction-lifecycle.md) · [`hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) intake-655 update · [`routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) subsystem row · `research/intake_index.yaml` intake-655 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
 
 ## Intake deep-dives: Economy of Minds & RLM structured-output contracts (2026-06-12)
 
@@ -2501,7 +2667,7 @@ A 2026-06-19 research-intake batch surfaced four agent-harness/delegation produc
 - **ruflo (intake-700, ex-Claude-Flow)** — every named primitive already covered (`strategy_store` + ReasoningBank memory, SiliconSwarm sharing, BT consensus, pi-agent-core hooks). Only net-new = zero-trust cross-machine federation (mTLS / ed25519 / PII-gating), **out-of-scope** for single-host single-user EPYC. Self-published 1.3×–1953× benchmarks are vendor observations, not decision-gating. Note the recent CWE-78 patch if its hook-shell surface is ever inspected.
 - **OpenRouter subagent server tool (intake-705)** — provider-hosted stateless scoped delegation (worker sees only `task_description`; model + per-request task cap pinned at configure time). EPYC's `src/api/routes/chat_delegation.py` already does this server-side in software (architect→specialist, role pinning, per-request loop/token caps, depth guard), and the batched structured-return contract shipped in commit `18b5ceb` (2026-06-14). **Real remaining delta: a cost-aware capable→cheaper-worker delegation MODE** — a capable model spending input-only tokens to hand a self-contained subtask *down* to a cheaper/faster worker under a per-request task cap. This is the one feature-mine worth carrying forward from the cluster.
 
-Sources: [intake-696](https://centaur.run/) · [intake-697](https://vercel.com/eve) · [intake-700](https://github.com/ruvnet/ruflo) · [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) · [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) (agent-harness cluster) · [`handoffs/active/tool-use-eval-contract.md`](../handoffs/active/tool-use-eval-contract.md) (intake-705 / 18b5ceb update) · `research/intake_index.yaml` intake-696/697/700/705 · epyc-orchestrator `src/api/routes/chat_delegation.py`, `src/repl_environment/combined_ops.py` (commit `18b5ceb`).
+Sources: [intake-696](https://centaur.run/) · [intake-697](https://vercel.com/eve) · [intake-700](https://github.com/ruvnet/ruflo) · [intake-705](https://openrouter.ai/docs/guides/features/server-tools/subagent) · [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) (agent-harness cluster) · [`handoffs/active/tool-use-eval-contract.md`](../handoffs/active/tool-use-eval-contract.md) (intake-705 / 18b5ceb update) · `research/intake_index.yaml` intake-696/697/700/705 · epyc-orchestrator `src/api/routes/chat_delegation.py`, `src/repl_environment/combined_ops.py` (commit `18b5ceb`).
 
 ## Architect→Reviewer control plane — dormant-machinery activation + 13-dive evidence base (2026-07-16)
 

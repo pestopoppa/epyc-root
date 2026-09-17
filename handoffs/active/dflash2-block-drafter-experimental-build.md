@@ -392,6 +392,10 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
         lines. `LLAMA_SPEC_DIAG_ACCEPT` (plain `fprintf`) emitted thousands. The route logger writes through
         `GGML_LOG_INFO`, which the server most likely filters. The next probe is `--verbose` on one arm.
       - Belief kernel: pre-hook, zero rows (VB-GPU-RUNNER).
+      - [ ] **DF2-8a — make the MMVQ route logger visible:** rerun one serial-exact arm with `--verbose` and
+            `GGML_CUDA_LOG_MMVQ_ROUTE=2` to confirm the server filters `GGML_LOG_INFO`. This turns the
+            1-row vs multi-row attribution from inferred to observed. GPU; waits for the operator to lift the
+            2026-09-17 GPU hold. Filed 2026-09-17.
 
 - [ ] **DF2-6b-bis (new, 2026-08-28) — re-run the ngram arm at COMPARABLE DRAFT VOLUME.**
       The 2026-08-28 ngram arm drafted 218 tokens against dflash2's 4012 and draft_simple's 11951,

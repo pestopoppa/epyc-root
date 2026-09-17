@@ -500,6 +500,36 @@ Formalized from the 2026-07-14 backlog ROI audit ([backlog-roi-audit-2026-07-14.
       `judge_distinct_from_reader`/`cross_family_ok`. Qwen-on-Qwen is not cross-family: the EV-6 ≤2pp leg needs a
       non-Qwen judge (e.g. gemma4). Tests: `tests/test_augment_v1_manifest.py` 5/5, `test_harness.py` 13/13.
     - **OPERATOR RULING 2026-09-16:** internal use of the unlicensed Augment-v1 golden set is APPROVED. Data stays out of git (fetch script + manifest only, research `e70b6974`); do not redistribute. Run leg released to the GPU runner with a gemma4 cross-family judge (reader Qwen3.8-27B, judge gemma-4-26B-A4B).
+    - **RUN 2026-09-16 14:30–15:38Z (sub-gpu-runner; box NOT ticked). The EV-6 swap gate FAILS: 2.94pp against a 2.0pp limit.**
+      The evidence is research `aac025a4`, `data/ev13b-review-f1-20260916/`: summaries, calibration digests and
+      run_record only. Per-case output stays local because it quotes the unlicensed diffs.
+      - **Setup.** Reader Qwen3.8-27B-Q8_0, using the production architect_general argv with `-np 1 -c 131072`,
+        over 50 PRs × 3 runs on frozen v9 build-hip. There were 370 findings.
+      - **Judge calibration.** Both judges are VALID against the 95% bar.
+        - gemma-4-26B-A4B Q4_K_M: positive controls 99.0% (n=97), negative controls 100% (n=50).
+        - Qwen3.6-35B-A3B-MTP Q8_0: positive 100%, negative 96%.
+      - **Semantic Mean-F1** (matcher spec sha `d5a6a9bb`; category CANDIDATE; no codified protocol, so these
+        are observations capped at Judged/Located).
+        - Judged by gemma (cross-family): **0.338 (sd 0.014)**, per run 0.335/0.357/0.322. Judge parse-fail
+          rate 0.8%, no malfunction runs.
+        - Judged by Qwen3.6: **0.367 (sd 0.021)**, per run 0.391/0.371/0.340.
+        - Swap delta = **2.94pp > 2.0pp → gate FAIL**. The Qwen judge scored higher in all 3 runs (per-run
+          deltas 5.6/1.5/1.8pp), which is consistent with a same-family leniency.
+      - **Other readings.** Location validity was 1.0. The deterministic build-leg matcher scored TP=0, as the
+        spec predicts.
+      - **Residency.** Proven for all 3 servers: KFD count 1, VRAM peaks of 35.6/26.0/38.3 GiB, and 3131/476/422
+        samples.
+      - **Belief kernel.** 6 rows ingested (`ingest review-f1`).
+      - **Still open.** The SPEC's leg B (the Qwen3.6 reader) was not run, so this is one reader and not
+        "local models". The swap gate failure needs a decision: widen n, change the judge, or record EV-6 as
+        failing for this pair.
+    - [x] **EV-13b decision: PARKED (operator 2026-09-17)** ✅ 2026-09-17. The operator chose "park it" over the
+      other two options (widen n plus run leg B on GPU, or change the judge). EV-13b stays open and is not
+      dispatchable. No GPU time is spent on it, and the batch entry should not be scheduled. EV-6 is recorded as
+      FAILING for the reader=Qwen3.8-27B, judge=gemma-4-26B-A4B vs Qwen3.6-35B-A3B pair at n=3 (2.94pp).
+      **Resume trigger:** a consumer needs a judge-stable review-F1 ranking. The first expected consumer is the
+      detect/repair split in `reviewer-escalation-and-human-gate-policy.md` HG-9, whose small-model detection
+      leg is what this suite measures. On resume, choose widen-n or judge-swap before running anything.
 
 ## Research Intake Update — 2026-06-03
 

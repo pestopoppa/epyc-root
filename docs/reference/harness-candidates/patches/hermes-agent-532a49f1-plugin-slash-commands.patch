@@ -1,0 +1,586 @@
+From 532a49f1f26f3b9193017de4e7388a8500b069a6 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Mon, 6 Jul 2026 08:26:23 +0000
+Subject: [PATCH] Add plugin slash command support
+
+---
+ cli.py                            |  28 +++--
+ gateway/run.py                    |  14 ++-
+ hermes_cli/plugins.py             | 177 +++++++++++++++++++++++++++---
+ run_agent.py                      |  13 +++
+ tests/test_cli_prefix_matching.py |  19 ++++
+ tests/test_plugins.py             | 121 +++++++++++++++++++-
+ tests/test_run_agent.py           |  18 +++
+ 7 files changed, 357 insertions(+), 33 deletions(-)
+
+diff --git a/cli.py b/cli.py
+index c15bd87b..0cf48dae 100644
+--- a/cli.py
++++ b/cli.py
+@@ -3702,7 +3702,8 @@ class HermesCLI:
+                         version = f" v{p['version']}" if p["version"] else ""
+                         tools = f"{p['tools']} tools" if p["tools"] else ""
+                         hooks = f"{p['hooks']} hooks" if p["hooks"] else ""
+-                        parts = [x for x in [tools, hooks] if x]
++                        commands = f"{p['commands']} commands" if p.get("commands") else ""
++                        parts = [x for x in [tools, hooks, commands] if x]
+                         detail = f" ({', '.join(parts)})" if parts else ""
+                         error = f" — {p['error']}" if p["error"] else ""
+                         print(f"  {status} {p['name']}{version}{detail}{error}")
+@@ -3769,16 +3770,21 @@ class HermesCLI:
+                     self.console.print(f"[bold red]Quick command '{base_cmd}' has unsupported type (supported: 'exec', 'alias')[/]")
+             # Check for plugin-registered slash commands
+             elif base_cmd.lstrip("/") in _get_plugin_cmd_handler_names():
+-                from hermes_cli.plugins import get_plugin_command_handler
+-                plugin_handler = get_plugin_command_handler(base_cmd.lstrip("/"))
+-                if plugin_handler:
+-                    user_args = cmd_original[len(base_cmd):].strip()
+-                    try:
+-                        result = plugin_handler(user_args)
+-                        if result:
+-                            _cprint(str(result))
+-                    except Exception as e:
+-                        _cprint(f"\033[1;31mPlugin command error: {e}{_RST}")
++                from hermes_cli.plugins import invoke_plugin_command
++                user_args = cmd_original[len(base_cmd):].strip()
++                try:
++                    result = invoke_plugin_command(
++                        base_cmd.lstrip("/"),
++                        user_args,
++                        cli=self,
++                        agent=self.agent,
++                        session_id=self.session_id,
++                        platform="cli",
++                    )
++                    if result:
++                        _cprint(str(result))
++                except Exception as e:
++                    _cprint(f"\033[1;31mPlugin command error: {e}{_RST}")
+             # Check for skill slash commands (/gif-search, /axolotl, etc.)
+             elif base_cmd in _skill_commands:
+                 user_instruction = cmd_original[len(base_cmd):].strip()
+diff --git a/gateway/run.py b/gateway/run.py
+index c8cfae5d..c4b1b499 100644
+--- a/gateway/run.py
++++ b/gateway/run.py
+@@ -1798,12 +1798,18 @@ class GatewayRunner:
+         # Plugin-registered slash commands
+         if command:
+             try:
+-                from hermes_cli.plugins import get_plugin_command_handler
+-                plugin_handler = get_plugin_command_handler(command)
+-                if plugin_handler:
++                from hermes_cli.plugins import get_plugin_command_handler, invoke_plugin_command
++                if get_plugin_command_handler(command):
+                     user_args = event.get_command_args().strip()
+                     import asyncio as _aio
+-                    result = plugin_handler(user_args)
++                    result = invoke_plugin_command(
++                        command,
++                        user_args,
++                        runner=self,
++                        event=event,
++                        session_id=getattr(event, "session_id", None),
++                        platform=getattr(event, "platform", None),
++                    )
+                     if _aio.iscoroutine(result):
+                         result = await result
+                     return str(result) if result else None
+diff --git a/hermes_cli/plugins.py b/hermes_cli/plugins.py
+index 5e27535a..c77dad2a 100644
+--- a/hermes_cli/plugins.py
++++ b/hermes_cli/plugins.py
+@@ -23,6 +23,12 @@ Tool registration
+ -----------------
+ ``PluginContext.register_tool()`` delegates to ``tools.registry.register()``
+ so plugin-defined tools appear alongside the built-in tools.
++
++Command registration
++--------------------
++``PluginContext.register_command()`` delegates to ``hermes_cli.commands`` so
++plugin-defined slash commands appear in help/autocomplete/gateway dispatch and
++resolve through the same registry as built-in commands.
+ """
+ 
+ from __future__ import annotations
+@@ -30,6 +36,7 @@ from __future__ import annotations
+ import importlib
+ import importlib.metadata
+ import importlib.util
++import inspect
+ import logging
+ import os
+ import sys
+@@ -83,6 +90,7 @@ class PluginManifest:
+     requires_env: List[str] = field(default_factory=list)
+     provides_tools: List[str] = field(default_factory=list)
+     provides_hooks: List[str] = field(default_factory=list)
++    provides_commands: List[str] = field(default_factory=list)
+     source: str = ""        # "user", "project", or "entrypoint"
+     path: Optional[str] = None
+ 
+@@ -95,6 +103,7 @@ class LoadedPlugin:
+     module: Optional[types.ModuleType] = None
+     tools_registered: List[str] = field(default_factory=list)
+     hooks_registered: List[str] = field(default_factory=list)
++    commands_registered: List[str] = field(default_factory=list)
+     enabled: bool = False
+     error: Optional[str] = None
+ 
+@@ -160,6 +169,40 @@ class PluginContext:
+         self._manager._hooks.setdefault(hook_name, []).append(callback)
+         logger.debug("Plugin %s registered hook: %s", self.manifest.name, hook_name)
+ 
++    # -- command registration ----------------------------------------------
++
++    def register_command(
++        self,
++        name: str,
++        handler: Callable[[str], str | None],
++        description: str,
++        *,
++        category: str = "Tools & Skills",
++        aliases: tuple[str, ...] = (),
++        args_hint: str = "",
++        subcommands: tuple[str, ...] = (),
++        cli_only: bool = False,
++        gateway_only: bool = False,
++    ) -> None:
++        """Register a plugin slash command and its handler.
++
++        Handlers receive the raw argument string after the slash command and
++        should return a display string or ``None``.
++        """
++        self._manager.register_command(
++            plugin_name=self.manifest.name,
++            name=name,
++            handler=handler,
++            description=description,
++            category=category,
++            aliases=aliases,
++            args_hint=args_hint,
++            subcommands=subcommands,
++            cli_only=cli_only,
++            gateway_only=gateway_only,
++        )
++        logger.debug("Plugin %s registered command: %s", self.manifest.name, name)
++
+ 
+ # ---------------------------------------------------------------------------
+ # PluginManager
+@@ -172,6 +215,9 @@ class PluginManager:
+         self._plugins: Dict[str, LoadedPlugin] = {}
+         self._hooks: Dict[str, List[Callable]] = {}
+         self._plugin_tool_names: Set[str] = set()
++        self._plugin_commands: Dict[str, Callable] = {}
++        self._plugin_command_names: Set[str] = set()
++        self._plugin_command_owner: Dict[str, str] = {}
+         self._discovered: bool = False
+ 
+     # -----------------------------------------------------------------------
+@@ -243,6 +289,7 @@ class PluginManager:
+                     requires_env=data.get("requires_env", []),
+                     provides_tools=data.get("provides_tools", []),
+                     provides_hooks=data.get("provides_hooks", []),
++                    provides_commands=data.get("provides_commands", []),
+                     source=source,
+                     path=str(child),
+                 )
+@@ -303,27 +350,26 @@ class PluginManager:
+                 loaded.error = "no register() function"
+                 logger.warning("Plugin '%s' has no register() function", manifest.name)
+             else:
++                before_tools = set(self._plugin_tool_names)
++                before_hooks = {
++                    h
++                    for h, cbs in self._hooks.items()
++                    if cbs
++                }
++                before_command_names = set(self._plugin_command_names)
+                 ctx = PluginContext(manifest, self)
+                 register_fn(ctx)
+-                loaded.tools_registered = [
+-                    t for t in self._plugin_tool_names
+-                    if t not in {
+-                        n
+-                        for name, p in self._plugins.items()
+-                        for n in p.tools_registered
+-                    }
+-                ]
+-                loaded.hooks_registered = list(
++                loaded.tools_registered = sorted(self._plugin_tool_names - before_tools)
++                loaded.hooks_registered = sorted(
+                     {
+                         h
+                         for h, cbs in self._hooks.items()
+-                        if cbs  # non-empty
+-                    }
+-                    - {
+-                        h
+-                        for name, p in self._plugins.items()
+-                        for h in p.hooks_registered
++                        if cbs
+                     }
++                    - before_hooks
++                )
++                loaded.commands_registered = sorted(
++                    self._plugin_command_names - before_command_names
+                 )
+                 loaded.enabled = True
+ 
+@@ -333,6 +379,68 @@ class PluginManager:
+ 
+         self._plugins[manifest.name] = loaded
+ 
++    # -----------------------------------------------------------------------
++    # Command registration
++    # -----------------------------------------------------------------------
++
++    @staticmethod
++    def _normalize_command_name(name: str) -> str:
++        normalized = name.strip().lower().lstrip("/")
++        if not normalized:
++            raise ValueError("Plugin command name cannot be empty")
++        if any(ch.isspace() for ch in normalized):
++            raise ValueError(f"Plugin command name cannot contain whitespace: {name!r}")
++        return normalized
++
++    def register_command(
++        self,
++        *,
++        plugin_name: str,
++        name: str,
++        handler: Callable[[str], str | None],
++        description: str,
++        category: str = "Tools & Skills",
++        aliases: tuple[str, ...] = (),
++        args_hint: str = "",
++        subcommands: tuple[str, ...] = (),
++        cli_only: bool = False,
++        gateway_only: bool = False,
++    ) -> None:
++        """Register a plugin-defined slash command and handler."""
++        from hermes_cli.commands import CommandDef, register_plugin_command, resolve_command
++
++        command_name = self._normalize_command_name(name)
++        command_aliases = tuple(self._normalize_command_name(alias) for alias in aliases)
++        all_names = (command_name, *command_aliases)
++
++        for candidate in all_names:
++            if candidate in self._plugin_commands:
++                owner = self._plugin_command_owner.get(candidate, "another plugin")
++                raise ValueError(
++                    f"Plugin command '/{candidate}' already registered by {owner}"
++                )
++            if resolve_command(candidate) is not None:
++                raise ValueError(
++                    f"Plugin command '/{candidate}' conflicts with an existing command"
++                )
++
++        cmd = CommandDef(
++            name=command_name,
++            description=description,
++            category=category,
++            aliases=command_aliases,
++            args_hint=args_hint,
++            subcommands=subcommands,
++            cli_only=cli_only,
++            gateway_only=gateway_only,
++        )
++        register_plugin_command(cmd)
++
++        self._plugin_command_names.add(command_name)
++        for candidate in all_names:
++            self._plugin_commands[candidate] = handler
++            self._plugin_command_owner[candidate] = plugin_name
++
+     def _load_directory_module(self, manifest: PluginManifest) -> types.ModuleType:
+         """Import a directory-based plugin as ``hermes_plugins.<name>``."""
+         plugin_dir = Path(manifest.path)  # type: ignore[arg-type]
+@@ -420,6 +528,7 @@ class PluginManager:
+                     "enabled": loaded.enabled,
+                     "tools": len(loaded.tools_registered),
+                     "hooks": len(loaded.hooks_registered),
++                    "commands": len(loaded.commands_registered),
+                     "error": loaded.error,
+                 }
+             )
+@@ -456,6 +565,44 @@ def get_plugin_tool_names() -> Set[str]:
+     return get_plugin_manager()._plugin_tool_names
+ 
+ 
++def get_plugin_command_handler(name: str) -> Callable | None:
++    """Return the handler for a plugin slash command name or alias."""
++    normalized = PluginManager._normalize_command_name(name)
++    return get_plugin_manager()._plugin_commands.get(normalized)
++
++
++def invoke_plugin_command(name: str, args: str, **context: Any) -> Any:
++    """Invoke a plugin command handler with optional execution context.
++
++    Backwards compatible handlers that accept only ``args`` continue to work.
++    Context-aware handlers can accept ``context=...``, specific keyword names,
++    or ``**kwargs``.
++    """
++    handler = get_plugin_command_handler(name)
++    if handler is None:
++        return None
++
++    try:
++        sig = inspect.signature(handler)
++    except (TypeError, ValueError):
++        return handler(args)
++
++    params = sig.parameters
++    if any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
++        return handler(args, **context)
++    if "context" in params:
++        return handler(args, context=context)
++
++    kwargs = {
++        key: value
++        for key, value in context.items()
++        if key in params
++    }
++    if kwargs:
++        return handler(args, **kwargs)
++    return handler(args)
++
++
+ def get_plugin_toolsets() -> List[tuple]:
+     """Return plugin toolsets as ``(key, label, description)`` tuples.
+ 
+diff --git a/run_agent.py b/run_agent.py
+index 25cfd367..c9de1936 100644
+--- a/run_agent.py
++++ b/run_agent.py
+@@ -4210,6 +4210,19 @@ class AIAgent:
+         if extra_body:
+             api_kwargs["extra_body"] = extra_body
+ 
++        try:
++            from hermes_cli.plugins import invoke_hook
++            invoke_hook(
++                "pre_llm_call",
++                messages=sanitized_messages,
++                model=self.model,
++                api_kwargs=api_kwargs,
++                agent=self,
++                session_id=getattr(self, "session_id", None),
++            )
++        except Exception:
++            pass
++
+         return api_kwargs
+ 
+     def _supports_reasoning_extra_body(self) -> bool:
+diff --git a/tests/test_cli_prefix_matching.py b/tests/test_cli_prefix_matching.py
+index eb773def..2a29bb1f 100644
+--- a/tests/test_cli_prefix_matching.py
++++ b/tests/test_cli_prefix_matching.py
+@@ -158,3 +158,22 @@ class TestSlashCommandPrefixMatching:
+         mock_help.assert_called_once()
+         printed = " ".join(str(c) for c in cli_obj.console.print.call_args_list)
+         assert "Ambiguous" not in printed
++
++    def test_plugin_command_dispatch_passes_cli_context(self):
++        """Plugin commands run through invoke_plugin_command with session context."""
++        cli_obj = _make_cli()
++        cli_obj.session_id = "session-1"
++
++        import cli as cli_mod
++        with patch.object(cli_mod, "_get_plugin_cmd_handler_names", return_value={"plugin-demo"}), \
++             patch("hermes_cli.plugins.invoke_plugin_command", return_value="ok") as mock_invoke, \
++             patch.object(cli_mod, "_cprint") as mock_print:
++            cli_obj.process_command("/plugin-demo arg")
++
++        mock_invoke.assert_called_once()
++        args, kwargs = mock_invoke.call_args
++        assert args[:2] == ("plugin-demo", "arg")
++        assert kwargs["cli"] is cli_obj
++        assert kwargs["session_id"] == "session-1"
++        assert kwargs["platform"] == "cli"
++        mock_print.assert_called_once_with("ok")
+diff --git a/tests/test_plugins.py b/tests/test_plugins.py
+index f90853a8..892fa765 100644
+--- a/tests/test_plugins.py
++++ b/tests/test_plugins.py
+@@ -19,6 +19,8 @@ from hermes_cli.plugins import (
+     PluginManifest,
+     get_plugin_manager,
+     get_plugin_tool_names,
++    get_plugin_command_handler,
++    invoke_plugin_command,
+     discover_plugins,
+     invoke_hook,
+ )
+@@ -44,6 +46,17 @@ def _make_plugin_dir(base: Path, name: str, *, register_body: str = "pass",
+     return plugin_dir
+ 
+ 
++@pytest.fixture
++def restore_command_registry():
++    """Restore the global slash-command registry after plugin-command tests."""
++    from hermes_cli import commands as commands_mod
++
++    snapshot = list(commands_mod.COMMAND_REGISTRY)
++    yield
++    commands_mod.COMMAND_REGISTRY[:] = snapshot
++    commands_mod.rebuild_lookups()
++
++
+ # ── TestPluginDiscovery ────────────────────────────────────────────────────
+ 
+ 
+@@ -273,6 +286,109 @@ class TestPluginContext:
+         from tools.registry import registry
+         assert "plugin_echo" in registry._tools
+ 
++    def test_register_command_adds_to_registry_and_handler(
++        self, tmp_path, monkeypatch, restore_command_registry
++    ):
++        """PluginContext.register_command() wires the command registry and handler."""
++        plugins_dir = tmp_path / "hermes_test" / "plugins"
++        plugin_dir = plugins_dir / "cmd_plugin"
++        plugin_dir.mkdir(parents=True)
++        (plugin_dir / "plugin.yaml").write_text(
++            yaml.dump({"name": "cmd_plugin", "provides_commands": ["plugin_greet"]})
++        )
++        (plugin_dir / "__init__.py").write_text(
++            'def _greet(args):\n'
++            '    return f"hello {args}".strip()\n'
++            'def register(ctx):\n'
++            '    ctx.register_command(\n'
++            '        name="plugin_greet",\n'
++            '        handler=_greet,\n'
++            '        description="Greet from a plugin",\n'
++            '        aliases=("pgreet",),\n'
++            '        args_hint="[name]",\n'
++            '    )\n'
++        )
++        monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes_test"))
++
++        mgr = PluginManager()
++        mgr.discover_and_load()
++        import hermes_cli.plugins as plugins_mod
++        monkeypatch.setattr(plugins_mod, "_plugin_manager", mgr)
++
++        from hermes_cli.commands import (
++            GATEWAY_KNOWN_COMMANDS,
++            COMMANDS,
++            resolve_command,
++            slack_subcommand_map,
++            telegram_bot_commands,
++        )
++
++        assert resolve_command("plugin_greet").name == "plugin_greet"
++        assert resolve_command("pgreet").name == "plugin_greet"
++        assert "/plugin_greet" in COMMANDS
++        assert "plugin_greet" in GATEWAY_KNOWN_COMMANDS
++        assert slack_subcommand_map()["pgreet"] == "/pgreet"
++        assert ("plugin_greet", "Greet from a plugin") in telegram_bot_commands()
++
++        handler = get_plugin_command_handler("pgreet")
++        assert handler is not None
++        assert handler("Ada") == "hello Ada"
++        assert invoke_plugin_command("pgreet", "Grace", session_id="s-1") == "hello Grace"
++
++        loaded = mgr._plugins["cmd_plugin"]
++        assert loaded.commands_registered == ["plugin_greet"]
++        listing = mgr.list_plugins()
++        assert listing[0]["commands"] == 1
++
++    def test_invoke_plugin_command_passes_context_to_context_aware_handler(
++        self, tmp_path, monkeypatch, restore_command_registry
++    ):
++        """Command handlers can opt into context without breaking args-only handlers."""
++        plugins_dir = tmp_path / "hermes_test" / "plugins"
++        plugin_dir = plugins_dir / "ctx_cmd_plugin"
++        plugin_dir.mkdir(parents=True)
++        (plugin_dir / "plugin.yaml").write_text(yaml.dump({"name": "ctx_cmd_plugin"}))
++        (plugin_dir / "__init__.py").write_text(
++            'def _who(args, context=None):\n'
++            '    return f"{context[\'session_id\']}:{args}"\n'
++            'def register(ctx):\n'
++            '    ctx.register_command(\n'
++            '        name="plugin_who",\n'
++            '        handler=_who,\n'
++            '        description="Show command context",\n'
++            '    )\n'
++        )
++        monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes_test"))
++
++        mgr = PluginManager()
++        mgr.discover_and_load()
++        import hermes_cli.plugins as plugins_mod
++        monkeypatch.setattr(plugins_mod, "_plugin_manager", mgr)
++
++        assert invoke_plugin_command("plugin_who", "Ada", session_id="s-123") == "s-123:Ada"
++
++    def test_register_command_rejects_builtin_collision(
++        self, tmp_path, monkeypatch, restore_command_registry
++    ):
++        """Plugin commands cannot shadow built-in commands or aliases."""
++        plugins_dir = tmp_path / "hermes_test" / "plugins"
++        _make_plugin_dir(
++            plugins_dir,
++            "bad_cmd_plugin",
++            register_body=(
++                'ctx.register_command('
++                'name="help", handler=lambda args: "bad", description="Bad")'
++            ),
++        )
++        monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes_test"))
++
++        mgr = PluginManager()
++        mgr.discover_and_load()
++
++        loaded = mgr._plugins["bad_cmd_plugin"]
++        assert not loaded.enabled
++        assert "conflicts with an existing command" in loaded.error
++
+ 
+ # ── TestPluginToolVisibility ───────────────────────────────────────────────
+ 
+@@ -367,7 +483,6 @@ class TestPluginManagerList:
+ 
+ 
+ 
+-# NOTE: TestPluginCommands removed – register_command() was never implemented
+-# in PluginContext (hermes_cli/plugins.py).  The tests referenced _plugin_commands,
+-# commands_registered, get_plugin_command_handler, and GATEWAY_KNOWN_COMMANDS
++# Plugin slash-command coverage lives in TestPluginContext above because command
++# registration is part of the plugin facade contract.
+ # integration — all of which are unimplemented features.
+diff --git a/tests/test_run_agent.py b/tests/test_run_agent.py
+index 81e16b70..dc713c14 100644
+--- a/tests/test_run_agent.py
++++ b/tests/test_run_agent.py
+@@ -659,6 +659,24 @@ class TestBuildApiKwargs:
+         kwargs = agent._build_api_kwargs(messages)
+         assert kwargs["max_tokens"] == 4096
+ 
++    def test_pre_llm_call_hook_can_mutate_api_kwargs(self, agent, monkeypatch):
++        calls = []
++
++        def fake_invoke_hook(hook_name, **kwargs):
++            calls.append((hook_name, kwargs))
++            kwargs["api_kwargs"].setdefault("extra_body", {})["x_show_routing"] = True
++
++        monkeypatch.setattr("hermes_cli.plugins.invoke_hook", fake_invoke_hook)
++
++        messages = [{"role": "user", "content": "hi"}]
++        kwargs = agent._build_api_kwargs(messages)
++
++        assert calls
++        assert calls[0][0] == "pre_llm_call"
++        assert calls[0][1]["messages"] is messages
++        assert calls[0][1]["agent"] is agent
++        assert kwargs["extra_body"]["x_show_routing"] is True
++
+ 
+ class TestBuildAssistantMessage:
+     def test_basic_message(self, agent):
+-- 
+2.51.0
+

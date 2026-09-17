@@ -403,7 +403,7 @@ benchmark, it is a cost-and-quality decision the router makes.
 under MEASUREMENT.md. Every cell was re-verified against primary provider docs on 2026-08-25, and the
 table can silently go stale — it already has (below).
 
-The OCC-2 record ([optical-context-compression.md](../handoffs/active/optical-context-compression.md))
+The OCC-2 record ([optical-context-compression.md](../handoffs/completed/optical-context-compression.md))
 was created independent of the bitmap-frame-compression question (OCC-1): the asymmetry is a
 cost-aware-routing input in its own right. Per provider, as of 2026-08-25:
 
@@ -433,7 +433,7 @@ billing is irrelevant: their cost is tokens-decoded, not billed input.
 
 ### Source References (2026-08-25 OCC-2)
 
-- [optical-context-compression.md](../handoffs/active/optical-context-compression.md) — the OCC-2 Record (billing-shape table, per-provider verification status, staleness caveat, consumer pointer).
+- [optical-context-compression.md](../handoffs/completed/optical-context-compression.md) — the OCC-2 Record (billing-shape table, per-provider verification status, staleness caveat, consumer pointer).
 - [progress 2026-08-25-mainA-rtg53.md](../progress/2026-08/2026-08-25-mainA-rtg53.md) — per-claim verification against primary sources and the DAR-4b consumer selection (scaffold-autopilot-cost-lever rejected as consumer).
 - [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md) §DAR-4b — the ω/τ cost surface the table would feed.
 

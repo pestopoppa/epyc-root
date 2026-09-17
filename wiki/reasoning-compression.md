@@ -2,14 +2,51 @@
 
 **Category**: `reasoning_compression`
 **Confidence**: verified (measured/committed/git-archaeology findings below) · observation (in-progress and pending-inference items) · external (vendor- and paper-reported numbers)
-**Last compiled**: 2026-08-23 (evening: E-7 validator EXTENDED and ENFORCED — template_sha is now a required certification field, and the ledger's `active_kernel_era` v8-vs-v9 stale-field correction with a structural roll-forward mandate; earlier same-day: first compile of this page — created in the 2026-08-23 operator wiki sweep; folds the reasoning-compression / reasoning-effort-levels / per-request-reasoning-budget handoffs)
-**Sources**: 3 handoffs (reasoning-compression, reasoning-effort-levels, per-request-reasoning-budget), cross-referencing the sibling pages that already carry the effort-ladder measurements, the np×context surfaces, and the repetition-penalty fence
+**Last compiled**: 2026-09-17 (incremental: PRB-T4 TALE-EP GPU run INCONCLUSIVE, its shared-scorer/sampler defects fixed, re-run filed); earlier: 2026-08-23 (evening: E-7 validator EXTENDED and ENFORCED — template_sha is now a required certification field, and the ledger's `active_kernel_era` v8-vs-v9 stale-field correction with a structural roll-forward mandate; earlier same-day: first compile of this page — created in the 2026-08-23 operator wiki sweep; folds the reasoning-compression / reasoning-effort-levels / per-request-reasoning-budget handoffs)
+**Sources**: 3 handoffs (reasoning-compression, reasoning-effort-levels, per-request-reasoning-budget), cross-referencing the sibling pages that already carry the effort-ladder measurements, the np×context surfaces, and the repetition-penalty fence (added 2026-09-17: PRB-T4 GPU run + sub-scorer-fix progress log)
 
 This page is the reasoning-**compression** home for the `reasoning`/`chain_of_thought` aliases: what is *new* about the per-request reasoning-budget path, the per-model effort-calibration invariant, and the 2026-08-21 chat-template intake round. Findings that predate this page and were already compiled elsewhere are pointed to, not restated: the effort-ladder measurements (+32pp prompt-CoT lever, native-`<think>` non-termination tail, `max_tokens` third axis) live on [Cost-Aware Routing](cost-aware-routing.md); the cross-candidate np×context throughput surfaces (A1/A3/A4) on [Hardware Optimization](hardware-optimization.md); the RP-1/RP-2 per-model repetition-penalty fence on [Quantization](quantization.md); the looped-transformer lineage and its watch triggers on [Training & Distillation](training-distillation.md).
 
 ## Summary
 
 Reasoning traces are the dominant token cost on the architect lanes, and every lever that reduces them is a (model, quant, template) property, never a stack default. The per-request budget path is one field wide on the server, so the 2026-08-21 dive nominated **TALE-EP** — a prompt-level numeric budget that needs no server support — as the unblock, with an evaluation designed but not yet run and a fixed adoption rule. The effort ladder gained a third calibration axis (`template_sha`, amended 2026-08-21, practiced at CT-E7), and a binding constraint: effort must be steered by the prompt, never by a bare `max_tokens` cap. OPSDC's headline accuracy claim was corrected by its own authors to parity.
+
+## Compiled Update — 2026-09-17: PRB-T4 ran on the GPU and came back INCONCLUSIVE, and its anomalies were shared-scorer defects
+
+**Confidence: verified** for the run facts. Residency was proven with 25,869 samples, KFD 1 and a 36.1 GiB peak, and the defect root causes are established. The accuracy and token deltas are **observations**: category CANDIDATE, no codified protocol, paired bootstrap CIs.
+
+The TALE-EP evaluation designed on 2026-08-23 has run for the first time. It used Qwen3.8-27B-Q8_0 on v9 `b10125-0db32c06e`, the production architect_general argv, temperature 0.1, seed 42, token budgets and `enable_thinking=false`. That page said the run was "designed but not run". That no longer holds, although the run is incomplete and its scored cells need care. Before it ran, the harness was fixed so that the estimator call is charged (`*_incl_estimator`), and budgets are in tokens, as in the paper, not words (research `a454b7fd` → `76f5132b`). Two earlier claims on this page are corrected. The "neither anchor suite (GSM8K…) exists in our question pool" premise is wrong: all 150 sampled math items were `gsm8k_*`. And the math cells measure GSM8K only, not the math suite.
+
+### Key findings
+
+- **Result under the fixed rule: INCONCLUSIVE on 3 of 4 suites.**
+  - **math (n=150):** TALE saved −58.4% net tokens at +0.7 pp accuracy. Static saved −72.2% at −0.7 pp.
+  - **olympiadbench (n=100):** TALE saved −26.6% at −1.0 pp. Static saved −77.7% but lost 12.0 pp, CI [−20, −4].
+  - **livecodebench:** TALE saved −18.6% and static saved −27.9%, with accuracy vacuous on both arms.
+  - **Rule outcome.** ADOPT fails: only math clears ≥30% net at ≥−1 pp. ADOPT_STATIC_INSTEAD fails: static loses badly on olympiadbench. DECLINE fails: the worst suite is −1.0 pp and the mean net reduction is 34.6%. The rule's next step is n=400 per suite.
+
+  ([per-request-reasoning-budget](../handoffs/active/per-request-reasoning-budget.md))
+- **The three defects were in shared plumbing, not in TALE's scoring.**
+  - mmlu_pro never ran. The A–J gold met an A–H scorer with an empty config (2,053 I/J rows).
+  - livecodebench's 100% comes from the stale live pool's `substring 'def '` oracle.
+  - The "math" sample was all GSM8K. The loader took the first n rows in file order, and the same loader skewed olympiadbench toward few geometry items (15/300).
+  - Fixes (research `52595b9b`, orchestrator `f0015306`, branch only): `choice_labels`, a refusal of substring oracles on code rows, seeded source-stratified sampling (`--sample-seed`), an oracle preflight that exits 2, three-valued scoring, and a refreshed re-run pool (sha256 `3c3b498a…`).
+  - The belief kernel ingested 24 rows for math and olympiadbench only. Those rows now carry VB-PRB-T4-CAVEAT.
+
+  ([per-request-reasoning-budget](../handoffs/active/per-request-reasoning-budget.md), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md), [Benchmark Methodology](benchmark-methodology.md))
+- **The TrimR 2026-04-09 "Math (GSM8K)" number used the same first-n loader.** It was already labelled GSM8K, so it needs no caveat, and `eval_trimr.py` now uses the stratified sampler. ([sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md))
+- **Still not a replication of the paper.** GSM8K appears, but on a different model, so the run neither confirms nor refutes `intake-1215#record`'s published numbers. ([per-request-reasoning-budget](../handoffs/active/per-request-reasoning-budget.md))
+
+### Open questions
+
+- PRB-T4-RERUN: math, olympiadbench, mmlu_pro and livecodebench at n=400, seed 42, on the refreshed pool, in an exclusive MI210 window. It is precondition-gated on the orchestrator scorer fix reaching the shared clone. The CPU `frontdoor` replicate is also unrun.
+- Does TALE beat static once suite-level math and mmlu_pro are in the average? Static's olympiadbench collapse is the one resolved signal so far.
+
+### Sources
+
+- [per-request-reasoning-budget.md](../handoffs/active/per-request-reasoning-budget.md): the GPU run table, the rule application, the defects and their fix, the re-run box, and the pre-run harness gaps that were closed.
+- [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): the root causes, the refreshed pool composition at n=400, and the TrimR loader note.
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md): the stale-pool history behind the vacuous livecodebench cell.
 
 ## Compiled Update — 2026-08-23 (evening): the template axis is now ENFORCED, and the kernel-era field was stale
 

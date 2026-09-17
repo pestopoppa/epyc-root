@@ -2,8 +2,31 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
-**Sources**: 84+ documents
+**Last compiled**: 2026-09-17 (incremental: DAR-6 swarm fan-out code deleted and flag inert; A9 livecodebench stratum labels vacuous); earlier: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
+**Sources**: 84+ documents (added 2026-09-17: DAR-6 removal note, A9 livecodebench caveat, sub-scorer-fix consumer map)
+
+## Compiled Update — 2026-09-17: the DAR-6 swarm fan-out no longer exists, and the livecodebench routing stratum has no correctness signal
+
+**Confidence: verified**. Both findings are git and code facts: the ref-level closure audit, and the scorer-fix consumer map.
+
+Two routing capabilities on this page turn out to be weaker than it says. First, the swarm fan-out scaffolding is gone. The 2026-05-27 DAR-6 section below says it "landed default-off", and that was true when written. But the code was deleted as dead code three weeks later, and that section now describes a capability that does not exist. Second, the learned-routing A9 `suite:livecodebench` stratum was "repaired" on preference labels ordered by an oracle that any Python answer passes.
+
+### Key findings
+
+- **DAR-6.3/6.4 were really built, then deleted.** They were built in orchestrator `5f5fd8f6` (2026-05-27) and deleted in `771348c8` (2026-06-16, "delete dead DAR-6 swarm_fanout module", an ancestor of `main` @ `88a2902d`). `src/swarm_fanout.py`, `dispatch_swarm_fanout`, `SwarmFanoutResult`, `SwarmCompletion`, `bradley_terry_aggregate` and `length_proxy_aggregator` exist on no ref at main. The boxes stay ticked as history, but **neither is a live capability**. This supersedes the "Scaffolding landed default-off, two safety layers" bullet in the DAR-6 section below, and the "`dispatch_swarm_fanout` remains under an ownership watch" wording. `src/bradley_terry.py` survives. ([decision-aware-routing](../handoffs/active/decision-aware-routing.md))
+- **The `swarm_fanout` flag controls nothing.** The FeatureSpec is still defined (`src/features.py:211,563`, `orchestration/runtime_flags.spec.yaml:117`), but no code path reads it. Turning it on changes no behaviour, so it cannot serve as the DAR-6.5/J14 A/B arm. That gate must first rebuild a fan-out dispatcher, reusing `bradley_terry.py`, or be re-scoped. ([decision-aware-routing](../handoffs/active/decision-aware-routing.md))
+- **A9 `suite:livecodebench` labels carry no correctness signal.** They are score-ordered from livecodebench results recorded in 2026-06, when the suite's only live oracle was `substring 'def '`. The 2026-08-12 executable-oracle rebuild never reached the live pool either. So the stratum's "repair" is not routing evidence until it is re-labelled against the executable oracle. The offline reward-oracle pairwise builders are listed among the consumers of the stale pool rows. ([learned-routing-controller](../handoffs/active/learned-routing-controller.md), [sub-scorer-fix](../progress/2026-09/2026-09-17-sub-scorer-fix.md), [Benchmark Methodology](benchmark-methodology.md))
+
+### Open questions
+
+- Should DAR-6.5 be re-scoped, or should the dispatcher be rebuilt? The DAR-1 replay freeze on swarm expansion still holds either way.
+- Once the live pool is refreshed, re-label A9's livecodebench stratum and re-check whether the repair survives.
+
+### Sources
+
+- [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md): the removal note for DAR-6.3/6.4, and the dependency note that the DAR-6.5 flag is inert.
+- [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md): the A9 livecodebench-stratum caveat.
+- [2026-09-17-sub-scorer-fix.md](../progress/2026-09/2026-09-17-sub-scorer-fix.md): the consumer map naming the learned-routing A9 builders, and the affected-results table.
 
 ## Compiled Update — 2026-08-25: the role-keyed gate's geometry blind spot is now measured, demoted, and guarded — and X-MAS runs shadow, not enforce
 

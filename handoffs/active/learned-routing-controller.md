@@ -1458,6 +1458,12 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   best `logistic_l2`, mean accuracy/AUC `0.8807/0.9677` over `616` test pairs.
   Current blockers are `source_family:seeding_eval` and `suite:thinking`.
   Runtime gate changes remain disallowed.
+  - ⚠ Caveat 2026-09-17 (sub-scorer-fix): the `suite:livecodebench` preference labels are score-ordered
+    from livecodebench results recorded 2026-06, when the suite's only live oracle was
+    `substring 'def '`, which any Python answer passes
+    (`autopilot-continuous-optimization.md`, 2026-08-12 and 2026-09-17 notes). So this stratum's
+    "repair" rests on labels with no correctness signal. Do not use it as evidence for routing until
+    it is re-labelled against the executable oracle.
 - 2026-06-21 follow-up: orchestrator also ran the analogous targeted
   `suite:thinking` expansion:
   `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_pairwise_thinking_expansion_*`

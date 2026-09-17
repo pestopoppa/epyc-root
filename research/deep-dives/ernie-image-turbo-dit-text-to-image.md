@@ -286,5 +286,5 @@ Rationale:
 - [`research/intake_index.yaml`](../intake_index.yaml) — intake-937 (created 2026-07-29; supersedes the mis-cited `intake-528` — see the header note)
 - [`handoffs/active/ernie-image-turbo-evaluation.md`](../../handoffs/active/ernie-image-turbo-evaluation.md) — testing handoff (created alongside this deep dive)
 - [`handoffs/active/multimodal-pipeline.md`](../../handoffs/active/multimodal-pipeline.md) — image generation is currently out of scope but this is the natural future home
-- [`handoffs/active/hermes-outer-shell.md`](../../handoffs/active/hermes-outer-shell.md) — `image_generate (FAL)` cloud tool currently disabled; ERNIE-Image-Turbo is a self-hosted replacement candidate
+- [`handoffs/completed/hermes-outer-shell.md`](../../handoffs/completed/hermes-outer-shell.md) — `image_generate (FAL)` cloud tool currently disabled; ERNIE-Image-Turbo is a self-hosted replacement candidate
 - [`handoffs/active/gpu-acceleration-path.md`](../../handoffs/active/gpu-acceleration-path.md) — DGX Spark acquisition is the gating event for this entry becoming actionable

@@ -3864,3 +3864,10 @@ submitting a completed package, and no unreviewed draft becomes a published chec
 
 Per-task handoff/progress/checklist/publication follows the wrap-up workflow. Index pruning, handoff
 compaction and wiki compilation are not part of this implementation request's routine checkpoints.
+
+- [ ] **AKU-RED-LOOP — triage the red research AutoKernel loop suites** (filed 2026-09-17; handed over by
+  `sub-redtests`, see `progress/2026-09/2026-09-16-sub-redtests.md` → *Handover*). Under python3,
+  `scripts/kernel_rnd/autokernel/loop` shows 30 failed and 30 errors. Clusters: the `test_serial_run.py`
+  settlement refusal; `ProducerSourceRefused` in 13 errors; `test_seed.py` prompt text; missing
+  `samples_ts`/`n_threads`/`build_commit`; and one test path in a removed worktree. Classify each by reason
+  (stale test, code bug, environment), then fix or delete.

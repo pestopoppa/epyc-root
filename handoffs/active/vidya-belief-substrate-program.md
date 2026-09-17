@@ -1974,7 +1974,57 @@ are left to that still-running agent.
     emits answer-only latency. Rows project `protocol_id=""` (no TALE protocol is codified), so tuples cap at
     `Judged/Located`. The writer reads the per-question `.jsonl` + `.meta.json`, not `.summary.json`; its formulas
     match `summarize()`. Left unticked until the driver (research `sub/gpu-runner-20260916`) merges.
-- [ ] **VB-REVIEW-F1 — wire review_f1 `_summary.json` (EV-13b) at write time** (research `e70b6974` → `726e2676`;
+  - 2026-09-17 (sub-gpu-collect2): **first run emitted through the hook.** PRB-T4 wrote 3 per-suite
+    `.beliefs.jsonl` sidecars (research `b4d38ebc`). `ingest tale-budget` projected math and olympiadbench:
+    24 rows, 0 refused. The livecodebench sidecar was withheld because its accuracy uses the vacuous
+    `substring 'def '` scorer. This needs a tuple-level exclusion or a scorer fix; do not ingest it as-is.
+    Still unticked: the driver has not merged.
+- [ ] **VB-RUNNER-PATHS — make the GPU-runner capture call sites portable and loud** (filed 2026-09-17 from
+  `2026-09-16-sub-runner-adapters.md`). Research `scripts/benchmark/review_f1/ev13b_run.py:197` (on research main)
+  hard-codes `sys.path.insert(0, "/workspace/scripts/vidya")`, as does the unmerged PRB-T4 driver
+  `prb_t4_tale_gpu.py` (`sub/gpu-runner-20260916`). Both swallow a capture failure into their log. Resolve the
+  root checkout from `EPYC_ROOT` (or refuse), and make a failed capture visible. Then port `prb_t4_tale_gpu.py`
+  to research main without its tmp-path literals. VB-PRB-T4 cannot close until that driver merges.
+- [ ] **VB-PRB-T4-CAVEAT — mark the 24 ingested PRB-T4 TALE rows as sample-scoped (filed 2026-09-17,
+  sub-scorer-fix).**
+  - **Affected rows.** The ledger holds 24 `vidya.adapters.tale_budget/v1` claims from run
+    `prb_t4_gpu_20260916_191049`: 12 `math`, 12 `olympiadbench`. They are
+    `tale_suite_accuracy`, `tale_mean_answer_tokens`, `tale_mean_tokens_incl_estimator` and
+    `tale_mean_latency_s_incl_estimator` × baseline/static/tale.
+  - **Defect.** The harness sampled the first n rows in file order.
+    - The `math` claims describe **GSM8K only** (150/150 `gsm8k_*`), not the math suite, which also
+      has 500 MATH-500 rows.
+    - The `olympiadbench` claims come from a subject-skewed draw: geometry 15/300 trials against a
+      19% population share.
+  - **Status.** The sampler is fixed (research `52595b9b`). The rows are real measurements of that
+    sample, not scorer artifacts.
+  - **Action.** Record a correction/scope frame through the kernel's correction path, never by editing
+    the ledger. It should narrow the suite label (math → gsm8k subset; olympiadbench → skewed subset),
+    or supersede the rows with the PRB-T4-RERUN rows once they exist.
+  - **Other affected results (not in the ledger).**
+    - The livecodebench sidecar stays withheld. Its accuracy is vacuous, and the stale rows are now
+      refused by the scorer.
+    - The CT-1/CT-1b/E-7 `mmlu_pro` cells are under-scored (`qwen-chat-template-evaluation.md`,
+      CAVEAT 2026-09-17). Their sidecars under `/workspace/tmp/e7-recal/` must not be ingested
+      without that correction.
+- [ ] **VB-GPU-RUNNER — write hooks for the sub-gpu-runner recipe sweeps (filed 2026-09-16, sub-gpu-runner).**
+  These 2026-09-16 runs are PRE-HOOK and emit zero rows. None has a write hook: `serving_beliefs` fires only
+  inside `serving.compare`. Do not project their JSONL on read.
+
+  | Run | Went through | Evidence (research) |
+  |---|---|---|
+  | INF-62 SL-1 / SL-5 | `serving.calibrate_floor(samples=1)` | `8146880b` |
+  | DF2-6 serial-exact | `df2_greedy_parity` | `8146880b` |
+  | fable5 §5 #1 MoE sweep | `llama-batched-bench` wrapper | `6cbdd856` |
+  | ERNIE-Image-Turbo ROCm rebench | sd-server wrapper | `cf05eefc` |
+  | INF-61 Qwen3.8 np×depth grid, MTP n-max 8 | `v7_quality_gate_runner` wrapper (throughput only) | `0a711890` |
+
+  Before any successor sweep:
+  - Give `calibrate_floor`-based recipe sweeps, and the batched-bench, sd-server and np-grid wrappers, a
+    producer hook. Carry per launch: recipe_hash, residency, unit=launch, and the tok/s (or s/image)
+    estimator string.
+  - Give the parity and A/A runners one too. Categorical PASS/FAIL per prompt stays categorical.
+- [x] **VB-REVIEW-F1 — wire review_f1 `_summary.json` (EV-13b) at write time** (research `e70b6974` → `726e2676`;
   the `_summary.json` producer `ev13b_run.py` is on unmerged `sub/gpu-runner-ev13b-20260916`): micro
   P/R/F1 with n_runs≥3 and sd, reader AND judge identity, `golden_manifest_checksum`, matcher-spec sha,
   `cross_family_ok`, judge-swap delta. Refuse a summary with judge==reader or no manifest checksum. Locator =
@@ -1983,6 +2033,9 @@ are left to that still-running agent.
     `cli.py ingest review-f1` (end-to-end test). The field names match `semantic_judge.py score` at research
     `0627a5d9`. Rows project `protocol_id=""`, so tuples cap at `Judged/Located`. Left unticked until
     `ev13b_run.py` merges.
+  - ✅ 2026-09-16 (sub-gpu-collect2): **first run landed through the hook.** `ev13b_run.py` merged to research main
+    (`59d0bc73`). The EV-13b run emitted both `_summary.semantic.<judge>.beliefs.jsonl` sidecars at write time, and
+    `cli.py ingest review-f1` projected 2 units → 6 rows (0 refused) into the shared ledger. Evidence: research `aac025a4`.
 - [ ] **VB-SL2-STEPS — decide whether the serving A/B's `target_sample_steps_est` block (INF-62 SL-2, research
   branch `sub/gpu-prep-20260916`) gets its own `belief_measurements` rows.** Today it rides inside the
   `serving_beliefs` native body (so `native_sha256` binds it) but only tok/s is projected. It is an ESTIMATE
@@ -2019,6 +2072,10 @@ are left to that still-running agent.
   proposed and of accepted mutations, which is the AP-52 read) into ClaimTuples. Hold
   vocabulary-unavailable rejections out of the leakage denominator. No new grading rule. The locator
   is the window, never the proposal. README row: "PromptForge mutation-safety gate verdicts".
+  - Note 2026-09-16 (`sub-mhs3b`, additive): MHS-3's structural refusals (`eval_content_ngram_overlap`,
+    `eval_expected_answer_leakage`, `eval_source_identity_leakage`, `eval_suite_special_casing`) write to the same
+    `gate_detail` ledger, and each reason string now carries the matched source id. A projection can key on that id.
+    No new adapter row is needed.
 - [x] **VB-MHS-OPS — project the `eval_leakage_guard` ledger events into claim tuples** (filed 2026-09-16,
   `sub-gate-frontier`; producer on orchestrator `sub/gate-frontier-20260916`, under review, unmerged). Each
   `preflight_failed`/`alarm_raised`→`alarm_cleared` interval is an instrument-unavailable interval;
@@ -2039,6 +2096,11 @@ are left to that still-running agent.
   and `mhs-guard-ops`** (filed 2026-09-16, `sub-vbmhsops`). Waiting on an external event: the merge
   and the restart. Until the epoch is set, the verdict source declines every unit, because nothing
   persisted marks a clean window as screened, so pre-hook data must get zero rows.
+- [ ] **VB-AP-PROMO-RULE — project `eval_details.promotion_rule` and `eval_details.frontier_admission` from the
+  AutoPilot trial journal into the support frame** (filed 2026-09-17 from `2026-09-16-sub-gate-frontier.md`). Both
+  fields come from gate-frontier (c)+(b) (orchestrator `sub/gate-frontier-20260916`, in the AutoPilot merge train).
+  The change is additive for the `autopilot_journal` adapter and changes no grade. Do it once the train is on
+  orchestrator main.
 - [ ] **VB-AP53-RATE — project the AutoPilot re-proposal rate and the rejected-mutation ledger as
   per-window rates** (filed 2026-09-16, sub-autopilot-evidence; orchestrator `203cb6e2`, merged at `753343f5`).
   - Producers:
@@ -2229,7 +2291,7 @@ Source: `optical-context-compression.md` OCC-1. The harness is `epyc-inference-r
 the served Qwen3-VL-30B-A3B reader. The source row is in `scripts/vidya/adapters/README.md`. The hook
 was filed and built before the first GPU run, so that run will not fall in a pre-hook era.
 
-- [ ] **SC85 — wire OCC-1 on the WRITE side, plus a strict reader.** Root side (branch
+- [x] **SC85 — wire OCC-1 on the WRITE side, plus a strict reader.** ✅ 2026-09-16 (both sides on origin/main: root `1d5f5314`, research `2f053f61` + `e2c48c13`) Root side (branch
   `sub/occ1-root-20260916`): `adapters/occ1_optical_compression_capture.py` (writer and `validate_row`),
   `adapters/occ1_optical_compression.py` (reader), the `cli.py ingest occ1` source, and
   `tests/vidya/test_occ1_optical_compression_adapter.py`. The rows per arm are F1, EM, the paired
@@ -2293,4 +2355,16 @@ sections after it). VB-EVCONF2's producer merged (orchestrator `d8b915ee`/`88a29
 | VB-AP53-RATE | none for the rate; the AP-55 part is ported here | no | producer `rejected_mutation_ledger.py` is on orchestrator main, but no per-window rate row writer exists |
 | SC83 (was SC76, reviewer FA rate) | none | no | see SC83 above |
 | VB-MHS-GATES | none | no | producer is on unmerged orchestrator `sub/autopilot-safety-20260916` |
-| VB-GPU-RUNNER | none | no | the sweeps are pre-hook; needs a producer hook in `calibrate_floor` |
+| VB-GPU-RUNNER | none | no | the sweeps (INF-62 SL-1/SL-5, DF2-6, §5 MoE batched, ERNIE, INF-61) are pre-hook; each needs a producer hook (`calibrate_floor`, batched-bench, sd-server and np-grid wrappers) |
+
+## SC86 — HS-4 OpenCode-shell runs (filed 2026-09-16)
+
+- [ ] **SC86 — wire HS-4 shell runs on the WRITE side**: each run emits a ClaimTuple carrying the harness pin, plugin and config hash, Harness Card version, `x_memory` arm, and the HS-14 column set; locator = run. Must land before the first measured shell run (HS-4 P0.4). Design: `docs/design/hs4-shell-and-orchestrator-features-20260916.md` §4 (P0.5).
+  Status 2026-09-16 (`sub-sc86`, branch `sub/sc86-20260916`, unmerged): **adapter ready, producer pending (HS-4 P0.4 driver).** `adapters/opencode_shell_run_capture.py` (run-sidecar schema `epyc.hs4.opencode_shell_run.v1`, writer, `validate_row`), `adapters/opencode_shell_run.py` (strict reader), `cli.py ingest opencode-shell`, and `tests/vidya/test_opencode_shell_run_adapter.py` (32 pass, including writer → `cli.py ingest` → tuple). Rows: the four HS-14 columns, re-derived from recorded counts; refused on a missing pin or config hash and on pre-hook or backfilled runs. The P0.4 driver must write `opencode_shell_run.json` and call the writer at run end; that call is the HS-4 P0.4 owner's. Tick this box when the branch is merged and the driver calls the writer (the SC85 precedent).
+- [ ] **SC86b — codify the shell-run protocol** under `measurement/protocols/` (task suite, trials per task, serving at production `enable_thinking`, the HS-14 column definitions), and have the P0.4/HS-14 driver pass `protocol_id`. Until then, every OpenCode-shell tuple is `Judged/Located`.
+
+## VB-NIAH-E1A — RLM E1 NIAH dual-scored arms (filed 2026-09-16, sub-e1a)
+
+Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inference-research `scripts/benchmark/niah_scorer.py` (branch `sub/e1a-niah-20260916` `d8fab068`, pending merge). The source row is in `scripts/vidya/adapters/README.md`. No E1 arm has run, so nothing is pre-hook.
+
+- [ ] **VB-NIAH-E1A — wire E1 NIAH arms on the WRITE side before the first E1 run.** One self-hashed ClaimTuple per arm (Base / D1 / D2) with strict and lenient accuracy together, `format_gap`, `scorer_id`, n/undecidable counts, reps, and latency and tokens as separate fields; refuse a row with only one accuracy. Locator = run × arm. Adapter projects; `claim_tuple.grade()` decides (no new ladder).

@@ -1,0 +1,18 @@
+{
+  // Typecheck only; nothing is vendored. Extend this file from a scratch directory that has
+  // @opencode-ai/plugin@1.18.31, typescript@5.9.3 and @types/node@22.18.0 installed, adding
+  // "paths" and "typeRoots" there. The exact recipe is in
+  // docs/reference/harness-candidates/opencode-p03-audit-20260916.md, section "Tests".
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "scripts/**/*.ts"]
+}

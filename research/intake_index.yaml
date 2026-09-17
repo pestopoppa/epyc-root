@@ -24938,7 +24938,7 @@
     experiments: []
     intake_entries: []
   handoffs_updated:
-  - 'handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md'
+  - 'handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md'
   - 'handoffs/active/gpu-acceleration-path.md'
   - 'handoffs/active/rocm-verify-profile-backend.md'
   handoffs_created: []
@@ -29589,7 +29589,7 @@
     - 'intake-564 (ESSA)'
     - 'intake-565 (ES vs GRPO geometry)'
   handoffs_updated:
-  - 'handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md'
+  - 'handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md'
   - 'handoffs/active/frontier-f3-data-flywheel.md'
   - 'handoffs/active/learned-routing-controller.md'
   handoffs_created: []
@@ -29659,7 +29659,7 @@
     - 'intake-474 (Trinity)'
     - 'intake-563 (ES-at-Scale)'
   handoffs_updated:
-  - 'handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md'
+  - 'handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md'
   - 'handoffs/active/frontier-f3-data-flywheel.md'
   - 'handoffs/active/learned-routing-controller.md'
   handoffs_created: []
@@ -29729,7 +29729,7 @@
     - 'intake-563 (ES-at-Scale)'
     - 'intake-564 (ESSA)'
   handoffs_updated:
-  - 'handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md'
+  - 'handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md'
   - 'handoffs/active/learned-routing-controller.md'
   handoffs_created: []
   novelty_justification: First paper in EGGROLL cluster to characterize WHAT ES is actually doing in parameter space at LLM scale, as distinct from throughput/accuracy headlines. Three core findings — orthogonal updates, no loss barrier, large off-task KL drift — are novel mechanistic results not yet folded into any other ES-LLM paper.
@@ -40561,7 +40561,7 @@
     - intake-728
   handoffs_updated:
   - 'handoffs/active/autopilot-continuous-optimization.md'
-  - 'handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md'
+  - 'handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md'
   handoffs_created: []
   novelty_justification: High. No prior intake entry covers Ornith (grep for "ornith" returns nothing; Qwen3.5/397B hits are base-model arch notes). New open-weights agentic-coding family with SOTA-tier claimed results.
   relevance_justification: High. Open-weights, MIT, GGUF, on Gemma4/Qwen3.5 bases the stack already runs — a direct candidate for coder/worker roles, fitting the characterized single-instance NUMA operating points. The deployable-model angle is the actionable hook (distinct from the method-pattern angle tracked on the autopilot handoff via intake-730). Feasibility de-risked to GREEN on 2026-06-26 (fork already supports qwen35/qwen35moe arch — see contradicting_evidence).
@@ -42510,7 +42510,7 @@
     - intake-367
   handoffs_updated:
   - 'handoffs/active/backlog-roi-audit-2026-07-14.md'
-  - 'handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md'
+  - 'handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md'
   handoffs_created: []
   novelty_justification: Execution-free verification for SWE agents is an existing line (intake-368/371); Dockerless's twist — agentic repo-exploration-for-evidence wired as both SFT filter and RL reward for a fully environment-free pipeline — is a refinement/extension, hence medium.
   relevance_justification: Off our core inference-optimization axis (it is a coding-agent post-training method) but lands in an active thread — we just shipped functional-verifier-in-the-loop (multi-file-coding-completion-capability, 2026-06-28); an execution-free verifier could gate coder_escalation patches without spinning up test environments, and eval-tower-verification needs verifier accuracy/calibration eval. Same tier as sibling intake-368.
@@ -42889,7 +42889,7 @@
     - intake-685
     - intake-618
   handoffs_updated:
-  - 'handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md'
+  - 'handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md'
   handoffs_created: []
   novelty_justification: Hypernetwork->LoRA generation is established (Text-to-LoRA, Doc-to-LoRA/intake-098, Code2LoRA/intake-707) and cross-base LoRA transfer exists (Cross-LoRA, LoRA-X); PorTAL's distinct contribution is the factorization into a base-agnostic frozen (latent + CORE) plus a thin per-base CONVERTER that is the ONLY thing refit on an unseen model — the ~98%-vs-~14% converter-refit result is a genuinely new mechanism, not repackaging.
   relevance_justification: Conceptually on-target for our exact pain (a rotating open-weight roster where per-model re-adaptation recurs), but NOT actionable on the current stack — training/converter-refit is GPU-gated (the Phase-B blocker that backburners the whole doc-to-LoRA line); llama.cpp LoRA hot-swap already exists but the orchestrator LoRA-wiring gap remains. Medium — nothing CPU-runnable today, off the North-Star.

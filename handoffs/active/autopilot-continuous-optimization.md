@@ -2596,6 +2596,16 @@ itself inside the sweep.** Everything below is verified-open, not speculative.
   re-derived independently, and the new guard run against the live pool flags exactly `livecodebench`
   plus `needle_parameterized` — the latter a fixed needle by design, reported not allow-listed.)*
   ✅ 2026-08-12 — **REBUILT**: orchestrator `75b812c0`, research `cb0761b5`.
+  ⚠ 2026-09-17 (sub-scorer-fix, from PRB-T4): **the rebuild never reached the live pool.**
+  `question_pool.jsonl` was built 2026-07-27 and has not been regenerated. It still ships 2,349
+  livecodebench rows (and 3 `real_suite_v1` rows) scored by `substring 'def '`, including the 5
+  core-pool rows. So every livecodebench score taken from the live pool AFTER 2026-08-12 was vacuous
+  too; PRB-T4's 100% is one example.
+  - **Now.** The shared scorer refuses a substring oracle on any row that declares a code `language`
+    (orchestrator `f0015306` (branch `sub/scorer-fix-orch-20260917`; landing on main is blocked by the held orchestrator push lock)), so those rows are EXCLUDED instead of passing.
+  - **Refreshed copy.** `question_pool.py --refresh-suites livecodebench mmlu_pro` wrote one to a new
+    path (research `52595b9b`). Swapping the LIVE pool is a T1 instrument-era change and belongs to
+    the tower owner; the command refuses without `--allow-live-overwrite`.
   **The shipped oracle passes a do-nothing stub.** *(Verified by `mainC`: all 5 livecodebench rows in
   the core pools are satisfied by `def solve(): pass`, one distinct `expected` between them.)* It also
   passes echoing the prompt, 100%. That is the strongest form of the vacuity claim.
@@ -3417,6 +3427,12 @@ Source entries: intake-1362 (dive-verified), intake-1355 (dive-verified), intake
       - 2026-09-16 **operator decision — gate mode A (shadow)**: run the next AutoPilot run in shadow;
         **AP-55-ARM is pre-approved** to move the gate to `enforce` plus the seed re-runs after one
         shadow run (read the counterfactual `eval_details.ap55_promotion_gate.hold` rate first).
+      - [ ] **AP-55-ARM** — after one AutoPilot run in shadow (mode A), report how often enforce
+            would have held a promotion (from the recorded shadow verdicts), then arm enforce plus
+            seed re-runs (`AUTOPILOT_AP55_PROMOTION_GATE=enforce`, `AUTOPILOT_AP55_SEED_RERUN=1`).
+            The operator pre-approved option B for after that review (2026-09-16). Needs the AutoPilot
+            merge train (`sub/autopilot-train-20260916`, which carries the within-noise AP-55 hold fix
+            `f76e65cd`) on orchestrator main first. Filed 2026-09-17 from `2026-09-16-sub-gate-frontier.md`.
 - [ ] **AP-56 — Determinism certification before N=1 promotion.** llama-server fixed seed and fixed
       slot count; replay the baseline action chain and require identical trajectories before trusting a
       single-run verdict. External, descriptive: promotion rate 7.9% (1,223 decisions) → 25.2% (131)
