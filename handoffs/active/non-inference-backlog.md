@@ -282,7 +282,7 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
       - (c) add a system-interpreter PyYAML check to `health_check.sh` next to the OBS-11 checks.
     - **Recommendation:** (c) now, plus (a). Editing CLAUDE.md is a fleet-doctrine change, so the
       owning session makes it.
-  - [ ] **OBS-12b** (LOW, filed 2026-09-17): `lint_wiki.py` reports two dangling links:
+  - [x] **OBS-12b** ✅ 2026-09-17 (already fixed by the wrap-up pass-2 wiki compile; all three links now point at `../handoffs/completed/security-review-skill.md`, verified by the main session) (LOW, filed 2026-09-17): `lint_wiki.py` reports two dangling links:
     `wiki/agent-architecture.md:2254` and `wiki/tool-implementation.md:278,321` still point at
     `../handoffs/active/security-review-skill.md`, which moved to `completed/` in `9804fec9`.
     `wiki/` is written by the serialized wrap-up, so fix it in the next compile.
