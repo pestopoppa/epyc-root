@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "orchestrator": {
-      "command": "/home/daniele/miniforge3/bin/python3",
+      "command": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python",
       "args": ["/mnt/raid0/llm/epyc-orchestrator/src/mcp_server.py"],
       "env": {
         "PYTHONPATH": "/mnt/raid0/llm/epyc-orchestrator",
