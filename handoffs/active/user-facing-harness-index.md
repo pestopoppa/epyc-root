@@ -14,7 +14,6 @@
 | UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
 | UFH-04 | minddr deep research mode | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) | Phase-2 — Provision a pinned gfx90a training env, then run the MI210 training-viability smoke; the run waits on E5 Stage-B host release | — |
 | UFH-05 | reasoning compression | [reasoning-compression.md](reasoning-compression.md) | If validated: implement enforce mode (route easy→worker, hard→architect) | — |
-| UFH-06 | security review skill | [security-review-skill.md](security-review-skill.md) | Decide the deferred CI-gate box for the security-review skill (the only open box); if dropped, move the handoff to completed | — |
 | UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | P4e — once P4c telemetry has enough calls, decide per command whether run_bash_compressed is promoted, kept optional, or dropped | — |
 | UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | HIL-1 — once HS-4 Phase 0 is integrated, list which feature-map homes are loop-friendly (mutable as files, deterministic to eval) | UFH-01 |
 
