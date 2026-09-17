@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-CKPT-PROMPT-LEAK-20260916",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_checkpoint_prompt_leak_20260916.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
