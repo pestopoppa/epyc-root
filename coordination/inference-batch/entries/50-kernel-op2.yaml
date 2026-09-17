@@ -26,7 +26,7 @@
     checkbox: "frontdoor Q8_0 operator/graph fusion to cut barrier COUNT"
     also_flips:
       - "handoffs/active/batched-decode-measurement.md#E3 — 8x8 GEMM SIMD body"
-    source_ref: "handoffs/active/fable5-window2-findings-05-intake-sweep-and-roofline.md (kernel ROI ranking; frontdoor Q8_0 fusion lever L52/L76/L82)"
+    source_ref: "handoffs/completed/fable5-window2-findings-05-intake-sweep-and-roofline.md (kernel ROI ranking; frontdoor Q8_0 fusion lever L52/L76/L82)"
     coordination_note: >
       #2 cross-substrate kernel ROI per findings-05: frontdoor Q8_0 decode is barrier/op-count-bound
       (13.8% of 460 GB/s; 45% of Q4_K decode cycles are libomp barrier at 96t; 0.17 IPC, 96.6%

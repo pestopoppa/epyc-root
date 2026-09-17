@@ -1,5 +1,7 @@
 # Window-2 findings 05 — Intake/deep-dive sweep + kernel roofline gap (2026-07-03, operator-directed)
 
+> **✅ COMPLETED 2026-09-17** (operator /wrap-up). The last open item, §5 measurement #1 (MoE half), closed as a bounded null: Q-A GO, and Q-B 0.619/0.655 with no remaining levers, per operator. Details are in `wiki/moe-optimization.md` and `progress/2026-09/2026-09-16-sub-s5-topup.md`. Historical record only; live follow-ups belong to their own handoffs.
+
 **Two operator questions**: (A) did we miss important tasks in the research-intake / deep-dive corpus — especially stale **DGX-gated** dismissals now unblocked by the MI210? (B) roofline gap for the **CPU kernel (v6+iqk)** and the **MI210** — highest-ROI avenues to close it, and can the dequant slowdown be compensated (even Q8/fp16 caps ~60%)? Plus a standing instruction to **apply** the reprioritization to the live backlog, not just propose it (§7).
 
 **Method**: 8 read-only sweep agents over **769 intakes + 125 deep-dives** (compact-extract → deep-read candidates → fold-check vs 119 active handoffs) + 2 roofline agents (CPU, MI210) + 3 adversarial verifiers + 1 kernel synthesis. 14 agents, 0 errors, ~2.09M tokens. Every number below is an **OBSERVATION** per MEASUREMENT.md (no protocol-id; throttle-suspect 28-day CPU host / single-run contended MI210 host) — usable for hypotheses, never to gate a keep/revert/deploy decision.
@@ -99,13 +101,13 @@ All edits above are on branch `spec-dec-mtp-refresh-2026-06-22` and are **uncomm
 
 - [x] Intake-sweep findings deliverable produced (edits applied across 11 handoffs) ✅
 
-### Measurement #1 — the DENSE half is now measured (2026-08-16); the MoE half is still open
+### Measurement #1 — dense half measured 2026-08-16; MoE half CLOSED 2026-09-17 as a bounded null
 
 - [x] **§5 measurement #1, dense quantized `-np {1,2,4,8,16,32}` sweep — RUN ✅ 2026-08-16.**
       Goedel-8B, 8 rungs, one f16 source, frozen production quantizer `0db32c06e`/10125. Receipt:
       `artifacts/gpu-aux-baselines/a10_quant_ladder_occupancy_knee_20260816.md`. Filed as
       `autokernel-research-loop.md` §22.
-- [x] **§5 measurement #1, MoE half — STILL OPEN and still a genuine go/no-go.** ✅ 2026-09-17 closed as bounded null (Q-B 0.619/0.655; operator: no more levers; Q-A GO stands). This handoff's own
+- [x] **§5 measurement #1, MoE half — CLOSED (was a genuine go/no-go).** ✅ 2026-09-17 closed as bounded null (Q-B 0.619/0.655; operator: no more levers; Q-A GO stands). This handoff's own
       caveat (§4) is that MoE batches worse than dense because distinct tokens hit distinct experts,
       so the dense result below does NOT transfer. The named targets — Q4_K gemma4-31B and Q8_0
       Qwen3.6-27B — remain unmeasured. Needs an owner and a GPU window.
