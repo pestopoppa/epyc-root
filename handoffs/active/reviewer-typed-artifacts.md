@@ -66,7 +66,7 @@ intake-834 rubric artifact + axes · intake-835 REJECT-to-empty · intake-836 ve
 ## RA-9 — dual-gold annotation envelope + a gold-sanity gate (intake-948, intake-983; 2026-08-03)
 
 _Via `/research-intake` Stage-2/2b. Schema-level items, so they belong here rather than in the skill;
-the pipeline-ordering half lives in [`security-review-skill.md`](security-review-skill.md)._
+the pipeline-ordering half lives in [`security-review-skill.md`](../completed/security-review-skill.md)._
 
 - [x] **Adopt benchmrk's annotation envelope as the dual-gold schema.** ✅ 2026-09-16 Its `status:"invalid"` decoys give us a **negative-control axis we do not have anywhere** — intake-845 records the gap explicitly. Every current gold annotation asserts a true finding; nothing in the corpus asserts a finding that *should* be rejected, so no false-accept rate is measurable from our own data.
   - Evidence: `epyc-orchestrator` branch `sub/reviewer-artifacts-20260916` @ `e242a156`, integrated by orchestrator merge `bdf76ab3` (pushed in `753343f5`, 2026-09-16) — `orchestration/gold_annotation.schema.json` (validate_ir kind `gold_annotation`) + `src/proactive_delegation/gold_annotations.py`. `status: valid|invalid`; `invalid_reason` required iff decoy; dual gold (executable oracle + reasoning label, never both null), a conflict must carry `needs_arbitration`; model annotators force `origin: machine_generated`. `false_accept_rate()` is the negative-control axis: numerator/denominator stated, unscored decoys listed, decoys under arbitration excluded and listed. **This is the ONE dual-gold schema** — `security-review-skill.md` points here. `tests/test_gold_annotations.py` (45 tests, 13/13 mutants killed). Corpus population with real decoys is not done: no decoy rows exist yet.

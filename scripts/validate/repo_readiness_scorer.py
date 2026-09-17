@@ -385,7 +385,7 @@ def build_criteria() -> list[Criterion]:
     add(4, "Debugging & Observability", "analysis_reports", "Has analyzers or report generators over logs/traces.",
         exists_any("scripts/utils/agent_log_analyze.sh", "scripts/analysis/**", "orchestration/reports/**"))
     add(4, "Security", "security_audit", "Has security-review, audit, or hardening surfaces.",
-        exists_any("handoffs/active/security-review-skill.md", "scripts/hooks/pii_precommit.sh",
+        exists_any("handoffs/completed/security-review-skill.md", "scripts/hooks/pii_precommit.sh",
                    "scripts/hooks/earlyoom_audit.sh", "scripts/security/**",
                    "scripts/security_audit.*"))
     add(4, "Task Discovery", "prioritized_tasks", "Prioritizes tasks with dependencies and reporting rules.",
@@ -414,7 +414,7 @@ def build_criteria() -> list[Criterion]:
         exists_any("logs/agent_audit*.log", "scripts/halo/convert_tap_to_otel.py",
                    "orchestration/repl_memory/**"))
     add(5, "Security", "autonomous_security_review", "Has agent-usable security review or policy gates.",
-        exists_any("handoffs/active/security-review-skill.md", "scripts/hooks/pii_precommit.sh",
+        exists_any("handoffs/completed/security-review-skill.md", "scripts/hooks/pii_precommit.sh",
                    ".claude/skills/security-review/**"))
     add(5, "Task Discovery", "auto_remediation_queue", "Has an autopilot/remediation queue or self-running lab.",
         exists_any("scripts/autopilot/**", "handoffs/active/frontier-f2-self-running-lab.md",

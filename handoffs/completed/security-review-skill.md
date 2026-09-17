@@ -1,6 +1,12 @@
 # Security-Review Skill (two-pass STRIDE + OWASP)
 
-**Status**: v1 skill scaffold landed 2026-06-13; slash-command integration landed 2026-06-18; CI gate deferred
+> **✅ COMPLETED 2026-09-17.** The skill shipped (v1 scaffold 2026-06-13, slash command 2026-06-18, GATE-0 /
+> refutation / dedup 2026-09-16). The last open box, the CI gate, was **DROPPED by the operator on
+> 2026-09-17** (Option A): no enforcement workflow exists, an LLM gate needs model calls on every PR, and the
+> orchestrator has no CI. To add enforcement later, open a new handoff with a named trigger. Index row
+> UFH-06 deleted on completion.
+
+**Status**: COMPLETED 2026-09-17 — v1 skill scaffold landed 2026-06-13; slash-command integration landed 2026-06-18; GATE-0/refutation/dedup landed 2026-09-16; CI gate DROPPED by operator 2026-09-17
 **Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
 **Categories**: agent_architecture, benchmark_methodology, tool_implementation
 
@@ -23,7 +29,7 @@ The v1 skill covers the Factory-derived mechanism:
 - Structured finding schema: title, location, problem, exploit path, suggested fix, residual risk, checks run.
 - Explicit false-positive guard: do not emit a finding unless attacker capability, reachability, trust-boundary crossing, vulnerable sink, unblocked mitigation analysis, concrete impact, minimal fix, and file/line evidence all pass.
 
-Decision: the skill now has a dedicated slash command wrapper. CI and PR-summary integration stay deferred until a concrete enforcement workflow exists.
+Decision: the skill now has a dedicated slash command wrapper. CI and PR-summary integration were deferred until a concrete enforcement workflow existed, and were then dropped by the operator on 2026-09-17 (see the checklist).
 
 ## Research Context
 
@@ -43,15 +49,17 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 
 ## Open Questions
 
+_At completion (2026-09-17) these are design notes, not tracked work. The CI item was dropped with the CI gate, and the rest have no committed follow-up._
+
 - Which local model(s) drive it? OWASP-LLM analysis of our own stack ideally uses a cross-family reviewer (avoid self-blindness) — tie to eval-tower EV-6.
-- Scope presets (base-branch compare / uncommitted / specific commit / custom) — the slash command now accepts an optional scope argument and defaults to the current diff; richer CI/PR presets remain future work.
+- Scope presets (base-branch compare / uncommitted / specific commit / custom) — the slash command now accepts an optional scope argument and defaults to the current diff; richer CI/PR presets fell with the CI gate (dropped 2026-09-17).
 - Existing code-review skill upgrade — no local `.claude/skills/code-review` exists in this repo. The reusable 8-gate filter and finding schema live in `security-review/SKILL.md`; fold them into a future code-review skill if/when one is added.
-- CI integration: PR-summary + min-severity threshold gate — wire later.
+- ~~CI integration: PR-summary + min-severity threshold gate — wire later.~~ Dropped with the CI gate (operator, 2026-09-17).
 
 ## Notes
 
 - Pairs with the **code-review 8-gate bug filter + P0–P3 + finding schema** upgrade to our existing code-review skill (harvest Part 3E) — adopt both together so they share the finding schema.
-- Cross-refs: `eval-tower-verification.md` (two-pass = verifier), code-review skill, [`privacy-hygiene-precommit-hooks.md`](../completed/privacy-hygiene-precommit-hooks.md) (secret scanning overlap), `feedback_observe_before_diagnosing`.
+- Cross-refs: `eval-tower-verification.md` (two-pass = verifier), code-review skill, [`privacy-hygiene-precommit-hooks.md`](privacy-hygiene-precommit-hooks.md) (secret scanning overlap), `feedback_observe_before_diagnosing`.
 
 ## 2026-08-03 — intake Stage-2: CodeCrucible + benchmrk (intake-943, intake-948)
 
@@ -85,4 +93,4 @@ Three mechanisms to lift, in dependency order. The **ordering is the finding** i
 
 - [x] v1 skill scaffold landed 2026-06-13 ✅
 - [x] Slash-command integration landed 2026-06-18 ✅
-- [ ] CI gate integration (intentionally deferred)
+- [x] ~~CI gate integration~~ — DROPPED by operator 2026-09-17 (no enforcement workflow exists; an LLM gate needs model calls per PR and the orchestrator has no CI). Reopen as a new handoff with a named trigger if enforcement is wanted. ✅ 2026-09-17
