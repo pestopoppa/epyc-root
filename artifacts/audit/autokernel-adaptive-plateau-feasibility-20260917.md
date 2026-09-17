@@ -100,10 +100,15 @@ candidate-generation/pool record, not this target-scheduler receipt.
 ### Bounded native momentum slice — 2026-09-17
 
 The existing GLM store's `experiments.db` has 195 attempt rows. A read-only
-scalar/JSON-key audit found 78 measured serving A/B candidates under one
+scalar/JSON-key census found 78 measured serving A/B candidates under one
 exact `aggregate_tok_s` surface, `recipe_hash` and `request_digest`, spread
 across 20 distinct anchor epochs; one epoch has 29 candidates and eight have
-only one. `loop/serving.py` defines the metric as predicted tokens per wall
+only one. **The 78 is a key census, not 78 validated projector rows.** The
+first read-only projection admitted only five legacy `serving_ab.v1` rows and
+excluded 82 native `serving_ab.v2` rows across all measured statuses. The v2
+producer/plan was then inspected and the projector amended to recognize only
+that explicit matched-process schema. No second real projection has run.
+`loop/serving.py` defines the metric as predicted tokens per wall
 time and computes effect as candidate/anchor−1, establishing higher-better
 direction. Each comparison records `candidate_tok_s`, its anchor rate and
 pair count. These facts permit only an **observed, within-epoch** relative
@@ -114,11 +119,14 @@ best-improvement EWMA: reset when `epoch_sha256` changes, retain native
 read-only slice with β=0.85 and ε_rel=0.001 as an observation; it emits no
 `PLATEAU_STOP`, ancestor-revert decision, champion action or cross-epoch gain.
 This is not PACEvolve's known-optimum momentum rule because no kernel target
-lower bound `r` is recorded. The same DB has no realized-action-cost column;
+lower bound `r` is recorded. The producer now emits a self-hashed provenance
+receipt binding each scanned native payload hash, the report hash, and its
+source hash; fixtures cover both native schemas. The same DB has no realized-action-cost column;
 its sampled measured-attempt payload has no cost key. Serial held-time
 receipts do not carry an exact attempt-ID join to those rows, and historical
 AK-D32 phase/decision state is not present in the experiment row. Therefore
 CostAda-style cost credit and a comparison with AK-D32 remain unavailable,
-not zero. The real store has not yet been run through the new reporter pending
-write-side Vidya source registration by the owning main thread; fixture-only
-tests establish the projection's bounds and epoch reset.
+not zero. The real store has not been re-run through the corrected reporter;
+the one prior read-only check produced no file or publication. Source
+registration SC89 is owned by the main thread, and further real reporting
+waits for review of the write-side provenance receipt.
