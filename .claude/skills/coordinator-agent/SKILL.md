@@ -58,6 +58,11 @@ none, because it is trusted.
 
 Harmless when it is not a post-reboot start. Run all of it; record every answer for the report.
 
+Every Python command in this skill uses the orchestrator venv interpreter. `tmux_adapter.py`,
+`merge_gate.py` and `session_bus.py` need PyYAML. The system `python3` has it only while `~/.local`
+survives a devcontainer rebuild. Without it, `tmux_adapter` crashes, `merge_gate` refuses, and
+`session_bus validate` skips its roster check (OBS-12).
+
 ```bash
 # tmux session that every tmux roster endpoint points into. C20: nothing recreates it
 # after a reboot and cmd_spawn fails closed without it (allow_session_creation: false).
@@ -70,7 +75,7 @@ tmux list-windows -t agent -F '#{window_name}'
 # coordinator-daemon liveness + advice, and its watchdog.
 # NO PROCESS NAME PATTERNS — see the warning below. `bus_supervisor.sh status` prints
 # the daemon pids AND the supervisor pid without matching on any name.
-python3 scripts/coordination/session_bus_coordinator.py status
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus_coordinator.py status
 scripts/coordination/bus_supervisor.sh status
 # then confirm each pid it named is really alive, and how long it has been up:
 ps -o pid,lstart,args -p <pid-from-status>
@@ -82,7 +87,7 @@ scripts/session/verify_llama_cpp.sh
 /mnt/raid0/llm/epyc-orchestrator/scripts/region-lock status
 
 # serving stack
-python3 /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py status
+/workspace/repos/epyc-orchestrator/.venv/bin/python /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py status
 
 # AutoPilot — load-bearing signal, see below. Take its pid from the stack status,
 # never from a name pattern; if the stack status does not surface an autopilot pid,
@@ -140,14 +145,14 @@ nohup /bin/bash scripts/coordination/fleet_watch.sh >> logs/fleet_watch.out 2>&1
 #    243 hours. Require BOTH: the pid is alive AND is the daemon, and the heartbeat's
 #    `source_tree` equals the committed tree — a daemon running older code is a daemon
 #    whose fixes are not live.
-python3 scripts/coordination/session_bus_coordinator.py status
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus_coordinator.py status
 git rev-parse HEAD:scripts/coordination        # must equal heartbeat source_tree
 
 # 4. THE ALARM DRILL. An alarm nobody receives is the failure this whole plane exists
 #    to prevent — on 2026-08-14 every internal signal fired correctly for 11 hours and
 #    no human learned of it. Prove the channel end to end, then prove it is quiet.
 bash scripts/coordination/tests/alarm_drill.sh          # must print RESULT: PASS
-python3 scripts/coordination/alarm_channel.py status    # active alarms, if any
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/alarm_channel.py status    # active alarms, if any
 ```
 
 If `alarm_config.yaml` still contains the `REPLACE-ME` sentinel, the channel is INERT by
@@ -160,7 +165,7 @@ Bus state held by sessions that no longer exist cannot clear itself, and after a
 there is always some. Enumerate it before triaging anything:
 
 ```bash
-python3 scripts/coordination/ghost_sweep.py     # dry run; enumerates and explains
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/ghost_sweep.py     # dry run; enumerates and explains
 ```
 
 Releasing it is operator-signed (D7) and runs through the daemon, which owns the queue:
@@ -245,9 +250,9 @@ AND pushed) and the coordinator must have confirmed that state before relaying t
 ## Phase 1 — become addressable
 
 ```bash
-python3 scripts/coordination/session_bus.py provision --agent coordinator-agent
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus.py provision --agent coordinator-agent
 
-python3 scripts/coordination/session_bus.py append --agent coordinator-agent \
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus.py append --agent coordinator-agent \
   --target heartbeat --json '{"state":"working","task_id":"coordinator-cold-start"}'
 ```
 
@@ -263,10 +268,10 @@ than none, because the stall ladder reads it as a stall and nudges a healthy age
 ## Phase 2 — recover state from files alone
 
 ```bash
-python3 scripts/coordination/session_bus.py rebuild
-python3 scripts/coordination/session_bus.py drain --agent coordinator-agent
-python3 scripts/coordination/session_bus.py validate
-python3 scripts/coordination/session_bus_coordinator.py status
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus.py rebuild
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus.py drain --agent coordinator-agent
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus.py validate
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/session_bus_coordinator.py status
 ```
 
 Then read the pending operator gates:
@@ -308,7 +313,7 @@ produce a **spawn plan** for the operator counting **live mains against
 `caps.max_concurrent_mains`** (`coordination/session-bus/config.yaml`, currently 7):
 
 ```bash
-python3 scripts/coordination/tmux_adapter.py probe --agent <id>   # prints "live mains N/cap [max_concurrent_mains]"
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/tmux_adapter.py probe --agent <id>   # prints "live mains N/cap [max_concurrent_mains]"
 ```
 
 The cap counts **live roster windows**, not spawn events, so closing an idle main returns its slot
@@ -338,13 +343,13 @@ alias orphans all of it and leaves the old row drawing "LOOKS DEAD" advisories f
 the decision package, then use the explicit selected mode:
 
 ```bash
-python3 scripts/coordination/tmux_adapter.py inspect-pane --agent <id>
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/tmux_adapter.py inspect-pane --agent <id>
 # After the operator resets/reseeds the pane's role context:
-python3 scripts/coordination/tmux_adapter.py inspect-pane --agent <id> --context-reset-confirmed
-python3 scripts/coordination/tmux_adapter.py instantiate --agent <id> --mode adopt \
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/tmux_adapter.py inspect-pane --agent <id> --context-reset-confirmed
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/tmux_adapter.py instantiate --agent <id> --mode adopt \
   --target <exact-target> --context-reset-confirmed
 # or, after the operator chooses fresh:
-python3 scripts/coordination/tmux_adapter.py instantiate --agent <id> --mode fresh \
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/tmux_adapter.py instantiate --agent <id> --mode fresh \
   --command '<operator-selected launch command>' --dry-run
 ```
 
@@ -411,7 +416,7 @@ in an inbox belonged to someone else.
 ### Nudging — the only safe path
 
 ```bash
-python3 scripts/coordination/tmux_adapter.py nudge --agent <id> --message '<text>'   # add --dry-run to preview
+/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/tmux_adapter.py nudge --agent <id> --message '<text>'   # add --dry-run to preview
 ```
 
 - **Never nudge via raw `tmux send-keys`.** The adapter chunks long messages and verifies
@@ -449,7 +454,7 @@ python3 scripts/coordination/tmux_adapter.py nudge --agent <id> --message '<text
   `human_only_paths.yaml`, and never tick ANOTHER agent's checkbox
   (`agents/shared/INVARIANTS.md` invariants 4, 9, 10). Saying that someone else's box is stale is
   not ticking it and is always allowed.
-- **Every merge is gated**: `python3 scripts/coordination/merge_gate.py check [--repo <r>]
+- **Every merge is gated**: `/workspace/repos/epyc-orchestrator/.venv/bin/python scripts/coordination/merge_gate.py check [--repo <r>]
   [--range <ref..ref>]`. A **gated** verdict means you produce a *pre-validated* command for the
   operator — you never apply it. A presented command that fails is a defect attributed to you, so
   dry-run it first.

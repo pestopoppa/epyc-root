@@ -101,8 +101,15 @@ def load_config() -> dict:
             {"path": "docs", "type": "docs", "recurse": True},
         ],
     }
-    if not HAS_YAML or not config_path.exists():
+    if not config_path.exists():
         return defaults
+    if not HAS_YAML:
+        # OBS-12: silently using the defaults here diverges from wiki.yaml
+        # (e.g. its extra skip_filenames), so refuse instead.
+        raise RuntimeError(
+            f"PyYAML is not installed in {sys.executable}, so {config_path} cannot be read. "
+            f"Run with the orchestrator venv: /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/project-wiki/scripts/compile_sources.py"
+        )
 
     try:
         with open(config_path) as f:

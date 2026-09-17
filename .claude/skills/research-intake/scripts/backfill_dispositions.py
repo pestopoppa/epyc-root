@@ -10,11 +10,20 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except ImportError:
+    print(
+        "ERROR: PyYAML is not installed in " + sys.executable + ". Run this script with the "
+        "orchestrator venv: /workspace/repos/epyc-orchestrator/.venv/bin/python .claude/skills/research-intake/scripts/backfill_dispositions.py",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 ROOT = Path(__file__).resolve().parents[4]
 INDEX_PATH = ROOT / "research" / "intake_index.yaml"
