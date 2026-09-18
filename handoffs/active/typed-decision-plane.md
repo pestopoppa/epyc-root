@@ -52,6 +52,56 @@ episodic memory writing."
 - [x] **TD-1c — Native semantic parity.** Close the 5/16 disagreement between native and JSON arms before the speed is trusted: check the native prompt's answer cueing vs the JSON prompt, whether the candidate slice is over pre- or post-grammar probabilities, and per-position conditioning (later answers are generated after earlier ones). ✅ 2026-09-17 accepted: root cause was prompt cueing — only the first answer was grounded on the prompt; later positions were conditioned on prior answer tokens, collapsing noul answers to false. Fix replays each question's cue as tokenized grammar terminals so every answer follows its own question. Live on the worker: **agreement 15/16 = 93.75%**, native 15/16 correct on the overlap (JSON 22/24 overall), 8.1 s vs 16.9 s = **2.08x** — parity at a speed cost; recovering the 18.9x is TD-1d.
 - [x] **TD-3b — Meaningful fan-out agreement.** ✅ 2026-09-17 measured on the worker with the real 24-question catalogue: **agreement 87.5% (21/24) at 2.2x** (17.2 s batched vs 37.9 s singleton) — a quantified speed/stability trade-off for the fan-out lever; consistent with the 6.25% order-flip rate (27B) and far from the LFM's 37.5%.
 - [x] **TD-1d — Recover native speed at parity.** The cue replay costs a forward pass per forced cue token (2.08x vs JSON; 18.9x pre-fix). Options to test: (a) minimal grounding cues (id + a few tokens) judged on the same 24-question set; (b) parallel per-question native reads against one cached prefix (use the server's multiple slots) — the faithful 'parallel sampler' shape; (c) routing cheap vs hard questions between native and JSON arms. ✅ 2026-09-17 ACCEPTED via the id-only cue. Cue sweep on the worker (same 35B, same 24-question set, one run each): JSON 19.3 s / 1,354 tok; native:full 7.3 s (2.66x) / 523 tok; native:short 3.2 s (6.0x) / 239 tok; **native:id_only 1.6 s (11.98x) / 112 tok** — all three native styles at 15/16 agreement and 15/16 accuracy on the overlap (JSON 14/16 on the same 16). The prompt catalogue carries the grounding; the id-only cue re-anchors position. Parallel per-question reads were tested and rejected on this stack (exclusive heavy_model lock serializes workers; client concurrency 0.65x vs batched; the true parallel-sampler needs a multi-slot readout readout the generation API lacks — record for any future runtime choice). Remaining: adopt id_only as the native default after review and decide whether a `native_cue_sweep` study gets a belief-kernel carrier.
+  - ⚠️ **2026-09-18 RE-MEASUREMENT DISAGREES WITH THE ACCEPTANCE — the bar is not cleared at n>1.** The row above
+    accepted TD-1d on **one run per arm**. A 4-round re-measurement on the same model and catalogue, with every
+    arm run before the next round and arm order rotated, puts the best arm **below** the 10x bar. The tick is
+    left standing because the box belongs to the accepting session; **this note is the evidence against it.**
+
+    | arm | this run (n=4, mean ± sd) | speedup | 2026-09-17 (n=1) |
+    |---|---|---|---|
+    | json baseline | 14.02 ± 1.82 s (11.34–15.45) | 1.00x | 19.3 s |
+    | native_full | 6.52 ± 0.05 s | 2.15x | 7.3 s (2.66x) |
+    | native_short | 3.03 ± 0.12 s | 4.63x | 3.2 s (6.0x) |
+    | **native_id_only** | **1.46 ± 0.03 s** | **9.60x** | 1.6 s (**11.98x**) |
+    | native_pq1 (1 slot) | 2.09 ± 0.04 s | 6.69x | — |
+    | native_pq3 (3 slots) | 5.24 ± 0.93 s | 2.67x | — |
+    | native_pq3_id_only | 2.27 ± 0.45 s | 6.17x | — |
+
+    **The disagreement is the JSON BASELINE, not the native arm** — the two id_only measurements agree (1.46 s
+    vs 1.6 s). The 2026-09-17 JSON sample (19.3 s) is **above the maximum of four samples measured here**
+    (15.45 s), and pairing each side's baseline with the other's native time spans **8.8x–13.2x**. A single
+    baseline sample cannot see that spread, which is exactly why the bar needs a repeated baseline.
+    Agreement is NOT in dispute: 60/64 pooled = 0.9375 = 15/16, every round, same `n01` disagreement as TD-1c.
+    **Denominator caveat that applies to BOTH numbers:** native decides 16/24 (c01–c08 fail closed,
+    `native_unsupported_candidates`), so the ratio compares a 16-decision run to a 24-decision one. Per decision
+    it is 584 ms vs 91 ms = **6.40x**. The bar never stated its denominator; neither figure passes it.
+    Independent corroboration of the 09-17 note: parallel reads ARE a loser here — measured 2.67x, slower than
+    serial. Artifacts: `artifacts/typed_decisions/run_20260918/`; server launched and killed by the measuring
+    session, VRAM 59% in all 24 in-run samples.
+    - [ ] **TD-1d.0 — OWNER/OPERATOR: re-settle the acceptance.** Either re-run the 09-17 arms with a repeated
+      baseline (n>=4, alternated) and keep the acceptance if it survives, or downgrade "ACCEPTED" to
+      "best-effort 6.4–9.6x, bar not cleared". Do not adopt id_only as the native default on the n=1 number
+      alone. Inference-gated (one short window; the whole sweep above took ~20 min including model load).
+  - [ ] **TD-1d.1 — `/v1` drops `grammar`/`json_schema`, so the native path cannot run through `LLMPrimitives`.**
+    `frontdoor` routes to `/v1/chat/completions` (`use_chat_completions=True`), which forwards neither field:
+    measured 515 free-form tokens and **0/24 decisions** (`native_unknown_candidate` x16). Every arm above used a
+    direct `/completion` adapter mirroring `_build_payload`, and TD-1c's result must have gone the same way.
+    **No typed-decision arm is deployable through the normal primitives path until this is closed** — decide
+    whether `/v1` forwards the fields for internal callers, or whether typed decisions keep a declared direct
+    `/completion` lane. Zero inference to decide.
+  - [ ] **TD-1d.2 — concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`**
+    (probed: parallel wall == serial wall, max 1 slot busy). A constraint on every future fan-out design, not
+    just this one; independently matches the 09-17 note's `heavy_model` lock observation.
+  - [ ] **TD-1d.3 — `qwen35moe` is hybrid-recurrent (SSM layers), so prefix reuse is checkpoint-quantized.**
+    Back-to-back per-question reads on one slot reuse **0** tokens (~450 ms each) unless a prefix-only request
+    first leaves a checkpoint at the prefix end (then `cache_n` 1105, ~128 ms/read); under 3-way concurrency they
+    stretch to 585–900 ms. This is the mechanism behind fan-out losing, and it belongs in any prefix-cache
+    reasoning about this model class.
+  - [ ] **TD-1d.4 — to clear the bar honestly, handle the 8 multi-token choice questions natively** (which also
+    removes the denominator confound), or take option (c): per-question cost/confidence labels plus a JSON
+    fallback for those 8. Not built; (c) is a routing policy, not a speed fix.
+    Harness extension `run_typed_decisions_native_parallel` (`src/typed_decisions/native.py`, +251 lines, ruff
+    clean, 209 native unit tests pass) is **uncommitted** pending TD-1d.0.
 - [x] **TD-4 — Closed-set tool-argument selection pilot.** Map tool arguments to closed sets (Literal → Choice,
   list[Literal] → multi-choice, bool → Noul) with per-argument confidence; compare against the current
   free-form tool-call path on exact-match argument correctness and wall time. Citation: intake-1472 pattern,

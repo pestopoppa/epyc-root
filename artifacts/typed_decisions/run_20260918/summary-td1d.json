@@ -1,0 +1,1003 @@
+{
+  "arms": {
+    "json": {
+      "agreement_per_round": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "agreement_pooled": null,
+      "decisions_per_round": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "failure_reasons_per_round": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "n": 4,
+      "speedup_vs_json_mean_of_means": 1.0,
+      "speedup_vs_json_per_round": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "tokens_generated_per_round": [
+        1356,
+        1360,
+        1363,
+        1055
+      ],
+      "wall_max_ms": 15448.073332197964,
+      "wall_mean_ms": 14016.66769082658,
+      "wall_min_ms": 11341.696095652878,
+      "wall_ms": [
+        15448.073332197964,
+        14617.290570400655,
+        14659.610765054822,
+        11341.696095652878
+      ],
+      "wall_stdev_ms": 1823.7798464820144
+    },
+    "native_full": {
+      "agreement_per_round": [
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_full": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_full": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_full": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_full": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        }
+      ],
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 64,
+        "rate": 0.9375
+      },
+      "decisions_per_round": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "failure_reasons_per_round": [
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ]
+      ],
+      "n": 4,
+      "speedup_vs_json_mean_of_means": 2.151295879350738,
+      "speedup_vs_json_per_round": [
+        2.3657320028994637,
+        2.253905691563522,
+        2.2645209490718976,
+        1.7255082445240664
+      ],
+      "tokens_generated_per_round": [
+        523,
+        523,
+        523,
+        523
+      ],
+      "wall_max_ms": 6572.959666606039,
+      "wall_mean_ms": 6515.453232335858,
+      "wall_min_ms": 6473.603510297835,
+      "wall_ms": [
+        6529.93378508836,
+        6485.315967351198,
+        6473.603510297835,
+        6572.959666606039
+      ],
+      "wall_stdev_ms": 45.373745587450415
+    },
+    "native_id_only": {
+      "agreement_per_round": [
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_id_only": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_id_only": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_id_only": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_id_only": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        }
+      ],
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 64,
+        "rate": 0.9375
+      },
+      "decisions_per_round": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "failure_reasons_per_round": [
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ]
+      ],
+      "n": 4,
+      "speedup_vs_json_mean_of_means": 9.597613559416047,
+      "speedup_vs_json_per_round": [
+        10.407833305510758,
+        9.81757157421777,
+        10.216676258762641,
+        7.910814074316729
+      ],
+      "tokens_generated_per_round": [
+        112,
+        112,
+        112,
+        112
+      ],
+      "wall_max_ms": 1488.890654873103,
+      "wall_mean_ms": 1460.4325965046883,
+      "wall_min_ms": 1433.695191051811,
+      "wall_ms": [
+        1484.273707959801,
+        1488.890654873103,
+        1434.8708321340382,
+        1433.695191051811
+      ],
+      "wall_stdev_ms": 30.25751878793868
+    },
+    "native_pq1": {
+      "agreement_per_round": [
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq1": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq1": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq1": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq1": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        }
+      ],
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 64,
+        "rate": 0.9375
+      },
+      "decisions_per_round": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "failure_reasons_per_round": [
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ]
+      ],
+      "n": 4,
+      "speedup_vs_json_mean_of_means": 6.692105011365146,
+      "speedup_vs_json_per_round": [
+        7.355225607725346,
+        7.0387220290839085,
+        6.81385479205707,
+        5.533591755432504
+      ],
+      "tokens_generated_per_round": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "wall_max_ms": 2151.4416160061955,
+      "wall_mean_ms": 2094.508031033911,
+      "wall_min_ms": 2049.6083912439644,
+      "wall_ms": [
+        2100.285450927913,
+        2076.69666595757,
+        2151.4416160061955,
+        2049.6083912439644
+      ],
+      "wall_stdev_ms": 43.23591893159208
+    },
+    "native_pq3": {
+      "agreement_per_round": [
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq3": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq3": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq3": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq3": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        }
+      ],
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 64,
+        "rate": 0.9375
+      },
+      "decisions_per_round": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "failure_reasons_per_round": [
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ]
+      ],
+      "n": 4,
+      "speedup_vs_json_mean_of_means": 2.672625501862526,
+      "speedup_vs_json_per_round": [
+        3.8359705966492443,
+        2.8655721607840756,
+        2.3524138491405364,
+        2.018731398203994
+      ],
+      "tokens_generated_per_round": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "wall_max_ms": 6231.731194071472,
+      "wall_mean_ms": 5244.531147764064,
+      "wall_min_ms": 4027.161560021341,
+      "wall_ms": [
+        4027.161560021341,
+        5101.002435199916,
+        6231.731194071472,
+        5618.229401763529
+      ],
+      "wall_stdev_ms": 933.9528041185674
+    },
+    "native_pq3_id_only": {
+      "agreement_per_round": [
+        {
+          "agreeing": 14,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq3_id_only": true
+              }
+            },
+            {
+              "question_id": "n08",
+              "values": {
+                "json": false,
+                "native_pq3_id_only": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 14,
+          "comparable": 15,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq3_id_only": true
+              }
+            }
+          ],
+          "unresolved_pairs": 9
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq3_id_only": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 13,
+          "comparable": 15,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_pq3_id_only": true
+              }
+            },
+            {
+              "question_id": "n08",
+              "values": {
+                "json": false,
+                "native_pq3_id_only": true
+              }
+            }
+          ],
+          "unresolved_pairs": 9
+        }
+      ],
+      "agreement_pooled": {
+        "agreeing": 56,
+        "comparable": 62,
+        "rate": 0.9032258064516129
+      },
+      "decisions_per_round": [
+        16,
+        15,
+        16,
+        15
+      ],
+      "failure_reasons_per_round": [
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unknown_candidate",
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unknown_candidate",
+          "native_unsupported_candidates"
+        ]
+      ],
+      "n": 4,
+      "speedup_vs_json_mean_of_means": 6.167322671670324,
+      "speedup_vs_json_per_round": [
+        6.557677936658752,
+        6.641302314521281,
+        8.491320125957442,
+        4.039336243950562
+      ],
+      "tokens_generated_per_round": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "wall_max_ms": 2807.811831124127,
+      "wall_mean_ms": 2272.731367731467,
+      "wall_min_ms": 1726.423047017306,
+      "wall_ms": [
+        2355.723090004176,
+        2200.9675027802587,
+        1726.423047017306,
+        2807.811831124127
+      ],
+      "wall_stdev_ms": 446.0200151953407
+    },
+    "native_short": {
+      "agreement_per_round": [
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_short": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_short": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 16,
+          "disagreements": [
+            {
+              "question_id": "n01",
+              "values": {
+                "json": false,
+                "native_short": true
+              }
+            }
+          ],
+          "unresolved_pairs": 8
+        },
+        {
+          "agreeing": 15,
+          "comparable": 15,
+          "disagreements": [],
+          "unresolved_pairs": 9
+        }
+      ],
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 63,
+        "rate": 0.9523809523809523
+      },
+      "decisions_per_round": [
+        16,
+        16,
+        16,
+        15
+      ],
+      "failure_reasons_per_round": [
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unsupported_candidates"
+        ],
+        [
+          "native_unknown_candidate",
+          "native_unsupported_candidates"
+        ]
+      ],
+      "n": 4,
+      "speedup_vs_json_mean_of_means": 4.628134095755079,
+      "speedup_vs_json_per_round": [
+        5.225096283288997,
+        4.918774770894273,
+        4.563577263868281,
+        3.813926182817177
+      ],
+      "tokens_generated_per_round": [
+        239,
+        239,
+        239,
+        239
+      ],
+      "wall_max_ms": 3212.3069069348276,
+      "wall_mean_ms": 3028.5785590531304,
+      "wall_min_ms": 2956.514577846974,
+      "wall_ms": [
+        2956.514577846974,
+        2971.7340702190995,
+        3212.3069069348276,
+        2973.7586812116206
+      ],
+      "wall_stdev_ms": 122.72712023018045
+    }
+  },
+  "benchmark": "typed_decisions_modes",
+  "json_self_consistency": [
+    {
+      "agreeing": 24,
+      "comparable": 24,
+      "disagreements": [],
+      "round": 2
+    },
+    {
+      "agreeing": 24,
+      "comparable": 24,
+      "disagreements": [],
+      "round": 3
+    },
+    {
+      "agreeing": 24,
+      "comparable": 24,
+      "disagreements": [],
+      "round": 4
+    }
+  ],
+  "questions": [
+    "n01",
+    "n02",
+    "n03",
+    "n04",
+    "n05",
+    "n06",
+    "n07",
+    "n08",
+    "c01",
+    "c02",
+    "c03",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c08",
+    "s01",
+    "s02",
+    "s03",
+    "s04",
+    "s05",
+    "s06",
+    "s07",
+    "s08"
+  ],
+  "residency_samples": [
+    {
+      "phase": "idle",
+      "ts": "2026-09-18T00:20:25.757197+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "kfd_llama_procs": 1,
+      "phase": "before",
+      "ts": "2026-09-18T00:20:25.756897+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "warm:json",
+      "ts": "2026-09-18T00:20:33.754458+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "warm:native_full",
+      "ts": "2026-09-18T00:20:41.788249+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "warm:native_short",
+      "ts": "2026-09-18T00:20:49.814529+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "warm:native_pq3_id_only",
+      "ts": "2026-09-18T00:20:58.374361+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r1:json",
+      "ts": "2026-09-18T00:21:06.442314+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r1:json",
+      "ts": "2026-09-18T00:21:14.498568+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r1:native_full",
+      "ts": "2026-09-18T00:21:22.595071+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r1:native_pq3",
+      "ts": "2026-09-18T00:21:30.692611+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r2:native_full",
+      "ts": "2026-09-18T00:21:39.725310+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r2:native_pq1",
+      "ts": "2026-09-18T00:21:47.859660+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r2:native_pq3_id_only",
+      "ts": "2026-09-18T00:21:55.871719+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r2:json",
+      "ts": "2026-09-18T00:22:03.863329+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r3:native_short",
+      "ts": "2026-09-18T00:22:11.873884+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r3:native_pq3",
+      "ts": "2026-09-18T00:22:19.875612+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r3:json",
+      "ts": "2026-09-18T00:22:27.857109+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r3:json",
+      "ts": "2026-09-18T00:22:35.861415+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r3:native_full",
+      "ts": "2026-09-18T00:22:43.864462+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r4:native_pq3",
+      "ts": "2026-09-18T00:22:51.925352+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r4:json",
+      "ts": "2026-09-18T00:22:59.935117+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r4:json",
+      "ts": "2026-09-18T00:23:07.985290+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "phase": "r4:native_full",
+      "ts": "2026-09-18T00:23:15.993986+00:00",
+      "vram_allocated_pct": "59"
+    },
+    {
+      "kfd_llama_procs": 1,
+      "phase": "after",
+      "ts": "2026-09-18T00:23:20.015113+00:00",
+      "vram_allocated_pct": "59"
+    }
+  ],
+  "rounds": 4,
+  "server": {
+    "base_url": "http://127.0.0.1:8199",
+    "build": {
+      "build_info": "b10125-0db32c06e",
+      "version": null
+    },
+    "model_path": "/mnt/raid0/llm/models/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf",
+    "n_ctx_per_slot": 32768,
+    "total_slots": 4
+  },
+  "slot_busy_max_by_phase": {
+    "after": 0,
+    "idle": 0,
+    "r1:json": 1,
+    "r1:native_full": 1,
+    "r1:native_id_only": 1,
+    "r1:native_pq1": 1,
+    "r1:native_pq3": 2,
+    "r1:native_pq3_id_only": 2,
+    "r1:native_short": 1,
+    "r2:json": 1,
+    "r2:native_full": 1,
+    "r2:native_id_only": 1,
+    "r2:native_pq1": 1,
+    "r2:native_pq3": 2,
+    "r2:native_pq3_id_only": 1,
+    "r2:native_short": 1,
+    "r3:json": 1,
+    "r3:native_full": 1,
+    "r3:native_id_only": 1,
+    "r3:native_pq1": 0,
+    "r3:native_pq3": 3,
+    "r3:native_pq3_id_only": 1,
+    "r3:native_short": 1,
+    "r4:json": 1,
+    "r4:native_full": 1,
+    "r4:native_id_only": 1,
+    "r4:native_pq1": 0,
+    "r4:native_pq3": 2,
+    "r4:native_pq3_id_only": 3,
+    "r4:native_short": 1,
+    "warm:json": 1,
+    "warm:native_full": 1,
+    "warm:native_id_only": 1,
+    "warm:native_pq1": 0,
+    "warm:native_pq3": 2,
+    "warm:native_pq3_id_only": 3,
+    "warm:native_short": 1
+  },
+  "timestamp": "2026-09-18T00:23:20.252486+00:00",
+  "transport": "direct /completion (see module docstring); sampling temp=0 top_k=40 top_p=0.95 repeat_penalty=1.1 seed=0 cache_prompt=true",
+  "verdict": [
+    {
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 64,
+        "rate": 0.9375
+      },
+      "arm": "native_full",
+      "min_round_agreement_rate": 0.9375,
+      "passes_bar": false,
+      "speedup_mean": 2.151295879350738
+    },
+    {
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 63,
+        "rate": 0.9523809523809523
+      },
+      "arm": "native_short",
+      "min_round_agreement_rate": 0.9375,
+      "passes_bar": false,
+      "speedup_mean": 4.628134095755079
+    },
+    {
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 64,
+        "rate": 0.9375
+      },
+      "arm": "native_id_only",
+      "min_round_agreement_rate": 0.9375,
+      "passes_bar": false,
+      "speedup_mean": 9.597613559416047
+    },
+    {
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 64,
+        "rate": 0.9375
+      },
+      "arm": "native_pq1",
+      "min_round_agreement_rate": 0.9375,
+      "passes_bar": false,
+      "speedup_mean": 6.692105011365146
+    },
+    {
+      "agreement_pooled": {
+        "agreeing": 60,
+        "comparable": 64,
+        "rate": 0.9375
+      },
+      "arm": "native_pq3",
+      "min_round_agreement_rate": 0.9375,
+      "passes_bar": false,
+      "speedup_mean": 2.672625501862526
+    },
+    {
+      "agreement_pooled": {
+        "agreeing": 56,
+        "comparable": 62,
+        "rate": 0.9032258064516129
+      },
+      "arm": "native_pq3_id_only",
+      "min_round_agreement_rate": 0.8666666666666667,
+      "passes_bar": false,
+      "speedup_mean": 6.167322671670324
+    }
+  ]
+}
