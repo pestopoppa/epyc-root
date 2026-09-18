@@ -60,3 +60,27 @@ worktree, 28 retained keeps and historical evidence remain in use. v28 uses
 v27's exact target root to preserve stable continuation binding and disables
 retired-build pruning during this recovery. The full-recipe held-out floor is
 absent and its distinct calibration must finish before research authoring.
+
+10:39–11:07 UTC status: v28 has now completed **36** serial batches, all
+`abstained` in their sealed continuations, with zero measured source candidates
+and no new keep. The active batch 36 is in a matched CPU serving A/B, with
+fresh dashboard heartbeats and repeated `llama-server` launches using roughly
+34 CPU-core equivalents during requests. The apparent host idleness between
+launches is not a stopped process. The 36 abstentions do **not** satisfy the
+operator's semantic 20-loop health watch. Their repeated reason is that dense
+Q8 work lacks an admitted independent path while 25–53% sampled barrier/wait
+time has no node-local causal attribution; the Q4_K/Q5_K route is admitted but
+prior mechanisms are exhausted. A SIGTERM to the captured supervisor PID
+2212445 set its STOP marker; it is expected to exit after batch 36 settles.
+Do not kill the active child merely to make the stop immediate.
+
+Read-only audit identified a nonduplicative next diagnostic: compile the
+retained 614ff2ba experimental tree with existing `GGML_CPU_PROF` support,
+verify profiler markers in its CPU DSO, then profile the exact GLM request
+with `GGML_CPU_PROF_THREADS=1` and separate draft/trunk graph-shape filters.
+Older c463 per-node captures exist but their per-thread columns are all zero,
+so they cannot distinguish barrier overhead from straggler work. Hold the
+shared CPU-region claim through the replay. A Q8_0_1 exact-path oracle is
+technically possible, but the audit found no distinct evidence-backed Q8
+optimization to justify opening that gate yet. Wait for a causal source or
+assembly finding rather than invite more variations of exhausted mechanisms.
