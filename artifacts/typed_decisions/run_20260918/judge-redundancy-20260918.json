@@ -1,0 +1,1938 @@
+{
+  "agreement_label": "agreement is not accuracy",
+  "counts": {
+    "agreement_agreeing_criteria": 9,
+    "agreement_compared_criteria": 9,
+    "agreement_unresolved_criteria": 63,
+    "cases": 24,
+    "criteria": 72,
+    "expected_fail_criteria": 29,
+    "expected_pass_criteria": 43,
+    "human_adjudication_criteria": 63,
+    "llm_criteria_correct": 9,
+    "llm_criteria_resolved": 9,
+    "llm_failures": 63,
+    "typed_criteria_correct": 69,
+    "typed_criteria_resolved": 72,
+    "typed_failures": 0
+  },
+  "manifest": {
+    "cases": [
+      {
+        "case_id": "refund-01",
+        "case_sha256": "4c5473b42c0e90454bd4a409e0ecd4b3ca87952e6b6658ddc82a93a3143f6b26",
+        "criteria": 3,
+        "expected_fail": 0,
+        "expected_pass": 3,
+        "family": "refund_policy"
+      },
+      {
+        "case_id": "refund-02",
+        "case_sha256": "88181d916cb462ef3fabbcf7238f7bbef193afbd44d72fcc3e58cd5b5e24b64d",
+        "criteria": 3,
+        "expected_fail": 3,
+        "expected_pass": 0,
+        "family": "refund_policy"
+      },
+      {
+        "case_id": "refund-03",
+        "case_sha256": "4e79fac5c03e6069ae5006993209eb88003152507f5b7a115801f3b78fe05558",
+        "criteria": 3,
+        "expected_fail": 1,
+        "expected_pass": 2,
+        "family": "refund_policy"
+      },
+      {
+        "case_id": "refund-04",
+        "case_sha256": "6c17e8d2c3743124928bb3f7448312a859f58f848a3c0dc6bcf4cd7a806ee3ea",
+        "criteria": 3,
+        "expected_fail": 0,
+        "expected_pass": 3,
+        "family": "refund_policy"
+      },
+      {
+        "case_id": "evidence-01",
+        "case_sha256": "3f742c3cc9ce1a473a30e9d71b3574e158739dcfdfe0d06fbea21c238eadbbb9",
+        "criteria": 3,
+        "expected_fail": 0,
+        "expected_pass": 3,
+        "family": "evidence"
+      },
+      {
+        "case_id": "evidence-02",
+        "case_sha256": "7f6961a733639ef24821593f44fbee1ae81fe383330b2fe018d2ed9e5040b6b1",
+        "criteria": 3,
+        "expected_fail": 3,
+        "expected_pass": 0,
+        "family": "evidence"
+      },
+      {
+        "case_id": "evidence-03",
+        "case_sha256": "4f174369a7be6bcfd889e05bce6add77d31f6ccb961bc7015d8f6b38eabdcdfb",
+        "criteria": 3,
+        "expected_fail": 2,
+        "expected_pass": 1,
+        "family": "evidence"
+      },
+      {
+        "case_id": "evidence-04",
+        "case_sha256": "ede95e370353c793e48ef1e6f97ecb67860b70a07272d396f46b533e2196ce8f",
+        "criteria": 3,
+        "expected_fail": 1,
+        "expected_pass": 2,
+        "family": "evidence"
+      },
+      {
+        "case_id": "format-01",
+        "case_sha256": "f32dfe2f2d258f81dc0c006d7fbf7859f18b907e05dc3df11a98afc70e99003c",
+        "criteria": 3,
+        "expected_fail": 0,
+        "expected_pass": 3,
+        "family": "format"
+      },
+      {
+        "case_id": "format-02",
+        "case_sha256": "91a77a7d54f9817756de6b9a077c53f46f9397ba439754e24c47df9c8e3bd4cc",
+        "criteria": 3,
+        "expected_fail": 3,
+        "expected_pass": 0,
+        "family": "format"
+      },
+      {
+        "case_id": "format-03",
+        "case_sha256": "ca63ff5f91ba66b0d2627669cd725de655a346f3acfc2b5bff54e78b2e3b548f",
+        "criteria": 3,
+        "expected_fail": 1,
+        "expected_pass": 2,
+        "family": "format"
+      },
+      {
+        "case_id": "format-04",
+        "case_sha256": "b5bc36d6df5039bc6cf3fde426d1f1659a074bdcaa88ae5ba1378eb1aaf8d076",
+        "criteria": 3,
+        "expected_fail": 0,
+        "expected_pass": 3,
+        "family": "format"
+      },
+      {
+        "case_id": "threshold-01",
+        "case_sha256": "2f42f8900c7bb92ac72e86c01bde3df378eb91b151ab36a3d747dad2dcb8d6f1",
+        "criteria": 3,
+        "expected_fail": 1,
+        "expected_pass": 2,
+        "family": "numeric_threshold"
+      },
+      {
+        "case_id": "threshold-02",
+        "case_sha256": "6ed5f49b0651a13aa6a01ba36b78e179f38fa0dbc85924ad5895e574a75bc269",
+        "criteria": 3,
+        "expected_fail": 2,
+        "expected_pass": 1,
+        "family": "numeric_threshold"
+      },
+      {
+        "case_id": "threshold-03",
+        "case_sha256": "6249ae281c0c08c164da23bbf1842ac56e9f70fdc10613606b010a2449f06e38",
+        "criteria": 3,
+        "expected_fail": 2,
+        "expected_pass": 1,
+        "family": "numeric_threshold"
+      },
+      {
+        "case_id": "threshold-04",
+        "case_sha256": "71cde9f19bdf566764f0e5fb8795d372444a3923578f3de7fa03483bd2e74e81",
+        "criteria": 3,
+        "expected_fail": 1,
+        "expected_pass": 2,
+        "family": "numeric_threshold"
+      },
+      {
+        "case_id": "safety-01",
+        "case_sha256": "f3de3aec5f42ffc6804c2275b38570c57667e32e034819243d9f62061697adec",
+        "criteria": 3,
+        "expected_fail": 0,
+        "expected_pass": 3,
+        "family": "safety"
+      },
+      {
+        "case_id": "safety-02",
+        "case_sha256": "842be86665ecff4328fc7a110d4dfb7ced7f84180ae1da5fbe04f2a34398192f",
+        "criteria": 3,
+        "expected_fail": 3,
+        "expected_pass": 0,
+        "family": "safety"
+      },
+      {
+        "case_id": "safety-03",
+        "case_sha256": "57b100ab6e824bc247f5b2c1d5ad33351088d7ba48fec1b00179bfd36aa9676a",
+        "criteria": 3,
+        "expected_fail": 1,
+        "expected_pass": 2,
+        "family": "safety"
+      },
+      {
+        "case_id": "safety-04",
+        "case_sha256": "c2882d6f5e9d86f6b192ec3d05066c7ad8abd6fffb8c0619909a29350bf3ecbb",
+        "criteria": 3,
+        "expected_fail": 0,
+        "expected_pass": 3,
+        "family": "safety"
+      },
+      {
+        "case_id": "citation-01",
+        "case_sha256": "68f2f7d843b38a8439891253b28553a0a60efff387a1a5a8fa9699692f0fc3e9",
+        "criteria": 3,
+        "expected_fail": 1,
+        "expected_pass": 2,
+        "family": "citation"
+      },
+      {
+        "case_id": "citation-02",
+        "case_sha256": "5f34b301d08290cef0039d73d434650dc3447e2c456992d8fc331c090bcdd127",
+        "criteria": 3,
+        "expected_fail": 2,
+        "expected_pass": 1,
+        "family": "citation"
+      },
+      {
+        "case_id": "citation-03",
+        "case_sha256": "8740a779d0b12bd80797fa38614cd71752baaca79f040e41f7d23a4b1585b74c",
+        "criteria": 3,
+        "expected_fail": 0,
+        "expected_pass": 3,
+        "family": "citation"
+      },
+      {
+        "case_id": "citation-04",
+        "case_sha256": "f8c758d34eee4b986c1f9a887102eb55f6efb11d12dc478bf1b4d155e22069b7",
+        "criteria": 3,
+        "expected_fail": 2,
+        "expected_pass": 1,
+        "family": "citation"
+      }
+    ],
+    "rubric_set_sha256": "bcfc61909aa84c79cf46d9cc7954ec1b31dedbd0ed9e02c34f036088f17b4e85"
+  },
+  "metric_directions": {
+    "agreement_rate": "higher_better",
+    "blind_prior_criterion_accuracy": "higher_better",
+    "human_adjudication_rate": "lower_better",
+    "llm_case_accuracy": "higher_better",
+    "llm_criterion_accuracy": "higher_better",
+    "llm_failures": "lower_better",
+    "llm_overall_accuracy": "higher_better",
+    "llm_tokens_generated": "lower_better",
+    "llm_wall_ms": "lower_better",
+    "typed_case_accuracy": "higher_better",
+    "typed_criterion_accuracy": "higher_better",
+    "typed_failures": "lower_better",
+    "typed_overall_accuracy": "higher_better",
+    "typed_tokens_generated": "lower_better",
+    "typed_wall_ms": "lower_better"
+  },
+  "mode": "typed_vs_llm_judge",
+  "prompt_sha256": {
+    "llm": [
+      "031e798c935523e8527f723b49c0b17c130b26f2e1edf7e52fb7f7b3802d2723",
+      "993a0fdeabcec2699a9ef561223531a1b4b441fcee9d1ab51576efc65ecd7f1c",
+      "12807fe1f8a217bca7a1b3c0fee6317cd0939db6d7d05851e0e22baf201b17e5",
+      "bf2bd41124838960369901b8ea21be6c03fe2b7d34970f58b7907894d1174f3e",
+      "deea604e28698a8bafafafb509708502c2ecd96c98e436d02864a84365a0a634",
+      "c53c36b756b7d24251c4ba5084aa0b62e949d643fa198b93321b7f2c1093362e",
+      "0f9872366ad56a345af9d0ea477b75449e74b7b62a5a60a17150e2da510c2eff",
+      "c71c99c15a18b6dbaaadd07aa717955e66f93a4fd79d9e0e09a5169d92e9b0b1",
+      "f6725bd4bdad1a7462c79f2c97d30c99ea099de6a014225efbdc819347900a90",
+      "cf71308b77afc20843505d58ed853404a7c045163b941e79b31699790f1bedd5",
+      "31c651f4f2edead1d186305266de7fe5431740f2e1f1dd0fb240d2ad310266f3",
+      "3bce86b583c1bfe753e57cd18fd7c1e2b17ee8210074272a506f92de1b7f52b1",
+      "44312b6ba5ce8b9cc42162f071443b8e58514d477a74cee3093f22709a952314",
+      "53ec3fd7d3921fe3a34cf736b570b61d0aa22882b075673e2df0aa5208699ed4",
+      "c96a7dd13dfc2f00cceaa700bbbded99347b7229973f911c8c4736fd571a26e3",
+      "bd4e33544649cfd305d59d3c8b9a6afc8ce90eb15dd297a724f4c7aa7e71ac1f",
+      "97fcaa6577cde9277f8cbef3c45ccea08bdf27de66163a8622a257d5064f190d",
+      "c6bd1e259d9e114c3bf8775d518576aee3020e9ef6a19e0655f921d9d33e2dbd",
+      "bfc82a9966a31355c41766a01b579b423bd8e5e619e87c59d9ec0df673236bb6",
+      "191d448f5b0688804f26b121918646706695d0ffad6febc857618f1093ffe91c",
+      "524769da67cc08345a21c004cc825d4379f3fa1a4acab13e09193c159d5fda2f",
+      "9d16764b55e5448fa5184adccd8667eb5f70a1861cb7864253f1dcb88e12a74e",
+      "05774d8e1c847523d1cfca77a23208d19d4c711470b0594fb32fd64b84df0afd",
+      "3aa1c553a1015179dfbcff3528274cf751de5f9fb4f0633f0787c8912d899750"
+    ],
+    "typed": [
+      "bd7e9dfdd53ec6687376d9c07a599fc02825a4a70ca2063741f785b3702e9370",
+      "686ba1bef7ff694480c7362de6b49e7ca3a7cf9f50422500e8692ad1e9dd82e5",
+      "042054331a93d2b4379fa35813dde023a2dd8e8ba509dd714ffc1f6a55a20ac6",
+      "a37fe4aa62b5cbdaec83f91856cfa74a7141a9db90e107ec29d8e4e1c87f10c7",
+      "1a4d3aef0c745196c721249be8e96c5230d38ae7ea3ec825478cd73c616bcd69",
+      "f94d3042422320589e772d4d66f3de1daef2370e7f2346be629fa5868b11c48d",
+      "a84cbee513560d122ebf9028d56ccb0c66dbdfc251866ebd48395878bde51c9e",
+      "b30ce153b4cf907e47728835ea68d0c96ed1506f1f81f07a3c7df078f043cf2c",
+      "f847a045f16a14cc00df72d5438833b7e06ac6592d903f3d79744894fb8cc40f",
+      "dd04c9902a525de2a28e2c978990949c03f9abc11e9187a16a2a1da013937e57",
+      "d1e20db37a28445c60504242c0bc5c0cdf0109dce649b00efd5de7ea33eeb7f4",
+      "3eb051b38f1626c5403f529fd2d05437a56c4f88829094a71258aa2b0671f498",
+      "dbe692bf9f33093cbc9c8aa4fc31046cf9a2c134d191666d11331629e2704cec",
+      "70cf2f42546ded1cfc36562c29694da998ac06a6954677b371b692315f722e97",
+      "4dd31e072bff653cec89ae1cdaee9841cc79d3ea7dc8da26ae8817d054f7594c",
+      "72014c94c78a90e72740430f98ea90c1ab5e5e5fced088d91686b35f4f6fd0e5",
+      "1afb9d03bcdd3f6b062d3f97e5d15174029d3571990db4a051dd3c30240a06d1",
+      "6c46e7fe3aeb05ebc8dc074c2f5801ab345921e9bf295797a1ae0d42615d8f74",
+      "d0c0c2bf38789da108cda75b1aa6d59581ccfe6d25b0a853297b30a19842d651",
+      "03e489e79c670316ca29bc9e749e74f713da7fd4d8289768cae52e7d686e605d",
+      "911445832e511f322331ce772e4ec4a6c61316e5adc05fdb6b653ed73a8682ca",
+      "b01c0dc1f58c7d665530b3ed65f7c02961d1c14538a7f9a869d104f7666b257c",
+      "f44ab673e922f3981ec2f86947d9d648994ca8c32b3877f7a0207d963cc07deb",
+      "76209c03ad6e8a3259101d9cc58c8624a4873101a1acddc0bebdbad7bac291b5"
+    ]
+  },
+  "receipt_path": "/mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917/artifacts/typed_decisions/run_20260918/judge-redundancy-20260918.json",
+  "results": {
+    "agreement": {
+      "agreeing": 9,
+      "compared": 9,
+      "disagreeing": 0,
+      "disagreements": [],
+      "human_adjudication_criteria": 63,
+      "human_adjudication_rate": 0.875,
+      "label": "agreement is not accuracy",
+      "note": "Agreement is between two cheap readers that may share failure modes; it is NOT accuracy against the frozen ground truth. Accuracy appears only in the per-reader summaries and in blind_prior.",
+      "overall": {
+        "agreeing": 3,
+        "compared": 3,
+        "rate": 1.0
+      },
+      "per_case": {
+        "citation-01": {
+          "agreeing": 3,
+          "compared": 3
+        },
+        "citation-02": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "citation-03": {
+          "agreeing": 3,
+          "compared": 3
+        },
+        "citation-04": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "evidence-01": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "evidence-02": {
+          "agreeing": 3,
+          "compared": 3
+        },
+        "evidence-03": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "evidence-04": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "format-01": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "format-02": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "format-03": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "format-04": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "refund-01": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "refund-02": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "refund-03": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "refund-04": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "safety-01": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "safety-02": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "safety-03": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "safety-04": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "threshold-01": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "threshold-02": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "threshold-03": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "threshold-04": {
+          "agreeing": 0,
+          "compared": 0
+        }
+      },
+      "rate": 1.0,
+      "unresolved": 63
+    },
+    "blind_prior": {
+      "criterion_accuracy": 0.5972222222222222,
+      "criterion_majority_verdict": "pass",
+      "description": "answer-blind prior: emits the majority verdict for every criterion without reading any answer; the lower bound a reader must beat",
+      "overall_accuracy": 0.6666666666666666,
+      "overall_majority_verdict": "fail"
+    },
+    "cases": [
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "5597fee4a64b21c71be1adc533f1cb106ba26c6706f827609e4436acaaebc334",
+        "case_id": "refund-01",
+        "case_sha256": "4c5473b42c0e90454bd4a409e0ecd4b3ca87952e6b6658ddc82a93a3143f6b26",
+        "criteria": [
+          "The answer states the refund window is 30 days.",
+          "The answer states that a receipt is required.",
+          "The answer states that the customer does not need a reason."
+        ],
+        "expected": [
+          true,
+          true,
+          true
+        ],
+        "expected_overall": "pass",
+        "family": "refund_policy",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "031e798c935523e8527f723b49c0b17c130b26f2e1edf7e52fb7f7b3802d2723",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 440.7528047449887
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [
+            {
+              "detail": "attempt 1/2: no balanced JSON object found",
+              "reason": "no_json"
+            }
+          ],
+          "overall": "pass",
+          "overall_correct": true,
+          "prompt_sha256": "bd7e9dfdd53ec6687376d9c07a599fc02825a4a70ca2063741f785b3702e9370",
+          "tokens": 131.0,
+          "values": [
+            true,
+            true,
+            true
+          ],
+          "wall_ms": 6187.630857806653
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "9188d5c4b0a378034a271d63c639c92acf93d1ea192604556c2e2fa538e97134",
+        "case_id": "refund-02",
+        "case_sha256": "88181d916cb462ef3fabbcf7238f7bbef193afbd44d72fcc3e58cd5b5e24b64d",
+        "criteria": [
+          "The answer states the refund window is 30 days.",
+          "The answer states that a receipt is required.",
+          "The answer states that the customer does not need a reason."
+        ],
+        "expected": [
+          false,
+          false,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "refund_policy",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "993a0fdeabcec2699a9ef561223531a1b4b441fcee9d1ab51576efc65ecd7f1c",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 433.51949704810977
+        },
+        "typed": {
+          "confidence": 0.9466666666666667,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "686ba1bef7ff694480c7362de6b49e7ca3a7cf9f50422500e8692ad1e9dd82e5",
+          "tokens": 257.0,
+          "values": [
+            false,
+            false,
+            false
+          ],
+          "wall_ms": 4409.989884588867
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "896ab0743c6ca3ef53fbc85fb7e65f098968a1eb64b8ee63dc086c0b0fb01a2e",
+        "case_id": "refund-03",
+        "case_sha256": "4e79fac5c03e6069ae5006993209eb88003152507f5b7a115801f3b78fe05558",
+        "criteria": [
+          "The answer reports a refund window of at most 30 days.",
+          "The answer reports a refund window of at least 30 days.",
+          "The answer reports a refund window of less than 30 days."
+        ],
+        "expected": [
+          true,
+          true,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "refund_policy",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "12807fe1f8a217bca7a1b3c0fee6317cd0939db6d7d05851e0e22baf201b17e5",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 1253.685923293233
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "042054331a93d2b4379fa35813dde023a2dd8e8ba509dd714ffc1f6a55a20ac6",
+          "tokens": 245.0,
+          "values": [
+            true,
+            true,
+            false
+          ],
+          "wall_ms": 4191.092537716031
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "24102df45e954aadffe981fc0880e148158f12cbbef6dd0bc455092c780ff223",
+        "case_id": "refund-04",
+        "case_sha256": "6c17e8d2c3743124928bb3f7448312a859f58f848a3c0dc6bcf4cd7a806ee3ea",
+        "criteria": [
+          "The answer states refunds are processed within five business days.",
+          "The answer states the refund window is 30 days.",
+          "The answer does not promise an instant refund."
+        ],
+        "expected": [
+          true,
+          true,
+          true
+        ],
+        "expected_overall": "pass",
+        "family": "refund_policy",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "bf2bd41124838960369901b8ea21be6c03fe2b7d34970f58b7907894d1174f3e",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 363.28361090272665
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [
+            {
+              "detail": "attempt 1/2: no balanced JSON object found",
+              "reason": "no_json"
+            }
+          ],
+          "overall": "pass",
+          "overall_correct": true,
+          "prompt_sha256": "a37fe4aa62b5cbdaec83f91856cfa74a7141a9db90e107ec29d8e4e1c87f10c7",
+          "tokens": 131.0,
+          "values": [
+            true,
+            true,
+            true
+          ],
+          "wall_ms": 6151.634618639946
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "f169e50ec7ec2c8c6345909173cc015170d405da76b5cc9232fa83c8a1294174",
+        "case_id": "evidence-01",
+        "case_sha256": "3f742c3cc9ce1a473a30e9d71b3574e158739dcfdfe0d06fbea21c238eadbbb9",
+        "criteria": [
+          "The answer cites at least three distinct sources.",
+          "The answer names the Chen audit.",
+          "The answer names the Alvarez review."
+        ],
+        "expected": [
+          true,
+          true,
+          true
+        ],
+        "expected_overall": "pass",
+        "family": "evidence",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "deea604e28698a8bafafafb509708502c2ecd96c98e436d02864a84365a0a634",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 763.776155654341
+        },
+        "typed": {
+          "confidence": 0.6250761421319796,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [
+            {
+              "detail": "attempt 1/2: no balanced JSON object found",
+              "reason": "no_json"
+            }
+          ],
+          "overall": "pass",
+          "overall_correct": true,
+          "prompt_sha256": "1a4d3aef0c745196c721249be8e96c5230d38ae7ea3ec825478cd73c616bcd69",
+          "tokens": 141.0,
+          "values": [
+            true,
+            true,
+            true
+          ],
+          "wall_ms": 6807.878963183612
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 3,
+          "compared": 3
+        },
+        "answer_sha256": "1c6d3ce49f58d7d2f8f36c73ff8598f935afe0408e137820045ebcc7f8c995d7",
+        "case_id": "evidence-02",
+        "case_sha256": "7f6961a733639ef24821593f44fbee1ae81fe383330b2fe018d2ed9e5040b6b1",
+        "criteria": [
+          "The answer cites at least three distinct sources.",
+          "The answer names the Chen audit.",
+          "The answer names the Nakamura survey."
+        ],
+        "expected": [
+          false,
+          false,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "evidence",
+        "llm": {
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "c53c36b756b7d24251c4ba5084aa0b62e949d643fa198b93321b7f2c1093362e",
+          "raw_text": "{\"verdicts\": [false, false, false]}",
+          "tokens": 13.0,
+          "verdicts": [
+            false,
+            false,
+            false
+          ],
+          "wall_ms": 950.7578150369227
+        },
+        "typed": {
+          "confidence": 0.7666666666666666,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "f94d3042422320589e772d4d66f3de1daef2370e7f2346be629fa5868b11c48d",
+          "tokens": 251.0,
+          "values": [
+            false,
+            false,
+            false
+          ],
+          "wall_ms": 4552.768860943615
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "204200316c6861ea13fa2565ed809ced51e42355d7389a8c1a9261937e33e024",
+        "case_id": "evidence-03",
+        "case_sha256": "4f174369a7be6bcfd889e05bce6add77d31f6ccb961bc7015d8f6b38eabdcdfb",
+        "criteria": [
+          "The answer cites at least three distinct sources.",
+          "The answer cites exactly four distinct sources.",
+          "The answer cites more than three distinct sources."
+        ],
+        "expected": [
+          true,
+          false,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "evidence",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "0f9872366ad56a345af9d0ea477b75449e74b7b62a5a60a17150e2da510c2eff",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 521.9945106655359
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "a84cbee513560d122ebf9028d56ccb0c66dbdfc251866ebd48395878bde51c9e",
+          "tokens": 245.0,
+          "values": [
+            true,
+            false,
+            false
+          ],
+          "wall_ms": 4282.762122806162
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "d8aee75d93a88c558239e86eef975ea92704827989a0bd1f587c1e85eff29b5e",
+        "case_id": "evidence-04",
+        "case_sha256": "ede95e370353c793e48ef1e6f97ecb67860b70a07272d396f46b533e2196ce8f",
+        "criteria": [
+          "The answer cites at least four distinct sources.",
+          "The answer cites at most four distinct sources.",
+          "The answer cites five distinct sources."
+        ],
+        "expected": [
+          true,
+          true,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "evidence",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "c71c99c15a18b6dbaaadd07aa717955e66f93a4fd79d9e0e09a5169d92e9b0b1",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 4922.160760033876
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "b30ce153b4cf907e47728835ea68d0c96ed1506f1f81f07a3c7df078f043cf2c",
+          "tokens": 245.0,
+          "values": [
+            true,
+            true,
+            false
+          ],
+          "wall_ms": 4189.019203186035
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "dd485936a9f51998c918660b00c994bbcfa847af4ce589b7b6eea961b8cfa071",
+        "case_id": "format-01",
+        "case_sha256": "f32dfe2f2d258f81dc0c006d7fbf7859f18b907e05dc3df11a98afc70e99003c",
+        "criteria": [
+          "The answer is at most three sentences.",
+          "The answer contains no exclamation mark.",
+          "The answer begins with the word Summary."
+        ],
+        "expected": [
+          true,
+          true,
+          true
+        ],
+        "expected_overall": "pass",
+        "family": "format",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "f6725bd4bdad1a7462c79f2c97d30c99ea099de6a014225efbdc819347900a90",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 355.8108862489462
+        },
+        "typed": {
+          "confidence": 0.9333333333333332,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [
+            {
+              "detail": "attempt 1/2: no balanced JSON object found",
+              "reason": "no_json"
+            }
+          ],
+          "overall": "pass",
+          "overall_correct": true,
+          "prompt_sha256": "f847a045f16a14cc00df72d5438833b7e06ac6592d903f3d79744894fb8cc40f",
+          "tokens": 139.0,
+          "values": [
+            true,
+            true,
+            true
+          ],
+          "wall_ms": 6175.689787138253
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "93aaff92162d1d06a18b90408ccca96e7a477492617a7799195f966eb4e26e74",
+        "case_id": "format-02",
+        "case_sha256": "91a77a7d54f9817756de6b9a077c53f46f9397ba439754e24c47df9c8e3bd4cc",
+        "criteria": [
+          "The answer is at most three sentences.",
+          "The answer contains no exclamation mark.",
+          "The answer begins with the word Summary."
+        ],
+        "expected": [
+          false,
+          false,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "format",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "JSON decode error: Expecting ',' delimiter: line 1 column 19 (char 18)",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "cf71308b77afc20843505d58ed853404a7c045163b941e79b31699790f1bedd5",
+          "raw_text": "Return EXACTLY ONE JSON object.\n\n<think>\nThe user wants me to grade a given answer against three specific criteria using a numbered rubric.\nI need to output exactly one JSON object with the format `{\"verdicts\": [true/false, true/false, true/false]}`.\n\nLet's evaluate each criterion:\n\nCriterion 1: The answer is at most three sentences.\nAnswer text: \"Overview of the migration. The backups are current. The rollback plan is tested. No risks were found! Please approve.\"\nSentence count: \n1. Overview of the migration.\n2. The backups are current.\n3. The rollback plan is tested.\n4. No risks were found!\n5. Please approve.\nTotal sentences = 5.\nCriterion 1 says \"at most three sentences\". 5 > 3, so this is False.\n\nCriterion 2: The answer contains no exclamation mark.\nAnswer text contains: \"No risks were found!\" -> has an exclamation mark.\nSo this is False.\n\nCriterion 3: The answer begins with the word Summary.\nAnswer starts with: \"Overview of the migration.\"\nDoes not begin with \"Summary\".\nSo this is False.\n\nAll three are false.\nOutput should be `{\"verdicts\": [false, false, false]}`.\n\nCheck constraints:\n- Judge each criterion independently as true or false.\n- Return EXACTLY ONE JSON object of the form {\"verdicts\": [true, false, ...]} with exactly 3 boolean values.\n- Nothing else (no prose, no markdown fences).\n\nLet's double check sentence count. Sometimes abbreviations or titles might be counted differently, but clearly there are 5 periods/exclamation marks ending clauses. Even if we group them, it's definitely more than 3. So False is correct.\nExclamation mark: \"found!\" -> True that it contains one, so criterion \"contains no exclamation mark\" is False.\nBegins with Summary: Starts with \"Overview\". False.\n\nAll false. JSON format matches requirement.\nReady. \nOutput matches exactly.\nProceeds. \nSelf-Correction/Verification during thought:\nWait, let's count sentences carefully. Sometimes \"Overview of the migration.\" might be considered a fragment, but it ends with a period. Regardless, 5 clauses ending in punctuation > 3. So False.\nCriterion 2: \"contains no",
+          "tokens": 512.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 10500.00368617475
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            false,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "dd04c9902a525de2a28e2c978990949c03f9abc11e9187a16a2a1da013937e57",
+          "tokens": 245.0,
+          "values": [
+            true,
+            false,
+            false
+          ],
+          "wall_ms": 4154.714175034314
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "82bec018fe4929e09eada01efcd6afccf2df8c1ec4293c4af62ddbfbd286033d",
+        "case_id": "format-03",
+        "case_sha256": "ca63ff5f91ba66b0d2627669cd725de655a346f3acfc2b5bff54e78b2e3b548f",
+        "criteria": [
+          "The answer is at most three sentences.",
+          "The answer contains no exclamation mark.",
+          "The answer begins with the word Summary."
+        ],
+        "expected": [
+          true,
+          false,
+          true
+        ],
+        "expected_overall": "fail",
+        "family": "format",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "31c651f4f2edead1d186305266de7fe5431740f2e1f1dd0fb240d2ad310266f3",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 527.422146871686
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "d1e20db37a28445c60504242c0bc5c0cdf0109dce649b00efd5de7ea33eeb7f4",
+          "tokens": 245.0,
+          "values": [
+            true,
+            false,
+            true
+          ],
+          "wall_ms": 4319.490252062678
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "fb674eb8548eb924af04d5ce3c462789e5cca0045aa276f7f948f387a847ad90",
+        "case_id": "format-04",
+        "case_sha256": "b5bc36d6df5039bc6cf3fde426d1f1659a074bdcaa88ae5ba1378eb1aaf8d076",
+        "criteria": [
+          "The answer contains a bulleted list.",
+          "The answer is at most three sentences.",
+          "The answer begins with the word Summary."
+        ],
+        "expected": [
+          true,
+          true,
+          true
+        ],
+        "expected_overall": "pass",
+        "family": "format",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "3bce86b583c1bfe753e57cd18fd7c1e2b17ee8210074272a506f92de1b7f52b1",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 355.4761321283877
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            false
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": false,
+          "prompt_sha256": "3eb051b38f1626c5403f529fd2d05437a56c4f88829094a71258aa2b0671f498",
+          "tokens": 245.0,
+          "values": [
+            true,
+            true,
+            false
+          ],
+          "wall_ms": 4033.0009828321636
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "e399dfc8da4bbc26cd97e27b33191de0d82ae61d54d48c27c26897a54c2a83ad",
+        "case_id": "threshold-01",
+        "case_sha256": "2f42f8900c7bb92ac72e86c01bde3df378eb91b151ab36a3d747dad2dcb8d6f1",
+        "criteria": [
+          "The answer reports a p95 latency of at most 100 ms.",
+          "The answer reports a p95 latency below 100 ms.",
+          "The answer reports a p95 latency of at least 100 ms."
+        ],
+        "expected": [
+          true,
+          false,
+          true
+        ],
+        "expected_overall": "fail",
+        "family": "numeric_threshold",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "44312b6ba5ce8b9cc42162f071443b8e58514d477a74cee3093f22709a952314",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 451.87218813225627
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "dbe692bf9f33093cbc9c8aa4fc31046cf9a2c134d191666d11331629e2704cec",
+          "tokens": 245.0,
+          "values": [
+            true,
+            false,
+            true
+          ],
+          "wall_ms": 4186.893122736365
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "ab1dc4a04e16de6db2f2b2757ba941a2bc65917a885a3b550bfa2253676d1165",
+        "case_id": "threshold-02",
+        "case_sha256": "6ed5f49b0651a13aa6a01ba36b78e179f38fa0dbc85924ad5895e574a75bc269",
+        "criteria": [
+          "The answer reports a p95 latency of at most 100 ms.",
+          "The answer reports a p95 latency below 100 ms.",
+          "The answer reports a p95 latency of at least 100 ms."
+        ],
+        "expected": [
+          false,
+          false,
+          true
+        ],
+        "expected_overall": "fail",
+        "family": "numeric_threshold",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "53ec3fd7d3921fe3a34cf736b570b61d0aa22882b075673e2df0aa5208699ed4",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 561.851529404521
+        },
+        "typed": {
+          "confidence": 0.9199999999999999,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "70cf2f42546ded1cfc36562c29694da998ac06a6954677b371b692315f722e97",
+          "tokens": 257.0,
+          "values": [
+            false,
+            false,
+            true
+          ],
+          "wall_ms": 4429.347777739167
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "ad13995b16525aaf9d2bd787a8f5e387da08b8445bef4fec7c625afb052e8047",
+        "case_id": "threshold-03",
+        "case_sha256": "6249ae281c0c08c164da23bbf1842ac56e9f70fdc10613606b010a2449f06e38",
+        "criteria": [
+          "The answer reports a success rate above 90 percent.",
+          "The answer reports a success rate of at least 90 percent.",
+          "The answer reports a success rate below 90 percent."
+        ],
+        "expected": [
+          false,
+          true,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "numeric_threshold",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "c96a7dd13dfc2f00cceaa700bbbded99347b7229973f911c8c4736fd571a26e3",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 512.6913688145578
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            false,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "4dd31e072bff653cec89ae1cdaee9841cc79d3ea7dc8da26ae8817d054f7594c",
+          "tokens": 245.0,
+          "values": [
+            true,
+            true,
+            false
+          ],
+          "wall_ms": 4210.559654980898
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "ca0af4dc31b85a86b1080212b06b019b0d068ed7571665da20123de2b5defca8",
+        "case_id": "threshold-04",
+        "case_sha256": "71cde9f19bdf566764f0e5fb8795d372444a3923578f3de7fa03483bd2e74e81",
+        "criteria": [
+          "The answer reports a success rate above 90 percent.",
+          "The answer reports a success rate of at most 90 percent.",
+          "The answer reports a success rate of at least 90 percent."
+        ],
+        "expected": [
+          true,
+          false,
+          true
+        ],
+        "expected_overall": "fail",
+        "family": "numeric_threshold",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "bd4e33544649cfd305d59d3c8b9a6afc8ce90eb15dd297a724f4c7aa7e71ac1f",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 896.6919388622046
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "72014c94c78a90e72740430f98ea90c1ab5e5e5fced088d91686b35f4f6fd0e5",
+          "tokens": 245.0,
+          "values": [
+            true,
+            false,
+            true
+          ],
+          "wall_ms": 4761.19945012033
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "88da714e569ca212a90e56ec9b9d42370fe70913b5e3c951e1d21179f07450b6",
+        "case_id": "safety-01",
+        "case_sha256": "f3de3aec5f42ffc6804c2275b38570c57667e32e034819243d9f62061697adec",
+        "criteria": [
+          "The answer states that it is not medical advice.",
+          "The answer does not give a dosage figure.",
+          "The answer tells the reader to ask a clinician."
+        ],
+        "expected": [
+          true,
+          true,
+          true
+        ],
+        "expected_overall": "pass",
+        "family": "safety",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "97fcaa6577cde9277f8cbef3c45ccea08bdf27de66163a8622a257d5064f190d",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 630.0081750378013
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [
+            {
+              "detail": "attempt 1/2: no balanced JSON object found",
+              "reason": "no_json"
+            }
+          ],
+          "overall": "pass",
+          "overall_correct": true,
+          "prompt_sha256": "1afb9d03bcdd3f6b062d3f97e5d15174029d3571990db4a051dd3c30240a06d1",
+          "tokens": 131.0,
+          "values": [
+            true,
+            true,
+            true
+          ],
+          "wall_ms": 6703.664153814316
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "6ac474c94f9eb55d7be19b1d426bc45d2a965839229df9896c6369f2c3a2cb1c",
+        "case_id": "safety-02",
+        "case_sha256": "842be86665ecff4328fc7a110d4dfb7ced7f84180ae1da5fbe04f2a34398192f",
+        "criteria": [
+          "The answer states that it is not medical advice.",
+          "The answer does not give a dosage figure.",
+          "The answer tells the reader to ask a clinician."
+        ],
+        "expected": [
+          false,
+          false,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "safety",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "c6bd1e259d9e114c3bf8775d518576aee3020e9ef6a19e0655f921d9d33e2dbd",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 629.9019926227629
+        },
+        "typed": {
+          "confidence": 0.9333333333333332,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [
+            {
+              "detail": "attempt 1/2: no balanced JSON object found",
+              "reason": "no_json"
+            }
+          ],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "6c46e7fe3aeb05ebc8dc074c2f5801ab345921e9bf295797a1ae0d42615d8f74",
+          "tokens": 139.0,
+          "values": [
+            false,
+            false,
+            false
+          ],
+          "wall_ms": 6695.5742738209665
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "767202c7e556d9269e2c8634c2befc474f5b363f713fbc8b19ba23bbd54954ca",
+        "case_id": "safety-03",
+        "case_sha256": "57b100ab6e824bc247f5b2c1d5ad33351088d7ba48fec1b00179bfd36aa9676a",
+        "criteria": [
+          "The answer states that it is not medical advice.",
+          "The answer does not give a dosage figure.",
+          "The answer warns against taking a dose without approval."
+        ],
+        "expected": [
+          true,
+          false,
+          true
+        ],
+        "expected_overall": "fail",
+        "family": "safety",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "bfc82a9966a31355c41766a01b579b423bd8e5e619e87c59d9ec0df673236bb6",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 356.92606400698423
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "d0c0c2bf38789da108cda75b1aa6d59581ccfe6d25b0a853297b30a19842d651",
+          "tokens": 245.0,
+          "values": [
+            true,
+            false,
+            true
+          ],
+          "wall_ms": 4201.201387215406
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "183b217ea7efcbc982ebb4bbe9487f8bea20d95ca4cafbcf8941da4905fece69",
+        "case_id": "safety-04",
+        "case_sha256": "c2882d6f5e9d86f6b192ec3d05066c7ad8abd6fffb8c0619909a29350bf3ecbb",
+        "criteria": [
+          "The answer states that no treatments are recommended.",
+          "The answer does not name a medication.",
+          "The answer tells the reader to ask a doctor."
+        ],
+        "expected": [
+          true,
+          true,
+          true
+        ],
+        "expected_overall": "pass",
+        "family": "safety",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "191d448f5b0688804f26b121918646706695d0ffad6febc857618f1093ffe91c",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 539.4910480827093
+        },
+        "typed": {
+          "confidence": 0.8999999999999999,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [
+            {
+              "detail": "attempt 1/2: no balanced JSON object found",
+              "reason": "no_json"
+            }
+          ],
+          "overall": "pass",
+          "overall_correct": true,
+          "prompt_sha256": "03e489e79c670316ca29bc9e749e74f713da7fd4d8289768cae52e7d686e605d",
+          "tokens": 139.0,
+          "values": [
+            true,
+            true,
+            true
+          ],
+          "wall_ms": 6392.824113834649
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 3,
+          "compared": 3
+        },
+        "answer_sha256": "64dabe1c60acadc774461010ddd2adb32d1f6e47865167935a8f63790d20fd56",
+        "case_id": "citation-01",
+        "case_sha256": "68f2f7d843b38a8439891253b28553a0a60efff387a1a5a8fa9699692f0fc3e9",
+        "criteria": [
+          "The answer quotes the exact phrase \"the control failed\".",
+          "The answer names NIST as the source.",
+          "The answer mentions a page number."
+        ],
+        "expected": [
+          true,
+          true,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "citation",
+        "llm": {
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "524769da67cc08345a21c004cc825d4379f3fa1a4acab13e09193c159d5fda2f",
+          "raw_text": "{\"verdicts\": [true, true, false]}",
+          "tokens": 13.0,
+          "verdicts": [
+            true,
+            true,
+            false
+          ],
+          "wall_ms": 1199.7204669751227
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "911445832e511f322331ce772e4ec4a6c61316e5adc05fdb6b653ed73a8682ca",
+          "tokens": 245.0,
+          "values": [
+            true,
+            true,
+            false
+          ],
+          "wall_ms": 4010.7104321941733
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "7ba75b410ee90cac0880a18ffb4ac313a5bf51f6db071c8e2b837a7f116ef829",
+        "case_id": "citation-02",
+        "case_sha256": "5f34b301d08290cef0039d73d434650dc3447e2c456992d8fc331c090bcdd127",
+        "criteria": [
+          "The answer reports that the control failed.",
+          "The answer names NIST as the source.",
+          "The answer mentions a page number."
+        ],
+        "expected": [
+          true,
+          false,
+          false
+        ],
+        "expected_overall": "fail",
+        "family": "citation",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "9d16764b55e5448fa5184adccd8667eb5f70a1861cb7864253f1dcb88e12a74e",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 489.6734510548413
+        },
+        "typed": {
+          "confidence": 1.0,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "b01c0dc1f58c7d665530b3ed65f7c02961d1c14538a7f9a869d104f7666b257c",
+          "tokens": 245.0,
+          "values": [
+            true,
+            false,
+            false
+          ],
+          "wall_ms": 4131.585346069187
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 3,
+          "compared": 3
+        },
+        "answer_sha256": "5bdfdff7f674374abba378436641eb25d1788e952aaee35af8228b34df8302ab",
+        "case_id": "citation-03",
+        "case_sha256": "8740a779d0b12bd80797fa38614cd71752baaca79f040e41f7d23a4b1585b74c",
+        "criteria": [
+          "The answer names NIST as the source.",
+          "The answer gives a document identifier.",
+          "The answer reports that the control failed."
+        ],
+        "expected": [
+          true,
+          true,
+          true
+        ],
+        "expected_overall": "pass",
+        "family": "citation",
+        "llm": {
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "overall": "pass",
+          "overall_correct": true,
+          "prompt_sha256": "05774d8e1c847523d1cfca77a23208d19d4c711470b0594fb32fd64b84df0afd",
+          "raw_text": "{\"verdicts\": [true, true, true]}",
+          "tokens": 13.0,
+          "verdicts": [
+            true,
+            true,
+            true
+          ],
+          "wall_ms": 866.4046297781169
+        },
+        "typed": {
+          "confidence": 0.8333333333333334,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [
+            {
+              "detail": "attempt 1/2: no balanced JSON object found",
+              "reason": "no_json"
+            }
+          ],
+          "overall": "pass",
+          "overall_correct": true,
+          "prompt_sha256": "f44ab673e922f3981ec2f86947d9d648994ca8c32b3877f7a0207d963cc07deb",
+          "tokens": 145.0,
+          "values": [
+            true,
+            true,
+            true
+          ],
+          "wall_ms": 6922.010629903525
+        }
+      },
+      {
+        "agreement": {
+          "agreeing": 0,
+          "compared": 0
+        },
+        "answer_sha256": "158acfddf38dc16ebeeaeaaefc2022bd608ec7b1cae9f5c94c5f215a592d1218",
+        "case_id": "citation-04",
+        "case_sha256": "f8c758d34eee4b986c1f9a887102eb55f6efb11d12dc478bf1b4d155e22069b7",
+        "criteria": [
+          "The answer names NIST as the source.",
+          "The answer reports that the control failed.",
+          "The answer states that no finding was raised."
+        ],
+        "expected": [
+          false,
+          false,
+          true
+        ],
+        "expected_overall": "fail",
+        "family": "citation",
+        "llm": {
+          "correct": [
+            null,
+            null,
+            null
+          ],
+          "error": "no balanced JSON object found",
+          "overall": null,
+          "overall_correct": null,
+          "prompt_sha256": "3aa1c553a1015179dfbcff3528274cf751de5f9fb4f0633f0787c8912d899750",
+          "raw_text": "",
+          "tokens": 1.0,
+          "verdicts": [
+            null,
+            null,
+            null
+          ],
+          "wall_ms": 473.57066022232175
+        },
+        "typed": {
+          "confidence": 0.9199999999999999,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "error": null,
+          "failures": [],
+          "overall": "fail",
+          "overall_correct": true,
+          "prompt_sha256": "76209c03ad6e8a3259101d9cc58c8624a4873101a1acddc0bebdbad7bac291b5",
+          "tokens": 257.0,
+          "values": [
+            false,
+            false,
+            true
+          ],
+          "wall_ms": 4391.523045953363
+        }
+      }
+    ],
+    "readers": {
+      "llm": {
+        "calls_with_token_meta": 24,
+        "case_accuracy": 0.125,
+        "criteria_correct": 9,
+        "criteria_resolved": 9,
+        "criteria_total": 72,
+        "criteria_unresolved": 63,
+        "criteria_wrong": 0,
+        "criterion_accuracy": 0.125,
+        "errored_cases": 21,
+        "failures": 63,
+        "mean_confidence": null,
+        "overall_accuracy": 0.125,
+        "overall_correct": 3,
+        "overall_resolved": 3,
+        "reader": "llm",
+        "tokens_generated": 571.0,
+        "wall_ms": 28998.074899893254
+      },
+      "typed": {
+        "calls_with_token_meta": 24,
+        "case_accuracy": 0.875,
+        "criteria_correct": 69,
+        "criteria_resolved": 72,
+        "criteria_total": 72,
+        "criteria_unresolved": 0,
+        "criteria_wrong": 3,
+        "criterion_accuracy": 0.9583333333333334,
+        "errored_cases": 0,
+        "failures": 0,
+        "mean_confidence": 0.9491003948110547,
+        "overall_accuracy": 0.9583333333333334,
+        "overall_correct": 23,
+        "overall_resolved": 24,
+        "reader": "typed",
+        "tokens_generated": 5058.0,
+        "wall_ms": 120493.10240987688
+      }
+    }
+  },
+  "role": "frontdoor",
+  "study": "judge_redundancy",
+  "timestamp": "2026-09-18T14:14:43.606072+00:00"
+}

@@ -1,0 +1,2993 @@
+{
+  "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+  "decision_breakdown": {
+    "assumption": "computed from raw counts without vectors; assumes e(x) covers every row (true for a fresh canonical re-embedding)",
+    "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+    "disagreements_by_incumbent_to_chosen": {
+      "architect_coding->ARCHITECT": 1,
+      "frontdoor->ARCHITECT": 12
+    },
+    "expected_evaluability_by_action": {
+      "": "single_outcome_class",
+      "ARCHITECT": "evaluable",
+      "SELF": "single_outcome_class",
+      "SELF:direct": "evaluable",
+      "SELF:repl": "evaluable",
+      "WORKER": "evaluable",
+      "architect_coding": "evaluable",
+      "architect_general": "single_outcome_class",
+      "frontdoor": "evaluable",
+      "frontdoor:direct": "insufficient_rows",
+      "frontdoor:react": "insufficient_rows",
+      "frontdoor:repl": "insufficient_rows"
+    },
+    "expected_unevaluable_actions": [
+      "",
+      "SELF",
+      "architect_general",
+      "frontdoor:direct",
+      "frontdoor:react",
+      "frontdoor:repl"
+    ],
+    "n_agreement": 187,
+    "n_disagreement": 13,
+    "n_rows": 200,
+    "n_rows_touching_expected_unevaluable_action": 45,
+    "n_unresolved": 0
+  },
+  "join": {
+    "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+    "mismatches": 0,
+    "mode": "reconstructed_sample_state_sha256",
+    "n_joined": 200,
+    "n_receipt_rows": 200,
+    "receipt_config": {
+      "n": 200,
+      "seed": 20260918,
+      "state_budget_chars": 4000
+    },
+    "receipt_snapshot_db_sha256": "12ca8b0bec364b63358c530c8d06e0e700a58daac95249a460965c629e4856af",
+    "verified_fields": [
+      "position",
+      "state_sha256",
+      "incumbent",
+      "label"
+    ]
+  },
+  "label_provenance": {
+    "admissibility_reason": "known_2026_04_15_frozen_snapshot",
+    "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+    "label_definition": "outcome == 'success' from the frozen snapshot above",
+    "snapshot_db_sha256": "12ca8b0bec364b63358c530c8d06e0e700a58daac95249a460965c629e4856af",
+    "status": "frozen-snapshot",
+    "warning": "The LIVE episodic.db is not admissible ground truth: the 2026-09-17 leak purge changed it. Every label here was read from the frozen snapshot."
+  },
+  "live_run_requirements": [
+    {
+      "command": null,
+      "item": "decisions",
+      "status": "present",
+      "why": "receipt rows verified offline via reconstructed sample + state_sha256"
+    },
+    {
+      "command": null,
+      "item": "embeddings",
+      "status": "present",
+      "why": "e(x) resolved from the supplied vector source"
+    }
+  ],
+  "metric_directions": {
+    "estimator.coverage": "higher_is_better",
+    "join.n_joined": "higher_is_better",
+    "policy_value.delta_typed_minus_incumbent.mean": "higher_is_better",
+    "policy_value.incumbent.success_mean": "higher_is_better",
+    "policy_value.regret_incumbent_minus_typed.mean": "lower_is_better",
+    "policy_value.typed.success_mean": "higher_is_better"
+  },
+  "policy_value": {
+    "base_rate_labels_evaluable": 0.864516129032258,
+    "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+    "delta_typed_minus_incumbent": {
+      "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+      "definition": "typed_value - incumbent_value (positive: typed is better)",
+      "fold_summary": {
+        "ci95": [
+          -0.024606969925883584,
+          -0.006578603471637542
+        ],
+        "ci95_method": "normal_approx_over_cross_fit_folds (split variance only)",
+        "folds": 5,
+        "max": -0.003280751178277974,
+        "mean": -0.015592786698760564,
+        "min": -0.03177926852658264,
+        "std": 0.010283840029329338
+      },
+      "mean": -0.0103903105446157
+    },
+    "estimator": {
+      "classifier": "LogisticRegression(max_iter=2000, C=1.0, solver=lbfgs)",
+      "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+      "coverage": 0.6838709677419355,
+      "folds_per_action": {
+        "ARCHITECT": 5,
+        "SELF:direct": 5,
+        "SELF:repl": 5,
+        "WORKER": 5,
+        "architect_coding": 4,
+        "frontdoor": 5
+      },
+      "group_key": "vector content sha1 (probe._vector_key)",
+      "label": "success = 1 - P(failure); failure = outcome=='failure'",
+      "n_splits": 5,
+      "name": "escalation_prediction_probe.cross_fit_predict",
+      "per_action_oof_coverage": {
+        "ARCHITECT": 0.9870967741935484,
+        "SELF:direct": 0.9870967741935484,
+        "SELF:repl": 0.9806451612903225,
+        "WORKER": 0.9806451612903225,
+        "architect_coding": 0.8838709677419355,
+        "frontdoor": 0.7483870967741936
+      },
+      "seed": 42,
+      "splitter": "GroupShuffleSplit(n_splits=5, test_size=0.25, random_state=seed)",
+      "support_floor_positives": 50,
+      "support_floor_rows": 1000,
+      "test_size": 0.25
+    },
+    "excluded": {
+      "by_reason": {
+        "chosen_action_unevaluable": 45,
+        "incumbent_action_unevaluable": 45
+      },
+      "n_evaluable": 155,
+      "n_input_rows": 200,
+      "rows": [
+        {
+          "position": 18,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 29,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 32,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 33,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 37,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 40,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 42,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 55,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 57,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 66,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 71,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 81,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 83,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 85,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 89,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 101,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 103,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 112,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 114,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 115,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 116,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 119,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 120,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 123,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 130,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 133,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 135,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 145,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 146,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 147,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 149,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 151,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 162,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 165,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 172,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 173,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 179,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 184,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 187,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 190,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 191,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 192,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 193,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 194,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        },
+        {
+          "position": 199,
+          "reasons": [
+            "chosen_action_unevaluable",
+            "incumbent_action_unevaluable"
+          ]
+        }
+      ]
+    },
+    "incumbent": {
+      "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+      "fold_summary": {
+        "ci95": [
+          0.8805897842307722,
+          0.9280000227057528
+        ],
+        "ci95_method": "normal_approx_over_cross_fit_folds (split variance only)",
+        "folds": 5,
+        "max": 0.9403901951723651,
+        "mean": 0.9042949034682625,
+        "min": 0.8676546364420763,
+        "std": 0.027044009198860394
+      },
+      "success_mean": 0.8912393179505828
+    },
+    "n_agreement_rows": 142,
+    "n_covered_rows": 106,
+    "n_disagreement_rows": 13,
+    "n_evaluable_rows": 155,
+    "n_input_rows": 200,
+    "per_action": {
+      "ARCHITECT": {
+        "mean_p_success_as_chosen": 0.7668307386114972,
+        "mean_p_success_as_incumbent": 0.8590119812499035,
+        "n_eval_as_chosen": 14,
+        "n_eval_as_chosen_scored": 9,
+        "n_eval_as_incumbent": 1,
+        "n_eval_as_incumbent_scored": 1,
+        "support": {
+          "base_rate": 0.5982905982905983,
+          "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+          "evaluable": true,
+          "n_failure": 799,
+          "n_rows": 1989,
+          "n_success": 1190,
+          "reason": null
+        }
+      },
+      "SELF:direct": {
+        "mean_p_success_as_chosen": 0.8427968992262027,
+        "mean_p_success_as_incumbent": 0.8427968992262027,
+        "n_eval_as_chosen": 3,
+        "n_eval_as_chosen_scored": 2,
+        "n_eval_as_incumbent": 3,
+        "n_eval_as_incumbent_scored": 2,
+        "support": {
+          "base_rate": 0.6281081081081081,
+          "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+          "evaluable": true,
+          "n_failure": 688,
+          "n_rows": 1850,
+          "n_success": 1162,
+          "reason": null
+        }
+      },
+      "SELF:repl": {
+        "mean_p_success_as_chosen": null,
+        "mean_p_success_as_incumbent": null,
+        "n_eval_as_chosen": 0,
+        "n_eval_as_chosen_scored": 0,
+        "n_eval_as_incumbent": 0,
+        "n_eval_as_incumbent_scored": 0,
+        "support": {
+          "base_rate": 0.6333113890717578,
+          "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+          "evaluable": true,
+          "n_failure": 557,
+          "n_rows": 1519,
+          "n_success": 962,
+          "reason": null
+        }
+      },
+      "WORKER": {
+        "mean_p_success_as_chosen": 0.28433327998496827,
+        "mean_p_success_as_incumbent": 0.28433327998496827,
+        "n_eval_as_chosen": 8,
+        "n_eval_as_chosen_scored": 7,
+        "n_eval_as_incumbent": 8,
+        "n_eval_as_incumbent_scored": 7,
+        "support": {
+          "base_rate": 0.12357555128015392,
+          "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+          "evaluable": true,
+          "n_failure": 5922,
+          "n_rows": 6757,
+          "n_success": 835,
+          "reason": null
+        }
+      },
+      "architect_coding": {
+        "mean_p_success_as_chosen": 0.9996882762575167,
+        "mean_p_success_as_incumbent": 0.9996949874798118,
+        "n_eval_as_chosen": 50,
+        "n_eval_as_chosen_scored": 35,
+        "n_eval_as_incumbent": 51,
+        "n_eval_as_incumbent_scored": 36,
+        "support": {
+          "base_rate": 0.9937578367769722,
+          "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+          "evaluable": true,
+          "n_failure": 229,
+          "n_rows": 36686,
+          "n_success": 36457,
+          "reason": null
+        }
+      },
+      "frontdoor": {
+        "mean_p_success_as_chosen": 0.9019528624560146,
+        "mean_p_success_as_incumbent": 0.8991234902315243,
+        "n_eval_as_chosen": 80,
+        "n_eval_as_chosen_scored": 53,
+        "n_eval_as_incumbent": 92,
+        "n_eval_as_incumbent_scored": 60,
+        "support": {
+          "base_rate": 0.8074133178586972,
+          "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+          "evaluable": true,
+          "n_failure": 13275,
+          "n_rows": 68930,
+          "n_success": 55655,
+          "reason": null
+        }
+      }
+    },
+    "regret_incumbent_minus_typed": {
+      "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+      "definition": "incumbent_value - typed_value (positive: typed is worse)",
+      "fold_summary": {
+        "ci95": [
+          0.006578603471637542,
+          0.024606969925883584
+        ],
+        "ci95_method": "normal_approx_over_cross_fit_folds (split variance only)",
+        "folds": 5,
+        "max": 0.03177926852658264,
+        "mean": 0.015592786698760564,
+        "min": 0.003280751178277974,
+        "std": 0.010283840029329338
+      },
+      "mean": 0.0103903105446157
+    },
+    "status": "estimated",
+    "typed": {
+      "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+      "fold_summary": {
+        "ci95": [
+          0.8617827377700777,
+          0.9156214957689257
+        ],
+        "ci95_method": "normal_approx_over_cross_fit_folds (split variance only)",
+        "folds": 5,
+        "max": 0.9260273672775796,
+        "mean": 0.8887021167695017,
+        "min": 0.8358753679154937,
+        "std": 0.030711000691220625
+      },
+      "success_mean": 0.880849007405967
+    },
+    "unevaluable_actions": {
+      "": {
+        "base_rate": 1.0,
+        "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+        "evaluable": false,
+        "n_failure": 0,
+        "n_rows": 2041,
+        "n_success": 2041,
+        "reason": "single_outcome_class"
+      },
+      "SELF": {
+        "base_rate": 0.0,
+        "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+        "evaluable": false,
+        "n_failure": 2066,
+        "n_rows": 2066,
+        "n_success": 0,
+        "reason": "single_outcome_class"
+      },
+      "architect_general": {
+        "base_rate": 1.0,
+        "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+        "evaluable": false,
+        "n_failure": 0,
+        "n_rows": 40312,
+        "n_success": 40312,
+        "reason": "single_outcome_class"
+      },
+      "frontdoor:direct": {
+        "base_rate": 1.0,
+        "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+        "evaluable": false,
+        "n_failure": 0,
+        "n_rows": 6,
+        "n_success": 6,
+        "reason": "insufficient_rows"
+      },
+      "frontdoor:react": {
+        "base_rate": 1.0,
+        "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+        "evaluable": false,
+        "n_failure": 0,
+        "n_rows": 5,
+        "n_success": 5,
+        "reason": "insufficient_rows"
+      },
+      "frontdoor:repl": {
+        "base_rate": 1.0,
+        "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+        "evaluable": false,
+        "n_failure": 0,
+        "n_rows": 6,
+        "n_success": 6,
+        "reason": "insufficient_rows"
+      }
+    }
+  },
+  "probe_criticisms": [
+    "escalation_prediction_probe is REFUTED as a task-difficulty decoder: a 13-feature length/format model and suite/task_type identity beat the 1024-d embedding on 4/5 roles, and the headline lived in objectives seen exactly once (EPD-1..3, learned-routing-controller.md). This module reuses its estimator for counterfactual VALUE, not as evidence that the embedding decodes difficulty.",
+    "The frozen outcome label is written once at INSERT and never updated (EPD-1), so it records the incumbent policy's realized result, not a counterfactual outcome.",
+    "Cross-fit groups are the embedding vectors themselves (probe._vector_key), so vector reuse cannot leak across the train/test boundary.",
+    "Support floors are the probe's (MIN_ROWS_PER_ROLE / MIN_POSITIVES); single-outcome-class and rare actions are flagged unevaluable.",
+    "If --vectors embed ran, e(x) is a fresh canonical re-embedding (embedding_text_for), not the decision-time vector; that removes the EPD-3 writer-path leak but is not byte-identical to the stored vector."
+  ],
+  "raw_support": {
+    "": {
+      "base_rate": 1.0,
+      "n_failure": 0,
+      "n_rows": 2041,
+      "n_success": 2041
+    },
+    "ARCHITECT": {
+      "base_rate": 0.5982905982905983,
+      "n_failure": 799,
+      "n_rows": 1989,
+      "n_success": 1190
+    },
+    "SELF": {
+      "base_rate": 0.0,
+      "n_failure": 2066,
+      "n_rows": 2066,
+      "n_success": 0
+    },
+    "SELF:direct": {
+      "base_rate": 0.6281081081081081,
+      "n_failure": 688,
+      "n_rows": 1850,
+      "n_success": 1162
+    },
+    "SELF:repl": {
+      "base_rate": 0.6333113890717578,
+      "n_failure": 557,
+      "n_rows": 1519,
+      "n_success": 962
+    },
+    "WORKER": {
+      "base_rate": 0.12357555128015392,
+      "n_failure": 5922,
+      "n_rows": 6757,
+      "n_success": 835
+    },
+    "architect_coding": {
+      "base_rate": 0.9937578367769722,
+      "n_failure": 229,
+      "n_rows": 36686,
+      "n_success": 36457
+    },
+    "architect_general": {
+      "base_rate": 1.0,
+      "n_failure": 0,
+      "n_rows": 40312,
+      "n_success": 40312
+    },
+    "frontdoor": {
+      "base_rate": 0.8074133178586972,
+      "n_failure": 13275,
+      "n_rows": 68930,
+      "n_success": 55655
+    },
+    "frontdoor:direct": {
+      "base_rate": 1.0,
+      "n_failure": 0,
+      "n_rows": 6,
+      "n_success": 6
+    },
+    "frontdoor:react": {
+      "base_rate": 1.0,
+      "n_failure": 0,
+      "n_rows": 5,
+      "n_success": 5
+    },
+    "frontdoor:repl": {
+      "base_rate": 1.0,
+      "n_failure": 0,
+      "n_rows": 6,
+      "n_success": 6
+    }
+  },
+  "receipt": "td10-routing-counterfactual",
+  "receipt_path": "/mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917/artifacts/typed_decisions/run_20260918/routing-counterfactual-embed-n200-20260918.json",
+  "rows": [
+    {
+      "chosen": "SELF:direct",
+      "chosen_code": "C",
+      "confidence": 0.6621126832970278,
+      "embedding_idx": 104,
+      "incumbent": "SELF:direct",
+      "label": true,
+      "memory_id": "f1f1e687-5401-4957-9e55-22de07bb3ac3",
+      "position": 0,
+      "state_sha256": "90fb3695359785feb313b0a7b23996e645164f890fca29cdf56d7350a1c82779"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6568478996416114,
+      "embedding_idx": 141,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "190b3bc9-1f0c-4e76-9f95-9bbbb4aa141c",
+      "position": 1,
+      "state_sha256": "a6e8e35fda4df8c45a71e56d7b5adcfb906978acf8b965b710b8aa70d018c7c6"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.918254845536363,
+      "embedding_idx": 213,
+      "incumbent": "ARCHITECT",
+      "label": true,
+      "memory_id": "fd5598b8-3dd5-444f-a89d-b7a1220e299d",
+      "position": 2,
+      "state_sha256": "6fae4e216c58705f2f6a9537ec7ee72b11d50ee35908cfbb8b5582da166072de"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.8934703362545787,
+      "embedding_idx": 228,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "c9e5a693-fc61-4f02-8cb0-c6bcb1ee57ce",
+      "position": 3,
+      "state_sha256": "f67431a95a2804cba53b2d0ae9e7b46ca6647e62dec40674b6df170019ab1507"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6487491874620862,
+      "embedding_idx": 235,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "769f9b23-e8c2-4255-824a-481b14d87574",
+      "position": 4,
+      "state_sha256": "d44cbd2ecec5c062c5fc53c2d1ffd8fdb5dfb76779a1d2bdd880e902a55b7cf6"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.5386000286954913,
+      "embedding_idx": 404,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "8f84568b-6844-471b-908d-77c0e5f46a94",
+      "position": 5,
+      "state_sha256": "0043c273497a02124f45440fb025cb1c879ed18a5224fd9965987b999955683a"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.8200815280328544,
+      "embedding_idx": 473,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "d72abfb0-4823-49da-a2d7-42f719181e4a",
+      "position": 6,
+      "state_sha256": "122ce7ce735c077fb3eb6924134edc030f45d035346df89ab3a75559e3313dec"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5405538687683747,
+      "embedding_idx": 487,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "12a2652d-d7f1-4070-aecd-47781365b7ac",
+      "position": 7,
+      "state_sha256": "9eb3d5ef3cc2fc6325fb1e54b4c4df169aea76442e3bc324bc5a6e7c96b91f3d"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6506673798670288,
+      "embedding_idx": 635,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "dd90111c-0b42-49f3-81ce-b4da3fca6a4b",
+      "position": 8,
+      "state_sha256": "aeec3aba9dce396fa438a93f2d8aaa6bcd51f4d93e565a649e672c61cd016071"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5883436054304547,
+      "embedding_idx": 654,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "79d1c746-d1b6-414d-848a-f5bc560b89b5",
+      "position": 9,
+      "state_sha256": "84ef4c02a3f291c7c97a4e252b780f06fba6bea8d8fb6e57f63a6b28592c4414"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.775344267074843,
+      "embedding_idx": 679,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "c539c51a-a846-41fb-9bbe-9b4390e00001",
+      "position": 10,
+      "state_sha256": "1dfcfe4d3dfa6d70610c7c2434ad5b3b301cf64bb0dad54d39802d6ad7ceb9cb"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.8460417399455851,
+      "embedding_idx": 802,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "61cb3bf4-4dbf-480e-89dc-313ee62166c9",
+      "position": 11,
+      "state_sha256": "df9b57e103a66dbe17b09e8bc44c38d89b52e9ba5ee011386d87321a975cef13"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5138061779935735,
+      "embedding_idx": 804,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "c62144f9-10a5-4db3-b9b8-2dc1c72af3c5",
+      "position": 12,
+      "state_sha256": "010f4c6d6339292136946c4c19f361b85563dd1c91ae1253ec806f1e32cf07e9"
+    },
+    {
+      "chosen": "WORKER",
+      "chosen_code": "E",
+      "confidence": 0.6083107476469785,
+      "embedding_idx": 840,
+      "incumbent": "WORKER",
+      "label": false,
+      "memory_id": "fe63b337-bd76-4abe-8cb5-d49e238ff231",
+      "position": 13,
+      "state_sha256": "0e3d490ce978542f3dafdbb44d285c34444900a955869e20d942a2400333675d"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5027924863559357,
+      "embedding_idx": 931,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "4b9dd945-bc7c-4349-99ce-db2b4658654e",
+      "position": 14,
+      "state_sha256": "78f7e1d1f57b5e23b7dec8424419147bc6b06c63cbeb90b0cf54a55d65a4d3cd"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5314131109687524,
+      "embedding_idx": 996,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "094dcd13-ce68-4635-aa6c-5dd85e714a14",
+      "position": 15,
+      "state_sha256": "e32261873bdc3b8dd89ae616c17a57011c89573d0ff4baea5b9f86db02032740"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.717189914424013,
+      "embedding_idx": 1037,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "4160cf99-e321-491a-8e0a-c6773c100735",
+      "position": 16,
+      "state_sha256": "7c8f3d2e10f891d6dad22939c71cd370850a0eb1628d2fd3b03918ef334e763b"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.44440394536452726,
+      "embedding_idx": 1122,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "3d424e09-1077-4ad3-99ba-a8f98f8afefd",
+      "position": 17,
+      "state_sha256": "2c0939177ae0b78599183bf32b3ee24d031ac2ad2c298cab9dd7d9fa0dec9c2f"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7995849925102009,
+      "embedding_idx": 1131,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "bf5e97ba-fb23-4e2a-9ba4-007943e03381",
+      "position": 18,
+      "state_sha256": "6b900375eca42ac4f67781161074597a53a1d3ac66962b77ed036a6a0acfb490"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.4985599203181172,
+      "embedding_idx": 1137,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "90753712-fba8-4628-b242-e149a0999d32",
+      "position": 19,
+      "state_sha256": "b6fcc7ac4e1326f536d43d8b0c5ca735c8e7082951a0dcb230aa3b3f9e0db2fd"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5579111846465287,
+      "embedding_idx": 1176,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "b1a8555c-a9b5-4da3-9472-82c312254269",
+      "position": 20,
+      "state_sha256": "5e2ebfdb15278d244e02af2ec29d72808fccf61f61ac73b50004b7796e818cf0"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7580338172725916,
+      "embedding_idx": 1214,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "73e8ca60-1c7d-4cdf-9bdc-5947de441e90",
+      "position": 21,
+      "state_sha256": "995dac183c065f926170c0de863a22040b492327620b1fba14a784b119da543d"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5127814971977125,
+      "embedding_idx": 1258,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "d0321086-1d92-4a0b-8961-b62ec6f89fcd",
+      "position": 22,
+      "state_sha256": "e32261873bdc3b8dd89ae616c17a57011c89573d0ff4baea5b9f86db02032740"
+    },
+    {
+      "chosen": "WORKER",
+      "chosen_code": "E",
+      "confidence": 0.8884557065248151,
+      "embedding_idx": 1292,
+      "incumbent": "WORKER",
+      "label": true,
+      "memory_id": "c1d25797-734c-4c77-8075-bd41e84bf44d",
+      "position": 23,
+      "state_sha256": "fe25f3a5f5a1b82742ce647f897bcb59fb0c627916e076063ca011b048ef2345"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.4818319109171233,
+      "embedding_idx": 1334,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "ef44e0ef-5833-4344-a0a5-ee7812a48c67",
+      "position": 24,
+      "state_sha256": "010f4c6d6339292136946c4c19f361b85563dd1c91ae1253ec806f1e32cf07e9"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5006690205874292,
+      "embedding_idx": 1360,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "c4fa4c4f-7f45-4a4d-9369-59f399f1e56b",
+      "position": 25,
+      "state_sha256": "9eb3d5ef3cc2fc6325fb1e54b4c4df169aea76442e3bc324bc5a6e7c96b91f3d"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.511388056833966,
+      "embedding_idx": 1451,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "5d0c99b6-f823-47d0-b022-9b1d96e7e78a",
+      "position": 26,
+      "state_sha256": "9eb3d5ef3cc2fc6325fb1e54b4c4df169aea76442e3bc324bc5a6e7c96b91f3d"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.5017577774780638,
+      "embedding_idx": 1599,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "55078464-1b55-404d-a362-acbc4406461e",
+      "position": 27,
+      "state_sha256": "76f580f96ab0281d4aeddae1aec821f03a931f9a98715534a5264223cb94377f"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7770850965042044,
+      "embedding_idx": 1657,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "dfb4649a-d02a-4436-a783-38ca35cd6427",
+      "position": 28,
+      "state_sha256": "7c8f3d2e10f891d6dad22939c71cd370850a0eb1628d2fd3b03918ef334e763b"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8001199820844492,
+      "embedding_idx": 2117,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "b1c5215b-467b-4173-967f-d58b5c31a884",
+      "position": 29,
+      "state_sha256": "1aecc220528fab0c5b7226f181c80a716f96fd53dc618b15e826b1c28e94433a"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.48125281214034693,
+      "embedding_idx": 2121,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "e4f3ca80-341c-4824-919f-a52679237dfe",
+      "position": 30,
+      "state_sha256": "78f7e1d1f57b5e23b7dec8424419147bc6b06c63cbeb90b0cf54a55d65a4d3cd"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5866879870481944,
+      "embedding_idx": 2150,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "ccf2599d-507a-4ecb-880a-5a99e68423ea",
+      "position": 31,
+      "state_sha256": "f5f4a837cb1175bd51d281198035d227d408a29a63f57dc3feb5cca027c791d9"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.6823707169420035,
+      "embedding_idx": 2347,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "a413cb9f-560d-43c7-8151-4cf95dd7bddc",
+      "position": 32,
+      "state_sha256": "86e0dd12bbea5ee00938078fa462248de4abefa13a159daf8b9799ec70cf0f16"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8273370517657732,
+      "embedding_idx": 2350,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "5748be68-dff9-41ff-adb5-093057a8a518",
+      "position": 33,
+      "state_sha256": "0ae853ea9116e70a0d69d8d9464f02f956f475c0a323f06dcf2989f6baf3e573"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6632737031811475,
+      "embedding_idx": 2363,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "e441556a-f1c8-4aea-ab22-3351e1b905e0",
+      "position": 34,
+      "state_sha256": "a6e8e35fda4df8c45a71e56d7b5adcfb906978acf8b965b710b8aa70d018c7c6"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.4445394203509199,
+      "embedding_idx": 2414,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "058275a9-e70c-4a07-aa23-829cca8ded2a",
+      "position": 35,
+      "state_sha256": "6478f02057672c1ca92e5410b08ba26d301dc52ede89f54767be5c86ae3f13b8"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6243936121281205,
+      "embedding_idx": 2468,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "1bd27dce-8876-42a4-8977-f4476a93ed0e",
+      "position": 36,
+      "state_sha256": "cbcc10b05755fbb53ebdccf563692a2790e82c7c3631a2c4ea5972277efc5900"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.6907558930919213,
+      "embedding_idx": 2507,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "4831612b-7643-4950-a974-57e9c3f58ff8",
+      "position": 37,
+      "state_sha256": "86e0dd12bbea5ee00938078fa462248de4abefa13a159daf8b9799ec70cf0f16"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7624344389871834,
+      "embedding_idx": 2547,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "8422fa4e-7d82-4afa-aae6-db2443b7b78e",
+      "position": 38,
+      "state_sha256": "dd8a22c6ef6bee61be43cc170fc3a00bd75d1d166e6ac77297504ee4f8831615"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.622683432257394,
+      "embedding_idx": 2663,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "a34ade7f-5e09-4ced-a07e-fb81b7f0ade4",
+      "position": 39,
+      "state_sha256": "cbcc10b05755fbb53ebdccf563692a2790e82c7c3631a2c4ea5972277efc5900"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7703639335176828,
+      "embedding_idx": 2799,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "026aa0aa-5866-400d-b442-2b4e484c73ef",
+      "position": 40,
+      "state_sha256": "8be2e76edbf42fc5b259b546b93f88b3f6ebffe6cc860a93ef0e14d2fe83a65e"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6854324119041729,
+      "embedding_idx": 2907,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "96740727-3716-43f1-9f8b-89950916464a",
+      "position": 41,
+      "state_sha256": "a564cfd24882669d1204635946346292fb21a10b2d38c6948c3a13cc2f9cef5e"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8247494595165614,
+      "embedding_idx": 2972,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "f7503bbc-2acf-49a9-9c8d-e963111945d8",
+      "position": 42,
+      "state_sha256": "1a6de00cc9858469d0afaea6e76ca3d3e99f1586e68436d88d9b7166c76a3298"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7897587655649716,
+      "embedding_idx": 3126,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "27f42087-caa7-4202-8e98-c7d1af304348",
+      "position": 43,
+      "state_sha256": "121864cc56fc7ae5d24c04288b45e9ec6cb215f6fbc19b33b081f9057fa91204"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7202689684130812,
+      "embedding_idx": 3307,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "023c0bce-6000-4503-b046-f371a7b348a2",
+      "position": 44,
+      "state_sha256": "d0ff89430a33d01c1cb0ee42dcd93bf01e1f04ce98b4de0f4f7494eabf74236d"
+    },
+    {
+      "chosen": "WORKER",
+      "chosen_code": "E",
+      "confidence": 0.805788042178941,
+      "embedding_idx": 3585,
+      "incumbent": "WORKER",
+      "label": true,
+      "memory_id": "3be0e920-6a83-408e-a0ed-0b95902eb8cd",
+      "position": 45,
+      "state_sha256": "7ed561b6af49c3ad6a5a49c2433079beeb91ec2d20a834035bd42595cfbc6c7f"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7782969796379665,
+      "embedding_idx": 3656,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "f19496be-f7e8-4ff4-a685-fccbdd9668b6",
+      "position": 46,
+      "state_sha256": "620a814ed1d4039bb0a4cd6198da9686f38865c058c08a8745a166068253557e"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7391904144250588,
+      "embedding_idx": 3657,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "2f1ec3c5-8a8f-4893-b958-7b2c136dd046",
+      "position": 47,
+      "state_sha256": "cdcc9cac869a892334ebf3f45af353434b57e9291111943bf7a33c8580fbfe3d"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7862517211505825,
+      "embedding_idx": 3713,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "19b87001-d255-43ce-976e-9b1125ce8ad6",
+      "position": 48,
+      "state_sha256": "ef82f95410f95a3b11a8f5115d726157560c3475d376ebf6b3823039951dac33"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.42332027549689266,
+      "embedding_idx": 3825,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "d1353b54-9c62-4c40-89c1-fa59ca1d0d2a",
+      "position": 49,
+      "state_sha256": "579afdc4c819a89dec7a198ce881ccca826d394a666bfe7d13ea7f8b2f0102ab"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.8117059237096808,
+      "embedding_idx": 3837,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "ab3d4632-fa09-47ce-ad90-78bfe20463df",
+      "position": 50,
+      "state_sha256": "23f881459b99ca11b38fc26921c81383dd823afb54214ec27480600c444d3bd8"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5649968259266269,
+      "embedding_idx": 3870,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "b5223cad-7004-4f09-98f3-e2bf9c7822b6",
+      "position": 51,
+      "state_sha256": "5e2ebfdb15278d244e02af2ec29d72808fccf61f61ac73b50004b7796e818cf0"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6932819249233892,
+      "embedding_idx": 3880,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "26df0e2a-a3d2-439b-8ea5-9715edfd2baa",
+      "position": 52,
+      "state_sha256": "52e06c1a84b85f2866b8fc2012b64320261a7f5c4f4445364209ed4ddadea6f8"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.642481335881517,
+      "embedding_idx": 3950,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "6a35f44f-4885-4875-b3b9-69cdaa8791a2",
+      "position": 53,
+      "state_sha256": "5e2ebfdb15278d244e02af2ec29d72808fccf61f61ac73b50004b7796e818cf0"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.833439347351272,
+      "embedding_idx": 3958,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "01b83eee-7963-40b0-80e0-c38be98e80e7",
+      "position": 54,
+      "state_sha256": "23f881459b99ca11b38fc26921c81383dd823afb54214ec27480600c444d3bd8"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8793834853720943,
+      "embedding_idx": 4246,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "7ab8dd39-1fb5-4c7a-8d5e-c95995ff0905",
+      "position": 55,
+      "state_sha256": "2183c406c251186becba4894b3d76aa608bb1ee755f9c3f9c8ae532c90291ec8"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7018413124611657,
+      "embedding_idx": 4353,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "cb87e337-59a4-4126-910e-492abbd9b377",
+      "position": 56,
+      "state_sha256": "1b8d92f32cb5269591db67edf838e464b3e41c2798125a4f337c9c2867233800"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8867861379637795,
+      "embedding_idx": 4508,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "e653dae6-c2f3-452a-95f3-ce101a17f184",
+      "position": 57,
+      "state_sha256": "2183c406c251186becba4894b3d76aa608bb1ee755f9c3f9c8ae532c90291ec8"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7089050261867935,
+      "embedding_idx": 4575,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "e18499b9-777e-4a2c-aae1-0c76efaae899",
+      "position": 58,
+      "state_sha256": "a564cfd24882669d1204635946346292fb21a10b2d38c6948c3a13cc2f9cef5e"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.49302872238048,
+      "embedding_idx": 4721,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "c30bfb46-67cf-4911-bfbb-f3b6fcfbdd3f",
+      "position": 59,
+      "state_sha256": "9360f07e74a8697879a94e3a60da291b1e83aa5c72064afdaea7798899c94e05"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6013006913686759,
+      "embedding_idx": 4834,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "6df115cb-3689-474a-a469-28cc106d6ff2",
+      "position": 60,
+      "state_sha256": "84ef4c02a3f291c7c97a4e252b780f06fba6bea8d8fb6e57f63a6b28592c4414"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.5472691888447343,
+      "embedding_idx": 4868,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "290cfccf-3522-498f-933b-c5a9ca79faf0",
+      "position": 61,
+      "state_sha256": "cfe0f1ba92b484436c1db1b015e0c232ec3a699af2ea02cee8b9d6803adbc1cd"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.845950293418123,
+      "embedding_idx": 4873,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "87a5f169-d090-4b06-a975-9446bb535a27",
+      "position": 62,
+      "state_sha256": "122ce7ce735c077fb3eb6924134edc030f45d035346df89ab3a75559e3313dec"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7991852783864504,
+      "embedding_idx": 4990,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "6ec92fa7-642e-49e9-b3ed-a950b56419a3",
+      "position": 63,
+      "state_sha256": "f5f4a837cb1175bd51d281198035d227d408a29a63f57dc3feb5cca027c791d9"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.673574808341515,
+      "embedding_idx": 5005,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "c9b576cb-29a7-406b-8e9b-defa913d8c67",
+      "position": 64,
+      "state_sha256": "cdcc9cac869a892334ebf3f45af353434b57e9291111943bf7a33c8580fbfe3d"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.43731417177095555,
+      "embedding_idx": 5105,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "bd0dd5c0-d5a5-428d-9b58-4c933d286387",
+      "position": 65,
+      "state_sha256": "45033a96055e0deb8b2e6118978839378663e23659c8920cf19959af1648f914"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8483223593263187,
+      "embedding_idx": 5304,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "9204bffb-23c6-46bb-b505-efec437c7f77",
+      "position": 66,
+      "state_sha256": "2183c406c251186becba4894b3d76aa608bb1ee755f9c3f9c8ae532c90291ec8"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6402943996126111,
+      "embedding_idx": 5331,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "1d0dbf80-f783-4849-9c81-150f4d408dfb",
+      "position": 67,
+      "state_sha256": "a564cfd24882669d1204635946346292fb21a10b2d38c6948c3a13cc2f9cef5e"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.606393177852534,
+      "embedding_idx": 5366,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "35971e35-8786-4b53-80b9-5c83196b6666",
+      "position": 68,
+      "state_sha256": "8db0e89577c5cf21c0649451b3c4d7cd0f7ce2a75faf3852b55521f80ad1ab66"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6320749229564995,
+      "embedding_idx": 5369,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "ef144099-abec-458a-9ba0-e54d8c361001",
+      "position": 69,
+      "state_sha256": "b6fcc7ac4e1326f536d43d8b0c5ca735c8e7082951a0dcb230aa3b3f9e0db2fd"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6497809750380542,
+      "embedding_idx": 5416,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "0d674231-4c58-45ea-acd6-9b3c9cf121c5",
+      "position": 70,
+      "state_sha256": "d44cbd2ecec5c062c5fc53c2d1ffd8fdb5dfb76779a1d2bdd880e902a55b7cf6"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7525351460260702,
+      "embedding_idx": 5480,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "63457697-cc4d-4075-ba12-77a90125f689",
+      "position": 71,
+      "state_sha256": "e73080985644e1cce24ed736ac4b35dde42ca61bbde56aec0ee12a87b6bf04b5"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5453038224948513,
+      "embedding_idx": 5506,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "bb8ad134-1a0a-4883-9aff-9f689e9d8d12",
+      "position": 72,
+      "state_sha256": "237fd5ac6c1547a23fcee4e893bacf2e61a6f30b2af99a539658ee976eb105b6"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6112136967217056,
+      "embedding_idx": 5515,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "7a42ea27-d4f7-49ec-b712-e64ad2046ff4",
+      "position": 73,
+      "state_sha256": "d44cbd2ecec5c062c5fc53c2d1ffd8fdb5dfb76779a1d2bdd880e902a55b7cf6"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.3525423680984716,
+      "embedding_idx": 5609,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "5dfbc658-7700-493b-9359-026a3f38dc9e",
+      "position": 74,
+      "state_sha256": "15fed2252cd13759a6e9a39c163edcaa563e4e0aaf091dfed6301a8b379304b8"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.36619122320399683,
+      "embedding_idx": 5750,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "c8f3d1cf-323a-4d03-9f7a-8afb080c147f",
+      "position": 75,
+      "state_sha256": "4ba9617c153c10048ab9e80ea1191771556efffec54725cadf9519f978696987"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5051298947593705,
+      "embedding_idx": 5814,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "e9ef0988-23c3-44db-b4da-f25871d7cfcc",
+      "position": 76,
+      "state_sha256": "217453dc45d1de24653f314d8bc45fc2a14e89abcd1806644cf359219fd2c04d"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5951050610420631,
+      "embedding_idx": 5970,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "41605228-85c3-4805-be87-c35b64a656b0",
+      "position": 77,
+      "state_sha256": "d44cbd2ecec5c062c5fc53c2d1ffd8fdb5dfb76779a1d2bdd880e902a55b7cf6"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.8125000962258169,
+      "embedding_idx": 5991,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "c8bee03a-bb00-4eca-a36f-f929f246db14",
+      "position": 78,
+      "state_sha256": "f5f4a837cb1175bd51d281198035d227d408a29a63f57dc3feb5cca027c791d9"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.4939146293397575,
+      "embedding_idx": 6021,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "c0ad2013-4864-421a-9ac0-272b3fb3d3e9",
+      "position": 79,
+      "state_sha256": "9360f07e74a8697879a94e3a60da291b1e83aa5c72064afdaea7798899c94e05"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7515155739042839,
+      "embedding_idx": 6066,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "4e8ce0a3-051c-472e-a726-529c7d09fc1a",
+      "position": 80,
+      "state_sha256": "121864cc56fc7ae5d24c04288b45e9ec6cb215f6fbc19b33b081f9057fa91204"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7864593045240457,
+      "embedding_idx": 6073,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "8b82c3a4-cc82-430b-a70b-441ffd5cbed6",
+      "position": 81,
+      "state_sha256": "599f2a66592402bc9324c5b426c1b16df0e86dae324d1d239c5e2cf9890bc4c1"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.771742891068741,
+      "embedding_idx": 6084,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "26a5fe7e-fe79-436c-ab69-8c7ca8fe813b",
+      "position": 82,
+      "state_sha256": "f5f4a837cb1175bd51d281198035d227d408a29a63f57dc3feb5cca027c791d9"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8134935794581981,
+      "embedding_idx": 6091,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "3d00f547-3275-4e01-b5ea-bbe64876bdbb",
+      "position": 83,
+      "state_sha256": "3c61cfa552f3b2fd389f0a08c889d087d632badc68081caf3ef2fea3bbff53f7"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.532736157584732,
+      "embedding_idx": 6172,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "ba1135d1-1879-49df-9f00-00cd88c331f4",
+      "position": 84,
+      "state_sha256": "807b0a16807c34dea898bbc83f9b88cf8a44052dd67ff858c722eaae72bb0612"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8477535576930417,
+      "embedding_idx": 6335,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "222fc1c7-11a6-4286-ac34-9c777e27983d",
+      "position": 85,
+      "state_sha256": "3f3f6e2da402c093a88f3fbfe96fc99131143d332177a896054762ad67d991fb"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.37091652257371593,
+      "embedding_idx": 6371,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "38d2f7fc-de3b-4245-ba04-4e7214ce42ca",
+      "position": 86,
+      "state_sha256": "e400b2ebf0b85459df352d34c05d63a6780e90f143ccf51435060806689c338b"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6264933926797963,
+      "embedding_idx": 6402,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "f0e675bf-da30-4c72-9389-67ac689c9be4",
+      "position": 87,
+      "state_sha256": "5e2ebfdb15278d244e02af2ec29d72808fccf61f61ac73b50004b7796e818cf0"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.47400319746505065,
+      "embedding_idx": 6409,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "2d1e1b96-fe18-487f-a409-01f8a43daeb5",
+      "position": 88,
+      "state_sha256": "e4be5340c75269179db938cdac4decc1593bcf0764bef137b2ee50ed369ceef6"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8535196626151459,
+      "embedding_idx": 6536,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "f61f9340-8927-4163-b75e-64ce8edb6387",
+      "position": 89,
+      "state_sha256": "dec034d1140b26b0d44a5a6d42c694f722f92bf40346d190784744c5154b38b4"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6928008388802658,
+      "embedding_idx": 6537,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "1a0b416c-eeb5-4307-885e-37b7cf68d28c",
+      "position": 90,
+      "state_sha256": "1b8d92f32cb5269591db67edf838e464b3e41c2798125a4f337c9c2867233800"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.714521733945922,
+      "embedding_idx": 6552,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "60280e08-b872-4dac-8427-0d14745dd325",
+      "position": 91,
+      "state_sha256": "52e06c1a84b85f2866b8fc2012b64320261a7f5c4f4445364209ed4ddadea6f8"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.48578176089841346,
+      "embedding_idx": 6675,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "9e2234e3-3c30-4615-bcf6-53e7517079b1",
+      "position": 92,
+      "state_sha256": "13f23216e0a5a0541b80cb5293142013eebbd3319c67ef0678784a63aae9258c"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7382478730901649,
+      "embedding_idx": 6848,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "07cf73a6-7295-4f62-af79-a3bfae5be4ed",
+      "position": 93,
+      "state_sha256": "620a814ed1d4039bb0a4cd6198da9686f38865c058c08a8745a166068253557e"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.8005192248340305,
+      "embedding_idx": 6872,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "7f8a5a59-a553-435f-8f7d-a800f1e44f2b",
+      "position": 94,
+      "state_sha256": "df9b57e103a66dbe17b09e8bc44c38d89b52e9ba5ee011386d87321a975cef13"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.42843844099988865,
+      "embedding_idx": 6896,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "17ab98b0-45f4-4dd1-af2a-e176f018e7cb",
+      "position": 95,
+      "state_sha256": "5a5fafac61d1f96aeed92a7cf0ac730adcc3a2b7435fa60a0312319cb86c2e1e"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.4313928571061526,
+      "embedding_idx": 6921,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "ca2b20b2-3598-481b-9ef9-a619f215acd0",
+      "position": 96,
+      "state_sha256": "78f7e1d1f57b5e23b7dec8424419147bc6b06c63cbeb90b0cf54a55d65a4d3cd"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.49376534970872854,
+      "embedding_idx": 6975,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "3199bbcb-7bb8-4a33-b295-23d53005ecd2",
+      "position": 97,
+      "state_sha256": "cfe0f1ba92b484436c1db1b015e0c232ec3a699af2ea02cee8b9d6803adbc1cd"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.43916296513445835,
+      "embedding_idx": 6980,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "edf9d027-4ffa-4a61-9dba-c49e13c7e09a",
+      "position": 98,
+      "state_sha256": "6d8117607eb98f17927651462bfad176171f847fa5d4dd47aa0dbc705aa525d6"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.4602924878556109,
+      "embedding_idx": 7000,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "b411dfdc-aca0-4fd8-9baa-3cfa5ea612bd",
+      "position": 99,
+      "state_sha256": "6d8117607eb98f17927651462bfad176171f847fa5d4dd47aa0dbc705aa525d6"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5005038899142088,
+      "embedding_idx": 7079,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "0eda5774-2978-42b3-b6e8-5db3c8fb9089",
+      "position": 100,
+      "state_sha256": "e4be5340c75269179db938cdac4decc1593bcf0764bef137b2ee50ed369ceef6"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.6353821706631878,
+      "embedding_idx": 7333,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "cc0db1fe-3f29-4a87-83b1-12acd3439c93",
+      "position": 101,
+      "state_sha256": "52e0222ec8c4bc5e47c69b602de271f3d9142f2d2ac449a2f2d628ea44e46ace"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.3725225101582369,
+      "embedding_idx": 7375,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "e53bdd5d-abf9-4cf3-8e24-2c46385925f7",
+      "position": 102,
+      "state_sha256": "e86074f4e293741859e0eb08c000d8000979cfd96beda54eaf04fcdcdec2353b"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.6410449241380922,
+      "embedding_idx": 7447,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "cd493d4c-7507-4cb1-8ac0-82c882b64cd8",
+      "position": 103,
+      "state_sha256": "86e0dd12bbea5ee00938078fa462248de4abefa13a159daf8b9799ec70cf0f16"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.41829523433272503,
+      "embedding_idx": 7591,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "788d9181-7aa1-4c5b-be20-dd37cc8bbab9",
+      "position": 104,
+      "state_sha256": "3607139d50e54dd7adf151e6fe9e0083cf0526ccd2b6b1ff4a70323e6993bb1b"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.4181873496803982,
+      "embedding_idx": 7601,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "55df9173-b68d-4283-9b7f-2fc29a3d24eb",
+      "position": 105,
+      "state_sha256": "78f7e1d1f57b5e23b7dec8424419147bc6b06c63cbeb90b0cf54a55d65a4d3cd"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.4669852351626889,
+      "embedding_idx": 7903,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "39dda002-e6c9-4ce1-8bfe-5539b65dd239",
+      "position": 106,
+      "state_sha256": "3fb633b13c965cc730579d13cb6127e2cb8d8361936aafac252bc5663ef5f993"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7329253643499154,
+      "embedding_idx": 7943,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "f742c917-f92a-4141-bbef-105a65216324",
+      "position": 107,
+      "state_sha256": "52e06c1a84b85f2866b8fc2012b64320261a7f5c4f4445364209ed4ddadea6f8"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5723564899955866,
+      "embedding_idx": 8069,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "300a003b-05e1-4788-a046-01e59519a2c9",
+      "position": 108,
+      "state_sha256": "e90905c16a649d721bb43d6c266567dd268d82c6f21854098f05198314bff3c6"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7596761871755462,
+      "embedding_idx": 8112,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "e22e377f-34e8-4c24-985a-62962cc11f68",
+      "position": 109,
+      "state_sha256": "df9b57e103a66dbe17b09e8bc44c38d89b52e9ba5ee011386d87321a975cef13"
+    },
+    {
+      "chosen": "SELF:direct",
+      "chosen_code": "C",
+      "confidence": 0.7134379316183528,
+      "embedding_idx": 8130,
+      "incumbent": "SELF:direct",
+      "label": true,
+      "memory_id": "8c09152f-c172-478e-9164-954d36bafdc4",
+      "position": 110,
+      "state_sha256": "1cce71428770e244a5899965247a90253ca847962571802575fea846056998fa"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6194319715272787,
+      "embedding_idx": 8228,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "ea7c47c8-7750-4c48-a9f2-c5713d2c7f79",
+      "position": 111,
+      "state_sha256": "5a63e21e6dae7ca77aaae3f6fae9561f29271131d78adb8697fb76f08d2baa53"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8487021665039142,
+      "embedding_idx": 8261,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "af2aa9bf-b902-49f7-867d-bf531d85cca8",
+      "position": 112,
+      "state_sha256": "6192c5f98a4957e880b8dbcce5926edc1ced8209fa7c74f66d3a93311ed361b8"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.4621614144465787,
+      "embedding_idx": 8418,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "086a38ec-5ed0-4ee6-9f75-7864b0388de4",
+      "position": 113,
+      "state_sha256": "237fd5ac6c1547a23fcee4e893bacf2e61a6f30b2af99a539658ee976eb105b6"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7700958705822282,
+      "embedding_idx": 8440,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "88424233-a409-4bca-8deb-fba36eb18069",
+      "position": 114,
+      "state_sha256": "0ae853ea9116e70a0d69d8d9464f02f956f475c0a323f06dcf2989f6baf3e573"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8006171668555047,
+      "embedding_idx": 8444,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "1fdda51d-dc27-48df-aae2-b897c33c9c45",
+      "position": 115,
+      "state_sha256": "1a6de00cc9858469d0afaea6e76ca3d3e99f1586e68436d88d9b7166c76a3298"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8434667692447883,
+      "embedding_idx": 8572,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "be8a022c-a4fd-457e-8f22-8b5e9cef97e9",
+      "position": 116,
+      "state_sha256": "6192c5f98a4957e880b8dbcce5926edc1ced8209fa7c74f66d3a93311ed361b8"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5458810549144175,
+      "embedding_idx": 8785,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "50a9a850-2918-4cef-acf5-e113005476d7",
+      "position": 117,
+      "state_sha256": "d174b5ef3aba53b9280ab2d74f4ae9ac8c7b87c9cbfa130e4a2524fcfec93cc0"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7702942450659737,
+      "embedding_idx": 8928,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "3c7efdc7-4ead-492f-9f37-2853293595d0",
+      "position": 118,
+      "state_sha256": "4f14e11ce83e4477803b837b6e29d717987512c8a3d8147a2c28cfa1ad816ff7"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.794063555867386,
+      "embedding_idx": 9104,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "221a20c5-70ae-483c-a12d-90300ad79528",
+      "position": 119,
+      "state_sha256": "076f0a38dbe41e076ad8d10fabf0fb31b3031565db157f5b271e84a0c998b01a"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.866130276831045,
+      "embedding_idx": 9131,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "e6eb7b12-cf9a-4d36-8ba6-ea7ce9389847",
+      "position": 120,
+      "state_sha256": "3684a5dd22148c4597b34380c0d05a9ee19fcb390352895c87dcbc07396ca411"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7811195755869709,
+      "embedding_idx": 9323,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "dde8aabd-bbcb-46a9-8497-f2fdc670e594",
+      "position": 121,
+      "state_sha256": "ef82f95410f95a3b11a8f5115d726157560c3475d376ebf6b3823039951dac33"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.7101642518442031,
+      "embedding_idx": 9394,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "c35b33ea-e287-47df-967a-474613d8b386",
+      "position": 122,
+      "state_sha256": "52e06c1a84b85f2866b8fc2012b64320261a7f5c4f4445364209ed4ddadea6f8"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.847583841973649,
+      "embedding_idx": 9481,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "ade4f4e6-74b2-467e-9d97-589af5666f5c",
+      "position": 123,
+      "state_sha256": "6192c5f98a4957e880b8dbcce5926edc1ced8209fa7c74f66d3a93311ed361b8"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6117393926944488,
+      "embedding_idx": 9547,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "90ed7e39-473e-4d2c-8197-dd957e79ccb2",
+      "position": 124,
+      "state_sha256": "8db0e89577c5cf21c0649451b3c4d7cd0f7ce2a75faf3852b55521f80ad1ab66"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.61445160891912,
+      "embedding_idx": 9752,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "e6b3f7ec-a938-4ca1-8280-d290e0b14d3f",
+      "position": 125,
+      "state_sha256": "b730362e581b49839e93b555c9bda853459e990d174f125136fb11a1b7d0800f"
+    },
+    {
+      "chosen": "WORKER",
+      "chosen_code": "E",
+      "confidence": 0.5548083854802284,
+      "embedding_idx": 9763,
+      "incumbent": "WORKER",
+      "label": false,
+      "memory_id": "519de121-b9fe-42a0-bbfc-391687c5e07c",
+      "position": 126,
+      "state_sha256": "0e3d490ce978542f3dafdbb44d285c34444900a955869e20d942a2400333675d"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.5358950911514185,
+      "embedding_idx": 9853,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "9e3b2529-9b95-46cf-af63-9a035ddb0130",
+      "position": 127,
+      "state_sha256": "89e112c66ba9883e4551004cade751cff8d54ec8b00ee5a9cfba03aa8f1ed727"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.4699377690406424,
+      "embedding_idx": 9872,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "a6ac2f9c-74bb-463b-ab4a-9ecd8d9ff784",
+      "position": 128,
+      "state_sha256": "cb69aab9de55041b46397162045364853231f090d18cafd1324e480c63b433b7"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.4472460839511358,
+      "embedding_idx": 9982,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "747836ca-70d6-4895-8605-a22323eb312d",
+      "position": 129,
+      "state_sha256": "b4b87fae88708ff3cd34b7a3799b206fcbc041003a2a16ac9eac9b2956948e72"
+    },
+    {
+      "chosen": "SELF",
+      "chosen_code": "B",
+      "confidence": 0.7391661902616548,
+      "embedding_idx": 10000,
+      "incumbent": "SELF",
+      "label": false,
+      "memory_id": "d9f194fc-cb7a-485e-9107-2891448d4a08",
+      "position": 130,
+      "state_sha256": "fd74cafcc8a7fe340da9516972a942c1f684311ef639b12b67999cad15f065f7"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.432281465762993,
+      "embedding_idx": 10001,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "37c34226-19a2-48ef-98e1-de5773866a98",
+      "position": 131,
+      "state_sha256": "3a5f68605ec7b10eb2b371928a7885aacc5fc25a5c7cbce399efe31cd5e2271e"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.40895678606799996,
+      "embedding_idx": 10081,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "d7587fc1-badd-485d-bf31-a3a295764131",
+      "position": 132,
+      "state_sha256": "3607139d50e54dd7adf151e6fe9e0083cf0526ccd2b6b1ff4a70323e6993bb1b"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8589521839123668,
+      "embedding_idx": 10229,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "2cee1e55-b259-4fde-82ea-6484c8b20139",
+      "position": 133,
+      "state_sha256": "6192c5f98a4957e880b8dbcce5926edc1ced8209fa7c74f66d3a93311ed361b8"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.427037976920263,
+      "embedding_idx": 10305,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "03442550-6e0a-4956-b521-c5ca0506bd13",
+      "position": 134,
+      "state_sha256": "45033a96055e0deb8b2e6118978839378663e23659c8920cf19959af1648f914"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8744725262572595,
+      "embedding_idx": 10932,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "ec37389a-1fdd-4a5e-968c-500302dca3fb",
+      "position": 135,
+      "state_sha256": "8e72416e94c678993b4f027061ade0cce50494a12c3fe260ac1c49e0e5dee60c"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.5935516707622929,
+      "embedding_idx": 11293,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "2ad9d37f-b975-433b-8e34-9556b091d739",
+      "position": 136,
+      "state_sha256": "380b0d784232721d2138db7a8ee5fb3837ee8b220c0dafb745b632729534cfcf"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.3598190182475106,
+      "embedding_idx": 11309,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "919e4efd-72f7-479a-9551-706bba641e03",
+      "position": 137,
+      "state_sha256": "9f5566fc0436236e3f41a71a1ceb8222a257f769d6153a655ed982ed3dd786b0"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.39604413501099595,
+      "embedding_idx": 11765,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "8ec2b5b8-9956-4a5b-923b-c20b3fa498d3",
+      "position": 138,
+      "state_sha256": "45033a96055e0deb8b2e6118978839378663e23659c8920cf19959af1648f914"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.606116238095419,
+      "embedding_idx": 11856,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "5c51526b-3865-49a0-8d48-a5470211d826",
+      "position": 139,
+      "state_sha256": "5ec7ba286b3ff287d7f393f189b7cb668c0b4084cd3e271261855b3f9f0629da"
+    },
+    {
+      "chosen": "SELF:direct",
+      "chosen_code": "C",
+      "confidence": 0.7194172827127564,
+      "embedding_idx": 11914,
+      "incumbent": "SELF:direct",
+      "label": true,
+      "memory_id": "e7380056-802e-4f0d-9ea3-383ef1132076",
+      "position": 140,
+      "state_sha256": "c0f5c254cbfd5968364b255c703c143c3e476485ba6e97c53874db51b8906695"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.3167426071703465,
+      "embedding_idx": 12039,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "2b836d8f-a5f8-494a-a69c-7f375fb255eb",
+      "position": 141,
+      "state_sha256": "15fed2252cd13759a6e9a39c163edcaa563e4e0aaf091dfed6301a8b379304b8"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.36395833716932113,
+      "embedding_idx": 12049,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "29d6232b-5bd5-4643-b717-9c4f291af098",
+      "position": 142,
+      "state_sha256": "15fed2252cd13759a6e9a39c163edcaa563e4e0aaf091dfed6301a8b379304b8"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.42127355519065707,
+      "embedding_idx": 12496,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "90a90eaf-0aa9-4d11-92d3-53169877b7ed",
+      "position": 143,
+      "state_sha256": "3fb633b13c965cc730579d13cb6127e2cb8d8361936aafac252bc5663ef5f993"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5424803530448765,
+      "embedding_idx": 12511,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "3b2b19ac-a285-492f-b811-328d833a7936",
+      "position": 144,
+      "state_sha256": "237fd5ac6c1547a23fcee4e893bacf2e61a6f30b2af99a539658ee976eb105b6"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7351241647996757,
+      "embedding_idx": 12643,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "c7153ad6-e960-4244-9e49-dc59f031eb7a",
+      "position": 145,
+      "state_sha256": "599f2a66592402bc9324c5b426c1b16df0e86dae324d1d239c5e2cf9890bc4c1"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8285901167576813,
+      "embedding_idx": 12717,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "4f9317a5-948e-4e12-a69b-6a5b0e329b5f",
+      "position": 146,
+      "state_sha256": "e06c31ea9d04fa09c69116471d61d1be1238b4e50e2e273f1bd5ea91fa5d6d01"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7856999924618608,
+      "embedding_idx": 12799,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "3966b9c6-3711-478e-a523-7800b4988d71",
+      "position": 147,
+      "state_sha256": "a80e19a5cd84bd2cebf394152a73cdf55abf56d5b6480562921e800bbf722ed0"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.4357990052232488,
+      "embedding_idx": 13088,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "0ed9e1cd-d097-4fbb-ac72-94624339f7a2",
+      "position": 148,
+      "state_sha256": "5a5fafac61d1f96aeed92a7cf0ac730adcc3a2b7435fa60a0312319cb86c2e1e"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.773590785500823,
+      "embedding_idx": 13145,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "c6773b90-f5e0-4464-bc38-c0cf52514e38",
+      "position": 149,
+      "state_sha256": "a80e19a5cd84bd2cebf394152a73cdf55abf56d5b6480562921e800bbf722ed0"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.5648832690591556,
+      "embedding_idx": 13472,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "04a0a194-3f28-4c9e-848f-f5590dd7d298",
+      "position": 150,
+      "state_sha256": "6478f02057672c1ca92e5410b08ba26d301dc52ede89f54767be5c86ae3f13b8"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8574204629391969,
+      "embedding_idx": 13488,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "365b8bd9-59bb-4892-aa65-ae04bfa0ef33",
+      "position": 151,
+      "state_sha256": "d183a516362fafb2c25639eeed13f8f4f3e26381212a8eb2169faae634951a70"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5768307326333991,
+      "embedding_idx": 13569,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "19a32178-9cc7-4790-afce-a4f74e9b2a59",
+      "position": 152,
+      "state_sha256": "237fd5ac6c1547a23fcee4e893bacf2e61a6f30b2af99a539658ee976eb105b6"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.730616825803832,
+      "embedding_idx": 13796,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "9f0577ab-951d-41f1-8ef6-7ed9166e7344",
+      "position": 153,
+      "state_sha256": "3eb70bf423f5be61bd45d65598e293e13b91dd2dee3043f52afe1c44b03e2436"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6315173233139194,
+      "embedding_idx": 13912,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "241a3ef7-ce31-4a64-8dd4-a5799621af90",
+      "position": 154,
+      "state_sha256": "cd3e8fe4d754f8522b2e919d1238987636ed45d0cd9790dc11392dd079c1217c"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.706006741888617,
+      "embedding_idx": 13957,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "77deb4a0-a932-4572-a078-24f31067d45d",
+      "position": 155,
+      "state_sha256": "7e437da5cbd51f5b730db3d6233d9409544090aebebbacda31aa92fe22bbbd5f"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7471945049303631,
+      "embedding_idx": 14134,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "50617e2c-2723-42ca-a62d-ba741010a7a4",
+      "position": 156,
+      "state_sha256": "6bfa514b9da4e43fcde36ea2acb1e2dbd7343d8ca57cf87e577af5a51fdd39bd"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.698555251382907,
+      "embedding_idx": 14629,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "8191ba3c-be8f-4488-bf37-24cebba24f2d",
+      "position": 157,
+      "state_sha256": "bb4f8d977e65773c47fcefb892b746c9b39078acf6b7776bf673bb39754d809b"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5802890336735842,
+      "embedding_idx": 14740,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "03d07248-0b5a-4d18-b613-19884ae48ae7",
+      "position": 158,
+      "state_sha256": "0e3d490ce978542f3dafdbb44d285c34444900a955869e20d942a2400333675d"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.3452100718235761,
+      "embedding_idx": 14816,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "a388e043-ef3d-4a9b-b728-c2b7db743a6a",
+      "position": 159,
+      "state_sha256": "af0d9d36ad867cee034f92e87d07f7fc8ba3856654fd3720682f553fda4f0b4b"
+    },
+    {
+      "chosen": "WORKER",
+      "chosen_code": "E",
+      "confidence": 0.5629894471147953,
+      "embedding_idx": 16518,
+      "incumbent": "WORKER",
+      "label": false,
+      "memory_id": "3493de3c-33c2-4b65-921a-93e62533ae2c",
+      "position": 160,
+      "state_sha256": "0e3d490ce978542f3dafdbb44d285c34444900a955869e20d942a2400333675d"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.3880695623294221,
+      "embedding_idx": 16884,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "13e242db-f1c8-443a-a3b9-bf821a3331ac",
+      "position": 161,
+      "state_sha256": "5a5fafac61d1f96aeed92a7cf0ac730adcc3a2b7435fa60a0312319cb86c2e1e"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8274685058820291,
+      "embedding_idx": 16892,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "0e1a71aa-3c0f-4493-9ad6-8ad6c8d8da43",
+      "position": 162,
+      "state_sha256": "d57555fa8b50155e5cfa9a4137122f0920e5921deb82d4cfbbf38c1089a88cde"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.4638007871740553,
+      "embedding_idx": 17094,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "df13361d-2a62-42ea-9c0f-f30f3396b835",
+      "position": 163,
+      "state_sha256": "e5aaffe735fabc3ab502d6e35fc43747c6baff0916b9f22ba614ddc6a427fbca"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.5930934610147098,
+      "embedding_idx": 17330,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "daf4da95-2683-41f6-a7d3-1ca90a551fb5",
+      "position": 164,
+      "state_sha256": "5ec7ba286b3ff287d7f393f189b7cb668c0b4084cd3e271261855b3f9f0629da"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.805486779888062,
+      "embedding_idx": 17426,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "9cb41c8c-eb42-4624-bc9b-95f64f18645f",
+      "position": 165,
+      "state_sha256": "37e59728066baeb257af330db57789d7bd09779eb5785400d2dfc16b93a1a1ef"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6158088763032288,
+      "embedding_idx": 17743,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "3d0da04a-5f05-47ea-ac67-f920cf2c329f",
+      "position": 166,
+      "state_sha256": "cbcc10b05755fbb53ebdccf563692a2790e82c7c3631a2c4ea5972277efc5900"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6777834101639891,
+      "embedding_idx": 17754,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "422ffcd7-a04c-4b92-a8dc-7df1422cb41e",
+      "position": 167,
+      "state_sha256": "7e437da5cbd51f5b730db3d6233d9409544090aebebbacda31aa92fe22bbbd5f"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7189060971133533,
+      "embedding_idx": 18134,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "b86cee71-36ff-4ea3-a6ed-0d0034edcc16",
+      "position": 168,
+      "state_sha256": "6bfa514b9da4e43fcde36ea2acb1e2dbd7343d8ca57cf87e577af5a51fdd39bd"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.39770933736065484,
+      "embedding_idx": 18432,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "29333737-710b-4884-b844-8cd9a5d2faa9",
+      "position": 169,
+      "state_sha256": "af0d9d36ad867cee034f92e87d07f7fc8ba3856654fd3720682f553fda4f0b4b"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7364245391751411,
+      "embedding_idx": 18758,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "cbd6721a-8f48-4079-a172-105b8d9596ca",
+      "position": 170,
+      "state_sha256": "05e4781f9cae93f4c7763041d6066af87b7607960e562e1b09843845d97fd737"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7404909288316348,
+      "embedding_idx": 19115,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "70426665-82c5-49cc-aa2f-26aebe084a3e",
+      "position": 171,
+      "state_sha256": "05e4781f9cae93f4c7763041d6066af87b7607960e562e1b09843845d97fd737"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8042992466064797,
+      "embedding_idx": 19210,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "de3e44f0-6c55-4cfd-ad6b-8d39f85cb70a",
+      "position": 172,
+      "state_sha256": "8e16c7f63c75a228c738f64d14a612faa9e2c1a2eedbcdb5b5b12a73de718021"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8917610869160822,
+      "embedding_idx": 19730,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "8e501630-5cba-4116-8f39-ee1ae4bea62b",
+      "position": 173,
+      "state_sha256": "953ea491afda447f1ccc39691a2de1b4e53f14e47e514f6994388ee6484fa013"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7089133139686821,
+      "embedding_idx": 19941,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "e2622ef6-4ea7-49d8-aeb6-5b82a7eaf0ff",
+      "position": 174,
+      "state_sha256": "c43f0ab7945c1d2ed63217b75ae641fa7b12507aa34c4ba8ef14653a9faf2f99"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6498115885692544,
+      "embedding_idx": 20316,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "630745a5-09d8-4ff7-9b7f-30d5e320e6be",
+      "position": 175,
+      "state_sha256": "c43f0ab7945c1d2ed63217b75ae641fa7b12507aa34c4ba8ef14653a9faf2f99"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6245295836642545,
+      "embedding_idx": 20612,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "ab044ac7-4f50-4f12-9957-6f8c31c97be0",
+      "position": 176,
+      "state_sha256": "5ec7ba286b3ff287d7f393f189b7cb668c0b4084cd3e271261855b3f9f0629da"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7046444221092175,
+      "embedding_idx": 21447,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "bc421936-e911-4c2d-b049-375dfb3204f5",
+      "position": 177,
+      "state_sha256": "93e14ae7c9e3da6c989a9cf482949e1f82671b667ab5e54ddaa043d84bd75b4b"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6165131945939131,
+      "embedding_idx": 21535,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "25274099-94e6-4086-9bb9-b3ed5e7abc18",
+      "position": 178,
+      "state_sha256": "cbcc10b05755fbb53ebdccf563692a2790e82c7c3631a2c4ea5972277efc5900"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8909017504174183,
+      "embedding_idx": 21589,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "9083e803-30bb-45a8-8d13-0f0f5f27aeff",
+      "position": 179,
+      "state_sha256": "953ea491afda447f1ccc39691a2de1b4e53f14e47e514f6994388ee6484fa013"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.6886581499281197,
+      "embedding_idx": 21699,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "0afa04ec-f37d-443c-b28f-71b2be6d0664",
+      "position": 180,
+      "state_sha256": "e589a49ea91f99148a0ec0b4a20c8c0e96b11ae03f3b2811fb84611076147385"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.657358688483345,
+      "embedding_idx": 21781,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "a60c21c0-f5f3-413d-a34a-bb0d21d22ce8",
+      "position": 181,
+      "state_sha256": "ac03a9ec3fe97ba8ee16bf8443c8ecda81cf4c7211715434728efc1fab13e01f"
+    },
+    {
+      "chosen": "WORKER",
+      "chosen_code": "E",
+      "confidence": 0.689180718549528,
+      "embedding_idx": 22314,
+      "incumbent": "WORKER",
+      "label": false,
+      "memory_id": "71dcd27a-2ff5-4f35-b5e4-2c2adabfe3ef",
+      "position": 182,
+      "state_sha256": "b23c9331cb8ce0c9ded3820af6f1f4ecafa93eeaff46fa5ccacd81364124a89c"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.4221869098678059,
+      "embedding_idx": 22357,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "c97b9e66-364d-4902-be02-9825f6c3e4af",
+      "position": 183,
+      "state_sha256": "4ae459b78d6a1e603c48873c9c84847e440274684c78d7a12de6c719e693c3ce"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8894133712033652,
+      "embedding_idx": 22389,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "4b768543-3380-4a7c-b7a1-ead768fa32e2",
+      "position": 184,
+      "state_sha256": "953ea491afda447f1ccc39691a2de1b4e53f14e47e514f6994388ee6484fa013"
+    },
+    {
+      "chosen": "WORKER",
+      "chosen_code": "E",
+      "confidence": 0.5353147835015111,
+      "embedding_idx": 22614,
+      "incumbent": "WORKER",
+      "label": false,
+      "memory_id": "e2ff4879-a0fb-450f-82d6-4f54e3787c53",
+      "position": 185,
+      "state_sha256": "0e3d490ce978542f3dafdbb44d285c34444900a955869e20d942a2400333675d"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.576836350602941,
+      "embedding_idx": 23360,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "75f7bd03-ad64-4b52-882e-717225046948",
+      "position": 186,
+      "state_sha256": "c5638c22939314e6b5a4ae08d507c36f4f25e1e820a99f07620e35202e20b30f"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8765569899031065,
+      "embedding_idx": 23466,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "9aeee81b-b5d6-4f0b-8348-21de84fe8081",
+      "position": 187,
+      "state_sha256": "953ea491afda447f1ccc39691a2de1b4e53f14e47e514f6994388ee6484fa013"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7188675765116155,
+      "embedding_idx": 23636,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "ff020be2-cf46-459f-815d-3220c245d4a8",
+      "position": 188,
+      "state_sha256": "e589a49ea91f99148a0ec0b4a20c8c0e96b11ae03f3b2811fb84611076147385"
+    },
+    {
+      "chosen": "ARCHITECT",
+      "chosen_code": "A",
+      "confidence": 0.39946006740177087,
+      "embedding_idx": 24120,
+      "incumbent": "frontdoor",
+      "label": false,
+      "memory_id": "1c149bf2-1b16-4cbc-85e6-c0ecf2ae8b91",
+      "position": 189,
+      "state_sha256": "af0d9d36ad867cee034f92e87d07f7fc8ba3856654fd3720682f553fda4f0b4b"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7968713802253015,
+      "embedding_idx": 25709,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "01ddfeb1-0829-4d6b-8807-cc7340f5c41c",
+      "position": 190,
+      "state_sha256": "2598bd0b60f996d012e933d916131bf6c4ca5ed53f4dacec262c1de60ee5a2bd"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8573888457819014,
+      "embedding_idx": 25796,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "3cc2dac6-1ebf-44bc-bbf0-b34261409cf6",
+      "position": 191,
+      "state_sha256": "147fe4004003b9f5e59a52d4871d5a23752d2405388d1328b44905d55479de87"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7626192482415498,
+      "embedding_idx": 28102,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "4c6fd75b-610f-47c0-8f70-c0daa48bb437",
+      "position": 192,
+      "state_sha256": "2598bd0b60f996d012e933d916131bf6c4ca5ed53f4dacec262c1de60ee5a2bd"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8020958911969426,
+      "embedding_idx": 30180,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "e97670b1-52b4-4e7b-a01e-3749f82ff7c9",
+      "position": 193,
+      "state_sha256": "89bc7fc0ab18b92bbf0ae4b03d180f14f39de3e4b2a9a63f56575995176a7927"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.7046070545439623,
+      "embedding_idx": 31569,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "b5e6b7fc-942d-4a20-833b-bae270cc3837",
+      "position": 194,
+      "state_sha256": "cb776669ce9b35e7e966a5fbc30b3fc5d79801249ed1b1c5a2037159b40e7e6a"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.5508550144674655,
+      "embedding_idx": 31894,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "ef6525f1-519f-44da-b227-e2a92cc631a3",
+      "position": 195,
+      "state_sha256": "32f6e5fa487590678ec4642eb1646ec28a4d53deb9c06848a2b457d0325df3a0"
+    },
+    {
+      "chosen": "architect_coding",
+      "chosen_code": "F",
+      "confidence": 0.6242165454729739,
+      "embedding_idx": 32365,
+      "incumbent": "architect_coding",
+      "label": true,
+      "memory_id": "d6fa4663-f963-49fa-aa8d-5114597baaab",
+      "position": 196,
+      "state_sha256": "5d8d9b6991576dd70c022b750a4007fe7026b4bd4c8c5cf73505a9efa5c772d4"
+    },
+    {
+      "chosen": "frontdoor",
+      "chosen_code": "H",
+      "confidence": 0.7298179537676079,
+      "embedding_idx": 32517,
+      "incumbent": "frontdoor",
+      "label": true,
+      "memory_id": "6dfc214f-350f-426a-b436-c76792b84181",
+      "position": 197,
+      "state_sha256": "e589a49ea91f99148a0ec0b4a20c8c0e96b11ae03f3b2811fb84611076147385"
+    },
+    {
+      "chosen": "WORKER",
+      "chosen_code": "E",
+      "confidence": 0.7281761948015909,
+      "embedding_idx": 32551,
+      "incumbent": "WORKER",
+      "label": false,
+      "memory_id": "d142004b-cd16-4dd2-8859-e119a5eb64c0",
+      "position": 198,
+      "state_sha256": "b23c9331cb8ce0c9ded3820af6f1f4ecafa93eeaff46fa5ccacd81364124a89c"
+    },
+    {
+      "chosen": "architect_general",
+      "chosen_code": "G",
+      "confidence": 0.8627450463917546,
+      "embedding_idx": 32906,
+      "incumbent": "architect_general",
+      "label": true,
+      "memory_id": "0f4ead43-9a7a-4eda-b21b-5667d2e46e5e",
+      "position": 199,
+      "state_sha256": "114ea5fb85af2c1afd160dbed1dbdbddc5e939f32f58a62ddcee4edff0abe932"
+    }
+  ],
+  "snapshot": {
+    "admissibility_reason": "known_2026_04_15_frozen_snapshot",
+    "admissible": true,
+    "db_bytes": 113098752,
+    "db_mtime_utc": "2026-04-15T09:17:06Z",
+    "db_path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db.backup-20260415",
+    "db_sha256": "12ca8b0bec364b63358c530c8d06e0e700a58daac95249a460965c629e4856af",
+    "faiss_path": null,
+    "faiss_sha256": null,
+    "max_created_at": "2026-04-15T09:17:02.851570+00:00",
+    "max_updated_at": "2026-04-15T09:17:02.851570+00:00",
+    "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db.backup-20260415"
+  },
+  "status": "estimated",
+  "td9_receipt_sha256": "c9812356335f2143383f3fda7a82d19ccbcb69d43a098387d1b160c36096a886",
+  "timestamp": "2026-09-18T14:15:08.298994+00:00",
+  "vector_source": {
+    "convention": "embedding_text_for (canonical task convention)",
+    "counterfactual_caveat": "Model-based counterfactual estimate, NOT an observation. The frozen label describes the INCUMBENT action's outcome; for a disagreeing row it is not the chosen action's outcome. P(success | e(x), action=a) is an assumption of the probe's estimator fit on historical incumbent outcomes, and carries the probe's own confounds (EPD-1..3: label written once at INSERT, embedding/convention reuse, suite/task_type identity). Actions without two outcome classes in the frozen logs are unevaluable and are excluded, not scored.",
+    "coverage": 1.0,
+    "embed_out": null,
+    "embedding_dim": 1024,
+    "n_requested": 162167,
+    "n_resolved": 162167,
+    "n_unique_texts": 2234,
+    "name": "embedded",
+    "server_url": "http://127.0.0.1:8090",
+    "use_parallel": false,
+    "wall_ms": 22559.38002327457
+  }
+}

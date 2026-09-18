@@ -539,3 +539,6 @@ quoted here. See [[feedback_eval_saturation_masks_model_gap]],
 
 - [ ] **CJ-13 — Two-cheap-readers redundancy arm (typed judge + local LLM judge).** Report pairwise agreement and human-disagreement cost per the intake-1475/1486 methodology; label "agreement is not accuracy"; no adoption decision (CJ-GATE remains the operator's).
 - [ ] **CJ-14 — Adopt the dinostomp measurement discipline for new judge instruments:** hashed manifests/run records, a blind probe as the lower bound, pre-registered per-item distributions (intake-1490).
+## Research Intake Update — 2026-09-18 (judge redundancy measured; CJ-13/CJ-14)
+
+First live run of the redundancy harness (24 rubric cases / 72 criteria, synthetic deterministic ground truth, Qwen3.6-35B-A3B, one run): **typed judge 95.8% criterion accuracy, 0 failures** vs **free-form LLM judge 12.5% with 63/72 parse failures**; blind prior 59.7%. Agreement between readers is only computable where both resolve (9 criteria, 100% agreement there) — reported separately from accuracy as required. Observation-grade (n=24, single run); re-run before citing. Harness: `src/typed_decisions/judge_redundancy.py`; receipt under artifacts/typed_decisions/run_20260918/.

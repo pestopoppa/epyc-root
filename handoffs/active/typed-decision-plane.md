@@ -116,6 +116,9 @@ episodic memory writing."
 
 **Declined (2026-09-17):** no new belief-kernel carrier for bench/cue-sweep reports — they are screening instruments, not protocol-grade measurements (the strict reader refuses them by design); revisit only if a `P-TDP` measurement protocol is ratified.
 
+- [x] **TD-10 — Counterfactual evaluation of the TD-9 routing policy (model-based OPE).** ✅ 2026-09-18: reused the escalation probe's cross-fitted, embedding-grouped estimator over the frozen snapshot with freshly embedded states; **delta typed-minus-incumbent = -0.0104** (CI95 [-0.0246, -0.0066], 5 folds all negative; ~1pp worse). Verdict: **enforcement stays OFF** — agreement is not skill; the 13 departures (frontdoor->ARCHITECT) are estimated harmful. Caveats: model-based estimate with the probe's EPD-1..3 confounds; unevaluable actions excluded.
+- [ ] **TD-11 — Routing prompt/policy improvement, re-tested through the counterfactual harness.** The harness now measures value, not agreement; use it to iterate (framing, support-aware candidates, leave-one-out conditioning) before any enforcement proposal. Acceptance: positive delta with a CI excluding zero on the frozen snapshot, or a written decision to drop typed routing.
+
 ## Wiring policy (2026-09-18, operator-directed)
 
 - **Fan-out decision rule (TD-8, implemented in `src/typed_decisions/fanout_policy.py`):** exactness-required + native-eligible -> native id-only per question (11.98x, isolated); stability-tolerant batches of >= 8 -> batched (2.2x at 87.5% measured agreement); otherwise sequential JSON. The 87.5% figure governs the choice per surface.
