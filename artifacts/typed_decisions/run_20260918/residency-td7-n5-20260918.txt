@@ -1,0 +1,90 @@
+--- sample 1 12:15:03
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 2 12:15:05
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 3 12:15:08
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 4 12:15:11
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 5 12:15:13
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 6 12:15:16
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 7 12:15:18
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 8 12:15:21
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 9 12:15:23
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 10 12:15:26
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 11 12:15:29
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 12 12:15:31
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 13 12:15:34
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 14 12:15:37
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 15 12:15:39
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 16 12:15:41
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 17 12:15:44
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 18 12:15:47
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 19 12:15:49
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 20 12:15:52
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 21 12:15:54
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 22 12:15:57
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 23 12:15:59
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 24 12:16:02
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 25 12:16:05
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 26 12:16:07
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 27 12:16:10
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 28 12:16:13
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 29 12:16:15
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	
+--- sample 30 12:16:18
+GPU[0]		: GPU Memory Allocated (VRAM%): 55
+907192	llama-server	1     	38287421440	0        	0           	

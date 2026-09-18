@@ -1,0 +1,382 @@
+{
+  "aggregates": {
+    "agreement": {
+      "by_incumbent_action": {
+        "WORKER": {
+          "agreeing": 0,
+          "n": 1,
+          "rate": 0.0
+        },
+        "frontdoor": {
+          "agreeing": 0,
+          "n": 4,
+          "rate": 0.0
+        }
+      },
+      "n_agreeing": 0,
+      "n_disagreeing": 5,
+      "rate": 0.0,
+      "wilson_95": [
+        0.0,
+        0.43448246865939283
+      ]
+    },
+    "calibration": {
+      "auroc": null,
+      "base_rate": 0.8,
+      "bottom1_accuracy": 0.6666666666666666,
+      "brier": 0.18340740740740738,
+      "ece": 0.17333333333333323,
+      "mae": 0.2088888888888889,
+      "n": 5,
+      "reliability_bins": [
+        {
+          "accuracy": null,
+          "bin": 0,
+          "hi": 0.1,
+          "lo": 0.0,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 1,
+          "hi": 0.2,
+          "lo": 0.1,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 2,
+          "hi": 0.3,
+          "lo": 0.2,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 3,
+          "hi": 0.4,
+          "lo": 0.3,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 4,
+          "hi": 0.5,
+          "lo": 0.4,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 5,
+          "hi": 0.6,
+          "lo": 0.5,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 6,
+          "hi": 0.7,
+          "lo": 0.6,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 7,
+          "hi": 0.8,
+          "lo": 0.7,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 8,
+          "hi": 0.9,
+          "lo": 0.8,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": 0.8,
+          "bin": 9,
+          "hi": 1.0,
+          "lo": 0.9,
+          "mean_confidence": 0.9733333333333333,
+          "n": 5
+        }
+      ],
+      "spearman_rho": 0.408248290463863,
+      "top1_accuracy": 1.0
+    },
+    "calibration_agreeing_only": {
+      "auroc": null,
+      "base_rate": null,
+      "bottom1_accuracy": null,
+      "brier": null,
+      "ece": null,
+      "mae": null,
+      "n": null,
+      "reliability_bins": [],
+      "spearman_rho": null,
+      "top1_accuracy": null
+    },
+    "failures": {
+      "by_reason": {
+        "native_unsupported_candidates": 5
+      },
+      "total": 5
+    },
+    "label_base_rate": 0.8,
+    "n_decided": 5,
+    "n_rows": 5,
+    "n_unresolved": 0,
+    "path_split": {
+      "json": 5,
+      "native": 0,
+      "unresolved": 0
+    },
+    "wall_ms_max": 2694.22190496698,
+    "wall_ms_mean": 2517.768259625882,
+    "wall_ms_total": 12588.84129812941
+  },
+  "config": {
+    "cue_style": "id_only",
+    "json_n_tokens": 768,
+    "mode": "native+json_fallback",
+    "n": 5,
+    "options": [
+      "ARCHITECT",
+      "SELF",
+      "SELF:direct",
+      "SELF:repl",
+      "WORKER",
+      "architect_coding",
+      "architect_general",
+      "frontdoor",
+      "frontdoor:direct",
+      "frontdoor:react",
+      "frontdoor:repl"
+    ],
+    "question_id": "routing_action",
+    "question_text": "Which recorded routing action should handle the task described in STATE? Answer with exactly one of the declared action classes.",
+    "role": "frontdoor",
+    "seed": 20260918,
+    "state_budget_chars": 4000
+  },
+  "corpus": {
+    "distinct_actions": 11,
+    "excluded_empty_action_rows": 2041,
+    "routing_rows": 162167,
+    "rows_with_action": 160126
+  },
+  "label_provenance": {
+    "admissibility_reason": "known_2026_04_15_frozen_snapshot",
+    "label_definition": "outcome == 'success' from the frozen snapshot above",
+    "snapshot_db_sha256": "12ca8b0bec364b63358c530c8d06e0e700a58daac95249a460965c629e4856af",
+    "status": "frozen-snapshot",
+    "warning": "The LIVE episodic.db is not admissible ground truth: the 2026-09-17 leak purge changed it. Every label in this receipt was read from the frozen snapshot, identified by path+SHA-256."
+  },
+  "metric_directions": {
+    "agreement.rate": "higher_is_better",
+    "agreement.wilson_95_low": "higher_is_better",
+    "calibration.auroc": "higher_is_better",
+    "calibration.bottom1_accuracy": "lower_is_better",
+    "calibration.brier": "lower_is_better",
+    "calibration.ece": "lower_is_better",
+    "calibration.mae": "lower_is_better",
+    "calibration.spearman_rho": "higher_is_better",
+    "calibration.top1_accuracy": "higher_is_better",
+    "path_split.unresolved": "lower_is_better",
+    "wall_ms_total": "lower_is_better"
+  },
+  "receipt": "td7-routing-replay",
+  "receipt_path": "/mnt/raid0/llm/tmp/td7-replay/residency-n5.json",
+  "rows": [
+    {
+      "action": "WORKER",
+      "confidence": 1.0,
+      "elapsed_ms": 2477.7537076734006,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 0,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 1.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "2ef278eb0879ff250637fd44ffb65ccdb3652146c27dddb818c8cdff518bd4e2",
+      "state_chars": 272,
+      "state_sha256": "78f7e1d1f57b5e23b7dec8424419147bc6b06c63cbeb90b0cf54a55d65a4d3cd",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2694.22190496698,
+      "incumbent": "WORKER",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 1,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "f213d54de9fc7af0d396057c4353d65fa1003bf35bafabd35d11b8b47f2e9a98",
+      "state_chars": 664,
+      "state_sha256": "7ed561b6af49c3ad6a5a49c2433079beeb91ec2d20a834035bd42595cfbc6c7f",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2412.2925298288465,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 2,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "52cff91adda489171b0226f4b90993b3649d3b62272f59e535c1334c9aba11e7",
+      "state_chars": 70,
+      "state_sha256": "3fb633b13c965cc730579d13cb6127e2cb8d8361936aafac252bc5663ef5f993",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2564.76978585124,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": false,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 3,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "a642968689a929f1d38cc3b73ece965f8632527b4f1be13a4fbfb7313e69dfdf",
+      "state_chars": 262,
+      "state_sha256": "237fd5ac6c1547a23fcee4e893bacf2e61a6f30b2af99a539658ee976eb105b6",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2439.803369808942,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 4,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "76f4c89f5029a5a01beaa4cf0e2ba9f1aabbec6df3a9948c6d1c093b24c859e8",
+      "state_chars": 264,
+      "state_sha256": "e589a49ea91f99148a0ec0b4a20c8c0e96b11ae03f3b2811fb84611076147385",
+      "state_truncated": false
+    }
+  ],
+  "snapshot": {
+    "admissibility_reason": "known_2026_04_15_frozen_snapshot",
+    "admissible": true,
+    "db_bytes": 113098752,
+    "db_mtime_utc": "2026-04-15T09:17:06Z",
+    "db_path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db.backup-20260415",
+    "db_sha256": "12ca8b0bec364b63358c530c8d06e0e700a58daac95249a460965c629e4856af",
+    "faiss_path": null,
+    "faiss_sha256": null,
+    "max_created_at": "2026-04-15T09:17:02.851570+00:00",
+    "max_updated_at": "2026-04-15T09:17:02.851570+00:00",
+    "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db.backup-20260415"
+  },
+  "timestamp": "2026-09-18T12:16:24.737672+00:00",
+  "wall_ms_total": 12589.159082621336
+}

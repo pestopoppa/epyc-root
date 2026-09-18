@@ -1,0 +1,2298 @@
+{
+  "aggregates": {
+    "agreement": {
+      "by_incumbent_action": {
+        "ARCHITECT": {
+          "agreeing": 0,
+          "n": 1,
+          "rate": 0.0
+        },
+        "SELF:direct": {
+          "agreeing": 0,
+          "n": 1,
+          "rate": 0.0
+        },
+        "WORKER": {
+          "agreeing": 1,
+          "n": 4,
+          "rate": 0.25
+        },
+        "architect_coding": {
+          "agreeing": 0,
+          "n": 22,
+          "rate": 0.0
+        },
+        "architect_general": {
+          "agreeing": 0,
+          "n": 10,
+          "rate": 0.0
+        },
+        "frontdoor": {
+          "agreeing": 1,
+          "n": 22,
+          "rate": 0.045454545454545456
+        }
+      },
+      "n_agreeing": 2,
+      "n_disagreeing": 58,
+      "rate": 0.03333333333333333,
+      "wilson_95": [
+        0.00918931917345028,
+        0.11363774365849509
+      ]
+    },
+    "calibration": {
+      "auroc": 0.35802469135802467,
+      "base_rate": 0.9,
+      "bottom1_accuracy": 1.0,
+      "brier": 0.11517268631889357,
+      "ece": 0.112641498500269,
+      "mae": 0.16253864466810938,
+      "n": 60,
+      "reliability_bins": [
+        {
+          "accuracy": null,
+          "bin": 0,
+          "hi": 0.1,
+          "lo": 0.0,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 1,
+          "hi": 0.2,
+          "lo": 0.1,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 2,
+          "hi": 0.3,
+          "lo": 0.2,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 3,
+          "hi": 0.4,
+          "lo": 0.3,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": 1.0,
+          "bin": 4,
+          "hi": 0.5,
+          "lo": 0.4,
+          "mean_confidence": 0.44999999999999996,
+          "n": 3
+        },
+        {
+          "accuracy": null,
+          "bin": 5,
+          "hi": 0.6,
+          "lo": 0.5,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 6,
+          "hi": 0.7,
+          "lo": 0.6,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": 1.0,
+          "bin": 7,
+          "hi": 0.8,
+          "lo": 0.7,
+          "mean_confidence": 0.7500504201680672,
+          "n": 3
+        },
+        {
+          "accuracy": 0.75,
+          "bin": 8,
+          "hi": 0.9,
+          "lo": 0.8,
+          "mean_confidence": 0.8896788990825687,
+          "n": 4
+        },
+        {
+          "accuracy": 0.9,
+          "bin": 9,
+          "hi": 1.0,
+          "lo": 0.9,
+          "mean_confidence": 0.9759985114838013,
+          "n": 50
+        }
+      ],
+      "spearman_rho": -0.15289211177681877,
+      "top1_accuracy": 0.8181818181818182
+    },
+    "calibration_agreeing_only": {
+      "auroc": null,
+      "base_rate": 0.5,
+      "bottom1_accuracy": 0.5,
+      "brier": 0.5,
+      "ece": 0.5,
+      "mae": 0.5,
+      "n": 2,
+      "reliability_bins": [
+        {
+          "accuracy": null,
+          "bin": 0,
+          "hi": 0.1,
+          "lo": 0.0,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 1,
+          "hi": 0.2,
+          "lo": 0.1,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 2,
+          "hi": 0.3,
+          "lo": 0.2,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 3,
+          "hi": 0.4,
+          "lo": 0.3,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 4,
+          "hi": 0.5,
+          "lo": 0.4,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 5,
+          "hi": 0.6,
+          "lo": 0.5,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 6,
+          "hi": 0.7,
+          "lo": 0.6,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 7,
+          "hi": 0.8,
+          "lo": 0.7,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": null,
+          "bin": 8,
+          "hi": 0.9,
+          "lo": 0.8,
+          "mean_confidence": null,
+          "n": 0
+        },
+        {
+          "accuracy": 0.5,
+          "bin": 9,
+          "hi": 1.0,
+          "lo": 0.9,
+          "mean_confidence": 1.0,
+          "n": 2
+        }
+      ],
+      "spearman_rho": null,
+      "top1_accuracy": 0.5
+    },
+    "failures": {
+      "by_reason": {
+        "native_unsupported_candidates": 60
+      },
+      "total": 60
+    },
+    "label_base_rate": 0.9,
+    "n_decided": 60,
+    "n_rows": 60,
+    "n_unresolved": 0,
+    "path_split": {
+      "json": 60,
+      "native": 0,
+      "unresolved": 0
+    },
+    "wall_ms_max": 2637.7811869606376,
+    "wall_ms_mean": 2450.5933230354763,
+    "wall_ms_total": 147035.59938212857
+  },
+  "config": {
+    "cue_style": "id_only",
+    "json_n_tokens": 768,
+    "mode": "native+json_fallback",
+    "n": 60,
+    "options": [
+      "ARCHITECT",
+      "SELF",
+      "SELF:direct",
+      "SELF:repl",
+      "WORKER",
+      "architect_coding",
+      "architect_general",
+      "frontdoor",
+      "frontdoor:direct",
+      "frontdoor:react",
+      "frontdoor:repl"
+    ],
+    "question_id": "routing_action",
+    "question_text": "Which recorded routing action should handle the task described in STATE? Answer with exactly one of the declared action classes.",
+    "role": "frontdoor",
+    "seed": 20260918,
+    "state_budget_chars": 4000
+  },
+  "corpus": {
+    "distinct_actions": 11,
+    "excluded_empty_action_rows": 2041,
+    "routing_rows": 162167,
+    "rows_with_action": 160126
+  },
+  "label_provenance": {
+    "admissibility_reason": "known_2026_04_15_frozen_snapshot",
+    "label_definition": "outcome == 'success' from the frozen snapshot above",
+    "snapshot_db_sha256": "12ca8b0bec364b63358c530c8d06e0e700a58daac95249a460965c629e4856af",
+    "status": "frozen-snapshot",
+    "warning": "The LIVE episodic.db is not admissible ground truth: the 2026-09-17 leak purge changed it. Every label in this receipt was read from the frozen snapshot, identified by path+SHA-256."
+  },
+  "metric_directions": {
+    "agreement.rate": "higher_is_better",
+    "agreement.wilson_95_low": "higher_is_better",
+    "calibration.auroc": "higher_is_better",
+    "calibration.bottom1_accuracy": "lower_is_better",
+    "calibration.brier": "lower_is_better",
+    "calibration.ece": "lower_is_better",
+    "calibration.mae": "lower_is_better",
+    "calibration.spearman_rho": "higher_is_better",
+    "calibration.top1_accuracy": "higher_is_better",
+    "path_split.unresolved": "lower_is_better",
+    "wall_ms_total": "lower_is_better"
+  },
+  "receipt": "td7-routing-replay",
+  "receipt_path": "/mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917/artifacts/typed_decisions/run_20260918/routing-replay-n60-20260918.json",
+  "rows": [
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2553.4797948785126,
+      "incumbent": "ARCHITECT",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 0,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "577463eb904ccde201c2827ba3c29c73e62bbbeb78269db3dc0b669ccd0bfdf4",
+      "state_chars": 728,
+      "state_sha256": "6fae4e216c58705f2f6a9537ec7ee72b11d50ee35908cfbb8b5582da166072de",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.8999999999999999,
+      "elapsed_ms": 2548.3742728829384,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": false,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 1,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9090909090909091,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.09090909090909091,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "6087f6049bc2d1d46e96b457589e4248e2ce2e62a815829ba974d02f4921ea8f",
+      "state_chars": 253,
+      "state_sha256": "0043c273497a02124f45440fb025cb1c879ed18a5224fd9965987b999955683a",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.44999999999999996,
+      "elapsed_ms": 2431.3397421501577,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 2,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.5,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.5,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "db098c4210bddb0cae3f33eea45be5d68707e41e63945d2074602c8fb26fb7dd",
+      "state_chars": 265,
+      "state_sha256": "aeec3aba9dce396fa438a93f2d8aaa6bcd51f4d93e565a649e672c61cd016071",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2269.751815125346,
+      "incumbent": "WORKER",
+      "json_failures": [],
+      "label": false,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 3,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "aa50ec628b515b29aee36d3f51bc49239d3791443d22c75162fba3d2cca6ff76",
+      "state_chars": 136,
+      "state_sha256": "0e3d490ce978542f3dafdbb44d285c34444900a955869e20d942a2400333675d",
+      "state_truncated": false
+    },
+    {
+      "action": "WORKER",
+      "confidence": 1.0,
+      "elapsed_ms": 2384.499309118837,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 4,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 1.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "2ef278eb0879ff250637fd44ffb65ccdb3652146c27dddb818c8cdff518bd4e2",
+      "state_chars": 272,
+      "state_sha256": "78f7e1d1f57b5e23b7dec8424419147bc6b06c63cbeb90b0cf54a55d65a4d3cd",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2485.6282719410956,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 5,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "073e9feaa135711b5bb251544a8ee11ee83559d42b9057dc2c2cedbad9a8aba1",
+      "state_chars": 265,
+      "state_sha256": "b6fcc7ac4e1326f536d43d8b0c5ca735c8e7082951a0dcb230aa3b3f9e0db2fd",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9663265306122448,
+      "elapsed_ms": 2439.821222797036,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 6,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9693877551020408,
+        "SELF:direct": 0.020408163265306124,
+        "SELF:repl": 0.010204081632653062,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "9e5039b5b0d73bacf1337f349193cf55a46e4d3461ace3244a591273a1f1bfe0",
+      "state_chars": 263,
+      "state_sha256": "5e2ebfdb15278d244e02af2ec29d72808fccf61f61ac73b50004b7796e818cf0",
+      "state_truncated": false
+    },
+    {
+      "action": "WORKER",
+      "confidence": 1.0,
+      "elapsed_ms": 2637.7811869606376,
+      "incumbent": "WORKER",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 7,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 1.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "ccf41f328ce0da18655f3863bb767dacd3cf17481f67918278d90f50718e56f1",
+      "state_chars": 661,
+      "state_sha256": "fe25f3a5f5a1b82742ce647f897bcb59fb0c627916e076063ca011b048ef2345",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2497.5640578195453,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 8,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "009c6779fb8b8c14cb6086a260d170b4c592ad728f43c6e0596c21f9880d79af",
+      "state_chars": 289,
+      "state_sha256": "1aecc220528fab0c5b7226f181c80a716f96fd53dc618b15e826b1c28e94433a",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2503.3825570717454,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 9,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "b55c354667f1c2ff63434d3b0025a8eebf1e1dd49545581b4b7f5facd563a55b",
+      "state_chars": 256,
+      "state_sha256": "6478f02057672c1ca92e5410b08ba26d301dc52ede89f54767be5c86ae3f13b8",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2420.0866036117077,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 10,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "57479e0b4b9c7b66044ab3a810b181f534ee0731ff5d68ed42ab0ac66fbe51b1",
+      "state_chars": 258,
+      "state_sha256": "dd8a22c6ef6bee61be43cc170fc3a00bd75d1d166e6ac77297504ee4f8831615",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2485.000427812338,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 11,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "408e423dbc7cae1ebbc7decd1a68c1942f95a5c5c0f22b04c4c32ed3ddc57cbb",
+      "state_chars": 269,
+      "state_sha256": "8be2e76edbf42fc5b259b546b93f88b3f6ebffe6cc860a93ef0e14d2fe83a65e",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9663265306122448,
+      "elapsed_ms": 2424.0019507706165,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 12,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9693877551020408,
+        "SELF:direct": 0.020408163265306124,
+        "SELF:repl": 0.010204081632653062,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "3d04d34de1cd93eddea297460bd5db797756c7309244a182667b67a9fc486669",
+      "state_chars": 264,
+      "state_sha256": "a564cfd24882669d1204635946346292fb21a10b2d38c6948c3a13cc2f9cef5e",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2266.1988330073655,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 13,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "223a01ec11c06310d3911da74e52ef13835c3dca5d9de8ffa10923c89f70cb00",
+      "state_chars": 260,
+      "state_sha256": "121864cc56fc7ae5d24c04288b45e9ec6cb215f6fbc19b33b081f9057fa91204",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2449.2101687937975,
+      "incumbent": "WORKER",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 14,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "f213d54de9fc7af0d396057c4353d65fa1003bf35bafabd35d11b8b47f2e9a98",
+      "state_chars": 664,
+      "state_sha256": "7ed561b6af49c3ad6a5a49c2433079beeb91ec2d20a834035bd42595cfbc6c7f",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.44999999999999996,
+      "elapsed_ms": 2572.1684941090643,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 15,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.5,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.5,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "083975b671e2966ca6b85d907e9c4a244968b6b7f2fcaf1f4161f50c0b9dced6",
+      "state_chars": 266,
+      "state_sha256": "620a814ed1d4039bb0a4cd6198da9686f38865c058c08a8745a166068253557e",
+      "state_truncated": false
+    },
+    {
+      "action": "frontdoor",
+      "confidence": 1.0,
+      "elapsed_ms": 2384.999001864344,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": false,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 16,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 1.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "1cdcf9bb28dbc1c8de3cb49e15895ad9fe69367da25be969edb274f54235347a",
+      "state_chars": 263,
+      "state_sha256": "cdcc9cac869a892334ebf3f45af353434b57e9291111943bf7a33c8580fbfe3d",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2495.5976041965187,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 17,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "9a0544c9b2c6376f240af25c8c7372d2a50b53bc5084da0f4ada638fc1b5cf4d",
+      "state_chars": 261,
+      "state_sha256": "ef82f95410f95a3b11a8f5115d726157560c3475d376ebf6b3823039951dac33",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9663265306122448,
+      "elapsed_ms": 2452.10220804438,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 18,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9693877551020408,
+        "SELF:direct": 0.020408163265306124,
+        "SELF:repl": 0.010204081632653062,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "9e5039b5b0d73bacf1337f349193cf55a46e4d3461ace3244a591273a1f1bfe0",
+      "state_chars": 263,
+      "state_sha256": "5e2ebfdb15278d244e02af2ec29d72808fccf61f61ac73b50004b7796e818cf0",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9663265306122448,
+      "elapsed_ms": 2503.510252106935,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 19,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9693877551020408,
+        "SELF:direct": 0.020408163265306124,
+        "SELF:repl": 0.010204081632653062,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "75cbe8f427c92b3a3dbad336e021bf11e4e33942963839f08d499f3085ba03c5",
+      "state_chars": 263,
+      "state_sha256": "52e06c1a84b85f2866b8fc2012b64320261a7f5c4f4445364209ed4ddadea6f8",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.7781512605042017,
+      "elapsed_ms": 2507.0318430662155,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 20,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.7983193277310925,
+        "SELF:direct": 0.025210084033613446,
+        "SELF:repl": 0.008403361344537816,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.16806722689075632,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "cd656fb59bb04445468539561754bfe5e62ba7545f1d6aeb8ecb9666e3f7fd6e",
+      "state_chars": 202,
+      "state_sha256": "23f881459b99ca11b38fc26921c81383dd823afb54214ec27480600c444d3bd8",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2425.3461859188974,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 21,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "b0f29492ba3404031e8f072e54105e3ea3dac2a9aaf582bf70c2cc41a5083639",
+      "state_chars": 205,
+      "state_sha256": "1b8d92f32cb5269591db67edf838e464b3e41c2798125a4f337c9c2867233800",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9663265306122448,
+      "elapsed_ms": 2509.8665738478303,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 22,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9693877551020408,
+        "SELF:direct": 0.020408163265306124,
+        "SELF:repl": 0.010204081632653062,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "3d04d34de1cd93eddea297460bd5db797756c7309244a182667b67a9fc486669",
+      "state_chars": 264,
+      "state_sha256": "a564cfd24882669d1204635946346292fb21a10b2d38c6948c3a13cc2f9cef5e",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 1985.9471968375146,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 23,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "90f18d2bfe1fbff97d572ce246c8d2bd03ba9768762da83b7a4198de89e9da4b",
+      "state_chars": 164,
+      "state_sha256": "122ce7ce735c077fb3eb6924134edc030f45d035346df89ab3a75559e3313dec",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2490.19060889259,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 24,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "3d04d34de1cd93eddea297460bd5db797756c7309244a182667b67a9fc486669",
+      "state_chars": 264,
+      "state_sha256": "a564cfd24882669d1204635946346292fb21a10b2d38c6948c3a13cc2f9cef5e",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2560.4432276450098,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 25,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "828084ee86fb783287e54ebb9c450a766b0e63792573b44ff0b71e4f355847b6",
+      "state_chars": 264,
+      "state_sha256": "d44cbd2ecec5c062c5fc53c2d1ffd8fdb5dfb76779a1d2bdd880e902a55b7cf6",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2367.221117950976,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 26,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "eaa766ea55003dd9a108eb1336bbe41806b0484e8e46eda624508ca0250fdba6",
+      "state_chars": 244,
+      "state_sha256": "217453dc45d1de24653f314d8bc45fc2a14e89abcd1806644cf359219fd2c04d",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2504.5671300031245,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 27,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "fb68da4223ada49f7a6c00278ea124e0658590887852910e8ea53bec5f06972c",
+      "state_chars": 254,
+      "state_sha256": "f5f4a837cb1175bd51d281198035d227d408a29a63f57dc3feb5cca027c791d9",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.736,
+      "elapsed_ms": 2459.9204920232296,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 28,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.76,
+        "SELF:direct": 0.024,
+        "SELF:repl": 0.008,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.2,
+        "frontdoor:repl": 0.008
+      },
+      "prompt_sha256": "74850ac71a31c01c116e7f5945ddf7a813caf57b953ce6dba769e3df48e827f4",
+      "state_chars": 265,
+      "state_sha256": "599f2a66592402bc9324c5b426c1b16df0e86dae324d1d239c5e2cf9890bc4c1",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9346534653465346,
+      "elapsed_ms": 2600.392720196396,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 29,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9405940594059405,
+        "SELF:direct": 0.0297029702970297,
+        "SELF:repl": 0.009900990099009901,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.019801980198019802
+      },
+      "prompt_sha256": "6398cd0d522eaa0b171a851407d6d268ac3b8e4069e525422ef967fdc57d5c7e",
+      "state_chars": 265,
+      "state_sha256": "dec034d1140b26b0d44a5a6d42c694f722f92bf40346d190784744c5154b38b4",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2399.50319705531,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 30,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "b0f29492ba3404031e8f072e54105e3ea3dac2a9aaf582bf70c2cc41a5083639",
+      "state_chars": 205,
+      "state_sha256": "1b8d92f32cb5269591db67edf838e464b3e41c2798125a4f337c9c2867233800",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9663265306122448,
+      "elapsed_ms": 2505.369951017201,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 31,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9693877551020408,
+        "SELF:direct": 0.020408163265306124,
+        "SELF:repl": 0.010204081632653062,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "75cbe8f427c92b3a3dbad336e021bf11e4e33942963839f08d499f3085ba03c5",
+      "state_chars": 263,
+      "state_sha256": "52e06c1a84b85f2866b8fc2012b64320261a7f5c4f4445364209ed4ddadea6f8",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9663265306122448,
+      "elapsed_ms": 2402.144913095981,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 32,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9693877551020408,
+        "SELF:direct": 0.020408163265306124,
+        "SELF:repl": 0.010204081632653062,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "bbb4dafead3de5dfa3c59fc98f6aebd78418fcbaa26b05f0e10d35695fed11b8",
+      "state_chars": 264,
+      "state_sha256": "5a5fafac61d1f96aeed92a7cf0ac730adcc3a2b7435fa60a0312319cb86c2e1e",
+      "state_truncated": false
+    },
+    {
+      "action": "WORKER",
+      "confidence": 1.0,
+      "elapsed_ms": 2490.3073413297534,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 33,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 1.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "ea6c6de9b528a41c1a7e17c7d936a9a3dd9132560cc3423d52d62764412ce2b0",
+      "state_chars": 270,
+      "state_sha256": "6d8117607eb98f17927651462bfad176171f847fa5d4dd47aa0dbc705aa525d6",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.945,
+      "elapsed_ms": 2454.373197630048,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 34,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.95,
+        "SELF:direct": 0.03,
+        "SELF:repl": 0.01,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.01
+      },
+      "prompt_sha256": "1e3ab4511970f5612ebd545ee424a515bf23eaea3bf5dee1beebbc6a87abfe15",
+      "state_chars": 258,
+      "state_sha256": "52e0222ec8c4bc5e47c69b602de271f3d9142f2d2ac449a2f2d628ea44e46ace",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2448.7001970410347,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 35,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "52cff91adda489171b0226f4b90993b3649d3b62272f59e535c1334c9aba11e7",
+      "state_chars": 70,
+      "state_sha256": "3fb633b13c965cc730579d13cb6127e2cb8d8361936aafac252bc5663ef5f993",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.8999999999999999,
+      "elapsed_ms": 2511.688827071339,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 36,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9090909090909091,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.09090909090909091,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "55dd0fd6d204d624f0f9f722e72c4fa37a705e04425ed51726e9ad492b79ca5a",
+      "state_chars": 264,
+      "state_sha256": "0ae853ea9116e70a0d69d8d9464f02f956f475c0a323f06dcf2989f6baf3e573",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2221.6802379116416,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 37,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "35097460321599366904e45bec184781dfe99af6f44ca38b629e3fc51afdc8dc",
+      "state_chars": 262,
+      "state_sha256": "d174b5ef3aba53b9280ab2d74f4ae9ac8c7b87c9cbfa130e4a2524fcfec93cc0",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9663265306122448,
+      "elapsed_ms": 2530.1819830201566,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 38,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9693877551020408,
+        "SELF:direct": 0.020408163265306124,
+        "SELF:repl": 0.010204081632653062,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "9a0544c9b2c6376f240af25c8c7372d2a50b53bc5084da0f4ada638fc1b5cf4d",
+      "state_chars": 261,
+      "state_sha256": "ef82f95410f95a3b11a8f5115d726157560c3475d376ebf6b3823039951dac33",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.858715596330275,
+      "elapsed_ms": 2434.2211270704865,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 39,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.8715596330275228,
+        "SELF:direct": 0.027522935779816512,
+        "SELF:repl": 0.009174311926605503,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.09174311926605505,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "2fd81cc297bf31ad72a7abe312b0e8cc5ac79165bbc2a926788c0cd4e9861936",
+      "state_chars": 265,
+      "state_sha256": "8db0e89577c5cf21c0649451b3c4d7cd0f7ce2a75faf3852b55521f80ad1ab66",
+      "state_truncated": false
+    },
+    {
+      "action": "frontdoor",
+      "confidence": 0.945,
+      "elapsed_ms": 2524.2771841585636,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 40,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.95,
+        "frontdoor:direct": 0.03,
+        "frontdoor:react": 0.01,
+        "frontdoor:repl": 0.01
+      },
+      "prompt_sha256": "0dc8a1402ff4abcb55b8dab878816a7dcb4d587bb80c67dca246d88c354489e7",
+      "state_chars": 265,
+      "state_sha256": "b4b87fae88708ff3cd34b7a3799b206fcbc041003a2a16ac9eac9b2956948e72",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.945,
+      "elapsed_ms": 2438.8333768583834,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 41,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.95,
+        "SELF:direct": 0.03,
+        "SELF:repl": 0.01,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.01
+      },
+      "prompt_sha256": "70268189a47721e2885af61c1cb8e93323ed72b45251ac4a079efc32812cb52d",
+      "state_chars": 136,
+      "state_sha256": "45033a96055e0deb8b2e6118978839378663e23659c8920cf19959af1648f914",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2533.1608979031444,
+      "incumbent": "SELF:direct",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 42,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "4daa92574c110912ab386c8d672162e20d612825dcfde48fa390158096c89749",
+      "state_chars": 681,
+      "state_sha256": "c0f5c254cbfd5968364b255c703c143c3e476485ba6e97c53874db51b8906695",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2580.417894758284,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": false,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 43,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "a642968689a929f1d38cc3b73ece965f8632527b4f1be13a4fbfb7313e69dfdf",
+      "state_chars": 262,
+      "state_sha256": "237fd5ac6c1547a23fcee4e893bacf2e61a6f30b2af99a539658ee976eb105b6",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9663265306122448,
+      "elapsed_ms": 2443.9509948715568,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 44,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9693877551020408,
+        "SELF:direct": 0.020408163265306124,
+        "SELF:repl": 0.010204081632653062,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "bbb4dafead3de5dfa3c59fc98f6aebd78418fcbaa26b05f0e10d35695fed11b8",
+      "state_chars": 264,
+      "state_sha256": "5a5fafac61d1f96aeed92a7cf0ac730adcc3a2b7435fa60a0312319cb86c2e1e",
+      "state_truncated": false
+    },
+    {
+      "action": "frontdoor",
+      "confidence": 1.0,
+      "elapsed_ms": 2399.6788137592375,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 45,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 1.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "0cf08fc58911b2ff5d85a47047febf84bab2a11061fda238202863e3b3cd8215",
+      "state_chars": 263,
+      "state_sha256": "e5aaffe735fabc3ab502d6e35fc43747c6baff0916b9f22ba614ddc6a427fbca",
+      "state_truncated": false
+    },
+    {
+      "action": "WORKER",
+      "confidence": 1.0,
+      "elapsed_ms": 2262.4723645858467,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 46,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 1.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "e9a43a98b67748f596ac8e270ebbcc1617dbf4176fd07ff0cb0f279ab133f2eb",
+      "state_chars": 265,
+      "state_sha256": "7e437da5cbd51f5b730db3d6233d9409544090aebebbacda31aa92fe22bbbd5f",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2443.6085377819836,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 47,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "943e09738f4a5deb76f66daf611943ee5384fbf4221cb8e310679da68cdd3e7e",
+      "state_chars": 204,
+      "state_sha256": "6bfa514b9da4e43fcde36ea2acb1e2dbd7343d8ca57cf87e577af5a51fdd39bd",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2438.693070784211,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 48,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "7039345916f1ae8656a188209e8c94650ece71e430c256418e474e5eec954011",
+      "state_chars": 264,
+      "state_sha256": "5ec7ba286b3ff287d7f393f189b7cb668c0b4084cd3e271261855b3f9f0629da",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2420.17727997154,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": false,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 49,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "1bc5f2cce5c76896937048ce295805b1254123a6b51e8b8ac1fd490a04a1cb7c",
+      "state_chars": 260,
+      "state_sha256": "93e14ae7c9e3da6c989a9cf482949e1f82671b667ab5e54ddaa043d84bd75b4b",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2450.657298322767,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 50,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "46bf2083603ca2a2139fcc5198ff15c8b260740dd6daeab6bad67de6f21dfa67",
+      "state_chars": 264,
+      "state_sha256": "cbcc10b05755fbb53ebdccf563692a2790e82c7c3631a2c4ea5972277efc5900",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2415.2568448334932,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 51,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "76f4c89f5029a5a01beaa4cf0e2ba9f1aabbec6df3a9948c6d1c093b24c859e8",
+      "state_chars": 264,
+      "state_sha256": "e589a49ea91f99148a0ec0b4a20c8c0e96b11ae03f3b2811fb84611076147385",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2530.0647080875933,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 52,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "762312fdc14f9e95f5ff808d458ac1faa421f870c121ae80fac5dc6056b435b1",
+      "state_chars": 264,
+      "state_sha256": "4ae459b78d6a1e603c48873c9c84847e440274684c78d7a12de6c719e693c3ce",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.44999999999999996,
+      "elapsed_ms": 2431.7581867799163,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 53,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.5,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.5,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "2de6468746aa9f200972a40010c928eb8fe1ddeea99f92457b13856817c17dec",
+      "state_chars": 267,
+      "state_sha256": "953ea491afda447f1ccc39691a2de1b4e53f14e47e514f6994388ee6484fa013",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2225.4266650415957,
+      "incumbent": "WORKER",
+      "json_failures": [],
+      "label": false,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 54,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "aa50ec628b515b29aee36d3f51bc49239d3791443d22c75162fba3d2cca6ff76",
+      "state_chars": 136,
+      "state_sha256": "0e3d490ce978542f3dafdbb44d285c34444900a955869e20d942a2400333675d",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.8999999999999999,
+      "elapsed_ms": 2443.975323345512,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 55,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9090909090909091,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.09090909090909091,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "f19067f99826b730af4f770115a5376c354f36bad74819b79d535847210d08d2",
+      "state_chars": 266,
+      "state_sha256": "2598bd0b60f996d012e933d916131bf6c4ca5ed53f4dacec262c1de60ee5a2bd",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.736,
+      "elapsed_ms": 2553.517078049481,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 56,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.76,
+        "SELF:direct": 0.024,
+        "SELF:repl": 0.008,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.2,
+        "frontdoor:repl": 0.008
+      },
+      "prompt_sha256": "f35d96318dfdfd52269bfd1b2007aa3d85ea2fe486ad6a74183194023a4fffa7",
+      "state_chars": 265,
+      "state_sha256": "89bc7fc0ab18b92bbf0ae4b03d180f14f39de3e4b2a9a63f56575995176a7927",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 1.0,
+      "elapsed_ms": 2542.0743310824037,
+      "incumbent": "architect_general",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 57,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 1.0,
+        "SELF:direct": 0.0,
+        "SELF:repl": 0.0,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "48befaeb39be25a0c54c91998295e2a1b9b1e5d58c43f21944f06e2b8e368dc2",
+      "state_chars": 265,
+      "state_sha256": "cb776669ce9b35e7e966a5fbc30b3fc5d79801249ed1b1c5a2037159b40e7e6a",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2509.14054736495,
+      "incumbent": "architect_coding",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 58,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "33a57227be383d04580b330a8bab7a59c0f1e93dace8942d19cc969db5ef44d6",
+      "state_chars": 179,
+      "state_sha256": "5d8d9b6991576dd70c022b750a4007fe7026b4bd4c8c5cf73505a9efa5c772d4",
+      "state_truncated": false
+    },
+    {
+      "action": "SELF",
+      "confidence": 0.9555555555555555,
+      "elapsed_ms": 2434.8621401004493,
+      "incumbent": "frontdoor",
+      "json_failures": [],
+      "label": true,
+      "native_failures": [
+        {
+          "detail": "question 'routing_action': candidate labels ['ARCHITECT', 'SELF:direct', 'SELF:repl', 'WORKER', 'architect_coding', 'architect_general', 'frontdoor', 'frontdoor:direct', 'frontdoor:react', 'frontdoor:repl'] do not tokenize to exactly one token (with or without a leading space); ask this question in JSON mode",
+          "reason": "native_unsupported_candidates"
+        }
+      ],
+      "path": "json",
+      "position": 59,
+      "probabilities": {
+        "ARCHITECT": 0.0,
+        "SELF": 0.9595959595959596,
+        "SELF:direct": 0.030303030303030304,
+        "SELF:repl": 0.010101010101010102,
+        "WORKER": 0.0,
+        "architect_coding": 0.0,
+        "architect_general": 0.0,
+        "frontdoor": 0.0,
+        "frontdoor:direct": 0.0,
+        "frontdoor:react": 0.0,
+        "frontdoor:repl": 0.0
+      },
+      "prompt_sha256": "76f4c89f5029a5a01beaa4cf0e2ba9f1aabbec6df3a9948c6d1c093b24c859e8",
+      "state_chars": 264,
+      "state_sha256": "e589a49ea91f99148a0ec0b4a20c8c0e96b11ae03f3b2811fb84611076147385",
+      "state_truncated": false
+    }
+  ],
+  "snapshot": {
+    "admissibility_reason": "known_2026_04_15_frozen_snapshot",
+    "admissible": true,
+    "db_bytes": 113098752,
+    "db_mtime_utc": "2026-04-15T09:17:06Z",
+    "db_path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db.backup-20260415",
+    "db_sha256": "12ca8b0bec364b63358c530c8d06e0e700a58daac95249a460965c629e4856af",
+    "faiss_path": null,
+    "faiss_sha256": null,
+    "max_created_at": "2026-04-15T09:17:02.851570+00:00",
+    "max_updated_at": "2026-04-15T09:17:02.851570+00:00",
+    "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db.backup-20260415"
+  },
+  "timestamp": "2026-09-18T12:03:52.000019+00:00",
+  "wall_ms_total": 147038.30192657188
+}
