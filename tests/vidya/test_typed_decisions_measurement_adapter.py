@@ -1,4 +1,4 @@
-"""TD-2/TD-3 typed-decision measurement receipts -> ClaimTuple projection (VB-TDP-1).
+"""TD-2/TD-3/TD-7 typed-decision measurement receipts -> ClaimTuple projection (VB-TDP-1).
 
 Pinned:
 
@@ -8,12 +8,18 @@ Pinned:
   stable on replay, and the REAL receipt corpus does not collapse distinct claims;
 * absence is not back-filled: a receipt with no ``protocol_id`` yields no invented
   protocol, and a receipt with no ``metric_direction`` yields no direction inferred
-  from a metric name (ECE must NOT come out ``lower_better``; the tool-args pilot's
-  and the parallel fan-out's real ``metric_directions`` maps project verbatim, and
-  the same receipt with the map deleted keeps the absent clause);
+  from a metric name (ECE must NOT come out ``lower_better``; the tool-args pilot's,
+  the parallel fan-out's and the routing replay's real ``metric_directions`` maps
+  project verbatim — routing replay's own ``higher_is_better`` / ``lower_is_better``
+  vocabulary through the adapter's declared 1:1 map, with the receipt token carried
+  verbatim — and the same receipt with the map deleted keeps the absent clause);
 * the extractor does not understate coverage: every declared metric of every study
   projects, and a receipt missing a declared field is REFUSED by name, never
-  silently shorter;
+  silently shorter; a routing-replay metric the producer explicitly recorded as
+  ``null`` (a degenerate AUROC) is omitted, never filled;
+* the routing replay's frozen label is the INCUMBENT action's outcome, and that
+  caveat plus the ``calibration_agreeing_only`` sub-block are carried in every
+  routing claim and in ``extra``;
 * the adapter never emits a grade.
 """
 
@@ -44,6 +50,10 @@ REAL_TOOL_ARGS_RECEIPT = (HERE.parents[1] / "artifacts" / "typed_decisions"
 #: The live TD-3b parallel fan-out (4 workers) receipt from the same run dir.
 REAL_PARALLEL_FANOUT_RECEIPT = (HERE.parents[1] / "artifacts" / "typed_decisions"
                                 / "run_20260917" / "parallel-fanout-w4.json")
+#: The TD-7/TD-9 routing-replay receipts; the newest is used so a TD-9 run landing
+#: while this test file is open is exercised instead of the TD-7 one.
+REAL_ROUTING_REPLAY_DIR = (HERE.parents[1] / "artifacts" / "typed_decisions"
+                           / "run_20260918")
 AS_OF = "2026-09-17T18:00:00Z"
 
 #: Declared coverage, study -> metric keys. The adapter's map is the contract; this
@@ -67,7 +77,20 @@ DECLARED = {
                         "concurrent_vs_batched_agreement_rate",
                         "sequential_vs_batched_agreement_rate",
                         "concurrent_vs_sequential_agreement_rate"),
+    "routing_replay": ("agreement_rate", "agreement_wilson_95_low", "ece", "brier",
+                       "auroc"),
 }
+
+
+def _newest_routing_replay_receipt() -> Path | None:
+    if not REAL_ROUTING_REPLAY_DIR.is_dir():
+        return None
+    hits = sorted(REAL_ROUTING_REPLAY_DIR.glob("routing-replay-*.json"),
+                  key=lambda p: (p.stat().st_mtime, p.name))
+    return hits[-1] if hits else None
+
+
+REAL_ROUTING_REPLAY_RECEIPT = _newest_routing_replay_receipt()
 
 
 def _prompts(count: int, seed: str) -> list[str]:
@@ -251,6 +274,114 @@ def parallel_fanout_receipt(**over) -> dict:
     return receipt
 
 
+def routing_replay_receipt(**over) -> dict:
+    """The TD-7 routing-replay harness shape (``receipt`` tag, no ``study`` field).
+
+    Mirrors the producer (``src/typed_decisions/routing_replay.py``): aggregates over
+    the replayed rows, the producer's own ``metric_directions`` vocabulary, and label
+    provenance binding the labels to the frozen snapshot.
+    """
+    receipt = {
+        "receipt": "td7-routing-replay",
+        "timestamp": "2026-09-18T12:06:31.338770+00:00",
+        "snapshot": {
+            "path": "/snap/episodic.db.backup-20260415",
+            "db_path": "/snap/episodic.db.backup-20260415",
+            "db_sha256": "1" * 64,
+            "db_bytes": 113098752,
+            "db_mtime_utc": "2026-04-15T09:17:06Z",
+            "faiss_path": None,
+            "faiss_sha256": None,
+            "max_created_at": "2026-04-15T09:17:02.851570+00:00",
+            "max_updated_at": "2026-04-15T09:17:02.851570+00:00",
+            "admissible": True,
+            "admissibility_reason": "known_2026_04_15_frozen_snapshot",
+        },
+        "config": {
+            "n": 4,
+            "seed": 20260918,
+            "role": "frontdoor",
+            "cue_style": "id_only",
+            "mode": "native+json_fallback",
+            "state_budget_chars": 4000,
+            "json_n_tokens": 768,
+            "question_id": "routing_action",
+            "question_text": ("Which recorded routing action should handle the task "
+                              "described in STATE?"),
+            "options": ["ARCHITECT", "SELF"],
+        },
+        "corpus": {"routing_rows": 9, "rows_with_action": 9,
+                   "excluded_empty_action_rows": 0, "distinct_actions": 2},
+        "rows": [
+            {"position": i, "incumbent": incumbent, "label": label,
+             "state_sha256": hashlib.sha256(f"state-{i}".encode()).hexdigest(),
+             "state_chars": 700, "state_truncated": False, "path": "json",
+             "action": action, "confidence": confidence,
+             "probabilities": {action: confidence}, "native_failures": [],
+             "json_failures": [], "prompt_sha256": _prompts(1, f"routing-{i}")[0],
+             "elapsed_ms": 250.0}
+            for i, (incumbent, action, label, confidence) in enumerate((
+                ("SELF", "SELF", True, 0.9),
+                ("SELF", "ARCHITECT", True, 0.8),
+                ("ARCHITECT", "ARCHITECT", False, 0.7),
+                ("SELF", "ARCHITECT", True, 0.6),
+            ))
+        ],
+        "aggregates": {
+            "n_rows": 4, "n_decided": 4, "n_unresolved": 0,
+            "agreement": {
+                "n_agreeing": 1, "n_disagreeing": 3, "rate": 0.25,
+                "wilson_95": [0.04562100268861287, 0.6993581503854306],
+                "by_incumbent_action": {
+                    "SELF": {"n": 3, "agreeing": 0, "rate": 0.0},
+                    "ARCHITECT": {"n": 1, "agreeing": 1, "rate": 1.0},
+                },
+            },
+            "path_split": {"native": 0, "json": 4, "unresolved": 0},
+            "failures": {"total": 4,
+                         "by_reason": {"native_unsupported_candidates": 4}},
+            "calibration": {
+                "n": 4, "ece": 0.2, "brier": 0.15, "auroc": 0.75,
+                "top1_accuracy": 0.75, "bottom1_accuracy": 0.25,
+                "spearman_rho": 0.0, "mae": 0.2, "base_rate": 0.75,
+                "reliability_bins": [],
+            },
+            "calibration_agreeing_only": {
+                "n": 1, "ece": 0.1, "brier": 0.01, "auroc": None,
+                "top1_accuracy": 1.0, "bottom1_accuracy": None,
+                "spearman_rho": None, "mae": 0.1, "base_rate": 1.0,
+                "reliability_bins": [],
+            },
+            "label_base_rate": 0.75,
+            "wall_ms_total": 1000.0, "wall_ms_mean": 250.0, "wall_ms_max": 400.0,
+        },
+        "wall_ms_total": 1005.0,
+        "metric_directions": {
+            "agreement.rate": "higher_is_better",
+            "agreement.wilson_95_low": "higher_is_better",
+            "calibration.ece": "lower_is_better",
+            "calibration.brier": "lower_is_better",
+            "calibration.mae": "lower_is_better",
+            "calibration.auroc": "higher_is_better",
+            "calibration.top1_accuracy": "higher_is_better",
+            "calibration.bottom1_accuracy": "lower_is_better",
+            "calibration.spearman_rho": "higher_is_better",
+            "path_split.unresolved": "lower_is_better",
+            "wall_ms_total": "lower_is_better",
+        },
+        "label_provenance": {
+            "status": "frozen-snapshot",
+            "label_definition": "outcome == 'success' from the frozen snapshot above",
+            "snapshot_db_sha256": "1" * 64,
+            "admissibility_reason": "known_2026_04_15_frozen_snapshot",
+            "warning": ("The LIVE episodic.db is not admissible ground truth: the "
+                        "2026-09-17 leak purge changed it."),
+        },
+    }
+    receipt.update(over)
+    return receipt
+
+
 def write(receipt: dict, tmp_path: Path, name: str = "receipt.json") -> Path:
     path = tmp_path / name
     path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
@@ -263,6 +394,8 @@ def write_corpus(tmp_path: Path) -> Path:
     root.mkdir(parents=True, exist_ok=True)
     write(fanout_receipt(), root, "fanout-20260917T162623965948Z.json")
     write(parallel_fanout_receipt(), root, "parallel-fanout-20260917T232456139097Z.json")
+    write(routing_replay_receipt(), root,
+          "routing-replay-20260918T120631338770Z.json")
     return root
 
 
@@ -311,6 +444,7 @@ def test_identity_is_unique_per_run_and_per_metric(tmp_path):
         write(fanout_receipt(), tmp_path, "fanout.json"),
         write(tool_args_pilot_receipt(), tmp_path, "tool-args-pilot.json"),
         write(parallel_fanout_receipt(), tmp_path, "parallel-fanout.json"),
+        write(routing_replay_receipt(), tmp_path, "routing-replay.json"),
     ]
     tuples = [tup for path in paths for tup in tuples_for(path)]
     expected = sum(len(keys) for keys in DECLARED.values())
@@ -350,6 +484,42 @@ def test_parallel_fanout_identity_keeps_the_per_arm_prompt_map(tmp_path):
     first = write(parallel_fanout_receipt(), tmp_path, "run-a.json")
     changed = parallel_fanout_receipt()
     changed["prompt_sha256"]["concurrent_singleton"] = _prompts(4, "parallel-conc-b")
+    second = write(changed, tmp_path, "run-b.json")
+    assert set(t.measurement_id for t in tuples_for(first)).isdisjoint(
+        t.measurement_id for t in tuples_for(second))
+
+
+def test_routing_replay_receipt_tag_and_study_field_are_one_study(tmp_path):
+    """TD-7 identifies itself by receipt tag; a TD-9 ``study`` field must not fork the run."""
+    tagged = write(routing_replay_receipt(), tmp_path, "tagged.json")
+    study = write(routing_replay_receipt(study="routing_replay"), tmp_path, "study.json")
+    td9 = write(routing_replay_receipt(receipt="td9-routing-replay"), tmp_path, "td9.json")
+    tagged_ids = {t.measurement_id for t in tuples_for(tagged)}
+    assert tagged_ids == {t.measurement_id for t in tuples_for(study)}
+    assert tagged_ids == {t.measurement_id for t in tuples_for(td9)}
+    assert {t.extra["study"] for t in tuples_for(study)} == {"routing_replay"}
+
+
+def test_routing_replay_identity_is_unique_across_runs_differing_only_by_timestamp(
+        tmp_path):
+    """A run is identified by snapshot + N + seed + timestamp; only the clock moved."""
+    first = write(routing_replay_receipt(), tmp_path, "run-a.json")
+    second = write(routing_replay_receipt(timestamp="2026-09-18T12:06:32.000000+00:00"),
+                   tmp_path, "run-b.json")
+    ids_a = [t.measurement_id for t in tuples_for(first)]
+    ids_b = [t.measurement_id for t in tuples_for(second)]
+    assert len(ids_a) == len(DECLARED["routing_replay"])
+    assert set(ids_a).isdisjoint(ids_b)
+    assert len(set(ids_a) | set(ids_b)) == 2 * len(DECLARED["routing_replay"])
+
+
+def test_routing_replay_identity_is_unique_across_snapshots(tmp_path):
+    """Same timestamp and counts, different frozen label source: two runs."""
+    first = write(routing_replay_receipt(), tmp_path, "run-a.json")
+    changed = routing_replay_receipt()
+    changed["snapshot"] = {**changed["snapshot"], "db_sha256": "2" * 64}
+    changed["label_provenance"] = {**changed["label_provenance"],
+                                   "snapshot_db_sha256": "2" * 64}
     second = write(changed, tmp_path, "run-b.json")
     assert set(t.measurement_id for t in tuples_for(first)).isdisjoint(
         t.measurement_id for t in tuples_for(second))
@@ -457,6 +627,58 @@ def test_real_parallel_fanout_receipt_projects_with_recorded_directions():
     assert by_metric["concurrent_vs_sequential_agreement_rate"].reps == 24
 
 
+@pytest.mark.skipif(REAL_ROUTING_REPLAY_RECEIPT is None,
+                    reason="no live routing-replay receipt on disk")
+def test_real_routing_replay_receipt_projects_with_recorded_directions():
+    """The newest TD-7/TD-9 receipt: every declared metric, the receipt's own direction
+    tokens through the declared vocabulary map, the snapshot sha in the identity, and
+    the incumbent-label caveat in every claim."""
+    path = REAL_ROUTING_REPLAY_RECEIPT
+    try:
+        raw = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        pytest.skip(f"newest routing-replay receipt is not a complete document: {exc}")
+    natives = adapter.native_rows(path)
+    keys = {n["metric_key"] for n in natives}
+    assert keys, f"{path} projected nothing"
+    assert keys <= set(DECLARED["routing_replay"])
+    # A small/degenerate run may write a null AUROC; the rest are the study's contract.
+    assert {"agreement_rate", "agreement_wilson_95_low", "ece", "brier"} <= keys
+    tuples = [adapter.project(n) for n in natives]
+    assert len({t.measurement_id for t in tuples}) == len(tuples)
+
+    by_metric = {t.extra["metric_key"]: t for t in tuples}
+    snapshot_sha = raw["snapshot"]["db_sha256"]
+    for tup in tuples:
+        assert tup.extra["metric_direction_present"] is True
+        assert tup.extra["metric_direction_source"].startswith(
+            "receipt:metric_directions.")
+        assert tup.metric_direction in ("higher_better", "lower_better")
+        assert tup.extra["metric_direction_receipt_token"] in (
+            "higher_is_better", "lower_is_better")
+        assert tup.extra["snapshot_db_sha256"] == snapshot_sha
+        # The frozen label describes the incumbent action; the reader cannot miss it.
+        assert adapter.ROUTING_LABEL_CAVEAT in tup.claim
+        assert "calibration_agreeing_only" in tup.extra
+    assert by_metric["agreement_rate"].metric_direction == "higher_better"
+    assert by_metric["agreement_wilson_95_low"].metric_direction == "higher_better"
+    assert by_metric["ece"].metric_direction == "lower_better"
+    assert by_metric["brier"].metric_direction == "lower_better"
+    if "auroc" in by_metric:
+        assert by_metric["auroc"].metric_direction == "higher_better"
+
+    # Values and scored denominators come from the receipt, not from a name.
+    aggregates = raw["aggregates"]
+    assert by_metric["agreement_rate"].value == aggregates["agreement"]["rate"]
+    assert by_metric["agreement_rate"].reps == aggregates["n_decided"]
+    assert by_metric["agreement_wilson_95_low"].value \
+        == aggregates["agreement"]["wilson_95"][0]
+    for key in ("ece", "brier", "auroc"):
+        if key in by_metric:
+            assert by_metric[key].value == aggregates["calibration"][key]
+            assert by_metric[key].reps == aggregates["calibration"]["n"]
+
+
 def test_parallel_fanout_directions_are_read_from_the_receipt_not_from_names(tmp_path):
     """Flip the receipt's own agreement-family and time labels: the claims follow it."""
     flipped = parallel_fanout_receipt(metric_directions={
@@ -502,6 +724,66 @@ def test_a_recorded_invalid_tool_args_direction_is_refused_never_repaired(tmp_pa
                  tmp_path)
     with pytest.raises(ct.ProjectionError, match="metric_directions.wall_ms"):
         tuple(adapter.native_rows(path))
+
+
+def test_routing_replay_directions_are_read_from_the_receipt_not_from_names(tmp_path):
+    """Flip the receipt's own vocabulary: the claims must follow it token for token."""
+    flipped = {key: ("lower_is_better" if value == "higher_is_better" else "higher_is_better")
+               for key, value in routing_replay_receipt()["metric_directions"].items()}
+    path = write(routing_replay_receipt(metric_directions=flipped), tmp_path)
+    by_metric = {t.extra["metric_key"]: t for t in tuples_for(path)}
+    for key in ("agreement_rate", "agreement_wilson_95_low", "auroc"):
+        assert by_metric[key].metric_direction == "lower_better"
+        assert by_metric[key].extra["metric_direction_receipt_token"] == "lower_is_better"
+    for key in ("ece", "brier"):
+        assert by_metric[key].metric_direction == "higher_better"
+        assert by_metric[key].extra["metric_direction_receipt_token"] == "higher_is_better"
+
+
+def test_a_routing_replay_missing_direction_is_refused_by_path(tmp_path):
+    receipt = routing_replay_receipt()
+    del receipt["metric_directions"]["calibration.ece"]
+    path = write(receipt, tmp_path)
+    with pytest.raises(ct.ProjectionError,
+                       match=r"metric_directions\.calibration\.ece"):
+        adapter.native_rows(path)
+
+
+def test_a_routing_replay_recorded_invalid_direction_is_refused_never_repaired(tmp_path):
+    directions = dict(routing_replay_receipt()["metric_directions"])
+    directions["calibration.auroc"] = "higher_is_more_accurate"
+    path = write(routing_replay_receipt(metric_directions=directions), tmp_path)
+    with pytest.raises(ct.ProjectionError,
+                       match=r"metric_directions\.calibration\.auroc"):
+        adapter.native_rows(path)
+
+
+def test_a_routing_replay_missing_declared_value_is_refused_by_path(tmp_path):
+    """Absent is not null: a field the receipt never captured refuses, never skips."""
+    receipt = routing_replay_receipt()
+    del receipt["aggregates"]["calibration"]["brier"]
+    path = write(receipt, tmp_path)
+    with pytest.raises(ct.ProjectionError,
+                       match=r"aggregates\.calibration\.brier"):
+        adapter.native_rows(path)
+
+
+def test_a_routing_replay_missing_snapshot_identity_is_refused_by_path(tmp_path):
+    """The label-source sha is part of the run identity: absent refuses by path."""
+    receipt = routing_replay_receipt()
+    del receipt["snapshot"]["db_sha256"]
+    path = write(receipt, tmp_path)
+    with pytest.raises(ct.ProjectionError, match=r"snapshot\.db_sha256"):
+        adapter.native_rows(path)
+
+
+def test_a_routing_replay_null_metric_is_omitted_not_filled(tmp_path):
+    """The producer's own null AUROC (a degenerate run) projects no tuple for it."""
+    receipt = routing_replay_receipt()
+    receipt["aggregates"]["calibration"]["auroc"] = None
+    path = write(receipt, tmp_path)
+    keys = {n["metric_key"] for n in adapter.native_rows(path)}
+    assert keys == set(DECLARED["routing_replay"]) - {"auroc"}
 
 
 # --- absence is not back-filled -----------------------------------------------------------
@@ -575,7 +857,8 @@ def test_every_declared_metric_of_every_study_projects(tmp_path):
     builders = {"contamination": contamination_receipt,
                 "calibration": calibration_receipt, "fanout": fanout_receipt,
                 "tool_args_pilot": tool_args_pilot_receipt,
-                "parallel_fanout": parallel_fanout_receipt}
+                "parallel_fanout": parallel_fanout_receipt,
+                "routing_replay": routing_replay_receipt}
     for study, builder in builders.items():
         path = write(builder(), tmp_path, f"{study}.json")
         natives = adapter.native_rows(path)
