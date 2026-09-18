@@ -38,8 +38,25 @@ oracle smoke on active-tip `anchor-gen-014` passed 32 plain/expert scalar cases
 and 16 fused scalar/GDB specialization-hit cases; no performance measurement
 was run in that smoke.
 
-The supervisor was restarted at 03:58 UTC against the **same** v27 serial state,
-store, and held-out floor. It recovered the D fence and launched retained
-batch 1 (child PID 2186174), so the prior settled abstention is still charged.
-The 20-loop semantic watch is still open: inspect proposals, critic decisions,
-correctness, measurements, and escape behavior; a keep quota is not the test.
+The supervisor was restarted at 03:58 UTC against the **same** v27 serial state
+and store. It recovered the D fence and launched retained batch 1 (child PID
+2186174), so the prior settled abstention remained charged. Batch 1 then
+selected the full CPU recipe, whereas the 3.113% held-out floor belongs to a
+different half-partition recipe. The full recipe legitimately needs its own
+held-out calibration. I mistook this for a duplicate and interrupted the child
+at 04:03 UTC. The process and its server are verified dead; no batch-1 result
+or performance claim exists. This interruption left a failed-target marker and
+an issued scheduler selection without a released-claim receipt. Recovery must
+preserve that fail-closed evidence, not fabricate a settled measurement. The
+20-loop semantic watch remains open; v27 is stopped and retained as evidence.
+
+Recovery: `8ca6f796` adds a new-state-only `--initial-continuation` input,
+validated against the exact target, stable argv and completed child hash. v28
+started at 04:12 UTC in
+`/mnt/raid0/llm/tmp/aku-glm53-continuous-20260918-v28`, with its first child
+resuming the validated v27 batch-0 continuation. Its scheduler epoch starts
+empty; it does **not** import the interrupted v27 selection. The same store,
+worktree, 28 retained keeps and historical evidence remain in use. v28 uses
+v27's exact target root to preserve stable continuation binding and disables
+retired-build pruning during this recovery. The full-recipe held-out floor is
+absent and its distinct calibration must finish before research authoring.
