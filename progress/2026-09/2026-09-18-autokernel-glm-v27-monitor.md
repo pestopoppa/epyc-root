@@ -4,7 +4,8 @@ The operator requested a 20-iteration semantic health watch using the autonomous
 Qwen3.8-27B run and manually steered Next-Flash work as patterns for useful
 research: falsifiable bottleneck hypotheses, source-specific critic decisions,
 independent correctness, matched measurements, and escape after measured nulls.
-This is **not** a keep quota. The watch is still open.
+This was **not** a keep quota. The operator ended the watch on 2026-09-18;
+AutoKernel is stopped and must not be relaunched by this session.
 
 GLM v27 started 2026-09-17 23:48 UTC in
 `/mnt/raid0/llm/tmp/aku-glm53-continuous-20260917-v27`, retaining the
@@ -60,3 +61,43 @@ worktree, 28 retained keeps and historical evidence remain in use. v28 uses
 v27's exact target root to preserve stable continuation binding and disables
 retired-build pruning during this recovery. The full-recipe held-out floor is
 absent and its distinct calibration must finish before research authoring.
+
+10:39–11:07 UTC status: v28 has now completed **36** serial batches, all
+`abstained` in their sealed continuations, with zero measured source candidates
+and no new keep. The active batch 36 is in a matched CPU serving A/B, with
+fresh dashboard heartbeats and repeated `llama-server` launches using roughly
+34 CPU-core equivalents during requests. The apparent host idleness between
+launches is not a stopped process. The 36 abstentions do **not** satisfy the
+operator's semantic 20-loop health watch. Their repeated reason is that dense
+Q8 work lacks an admitted independent path while 25–53% sampled barrier/wait
+time has no node-local causal attribution; the Q4_K/Q5_K route is admitted but
+prior mechanisms are exhausted. A SIGTERM to the captured supervisor PID
+2212445 set its STOP marker; it is expected to exit after batch 36 settles.
+At 11:09:46 UTC the supervisor honored the STOP marker after batch 36
+settled. Its continuation is `terminal=stopped`, `iterations_completed=1`,
+`outcome_counts={"runtime_observed":1}` for
+`akm-threads44-balanced-numa`. This is an observation-only runtime arm,
+not a source candidate, keep, or champion promotion. The serial state now
+has `next_batch=37`, `active=null`, and no failed target; the outer status
+declares `complete`. Exact captured supervisor PID 2212445 and child PID
+2806534 were absent when checked, and no AutoKernel process remained. No
+signal was needed because the queued stop completed before termination.
+
+The operator then explicitly ended this campaign and requested session
+wrap-up. The semantic 20-loop acceptance condition was **not met**: 36
+abstentions followed by one observation-only runtime arm produced zero new
+source-candidate measurements or keeps. The retained 28-keep store and
+experimental source remain intact. The causal per-thread profile described
+below was not run; it is a possible diagnostic only if the operator later
+authorizes another campaign, not a pending action for this session.
+
+Read-only audit identified a nonduplicative next diagnostic: compile the
+retained 614ff2ba experimental tree with existing `GGML_CPU_PROF` support,
+verify profiler markers in its CPU DSO, then profile the exact GLM request
+with `GGML_CPU_PROF_THREADS=1` and separate draft/trunk graph-shape filters.
+Older c463 per-node captures exist but their per-thread columns are all zero,
+so they cannot distinguish barrier overhead from straggler work. Hold the
+shared CPU-region claim through the replay. A Q8_0_1 exact-path oracle is
+technically possible, but the audit found no distinct evidence-backed Q8
+optimization to justify opening that gate yet. Wait for a causal source or
+assembly finding rather than invite more variations of exhausted mechanisms.

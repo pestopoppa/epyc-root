@@ -4,7 +4,7 @@
     "handoff-active": 168,
     "handoff-blocked": 2,
     "handoff-completed": 195,
-    "progress": 467,
+    "progress": 470,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
@@ -12,30 +12,20 @@
   "last_touch": {
     "advanced": {
       "added": 1,
-      "changed": 11,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-09-18T00:00:57Z",
+    "at": "2026-09-18T11:49:30Z",
     "scope_paths": [
-      "docs/guides/agent-workflows/handoff-index-authoring.md",
-      "docs/reference/harness-candidates/client-surface-audit.md",
-      "handoffs/active/dashboard-architecture-restructure.md",
-      "handoffs/active/fuzzy-workflow-authoring-gui.md",
-      "handoffs/active/harness-selection-and-integration.md",
-      "handoffs/active/non-inference-backlog.md",
-      "handoffs/active/scoring-infra-standardization.md",
-      "handoffs/active/typed-decision-plane.md",
-      "handoffs/active/unified-trace-memory-service.md",
-      "handoffs/active/vidya-belief-substrate-program.md",
-      "progress/2026-09/2026-09-17-backlog-churn.md",
-      "progress/2026-09/2026-09-17-intake-jev-sageattn.md"
+      "handoffs/active/autokernel-research-loop.md",
+      "progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-18T00:00:57Z",
+  "scan_time": "2026-09-18T11:49:30Z",
   "schema_version": 1,
-  "source_set_hash": "c16ae2b6ed9301603afa9ae058cc63021531a80f58dcca78ab1962c2b3a5f6b5",
+  "source_set_hash": "41ce286d57b108ec32f05578a0bc025f8a8092c7f27e421d7285f1541eb4c1db",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -134,10 +124,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8c69280f73c325f8a16494b471f553507ec8c5508cab0cd1119756146932d652",
-      "modified": "2026-09-17T20:13:10Z",
+      "content_hash": "296982e143291554ac219baca7c753525c7cc024db72e81cd282708c68f6e78c",
+      "modified": "2026-09-18T11:48:03Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 472525,
+      "size": 476361,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -630,10 +620,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "61a581c6fd0ca073c95b77345aef4379bffdb83e1bbc48d750ebe53bd218d5cc",
-      "modified": "2026-09-17T23:44:00Z",
+      "content_hash": "143a29b0eca03979db31f9d9bd725516abcc4404136b61926a387d4bbe51e0ed",
+      "modified": "2026-09-18T00:28:55Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 51388,
+      "size": 53905,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -878,10 +868,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "679d1c6c8831585f2f40c548f9cd5e520f46c8fbd220969f65e7509eb78bbd75",
-      "modified": "2026-09-17T23:44:00Z",
+      "content_hash": "a01ded22c3609d79784ad9379db8ccfb133bba306e86c9cc793cab393badf777",
+      "modified": "2026-09-18T10:51:17Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 93940,
+      "size": 97962,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1310,10 +1300,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "621479d09e75c093356db928be53c4236a02e5175cd5a9b453f219513403e6e9",
-      "modified": "2026-09-17T23:56:59Z",
+      "content_hash": "7ad94627edcf9e0ccd294b2ecef124881c1c855461f943cc016dae952b8ec9ae",
+      "modified": "2026-09-18T00:28:55Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 12854,
+      "size": 18415,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },
@@ -7814,6 +7804,30 @@
       "type": "progress"
     },
     {
+      "content_hash": "3fada7dea29cc3c9a35ca35c2b540ab8e7a6721f1f4ab199ea7c5f215bbdec12",
+      "modified": "2026-09-18T11:47:37Z",
+      "path": "progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md",
+      "size": 6811,
+      "title": "AutoKernel GLM v27 monitor \u2014 2026-09-18",
+      "type": "progress"
+    },
+    {
+      "content_hash": "bc6611adcecf026341f806c8f4a93e8a056306ad20b688a5a9cd3f0d6e28144a",
+      "modified": "2026-09-18T10:47:51Z",
+      "path": "progress/2026-09/2026-09-18-backlog-churn-2.md",
+      "size": 11220,
+      "title": "2026-09-18 \u2014 backlog churn, second batch: seven closures, one contract renamed, one daemon class named",
+      "type": "progress"
+    },
+    {
+      "content_hash": "92ddbf806e753fc668e9819d9bb88a3d920d6bc4229ed120d96377cd6c2b1561",
+      "modified": "2026-09-18T00:28:17Z",
+      "path": "progress/2026-09/2026-09-18-td1d-remeasure.md",
+      "size": 4561,
+      "title": "2026-09-18 \u2014 TD-1d re-measured on the GPU: an n=1 acceptance does not survive n=4",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
       "modified": "2026-09-17T14:42:12Z",
       "path": "docs/coordination/session-bus-task-flow-STATUS.md",
@@ -8670,7 +8684,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1079,
+  "total_new": 1082,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
