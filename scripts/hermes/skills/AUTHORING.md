@@ -44,7 +44,8 @@ Known current fields:
 |---|---|---|
 | `x_orchestrator_role` | string or null | Force an orchestrator role from `GET /v1/models` |
 | `x_max_escalation` | string or null | Cap escalation at `A`, `B1`, `B2`, or `C` |
-| `x_force_model` | string or null | Force a registry model and bypass normal routing |
+| `x_force_role` | string or null | Highest-precedence ROLE override; legal values are what `/v1/models` lists. An unservable value is refused with a 422 naming the field. |
+| `x_force_model` | string or null | **Deprecated alias for `x_force_role`** (same behaviour). It never took a model name — the seam is role-keyed end to end. |
 | `x_disable_repl` | boolean | Skip REPL execution and request direct text |
 | `x_show_routing` | boolean | Include routing metadata in the response |
 
@@ -63,7 +64,7 @@ operator behavior. At minimum, consider:
 - Does this skill mutate Hermes session state? Document how to reset it.
 - Does it require a live orchestrator API, a standalone Hermes backend, or only
   local config edits?
-- Does it use `x_force_model`? State that it bypasses routing and wins over
+- Does it use `x_force_role` (or its deprecated alias `x_force_model`)? State that it bypasses routing and wins over
   `x_orchestrator_role`.
 - Does it use booleans? Show JSON booleans (`true`/`false`), not strings.
 - Does it mention a role/model? Tell the reader how to verify it is still live.

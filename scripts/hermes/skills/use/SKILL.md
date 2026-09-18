@@ -33,9 +33,9 @@ Each command maps to an extension field on the `/v1/chat/completions` request:
 
 ## Notes
 
-- `x_orchestrator_role`, `x_force_model`, and `x_max_escalation` are strings;
+- `x_orchestrator_role`, `x_force_role` (deprecated alias `x_force_model`), and `x_max_escalation` are strings;
   boolean `x_*` overrides must be JSON booleans
-- `x_force_model` takes precedence over `x_orchestrator_role`
+- `x_force_role` takes precedence over `x_force_model`, which takes precedence over `x_orchestrator_role`
 - Available roles are listed at `GET /v1/models`; verify concrete role names
   before adding new command aliases
 - Override persists for the duration of the conversation (Hermes manages session state)
