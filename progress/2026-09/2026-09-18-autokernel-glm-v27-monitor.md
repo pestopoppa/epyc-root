@@ -4,7 +4,8 @@ The operator requested a 20-iteration semantic health watch using the autonomous
 Qwen3.8-27B run and manually steered Next-Flash work as patterns for useful
 research: falsifiable bottleneck hypotheses, source-specific critic decisions,
 independent correctness, matched measurements, and escape after measured nulls.
-This is **not** a keep quota. The watch is still open.
+This was **not** a keep quota. The operator ended the watch on 2026-09-18;
+AutoKernel is stopped and must not be relaunched by this session.
 
 GLM v27 started 2026-09-17 23:48 UTC in
 `/mnt/raid0/llm/tmp/aku-glm53-continuous-20260917-v27`, retaining the
@@ -72,7 +73,23 @@ Q8 work lacks an admitted independent path while 25–53% sampled barrier/wait
 time has no node-local causal attribution; the Q4_K/Q5_K route is admitted but
 prior mechanisms are exhausted. A SIGTERM to the captured supervisor PID
 2212445 set its STOP marker; it is expected to exit after batch 36 settles.
-Do not kill the active child merely to make the stop immediate.
+At 11:09:46 UTC the supervisor honored the STOP marker after batch 36
+settled. Its continuation is `terminal=stopped`, `iterations_completed=1`,
+`outcome_counts={"runtime_observed":1}` for
+`akm-threads44-balanced-numa`. This is an observation-only runtime arm,
+not a source candidate, keep, or champion promotion. The serial state now
+has `next_batch=37`, `active=null`, and no failed target; the outer status
+declares `complete`. Exact captured supervisor PID 2212445 and child PID
+2806534 were absent when checked, and no AutoKernel process remained. No
+signal was needed because the queued stop completed before termination.
+
+The operator then explicitly ended this campaign and requested session
+wrap-up. The semantic 20-loop acceptance condition was **not met**: 36
+abstentions followed by one observation-only runtime arm produced zero new
+source-candidate measurements or keeps. The retained 28-keep store and
+experimental source remain intact. The causal per-thread profile described
+below was not run; it is a possible diagnostic only if the operator later
+authorizes another campaign, not a pending action for this session.
 
 Read-only audit identified a nonduplicative next diagnostic: compile the
 retained 614ff2ba experimental tree with existing `GGML_CPU_PROF` support,
