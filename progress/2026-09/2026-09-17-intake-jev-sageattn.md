@@ -124,3 +124,10 @@ non-measurement). `metric_direction` write-side gap fixed in the producer.
 - Belief kernel: adapter extended to the tool_args_pilot study (7 claims per receipt, directions verbatim); 8 receipts
   projected cumulatively -> 28 claims / 84 frames; 3 bench reports correctly refused.
 - Live rounds ran on the worker (Qwen3.6-35B-A3B, MI210) and were torn down after each; VRAM returned to 0.
+
+## Round 4 — TD-1d: 12x native at parity
+
+Cue-style sweep on the worker (id_only cue): native 1.61 s vs JSON 19.3 s = **11.98x at 15/16 agreement and 15/16
+accuracy** on the overlap (short cue 6.0x, full cue 2.66x). Parallel per-question reads rejected on this stack:
+exclusive heavy_model lock serializes workers (concurrent 0.65x vs batched), and llama-server's generation API has
+no multi-slot logit readout — that architecture is the remaining gap to the vendor's parallel sampler.

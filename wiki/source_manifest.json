@@ -4,15 +4,38 @@
     "handoff-active": 168,
     "handoff-blocked": 2,
     "handoff-completed": 195,
-    "progress": 466,
+    "progress": 467,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-17T20:15:32Z",
-  "mode": "touch",
-  "scan_time": "2026-09-17T20:15:32Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 11,
+      "removed": 0
+    },
+    "at": "2026-09-18T00:00:57Z",
+    "scope_paths": [
+      "docs/guides/agent-workflows/handoff-index-authoring.md",
+      "docs/reference/harness-candidates/client-surface-audit.md",
+      "handoffs/active/dashboard-architecture-restructure.md",
+      "handoffs/active/fuzzy-workflow-authoring-gui.md",
+      "handoffs/active/harness-selection-and-integration.md",
+      "handoffs/active/non-inference-backlog.md",
+      "handoffs/active/scoring-infra-standardization.md",
+      "handoffs/active/typed-decision-plane.md",
+      "handoffs/active/unified-trace-memory-service.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "progress/2026-09/2026-09-17-backlog-churn.md",
+      "progress/2026-09/2026-09-17-intake-jev-sageattn.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-18T00:00:57Z",
   "schema_version": 1,
-  "source_set_hash": "2c432545fce16ef6ad84b9d60bdc9f42caee4fda613e3dd89a471c3f821b80aa",
+  "source_set_hash": "c16ae2b6ed9301603afa9ae058cc63021531a80f58dcca78ab1962c2b3a5f6b5",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -295,10 +318,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "afa203b13aca4cdfaded60916d977dfb5a48fd47b5c682469b7f1ce463ba0bd1",
-      "modified": "2026-09-17T14:47:14Z",
+      "content_hash": "0c6b40a3ebe4dfaec904973ee9e94457fd6fcd506c289e468c2eaf96a468d3e5",
+      "modified": "2026-09-17T23:44:00Z",
       "path": "handoffs/active/dashboard-architecture-restructure.md",
-      "size": 34689,
+      "size": 35951,
       "title": "Dashboard Architecture Restructure \u2014 audit + action plan",
       "type": "handoff-active"
     },
@@ -519,10 +542,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2b2fb6758edb4e40ffc2d9d15880c562f648a3c61049964a98783273accefbe4",
-      "modified": "2026-09-17T19:08:01Z",
+      "content_hash": "4ad4aa8871b3432805f460401b1a83a13945925cfbe11af1e71474cad7f2d011",
+      "modified": "2026-09-17T20:33:52Z",
       "path": "handoffs/active/fuzzy-workflow-authoring-gui.md",
-      "size": 6256,
+      "size": 21970,
       "title": "Fuzzy Workflow Authoring GUI \u2014 deterministic flow, fuzzy steps, one canvas",
       "type": "handoff-active"
     },
@@ -607,10 +630,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "82b67886e6302523bea659f480f4bf6cc3bfb9cc1aa65e8e8af0336f27ee0fd9",
-      "modified": "2026-09-17T19:40:52Z",
+      "content_hash": "61a581c6fd0ca073c95b77345aef4379bffdb83e1bbc48d750ebe53bd218d5cc",
+      "modified": "2026-09-17T23:44:00Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 47226,
+      "size": 51388,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -855,10 +878,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "284521e26b9ed025ec8a0c8a695d8e1a00bb04e2b9b1e221240e0972cae0a660",
-      "modified": "2026-09-17T14:47:14Z",
+      "content_hash": "679d1c6c8831585f2f40c548f9cd5e520f46c8fbd220969f65e7509eb78bbd75",
+      "modified": "2026-09-17T23:44:00Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 90885,
+      "size": 93940,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1135,10 +1158,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c74051d417cdc30ec1229b575ce72e875834fbe7cabb4b06a354a0550f831097",
-      "modified": "2026-09-17T12:30:10Z",
+      "content_hash": "8db412001c3f5f2ff4403e40c28d89f95bbd3fd6aab812757bb34176a956a85e",
+      "modified": "2026-09-17T20:33:52Z",
       "path": "handoffs/active/scoring-infra-standardization.md",
-      "size": 41981,
+      "size": 43526,
       "title": "Scoring Infrastructure Standardization + Tool-Use Eval Harness",
       "type": "handoff-active"
     },
@@ -1287,18 +1310,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2ee44d3437da5585bfe47da71f9b659343cb59020fd613a7babe417bf037d7e6",
-      "modified": "2026-09-17T20:10:01Z",
+      "content_hash": "621479d09e75c093356db928be53c4236a02e5175cd5a9b453f219513403e6e9",
+      "modified": "2026-09-17T23:56:59Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 10245,
+      "size": 12854,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },
     {
-      "content_hash": "e65f4db78ee4a7429006d2abee45bdeba0a2acb9487cbb25d65d406215622027",
-      "modified": "2026-09-17T14:47:14Z",
+      "content_hash": "05801218fd537bbb4edb54bef2f1bf9cfa5c0b4a66d8b1fa5e839b8d541afd0d",
+      "modified": "2026-09-17T23:44:00Z",
       "path": "handoffs/active/unified-trace-memory-service.md",
-      "size": 44842,
+      "size": 48089,
       "title": "Unified Trace / Memory Service",
       "type": "handoff-active"
     },
@@ -1311,10 +1334,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "99dab041019675a1877690abccc78f4755b2bcde1d19f87dd8058cb54be4bfc5",
-      "modified": "2026-09-17T16:33:50Z",
+      "content_hash": "7d9a8d0408a05242c737156a6c1160f6659d878a06f36f7129202b14d78149dd",
+      "modified": "2026-09-17T20:33:52Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 226430,
+      "size": 227788,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -7623,6 +7646,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "560657e5163670463c938bfca0560332617564033532bf6f505350a96fe8f321",
+      "modified": "2026-09-17T20:33:52Z",
+      "path": "progress/2026-09/2026-09-17-backlog-churn.md",
+      "size": 4631,
+      "title": "2026-09-17 \u2014 backlog churn: five low-hanging tasks closed, one defect filed",
+      "type": "progress"
+    },
+    {
       "content_hash": "41476e3f8cb13d335c52bf2c93797edf2e820db48192a8e3e484efd418f38ee0",
       "modified": "2026-09-17T19:43:01Z",
       "path": "progress/2026-09/2026-09-17-harness-doc-audit.md",
@@ -7631,10 +7662,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "1e66307b2f195f73d6bd9fd411060e510e17bb623e0a995929c5a5383d876be0",
-      "modified": "2026-09-17T20:10:01Z",
+      "content_hash": "1bcd631615fef1c8dbc5c693fb1a7d765976612c2e4cd8676fd9315520c5b22e",
+      "modified": "2026-09-17T23:43:36Z",
       "path": "progress/2026-09/2026-09-17-intake-jev-sageattn.md",
-      "size": 9118,
+      "size": 10631,
       "title": "2026-09-17 \u2014 research-intake session `intake-jev-sageattn` (full wrap-up)",
       "type": "progress"
     },
@@ -8015,10 +8046,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "271df33a47bdb403b29ae8edf67abd2429cba7775538eb5c246b8eb70860dfdf",
-      "modified": "2026-09-17T14:42:12Z",
+      "content_hash": "bc2482c00bfb8ec8b363cdecda62d066098f8f99af4302083e156a02328d625e",
+      "modified": "2026-09-17T23:44:00Z",
       "path": "docs/guides/agent-workflows/handoff-index-authoring.md",
-      "size": 7177,
+      "size": 8717,
       "title": "Handoff Index Authoring",
       "type": "docs"
     },
@@ -8295,10 +8326,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "e6dceb8be016a1c499d7f54e53ace53fe5519906eba1410d84b225b0f296bb09",
-      "modified": "2026-09-17T19:32:06Z",
+      "content_hash": "a8715af222c36faf1984b0fcbd6419cbc8ad285af2c40ceb811dcdfe19ed7590",
+      "modified": "2026-09-17T20:33:52Z",
       "path": "docs/reference/harness-candidates/client-surface-audit.md",
-      "size": 13360,
+      "size": 14887,
       "title": "Client Surface Audit \u2014 reusable instrument",
       "type": "docs"
     },
@@ -8639,7 +8670,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1078,
+  "total_new": 1079,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
