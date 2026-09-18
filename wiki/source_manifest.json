@@ -4,31 +4,28 @@
     "handoff-active": 168,
     "handoff-blocked": 2,
     "handoff-completed": 195,
-    "progress": 469,
+    "progress": 470,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-17T20:15:32Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 3,
+      "added": 1,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-09-18T10:52:02Z",
+    "at": "2026-09-18T11:49:30Z",
     "scope_paths": [
-      "handoffs/active/harness-selection-and-integration.md",
-      "handoffs/active/non-inference-backlog.md",
-      "handoffs/active/typed-decision-plane.md",
-      "progress/2026-09/2026-09-18-backlog-churn-2.md",
-      "progress/2026-09/2026-09-18-td1d-remeasure.md"
+      "handoffs/active/autokernel-research-loop.md",
+      "progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-18T10:52:02Z",
+  "scan_time": "2026-09-18T11:49:30Z",
   "schema_version": 1,
-  "source_set_hash": "e2dde582007ac75aaddc44564364e3ad47785d85469890f12115883e621571e6",
+  "source_set_hash": "41ce286d57b108ec32f05578a0bc025f8a8092c7f27e421d7285f1541eb4c1db",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -127,10 +124,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8c69280f73c325f8a16494b471f553507ec8c5508cab0cd1119756146932d652",
-      "modified": "2026-09-17T20:13:10Z",
+      "content_hash": "296982e143291554ac219baca7c753525c7cc024db72e81cd282708c68f6e78c",
+      "modified": "2026-09-18T11:48:03Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 472525,
+      "size": 476361,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -7807,6 +7804,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "3fada7dea29cc3c9a35ca35c2b540ab8e7a6721f1f4ab199ea7c5f215bbdec12",
+      "modified": "2026-09-18T11:47:37Z",
+      "path": "progress/2026-09/2026-09-18-autokernel-glm-v27-monitor.md",
+      "size": 6811,
+      "title": "AutoKernel GLM v27 monitor \u2014 2026-09-18",
+      "type": "progress"
+    },
+    {
       "content_hash": "bc6611adcecf026341f806c8f4a93e8a056306ad20b688a5a9cd3f0d6e28144a",
       "modified": "2026-09-18T10:47:51Z",
       "path": "progress/2026-09/2026-09-18-backlog-churn-2.md",
@@ -8679,7 +8684,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1081,
+  "total_new": 1082,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
