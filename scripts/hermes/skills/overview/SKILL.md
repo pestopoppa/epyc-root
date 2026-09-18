@@ -18,7 +18,7 @@ routing and stack lifecycle control.
 |-----------|------|--------|-------------|
 | `x_orchestrator_role` | string or null | Force a role from `GET /v1/models` and bypass frontdoor routing. | `/use` |
 | `x_max_escalation` | string or null | Cap escalation at `A`, `B1`, `B2`, or `C`. | `/escalation` |
-| `x_force_model` | string or null | Force one registry model and bypass role routing. Wins over `x_orchestrator_role`. | No dedicated command; advanced API override only |
+| `x_force_role` | string or null | Force one ROLE and bypass role routing. Wins over `x_orchestrator_role`. Legal values = what `/v1/models` lists; anything else is a 422. (`x_force_model` is a deprecated alias — it never took a model name.) | No dedicated command; advanced API override only |
 | `x_disable_repl` | boolean | Skip REPL execution and request direct text. | `/nocode` |
 | `x_show_routing` | boolean | Include routing metadata in the response for debugging. | No dedicated command; advanced API override only |
 

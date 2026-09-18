@@ -75,7 +75,7 @@ print(response.choices[0].message.content)
 - Do not hardcode deprecated roles or model IDs. Use `GET /v1/models` or the
   current orchestrator registry when examples need a concrete role.
 - Boolean overrides are JSON booleans, not strings.
-- `x_force_model` bypasses routing and takes precedence over
+- `x_force_role` (deprecated alias: `x_force_model`) bypasses routing and takes precedence over
   `x_orchestrator_role`; use it only when a specific registry model is required.
 - Reset commands must remove stale `x_*` fields from Hermes session state, not
   send an empty string.
