@@ -680,3 +680,13 @@ Canonical sources (always verify status in these files first):
   itself). Generalising H-4 so each daemon publishes `source_tree` and one supervisor tick restarts a
   divergent one is the proven shape and the right next step. Absolute-path launch recipes plus host-cron
   `once` ticks are an operator decision (OP-9/FW-3). Zero inference.
+  - [ ] **NIB2-81a — record the class where it will be found again.** An `INCIDENT_LOG.md` entry (a daemon
+    executes a stale or orphaned script inode; observed 2026-09-17, three shapes) plus one paragraph in
+    `scripts/coordination/WORKTREE_MIGRATION.md`: runtime-plane daemons execute from CANON or the VIEW only —
+    **a lane may develop a daemon, never run it.** Verified absent today: neither file mentions `fd/255`, an
+    inode, or this failure. That migration note already pins runtime *state* to `/workspace` and is silent on
+    runtime *code*, which is the gap the class fell through. Zero inference.
+  - [ ] **NIB2-81b — the orphaned `:8101` hub (pid 2098198).** Its worktree is deleted, and it has no registry
+    row, pidfile or probe, so nothing watches it and nothing would restart it. It presents 2026-09-15 code as
+    current, and a lazy import will ENOENT against the missing tree. OPERATOR / owning session: stop it
+    (identity from its own pid record, **never** a name pattern) or register it properly. Zero inference.

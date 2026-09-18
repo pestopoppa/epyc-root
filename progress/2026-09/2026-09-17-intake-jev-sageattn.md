@@ -131,3 +131,14 @@ Cue-style sweep on the worker (id_only cue): native 1.61 s vs JSON 19.3 s = **11
 accuracy** on the overlap (short cue 6.0x, full cue 2.66x). Parallel per-question reads rejected on this stack:
 exclusive heavy_model lock serializes workers (concurrent 0.65x vs batched), and llama-server's generation API has
 no multi-slot logit readout — that architecture is the remaining gap to the vendor's parallel sampler.
+
+## Round 5 — wiring round (operator-directed items 1 + 5)
+
+- Item 1: closed-set tool arguments wired at `src/repl_environment/context.py` `_dispatch_tool` behind
+  `typed_decisions_tool_args` (default off), fail-open, strict all-args-mappable gate, native preferred with JSON fallback.
+  24 new tests. Deferred items tracked: TD-7 (routing replay), CJ-13/14 (judge), M-19 (episodic).
+- Item 5: `fanout_policy.py` decision rule (native id-only / batched >=8 / sequential) with provenance-stamped
+  constants; TD-8 recorded done. 18 new tests.
+- Harness leverage filed as HS-TD-1..3 in `harness-selection-and-integration.md` (pre-dispatch classification,
+  per-turn self-check, context selection) — tracked for a harness session window, not yet implemented.
+- 281 tests green across the typed-decision + features suites; both repos promoted (root cfa19ab3, orch 770d3d5b).
