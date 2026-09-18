@@ -650,3 +650,33 @@ Canonical sources (always verify status in these files first):
   **Not fixed here: it changes graph control flow on a path evals traverse, so it wants its own
   before/after test and the owning session's judgement on which reading is right.** Zero inference
   to verify (unit tests with a fake backend); zero compute.
+- [ ] **NIB2-81** (HIGH for the reaper instance, MED for the class): **a long-running daemon keeps executing the
+  script inode it was launched with, so a committed fix never reaches it.** Investigated 2026-09-17 (read-only
+  `/proc` census, no name patterns, nothing signalled): full report at
+  `tmp/daemon-staleness-20260917/report.md`. **Three shapes, all live on this host:**
+  (1) **stale AND diverged** — the reaper (pid 2873259, started 09-08) holds `fd/255` on a lane copy under
+  `worktrees/mains/ak-rebuild-20260828`, 1,802 B at `02e3cebe`, against 7,976 B tracked at `49e85ab7`; the
+  running code still gates VACUUM on `pgrep -x opencode` and has never sourced `observer_guard.sh` (461
+  iterations, 39 VACUUMs against the operator's live `opencode.db`). Restart is **NI-OC-a.1**.
+  (2) **orphaned inode** — the hub and bus supervisors both show `(deleted)` for their script; the orphaning
+  event was this session's own `git reset --hard origin/main` at 19:04 (reflog `7002ebc8`). Content is
+  identical today, so nothing is broken — **the next commit to either file diverges silently.**
+  (3) **orphaned tree** — a hub on `:8101` (pid 2098198) runs from a worktree directory that no longer exists,
+  with no registry row, pidfile or probe.
+  **Mechanism:** no cron in the container, so these are hand-launched and inherit the launching session's cwd;
+  bash holds the script inode for life; git never writes in place, so a commit moves the PATH to a new inode
+  while the daemon keeps the old one; the abandoned lane never advances. Nothing moves a daemon back —
+  supervisors restart their charges, not themselves, and `WORKTREE_MIGRATION.md` pins runtime *state* to
+  `/workspace` while saying nothing about runtime *code*.
+  **Why no instrument caught it:** `observer_census.py` is static by design (Rule A/B over `git ls-files`, and
+  its runtime battery uses a sandboxed stand-in, never a live pid), which is how "census OK (17 observers)"
+  coexisted with a live pre-adoption reaper. `check_lane_worktree.py` flags the opposite direction;
+  `/api/health` folds data freshness, not code provenance. The one loop that works is the bus supervisor's H-4
+  tree-divergence check, which restarted the coordinator daemon at 23:34.
+  **Remedy, recommended shape:** (a) a startup self-attestation — each daemon compares its own `fd/255` inode
+  and blob against `HEAD:<relpath>` and refuses or alarms on mismatch (cheap; misses post-start orphaning);
+  plus (b) a registry `runtime:{pidfile,expected_path}` field and an `observer_census.py --live` `/proc` walk
+  feeding the existing fleet alarm (catches all three shapes including the `:8101` stray; fixes nothing by
+  itself). Generalising H-4 so each daemon publishes `source_tree` and one supervisor tick restarts a
+  divergent one is the proven shape and the right next step. Absolute-path launch recipes plus host-cron
+  `once` ticks are an operator decision (OP-9/FW-3). Zero inference.
