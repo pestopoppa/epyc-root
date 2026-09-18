@@ -1,0 +1,289 @@
+{
+  "schema": "epyc.m12.smoke_prefix_reuse.v1",
+  "started_at": "2026-09-18T14:03:13.146279+00:00",
+  "base": "http://127.0.0.1:8199",
+  "thresholds": {
+    "reuse_min_share": 0.95,
+    "stride": 2052,
+    "slack_tokens": 2048,
+    "warm_time_max_ratio": 0.25
+  },
+  "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "build_info": "b10301-ef81196d5",
+  "slots": [
+    {
+      "id": 0,
+      "n_ctx": 196608,
+      "speculative": true
+    },
+    {
+      "id": 1,
+      "n_ctx": 196608,
+      "speculative": true
+    },
+    {
+      "id": 2,
+      "n_ctx": 196608,
+      "speculative": true
+    },
+    {
+      "id": 3,
+      "n_ctx": 196608,
+      "speculative": true
+    }
+  ],
+  "legs": {
+    "tulving": {
+      "book": "200ch (196 chapters on disk)",
+      "A": {
+        "wall_s": 89.99,
+        "prompt_tokens": 104698,
+        "cached_tokens": 0,
+        "cache_n": 0,
+        "prompt_n": 104698,
+        "prompt_ms": 89596.665,
+        "prompt_per_second": 1168.5479587884215,
+        "predicted_n": 16,
+        "finish_reason": "length",
+        "content": "- Bethpage Black Course\n- American Museum of Natural History\n- Port Jefferson",
+        "vram_max_bytes": 59346915328
+      },
+      "B": {
+        "wall_s": 3.49,
+        "prompt_tokens": 104695,
+        "cached_tokens": 102650,
+        "cache_n": 102650,
+        "prompt_n": 2045,
+        "prompt_ms": 3159.23,
+        "prompt_per_second": 647.3096292451008,
+        "predicted_n": 16,
+        "finish_reason": "length",
+        "content": "- September 13, 2025\n- September 2",
+        "vram_max_bytes": 59348836352,
+        "_stride": 2052
+      },
+      "C": {
+        "wall_s": 0.45,
+        "prompt_tokens": 104695,
+        "cached_tokens": 104691,
+        "cache_n": 104691,
+        "prompt_n": 4,
+        "prompt_ms": 121.96,
+        "prompt_per_second": 32.79763857002296,
+        "predicted_n": 16,
+        "finish_reason": "length",
+        "content": "- September 13, 2025\n- September 2",
+        "vram_max_bytes": 59392258048,
+        "_stride": 2052
+      }
+    },
+    "beam": {
+      "conversation": "conversation 11",
+      "D": {
+        "wall_s": 256.43,
+        "prompt_tokens": 191447,
+        "cached_tokens": 0,
+        "cache_n": 0,
+        "prompt_n": 191447,
+        "prompt_ms": 255466.526,
+        "prompt_per_second": 749.4015086735865,
+        "predicted_n": 16,
+        "finish_reason": "length",
+        "content": "Based on the conversation history, the bias audit was initiated on **April 3",
+        "vram_max_bytes": 59392253952
+      },
+      "E": {
+        "wall_s": 6.25,
+        "prompt_tokens": 191451,
+        "cached_tokens": 189399,
+        "cache_n": 189399,
+        "prompt_n": 2052,
+        "prompt_ms": 5575.414,
+        "prompt_per_second": 368.0444178674445,
+        "predicted_n": 16,
+        "finish_reason": "length",
+        "content": "Based on the conversation history provided, there is no record of specific feedback from two",
+        "vram_max_bytes": 59386286080,
+        "_stride": 2052
+      },
+      "F": {
+        "wall_s": 4.21,
+        "prompt_tokens": 104698,
+        "cached_tokens": 102650,
+        "cache_n": 102650,
+        "prompt_n": 2048,
+        "prompt_ms": 3188.821,
+        "prompt_per_second": 642.2436380091576,
+        "predicted_n": 16,
+        "finish_reason": "length",
+        "content": "- Ezra Edwards\n- Noa Middleton\n- Mara Ledbetter\n- Si",
+        "vram_max_bytes": 59385929728,
+        "_stride": 2052
+      }
+    }
+  },
+  "slots_after": [
+    {
+      "id": 0,
+      "n_ctx": 196608,
+      "speculative": true,
+      "is_processing": false
+    },
+    {
+      "id": 1,
+      "n_ctx": 196608,
+      "speculative": true,
+      "is_processing": false
+    },
+    {
+      "id": 2,
+      "n_ctx": 196608,
+      "speculative": true,
+      "is_processing": false,
+      "id_task": 190,
+      "n_prompt_tokens": 191466,
+      "n_prompt_tokens_processed": 2052,
+      "n_prompt_tokens_cache": 0,
+      "params": {
+        "seed": 4294967295,
+        "temperature": 0.0,
+        "dynatemp_range": 0.0,
+        "dynatemp_exponent": 1.0,
+        "top_k": 1,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "top_n_sigma": -1.0,
+        "xtc_probability": 0.0,
+        "xtc_threshold": 0.10000000149011612,
+        "typical_p": 1.0,
+        "repeat_last_n": 64,
+        "repeat_penalty": 1.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "dry_multiplier": 0.0,
+        "dry_base": 1.75,
+        "dry_allowed_length": 2,
+        "dry_penalty_last_n": 196608,
+        "mirostat": 0,
+        "mirostat_tau": 5.0,
+        "mirostat_eta": 0.10000000149011612,
+        "max_tokens": 16,
+        "n_predict": 16,
+        "n_keep": 0,
+        "n_discard": 0,
+        "kv_streaming_sink": 0,
+        "kv_streaming_window": 0,
+        "ignore_eos": false,
+        "stream": false,
+        "n_probs": 0,
+        "min_keep": 0,
+        "chat_format": "peg-native",
+        "reasoning_format": "deepseek",
+        "reasoning_in_content": false,
+        "generation_prompt": "<|im_start|>assistant\n<think>\n\n</think>\n\n",
+        "samplers": [
+          "penalties",
+          "dry",
+          "top_n_sigma",
+          "top_k",
+          "typ_p",
+          "top_p",
+          "min_p",
+          "xtc",
+          "temperature"
+        ],
+        "speculative.types": "none,draft-mtp",
+        "speculative.n_max": 4,
+        "timings_per_token": false,
+        "post_sampling_probs": false,
+        "backend_sampling": false,
+        "lora": []
+      },
+      "next_token": [
+        {
+          "has_next_token": false,
+          "has_new_line": false,
+          "n_remain": 0,
+          "n_decoded": 16
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "n_ctx": 196608,
+      "speculative": true,
+      "is_processing": false,
+      "id_task": 199,
+      "n_prompt_tokens": 104713,
+      "n_prompt_tokens_processed": 2048,
+      "n_prompt_tokens_cache": 0,
+      "params": {
+        "seed": 4294967295,
+        "temperature": 0.0,
+        "dynatemp_range": 0.0,
+        "dynatemp_exponent": 1.0,
+        "top_k": 1,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "top_n_sigma": -1.0,
+        "xtc_probability": 0.0,
+        "xtc_threshold": 0.10000000149011612,
+        "typical_p": 1.0,
+        "repeat_last_n": 64,
+        "repeat_penalty": 1.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "dry_multiplier": 0.0,
+        "dry_base": 1.75,
+        "dry_allowed_length": 2,
+        "dry_penalty_last_n": 196608,
+        "mirostat": 0,
+        "mirostat_tau": 5.0,
+        "mirostat_eta": 0.10000000149011612,
+        "max_tokens": 16,
+        "n_predict": 16,
+        "n_keep": 0,
+        "n_discard": 0,
+        "kv_streaming_sink": 0,
+        "kv_streaming_window": 0,
+        "ignore_eos": false,
+        "stream": false,
+        "n_probs": 0,
+        "min_keep": 0,
+        "chat_format": "peg-native",
+        "reasoning_format": "deepseek",
+        "reasoning_in_content": false,
+        "generation_prompt": "<|im_start|>assistant\n<think>\n\n</think>\n\n",
+        "samplers": [
+          "penalties",
+          "dry",
+          "top_n_sigma",
+          "top_k",
+          "typ_p",
+          "top_p",
+          "min_p",
+          "xtc",
+          "temperature"
+        ],
+        "speculative.types": "none,draft-mtp",
+        "speculative.n_max": 4,
+        "timings_per_token": false,
+        "post_sampling_probs": false,
+        "backend_sampling": false,
+        "lora": []
+      },
+      "next_token": [
+        {
+          "has_next_token": false,
+          "has_new_line": false,
+          "n_remain": 0,
+          "n_decoded": 16
+        }
+      ]
+    }
+  ],
+  "finished_at": "2026-09-18T14:09:14.684922+00:00",
+  "fails": [],
+  "warns": [],
+  "verdict": "PASS"
+}

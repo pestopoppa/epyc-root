@@ -1,0 +1,5 @@
+{
+ "full": "/workspace/repos/epyc-inference-research/benchmarks/results/runs/20260918_150038/qwen36_35b_a3b_mtp_q8_local_baseline.json",
+ "retrieved": "/workspace/repos/epyc-inference-research/benchmarks/results/runs/20260918_143309/qwen36_35b_a3b_mtp_q8_local_baseline.json",
+ "none": "/workspace/repos/epyc-inference-research/benchmarks/results/runs/20260918_142038/qwen36_35b_a3b_mtp_q8_local_baseline.json"
+}

@@ -377,7 +377,7 @@ failure caught in amber.
       - B6: the merge list now also covers these two branches — both merged (research `cfbfa448`).
       - B7: add `pandas` to the research `.venv` (`uv sync --extra benchmark`, which also realigns pyarrow to
         24.0.0) — see M-12j.
-  - [ ] **M-12a — Tulving 200ch/100K first** (intake-408#record). Variant `Udefault_Sdefault_seed0`,
+  - [x] **M-12a — Tulving 200ch/100K first** (intake-408#record). Variant `Udefault_Sdefault_seed0`,
         chapters=200 (`tulving_episodic_adapter.py:_select_target_qa_files` at :463 already resolves
         this to the 196ch parquet on disk). Three prompt-matched arms: memory-OFF (question +
         answer contract, no book), memory-ON (`src/trace` retrieval fills the context), CEILING
@@ -388,6 +388,81 @@ failure caught in amber.
         "If none, say 'None'" contract on every arm. Deterministic scorer, no LLM judge.
         *2026-09-16 (B1, merged `cfbfa448`):* the M-12a command must set `TULVING_CHAPTERS=200`;
         `score_tulving_run --chapters` is now optional and must agree with the recorded rows.
+
+        ✅ **2026-09-18 — RUN, SCORED AND INGESTED. Retrieval reaches the full-book ceiling.**
+        Operator lifted the recipe's *"the operator runs everything here… Agents do not"* rule for this
+        window and freed the GPU explicitly; recorded here so the next reader sees the rule was
+        **waived deliberately, not missed**. Reader: `qwen3.6-35b-a3b-q8-gpu-mtp-longctx196k-np4`
+        (`recipe_hash 54674144…`, argv from `m12_launch_argv.py`, never transcribed), champion build
+        `/mnt/raid0/llm/tmp/build-fold-ef81196d5/bin`, linkage PASS, 4 slots × 196,608 ctx.
+        `SMOKE_PREFIX_REUSE: PASS` first (receipt in the artifacts below): the 104,698-token book costs
+        89.6 s cold, then a follow-up reuses 102,650 tokens in 3.2 s, and step F confirmed the book
+        keeps its prefix **after an intervening 191,447-token BEAM conversation** — which is what the
+        four slots are for, not throughput. Server launched and killed by the measuring session.
+
+        **Headline — five-bin Simple Recall Score, bin 0 INCLUDED.** 686 questions per arm, 686 scored,
+        0 missing ground truth, variant `Udefault_Sdefault_seed0`, `book_sha16 afa5379c27e83459`,
+        196 chapters on disk. Each arm's `context_mode_by_prompt` confirms it ran the arm it claims.
+
+        | arm | Simple Recall | avg F1 | truncated | run_id |
+        |---|---:|---:|---:|---|
+        | memory-OFF (`none`) | **0.1893** | 0.2487 | 7 | `20260918_142038` |
+        | memory-ON (`retrieved`) | **0.6069** | 0.6432 | 5 | `20260918_143309` |
+        | CEILING (`full` book) | **0.6086** | 0.6189 | 13 | `20260918_150038` |
+
+        **Retrieval is within 0.3% of the ceiling** (0.6069 vs 0.6086) and is *ahead* on avg F1
+        (0.6432 vs 0.6189). FTS5 chapter retrieval over the trace store buys essentially everything
+        that putting the whole 104,725-token book in context buys — which is the question M-12 exists
+        to answer.
+
+        **The bins are the result; averaging them away hides it.** Per-bin avg F1:
+
+        | arm | bin 0 (150 q) | bin 1 (150) | bin 2 (90) | bin 3-5 (98) | bin 6+ (60) |
+        |---|---:|---:|---:|---:|---:|
+        | memory-OFF | **0.927** | 0.001 | 0.002 | 0.007 | 0.010 |
+        | memory-ON | 0.853 | 0.623 | 0.664 | 0.534 | 0.360 |
+        | CEILING | 0.760 | **0.685** | 0.531 | 0.509 | **0.558** |
+
+        - **Bin 0 is the unanswerable set, where the correct answer is `"None"`.** memory-OFF scores
+          **0.927** there and ~0 everywhere else: it is excellent at declining and knows nothing else.
+          Its headline is almost entirely the abstention bin. That frank "I don't know" is a **property
+          worth keeping**, not a deficit — it is the behaviour the hallucination bin was added to detect.
+        - **The full book is the WORST arm at declining** (0.760 vs retrieval's 0.853): more context
+          makes fabrication on unanswerable questions *more* likely, while it helps most on the hardest
+          6+ bin (0.558 vs 0.360). Retrieval keeps cleaner abstention and wins bins 2 and 3-5.
+        - Reporting bin 0 separately would invert the ranking, which is exactly why the headline keeps it.
+
+        **Chronological Awareness (diagnostic only, pending the M-12d tau fix):** 0.109 memory-OFF /
+        **0.344** memory-ON / 0.290 CEILING — retrieval ahead of the full book here too.
+
+        **Caveat, not papered over:** CEILING truncated **13** rows against memory-ON's 5 (a 104K-token
+        prompt leaves less room before the length cap), so the ceiling arm is slightly understated. The
+        two headline figures are within 0.3% of each other and 13/686 truncations could cover that gap —
+        **treat "retrieval matches the ceiling" as established, and "retrieval beats the ceiling" as NOT
+        established.** Raising the answer budget for the `full` arm would settle it.
+
+        **Belief kernel (write side, wired):** each arm's scorer run emits
+        `belief_measurements.jsonl` **beside its own artifact**, ingested via
+        `cli.py ingest tulving` — 3 units matched, 3 projected, 0 declined, 0 refused, 6 rows, 18 frames.
+        Rows carry `metric_direction=higher_better`, `reps` (548 recall / 138 chronological) and
+        `protocol_id epyc.vidya.tulving_episodic_capture.v1`.
+        Artifacts: `artifacts/m12/run_20260918/` (3 scored JSONs, 3 sidecars, the smoke receipt, the
+        reader argv, the arm→file map).
+
+        **Two defects found while running this, both worth fixing before the next window:**
+        1. **The recipe's §7 command omits `--model`**, so as written `run_benchmark.py` enumerates
+           **all 71 models / 80 roles**, smallest first. It began with a 0.1 GB embedder and **sent
+           Tulving questions to the resident 35B reader while labelling them as the embedder role**
+           before failing on `enable_thinking=False`. Silent mis-attribution; add
+           `--model qwen36_35b_a3b_mtp_q8_local` to the documented line.
+        2. **The belief sidecar path follows `--out-json`.** Scoring every arm into one shared
+           directory makes each arm **overwrite** the previous arm's sidecar, leaving one arm's rows
+           and silently losing two. Score each arm into its own run directory (or the capture's
+           default location), and check the row count per arm afterwards.
+        3. *(Also observed)* every result row has `prompt_tokens: null` — completion tokens are
+           recorded but prompt tokens are not, so the per-question context cost of a no-book arm vs a
+           104K-token arm is **not recoverable from the results file**. Relevant to any cost-per-answer
+           comparison; adjacent to the RTG-47 terminal-prompt-token work.
   - [ ] **M-12b — BEAM 128K second, abstention EXCLUDED from the headline** (intake-1330#record).
         BEAM's Vanilla column = memory-off, its `pair_chunk` RAG column = naive-memory control,
         our trace/navigation surface = the only new arm. Report instruction_following,
