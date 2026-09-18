@@ -2513,3 +2513,7 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   ladder (`docs/design/vidya-pilot-spec.md` §4.7). Lands with the FW-2 executor; the adapter has nothing to read
   until then, which is exactly why the row is filed now. Owner: whoever builds the FW-2 executor.
   Locator = run. Zero inference to author.
+
+## VB-AK-HELDOUT — AutoKernel CPU held-out confirmation (filed 2026-09-18)
+
+- [ ] **VB-AK-HELDOUT — capture the held-out serving comparison and integrity-gate disposition at the write side.** Research `9eee67c1` introduced `epyc.autokernel.heldout_serving_confirm.v1` as plain per-candidate JSON before the first GLM v27 confirmation. Add a producer-authored, self-hashed ClaimTuple binding exact attempt/tree, distinct public and held-out request digests, model, recipe, both executable/build identities, instrument, separately calibrated floor, paired raw vectors, units and actual veto outcome. A strict reader must reopen the native bytes and project them through `claim_tuple.grade()`; no new ladder and no champion-promotion warrant. Pre-hook plain records remain historical evidence but emit no graded row. Source row: `scripts/vidya/adapters/README.md`.
