@@ -26,6 +26,7 @@ episodic memory writing."
 | intake-1486 | Independent rerank reproduction: Jev tied with Cohere Pro (nDCG 0.692 vs 0.691, CI crosses 0); Jev Choice order-sensitive 24.7% | Guarantees are not quality; order effects must be measured |
 | intake-1487 | Fully local pinned one-pass implementation: 5.21x vs same-model JSON on a 3090; 20.03 decisions/s parallel reuse; reuse drifts 5–6/777 argmaxes | Local mechanism + acceptance envelope |
 | intake-1490 | Independent audit of jevlike: shipped shuffled-context control was defective; informed-vs-blind lift ~25 pts after correcting | Verification discipline for our own measurements |
+| intake-1493 | Open browser agent (MIT) that asks one typed call for an operation plus one speculative target head per operation, consuming only the matching head; its measured gain is ~half fewer model requests, ~half browser I/O | Pattern for TD-12..TD-15 (tool choice + arguments in one call) |
 
 ## Tasks
 
@@ -118,6 +119,11 @@ episodic memory writing."
 
 - [x] **TD-10 — Counterfactual evaluation of the TD-9 routing policy (model-based OPE).** ✅ 2026-09-18: reused the escalation probe's cross-fitted, embedding-grouped estimator over the frozen snapshot with freshly embedded states; **delta typed-minus-incumbent = -0.0104** (CI95 [-0.0246, -0.0066], 5 folds all negative; ~1pp worse). Verdict: **enforcement stays OFF** — agreement is not skill; the 13 departures (frontdoor->ARCHITECT) are estimated harmful. Caveats: model-based estimate with the probe's EPD-1..3 confounds; unevaluable actions excluded.
 - [ ] **TD-11 — Routing prompt/policy improvement, re-tested through the counterfactual harness.** The harness now measures value, not agreement; use it to iterate (framing, support-aware candidates, leave-one-out conditioning) before any enforcement proposal. Acceptance: positive delta with a CI excluding zero on the frozen snapshot, or a written decision to drop typed routing.
+
+- [ ] **TD-12 — One-call tool + argument arm (operation × conditional target).** Build a typed-decision arm that asks, in one call, a choice over the role's tools (`ToolRegistry.list_tools(role)`) plus one argument head set per candidate tool whose instructions name the tool they assume, and consume only the chosen tool's heads. A failed head for an UNUSED tool must not reject the pass (today any failure rejects it: `tool_args_integration.py:197-198`). Compare against the current tool-then-arguments path (TD-4) on exact-match tool+argument correctness and wall time over the TD-4 case set extended with a tool-choice step. Citation: intake-1493 (dive-verified; `jev_ultrafast/model.py:94-133` @ 1231850a).
+- [ ] **TD-13 — Contamination between the operation head and its conditional heads.** Before TD-12's heads are trusted as independent: for each case, answer the chosen tool's argument heads alone and batched with the sibling (unused) tools' heads; report top-answer flip rate per model. Existing receipts (TD-2, TD-3b) cover flat catalogues only. Acceptance: flip rate reported for the worker model; TD-12 adoption gated on it.
+- [ ] **TD-14 — Per-candidate descriptions on `Question`.** Add an optional description per option (today options are a bare label list, `types.py:66-68`, rendered as `candidates: a | b`), rendered in the catalogue, so tool or element tables are grounded without stuffing the shared state. Unit tests; JSON and native arms both render it.
+- [ ] **TD-15 — (conditional on TD-12) Native path for more than 36 candidates.** Only if TD-12 needs tables beyond the TD-9 code map (36 symbols, `routing_replay.py:153`) or the 128 `n_probs` cap (`native.py:259`): hierarchical codes or chunked candidate tables. Close as not-needed if TD-12 stays under 36.
 
 ## Wiring policy (2026-09-18, operator-directed)
 

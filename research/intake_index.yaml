@@ -169889,3 +169889,173 @@
   - claim_index: 4
     effect: unaffected
     note: 72-hour live window, no snapshot retrievable; bound stated as 'not derivable now'.
+- id: intake-1493
+  arxiv_id: null
+  url: https://github.com/browser-use/jev-ultrafast
+  source_type: repo
+  title: Jev Ultrafast — browser agent with a dynamic indexed action space (TypeSafe Jev picks operation + element in one request; small LLM writes text only for TYPE_TEXT)
+  authors:
+  - Gregor Žunič (Browser Use)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - routing_intelligence
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: null
+  key_claims:
+  - 'One hosted Jev request per decision cycle asks an operation question (CLICK / TYPE_TEXT / SELECT / SCROLL / WAIT / DONE / BLOCKED) plus one speculative target question per available operation; the executor validates and consumes only the target head matching the chosen operation (model.py choose()).'
+  - 'Action space is rebuilt every observation as an indexed element table; each operation offers only compatible observed elements, so model output never becomes a selector, coordinate or code (model.py action_space()).'
+  - 'Free text is delegated: only when TYPE_TEXT is chosen does a small OpenAI-compatible LLM produce a strict {"text": ...} JSON value; the value is cached across a stale-page retry only if the whole helper input is identical (agent.py, model.py field_text()).'
+  - 'Vendor-authored matched comparison, 3 alternating pairs on one Google Flights task: median 9.450 s -> 7.092 s (25% lower), median Jev requests 22 -> 17, median browser protocol calls 1,092 -> 101; authors state sign-test p = 0.25 and that it is not a reliability benchmark (docs/performance.md).'
+  - 'The speedup splits roughly evenly between fewer decision requests (semantic freshness guards stop invalidating decisions on animations: median decision_total_ms 4,261 -> 3,284) and less non-decision (browser/wait) time (median 5,189 -> 4,096 ms); decision time is 42-53% of wall time in every run (full-speed-measurement.json).'
+  - 'The launch-tweet task cost of $0.0039 is reproducible from repo evidence plus the vendor price: 90,558 TypeSafe input tokens x $42 per billion input tokens (output free) = $0.00380, plus $0.0000627 text-helper cost = $0.00387; browser costs excluded.'
+  techniques:
+  - speculative per-operation target heads in one typed-decision request (operation x target factorisation)
+  - dynamic per-step closed action space built from an observed DOM snapshot
+  - choice model for control + small generative LLM only for free-text slots
+  - validate-then-consume (probabilities sum, argmax consistency, id set equality) before any side effect
+  - never-retry mutations; log execution before re-observation
+  reported_results:
+  - 'Recorded demo run: 7,073 ms, 17 Jev requests (jev-1.13.0), median Jev latency 178 ms, 11 browser actions incl. 1 WAIT, 2 Mercury-2.5 text calls (581 ms / 346 ms), 90,558 input / 6,325 output TypeSafe tokens (docs/performance.md; flights-measurement.json).'
+  - 'Matched runs: baseline 11,214 / 8,984 / 9,450 ms; candidate 6,964 / 7,913 / 7,092 ms; all 6 verified by an independent predicate (full-speed-measurement.json).'
+  - 'Smoke checks, not matched comparisons: Wikipedia article open 2.798 s; local hotel fixture 1.896 s.'
+  - 'Text-helper cost $0.00006272 for the two OpenRouter calls; the repo states TypeSafe responses carry no billed dollar amount, so total task cost is not reported in-repo.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - typed-decision-plane.md
+    - routing-intelligence.md
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-1472
+    - intake-1473
+    - intake-1474
+    - intake-1487
+    - intake-1494
+    intake_entry_notes:
+    - 'intake-1472: the fan-out pattern this repo instantiates (docs.typesafe.ai/patterns/fan-out is linked from the README) is part of the documented spec already ingested there.'
+    - 'typed-decision-plane TD-4 (closed-set tool-argument selection) is the closest in-house analogue; this repo adds the operation-plus-conditional-target factorisation in one call, which TD-4 does not test.'
+  contradicting_evidence:
+  - 'SUPERSEDED BY DIVE 2026-09-18: the Stage-1 note that the tweet''s $0.0039 was untraceable was wrong; it is derivable from the recorded token count at the documented price (key_claims[5]).'
+  - 'HN thread (news.ycombinator.com/item?id=49735979): users report the demo failing to run; one questions excluding initial page observation from the clock; one reports browser-harness sends opt-out PostHog telemetry. Telemetry module confirmed in browser-harness main @ afbcc381 (src/browser_harness/telemetry.py, opt-out env BH_TELEMETRY / ANONYMIZED_TELEMETRY); not checked in the pinned 0.1.13.'
+  - 'Issue #26 (open, no maintainer reply at retrieval) asks whether the runtime is co-designed with Jev or would work with a general LLM — i.e. the transferable boundary is unstated.'
+  notes: 'Stage-1 read 2026-09-18 of main @ 1231850a0bf1a0c0341fe408ef1668dbbfdfac46 (3 commits, 2026-09-16..18; MIT; ~750 lines Python + 107 JS). README sha256 prefix 29f5276b3e62. All figures above read from the repo docs/JSON and cross-checked (medians recomputed from per-run rows). Hard dependency on the hosted TypeSafe API (api.typesafe.ai/v1/systemone) and a hosted text model; no local path. Transferable to EPYC only as a pattern over our local typed-decision call (typed-decision-plane.md, owned by the intake-jev-sageattn session): (a) operation x target speculative heads in one call for tool choice + argument; (b) generative fallback only for free-text slots. EPYC has no browser-agent surface; web access goes through search/fetch tools (searxng-search-backend.md). Speed attribution matters: the 25% gain is browser I/O, so no model-side speed claim transfers.'
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: code
+    locator: jev_ultrafast/model.py:126 (choose)
+    quote: '# Unused target heads cannot cause an action. Validate the head selected by the operation.'
+    quote_sha256: 909a66d3fea2ef8743112dfda86cd1ed4da0eb067714141e0507c120d69c292a
+    source_revision: browser-use/jev-ultrafast @ 1231850a0bf1a0c0341fe408ef1668dbbfdfac46
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: doc
+    locator: README.md:105 (Why it moves)
+    quote: Model output never becomes selectors, coordinates, shell commands, or executable JavaScript.
+    quote_sha256: b1f9f6b5b1c39147953eedf35f19ed2726fefe413816e3bd476ec6e51b9c43b3
+    source_revision: browser-use/jev-ultrafast @ 1231850a0bf1a0c0341fe408ef1668dbbfdfac46
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: code
+    locator: jev_ultrafast/agent.py:110
+    quote: 'if self.pending_text and self.pending_text[0] == context:'
+    quote_sha256: b61ceaa8e24e73e6d37b8c36dcc66ccf821d0c9b456db72f974c54d13230e9fd
+    source_revision: browser-use/jev-ultrafast @ 1231850a0bf1a0c0341fe408ef1668dbbfdfac46
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: doc
+    locator: docs/performance.md:18
+    quote: Three pairs are too few for a strong statistical claim (two-sided sign-test p = 0.25).
+    quote_sha256: 1d3a0c0ca67a201a921c11af56ae58702594082257f5664eb1d718cba2327cbf
+    source_revision: browser-use/jev-ultrafast @ 1231850a0bf1a0c0341fe408ef1668dbbfdfac46
+    verified_by: research-intake/stage2
+    setup_scope: 3 alternating pairs, one task, one Chrome profile, live Google Flights
+  - claim_index: 5
+    kind: doc
+    locator: docs/performance.md:32
+    quote: the TypeSafe responses contain token counts without a billed dollar amount
+    quote_sha256: f48f2e9a3557529b7d28b7a603e7d990795de7f7f63b23035c250b2e3a85a716
+    source_revision: browser-use/jev-ultrafast @ 1231850a0bf1a0c0341fe408ef1668dbbfdfac46
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed in code (model.py:94-133); unused heads are never validated or executed.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed; targets resolve through code-owned indices (model.py:48-78) and the executor looks the action up by id (agent.py:101).
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed (agent.py:106-118; model.py:160-198 strict single-key JSON).
+  - claim_index: 3
+    effect: unaffected
+    note: Per-run rows recomputed from full-speed-measurement.json; medians 9,450 / 7,092 ms, requests 22 / 17, CDP calls 1,092 / 101 match.
+  - claim_index: 4
+    effect: narrowed
+    note: Stage-1 said the gain was browser plumbing, not the model. The per-run rows show about 1.0 s of the 2.36 s median gain is fewer decision requests (fewer stale invalidations) and about 1.1 s is non-decision time.
+  - claim_index: 5
+    effect: unaffected
+    note: New claim added by the dive; replaces the Stage-1 contradicting-evidence item that called $0.0039 untraceable.
+  depends_on:
+  - entry: intake-1472
+    claim_index: 5
+    why: 'The $0.0039 derivation uses intake-1472''s documented $42 per billion input tokens (output free). If that price claim were retracted, the cost reconstruction fails; the repo itself reports no Jev dollar cost.'
+  dive_corrections: '2026-09-18 Stage-2 dive (repo @ 1231850a; orchestrator typed_decisions @ 33f66c18). (1) Repo runs as released offline: uv sync + 31/31 pytest pass, ruff clean, node --check OK; HN "doesn''t work" reports are about the live demo setup (keys, Chrome remote debugging), not reproduced. (2) Cost: the tweet''s $0.0039 is derivable (claim 5); the Stage-1 contradiction is withdrawn. (3) Speed attribution narrowed (claim 4). (4) Mapping onto in-house work: TD-4 types the ARGUMENTS of a tool the model already named (repl_environment/context.py:508,553-619; tool_args.py:105-149); nothing in typed_decisions factors operation + conditional target in one call. The pattern is expressible with existing choice Questions, but three gaps block a faithful port: no per-candidate descriptions (types.py:66-68; candidates render as a bare list), any failed head fails the whole pass (tool_args_integration.py:197-198), whereas jev ignores unused heads; choice questions need at least 2 options (types.py:77-80). Native id_only cannot carry large indexed tables: the TD-9 code map is 36 symbols (routing_replay.py:153) and n_probs is capped at 128 (native.py:259). fanout_policy.choose_fanout_mode (fanout_policy.py:145-180, BATCHED_MIN_QUESTIONS=8 at :90) would route a 1-op + <=3-target batch to SEQUENTIAL_SINGLETON unless every label is single-token native-eligible, which removes the one-round-trip property. No in-house receipt measures contamination between an operation head and heads conditioned on it. (5) Issue #26 (runtime co-designed with Jev vs general LLM) remains open; our local path is the general-LLM side of that question. Dive-surfaced sources: none new beyond intake-1494.'
+  ingested_date: '2026-09-18'
+  handoffs_updated:
+  - typed-decision-plane.md
+  handoffs_created:
+  - browser-agent-surface.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'TD-12..TD-15 filed in handoffs/active/typed-decision-plane.md (operator-approved 2026-09-19)'
+  - 'Design reference recorded in handoffs/active/browser-agent-surface.md (dormant stub, UFH-10)'
+- id: intake-1494
+  arxiv_id: null
+  url: https://github.com/browser-use/browser-harness
+  source_type: repo
+  title: Browser Harness — connect an LLM to a real Chrome via one editable CDP websocket; agent writes missing helpers into a local workspace; MCP server
+  authors:
+  - Browser Use
+  categories:
+  - tool_implementation
+  - agent_architecture
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1493
+  verdict: worth_investigating
+  credibility_score: null
+  key_claims:
+  - 'Thin CDP harness: the agent drives the user''s real Chrome over one websocket and writes reusable helpers into agent-workspace while src/browser_harness stays protected (README).'
+  - 'Ships browser-harness-mcp exposing browser-control helpers as MCP tools over stdio (README, docs/MCP.md).'
+  - 'Contains opt-out PostHog telemetry (src/browser_harness/telemetry.py; disable via BH_TELEMETRY, BROWSER_HARNESS_TELEMETRY or ANONYMIZED_TELEMETRY).'
+  techniques:
+  - self-extending helper library written by the agent
+  - CDP websocket control of an existing browser profile
+  - MCP stdio exposure of browser helpers
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - searxng-search-backend.md
+    experiments: []
+    intake_entries:
+    - intake-1493
+  contradicting_evidence:
+  - 'HN commenter on the jev-ultrafast thread says browser-harness telemetry can leak credentials; the telemetry module exists but the leak claim was not verified in Stage 1.'
+  notes: 'Expansion from intake-1493 (runtime dependency, pinned browser-harness==0.1.13). Read main @ afbcc381b963040c19627d788e40c7e7663171ee (2026-09-07), MIT. Relevant only if EPYC ever needs JS-heavy page interaction beyond fetch/Crawl4AI; the telemetry default makes it unsuitable to run on the shared host without disabling it.'
+  verification: stage1-unverified
+  ingested_date: '2026-09-18'
+  handoffs_updated: []
+  handoffs_created:
+  - browser-agent-surface.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Recorded as a runtime option in handoffs/active/browser-agent-surface.md (dormant stub, UFH-10); opt-out PostHog telemetry noted (src/browser_harness/telemetry.py @ afbcc381)'

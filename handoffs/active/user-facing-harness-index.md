@@ -17,6 +17,7 @@
 | UFH-07 | tool output compression | [tool-output-compression.md](tool-output-compression.md) | P4e — once P4c telemetry has enough calls, decide per command whether run_bash_compressed is promoted, kept optional, or dropped | — |
 | UFH-08 | harness improvement loop | [harness-improvement-loop.md](harness-improvement-loop.md) | HIL-1 — list the loop-friendly feature-map homes from hs4-shell doc §3, separating the mutable arm from policy documents | UFH-01 |
 | UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | FW-1 — sketch the two-layer workflow example as a pseudocode loop block, and record what the GUI must expose | — |
+| UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
 
 ## Cross-domain
 
