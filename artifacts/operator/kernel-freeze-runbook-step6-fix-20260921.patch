@@ -1,0 +1,79 @@
+--- a/docs/reference/kernel-freeze-runbook.md
++++ b/docs/reference/kernel-freeze-runbook.md
+@@ -55,13 +55,73 @@
+        /mnt/raid0/llm/kernels/production/<B>/<binary> \
+        /mnt/raid0/llm/kernels/production/<B>
+    ```
+ 
+-6. **Promote by moving the symlink, not by editing config:**
++6. **Materialize a versioned build directory, then move the symlink.**
++
++   Steps 1-5 leave the candidate in a scratch build tree (historically
++   `/mnt/raid0/llm/tmp/build-*`). That tree is not a promotable target, for two
++   reasons, and **both must be fixed before the symlink moves**:
++
++   * it is not versioned and nothing keeps it — build 10196 (`58c345093`) was lost
++     from `/mnt/raid0/llm/tmp` outright;
++   * a scratch build bakes an **absolute RUNPATH to its own build directory**
++     (`readelf -d .../llama-server` -> `/mnt/raid0/llm/tmp/build-<x>/bin:...`),
++     whereas a production target must carry `$ORIGIN` — `production/<B>` is a
++     symlink whose target is meant to move, and a binary that names an absolute
++     lib directory silently keeps loading the old one.
++
++   6a. **Build relocatable.** The candidate build in step 1 must be configured with
++
+    ```bash
+-   ln -sfn <old build dir> /mnt/raid0/llm/kernels/archive/<B>-<YYYYMMDD>-<sha>
+-   ln -sfn <new build dir> /mnt/raid0/llm/kernels/production/<B>
++   cmake -B <build> -DCMAKE_BUILD_RPATH_USE_ORIGIN=ON ...
+    ```
++
++   so that `bin/` is self-contained. Verify, not assume:
++
++   ```bash
++   readelf -d <build>/bin/llama-server | grep RUNPATH   # must be $ORIGIN[:/opt/rocm/lib]
++   ```
++
++   6b. **Copy it into the store under a versioned name** (copy, never move — the
++   bench evidence still cites the build path):
++
++   ```bash
++   V=/mnt/raid0/llm/kernels/builds/<B>-<YYYYMMDD>-<short-sha>
++   mkdir -p "$V" && cp -a <build>/bin "$V/bin"
++   ( cd "$V" && find bin -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS )
++   ```
++
++   6c. **Prove the copy stands alone** — with `LD_LIBRARY_PATH` *unset*, because a
++   passing check that needed the variable proves only that the variable was set:
++
++   ```bash
++   env -u LD_LIBRARY_PATH \
++     epyc-inference-research/scripts/utils/verify_ggml_linkage.sh \
++       "$V/bin/<binary>" "$V"
++   ```
++
++   6d. **Archive the outgoing target by its RESOLVED path, then repoint:**
++
++   ```bash
++   OLD=$(readlink -f /mnt/raid0/llm/kernels/production/<B>)
++   ln -sfn "$OLD" /mnt/raid0/llm/kernels/archive/<B>-<YYYYMMDD>-<outgoing-sha>
++   ln -sfn "$V/bin" /mnt/raid0/llm/kernels/production/<B>
++   ```
++
++   **One-time exception for the first promotion through this store.** Today
++   `production/<B>` still resolves into the frozen *source* tree
++   (`llama.cpp/build/bin`, `llama.cpp/build-hip/bin`), which is an accretive
++   directory holding five generations of `libllama*.so.0.0.101xx` at once — a
++   symlink into it would archive a moving, mixed-version target. For that first
++   promotion only, archive a **copy**:
++
++   ```bash
++   cp -a "$OLD" /mnt/raid0/llm/kernels/archive/<B>-<YYYYMMDD>-<outgoing-sha>
++   ```
++
++   after which every subsequent promotion archives a symlink as above.
++
+    Neither registry changes. No launcher changes. The binary name is unchanged by
+    design — that is what lets the orchestration apparatus keep working untouched.
+ 
+ 7. **Re-verify after promotion** (step 5 again, against the new target), then record

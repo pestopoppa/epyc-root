@@ -1,0 +1,145 @@
+{
+  "schema": "epyc.kernel_promotion_qualification.v1",
+  "created": "2026-09-21",
+  "status": "QUALIFIED - awaiting operator ratification (steps 6-7 not executed)",
+  "candidate": {
+    "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "branch": "ak/champion/llama-cpp-0db32c06e3e5",
+    "build_number": 10303,
+    "builds": {
+      "cpu": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82",
+      "gpu": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82"
+    },
+    "runpath": "$ORIGIN (relocatable)",
+    "linkage_verified_standalone": true
+  },
+  "incumbent": {
+    "commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+    "build_number": 10125,
+    "branch": "production-consolidated-v9"
+  },
+  "host": {
+    "bios_change": "memory interleave ENABLED + memory speed 5600 MT/s (was 4800); NPS4 unchanged",
+    "applied": "2026-09-21 reboot",
+    "attribution": "BUNDLE - no arm separates the two items"
+  },
+  "gates": {
+    "cpu_speed": {
+      "status": "pass",
+      "pass_ratio": 0.98,
+      "gray_floor": 0.95,
+      "n_per_arm": 5,
+      "ratios": {
+        "worker_general_gemma4_26b": 1.1831,
+        "architect_critic_qwen35_122b": 1.193,
+        "frontdoor_qwen36_35b_a3b": 1.0655,
+        "ingest_long_context_qwen3next_80b": 1.5787
+      }
+    },
+    "cpu_quality": {
+      "status": "pass",
+      "errors": 0,
+      "worker_general": {
+        "mmlu_pro": {
+          "v9": 0.36,
+          "candidate": 0.375,
+          "n": 200
+        },
+        "gpqa": {
+          "v9": 0.2513,
+          "candidate": 0.2564,
+          "n": 195
+        }
+      },
+      "architect_critic": {
+        "mmlu_pro": {
+          "v9": 0.635,
+          "candidate": 0.645,
+          "n": 200
+        },
+        "gpqa": {
+          "v9": 0.5692,
+          "candidate": 0.5692,
+          "n": 195
+        }
+      }
+    },
+    "gpu_speed": {
+      "status": "pass",
+      "ctx": 65536,
+      "launches_per_point": 3,
+      "unit": "process",
+      "residency": "proven",
+      "qwen38_27b_q8": {
+        "note": "recipe-to-recipe: candidate DFlash2 vs v9 MTP self-draft, each at its own best",
+        "ratios": {
+          "np1": 1.319,
+          "np2": 1.268,
+          "np4": 1.239,
+          "np8": 1.088
+        }
+      },
+      "qwen3_vl_30b_a3b_q4km": {
+        "ratios": {
+          "np1": 1.0587,
+          "np2": 1.0047,
+          "np4": 1.0897
+        }
+      }
+    },
+    "serving_floor": {
+      "p95_dev_pct": 7.249,
+      "ci95": [
+        6.024,
+        9.371
+      ],
+      "n": 24,
+      "unit": "process",
+      "source": "R23-61b"
+    }
+  },
+  "defects_found_and_fixed": [
+    {
+      "commit_fixed_by": "d0d70c5fe",
+      "introduced_by": "8136b3221",
+      "summary": "champion could not load the gemma MTP drafter; 4 of 8 gated CPU roles unservable",
+      "detail": "contradictory n_layer_nextn invariants; gemma4-assistant is a standalone NextN head where nextn == n_layer_all"
+    },
+    {
+      "commit_fixed_by": "ffc1bac82",
+      "introduced_by": "ae6031aaa",
+      "summary": "CPU-only fused MoE op with no CUDA/HIP implementation cost -30% on every MoE model on GPU",
+      "detail": "GGML_OP_MOE_TOPK_NORM absent from ggml-cuda; scheduler split the graph at every MoE layer",
+      "found_by": "git bisect over 89 revisions, llama-bench tg128 oracle"
+    }
+  ],
+  "digests": {
+    "cpu": {
+      "llama-server": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+      "libggml-base.so.0.16.0": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+      "libggml-cpu.so.0.16.0": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+      "libllama.so.0.0.10303": "5cdd003d3f441e1efe42e4c06e4434b0195f25ab6317d64aa7e7cf60deaba844"
+    },
+    "gpu": {
+      "llama-server": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+      "libggml-base.so.0.16.0": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+      "libggml-cpu.so.0.16.0": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+      "libllama.so.0.0.10303": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a",
+      "libggml-hip.so.0.16.0": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+    }
+  },
+  "evidence": {
+    "root": "/mnt/raid0/llm/epyc-inference-research/data/kernel-v9-candidate/promotion-plan-20260921",
+    "file_count": 581,
+    "sha256sums": "/mnt/raid0/llm/epyc-inference-research/data/kernel-v9-candidate/promotion-plan-20260921/SHA256SUMS",
+    "gpu_sweeps": "/mnt/raid0/llm/epyc-inference-research/data/champion-maxperf-postbios-20260921"
+  },
+  "not_executed": {
+    "steps": "runbook 6 (repoint symlink) and 7 (re-verify after promotion)",
+    "blockers": [
+      "kernels/production/{cpu,gpu} point INSIDE the frozen v9 source tree at accretive artifact dirs holding 5 library generations; there is no '<old build dir>' to archive, so step 6 as written cannot execute. Prepared fix: artifacts/operator/kernel-freeze-runbook-step6-fix-20260921.patch",
+      "a production cutover is a human-only trust boundary (MEASUREMENT.md)",
+      "~29 source sites still hardcode llama.cpp/build{-hip}/bin instead of kernel_paths.backend_dir(), incl. gpu_shadow_lane.py:49-50 and gpu_shadow_lane_tenancy.yaml:47; two silent fallbacks (orchestrator_stack.py:156-167, stack_priors.py:1930-1954) would serve the CPU path instead of raising on a dangling store symlink"
+    ]
+  }
+}
