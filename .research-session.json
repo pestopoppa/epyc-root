@@ -1,400 +1,87 @@
 {
-  "session_id": "jev-sageattn-20260917",
-  "started_at": "2026-09-17T00:00:00Z",
-  "last_checkpoint": "2026-09-17T14:35:00Z",
+  "session_id": "intake-jev-ultrafast-20260918",
+  "started_at": "2026-09-18T00:00:00Z",
+  "last_checkpoint": "2026-09-18T20:56:06Z",
   "phase": 5,
   "stage": "stage4-complete",
-  "session_kind": "research-intake (2 operator-submitted digest items: Jev-like typed decisions; agentic SageAttention3 CuTeDSL port)",
-  "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-jev-sageattn-20260917 (branch intake/jev-sageattn-20260917 off origin/main 6f346ea3, index tip intake-1459 before append). Shared clone /workspace is 529 commits behind origin/main with peer uncommitted work; all index writes happen in this worktree. Scratch: /workspace/tmp/intake-jev-sageattn/. Committed Dream-RSI .research-session.json backed up to scratch before overwrite.",
-  "mandate": "Ingest operator-submitted digest item 1 (Jev-like one-pass typed decisions; reconstructions by Wang-Mascianica / Rogge / Gundala / mmastrac) and digest item 2 (agentic port of SageAttention3 CuTe C++ -> CuTeDSL). Operator steering: PAW for agent-loop robustness + GUI separating deterministic flow from fuzzy LLM work; Jev techniques folded into the orchestrator (JSON schemas / tool use / fast routing / episodic memory writing); porting methodology to autokernel.",
-  "submitted_url_count": 8,
-  "submitted_inline_items": 2,
-  "max_existing_intake_id_at_start": 1459,
-  "next_intake_id": 1480,
-  "expansion_cap": 10,
-  "expansion_count": 10,
-  "dedup": {
-    "method": "unbounded rg over all url/arxiv_id values in worktree index (1459 entries), case-insensitive keyword sweep for jevlike|vinnylarouge|drinkmoonshine|harshatheg|RLCD|typesafe|programasweights|diffgemma|2505.11594|SageAttention|2407.02423",
-    "exact_collisions": 0,
-    "companion_artifacts_of_existing_entry": {
-      "intake-811 (Program-as-Weights, arXiv 2607.02512)": "programasweights.readthedocs.io and github.com/programasweights/programasweights-python are companion artifacts, NOT duplicates (no exact url/arxiv collision); the repo IS mentioned in intake-811 notes, so this read also re-checks the entry's re-open trigger.",
-      "intake-465": "NVIDIA/CUTLASS repo already indexed (context only).",
-      "intake-239": "Outlines constrained decoding context (not re-ingested)."
-    },
-    "arxiv_check_2407.02423": "Biderman attention-variants catalog referenced by digest item 1 is NOT in the index; not ingested (menu-of-variants context only; no decision value for the orchestrator) - recorded as decline candidate."
-  },
-  "processed_urls": {
-    "inline-item-1": "intake-1460 (operator digest: one-pass typed decisions / Jev reconstruction)",
-    "inline-item-2": "intake-1461 (operator digest: agentic SageAttention3 CuTeDSL port)",
-    "https://github.com/vinnylarouge/jevlike": "intake-1462",
-    "https://huggingface.co/spaces/drinkmoonshine/parallel-constrained-decoding": "intake-1463",
-    "https://huggingface.co/harshatheg/Qwen-2.5-1B-RLCD": "intake-1464",
-    "https://github.com/mmastrac/diffgemma/pull/21": "intake-1465",
-    "https://programasweights.readthedocs.io/en/latest/": "intake-1466",
-    "https://github.com/programasweights/programasweights-python": "intake-1467",
-    "https://arxiv.org/abs/2505.11594": "intake-1468",
-    "https://github.com/thu-ml/SageAttention": "intake-1469"
-  },
-  "expansion_entries": {
-    "intake-1470": "typesafe.ai launch blog (vendor primary)",
-    "intake-1471": "evals.typesafe.ai (vendor workflow evals)",
-    "intake-1472": "docs.typesafe.ai (Choice/Score/Noul spec)",
-    "intake-1473": "github.com/typesafe-ai/system-one-adapter-python (reference implementation of the contract)",
-    "intake-1474": "github.com/rorshopping/jev-on-a-laptop (independent calibration/speed/accuracy study)",
-    "intake-1475": "goodstartlabs.com verification-is-the-bottleneck (independent judge-agreement study)",
-    "intake-1476": "every.to mini-vibe-check (independent hands-on application survey)",
-    "intake-1477": "arXiv:2609.04199 Compile by Training (PAW self-hosted recipe)",
-    "intake-1478": "HF programasweights/paw-4b-qwen3-0.6b (compiler weights)",
-    "intake-1479": "HF yuntian-deng/fuzzy_bench_verified (FuzzyBench eval data)"
-  },
-  "expansion_candidates_not_ingested": {
-    "typesafe.ai homepage": "vendor, claims covered by 1470/1471; homepage multipliers noted inside 1470",
-    "evals.typesafe.ai per-workflow subpages (4)": "fold into intake-1471 if it is dived",
-    "news.ycombinator.com/item?id=49717558": "community objections; useful as contradicting evidence but not a source class to ingest",
-    "news.ycombinator.com/item?id=49736660": "anonymous prior-art claim with no artifact/link",
-    "kingy.ai review (Curtis Pyke)": "document-and-eval review; its undisclosed-items list is largely covered by 1470-1474",
-    "nearhere.events event-validation post": "non-blind small-n use-case benchmark; lower value than 1474/1475",
-    "vllm-project/vllm#57250": "referenced by intake-1465; fetch deferred until the diffusion path matters",
-    "HF programasweights/paw-programs (434 .paw bundles)": "compiled-program collection; re-check only if a self-hosted compile prototype is scoped",
-    "github.com/programasweights/compile-by-training": "repo companion of intake-1477; fold into that dive",
-    "x.com/NielsRogge/status/2100239244501430438": "canonical URL captured; X pages unfetchable (image only), no additional artifact",
-    "Maharshi X threads (2026-09-16 port; 2026-08-09 kernel-agent)": "NOT SURFACED by bounded search; operator-supplied URLs required",
-    "shreyansh26/Qwen-2.5-1B-RLCD": "second weightless mirror; no additional content",
-    "rorshopping HF Space (static showcase)": "duplicate presentation of intake-1474",
-    "arXiv:2407.02423 Biderman et al.": "attention-variants catalog cited by digest item 1; no repo citation found either; declined as context-only"
-  },
+  "session_kind": "research-intake (1 operator-submitted URL)",
+  "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-jev-ultrafast-20260918 (branch intake/jev-ultrafast-20260918 off origin/main 5ac3f9a0). Scratch /workspace/tmp/intake-jev-ultrafast/. Prior session file backed up to scratch/backup-session.json.",
+  "processed_urls": [
+    "https://github.com/browser-use/jev-ultrafast",
+    "https://github.com/browser-use/browser-harness"
+  ],
+  "entries": [
+    "intake-1493",
+    "intake-1494"
+  ],
+  "next_intake_id": 1495,
+  "expansion_refused": [
+    {
+      "seed": "intake-1493",
+      "reason": "inception/mercury-2.5 (text helper) is a hosted closed-weights model named only as a config value; no primary source to ingest"
+    }
+  ],
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 1,
-      "verbatim": "The program as weights links seem relevant for constructing agent loops and making our current agent loops more robust. I liek the idea of a GUI for designing high level processes that clearly separate deterministic flow from fuzzy LLM work in a menaingful way. The jev-related links/content seem extremely relevant for the orchestrator where json schemas are passed and tool use is important since it both guarantees exact tool use and also a pretty large overall speed boost. We hsould find a way to fold those techniques into the orchestrator. It may also be relevant for fast routing and episodic memory writing.  \n\nLastly, the Agentic Kernel Porting seems obviosuly relevant to autokernel",
+      "verbatim": "It would tie into the extensive jev-related work performed over there past two days",
       "disposition": "planned",
-      "plan_ref": "PLAN-FRAME (to instantiate at Stage 3): (a) Jev typed-decision techniques -> orchestrator JSON-schema/tool-use path, fast routing, episodic-memory writing; (b) PAW -> agent-loop robustness + a GUI separating deterministic flow from fuzzy LLM work; (c) agentic porting methodology -> autokernel (contingent on operator-supplied primary URL; see declines)."
+      "plan_ref": "plan \u00a71 TD-12..TD-15; relevance medium->high (Stage 2)"
     },
     {
       "seq": 2,
-      "stage": 2,
-      "verbatim": "The operator's reply opened with a rendered copy of the Stage-1 recommended-dives table, followed by the words: '- proceed.' It continued: '\"One operator input needed to unblock an item: canonical URLs for Maharshi's two X threads...\" - I'll pull both threads together and check any diagrams so the combined essay can absorb their content.' The remainder of the message was an operator-supplied essay titled 'Agentic GPU Kernels as a Verifiable Loop, and Why Porting Is the Work That Fits It', stored verbatim at /workspace/tmp/intake-jev-sageattn/operator-essay2-20260917.md and persisted to the index as intake-1480.",
+      "stage": 3,
+      "verbatim": "what if we choose to desire a browser-agent surface in the future? Shouldn't we at least create a stub for it?",
       "disposition": "planned",
-      "plan_ref": "PLAN-FRAME updated: (c) agentic porting methodology -> autokernel now rests on E-grade harness elements anchored to CUTLASS/CUDA-docs/intake-1468/1469; port numbers stay non-citable (U)."
+      "plan_ref": "plan \u00a72 browser-agent-surface.md + UFH-10"
     }
   ],
-  "contradiction_pass": {
-    "jev_cluster": "No independent replication of the headline multipliers (193.6x/444.6x; 40x-200x latency) under a matched harness found by bounded search (provisional, NOT evidence of absence). Independent evidence contradicts the 'calibrated' framing: intake-1474 measures raw candidate-softmax confidence with 65% of 7B wrong fields above 0.90; intake-1475 measures a ~4-point judge-agreement gap to frontier. Vendor self-caveats recorded (wrapper advantage, label bias, non-empirical 0%). HN thread objections not ingested.",
-    "paw_cluster": "No criticism surfaced in bounded search (provisional). Internal tension: paper says compilation is hosted, while intake-1477 documents a self-hosted training-based path; no licenses declared on intake-1478/1479/1466.",
-    "sageattention_cluster": "No contradiction surfaced for the paper/repo facts (provisional). The digest's port claims (1.2x/2.8x/zero CuTeDSL) are NOT in either artifact and no primary URL was locatable."
+  "dive_selected": [
+    "intake-1493"
+  ],
+  "dive_results": {
+    "intake-1493": "dive-verified; 1 claim narrowed, 1 added, Stage-1 contradiction withdrawn"
   },
-  "stage1_results": {
-    "entries_persisted": 20,
-    "intake_ids": "intake-1460..1479 (all verification: stage1-unverified, handoffs_updated/created: [])",
-    "notable": {
-      "jevlike": "Option-as-query cross-attention CONFIRMED in code (model.py:34-43) with deviation (query vector is the readout); per-call option set CONFIRMED; frozen Qwen2.5-0.5B + tiny head CONFIRMED; RLCD/calibration objective NOT FOUND; 26%/29%/100x are README prose with no shipped artifacts; repo-internal contradicting evidence (option head capacity bottleneck).",
-      "hf_space": "Prefill-once + candidate-logit scoring CONFIRMED, but batched M-wide over a replicated KV (not per-field passes); collision fields use a clamped heuristic; is_valid_json/schema_match hardcoded True; stock Qwen2.5-1.5B; RLCD is an alias; no accuracy/calibration eval.",
-      "hf_model": "NO weights/config (404s; usedStorage 0, 200 likes) - code mirror only; not_applicable as a model artifact.",
-      "diffgemma_pr": "Merged 2026-09-16; typed decisions via label-slot logits in one scored denoise forward; 4-read Monte Carlo with stderr/agreement; explicitly uncalibrated; Apple-Silicon-only.",
-      "paw_docs_sdk": "Compilation still hosted; local runtime is llama.cpp + GGUF LoRA .paw; in-repo compiler module non-runnable (missing imports); no weights/datasets in SDK repo.",
-      "paw_reopen": "intake-811 re-open trigger appears MET (weights intake-1478 + dataset intake-1479, both public/ungated), and their dates (2026-06-07/2026-07-03) PRECEDE the 2026-07-11 dive that called the compiler closed - a candidate correction to intake-811.",
-      "sageattention3": "Paper v3 + repo commit d1a57a54 verify NVFP4 1x16, two-level P scaling [0,448x6], 1038 TOPS RTX5090; NO CuTeDSL variant upstream; NO AMD path; digest port claims have no locatable primary source.",
-      "typesafe_docs": "The closest public SPEC: Choice/Score/Noul primitives, one-call parallel questions, caller-side confidence thresholds, speculative fan-out, published failure modes; hosted-only, confidence formula undisclosed; internal doc inconsistencies (11.5x vs 12.2x; 32k vs 64k budget).",
-      "adapter": "MIT reference implementation of the contract over generic LLM APIs (msgspec per-request schema, corrective retries, normalization, local confidence statistics, injection-guarded serialization); targets OpenAI-compatible base_url (portable pattern to llama.cpp).",
-      "rorshopping": "Independent: 3.4-7.9x speed (not 40-200x) vs same-model naive JSON; 1.5B/7B/8B primary-field 58.3%/95.8%/91.7%; confidence raw softmax with 65%/64% of wrong fields >0.90 confident; local 7B 73.8% vs published Jev 86.6% on Jev's own eval (343-pair common subset).",
-      "goodstartlabs": "6,003 checks: Jev 91.5% agreement with Fable 5.1; 86-92% vs five LMs; LMs 88-95% with each other; ~$160 vs $33,000 per million graded answers; agreement is not accuracy.",
-      "compile_by_training": "FuzzyBench-Hard 0.224 -> 0.836 LEM; teacher-synthesized LoRA on Qwen3-0.6B; hosted compile-time teacher API; ~40GB accelerator recipe.",
-      "paw_weights_dataset": "8.04GB compiler safetensors + 652MB lora_mapper + meta.json; dataset 43,128 + 7,550 rows (spec/input/output); NO license on either; no training split."
-    },
-    "validator": "scripts/validate/validate_intake.sh exit 0 (1475 index entries after append; max id 1479)",
-    "index_write": "text append via /workspace/tmp/intake-jev-sageattn/append_entries.py (yaml.safe_dump of ONLY the 20 new entries, appended in append mode); pre-append backup /workspace/tmp/intake-jev-sageattn/backup-index-before-stage1-append.yaml; no round-trip of the document; git status clean outside research/ and .research-session.json.",
-    "spot_check": "read-back asserted all 20 entries present with verification=stage1-unverified and empty handoff fields"
-  },
-  "dive_recommendations_ranked": [
+  "dive_surfaced_sources": [],
+  "derived_actionables": [
     {
-      "rank": 1,
-      "intakes": [
-        "intake-1472",
-        "intake-1473"
-      ],
-      "why": "Operator's #1 Jev target: public spec + portable reference implementation of the typed-decision contract over generic LLM APIs (targets OpenAI-compatible base_url, i.e. our llama.cpp server)",
-      "settle": "exact primitive semantics (Choice/Score/Noul, confidence-as-statistic, parallel isolation, speculative fan-out), the adapter's schema/retry/normalization code paths with file:line, and what is transplantable without the hosted service"
+      "id": "DA-1",
+      "draft": "TD-4b: one-call tool + argument arm: a choice over list_tools(role) plus per-tool argument heads, consuming only the chosen tool's heads; compare to the tool-then-args path",
+      "owner": "typed-decision-plane.md",
+      "disposition": "propose"
     },
     {
-      "rank": 2,
-      "intakes": [
-        "intake-1474"
-      ],
-      "why": "The independent negative that gates any confidence-driven routing/episodic gate: raw softmax confidence, 3.4-7.9x real speedup, ~13-pt accuracy gap",
-      "settle": "verify the calibration tables and raw JSONs, the strict common-subset scoring, and whether any local model/config clears a usable calibration bar"
+      "id": "DA-2",
+      "draft": "Per-head fail-open: a failed UNUSED head must not reject the pass (tool_args_integration.py:197)",
+      "owner": "typed-decision-plane.md (folds into DA-1)",
+      "disposition": "propose"
     },
     {
-      "rank": 3,
-      "intakes": [
-        "intake-1467",
-        "intake-1466"
-      ],
-      "why": "Operator wants PAW for agent-loop robustness; these ground the local runtime contract and the re-open evidence for intake-811",
-      "settle": "the .paw runtime contract and offline validation, the non-runnable local-compile module, the missing license surface, and the exact re-open-trigger state vs the 2026-07-11 blocker"
+      "id": "DA-3",
+      "draft": "Optional per-candidate descriptions on Question, rendered in the catalogue",
+      "owner": "typed-decision-plane.md",
+      "disposition": "propose"
     },
     {
-      "rank": 4,
-      "intakes": [
-        "intake-1477",
-        "intake-1478",
-        "intake-1479"
-      ],
-      "why": "Decides whether a self-hosted compile-once prototype is feasible on EPYC hardware and confirms the intake-811 correction",
-      "settle": "per-artifact requirements (teacher API, accelerator memory, licenses), the FuzzyBench-Hard split mapping, and actual loadability of the compiler weights"
+      "id": "DA-4",
+      "draft": "Measure contamination between an operation head and speculative heads conditioned on it before trusting their independence",
+      "owner": "typed-decision-plane.md",
+      "disposition": "propose"
     },
     {
-      "rank": 5,
-      "intakes": [
-        "intake-1462",
-        "intake-1463"
-      ],
-      "why": "Mechanism fidelity of the option-scorer reconstruction + the engine underneath intake-1474; needed before implementing any typed-decision path locally",
-      "settle": "the attention math vs the digest's description, the batched-KV claim, the collision heuristic, and whether any of the 26%/29%/100x figures have supporting artifacts"
+      "id": "DA-5",
+      "draft": "Native path beyond 36 candidates (hierarchical codes / chunking; 128 n_probs cap)",
+      "owner": "typed-decision-plane.md",
+      "disposition": "propose-conditional (only if DA-1 needs large tables)"
     },
     {
-      "rank": 6,
-      "intakes": [
-        "intake-1475"
-      ],
-      "why": "Independent judge-agreement ceiling and cost basis for the canonical judge suite",
-      "settle": "the agreement matrix, threshold choice (p>=0.70), cost methodology, and the version-drift caveat"
-    },
-    {
-      "rank": 7,
-      "intakes": [
-        "intake-1470",
-        "intake-1471"
-      ],
-      "why": "Vendor claim anchors and eval-table reconstruction; required before any external-vs-local comparison is filed (digest wording already diverges from published wording)",
-      "settle": "exact claim tuples with section anchors, the per-workflow subpages, and whether the headline multipliers are reconstructible"
-    },
-    {
-      "rank": 8,
-      "intakes": [
-        "intake-1468",
-        "intake-1469"
-      ],
-      "why": "CONDITIONAL: only if a CuTe/CuTeDSL porting pilot is scoped for autokernel; the kernel itself cannot run on gfx90a",
-      "settle": "kernel design facts worth porting (two-level P scaling, FP16 protection of dO*V^T) and the CuTe template structure as port-source context"
+      "id": "DA-6",
+      "draft": "Port jev browser executor / adopt browser-harness",
+      "owner": null,
+      "disposition": "decline: no browser-agent surface; opt-out telemetry"
     }
   ],
-  "preliminary_actionables_unverified": {
-    "orchestrator_typed_decisions": "intake-1472/1473 -> routing-intelligence.md (RTG-30), decision-aware-routing.md (RTG-09), learned-routing-controller.md (RTG-15), tool-use-eval-contract.md: implement one-pass typed decisions over llama.cpp (per-request schema from declared questions, candidate scoring, {choice, probabilities, confidence}) and measure against the current JSON-generation path. [unverified - do not file before Stage 3]",
-    "fast_routing": "intake-1462/1463/1474 -> routing handoffs + retrain-routing-models.md (RTG-29): candidate-logit scoring for closed-set routing tiers; calibration must be measured locally before any gate. [unverified]",
-    "episodic_memory": "intake-1472/1473 -> episodic-memory-integrity.md, unified-trace-memory-service.md (RTG-41): typed decision records with per-question probabilities + caller-side confidence threshold as the memory-write gate. [unverified]",
-    "judge_cost": "intake-1475/1476 -> canonical-judge-suite-revamp.md, eval-benchmark-cost-reduction.md: cheap typed judges with redundancy (agreement, not accuracy) as a cost lever, pending local accuracy anchor. [unverified]",
-    "paw_agent_loops": "intake-1466/1467/1477 -> harness-selection-and-integration.md, autopilot-continuous-optimization.md: compile-once fuzzy subfunctions (deterministic flow + fuzzy primitive separation) and evaluate the operator's process-designer GUI idea; likely needs a new stub for the authoring surface. [unverified]",
-    "intake811_reopen": "intake-1477/1478/1479 -> intake-811: re-open assessment for a self-hosted compile-once cheap-specialist prototype on CPU/MI210 (teacher-API dependency, ~40GB recipe, absent licenses). [unverified]",
-    "autokernel_porting": "intake-1461 (BLOCKED: primary source unlocatable) -> autokernel-research-loop.md (INF-06), agentic-rocm-kernel-authoring.md (INF-03): porting-harness methodology adoption contingent on operator-supplied thread URLs; intake-1468/1469 supply only the kernel facts. [unverified]"
-  },
-  "explicit_declines": {
-    "intake-1460": "no dive - it is a digest whose primaries are all separately ingested; dive budget goes to the primaries",
-    "intake-1461": "no dive at Stage 1 - load-bearing 1.2x/2.8x/zero-CuTeDSL claims have no locatable primary source (Maharshi X threads unsurfaced); reversible if operator supplies the two thread URLs",
-    "intake-1464": "no dive - weightless shell already conclusively inspected (no config/weights, 404s); monitor posture for weights appearing",
-    "intake-1465": "no dive - Apple-Silicon-only diffusion path with no EPYC-executable component; its strongest evidence (20-ticket eval) is in follow-up PR #23, outside this artifact",
-    "intake-1468": "no dive now - hardware-mismatched (FP4/Blackwell vs gfx90a) and the digest's port claims are not in it; revisit only as port-source material if a CuTe/CuTeDSL pilot is scoped",
-    "intake-1469": "no dive now - same as intake-1468; no CuTeDSL variant and no ROCm path upstream",
-    "intake-1476": "no dive - anecdote-grade, self-scored, non-blind; use only to motivate a controlled local test",
-    "arxiv_2407_02423": "declined as context-only (cited by the digest as a catalog of attention variants; no decision value and not found cited by any ingested artifact)"
-  },
-  "operator_decision_items": [
-    "Supply canonical URLs for Maharshi's two X threads (2026-09-16 agentic SageAttention3->CuTeDSL port; 2026-08-09 kernel-agent write-up) if the autokernel porting methodology is to become dive-verifiable and citable in a Stage-3 plan item (intake-1461 currently blocks its own actionables)."
-  ],
-  "verification_gates": {
-    "stage1": "PASS: session resolved (Dream-RSI not resumed; backed up); dedup unbounded (0 collisions); every URL has Phase 1+2 results; expansion exactly 10 <= cap; every relevance>=medium entry has a dive recommendation or explicit decline; all 20 persisted stage1-unverified with handoffs_* empty; no cross-contaminated figures (per-artifact subagent isolation); validate_intake.sh exit 0; git status clean outside research/ and .research-session.json."
-  },
-  "stage2_selected": [
-    "1472+1473",
-    "1474",
-    "1467+1466",
-    "1477+1478+1479",
-    "1462+1463",
-    "1475",
-    "1470+1471",
-    "1468+1469+1461"
-  ],
-  "stage2b_ids": {
-    "intake-1480": "Operator essay: Agentic GPU Kernel Porting as a Verifiable Loop (expanded_from 1461; born stage1-unverified per dive recommendation)"
-  },
-  "stage2_results": {
-    "dived": 16,
-    "dive_verified": [
-      "intake-1462",
-      "intake-1463",
-      "intake-1467",
-      "intake-1468",
-      "intake-1469",
-      "intake-1470",
-      "intake-1472",
-      "intake-1473",
-      "intake-1474",
-      "intake-1475",
-      "intake-1477",
-      "intake-1478",
-      "intake-1479"
-    ],
-    "dive_overturned": [
-      "intake-1466",
-      "intake-1471"
-    ],
-    "stage1_unverified_after_dive": [
-      "intake-1461",
-      "intake-1480"
-    ],
-    "not_dived": [
-      "intake-1460 (digest; primaries ingested)",
-      "intake-1464 (weightless shell)",
-      "intake-1465 (Apple-only diffusion pattern)",
-      "intake-1476 (anecdote-grade; COI caveat added)"
-    ],
-    "notable_corrections": {
-      "intake-1466": "OVERTURNED: 'no accuracy numbers anywhere on the docs site' is false (ToolCall-15 93% with leakage caveat; 67->88%; 67.5%/80%; ADR quant evals); all 7 key_claims confirmed.",
-      "intake-1471": "OVERTURNED: sample sizes ARE published (n_cases 240/117/150/204 = 711 + 5 example cases/workflow); workflow-vs-prompt counterexamples 5 of 32; multiplier pair not reconstructible (nearest single config invoice opus5 441.45x/184.20x).",
-      "intake-1474": "Metric mislabel corrected: all_fields_accuracy is per-field (50.0/72.2/84.7); case-level exact 16.7/50.0/62.5; 1.5B benchmark row docs-only; calibration warning + ~13pt gap solid.",
-      "intake-1462": "Attention math has a second 1/sqrt(rank); shipped shuffled-context control leaks target in 39.4% (dinostomp audit; issue #1); figures still unshipped.",
-      "intake-1463": "Collision handling MLX-only (torch ties -> first choice); hardcoded validity/counter constants; preset field counts contradict timing table.",
-      "intake-1472/1473": "Contract verified; adapter sends question IDs as schema properties (contradicts vendor promise); normalization off by default; llama.cpp targeting read-level plausible (json_schema -> GBNF) but unexecuted.",
-      "intake-1467/1466": "Re-open trigger correction: compiler weights (2026-06-07) and FuzzyBench data (2026-02-17) predate the 2026-07-11 blocker; licenses undeclared; no official self-hosted compile.",
-      "intake-1477/1478/1479": "Code repos MIT (artifact licenses undeclared); FuzzyBench-Hard not shipped; 0.224 is adversarially selected; downloads untracked on HF.",
-      "intake-1470": "Speed bracket not derivable (endpoint ratios 6x-4700x; 200x unproduced); CompleteSkeptic = vendor CEO.",
-      "intake-1475": "Vendor early access + GSL backers include Every (publisher of 1476); costs estimates; ~4pt gap derived top-pair (mean ~1.7pp); no raw data.",
-      "intake-1468/1469": "Anchored with table/line locators; venue externally confirmed (OpenReview JbJVWljk7r NeurIPS 2025 Spotlight); no CuTeDSL/ROCm upstream; vestigial __HIPCC__ macro only.",
-      "intake-1461/1480": "Port claims U (unverifiable; bounded search negative); RTX PRO 6000/SM120 and cuDNN baseline are misattributions relative to the paper."
-    },
-    "index_write_stage2": "tail re-emit of intake-1460..1480 via /workspace/tmp/intake-jev-sageattn/apply_dives.py; head bytes asserted identical (sha256 5a096d970bec...); pre-write backup backup-index-before-stage2.yaml; validator exit 0 (1476 entries).",
-    "validator": "validate_intake.sh exit 0"
-  },
-  "dive_surfaced_sources": {
-    "recommend_ingest_and_dive": [
-      {
-        "ref": "github.com/avra-m3/program-as-weights-server (MIT; created 2026-07-10)",
-        "bears_on": "intake-1466/1467/1478/1480/811",
-        "why": "Independent unofficial self-hosted PAW compile server using the released weights via PAW_API_URL; would settle whether self-hosted compile is runnable on our host (RAM/device; CUDA/MPS only today)."
-      },
-      {
-        "ref": "github.com/manojbade/paw-local-eval (MIT; created 2026-07-05)",
-        "bears_on": "intake-1466/1467/811",
-        "why": "Only independent PAW accuracy/usage evaluation (100 adversarial cases; compact 85% / standard 94% / finetuned 97%; semantic abstention 98.9%; confidence thresholding fails; n=30 pilot misranked models)."
-      },
-      {
-        "ref": "github.com/collapseindex/dinostomp (audit of jevlike)",
-        "bears_on": "intake-1462",
-        "why": "Independent audit quantifying the shuffled-control target leak (39.4%), 29.8% informed vs 5.0% blind, and three data gates; not yet indexed."
-      },
-      {
-        "ref": "github.com/iammrduncan/typesafe-ai-benchmark",
-        "bears_on": "intake-1470/1471/1472",
-        "why": "Third-party measured side-by-side (Qwen 3.8 27B on Cerebras vs Jev; seven workloads; raw exports + cost accounting) - closest independent test of the speed/cost claims."
-      },
-      {
-        "ref": "github.com/anessbelbati/jev-rerank-bench",
-        "bears_on": "intake-1472",
-        "why": "Independent rerank reproduction with CIs: Jev 0.692 vs Cohere Pro 0.691 (no winner); 24.7% top-pick change under passage reversal; self-hosted Qwen RLCD below BM25."
-      },
-      {
-        "ref": "github.com/TheoLeeCJ/openjev",
-        "bears_on": "intake-1473/1463",
-        "why": "Independent local reproduction on a 3090 (Qwen3.5-4B, native option logits, shared-prefill parallel criteria) - concrete local architecture for the typed-decision path."
-      },
-      {
-        "ref": "warmersun.com/jev (claims audit, 2026-09-16)",
-        "bears_on": "intake-1470/1472",
-        "why": "Independent claims audit separating vendor claims from public evidence (price sheet, group-level calibration, alias risk, first independent tests)."
-      },
-      {
-        "ref": "github.com/LuXuxue/SageAttention (HIP-native port; RDNA2/3)",
-        "bears_on": "intake-1461/1469/1480",
-        "why": "Independent cross-ISA kernel port artifact (created 2026-08-02, pushed 2026-09-14, Apache-2.0) - the existence proof the CuTeDSL thread lacks; gfx110x/gfx103x, so gfx90a applicability must be checked."
-      },
-      {
-        "ref": "huggingface.co/programasweights/paw-4b-gpt2 (Compact compiler)",
-        "bears_on": "intake-1478",
-        "why": "Second public compiler artifact (GPT-2 124M interpreter; browser/WASM path) with the same undeclared-license pattern."
-      },
-      {
-        "ref": "huggingface.co/programasweights/paw-programs (434 .paw bundles, 32,726 downloads)",
-        "bears_on": "intake-1466/1467",
-        "why": "At-scale corpus of the documented bundle format; lets the contract be checked without compiling."
-      },
-      {
-        "ref": "llm-benchmarks.diegoromero.es (cited 3-329 s baseline source)",
-        "bears_on": "intake-1470",
-        "why": "The blog's hyperlinked baseline source returned 403 to the dive; retry fetch to verify or mark link-only."
-      },
-      {
-        "ref": "github.com/AbdelStark/awesome-typesafe",
-        "bears_on": "Jev cluster discovery",
-        "why": "Curated index routing to the community corpus (low weight; discovery surface, not evidence)."
-      }
-    ],
-    "recommend_decline": [
-      "github.com/codeitlikemiley/system-one-adapter-rust (derivative port; no measurements)",
-      "github.com/dynamder/paw-rs and github.com/programasweights/skills (no claim bearing)",
-      "news.ycombinator.com/item?id=49717558 and 49736660 (discussion/prior-art claim; no artifact; 1470/1471 dives already record the provenance correction)",
-      "HN 47780141 / 47768831 / 48602758 / 49402907 / 49404117 (PAW launch restatements)",
-      "blog.nimendra.xyz Jev write-up (restatement)",
-      "completeskeptic.com + X @CompleteSkeptic (vendor CEO; already tagged)",
-      "goodstartlabs.com/about (COI context, recorded in entries; not a source)",
-      "datasets/wtzhang-nlp/fuzzy_bench (namesake; noted in intake-1479 dive_corrections)",
-      "anonymous.4open.science/r/programasweights (dead snapshot)",
-      "HF dataset PR #2 (monitor only)",
-      "openreview.net/forum?id=JbJVWljk7r (external confirmation, cited in intake-1468 notes; no entry needed)",
-      "kyrieblunders/veitner CuTeDSL write-ups and HN 44308612 (optional autokernel context; provisional negative for the port)"
-    ]
-  },
-  "stage2b_result": "12 born dive-verified/overturned entries appended (intake-1481..1492); validator exit 0 (1488 entries); declines recorded on bearing entries.",
-  "stage3_plan": "research/intake-stage3-plan-2026-09-17-jev-paw-autokernel.md (3 new stubs RTG-56/INF-76/UFH-09, 10 handoff edits D1-D10, intake-811 amendment, explicit declines); no handoff writes until operator approval.",
-  "stage4_result": {
-    "stubs_created": [
-      "handoffs/active/typed-decision-plane.md",
-      "handoffs/active/paw-compiled-specialists.md",
-      "handoffs/active/fuzzy-workflow-authoring-gui.md"
-    ],
-    "handoffs_edited": [
-      "routing-intelligence.md",
-      "learned-routing-controller.md",
-      "canonical-judge-suite-revamp.md",
-      "eval-benchmark-cost-reduction.md",
-      "episodic-memory-integrity.md",
-      "tool-use-eval-contract.md",
-      "autokernel-research-loop.md",
-      "agentic-rocm-kernel-authoring.md",
-      "vidya-belief-substrate-program.md",
-      "master-handoff-index.md"
-    ],
-    "index_rows_added": [
-      "RTG-56",
-      "INF-76",
-      "UFH-09",
-      "OP-43"
-    ],
-    "new_tasks": 27,
-    "checkbox_flips": 0,
-    "renumbered_for_collisions": {
-      "RI-11->RI-14": "pre-existing RI-11/RI-12/RI-13",
-      "M-17->M-19": "pre-existing M-17/M-18 standing gate"
-    },
-    "intake_811_amendment": "blocker corrected (availability stale; surviving blockers = licenses, no official self-hosted compile, no 10M training set); integration_disposition monitor->integrated; handoffs_created [paw-compiled-specialists.md]",
-    "intake_edges_filled": 21,
-    "gates": {
-      "validate_intake": "exit 0",
-      "index_state_check": "exit 0",
-      "cite_check_clear": "conflicted citation resolved via #record and claim_corrections added to 1481/1492"
-    },
-    "not_committed": "per policy; worktree branch intake/jev-sageattn-20260917 held for wrap-up/promotion"
-  },
-  "operator_rulings": [
-    {
-      "id": "OP-43 (closed 2026-09-17)",
-      "verbatim": "everything we do is internal research",
-      "ruling": "Internal-research-only scope is the standing posture. Unlicensed PAW artifacts (intake-1478/1483/1479/1484) are usable for all internal work; no redistribution, no deployed-service use, no shipping compiled programs. The license question re-opens only if a distribution/productization path is ever scoped.",
-      "applied": [
-        "master-handoff-index.md OP-43 row removed (OP-9 precedent: closed rows are deleted; resolution recorded in the owning handoff)",
-        "paw-compiled-specialists.md PAW-1 marked resolved with the scope ruling",
-        "intake-811 amendment annotated with the ruling"
-      ],
-      "gates": "index_state --check exit 0; validate_intake.sh exit 0"
-    }
-  ]
+  "plan_file": "/home/node/.claude/plans/radiant-launching-allen.md",
+  "plan_approved": "2026-09-19"
 }

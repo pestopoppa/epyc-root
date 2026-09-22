@@ -1,0 +1,14 @@
+diff --git a/ggml/src/ggml-cpu/iqk/iqk_gemm_kquants.cpp b/ggml/src/ggml-cpu/iqk/iqk_gemm_kquants.cpp
+index bd11eb9e0..d3c702f19 100644
+--- a/ggml/src/ggml-cpu/iqk/iqk_gemm_kquants.cpp
++++ b/ggml/src/ggml-cpu/iqk/iqk_gemm_kquants.cpp
+@@ -893,8 +893,7 @@ static void mul_mat_qX_K_q8_2_X4_T(int n, const void * vx, size_t bx, const Data
+                         const block_q8_2_x4& y = q8.y[iy][2*i+j];
+                         __m512i yq[4];
+                         for (int k = 0; k < 4; ++k) {
+-                            auto y256 = _mm256_loadu_si256((const __m256i *)y.qs + k);
+-                            yq[k] = _mm512_inserti32x8(_mm512_castsi256_si512(y256), y256, 1);
++                            yq[k] = _mm512_broadcast_i32x8(_mm256_loadu_si256((const __m256i *)y.qs + k));
+                         }
+                         auto sumi1 = _mm512_dpbusd_epi32(_mm512_setzero_si512(), values[0], yq[0]);
+                         auto sumi2 = _mm512_dpbusd_epi32(_mm512_setzero_si512(), values[1], yq[1]);

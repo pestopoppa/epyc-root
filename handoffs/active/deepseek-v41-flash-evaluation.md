@@ -99,8 +99,10 @@ candidate block selection (`candidate_source_layer_id=20`, `candidate_topk_block
   Recommendation: **(c)**. Source-audit first (pin SHAs, diff vs `deepseek4.cpp`), same shape as
   the GLM-5.3 T0 audit. This is an engineering choice, not an operator gate; proceed on (c) unless
   the audit shows vcruz's sparse path is further along than reported.
-- [ ] DS41-B1 — Create the experimental branch from the current champion tip. Record its exact
-  SHA and its descent from production v9 `0db32c06e`. Build CPU and HIP, and prove linkage with
+- [ ] DS41-B1 — Create the experimental branch from **production-consolidated-v10** (`ffc1bac82`,
+  build 10303, live in `kernels/production/{cpu,gpu}` since 2026-09-21), or from
+  `experimental/glm53-keeps-on-v10-20260922` if DS41-K1 admits it first. Record its exact SHA and
+  its descent from v10. Build CPU and HIP, and prove linkage with
   `verify_ggml_linkage.sh`.
 - [ ] DS41-B2 — Arch registration and loader for `deepseek41`, with a tested antirez-name compat
   map and every tensor shape/type validated before weights load.
@@ -115,6 +117,34 @@ candidate block selection (`candidate_source_layer_id=20`, `candidate_topk_block
 - [ ] DS41-B6 — Native 3-layer MTP through `--spec-type draft-mtp`: load `nextn` blocks and
   dispatch `DECODER_MTP` for depths 1-3. Validate target/draft hidden-state semantics and index
   or KV sharing into draft iterations.
+
+### K — GLM-5.3 AutoKernel keeps carried to V4.1
+
+The GLM-5.3 CPU campaign left 28 kernel keeps that are **not in v10**. All touch generic
+ggml-cpu code only (`quants.c`, `ggml-cpu.c`, `ops.cpp`, `iqk_dispatch.cpp`,
+`iqk_gemm_kquants.cpp`, `iqk_quantize_min.cpp`): Q4_K/Q5_K/Q8 dot paths, FA, the lightning-indexer
+f16 dot, MoE expert cohorts and row-exact MoE (`akm-moe-rowexact-qact-2d-partition` +18.168%,
+`akm-moe-rowexact-weighted-slabs` +3.179%). V4.1's Q4_K routed experts, Q8 attention and DSA
+indexer run on these paths. Every gain was measured **only** on
+`serving:glm53-c463f601b-cpu-mtp-depth3-b2048-ub512`; none is a claim about v10 or about V4.1.
+
+- [x] DS41-K0 — Preserve and port. The source branch `ak/glm53-recovered-accumulator-20260912` is
+  pushed to `fork` (it was 5 commits ahead). It is cherry-picked onto v10 as
+  `experimental/glm53-keeps-on-v10-20260922` (fork): 28 keeps plus the row-exact MTP prerequisite
+  `04ffb8ad0`. Its generic ggml/llama-context/server parts are ported, and its GLM5Next-only tests are
+  dropped. There was one conflict, in `tests/CMakeLists.txt`. The CPU build compiles, with iqk symbols
+  present. `test-rowexact-backend-toggle {dense,densef32,mmid}` exits 3 (`difference_witness=0`)
+  **identically on the original `614ff2ba0`**, so this is not a port regression. The test's witness
+  does not engage on this host as written; fix or retire it in K1. The 11 in-flight lane diffs from
+  the deleted runs are in `artifacts/autokernel/glm53-inflight-candidates-20260922/`; they are
+  unmeasured. ✅ 2026-09-22
+- [ ] DS41-K1 — Cross-workload admission of the ported branch vs v10 on the current CPU roles,
+  under the AutoKernel cross-workload keep gate: speed paired with quality/coherence, per keep or
+  bisected. Survivors become a **v11 champion candidate** through the standard four-step workflow
+  (full-candidate bench, no cherry-picks at promotion). The row-exact keeps must also pass the
+  MTP exact-trajectory gates on an MTP role.
+- [ ] DS41-K2 — Re-measure the surviving keeps on deepseek41 once DS41-T1 passes, and evaluate the
+  11 in-flight candidates as AutoKernel seeds on the V4.1 surface.
 
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
 

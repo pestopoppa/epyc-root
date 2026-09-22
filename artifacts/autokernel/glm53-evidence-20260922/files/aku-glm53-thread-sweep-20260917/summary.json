@@ -1,0 +1,479 @@
+{
+  "baseline_recipe": "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260917-v20.recipe.json",
+  "caveat": "Diagnostic only; no floor, no automatic keep or champion advancement.",
+  "confirmation": {
+    "24": [
+      8.270772424559814,
+      8.532031914065374,
+      8.197175368640744,
+      8.218739570567967,
+      8.307567838958057
+    ],
+    "48": [
+      8.885400289452328,
+      8.852447542678133,
+      8.753135806628734,
+      8.804669928143403,
+      8.835448079999322
+    ]
+  },
+  "confirmed_count": 24,
+  "confirmed_effect_pct": -6.391024544841772,
+  "cpu_claim": {
+    "affinity_cores": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43",
+      "44",
+      "45",
+      "46",
+      "47",
+      "48",
+      "49",
+      "50",
+      "51",
+      "52",
+      "53",
+      "54",
+      "55",
+      "56",
+      "57",
+      "58",
+      "59",
+      "60",
+      "61",
+      "62",
+      "63",
+      "64",
+      "65",
+      "66",
+      "67",
+      "68",
+      "69",
+      "70",
+      "71",
+      "72",
+      "73",
+      "74",
+      "75",
+      "76",
+      "77",
+      "78",
+      "79",
+      "80",
+      "81",
+      "82",
+      "83",
+      "84",
+      "85",
+      "86",
+      "87",
+      "88",
+      "89",
+      "90",
+      "91",
+      "92",
+      "93",
+      "94",
+      "95"
+    ],
+    "allocation_generation": 1,
+    "close": {
+      "ended_monotonic_s": 3035844.978330362,
+      "error": null,
+      "locks": [
+        {
+          "device": 2431,
+          "inode": 188914914,
+          "owners": [
+            {
+              "kernel_row": "14: FLOCK ADVISORY WRITE 3554799 09:7f:188914914 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.autokernel-cpu.q0.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188914918,
+          "owners": [
+            {
+              "kernel_row": "13: FLOCK ADVISORY WRITE 3554799 09:7f:188914918 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.autokernel-cpu.q1.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188914919,
+          "owners": [
+            {
+              "kernel_row": "12: FLOCK ADVISORY WRITE 3554799 09:7f:188914919 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.autokernel-cpu.q2.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188914920,
+          "owners": [
+            {
+              "kernel_row": "11: FLOCK ADVISORY WRITE 3554799 09:7f:188914920 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.autokernel-cpu.q3.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188874759,
+          "owners": [
+            {
+              "kernel_row": "18: FLOCK ADVISORY WRITE 3554799 09:7f:188874759 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q0.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188874760,
+          "owners": [
+            {
+              "kernel_row": "17: FLOCK ADVISORY WRITE 3554799 09:7f:188874760 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q1.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188874761,
+          "owners": [
+            {
+              "kernel_row": "16: FLOCK ADVISORY WRITE 3554799 09:7f:188874761 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q2.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188874785,
+          "owners": [
+            {
+              "kernel_row": "15: FLOCK ADVISORY WRITE 3554799 09:7f:188874785 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q3.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        }
+      ],
+      "observed_at": 1789650497.6554353,
+      "owner_pid": 3554799,
+      "started_monotonic_s": 3035844.961704901,
+      "status": "held"
+    },
+    "context_id": "3f06964822f7dd8914910765fef36ecbc58f14a50995d1ca5b8e48666ad86f2c",
+    "device_id": "cpu",
+    "domain": {
+      "boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+      "clock": "monotonic",
+      "error": null,
+      "kind": "direct_loop",
+      "pid": 3554799,
+      "process_start_ticks": 303230406
+    },
+    "ended_at": 3035844.978924719,
+    "gpu_device_ids": [],
+    "memory_reservation_bytes": 0,
+    "open": {
+      "ended_monotonic_s": 3032304.45226603,
+      "error": null,
+      "locks": [
+        {
+          "device": 2431,
+          "inode": 188914914,
+          "owners": [
+            {
+              "kernel_row": "14: FLOCK ADVISORY WRITE 3554799 09:7f:188914914 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.autokernel-cpu.q0.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188914918,
+          "owners": [
+            {
+              "kernel_row": "13: FLOCK ADVISORY WRITE 3554799 09:7f:188914918 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.autokernel-cpu.q1.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188914919,
+          "owners": [
+            {
+              "kernel_row": "12: FLOCK ADVISORY WRITE 3554799 09:7f:188914919 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.autokernel-cpu.q2.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188914920,
+          "owners": [
+            {
+              "kernel_row": "11: FLOCK ADVISORY WRITE 3554799 09:7f:188914920 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.autokernel-cpu.q3.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188874759,
+          "owners": [
+            {
+              "kernel_row": "18: FLOCK ADVISORY WRITE 3554799 09:7f:188874759 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q0.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188874760,
+          "owners": [
+            {
+              "kernel_row": "17: FLOCK ADVISORY WRITE 3554799 09:7f:188874760 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q1.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188874761,
+          "owners": [
+            {
+              "kernel_row": "16: FLOCK ADVISORY WRITE 3554799 09:7f:188874761 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q2.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        },
+        {
+          "device": 2431,
+          "inode": 188874785,
+          "owners": [
+            {
+              "kernel_row": "15: FLOCK ADVISORY WRITE 3554799 09:7f:188874785 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q3.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        }
+      ],
+      "observed_at": 1789646957.128025,
+      "owner_pid": 3554799,
+      "started_monotonic_s": 3032304.434295528,
+      "status": "held"
+    },
+    "ownership_generation": 1,
+    "physical_claim_ids": [
+      "ffa56b5e-1da4-42e7-ac5d-d233ff830b65:flock:2431:188914914",
+      "ffa56b5e-1da4-42e7-ac5d-d233ff830b65:flock:2431:188914918",
+      "ffa56b5e-1da4-42e7-ac5d-d233ff830b65:flock:2431:188914919",
+      "ffa56b5e-1da4-42e7-ac5d-d233ff830b65:flock:2431:188914920",
+      "ffa56b5e-1da4-42e7-ac5d-d233ff830b65:flock:2431:188874759",
+      "ffa56b5e-1da4-42e7-ac5d-d233ff830b65:flock:2431:188874760",
+      "ffa56b5e-1da4-42e7-ac5d-d233ff830b65:flock:2431:188874761",
+      "ffa56b5e-1da4-42e7-ac5d-d233ff830b65:flock:2431:188874785"
+    ],
+    "physical_region_fraction": 1.0,
+    "released": true,
+    "started_at": 3032304.434227387
+  },
+  "frozen_prompts": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
+  "gpu_claim": {
+    "affinity_cores": [],
+    "allocation_generation": 1,
+    "close": {
+      "ended_monotonic_s": 3035844.97903038,
+      "error": null,
+      "locks": [
+        {
+          "device": 2431,
+          "inode": 188906159,
+          "owners": [
+            {
+              "kernel_row": "11: FLOCK ADVISORY WRITE 3554799 09:7f:188906159 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        }
+      ],
+      "observed_at": 1789650497.6726665,
+      "owner_pid": 3554799,
+      "started_monotonic_s": 3035844.978937039,
+      "status": "held"
+    },
+    "context_id": "a28a364030832d4e34a52946b7729cd8f29864e132b1c10ea2226ee29c2182f9",
+    "device_id": "mi210_0",
+    "domain": {
+      "boot_id": "ffa56b5e-1da4-42e7-ac5d-d233ff830b65",
+      "clock": "monotonic",
+      "error": null,
+      "kind": "direct_loop",
+      "pid": 3554799,
+      "process_start_ticks": 303230406
+    },
+    "ended_at": 3035844.979039081,
+    "gpu_device_ids": [
+      "mi210_0"
+    ],
+    "memory_reservation_bytes": 0,
+    "open": {
+      "ended_monotonic_s": 3032304.375207541,
+      "error": null,
+      "locks": [
+        {
+          "device": 2431,
+          "inode": 188906159,
+          "owners": [
+            {
+              "kernel_row": "11: FLOCK ADVISORY WRITE 3554799 09:7f:188906159 0 EOF",
+              "pid": 3554799
+            }
+          ],
+          "path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+          "path_unchanged": true,
+          "same_holder": true
+        }
+      ],
+      "observed_at": 1789646957.0490317,
+      "owner_pid": 3554799,
+      "started_monotonic_s": 3032304.355301329,
+      "status": "held"
+    },
+    "ownership_generation": 1,
+    "physical_claim_ids": [
+      "ffa56b5e-1da4-42e7-ac5d-d233ff830b65:flock:2431:188906159"
+    ],
+    "physical_region_fraction": 0.0,
+    "released": true,
+    "started_at": 3032304.355236448
+  },
+  "schema": "epyc.autokernel.glm53_thread_diagnostic.v1",
+  "screen": {
+    "24": [
+      8.493547433766711
+    ],
+    "32": [
+      7.857356325553967
+    ],
+    "48": [
+      9.102539071493368,
+      8.842957248636825,
+      9.216871252405747,
+      8.867579756042835
+    ],
+    "64": [
+      8.206410325228537
+    ],
+    "96": [
+      7.630336429282727
+    ]
+  },
+  "screen_ranked": [
+    24,
+    64,
+    32,
+    96
+  ],
+  "source_commit": "614ff2ba02e095b3ed11d7ed5e85ca3b1e2efeb3"
+}

@@ -1,0 +1,224 @@
+{
+  "binding": {
+    "argv": [
+      "--resolved-campaign",
+      "/mnt/raid0/llm/tmp/aku-full-roster-dryrun-inputs-20260910/campaign-resolved-fullsmt.json",
+      "--target-id",
+      "glm53-c463f601b-cpu-mtp-depth3-b2048-ub512",
+      "--model",
+      "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+      "--worktree",
+      "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-20260912",
+      "--store",
+      "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store",
+      "--worker-root",
+      "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/targets/d4aa7739d4f137c67dd8772b99bf57ca355760cf9cc965c4153d4139f9d5f265/workers",
+      "--worker-build-root",
+      "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/targets/d4aa7739d4f137c67dd8772b99bf57ca355760cf9cc965c4153d4139f9d5f265/builds",
+      "--cpu-serving-launch",
+      "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-ec8b707-accumulator-tip.recipe.json",
+      "--frozen-prompts",
+      "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
+      "--serving-instrument",
+      "matched_process_v2",
+      "--experimental-branch",
+      "ak/glm53-recovered-accumulator-20260912",
+      "--allow-unverified-anchor",
+      "--planner-model",
+      "gpt-5.6-sol",
+      "--critic-model",
+      "gpt-5.6-sol",
+      "--planner-effort",
+      "medium",
+      "--critic-effort",
+      "medium",
+      "--belief-root-repo",
+      "/mnt/raid0/llm/worktrees/mains/autokernel-unified-20260908",
+      "--shared-history-root",
+      "/mnt/raid0/llm/autokernel/loop-memory"
+    ],
+    "documents": {
+      "--cpu-serving-launch": "5fcc561ccd400c7d4ae73f215d5b3015db500285efa17dabd2ae1df887706e71",
+      "--frozen-prompts": "e2c7ea511ee59847f595913d894be7e2ff4c2bf2b74cce804591f5b453f297e6",
+      "--resolved-campaign": "2f2de05d54b33a5dad61a9e47f14952af6563713cde612caa042106ca702844c"
+    }
+  },
+  "branch": "ak/glm53-recovered-accumulator-20260912",
+  "cor_anchor": null,
+  "current_anchor": {
+    "commit": "dc3798db10a6654721f2a1fa6a162be2e5fdf95f",
+    "path": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store/anchor-gen-009"
+  },
+  "experimental_source_keeps": [
+    {
+      "path": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store/fold-receipts/56c101eda0750afc12b81f3bc9446472cae35690aec18edaff5ce5e32c732a65.json",
+      "sha256": "7069243f6417c532e9e3dd6497da9ce0e2fbca286773d7fdb5a25e3941b3c8fc"
+    }
+  ],
+  "held_claim_evidence": {
+    "evidence": {
+      "locator": "84170f1b200b946b67a070fcadd55981fbaa234be0ea5d0ed2b3750ac81501da-6568545872b7f5b28100238a316d97bc6ec9dfd1c83b30b88fad94db7f208b20.json",
+      "sha256": "1b9d2b414777542d8ca872359be4bab81a2780c07a3efc9e0ca79cc37ddd4625",
+      "verified": true
+    },
+    "schema": "epyc.autokernel.direct_held_reference.v1",
+    "selection_digest": "b16f8ffdba740497e6a4e8432a4788edbc842ee14a30f5d605e63d693e64a4f7"
+  },
+  "input_argv": [
+    "--resolved-campaign",
+    "/mnt/raid0/llm/tmp/aku-full-roster-dryrun-inputs-20260910/campaign-resolved-fullsmt.json",
+    "--target-id",
+    "glm53-c463f601b-cpu-mtp-depth3-b2048-ub512",
+    "--model",
+    "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+    "--worktree",
+    "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-20260912",
+    "--anchor-build",
+    "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store/anchor-gen-001",
+    "--store",
+    "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store",
+    "--worker-root",
+    "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/targets/d4aa7739d4f137c67dd8772b99bf57ca355760cf9cc965c4153d4139f9d5f265/workers",
+    "--worker-build-root",
+    "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/targets/d4aa7739d4f137c67dd8772b99bf57ca355760cf9cc965c4153d4139f9d5f265/builds",
+    "--cpu-serving-launch",
+    "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-ec8b707-accumulator-tip.recipe.json",
+    "--frozen-prompts",
+    "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
+    "--cor-build",
+    "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b",
+    "--serving-instrument",
+    "matched_process_v2",
+    "--experimental-branch",
+    "ak/glm53-recovered-accumulator-20260912",
+    "--allow-unverified-anchor",
+    "--planner-model",
+    "gpt-5.6-sol",
+    "--critic-model",
+    "gpt-5.6-sol",
+    "--planner-effort",
+    "medium",
+    "--critic-effort",
+    "medium",
+    "--belief-root-repo",
+    "/mnt/raid0/llm/worktrees/mains/autokernel-unified-20260908",
+    "--shared-history-root",
+    "/mnt/raid0/llm/autokernel/loop-memory",
+    "--resume-run",
+    "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/batches/batch-000023/loop-continuation.json",
+    "--iterations",
+    "1",
+    "--out",
+    "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/batches/batch-000024",
+    "--scheduler-selection",
+    "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/batches/batch-000024/scheduler-selection.json"
+  ],
+  "input_argv_sha256": "3a7ec695f17d68a2539a4876241bafcf6b33431c78eb62d9cc1a08d011ed3bf3",
+  "iterations_completed": 1,
+  "iterations_requested": 1,
+  "last_outcome_reference": {
+    "iteration_index": 0,
+    "mechanism_id": "akm-q4k-pairrow-zmm-accumulate",
+    "runtime_result": null,
+    "serving_receipt": {
+      "path": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store/serving-beliefs/febc4fb282715094e247bd623b6c1503ac59051ef64fb1e668c0b2ca29b48df3.json",
+      "sha256": "5ee9f72009d24ffa0f138f55f8fd1a28eba4cd463cd9b75795b7e9e2f4973095"
+    },
+    "status": "kept"
+  },
+  "model": "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+  "outcome_counts": {
+    "kept": 1
+  },
+  "result_file": "loop-run.json",
+  "schema": "epyc.autokernel.loop_continuation.v2",
+  "selected_target": {
+    "campaign_id": "aku-full-roster-dryrun-20260910",
+    "manifest_digest": "e414ddc3b92996b06232c800917a87a10ca3148f11e699ab1595225f06b772aa",
+    "original_target": {
+      "baseline": {
+        "kind": "build",
+        "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/llama-server",
+        "ref": "local:glm53:c463f601b:llama-server",
+        "schema": "epyc.autokernel.local_artifact.v1",
+        "sha256": "eb15de65559e0dbacdb55b3d38eab95bd2a6f24fd955705249f6ca6e7dc25e6a"
+      },
+      "baseline_ref": null,
+      "enrolled_as": [
+        "seed"
+      ],
+      "execution": {
+        "backend": "cpu",
+        "build": {
+          "kind": "build",
+          "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/llama-server",
+          "ref": "local:glm53:c463f601b:llama-server",
+          "schema": "epyc.autokernel.local_artifact.v1",
+          "sha256": "eb15de65559e0dbacdb55b3d38eab95bd2a6f24fd955705249f6ca6e7dc25e6a"
+        },
+        "build_ref": "local:glm53:c463f601b:llama-server",
+        "concurrency": 1,
+        "context": 8192,
+        "drafter": null,
+        "drafter_ref": null,
+        "env": {
+          "GGML_FA_SPLIT_KV": "0",
+          "GGML_FUSED_DECODE_OFF": "1",
+          "GGML_IQK": "1",
+          "GGML_IQK_Q8_0": "1",
+          "GGML_IQK_Q8_0_MIN_ROWS": "32",
+          "GGML_NOHUGEPAGE_PROCESS": "1",
+          "GGML_ROWEXACT_N": "16",
+          "LLAMA_SPEC_EXACT": "row",
+          "LLAMA_TRACE": "1",
+          "OMP_DYNAMIC": "false",
+          "OMP_PLACES": "cores",
+          "OMP_PROC_BIND": "spread",
+          "OMP_WAIT_POLICY": "active",
+          "PATH": "/usr/bin:/bin"
+        },
+        "metric": "aggregate_tok_s",
+        "metric_direction": "higher",
+        "model": {
+          "kind": "model",
+          "path": "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+          "ref": "local:glm53:model-entry",
+          "schema": "epyc.autokernel.local_artifact.v1",
+          "sha256": "00dceaf3ed08781b1e44513a44ebb19e96248d01ba2a80b17f675a2b6fa9a1ee"
+        },
+        "model_ref": "local:glm53:model-entry",
+        "recipe": {
+          "kind": "recipe",
+          "path": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-c463f601b-cpu-mtp-depth3-b2048-ub512-corrected.recipe.json",
+          "ref": "local:glm53:c463f601b:recipe",
+          "schema": "epyc.autokernel.local_artifact.v1",
+          "sha256": "5c81ad0b8c5514f19350859016bf45c67feec61056c11c6046af39e09a324480"
+        },
+        "recipe_ref": "local:glm53:c463f601b:recipe",
+        "schema": "epyc.autokernel.resolved_execution.v1",
+        "speculation": "self_draft"
+      },
+      "missing": [],
+      "required_obligations": [],
+      "revision": 1,
+      "roles": [
+        "candidate"
+      ],
+      "schema": "epyc.autokernel.target_revision.v1",
+      "seed_boost_units": 1,
+      "spec_digests": [
+        "3d333eef8a8f40194385f8c5b8a3a2bb9b4f661d3ff6775ae4ce08c323661da8"
+      ],
+      "status": "ready",
+      "target_ids": [
+        "glm53-c463f601b-cpu-mtp-depth3-b2048-ub512"
+      ],
+      "workload_signature": "04dabcf12660866a5313cbae6889b91fc706ef7497702a1ff4870740f18ba4a8"
+    },
+    "request_id": "aku-glm53-cpu-five-loop-20260910",
+    "scope": "cpu_serving_selected_workload",
+    "selected_id": "glm53-c463f601b-cpu-mtp-depth3-b2048-ub512"
+  },
+  "terminal": "complete",
+  "worktree": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-20260912"
+}

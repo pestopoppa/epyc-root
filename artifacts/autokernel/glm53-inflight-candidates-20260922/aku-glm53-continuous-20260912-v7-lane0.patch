@@ -1,0 +1,108 @@
+diff --git a/ggml/src/ggml-cpu/ops.cpp b/ggml/src/ggml-cpu/ops.cpp
+index 6bb4b7249..59372376f 100644
+--- a/ggml/src/ggml-cpu/ops.cpp
++++ b/ggml/src/ggml-cpu/ops.cpp
+@@ -11227,25 +11227,41 @@ static inline void ggml_vec_dot_f32_4_avx512(
+     }
+ }
+ 
+-static inline void ggml_vec_mad_f32_dual_store_avx512(
+-        int n, float * y, float * y_copy, const float * x, float v) {
+-    const int np = n & ~63;
+-    const __m512 vv = _mm512_set1_ps(v);
++static inline void ggml_vec_mad_dot_f32_4_avx512(
++        int n, float s[4], float * rows, int64_t row_stride, float * rows_copy,
++        const float * x, const float v[4], const float * shared) {
++    __m512 sum[4][4];
++    __m512 vv[4];
+ 
+-    for (int i = 0; i < np; i += 64) {
++    for (int r = 0; r < 4; ++r) {
++        vv[r] = _mm512_set1_ps(v[r]);
++        for (int j = 0; j < 4; ++j) {
++            sum[r][j] = _mm512_setzero_ps();
++        }
++    }
++
++    for (int i = 0; i < n; i += 64) {
+         for (int j = 0; j < 4; ++j) {
+             const int offset = i + 16*j;
+-            const __m512 value = _mm512_fmadd_ps(
+-                _mm512_loadu_ps(x + offset), vv, _mm512_loadu_ps(y + offset));
+-            _mm512_storeu_ps(y + offset, value);
+-            _mm512_storeu_ps(y_copy + offset, value);
++            const __m512 vx = _mm512_loadu_ps(x + offset);
++            const __m512 vshared = _mm512_loadu_ps(shared + offset);
++            for (int r = 0; r < 4; ++r) {
++                const int64_t row_offset = r*row_stride + offset;
++                const __m512 value = _mm512_fmadd_ps(vx, vv[r], _mm512_loadu_ps(rows + row_offset));
++                _mm512_storeu_ps(rows + row_offset, value);
++                if (rows_copy) {
++                    _mm512_storeu_ps(rows_copy + row_offset, value);
++                }
++                sum[r][j] = _mm512_fmadd_ps(value, vshared, sum[r][j]);
++            }
+         }
+     }
+ 
+-    for (int i = np; i < n; ++i) {
+-        const float value = y[i] + x[i]*v;
+-        y[i] = value;
+-        y_copy[i] = value;
++    for (int r = 0; r < 4; ++r) {
++        sum[r][0] = _mm512_add_ps(sum[r][0], sum[r][2]);
++        sum[r][1] = _mm512_add_ps(sum[r][1], sum[r][3]);
++        sum[r][0] = _mm512_add_ps(sum[r][0], sum[r][1]);
++        s[r] = (float) _mm512_reduce_add_ps(sum[r][0]);
+     }
+ }
+ #endif
+@@ -11397,20 +11413,26 @@ static void ggml_compute_forward_gated_delta_net_one_chunk(
+             }
+ 
+             // outer product: S[i][j] += k[i] * delta[j] => M[j][i] += delta[j] * k[i]
+-            for (int64_t j = 0; j < S_v; ++j) {
++            j = 0;
+ #if defined(__AVX512F__)
+-                if (curr_state_o) {
+-                    ggml_vec_mad_f32_dual_store_avx512(
+-                        S_v, &s_out[j * S_v], &curr_state_o[j * S_v], k_d, delta[j]);
+-                } else
+-#endif
+-                {
+-                    ggml_vec_mad_f32(S_v, &s_out[j * S_v], k_d, delta[j]);
++            if (S_v % 64 == 0) {
++                for (; j + 3 < S_v; j += 4) {
++                    float sum[4];
++                    ggml_vec_mad_dot_f32_4_avx512(
++                        S_v, sum, &s_out[j * S_v], S_v,
++                        curr_state_o ? &curr_state_o[j * S_v] : nullptr,
++                        k_d, &delta[j], q_d);
++                    for (int r = 0; r < 4; ++r) {
++                        attn_data[j + r] = sum[r] * scale;
++                    }
+                 }
+             }
++#endif
++            for (int64_t ju = j; ju < S_v; ++ju) {
++                ggml_vec_mad_f32(S_v, &s_out[ju * S_v], k_d, delta[ju]);
++            }
+ 
+             // attn_out[j] = sum_i S[i][j] * q[i] = dot(row j of M, q)
+-            j = 0;
+ #if defined(__AVX512F__)
+             for (; j + 3 < S_v; j += 4) {
+                 float sum[4];
+@@ -11428,7 +11450,11 @@ static void ggml_compute_forward_gated_delta_net_one_chunk(
+ 
+             attn_data += S_v * H; // advance to next token
+ 
+-#if !defined(__AVX512F__)
++#if defined(__AVX512F__)
++            if (curr_state_o && S_v % 64 != 0) {
++                memcpy(curr_state_o, s_out, S_v * S_v * sizeof(float));
++            }
++#else
+             if (curr_state_o) {
+                 memcpy(curr_state_o, s_out, S_v * S_v * sizeof(float));
+             }
