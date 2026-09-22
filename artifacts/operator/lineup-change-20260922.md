@@ -1,20 +1,163 @@
-# Lineup change 2026-09-22 — master-registry diff, hunk by hunk (REVISION 2)
+# Lineup change 2026-09-22 — master-registry diff, hunk by hunk (REVISION 3)
 
 **Artifact**: `/workspace/artifacts/operator/lineup-change-20260922.patch`
 **Target**: `epyc-inference-research/orchestration/model_registry.yaml` (the MASTER, the only
-hand-edited registry) — **996 insertions, 285 deletions, 30 hunks**, one file.
-**Status**: DRAFTED, NOT APPLIED. `git apply --check` passes in the research repo against
-`74472b9c` (the file's current tip; sha256 `c373717d…`). The resulting YAML parses
-(`yaml.safe_load`, **15** top-level keys, **188** `roles`, **17** `server_mode`).
+hand-edited registry) — **1074 insertions, 281 deletions, 28 hunks**, one file.
+**Status**: DRAFTED, NOT APPLIED. `git apply --check` passes in the research repo against the
+file's current tip `7bc650b8` (blob `1b8332cb`, sha256 `c373717d…`; repo HEAD `7b0627c4`). The
+resulting YAML parses (`yaml.safe_load`, **15** top-level keys, **188** `roles`, **17**
+`server_mode`, **77** `deprecated_models` — base is 15 / 185 / 17 / 77).
 
-**REVISION 2 supersedes the first draft.** The operator has ruled on C1–C4. Two of the four
-rulings **withdrew** structural moves the first draft made, so this is not an edit on top of that
-diff — the frontdoor and ingest hunks were rebuilt from the pristine file. §2 records each ruling
-as a resolution: what was asked, what was ruled, what the patch now does, and what it costs.
+**REVISION 3 supersedes revision 2.** A measurement taken this session overturned the PREMISE of
+one of revision 2's decisions. It is not a refinement; it invalidates a number this file reasoned
+from in six places. §0.5 is the finding. Three things follow from it, and they are the whole of
+the change from revision 2:
+
+1. the over-declared `kv_kib_per_token_f16` values are corrected (§0.5);
+2. **Qwen3-VL-30B stays on the MI210** — revision 2's GPU→CPU migration is withdrawn in full,
+   because it existed only to make room that was never missing (§0.5, H3);
+3. the operator's explicit allocation is encoded: 27B `:8083` at **n_ctx 196608** q8_0/q8_0 and
+   VL `:8086` at **n_ctx 65536** q8_0/q8_0 (§0.5 arithmetic, C2).
+
+Revision 2's C1–C4 resolutions are otherwise preserved verbatim, including the parts C2's
+arithmetic no longer needs (restated, not deleted — §C2).
 
 Nothing under `orchestration/derived/`, nothing in the lean registry, nothing in
-epyc-orchestrator was touched. §4 lists the orchestrator work this diff is **inert without**,
-including the two items a validator run proved are hard blockers rather than tidiness.
+epyc-orchestrator was touched. §4 lists the orchestrator work this diff is **inert without**.
+One of revision 2's two "proven blockers" is **gone** as a direct consequence of change 2 above.
+
+---
+
+# 0.5 ★ THE KV-RATE CORRECTION — the finding this revision turns on
+
+**`serving_shape.kv_kib_per_token_f16` was 4.06x too high for every Qwen3.6/3.8 model in this
+file.** The formula it was derived from,
+
+```
+block_count * head_count_kv * (key_length + value_length) * 2 / 1024
+```
+
+assumes every layer keeps a KV cache. These models declare `<arch>.full_attention_interval = 4`,
+so only every 4th layer does; the rest are filtered out of the cache entirely. The server states
+it directly — live v10 GPU build, Qwen3.8-27B (`block_count` 65), n_ctx 65536:
+
+```
+llama_kv_cache: size = 2176.00 MiB ( 65536 cells,  16 layers, ...)
+                K (q8_0): 1088.00 MiB, V (q8_0): 1088.00 MiB
+```
+
+Measured at that context: **f16 4096 MiB, q8_0 2176 MiB, q4_0 1152 MiB** — i.e. **64.0 / 34.0 /
+18.0 KiB per token**. The correct rule is now code, not lore:
+`epyc-orchestrator scripts/server/stack_manifest.py` → `kv_layers()` / `kv_kib_per_token_f16()`,
+commit **`44d7516a`**:
+
+```
+KV_LAYERS = block_count // full_attention_interval   (when the key is present)
+KV_LAYERS = block_count                              (otherwise)
+```
+
+**The error direction is what cost us.** Over-counting KV makes the capacity gate REFUSE lineups
+that fit. Revision 2's vision migration, and its "262144 DOES NOT FIT / OVER BY 0.53" verdict,
+were both consequences of the inflated figure and not of the hardware.
+
+### The corrections, each derived from a GGUF header this session read directly
+
+Every row below was re-read from the real file's header, not taken on trust:
+
+| model | arch | block_count | kv_heads | k/v len | interval | KV layers | true f16 | was |
+|---|---|---|---|---|---|---|---|---|
+| Qwen3.8-27B (`architect_general`, `:8083`) | `qwen35` | 65 | 4 | 256/256 | **4** | 16 | **64.0** | 260.0 |
+| Qwen3.6-35B-A3B-MTP (`frontdoor`, `:8070`) | `qwen35moe` | 41 | 2 | 256/256 | **4** | 10 | **20.0** | 82.0 |
+| Qwen3.6-27B-MTP (rollback anchor, not serving) | `qwen35` | 65 | 4 | 256/256 | **4** | 16 | **64.0** | — |
+| Qwen3-VL-30B-A3B (`worker_vision`, `:8086`) | `qwen3vlmoe` | 48 | 4 | 128/128 | **none** | 48 | **96.0** ✓ | 96.0 |
+| gemma-4-26B-A4B (retiring) | `gemma4` | 30 | 8 | 512/512 | **none** | 30 | **480.0** ✓ | 480.0 |
+| Qwen3.8-Flash-Next (`architect_critic`, `:8074`) | `qwen4exp` | 48 | 2 | 256/256 | **4** | 12 | 24.0 | 96.0 (kept — see below) |
+
+**Only TWO live declarations in this file needed changing**, because the other affected artifacts
+either have no `serving_shape` of their own or are being retired by this same patch:
+`server_mode.frontdoor` 82.0 → **20.0** and `server_mode.architect_general` 260.0 → **64.0**.
+Both carry a new in-registry comment recording the interval, the derived layer count, the server's
+own KV buffer report as the source, and a "do not restore the block_count form" instruction, plus
+a pointer to `kv_layers()` as the canonical derivation. Nine further places in the file quoted a
+number derived from the old rates; all nine are corrected in the same patch (the worker-alias
+prose, the `:8083` capacity banner, the `ingest_long_context` "not purchasable" note, the
+`alias_note`, the catalogue row's density claim, and the `vram_gib: 36.70` note — see below).
+
+**`Qwen3-VL-30B` and `gemma-4` were VERIFIED, not assumed.** Neither GGUF carries a
+`full_attention_interval` key, so `KV_LAYERS == block_count` and their existing declarations are
+right. VL's is independently corroborated by the server: the 2026-08-02 KV-quant A/B recorded
+`6144.00 → 3264.00 MiB at n_ctx 65536`, and 3264 MiB is exactly 96.0 × 0.53125 × 65536 / 1048576.
+
+**`Qwen3.8-Flash-Next` is the one affected model left UNCORRECTED, on purpose.** 48 // 4 = 12 KV
+layers gives 24.0, which the registry *already* carries beside the gate value as
+`kv_kib_per_token_f16_measured: 24.0`. The gate input stays at the conservative 96.0 because this
+model — alone in the fleet — also carries a sparse-attention **indexer cache**
+(`qwen4exp.attention.indexer.top_k: 2048`, `qwen4exp.attention.indexer.key_length: 128`, both read
+from the header this session) that *neither* formula accounts for, and the registry's own C4 note
+forbids correcting it downward until that term is measured. It is a CPU role against a ~1069 GiB
+host budget, so over-stating it costs nothing. The patch adds a comment saying exactly this and
+naming `PROD-3/FN-CTX-1` as the discharge. **This is the one place where I did not apply the
+general rule, and it is flagged rather than silent.**
+
+### `vram_non_kv_gib` — vetted, one unresolved discrepancy
+
+- **`architect_general: 27.33` — CONFIRMED, unchanged.** The server's own report gives model
+  buffers 25972.29 + 1288.28 MiB = 26.62 GiB plus ~0.39 GiB compute = ~27.0.
+- **`worker_vision: 19.26` — CONFIRMED by a live sample, unchanged.** The 2026-09-22 KFD reading
+  for `:8086` was 22.34 GiB; declared 19.26 + 3.19 GiB of q8_0 KV at 65536 = **22.45**. Agreement
+  to 0.11 GiB.
+- **⚠ UNRESOLVED: the 27B's live reading does not reconcile.** The same 2026-09-22 sample put
+  `:8083` at 35,673,968,640 B = **33.22 GiB** at `-np 2 -c 65536 -ctk q8_0 -ctv q8_0`, while
+  declared non-KV 27.33 + the server's own 2176 MiB of KV = **29.51** — a **3.71 GiB gap with no
+  attribution**. VL reconciles on the same instrument and sample, so it is not an instrument
+  artifact. **No replacement is guessed**: 27.33 is corroborated by the server's buffer report and
+  stays. If the gap is real and persists, the 3.15 GiB of headroom below is nearer zero and the
+  allocation is tight rather than comfortable. **This must be settled by sampling
+  `/sys/class/kfd` DURING the first post-cutover load** — it could not be re-sampled here because
+  the stack is intentionally down for the operator window. It is recorded in the registry at
+  `server_mode.architect_general.serving_shape`, not only here.
+
+### The operator's allocation, and the arithmetic it satisfies
+
+- **Qwen3.8-27B** (`:8083`, architect_general + coder_escalation + ingest_long_context):
+  **n_ctx 196608**, `kv_quant {k: q8_0, v: q8_0}`
+- **Qwen3-VL-30B** (`:8086`, worker_vision + vision_escalation): **n_ctx 65536**,
+  `kv_quant {k: q8_0, v: q8_0}`
+
+```
+  usable (rocm-smi, 68,702,699,520 B)                        63.98
+- whisper.cpp + Qwen3-TTS, live-measured, gate-INVISIBLE      4.68
+- 27B weights   (serving_shape.vram_non_kv_gib)              27.33
+- VL  weights   (serving_shape.vram_non_kv_gib)              19.26
+-----------------------------------------------------------------
+=                                                            12.71 GiB for BOTH KV caches
+
+  27B @ -c 196608 q8_0/q8_0:  34.0 x 196608 / 1048576   =     6.38 GiB
++ VL  @ -c  65536 q8_0/q8_0:  51.0 x  65536 / 1048576   =     3.19 GiB
+-----------------------------------------------------------------
+=  9.56 GiB used,  3.15 GiB FREE
+```
+
+Both GPU roles stay resident. **Executed, not asserted**: `serving_shape_capacity_report()` on the
+patched registry against the REAL `stack_topology.yaml` returns GPU `kv_gib = 9.5625` — the same
+9.56 — and `VramFit(ok=True, required_gib=56.1525, …, per_role={'architect_general': 33.705,
+'worker_vision': 22.4475})`. 56.1525 + 4.68 = 60.83 against 63.98 usable ⇒ **3.15 GiB free**. See
+§5 rows 6–8.
+
+**Note on `q8_0`: it is 0.53125 of f16, not 0.5.** A q8_0 block is 34 B per 32 elements (scale
+plus quants), so the naive "half of f16" understates KV by 5.88%. Every q8_0 figure above uses the
+true ratio, as does `stack_manifest._KV_TYPE_F16_RATIO` (also corrected in `44d7516a`). 64.0 ×
+0.53125 = 34.0, which is exactly the rate the server reports.
+
+### A correct measurement this rate had convicted of being impossible
+
+`roles.architect_general.model.vram_gib: 36.70` carried a 2026-08-02 note declaring its own
+provenance string ("incl. q8_0 KV at 262144 ctx") *arithmetically impossible*, on the grounds that
+KV alone would be 130.0 × 262144 = 32.50 GiB. On the measured rate, KV at 262144 is **8.50 GiB**,
+and 27.05 weights + 8.50 KV + ~1.15 graph = **36.70**. The figure and its stated context agree
+exactly. **That flag is withdrawn in this patch.** It is worth stating plainly: the block_count
+form did not merely inflate a gate input — it produced a false accusation against a correct
+measurement, which then sat in the file for seven weeks.
 
 ---
 
@@ -55,8 +198,8 @@ entries before and **77** after.
 |---|---|---|
 | CPU `:8070` + `:8080`/`:8180` | Qwen3.6-35B-A3B-MTP-Q8_0 | **frontdoor** (primary), worker_summarize, worker_general, worker_explore, worker_math, toolrunner |
 | CPU `:8074` (1× full, `-t 48`) | **Qwen3.8-Flash-Next UD-IQ4_XS** | architect_critic — **alone** |
-| GPU `:8083` (MI210) | Qwen3.8-27B-Q8_0, **thinking ON @ medium**, `n_ctx 196608` | architect_general (primary), coder_escalation, **ingest_long_context** |
-| CPU `:8086` | Qwen3-VL-30B Q4_K_M + mmproj | worker_vision, vision_escalation |
+| GPU `:8083` (MI210) | Qwen3.8-27B-Q8_0, **thinking ON @ medium**, `n_ctx 196608`, q8_0/q8_0 | architect_general (primary), coder_escalation, **ingest_long_context** |
+| GPU `:8086` (MI210, **unchanged**) | Qwen3-VL-30B Q4_K_M + mmproj, `n_ctx 65536`, q8_0/q8_0 | worker_vision, vision_escalation |
 
 **VACATED**: `:8072`/`:8082`/`:8182` (gemma4) and `:8085`/`:8185`/`:8285` (Qwen3-Next-80B).
 
@@ -87,14 +230,36 @@ under (P-BENCH-PLACEMENT-1, n=3, 2026-07-30). Moving the 35B onto `:8072` would 
 measured placement for no gain. It also keeps the stack_topology delete on the retiring role
 (`numa_config.worker_general`) instead of on the surviving one.
 
-### H3 · `server_mode.worker_vision` — MI210 → CPU
-`device: ROCm0 → cpu`; `vram_mb: 21049` and `serving_shape.vram_non_kv_gib: 19.26` **deleted**
-(the latter is the GPU capacity check's input — leaving it would keep charging a vacated card
-19.26 GiB and veto the headroom this migration creates); `memory_gb: 0 → 18.29`;
-`host_non_kv_gib: 18.29` added; `no_mmap: true` restored; `ngl` dropped. `kv_quant` q8_0/q8_0 is
-**kept** — the MMMU-250 non-inferiority result is a quantisation result and carries, but its
-attention-kernel caveat (f16→TILE, q8_0→VEC were **HIP** kernels) does not, so the +0.80 pp delta
-is re-opened rather than re-confirmed. `throughput: 112.20 → null`.
+### H3 · `server_mode.worker_vision` — **WITHDRAWN. The role stays on the MI210.**
+Revision 2 moved this role to `device: cpu`, deleted `vram_mb: 21049` and
+`serving_shape.vram_non_kv_gib: 19.26`, added `host_non_kv_gib`/`no_mmap`, set `memory_gb: 18.29`
+and nulled `throughput` (and did the same in `roles.worker_vision`, `roles.vision_escalation`).
+**Every one of those edits is reverted to the pristine row**, verified by reverse-applying exactly
+those hunks and re-diffing: `device: ROCm0`, `vram_mb: 21049`, `vram_non_kv_gib: 19.26`,
+`n_ctx 65536`, `kv_quant {k: q8_0, v: q8_0}`, `throughput: 112.20`, `n_gpu_layers: 999`,
+`baseline_tps`/`optimized_tps` 112.20 and the MMMU-250 stamps all stand as measured.
+
+**It existed only because the 4x-inflated 27B KV figure made the card look full**, and it was
+never a quality or placement decision — the row's own migration comment said so ("released so
+frontdoor can join architect_general on :8083"), and even that premise had already been withdrawn
+by ruling C1. With the true rates both GPU roles fit with 3.15 GiB to spare (§0.5).
+
+What the patch adds instead of the migration: a block comment on the row recording *that* the
+migration was proposed, *why* it is withdrawn, and the one-line budget summary pointing at
+`server_mode.architect_general.serving_shape` for the arithmetic; and a verification note on
+`kv_kib_per_token_f16: 96.0` recording that the correction does **not** apply to this model (no
+`full_attention_interval` key) and that the server's own `3264.00 MiB at n_ctx 65536` confirms it.
+The stale "62.59 of 63.98, headroom 1.40" four-model figure in the GPU BUDGET NOTE is superseded
+**as a budget statement** (it was taken with the 27B at `-c 65536`) and **kept as a warning** —
+VRAM grows on first EXECUTION, and the 4.68 GiB of speech VRAM is still invisible to the gate.
+
+**✓ This removes revision 2's proven blocker (b).** That blocker was
+`validate_serving_shape_capacity()` raising *"GPU role(s) ['worker_vision'] declare no
+serving_shape.vram_non_kv_gib"*, caused purely by the registry saying `device: cpu` while
+`stack_topology.yaml` still classed the role `GPU_HOST_LANE` (the report derives "is GPU" from
+`shape_class`, never from `device:`). With the row pristine the two agree again and the check
+**PASSES on the real topology, unsimulated** — §5 row 7. `numa_config.worker_vision` needs no
+change at all now.
 
 ### H4 · `server_mode.architect_critic` — Qwen3.5-122B → Qwen3.8-Flash-Next, **single-role**
 `model_role` → the new `qwen38_flash_next_ud_iq4xs_local`; **no `shared_with`** (see C2);
@@ -112,11 +277,16 @@ the retired Qwen3-Next template). `chat_template_kwargs` restated with the proce
 `benchmark_score: null`. The block comment enumerates the **five** things this role gives up and
 the one it gains.
 
-### H6 · `server_mode.architect_general` — the GPU cap, and MEDIUM effort
+### H6 · `server_mode.architect_general` — the corrected KV rate, the GPU cap, and MEDIUM effort
 `shared_with: [coder_escalation] → [coder_escalation, ingest_long_context]`;
-`serving_shape.n_ctx: 65536 → 196608` with the old DO-NOT-RAISE banner **replaced by its own
-recomputation** (not deleted — the history of why it said that is kept);
-`chat_template_kwargs` gains `enable_thinking: true` + `reasoning_effort: medium`.
+**`serving_shape.kv_kib_per_token_f16: 260.0 → 64.0`** with the measurement, the interval, the
+derived 16 KV layers and the `kv_layers()` pointer recorded in-line;
+`serving_shape.n_ctx: 65536 → 196608` with the old DO-NOT-RAISE banner **replaced by a full
+recomputation** (not deleted — the old arithmetic is kept verbatim and explicitly convicted, so
+nobody re-derives it); the 3.71 GiB live-reading discrepancy from §0.5 recorded as an ⚠ with a
+named verification step; `chat_template_kwargs` gains `enable_thinking: true` +
+`reasoning_effort: medium`. The `vram_gib: 36.70` "internally inconsistent" flag is **withdrawn**
+(§0.5).
 
 ### H7-H14 · `roles.*` mirrors
 `roles.frontdoor` **restored verbatim** plus one explanatory comment. `roles.worker_general`
@@ -125,8 +295,9 @@ deleted, quality nulled). `roles.ingest_long_context` (→ the 27B; the Qwen3-Ne
 moved wholesale into a `previous_model_record:` sub-block and the live keys nulled).
 `roles.architect_critic` (→ Flash-Next, `ingest` **not** added to `candidate_roles`,
 `contention_note` rewritten to say why). `roles.architect_general` (`disable_thinking: true →
-false`, `reasoning` annotated). `roles.worker_vision` / `roles.vision_escalation` (→ `device: cpu`,
-`n_gpu_layers` deleted, tps nulled). `process_layout.hot_resident` regrouped, and
+false`, `reasoning` annotated). **`roles.worker_vision` / `roles.vision_escalation` are NOT
+touched at all** — revision 2's device edits there are reverted (H3).
+`process_layout.hot_resident` regrouped, and
 **`worker_explore` ADDED** — it was live and demonstrably missing while its two co-aliases were
 listed (a pre-existing gap, corrected while the lane is open).
 
@@ -251,6 +422,13 @@ Same GGUF ⇒ one server, per the project's standing rule; and a second `llama-s
 
 ### Can the 27B's serving shape carry ingest on top of its existing roles? **Partly. Here is the arithmetic.**
 
+**⚠ REVISION 3 REPLACES THE ARITHMETIC IN THIS SECTION.** Revision 2 computed it on a 27B KV rate
+that is 4.06x too high (§0.5), and on a card it had just emptied by migrating vision to CPU. Both
+inputs are wrong. The conclusion that survives is the *ruling* — ingest goes to the 27B — and the
+cost in §"The cost the ruling's premise does not cover", which is unaffected because it is a
+per-slot-context argument, not a VRAM argument. The numbers below are restated, not deleted, so
+the change is auditable.
+
 MI210, one card, **63.98 GiB usable** (`rocm-smi`: 68,702,699,520 B — re-read 2026-09-22).
 Live per-process VRAM, sampled **during** the running stack from
 `/sys/class/kfd/kfd/proc/<pid>/vram_57300` on 2026-09-22:
@@ -268,31 +446,40 @@ Live per-process VRAM, sampled **during** the running stack from
 registry. whisper.cpp has none (`server_mode.voice_server` still describes a *CPU* faster-whisper
 service) and **Qwen3-TTS has no registry entry at all**. Both are VRAM-resident on this card.
 
-The 27B's declared KV rate is 260.0 KiB/token f16 ⇒ **130.0 KiB/token at q8_0/q8_0**. Against the
-declared non-KV 27.33 GiB:
+The 27B's KV rate is **64.0 KiB/token f16 ⇒ 34.0 at q8_0/q8_0** (measured — §0.5; it was declared
+as 260.0 ⇒ 130.0). **Vision stays on the card**, so both GPU roles are charged. Against the
+declared non-KV figures (27B 27.33, VL 19.26) and VL at a fixed `-c 65536` q8_0/q8_0 = 3.19 GiB:
 
-| `-c` | 27B non-KV | 27B KV | + speech 4.68 | total | free | verdict |
-|---|---|---|---|---|---|---|
-| 65536 (was) | 27.33 | 8.13 | 4.68 | 40.14 | 23.84 | — |
-| 131072 | 27.33 | 16.25 | 4.68 | 48.26 | 15.72 | fits |
-| **196608 (TAKEN)** | 27.33 | 24.38 | 4.68 | **56.39** | **7.59** | **fits** |
-| 262144 | 27.33 | 32.50 | 4.68 | **64.51** | **−0.53** | **DOES NOT FIT** |
+| 27B `-c` | 27B non-KV | 27B KV | VL non-KV | VL KV | + speech 4.68 | total | free | verdict |
+|---|---|---|---|---|---|---|---|---|
+| 65536 (was) | 27.33 | 2.13 | 19.26 | 3.19 | 4.68 | 56.59 | 7.39 | — |
+| 131072 | 27.33 | 4.25 | 19.26 | 3.19 | 4.68 | 58.71 | 5.27 | fits |
+| **196608 (TAKEN)** | 27.33 | **6.38** | 19.26 | **3.19** | 4.68 | **60.83** | **3.15** | **fits** |
+| 262144 | 27.33 | 8.50 | 19.26 | 3.19 | 4.68 | 62.96 | 1.02 | fits, on 1.0 GiB |
 
-Cross-checked on the live basis instead of the declared constant: 33.22 GiB observed at `-c 65536`,
-plus the marginal KV for 131,072 more tokens (+16.25) = 49.47, + 4.68 = **54.15 GiB, 9.83 free**.
-Both bases agree — 196608 fits with 7.6–9.8 GiB of margin; 262144 does not fit at all.
+**262144 is no longer arithmetically refused — it is refused on MARGIN.** 1.02 GiB is inside the
+noise of a card whose VRAM grows on first EXECUTION rather than at load, carrying two speech
+servers the registry cannot see, and with the unreconciled 3.71 GiB live-reading gap of §0.5 still
+open. 196608 is the operator's allocation and 3.15 GiB is what it buys. Revision 2's "OVER BY
+0.53 — REFUSED" verdict is **withdrawn**: it was an artifact of the 130.0 rate.
 
-**262144 is not purchasable at any slot count.** KV is unified on this server, so slots do not
-scale KV; `-c` does. Dropping to `slots: 1` buys per-slot context, not headroom, and would
+Also withdrawn: revision 2's live-basis "cross-check" (33.22 observed + 16.25 marginal = 54.15,
+"both bases agree"). It does not corroborate anything — it added a *correct* marginal KV to an
+observation that is itself 3.71 GiB above declared+measured, and the agreement was coincidental.
+The discrepancy is now carried as an open item (§0.5) instead of as evidence.
+
+**262144 is still not purchasable at any slot count.** KV is unified on this server, so slots do
+not scale KV; `-c` does. Dropping to `slots: 1` buys per-slot context, not headroom, and would
 serialize all three roles.
 
-**Executed, not asserted.** `validate_serving_shape_capacity()` run against the patched registry
-under the simulated post-cutover topology returns
-`VramFit(ok=True, required_gib=51.705, budget_gib=62.0, capacity_gib=64.0, headroom_gib=2.0,
-per_role={'architect_general': 51.705})` → **PASS**. Run again with `n_ctx` forced to 262144 it
-returns `required_gib=59.83` and **also PASSES** — which is precisely the point: 59.83 + 4.68 =
-64.51 > 63.98. **A gate pass at 262144 is not evidence that it fits.** That demonstration is
-recorded in the registry comment at `server_mode.architect_general.serving_shape`.
+**Executed, not asserted, and on the REAL topology this time.**
+`validate_serving_shape_capacity()` against the patched registry and the unmodified
+`stack_topology.yaml` → **PASS**, with
+`VramFit(ok=True, required_gib=56.1525, budget_gib=62.0, capacity_gib=64.0, headroom_gib=2.0,
+per_role={'architect_general': 33.705, 'worker_vision': 22.4475})` and GPU `kv_gib = 9.5625`.
+Revision 2 could only run this against a *simulated* topology (see H3). **The gate's blindness to
+the 4.68 GiB of speech VRAM is unchanged and still the binding caveat** — 56.1525 is the number
+the gate sees; 60.83 is the number the card sees.
 
 ### ★ The cost the ruling's premise does not cover
 
@@ -312,9 +499,11 @@ derives an *empty* region set — and it gains speculation and thinking-at-mediu
 
 **⚠ The role keeps its name and loses its reason.** Qwen3-Next-80B won this role because
 SSM-hybrid linear attention scales O(n) per token and therefore beats pure-attention models at
-extreme context. The Qwen3.8-27B is a **dense** model with 65 blocks × 4 kv-heads — the KV-densest
-artifact in the fleet, 3× the 35B's per-token cost — and it is exactly that density that caps the
-process at 196608. A long-context quality **and** cost re-measure is the gate, not a follow-up.
+extreme context. The Qwen3.8-27B is a **dense** model with 65 blocks × 4 kv-heads. It is still
+the KV-densest artifact in the fleet per token (64.0 KiB/token f16, 3.2× the 35B's corrected
+20.0), but **196608 is an operator ALLOCATION with 3.15 GiB of headroom left over, not a ceiling
+that density imposes** — revision 2 said the density capped the process, and that followed from
+the 260.0 figure (§0.5). A long-context quality **and** cost re-measure is the gate, not a follow-up.
 
 ---
 
@@ -395,9 +584,19 @@ served"*, and the catalogue row's `constraints.forbid` carries
 
 There is **no measured KV figure for this model at any context above 8192, anywhere.** The
 `kv_kib_per_token_f16: 96.0` in the patch is the conservative all-48-blocks figure; the
-header-derived measured constant (24.0 KiB/tok f16 = 6.00 GiB at 262144, from
+header-derived constant (24.0 KiB/tok f16 = 6.00 GiB at 262144, from
 `full_attention_interval: 4` ⇒ 12 of 48 blocks carry KV) is carried alongside in
 `kv_kib_per_token_f16_measured`, clearly labelled as derivation.
+
+**⚠ REVISION 3 NOTE — this row is the one place the §0.5 correction was deliberately NOT applied.**
+The rule that cut `frontdoor` 82.0 → 20.0 and `architect_general` 260.0 → 64.0 says this row's gate
+input should read 24.0. It does not, for two reasons, both stated in the registry: this model alone
+carries a sparse-attention indexer cache (`qwen4exp.attention.indexer.top_k: 2048`,
+`…indexer.key_length: 128`, both read from the GGUF header this session) that *neither* formula
+accounts for, and this row's own comment forbids correcting downward until that term is measured.
+It is a CPU role against a ~1069 GiB host budget, so the conservative direction costs nothing.
+**`PROD-3/FN-CTX-1` below is extended to discharge it**: the same run that proves the served shape
+must read back the real KV buffer, at which point this becomes a measurement and 96.0 goes.
 
 **VALIDATION TASK TO FILE — this is the C4 deliverable and it is not optional:**
 
@@ -424,7 +623,7 @@ header-derived measured constant (24.0 KiB/tok f16 = 6.00 GiB at 262144, from
 | `architect_critic` | **quality_score 2.57/3** | **none.** No critic-suite gate has ever been run on qwen4exp. This role exists *for* critique quality. |
 | `ingest_long_context` | **25/27 (93%)** canonical long_context, and the 2026-01-26 "best summary quality" finding | **none.** Both are Qwen3-Next-80B results, and the replacement is a dense model at 2.67× less per-slot context. |
 | `architect_general` | *(new in revision 2)* every figure it carries was taken with **thinking OFF** | **none.** See C1. |
-| vision | the MMMU-250 KV-quant A/B's *kernel* leg | re-opened on CPU. |
+| vision | **nothing — revision 3 leaves this role entirely alone** (H3) | unchanged ✓ |
 | `frontdoor` | **nothing** — revision 2 leaves it on its own artifact with its own stamps | unchanged ✓ |
 
 The diff **nulls** rather than carries every lost figure, because a stale number a router reads is
@@ -436,9 +635,8 @@ worse than a null that halts it.
 `roles.*.performance`, so these re-price routing the moment the compile runs:
 
 - **Worker lane: `56.86 → 40.22` t/s short ctx (−29%), `27.01 → 22.59` long ctx (−16%).**
-- **Vision: `112.20 → null`.** 112.20 was an MI210 median (n=250 MMMU turns). **No CPU figure is
-  estimated** — no measured CPU/GPU ratio for this model exists on this host, and carrying 112.20
-  would make the router price CPU vision at roughly 5-10× its real speed.
+- **Vision: unchanged at `112.20`.** (Revision 2 nulled it with the CPU move; that is withdrawn
+  with the move.)
 - **frontdoor: unchanged at `40.22`.** (Revision 1 raised it to 55.46; that is withdrawn with the
   GPU move.)
 - **architect_critic: `24.00 → 52.7`** — carried with its three caveats stated in-line (measured at
@@ -449,20 +647,26 @@ worse than a null that halts it.
   `roles.architect_critic.performance` respectively.
 - **ingest_long_context: `14.4-20.8 → null`.**
 
-## R3 — Host memory: ~310 GiB freed, measured by the capacity report.
+## R3 — Host memory: **~250 GiB freed**, measured by the capacity report.
 
-`serving_shape_capacity_report()` on the base vs the patched registry (simulated post-cutover
-topology), both executed:
+`serving_shape_capacity_report()` on the base vs the patched registry, both executed against the
+**real, unmodified** `stack_topology.yaml`:
 
 | | host KV | host weights | host required | budget |
 |---|---|---|---|---|
-| before | 244.06 GiB | 334.00 GiB | **578.06 GiB** | 1069.42 |
-| after | 48.75 GiB | 219.29 GiB | **268.04 GiB** | 1069.42 |
+| before | 259.87 GiB | 334.00 GiB | **593.87 GiB** | 1069.42 |
+| after | **31.31 GiB** | 312.00 GiB | **343.31 GiB** | 1069.42 |
 
-The single biggest term is gemma's KV: 480.0 KiB/token f16 (240.0 at q8_0) = 60.0 GiB per instance
-× 3 = **180 GiB**, replaced by the 35B's 10.25 GiB × 3. gemma's 8 kv-heads × 512-wide K/V was the
-fleet's outlier and it leaves with the model; the "first thing to cap if memory pressure appears"
-warning the worker row carried is **discharged**.
+*(Revision 2 reported 578.06 → 268.04. Both legs move in revision 3: the base figure rises because
+the capacity code's q8_0 ratio was itself corrected in `44d7516a` from 0.5 to the true 0.53125, and
+the patched figure changes because frontdoor's KV rate drops 82.0 → 20.0. The delta is what matters
+and it grew: −250.6 GiB.)*
+
+Two terms dominate. gemma's KV — 480.0 KiB/token f16 (255.0 at q8_0) = 63.75 GiB per instance × 3 =
+**191 GiB** — leaves with the model; its 8 kv-heads × 512-wide K/V was the fleet's outlier and, as
+§0.5 confirms, it was never over-declared. And the 35B that replaces it costs **2.66 GiB** per
+instance, not the 10.25 revision 2 claimed, because of the KV-layer correction. The "first thing to
+cap if memory pressure appears" warning the worker row carried is **discharged twice over**.
 
 ## R4 — Concurrency halves on the combined CPU worker lane.
 
@@ -508,15 +712,18 @@ this model — deleting it makes the recipe unverifiable).
 `Qwen3-Coder-30B-A3B-Instruct-Q4_K_M`, though both are aliases and cannot be serving those files.
 `worker_explore` has **no `roles` entry at all** (its `process_layout` omission *is* fixed here).
 `worker_vision`'s three-way `n_ctx` disagreement (16384 `roles` / 65536 `server_mode` / 8192
-`stack_manifest.LAUNCH_CONTEXT_TOKENS`) survives the device move unreconciled — what the move does
-change is that the one "measured" value of the three was measured on a backend the role no longer
-runs on.
+`stack_manifest.LAUNCH_CONTEXT_TOKENS`) is untouched and unreconciled — revision 2 annotated it
+while migrating the role; with the migration withdrawn the annotation went too, so it is recorded
+**here only**. It is a real pre-existing defect and out of scope for a lineup diff: all three
+values describe the same GPU process, and the `server_mode` 65536 is the one the capacity gate and
+this change's arithmetic use.
 
 ---
 
 # 4. Out of scope for this patch, and it is INERT — or WRONG — without these
 
-Two of these are not tidiness. A validator run proves they are hard blockers.
+One of these is not tidiness. A validator run proves it is a hard blocker; revision 2's second
+blocker is resolved by the H3 withdrawal.
 
 ### 4.1 `epyc-orchestrator/scripts/server/stack_numa.py` — the new shape (C3)
 
@@ -548,35 +755,38 @@ it is carried here rather than left in a scratch directory that will not survive
 
 ### 4.2 ★ `stack_topology.yaml` — `numa_config` deletions and one shape change
 
-**PROVEN BLOCKER (a):** `validate_declaration_parity()` against the patched registry **fails**:
+**PROVEN BLOCKER (a), still open:** `validate_declaration_parity()` against the patched registry
+**fails with 8 problems** (executed — §5 row 6):
 
 ```
-port for role 'ingest_long_context': launcher declares 8085, master declares 8083
-port for role 'toolrunner'/'worker_explore'/'worker_general'/'worker_math': launcher 8072, master 8070
+port for role 'ingest_long_context': launcher 8085, master (ingest_long_context/direct) 8083
+port for role 'toolrunner':      launcher 8072, master (frontdoor/shared_with) 8070
+port for role 'worker_explore':  launcher 8072, master (frontdoor/shared_with) 8070
+port for role 'worker_general':  launcher 8072, master (frontdoor/shared_with) 8070
+port for role 'worker_math':     launcher 8072, master (frontdoor/shared_with) 8070
 numa_ports for 'ingest_long_context': launcher [8185, 8285], master [8083]
-numa_ports for 'worker_general': launcher [8082, 8182], master [8080, 8180]
+numa_ports for 'worker_general':      launcher [8082, 8182], master [8080, 8180]
 numa_instances for 'ingest_long_context': launcher 2, master 1
 ```
 
+The same check **PASSES on the base file**, so all 8 are this change's own and all 8 are expected.
 `numa_config.worker_general` and `numa_config.ingest_long_context` must be **DELETED** (2026-08-01
 W1 precedent: *"a role with no process of its own must not carry NUMA wiring — that wiring is what
 would launch a second server"*), and `launch_manifest.yaml` re-derived. Left in place they launch
-CPU servers on `:8072`/`:8085` for roles that are supposed to be elsewhere.
+CPU servers on `:8072`/`:8085` for roles that are supposed to be elsewhere. The capacity report
+still shows three phantom `worker_general` instances for exactly this reason.
 
-**PROVEN BLOCKER (b), and it was not in revision 1:** `validate_serving_shape_capacity()` **raises**
-on the patched registry:
-
-```
-ValueError: stack_manifest: GPU role(s) ['worker_vision'] declare no
-`serving_shape.vram_non_kv_gib`.
-```
-
-Reading `serving_shape_capacity_report()` at `stack_manifest.py:1330-1362`, a role is GPU **iff
-`shape_class == "gpu_host_lane"`** — derived from `stack_topology.yaml`'s `cpu_shape`, **not** from
-the registry's `device:` key, which is read into the report but never used for that test. So
-`device: cpu` in the master is **declarative only**: `numa_config.worker_vision` must move off
-`GPU_HOST_LANE` onto a real CPU shape and drop `gpu_host_lane: true`, or the capacity check fails
-at import for the whole stack. *(The first draft had this defect too and did not name it.)*
+**✓ BLOCKER (b) IS GONE.** Revision 2 recorded `validate_serving_shape_capacity()` **raising**
+`ValueError: stack_manifest: GPU role(s) ['worker_vision'] declare no
+serving_shape.vram_non_kv_gib`. That was caused purely by revision 2's own vision migration:
+`serving_shape_capacity_report()` (`stack_manifest.py:1476-1495`) decides a role is GPU **iff
+`shape_class == "gpu_host_lane"`**, derived from `stack_topology.yaml`'s `cpu_shape` and **never**
+from the registry's `device:` key — so setting `device: cpu` while the topology still said
+`GPU_HOST_LANE` produced a GPU role with no VRAM declaration. With H3 withdrawn the two agree
+again. **Checked, not assumed**: the capacity check now PASSES against the unmodified
+`stack_topology.yaml`, with no simulation (§5 row 7). `numa_config.worker_vision` needs **no
+change**. The `shape_class`-not-`device:` reading is still worth knowing and is recorded here for
+the next person who tries to move a role between devices from the registry alone.
 
 **Also**: `numa_config.frontdoor.spec_overrides` is fine, but `numa_config.worker_general`'s
 `{draft_max: 2, p_split: 0}` dies with that block; `architect_critic.numa_pre_evict_gib: 40` is
@@ -596,43 +806,70 @@ freeze scope's **shape** changes: cpu goes 8 roles / 4 models → 7 roles / **2*
 # 5. Verification log — what was executed, with output
 
 Every claim below was produced by running the command, against a **copy** in
-`/mnt/raid0/llm/tmp/`. The real `model_registry.yaml` was never modified; the live stack was never
-touched.
+`/mnt/raid0/llm/tmp/lineup-rev3/`. The real `model_registry.yaml` was never modified; the live
+stack was never touched (it is intentionally down for the operator window, which is also why row
+20's discrepancy could not be re-sampled). Where revision 2 established a baseline, the **DELTA**
+against the unmodified base is reported, not only the absolute number.
 
-| # | command | result |
-|---|---|---|
-| 1 | `git apply --check /workspace/artifacts/operator/lineup-change-20260922.patch` (in `epyc-inference-research`, tip `74472b9c`) | `Checking patch orchestration/model_registry.yaml...` — **exit 0** |
-| 2 | apply to a scratch copy, then `yaml.safe_load` | **OK** — top-level keys **15**, `roles` **188** (was 185), `server_mode` **17** (unchanged), `deprecated_models` **77** (unchanged) |
-| 3 | `scripts/validate_model_registry.py <patched>` | **0 error(s), 59 warning(s)** — identical to the base file's `0 error(s), 59 warning(s)` |
-| 4 | `scripts/validate/check_evidence_durability.py <patched> --repo …` (the pre-commit hook's check) | **errors: 0, warnings: 5** — all 5 are pre-existing `WAIVED_LOST` paths |
-| 5 | `python -m src.registry.registry_compiler --master <patched> --dry-run` | **exit 0**, 3181-line lean projection, no unlisted-section warnings |
-| 6 | `stack_manifest.validate_declaration_parity()` on the patched registry | **FAILS** — 8 port/numa_ports/numa_instances mismatches vs `launch_manifest.yaml`. Expected and load-bearing; see §4.2(a) |
-| 7 | `stack_manifest.validate_serving_shape_capacity()` on the patched registry, current topology | **RAISES** — `worker_vision` still classed GPU by its `cpu_shape`; see §4.2(b) |
-| 8 | same, with the §4.2 topology change simulated in memory | **PASS** — `VramFit(ok=True, required_gib=51.705, budget_gib=62.0, capacity_gib=64.0)`; host `required 268.04 / budget 1069.42` |
-| 9 | same, `n_ctx` forced to 262144 | **PASS at `required_gib=59.83`** — demonstrating the gate's blindness to the 4.68 GiB of live speech VRAM (C2) |
-| 10 | `scripts/validate/reasoning_effort_certifications.py --registry <patched>` | `reasoning-effort certifications: ok` — **exit 0** (confirms the C1 setting does not trip the fail-closed L0–L4 ladder gate) |
-| 11 | `stack_change_pipeline.py check --research-registry <patched>` | **failed, 15 errors** — vs **12 errors** on the unmodified base. The 3-error delta is entirely `lean_registry: stale` (*"run stack_change_pipeline update"*), which is the expected consequence of changing the master. All 12 others (`descriptors`/`stack_priors`/`operator_summary` stale, `guard` source-artifact hash mismatches) are **pre-existing** and reproduce on the base file. |
-| 12 | `git apply --check` on the §4.1 `stack_numa.py` diff (in `epyc-orchestrator`) | **exit 0** |
-| 13 | import the edited `stack_numa.py` against a scratch topology naming `NUMA_FULL_T48` | **import OK** — `_assert_instance_invariants()` passes; `architect_critic` instances `[('0-95', 8074, 48)]`, shape `('NUMA_FULL_T48',)`, class `('full',)`; `CPU_SHAPE_CLASSES` unchanged |
-| 14 | negative test: `('0-47,96-143', 8074, 96)` | **still fatal** — *"-t 96 but cpuset '0-47,96-143' holds 48 PHYSICAL cores — SMT oversubscription"* |
-| 15 | negative test: `-t 48` on `0-95` under the name `NUMA_FULL` | **still fatal** — *"leaves 48 of the 96 PHYSICAL cores … idle, and its shape 'NUMA_FULL' is not registered in _UNDERSUBSCRIBED_SHAPES"* |
-| 16 | `rocm-smi --showmeminfo vram` | total 68,702,699,520 B (63.98 GiB), used 64,733,995,008 B (60.29 GiB) |
-| 17 | `/sys/class/kfd/kfd/proc/<pid>/vram_57300` for all 4 KFD processes, sampled DURING the live stack | 27B **33.22**, VL **22.34**, whisper **2.06**, TTS **2.62** GiB — sum 60.24, agreeing with (16) to 0.05 GiB |
-| 18 | `/proc/1531282/cmdline` | `-np 2 -c 65536 -t 8 -ctk q8_0 -ctv q8_0 --spec-draft-n-max 8 --reasoning off` — the source of the C1 drift finding |
-| 19 | on-disk `stat` of every artifact the patch cites | all present; sizes as quoted in §1/§C4/§R5 |
+| # | command | base | patched | delta |
+|---|---|---|---|---|
+| 1 | `git apply --check /workspace/artifacts/operator/lineup-change-20260922.patch` (in `epyc-inference-research`, file tip `7bc650b8`, blob `1b8332cb`) | — | `Checking patch orchestration/model_registry.yaml...` **exit 0** | — |
+| 2 | apply to a scratch copy, then `yaml.safe_load` | top-level **15**, `roles` **185**, `server_mode` **17**, `deprecated_models` **77** | top-level **15**, `roles` **188**, `server_mode` **17**, `deprecated_models` **77** | +3 roles only; copy deleted after |
+| 3 | `scripts/validate_model_registry.py` | `0 error(s), 59 warning(s)` | `0 error(s), 59 warning(s)` | **0** |
+| 4 | `scripts/validate/check_evidence_durability.py … --repo /mnt/raid0/llm/epyc-inference-research` | `errors: 0  warnings: 5` | `errors: 0  warnings: 5` | **0** (all 5 pre-existing `WAIVED_LOST`) |
+| 5 | `python3 -m src.registry.registry_compiler --master … --dry-run` | **exit 0**, 3153 lines | **exit 0**, 3183 lines | +30 lines, no unlisted-section warnings |
+| 6 | `stack_manifest.validate_declaration_parity()` | **PASS** | **FAIL, 8 problems** (ports/numa_ports/numa_instances vs `launch_manifest.yaml`) | +8, all expected — §4.2(a) |
+| 7 | `stack_manifest.validate_serving_shape_capacity()`, **real unmodified `stack_topology.yaml`** | **PASS** | **PASS** | **0 — revision 2's blocker (b) is gone** |
+| 8 | `stack_manifest.serving_shape_capacity_report()`, same topology — GPU leg | `VramFit(ok=True, required_gib=58.4103, budget_gib=62.0, capacity_gib=64.0, headroom_gib=2.0, per_role={'architect_general': 35.9628, 'worker_vision': 22.4475})`, `kv_gib 11.8203` | `VramFit(ok=True, required_gib=56.1525, budget_gib=62.0, capacity_gib=64.0, headroom_gib=2.0, per_role={'architect_general': 33.705, 'worker_vision': 22.4475})`, **`kv_gib 9.5625`** | −2.26 GiB required **while tripling the 27B's context**; `kv_gib` equals the 9.56 in the operator's arithmetic exactly |
+| 9 | same — host leg | KV 259.87, weights 334.00, **required 593.87**, budget 1069.4157, ok | KV **31.31**, weights 312.00, **required 343.31**, budget 1069.4157, ok | **−250.56 GiB** |
+| 10 | same — per-instance rows, patched | — | `architect_general` GPU n_ctx 196608 kv **6.375**; `worker_vision` GPU n_ctx 65536 kv **3.188**; `frontdoor` ×3 kv **2.656**; `architect_critic` kv 15.375 | 6.375 + 3.188 = 9.5625 ✓ |
+| 11 | `scripts/validate/reasoning_effort_certifications.py --registry …` | `ok`, exit 0 | `ok`, exit 0 | **0** (C1's setting does not trip the L0–L4 ladder gate) |
+| 12 | `scripts/registry/stack_change_pipeline.py check --research-registry …` | **failed, 15 errors** | **failed, 18 errors** | **+3**, and the 3 are exactly `lean_registry: stale` (*"lean registry content is stale against the master registry projection (local cache key 306b9433055f != 4f8d8cc41231)"* and its two companion lines). Every other error is pre-existing and reproduces on the base. *(Revision 2 saw 12 → 15; both absolutes rose by 3 because `44d7516a` changed `stack_manifest.py`'s source hash. The delta is unchanged.)* |
+| 13 | GGUF header read, `Qwen3.8-27B-Q8_0.gguf` | — | `qwen35.block_count 65`, `head_count_kv 4`, `key_length 256`, `value_length 256`, **`full_attention_interval 4`** | ⇒ 16 KV layers ⇒ **64.0** |
+| 14 | GGUF header read, `Qwen3.6-35B-A3B-MTP-Q8_0.gguf` | — | `qwen35moe.block_count 41`, `head_count_kv 2`, 256/256, **`full_attention_interval 4`** | ⇒ 10 KV layers ⇒ **20.0** |
+| 15 | GGUF header read, `Qwen3.6-27B-MTP-Q8_0.gguf` (rollback anchor) | — | `qwen35.block_count 65`, `head_count_kv 4`, 256/256, **`full_attention_interval 4`** | ⇒ **64.0**; declares no `serving_shape`, nothing to correct |
+| 16 | GGUF header read, `Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf` | — | `qwen3vlmoe.block_count 48`, `head_count_kv 4`, 128/128, **NO `full_attention_interval`** | **96.0 is correct — verified, not assumed** |
+| 17 | GGUF header read, `gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf` | — | `gemma4.block_count 30`, `head_count_kv [30 values]`, 512/512, **NO `full_attention_interval`** | **480.0 is correct — verified, not assumed** |
+| 18 | GGUF header read, `Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf` | — | `qwen4exp.block_count 48`, `head_count_kv 2`, 256/256, **`full_attention_interval 4`**, **`attention.indexer.key_length 128`** | true attention term 24.0, but the indexer cache is unaccounted — gate input deliberately left at 96.0, see C4 |
+| 19 | reverse-apply of revision 2's six vision hunks, then re-diff | — | `device: ROCm0`, `vram_mb: 21049`, `vram_non_kv_gib: 19.26`, `n_gpu_layers: 999`, `throughput: 112.20`, `baseline_tps/optimized_tps 112.20` all restored byte-for-byte | H3 withdrawal is structural, not textual |
+| 20 | VL cross-check of the corrected q8_0 ratio against the server's own A/B readback | — | registry records `6144.00 → 3264.00 MiB at n_ctx 65536`; 96.0 × 0.53125 × 65536 / 1048576 = **3.1875 GiB = 3264 MiB** | exact |
+| 21 | `git apply --check` on the Appendix A `stack_numa.py` diff (in `epyc-orchestrator`) | — | **exit 0**, re-verified against the current file for revision 3 | unchanged |
+
+Revision 2's rows 13–15 (importing the edited `stack_numa.py` against a scratch topology, and the
+two negative tests) were **not re-run** for revision 3: nothing in this revision touches the C3
+shape, and row 21 confirms the diff still applies. They are stated as revision 2 results, not as
+revision 3 ones.
 
 **Read, not executed** (stated as reading, not as a check): the `on_gpu` derivation at
-`stack_manifest.py:1330-1362`; the alias-resolution order in `master_server_row()`; the
-`shared_with` → fleet binding in `src/fleet.py:387-441` (gated behind `ORCHESTRATOR_FLEET_LAYER=1`,
-no standalone CLI, so it was not run); the Qwen3.8-27B template's `reasoning_effort` branch
-(quoted from this registry's own `chat_template.evidence`, **not** re-extracted from the GGUF
-header); every consumer of `chat_template_kwargs` listed in §C1.
+`stack_manifest.py:1476-1495` and the `_KV_TYPE_F16_RATIO` block at `:1315-1341`; `kv_layers()` /
+`kv_kib_per_token_f16()` at `:1347-1370` and the long arithmetic note above them (commit
+`44d7516a`, `capacity gate: KV cost counts KV LAYERS, not every layer`); the alias-resolution order
+in `master_server_row()`; the `shared_with` → fleet binding in `src/fleet.py:387-441` (gated behind
+`ORCHESTRATOR_FLEET_LAYER=1`, no standalone CLI, so it was not run); the Qwen3.8-27B template's
+`reasoning_effort` branch (quoted from this registry's own `chat_template.evidence`, **not**
+re-extracted from the GGUF header); every consumer of `chat_template_kwargs` listed in §C1. The
+`llama_kv_cache: size = 2176.00 MiB ( 65536 cells, 16 layers, … )` server line and the f16/q8_0/q4_0
+4096/2176/1152 MiB triple are quoted from the session that produced `44d7516a`; they were **not**
+re-run here, because the stack is down.
 
-**Not resolved, and stated as such**: whether `reasoning_effort: medium` is *good* for this role —
-nothing has been measured with thinking ON; whether the compiled lean registry will carry
-`reasoning: auto` rather than the live `off` (that is a post-`update` verification step, not
-something a patch can settle); the Flash-Next served-shape proof (C4, filed as `PROD-3/FN-CTX-1`);
-and a CPU throughput figure for vision, which is deliberately left `null`.
+**Not resolved, and stated as such**:
+- **the 3.71 GiB gap** between the 27B's live KFD reading (33.22 GiB at `-c 65536`) and
+  declared non-KV + measured KV (29.51). Nothing was changed on the strength of it and no
+  replacement figure was guessed. It bounds the real headroom and must be settled by sampling
+  `/sys/class/kfd` DURING the first post-cutover load (§0.5);
+- whether `reasoning_effort: medium` is *good* for this role — nothing has been measured with
+  thinking ON;
+- whether the compiled lean registry will carry `reasoning: auto` rather than the live `off` (a
+  post-`update` verification step, not something a patch can settle);
+- the Flash-Next served-shape proof and its KV readback (C4, `PROD-3/FN-CTX-1`);
+- `worker_vision`'s three-way `n_ctx` disagreement (R7), untouched by this change.
+
+**Belief-kernel wiring.** This revision turns on a measurement, and the measurement's own write
+side is `44d7516a`'s docstring — a source file, not a claim tuple. Per the root `CLAUDE.md` rule,
+the KV-rate correction needs an adapter row in `scripts/vidya/adapters/README.md` and a task in
+`handoffs/active/vidya-belief-substrate-program.md` **at the same time as the `PROD-3/FN-CTX-1`
+row**, not after. Index rows are the owning session's write, so this is flagged for the operator's
+session rather than added here.
 
 ---
 
