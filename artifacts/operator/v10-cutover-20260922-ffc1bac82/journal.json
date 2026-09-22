@@ -1,0 +1,42 @@
+{
+  "schema": "epyc.kernel_cutover_journal.v1",
+  "created": "2026-09-22T11:40:42.063984+00:00",
+  "state": "STORE CUTOVER DONE AND SERVING; FREEZE NOT YET CUT",
+  "outgoing": {
+    "branch": "production-consolidated-v9",
+    "commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+    "version": "10125 (0db32c06e)"
+  },
+  "incoming": {
+    "branch": "production-consolidated-v10 (NOT YET CUT \u2014 blocked on operator)",
+    "commit": "ffc1bac82",
+    "version": "10303 (ffc1bac82)"
+  },
+  "ancestry": "VERIFIED: v9 0db32c06e is an ancestor of v10 ffc1bac82 \u2014 a clean version-past, not a patch in place",
+  "store": {
+    "production_cpu": "kernels/builds/cpu-20260921-ffc1bac82/bin",
+    "production_gpu": "kernels/builds/gpu-20260921-ffc1bac82/bin",
+    "archive": [
+      "cpu-20260810-0db32c06e",
+      "gpu-20260810-0db32c06e"
+    ]
+  },
+  "rewind": {
+    "cpu": "ln -sfn /mnt/raid0/llm/kernels/archive/cpu-20260810-0db32c06e/bin /mnt/raid0/llm/kernels/production/cpu",
+    "gpu": "ln -sfn /mnt/raid0/llm/kernels/archive/gpu-20260810-0db32c06e/bin /mnt/raid0/llm/kernels/production/gpu",
+    "exercised": "YES \u2014 used for real on 2026-09-22 to revert an incomplete first promotion"
+  },
+  "binary_sha256": {
+    "v10_cpu_llama_server": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+    "v10_hip_llama_server": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+    "v9_cpu_llama_server": "8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499",
+    "v9_hip_llama_server": "21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb"
+  },
+  "manifests": {
+    "v10-cpu": 105,
+    "v10-hip": 106,
+    "v9-cpu": 118,
+    "v9-hip": 119
+  },
+  "known_residue": "the v10 binaries' RUNPATH ends in an EMPTY element ($ORIGIN: / $ORIGIN:/opt/rocm/lib:), so the loader also searches the CWD; v9's are clean [$ORIGIN]. Fix at the next rebuild."
+}

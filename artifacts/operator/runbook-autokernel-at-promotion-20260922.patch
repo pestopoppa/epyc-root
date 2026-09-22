@@ -1,0 +1,137 @@
+--- a/docs/reference/kernel-freeze-runbook.md
++++ b/docs/reference/kernel-freeze-runbook.md
+@@ -401,4 +401,131 @@
+ it re-execs the restored binary; a running server holds its own argv and will not follow
+ a symlink that moved underneath it.
+
++## AutoKernel at promotion end
++
++A promotion does not end at the symlink. AutoKernel holds a *cycle* state — one champion
++branch per production kernel tree, aggregating everything between promotions
++(`agents/shared/OPERATING_CONSTRAINTS.md:126-164`, *The Single Champion*) — and a
++promotion closes that cycle. Until the steps below are done, the loop's own baselines
++still name the OUTGOING kernel, so its next measured "improvement" includes gains that
++have already shipped.
++
++**Operator ruling, 2026-09-22 (verbatim): "a new champion should be instantiated off of
++the newly promoted frozen kernel."** This is settled; it is not a decision an agent
++re-opens at promotion time.
++
++### 9a. Cut the freeze branch FIRST — nothing below is satisfiable without it
++
++A store-only promotion (repointing `kernels/production/<B>`) leaves the frozen clone
++untouched, and AutoKernel resolves "production" from the TREE, not from the store:
++`autokernel/loop/production.py:75,79,115-127` reads `git branch --show-current` +
++`rev-parse HEAD` in `/mnt/raid0/llm/llama.cpp` and refuses any branch outside
++`production-consolidated-*`. So after a store-only promotion the champion-vs-production
++headline keeps measuring against the OLD freeze — with no error, because the resolver is
++working exactly as designed. That is the "classic mistake" the module's own header quotes
++the operator warning against, reintroduced from the other side.
++
++Therefore the promotion must cut `production-consolidated-vN` at the promoted commit and
++leave the frozen clone checked out on it. **This touches the frozen tree, so it is an
++explicitly operator-authorized act** (CLAUDE.md → *Production kernels are FROZEN*), and it
++belongs in the same ratification as the freeze record. An agent prepares the command and
++stops:
++
++```bash
++git -C /mnt/raid0/llm/llama.cpp branch production-consolidated-vN <promoted-sha>
++git -C /mnt/raid0/llm/llama.cpp checkout production-consolidated-vN   # operator-only
++```
++
++A promotion that stops before this leaves the freeze **incomplete**, and the qualification
++record must say so in its `status` field rather than reading as done.
++
++### 9b. Instantiate the new champion off the newly promoted kernel
++
++Naming convention, from the code that consumes it: the branch is
++`ak/champion/llama-cpp-<12-hex of the production commit it was seeded from>`
++(`autokernel/loop/champion.py:47`, `pool.py:50,55`). So:
++
++```bash
++git -C /mnt/raid0/llm/llama.cpp branch \
++    ak/champion/llama-cpp-<sha12> production-consolidated-vN
++git -C /mnt/raid0/llm/llama.cpp worktree add \
++    /mnt/raid0/llm/tmp/ak-loop-tree ak/champion/llama-cpp-<sha12>
++```
++
++Both commands write refs into the FROZEN CLONE's git directory (the champion branch and
++its worktree have always lived there — `pool.py:48,50`). They do not modify, rebase,
++build or commit to the production branch, but they are writes to that clone: **name them
++in the authorization, do not slip them in under "just a branch".**
++
++When the promoted commit IS the outgoing champion's own tip — the normal case, because a
++champion exists so that promotion is "take the one precompiled branch" — the new champion
++starts at the same commit as the old one. That is correct, not a no-op: the two branches
++differ in *what they mean*, and the aggregate below is what actually resets.
++
++### 9c. Empty the aggregate — this is where double-counting is prevented
++
++The champion branch is only half the state. The loop's baselines live in
++`/mnt/raid0/llm/autokernel/loop-memory/`, and every one of them still describes the old
++cycle. Before the next run, all of these must name the new freeze:
++
++| File | Field to reset | Why |
++|---|---|---|
++| `champion-vs-production.json` | `baseline.{commit,build,label}`, `champion.*`, `effect_fraction` | Its `effect_fraction` is the shipped gain. Left in place it re-publishes gains now IN production as a champion advantage. Delete it and let `production.refresh` rewrite it; the panel reads SUPERSEDED meanwhile, which is the correct degraded state. |
++| `accumulator-bundle.json` | `champion_of_record`, `tip`, `keeps[]`, `compounded_bench_pct` | `keeps[]` and `compounded_bench_pct` are the accumulated standing of the CLOSED cycle. A new cycle starts with zero keeps and no compounded percentage. |
++| `anchor-gen-*/provenance.json` | — (retire the directories) | Each names a `champion_commit` from the old lineage. `champion.verify_anchor` requires the anchor's `champion_commit` to be ancestor-or-equal of HEAD; an old-lineage anchor that still satisfies that test is a stale baseline the A/A guard will not necessarily catch. |
++| `serving-floor.*.json` | nothing structural; restate `conditions.host_state` | The floor is keyed by `recipe_hash` only, not by build or commit, so it survives a promotion mechanically. Its only build identity is prose. Restate it, or the next reader inherits a sentence naming a build that is no longer production. |
++
++**The invariant to state out loud:** after the reset, the champion's measured standing
++versus production must be **zero, by construction**, and the first keep of the new cycle
++must be the first non-zero number. If the first run of a new cycle reports a headline
++gain before it has kept anything, the reset was not done.
++
++### 9d. Re-point the constants that name the outgoing state
++
++These are compile-time literals; nothing resolves them:
++
++* `autokernel/loop/champion.py:47` — `CANONICAL_BRANCH`, and its assertion in
++  `loop/test_champion.py:139`.
++* `autokernel/controller/discovery_deployment_factory.py:480` — `_INSTRUMENT_BRANCH`.
++* `autokernel/controller/discovery_deployment.py:28-30` — `FROZEN_PRODUCTION_{PATH,HEAD,BRANCH}`.
++* `autokernel/campaign.py:1148-1150` — `PRODUCTION_{REPO,BRANCH,COMMIT}`.
++* `autokernel/evaluator/c3_epyc_suite.py:45-47` — `PRODUCTION_V9_{BRANCH,COMMIT,VERSION}`.
++* `autokernel/loop/production.py:87-88` — `LEGACY_COMMIT` / `LEGACY_BUILD`: the adopted
++  prebuilt for one sha. A new freeze is a cache MISS by design; do not repoint it, add
++  the new freeze's store build as its own cache entry.
++* `scripts/benchmark/serving_evidence_refresh.py:70`, `boundary_20260831.sh:65`,
++  `emit_operator_gate_bundle.py:149` — champion-branch defaults.
++* `scripts/lib/qwen38_flash_next_recipe.py:245` — `CURRENT_CHAMPION["branch"]`, and the
++  scratch `build_dir` entries at `:262,:296`.
++
++Fix them by naming the new freeze, never by deleting the check. Expect the tests that
++assert the old branch name to fail — that is the mechanism working.
++
++### 9e. Retire the scratch anchor builds
++
++Anchor and candidate builds pinned by absolute path to `/mnt/raid0/llm/tmp/build-*` are
++*era-scoped*: `--anchor-build /mnt/raid0/llm/tmp/build-anchor-j64` was the production
++binary of the outgoing freeze and silently becomes "an old kernel" at the moment of
++promotion. `run.py` requires `--anchor-build` explicitly (`:542`), so the loop itself is
++safe — but the standalone probes carry it as a **default**
++(`scripts/benchmark/autokernel_aa_campaign.py:102`,
++`autokernel_force_mmq_probe.py:45`), and a default is what gets used.
++
++At promotion end, either repoint those defaults at the new freeze's store build or make
++them required. Do not resolve a kernel by build path in new code: use the store
++(`epyc-orchestrator/src/registry/kernel_paths.py`), which is the same class of defect
++that made `kernel_freeze_scope.py` report `gpu: 0 roles`.
++
++### Gate — the loop may not start until all of these hold
++
++1. The frozen tree is on `production-consolidated-vN` at the promoted commit, and
++   `production.resolve_frozen()` returns that commit.
++2. `ak/champion/llama-cpp-<sha12>` exists and is checked out, attached and at tip, in
++   the champion worktree — this is what `champion.verify_startup` enforces
++   (`champion.py:220-231`); it refuses otherwise, loudly, and that refusal must not be
++   bypassed.
++3. The aggregate is empty: no `accumulator-bundle.json` keeps, no
++   `champion-vs-production.json` carrying the previous cycle's `effect_fraction`.
++4. No anchor whose `provenance.json` names an old-lineage `champion_commit`.
++
+ ## What this does not cover
+
+ Changing *which* backend a role uses is a topology change, not a kernel freeze. That
+
