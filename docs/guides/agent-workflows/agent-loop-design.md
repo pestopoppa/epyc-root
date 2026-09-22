@@ -284,7 +284,7 @@ target's inputs):
   "--resolved-campaign", "/absolute/inputs/original-resolved-campaign.json",
   "--target-id", "ORIGINAL_GPU_TARGET_ID",
   "--worktree", "/mnt/raid0/llm/tmp/champ2",
-  "--champion-branch", "ak/champion/llama-cpp-0db32c06e3e5",
+  "--champion-branch", "ak/champion/llama-cpp-ffc1bac82eec",
   "--anchor-build", "/absolute/original-verified-current-gpu-build",
   "--cor-build", "/absolute/original-verified-champion-of-record-build",
   "--store", "/mnt/raid0/llm/autokernel/loop-memory",

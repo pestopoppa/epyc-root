@@ -1055,10 +1055,12 @@ class RetiredHeadlineRendering:
         # The gate card names ITS anchor beside ITS number.
         #
         # NOT keyed on the bare commit prefix: this bundle's champion BRANCH is
-        # `ak/champion/llama-cpp-0db32c06e3e5`, so `0db32c06e3e5 in gate` is
+        # `ak/champion/llama-cpp-ffc1bac82eec`, so `ffc1bac82eec in gate` is
         # satisfied by the branch name and stayed green through a mutation that
         # dropped the anchor entirely. The key has to be the claim, not a
-        # substring that happens to co-occur with it.
+        # substring that happens to co-occur with it. (Renamed 2026-09-22 with
+        # the v10 champion reseed; the hazard is identical under the new name,
+        # which is the reason to keep naming it here.)
         self.assertIn(treatment, gate)
         anchor = source["production_anchor"]["commit"][:12]
         self.assertIn(f"the frozen production kernel {anchor}", gate)

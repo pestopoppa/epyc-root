@@ -57,7 +57,8 @@ class ChampionCardTests(unittest.TestCase):
                               "operations_root": str(self.bundle / "operations")},
                "production": {"branch": "production-consolidated-v9", "head": PROD}}
         if champion_commit:
-            cfg["instrument"] = {"branch": "ak/champion/llama-cpp-0db32c06e3e5",
+            # Champion branch renamed 2026-09-22 at the v10 reseed.
+            cfg["instrument"] = {"branch": "ak/champion/llama-cpp-ffc1bac82eec",
                                  "commit": champion_commit}
         self.cfgpath.write_text(json.dumps(cfg))
         (self.state / "state.json").write_text(json.dumps({
