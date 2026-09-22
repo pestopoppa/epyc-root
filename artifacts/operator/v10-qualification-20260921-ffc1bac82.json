@@ -1,7 +1,7 @@
 {
   "schema": "epyc.kernel_promotion_qualification.v1",
   "created": "2026-09-21",
-  "status": "QUALIFIED - awaiting operator ratification (steps 6-7 not executed)",
+  "status": "PROMOTED AND SERVING 2026-09-22 (steps 6-7 executed; see cutover)",
   "candidate": {
     "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
     "branch": "ak/champion/llama-cpp-0db32c06e3e5",
@@ -134,12 +134,37 @@
     "sha256sums": "/mnt/raid0/llm/epyc-inference-research/data/kernel-v9-candidate/promotion-plan-20260921/SHA256SUMS",
     "gpu_sweeps": "/mnt/raid0/llm/epyc-inference-research/data/champion-maxperf-postbios-20260921"
   },
-  "not_executed": {
-    "steps": "runbook 6 (repoint symlink) and 7 (re-verify after promotion)",
-    "blockers": [
-      "kernels/production/{cpu,gpu} point INSIDE the frozen v9 source tree at accretive artifact dirs holding 5 library generations; there is no '<old build dir>' to archive, so step 6 as written cannot execute. Prepared fix: artifacts/operator/kernel-freeze-runbook-step6-fix-20260921.patch",
-      "a production cutover is a human-only trust boundary (MEASUREMENT.md)",
-      "~29 source sites still hardcode llama.cpp/build{-hip}/bin instead of kernel_paths.backend_dir(), incl. gpu_shadow_lane.py:49-50 and gpu_shadow_lane_tenancy.yaml:47; two silent fallbacks (orchestrator_stack.py:156-167, stack_priors.py:1930-1954) would serve the CPU path instead of raising on a dangling store symlink"
-    ]
+  "cutover": {
+    "executed": "2026-09-22",
+    "production_cpu": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin",
+    "production_gpu": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin",
+    "archive_anchors": [
+      "cpu-20260810-0db32c06e",
+      "gpu-20260810-0db32c06e"
+    ],
+    "first_attempt": "FAILED and was ROLLED BACK: the candidate was built with --target llama-server llama-bench, giving 2 executables where v9 ships 92. executor.py resolves llama-completion / llama-speculative / llama-lookup / llama-mtmd-cli through the store, so it would have failed at launch. verify_kernel_store.sh PASSED it because it only checked llama-server. Rolled back via the archive anchor (its first ever use), rebuilt the full target set, re-promoted. The verifier now asserts the five companion tools and goes red on exactly that defect.",
+    "serving_verification": {
+      "servers": 18,
+      "argv0_all_v10": true,
+      "ggml_mapped_from_store": "18/18 exclusively (read from /proc/<pid>/maps; this host runs three ggml generations and the failure mode is silent, and ldd cannot settle it because llama.cpp dlopens libggml-hip.so)",
+      "libggml_hip_mapped_on_gpu_roles": true,
+      "health_ports": "12/12",
+      "real_inference": "5 roles answered correctly; orchestrator API routed"
+    },
+    "derived_artifacts": "regenerated via scripts/registry/stack_change_pipeline.py update (28 v10 refs, 0 stale v9). A bare `python -m src.registry.stack_priors` is WRONG: no --numa-mode, compiles the legacy single-instance lineup while production declares numa_mode: both.",
+    "two_regressions_the_cutover_caused_and_fixed": [
+      "kernel_freeze_scope.py classified backends by the substring 'build-hip'; the v10 store path has none, so GPU scope went 4 roles -> 0 and cpu 8 -> 12. The runbook MANDATES deriving scope from this tool, so the next promotion would have derived an EMPTY GPU gate.",
+      "dashboard_topology.py used the same marker family (hip|rocm|gfx) on argv[0]; every GPU role reported substrate 'cpu'. Fixed and verified live: 4 gpu / 16 cpu."
+    ],
+    "commits": {
+      "epyc-orchestrator": "42b926ff -> main 35d8510f",
+      "epyc-root": "cfd77952 -> main 05dde776"
+    }
+  },
+  "still_outstanding": {
+    "speech_backends": "production/{stt,tts} still point into live source trees; their binaries carry ABSOLUTE RUNPATHs so a versioned copy is not self-contained. Staged rebuild awaiting operator execution: artifacts/operator/ratify_speech_origin_rebuild_20260921.sh",
+    "runpath_trailing_colon": "the promoted binaries' RUNPATH ends in an empty element ($ORIGIN: / $ORIGIN:/opt/rocm/lib:), which makes the loader also search CWD. v9's archive is clean [$ORIGIN]. Harmless in practice here but fix at the next rebuild.",
+    "provenance": "PROVENANCE.md not yet written into builds/*-ffc1bac82/",
+    "verify_llama_cpp": "still attests the frozen v9 SOURCE tree, which a store promotion does not touch, so it passes on v9 while the store serves v10. Store-side identity is the right fix; cutting a production-consolidated-v10 branch is an operator decision."
   }
 }
