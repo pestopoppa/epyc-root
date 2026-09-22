@@ -1,0 +1,56 @@
+{
+  "schema": "epyc.operator_v10_final_freeze_attestation.v1",
+  "decision": "FREEZE-V10",
+  "status": "production_promoted_frozen",
+  "ratified_at": "2026-09-22T13:32:48Z",
+  "production_branch": "production-consolidated-v10",
+  "production_head": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "production_version": "10303 (ffc1bac82)",
+  "production_frozen": true,
+  "production_binary_sha256": {
+    "cpu": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+    "hip": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b"
+  },
+  "binary_location": {
+    "note": "v10 is the first promotion served from the KERNEL STORE rather than the source tree's own build/ and build-hip/. The frozen tree's in-tree build dirs still hold the v9 binaries and are no longer the serving path.",
+    "cpu": "/mnt/raid0/llm/kernels/production/cpu -> builds/cpu-20260921-ffc1bac82/bin (117 files)",
+    "gpu": "/mnt/raid0/llm/kernels/production/gpu -> builds/gpu-20260921-ffc1bac82/bin (120 files)"
+  },
+  "candidate_repair_chain": {
+    "authorized_start": "ak/champion/llama-cpp-0db32c06e3e5 (AutoKernel champion branch off the v9 tip)",
+    "qualified_final": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "reason": "Two qualification defects were repaired IN the candidate and the FULL build was redone before cutover, never cherry-picked at promotion time: (1) the nextn read/assert was restored to v9's ordering with LLM_ARCH_GEMMA4_ASSISTANT exempted from the early generic read, which had broken gemma4 loading; (2) MoE weight fusion was gated on an all-CPU backend set, which had corrupted GPU decode."
+  },
+  "qualification": {
+    "status": "pass",
+    "path": "artifacts/operator/v10-qualification-20260921-ffc1bac82.json",
+    "sha256": "24c66fdecf2e55c040a32943825a936eb14423a79f701487089470b137a7cdd1"
+  },
+  "cutover": {
+    "status": "complete",
+    "path": "artifacts/operator/v10-cutover-20260922-ffc1bac82/journal.json",
+    "sha256": "d72960c42c260f276738da5a6b5f5e74a56faa442dd2ddc96f89d2744808ab3b"
+  },
+  "overlay_bake": {
+    "new_commit_in_frozen_tree": false,
+    "reason": "ffc1bac82 already carries the EPYC overlay CLAUDE.md, inherited through the v9 bake, and its text is branch-generic. Committing the staged overlay's two-line comment drift would have broken HEAD == binary-embedded-commit for no substantive gain. The drift is carried to the next promotion's experimental-branch bake."
+  },
+  "rollback": {
+    "branch": "production-consolidated-v9",
+    "head": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
+    "version": "10125 (0db32c06e)",
+    "archive": [
+      "kernels/archive/cpu-20260810-0db32c06e",
+      "kernels/archive/gpu-20260810-0db32c06e"
+    ],
+    "rehearsal": "pass \u2014 NOT a rehearsal: the rewind was executed for real on 2026-09-22 to revert a first promotion that had shipped a partial build (2 binaries instead of 92). The store was restored from the archive anchor, the candidate was rebuilt in full, and verify_kernel_store.sh was extended to count companion tools so the same shape cannot recur.",
+    "commands": {
+      "cpu": "ln -sfn /mnt/raid0/llm/kernels/archive/cpu-20260810-0db32c06e/bin /mnt/raid0/llm/kernels/production/cpu",
+      "gpu": "ln -sfn /mnt/raid0/llm/kernels/archive/gpu-20260810-0db32c06e/bin /mnt/raid0/llm/kernels/production/gpu"
+    }
+  },
+  "known_residue": {
+    "runpath_trailing_colon": "the v10 binaries' RUNPATH ends in an empty element ($ORIGIN: / $ORIGIN:/opt/rocm/lib:), so the loader also searches CWD. v9's archived binaries are clean [$ORIGIN]. Harmless under the launchers in use; fix at the next rebuild."
+  },
+  "scope": "operator-authorized complete v9-to-v10 promotion: candidate qualification, store cutover, freeze cut, verifier re-pin and governance update. AutoKernel champion reseed off the newly frozen kernel is sequenced AFTER this ratification and is covered by the kernel-promotion skill's phase 9, not by this attestation."
+}
