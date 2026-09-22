@@ -1,5 +1,14 @@
 # GLM-5.3-Flash support audit — 2026-09-08
 
+> **Artifact deleted 2026-09-22 by operator.** The six-shard `unsloth/GLM-5.3-Flash-GGUF`
+> UD-Q4_K_XL (186 GB), both GLM-5.3-Flash-DFlash2 drafters and the three
+> `llama.cpp-experimental-glm53-*` worktrees are gone from disk. Source survives on the fork
+> (`pestopoppa/llama.cpp`), pushed: `experimental/glm53-text-mtp-20260908` @ `f8e2668b6`,
+> `ak/champion-glm53-candidate-20260909` @ `c463f601b`,
+> `experimental/glm53-mtp-longprefill-fix-20260909` @ `7c78663de`. Local paths below that point
+> at the model or those worktrees are historical. INF-69 is closed; the successor evaluation is
+> [`deepseek-v41-flash-evaluation.md`](../../../handoffs/active/deepseek-v41-flash-evaluation.md).
+
 ## Verdict and scope
 
 The existing champion cannot load the local model, but upstream contributors have implemented

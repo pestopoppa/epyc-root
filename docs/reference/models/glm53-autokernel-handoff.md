@@ -1,5 +1,14 @@
 # GLM-5.3-Flash source handoff for AutoKernel
 
+> **Artifact deleted 2026-09-22 by operator.** The six-shard `unsloth/GLM-5.3-Flash-GGUF`
+> UD-Q4_K_XL (186 GB), both GLM-5.3-Flash-DFlash2 drafters and the three
+> `llama.cpp-experimental-glm53-*` worktrees are gone from disk. Source survives on the fork
+> (`pestopoppa/llama.cpp`), pushed: `experimental/glm53-text-mtp-20260908` @ `f8e2668b6`,
+> `ak/champion-glm53-candidate-20260909` @ `c463f601b`,
+> `experimental/glm53-mtp-longprefill-fix-20260909` @ `7c78663de`. Local paths below that point
+> at the model or those worktrees are historical. INF-69 is closed; the successor evaluation is
+> [`deepseek-v41-flash-evaluation.md`](../../../handoffs/active/deepseek-v41-flash-evaluation.md).
+
 **Experimental reuse base — NOT ACCEPTED:** [`pestopoppa/llama.cpp`](https://github.com/pestopoppa/llama.cpp/tree/ak/champion-glm53-candidate-20260909), pushed branch `ak/champion-glm53-candidate-20260909`, commit `c463f601bd39d0e313b744c214b8c22f9455bcd3`. Champion remains `ef81196d5bdd4190b46dff4ae7eecc333a46c8ce`.
 
 **Experimental reference tip:** branch `experimental/glm53-text-mtp-20260908` points to `f8e2668b6a951d7c44f3264f87d1bc882299bae5`.
@@ -116,3 +125,31 @@ This optimization round produced no additional full-model speed gain. The useful
 A candidate must first pass focused bitwise/operator tests, then both aliases' rollback/state/export fixtures, then a real-model run with actual draft rejection. Performance selection uses same-build guard-off controls with fixed warmups and bracketed/interleaved server blocks. For a decode-only experiment, failure of the short repeated decode gate stops the longer decode campaign; a prefill-specific candidate still requires its own matched prefill gate. Any integration into a newer champion also requires full cross-model CPU and HIP regression before promotion. Production promotion remains a separate operator decision.
 
 AutoKernel seed completed and independently retrieved: four `measured_null` records in `/mnt/raid0/llm/autokernel/loop-memory/experiments.db`, campaign `ak-external-glm53-core-20260909`. Inbox `24-glm53-core-c463-external.md` is read by the normal loop. Self-contained evidence bundle: `/mnt/raid0/llm/autokernel/loop-memory/external/glm53-core-c463-20260909`; receipt `ingestion-receipt.json`. Envelope SHA-256 `6ab1cd967603a6feb1ef369cc16a3756ea7eb3fd85e924ed847fff1a3cc9507f`. Idempotence verified (four initial inserts, zero duplicate inserts); records are cross-epoch/noncomparable and cannot advance champion.
+
+## Findings extracted from INF-69 at closure (2026-09-22)
+
+These lived only in the handoff's checkbox bodies; the sibling reports hold the rest.
+
+- **Expert multirow (T11b/c).** Operator microdiagnostic, 80/80 cells hash-exact: median
+  serial/optimized ratios at widths 2/3/4 were 1.075/1.120/1.149 (Q4_K) and 1.108/1.156/1.227
+  (Q5_K), width-1 controls 1.017/1.013. The one-request full-model screen measured 9.7305 vs
+  9.8985 tok/s off (0.9830x) with identical 561/323 drafted/accepted counters. Kernel-level wins
+  did not reach the model.
+- **Batched Q8 verification (T12a-d).** Modes 0/1/2 pass all operator cases; mode-2 AB/BA
+  microbenchmark 1.073x (MLA) and 1.023x (output projection). A 1.0497x full-model ratio was
+  rejected for attribution: median unrelated load was 8.41 vs 1.82 CPU-equivalents. The balanced
+  A3/B3/B2/A2 repeat measured 9.2318/9.2866 (baseline mean/median) vs 9.0863/9.0452 (mode 2),
+  ratios 0.9842/0.9740. Lesson: an in-window contention witness is what caught the false win.
+- **Champion-core parity (T15b).** 31/31 plain/MTP trajectory pairs exact. MTP recorded 2,804
+  verification events, 5,419 accepted and 2,949 rejected draft tokens; plain recorded zero
+  verification events. Null plain counters were accepted only together with zero events.
+- **Never executed.** T2 (DSA dense-mask vs sparse disposition, `indexer_top_k`/`kpool`
+  semantics) and T4 (quality/role fit) did not run before deletion. So there is no GLM-5.3
+  quality verdict, and the inherited GLM-5.2 hypotheses were never tested on `glm5next`: final
+  attention over full KV with a mask, and an under-sized top-k cap corrupting output past the cap.
+- **Transferable to any successor MTP port.** Parallel verification must be row-exact
+  (`LLAMA_SPEC_EXACT=row`), because batch non-invariance alone reproduced the first mismatch.
+  Depth-3 passing proves nothing about other depths (depth 2 diverged at token 58). Multi-ubatch
+  prefill needs its own MTP selection-width regression (fix `7c78663de`). A cross-model CPU
+  regression is part of admission: this core's Flash-Next CPU check measured −25.71% vs the
+  historical harness.

@@ -1771,7 +1771,7 @@ retrofitting the read side is impossible. Source row added to
     an A2 nomination as a keep, validation or release result.
 
   - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.**
-    - [ ] **2026-09-17 sampled-location extension, before first live GLM use:** write bounded per-TID×symbol-family×sampled-CPU/NUMA-location period fields and the `perf --sample-cpu` capture identity in the original immutable profile receipt. Project only native sampled fields through the existing measurement ladder; old captures remain location-unknown, and CPU location alone cannot establish remote memory traffic or a throughput gain.
+    - [ ] **2026-09-17 sampled-location extension, before first live GLM use** (GLM-5.3-Flash deleted 2026-09-22; read as "before first live use on the next CPU target", e.g. DeepSeek-V4.1-Flash): write bounded per-TID×symbol-family×sampled-CPU/NUMA-location period fields and the `perf --sample-cpu` capture identity in the original immutable profile receipt. Project only native sampled fields through the existing measurement ladder; old captures remain location-unknown, and CPU location alone cannot establish remote memory traffic or a throughput gain.
     - [x] **Direct existing-loop CPU observation/corpus and actor read-side connection**:
       ✅ 2026-09-10. `loop_cpu_profile.v1` binds the producer's original compact capture,
       actual execution/frozen-request identity and sampled-period measurement. The existing
@@ -1940,7 +1940,12 @@ no rate at all. A later session may extend the audit but may not report these fi
 ## VB-GLM53-MTP — prospective validation producer (2026-09-08)
 
 - [ ] **VB-GLM53-MTP — wire the GLM53 text/MTP validation producer at write time.**
-  Producer work: [INF-69](glm53-flash-evaluation.md), runtime validation under
+  **[Retargeted 2026-09-22]** GLM-5.3-Flash was deleted from disk (operator-directed), so no new
+  GLM53 records will be produced. The completed GLM53 evidence below is still history to project
+  as-is. The *prospective* half now applies to the DeepSeek-V4.1-Flash text/MTP validation
+  producer (3 native MTP layers) in [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md).
+  Its source-table row goes in before that model's first run, with the same identity and caveat fields.
+  Producer work: [INF-69](../completed/glm53-flash-evaluation.md), runtime validation under
   `/mnt/raid0/llm/tmp/glm53-validation-20260908/runtime/`. Preserve the original launch's
   model/binary/source/recipe identity, native draft/accept/reject counts, in-window contention,
   observation-only host caveats, and forced-prefix rollback/replay results. Project quantitative
@@ -1958,6 +1963,17 @@ no rate at all. A later session may extend the audit but may not report these fi
   The authorized three-lever implementation adds bitwise kernel controls, per-node
   critical-path timing with instrumentation-off controls, individual switch ablations,
   and matched unprofiled baseline/integrated repetitions. Preserve rejected variants.
+
+## VB-DSV41 — DeepSeek-V4.1-Flash port validation producer (2026-09-22)
+
+- [ ] **VB-DSV41 — wire the `deepseek41` validation/serving producer at write time, before DS41-T1.**
+  Producer work: [INF-77](deepseek-v41-flash-evaluation.md) (successor to INF-69; VB-GLM53-MTP's
+  subject was deleted 2026-09-22 and it produces no further records). Reuse the VB-GLM53-MTP carrier:
+  artifact header/size identity, candidate source/binary digests with linkage proof, full recipe,
+  per-depth native MTP draft/accept/reject counts, forced-prefix rollback/replay results, in-window
+  contention and GPU residency witnesses. Add reference-parity records bound to the official
+  `inference/` revision and fixture scope, with quantization drift kept separate from port defects.
+  Categorical verdicts stay categorical. Source-table row filed in `scripts/vidya/adapters/README.md`.
 
 ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep)
 

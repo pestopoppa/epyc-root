@@ -254,7 +254,9 @@ format. These examples are **templates, not installed launch authority**: replac
 `/absolute/...` paths and target IDs with the original owned inputs. Do not launch
 against a worktree/store whose existing owner is still running.
 
-`glm-cpu.args.json`:
+`glm-cpu.args.json` (historical example: GLM-5.3-Flash and its `llama.cpp-experimental-glm53-*`
+worktrees were deleted 2026-09-22, so these paths no longer resolve; substitute the current CPU
+target's inputs):
 
 ```json
 [

@@ -1,6 +1,16 @@
 # GLM-5.3-Flash Evaluation (glm5next)
 
-**Status**: CORE IMPLEMENTED / CANDIDATE NOT ACCEPTED 2026-09-09 — text-only
+**Status**: **CLOSED — SUBJECT DELETED 2026-09-22** (superseded by
+[`deepseek-v41-flash-evaluation.md`](../active/deepseek-v41-flash-evaluation.md)). The operator deleted
+the UD-Q4_K_XL artifact, both GLM-5.3-Flash-DFlash2 drafters and the three
+`llama.cpp-experimental-glm53-*` worktrees. Branches remain pushed:
+`experimental/glm53-text-mtp-20260908` @ `f8e2668b6`, `ak/champion-glm53-candidate-20260909` @
+`c463f601b`, `experimental/glm53-mtp-longprefill-fix-20260909` @ `7c78663de`. T2, T4 and T15 are
+not runnable and were never executed; findings extracted to
+[the AutoKernel source handoff](../../docs/reference/models/glm53-autokernel-handoff.md#findings-extracted-from-inf-69-at-closure-2026-09-22).
+Everything below is historical.
+
+**Historical status (2026-09-09)**: CORE IMPLEMENTED / CANDIDATE NOT ACCEPTED 2026-09-09 — text-only
 `glm5next` and native depth-3 MTP pass exact rollback/replay and all 31 full-model
 plain/MTP trajectory pairs with real draft rejection. Candidate `c463f601b` is
 **not** the canonical champion: `ef81196d5` remains unchanged. The exact
@@ -97,11 +107,11 @@ identify the high-value levers in the [profile report](../../docs/reference/mode
   passes the paired CPU gates in the [optimization report](../../docs/reference/models/glm53-cpu-optimization-20260908.md).
 - [x] T1 — Load + short-context coherence smoke on the chosen tree (abort on repetition loops),
   CPU-only, canonical env; record `(arch, indexer defaults, kpool)` from the load log.
-- [ ] T2 — DSA-path disposition for glm5next: DENSE-MASK vs sparse (expect DENSE-MASK per finding 1);
+- [x] T2 — **CLOSED UNRUN 2026-09-22 (subject deleted; translated to DS41-T2)** — DSA-path disposition for glm5next: DENSE-MASK vs sparse (expect DENSE-MASK per finding 1);
   `indexer_top_k`/`kpool` semantics probe BEFORE any quality run (finding 2).
 - [x] T3 — Throughput baseline at the canonical recipe (interleave + no-mmap, t48/t64, r5) —
   observation-grade first; codified attestation only if it becomes a serving candidate.
-- [ ] T4 — Quality/role fit per the standard suites; GO / WAIT / KILL disposition with the disk-retention
+- [x] T4 — **CLOSED UNRUN 2026-09-22 (subject deleted; translated to DS41-T9)** — Quality/role fit per the standard suites; GO / WAIT / KILL disposition with the disk-retention
   decision (artifact is in the novel-under-test keep bucket until this verdict).
 
 ## Authorized optimization work — 2026-09-08
@@ -242,7 +252,7 @@ in the [AutoKernel source handoff](../../docs/reference/models/glm53-autokernel-
 
 ## Champion integration — operator-authorized 2026-09-09
 
-- [ ] T15 — Fold the GLM core through `c463f601b` into the existing AutoKernel champion lineage, build CPU/HIP with the champion recipe, validate GLM native-MTP and existing-model regressions, and refresh the admitted champion identity/standing. Validation worktree: `/mnt/raid0/llm/llama.cpp-experimental-glm53-champion-20260909`, branch `ak/champion-glm53-candidate-20260909`; created from current champion `ef81196d5` by fast-forward. The rejected experiments remain at `f8e2668b6`. **Disposition:** do not admit `c463f601b`; the matched CPU result remains below the historical champion observation. `ef81196d5` stays canonical. Any causal investigation or revised candidate is future AutoKernel work, not a pending inference task in this session. Frozen production is unchanged.
+- [x] T15 — **CLOSED UNRUN 2026-09-22 (subject deleted; admission gate translated to DS41-T8)** — Fold the GLM core through `c463f601b` into the existing AutoKernel champion lineage, build CPU/HIP with the champion recipe, validate GLM native-MTP and existing-model regressions, and refresh the admitted champion identity/standing. Validation worktree: `/mnt/raid0/llm/llama.cpp-experimental-glm53-champion-20260909`, branch `ak/champion-glm53-candidate-20260909`; created from current champion `ef81196d5` by fast-forward. The rejected experiments remain at `f8e2668b6`. **Disposition:** do not admit `c463f601b`; the matched CPU result remains below the historical champion observation. `ef81196d5` stays canonical. Any causal investigation or revised candidate is future AutoKernel work, not a pending inference task in this session. Frozen production is unchanged.
 
 - [x] T15a — Create the champion-descended GLM core candidate, build matching CPU control/candidate and the house-flag HIP candidate, and pass the freshly built GLM alias/rollback/restore/pool/long-export and six exact real-model phase comparisons. Evidence: `final-spec-regressions-champion-candidate-c463f601b-20260909T104706Z`. Full-model trajectories subsequently passed T15b; existing-model sanity is recorded in T15c/d, with CPU admission held. ✅ 2026-09-09
 

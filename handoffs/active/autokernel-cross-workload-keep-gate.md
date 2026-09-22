@@ -192,7 +192,7 @@ Membership rule, which reuses the existing rule at `serial_run.py:1222-1228` rat
 - every `production`-enrolled target, at its **production-optimal registered recipe** (`MEASUREMENT.md:156-165`);
 - plus every target that authored a keep retained on the tip.
 
-Seed or candidate targets (e.g. GLM-5.3-Flash) are advisory unless a keep they authored is retained (`autokernel-unified-surface-program.md:1300-1310`).
+Seed or candidate targets (e.g. GLM-5.3-Flash, deleted 2026-09-22; next such candidate is DeepSeek-V4.1-Flash) are advisory unless a keep they authored is retained (`autokernel-unified-surface-program.md:1300-1310`).
 
 Snapshot of the production LLM fleet on the llama.cpp kernel tree, from lean `/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml`. The file was compiled 2026-09-03 (`:13`). **Re-resolve it at implementation**, because INF-73 AKU-12c reports "seven production workloads plus the explicit GLM candidate" in the generated full-SMT campaign (`autokernel-unified-surface-program.md:3500-3506`).
 

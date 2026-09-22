@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| REV-02 | glm52 reviewer capability gates | [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md) | Re-derive GLM-5.3 kpool/top_k after INF-69 T2; use its CPU-validated experimental text/MTP port | INF-69 |
+| REV-02 | glm52 reviewer capability gates | [glm52-reviewer-capability-gates.md](glm52-reviewer-capability-gates.md) | Re-derive DeepSeek-V4.1-Flash sparse-attention cap after its port/load gates (INF-77), then GC-1/2/3 smokes | INF-77 |
 | REV-03 | reviewer calibration accounting | [reviewer-calibration-accounting.md](reviewer-calibration-accounting.md) | RC-6a — operator PR + sign-off: land the drafted P-REV-1 blocks into MEASUREMENT.md §1/§2/§3 with a one-line CHANGELOG | — |
 | REV-05 | reviewer escalation and human gate policy | [reviewer-escalation-and-human-gate-policy.md](reviewer-escalation-and-human-gate-policy.md) | HG-1 — Threshold policy from H4/H5 reliability-by-confidence-bucket curves (per-domain). | UFH-01 |
 | REV-06 | reviewer latency and sampling budget | [reviewer-latency-and-sampling-budget.md](reviewer-latency-and-sampling-budget.md) | LB-1 — Reproduce and attribute the review-latency regression on the RD-12 replay: prompt count vs prompt length vs architect queueing | — |

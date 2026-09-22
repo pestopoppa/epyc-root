@@ -103,7 +103,7 @@ The completed work was seeded into AutoKernel as four cross-epoch `measured_null
 - [`glm53-flash-support-audit-20260908.md`](../docs/reference/models/glm53-flash-support-audit-20260908.md) — pinned upstream/base identities, exact six-shard hybrid layout, mixed tensor types, alias/default requirements, and original validation contract.
 - [`glm53-cpu-optimization-20260908.md`](../docs/reference/models/glm53-cpu-optimization-20260908.md) — phase-scoped row-exact implementation, native-MTP recipe, correctness gates, candidate observations, and bounded quality limits.
 - [`glm53-cpu-worker-audit-20260909.md`](../docs/reference/models/glm53-cpu-worker-audit-20260909.md) — node-level CPU evidence and the corrected recurrent-copy route analysis.
-- [`glm53-flash-evaluation.md`](../handoffs/active/glm53-flash-evaluation.md) — current implementation status, completed expert/Q8/scheduling decisions, and remaining DSA/role-fit work.
+- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — current implementation status, completed expert/Q8/scheduling decisions, and remaining DSA/role-fit work.
 - [`glm53-autokernel-handoff.md`](../docs/reference/models/glm53-autokernel-handoff.md) — exact private-fork branch boundary, champion ancestry, retained recipe, rejected experiments, and mandatory fold gates.
 - [`2026-09-09-glm53-cpu-optimization.md`](../progress/2026-09/2026-09-09-glm53-cpu-optimization.md) — executed gates, exact final regression evidence, rejected experiments, and immutable candidate identities.
 
@@ -295,7 +295,7 @@ comparison but not quality-representative.
 
 ### Source References (2026-09-01 GLM + qwen4exp)
 
-- [`glm53-flash-evaluation.md`](../handoffs/active/glm53-flash-evaluation.md) — the `glm5next` artifact
+- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — the `glm5next` artifact
   identity, the five inherited GLM-MoE-DSA findings with the re-verify-before-relying contract, and the
   T0 arch-support-audit gate (INF-69).
 - [`glm51-reap-cpu-evaluation.md`](../handoffs/completed/glm51-reap-cpu-evaluation.md) — the GLM-5.2

@@ -776,7 +776,7 @@ survives the model is the DSA layer knowledge, now seeded into the GLM-5.3-Flash
 
 - [`glm51-reap-cpu-evaluation.md`](../handoffs/completed/glm51-reap-cpu-evaluation.md) — the
   completed evaluation: KILL verdict, DSA-DENSE-MASK evidence, top-k schedule records.
-- [`glm53-flash-evaluation.md`](../handoffs/active/glm53-flash-evaluation.md) — INF-69: the
+- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — INF-69: the
   inherited-findings contract and the glm5next arch facts (GGUF header read).
 - [`2026-08-31-disk-reclaim-menu.md`](../progress/2026-08/2026-08-31-disk-reclaim-menu.md) —
   OP-31 execution record incl. the GLM-5.2 deletion and disk state (87 G → 480 G).

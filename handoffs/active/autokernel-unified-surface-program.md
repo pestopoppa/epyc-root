@@ -2769,6 +2769,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     match the tested tree, Ruff clean. The preceding full run had5 failures and15 setup errors
     (2583 passed,2 strict xfails,83 subtests); a fresh full-suite result is still required.
   - [ ] **AKU-06j — install the concrete owned CPU profiling producer for GLM discovery**:
+    **[Subject deleted 2026-09-22]** GLM-5.3-Flash (model, DFlash2 drafters, `llama.cpp-experimental-glm53-*` worktrees) was removed from disk by operator direction; branches and stores remain as history. The GLM prompt/configuration conformance half is unrunnable as written. The producer itself is model-agnostic. The next CPU discovery subject is DeepSeek-V4.1-Flash ([`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md)), once its experimental port loads.
     Concrete full-request producer is implemented and tested under AKU-06o below; this task
     remains open for exact GLM prompt/configuration and
     real deployment conformance. Do not relabel independent full-request v1 as cached decode.
@@ -3650,10 +3651,12 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     verified champion movement. The dashboard is bound to production-v9 as its serving era; no
     production-kernel mutation, registry change or live-loop control was performed.
   - [ ] **AKU-12i — monitor the relaunched GLM AutoKernel through 20 healthy completed iterations**:
+    **[Subject deleted 2026-09-22]** GLM-5.3-Flash (model, DFlash2 drafters, `llama.cpp-experimental-glm53-*` worktrees) was removed from disk by operator direction; branches and stores remain as history. No GLM campaign can relaunch. Do not tick this row. Any retarget to DeepSeek-V4.1-Flash is a new task under that handoff, after the port exists.
     batch 5 is live after three clean completed iterations. Stop safely, repair and relaunch on any
     unexpected behavior; after 20 clean iterations leave the continuous campaign running. This is
     operational health monitoring, not candidate validation, champion promotion or production mutation.
-  - [ ] **AKU-12e — validate the accumulated GLM tip across required targets**: run the
+  - [ ] **AKU-12e — validate the accumulated GLM tip across required targets**: **[Subject deleted 2026-09-22]** GLM-5.3-Flash (model, DFlash2 drafters, `llama.cpp-experimental-glm53-*` worktrees) was removed from disk by operator direction; branches and stores remain as history. The GLM correctness gates cannot run without the model. Tip `dc3798db10a6` stays pushed as history. Its generic (non-GLM-specific) keeps could only be revalidated on other targets through a new task.
+    Original text: run the
     existing required-target validation and exact GLM correctness gates against experimental
     tip `dc3798db10a6`; publish the aggregate disposition before any champion admission proposal.
     This is a separate candidate-validation task, not part of the completed 50-loop health proof,

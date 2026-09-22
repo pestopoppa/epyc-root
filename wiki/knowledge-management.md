@@ -2679,7 +2679,7 @@ reader skimming the task list cannot mistake an old measurement for a claim abou
   `intake-836` hypothesis on GC-3a, and the GC-4 void note.
 - [`progress/2026-09/2026-09-01-adhoc-audit.md`](../progress/2026-09/2026-09-01-adhoc-audit.md) — the OP-8
   execution record: GLM-5.2 ruled KILL, artifact deleted, as a merge-preserved deliberate deletion.
-- [`glm53-flash-evaluation.md`](../handoffs/active/glm53-flash-evaluation.md) — the successor handoff's own
+- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — the successor handoff's own
   header, "spun out of the OP-8 KILL ruling; inherits the GLM-MoE-DSA findings", confirming the lineage from
   the other side.
 ## Compiled Update — 2026-09-03: the compile watermark failed again with no `git clean` in sight — the remedy was scoped to the wrong threat
