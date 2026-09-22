@@ -103,11 +103,32 @@ export MODELS_DIR="${ORCHESTRATOR_PATHS_MODELS_DIR}"
 export ORCHESTRATOR_PATHS_MODEL_BASE="${ORCHESTRATOR_PATHS_MODEL_BASE:-${LLM_ROOT}/lmstudio/models}"
 export MODEL_BASE="${ORCHESTRATOR_PATHS_MODEL_BASE}"
 
-export ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="${ORCHESTRATOR_PATHS_LLAMA_CPP_BIN:-${LLM_ROOT}/llama.cpp/build/bin}"
-export LLAMA_CPP_BIN="${ORCHESTRATOR_PATHS_LLAMA_CPP_BIN}"
+# llama.cpp binaries — resolved through the KERNEL STORE, never a build-path literal.
+# A literal here silently outranks the kernel-store layer for every sourcing script, so a
+# v10 promotion that repoints kernels/production/cpu would leave them on the OLD kernel.
+# `readlink -e` yields the RESOLVED path, which matters because GPU-role detection keys on
+# the `build-hip` marker in argv[0]. On failure export NOTHING and say so: do not
+# substitute the old literal, and do not `return 1` (this file is sourced as
+# `source A 2>/dev/null || source B`, so a non-zero return sources the OTHER file).
+# Mirrors epyc-orchestrator/scripts/lib/env.sh.
+if [[ -z "${ORCHESTRATOR_PATHS_LLAMA_CPP_BIN:-}" ]]; then
+  _epyc_store_cpu="$(readlink -e "${LLM_ROOT}/kernels/production/cpu" 2>/dev/null)" || _epyc_store_cpu=""
+  if [[ -n "${_epyc_store_cpu}" ]]; then
+    export ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="${_epyc_store_cpu}"
+  else
+    echo "env.sh: ${LLM_ROOT}/kernels/production/cpu does not resolve." >&2
+    echo "        NOT exporting ORCHESTRATOR_PATHS_LLAMA_CPP_BIN / LLAMA_SERVER — refusing to" >&2
+    echo "        substitute a build-path literal, which is how a stale kernel gets served." >&2
+    echo "        Repoint it: ln -sfn <build dir> ${LLM_ROOT}/kernels/production/cpu" >&2
+  fi
+  unset _epyc_store_cpu
+fi
 
-export ORCHESTRATOR_PATHS_LLAMA_SERVER="${ORCHESTRATOR_PATHS_LLAMA_SERVER:-${LLAMA_CPP_BIN}/llama-server}"
-export LLAMA_SERVER="${ORCHESTRATOR_PATHS_LLAMA_SERVER}"
+if [[ -n "${ORCHESTRATOR_PATHS_LLAMA_CPP_BIN:-}" ]]; then
+  export LLAMA_CPP_BIN="${ORCHESTRATOR_PATHS_LLAMA_CPP_BIN}"
+  export ORCHESTRATOR_PATHS_LLAMA_SERVER="${ORCHESTRATOR_PATHS_LLAMA_SERVER:-${LLAMA_CPP_BIN}/llama-server}"
+  export LLAMA_SERVER="${ORCHESTRATOR_PATHS_LLAMA_SERVER}"
+fi
 
 export ORCHESTRATOR_PATHS_CACHE_DIR="${ORCHESTRATOR_PATHS_CACHE_DIR:-${LLM_ROOT}/cache}"
 export CACHE_DIR="${ORCHESTRATOR_PATHS_CACHE_DIR}"

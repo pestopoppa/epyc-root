@@ -107,6 +107,32 @@ else
 fi
 
 # ============================================
+# 0.55 VERIFY THE KERNEL STORE
+# ============================================
+# verify_llama_cpp.sh and verify_speech_kernels.sh attest the SOURCE TREES and build
+# dirs. Neither attests kernels/production/<backend> -- the symlinks the orchestrator
+# actually resolves through kernel_paths.backend_dir(). A mis-pointed or dangling store
+# symlink is therefore invisible to every other gate: the canonical shape is
+# production/gpu resolving to a CPU-only build dir, which serves, answers, and is slow
+# rather than broken (INC-20260731). This closes that hole.
+echo ""
+echo "--- Verifying kernel store ---"
+STORE_VERIFY="$SCRIPT_DIR/verify_kernel_store.sh"
+if [[ -x "$STORE_VERIFY" ]]; then
+  if ! "$STORE_VERIFY"; then
+    echo ""
+    echo "⛔ WARNING: kernel store does not resolve!"
+    echo "   The orchestrator may launch the wrong backend, or fail to launch."
+    echo ""
+    agent_observe "kernel_store" "VERIFICATION FAILED - store symlink/linkage broken"
+  else
+    agent_observe "kernel_store" "kernels/production/* resolve; ggml linkage proven per backend"
+  fi
+else
+  echo "  Kernel store verification script not found (skip in dev environments)"
+fi
+
+# ============================================
 # 0.6 VERIFY DEPENDENCIES (UV)
 # ============================================
 echo ""
