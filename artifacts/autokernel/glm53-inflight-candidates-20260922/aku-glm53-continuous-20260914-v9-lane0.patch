@@ -1,0 +1,82 @@
+diff --git a/ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp b/ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp
+index 2bddc1ec6..2886d6fe0 100644
+--- a/ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp
++++ b/ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp
+@@ -613,18 +613,67 @@ extern "C" bool ggml_iqk_try_mul_mat_id(const struct ggml_compute_params * param
+ 
+     // 3) per-expert GEMM via iqk
+     bool engaged = false;
+-    for (int cur_a = 0; cur_a < n_as; ++cur_a) {
++    bool slab_ok = iqk_mmid_slab_enabled() && mmid_rowexact &&
++        (tA == GGML_TYPE_Q4_K || tA == GGML_TYPE_Q5_K);
++    const int64_t slab_gran = slab_ok ? iqk_mul_mat_moe_row_granularity(tA) : 1;
++    const int64_t units_per_expert = slab_ok && slab_gran > 0 && ne01 % slab_gran == 0
++        ? ne01 / slab_gran : 0;
++    int64_t work_total = 0;
++    if (units_per_expert == 0) {
++        slab_ok = false;
++    }
++    for (int cur_a = 0; slab_ok && cur_a < n_as; ++cur_a) {
+         const int64_t cne1 = matrix_row_counts[cur_a];
+         if (cne1 == 0) continue;
+-        engaged = true;
+-        const char * A = (const char *) src0->data + (size_t) cur_a * src0->nb[2];
+-        const iqk_mmid * rmap = matrix_rows + (size_t) cur_a * n_ids * ids->ne[1];
+-        if (!iqk_mul_mat_moe(ne01, cne1, ne10, (int) ne11,
+-                tA, A, src0->nb[1],
+-                activation_type, qact, act_row,
+-                (float *) dst->data, dst->nb[1], dst->nb[2],
+-                rmap, mmid_rowexact, ith, nth)) {
+-            return false; // gating should preclude; native re-runs from scratch on false
++        if (cne1 > ggml_cpu_rowexact_n() || iqk_dequant_type(tA, (int) cne1) != tA) {
++            slab_ok = false;
++            break;
++        }
++        work_total += cne1 * units_per_expert;
++    }
++
++    if (slab_ok && work_total > 0) {
++        const int64_t work0 = work_total * ith / nth;
++        const int64_t work1 = work_total * (ith + 1) / nth;
++        int64_t work_prefix = 0;
++        for (int cur_a = 0; cur_a < n_as; ++cur_a) {
++            const int64_t cne1 = matrix_row_counts[cur_a];
++            if (cne1 == 0) continue;
++            const int64_t expert_work = cne1 * units_per_expert;
++            const int64_t local0 = work0 <= work_prefix ? 0 :
++                (work0 < work_prefix + expert_work ? work0 - work_prefix : expert_work);
++            const int64_t local1 = work1 <= work_prefix ? 0 :
++                (work1 < work_prefix + expert_work ? work1 - work_prefix : expert_work);
++            const int64_t unit0 = (local0 + cne1 - 1) / cne1;
++            const int64_t unit1 = (local1 + cne1 - 1) / cne1;
++            const int64_t first_x = unit0 * slab_gran;
++            const int64_t nrc_x = (unit1 - unit0) * slab_gran;
++            const char * A = (const char *) src0->data + (size_t) cur_a * src0->nb[2] + first_x * src0->nb[1];
++            const iqk_mmid * rmap = matrix_rows + (size_t) cur_a * n_ids * ids->ne[1];
++            if (!iqk_mul_mat_moe(nrc_x, cne1, ne10, (int) ne11,
++                    tA, A, src0->nb[1],
++                    activation_type, qact, act_row,
++                    (float *) dst->data + first_x, dst->nb[1], dst->nb[2],
++                    rmap, true, 0, 1)) {
++                return false; // gating should preclude; native re-runs from scratch on false
++            }
++            work_prefix += expert_work;
++            engaged = true;
++        }
++    } else {
++        for (int cur_a = 0; cur_a < n_as; ++cur_a) {
++            const int64_t cne1 = matrix_row_counts[cur_a];
++            if (cne1 == 0) continue;
++            engaged = true;
++            const char * A = (const char *) src0->data + (size_t) cur_a * src0->nb[2];
++            const iqk_mmid * rmap = matrix_rows + (size_t) cur_a * n_ids * ids->ne[1];
++            if (!iqk_mul_mat_moe(ne01, cne1, ne10, (int) ne11,
++                    tA, A, src0->nb[1],
++                    activation_type, qact, act_row,
++                    (float *) dst->data, dst->nb[1], dst->nb[2],
++                    rmap, mmid_rowexact, ith, nth)) {
++                return false; // gating should preclude; native re-runs from scratch on false
++            }
+         }
+     }
+     if (engaged && ith == 0) {

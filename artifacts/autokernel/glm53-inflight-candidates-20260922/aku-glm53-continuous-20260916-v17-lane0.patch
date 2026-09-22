@@ -1,0 +1,212 @@
+diff --git a/ggml/src/ggml-cpu/ggml-cpu.c b/ggml/src/ggml-cpu/ggml-cpu.c
+index 40dc9318f..322c18e69 100644
+--- a/ggml/src/ggml-cpu/ggml-cpu.c
++++ b/ggml/src/ggml-cpu/ggml-cpu.c
+@@ -4080,9 +4080,11 @@ static int ggml_cpu_try_fuse_ops(
+         struct ggml_tensor * up   = node;
+         struct ggml_tensor * gate = cgraph->nodes[node_n + 1];
+         struct ggml_tensor * glu  = cgraph->nodes[node_n + 2];
++        struct ggml_tensor * down = node_n + 3 < cgraph->n_nodes ? cgraph->nodes[node_n + 3] : NULL;
+ 
+         const struct ggml_tensor * up_w   = up->src[0];
+         const struct ggml_tensor * gate_w = gate->src[0];
++        const struct ggml_tensor * down_w = down ? down->src[0] : NULL;
+         const struct ggml_tensor * src    = up->src[1];
+         const struct ggml_tensor * ids    = up->src[2];
+ 
+@@ -4091,6 +4093,22 @@ static int ggml_cpu_try_fuse_ops(
+         const bool same_weights = qtype && gate_w && gate_w->type == up_w->type &&
+             memcmp(gate_w->ne, up_w->ne, sizeof(up_w->ne)) == 0 &&
+             memcmp(gate_w->nb, up_w->nb, sizeof(up_w->nb)) == 0;
++        const bool down_qtype = down_w &&
++            (down_w->type == GGML_TYPE_Q4_K || down_w->type == GGML_TYPE_Q5_K);
++        const bool fuse_down_candidate = up_w && down && down->op == GGML_OP_MUL_MAT_ID &&
++            (down->flags & GGML_TENSOR_FLAG_COMPUTE) != 0 &&
++            ggml_node_has_n_uses(cgraph, node_n + 2, 1) &&
++            ggml_node_has_n_uses(cgraph, node_n + 3, 1) &&
++            down->src[1] == glu && down->src[2] == ids && down_qtype &&
++            down->type == GGML_TYPE_F32 && ggml_is_contiguous(down) &&
++            ggml_is_contiguous(down_w) &&
++            down_w->ne[0] == glu->ne[0] && down_w->ne[0] % QK_K == 0 &&
++            down_w->ne[1] >= 32 && down_w->ne[2] == up_w->ne[2] && down_w->ne[3] == 1 &&
++            down_w->nb[0] == ggml_type_size(down_w->type) &&
++            down_w->nb[1] == ggml_row_size(down_w->type, down_w->ne[0]) &&
++            down_w->nb[2] == down_w->nb[1] * down_w->ne[1] &&
++            down->ne[0] == down_w->ne[1] && down->ne[1] == ids->ne[0] &&
++            down->ne[2] == ids->ne[1] && down->ne[3] == 1;
+ 
+         if (iqk && atoi(iqk) != 0 &&
+             gate->op == GGML_OP_MUL_MAT_ID && glu->op == GGML_OP_GLU &&
+@@ -4131,16 +4149,47 @@ static int ggml_cpu_try_fuse_ops(
+             const int64_t n_ids = ids->ne[0];
+             const int64_t n_as  = up_w->ne[2];
+             const size_t act_row = (size_t) (ne10 / 32) * 36;
+-            const size_t act_size = act_row * ne11 * ne12;
++            const size_t down_act_row = fuse_down_candidate ? (size_t) (down_w->ne[0] / 32) * 36 : 0;
++            const int64_t down_gran = fuse_down_candidate ?
++                iqk_mul_mat_moe_row_granularity((int) down_w->type) : 1;
++            const bool down_rows_fit = (size_t) ids->ne[1] <= SIZE_MAX / (size_t) n_ids;
++            const size_t down_rows = down_rows_fit ? (size_t) n_ids * ids->ne[1] : 0;
++            const bool down_slice_size_fits = down_rows_fit &&
++                (down_rows == 0 || down_act_row <= SIZE_MAX / down_rows);
++            const size_t down_slice_size = down_slice_size_fits ? down_act_row * down_rows : 0;
+ 
+             char * base = (char *) params->wdata;
+-            char * cursor = base + GGML_PAD(act_size, sizeof(int64_t));
++            char * cursor = base + GGML_PAD(act_row * ne11 * ne12, sizeof(int64_t));
+             int64_t * row_counts = (int64_t *) cursor;
+             int64_t * direct = row_counts + n_as;
+             cursor += GGML_PAD((size_t) (n_as + 1) * sizeof(int64_t), sizeof(int64_t));
+             struct iqk_moe_row_mapping * rows = (struct iqk_moe_row_mapping *) cursor;
+             cursor += (size_t) n_as * n_ids * ids->ne[1] * sizeof(*rows);
+ 
++            int64_t * expert_ordinals = NULL;
++            char (*cohort_done)[CACHE_LINE_SIZE] = NULL;
++            char * down_base = NULL;
++            size_t down_offset = 0;
++            bool down_metadata_fits = false;
++            if (fuse_down_candidate) {
++                const size_t ordinal_offset =
++                    (size_t) (GGML_PAD((uintptr_t) cursor, CACHE_LINE_SIZE) - (uintptr_t) base);
++                const size_t ordinal_size = (size_t) n_as * sizeof(*expert_ordinals);
++                const size_t cohort_size = (size_t) n_as * CACHE_LINE_SIZE;
++                if (ordinal_offset <= params->wsize && ordinal_size <= params->wsize - ordinal_offset) {
++                    const size_t cohort_offset = (size_t) (GGML_PAD(
++                        (uintptr_t) base + ordinal_offset + ordinal_size, CACHE_LINE_SIZE) - (uintptr_t) base);
++                    down_metadata_fits = cohort_offset <= params->wsize &&
++                        cohort_size <= params->wsize - cohort_offset;
++                    down_offset = down_metadata_fits ? cohort_offset + cohort_size : 0;
++                    expert_ordinals = (int64_t *) (base + ordinal_offset);
++                    if (down_metadata_fits) {
++                        cohort_done = (char (*)[CACHE_LINE_SIZE]) (base + cohort_offset);
++                        down_base = base + down_offset;
++                    }
++                }
++            }
++
+             if (params->wdata && params->wsize >= (size_t) (cursor - base)) {
+                 if (params->ith == 0) {
+                     memset(row_counts, 0, (size_t) n_as * sizeof(*row_counts));
+@@ -4158,6 +4207,26 @@ static int ggml_cpu_try_fuse_ops(
+                     }
+ 
+                     *direct = 1;
++                    int64_t active_experts = 0;
++                    if (down_metadata_fits) {
++                        for (int64_t expert = 0; expert < n_as; ++expert) {
++                            expert_ordinals[expert] = row_counts[expert] > 0 ? active_experts++ : -1;
++                        }
++
++                        const bool scratch_fits = down_slice_size_fits && down_offset <= params->wsize &&
++                            (active_experts == 0 ||
++                             down_slice_size <= (params->wsize - down_offset) / (size_t) active_experts);
++                        if (active_experts <= params->nth && down_gran > 0 &&
++                            down_w->ne[1] % down_gran == 0 && scratch_fits) {
++                            *direct |= 2;
++                            for (int64_t expert = 0; expert < n_as; ++expert) {
++                                if (expert_ordinals[expert] >= 0) {
++                                    atomic_store_explicit((atomic_int *) cohort_done[expert], 0,
++                                            memory_order_relaxed);
++                                }
++                            }
++                        }
++                    }
+                     const int rowexact_n = ggml_cpu_rowexact_n();
+                     const bool global_rowexact = !params->disable_rowexact &&
+                         ids->ne[1] > 1 && ids->ne[1] <= rowexact_n;
+@@ -4184,14 +4253,24 @@ static int ggml_cpu_try_fuse_ops(
+                                 GGML_TYPE_Q8_2_X4, base, act_row,
+                                 (float *) glu->data, glu->nb[1], glu->nb[2], rows + map_offset, 0, 0);
+                         if (!up_direct || !gate_direct) {
+-                            *direct = 0;
++                            *direct &= ~1;
++                        }
++                        if ((*direct & 2) != 0 &&
++                            !iqk_mul_mat_moe_rows(
++                                down_w->ne[1], nr, down_w->ne[0], (int) n_ids,
++                                (int) down_w->type,
++                                (const char *) down_w->data + (size_t) expert * down_w->nb[2], down_w->nb[1],
++                                GGML_TYPE_Q8_2_X4,
++                                down_base + (size_t) expert_ordinals[expert] * down_slice_size, down_act_row,
++                                (float *) down->data, down->nb[1], down->nb[2], rows + map_offset, 0, 0)) {
++                            *direct &= ~2;
+                         }
+                     }
+                 }
+ 
+                 ggml_barrier(params->threadpool);
+ 
+-                if (*direct) {
++                if ((*direct & 1) != 0) {
+                     for (int64_t ir = params->ith; ir < ne11 * ne12; ir += params->nth) {
+                         const int64_t i12 = ir / ne11;
+                         const int64_t i11 = ir % ne11;
+@@ -4208,6 +4287,10 @@ static int ggml_cpu_try_fuse_ops(
+                                 if (expert < 0 || expert >= n_as) {
+                                     memset((char *) glu->data + id * glu->nb[1] + iid1 * glu->nb[2],
+                                             0, (size_t) glu->ne[0] * sizeof(float));
++                                    if ((*direct & 2) != 0) {
++                                        memset((char *) down->data + id * down->nb[1] + iid1 * down->nb[2],
++                                                0, (size_t) down->ne[0] * sizeof(float));
++                                    }
+                                 }
+                             }
+                         }
+@@ -4223,6 +4306,7 @@ static int ggml_cpu_try_fuse_ops(
+                             total_rows += row_counts[expert];
+                         }
+                     }
++                    const bool fuse_down = (*direct & 2) != 0;
+ 
+                     int64_t expert_begin = 0;
+                     int64_t expert_end = n_as;
+@@ -4272,8 +4356,48 @@ static int ggml_cpu_try_fuse_ops(
+                         if (!ok) {
+                             GGML_ABORT("IQK fused up-gate preflight mismatch");
+                         }
++
++                        if (fuse_down) {
++                            const int64_t expert_ordinal = expert_ordinals[expert];
++                            GGML_ASSERT(expert_ordinal >= 0);
++                            char * expert_down_base = down_base + (size_t) expert_ordinal * down_slice_size;
++                            atomic_int * done = (atomic_int *) cohort_done[expert];
++                            atomic_fetch_add_explicit(done, 1, memory_order_seq_cst);
++                            while (atomic_load_explicit(done, memory_order_seq_cst) < cohort_nth) {
++                                ggml_thread_cpu_relax();
++                            }
++
++                            for (int64_t ir = cohort_ith; ir < nr; ir += cohort_nth) {
++                                const struct iqk_moe_row_mapping row = rows[map_offset + ir];
++                                const float * glu_row = (const float *) ((const char *) glu->data +
++                                    (size_t) row.i1 * glu->nb[1] + (size_t) row.i2 * glu->nb[2]);
++                                quantize_row_q8_2_x4(glu_row,
++                                    expert_down_base +
++                                        ((size_t) row.i1 + (size_t) row.i2 * n_ids) * down_act_row,
++                                    down_w->ne[0]);
++                            }
++
++                            atomic_fetch_add_explicit(done, 1, memory_order_seq_cst);
++                            while (atomic_load_explicit(done, memory_order_seq_cst) < 2 * cohort_nth) {
++                                ggml_thread_cpu_relax();
++                            }
++
++                            const int64_t down_units = down_w->ne[1] / down_gran;
++                            const int64_t unit_begin = down_units * cohort_ith / cohort_nth;
++                            const int64_t unit_end = down_units * (cohort_ith + 1) / cohort_nth;
++                            const bool down_ok = iqk_mul_mat_moe_rows(
++                                    down_w->ne[1], nr, down_w->ne[0], (int) n_ids,
++                                    (int) down_w->type,
++                                    (const char *) down_w->data + (size_t) expert * down_w->nb[2], down_w->nb[1],
++                                    GGML_TYPE_Q8_2_X4, expert_down_base, down_act_row,
++                                    (float *) down->data, down->nb[1], down->nb[2], rows + map_offset,
++                                    unit_begin * down_gran, (unit_end - unit_begin) * down_gran);
++                            if (!down_ok) {
++                                GGML_ABORT("IQK fused down preflight mismatch");
++                            }
++                        }
+                     }
+-                    return 2;
++                    return fuse_down ? 3 : 2;
+                 }
+             }
+         }
