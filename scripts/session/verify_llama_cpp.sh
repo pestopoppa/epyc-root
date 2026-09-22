@@ -11,12 +11,28 @@ source "$SCRIPT_DIR/../lib/env.sh"
 
 # Configuration (derived from env.sh)
 LLAMA_CPP_DIR="${LLM_ROOT}/llama.cpp"
-EXPECTED_BRANCH="production-consolidated-v9"  # 2026-08 v9 cutover: DSpark/DFlash plus request-local speculative n_max.
-EXPECTED_COMMIT="0db32c06e3e550065b78311a6031ef3dd2c4f27c"
-EXPECTED_VERSION_LINE="version: 10125 (0db32c06e)"
-EXPECTED_CPU_SERVER_SHA256="8ebb1355593121a231735d7b58ad076f4539d2c5e3847fa09d2922fa8a980499"
-EXPECTED_HIP_SERVER_SHA256="21cfb750dc0ba4b3add0674fcb9dd061d77b3604ebf8e1d063ba0e2c51902feb"
+EXPECTED_BRANCH="production-consolidated-v10"  # 2026-09-22 v10 cutover: AutoKernel champion off the v9 tip, with the gemma4 nextn ordering and the all-CPU MoE fusion gate repaired in-candidate.
+EXPECTED_COMMIT="ffc1bac82eeca6f9099e1ccd9ba49703c460a115"
+EXPECTED_VERSION_LINE="version: 10303 (ffc1bac82)"
+EXPECTED_CPU_SERVER_SHA256="4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c"
+EXPECTED_HIP_SERVER_SHA256="2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b"
 EXPERIMENTAL_DIR="${LLM_ROOT}/llama.cpp-experimental"
+
+# WHERE THE PRODUCTION BINARIES LIVE — changed at v10.
+#
+# Through v9 the serving binaries were the source tree's own build/ and build-hip/,
+# so this script could check them in place. v10 is the first promotion served from
+# the KERNEL STORE: kernels/production/{cpu,gpu} are symlinks into a versioned
+# builds/ directory, and the frozen tree's in-tree build dirs still hold the V9
+# binaries. Checking those would now attest a kernel that serves nothing.
+#
+# So the source identity (branch/commit/clean tree) is read from the frozen tree,
+# and the BINARY identity is read through the store. verify_kernel_store.sh walks
+# the store's own integrity (symlink -> target -> binary -> ggml linkage, per
+# backend, companion tools included); this script pins the store to the ratified
+# v10 hashes.
+STORE_CPU_BIN="${LLM_ROOT}/kernels/production/cpu"
+STORE_GPU_BIN="${LLM_ROOT}/kernels/production/gpu"
 
 # Colors
 RED='\033[0;31m'
@@ -141,7 +157,14 @@ check_linkage() {
     echo -e "${RED}✗ $label: binary missing, nothing to link-check: $server${NC}"
     return 1
   fi
-  lib_dir="$(cd "$(dirname "$server")" && pwd)"
+  # `pwd -P`, not `pwd`. From v10 the production binaries are reached through
+  # kernels/production/<backend>, a SYMLINK into a versioned builds/ directory.
+  # The loader expands $ORIGIN to the binary's REAL directory, so the linkage
+  # verifier's path comparison sees builds/<ver>/bin while a logical `pwd` would
+  # hand it the symlink spelling — every correctly-resolved library then reports
+  # BAD on a pure string mismatch. Resolving here makes the two spellings agree
+  # without weakening the check: it still asserts the libs come from THIS bin dir.
+  lib_dir="$(cd "$(dirname "$server")" && pwd -P)"
 
   local out st inspected core
   # --- 1. launch recipe: own lib dir first
@@ -170,10 +193,23 @@ check_linkage() {
 }
 
 check_binary_exists() {
-  local cpu_server="$LLAMA_CPP_DIR/build/bin/llama-server"
-  local hip_server="$LLAMA_CPP_DIR/build-hip/bin/llama-server"
-  local cli="$LLAMA_CPP_DIR/build/bin/llama-cli"
+  local cpu_server="$STORE_CPU_BIN/llama-server"
+  local hip_server="$STORE_GPU_BIN/llama-server"
+  local cli="$STORE_CPU_BIN/llama-cli"
   local rc=0
+
+  # The store symlinks must resolve before anything is hashed; a dangling
+  # production/<backend> is the one failure that would otherwise read as a
+  # missing binary rather than a broken cutover.
+  local b target
+  for b in cpu gpu; do
+    if ! target=$(readlink -e "${LLM_ROOT}/kernels/production/$b"); then
+      echo -e "${RED}✗ kernel store: production/$b does not resolve${NC}"
+      rc=1
+    else
+      echo -e "${GREEN}✓ kernel store: production/$b -> $target${NC}"
+    fi
+  done
 
   if ! check_server_identity \
       "$cpu_server" "$EXPECTED_CPU_SERVER_SHA256" "$EXPECTED_VERSION_LINE" \
@@ -232,10 +268,10 @@ main() {
   # branch/commit/sha256 can still silently run another tree's ggml.
   echo ""
   echo "=== ggml linkage ==="
-  if ! check_linkage "Production CPU server" "$LLAMA_CPP_DIR/build/bin/llama-server"; then
+  if ! check_linkage "Production CPU server" "$STORE_CPU_BIN/llama-server"; then
     errors=$((errors + 1))
   fi
-  if ! check_linkage "Production HIP server" "$LLAMA_CPP_DIR/build-hip/bin/llama-server"; then
+  if ! check_linkage "Production HIP server" "$STORE_GPU_BIN/llama-server"; then
     errors=$((errors + 1))
   fi
 

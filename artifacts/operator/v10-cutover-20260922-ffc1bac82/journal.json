@@ -1,15 +1,15 @@
 {
   "schema": "epyc.kernel_cutover_journal.v1",
   "created": "2026-09-22T11:40:42.063984+00:00",
-  "state": "STORE CUTOVER DONE AND SERVING; FREEZE NOT YET CUT",
+  "state": "COMPLETE \u2014 store cutover done and serving; freeze cut at production-consolidated-v10 (ffc1bac82) on 2026-09-22",
   "outgoing": {
     "branch": "production-consolidated-v9",
     "commit": "0db32c06e3e550065b78311a6031ef3dd2c4f27c",
     "version": "10125 (0db32c06e)"
   },
   "incoming": {
-    "branch": "production-consolidated-v10 (NOT YET CUT \u2014 blocked on operator)",
-    "commit": "ffc1bac82",
+    "branch": "production-consolidated-v10",
+    "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
     "version": "10303 (ffc1bac82)"
   },
   "ancestry": "VERIFIED: v9 0db32c06e is an ancestor of v10 ffc1bac82 \u2014 a clean version-past, not a patch in place",
