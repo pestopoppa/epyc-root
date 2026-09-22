@@ -1,0 +1,485 @@
+{
+  "absent_environment": [],
+  "argv": [
+    "taskset",
+    "-c",
+    "0-95",
+    "numactl",
+    "--interleave=all",
+    "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/llama-server",
+    "--no-webui",
+    "-np",
+    "1",
+    "-c",
+    "8192",
+    "-t",
+    "48",
+    "--no-mmap",
+    "-lv",
+    "4",
+    "--device",
+    "none",
+    "-ngl",
+    "0",
+    "-fa",
+    "on",
+    "-b",
+    "2048",
+    "-ub",
+    "512",
+    "-ctk",
+    "f16",
+    "-ctv",
+    "f16",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18497",
+    "-m",
+    "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+    "--spec-type",
+    "draft-mtp",
+    "--spec-draft-n-max",
+    "3",
+    "--spec-draft-p-min",
+    "0",
+    "--reasoning",
+    "off"
+  ],
+  "backend": "cpu",
+  "build_dir": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b",
+  "capability": {
+    "backend": "cpu",
+    "contention": "unproven",
+    "cpu_placement": "unproven",
+    "gpu_residency": "not_applicable",
+    "reasons": [],
+    "schema": "epyc.autokernel.recipe_capability.v1",
+    "speculation": "self_draft",
+    "supported": true,
+    "witnesses": [
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_FA_SPLIT_KV",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_FUSED_DECODE_OFF",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_IQK",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_IQK_Q8_0",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_IQK_Q8_0_MIN_ROWS",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_NOHUGEPAGE_PROCESS",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_ROWEXACT_N",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "LLAMA_SPEC_EXACT",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "LLAMA_TRACE",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "OMP_DYNAMIC",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "OMP_PLACES",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "OMP_PROC_BIND",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "OMP_WAIT_POLICY",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "PATH",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      }
+    ]
+  },
+  "command_argv": [
+    "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/llama-server",
+    "--no-webui",
+    "-np",
+    "1",
+    "-c",
+    "8192",
+    "-t",
+    "48",
+    "--no-mmap",
+    "-lv",
+    "4",
+    "--device",
+    "none",
+    "-ngl",
+    "0",
+    "-fa",
+    "on",
+    "-b",
+    "2048",
+    "-ub",
+    "512",
+    "-ctk",
+    "f16",
+    "-ctv",
+    "f16",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18497",
+    "-m",
+    "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+    "--spec-type",
+    "draft-mtp",
+    "--spec-draft-n-max",
+    "3",
+    "--spec-draft-p-min",
+    "0",
+    "--reasoning",
+    "off"
+  ],
+  "drafter": null,
+  "dsos": [
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libggml-base.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "23735e6f21028356fa81657393f9c4ffeda70477e3377a4fb49fb2eda55b002a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libggml-base.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "23735e6f21028356fa81657393f9c4ffeda70477e3377a4fb49fb2eda55b002a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libggml-cpu.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "ce5f4b7f6377d48acc60a522db99f9cc7bb6c51184e5cffcd9cd26dc16c37e3d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libggml-cpu.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "ce5f4b7f6377d48acc60a522db99f9cc7bb6c51184e5cffcd9cd26dc16c37e3d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libggml.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "87d02c43ad4031dfaa0605cccf599c7cf996899658e18f7c1617a3296348741c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libggml.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "87d02c43ad4031dfaa0605cccf599c7cf996899658e18f7c1617a3296348741c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libllama-common.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "fa91d48699be6f7212dd63f2bdfa83bbacdca2be1be2c71393113b2cd6df455a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libllama-common.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "fa91d48699be6f7212dd63f2bdfa83bbacdca2be1be2c71393113b2cd6df455a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libllama-server-impl.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "26ff975edce41cf91eb32396d579867a6d28a25d1a8ec5678f161795fa2704c0"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libllama.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "07e4488660a99076e97544d07dc36e19a44e77ba6f0f9820f15ce6156b4f9aae"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libllama.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "07e4488660a99076e97544d07dc36e19a44e77ba6f0f9820f15ce6156b4f9aae"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libmtmd.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "736c17ce068764b9c802d6e94e178b5508c5991d0785b6f1497c94d16e19eeb5"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/libmtmd.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "736c17ce068764b9c802d6e94e178b5508c5991d0785b6f1497c94d16e19eeb5"
+    }
+  ],
+  "environment_policy": {
+    "allowed_inherit_keys": [],
+    "measurement_keys": [
+      "GGML_FA_SPLIT_KV",
+      "GGML_FUSED_DECODE_OFF",
+      "GGML_IQK",
+      "GGML_IQK_Q8_0",
+      "GGML_IQK_Q8_0_MIN_ROWS",
+      "GGML_NOHUGEPAGE_PROCESS",
+      "GGML_ROWEXACT_N",
+      "LLAMA_SPEC_EXACT",
+      "LLAMA_TRACE",
+      "OMP_DYNAMIC",
+      "OMP_PLACES",
+      "OMP_PROC_BIND",
+      "OMP_WAIT_POLICY",
+      "PATH"
+    ],
+    "schema": "epyc.autokernel.environment_policy.v1",
+    "version": "glm53-prospective-b2048-ub512-v1",
+    "witnesses": {
+      "GGML_FA_SPLIT_KV": "runtime_set",
+      "GGML_FUSED_DECODE_OFF": "runtime_set",
+      "GGML_IQK": "runtime_set",
+      "GGML_IQK_Q8_0": "runtime_set",
+      "GGML_IQK_Q8_0_MIN_ROWS": "runtime_set",
+      "GGML_NOHUGEPAGE_PROCESS": "runtime_set",
+      "GGML_ROWEXACT_N": "runtime_set",
+      "LLAMA_SPEC_EXACT": "runtime_set",
+      "LLAMA_TRACE": "runtime_set",
+      "OMP_DYNAMIC": "runtime_set",
+      "OMP_PLACES": "runtime_set",
+      "OMP_PROC_BIND": "runtime_set",
+      "OMP_WAIT_POLICY": "runtime_set",
+      "PATH": "runtime_set"
+    }
+  },
+  "executable": {
+    "path": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin/llama-server",
+    "role": "executable",
+    "schema": "epyc.autokernel.launch_artifact.v1",
+    "sha256": "eb15de65559e0dbacdb55b3d38eab95bd2a6f24fd955705249f6ca6e7dc25e6a"
+  },
+  "execution_digest": "c2cde6f581efb4db514db25851643738c16c99a6874658cc44f3b4c4c80d4d45",
+  "launch_contract": "orchestrator-production/v1",
+  "launch_env": {
+    "GGML_FA_SPLIT_KV": "0",
+    "GGML_FUSED_DECODE_OFF": "1",
+    "GGML_IQK": "1",
+    "GGML_IQK_Q8_0": "1",
+    "GGML_IQK_Q8_0_MIN_ROWS": "32",
+    "GGML_NOHUGEPAGE_PROCESS": "1",
+    "GGML_ROWEXACT_N": "16",
+    "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin",
+    "LLAMA_SPEC_EXACT": "row",
+    "LLAMA_TRACE": "1",
+    "OMP_DYNAMIC": "false",
+    "OMP_PLACES": "cores",
+    "OMP_PROC_BIND": "spread",
+    "OMP_WAIT_POLICY": "active",
+    "PATH": "/usr/bin:/bin"
+  },
+  "model": {
+    "path": "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+    "role": "model",
+    "schema": "epyc.autokernel.launch_artifact.v1",
+    "sha256": "00dceaf3ed08781b1e44513a44ebb19e96248d01ba2a80b17f675a2b6fa9a1ee"
+  },
+  "port": 18497,
+  "provenance": {
+    "build_identity_sha256": "0f4839a630649cbb2e4847456c5cf9d6123885ca72a38abc204851711cd1260a",
+    "expected_inventory_sha256": "a9984ae6a18f7b25dd27086abd32b74056264a9cc64ba074067e8a8bb90be626",
+    "export_sha256": "e05dff466aa5011c645b507705e2773d67c270b70c36a035b885ef0e93992603",
+    "instance_mode": "full",
+    "prospective_delta": "explicit_-b_2048_-ub_512_per_AKU-06p",
+    "serve_plan_sha256": "92d2ebad0a22890e803032ed7f9dd2b17696f180939c87ca438a61956334de02",
+    "source:candidate": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+    "workload_source": "original_fixed2029_request"
+  },
+  "readback_expectations": [],
+  "relevant_environment": {
+    "GGML_FA_SPLIT_KV": {
+      "state": "value",
+      "value": "0"
+    },
+    "GGML_FUSED_DECODE_OFF": {
+      "state": "value",
+      "value": "1"
+    },
+    "GGML_IQK": {
+      "state": "value",
+      "value": "1"
+    },
+    "GGML_IQK_Q8_0": {
+      "state": "value",
+      "value": "1"
+    },
+    "GGML_IQK_Q8_0_MIN_ROWS": {
+      "state": "value",
+      "value": "32"
+    },
+    "GGML_NOHUGEPAGE_PROCESS": {
+      "state": "value",
+      "value": "1"
+    },
+    "GGML_ROWEXACT_N": {
+      "state": "value",
+      "value": "16"
+    },
+    "LLAMA_SPEC_EXACT": {
+      "state": "value",
+      "value": "row"
+    },
+    "LLAMA_TRACE": {
+      "state": "value",
+      "value": "1"
+    },
+    "OMP_DYNAMIC": {
+      "state": "value",
+      "value": "false"
+    },
+    "OMP_PLACES": {
+      "state": "value",
+      "value": "cores"
+    },
+    "OMP_PROC_BIND": {
+      "state": "value",
+      "value": "spread"
+    },
+    "OMP_WAIT_POLICY": {
+      "state": "value",
+      "value": "active"
+    },
+    "PATH": {
+      "state": "value",
+      "value": "/usr/bin:/bin"
+    }
+  },
+  "runtime_binary_dir": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin",
+  "runtime_ld_paths": [
+    "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b/bin"
+  ],
+  "schema": "epyc.autokernel.canonical_launch.v1",
+  "snapshot_digest": "aab0de8927c47418a6b0fdc9a0057c8e70e2a8ac584825572caa150aac48d09b",
+  "template": {
+    "batch": 2048,
+    "cpu_list": "0-95",
+    "ctk": "f16",
+    "ctv": "f16",
+    "ctx": 8192,
+    "device": "none",
+    "env": {},
+    "env_readback": [],
+    "extra_flags": [],
+    "fa": "on",
+    "kv_unified": false,
+    "metric": "aggregate_tok_s",
+    "model": "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+    "n_predict": 512,
+    "name": "glm53-c463f601b-cpu-mtp-depth3-b2048-ub512",
+    "ngl": 0,
+    "np": 1,
+    "schema": "epyc.autokernel.canonical_recipe.v1",
+    "spec_decode": {
+      "draft_n_max": 3,
+      "type": "draft-mtp"
+    },
+    "temperature": 0.0,
+    "threads": 48,
+    "top_k": 1,
+    "top_p": 1.0,
+    "ubatch": 512
+  },
+  "template_hash": "2a1cf18b2f4f76e875b1dae5398b1c9950948fa2a16ae944b108e01898a921db",
+  "topology_prefix": [
+    "taskset",
+    "-c",
+    "0-95",
+    "numactl",
+    "--interleave=all"
+  ],
+  "workload": {
+    "metric": "aggregate_tok_s",
+    "n_predict": 512,
+    "temperature": 0.0,
+    "top_k": 1,
+    "top_p": 1.0
+  }
+}

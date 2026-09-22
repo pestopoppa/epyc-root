@@ -1,0 +1,14 @@
+{
+  "glm53-c463f601b-cpu-mtp-depth3-b2048-ub512": {
+    "allow_unverified_anchor": true,
+    "anchor_build": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store/anchor-gen-014",
+    "branch": "ak/glm53-recovered-accumulator-20260912",
+    "cor_build": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b",
+    "calibrate_heldout": 24,
+    "frozen_prompts": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
+    "heldout_frozen_prompts": "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260917-v27.heldout-prompts.json",
+    "launch": "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260917-v20.recipe.json",
+    "store": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store",
+    "worktree": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-20260912"
+  }
+}

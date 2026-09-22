@@ -1,0 +1,486 @@
+{
+  "absent_environment": [],
+  "argv": [
+    "taskset",
+    "-c",
+    "0-95",
+    "numactl",
+    "--interleave=all",
+    "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/llama-server",
+    "--no-webui",
+    "-np",
+    "1",
+    "-c",
+    "8192",
+    "-t",
+    "48",
+    "--no-mmap",
+    "-lv",
+    "4",
+    "--device",
+    "none",
+    "-ngl",
+    "0",
+    "-fa",
+    "on",
+    "-b",
+    "2048",
+    "-ub",
+    "512",
+    "-ctk",
+    "f16",
+    "-ctv",
+    "f16",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18497",
+    "-m",
+    "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+    "--spec-type",
+    "draft-mtp",
+    "--spec-draft-n-max",
+    "3",
+    "--spec-draft-p-min",
+    "0",
+    "--reasoning",
+    "off"
+  ],
+  "backend": "cpu",
+  "build_dir": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912",
+  "capability": {
+    "backend": "cpu",
+    "contention": "unproven",
+    "cpu_placement": "unproven",
+    "gpu_residency": "not_applicable",
+    "reasons": [],
+    "schema": "epyc.autokernel.recipe_capability.v1",
+    "speculation": "self_draft",
+    "supported": true,
+    "witnesses": [
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_FA_SPLIT_KV",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_FUSED_DECODE_OFF",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_IQK",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_IQK_Q8_0",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_IQK_Q8_0_MIN_ROWS",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_NOHUGEPAGE_PROCESS",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "GGML_ROWEXACT_N",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "LLAMA_SPEC_EXACT",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "LLAMA_TRACE",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "OMP_DYNAMIC",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "OMP_PLACES",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "OMP_PROC_BIND",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "OMP_WAIT_POLICY",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      },
+      {
+        "expected": null,
+        "field": null,
+        "key": "PATH",
+        "kind": "runtime_set",
+        "reason": "witness_sampler_not_implemented",
+        "status": "unknown"
+      }
+    ]
+  },
+  "command_argv": [
+    "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/llama-server",
+    "--no-webui",
+    "-np",
+    "1",
+    "-c",
+    "8192",
+    "-t",
+    "48",
+    "--no-mmap",
+    "-lv",
+    "4",
+    "--device",
+    "none",
+    "-ngl",
+    "0",
+    "-fa",
+    "on",
+    "-b",
+    "2048",
+    "-ub",
+    "512",
+    "-ctk",
+    "f16",
+    "-ctv",
+    "f16",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18497",
+    "-m",
+    "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+    "--spec-type",
+    "draft-mtp",
+    "--spec-draft-n-max",
+    "3",
+    "--spec-draft-p-min",
+    "0",
+    "--reasoning",
+    "off"
+  ],
+  "drafter": null,
+  "dsos": [
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libggml-base.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "0eac5418db68f7291713600469b76e9fceaeb6a2050374e7e213650728a5634b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libggml-base.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "0eac5418db68f7291713600469b76e9fceaeb6a2050374e7e213650728a5634b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libggml-cpu.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "584fc6ad128b219ef70cdb9e46e3723c1aea9f2a5548beeed07ffcc3128d3de2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libggml-cpu.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "584fc6ad128b219ef70cdb9e46e3723c1aea9f2a5548beeed07ffcc3128d3de2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libggml.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "41bdef152cc8a999033caa805824a6a50d7928b14c4c226f0ef63a25e989c268"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libggml.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "41bdef152cc8a999033caa805824a6a50d7928b14c4c226f0ef63a25e989c268"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libllama-common.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "f20450bc0bb87a549f27c1a2b453ee97b6c268ebbeaa977ac03a8cde9c29bb42"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libllama-common.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "f20450bc0bb87a549f27c1a2b453ee97b6c268ebbeaa977ac03a8cde9c29bb42"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libllama-server-impl.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "f6e15fbce2ec59253ad52c16bf89ffd49ac3880cbcac17bdb3112e93e51d4d3c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libllama.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "60ec9fb53898542a78495a915afe667cec79a4e448eb0f3d034cb36634804208"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libllama.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "60ec9fb53898542a78495a915afe667cec79a4e448eb0f3d034cb36634804208"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libmtmd.so",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "d7c5124ef9d283327300c06de21f1a47d67e56e12c4a7496122f0e4622b27db9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/libmtmd.so.0",
+      "role": "dso",
+      "schema": "epyc.autokernel.launch_artifact.v1",
+      "sha256": "d7c5124ef9d283327300c06de21f1a47d67e56e12c4a7496122f0e4622b27db9"
+    }
+  ],
+  "environment_policy": {
+    "allowed_inherit_keys": [],
+    "measurement_keys": [
+      "GGML_FA_SPLIT_KV",
+      "GGML_FUSED_DECODE_OFF",
+      "GGML_IQK",
+      "GGML_IQK_Q8_0",
+      "GGML_IQK_Q8_0_MIN_ROWS",
+      "GGML_NOHUGEPAGE_PROCESS",
+      "GGML_ROWEXACT_N",
+      "LLAMA_SPEC_EXACT",
+      "LLAMA_TRACE",
+      "OMP_DYNAMIC",
+      "OMP_PLACES",
+      "OMP_PROC_BIND",
+      "OMP_WAIT_POLICY",
+      "PATH"
+    ],
+    "schema": "epyc.autokernel.environment_policy.v1",
+    "version": "glm53-prospective-b2048-ub512-v1",
+    "witnesses": {
+      "GGML_FA_SPLIT_KV": "runtime_set",
+      "GGML_FUSED_DECODE_OFF": "runtime_set",
+      "GGML_IQK": "runtime_set",
+      "GGML_IQK_Q8_0": "runtime_set",
+      "GGML_IQK_Q8_0_MIN_ROWS": "runtime_set",
+      "GGML_NOHUGEPAGE_PROCESS": "runtime_set",
+      "GGML_ROWEXACT_N": "runtime_set",
+      "LLAMA_SPEC_EXACT": "runtime_set",
+      "LLAMA_TRACE": "runtime_set",
+      "OMP_DYNAMIC": "runtime_set",
+      "OMP_PLACES": "runtime_set",
+      "OMP_PROC_BIND": "runtime_set",
+      "OMP_WAIT_POLICY": "runtime_set",
+      "PATH": "runtime_set"
+    }
+  },
+  "executable": {
+    "path": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin/llama-server",
+    "role": "executable",
+    "schema": "epyc.autokernel.launch_artifact.v1",
+    "sha256": "8feed308aafec2a5c8c6190f4b13513bd8317e09268c7f0ebfc1271a9527dbdd"
+  },
+  "execution_digest": "aceeda20cac5cf9b22990239e95599635a5235d39ad4be1ca8ddb47171413d54",
+  "launch_contract": "orchestrator-production/v1",
+  "launch_env": {
+    "GGML_FA_SPLIT_KV": "0",
+    "GGML_FUSED_DECODE_OFF": "1",
+    "GGML_IQK": "1",
+    "GGML_IQK_Q8_0": "1",
+    "GGML_IQK_Q8_0_MIN_ROWS": "32",
+    "GGML_NOHUGEPAGE_PROCESS": "1",
+    "GGML_ROWEXACT_N": "16",
+    "LD_LIBRARY_PATH": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin",
+    "LLAMA_SPEC_EXACT": "row",
+    "LLAMA_TRACE": "1",
+    "OMP_DYNAMIC": "false",
+    "OMP_PLACES": "cores",
+    "OMP_PROC_BIND": "spread",
+    "OMP_WAIT_POLICY": "active",
+    "PATH": "/usr/bin:/bin"
+  },
+  "model": {
+    "path": "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+    "role": "model",
+    "schema": "epyc.autokernel.launch_artifact.v1",
+    "sha256": "00dceaf3ed08781b1e44513a44ebb19e96248d01ba2a80b17f675a2b6fa9a1ee"
+  },
+  "port": 18497,
+  "provenance": {
+    "build_identity_sha256": "0f4839a630649cbb2e4847456c5cf9d6123885ca72a38abc204851711cd1260a",
+    "expected_inventory_sha256": "a9984ae6a18f7b25dd27086abd32b74056264a9cc64ba074067e8a8bb90be626",
+    "experimental_parent_snapshot": "aab0de8927c47418a6b0fdc9a0057c8e70e2a8ac584825572caa150aac48d09b",
+    "export_sha256": "e05dff466aa5011c645b507705e2773d67c270b70c36a035b885ef0e93992603",
+    "instance_mode": "full",
+    "prospective_delta": "explicit_-b_2048_-ub_512_per_AKU-06p",
+    "serve_plan_sha256": "92d2ebad0a22890e803032ed7f9dd2b17696f180939c87ca438a61956334de02",
+    "source:candidate": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+    "workload_source": "original_fixed2029_request"
+  },
+  "readback_expectations": [],
+  "relevant_environment": {
+    "GGML_FA_SPLIT_KV": {
+      "state": "value",
+      "value": "0"
+    },
+    "GGML_FUSED_DECODE_OFF": {
+      "state": "value",
+      "value": "1"
+    },
+    "GGML_IQK": {
+      "state": "value",
+      "value": "1"
+    },
+    "GGML_IQK_Q8_0": {
+      "state": "value",
+      "value": "1"
+    },
+    "GGML_IQK_Q8_0_MIN_ROWS": {
+      "state": "value",
+      "value": "32"
+    },
+    "GGML_NOHUGEPAGE_PROCESS": {
+      "state": "value",
+      "value": "1"
+    },
+    "GGML_ROWEXACT_N": {
+      "state": "value",
+      "value": "16"
+    },
+    "LLAMA_SPEC_EXACT": {
+      "state": "value",
+      "value": "row"
+    },
+    "LLAMA_TRACE": {
+      "state": "value",
+      "value": "1"
+    },
+    "OMP_DYNAMIC": {
+      "state": "value",
+      "value": "false"
+    },
+    "OMP_PLACES": {
+      "state": "value",
+      "value": "cores"
+    },
+    "OMP_PROC_BIND": {
+      "state": "value",
+      "value": "spread"
+    },
+    "OMP_WAIT_POLICY": {
+      "state": "value",
+      "value": "active"
+    },
+    "PATH": {
+      "state": "value",
+      "value": "/usr/bin:/bin"
+    }
+  },
+  "runtime_binary_dir": "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin",
+  "runtime_ld_paths": [
+    "/mnt/raid0/llm/tmp/glm53-recovered-accumulator-anchor-20260912/bin"
+  ],
+  "schema": "epyc.autokernel.canonical_launch.v1",
+  "snapshot_digest": "3db0cfc5485406c7c1118074bc8c796d1bf0f9bb488220011531d92309f01316",
+  "template": {
+    "batch": 2048,
+    "cpu_list": "0-95",
+    "ctk": "f16",
+    "ctv": "f16",
+    "ctx": 8192,
+    "device": "none",
+    "env": {},
+    "env_readback": [],
+    "extra_flags": [],
+    "fa": "on",
+    "kv_unified": false,
+    "metric": "aggregate_tok_s",
+    "model": "/mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/GLM-5.3-Flash-UD-Q4_K_XL-00001-of-00006.gguf",
+    "n_predict": 512,
+    "name": "glm53-c463f601b-cpu-mtp-depth3-b2048-ub512",
+    "ngl": 0,
+    "np": 1,
+    "schema": "epyc.autokernel.canonical_recipe.v1",
+    "spec_decode": {
+      "draft_n_max": 3,
+      "type": "draft-mtp"
+    },
+    "temperature": 0.0,
+    "threads": 48,
+    "top_k": 1,
+    "top_p": 1.0,
+    "ubatch": 512
+  },
+  "template_hash": "2a1cf18b2f4f76e875b1dae5398b1c9950948fa2a16ae944b108e01898a921db",
+  "topology_prefix": [
+    "taskset",
+    "-c",
+    "0-95",
+    "numactl",
+    "--interleave=all"
+  ],
+  "workload": {
+    "metric": "aggregate_tok_s",
+    "n_predict": 512,
+    "temperature": 0.0,
+    "top_k": 1,
+    "top_p": 1.0
+  }
+}

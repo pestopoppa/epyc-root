@@ -1,0 +1,103 @@
+{
+  "source_db": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-store/experiments.db",
+  "source_db_sha256_note": "not hashed (5.2 GB); rows exported without payload",
+  "rows": 313,
+  "files": [
+    {
+      "original": "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260912-v7/batches/batch-000024/loop-continuation.json",
+      "archived": "files/aku-glm53-continuous-20260912-v7/batches/batch-000024/loop-continuation.json",
+      "sha256": "41da2b2c8c493ebed97844e3840793067d0d233fac835e95683d6f06531d0c7e",
+      "bytes": 9460
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260917-v27-owned.json",
+      "archived": "files/aku-glm53-continuous-20260917-v27-owned.json",
+      "sha256": "1dd1c1302e1a5187e3c26e996a740c3b021be75a2df4eec8286ba8e6f11cd8d0",
+      "bytes": 806
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku-glm53-continuous-20260917-v27.heldout-prompts.json",
+      "archived": "files/aku-glm53-continuous-20260917-v27.heldout-prompts.json",
+      "sha256": "ffcfbf707fe49096f8ae87b4382298c9d3d1e795c93dc9346c1ec5179a3dd95d",
+      "bytes": 9206
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku-glm53-thread-sweep-20260917/summary.json",
+      "archived": "files/aku-glm53-thread-sweep-20260917/summary.json",
+      "sha256": "2f0823eb0c7ff8c557a2d41a2c13e3f0597a0897485b14554d319b5945e96302",
+      "bytes": 12264
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-c463f601b-cpu-mtp-depth3-b2048-ub512.recipe.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/glm53-c463f601b-cpu-mtp-depth3-b2048-ub512.recipe.json",
+      "sha256": "09185034d59af8120247ee758226de904963cf82977ec4bcbbec263d8ef5398f",
+      "bytes": 14095
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/environment-policy.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/environment-policy.json",
+      "sha256": "580a43d02721e1e25fdf39f3d2e223c516b15ee7e5892e360316ac3c1cc85346",
+      "bytes": 1013
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-c463f601b-cpu-mtp-depth3-b2048-ub512-corrected.recipe.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/glm53-c463f601b-cpu-mtp-depth3-b2048-ub512-corrected.recipe.json",
+      "sha256": "5c81ad0b8c5514f19350859016bf45c67feec61056c11c6046af39e09a324480",
+      "bytes": 14144
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-c537f916-recovered-anchor.recipe.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/glm53-c537f916-recovered-anchor.recipe.json",
+      "sha256": "4a506ac68cf64e12683414ed9550006d94d66a0dceaf8f71c3f1471a2dd5873b",
+      "bytes": 14028
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-ec8b707-accumulator-tip.recipe.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/glm53-ec8b707-accumulator-tip.recipe.json",
+      "sha256": "5fcc561ccd400c7d4ae73f215d5b3015db500285efa17dabd2ae1df887706e71",
+      "bytes": 14029
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
+      "sha256": "e2c7ea511ee59847f595913d894be7e2ff4c2bf2b74cce804591f5b453f297e6",
+      "bytes": 31644
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-c537f916-recovered.recipe.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/glm53-c537f916-recovered.recipe.json",
+      "sha256": "9d91eecddea3f23a941e07e29f3a3a767b1cbc48f5c1e7633278aaf804a6ca1e",
+      "bytes": 14008
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-anchor-gen011.recipe.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/glm53-anchor-gen011.recipe.json",
+      "sha256": "a7f30bca6f0569c5a31f87fe284c2fc593ed3816b497e6edd75d171301c90cb6",
+      "bytes": 14029
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-c463f601b-cpu-mtp-depth3-b2048-ub512-corrected.recipe.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/glm53-c463f601b-cpu-mtp-depth3-b2048-ub512-corrected.recipe.json",
+      "sha256": "5c81ad0b8c5514f19350859016bf45c67feec61056c11c6046af39e09a324480",
+      "bytes": 14144
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
+      "archived": "files/aku12a-glm53-five-loop-inputs/glm53-fixed2029-depth3.prompt-manifest.json",
+      "sha256": "e2c7ea511ee59847f595913d894be7e2ff4c2bf2b74cce804591f5b453f297e6",
+      "bytes": 31644
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-five-loop-output-continuation/loop-run.json",
+      "archived": "files/aku12a-glm53-five-loop-output-continuation/loop-run.json",
+      "sha256": "a489ee01fa6807e202ec69c44d2d59c2ae2c3be28fa766c48ea90d3b099ce408",
+      "bytes": 74932
+    },
+    {
+      "original": "/mnt/raid0/llm/tmp/aku12a-glm53-roster-inputs-20260910/campaign-resolved.json",
+      "archived": "files/aku12a-glm53-roster-inputs-20260910/campaign-resolved.json",
+      "sha256": "1300442ea9f96f5a02eaa443aa56823e71aeb49a43d0025a1f8782ea2b3e4c1a",
+      "bytes": 52613
+    }
+  ]
+}
