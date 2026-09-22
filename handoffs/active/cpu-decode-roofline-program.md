@@ -277,7 +277,14 @@ at 153 GB/s in the configuration that serves.
       the intended node before falling back — system-wide, hurts file-heavy work), a drop_caches hook in the
       stack's launch path, or BIOS NPS1 (hardware interleave makes the placement question disappear; C0-c
       says whether it also lifts the 153 GB/s). Memory note: `feedback_page_cache_defeats_numa_interleave`.
-- [ ] **C8 — the BIOS session at the next reboot (operator-executed; this task prepares and verifies).**
+- [x] **C8 — the BIOS session at the next reboot (operator-executed; this task prepares and verifies).** ✅ 2026-09-21
+      — operator applied a BUNDLE of exactly two items: **memory interleave ENABLED + memory speed 5600 MT/s**
+      (12x96GB DDR5, was 4800); NPS4 unchanged, per C8 item 5. Verification run immediately post-reboot with a
+      cold page cache: **C0 read-sum 165.6 -> 446.8 GB/s at t96** (target was >=300), 152.6 -> 410.4 at t48;
+      single node membind=0 **66 -> 124.5 GB/s** = 93% of its 3-channel limit, and four nodes together reach 90%
+      of 4x single-node. **The global ~170 GB/s uncore cap C0-c identified is GONE** — the clock alone (+17%)
+      cannot produce +170%. Evidence: `epyc-inference-research/data/bios-postreboot-20260921/` (SHA256SUMS).
+      No arm separates the two BIOS items; the effect belongs to the pair.
       C0-c shows a **global ~170 GB/s read cap** (37% of nominal) that no software placement lifts, and the
       DIMMs run at 4800 of their rated 5600 MT/s. Prepare a one-page checklist for the operator's BIOS
       session on the H13SSL-NT: (1) DDR5 memory clock 5600 MT/s (DIMMs rated; 9655 supports 6000 at 1DPC);

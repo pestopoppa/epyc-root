@@ -2156,7 +2156,14 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           via `run._gate_floor`; prior record kept as `.pre-r2361a-20260915.json.bak`. CI code: research branch
           `sub/r23-61a-floor-n-ci` `a25aaf1f`. The standing 4.581%/n=10 lies below the CI; R23-58's 6.596% lies inside.
           Window, harness and build differ from the old floor, so this is NOT a measured degradation.
-        - [ ] **R23-61b — POST-BIOS floor repeat.** After the operator reboot + BIOS session (and C8 verification):
+        - [x] **R23-61b — POST-BIOS floor repeat.** ✅ 2026-09-21 — p95_dev **7.249%**, unit `process`, n=24,
+    95% CI **[6.024, 9.371]%**, median 166.67 tok/s, recipe_hash `29fbffc56cd7` unchanged, host-state
+    POST-BIOS. Pre-BIOS was 7.897% [5.520, 11.322] — **the CIs OVERLAP, so the BIOS bundle did NOT move
+    GPU serving dispersion.** Run on the `$ORIGIN` rebuild of the champion (same commit; the original
+    tmp build has an absolute RUNPATH and is not promotable). Prior record kept as
+    `.pre-r2361b-20260921-*.json.bak`. Original text follows for the method.
+          ORIGINAL TASK TEXT (method reference; the task itself is done above):
+          After the operator reboot + BIOS session (and C8 verification):
           `recal_serving_floor --apply --samples 24 --require-cpu-list` on the unchanged `ef81196d5` build + recipe
           (hash `29fbffc56cd7`), host-state "POST-BIOS". Compare p95_dev + CI against the pre-BIOS 7.897%
           [5.520, 11.322] n=24. Non-overlapping CIs = BIOS moved the variance.
@@ -2172,12 +2179,12 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         literal**, which it does only because `serving` → `loop` → `bench` is a real import cycle (hence
         `bench.py`'s lazy in-function `serving` imports); a test pins the two together for now
         (`scripts/kernel_rnd/autokernel/loop/bench.py:44`) (found 2026-09-14, noninf sweep).
-      - [ ] **R23-67 — state the `unit` in the D8 instrument-characterisation artifact behind
+          - [ ] **R23-67 — state the `unit` in the D8 instrument-characterisation artifact behind
         `MEASURED_FLOOR_PCT`**, which carries none: the built-in table is now labelled in code
         (`bench.FLOOR_UNIT`, `MEASURED_FLOOR_N = 20`) but the artifact's field is only derivable from its
         single-writer schema (`artifacts/autokernel-aa-noise-floor/aa-noise-floor.json`) (found 2026-09-14,
         noninf sweep).
-      - [ ] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite**:
+          - [ ] **R23-68 — record the autokernel-loop pytest baseline and the `TMPDIR` prerequisite**:
         `pytest scripts/kernel_rnd/autokernel/loop -q` at `origin/main` `7ea556f4` reads **176 failed / 201
         errors / 2509 passed**, the remainder environmental on this host (HTTP-child fixtures, live-store and
         port-bound tests, the `test_campaign_footprint.py` / `test_program_md.py` set) with
@@ -2219,7 +2226,28 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       **R23-61a** box directly above; the sweep confirms it is the binding live blocker rather than adding a
       new action.*
 
-      - [ ] **★ R23-64 — RE-SWEEP THE CPU DECODE THREAD COUNT ON THE CHAMPION (t48 / t64 / t96).
+      - [ ] **R23-70 — `stack_change_guard.py:78` points operators at the WRONG recompile command.**
+        `RECOMPILE_PRIORS_COMMAND = "uv run python scripts/registry/compile_stack_priors.py"` is a numa-blind
+        wrapper around `src.registry.stack_priors.main`, which has no `--numa-mode` and compiles the legacy
+        single-instance lineup while production declares `numa_mode: both`. Following the guard's own
+        remediation text produces a priors file that disagrees with `launch_manifest.yaml` on every
+        multi-port role (frontdoor [8070] vs [8080,8180], ingest [8085] vs [8185,8285], toolrunner/worker_*
+        [8072] vs [8082,8182]) — measured 2026-09-22, reverted. Should read
+        `scripts/registry/stack_change_pipeline.py update`, matching the pipeline's own five messages and
+        `docs/reference/stack-change-launch-runbook.md:16`. One-line fix, in epyc-orchestrator.
+  - [ ] **R23-71 — a live `--skip-stack-change-gate` sits in benchmark automation.**
+        `coordination/inference-batch/entries/30-bulk-campaign.yaml:297` (and the BULK-K-EMB-1 bundles,
+        `manifest.yaml:3076`) start embedders FOR A BENCHMARK with
+        `--skip-stack-change-gate --no-compile-registry`. `stack-change-launch-runbook.md:114` forbids exactly
+        that ("never for benchmarks, AutoPilot resumes, or claimed production readiness"), and
+        `accepted_gaps.yaml:3-10` records the 2026-08 precedent: "A bypass used four times running is not an
+        escape hatch, it is the new default." Either justify it as a declared accepted gap with an expiry, or
+        remove it.
+  - [ ] **R23-72 — `executor.py:77` and `:90` still hardcode the v9 build path** on the registry-load-failure
+        branch. `executor_paths.get_binary()` was migrated to the kernel store on 2026-09-22, but these two
+        fallbacks were not, so a registry load failure still resolves the OLD kernel silently. Same defect
+        class as the two the v10 promotion exposed.
+  - [ ] **★ R23-64 — RE-SWEEP THE CPU DECODE THREAD COUNT ON THE CHAMPION (t48 / t64 / t96).
         ★ GATED: MUST NOT RUN UNTIL AFTER THE OPERATOR'S PLANNED HOST REBOOT + BIOS SESSION.**
         Filed 2026-09-08 out of the MEAS-4 correction in
         [`cpu-decode-roofline-program.md`](cpu-decode-roofline-program.md) (MEAS-4 at `:1078`, D4 at

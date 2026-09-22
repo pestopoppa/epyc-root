@@ -951,7 +951,11 @@ sclk flat 1700 MHz at *every* point. Unit: **LAUNCH**. Details and per-point `re
       as-executed scripts, `SHA256SUMS` and a README step correction at `1eb4a89b`). Files byte-identical to
       scratch; every table value recomputed from the JSON and matched `docs/design/champion-max-performance-20260908.md` §6.
       Belief-kernel write-side wiring filed as SC82 in `vidya-belief-substrate-program.md` (the 2026-09-08 sweeps are pre-hook).
-- [ ] **MTP-27B-1 — the 27B is ALSO MTP-capable, and that is the missing PROD-BASE-1 denominator.** The
+- [x] **MTP-27B-1 — the 27B is ALSO MTP-capable, and that is the missing PROD-BASE-1 denominator.** ✅ 2026-09-21
+      — v9 measured on the 27B with MTP self-draft (`mtp-Qwen3.8-27B-Q8_0.gguf`, recipe
+      `qwen3.8-27b-q8-gpu-mtp`) at ctx 65536: **61.32 / 85.76 / 136.06 / 169.63** across np 1/2/4/8. That IS the
+      denominator; the champion on DFlash2 gives 80.87 / 108.75 / 168.64 / 184.48, ratios **1.319 / 1.268 /
+      1.239 / 1.088**. Recipe-to-recipe, each kernel at the best configuration it can run (operator direction). The
       Qwen3.8-27B GGUF carries the MTP head (`blk.64.nextn.eh_proj/.enorm/.hnorm/.shared_head_norm`,
       `qwen35.nextn_predict_layers = 1`) — the same shape the 35B has at `blk.40`. It could not be expressed
       as a recipe until `c3e362a1` made `spec_decode.drafter` optional, so it has never been measured through
@@ -992,7 +996,7 @@ Three separate reasons the comparison does not exist:
 > champion-vs-production ratio for Qwen3.8-27B + DFlash2 is quoting a number that was never measured, because
 > production cannot produce the denominator.
 
-- [ ] **PROD-BASE-1 — if a champion-vs-production headline is ever wanted, measure production AT ITS OWN BEST.**
+- [x] **PROD-BASE-1 — if a champion-vs-production headline is ever wanted, measure production AT ITS OWN BEST.** ✅ 2026-09-21
       Its own `np` sweep, whatever spec configuration it actually supports (MTP self-draft for Qwen3.8-27B),
       under the same host discipline and with residency proven — **never** forcing production through the DFlash2
       recipe, which measures a lane it does not have and would report a capability gap as a speed gap. Until that
