@@ -1,0 +1,122 @@
+# What the INCUMBENT was gated on. The referent of "quality per the incumbent's recorded
+# suites" in SKILL.md step 5.
+#
+# Why this file exists: until 2026-09-22 that phrase resolved to nothing. v9 and v10 both
+# ran MMLU-Pro + GPQA on worker_general and architect_critic at n=200/195 -- by
+# CONVENTION, carried in the head of whoever ran the previous promotion. A convention
+# cannot be checked, cannot be diffed, and quietly shrinks: v10's package silently
+# dropped the `relocatable_runtime` and `rollback_rehearsal` keys v9 had.
+#
+# What this file is NOT: it is not a second source of truth for the numbers. The numbers
+# live in the ratification and qualification artifacts named under `evidence`. This file
+# records WHICH SUITES, WHICH ROLES and WHAT n were run, so the next promotion can
+# reproduce the comparison instead of reinventing it. package.sh reads it and refuses a
+# package that gates on less than the incumbent did.
+#
+# Amending it: a gate may be ADDED at any time. REMOVING one, or lowering an n, is an
+# operator decision and is recorded in `waivers` with the signature that carried it --
+# "a bypass used four times running is not an escape hatch, it is the new default".
+
+schema: epyc.kernel_promotion_gates.v1
+incumbent:
+  version: v10
+  branch: production-consolidated-v10
+  commit: ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+  build_number: 10303
+  ratification: artifacts/operator/ratify_v10_final_freeze_20260922.json
+  qualification: artifacts/operator/v10-qualification-20260921-ffc1bac82.json
+
+# Scope is DERIVED, never listed here: scripts/scope.sh reads the compiled priors. The
+# roles below are the ones that carried a QUALITY suite, which is a strictly smaller set
+# than the speed scope and is a human choice about coverage.
+scope:
+  derived_by: scripts/validate/kernel_freeze_scope.py   # in epyc-orchestrator
+  rule: every role that resolves to the backend being promoted must show no speed regression
+
+gates:
+
+  speed:
+    required: true
+    # Historical packages split this per backend; both spellings satisfy the gate.
+    accepts: [speed, cpu_speed, gpu_speed]
+    method: recipe-to-recipe
+    note: >
+      Each kernel at its OWN best recipe, never one kernel forced through the other's
+      configuration. v10's CPU arms compared candidate DFlash2 against v9 MTP self-draft
+      on the 27B for exactly this reason.
+    unit: process
+    cpu:
+      n_per_arm: 5            # v10; v9 used minimum_reps_per_arm 10
+      pass_ratio_floor: 0.95  # v10 gray floor; reported pass_ratio was 0.98
+      arms_v10:               # role -> candidate/incumbent ratio actually recorded
+        worker_general_gemma4_26b: 1.1831
+        architect_critic_qwen35_122b: 1.1930
+        frontdoor_qwen36_35b_a3b: 1.0655
+        ingest_long_context_qwen3next_80b: 1.5787
+    gpu:
+      ctx: 65536
+      launches_per_point: 3
+      residency: proven      # non-zero VRAM sampled DURING the run + KFD process count
+      np_points: [1, 2, 4, 8]
+      models_v10: [qwen38_27b_q8, qwen3_vl_30b_a3b_q4km]
+
+  quality:
+    required: true
+    accepts: [quality, cpu_quality, gpu_quality]
+    suites: [mmlu_pro, gpqa]
+    roles: [worker_general, architect_critic]
+    n:
+      mmlu_pro: 200
+      gpqa: 195            # the suite holds 195 items; 200 was requested, 195 exist
+    seed: 42
+    temperature: 0.0
+    runner: >
+      epyc-inference-research/scripts/benchmark/v7_quality_gate_runner.py
+      --suites mmlu_pro gpqa --n 200 --seed 42 --endpoint chat
+    comparator: epyc-inference-research/scripts/benchmark/v7_quality_gate_compare.py
+    errors_allowed: 0
+    note: >
+      NOT text equality. Spec-dec-on vs -off is not bitwise stable and the INCUMBENT
+      fails that test too: different batch shapes change float summation order and flip
+      argmax at near-ties. If parity is wanted, run P-PARITY-1 at n>=5, never a
+      one-prompt smoke check.
+    recorded_v10:
+      worker_general:   {mmlu_pro: {v9: 0.3600, candidate: 0.3750}, gpqa: {v9: 0.2513, candidate: 0.2564}}
+      architect_critic: {mmlu_pro: {v9: 0.6350, candidate: 0.6450}, gpqa: {v9: 0.5692, candidate: 0.5692}}
+
+  serving_floor:
+    required: true
+    metric: p95_dev_pct
+    unit: process
+    recorded_v10: {p95_dev_pct: 7.249, ci95: [6.024, 9.371], n: 24, source: R23-61b}
+
+  load_only_preflight:
+    required: true
+    added: 2026-09-22
+    method: scripts/loadcheck.sh <build-dir> --apply
+    note: >
+      One load per distinct (model, draft model) pair in the derived scope, BEFORE any
+      bench. v10 found "champion cannot load the gemma4 MTP drafter" from a failed bench
+      arm an hour into a bench window; the drafter is why the pair, not the model, is the
+      unit.
+
+  relocatable_runtime:
+    required: true
+    method: scripts/preflight.sh <build-dir> <backend>
+    note: RUNPATH is exactly $ORIGIN[:/opt/rocm/lib] -- no absolute and no EMPTY element.
+
+  binary_set_parity:
+    required: true
+    method: scripts/preflight.sh <build-dir> <backend>
+    note: >
+      Executables only; sonames are versioned and always differ. v10's first attempt
+      shipped 2 binaries where the incumbent shipped 92, and every other check passed it.
+
+  rollback_rehearsal:
+    required: true
+    method: scripts/anchor.sh <backend>
+    note: >
+      The anchor must be demonstrated, not assumed. v10's rehearsal was not a rehearsal:
+      the rewind was executed for real on 2026-09-22 to revert the partial build.
+
+waivers: []   # each entry: {gate, reason, operator_signature_artifact, date}

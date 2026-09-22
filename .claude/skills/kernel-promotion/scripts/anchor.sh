@@ -45,5 +45,20 @@ echo "   linkage OK with LD_LIBRARY_PATH unset"
 
 A="$K/archive/$B-$(date -u +%Y%m%d)-${SHA:-unknown}"
 if [ -L "$A" ]; then echo "   anchor already exists: $A"; else ln -sfn "${OLD%/bin}" "$A"; echo "   anchor created: $A"; fi
-echo "REWIND COMMAND (record this in the ratification package):"
-echo "   ln -sfn $OLD $LINK"
+# A REWIND IS THREE STEPS, NOT TWO. The store symlink and the frozen tree are the obvious
+# pair; the third is the one that was missing from this comment until 2026-09-22.
+# stack_priors.yaml pins a RESOLVED binary_dir / binary_path / ld_library_path PER ROLE
+# (G11), so it goes stale the instant the symlink moves -- in EITHER direction. Move the
+# link back without recompiling the derived layer and every launcher still resolves the
+# kernel you just rolled back out, silently, because the path it holds still exists.
+echo "REWIND (all three steps -- record them in the ratification package):"
+echo "   1. store:   ln -sfn $OLD $LINK"
+echo "                 (and the other backend's link: a promotion moves both)"
+echo "   2. tree:    cd /mnt/raid0/llm/llama.cpp && git checkout <previous production branch>"
+echo "   3. derived: cd /mnt/raid0/llm/epyc-orchestrator && uv run python \\"
+echo "                 scripts/registry/stack_change_pipeline.py update --numa-mode <declared>"
+echo "               then  ... stack_change_pipeline.py check --run-promotion-gate"
+echo "               NOT python -m src.registry.stack_priors and NOT the guard's"
+echo "               RECOMPILE_PRIORS_COMMAND: neither takes --numa-mode, so both compile"
+echo "               the legacy single-instance lineup while production declares both."
+echo "   4. prove:   scripts/verify_serving.sh   (argv[0] and /proc/<pid>/maps, per role)"
