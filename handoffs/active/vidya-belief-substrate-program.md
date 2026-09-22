@@ -2533,3 +2533,23 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
 ## VB-AK-HELDOUT — AutoKernel CPU held-out confirmation (filed 2026-09-18)
 
 - [ ] **VB-AK-HELDOUT — capture the held-out serving comparison and integrity-gate disposition at the write side.** Research `9eee67c1` introduced `epyc.autokernel.heldout_serving_confirm.v1` as plain per-candidate JSON before the first GLM v27 confirmation. Add a producer-authored, self-hashed ClaimTuple binding exact attempt/tree, distinct public and held-out request digests, model, recipe, both executable/build identities, instrument, separately calibrated floor, paired raw vectors, units and actual veto outcome. A strict reader must reopen the native bytes and project them through `claim_tuple.grade()`; no new ladder and no champion-promotion warrant. Pre-hook plain records remain historical evidence but emit no graded row. Source row: `scripts/vidya/adapters/README.md`.
+
+## VB-KVQ-V10 — MI210 KV-quant decode sweep at v10 (filed 2026-09-22)
+
+- [ ] **VB-KVQ-V10 — author the read-side adapter for the v10 KV-quant sweep.** The WRITE side is already
+  wired (research `scripts/benchmark/kv_quant_27b_v10_sweep.py`, schema
+  `epyc.vidya.kv_quant_27b_v10_capture.v1`, sidecar `belief_measurements.jsonl` beside `summary.json`,
+  self-hashed `row_sha256`, shared `validate_row()`), filed BEFORE the sweep runs — the read side cannot be
+  retrofitted, and `benchmarks/results` is the standing proof of what that costs. Author
+  `scripts/vidya/adapters/kv_quant_27b_v10.py`: `@register("kv-quant-27b-v10-measurement")`, import and
+  re-run the producer's `validate_row()` (pinning the producer file's sha256) so a mutated or pre-hook row is
+  refused and the WHOLE file voids to zero rows; re-hash `scored_path` at the adapter boundary to set
+  `attestation_verified`; use `attestation_locator`, because the artifact lives in the research repo outside
+  `REPO_ROOT` and `attestation_path` must stay empty; and add a `Source(...)` row to
+  `scripts/vidya/ingest_sources.py` — wiring the ingest name IS the write side being finished.
+  **Project, do not grade:** `claim_tuple.grade()` decides and the `measurement` ladder is already registered
+  (`docs/design/vidya-pilot-spec.md` §4.7); the registry refuses a second. Carry the five cautions from the
+  source-table row verbatim, especially K-and-V-separately and the fixed `-fa on` — this host measured a 1.52x
+  swing from that flag alone, so a KV ratio quoted without it is a flash-attention number.
+  Locator = run x arm x depth x metric, never a replicate file.
+  Owner: the session that runs the sweep in the operator stack-down window.
