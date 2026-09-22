@@ -1,0 +1,236 @@
+diff --git a/ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp b/ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp
+index 2886d6fe0..dd7baa398 100644
+--- a/ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp
++++ b/ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp
+@@ -25,6 +25,14 @@
+ #include <execinfo.h>
+ #include <unistd.h>
+ 
++#if defined(__linux__) && defined(__x86_64__)
++#include <memory>
++#include <mutex>
++#include <unordered_map>
++#include <vector>
++#include <sys/syscall.h>
++#endif
++
+ // iqk port DEBUG: SIGSEGV backtrace handler (no gdb on host). Installed once when
+ // GGML_IQK_DEBUG_SEGV=1. Prints the crashing call stack to stderr.
+ namespace {
+@@ -244,6 +252,90 @@ inline bool iqk_first_engagement(std::atomic<uint64_t> & logged_types, int weigh
+     const uint64_t bit = UINT64_C(1) << weight_type;
+     return (logged_types.fetch_or(bit, std::memory_order_relaxed) & bit) == 0;
+ }
++
++#if defined(__linux__) && defined(__x86_64__) && defined(SYS_move_pages) && defined(SYS_getcpu)
++struct iqk_numa_owner_map {
++    const int64_t ne01;
++    const int64_t ne02;
++    const int64_t units_per_expert;
++    const int64_t slab_gran;
++    const size_t  nb01;
++    const size_t  nb02;
++    bool valid;
++    std::vector<int> owner;
++};
++
++const iqk_numa_owner_map * iqk_get_numa_owner_map(
++        const void * data, int64_t ne01, int64_t ne02, size_t nb01, size_t nb02,
++        int64_t units_per_expert, int64_t slab_gran) {
++    static std::mutex cache_mutex;
++    static std::unordered_map<const void *, std::unique_ptr<iqk_numa_owner_map>> cache;
++
++    std::lock_guard<std::mutex> lock(cache_mutex);
++    auto found = cache.find(data);
++    if (found != cache.end()) {
++        const iqk_numa_owner_map * map = found->second.get();
++        return map->ne01 == ne01 && map->ne02 == ne02 && map->nb01 == nb01 && map->nb02 == nb02 &&
++               map->units_per_expert == units_per_expert && map->slab_gran == slab_gran ? map : nullptr;
++    }
++
++    auto map = std::make_unique<iqk_numa_owner_map>(iqk_numa_owner_map{
++        ne01, ne02, units_per_expert, slab_gran, nb01, nb02, true,
++        std::vector<int>((size_t) ne02 * units_per_expert, -1)
++    });
++
++    constexpr size_t query_batch = 4096;
++    std::vector<void *> pages;
++    std::vector<int> status(query_batch);
++    std::vector<size_t> tile_index;
++    pages.reserve(query_batch);
++    tile_index.reserve(query_batch);
++
++    const uintptr_t page_size = (uintptr_t) sysconf(_SC_PAGESIZE);
++    if (page_size == 0 || (page_size & (page_size - 1)) != 0) {
++        map->valid = false;
++    }
++
++    auto query = [&]() {
++        if (pages.empty() || !map->valid) return;
++        const long rc = syscall(SYS_move_pages, 0, pages.size(), pages.data(), nullptr, status.data(), 0);
++        if (rc < 0) {
++            map->valid = false;
++        } else {
++            for (size_t i = 0; i < pages.size(); ++i) {
++                map->owner[tile_index[i]] = status[i] >= 0 ? status[i] : -1;
++            }
++        }
++        pages.clear();
++        tile_index.clear();
++    };
++
++    // A row tile can straddle pages. Its middle page is stable for immutable weights and
++    // avoids making the query itself proportional to the bytes consumed by the kernel.
++    for (int64_t expert = 0; map->valid && expert < ne02; ++expert) {
++        for (int64_t unit = 0; unit < units_per_expert; ++unit) {
++            const uintptr_t begin = (uintptr_t) data + (size_t) expert * nb02 +
++                (size_t) unit * slab_gran * nb01;
++            const uintptr_t end = begin + (size_t) slab_gran * nb01;
++            const uintptr_t middle_page = (begin + (end - begin) / 2) & ~(page_size - 1);
++            pages.push_back((void *) middle_page);
++            tile_index.push_back((size_t) expert * units_per_expert + unit);
++            if (pages.size() == query_batch) query();
++        }
++    }
++    query();
++
++    const iqk_numa_owner_map * result = map.get();
++    cache.emplace(data, std::move(map));
++    return result;
++}
++
++int iqk_current_numa_node() {
++    unsigned cpu = 0;
++    unsigned node = 0;
++    return syscall(SYS_getcpu, &cpu, &node, nullptr) == 0 ? (int) node : -1;
++}
++#endif
+ } // namespace
+ 
+ extern "C" bool ggml_iqk_try_mul_mat(const struct ggml_compute_params * params, struct ggml_tensor * dst) {
+@@ -435,6 +527,7 @@ extern "C" bool ggml_iqk_try_mul_mat_id(const struct ggml_compute_params * param
+     char * base = (char *) params->wdata;
+     char * qact = base;
+     char * wc   = base + GGML_PAD(ggml_row_size(GGML_TYPE_Q8_K, ggml_nelements(src1)), sizeof(int64_t));
++    char * const qact_alloc_end = wc;
+     int64_t * matrix_row_counts = (int64_t *) wc;
+     wc += GGML_PAD(n_as * sizeof(int64_t), sizeof(int64_t));
+     iqk_mmid * matrix_rows = (iqk_mmid *) wc;
+@@ -444,6 +537,16 @@ extern "C" bool ggml_iqk_try_mul_mat_id(const struct ggml_compute_params * param
+     // 1) quantize src1, row layout [i12*ne11 + i11]
+     const size_t nbw1 = act_row, nbw2 = nbw1 * ne11;
+ 
++#if defined(__linux__) && defined(__x86_64__) && defined(SYS_move_pages) && defined(SYS_getcpu)
++    int * worker_nodes = (int *) (qact + nbw2 * ne12);
++    const bool numa_nodes_fit = mmid_rowexact && activation_type == GGML_TYPE_Q8_2_X4 &&
++        (tA == GGML_TYPE_Q4_K || tA == GGML_TYPE_Q5_K) &&
++        (char *) (worker_nodes + nth) <= qact_alloc_end;
++    if (numa_nodes_fit) {
++        worker_nodes[ith] = iqk_current_numa_node();
++    }
++#endif
++
+     // INF-70 D1: single-token fast path — no internal barrier. Every thread quantizes the
+     // whole activation block into its own private slice, builds the trivial row->expert map
+     // on the stack (experts ascending, ids ascending within an expert — exactly the shared
+@@ -632,7 +735,99 @@ extern "C" bool ggml_iqk_try_mul_mat_id(const struct ggml_compute_params * param
+         work_total += cne1 * units_per_expert;
+     }
+ 
+-    if (slab_ok && work_total > 0) {
++    bool numa_owner_slabs = false;
++#if defined(__linux__) && defined(__x86_64__) && defined(SYS_move_pages) && defined(SYS_getcpu)
++    const iqk_numa_owner_map * owner_map = nullptr;
++    if (slab_ok && work_total > 0 && numa_nodes_fit) {
++        owner_map = iqk_get_numa_owner_map(src0->data, ne01, ne02, src0->nb[1], src0->nb[2],
++                units_per_expert, slab_gran);
++        numa_owner_slabs = owner_map != nullptr && owner_map->valid;
++    }
++#endif
++
++    if (numa_owner_slabs) {
++#if defined(__linux__) && defined(__x86_64__) && defined(SYS_move_pages) && defined(SYS_getcpu)
++        const int my_node = worker_nodes[ith];
++        int local_rank = 0;
++        int local_workers = 0;
++        for (int i = 0; i < nth; ++i) {
++            if (worker_nodes[i] == my_node) {
++                if (i < ith) ++local_rank;
++                ++local_workers;
++            }
++        }
++
++        auto has_worker = [&](int node) {
++            if (node < 0) return false;
++            for (int i = 0; i < nth; ++i) {
++                if (worker_nodes[i] == node) return true;
++            }
++            return false;
++        };
++
++        int64_t local_work = 0;
++        int64_t spill_work = 0;
++        for (int cur_a = 0; cur_a < n_as; ++cur_a) {
++            const int64_t cne1 = matrix_row_counts[cur_a];
++            if (cne1 == 0) continue;
++            for (int64_t unit = 0; unit < units_per_expert; ++unit) {
++                const int owner = owner_map->owner[(size_t) cur_a * units_per_expert + unit];
++                if (my_node >= 0 && owner == my_node) local_work += cne1;
++                if (!has_worker(owner)) spill_work += cne1;
++            }
++        }
++
++        int64_t local_prefix = 0;
++        int64_t spill_prefix = 0;
++        for (int cur_a = 0; cur_a < n_as; ++cur_a) {
++            const int64_t cne1 = matrix_row_counts[cur_a];
++            if (cne1 == 0) continue;
++            const char * A = (const char *) src0->data + (size_t) cur_a * src0->nb[2];
++            const iqk_mmid * rmap = matrix_rows + (size_t) cur_a * n_ids * ids->ne[1];
++            int64_t run0 = -1;
++
++            for (int64_t unit = 0; unit <= units_per_expert; ++unit) {
++                bool mine = false;
++                if (unit < units_per_expert) {
++                    const int owner = owner_map->owner[(size_t) cur_a * units_per_expert + unit];
++                    if (my_node >= 0 && owner == my_node && local_workers > 0) {
++                        const int rank = local_work > 0 ?
++                            (int) (((local_prefix + cne1 - 1) * local_workers) / local_work) : 0;
++                        mine = rank == local_rank;
++                        local_prefix += cne1;
++                    } else if (!has_worker(owner)) {
++                        const int rank = spill_work > 0 ?
++                            (int) (((spill_prefix + cne1 - 1) * nth) / spill_work) : 0;
++                        mine = rank == ith;
++                        spill_prefix += cne1;
++                    }
++                }
++
++                if (mine && run0 < 0) run0 = unit;
++                if (!mine && run0 >= 0) {
++                    if (!iqk_mul_mat_moe_rows(ne01, cne1, ne10, (int) ne11,
++                            tA, A, src0->nb[1],
++                            activation_type, qact, act_row,
++                            (float *) dst->data, dst->nb[1], dst->nb[2],
++                            rmap, run0 * slab_gran, (unit - run0) * slab_gran)) {
++                        return false;
++                    }
++                    run0 = -1;
++                    engaged = true;
++                }
++            }
++
++            if (!iqk_mul_mat_moe_rows(ne01, cne1, ne10, (int) ne11,
++                    tA, A, src0->nb[1],
++                    activation_type, qact, act_row,
++                    (float *) dst->data, dst->nb[1], dst->nb[2],
++                    rmap, 0, 0)) {
++                return false;
++            }
++            engaged = true;
++        }
++#endif
++    } else if (slab_ok && work_total > 0) {
+         const int64_t work0 = work_total * ith / nth;
+         const int64_t work1 = work_total * (ith + 1) / nth;
+         int64_t work_prefix = 0;

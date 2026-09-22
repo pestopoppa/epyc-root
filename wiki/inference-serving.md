@@ -2,8 +2,77 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (incremental: MTP n-max 8 grid below n-max 4 at np≥2 (observation, ABA required); lineup-port contention waiver; enumerate_feasible warn-only; stack_priors fulls restored; K-MEM-1 scorer-v2 0.5684; J14 dispatcher deleted; 35B np=1 112.676 is a 6-run median; SQLite archive never existed); earlier: 2026-09-14: an enrolled production alias is a SERVING RECIPE, not a model handle — `architect_general@8083` serves native MTP at np=2 while the historical GPU research gate for the same family was DFlash2 at np=4, so a name match silently swaps drafter, concurrency and gate protocol; resolve the workflow from the campaign's retained configuration. Earlier: 2026-09-09: GLM core validated but admission held on CPU performance; AutoKernel seed complete. Earlier: 2026-09-08 (evening): a SECOND headline model on the same champion binary — Qwen3.6-35B-A3B-MTP-Q8_0 at **112.68 tok/s single user / 310.96 tok/s aggregate at 16 slots**, residency proven 24/24 — and the curve is **NOT saturated** there (+15.98% on the last step, 41.4 of 64 GiB VRAM), so 310.96 is the highest measured point and never a maximum; the two models take **different operating points for structural reasons** (dense 27B turns over at 4→8 → np=4; MoE 35B still climbing at 16); and the 35B's np=1 dispersion is 2.70% and did NOT tighten when n doubled; earlier: 2026-09-08 (pm): the champion serving ceiling measured with residency proven on every launch — 79.25 tok/s single user, 179.12 aggregate at np=8, and np=4 is the operating point at 93.7% of peak aggregate for ~42 tok/s per user; aggregate throughput saturates well before the slot count, and between-launch dispersion widens 7.6x from np=1 to np=4; R23-60 landed residency sampling on the serving path, which previously proved none; earlier: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
-**Sources**: 139 distinct linked Markdown sources (added 2026-09-17: gpu-candidates, shape-keyed-contention-gating, numa-topology-cutover, bulk-inference-campaign, champion-max-performance, benchmark-results-dashboard (completed))
+**Last compiled**: 2026-09-22 (incremental: v10 store cutover + freeze (ffc1bac82, build 10303), derived-layer regen required on promotion; GLM-5.3-Flash retired → DeepSeek-V4.1-Flash (deepseek41, no runtime yet; INF-77); reviewer gates re-blocked on the V4.1 port); earlier: 2026-09-17 (incremental: MTP n-max 8 grid below n-max 4 at np≥2 (observation, ABA required); lineup-port contention waiver; enumerate_feasible warn-only; stack_priors fulls restored; K-MEM-1 scorer-v2 0.5684; J14 dispatcher deleted; 35B np=1 112.676 is a 6-run median; SQLite archive never existed); earlier: 2026-09-14: an enrolled production alias is a SERVING RECIPE, not a model handle — `architect_general@8083` serves native MTP at np=2 while the historical GPU research gate for the same family was DFlash2 at np=4, so a name match silently swaps drafter, concurrency and gate protocol; resolve the workflow from the campaign's retained configuration. Earlier: 2026-09-09: GLM core validated but admission held on CPU performance; AutoKernel seed complete. Earlier: 2026-09-08 (evening): a SECOND headline model on the same champion binary — Qwen3.6-35B-A3B-MTP-Q8_0 at **112.68 tok/s single user / 310.96 tok/s aggregate at 16 slots**, residency proven 24/24 — and the curve is **NOT saturated** there (+15.98% on the last step, 41.4 of 64 GiB VRAM), so 310.96 is the highest measured point and never a maximum; the two models take **different operating points for structural reasons** (dense 27B turns over at 4→8 → np=4; MoE 35B still climbing at 16); and the 35B's np=1 dispersion is 2.70% and did NOT tighten when n doubled; earlier: 2026-09-08 (pm): the champion serving ceiling measured with residency proven on every launch — 79.25 tok/s single user, 179.12 aggregate at np=8, and np=4 is the operating point at 93.7% of peak aggregate for ~42 tok/s per user; aggregate throughput saturates well before the slot count, and between-launch dispersion widens 7.6x from np=1 to np=4; R23-60 landed residency sampling on the serving path, which previously proved none; earlier: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
+**Sources**: 139 distinct linked Markdown sources (added 2026-09-22: deepseek-v41-flash-evaluation, 2026-09-21/22 progress, kernel-promotion log, glm52-reviewer-capability-gates, autokernel-rebuild-program) (added 2026-09-17: gpu-candidates, shape-keyed-contention-gating, numa-topology-cutover, bulk-inference-campaign, champion-max-performance, benchmark-results-dashboard (completed))
+
+## Compiled Update — 2026-09-22: v10 is the first kernel served from the store, and GLM-5.3-Flash is retired for DeepSeek-V4.1-Flash
+
+**Confidence: verified** for the store cutover, freeze and serving checks (live `/proc/<pid>/maps`,
+real completions); **unmeasured** for DeepSeek-V4.1-Flash inference, because no runtime on this host
+loads it yet.
+
+### production-consolidated-v10 = `ffc1bac82`, build 10303, frozen
+
+- **Store side.** `kernels/production/{cpu,gpu}` now point at versioned, relocatable
+  (`RUNPATH=$ORIGIN`) builds `kernels/builds/{cpu,gpu}-20260921-ffc1bac82`. The v9 rollback anchors
+  `archive/{cpu,gpu}-20260810-0db32c06e` were populated for the first time since the store was created
+  on 2026-07-31. A first attempt shipped 2 binaries instead of ~90 (`--target llama-server llama-bench`)
+  and was rolled back through that anchor, the first real use of the rollback path. `verify_kernel_store.sh`
+  now asserts the five companion tools that the executor resolves
+  ([kernel promotion log](../progress/2026-09/2026-09-22-kernel-promotion.md),
+  [2026-09-21 PART 3](../progress/2026-09/2026-09-21.md)).
+- **Freeze side.** The operator cut `production-consolidated-v10` at `ffc1bac82`. `0db32c06e` is an
+  ancestor, so this is a clean version-past. No commit was made in the frozen tree: the overlay
+  `CLAUDE.md` drift is two lines of an HTML comment, and committing it would have broken the
+  `HEAD == binary-embedded commit` correspondence. `verify_llama_cpp.sh` now takes source identity
+  from the frozen tree and binary identity from the store, because the tree's own `build/` dirs still
+  hold v9. The ratification (`ratify_v10_final_freeze_20260922.json`) is prepared for the operator to
+  sign, not self-signed. AutoKernel's `resolve_frozen()` picked up v10 with no intervention.
+- **Serving proof.** 18/18 servers map ggml only from the v10 store (0 cross-tree), both GPU roles map
+  `libggml-hip`, 12/12 ports answer `/health`, and five roles returned correct completions.
+- **A promotion is not "just a symlink move".** The stack-change gate refused the launch with 36 errors
+  because `derived/stack_priors.yaml` pins concrete per-role binary paths. The fix is
+  `stack_change_pipeline.py update`, not the bare `stack_priors` CLI. The bare CLI has no `--numa-mode`
+  and compiled the legacy single-port lineup, so it was reverted. The guard's own remediation string
+  still points at the numa-blind command (R23-70). Other residue was filed as R23-71 (a live
+  `--skip-stack-change-gate` in benchmark automation) and R23-72 (`executor.py` fallbacks still
+  hardcode v9 paths) in [the rebuild program](../handoffs/active/autokernel-rebuild-program.md).
+
+### GLM-5.3-Flash retired, DeepSeek-V4.1-Flash is the novel-under-test model (INF-69 → INF-77)
+
+- The operator deleted the GLM-5.3-Flash UD-Q4_K_XL artifact (186 GB), both DFlash2 drafters and the
+  three `llama.cpp-experimental-glm53-*` worktrees. The branches remain pushed (`f8e2668b6`,
+  `c463f601b`, `7c78663de`). INF-69 moved to
+  [completed](../handoffs/completed/glm53-flash-evaluation.md) with T2/T4/T15 closed unrun, so **there
+  is no GLM-5.3 quality verdict** ([2026-09-22](../progress/2026-09/2026-09-22-main-dsv41.md)).
+- The successor is [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md):
+  `deepseek-ai/DeepSeek-V4.1-Flash`, 763B MoE, 384 experts top-6 + 1 shared, 40 layers, 3 native MTP
+  layers, Engram tables at layers 1 and 14, hyper-connections, cross-layer KV/indexer sharing, and a
+  two-level sparse-attention selection. The serving artifact is `antirez/deepseek-v4.1-flash-gguf` Q4
+  (~483 GiB). It has Q4_K routed experts, Q8 attention/shared/output, and ~189 GiB of native-FP8 Engram
+  rows that can be streamed from disk. The download started 2026-09-22 at ~11 MB/s. This artifact was
+  chosen over vcruz305's Q4_K_M because that one strips the MTP layers.
+- **The GGUF architecture is `deepseek41`, which no llama.cpp runtime on this host registers.**
+  Production knows only `deepseek4`. Upstream conversion (#28696) is open, and runtime WIP on
+  vcruz305's `runtime/deepseek41` still lacks sparse attention. An experimental port is required
+  (DS41-B0 recommends a hybrid: build on `deepseek4` and use vcruz's Engram/loader as reference only).
+  It must include an Engram FP8-row get_rows/dequant op and native 3-layer MTP, because the operator
+  requires speculative decoding.
+- The reviewer gates (REV-02, [GC-1a/2a/3a](../handoffs/active/glm52-reviewer-capability-gates.md))
+  were retargeted a second time and are now blocked on the V4.1 port, load/coherence and
+  sparse-attention gates. The model-agnostic corpus, K-of-M protocol and schema lane carry over. The
+  GLM `indexer_top_k` schedule and quant profile are VOID for the new subject. GC-4b sizes the always-
+  resident set at ~294 GiB plus KV, and residency stays an operator decision.
+
+### Source References (2026-09-22)
+
+- [`progress/2026-09/2026-09-22-kernel-promotion.md`](../progress/2026-09/2026-09-22-kernel-promotion.md) — store cutover, freeze addendum, verifier re-point, overlay non-commit
+- [`progress/2026-09/2026-09-21.md`](../progress/2026-09/2026-09-21.md) — PART 2/3: champion defects, partial-build rollback, derived-layer regen, serving verification
+- [`progress/2026-09/2026-09-22-main-dsv41.md`](../progress/2026-09/2026-09-22-main-dsv41.md) — GLM-5.3 deletion, V4.1 download and fetch, keeps preserved
+- [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md) — INF-77 artifact identity, runtime status, gate translation
+- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — INF-69 closure banner
+- [`glm52-reviewer-capability-gates.md`](../handoffs/active/glm52-reviewer-capability-gates.md) — disposition gate 2, GC-4b sizing
+- [`autokernel-rebuild-program.md`](../handoffs/active/autokernel-rebuild-program.md) — R23-70/71/72
 
 ## Compiled Update — 2026-09-17: the MTP n-max 8 grid is not the batched optimum, the contention waiver now separates lineup servers from foreign ones, and topology tests are green again
 
@@ -103,7 +172,7 @@ The completed work was seeded into AutoKernel as four cross-epoch `measured_null
 - [`glm53-flash-support-audit-20260908.md`](../docs/reference/models/glm53-flash-support-audit-20260908.md) — pinned upstream/base identities, exact six-shard hybrid layout, mixed tensor types, alias/default requirements, and original validation contract.
 - [`glm53-cpu-optimization-20260908.md`](../docs/reference/models/glm53-cpu-optimization-20260908.md) — phase-scoped row-exact implementation, native-MTP recipe, correctness gates, candidate observations, and bounded quality limits.
 - [`glm53-cpu-worker-audit-20260909.md`](../docs/reference/models/glm53-cpu-worker-audit-20260909.md) — node-level CPU evidence and the corrected recurrent-copy route analysis.
-- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — current implementation status, completed expert/Q8/scheduling decisions, and remaining DSA/role-fit work.
+- [`glm53-flash-evaluation.md`](../handoffs/completed/glm53-flash-evaluation.md) — INF-69, closed 2026-09-22 when the subject was deleted (DSA/role-fit gates never ran; successor INF-77 [`deepseek-v41-flash-evaluation.md`](../handoffs/active/deepseek-v41-flash-evaluation.md)); completed expert/Q8/scheduling decisions.
 - [`glm53-autokernel-handoff.md`](../docs/reference/models/glm53-autokernel-handoff.md) — exact private-fork branch boundary, champion ancestry, retained recipe, rejected experiments, and mandatory fold gates.
 - [`2026-09-09-glm53-cpu-optimization.md`](../progress/2026-09/2026-09-09-glm53-cpu-optimization.md) — executed gates, exact final regression evidence, rejected experiments, and immutable candidate identities.
 

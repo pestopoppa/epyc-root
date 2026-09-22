@@ -1,168 +1,111 @@
 diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
-index ecba3a6..5f5b828 100644
+index 1b8332c..c7fd4d0 100644
 --- a/orchestration/model_registry.yaml
 +++ b/orchestration/model_registry.yaml
-@@ -870,28 +870,37 @@ server_mode:
+@@ -870,6 +870,33 @@ server_mode:
    #       KV-INCLUSIVE totals at some past context and would double-count.
  
    # HOT tier - always resident (~40GB total)
-+  # ── 2026-09-22 LINEUP CHANGE (operator-directed) ────────────────────────────────────
-+  # frontdoor MIGRATED CPU -> GPU. It is now an ALIAS on architect_general's :8083 MI210
-+  # process (Qwen3.8-27B dense Q8), exactly like coder_escalation. It launches NO server of
-+  # its own. The Qwen3.6-35B-A3B-MTP-Q8_0 it vacated did NOT leave the fleet: it moved
-+  # wholesale to `server_mode.worker` (:8072/:8082/:8182), which now serves worker_general,
-+  # worker_explore, worker_math, toolrunner AND worker_summarize.
++  # ── 2026-09-22 LINEUP CHANGE (operator-directed) ────────────────────────────────
++  # frontdoor STAYS ON Qwen3.6-35B-A3B-MTP-Q8_0, ON CPU, ON :8070. OPERATOR RULING C1: an
++  # earlier draft moved this role to the GPU 27B, which would have put frontdoor,
++  # architect_general and coder_escalation on ONE GGUF in ONE :8083 process and degenerated
++  # every escalation chain in the file. That draft is WITHDRAWN. Nothing about this row's
++  # model, recipe, placement, template or measured numbers changes.
 +  #
-+  # ⚠ THE 2026-07-30 no_mmap RATIONALE IS RETIRED HERE, NOT EDITED: it was a host-RAM NUMA
-+  # placement remedy and is inert for a VRAM-resident role under -ngl all. Dropped rather
-+  # than "retained (harmless)" because on this row it would force a private host copy.
++  # WHAT DOES CHANGE IS THE TENANCY OF THIS PROCESS. gemma4-26B-A4B is RETIRED, and the four
++  # roles it served (worker_general, worker_explore, worker_math, toolrunner) inherit this
++  # 35B — the same artifact this row already launches. Same GGUF => ONE server (the project's
++  # standing rule), so they join here as ALIASES and `server_mode.worker` becomes an alias
++  # row. :8072/:8082/:8182 are VACATED. `shared_with` below is the load-bearing binding
++  # (registry_compiler.py:71-73 resolves an alias role to its serving process through it);
++  # server_mode.worker.alias_of is documentation.
 +  #
-+  # ⚠ ESCALATION DEGENERACY — READ BEFORE RATIFYING. escalation_chains.coder is
-+  # frontdoor -> coder_escalation and escalation_chains.reasoning / .general contain
-+  # frontdoor -> architect_general. After this change ALL THREE of those hops are the SAME
-+  # GGUF in the SAME PROCESS, so escalating can only change the sampling seed. That is the
-+  # exact defect the 2026-07-31 Directive-3 note called out and fixed by splitting them.
-+  # This change re-creates it. See the companion .md, consequence C1.
++  # ⚠ CONCURRENCY IS HALVED FOR THE COMBINED LANE and nothing in this file softens it.
++  # BEFORE: 3 frontdoor instances (slots_by_shape {full: 4, half: 1} => 6 slots) PLUS 3 gemma
++  # instances (6 slots) = 12 slots across 6 processes. AFTER: 3 instances, 6 slots, shared by
++  # SIX role names. That follows from one GGUF, one server; it is the price of the merge.
++  #
++  # ✓ ESCALATION CHAINS SURVIVE INTACT, which is the whole point of the C1 ruling:
++  #   coder:     frontdoor (35B, CPU :8070)  -> coder_escalation (27B, GPU :8083)
++  #   reasoning: frontdoor (35B, CPU)        -> architect_general (27B, GPU)
++  #              -> architect_critic (Flash-Next, CPU :8074)
++  # Three distinct GGUFs on two devices. The 27B additionally gains MEDIUM reasoning effort
++  # (see server_mode.architect_general.chat_template_kwargs), so hop 2 now differs from hop 1
++  # in MODEL, DEVICE and THINKING MODE, not merely in sampling seed.
    frontdoor:
--    # 2026-07-30: private per-instance weights. Under shared mmap the GGUF's
--    # pages are placed ONCE by whichever process faults them first, and every
--    # later instance inherits that placement regardless of its own --membind /
--    # --interleave. Measured: 4 co-resident instances at 0.256/0.256/0.242/0.269
--    # node-local under mmap vs 1.00 each under --no-mmap, fleet decode 40.91 ->
--    # 52.13 tok/s. Without this the numactl policy in stack_numa.py is accepted
--    # and silently does nothing.
--    no_mmap: true
--    url: http://localhost:8070
--    port: 8070
--    # 2026-08-02: was 2. This is now the COMPAT SCALAR for `serving_shape.slots_by_shape`
--    # and must equal the value of the role's primary (endpoint) instance, which is the
--    # full one on :8070. The guard enforces that equality.
--    slots: 4
--    serving_shape:
--      n_ctx: 262144
--      slots_by_shape: {full: 4, half: 1}   # 262144/4 = 65536 per slot on the full,
--                                            # 262144/1 = 262144 per slot on each half
--      kv_quant: {k: q8_0, v: q8_0}          # Q8 KV (lean parity) — moved here from the flat key
--      kv_kib_per_token_f16: 82.0            # qwen35moe: 41 blocks x 2 kv-heads x (256+256) x 2 / 1024
--                                            # => 41.0 KiB/token at q8_0/q8_0, 10.25 GiB per instance
-+    url: http://localhost:8083
-+    port: 8083
-+    slots: 2                       # compat scalar; inherited from architect_general's process
-+    # NO `serving_shape` BLOCK — DELIBERATE. Same reasoning as coder_escalation: an alias
-+    # launches no server, so it HAS no serving shape of its own and declaring one would
-+    # assert a second, uncheckable KV-feasibility group over one allocation.
-+    # ⚠ CONTEXT LOSS: frontdoor served n_ctx 262144 / 4 slots = 65536 per slot on CPU. On
-+    # :8083 it inherits n_ctx 65536 / 2 slots = 32768 per slot — HALF its former per-slot
-+    # context. Raising the GPU cap is a separate, capacity-checked decision.
-+    kv_quant: {k: q8_0, v: q8_0}    # flat back-compat key (alias rows carry the flat form)
-+    alias_of: architect_general    # documentation; the load-bearing binding is
-+                                   # server_mode.architect_general.shared_with
-+    model_role: qwen38_27b_q8_local
-     chat_template_kwargs:
-       enable_thinking: false  # Qwen3.6 thinking OFF for task suites (lean parity; +33pp empirically)
-     # Terseness-template PILOT per operator directive 2026-08-21/22: serve the epyc-built
-@@ -907,49 +916,35 @@ server_mode:
-       base: froggeric v22.3 minus inline-tag scan plus Sharp terseness
+     # 2026-07-30: private per-instance weights. Under shared mmap the GGUF's
+     # pages are placed ONCE by whichever process faults them first, and every
+@@ -908,16 +935,26 @@ server_mode:
        evidence: 'CT-1b A/B artifacts: /workspace/artifacts/chat-templates/epyc-qwen3x-v1/ab-cpu-20260821/ct1b-terse/.
          E-7: frontdoor''s calibration stamps are voided by the template axis and must re-measure.'
--    model_role: qwen36_q8_0
+     model_role: qwen36_q8_0
 -    shared_with: [worker_summarize]  # 2026-07-31: coder_escalation REMOVED from this list —
--                       # it moved to architect_general's :8083 GPU process (Directive 3), so it is no
++    # ⚠ 2026-09-22: FOUR NAMES ADDED. worker_general, worker_explore, worker_math and
++    # toolrunner move here from the retiring gemma4 :8072 process. This process now serves
++    # SIX role names off ONE 35B allocation. registry_compiler.py:71-73 reads THIS list to
++    # resolve an alias to its serving process, so this line is the load-bearing half of the
++    # worker-lane merge — server_mode.worker.alias_of is documentation only.
++    # ORDER IS NOT ARBITRARY: the phase-2 parity guard derives `shared_with_first_n` from it.
++    shared_with: [worker_summarize, worker_general, worker_explore, worker_math, toolrunner]
++                       # 2026-07-31: coder_escalation REMOVED from this list —
+                        # it moved to architect_general's :8083 GPU process (Directive 3), so it is no
 -                       # longer served by frontdoor. worker_summarize is frontdoor's ONE remaining
 -                       # alias on :8070.
--                       # registry_compiler.py:71-73 reads THIS to resolve an alias role to its serving
--                       # process. The list was [] until 596a1e24 restored it (a drift guard caught the
--                       # emptiness and was RIGHT — the data was wrong, not the guard); 596a1e24's own
--                       # comment required this narrowing to land in the SAME commit as the repoint,
--                       # never split. It did.
++                       # longer served by frontdoor.
+                        # registry_compiler.py:71-73 reads THIS to resolve an alias role to its serving
+                        # process. The list was [] until 596a1e24 restored it (a drift guard caught the
+                        # emptiness and was RIGHT — the data was wrong, not the guard); 596a1e24's own
+                        # comment required this narrowing to land in the SAME commit as the repoint,
+                        # never split. It did.
 -    description: Root LM — Qwen3.6-35B-A3B MTP Q8 (quality 93%, May-4 Claude-as-Judge 170/183; v6 NEXTN self-draft)
--    benchmark_date: 2026-05-04
--    benchmark_score: 170/183 (92.9%)
--    model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
--    model_path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
--    draft_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
--    # kv_quant MOVED 2026-08-02 into `serving_shape` above — it is one third of the
--    # KV-feasibility group, not a free-standing knob. The flat key is still READ for
--    # rows that have not migrated; leaving a second copy here would be the duplication
--    # the group exists to remove.
--    memory_gb: 37
-+    description: "Root LM — Qwen3.8-27B dense Q8 MTP on MI210 (ROCm0). 2026-09-22: MIGRATED off the
-+      CPU Qwen3.6-35B-A3B :8070 process onto architect_general's :8083 GPU process; alias, launches
-+      no server of its own. Prior artifact Qwen3.6-35B-A3B-MTP-Q8_0 retained in the fleet under
-+      server_mode.worker. Quality on Qwen3.8-27B NOT measured for the frontdoor suites."
-+    # Terseness-template PILOT: inherited from the :8083 process (architect_general carries the
-+    # chat_template_file). Do NOT restate it here — one process serves one template.
-+    chat_template_kwargs:
-+      enable_thinking: false
-+    benchmark_date: null   # 2026-09-22 model swap: the 35B frontdoor record does NOT transfer
-+    benchmark_score: null  # was 170/183 (92.9%) = Qwen3.6-35B-A3B May-4 judge; belongs to the 35B
-+    model: Qwen3.8-27B-Q8_0.gguf
-+    model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
-+    memory_gb: 27   # Qwen3.8-27B Q8 weights (27.05 GiB); GPU-resident on ROCm0 — VRAM, not host RAM
-+    vram_gib: 37.22 # shared with architect_general + coder_escalation: ONE process, ONE allocation.
-+                    # This alias adds ZERO cost. Figure from qwen38_27b_q8_local.production_throughput.
-     tier: hot
--    # 2026-07-30: quarters retired. These are the SUB-FULL instances only —
--    # the full lives at `port` above. Halves reuse the first two quarter port
--    # slots; 8280/8380/8282/8382/8385/8485 are FREED and must not be revived
--    # without a topology change, because several fail-open paths treat an
--    # unknown port as lock-free (backend.py:207, placement.py:186,
--    # cpu_region_lock.py:641).
--    numa_instances: 2  # 2×48t NUMA-half instances (nodes 0,1 and 2,3)
--    numa_ports: [8080, 8180]
-     acceleration:
--      type: speculative_decoding
--      # CANONICAL: see top-level `speculative_decoding_policy`. MTP self-draft ALONE
--      # is the production recipe (was `draft-mtp` alone until 2026-07-31).
--      spec_type: draft-mtp
--      draft_max: 4
-+      # ALIAS ROLE. `type: none` means "launches no draft of its own", NOT "runs without
-+      # speculation" — it inherits architect_general's draft-mtp n-max 8 recipe at runtime.
-+      type: none
-+      inherits_spec_from: architect_general
-       lookup: false
-       corpus_retrieval: true
--    throughput: 40.22  # category=OPTIMUM t/s, full instance canonical placement, draft-mtp, short ctx.
--                       # Long ctx 22.59. Was 24.3 (a May-4 figure equal to its own baseline) until 2026-07-31.
--                       # q_scorer.registry_baseline_tps_by_role reads THIS FIRST, ahead of roles.*.performance,
--                       # so correcting roles/ alone left the cost model stale.
--    previous_model: Qwen3.5-35B-A3B-UD-Q4_K_M.gguf  # frontdoor swapped to Qwen3.6 Q8 2026-05-04 (lean)
-+    throughput: 55.46  # category=OPTIMUM t/s, MI210 ROCm0, Qwen3.8-27B dense Q8, draft-mtp n-max 8,
-+                       # np=1, short ctx. Source: qwen38_27b_q8_local.production_throughput (measured
-+                       # on THIS artifact). BASELINE spec-off 27.78. NOT a frontdoor-suite figure.
-+                       # ⚠ q_scorer.registry_baseline_tps_by_role reads THIS FIRST; the CPU 40.22 the
-+                       # role used to carry is gone with the CPU process, not merely superseded.
-+    previous_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf  # 2026-09-22: role moved OFF the CPU :8070 35B process
- 
-   # qwen25_coder_32b_q4km: launch spec preserved from the former coder_escalation model
-   # (role realigned to Qwen3.6 2026-05-27; kept per model_not_role_indexing). Not in process_layout.
-@@ -1021,6 +1016,14 @@ server_mode:
++    description: "Root LM — Qwen3.6-35B-A3B MTP Q8 (quality 93%, May-4 Claude-as-Judge 170/183;
++      v6 NEXTN self-draft). 2026-09-22: UNCHANGED MODEL, WIDENED TENANCY — this :8070 process
++      now also serves worker_general, worker_explore, worker_math and toolrunner, inherited
++      from the retired gemma4-26B-A4B. The 170/183 stamp is frontdoor's own and does NOT
++      transfer to the worker battery; see roles.worker_general.performance."
+     benchmark_date: 2026-05-04
+     benchmark_score: 170/183 (92.9%)
+     model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+@@ -1021,70 +1058,100 @@ server_mode:
      previous_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf  # 2026-07-31: role moved OFF frontdoor's shared 35B :8070 process onto the 27B dense on :8083. Prior to 2026-05-06 the role ran Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.
  
    worker:
-+    # 2026-09-22: `no_mmap` ADDED WITH THE MODEL. It travels with the 35B from the retiring
-+    # frontdoor row and it is load-bearing, not cosmetic: under shared mmap a GGUF's pages are
-+    # placed ONCE by whichever of the three instances faults them first, and every later one
-+    # inherits that placement regardless of its own --interleave. Measured on this exact fleet
-+    # shape: 0.256/0.256/0.242/0.269 node-local under mmap vs 1.00 each under --no-mmap, fleet
-+    # decode 40.91 -> 52.13 tok/s. The outgoing gemma row ran --no-mmap WITHOUT --mlock; the
-+    # mlock half of that is stack_topology.yaml's call, not this file's.
-+    no_mmap: true
-     url: http://localhost:8072
-     port: 8072
-     # 2026-08-02: was 1. Compat scalar for `serving_shape.slots_by_shape`; must equal
-@@ -1029,21 +1032,20 @@ server_mode:
-     serving_shape:
-       n_ctx: 262144
-       slots_by_shape: {full: 4, half: 1}   # 65536 per slot on the full, 262144 on each half
+-    url: http://localhost:8072
+-    port: 8072
+-    # 2026-08-02: was 1. Compat scalar for `serving_shape.slots_by_shape`; must equal
+-    # the primary (endpoint) instance's value, i.e. the full on :8072.
++    # ── 2026-09-22 LINEUP CHANGE (operator-directed) ────────────────────────────────
++    # gemma-4-26B-A4B-it-ORIG-Q4_K_M IS RETIRED. worker_general (this row's primary role) and
++    # its worker_explore / worker_math / toolrunner aliases inherit Qwen3.6-35B-A3B-MTP-Q8_0 —
++    # the artifact server_mode.frontdoor ALREADY launches on :8070/:8080/:8180. Same GGUF =>
++    # ONE server, so this row becomes an ALIAS and :8072/:8082/:8182 are VACATED.
++    #
++    # WHY frontdoor IS THE PRIMARY AND THIS ROW IS THE ALIAS, not the reverse: :8070/:8080/:8180
++    # with interleave=all / 0,1 / 2,3 is the wiring EVERY measured figure for this artifact was
++    # taken under (P-BENCH-PLACEMENT-1, n=3, 2026-07-30). Moving the 35B onto :8072 would have
++    # re-pointed a measured placement for no gain and voided the attestation below.
++    #
++    # ⚠ VACATED PORTS. 8072/8082/8182 must NOT be revived without a topology change: several
++    # dispatch paths fail OPEN on an unknown port (backend.py:207, placement.py:186;
++    # cpu_region_lock.py:641 yields no lock at all). stack_topology.yaml's
++    # `numa_config.worker_general` block MUST BE DELETED in the same change — left in place it
++    # launches three CPU servers for a role that no longer has a process (the 2026-08-01 W1
++    # precedent: "a role with no process of its own must not carry NUMA wiring — that wiring is
++    # what would launch a second server"). See the companion .md, C3-adjacent scope note.
++    url: http://localhost:8070
++    port: 8070
++    # Compat scalar; inherited from frontdoor's full instance on :8070. It must equal the
++    # primary (endpoint) instance's value, which validate_declaration_parity() enforces.
+     slots: 4
+-    serving_shape:
+-      n_ctx: 262144
+-      slots_by_shape: {full: 4, half: 1}   # 65536 per slot on the full, 262144 on each half
 -      # RECORDED, NOT CHANGED (2026-08-02): the live :8072/:8082/:8182 processes were
 -      # already running `-ctk q8_0 -ctv q8_0`; verified from /proc/<pid>/cmdline before
 -      # writing this row. It moved here from launch_manifest.yaml, which was the only
 -      # place that declared it.
-+      # CARRIED FORWARD from the retiring server_mode.frontdoor row (2026-09-22): q8_0/q8_0 is
-+      # what the live 35B processes on :8070/:8080/:8180 were already running. The value is
-+      # unchanged by the model swap because it belongs to the 35B, which moved here intact.
-       kv_quant: {k: q8_0, v: q8_0}
+-      kv_quant: {k: q8_0, v: q8_0}
 -      # gemma4: 30 blocks x 8 kv-heads x (512+512) x 2 / 1024 = 480.0 KiB/token at f16,
 -      # 240.0 at q8_0/q8_0 => 60 GiB per instance at n_ctx 262144, 180 GiB across the
 -      # three instances. THAT IS 6x THE NEXT MODEL and 74% of the whole host KV budget
@@ -173,86 +116,108 @@ index ecba3a6..5f5b828 100644
 -      kv_kib_per_token_f16: 480.0
 -    model_role: worker_general
 -    shared_with: [worker_explore, worker_math, toolrunner]  # 2026-08-02: worker_explore ADDED.
-+      # 2026-09-22 MODEL SWAP gemma4-26B-A4B -> Qwen3.6-35B-A3B-MTP-Q8_0. The KV figure below is
-+      # the 35B's, not gemma's. THIS IS THE BIGGEST SINGLE WIN IN THE LINEUP CHANGE:
-+      #   gemma4  480.0 KiB/token f16 -> 240.0 at q8_0/q8_0 => 60.0 GiB/instance @262144
-+      #   qwen35moe 82.0 KiB/token f16 ->  41.0 at q8_0/q8_0 => 10.25 GiB/instance @262144
-+      # Across three instances that is 180 GiB -> 30.75 GiB, i.e. ~149 GiB of host KV
-+      # reclaimed. The "first thing to cap if memory pressure appears" warning this comment
-+      # used to carry is DISCHARGED: gemma's 8 kv-heads x 512-wide outlier left the fleet.
-+      kv_kib_per_token_f16: 82.0
-+    model_role: qwen36_35b_a3b_mtp_q8_local
-+    shared_with: [worker_explore, worker_math, toolrunner, worker_summarize]  # 2026-08-02: worker_explore ADDED.
-                        # It was missing here while being demonstrably live: src/roles.py:332 and
-                        # src/api/routes/health.py:30 canonicalise it, src/config/models.py gives it
-                        # its own server_url, three orchestration/lab_jobs.yaml jobs run
-@@ -1054,25 +1056,41 @@ server_mode:
-                        # drifted side. Master was the incomplete one. Declaring it here lets the
-                        # phase-2 parity guard derive `shared_with_first_n` from master instead of
-                        # carrying worker_explore as a documented launcher-only exception.
+-                       # It was missing here while being demonstrably live: src/roles.py:332 and
+-                       # src/api/routes/health.py:30 canonicalise it, src/config/models.py gives it
+-                       # its own server_url, three orchestration/lab_jobs.yaml jobs run
+-                       # `model_role: worker_explore`, runtime_defaults.timeouts.roles declares 60s
+-                       # for it, and the compiled priors carry a worker_explore record that exists
+-                       # ONLY because the launcher attaches the alias.
+-                       # The launcher had it and master did not, so the launcher looked like the
+-                       # drifted side. Master was the incomplete one. Declaring it here lets the
+-                       # phase-2 parity guard derive `shared_with_first_n` from master instead of
+-                       # carrying worker_explore as a documented launcher-only exception.
 -    description: Try-cheap-first worker — gemma4-26B-A4B Q4_K_M MTP (swapped 2026-05-08 from Qwen3-Coder-30B-A3B; tool_compliance 96% vs 78%, full suite 90% vs 84%)
 -    model: gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf
 -    draft_model: gemma-4-26B-A4B-it-assistant-v6-Q8_0.gguf
 -    memory_gb: 16
-+    description: "Try-cheap-first worker — Qwen3.6-35B-A3B MTP Q8 (2026-09-22: swapped from
-+      gemma4-26B-A4B Q4_K_M, which is RETIRED). This process now serves FIVE role names:
-+      worker_general (primary) + worker_explore, worker_math, toolrunner, worker_summarize.
-+      The 35B and its self-draft moved here WHOLESALE from the retiring :8070 frontdoor
-+      process — same GGUF, same recipe, same measured numbers; only the role identity changed."
++    # NO `serving_shape` BLOCK — DELIBERATE. Same reasoning as coder_escalation: an alias
++    # launches no server, so it HAS no serving shape of its own, and declaring one would assert
++    # a second, uncheckable KV-feasibility group over a single allocation. The served shape is
++    # server_mode.frontdoor.serving_shape and it is UNCHANGED by this merge:
++    #   n_ctx 262144, slots_by_shape {full: 4, half: 1}, kv q8_0/q8_0, 82.0 KiB/token f16.
++    # ✓ THE WORKER LANE GAINS CONTEXT: it declared the same 262144, but on gemma that cost
++    #   480.0 KiB/token f16 (240.0 at q8_0) = 60.0 GiB per instance, 180 GiB across three. On
++    #   the 35B it is 82.0 f16 (41.0 at q8_0) = 10.25 GiB per instance. gemma's 8 kv-heads x
++    #   512-wide K/V was the fleet's outlier and it leaves with the model; the "first thing to
++    #   cap if host memory pressure appears" warning that used to live here is DISCHARGED.
++    kv_quant: {k: q8_0, v: q8_0}    # flat back-compat key (alias rows carry the flat form)
++    alias_of: frontdoor             # documentation; the load-bearing binding is
++                                    # server_mode.frontdoor.shared_with
++    model_role: qwen36_35b_a3b_mtp_q8_local
++    # ⚠ model_role REPOINTED, and it is load-bearing, not documentation:
++    # model_descriptors.py:1233-1244 substitutes the model_role row's config when an alias's
++    # model id differs from its server_mode entry. It previously read `worker_general` — the
++    # ROLE row, not a catalogue row — which was the odd one out in this file (frontdoor,
++    # architect_general, architect_critic and coder_escalation all name a catalogue row).
++    # qwen36_35b_a3b_mtp_q8_local IS the exact-artifact row for the file this process launches.
++    description: "Try-cheap-first worker — ALIAS on frontdoor's :8070 Qwen3.6-35B-A3B MTP Q8
++      process. 2026-09-22: gemma4-26B-A4B Q4_K_M RETIRED; worker_general and its worker_explore /
++      worker_math / toolrunner aliases moved onto the 35B that was already serving frontdoor and
++      worker_summarize. Not a distinct model and not a distinct server."
 +    model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
 +    model_path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
 +    draft_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf   # MTP self-draft = same file; launcher omits -md.
-+                                                 # The EXTERNAL gemma drafter is gone with gemma.
++                                                 # The EXTERNAL gemma drafter is gone with gemma
++                                                 # and is orphaned — see the deprecation marker on
++                                                 # roles.draft_gemma4_26b_a4b_assistant_q8.
 +    chat_template_kwargs:
 +      enable_thinking: false  # Qwen3.6 thinking OFF (lean parity; +33pp empirically) — MANDATORY
 +                              # on this artifact: without it the model returns 0 visible chars.
-+    # Terseness-template PILOT moves with the artifact (operator directive 2026-08-21/22).
-+    # REVERT: removing the single chat_template_file line fully reverts the pilot.
-+    chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
-+    chat_template:
-+      provenance: epyc_built_terse_v1
-+      served_template_bytes: 25808
-+      served_template_sha256_12: 1443ea9ab4bb
-+      base: froggeric v22.3 minus inline-tag scan plus Sharp terseness
-+      evidence: 'CT-1b A/B artifacts measured ON THIS ARTIFACT (Qwen3.6-35B-A3B):
-+        /workspace/artifacts/chat-templates/epyc-qwen3x-v1/ab-cpu-20260821/ct1b-terse/.'
-+    memory_gb: 37
++                              # Inherited from the :8070 process; restated because the alias row
++                              # is what a per-role chat_template_kwargs lookup reads
++                              # (registry_loader.get_role_chat_template_kwargs).
++    # Terseness-template PILOT: inherited from the :8070 process, which carries the
++    # chat_template_file. Do NOT restate it here — one process serves one template.
++    memory_gb: 0    # ALIAS: adds ZERO host RAM. The 37 GiB is charged once, to
++                    # server_mode.frontdoor, which owns the process.
      tier: hot
 -    previous_model: Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf
 +    previous_model: gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf   # RETIRED 2026-09-22
      acceleration:
-       type: speculative_decoding
+-      type: speculative_decoding
 -      # CANONICAL: see top-level `speculative_decoding_policy`. MTP self-draft ALONE
 -      # is the production recipe (composed REVERSED 2026-07-31 on evidence).
 -      # it held this same value while `spec_type` held `draft-mtp`, which read as
 -      # "the real one is elsewhere" and caused mis-launched measurement runs.
-+      # CANONICAL: see top-level `speculative_decoding_policy`. MTP self-draft ALONE.
-+      # draft_max 4 is the 35B's value, carried from server_mode.frontdoor. It is NOT
-+      # inherited from gemma (whose 2 was tuned for a 16/8-head EXTERNAL drafter) — depth
-+      # is per-model and per-drafter, and this drafter is a different object entirely.
-       spec_type: draft-mtp
+-      spec_type: draft-mtp
 -      draft_max: 2
 -      draft_p_min: 0.0
 -      threads_draft: 16
 -      ubatch: 512
++      # ALIAS ROLE. `type: none` means "launches no draft of its own", NOT "runs without
++      # speculation" — it inherits frontdoor's draft-mtp self-draft recipe (n-max 4) at runtime.
++      # gemma's `draft_max: 2 / draft_p_min: 0.0 / threads_draft: 16 / ubatch: 512` are DELETED:
++      # every one of them tuned a separate 441 MB external drafter process that no longer exists,
++      # and depth is per-model AND per-drafter.
++      type: none
++      inherits_spec_from: frontdoor
++      spec_type: draft-mtp        # the INHERITED recipe, stated so a reader of this row alone
++                                  # does not conclude the role serves without speculation
 +      draft_max: 4
        lookup: false
 -      corpus_retrieval: false
-+      corpus_retrieval: true
-     # 2026-07-30: quarters retired. These are the SUB-FULL instances only —
-     # the full lives at `port` above. Halves reuse the first two quarter port
-     # slots; 8280/8380/8282/8382/8385/8485 are FREED and must not be revived
-@@ -1081,10 +1099,16 @@ server_mode:
-     # cpu_region_lock.py:641).
-     numa_instances: 2  # 2×48t NUMA-half instances (nodes 0,1 and 2,3)
-     numa_ports: [8082, 8182]
+-    # 2026-07-30: quarters retired. These are the SUB-FULL instances only —
+-    # the full lives at `port` above. Halves reuse the first two quarter port
+-    # slots; 8280/8380/8282/8382/8385/8485 are FREED and must not be revived
+-    # without a topology change, because several fail-open paths treat an
+-    # unknown port as lock-free (backend.py:207, placement.py:186,
+-    # cpu_region_lock.py:641).
+-    numa_instances: 2  # 2×48t NUMA-half instances (nodes 0,1 and 2,3)
+-    numa_ports: [8082, 8182]
 -    # 2026-07-16 routing-prior rollback: supersedes the legacy May-08 60.7 t/s
 -    # prior with the Jun-28 matched v6/iQK port artifact (N=206, avg_tokens_per_second).
 -    throughput: 56.86  # category=OPTIMUM t/s, full instance canonical placement, draft-mtp + 8B draft, short ctx.
 -                       # Long ctx 27.01. Was 38.46 until 2026-07-31.
++      corpus_retrieval: true
++    # ⚠ numa_instances/numa_ports RETAINED as explicit singletons pointing at the primary port —
++    # NOT deleted. Several dispatch paths fail OPEN on an unknown port (see the vacated-port note
++    # above). Same precedent as server_mode.coder_escalation's and architect_general's cutovers.
++    numa_instances: 1
++    numa_ports: [8070]
 +    # 2026-09-22 MODEL SWAP. 56.86 was gemma4-26B-A4B + its 8B-class external drafter and does
 +    # NOT transfer — a different model with a different drafter. The figure below is the 35B's
-+    # own OPTIMUM, carried from the retiring server_mode.frontdoor row where it was measured.
++    # own OPTIMUM, measured on THIS artifact under THIS placement, and it is by construction the
++    # same number server_mode.frontdoor carries: it is the same process.
 +    # ⚠ THIS IS A THROUGHPUT REGRESSION FOR EVERY WORKER ROLE: 56.86 -> 40.22 t/s short ctx
 +    # (-29%), 27.01 -> 22.59 long ctx (-16%). q_scorer.registry_baseline_tps_by_role reads
 +    # THIS FIRST, so the cost model will re-price the whole worker lane on it.
@@ -263,7 +228,7 @@ index ecba3a6..5f5b828 100644
  
    # 2026-07-31 VISION UNIFICATION. worker_vision and vision_escalation were two CPU llama-server
    # processes on two NPS4 nodes (:8086 / :8087) pointed at ONE Qwen2.5-VL-7B GGUF. They are now
-@@ -1123,13 +1147,21 @@ server_mode:
+@@ -1123,13 +1190,21 @@ server_mode:
        #
        # Saves 2880 MiB, server-reported: 6144.00 -> 3264.00 MiB at n_ctx 65536.
        # Evidence: data/vision_kv_q8_ab_20260802/
@@ -290,7 +255,7 @@ index ecba3a6..5f5b828 100644
      shared_with: [vision_escalation]
      description: Vision — Qwen3-VL-30B-A3B-Instruct Q4_K_M on MI210 (MMMU-250 63.6% vs Qwen2.5-VL-7B 52.4%, +11.2 pp, paired exact McNemar p=0.0011)
      model:
-@@ -1141,23 +1173,38 @@ server_mode:
+@@ -1141,23 +1216,38 @@ server_mode:
        architecture: qwen3vlmoe
        ctx_max: 262144
      previous_model: Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf  # swapped 2026-07-31
@@ -340,25 +305,145 @@ index ecba3a6..5f5b828 100644
  
    # REAP-25B: Permanently pruned Qwen3-Coder-30B-A3B (25% experts removed by Cerebras REAP)
    # Pure MoE — speculative decoding IS viable (unlike Qwen3.5 hybrids)
-@@ -1258,9 +1305,14 @@ server_mode:
+@@ -1207,21 +1297,45 @@ server_mode:
+     # this server, so slot count does not scale KV; -c does. 65536/2 = 32768 per slot.
+     slots: 2
+     serving_shape:
+-      # ── THE GPU CAP IS DELIBERATE. DO NOT RAISE IT. ──────────────────────────
+-      # This card holds BOTH GPU roles. 63.98 GiB usable (rocm-smi, 68702699520 B).
++      # ── THE GPU CAP, RECOMPUTED 2026-09-22 AFTER VISION VACATED THE CARD ────────
++      # HISTORY (do not delete — it is why the old banner said DO NOT RAISE): while
++      # worker_vision shared this MI210, 131072 was 11 GiB past the end of the card:
++      #   non-KV  27B 27.33 + VL 19.26 = 46.59;  KV @131072  16.25 + 12.00 = 28.25;
++      #   TOTAL 74.84 GiB against 63.98 usable — DOES NOT FIT.
++      # That constraint is VOID as of this change: server_mode.worker_vision moved to
++      # `device: cpu` and its `vram_non_kv_gib` was deleted with it.
+       #
+-      #   non-KV resident   27B 27.33 + VL 19.26                  = 46.59 GiB
+-      #   KV @ -c  65536    27B  8.13 (q8_0) + VL  6.00 (f16)     = 14.13 GiB
+-      #                                                      TOTAL  60.72 GiB  FITS
+-      #   KV @ -c 131072    27B 16.25       + VL 12.00            = 28.25 GiB
+-      #                                                      TOTAL  74.84 GiB  DOES NOT
++      # ⚠ THE CAPACITY GATE IS BLIND TO 4.68 GiB OF LIVE VRAM, AND THAT IS THE BINDING
++      # FACT HERE. `stack_manifest.validate_serving_shape_capacity()` sums only the
++      # `vram_non_kv_gib` figures declared in THIS file. whisper.cpp has none
++      # (server_mode.voice_server still describes a CPU faster-whisper service) and
++      # Qwen3-TTS has NO registry entry at all. Both are VRAM-resident on this card.
++      # MEASURED 2026-09-22 from /sys/class/kfd/kfd/proc/<pid>/vram_57300, sampled DURING
++      # the live serving stack: whisper 2,210,533,376 B = 2.06 GiB, qwentts
++      # 2,815,950,848 B = 2.62 GiB, total 4.68 GiB. A gate PASS at a context this
++      # comment's own arithmetic rejects is therefore NOT evidence that it fits.
+       #
+-      # 131072 is not "tight", it is 11 GiB past the end of the card. The next
+-      # person to read `ctx_max: 262144` and helpfully raise this will OOM the
+-      # GPU. `stack_manifest.validate_serving_shape_capacity()` now recomputes
+-      # exactly this sum at import and refuses, so the mistake fails loudly
+-      # instead of at model-load time.
+-      n_ctx: 65536
++      # THE ARITHMETIC, on the declared non-KV 27.33 GiB and the declared q8_0 KV rate of
++      # 130.0 KiB/token, against 63.98 GiB usable (rocm-smi, 68702699520 B):
++      #   -c  65536   27.33 +  8.13 + 4.68 (speech) = 40.14 GiB   23.84 free   (was)
++      #   -c 131072   27.33 + 16.25 + 4.68          = 48.26 GiB   15.72 free
++      #   -c 196608   27.33 + 24.38 + 4.68          = 56.39 GiB    7.59 free   <= TAKEN
++      #   -c 262144   27.33 + 32.50 + 4.68          = 64.51 GiB   OVER BY 0.53 — REFUSED
++      # Cross-check against the LIVE reading rather than the declared constant: the :8083
++      # process held 35,673,968,640 B = 33.22 GiB at -np 2 -c 65536 -ctk q8_0 -ctv q8_0
++      # (same instrument, same sample, 2026-09-22). Adding the marginal KV for 131072 more
++      # tokens (+16.25 GiB) gives 49.47 + 4.68 = 54.15 GiB, 9.83 free. Both bases agree:
++      # 196608 fits with 7.6-9.8 GiB of margin and 262144 does not fit at all.
++      #
++      # ⚠ 262144 IS NOT REACHABLE AT ANY SLOT COUNT. KV is UNIFIED on this server, so
++      # slots do not scale KV; -c does. Dropping to slots: 1 buys per-slot context, not
++      # headroom, and would serialize all three roles on this process.
++      #
++      # 2026-09-22: RAISED 65536 -> 196608 to carry ingest_long_context (operator ruling
++      # C2). PER-SLOT CONTEXT IS 196608/2 = 98304. ingest_long_context declared 262144 on
++      # its retiring Qwen3-Next-80B process, so for THAT role this is a REDUCTION, not an
++      # increase — see server_mode.ingest_long_context and the companion .md, C2.
++      n_ctx: 196608
+       kv_quant: {k: q8_0, v: q8_0}   # RECORDED, NOT CHANGED: the live :8083 process was
+                                      # already running -ctk q8_0 -ctv q8_0 (verified from
+                                      # /proc/2019908/cmdline, 2026-08-02). Declared only in
+@@ -1236,8 +1350,47 @@ server_mode:
+                                      # NOT `vram_gib: 36.70` below — that figure is KV-INCLUSIVE
+                                      # and its "at 262144 ctx" provenance is arithmetically
+                                      # impossible (KV alone would be 32.5 GiB); see the note there.
++    # ── 2026-09-22: MEDIUM REASONING EFFORT (operator ruling C1) ──────────────────
++    # NOTHING IS INVENTED HERE. `chat_template_kwargs` is the existing deployment-time block
++    # (registry_loader.get_role_chat_template_kwargs() reads it from server_mode, NOT from
++    # roles; src/backends/openai.py:276-284 and src/backends/llama_server.py:639-647 inject it
++    # verbatim into the POST body). `reasoning_effort` is a kwarg THIS MODEL'S OWN Jinja
++    # template already understands: the served Qwen3.8-27B template (sha256 first-12
++    # 12827f24b742) branches on low/medium/high/xhigh at :58-66. That fact is already recorded
++    # in this file, under roles.qwen38_27b_q8_local.chat_template.evidence.
++    #
++    # ⚠ THREE THINGS HAD TO MOVE TOGETHER OR THE KWARG IS A NO-OP, and all three are in this
++    # change:
++    #   (1) enable_thinking false -> true. The template's whole reasoning_effort branch sits
++    #       INSIDE the enable_thinking gate at :58 and is UNREACHABLE while it is false — the
++    #       registry says exactly that in the evidence string cited above.
++    #   (2) `--reasoning off` -> `auto`. The live :8083 process is launched with
++    #       `--reasoning off` (read from /proc/1531282/cmdline, 2026-09-22), which disables
++    #       thinking at the SERVER regardless of any template kwarg. The source of that flag is
++    #       roles.architect_general.model.reasoning, repointed in this change.
++    #       ⚠ THAT KEY ALREADY READ `auto` IN THIS FILE while the live server ran `off` — a
++    #       PRE-EXISTING master-vs-compiled drift, surfaced here, not created here.
++    #   (3) roles.architect_general.model.disable_thinking true -> false.
++    #
++    # ⚠ `medium` IS DELIBERATE AND `high` IS NOT AVAILABLE ON THIS TEMPLATE: it silently
++    # coerces 'high' to 'xhigh' (:60-61) where stock raises, and xhigh injects a 209-char
++    # instruction (:59, :66). medium is the highest level that means what it says here.
++    #
++    # ⚠ THIS IS NOT `roles.<role>.reasoning_effort.level`. That is a DIFFERENT convention: an
++    # L0-L4 PROMPT-effort ladder (scripts/analysis/effort_ladder_spec.py) validated fail-closed
++    # by scripts/validate/reasoning_effort_certifications.py against
++    # orchestration/reasoning_effort_certifications.yaml, whose `role_certifications` map is
++    # EMPTY. Declaring a level there without a certificate FAILS stack_change_pipeline, and
++    # 'medium' is not one of its levels. The two must not be conflated.
++    #
++    # ⚠ UNMEASURED. No suite has been run on this role with thinking ON at any effort level.
++    # The +33pp "thinking OFF" finding elsewhere in this file was measured on Qwen3.6-35B-A3B
++    # frontdoor task suites, not on Qwen3.8-27B in the architect role, so it neither justifies
++    # nor refutes this setting. A quality gate is REQUIRED before cutover — .md C1.
+     chat_template_kwargs:
+-      enable_thinking: false
++      enable_thinking: true      # 2026-09-22: was false. REQUIRED for reasoning_effort to be
++                                 # reachable at all (template gate at :58).
++      reasoning_effort: medium   # 2026-09-22 operator ruling C1
+     # Terseness-template PILOT EXTENSION per operator directive 2026-08-22 ("can we have the
+     # pilot on architect_general also please"). CAVEATS RECORDED: CT-1b measured the terseness
+     # effect on Qwen3.6-35B-A3B (frontdoor's model), NOT on Qwen3.8-27B — this role's deployment
+@@ -1257,10 +1410,25 @@ server_mode:
+     # 2026-08-20 Qwen3.6->Qwen3.8 swap: moved with model_path. See the note on coder_escalation —
      # model_role is load-bearing, not documentation.
      model_role: qwen38_27b_q8_local
-     description: "System architecture — Qwen3.8-27B dense Q8 MTP on MI210 (ROCm0). 2026-08-20: artifact swapped from Qwen3.6-27B-MTP-Q8_0 (rollback anchor: qwen36_27b_mtp_q8_local, retained). 2026-07-31: 122B vacated to the new architect_critic role. PRIMARY for the :8083 GPU process; coder_escalation is an alias on it."
+-    description: "System architecture — Qwen3.8-27B dense Q8 MTP on MI210 (ROCm0). 2026-08-20: artifact swapped from Qwen3.6-27B-MTP-Q8_0 (rollback anchor: qwen36_27b_mtp_q8_local, retained). 2026-07-31: 122B vacated to the new architect_critic role. PRIMARY for the :8083 GPU process; coder_escalation is an alias on it."
 -    shared_with: [coder_escalation]  # 2026-07-31: the registry-native "one server, two roles"
 -                                     # declaration (src/registry/stack_priors.py:683-685). Without
 -                                     # it the alias exists only as a port collision.
-+    shared_with: [coder_escalation, frontdoor]  # 2026-07-31: the registry-native "one server,
-+                                     # N roles" declaration (src/registry/stack_priors.py:683-685).
++    description: "System architecture — Qwen3.8-27B dense Q8 MTP on MI210 (ROCm0), at MEDIUM
++      reasoning effort as of 2026-09-22. 2026-08-20: artifact swapped from Qwen3.6-27B-MTP-Q8_0
++      (rollback anchor: qwen36_27b_mtp_q8_local, retained). 2026-07-31: 122B vacated to the new
++      architect_critic role. PRIMARY for the :8083 GPU process; coder_escalation AND, from
++      2026-09-22, ingest_long_context are aliases on it. n_ctx raised 65536 -> 196608 once
++      worker_vision vacated the card."
++    shared_with: [coder_escalation, ingest_long_context]  # 2026-07-31: the registry-native
++                                     # "one server, N roles" declaration
++                                     # (src/registry/stack_priors.py:683-685).
 +                                     # Without it an alias exists only as a port collision.
-+                                     # ⚠ 2026-09-22: frontdoor ADDED. This process now serves THREE
-+                                     # role names off ONE 27B allocation. registry_compiler.py:71-73
-+                                     # reads THIS list to resolve an alias to its serving process, so
-+                                     # the addition here is the load-bearing half of the frontdoor
-+                                     # migration — server_mode.frontdoor.alias_of is documentation.
++                                     # ⚠ 2026-09-22: ingest_long_context ADDED (operator ruling C2).
++                                     # frontdoor was NOT added — it stays on the CPU 35B (ruling C1),
++                                     # which is what keeps the coder and reasoning escalation chains
++                                     # from degenerating into one GGUF in one process. This process
++                                     # now serves THREE role names off ONE 27B allocation.
++                                     # registry_compiler.py:71-73 reads THIS list to resolve an alias
++                                     # to its serving process, so the addition here is the
++                                     # load-bearing half of the ingest migration —
++                                     # server_mode.ingest_long_context.alias_of is documentation.
      # previous_wiring: 2x_cross_numa_8083_8183 REMOVED 2026-07-31 — a 122B-era CPU NUMA fact
      # naming a sibling port 8183 that does not exist for a GPU-resident role.
      agent_file_compression_operating_point: none  # 2026-07-31 model swap: the `aggressive` gate
-@@ -1372,38 +1424,116 @@ server_mode:
+@@ -1372,38 +1540,146 @@ server_mode:
        # region locks, and a future reader adding a half here must be forced to state its
        # slot count rather than inherit the full's.
        slots_by_shape: {full: 1}            # 262144/1 = 262144 per slot
@@ -404,16 +489,20 @@ index ecba3a6..5f5b828 100644
 -    model_role: qwen35_122b_q4km
 -    description: Adversarial plan critic — Qwen3.5-122B-A10B MoE (quality 2.57/3). Inherited from architect_general 2026-07-31. Consultable (architect_critic.critique_plan) AND routable (boosted-reasoning escalation).
 +    model_role: qwen38_flash_next_ud_iq4xs_local
-+    shared_with: [ingest_long_context]   # 2026-09-22: the registry-native "one server, two roles"
-+                                         # declaration (src/registry/stack_priors.py:683-685).
-+                                         # Same GGUF => ONE server, per the project's standing rule.
-+                                         # ⚠ THESE TWO ROLES HAVE DIFFERENT SHAPES AND NOW SHARE ONE.
-+                                         # See companion .md C2 for what each gives up.
-+    description: "Adversarial plan critic AND long-context ingest — Qwen3.8-Flash-Next UD-IQ4_XS
-+      (qwen4exp, 512 experts / 10 active, SSM+attention hybrid, trained ctx 262144 verified from the
-+      GGUF header). 2026-09-22: replaces Qwen3.5-122B-A10B UD-Q4_K_M (RETIRED) here and
-+      Qwen3-Next-80B-A3B-Instruct-Q4_K_M (RETIRED) on the ingest_long_context alias.
-+      Consultable (architect_critic.critique_plan) AND routable (boosted-reasoning escalation)."
++    # ⚠ NO `shared_with`. An earlier draft merged ingest_long_context onto this process.
++    # OPERATOR RULING C2 WITHDREW IT: this role's single full instance on 0-95 holds ALL FOUR
++    # CPU region locks while it runs, and ingest_long_context is ROUTINE traffic (Stage 1 of
++    # three_stage_summarization). Putting routine traffic behind the whole-machine lock is the
++    # exact hazard the operator's own D2 ruling (2026-07-31) narrowed the `reasoning` chain to
++    # `explicit_request` to prevent, and the telemetry D2 named as the prerequisite
++    # (`region_lock_wait_s_by_holder`) still does not exist anywhere in the codebase.
++    # ingest_long_context is now an alias on the GPU 27B (:8083) instead. This row serves
++    # architect_critic and nothing else.
++    description: "Adversarial plan critic — Qwen3.8-Flash-Next UD-IQ4_XS (qwen4exp, 512 experts /
++      10 active, SSM+attention hybrid, trained ctx 262144 verified from the GGUF header).
++      2026-09-22: replaces Qwen3.5-122B-A10B UD-Q4_K_M (RETIRED). SOLE ROLE ON THIS PROCESS —
++      ingest_long_context is NOT an alias here (operator ruling C2). Consultable
++      (architect_critic.critique_plan) AND routable (boosted-reasoning escalation)."
      previous_wiring: architect_general_8083  # identical GGUF + placement; role split 2026-07-31
 +    previous_model: /mnt/raid0/llm/models/Qwen3.5-122B-A10B-MTP-GGUF/UD-Q4_K_M/Qwen3.5-122B-A10B-UD-Q4_K_M-00001-of-00003.gguf  # RETIRED 2026-09-22
      # Phase 3 compliance gate (2026-05-07): aggressive passes (117% baseline compliance,
@@ -473,9 +562,35 @@ index ecba3a6..5f5b828 100644
 +      recipe_id: qwen38-flash-next-cpu-mtp
 +      module: epyc-inference-research/scripts/lib/qwen38_flash_next_recipe.py
 +      surface: cpu-decode
-+      threads: 48        # ⚠ NOT 96, on a 0-95 cpuset. This is the SERVED decode optimum for
-+                         # this model and it CONFLICTS with stack_numa._assert_instance_invariants,
-+                         # which requires -t == the cpuset's physical core count. See .md C3.
++      threads: 48        # NOT 96, on a 0-95 cpuset. This is the SERVED decode optimum for this
++                         # model (scripts/lib/qwen38_flash_next_recipe.py THREADS, "NOT 96: the
++                         # served decode optimum on this model").
++      cpu_shape: NUMA_FULL_T48
++      # ── C3 RESOLVED (operator ruling: "add the needed cpu shape") ─────────────────
++      # An earlier draft recorded -t 48 on a 0-95 cpuset as an UNRESOLVED CONFLICT with
++      # stack_numa._assert_instance_invariants, which raises at import when a non-GPU
++      # instance's `-t` does not equal its cpuset's physical core count. The existing
++      # NUMA_FULL shape is ("0-95", 96), so this role could not be wired at its measured
++      # optimum. The ruling is to describe the instance honestly rather than document an
++      # exception, so epyc-orchestrator gains a NEW SHAPE:
++      #     NUMA_FULL_T48 = ("0-95", 48)      class "full"
++      # ⚠ THIS ROW IS A POINTER, NOT THE DEFINITION. Shapes are Python constants in
++      # epyc-orchestrator/scripts/server/stack_numa.py and the file says so in terms:
++      # "Adding one is a change to the description of this machine and belongs HERE, not in
++      # the YAML" (:324-325). stack_topology.yaml may only NAME a shape; `-t` is never
++      # declared in YAML, it comes from the shape tuple. The orchestrator-side change is
++      # OUT OF SCOPE for this registry patch and is carried verbatim in the companion .md.
++      # ⚠ IT IS A DELIBERATE UNDER-SUBSCRIPTION, NOT AN OVERSUBSCRIPTION. The invariant's
++      # stated reason is SMT oversubscription (measured -13% per-stream, -8.5% aggregate at
++      # np=4); 48 threads on 96 physical cores is the opposite of that. The invariant's
++      # `threads != phys` is an equality standing in for an inequality, which is why it also
++      # rejects the honest case. The companion .md's diff narrows it for shapes that
++      # explicitly register as under-subscribed, and leaves `threads > phys` fatal for every
++      # shape including this one — the deleted NUMA_NODE0 (48 physical / 96 threads) stays
++      # rejected. It is a corrected proxy, not a bypass.
++      # ✓ THE REGION-LOCK FACT IS UNCHANGED: the cpuset is still 0-95, so this instance still
++      # derives regions {q0,q1,q2,q3} and still holds all four CPU region locks. The new
++      # shape changes the thread count and nothing else.
 +      no_mmap: true
 +      flash_attn: on
 +      env:
@@ -493,7 +608,7 @@ index ecba3a6..5f5b828 100644
      numa_instances: 1
      numa_ports: [8074]
      # ── THROUGHPUT PRIOR ── category=OPTIMUM, 2026-07-31. Full instance, canonical placement,
-@@ -1411,12 +1541,21 @@ server_mode:
+@@ -1411,12 +1687,21 @@ server_mode:
      # (Qwen3.5-122B-A10B Q4_K_M row: FULL 24.00 short / 15.76 long).
      # Does NOT inherit 12.19 (2026-05-04 spec-off probe). Do NOT use 8.21 / "~8 t/s" — that is
      # Qwen3-235B-A22B, a different model.
@@ -521,31 +636,54 @@ index ecba3a6..5f5b828 100644
    architect_coding:
      deprecated: true
      deprecated_date: 2026-05-27
-@@ -1438,77 +1577,94 @@ server_mode:
+@@ -1438,77 +1723,134 @@ server_mode:
        corpus_retrieval: true  # A/B BEST: +15.6pp acceptance (74.9→90.5%), +17% speed (8.3→9.7 t/s)
      throughput: 7.0    # t/s at 96t NUMA deployment (sweep 2026-03-21). 192t ref: 7.1. Old 9.00 was different config.
  
-+  # ── 2026-09-22 LINEUP CHANGE (operator-directed) ────────────────────────────────────
-+  # ingest_long_context MIGRATED onto architect_critic's :8074 process. Same GGUF
-+  # (Qwen3.8-Flash-Next UD-IQ4_XS) => ONE server, per the project's standing rule. It
-+  # launches NO server of its own; :8085/:8185/:8285 are VACATED.
++  # ── 2026-09-22 LINEUP CHANGE (operator-directed) ───────────────────────────────
++  # ingest_long_context MIGRATED onto architect_general's :8083 MI210 process
++  # (Qwen3.8-27B dense Q8). It launches NO server of its own; :8085/:8185/:8285 are VACATED.
++  # Its previous model, Qwen3-Next-80B-A3B-Instruct-Q4_K_M, is RETIRED.
 +  #
-+  # ⚠ WHAT THIS ROLE GIVES UP, AND IT IS NOT SMALL:
-+  #  (a) ITS PREFERRED SHAPE. This was the ONE role whose split beat its full under load
-+  #      (aggregate tok/s at T=8: half 86.17 vs full 72.53). architect_critic has exactly one
-+  #      full instance and no sub-full shape to demote to, so the halves are gone. The
-+  #      `burst_prefer_split` placement policy this role carried has nothing left to prefer.
-+  #  (b) CONCURRENCY. slots_by_shape was {full: 1, half: 1} across THREE instances, i.e. three
-+  #      concurrent ingests. It is now one slot on one instance, shared with the critic.
-+  #  (c) ISOLATION FROM THE WHOLE-MACHINE LOCK. architect_critic's single full instance on
-+  #      0-95 holds ALL FOUR CPU region locks while it runs (stack_numa.py:274-276). The D2
-+  #      ruling narrowed the `reasoning` chain to explicit_request ONLY so that routine traffic
-+  #      could never summon that lock. ingest_long_context IS routine traffic — it is Stage 1
-+  #      of three_stage_summarization. Merging them puts routine traffic on the whole-machine
-+  #      lock through the back door, which is the D2 hazard by another route. See .md C2.
++  # OPERATOR RULING C2. An earlier draft merged this role onto architect_critic's :8074
++  # Flash-Next process. That is WITHDRAWN: architect_critic's single full instance on 0-95
++  # holds ALL FOUR CPU region locks while it runs (stack_numa.py / instance_topology.py
++  # derive regions {q0,q1,q2,q3} from that cpuset), and this role is ROUTINE traffic —
++  # Stage 1 of three_stage_summarization. The D2 ruling (2026-07-31) narrowed the
++  # `reasoning` chain to explicit_request ONLY so routine traffic could never summon that
++  # lock; merging here would have reached the same hazard by a route D2 does not cover, and
++  # D2's named prerequisite telemetry (`region_lock_wait_s_by_holder`) still does not exist.
++  #
++  # ⚠ WHAT THIS ROLE GIVES UP, AND ONE ITEM IS LARGER THAN THE OPERATOR'S PREMISE:
++  #  (a) ★ CONTEXT. THIS IS A REDUCTION, NOT AN INCREASE. The role declared n_ctx 262144 at
++  #      one slot per instance, i.e. 262144 PER SLOT. :8083 gives 196608 total over 2 slots
++  #      = 98304 PER SLOT — a 2.67x cut. The ruling's premise ("it now has a much larger
++  #      context allowance") is true of the 27B relative to its OWN former 65536 cap, which
++  #      this change triples; it is not true relative to what ingest_long_context had.
++  #      262144 IS NOT PURCHASABLE ON THIS CARD: 27.33 non-KV + 32.50 KV + 4.68 GiB of
++  #      live-measured whisper/TTS VRAM = 64.51 GiB against 63.98 usable. The full
++  #      arithmetic, both bases, is in server_mode.architect_general.serving_shape.
++  #  (b) ITS PREFERRED SHAPE. This was the ONE role in the fleet whose split beat its full
++  #      under load (aggregate tok/s at T=8: half 86.17 vs full 72.53). :8083 is a single
++  #      GPU_HOST_LANE instance with no sub-full shape, so `burst_prefer_split` has nothing
++  #      left to prefer. That policy must be DROPPED from stack_topology.yaml, not left.
++  #  (c) CONCURRENCY. slots_by_shape was {full: 1, half: 1} across THREE instances, i.e.
++  #      three concurrent ingests. It is now 2 slots on one process, shared with
++  #      architect_general and coder_escalation.
 +  #  (d) `spec_type: none`. That was a PROPERTY OF Qwen3-Next-80B (SSM state cannot fork, so
-+  #      no draft path could be built), NOT a property of the role. qwen4exp ships an MTP head,
-+  #      so the exception dissolves with the model and this role now speculates.
++  #      no draft path could be built), NOT a property of the role. The 27B self-drafts from
++  #      an embedded nextn head, so the exception dissolves with the model and this role now
++  #      speculates at draft-mtp n-max 8.
++  #  (e) ITS DEVICE CLASS. This role moves CPU -> GPU. Every long-context figure it carried
++  #      was a CPU measurement on a different model; none of it transfers, and nothing has
++  #      been measured for a 27B dense Q8 at 98304 tokens on an MI210.
++  #
++  # ✓ WHAT IT GAINS: it leaves the whole-machine CPU region lock entirely (a GPU_HOST_LANE
++  # instance derives an EMPTY region set), and it gains speculation and thinking-at-medium.
++  #
++  # ⚠ stack_topology.yaml's `numa_config.ingest_long_context` block MUST BE DELETED in the
++  # same change (2026-08-01 W1 precedent). Left in place it launches CPU servers on
++  # :8085/:8185/:8285 for a role that has no process of its own.
    ingest_long_context:
 -    # 2026-07-30: private per-instance weights. Under shared mmap the GGUF's
 -    # pages are placed ONCE by whichever process faults them first, and every
@@ -596,43 +734,56 @@ index ecba3a6..5f5b828 100644
 -      evidence_strength: direct_registry_note
 -      evidence: Current Qwen3-Next GGUF template ignores chat_template_kwargs.enable_thinking; preserve native behavior.
 -    description: Accuracy-critical + long-context router specialist - SSM+MoE hybrid linear attention (NO speculation!)
-+    url: http://localhost:8074
-+    port: 8074
-+    slots: 1                       # compat scalar; inherited from architect_critic's process
++    url: http://localhost:8083
++    port: 8083
++    slots: 2                       # compat scalar; inherited from architect_general's process
 +    # NO `serving_shape` BLOCK — DELIBERATE. An alias launches no server, so it HAS no serving
-+    # shape of its own (same reasoning as coder_escalation and frontdoor).
-+    kv_quant: {k: f16, v: f16}      # flat back-compat key; FORCED by the model, see
-+                                    # server_mode.architect_critic.serving_shape.kv_quant
-+    alias_of: architect_critic     # documentation; the load-bearing binding is
-+                                   # server_mode.architect_critic.shared_with
++    # shape of its own (same reasoning as coder_escalation and server_mode.worker). The served
++    # shape is server_mode.architect_general.serving_shape: n_ctx 196608, 2 slots, q8_0/q8_0.
++    kv_quant: {k: q8_0, v: q8_0}   # flat back-compat key (alias rows carry the flat form)
++    alias_of: architect_general    # documentation; the load-bearing binding is
++                                   # server_mode.architect_general.shared_with
 +    # ⚠ numa_instances/numa_ports RETAINED as explicit singletons pointing at the primary
 +    # port — NOT deleted. Several dispatch paths fail OPEN on an unknown port
 +    # (backend.py:207, placement.py:186; cpu_region_lock.py:641 yields no lock at all).
-+    # Same precedent as server_mode.architect_general's GPU cutover.
 +    numa_instances: 1
-+    numa_ports: [8074]
-+    model_role: qwen38_flash_next_ud_iq4xs_local
++    numa_ports: [8083]
++    model_role: qwen38_27b_q8_local
 +    # `thinking_control` DELETED 2026-09-22. It described the Qwen3-Next GGUF's template
 +    # ("template ignores chat_template_kwargs.enable_thinking; preserve native behavior").
-+    # That is an artifact fact about a retired artifact. qwen4exp ships its own chat template
-+    # (verified in the GGUF header) whose enable_thinking behaviour is UNTESTED here — a
-+    # stale block asserting "preserve native behavior" would be a claim nobody has checked.
-+    # Re-add it once the qwen4exp template has actually been probed.
-+    description: "Long-context ingest alias — resolves to the architect_critic process
-+      (Qwen3.8-Flash-Next UD-IQ4_XS, CPU :8074). Not a distinct model and not a distinct server."
-+    alias_note: "THE ROLE'S DEFINING PROPERTY SURVIVES THE SWAP: qwen4exp declares
-+      context_length 262144 in its GGUF header (verified), so the 262144 this role needs is
-+      within the new model's trained context, not an extension."
++    # That is an artifact fact about a retired artifact. This role now runs the Qwen3.8-27B
++    # template, which DOES honour enable_thinking and reasoning_effort — and the :8083
++    # process sets both (enable_thinking: true, reasoning_effort: medium). A stale block
++    # asserting "preserve native behavior" would contradict the process it now runs in.
++    chat_template_kwargs:
++      enable_thinking: true      # inherited from the :8083 process; restated because a
++      reasoning_effort: medium   # per-role chat_template_kwargs lookup reads THIS row
++                                 # (registry_loader.get_role_chat_template_kwargs).
++    description: "Long-context ingest alias — resolves to the architect_general process
++      (Qwen3.8-27B dense Q8, MI210 ROCm0, :8083). Not a distinct model and not a distinct
++      server. 2026-09-22: replaces Qwen3-Next-80B-A3B-Instruct-Q4_K_M (RETIRED), which ran
++      three dedicated CPU instances on :8085/:8185/:8285."
++    alias_note: "⚠ THE ROLE'S DEFINING PROPERTY DOES NOT FULLY SURVIVE THE SWAP. The 27B's
++      ctx_max is 262144, so the model can carry the role's declared context in principle, but
++      the DEPLOYED per-slot context on :8083 is 98304 (196608 over 2 slots) and the MI210
++      cannot be raised further — see server_mode.architect_general.serving_shape for the
++      arithmetic on both the declared and the live-measured basis. Any caller that relies on
++      262144 must be re-pointed or must accept truncation."
 +    previous_model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf   # RETIRED 2026-09-22
      # Phase 3 compliance gate (2026-05-07): medium passes; aggressive fails procedure (89%
      # baseline). Compliance pinned 0.933 across all 4 levels, recall 0.93-1.00.
++    # ⚠ That gate scored Qwen3-Next-80B. It is NOT a Qwen3.8-27B result. architect_general,
++    # which owns this process, carries `none` for exactly this reason (its own aggressive gate
++    # was measured on the 122B and did not transfer). RE-PROBE via
++    # tests/compliance/agent_file/runner.py before relying on it.
      agent_file_compression_operating_point: medium
 -    model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf
 -    memory_gb: 46
-+    model: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
-+    memory_gb: 0    # ALIAS: adds ZERO host RAM. The 90 GiB is charged once, to
-+                    # server_mode.architect_critic, which owns the process.
++    model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
++    memory_gb: 0    # ALIAS: adds ZERO host RAM and ZERO VRAM. The 27 GiB is charged once, to
++                    # server_mode.architect_general, which owns the process.
      tier: hot
++    device: ROCm0   # 2026-09-22: was CPU. Inherited from the :8083 process.
      acceleration:
 -      type: none  # 2026-07-17: default experts; stale MoE4 override removed from live ingest policy
 -      # CANONICAL: see top-level `speculative_decoding_policy` -> exceptions.ingest_long_context.
@@ -648,94 +799,69 @@ index ecba3a6..5f5b828 100644
 -    throughput: 14.4-20.8
 -    benchmark_score: 25/27 (93%) on canonical long_context suite, May-4
 -    notes: "SSM-hybrid linear attention scales O(n) per token — at extreme contexts (50K+) outperforms pure-attention models. Best Stage-1 candidate for three_stage_summarization (full-context fast draft). Stage-2 review now uses frontdoor (Qwen3.6-35B-A3B Q8, 100% long_context). Historical MoE4 rows are not live launch policy as of 2026-07-17."
-+      # ALIAS ROLE: launches no draft of its own; inherits architect_critic's draft-mtp
-+      # n-max 4 recipe (EXTERNAL -md head) at runtime.
-+      #
 +      # ⚠ THE `speculative_decoding_policy -> exceptions.ingest_long_context` ENTRY IS NOW
 +      # STALE AND MUST BE AMENDED SEPARATELY. It records `none` as this ROLE's OPTIMUM on the
 +      # grounds that "its recurrent state cannot fork, so NO draft-model path exists and none
 +      # can be built". Every clause of that was true OF Qwen3-Next-80B and none of it is true
-+      # of qwen4exp, which ships an MTP head. Amending a `canonical: true` operator-ratified
-+      # policy block is NOT in this change's scope — it is flagged, not silently rewritten.
++      # of the Qwen3.8-27B, whose nextn/MTP head is embedded in the base GGUF. Amending a
++      # `canonical: true` operator-ratified policy block is NOT in this change's scope — it is
++      # flagged, not silently rewritten.
++      #
++      # ALIAS ROLE: launches no draft of its own; inherits architect_general's draft-mtp
++      # self-draft recipe (n-max 8, same file, launcher omits -md) at runtime.
 +      type: none
-+      inherits_spec_from: architect_critic
++      inherits_spec_from: architect_general
 +      spec_type: draft-mtp        # the INHERITED recipe, stated so a reader of this row alone
 +                                  # does not conclude the role serves without speculation
++      draft_max: 8
 +      lookup: false
-+    # ⚠ THROUGHPUT IS UNMEASURED FOR THIS ROLE ON THIS MODEL. 14.4-20.8 was Qwen3-Next-80B at
-+    # ~12K context and is gone with the model. The Flash-Next 52.7 prior lives on the owning
-+    # row (server_mode.architect_critic) and carries its own three caveats; it was measured on
-+    # a CRITIC-shaped workload at -c 8192, not on a long-context ingest workload, so it is
-+    # explicitly NOT copied down here.
-+    throughput: null                # category=UNMEASURED for this role on this artifact
-+    throughput_previous_model: 14.4-20.8   # Qwen3-Next-80B @ ~12K ctx. Provenance only.
++    # ⚠ THROUGHPUT IS UNMEASURED FOR THIS ROLE ON THIS MODEL AND ON THIS DEVICE. 14.4-20.8
++    # was Qwen3-Next-80B on CPU at ~12K context and is gone with the model. The 27B's own
++    # 55.46 t/s OPTIMUM lives on server_mode.architect_general; it was measured at np=1 on 12
++    # olympiadbench prompts with thinking OFF, i.e. neither at this role's context nor at the
++    # medium reasoning effort the process now sets, so it is explicitly NOT copied down here.
++    throughput: null                # category=UNMEASURED for this role on this artifact/device
++    throughput_previous_model: 14.4-20.8   # Qwen3-Next-80B, CPU, @ ~12K ctx. Provenance only.
 +    benchmark_score: null           # was 25/27 (93%) canonical long_context, May-4 — that is a
 +                                    # Qwen3-Next-80B score and does not transfer
-+    notes: "2026-09-22: the SSM-hybrid O(n) long-context argument that selected Qwen3-Next-80B for
-+      this role still applies to qwen4exp (48 blocks, full_attention_interval 4 => 12 attention
-+      layers, 36 recurrent), so the role's architectural rationale survives the swap. What does
-+      NOT survive is every measured number, the `spec_type: none` exception, and the three-instance
-+      split shape. Stage-2 review of three_stage_summarization used to escalate to frontdoor
-+      (Qwen3.6-35B-A3B Q8); after this change frontdoor is the GPU 27B and the 35B answers to
-+      worker_summarize instead — re-point that pipeline or it silently changes model."
++    notes: "2026-09-22: ⚠ THE ARCHITECTURAL RATIONALE THAT SELECTED THE OLD MODEL DOES NOT
++      SURVIVE. Qwen3-Next-80B won this role because SSM-hybrid linear attention scales O(n) per
++      token and therefore outperforms pure-attention models at extreme context. The Qwen3.8-27B
++      is a DENSE model with 65 blocks x 4 kv-heads — the KV-densest artifact in the fleet, 3x
++      the 35B's per-token cost — and it is exactly that density that caps this process at
++      196608. The role keeps its name and loses its reason. Recorded here rather than argued
++      away; a long-context quality and cost re-measure is the gate, not an optional follow-up.
++      Stage-2 review of three_stage_summarization escalates to frontdoor, which is unchanged
++      (Qwen3.6-35B-A3B Q8, CPU :8070), so that pipeline hop is NOT affected by this change."
  
    # Voice recognition service (separate from LLM inference)
    voice_server:
-@@ -1839,14 +1995,15 @@ roles:
-     backend:
-       type: local
-     model:
--      name: Qwen3.6-35B-A3B-MTP-Q8_0
--      path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
-+      name: Qwen3.8-27B-Q8_0
-+      path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
-       quant: Q8_0
--      size_gb: 37
--      architecture: qwen35moe  # MoE variant, arch=qwen35moe in GGUF metadata
--      ctx_max: 262144
--      attention_layers: 28
--      previous_model: Qwen3.5-35B-A3B-UD-Q4_K_M (swapped 2026-05-04; +11pp, +80% t/s under canonical)
-+      size_gb: 27.05
-+      architecture: qwen35   # dense, 65 blocks x 4 kv-heads — the KV-densest model in the fleet
-+      ctx_max: 262144        # model capability. DEPLOYED CONTEXT IS 65536 — the MI210 cap on
-+                             # :8083 is deliberate; see server_mode.architect_general.serving_shape.
-+      mtp_capable: true      # blk.64.nextn.* embedded in the base (GGUF-header verified)
-+      previous_model: Qwen3.6-35B-A3B-MTP-Q8_0 (migrated CPU -> GPU 2026-09-22; the 35B stayed on CPU under worker_general)
-       use_chat_api: true
-       disable_thinking: true
-       reasoning: auto
-@@ -1855,17 +2012,21 @@ roles:
-     - frontdoor
-     - general
-     - ingest
--    # `coder` removed 2026-07-31 (Directive 3): frontdoor remains hop 1 of the coder escalation
--    # chain, but it is no longer a coder-lane MODEL CHOICE — that lane is the 27B on :8083.
--    # Kept off so autopilot does not treat frontdoor and coder_escalation as interchangeable
--    # coder arms, which they no longer are. OPERATOR CALL — see decisions.
-+    # ⚠ 2026-09-22: `coder` is STILL off this list, and the 2026-07-31 reason for keeping it off
-+    # has now INVERTED. It was removed so autopilot would not treat frontdoor and
-+    # coder_escalation as interchangeable coder arms "which they no longer are". After this
-+    # change they ARE interchangeable — same GGUF, same process, same recipe. The list is left
-+    # unchanged because re-adding `coder` is a routing decision, not a bookkeeping one, but a
-+    # reader must not take the stale rationale above as still holding. See .md C1.
-     acceleration:
--      type: speculative_decoding
--      # CANONICAL: see top-level `speculative_decoding_policy`. MTP self-draft ALONE
--      # is the production recipe (was `draft-mtp` alone until 2026-07-31).
-+      # ALIAS ROLE: inherits architect_general's recipe on :8083. `draft_max` is the 27B's
-+      # RE-MEASURED optimum (8), NOT the 35B's 4 — depth is per-model and does not travel
-+      # with the role.
-+      type: none
-+      inherits_spec_from: architect_general
-       spec_type: draft-mtp
--      draft_max: 4
--      draft_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
-+      draft_max: 8
-+      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf  # same file; launcher omits -md
-       lookup: false
-       corpus_retrieval: true
-     performance:
-@@ -2192,32 +2353,37 @@ roles:
+@@ -1830,6 +2172,14 @@ roles:
+   # =============================================================================
+ 
+   frontdoor:
++    # ⚠ 2026-09-22 LINEUP CHANGE: THIS ROLE IS DELIBERATELY UNCHANGED. An earlier draft
++    # repointed it at the GPU Qwen3.8-27B; OPERATOR RULING C1 withdrew that. frontdoor keeps
++    # Qwen3.6-35B-A3B-MTP-Q8_0, keeps :8070, keeps its May-4 170/183 stamp and its E-7
++    # calibration stamps, and keeps `coder` off candidate_roles for the ORIGINAL 2026-07-31
++    # reason, which remains true: frontdoor and coder_escalation are still different GGUFs on
++    # different devices, so they are still not interchangeable coder arms.
++    # WHAT DID CHANGE IS AROUND IT: its :8070 process now also serves worker_general,
++    # worker_explore, worker_math and toolrunner (see server_mode.frontdoor.shared_with).
+     tier: A
+     description: "Root LM — Qwen3.6-35B-A3B Q8 (E-7 2026-08-22 at terse template 1443ea9ab4bb: math 82.5%, mmlu_pro 37.5%, gpqa_diamond 55.0%, cruxeval 32.5%; May-4 judge 93% VOIDED by the template swap)"
+     # Phase 3 compliance gate (2026-05-07): NON-MONOTONIC. mild fails (compliance 83% baseline),
+@@ -2185,39 +2535,55 @@ roles:
+       Handle edge cases explicitly.
+   ingest_long_context:
+     tier: B
+-    description: Large document ingestion, synthesis & summarization - SSM+MoE hybrid
++    description: "Large document ingestion, synthesis & summarization. 2026-09-22: ALIAS on
++      architect_general's :8083 MI210 process (Qwen3.8-27B dense Q8) — was three dedicated CPU
++      instances of Qwen3-Next-80B-A3B-Instruct Q4_K_M on :8085/:8185/:8285, RETIRED."
+     # Phase 3 compliance gate (2026-05-07): medium passes; aggressive fails procedure (89%
+     # baseline). Compliance pinned 0.933, recall 0.93-1.00. Source: /mnt/raid0/llm/epyc-root/data/compliance/2026-05-07-ingest_long_context-curve/SUMMARY.md
+     # (2026-08-02: absolutised. The bare repo-relative form reads as a path in THIS repo and
      # resolved nowhere; the agent-file compression gates are epyc-root's evidence, not ours.)
      agent_file_compression_operating_point: medium
      model:
@@ -747,23 +873,30 @@ index ecba3a6..5f5b828 100644
 -      architecture: ssm_moe_hybrid
 -      attention_layers: 32
 -      ctx_max: 262144
-+      name: Qwen3.8-Flash-Next-UD-IQ4_XS
-+      huggingface_id: unsloth/Qwen3.8-Flash-Next-GGUF
-+      path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
-+      quant: UD-IQ4_XS
-+      size_gb: 87.25
-+      split_count: 3
-+      architecture: qwen4exp
-+      attention_layers: 12          # of 48 blocks; 36 are recurrent Gated-DeltaNet
-+      ctx_max: 262144               # GGUF-header verified — the role's 262144 is IN-TRAINING,
-+                                    # not a YaRN/rope extension
-+      shared_gguf_with: architect_critic
++      name: Qwen3.8-27B-Q8_0
++      path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
++      quant: Q8_0
++      size_gb: 27.05
++      architecture: qwen35          # DENSE, 65 blocks x 4 kv-heads — the KV-densest model in
++                                    # the fleet, 3x the 35B's per-token cost. That density is
++                                    # what caps the :8083 process at n_ctx 196608.
++      attention_layers: 64
++      mtp_capable: true             # blk.64.nextn.* embedded in the base (GGUF-header verified)
++      ctx_max: 262144               # MODEL capability. DEPLOYED PER-SLOT CONTEXT IS 98304
++                                    # (196608 over 2 slots on :8083) and cannot be raised on
++                                    # this card — see server_mode.architect_general.serving_shape.
++      shared_gguf_with: architect_general
++      use_chat_api: true
++      disable_thinking: false       # 2026-09-22: the :8083 process runs thinking ON at medium
++                                    # reasoning effort (operator ruling C1).
++      reasoning: auto
++      max_tokens_multiplier: 4
 +      previous_model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M   # RETIRED 2026-09-22
      candidate_roles:
      - ingest
 -    - summarization  # Best summary quality (tested 2026-01-26)
 +    - summarization  # Best summary quality (tested 2026-01-26) — ⚠ that test scored
-+                     # Qwen3-Next-80B. It is NOT a qwen4exp result and must be re-run.
++                     # Qwen3-Next-80B. It is NOT a Qwen3.8-27B result and must be re-run.
      - architect
      acceleration:
 -      type: none  # 2026-07-17: default experts for live ingest; historical MoE4 benchmark retained below
@@ -779,14 +912,16 @@ index ecba3a6..5f5b828 100644
 -      - eagle
 -      reason: SSM incompatible with external draft (state can't fork). Prompt lookup
 -        works via auto freeze-recurrent (validated 2026-03-10).
-+      # ALIAS: inherits architect_critic's draft-mtp (EXTERNAL -md head) recipe.
++      # ALIAS: inherits architect_general's draft-mtp SELF-draft recipe (same file, launcher
++      # omits -md) at n-max 8.
 +      type: none
-+      inherits_spec_from: architect_critic
++      inherits_spec_from: architect_general
 +      spec_type: draft-mtp
++      draft_max: 8
 +    # ⚠ THE `constraints.forbid` BLOCK IS DELETED, AND THAT IS THE POINT OF THE SWAP.
 +    # It read `forbid: [speculative_decoding, eagle]`, reason "SSM incompatible with external
 +    # draft (state can't fork)". Every word was true of Qwen3-Next-80B and none of it is true
-+    # of qwen4exp, which ships an MTP head as a separate GGUF. The constraint was a MODEL
++    # of the Qwen3.8-27B, which embeds its own nextn/MTP head. The constraint was a MODEL
 +    # property wearing a ROLE's clothes; it leaves with the model.
 +    # ⚠ THE MATCHING `speculative_decoding_policy -> exceptions.ingest_long_context` ENTRY
 +    # (top of this file) IS NOW STALE. It is `canonical: true` and operator-ratified, so it is
@@ -795,7 +930,68 @@ index ecba3a6..5f5b828 100644
      performance:
        # baseline_tps == optimized_tps is CORRECT here and is not a copy error:
        # with no draft path available, the unaccelerated figure IS the optimum.
-@@ -2409,52 +2575,80 @@ roles:
+@@ -2234,10 +2600,29 @@ roles:
+       # prompt length at the same time.
+       baseline_tps: 10.12  # context length NOT RECORDED — see T8 note above
+       optimized_tps: 10.12  # context length NOT RECORDED; default-expert live policy; old MoE4 6.29 t/s row is historical only
+-      long_context_tps_range: 14.4-20.8 t/s @ ~12K context (May-4 long_context suite)
++      # ⚠ 2026-09-22 MODEL AND DEVICE SWAP. EVERY FIGURE IN THIS BLOCK IS A Qwen3-Next-80B
++      # CPU MEASUREMENT AND NONE OF IT TRANSFERS to a dense Qwen3.8-27B on an MI210. They are
++      # nulled rather than carried: q_scorer.registry_baseline_tps_by_role and the router read
++      # these, and a stale number that routes is worse than a null that halts.
++      # PRESERVED AS PROVENANCE ONLY, never as a prior:
++      #   baseline_tps 10.12 / optimized_tps 10.12 (context length NOT RECORDED — T8 gap),
++      #   long_context 14.4-20.8 t/s @ ~12K ctx, summarization 73.8s/464 tok @10K ctx,
++      #   long_context_quality 25/27 (93%) canonical suite, May-4 Claude-as-Judge.
++      # The 27B's own 55.46 t/s OPTIMUM is NOT copied here: it was measured at np=1, thinking
++      # OFF, on 12 olympiadbench prompts — not this role's workload, context or thinking mode.
++      baseline_tps: null
++      optimized_tps: null
+       speedup: n/a
+-      summarization_benchmark: "73.8s for 464 tokens on Twyne whitepaper (10K context)"
+-      long_context_quality: 25/27 (93%) on canonical long_context suite, May-4 Claude-as-Judge
++      previous_model_record:
++        model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M
++        baseline_tps: 10.12
++        optimized_tps: 10.12
++        long_context_tps_range: 14.4-20.8 t/s @ ~12K context (May-4 long_context suite)
++        summarization_benchmark: "73.8s for 464 tokens on Twyne whitepaper (10K context)"
++        long_context_quality: 25/27 (93%) on canonical long_context suite, May-4 Claude-as-Judge
++      long_context_quality: null   # NO long-context suite has ever been run on the Qwen3.8-27B.
++                                   # This role exists FOR long context; swapping it onto a model
++                                   # with no long-context gate is the open risk of this change.
+     memory:
+       residency: hot
+       pinned: true
+@@ -2277,8 +2662,25 @@ roles:
+       n_embd: 5120
+       ctx_max: 262144
+       use_chat_api: true
+-      disable_thinking: true      # required for clean output on Qwen3.6
+-      reasoning: auto
++      # ── 2026-09-22 (operator ruling C1): MEDIUM REASONING EFFORT ──────────────────
++      # The LEVEL itself lives in server_mode.architect_general.chat_template_kwargs
++      # (`reasoning_effort: medium`), which is the deployment-time surface
++      # registry_loader.get_role_chat_template_kwargs() reads and the backends inject. These
++      # two keys are the SERVER-side half without which that kwarg cannot take effect:
++      # `disable_thinking: true` and a `--reasoning off` launch both suppress thinking before
++      # the template is ever consulted.
++      disable_thinking: false     # 2026-09-22: was true ("required for clean output on
++                                  # Qwen3.6"). That was a Qwen3.6-27B artifact fact and the
++                                  # role has served Qwen3.8-27B since 2026-08-20; it is
++                                  # re-opened by this change, not carried, and the coherence
++                                  # gate at production prompt length is the proof obligation.
++      reasoning: auto             # ⚠ THIS KEY ALREADY READ `auto` WHILE THE LIVE :8083 SERVER
++                                  # RAN `--reasoning off` (/proc/1531282/cmdline, 2026-09-22).
++                                  # That master-vs-compiled drift is PRE-EXISTING and is
++                                  # surfaced here, not created here — but it is now
++                                  # LOAD-BEARING: if the compiled value stays `off`, the
++                                  # medium effort setting is a silent no-op. Verify the
++                                  # compiled lean registry after `stack_change_pipeline update`.
+       max_tokens_multiplier: 4
+       # NOTE: huggingface_id and split_count DROPPED — this is a single local file with no HF
+       # sidecar (provenance: local_artifact_no_hf_sidecar_found, L8821). split_count: 3 on a
+@@ -2409,52 +2811,82 @@ roles:
      backend:
        type: local
      model:
@@ -829,7 +1025,9 @@ index ecba3a6..5f5b828 100644
      - architect
      - critic
      - reasoning
-+    - ingest              # 2026-09-22: this artifact now also backs the ingest_long_context alias
++    # ⚠ `ingest` NOT ADDED. An earlier draft aliased ingest_long_context onto this process;
++    # operator ruling C2 withdrew it (routine traffic must not sit behind this instance's
++    # all-four-region CPU lock). See server_mode.architect_critic.
      acceleration:
 -      # MTP via NEXTN-embedded Qwen3.5-122B variant (draft = same GGUF; launcher omits -md).
 -      # CANONICAL: top-level speculative_decoding_policy. MTP self-draft ALONE. The n-gram lane
@@ -889,7 +1087,7 @@ index ecba3a6..5f5b828 100644
        # DO NOT resurrect 12.19 (2026-05-04 NO-MTP probe) or 8.21 (Qwen3-235B-A22B, a DIFFERENT
        # MODEL, quarantined under roles.architect_general.performance.superseded_model_history).
 -      contention_note: "This role's single full instance on 0-95 holds ALL FOUR CPU region locks; while it runs it serializes the entire CPU NUMA topology (stack_numa.py:274-276). That is inherent and accepted for this role, but it is the real cost of tier:hot — not the 69 GB."
-+      contention_note: "This role's single full instance on 0-95 holds ALL FOUR CPU region locks; while it runs it serializes the entire CPU NUMA topology (stack_numa.py:274-276). That is inherent and accepted for this role, but it is the real cost of tier:hot — not the 69 GB. ⚠ 2026-09-22: ingest_long_context IS NOW AN ALIAS ON THIS INSTANCE, so every ingest request takes that same whole-machine lock. The D2 ruling (2026-07-31) narrowed the `reasoning` escalation chain to explicit_request ONLY so routine traffic could never summon it; ingest IS routine traffic (Stage 1 of three_stage_summarization). This change reaches the D2 hazard by a route D2 does not cover. The prerequisite D2 named — `region_lock_wait_s_by_holder` telemetry — still does not exist anywhere in the codebase."
++      contention_note: "This role's single full instance on 0-95 holds ALL FOUR CPU region locks; while it runs it serializes the entire CPU NUMA topology (stack_numa.py:274-276). That is inherent and accepted for this role, but it is the real cost of tier:hot — not the 69 GB — which is now 90 GiB. ⚠ 2026-09-22: THIS IS WHY ingest_long_context WAS NOT ALIASED HERE. An earlier draft merged it onto this instance, which would have put routine traffic (Stage 1 of three_stage_summarization) behind the whole-machine lock. The D2 ruling (2026-07-31) narrowed the `reasoning` escalation chain to explicit_request ONLY so routine traffic could never summon it, and D2's named prerequisite — `region_lock_wait_s_by_holder` telemetry — still does not exist anywhere in the codebase. Operator ruling C2 sent ingest_long_context to the GPU 27B instead. This instance remains single-role, and the `reasoning` chain remains the only routed path to it."
      memory:
        residency: hot                              # operator decision 2026-07-31
        pinned: true
@@ -901,7 +1099,7 @@ index ecba3a6..5f5b828 100644
      generation_defaults:
        n_tokens: -1
        temperature: 0.1
-@@ -3464,8 +3658,23 @@ roles:
+@@ -3464,8 +3896,23 @@ roles:
    # Qwen3.5 MoE Models (122B, 397B)
    # =============================================================================
    qwen35_122b_q4km:
@@ -927,7 +1125,7 @@ index ecba3a6..5f5b828 100644
      # ARTIFACT MISMATCH, 2026-07-31: `model.path` below is the plain Q4_K_M HF-style path. The
      # DEPLOYED artifact is the MTP/UD file
      # /mnt/raid0/llm/models/Qwen3.5-122B-A10B-MTP-GGUF/UD-Q4_K_M/Qwen3.5-122B-A10B-UD-Q4_K_M-00001-of-00003.gguf
-@@ -4927,6 +5136,19 @@ roles:
+@@ -4927,6 +5374,19 @@ roles:
  
    draft_gemma4_26b_a4b_assistant_q8:
      tier: D
@@ -947,7 +1145,7 @@ index ecba3a6..5f5b828 100644
      description: Gemma 4 MTP assistant drafter for 26B-A4B target (Gemma4Assistant arch, 4 layers, 1024 hidden, 16/8 heads — half the heads of 31B drafter)
      model:
        name: gemma-4-26B-A4B-it-assistant
-@@ -4948,6 +5170,21 @@ roles:
+@@ -4948,6 +5408,21 @@ roles:
  
    gemma4_26b_a4b_q4km_mtp:
      tier: X  # eval-only, not deployable — MTP gain insufficient
@@ -969,7 +1167,7 @@ index ecba3a6..5f5b828 100644
      description: Gemma 4 26B-A4B-it Q4_K_M with MTP — MEASURED NOT VIABLE (1.06x speedup, 58% accept, 26B-A4B+MTP at 44 t/s is SLOWER than Coder-30B-A3B Q4_K_M baseline 49.1 t/s, so does not replace coder role)
      model:
        name: gemma-4-26B-A4B-it
-@@ -5222,14 +5459,18 @@ roles:
+@@ -5222,14 +5697,18 @@ roles:
      tier: C
      description: General worker — gemma4-26B-A4B Q4_K_M (MTP) — swapped 2026-05-08 from Meta-Llama-3-8B / Qwen3-Coder-30B-A3B lineage. Mirrors the live orchestrator worker_general target for benchmark correctness.
      model:
@@ -995,7 +1193,7 @@ index ecba3a6..5f5b828 100644
        env_vars:
          OMP_PROC_BIND: spread
          OMP_PLACES: cores
-@@ -5238,15 +5479,17 @@ roles:
+@@ -5238,15 +5717,17 @@ roles:
        kv_cache:
          type_k: q8_0
          type_v: q8_0
@@ -1019,7 +1217,7 @@ index ecba3a6..5f5b828 100644
      - coder
      acceleration:
        type: speculative_decoding
-@@ -5263,11 +5506,13 @@ roles:
+@@ -5263,11 +5744,13 @@ roles:
        #                         composed speculation on every worker.
        # `ngram_candidate_spec_type` is RETIRED — do not reintroduce it.
        spec_type: draft-mtp
@@ -1038,7 +1236,7 @@ index ecba3a6..5f5b828 100644
      constraints:
        forbid:
        - prompt_lookup
-@@ -5284,11 +5529,25 @@ roles:
+@@ -5284,11 +5767,25 @@ roles:
      performance:
        # CORRECTED 2026-07-31. Both rows held the same figure, so `optimized_tps`
        # was not an optimized number. Baseline here IS measured (spec-dec off).
@@ -1068,7 +1266,7 @@ index ecba3a6..5f5b828 100644
        draft_depth_sweep_observation: "2026-07-17 T5 production-shaped CPU worker sweep at data/t5_gemma_worker_draft_depth_20260717T213641Z/summary.json confirms draft_max=2: depth2 87.76 t/s with 492/666 accepted; depth3 76.38 t/s with 492/812 accepted; depth4 84.40 t/s with 494/734 accepted."
        mi210_ngram_mtp_repetition_observation: "2026-07-19 current-v7 MI210 strict repetitive JSON/tool-shaped fixture: no-spec passed at 74.15 t/s, draft-mtp passed at 113.45 t/s with 465/474 drafts accepted, and ngram-mod,draft-mtp passed at 183.50 t/s with 625/1454 accepted. Artifact: /mnt/raid0/llm/epyc-inference-research/data/k11_gemma4_determinism/k11_gemma4_mi210_modes_20260719T004400Z/summary.json."
        mi210_ngram_mtp_prompt_diverse_observation: "2026-07-19 prompt-diverse MI210 follow-up: ngram-mod,draft-mtp reproduced the large repetitive-output speedup (330.57 t/s vs draft-mtp 143.58 and no-spec 85.77) but did not improve non-repetitive coding explanation speed and failed the required-heading contract under the 640-token cap; short edit was only marginally faster than draft-mtp and all modes failed the exact patch contract. Treat ngram-mod,draft-mtp as a task-specific token-reuse lane, not the broad worker default. Artifact: /mnt/raid0/llm/epyc-inference-research/data/k11_gemma4_determinism/k11_gemma4_mi210_prompt_diverse_20260719T004626Z/compact_summary.json."
-@@ -5366,12 +5625,15 @@ roles:
+@@ -5366,12 +5863,15 @@ roles:
      - vision
      - agentic_vision  # tool-call capable — the property the Qwen2.5-VL lane was kept for
      serving:
@@ -1090,7 +1288,7 @@ index ecba3a6..5f5b828 100644
        image_min_tokens: 1024   # MANDATORY — upstream warns Qwen-VL needs >=1024 image tokens
        cache_ram: 0             # prompt cache disabled: every request carries a different image
      acceleration:
-@@ -5463,8 +5725,8 @@ roles:
+@@ -5463,8 +5963,8 @@ roles:
      candidate_roles:
      - vision
      serving:
@@ -1101,7 +1299,7 @@ index ecba3a6..5f5b828 100644
      acceleration:
        type: baseline
        disallowed:
-@@ -5474,8 +5736,11 @@ roles:
+@@ -5474,8 +5974,11 @@ roles:
      performance:
        # IDENTICAL to worker_vision by construction — one process. Do not benchmark separately.
        inherits_from: worker_vision
@@ -1115,7 +1313,7 @@ index ecba3a6..5f5b828 100644
        # 2026-08-01: renamed from `mmmu_val_250`. The descriptor compiler builds its
        # quality suite_vector from keys ending `_pct`/`_suite` plus the named set
        # {quality_score, vl_score, long_context_quality} (model_descriptors.py:288-318).
-@@ -7561,6 +7826,147 @@ roles:
+@@ -7561,6 +8064,147 @@ roles:
    # copied into epyc-orchestrator/orchestration/model_registry.yaml unless a
    # promotion handoff explicitly moves them into the live topology.
  
@@ -1263,7 +1461,7 @@ index ecba3a6..5f5b828 100644
    qwen3_next_80b_a3b_instruct_iq2m_local:
      tier: C
      description: Qwen3-Next-80B-A3B-Instruct i1-IQ2_M - local compression candidate; catalogue-only until quality and replacement gates pass.
-@@ -9728,6 +10134,55 @@ roles:
+@@ -9728,6 +10372,57 @@ roles:
        gpu_only: "MI210 scaffold-generator throughput/quality smoke if the 4B treatment is revived."
        cpu_gpu_hybrid: "Not a primary path at this size."
  
@@ -1278,7 +1476,9 @@ index ecba3a6..5f5b828 100644
 +    deprecated_date: 2026-09-22
 +    deprecated_reason: >
 +      RETIRED 2026-09-22 (operator-directed lineup change) — replaced in worker_general (and its
-+      worker_explore / worker_math / toolrunner aliases) by Qwen3.6-35B-A3B-MTP-Q8_0. The "ORIG"
++      worker_explore / worker_math / toolrunner aliases) by Qwen3.6-35B-A3B-MTP-Q8_0, which serves
++      them as ALIASES on frontdoor's existing :8070/:8080/:8180 process (same GGUF => one server);
++      :8072/:8082/:8182 are VACATED. The "ORIG"
 +      base was load-bearing: the non-ORIG gemma-4-26B-A4B-it-Q4_K_M.gguf GARBLES on v6+ kernels,
 +      which is why this specific artifact was pinned in 2026-06-26. GGUF REMAINS ON DISK; deletion
 +      is a separate operator action at session end.
@@ -1319,3 +1519,58 @@ index ecba3a6..5f5b828 100644
    gemma4_26b_a4b_orig_q8_local:
      tier: C
      description: Gemma 4 26B-A4B ORIG Q8_0 exact local artifact; catalogue-only precision row.
+@@ -10011,7 +10706,12 @@ roles:
+     tier: A
+     description: "Qwen3.8-27B Q8_0 exact local artifact (unsloth build, embeds the nextn/MTP head).
+       2026-08-20: PROMOTED to the PRODUCTION model backing architect_general (:8083, MI210 ROCm0) and
+-      its coder_escalation alias, replacing qwen36_27b_mtp_q8_local. That row is RETAINED unmodified as
++      its coder_escalation alias, replacing qwen36_27b_mtp_q8_local. 2026-09-22: it ALSO backs the
++      ingest_long_context alias on the same process (operator ruling C2), and the process now runs
++      thinking ON at MEDIUM reasoning effort (ruling C1) with n_ctx raised 65536 -> 196608.
++      ⚠ EVERY PERFORMANCE FIGURE BELOW WAS TAKEN WITH THINKING OFF, at np=1 and short context.
++      None of it transfers to the medium-effort, 196608-context, three-role configuration; those
++      are the re-measurements this lineup change owes. That row is RETAINED unmodified as
+       the rollback anchor — do not delete it. Same-file MTP self-draft, exactly like the Qwen3.6 it
+       replaces; the ggml-org mtp-*.gguf sidecar is redundant for this base."
+     production_throughput:
+@@ -10452,19 +11152,30 @@ roles:
+ process_layout:
+   hot_resident:
+   # 2026-07-31: this is a FLAT list — it encodes nothing about process sharing. Grouping is by
+-  # comment only. :8070 = frontdoor + worker_summarize. :8083 = architect_general +
+-  # coder_escalation. :8086 = worker_vision + vision_escalation (one process, one 21049 MB
+-  # VRAM allocation; BOTH names stay listed because stack_manifest.validate_against_registry()
+-  # warns in both directions on alias drift).
++  # comment only. UPDATED 2026-09-22 for the lineup change:
++  #   :8070 (+:8080/:8180) = frontdoor + worker_summarize + worker_general + worker_explore
++  #                          + worker_math + toolrunner  — ONE Qwen3.6-35B-A3B allocation
++  #   :8074                = architect_critic ALONE (Qwen3.8-Flash-Next)
++  #   :8083                = architect_general + coder_escalation + ingest_long_context
++  #                          — ONE Qwen3.8-27B allocation on the MI210
++  #   :8086                = worker_vision + vision_escalation (one process; now CPU, so the
++  #                          21049 MB VRAM figure that used to be quoted here is gone)
++  # BOTH/ALL alias names stay listed because stack_manifest.validate_against_registry() warns
++  # in both directions on alias drift.
++  # ⚠ :8072/:8082/:8182 (gemma4) and :8085/:8185/:8285 (Qwen3-Next-80B) are VACATED.
+   - frontdoor
+-  - worker_summarize      # frontdoor's ONE remaining alias on :8070 (Directive 3)
++  - worker_summarize      # alias on frontdoor's :8070 (Directive 3)
+   - architect_general     # MOVED from warm_mmap; GPU-resident on ROCm0, :8083
+   - coder_escalation      # MOVED off :8070 — alias on architect_general's :8083
+-  - architect_critic      # NEW: 122B inherited from architect_general, CPU, :8074, tier hot
+-  - worker_general
+-  - worker_math
+-  - toolrunner
+-  - ingest_long_context
++  - architect_critic      # 2026-09-22: Qwen3.8-Flash-Next, CPU, :8074, tier hot, SOLE role
++  - worker_general        # 2026-09-22: alias on frontdoor's :8070 (was gemma4 on :8072)
++  - worker_explore        # 2026-09-22: ADDED. It was live and demonstrably missing from this
++                          # list while its two co-aliases were listed — a PRE-EXISTING gap
++                          # (see server_mode.frontdoor.shared_with), corrected while the
++                          # worker lane is open rather than carried forward.
++  - worker_math           # 2026-09-22: alias on frontdoor's :8070
++  - toolrunner            # 2026-09-22: alias on frontdoor's :8070
++  - ingest_long_context   # 2026-09-22: alias on architect_general's :8083 (was CPU :8085)
+   - worker_vision
+   - vision_escalation
+   warm_mmap: []

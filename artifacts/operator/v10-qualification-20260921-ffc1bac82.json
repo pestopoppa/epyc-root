@@ -1,7 +1,7 @@
 {
   "schema": "epyc.kernel_promotion_qualification.v1",
   "created": "2026-09-21",
-  "status": "INCOMPLETE \u2014 store-side cutover done and serving, but the FREEZE is NOT cut. There is no production-consolidated-v10 branch, no FREEZE-V10 ratification, and verify_llama_cpp.sh still attests v9/10125 while the store serves 10303.",
+  "status": "COMPLETE \u2014 store cutover done and serving, AND the freeze is cut: production-consolidated-v10 exists at ffc1bac82 and the frozen tree is checked out to it (operator-executed 2026-09-22).",
   "candidate": {
     "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
     "branch": "ak/champion/llama-cpp-0db32c06e3e5",
@@ -169,16 +169,17 @@
   },
   "promotion_completeness": {
     "store_side_done": true,
-    "freeze_side_done": false,
-    "what_is_missing": [
-      "production-consolidated-v10 branch cut at ffc1bac82 and the frozen tree checked out to it",
-      "the agent-file overlay bake (docs/reference/agent-config/llama-tree-overlay/CLAUDE.md), owed since the v9 bake",
-      "v10-cutover-<ts>-ffc1bac82/ manifests of both backends, plus the outgoing v9 pair",
-      "ratify_v10_final_freeze_<date>.json, schema epyc.operator_v10_final_freeze_attestation.v1, mirroring ratify_v9_final_freeze_20260811.json (decision FREEZE-V10, status production_promoted_frozen)",
-      "verify_llama_cpp.sh constants: branch, commit, version line, both server sha256",
-      "the CLAUDE.md freeze block (v9 -> v10; v9 becomes the rollback anchor)"
-    ],
+    "freeze_side_done": true,
+    "what_is_missing": [],
     "why_it_matters": "the champion reset the operator directed ('a new champion instantiated off the newly promoted frozen kernel') is NOT EXECUTABLE until the frozen v10 exists \u2014 the promoted kernel currently lives only as a commit on the OLD champion branch plus the store symlinks, so seeding a new champion off it would be a no-op.",
-    "correction_note": "this artifact previously read 'QUALIFIED - awaiting operator ratification' (false: the store cutover HAD happened) and was then corrected to 'PROMOTED AND SERVING' (also false: it overstated a half-promotion as a completed one). Both corrections are recorded rather than erased."
+    "correction_note": "this artifact previously read 'QUALIFIED - awaiting operator ratification' (false: the store cutover HAD happened) and was then corrected to 'PROMOTED AND SERVING' (also false: it overstated a half-promotion as a completed one). Both corrections are recorded rather than erased. Third and final state: COMPLETE, once the operator cut the branch on 2026-09-22.",
+    "freeze_cut": {
+      "branch": "production-consolidated-v10",
+      "head": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "executed_by": "operator",
+      "date": "2026-09-22",
+      "ancestry_verified": "v9 0db32c06e is an ancestor of v10 ffc1bac82 (git merge-base --is-ancestor) \u2014 a clean version-past, not a patch in place"
+    },
+    "overlay_bake": "NO new commit was made in the frozen tree. ffc1bac82 already carries the EPYC overlay CLAUDE.md, inherited through the v9 bake, and its text is generic ('production-consolidated-vN; check git branch --show-current'), so it is correct as-is for v10. The staged overlay at docs/reference/agent-config/llama-tree-overlay/CLAUDE.md differs only in two lines of an HTML comment. Committing that into the frozen tree would have broken the HEAD == binary-embedded-commit correspondence (binaries report 'version: 10303 (ffc1bac82)') to change a comment. The two-line drift is carried forward to the next promotion's experimental-branch bake, where it costs nothing."
   }
 }

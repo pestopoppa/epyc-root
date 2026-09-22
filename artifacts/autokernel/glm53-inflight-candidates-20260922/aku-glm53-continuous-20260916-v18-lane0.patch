@@ -1,0 +1,416 @@
+diff --git a/ggml/src/ggml-cpu/ggml-cpu.c b/ggml/src/ggml-cpu/ggml-cpu.c
+index 40dc9318f..16ad81d3d 100644
+--- a/ggml/src/ggml-cpu/ggml-cpu.c
++++ b/ggml/src/ggml-cpu/ggml-cpu.c
+@@ -515,6 +515,9 @@ struct ggml_threadpool {
+ 
+     struct ggml_cgraph * cgraph;
+     struct ggml_cplan  * cplan;
++    size_t scratch_size;
++    const void * iqk_qact_plan;
++    void * iqk_qact_cache;
+ 
+     // synchronization primitives
+     atomic_int n_graph;       // updated when there is work to be done (i.e each graph) holds graph and active thread counts.
+@@ -3372,6 +3375,295 @@ void ggml_threadpool_resume(struct ggml_threadpool * threadpool) {
+ #endif
+ }
+ 
++#if defined(GGML_USE_IQK_MULMAT) && defined(IQK_IMPLEMENT)
++
++struct ggml_cpu_iqk_qact_plan {
++    const struct ggml_tensor * src;
++    int first_node;
++    int last_node;
++    size_t data_size;
++};
++
++struct ggml_cpu_iqk_qact_cache {
++    atomic_uint_fast64_t published_generation;
++    uint64_t generation;
++    const struct ggml_tensor * src;
++    const void * src_data;
++    int64_t ne[GGML_MAX_DIMS];
++    size_t nb[GGML_MAX_DIMS];
++    int first_node;
++    int last_node;
++    int layout;
++    size_t data_size;
++};
++
++static atomic_uint_fast64_t ggml_cpu_iqk_qact_generation = 0;
++
++static bool ggml_cpu_iqk_qact_qsplit_enabled(void) {
++    const char * value = getenv("GGML_QSPLIT");
++    return value == NULL || *value == '\0' || atoi(value) != 0;
++}
++
++static int64_t ggml_cpu_iqk_qact_qsplit_min(void) {
++    const char * value = getenv("GGML_QSPLIT_MIN");
++    return value != NULL && *value != '\0' ? (int64_t) atoll(value) : INT64_MAX;
++}
++
++static bool ggml_cpu_iqk_qact_private_slices(const struct ggml_tensor * src, int n_threads) {
++    const int64_t rows = src->ne[1] * src->ne[2] * src->ne[3];
++    const bool qsplit = ggml_cpu_iqk_qact_qsplit_enabled() && n_threads > 1 && rows < n_threads &&
++        (rows > 1 || src->ne[0] >= ggml_cpu_iqk_qact_qsplit_min());
++    return rows == 1 && !qsplit;
++}
++
++static bool ggml_cpu_iqk_qact_eligible(const struct ggml_tensor * node) {
++    if (node == NULL || node->op != GGML_OP_MUL_MAT || node->type != GGML_TYPE_F32 ||
++        (node->flags & GGML_TENSOR_FLAG_COMPUTE) == 0) {
++        return false;
++    }
++
++    const struct ggml_tensor * src0 = node->src[0];
++    const struct ggml_tensor * src1 = node->src[1];
++    if (src0 == NULL || src1 == NULL || src1->type != GGML_TYPE_F32) {
++        return false;
++    }
++    if (src0->type != GGML_TYPE_Q4_K && src0->type != GGML_TYPE_Q5_K) {
++        return false;
++    }
++    if (src0->type == GGML_TYPE_Q4_K && src0->ne[1] < 32) {
++        return false;
++    }
++    if (src0->ne[0] != src1->ne[0] || src0->ne[0] % 32 != 0) {
++        return false;
++    }
++    if (node->ne[0] != src0->ne[1] || node->ne[1] != src1->ne[1] ||
++        node->ne[2] != src1->ne[2] || node->ne[3] != src1->ne[3]) {
++        return false;
++    }
++    if (src0->nb[0] != ggml_type_size(src0->type) || src1->nb[0] != sizeof(float) ||
++        node->nb[0] != sizeof(float)) {
++        return false;
++    }
++
++    const char * iqk = getenv("GGML_IQK");
++    return iqk != NULL && atoi(iqk) != 0;
++}
++
++static bool ggml_cpu_iqk_qact_same_source(
++        const struct ggml_tensor * a,
++        const struct ggml_tensor * b) {
++    if (a != b || a->data != b->data || a->type != b->type) {
++        return false;
++    }
++    for (int d = 0; d < GGML_MAX_DIMS; ++d) {
++        if (a->ne[d] != b->ne[d] || a->nb[d] != b->nb[d]) {
++            return false;
++        }
++    }
++    return true;
++}
++
++static uintptr_t ggml_cpu_range_end(uintptr_t begin, size_t size) {
++    return size > UINTPTR_MAX - begin ? UINTPTR_MAX : begin + size;
++}
++
++static bool ggml_cpu_tensor_ranges_overlap(
++        const struct ggml_tensor * a,
++        const struct ggml_tensor * b) {
++    if (a == NULL || b == NULL || a->data == NULL || b->data == NULL) {
++        return false;
++    }
++    const size_t as = ggml_nbytes(a);
++    const size_t bs = ggml_nbytes(b);
++    if (as == 0 || bs == 0) {
++        return false;
++    }
++    const uintptr_t ab = (uintptr_t) a->data;
++    const uintptr_t bb = (uintptr_t) b->data;
++    return ab < ggml_cpu_range_end(bb, bs) && bb < ggml_cpu_range_end(ab, as);
++}
++
++static bool ggml_cpu_node_writes_tensor(
++        const struct ggml_tensor * node,
++        const struct ggml_tensor * tensor) {
++    if (node == NULL || (node->flags & GGML_TENSOR_FLAG_COMPUTE) == 0 || ggml_op_is_empty(node->op)) {
++        return false;
++    }
++    return ggml_cpu_tensor_ranges_overlap(node, tensor);
++}
++
++static struct ggml_cpu_iqk_qact_plan ggml_cpu_iqk_qact_analyze(
++        const struct ggml_cgraph * cgraph,
++        int n_threads) {
++    struct ggml_cpu_iqk_qact_plan best = { NULL, -1, -1, 0 };
++    int best_count = 1;
++
++    for (int i = 0; i < cgraph->n_nodes; ++i) {
++        const struct ggml_tensor * first = cgraph->nodes[i];
++        if (!ggml_cpu_iqk_qact_eligible(first)) {
++            continue;
++        }
++
++        const struct ggml_tensor * src = first->src[1];
++        if (ggml_cpu_node_writes_tensor(first, src)) {
++            continue;
++        }
++        int count = 1;
++        int last = i;
++        for (int j = i + 1; j < cgraph->n_nodes; ++j) {
++            const struct ggml_tensor * node = cgraph->nodes[j];
++            if (ggml_cpu_node_writes_tensor(node, src)) {
++                break;
++            }
++            if (ggml_cpu_iqk_qact_eligible(node) &&
++                    ggml_cpu_iqk_qact_same_source(src, node->src[1])) {
++                ++count;
++                last = j;
++            }
++        }
++
++        if (count > best_count) {
++            const size_t row_size = (size_t) (src->ne[0] / 32) * 36;
++            best.src = src;
++            best.first_node = i;
++            best.last_node = last;
++            best.data_size = row_size * (size_t) src->ne[1] *
++                (size_t) src->ne[2] * (size_t) src->ne[3];
++            if (ggml_cpu_iqk_qact_private_slices(src, n_threads)) {
++                best.data_size *= (size_t) n_threads;
++            }
++            best_count = count;
++        }
++    }
++
++    return best;
++}
++
++static size_t ggml_cpu_iqk_qact_reservation(const struct ggml_cpu_iqk_qact_plan * plan) {
++    if (plan->src == NULL) {
++        return 0;
++    }
++    return GGML_PAD(sizeof(struct ggml_cpu_iqk_qact_cache), CACHE_LINE_SIZE) +
++        GGML_PAD(plan->data_size, CACHE_LINE_SIZE);
++}
++
++static struct ggml_cpu_iqk_qact_cache * ggml_cpu_iqk_qact_cache(
++        const struct ggml_cplan * cplan,
++        const struct ggml_cpu_iqk_qact_plan * plan) {
++    const size_t reservation = ggml_cpu_iqk_qact_reservation(plan);
++    if (reservation == 0 || cplan->work_data == NULL || cplan->work_size < reservation) {
++        return NULL;
++    }
++    return (struct ggml_cpu_iqk_qact_cache *) (cplan->work_data + cplan->work_size - reservation);
++}
++
++static bool ggml_cpu_iqk_qact_mul_mat(
++        const struct ggml_compute_params * params,
++        struct ggml_tensor * dst,
++        int node_n,
++        const struct ggml_cpu_iqk_qact_plan * plan,
++        struct ggml_cpu_iqk_qact_cache * cache) {
++    if (cache == NULL || node_n < plan->first_node || node_n > plan->last_node ||
++        !ggml_cpu_iqk_qact_eligible(dst) || params->use_ref ||
++        !ggml_cpu_iqk_qact_same_source(plan->src, dst->src[1])) {
++        return false;
++    }
++
++    const struct ggml_tensor * src0 = dst->src[0];
++    const struct ggml_tensor * src1 = dst->src[1];
++    if (cache->generation == 0 ||
++        cache->src != src1 || cache->src_data != src1->data ||
++        cache->first_node != plan->first_node || cache->last_node != plan->last_node ||
++        cache->layout != GGML_TYPE_Q8_2_X4 || cache->data_size != plan->data_size) {
++        return false;
++    }
++    for (int d = 0; d < GGML_MAX_DIMS; ++d) {
++        if (cache->ne[d] != src1->ne[d] || cache->nb[d] != src1->nb[d]) {
++            return false;
++        }
++    }
++
++    const size_t header_size = GGML_PAD(sizeof(*cache), CACHE_LINE_SIZE);
++    char * qdata = (char *) cache + header_size;
++    const size_t row_size = (size_t) (src1->ne[0] / 32) * 36;
++    const size_t nbw1 = row_size;
++    const size_t nbw2 = nbw1 * (size_t) src1->ne[1];
++    const size_t nbw3 = nbw2 * (size_t) src1->ne[2];
++    const uint64_t generation = cache->generation;
++    const bool reuse = atomic_load_explicit(&cache->published_generation, memory_order_acquire) == generation;
++    const int64_t rows = src1->ne[1] * src1->ne[2] * src1->ne[3];
++    const bool private_slices = ggml_cpu_iqk_qact_private_slices(src1, params->nth);
++    const bool qsplit = ggml_cpu_iqk_qact_qsplit_enabled() && params->nth > 1 && rows < params->nth &&
++        (rows > 1 || src1->ne[0] >= ggml_cpu_iqk_qact_qsplit_min());
++
++    if (private_slices) {
++        qdata += (size_t) params->ith * nbw3;
++    }
++
++    if (!reuse) {
++        if (private_slices) {
++            quantize_row_q8_2_x4((const float *) src1->data, qdata, src1->ne[0]);
++        } else if (qsplit) {
++            const int64_t grains_per_row = (src1->ne[0] + 127) / 128;
++            const int64_t units = rows * grains_per_row;
++            const int64_t u0 = (int64_t) params->ith * units / params->nth;
++            const int64_t u1 = (int64_t) (params->ith + 1) * units / params->nth;
++
++            for (int64_t u = u0; u < u1; ) {
++                const int64_t row = u / grains_per_row;
++                const int64_t gs = u - row * grains_per_row;
++                int64_t ge = u1 - row * grains_per_row;
++                if (ge > grains_per_row) {
++                    ge = grains_per_row;
++                }
++                const int64_t e0 = gs * 128;
++                const int64_t e1 = MIN(ge * 128, src1->ne[0]);
++                const int64_t i3 = row / (src1->ne[1] * src1->ne[2]);
++                const int64_t rem = row - i3 * src1->ne[1] * src1->ne[2];
++                const int64_t i2 = rem / src1->ne[1];
++                const int64_t i1 = rem - i2 * src1->ne[1];
++
++                quantize_row_q8_2_x4(
++                    (const float *) ((const char *) src1->data + i3 * src1->nb[3] +
++                        i2 * src1->nb[2] + i1 * src1->nb[1]) + e0,
++                    qdata + i3 * nbw3 + i2 * nbw2 + i1 * nbw1 + (size_t) (e0 / 32) * 36,
++                    e1 - e0);
++                u = row * grains_per_row + ge;
++            }
++            ggml_barrier(params->threadpool);
++        } else {
++            for (int64_t i3 = 0; i3 < src1->ne[3]; ++i3) {
++                for (int64_t i2 = 0; i2 < src1->ne[2]; ++i2) {
++                    for (int64_t i1 = params->ith; i1 < src1->ne[1]; i1 += params->nth) {
++                        quantize_row_q8_2_x4(
++                            (const float *) ((const char *) src1->data + i3 * src1->nb[3] +
++                                i2 * src1->nb[2] + i1 * src1->nb[1]),
++                            qdata + i3 * nbw3 + i2 * nbw2 + i1 * nbw1,
++                            src1->ne[0]);
++                    }
++                }
++            }
++            ggml_barrier(params->threadpool);
++        }
++    }
++
++    const bool ok = iqk_mul_mat_4d(src0->ne[1], src1->ne[1], src0->ne[0],
++            src0->ne[2], src0->ne[3], src1->ne[2], src1->ne[3],
++            src0->nb[2], src0->nb[3], nbw2, nbw3,
++            dst->nb[2] / sizeof(float), dst->nb[3] / sizeof(float),
++            (int) src0->type, src0->data, src0->nb[1],
++            GGML_TYPE_Q8_2_X4, qdata, row_size,
++            (float *) dst->data, dst->nb[1] / sizeof(float),
++            !params->disable_rowexact, params->ith, params->nth);
++
++    if (!reuse && ok && params->ith == 0) {
++        atomic_store_explicit(&cache->published_generation, generation, memory_order_release);
++    }
++    return ok;
++}
++
++#endif
++
+ struct ggml_cplan ggml_graph_plan(
+           const struct ggml_cgraph * cgraph,
+                                int   n_threads,
+@@ -3617,6 +3909,15 @@ struct ggml_cplan ggml_graph_plan(
+         work_size += CACHE_LINE_SIZE*(n_threads);
+     }
+ 
++#if defined(GGML_USE_IQK_MULMAT) && defined(IQK_IMPLEMENT)
++    const struct ggml_cpu_iqk_qact_plan iqk_qact_plan =
++        ggml_cpu_iqk_qact_analyze(cgraph, MIN(max_tasks, n_threads));
++    const size_t iqk_qact_reservation = ggml_cpu_iqk_qact_reservation(&iqk_qact_plan);
++    if (iqk_qact_reservation > 0) {
++        work_size = GGML_PAD(work_size, CACHE_LINE_SIZE) + iqk_qact_reservation;
++    }
++#endif
++
+     cplan.threadpool      = threadpool;
+     cplan.n_threads       = MIN(max_tasks, n_threads);
+     cplan.work_size       = work_size;
+@@ -4318,7 +4619,7 @@ static thread_ret_t ggml_graph_compute_thread(void * data) {
+     struct ggml_compute_params params = {
+         /*.ith        =*/ state->ith,
+         /*.nth        =*/ atomic_load_explicit(&tp->n_graph, memory_order_relaxed) & GGML_THREADPOOL_N_THREADS_MASK,
+-        /*.wsize      =*/ cplan->work_size,
++        /*.wsize      =*/ tp->scratch_size,
+         /*.wdata      =*/ cplan->work_data,
+         /*.threadpool =*/ tp,
+         /*.use_ref    =*/ cplan->use_ref,
+@@ -4478,7 +4779,16 @@ static thread_ret_t ggml_graph_compute_thread(void * data) {
+         if (n_fused > 0) {
+             node_n += n_fused;
+         } else {
+-            ggml_compute_forward(&params, node);
++            bool handled = false;
++#if defined(GGML_USE_IQK_MULMAT) && defined(IQK_IMPLEMENT)
++            handled = ggml_cpu_iqk_qact_mul_mat(
++                &params, node, node_n,
++                (const struct ggml_cpu_iqk_qact_plan *) tp->iqk_qact_plan,
++                (struct ggml_cpu_iqk_qact_cache *) tp->iqk_qact_cache);
++#endif
++            if (!handled) {
++                ggml_compute_forward(&params, node);
++            }
+         }
+ 
+ #ifdef GGML_CPU_PROF
+@@ -4707,6 +5017,9 @@ static struct ggml_threadpool * ggml_threadpool_new_impl(
+     {
+         threadpool->cgraph           = cgraph;
+         threadpool->cplan            = cplan;
++        threadpool->scratch_size     = cplan != NULL ? cplan->work_size : 0;
++        threadpool->iqk_qact_plan    = NULL;
++        threadpool->iqk_qact_cache   = NULL;
+         threadpool->n_graph          = 0;
+         threadpool->n_barrier        = 0;
+         threadpool->n_barrier_passed = 0;
+@@ -4781,6 +5094,34 @@ enum ggml_status ggml_graph_compute(struct ggml_cgraph * cgraph, struct ggml_cpl
+     GGML_ASSERT(cplan->n_threads > 0);
+     GGML_ASSERT(cplan->work_size == 0 || cplan->work_data != NULL);
+ 
++#if defined(GGML_USE_IQK_MULMAT) && defined(IQK_IMPLEMENT)
++    const struct ggml_cpu_iqk_qact_plan iqk_qact_plan =
++        ggml_cpu_iqk_qact_analyze(cgraph, cplan->n_threads);
++    struct ggml_cpu_iqk_qact_cache * iqk_qact_cache =
++        ggml_cpu_iqk_qact_cache(cplan, &iqk_qact_plan);
++    if (iqk_qact_cache != NULL) {
++        uint64_t generation = atomic_fetch_add_explicit(
++            &ggml_cpu_iqk_qact_generation, 1, memory_order_relaxed) + 1;
++        if (generation == 0) {
++            generation = atomic_fetch_add_explicit(
++                &ggml_cpu_iqk_qact_generation, 1, memory_order_relaxed) + 1;
++        }
++
++        atomic_init(&iqk_qact_cache->published_generation, 0);
++        iqk_qact_cache->generation = generation;
++        iqk_qact_cache->src = iqk_qact_plan.src;
++        iqk_qact_cache->src_data = iqk_qact_plan.src->data;
++        for (int d = 0; d < GGML_MAX_DIMS; ++d) {
++            iqk_qact_cache->ne[d] = iqk_qact_plan.src->ne[d];
++            iqk_qact_cache->nb[d] = iqk_qact_plan.src->nb[d];
++        }
++        iqk_qact_cache->first_node = iqk_qact_plan.first_node;
++        iqk_qact_cache->last_node = iqk_qact_plan.last_node;
++        iqk_qact_cache->layout = GGML_TYPE_Q8_2_X4;
++        iqk_qact_cache->data_size = iqk_qact_plan.data_size;
++    }
++#endif
++
+     int n_threads                               = cplan->n_threads;
+     struct ggml_threadpool * threadpool = cplan->threadpool;
+ 
+@@ -4802,6 +5143,17 @@ enum ggml_status ggml_graph_compute(struct ggml_cgraph * cgraph, struct ggml_cpl
+         threadpool->ec               = GGML_STATUS_SUCCESS;
+     }
+ 
++    threadpool->scratch_size = cplan->work_size;
++    threadpool->iqk_qact_plan = NULL;
++    threadpool->iqk_qact_cache = NULL;
++#if defined(GGML_USE_IQK_MULMAT) && defined(IQK_IMPLEMENT)
++    if (iqk_qact_cache != NULL) {
++        threadpool->scratch_size = cplan->work_size - ggml_cpu_iqk_qact_reservation(&iqk_qact_plan);
++        threadpool->iqk_qact_plan = &iqk_qact_plan;
++        threadpool->iqk_qact_cache = iqk_qact_cache;
++    }
++#endif
++
+ #ifdef GGML_USE_OPENMP
+     if (n_threads > 1) {
+         #pragma omp parallel num_threads(n_threads)

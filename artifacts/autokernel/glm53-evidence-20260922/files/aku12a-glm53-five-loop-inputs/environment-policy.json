@@ -1,0 +1,37 @@
+{
+  "allowed_inherit_keys": [],
+  "measurement_keys": [
+    "GGML_FA_SPLIT_KV",
+    "GGML_FUSED_DECODE_OFF",
+    "GGML_IQK",
+    "GGML_IQK_Q8_0",
+    "GGML_IQK_Q8_0_MIN_ROWS",
+    "GGML_NOHUGEPAGE_PROCESS",
+    "GGML_ROWEXACT_N",
+    "LLAMA_SPEC_EXACT",
+    "LLAMA_TRACE",
+    "OMP_DYNAMIC",
+    "OMP_PLACES",
+    "OMP_PROC_BIND",
+    "OMP_WAIT_POLICY",
+    "PATH"
+  ],
+  "schema": "epyc.autokernel.environment_policy.v1",
+  "version": "glm53-prospective-b2048-ub512-v1",
+  "witnesses": {
+    "GGML_FA_SPLIT_KV": "runtime_set",
+    "GGML_FUSED_DECODE_OFF": "runtime_set",
+    "GGML_IQK": "runtime_set",
+    "GGML_IQK_Q8_0": "runtime_set",
+    "GGML_IQK_Q8_0_MIN_ROWS": "runtime_set",
+    "GGML_NOHUGEPAGE_PROCESS": "runtime_set",
+    "GGML_ROWEXACT_N": "runtime_set",
+    "LLAMA_SPEC_EXACT": "runtime_set",
+    "LLAMA_TRACE": "runtime_set",
+    "OMP_DYNAMIC": "runtime_set",
+    "OMP_PLACES": "runtime_set",
+    "OMP_PROC_BIND": "runtime_set",
+    "OMP_WAIT_POLICY": "runtime_set",
+    "PATH": "runtime_set"
+  }
+}
