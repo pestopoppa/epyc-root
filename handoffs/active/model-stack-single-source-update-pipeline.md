@@ -401,3 +401,48 @@ Surface inventory checks:
 uv run python scripts/validate/stack_change_guard.py --surface-summary-only --all-hardcoded-surfaces
 uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules --surface-inventory-format json > /tmp/stack-change-inventory.json
 ```
+
+---
+
+## Follow-ups from the 2026-09-22 v10 promotion + lineup cutover
+
+The cutover is live and serving; these are what it left owed. Each names its own
+blocker rather than sitting in prose.
+
+- [ ] **SSU-F1 — deprecate the seven `*_local` catalogue rows for the retired models, THEN delete ~544 GiB of weights.**
+  The lineup change deprecated the role-holding rows and never touched the
+  exact-artifact rows beneath them, so `qwen35_122b_iq2m`,
+  `qwen3_next_80b_a3b_instruct_iq2m_local`, `gemma4_26b_a4b_orig_q8_local`,
+  `gemma4_26b_a4b_q4km_current_local`, `gemma4_26b_a4b_orig_bf16_local`,
+  `gemma4_26b_a4b_ud_iq4xs_local` and `draft_gemma4_26b_a4b_assistant_v6_f16_local`
+  are all still live and non-deprecated. Three of them ALREADY point at absent
+  files. Deleting before deprecating leaves seven rows naming missing artifacts.
+  Clean checks already pass: no process maps them (`/proc/*/maps`), no live
+  serving role references them. Use the `retire-model` skill — this is exactly
+  what it refuses on. **Blocker: deletion is an operator action (destructive,
+  irreversible); the deprecation half can be done now.**
+
+- [ ] **SSU-F2 — build a CPU-shape architect quality bench, then close the Flash-Next quality gap.**
+  `architect_critic` and `qwen38_flash_next_ud_iq4xs_local` carry 2 known gaps
+  each and the stack-change gate was SKIPPED to launch. `architect_bench_gpu_arm.sh`
+  is GPU-shaped (pinned to cores 184-191); Flash-Next is a CPU role on 0-95.
+  Until this lands, `stack_change_pipeline.py check` cannot pass strict and the
+  gate stays skipped. **Blocker: none — this is buildable work.**
+
+- [ ] **SSU-F3 — explain the 2.24 GiB the capacity model does not account for on the MI210.**
+  Measured 2026-09-22 under six verified load cycles: usable 63.98, steady
+  63.069, so 0.91 GiB free against a predicted 3.15. The 27B holds 38.61 GiB
+  against a declaration implying ~33.7. Fragmentation and transient peaks are
+  BOTH ruled out by measurement (no ratchet; 0.016 GiB transient) — see
+  `epyc-inference-research/data/gpu-mi210/vram-headroom-20260922/report.json`.
+  Remaining candidates: the declaration understating non-KV for this artifact,
+  or a fixed allocation the model does not represent. This is what makes
+  `n_ctx 262144` unaffordable, so it is worth ~2 GiB of context.
+  **Blocker: none — needs a per-buffer accounting of one loaded server.**
+
+- [ ] **SSU-F4 — make the stack-change surfaces derive instead of restate.**
+  The audit's structural finding (`artifacts/operator/session-friction-audit-20260922.md` §2):
+  `port_map`, `role_launch_meta`, `numa_config`, the procedure enums and
+  `roles.*` each independently restate `shared_with`, and nothing recomputes.
+  The `stack-change` skill now enforces the discipline by hand; the durable fix
+  is to derive them. **Blocker: none — design work, sizeable.**

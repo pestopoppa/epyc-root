@@ -176,3 +176,71 @@ not exist. Fixed as code, not a comment, in `stack_manifest.kv_layers()` / `kv_k
 
 Consequence: Qwen3-VL-30B did not need to leave the GPU at all. It stays, and the operator's
 allocation is 27B at n_ctx 196608 q8_0 + VL at 65536 q8_0, 3.15 GiB free.
+
+---
+
+## Addendum 3 — the three follow-ups, and the skills
+
+### 1. runtime_attestation — CLEAN ✅
+
+`_runtime_attestation_warnings()` returns 0 warnings: the live fleet matches the
+compiled priors. It had failed earlier on the same alias `KeyError` in
+`orchestrator_stack.py` (`LAUNCH_CONTEXT_TOKENS["ingest_long_context"]`, which
+raised at IMPORT once that role became an alias); the fix holds.
+
+### 2. VRAM headroom — MEASURED, and it overturned the prediction ✅
+
+Six verified cycles across all three transient allocators (27B at a 15,177-token
+prompt, a real image through VL-30B's mmproj, whisper transcribing), 360 samples
+at 0.25 s. Both questions answered separately:
+
+| question | answer |
+|---|---|
+| does the card fragment? | **NO.** Troughs 63.069 / 63.069 / 63.076 / 63.080 / 63.084 / 63.084 — climbs 16 MiB over three cycles then stops. A one-time settle, not an allocator failing to return memory. |
+| how much transient headroom? | **0.016 GiB.** Sixteen mebibytes for all three allocators combined. |
+
+**The claim that "the card also fragments" was invented and is now falsified by
+measurement.** So was the worry that transients needed real headroom.
+
+But the static sum was wrong in the *other* direction, and that decides it:
+
+```
+usable 63.98 − steady-under-load 63.069 = 0.91 GiB free   (predicted 3.15)
+raising the 27B 196608 → 262144 costs +2.13 GiB of KV  →  NOT AFFORDABLE
+```
+
+The 27B holds **38.61 GiB**, not the ~33.7 its declaration implies. That is the
+3.71 GiB gap the lineup review flagged as unresolved and correctly refused to
+guess at. It reproduces, it is not fragmentation and not transients — both now
+ruled out — so the remaining candidates are a declaration understating non-KV
+for this artifact, or a fixed allocation the capacity model does not represent.
+**n_ctx 196608 stands, now for a measured reason.**
+
+Report: `epyc-inference-research/data/gpu-mi210/vram-headroom-20260922/report.json`,
+carrying the workload it exercised so it cannot be read as a general verdict.
+
+### 3. Deleting the retired weights — BLOCKED, correctly ⛔
+
+~544 GiB across gemma4 / Next-80B / Qwen3.5-122B. The clean checks passed: no
+running process maps any of them (verified from `/proc/*/maps`, not a name
+pattern), and no live serving role references them.
+
+But **seven live, non-deprecated `*_local` catalogue rows still name these
+artifacts** — the lineup patch deprecated the role-holding rows and never
+touched the exact-artifact rows beneath them. Deleting now would leave seven
+rows pointing at absent files; three of them (`gemma4_26b_a4b_orig_bf16_local`,
+`..._ud_iq4xs_local`, `draft_..._assistant_v6_f16_local`) are ALREADY in that
+state. Deprecate those rows first, then delete. This is exactly what
+`retire-model` refuses on, so the skill earned its keep on the day it was built.
+
+### The skills
+
+`stack-change` (umbrella, the only entry point) + `retire-model`, `change-role`,
+`change-topology`, and `kernel-promotion` repaired. 23 files. Every script named
+by every SKILL.md exists, is executable, and was run against the live trees
+including negative cases — which is the defect the audit charged at
+kernel-promotion and which I reproduced once in my own umbrella before closing it.
+
+`DERIVATION.md` carries the shared reference: which files are source, which are
+generated, the compile order, and the RESTATED DERIVATION rule — *a restatement
+may exist only if its gate recomputes from source and diffs.*
