@@ -151,3 +151,89 @@ Both on `origin/main`, `git cherry` empty.
 - `:8083` reload with `LLAMA_ARG_LOG_VERBOSITY=4`, to convert the 1.802 GiB compute residual from
   a subtraction into a reading. Queued behind the gate by the bench guard, not by a decision.
 - SSU-F8 and SSU-F9 in flight.
+
+---
+
+## 6. Late session — the guard that was already installed, and an index defect I caused
+
+### SSU-F9b withdrawn: the premise was false
+
+I filed, and told the operator, that `epyc-orchestrator` and `epyc-inference-research` carry LFS-only
+`pre-push` hooks with no serialization guard. **They do not.** Both carry the identical chained hook
+installed 2026-08-12, byte-identical to epyc-root's. That was a subagent claim relayed without
+verification; `cat` disproved it. Verified the guards actually *function* rather than merely exist, by
+feeding each a real ref-update line — both print `PUSH REFUSED` for an unheld lock.
+
+What *was* true is the better finding: each now resolves to its OWN repo's `coordination/push-locks`,
+which is what the SSU-F9 fix produces. **Before it, those two repos' pushes would have been refused
+always, not intermittently** — the guard read `/workspace/coordination/push-locks` while
+`serialized_push.py` took the lock in the repo's own directory. epyc-root's two derivations
+coincidentally produced the same string, which is exactly why the breakage was invisible from the repo
+where the work happens. So SSU-F9 silently repaired the sub-repos too.
+
+### The stale-shared-index incident — mine, and caught by a peer
+
+A parallel session flagged a stale working-tree copy. Investigating it found something worse and closer
+to home: the SHARED index held snapshots of **six of my files**, each of which would have published a
+mass deletion of work already on `origin/main`.
+
+| file | staged vs HEAD |
+|---|---:|
+| `artifacts/operator/vram-gap-27b-20260923.md` | −379 |
+| `handoffs/active/model-stack-single-source-update-pipeline.md` | −154 |
+| `.claude/skills/kernel-promotion/promotion_gates.yaml` | −43 |
+| `progress/2026-09/2026-09-23-main-kernel.md` | −31 |
+| `handoffs/active/vidya-belief-substrate-program.md` | −7 |
+| `handoffs/active/master-handoff-index.md` | −2 |
+
+**Mechanism.** I commit through a private index seeded from `origin/main` — which is what stopped me
+sweeping peers' hunks all day, and is correct. But it never advances the SHARED index, so a stale entry
+there stays pinned to old blob content while HEAD moves past it, and the growing gap reads as deletions.
+A plain `git commit` from ANY session would have published them.
+
+**Why it was invisible**, three compounding reasons, all checkable:
+1. The damage is proportional to how much you have committed since the entry went stale — it starts at
+   zero and grows silently. Mine reached −379 lines on one file over a day.
+2. `git status` shows `M`/`MM`; `MM` is the tell but renders as ordinary dirt in a clone with dozens of
+   dirty paths.
+3. `git diff -- <file>` — the command a careful person reaches for — is worktree-vs-INDEX and **cannot
+   show this class of damage by construction**. It needs `--cached`, or `git diff HEAD`.
+
+**The remedy already exists in writing.** `agents/commands/wrap-up.md` says: *"After committing,
+`git reset -q -- <the same paths>`."* So this is not a missing rule, it is an unenforced one, and the fix
+is detection. I ran it after my first two commits and stopped exactly when I switched to
+`commit-tree -p origin/main`, because in that shape the shared index is provably irrelevant to what *I*
+publish — the entire risk is to OTHER sessions' commits. **The hygiene step that protects peers looks
+redundant from inside the very pattern that made you safe from peers.**
+
+Cleared my six with `git reset`; worktree verified intact afterwards. Left the peer's four alone —
+checked each first, since `vidya-belief-substrate-program.md`'s staged deletions were mine while
+`adapters/README.md`'s was their DS41 row.
+
+I had seen that staged list hours earlier and called it benign without running `--cached`. **Looking is
+not checking**, and that gap is the whole incident. Saved as a durable memory; mechanism notes sent to
+the investigating session.
+
+### Champion fast-forward — verified, deliberately NOT taken
+
+A peer asked me to fast-forward `ak/champion/llama-cpp-ffc1bac82eec` to `8df1b5cf2` (a new ggml op,
+INF-77 DS41-B7). Verified their claim: `ffc1bac82` IS an ancestor (true fast-forward), 406 insertions /
+4 deletions, the only deletions being a `ggml-rpc` `GGML_OP_COUNT` assert refresh, and the sole
+references to the new op outside ggml core are in its own test file. Consistent with additive.
+
+**Not taken, and not for ownership reasons.** A champion is a commit AND its build. Moving the ref alone
+leaves `ak-loop-tree`'s binaries predating their own commit — INF-70 C9 exactly, where `libggml-cpu.so`
+predated its own fix by two days and two agents spent two days on a defect that did not exist. It needs
+ref-move plus rebuild, together or neither. Tree state for whoever does it: `ak-loop-tree` has the
+champion checked out at `ffc1bac82`, no AutoKernel loop resident (checked `/proc`, not a name pattern).
+Surfaced to the operator, since it changes what all future kernel work rebases onto.
+
+## Wiki compilation (operator-cadence step)
+
+Delta was 26 sources spanning several sessions' domains. Compiled the **three I had warrant for** and
+scoped the watermark touch to exactly those, leaving 23 in the delta for their owners rather than writing
+pages about work I do not understand:
+- `wiki/benchmark-methodology.md` — the token cap is part of the claim; the four rules; the
+  degeneracy precondition; subtraction-as-residual.
+- `wiki/inference-serving.md` — the served process does not run its own recipe; the read VRAM
+  decomposition; `full_attention_interval` confirmed in the server's own words.

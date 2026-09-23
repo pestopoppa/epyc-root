@@ -2,8 +2,59 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-09-22 (incremental: v10 store cutover + freeze (ffc1bac82, build 10303), derived-layer regen required on promotion; GLM-5.3-Flash retired → DeepSeek-V4.1-Flash (deepseek41, no runtime yet; INF-77); reviewer gates re-blocked on the V4.1 port); earlier: 2026-09-17 (incremental: MTP n-max 8 grid below n-max 4 at np≥2 (observation, ABA required); lineup-port contention waiver; enumerate_feasible warn-only; stack_priors fulls restored; K-MEM-1 scorer-v2 0.5684; J14 dispatcher deleted; 35B np=1 112.676 is a 6-run median; SQLite archive never existed); earlier: 2026-09-14: an enrolled production alias is a SERVING RECIPE, not a model handle — `architect_general@8083` serves native MTP at np=2 while the historical GPU research gate for the same family was DFlash2 at np=4, so a name match silently swaps drafter, concurrency and gate protocol; resolve the workflow from the campaign's retained configuration. Earlier: 2026-09-09: GLM core validated but admission held on CPU performance; AutoKernel seed complete. Earlier: 2026-09-08 (evening): a SECOND headline model on the same champion binary — Qwen3.6-35B-A3B-MTP-Q8_0 at **112.68 tok/s single user / 310.96 tok/s aggregate at 16 slots**, residency proven 24/24 — and the curve is **NOT saturated** there (+15.98% on the last step, 41.4 of 64 GiB VRAM), so 310.96 is the highest measured point and never a maximum; the two models take **different operating points for structural reasons** (dense 27B turns over at 4→8 → np=4; MoE 35B still climbing at 16); and the 35B's np=1 dispersion is 2.70% and did NOT tighten when n doubled; earlier: 2026-09-08 (pm): the champion serving ceiling measured with residency proven on every launch — 79.25 tok/s single user, 179.12 aggregate at np=8, and np=4 is the operating point at 93.7% of peak aggregate for ~42 tok/s per user; aggregate throughput saturates well before the slot count, and between-launch dispersion widens 7.6x from np=1 to np=4; R23-60 landed residency sampling on the serving path, which previously proved none; earlier: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
+**Last compiled**: 2026-09-23 (main-kernel wrap-up: the served process does not run its own recipe — `recipe.env` and `recipe.threads` are declared in the registry and read by NOBODY; plus the MI210 27B VRAM decomposition read from the kernel, confirming `full_attention_interval` KV sizing in the server’s own words); 2026-09-22 (incremental: v10 store cutover + freeze (ffc1bac82, build 10303), derived-layer regen required on promotion; GLM-5.3-Flash retired → DeepSeek-V4.1-Flash (deepseek41, no runtime yet; INF-77); reviewer gates re-blocked on the V4.1 port); earlier: 2026-09-17 (incremental: MTP n-max 8 grid below n-max 4 at np≥2 (observation, ABA required); lineup-port contention waiver; enumerate_feasible warn-only; stack_priors fulls restored; K-MEM-1 scorer-v2 0.5684; J14 dispatcher deleted; 35B np=1 112.676 is a 6-run median; SQLite archive never existed); earlier: 2026-09-14: an enrolled production alias is a SERVING RECIPE, not a model handle — `architect_general@8083` serves native MTP at np=2 while the historical GPU research gate for the same family was DFlash2 at np=4, so a name match silently swaps drafter, concurrency and gate protocol; resolve the workflow from the campaign's retained configuration. Earlier: 2026-09-09: GLM core validated but admission held on CPU performance; AutoKernel seed complete. Earlier: 2026-09-08 (evening): a SECOND headline model on the same champion binary — Qwen3.6-35B-A3B-MTP-Q8_0 at **112.68 tok/s single user / 310.96 tok/s aggregate at 16 slots**, residency proven 24/24 — and the curve is **NOT saturated** there (+15.98% on the last step, 41.4 of 64 GiB VRAM), so 310.96 is the highest measured point and never a maximum; the two models take **different operating points for structural reasons** (dense 27B turns over at 4→8 → np=4; MoE 35B still climbing at 16); and the 35B's np=1 dispersion is 2.70% and did NOT tighten when n doubled; earlier: 2026-09-08 (pm): the champion serving ceiling measured with residency proven on every launch — 79.25 tok/s single user, 179.12 aggregate at np=8, and np=4 is the operating point at 93.7% of peak aggregate for ~42 tok/s per user; aggregate throughput saturates well before the slot count, and between-launch dispersion widens 7.6x from np=1 to np=4; R23-60 landed residency sampling on the serving path, which previously proved none; earlier: 2026-09-08 (Qwen3.8-Flash-Next-FP8 is NO LONGER ON DISK — the 08-28 rm-rf deleted it after the 08-27 verification, INF-63 is BLOCKED on a ~185 GB disk-gated re-acquisition, and the Qwen fleet census (gated shared expert in qwen35moe/qwen4exp/qwen3next) opens the offload question; plus the HIP offload-mode external measurement; earlier 2026-08-27 note: official Qwen3.8-Flash-Next-FP8 artifact acquired and integrity-verified; future research evaluation filed as INF-63; DeepSeek V4 Flash local testing retired); previously 2026-08-25 (ROUTE-A1 and NUMA P0-1 closure) and 2026-08-23 (Qwen3.8-27B live swap, DFlash2 experimental posture, cold-start/slot-path findings)
 **Sources**: 139 distinct linked Markdown sources (added 2026-09-22: deepseek-v41-flash-evaluation, 2026-09-21/22 progress, kernel-promotion log, glm52-reviewer-capability-gates, autokernel-rebuild-program) (added 2026-09-17: gpu-candidates, shape-keyed-contention-gating, numa-topology-cutover, bulk-inference-campaign, champion-max-performance, benchmark-results-dashboard (completed))
+
+## Compiled Update — 2026-09-23: the served process does not run its own recipe, and the VRAM decomposition is now READ rather than subtracted
+
+**The registry's `recipe:` block is decorative.** `architect_critic` declares
+`threads: 48`, `cpu_shape: NUMA_FULL_T48` and `env: {GGML_NOHUGEPAGE_PROCESS: '1', GGML_FA_SPLIT_KV: '0'}`.
+The live process runs `-t 96` and carries none of the declared knobs. Cause: **nothing reads `recipe.env`**
+— a grep for any consumer across `scripts/` and `src/` returns zero hits. `build_launch_env()`
+(`scripts/server/stack_env.py:258`) composes from a canonical OMP block plus `_role_env_overrides()`,
+which reads `_ROLE_ENV_BLOCKS`, a hardcoded dict in that same file; for `architect_critic` it holds
+exactly `{'GGML_NUMA_REPACK_INTERLEAVE': '0'}`. `cpu_shape: NUMA_FULL_T48` has no definition in
+`stack_numa.py`, so the thread count falls through to 96.
+
+Two things make this worse than hygiene. `GGML_IQK=1` *is* live — because it is a launcher default, not
+because the recipe asked — which is exactly why the arrangement looked like it worked. And
+`GGML_NOHUGEPAGE_PROCESS=1` is **CHAMP-2, ADOPTED 2026-09-08 by operator ruling**, a SESSION-unit knob
+that must be exported at launch: an adopted optimisation is not reaching production and nothing detects
+it. *(Direction only — the recipe module sets `THP_SHIM["magnitude_claimed"] = False` deliberately; the
+86.4% figure in its tests is about conflating the two THP knobs, not this shim's own effect.)*
+
+**Consequence for every claim measured on a live port**: a serving number describes the DEPLOYED
+configuration, which may not be the recipe's. The architect quality gate runs against `:8074` at `-t 96`
+without the shim, while the recipe's recorded 43.281 t/s was taken at `-t 48` on build 10241 — the two
+must never be quoted against each other.
+
+**Separately, the MI210 27B VRAM decomposition is now read from the kernel** (`LLAMA_ARG_LOG_VERBOSITY=4`
+at a bench boundary; the reload was refused twice before that by the bench guard, correctly):
+
+| ROCm0 component | MiB |
+|---|---:|
+| model buffer | 26402.70 |
+| target KV (q8_0) | 6528.00 |
+| recurrent (RS) buffer | 2693.25 |
+| target compute buffer | 1472.33 |
+| draft KV (f16, 1 layer) | 768.00 |
+| draft compute buffer | 656.06 |
+| **total** | **38520.34 (37.62 GiB)** |
+
+Two confirmations fall out. The KV line reads `98304 cells, **16 layers**` on a 64-block model — that is
+`full_attention_interval = 4` stated by the server itself, where the capacity model's corrected
+`kv_layers()` had only inferred it from a GGUF key; the 4.06x KV over-declaration is now confirmed at both
+ends. And `2 cells, 64 layers, 2 seqs **8 rs_seq**` prices the MTP recurrent cache at ~0.329 GiB per unit
+of draft depth, so `--spec-draft-n-max` 8 → 4 returns ~1.3 GiB. **What that costs in tokens/s remains
+unmeasured** and is the input the 262144-context decision actually needs.
+
+**Standing gap**: the whole breakdown is suppressed by a launcher default, so every GPU role here is
+un-auditable for VRAM between reloads. A capacity model that cannot be checked against the kernel's own
+numbers is one nobody can falsify.
+
+**Sources**: `artifacts/operator/vram-gap-27b-20260923.md`,
+`handoffs/active/model-stack-single-source-update-pipeline.md` (SSU-F3, SSU-F7/F11, SSU-F10),
+`progress/2026-09/2026-09-23-main-kernel.md`.
 
 ## Compiled Update — 2026-09-22: v10 is the first kernel served from the store, and GLM-5.3-Flash is retired for DeepSeek-V4.1-Flash
 
