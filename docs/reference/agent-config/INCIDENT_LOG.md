@@ -251,3 +251,40 @@ scratch; operator allowlist `scripts/hooks/filesystem_allowlist.yaml`, schema
 mechanical filesystem containment on BOTH agent surfaces, one shared implementation
 (`docs/guides/agent-workflows/filesystem-containment-guard.md`; CLAUDE.md §
 Debugging).
+
+## INC-20260917-daemon-stale-script-inode
+
+A read-only `/proc` census (`tmp/daemon-staleness-20260917/report.md`) found a daemon executing a
+STALE OR ORPHANED script inode in three shapes, all live on this host the same night: (1)
+**stale and diverged** — the opencode-event reaper (pid 2873259, started 09-08) held `fd/255` on a
+lane copy under `worktrees/mains/ak-rebuild-20260828`, 1,802 B, against 7,976 B tracked at HEAD; the
+running code still gated its VACUUM decision on `pgrep -x opencode` and had never sourced
+`observer_guard.sh`, across 461 iterations and 39 VACUUMs against the operator's live
+`opencode.db`. (2) **orphaned inode** — both the hub and bus supervisors showed `(deleted)` for
+their own script after an unrelated `git reset --hard origin/main` in the shared clone; content was
+identical that day, so nothing was visibly broken, but the next commit to either file would have
+diverged silently. (3) **orphaned tree** — a hub on `:8101` ran from a worktree directory that no
+longer existed, with no registry row, pidfile or probe to catch it. Mechanism: bash opens a
+script's inode once at launch and reads it incrementally for the process's whole life; git never
+writes a tracked file in place (checkout/reset/merge unlink and recreate it), so every commit to a
+tracked script leaves any daemon already running on an orphaned inode; no cron runs in this
+container, so daemons are hand-launched and inherit the launching session's cwd, which is how a
+lane cwd produces a lane-pinned daemon. Nothing moved a daemon back: supervisors restart their
+charges, never themselves, and `scripts/coordination/WORKTREE_MIGRATION.md` pinned runtime *state*
+to `/workspace` while saying nothing about runtime *code*. `observer_census.py` (Rule A/B over
+`git ls-files`) certifies the FILE, not a running INSTANCE, so "census OK" coexisted with a
+nine-day-stale live reaper. Remedy (NIB2-81, this commit):
+`scripts/coordination/daemon_provenance.sh` (`dp_attest`, `dp_stale_since_start`) — a daemon
+calling `dp_attest` at its own startup REFUSES to start (a lane may develop a daemon, never run it)
+when its own script does
+not resolve under the canonical root, warns loudly (never refuses) on an uncommitted local edit,
+and records `{pid, script_realpath, inode, blob, started_at}` for `dp_stale_since_start` to poll
+once per loop iteration and LOG (never act) that a commit has since replaced the file it is
+executing. Wired into the opencode-event reaper's `run` mode and into `bus_supervisor.sh` /
+`hub_supervisor.sh`'s own `loop` startup — complementary to, not a duplicate of,
+`bus_supervisor.sh`'s pre-existing H-4 check, which watches the SEPARATE daemon `bus_supervisor.sh`
+supervises, not its own script. The generalised supervision loop that would also catch shape (3) —
+a registry `runtime:` field plus `observer_census.py --live` — remains open as NIB2-81 remedy (b),
+out of scope here. Rule fed: runtime-plane daemons execute from canon only (CLAUDE.md § Working-tree
+identity; `scripts/coordination/WORKTREE_MIGRATION.md` § The two planes;
+`handoffs/active/non-inference-backlog.md` NIB2-81/NIB2-81a).
