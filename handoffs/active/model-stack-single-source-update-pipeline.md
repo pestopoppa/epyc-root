@@ -446,3 +446,93 @@ blocker rather than sitting in prose.
   `roles.*` each independently restate `shared_with`, and nothing recomputes.
   The `stack-change` skill now enforces the discipline by hand; the durable fix
   is to derive them. **Blocker: none — design work, sizeable.**
+
+- [x] **SSU-F5 — fix the 11 `test_stack_priors_compiler.py` failures: fixtures that RESTATE the pre-lineup ports.**
+  Measured 2026-09-23: `pytest tests/unit/test_stack_priors_compiler.py` → **11 failed, 24 passed**
+  (an earlier report said 16; 11 is the counted figure). The shape is `assert [8070] == [8072]`
+  — fixtures hard-coding the port the worker lane answered on BEFORE the 2026-09-22 lineup
+  change moved `worker_general`/`worker_explore`/`worker_math`/`toolrunner` onto frontdoor's
+  `:8070` process. Failing tests: `test_stack_manifest_info_defaults_to_launcher_full_mode`,
+  `..._can_compile_explicit_both_mode`, `test_alias_roles_inherit_host_full_fleet_ports`,
+  `test_regenerated_worker_math_url_byte_equals_fix_a_delegated_value`,
+  `test_compile_maps_model_role_server_binding`,
+  `test_compile_prefers_server_mode_launch_requirement_paths`,
+  `test_compile_shared_aliases_use_runtime_descriptor`,
+  `test_compile_preserves_conflicts_as_gaps_when_allowed`,
+  `test_compile_require_realized_mode_derives_quarter_lineup`,
+  `test_compile_default_does_not_probe_realized_fleet`,
+  `test_compile_projects_ctx_model_max_and_policy_hints`.
+  **This is the SSU-F4 defect class one layer down** (audit §2, restated derivation): a fact that
+  is a function of `server_mode.*.shared_with` copied into a test fixture as a literal, so the
+  fixture asserts yesterday's topology and fails for a reason unrelated to what it tests.
+  Repinning the literals fixes today and guarantees the same breakage at the next lineup change;
+  deriving the expectation from the same source the compiler reads does not.
+  **Blocker: none.** Owner note: a green suite here is load-bearing — `compile_stack_priors`
+  refusing is what blocked the 2026-09-22 cutover for 40 minutes.
+
+### SSU-F5 outcome and what it left (2026-09-23)
+
+`tests/unit/test_stack_priors_compiler.py`: **11 failed / 24 passed → 35 passed**, one file changed
+(+366/−95), `ruff` clean. Nine of the eleven were bucket-(1) *restated derivations* — port and role
+literals copied from `port_map` / `numa_config` / `shared_with` — and are now recomputed from those
+sources. One was a pin that pinned the wrong thing (`test_..._delegated_value` read the alias's own
+restatement of a delegation instead of resolving the host first). One needed its fixture to stop
+borrowing the production lineup: `test_compile_maps_model_role_server_binding` had **ten** assertions
+the compiler resolved from the live launcher, so each fix revealed the next.
+
+The fix is proven *derived rather than repinned*, which is the only claim worth making here. A pytest
+plugin at `/mnt/raid0/llm/tmp/ssuf5/moved_lineup.py` relocates the worker lane a second time — onto
+`architect_critic` (`:8074` + `:8084/:8184`), moving all five surfaces together — and **34 of 35 tests
+follow the move with no edit to the test file**. The single failure is the deliberate pin failing
+loudly and correctly, and it is failing at a *production* defect, not a test one. Keep that plugin: it
+is a standing regression against the next lineup change.
+
+- [ ] **SSU-F8 — `src/config/models.py::_LEGACY_SERVER_URL_FALLBACKS` still names the retired `:8072`
+  worker fleet, and eleven neighbouring tests assert the same dead ports.** Found by SSU-F5 while
+  reading, reported rather than fixed because it is outside one test file.
+  Three rows — `worker_general`, `worker_math`, `toolrunner` — carry
+  `full:http://localhost:8072,http://localhost:8082,http://localhost:8182`. Those ports have not
+  existed since 2026-09-22; all three roles are aliases on frontdoor `:8070`. `_server_url_default()`
+  ends in a bare subscript of this dict, so in **exactly the degraded mode the table exists to serve**
+  (priors unreadable, no runtime facts, fresh checkout, bootstrap) these three roles resolve to a fleet
+  with nothing listening. It reads correct today only because live runtime facts win.
+  `worker_summarize` and `coder_escalation` were updated at their cutovers; the worker lane was not.
+  **Do not just update the three rows.** Add `_LEGACY_SERVER_URL_FALLBACKS` as a **sixth surface** in
+  `scripts/validate/check_shared_with_derivations.py` — an alias's fallback must equal its host's,
+  recomputed and diffed. It is the shape that file already handles, and its absence is the whole reason
+  this rotted silently while the five wired surfaces did not.
+  Then clear the eleven pre-existing failures in the neighbouring suites (verified present without
+  SSU-F5's change; none of them import the file it edited):
+  `test_config.py` ×2 (the consumer-side twin of the defect above), `test_config_lineup_liveness.py` ×1
+  (`KeyError: 'worker_general'`), `test_stack_numa_reader_agreement.py` ×2, `test_stack_numa.py` ×1,
+  `test_stack_manifest_imports.py` ×4, `test_stack_change_guard.py` ×1.
+  **Two of those deserve attention beyond "stale literal".** `test_stack_numa_reader_agreement`
+  (`assert [8080] == [8080, 8180]`) is a reader *disagreeing about half-instance ports* — the only
+  failure whose cause is not obviously a copied constant, and worth looking at independently of tests.
+  And two of the four `test_stack_manifest_imports` failures are a **stale parity exception still live
+  in `launch_manifest.yaml`**, whose own text says it no longer applies; while it sits there it
+  pre-excuses the next real divergence. One line, a live surface, owned by whoever owns that file.
+  **Blocker: none.**
+
+- [ ] **SSU-F9 — a correctly-acquired push lock does not satisfy the pre-push guard, and the failure
+  mode is silent.** Measured 2026-09-23: four consecutive failed pushes of one reviewed commit.
+  Two independent defects compose, and each one alone is enough to block a push while reporting success:
+  **(a) the lock directories disagree.** `serialized_push.py` with no `--lock-dir` derives ONE canonical
+  directory from the git common dir (correct, and deliberate — it is what makes all five lane worktrees
+  contend for one lease). The pre-push hook looks in `<repo>/coordination/push-locks/`. So `--acquire`
+  reports `acquired push lock for .` and the hook then reports `the push serialization lock is NOT HELD
+  — no lock file at /workspace/coordination/push-locks/push-<key>.json`. Both are telling the truth
+  about different directories.
+  **(b) the wrapper's own `--push` cannot satisfy its own guard across two tool calls.** The guard
+  accepts a push whose process is a *descendant of the lock holder*, but `--acquire` and `--push` run as
+  separate processes, so the holder pid is not an ancestor and the check falls through to
+  `EPYC_PUSH_LOCK_HOLDER`/`AGENT_ID` — neither of which the wrapper exports. The push fails.
+  **The silence is the real defect**: `--push` prints its full publish manifest and then
+  `PUSHING as '<agent>' under the push lock ...` as its LAST line, while git's `error: failed to push
+  some refs` goes to stderr and surfaces *before* the manifest. A caller reading the tail sees a
+  clean-looking manifest ending in `PUSHING`, and `--release` afterwards says `(no push lock held)`,
+  which reads like a normal post-push release. Nothing in that sequence says the push did not happen.
+  Only `git cherry origin/main main` does — which is why the wrap-up contract requires it.
+  Fix: make the guard and the wrapper agree on one lock directory; have `--push` exit non-zero and say
+  `PUSH FAILED` on the last line; and have the wrapper export its own identity so its push satisfies its
+  own guard. **Blocker: none.**
