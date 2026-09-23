@@ -559,7 +559,7 @@ refuse.
 `EPYC_PUSH_LOCK_DIR`, so not one of them exercised the default derivation. A test suite that always
 supplies the value under test cannot fail on it.
 
-- [ ] **SSU-F9a — OPERATOR ACK REQUIRED (D9).** All four files are under `scripts/coordination/**`
+- [x] **SSU-F9a — OPERATOR ACK REQUIRED (D9).** ✅ 2026-09-23 — granted and landed: commit `0f9a4ef1` (all four `scripts/coordination/**` + `scripts/hooks/**` files) carries `D9-ack: operator, 2026-09-23, in session -- authorised after the verification`, and is on origin/main. Ticked by the research-intake session on the operator's explicit ownership transfer (2026-09-23, "take ownership of all these"). All four files are under `scripts/coordination/**`
   and `scripts/hooks/**`, which D9 (ratified 2026-08-15) puts behind operator ack: the loop plane,
   where a wrong change is discovered by its consequences at 3am. The owning session cannot self-ack.
   Commit with `D9-ack: <who authorised, why>` once granted.

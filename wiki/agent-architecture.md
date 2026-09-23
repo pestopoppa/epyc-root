@@ -31,7 +31,7 @@
 
 ### Open questions
 
-- SSU-F9a's box still reads as awaiting the ack that `0f9a4ef1` records. The owning session should reconcile it.
+- SSU-F9a is closed (2026-09-23): the D9 ack is recorded in `0f9a4ef1`'s `D9-ack` trailer, and the box is ticked with that evidence.
 - Do any other coordination leases default to a `__file__`-relative directory, as in F9c?
 
 ### Source References (2026-09-23 wrap-up compile)
