@@ -416,6 +416,9 @@ Validate "piggyback on frontdoor" concept before investing in hidden-state extra
 - [ ] **P1.5.2** Collect over ~1000+ requests — FROZEN under the 2026-06-12 routing-expansion guard. Reopen only after a current-traffic DAR-1 replay shows >=5% identifiable routing regret and N2 per-question vectors exist; then enable `ORCHESTRATOR_LOGIT_PROBE=1` in a coordinated collection window.
 - [ ] **P1.5.3** Train linear probe (512 params), evaluate accuracy — gated by P1.5.2 collection.
 - [ ] **P1.5.4** Decision gate: >= 80% → proceed to Phase 2; < 60% → stay with BGE+MLP — gated by P1.5.3.
+  - *Freeze annotation 2026-09-23 (intake-1522; not an unfreeze):* when reopened, restate this and P2.6 as per-role AUROC
+    + ECE against TF-IDF/length and BGE+MLP baselines, with a (layer, position) sweep — accuracy thresholds hide
+    surface-feature wins.
 
 ### Phase 2: Hidden State Probe (llama.cpp fork changes required)
 
@@ -427,6 +430,9 @@ Validate "piggyback on frontdoor" concept before investing in hidden-state extra
 - [ ] **P2.4** Train independent linear probes per attention layer — find best
 - [ ] **P2.5** If complementary, use learned attention pooling (N learnable weights)
 - [ ] **P2.6** Decision gate: >= 90% → Phase 3; < 80% → stay with BGE+MLP
+  - *Freeze-exit annotation 2026-09-23 (intake-1526; not an unfreeze):* alternative substrate when reopened — an off-stack
+    decoupled encoder, since `/hidden-states` is not in v10. Gate it on per-role AUC + ECE on the incumbent-disagreement
+    subset vs BGE+MLP. Published encoders are 20B-122B and the headline savings are frontier-pool-only.
 
 ### Phase 3: BGE Elimination (Conditional on Phase 2)
 

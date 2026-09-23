@@ -452,6 +452,9 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   (`epyc-inference-research/scripts/benchmark/v4_quality_gate_{runner,compare}.py`). Run the
   `deepseek-harness` evaluation path (`evaluation/dsh-minimal.patch`) as the model-native task
   harness. Separate quantization drift (Q4_K experts vs FP4/FP8 source) from port defects.
+  - *2026-09-23 (intake-1508):* before any KLD/divergence claim, audit whether the reference is a dequantized upcast of
+    the FP8/FP4-native release (a 'BF16' release can sit on the FP8 grid, as shown for GLM-5.3-Flash) and name it
+    `dequantized_from_quant` in the claim.
 - [ ] DS41-T4 — **MTP exact rollback/replay**: forced rejection at every draft position; all
   accepted, none accepted, repeated cycles; rollback continuation vs replay of the accepted
   prefix; full vs chunked prefill; state save/restore; both KV-shared and index-shared layers.

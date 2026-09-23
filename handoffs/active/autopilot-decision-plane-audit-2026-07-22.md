@@ -610,6 +610,12 @@ The in-band `[ERROR: …]` marker lives in the **answer text**, persisted in see
     `scripts/operator/run_pcal_ratify_20260916.sh`). **Waiting on the operator to run
     `run_pcal_ratify_20260916.sh`** (human-only trust boundary). Detail:
     `progress/2026-09/2026-09-16-sub-pcal-ratify.md`.
+  **Intake 2026-09-23 (jev-exl3):** (i) before launching a separate spec-off server, test whether a per-request
+  `"speculative.n_max": 0` on the live v10 server yields fully populated per-token probs — the probe's fail-closed checks on
+  draft_n>0 and placeholder tokens detect a miss (intake-1521). (ii) External expectation for the spec-OFF math arm:
+  mean-token-prob AUROC 0.690 on GSM8K (8-SLM range 0.662-0.723), ~0.72 across GSM8K/MultiArith/SVAMP, near-random on
+  AQuA; a spec-OFF result near or below 0.5 points at the instrument first (intake-1525).
+- [ ] **EV-CONF-3 — llama.cpp-experimental: populate result.prob/probs for draft-accepted tokens** from verify-batch logits (v10 `server-context.cpp:4238-4244` TODO), for the next production candidate (v11); never patched into v10. Evidence: intake-1521.
 
 - [x] ✅ 2026-07-23 COMPLETE — reseed APPLIED by operator (12:45:07Z; backup autopilot_state.pre-reseed-20260723T124507Z.json; gate reads T1 1.6 / T2 1.891, era E7-eval-instrument; fail-closed hold lifted on same-era designed-core ground) **EV-BASELINE-E7 — post-E7 full-pool baseline sweep (reseed prerequisite; filed 2026-07-23)**:
   the granted era-fence reseed is UNDERDETERMINED by current data — `baseline_state` is tier-keyed

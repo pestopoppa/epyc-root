@@ -41,6 +41,9 @@ shift), so **each model we want to serve at champion speed needs its own DFlash2
 shipped MTP (1.5×) is a floor, not the ceiling.
 
 - [ ] **DF2-QWOPUS — scope + estimate training a DFlash2 head for Qwopus** (before committing card-days).
+  - *2026-09-23 (intake-1505):* Table 4 there is weak support that serving-quant features train fine (direct INT4 4.97 ≈
+    BF16 4.92). Nota's Stage-2 hyperparameters (taps [1,8,15,22,29], CE with exp(-(k-1)/7) decay, lr 1e-3, 2 epochs) are a
+    reference point; their SpecForge trainer is online-HF and does not replace offline llama.cpp feature capture.
       DFlash2/EAGLE-style drafters are distillation of a small (~2 GB) head from the frozen target — NOT a
       pretrain — so tractable: capture Qwopus hidden states + outputs over a corpus (teacher-forcing), train
       the draft head, validate acceptance. Rough recon: **~2–5 days on the single MI210** (inference-bound
@@ -405,6 +408,11 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       comparable rate, #25618's localisation cannot be tested on our stack. Use `ngram-cache` or
       `ngram-mod`, or prompts with high n-gram repetition, and REPORT `draft_n` per arm beside the
       verdict so exposure is visible rather than assumed.
+      - *2026-09-23 (intake-1513):* classify each FAIL's first divergence as near-tie (baseline token top-2, small margin;
+        the 6/12 unset-arm failures had margins 0.0046-0.079) or degenerative, and count partial-acceptance rounds.
+- [ ] **DF2-11 — Drafter-precision sweep.** Fixed Qwen3.8-27B Q8_0 target on MI210, DF2-4 protocol. Drafter arms: BF16, Q8_0 (on disk), Q4_K_M (incoai official), Q2_K (analogalok, 705 MB), plus FFN-only-Q4 and fc-at-Q8_0/rest-Q4_K arms. Report weighted acceptance, per-position acceptance and decode t/s in alternating pairs. Expected decode upside is small (the drafter reads ~2 GB vs ~28 GB target per block, projection); the value is VRAM headroom and settling intake-1256#record and intake-1506. Priors: intake-1505 Table 5 (4-bit drafter about -1% acceptance), intake-1512 (INT4-FFN TPC -0.03 to +0.01, below that paper's own table-to-table noise). ~2-4 GPU-h, ~6 GB downloads; piggyback on the next GPU window.
+- [ ] **DF2-12 — np>1 GDN parity arm.** Qwen3.8-27B DFlash2 at np=4, mixed prompts so slots interleave speculative and non-speculative steps; classify every divergence as near-tie vs degenerative. vLLM #39273 (hybrid GDN state corruption under speculation, still open) reports silent corruption with healthy acceptance on Qwen3.8-27B. Our rollback has no structural analog (`llama-memory-recurrent.cpp:1293-1310`), but np>1 is untested. Evidence: intake-1513.
+- [ ] **DF2-13 — Checkpoint + prompt-reuse test on a GDN target under DFlash2.** Two requests (B extends A's conversation); compare B's output with a cold-cache run of B. The context-checkpoint path carries an upstream TODO (`server-context.cpp:2398-2400`). Evidence: intake-1513.
 - [x] **DF2-9 (new, 2026-08-27) — pin `GGML_HIP_ROCWMMA_FATTN=ON` in every DF2/champion build
       recipe.** The flag **defaults to OFF** (`ggml/CMakeLists.txt:219`), and on gfx90a with
       `-fa on` the non-rocWMMA path produces non-finite values at longer sequence lengths — see the

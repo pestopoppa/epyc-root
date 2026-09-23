@@ -1,87 +1,207 @@
 {
-  "session_id": "intake-jev-ultrafast-20260918",
-  "started_at": "2026-09-18T00:00:00Z",
-  "last_checkpoint": "2026-09-18T20:56:06Z",
+  "session_id": "intake-jev-exl3-20260923",
+  "started_at": "2026-09-23T11:50:00Z",
+  "last_checkpoint": "2026-09-23T15:34:02Z",
   "phase": 5,
   "stage": "stage4-complete",
-  "session_kind": "research-intake (1 operator-submitted URL)",
-  "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-jev-ultrafast-20260918 (branch intake/jev-ultrafast-20260918 off origin/main 5ac3f9a0). Scratch /workspace/tmp/intake-jev-ultrafast/. Prior session file backed up to scratch/backup-session.json.",
-  "processed_urls": [
-    "https://github.com/browser-use/jev-ultrafast",
-    "https://github.com/browser-use/browser-harness"
+  "session_kind": "research-intake (4 repo URLs + 2 operator inline digests)",
+  "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-jev-exl3-20260923 (branch intake/jev-exl3-20260923 off origin/main 85f22ea8). Shared clone /workspace has another session's uncommitted edits to research/intake_index.yaml (stale, missing intake-1493/1494), so all intake writes happen in this worktree. Scratch: /workspace/tmp/intake-jev-exl3/. Previous session file (intake-jev-ultrafast-20260918, stage4-complete) is preserved in git history.",
+  "previous_session": "intake-jev-ultrafast-20260918",
+  "mandate": "Ingest KLPO, HelixDB, GQE, jaredpalmer/kev repos + operator digest A (OrcaRouter on Jev) + operator digest B (EXL3 VRAM tiers).",
+  "raw_submissions": {
+    "digest-A": {
+      "path": "/workspace/tmp/intake-jev-exl3/digest-A-jev-orcarouter.md",
+      "sha256": "0c90decead1aec208259f5866260e7403793d6c9f7a884f192472d729dca57f6"
+    },
+    "digest-B": {
+      "path": "/workspace/tmp/intake-jev-exl3/digest-B-exl3-vram-tiers.md",
+      "sha256": "62df1e2ba65c8ef23cc0bb7e185fd8b1a03be626f366c93f0964b22dbbf821c3"
+    }
+  },
+  "max_existing_intake_id_at_start": 1494,
+  "next_intake_id": 1528,
+  "entries_processed": [
+    "intake-1495",
+    "intake-1496",
+    "intake-1497",
+    "intake-1498",
+    "intake-1499",
+    "intake-1500",
+    "intake-1501",
+    "intake-1502",
+    "intake-1503",
+    "intake-1504",
+    "intake-1505",
+    "intake-1506",
+    "intake-1507",
+    "intake-1508",
+    "intake-1509",
+    "intake-1510",
+    "intake-1511",
+    "intake-1512",
+    "intake-1513",
+    "intake-1514",
+    "intake-1515",
+    "intake-1516",
+    "intake-1517",
+    "intake-1518",
+    "intake-1519",
+    "intake-1520",
+    "intake-1521",
+    "intake-1522",
+    "intake-1523",
+    "intake-1524",
+    "intake-1525",
+    "intake-1526",
+    "intake-1527"
   ],
-  "entries": [
-    "intake-1493",
-    "intake-1494"
-  ],
-  "next_intake_id": 1495,
+  "entries_remaining": [],
+  "dedup": {
+    "method": "unbounded normalized url/arxiv sweep + curl -sIL redirect check",
+    "collisions": [
+      "TheoLeeCJ/SemIf = 301 target of TheoLeeCJ/openjev (intake-1487): NOT minted; re-encounter note appended to intake-1487 notes",
+      "digest-A ref 1 typesafe.ai launch post = intake-1470",
+      "digest-B refs exllamav3 = intake-872, QTIP 2406.11235 = intake-873"
+    ]
+  },
+  "expansion_cap": 10,
+  "expansion_count": 9,
+  "expansion_entries": {
+    "intake-1501": "DDnim/jev-vs-laya <- 1499",
+    "intake-1502": "Laya HF card <- 1499",
+    "intake-1503": "OrcaRouter X thread <- 1499",
+    "intake-1504": "scienthoon/jev-ood-calibration <- 1498",
+    "intake-1505": "arXiv 2607.04244 (title resolved) <- 1500",
+    "intake-1506": "MiaAI-Lab DFlash2 EXL3 drafter <- 1500",
+    "intake-1507": "malaiwah/quant-fidelity-suite <- 1500",
+    "intake-1508": "HF discussion GLM-5.3-Flash-tr3-4bpw #1 <- 1500",
+    "intake-1509": "atomic.chat exl3-vs-gguf <- 1500"
+  },
   "expansion_refused": [
     {
-      "seed": "intake-1493",
-      "reason": "inception/mercury-2.5 (text helper) is a hosted closed-weights model named only as a config value; no primary source to ingest"
+      "seed": "intake-1499",
+      "reason": "cap: low-value restatements not ingested (getmaxim explainer, systemonemodels.org x2, di-zhang RLCD theory post, kyegomez/open-jev random-weight sketch, OmniJev/awesome-jev inventory, laya.convaiinnovations.com site, orcarouter.ai/blog/jev-vs-kev and jev-vs-laya)"
+    },
+    {
+      "seed": "intake-1498",
+      "reason": "cap: archerhume jevs-architecture-unmasked, multimodalart jev-reproductions-tracker, SamuelSacco/jev-exploration, scienthoon/luce, bitnovus/jev-spam-eval, anisselbd/jev-phishing-bench deferred to a later session"
+    },
+    {
+      "seed": "intake-1500",
+      "reason": "cap: Cornell-RelaxML/qtip, TabbyAPI, PonyExl3, turboderp HF collection, mratsim GLM-4.6-EXL3, MiaAI-Lab dual-Spark repo, brandonmmusic-max repo, X @yume_arasaki (unretrievable), arXiv 2505.22179, 'Displacement Is Not Direction' (id unverified) not ingested"
+    },
+    {
+      "seed": "intake-1495/1496/1497",
+      "reason": "relevance low: no expansion from KLPO (BPO/Score-Centering ids unverified), HelixDB, GQE"
     }
+  ],
+  "reader_disagreements_resolved": [
+    "intake-1508 v44 row regimes: receipts runtime-results/v44/kld/{fp8,nvfp4}-five-run-kld-receipt.json record FP8/NVFP4 MLA KV on EXL3 runtime (means 0.024629/0.060535); KV-cache reading adopted, recorded in entry",
+    "GLM-5.3-Flash is deleted from host (deepseek-v41-flash-evaluation.md:5-8), contrary to one reader"
   ],
   "steering_ledger": [
     {
       "seq": 1,
-      "stage": 1,
-      "verbatim": "It would tie into the extensive jev-related work performed over there past two days",
-      "disposition": "planned",
-      "plan_ref": "plan \u00a71 TD-12..TD-15; relevance medium->high (Stage 2)"
+      "stage": 2,
+      "verbatim": "Deep dive all 5 you recommended",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Stage-2 dive selection: intake-1498, 1504, 1502, 1507+1508 (pair), 1505"
     },
     {
       "seq": 2,
-      "stage": 3,
-      "verbatim": "what if we choose to desire a browser-agent surface in the future? Shouldn't we at least create a stub for it?",
-      "disposition": "planned",
-      "plan_ref": "plan \u00a72 browser-agent-surface.md + UFH-10"
+      "stage": 2,
+      "verbatim": "ingest+dive all recommended please",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Stage-2b selection: close-out items 1-9 ingest-and-dive; items 10-14 declined (record in bearing entries' dive_corrections)"
+    },
+    {
+      "seq": 3,
+      "stage": 2,
+      "verbatim": "A-D, then proceed to stage 3",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Stage-2b round-2 selection: arXiv 2407.09141, 2608.11212, 2605.02241, 2602.09924; other 17 dive-surfaced sources declined; then Stage 3"
+    },
+    {
+      "seq": 4,
+      "stage": 2,
+      "verbatim": "Ingest + dive all 5",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Gate round 3 (AskUserQuestion): arXiv 2411.02355, 2606.05688, 2502.04428, 2603.20895, 2607.03436"
     }
   ],
-  "dive_selected": [
-    "intake-1493"
+  "validator": "validate_intake.sh exit 0 (1505 entries)",
+  "index_write": "text append of 15 serialized entries (intake-1495..1509) + one in-place notes edit on intake-1487; backup /workspace/tmp/intake-jev-exl3/backup-index-before-stage1.yaml; no YAML round-trip; handoffs untouched",
+  "stage2_selected": [
+    "intake-1498",
+    "intake-1504",
+    "intake-1502",
+    "intake-1507",
+    "intake-1508",
+    "intake-1505"
   ],
-  "dive_results": {
-    "intake-1493": "dive-verified; 1 claim narrowed, 1 added, Stage-1 contradiction withdrawn"
+  "stage2_results": {
+    "intake-1498": "dive-verified; narrowed: released weights = v7 recipe + 1-epoch soft-target delta; hybrid prefix reuse serve-only; README 0.917/0.911 are pre-delta (released 0.910/0.900); coverage gap vs Jev CI includes 0; spend $557.31; llama.cpp feasible-with-work (merge-first for out_proj LoRA on 4B/9B; seq_cp driver)",
+    "intake-1504": "dive-verified; narrowed: 300 tickets x 3 q; tier visible so priority is policy-unknown not unknowable (oracle 97.3%); choice sign fragile; Brier computed; CC0 at file level; generator byte-reproduces",
+    "intake-1502": "dive-verified; narrowed: published loop = REINFORCE + CE weight 1.0; no ablation isolating RL; zero-shot split not held-out families; 0.466 baseline pre-clamp; CPU latency unprovenanced; RLCD-named only (intake-1460 note stands)",
+    "intake-1507": "dive-verified; self-compare is hash-proof identity not validation; registry carries v44 mislabel; P-KLD annex gap mapping (prepare only)",
+    "intake-1508": "dive-verified; row-label dispute settled (KV-cache variants, single window); mislabel by malaiwah ev5/7; W8A8 from config.json; depends_on intake-1507#02",
+    "intake-1505": "dive-verified; narrowed: RTX 5000 Ada proxy; latency not decode speedup; two-stage effect ~+1%; OVERTURNS entry framing that it bears on our DFlash collapse (our acceptance flat vs target precision)"
   },
-  "dive_surfaced_sources": [],
-  "derived_actionables": [
-    {
-      "id": "DA-1",
-      "draft": "TD-4b: one-call tool + argument arm: a choice over list_tools(role) plus per-tool argument heads, consuming only the chosen tool's heads; compare to the tool-then-args path",
-      "owner": "typed-decision-plane.md",
-      "disposition": "propose"
-    },
-    {
-      "id": "DA-2",
-      "draft": "Per-head fail-open: a failed UNUSED head must not reject the pass (tool_args_integration.py:197)",
-      "owner": "typed-decision-plane.md (folds into DA-1)",
-      "disposition": "propose"
-    },
-    {
-      "id": "DA-3",
-      "draft": "Optional per-candidate descriptions on Question, rendered in the catalogue",
-      "owner": "typed-decision-plane.md",
-      "disposition": "propose"
-    },
-    {
-      "id": "DA-4",
-      "draft": "Measure contamination between an operation head and speculative heads conditioned on it before trusting their independence",
-      "owner": "typed-decision-plane.md",
-      "disposition": "propose"
-    },
-    {
-      "id": "DA-5",
-      "draft": "Native path beyond 36 candidates (hierarchical codes / chunking; 128 n_probs cap)",
-      "owner": "typed-decision-plane.md",
-      "disposition": "propose-conditional (only if DA-1 needs large tables)"
-    },
-    {
-      "id": "DA-6",
-      "draft": "Port jev browser executor / adopt browser-harness",
-      "owner": null,
-      "disposition": "decline: no browser-agent surface; opt-out telemetry"
-    }
+  "second_reader": {
+    "A": "/mnt/raid0/llm/tmp/second-reader-20260923/SECOND-READER-A.yaml (1504,1502,1507,1508: 34 found-at, 3 found-elsewhere, 0 not-found; 35 yes, 2 partial on 1508); 1505 all clean per prose",
+    "B": "/mnt/raid0/llm/tmp/second-reader-20260923/SECOND-READER-B.yaml (1498: 9/9 yes; one json-pointer corrected to #/outcome)"
+  },
+  "index_write_stage2": "tail block intake-1495..1509 re-emitted via /workspace/tmp/intake-jev-exl3/merge_dives.py; head bytes asserted identical; backup backup-index-before-stage2.yaml; validator exit 0",
+  "stage2b_selected": [
+    "arXiv 2606.19558",
+    "rtx6kpro kimi-k3 distribution-fidelity doc",
+    "arXiv 2508.08192",
+    "adaptfm competition results",
+    "espetro/llama.cpp@kev",
+    "taigrr/gojev + kev-*-gguf",
+    "scienthoon/luce",
+    "ihubanov/hunch COMPARISON-laya",
+    "arXiv 2510.01237"
   ],
-  "plan_file": "/home/node/.claude/plans/radiant-launching-allen.md",
-  "plan_approved": "2026-09-19"
+  "stage2b_declined": {
+    "intake-1502": [
+      "r33drichards/laya-vision PR#1",
+      "Luni/laya-jev-benchmark",
+      "Alexander-Ollman/laya-ft",
+      "arXiv 2503.23303"
+    ],
+    "intake-1504": [
+      "SamuelSacco/jev-exploration"
+    ],
+    "intake-1505": [
+      "nota-github/adaptfm-quant-dflash (read in dive)",
+      "hf z-lab/Qwen3.5-4B-DFlash",
+      "pith.science/paper/2607.04244"
+    ],
+    "intake-1498": [
+      "monatis/ggmlc",
+      "multimodalart/jev-reproductions-tracker"
+    ]
+  },
+  "stage3_plan": "/home/node/.claude/plans/cryptic-crafting-flurry.md (operator-approved 2026-09-23)",
+  "stage4": {
+    "handoffs_edited": 16,
+    "new_task_boxes": 12,
+    "ticks": 0,
+    "new_docs": [
+      "docs/research-intake/p-kld-annex-proposals-20260923.md",
+      "progress/2026-09/2026-09-23-intake-jev-exl3.md"
+    ],
+    "deviations_from_plan": [
+      "intake-1499 disposition knowledge_only (plan listed integrated): no handoff text cites it; its content landed via 1501/1502/1504",
+      "intake-1522 disposition integrated (plan listed knowledge_only): the LRC P1.5.4 annotation cites it",
+      "Entry-level citations of intake-1519/1524/1514/1256 narrowed to #NN or #record to satisfy cite-check (overturned sibling claims)"
+    ],
+    "validators": "validate_intake.sh exit 0 (1523 entries); index_state.py --check exit 0"
+  },
+  "steering_ledger_dispositions": "all 4 rows context-only (dive/ingest selections executed in Stages 2/2b)"
 }

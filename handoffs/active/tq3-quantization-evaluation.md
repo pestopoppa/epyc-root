@@ -230,7 +230,7 @@ Unlike KT this needs **none** of the hard parts: `IQ2_XXS=16`, `IQ3_XXS=18`, `IQ
 
 - [ ] **STEP 1 (~1 day, do first):** add `iqk_gemm_iquants.cpp` to `CMakeLists.txt:55-61`, delete the two `return false` lines at `iqk_stubs.cpp:26,31`, add IQ2_XXS/IQ3_XXS/IQ2_S cases to `iqk_typeA_supported` (`iqk_dispatch.cpp:58`). Leave IQ4_XS on the native path (only 4 tensors; no case in the ik file). Expect **prefill-dominant, decode-modest** gains by the iqk pattern — GLM prompts run 3-12K tokens and its measured decode (2.49 t/s no-spec, 5.33 with MTP) is deep in the BW-bound regime. MUST be on `llama.cpp-experimental`; `production-consolidated-v7` is FROZEN.
 - [ ] **STEP 2 (gate, needs operator inference approval):** measure IQ4_KT vs Q4_K_M and IQ2_KT vs IQ2_XXS **inside `/mnt/raid0/llm/ik_llama.cpp` as a scratch measurement instrument** — the reference implementation is already on disk, so the whole speed/quality decision can be made without porting anything into v7. Not a second serving binary; a bench harness.
-- [ ] **STEP 3 (only if Step 2 wins):** the 3-6 day port. **Decision-flipper:** IQ4_KT must reach >=95% of Q4_K_M tg128 under the canonical protocol AND show a measurable PPL/eval win. Slower than 95% ⇒ DROP permanently — 17.5% fewer bytes that decode slower is strictly dominated.
+- [ ] **STEP 3 (only if Step 2 wins):** the 3-6 day port. **Decision-flipper:** IQ4_KT must reach >=95% of Q4_K_M tg128 under the canonical protocol AND show a measurable task-eval win (paired per-item flips vs the reference; report PPL/KLD beside it as fidelity context only — a near-baseline KLD/PPL ordering is not a quality ordering, intake-1510, intake-1519#05). Slower than 95% ⇒ DROP permanently — 17.5% fewer bytes that decode slower is strictly dominated.
 - NOTE: no IQ*_KT GGUF exists under `/mnt/raid0/llm`, and public KT producers (ubergarm, ik-community) cover the giant MoEs (DeepSeek-V3/R1, Kimi-K2.x, GLM-4.5/4.6/4.7), NOT the models we serve. Viterbi is the *encoding* cost only — decode runs the trellis LCG forward — so self-quantizing is hours on 192 cores plus an imatrix, not prohibitive, but it is not free either.
 - NOTE: `/mnt/raid0/llm/llama.cpp-experimental` is a proper worktree on `experimental-v7-refresh-20260716` @ `8bb53c520`, **3 ahead / 0 behind** production — correctly fresh-pulled. It is currently DIRTY with in-flight GDN/CONCAT work, so trellis/iquant work needs its own branch off it, not a merge into that state.
 
@@ -373,6 +373,9 @@ lesson (perplexity is blind to behavioural drift) onto an axis we actually serve
 a behavioural gate **mandatory** before any future KV-default change. **All configs < 2% ⇒ our
 group-32 granularity is doing the work**, and perplexity-plus-NIAH was retrospectively adequate —
 close the line. [intake-1291#record]
+*Flip-counting amendment 2026-09-23 (intake-1510, intake-1519#00, intake-1519#05):* also count leapfrogs (FP16-fail → quant-pass), report C→I
+and I→C separately plus net direction, and use greedy decoding or a measured FP16-vs-FP16 flip floor before reading any
+flip count — sampled 16-bit runs differ by 23.5% flips.
 
 ### B1 (B, blocked on G5) — pre-RoPE vs post-RoPE rotation placement
 

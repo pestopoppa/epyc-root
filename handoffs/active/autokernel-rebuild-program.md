@@ -1733,6 +1733,9 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           this item. Proposed fix: renumber this item to OP-46.
 
         Tick this box only after the operator's `--commit` lands.
+        *2026-09-23 intake jev-exl3 (PREPARE-only, not a tick):* drafted annex wording proposals from 9 dived sources are in
+        `docs/research-intake/p-kld-annex-proposals-20260923.md` for the operator to fold into the OP-38 package or reject.
+        No conflicts with the staged annex were found; the proposals are refinements.
       - [ ] **R23-49 — CPU CO-TENANCY: our builds, not our bench, are the contention (INF-70 relay 2026-09-07)**.
         INF-70 flagged `bench.py:34 CPU_LIST="184-191"` (8 GPU host threads) as contending with their 0-95
         bench region. Verified true but it is the SMALLEST of three. Kernel-verified sibling map

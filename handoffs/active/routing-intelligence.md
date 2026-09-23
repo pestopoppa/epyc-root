@@ -126,6 +126,9 @@ a dedicated router head buys over our MLP; it is **not** a replacement candidate
 one would fork an already-unfinished program.
 
 - [ ] **RI-CMP-1** — file LFM2.5-Encoder-350M-Prompt-Router as a `monitor_only` comparator against the MLP learned-routing controller. Do NOT open a work item: Phases 1.5-3 are unfinished and this is a comparator, not a replacement.
+  - *2026-09-23 (intake-1502, intake-1501):* also file Laya (laya / laya-multilingual) as a `monitor_only` comparator — near
+    chance zero-shot on routing (DDnim tier 9/20 and 5/20), its worst-calibrated bucket (choice:11+) is where an 11-way
+    routing choice lands, and it re-encodes the state per question. Not a work item.
 
 ## Reporting Instructions
 
@@ -161,3 +164,6 @@ worth about as much as an entire frontier-model optimization campaign, and shoul
 ## Research Intake Update — 2026-09-17 (Jev typed-decision cluster; intake-1472/1473/1474/1487)
 
 - [ ] **RI-14 — Typed-decision fast path for closed-set routing questions.** Once TD-2 calibration lands, evaluate a Choice-style candidate-logit call as the routing classifier fast path; never gate on uncalibrated confidence; report agreement + calibration + wall time vs the current classifier. (Evidence: intake-1472/1473/1474/1487; owner stub `typed-decision-plane.md`, RTG-56.)
+  - *Question-shape template 2026-09-23 (intake-1501):* tier choice with criteria + ordinal effort score, with a 20-card OOD
+    probe whose labels come from a distribution the arm was not tuned on.
+- [ ] **RI-15 — (conditional) Generation-side comparator for factual_risk.** When factual_risk.py is assessed for shadow→enforce, report on the same rows a generation-side comparator (spec-OFF mean/min token log-prob of the served answer), not only the calibration set. Evidence: intake-1521 (zero-shot log-prob ties a simplified supervised router in distribution; no calibration measured).

@@ -45,6 +45,11 @@ foreign paper's. The instrument is the deliverable; no throughput claim is licen
   Chance baselines, mandatory so a number is interpretable: **8/256 = 3.13%** (qwen35moe),
   **10/512 = 1.95%** (qwen4exp), against DeepSeek-V2-Lite's 9.38% where ReMoE's baseline was already
   2.91× chance. `intake-1338#01`.
+  *Rider 2026-09-23 (intake-1524#03; compute-gated, file only):* cross-artifact route-set agreement — run the ported tap on a
+  reference GGUF (Q8_0/BF16 experts) and a Q4_K candidate of the SAME model over the IDENTICAL token stream; emit per-layer
+  top-k Jaccard, the share of token-layers with at least one replaced expert, a repeat floor and a chance baseline, labelled
+  occurrence-only (not damage). v10 `llama-quant.cpp:304-307` never quantizes `ffn_gate_inp`, so flips come from upstream
+  perturbation.
 
 - [ ] **RT-3 — The stride hazard: BLOCKING, read before writing any tap code.** COMPUTE-GATED —
   FILE ONLY. Tell-tale signature: *every expert appearing exactly k times, sub-chance reuse*. Cause:

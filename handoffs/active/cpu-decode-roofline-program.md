@@ -4584,6 +4584,8 @@ delivered *before* the decline, not to outstanding work.
       Pairing bought 18× tighter resolution than raw PPLs (Cor 98.06%).
       **BF16 is not worth a second pass**: Q8_0 nearly doubled PLE precision for zero gain against a 1.235% floor;
       BF16 would cost **+25.6 GB resident** for nothing. **The PLE-precision B7 closes with no successor of its own** — unrelated to **INF-71**, the EXL3 trellis item that formerly shared the `B7` label and was renamed 2026-09-07.
+      *2026-09-23 scope note (intake-1510, intake-1519#05):* "does not buy quality" is scoped to fidelity — the paired KLD/PPL
+      measures change vs the IQ4_XS-uniform anchor, not damage vs BF16, and cannot rank near-baseline quality.
       **★ This CORRECTS the structural argument used to pre-judge B7 (mine, twice).** I argued the PLE row is
       diluted (input to two GEMVs averaged over 2560 terms, `ple.layers=[1]`, projections themselves IQ4_XS).
       But **~8% of top-1 tokens flip**: the `key` branch collapses to a SCALAR through a sigmoid gate that
