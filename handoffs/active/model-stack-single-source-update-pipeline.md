@@ -422,7 +422,7 @@ blocker rather than sitting in prose.
   what it refuses on. **Blocker: deletion is an operator action (destructive,
   irreversible); the deprecation half can be done now.**
 
-- [ ] **SSU-F2 — build a CPU-shape architect quality bench, then close the Flash-Next quality gap.**
+- [x] **SSU-F2 — build a CPU-shape architect quality bench, then close the Flash-Next quality gap.** **DONE 2026-09-23 — and the 'gap' was the instrument.** See the cap-convergence table below.
   `architect_critic` and `qwen38_flash_next_ud_iq4xs_local` carry 2 known gaps
   each and the stack-change gate was SKIPPED to launch. `architect_bench_gpu_arm.sh`
   is GPU-shaped (pinned to cores 184-191); Flash-Next is a CPU role on 0-95.
@@ -636,3 +636,36 @@ supplies the value under test cannot fail on it.
   43.281 t/s decode was measured at `t=48` WITH the shim on the champion build, so it cannot be
   expected to describe this process, and the two must never be quoted against each other.
   **Blocker: none.**
+
+### SSU-F2 outcome — the Flash-Next "quality gap" was a measurement artifact (2026-09-23)
+
+The CPU-shape architect quality bench exists (`architect_bench_cpu_{lib,arm,phase}.sh` +
+`architect_bench_cpu_conditions.py` + `architect_bench_cpu_truncation_audit.py`), runs against live
+`:8074`, and emits producer-authored belief rows. What it found closed the gap by dissolving it.
+
+| suite | max_tokens | pooled | untruncated | truncated |
+|---|---:|---:|---:|---:|
+| mmlu_pro | 64 (gate) | 0.5650 | 0.7143 | 46/200 |
+| mmlu_pro | 4096 | 0.7500 | 0.7590 | 5/200 |
+| **mmlu_pro** | **8192** | **0.7550** | **0.7550** | **0/200** |
+| gpqa | 64 (gate) | 0.5436 | 0.6176 | 25/195 |
+| gpqa | 4096 | 0.6513 | 0.6492 | 4/195 |
+| **gpqa** | **16384** | **0.6513** | **0.6513** | **0/195** |
+
+**Pooled == untruncated is the definition of converged**, and it is the only state in which a pooled
+accuracy is reportable. Against the retired Qwen3.5-122B's gate numbers (mmlu_pro 0.6450, gpqa
+0.5692, truncated 0/200 at cap 64) Flash-Next is **ahead on both suites** — where at the gate's own
+cap it appeared behind on both. The whole apparent regression was the cap: the 122B answers with a
+letter, Flash-Next derives in the visible channel and was being cut off mid-derivation, scoring
+~0.05 on work that was going fine.
+
+Raising the cap was only legitimate because the truncated rows were first shown **non-degenerate**
+— top repeated 60-char shingle = 1 in every sampled row, i.e. genuine long derivations that
+converge, not repetition loops that no cap would ever clear. Check that before raising a cap;
+otherwise "rerun until truncation hits zero" does not terminate.
+
+Recorded in the MASTER registry (`epyc-inference-research`, `58b115ed`) under
+`roles.architect_critic.performance.general_suite_quality` — **deliberately NOT in
+`quality_score`**, which on this role means the CRITIC suite and stays null because that gate has
+still never been run on this model. Recording general-knowledge suites there would have made the
+critic-suite gap look closed. Gate policy landed in `promotion_gates.yaml` as SSU-F6.

@@ -24,14 +24,28 @@ The completion-token distribution is bimodal — median 2 tokens, p90 exactly at
 |---|---|
 | 64 | 23.0% (46/200) |
 | 512 | 12.6% (partial, n=87) |
-| 4096 | 3.2% (3/94 at the time of writing — NOT zero) |
+| 4096 | 2.5% (5/200) |
+| 8192 | **0 / 200 — converged** |
 
-**Correction.** An earlier version of this entry recorded cap 4096 as taking truncation to zero.
-That was extrapolated from the first 56 rows, which happened to contain none; by row 94 there were
-three. The tail is much thinner than at cap 64 but it is not empty, so the operator's instruction —
-raise the cap and rerun until truncation hits zero — is not yet satisfied at 4096 and the run
-continues at 8192 if the full 200 confirms a non-zero count. A partial count is not a converged
-one, which is the same lesson as the pooled-accuracy rule above, one level up.
+**Correction, retained.** An earlier version of this entry recorded cap 4096 as taking truncation
+to zero, extrapolated from the first 56 rows which happened to contain none; the full 200 had five.
+A partial count is not a converged one — the same lesson as the pooled-accuracy rule above, one
+level up. Kept here rather than quietly edited out, because the mistake is the point.
+
+**FINAL, both suites converged (`pooled == untruncated`, truncation zero):**
+
+| suite | cap | pooled | untruncated | truncated |
+|---|---:|---:|---:|---:|
+| mmlu_pro | 8192 | **0.7550** | 0.7550 | 0/200 |
+| gpqa | 16384 | **0.6513** | 0.6513 | 0/195 |
+
+Against the retired Qwen3.5-122B's gate numbers (0.6450 / 0.5692) Flash-Next is **ahead on both**,
+where at the gate's own 64-token cap it appeared behind on both. The verdict was inverted by the
+instrument, not by the model.
+
+Raising the cap was legitimate only because the truncated rows were first shown NON-DEGENERATE (top
+repeated 60-char shingle = 1): genuine long derivations converge as the cap rises, repetition loops
+never do and no cap would reach zero. Check that first or the instruction does not terminate.
 
 Untruncated-only accuracy at the gate cap was 0.714 on mmlu_pro and 0.618 on gpqa, against
 pooled 0.565 / 0.544 — the gap is the artifact.
@@ -125,8 +139,15 @@ Both on `origin/main`, `git cherry` empty.
 
 ## Open
 
-- cap-4096 arm to finish all 200; if truncation is non-zero (it is 3/94 as of writing), rerun at
-  8192 per the operator's instruction, and only then apply the two prepared `performance:` blocks.
+- ~~cap sweep~~ **DONE**: converged at 8192 / 16384, recorded in the MASTER registry
+  (`epyc-inference-research` `58b115ed`) under `performance.general_suite_quality` — deliberately
+  NOT in `quality_score`, which means the CRITIC suite on this role and stays null because that
+  gate has still never been run.
+- **Near-miss worth recording**: the first edit went into
+  `epyc-orchestrator/orchestration/model_registry.yaml`, which is AUTO-GENERATED — the compiled
+  runtime view, silently overwritten at the next stack start. The master is in
+  epyc-inference-research. Reverted from backup; the file header says so and should have been read
+  before editing, not after.
 - `:8083` reload with `LLAMA_ARG_LOG_VERBOSITY=4`, to convert the 1.802 GiB compute residual from
   a subtraction into a reading. Queued behind the gate by the bench guard, not by a decision.
 - SSU-F8 and SSU-F9 in flight.
