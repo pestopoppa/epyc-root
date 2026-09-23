@@ -536,3 +536,48 @@ is a standing regression against the next lineup change.
   Fix: make the guard and the wrapper agree on one lock directory; have `--push` exit non-zero and say
   `PUSH FAILED` on the last line; and have the wrapper export its own identity so its push satisfies its
   own guard. **Blocker: none.**
+
+### SSU-F9 outcome (2026-09-23) — fixed and verified, AWAITING OPERATOR D9 ACK
+
+Fix is complete in the `/workspace` working tree, uncommitted: `serialized_push.py`,
+`pre_push_serialization_guard.sh` and their two suites, +346/−16. Both sides now resolve the lock
+through **one** resolver — the guard *asks the writer* (`--print-lock-file`) rather than deriving a
+second answer, and refuses if the writer's repo key disagrees with its own. The wrapper declares
+`EPYC_PUSH_LOCK_HOLDER` for its own child push, asserting only what `O_EXCL` just proved. `--push`
+now prints git's output *after* the manifest and ends on a verdict, and — the part that matters —
+it VERIFIES rather than attempts: `git cherry` runs after the push, so a push that exits 0 without
+landing is reported as `PUSH FAILED`, exit 4.
+
+Guard strength is unchanged and that was proven, not asserted: no lock still refuses; a declared id
+is still matched against the lock file rather than trusted; a mismatched id still refuses. A
+mutation check re-ran the suite against the *pre-fix* guard and got exactly 4 failures, all of them
+the new default-location assertions — so the new case catches the real defect and nothing regressed.
+A legacy lock in the pre-fix location is honoured during transition, and two locks for one repo
+refuse.
+
+**Why 56 green assertions never saw this**: every existing shell case pinned the location with
+`EPYC_PUSH_LOCK_DIR`, so not one of them exercised the default derivation. A test suite that always
+supplies the value under test cannot fail on it.
+
+- [ ] **SSU-F9a — OPERATOR ACK REQUIRED (D9).** All four files are under `scripts/coordination/**`
+  and `scripts/hooks/**`, which D9 (ratified 2026-08-15) puts behind operator ack: the loop plane,
+  where a wrong change is discovered by its consequences at 3am. The owning session cannot self-ack.
+  Commit with `D9-ack: <who authorised, why>` once granted.
+  **Blocker: the operator's authorisation. This is the decision, and it is genuinely theirs.**
+
+- [ ] **SSU-F9b — the push guard is installed in epyc-root ONLY, and epyc-orchestrator is where the
+  defect actually bites.** In `/workspace` the writer's and the guard's derivations coincidentally
+  produced the same string, which is why this was invisible here. In `epyc-orchestrator` they do
+  not: the writer takes the lock under `/mnt/raid0/llm/epyc-orchestrator/coordination/push-locks`
+  while the guard looked under `/workspace`. But `epyc-orchestrator` and `epyc-inference-research`
+  have **LFS-only `pre-push` hooks** — no serialization guard at all. So the repo where the
+  divergence is fatal is also the repo with no control on the path, and pushes there are
+  unserialized today. Installing the guard in the two sub-repos is an operator-facing change to how
+  those repos publish, so it is filed rather than taken.
+  **Blocker: none for the analysis; the install itself is an operator decision.**
+
+- [ ] **SSU-F9c — `promote_lane.py:519` has the same defect one lease over.** It defaults
+  `--lock-dir` to `serialized_push.DEFAULT_LOCK_DIR`, the `__file__`-relative fallback, which in a
+  lane worktree is that lane's **private** directory — so the *promote* lease serializes nothing
+  across lanes, exactly the 2026-09-01 incident that the push lease's git-common-dir derivation was
+  introduced to fix. Different lease, same shape, still live. **Blocker: none.**
