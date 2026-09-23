@@ -301,6 +301,46 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
 - [ ] DS41-T5 — **Full-model trajectory gates**: plain vs MTP exact parity over the
   multi-prompt set (GLM precedent was 31 pairs), with real draft rejection witnessed. Measure
   depths 1/2/3 separately; depth parity does not generalize.
+- [x] **DS41-T6 — first throughput baseline, 2026-09-23.** Canonical recipe (`taskset -c 0-95`,
+  `numactl --interleave=all`, OMP stack, `GGML_IQK=1`, `-fa 1 -mmp 0`), binary
+  `experimental/deepseek41-port-20260923` @ `7c18bb8c1` (build 10303), model
+  `DeepSeek-V4.1-Flash-Q4.gguf` (482.97 GiB, 754.64 B params reported).
+
+  | test | t=24 | t=48 | t=64 | t=96 | t=192 |
+  |---|---|---|---|---|---|
+  | pp512 | — | 137.03 ± 1.20 | 137.66 ± 1.52 | **144.03 / 145.80** | 104.09 ± 1.24 |
+  | tg128 | 12.89 ± 0.01 | **13.18 ± 0.04** | 12.90 ± 0.01 | 12.74 / 12.81 | 4.99 ± 0.03 |
+  | tg512 | — | **11.70** | — | 10.59 | — |
+
+  Also: pp256 122.05, pp2048 119.45 ± 0.32, tg64 10.58, tg256 11.00 ± 0.04 (all t=96). The t=96
+  columns are two independent runs in one sweep, so they double as a repeatability control (0.5%
+  on tg128, 1.2% on pp512).
+
+  **Operating point: prefill wants 96 threads, decode wants 48** — on a server that is
+  `--threads 48 --threads-batch 96`. Both phases collapse at 192 (SMT siblings): decode -61%.
+
+  **The shape matters more than the peak for kernel work: decode is FLAT from 24 to 96 threads**
+  (12.89 -> 12.81 t/s). 4x the cores moves it under 1%, so the decode ceiling is not parallelism
+  or barrier cost — it is memory. INF-70's t48>t96 finding transfers directionally, but the
+  mechanism differs: there the gap was large, here it is 3% at tg128 and 10% at tg512.
+
+  **Placement proven in-window** (the gate INF-70/C7 exists for): sampled 4x on the live process,
+  resident 47.6 -> 187.8 GiB, **25.0% on each of the four nodes at every sample**, independent
+  `numa_placement_check.sh` PASS at the 40% threshold. So these are not skewed-placement numbers.
+
+  Caveats: single-model, host otherwise idle but with the orchestration stack resident; llama-bench
+  is a proxy, not a serving rate (no speculation, no drafter, np=1); no DSpark drafter exists yet;
+  and F32 vs the reference's bf16 rounding is unresolved (T3).
+- [ ] DS41-T6b — repeat at claim grade once the operating point is fixed: unit=launch, n>=3, the
+  noise floor with its unit, and a serving-shaped run (`llama-server`, np sweep) — llama-bench
+  tg128 must never be quoted as a serving rate.
+- [ ] DS41-T6c — **defect in `bench_canonical.sh`**: its in-window placement sampler never fired on
+  this model (no `placement.log`, no `.rc`) across five runs, so every canonical run self-reported
+  as OBSERVATION. `largest_rss_descendant` walks `/proc/<pid>/task/*/children` from the wrapper
+  chain (region-lock -> env -> taskset -> numactl -> llama-bench) and did not reach the binary;
+  selecting by `comm == llama-bench` works and is what captured the proof above. Fix it in the
+  research repo so a 483 GiB no-mmap load — precisely the case the gate was written for — cannot
+  silently skip its own proof.
 - [ ] DS41-T6 — Throughput baseline at the canonical CPU recipe (interleave, no-mmap, t48/t64,
   r5), plain vs native MTP, prefill and decode separated. Observation-grade first.
 - [ ] DS41-T7 — GPU (MI210) path. The 483 GiB model cannot be VRAM-resident, so scope what can
