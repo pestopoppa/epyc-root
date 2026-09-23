@@ -27,18 +27,18 @@
 - **The per-node profiler had never been in a binary we built.** INF-70 wrote it but never gave it a CMake option: `strings libggml-cpu.so | grep -c GGML_CPU_PROF` returned **0**. DS41-C8 adds `-DGGML_CPU_PROF=ON` in a separate `build-prof/` tree, verified by symbol (`GGML_CPU_PROF_JSON_FILE` 2 hits, `LLAMA_HOST_PROF_JSON_FILE` 1). The measured build is untouched. Before C8, 21 of 22 compute consumers had no attribution. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C8, [2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md))
 - **A host-side cost the node profiler can never see (DS41-C9).** The dsv4 compressed-cache plan is rebuilt on the host **every ubatch**, in O(n_tokens × ratio) loops. The plan covers visibility counts, five index vectors and the full `[n_kv, n_tokens]` mask. The engram hash and its 48-row scatter are rebuilt the same way. At long context this is plausibly the dominant host term. Patch 0002 accumulates host phases per graph-input class and must reconcile, with attributed plus unattributed within 5%.
 - **Residency of the engram table needs no code.** Under the canonical recipe (`--no-mmap` + interleave) it is already fully resident at 25.0% per node. The lazy-tensor path cannot override `--no-mmap`. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md))
-- **A live degradation on the champion server, found while checking the sibling model.** On the planner/champion server (PID 2021760):
+- **A residency defect on the champion server, by design rather than a failed retry.** On the planner/champion server (PID 2021760, `:8074`, Qwen3.8-Flash-Next UD-IQ4_XS):
   - VMA A (68.34 GiB) is 100% resident and 100% locked, at 25.0% per node.
-  - VMA B (18.90 GiB) is **0% locked and 88% resident, with 2.27 GiB in swap**, after an `mlock` failure at load that never retried.
+  - VMA B (18.90 GiB) is **0% locked**. At the 2026-09-23 ~13:53 UTC reading it was 88% resident with 2.27 GiB in swap; at 17:50 UTC it was 99.9% resident with 23 MiB in swap (decode traffic faulted it back in). Nothing prevents it being pushed out again under memory pressure.
 
-  VMA B is almost certainly the repacked expert rows that the iqk GEMM reads every token. The fix is a restart, which the operator owns. Until then, any INF-70 arm measured against this server compares to a degraded baseline. That is a measurement-validity hazard, not just a latency one. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md))
+  **Cause (corrected 2026-09-23):** VMA B is the CPU **repack** buffer (A + B = the 87.25 GiB of GGUF weights). llama.cpp mlocks only host buffers (`src/llama-model.cpp:1640`, `use_mlock && ggml_backend_buffer_is_host`), and the repack buffer type sets `is_host = nullptr` (`ggml/src/ggml-cpu/repack.cpp:4854`), so it is **never** locked, by design. The one `failed to mlock` warning in the server log is for VMA A's size, and A locked anyway. **A restart with the same flags recreates the same unlocked region.** The remedy needs `--no-repack` (after a speed arm), a v11 kernel change that locks CPU extra-buffer types under `--mlock`, or an operator swap-policy change. Tracked as RES-VMAB-1/2 in [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md). Any INF-70 arm measured against this server should record VMA B's Swap and Locked from `/proc/<pid>/smaps` at its start and end.
 - **The loop design doc now names the v10-reseeded champion branch** `ak/champion/llama-cpp-ffc1bac82eec` (was `…-0db32c06e3e5`) in its cross-target validation example ([agent-loop-design](../docs/guides/agent-workflows/agent-loop-design.md)).
 
 ### Open questions
 
 - What are the per-op-class achieved bandwidths (DS41-C7)? The answer decides whether the campaign aims at the dense projections, the expert gather, or the host term.
 - How large is the DS41-C9 host term at long context once patch 0002 reconciles?
-- Were any INF-70 arms measured against the champion server while VMA B was unlocked? If so, which ones need a re-run after the restart?
+- Were any INF-70 arms measured against the champion server while VMA B was partly swapped? Only the ~13:53 UTC reading is known to fall in such a window; arms without a start/end VMA B reading cannot be cleared (RES-VMAB-2).
 
 ### Source References (2026-09-23 wrap-up compile)
 

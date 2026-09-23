@@ -3774,6 +3774,23 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       lever outright, is gated **behind** 5–7 sessions of porting. It can be answered for **~2–5 GB of targeted
       download and one zero-inference session, no bench lock.** If INF-71 is ever reopened, that is FIRST.
 
+## Tasks filed 2026-09-23 — champion residency (VMA B)
+
+_Found by main-dsv41 while checking the sibling model; root-caused 2026-09-23 by the research-intake session on operator ownership transfer._
+On `:8074` (PID 2021760, started 2026-09-22 14:50 UTC) the 18.90 GiB **repack** buffer (VMA B) is 0% locked: llama.cpp
+mlocks only host buffers (`src/llama-model.cpp:1640`) and the repack buffer type has `is_host = nullptr`
+(`ggml/src/ggml-cpu/repack.cpp:4854`). It was 2.27 GiB swapped at ~13:53 UTC and 23 MiB at 17:50 UTC. A restart does not fix
+it. Any relaunch of `:8074` goes through the inference owner or the operator (OPERATING_CONSTRAINTS → *Inference and Benchmarks*).
+
+- [ ] **RES-VMAB-1 — Make all champion weights lockable.** Options, cheapest first:
+  - (a) `--no-repack` (`common/arg.cpp:2247`) puts every weight in the locked host buffer. Measure tg/pp first: repack feeds the iqk GEMM, so this may cost decode speed.
+  - (b) In `llama.cpp-experimental`, lock CPU extra-buffer types (repack and friends) under `--mlock`. This is a v11 candidate, never a v10 patch.
+  - (c) An operator swap-policy change (swappiness 60 today, 8 GiB `/swap.img` 5.7 GiB used, mostly the 35B servers' non-weight memory).
+  Acceptance: VMA B shows the `lo` flag and 0 swap after load, with speed within noise of today's recipe.
+- [ ] **RES-VMAB-2 — Residency receipt for every arm against `:8074`.** Record VMA B's Locked/Rss/Swap from
+  `/proc/<pid>/smaps` at the start and end of each INF-70 arm. Arms since 2026-09-22 14:50 UTC without that receipt cannot be
+  cleared of the swapped-baseline hazard; list them and decide re-runs.
+
 ## Axis E — restore the MTP head (speculative decoding), LAST
 
 **Facts (2026-09-02).** unsloth published the MTP heads on 2026-09-01 (repo revision `5d16c055`,
