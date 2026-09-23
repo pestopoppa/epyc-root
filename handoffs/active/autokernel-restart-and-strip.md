@@ -228,7 +228,7 @@ refused, asserted rather than assumed.
       audiences read it and none can ask a follow-up: the planner (fed back since `9516ac05`), the
       dashboard command band, and a human. It now states what changed, what was declared, and that
       `<file-scope>` means a hunk outside any function body.
-- [ ] **AK-INST-2 — audit for OTHER hardcoded instrument pins.** `READY_CONTINUE_INSTRUMENT_COMMIT`
+- [x] **AK-INST-2 — audit for OTHER hardcoded instrument pins.** ✅ 2026-09-23 — audited every 40-hex / `*_COMMIT` comparison in the discovery plane: no other champion-drift pin (the rest are exact freeze/seal/vendor/replay identities or already ancestry checks). It surfaced a DIFFERENT v10 defect, fixed in research `714777e4`: with `MEASUREMENT_COMMIT == PRODUCTION_COMMIT` the "instrument parents == (production,)" rule was unsatisfiable in `live_controls` preflight AND `candidate_record.build_candidate_record` — shared `worktree.instrument_lineage_ok` now accepts the folded identity. The review-pin at `discovery_deployment_factory.py:1516` stays EXACT by design (re-pinned per freeze). `READY_CONTINUE_INSTRUMENT_COMMIT`
       was found only because it killed a campaign. Any other equality comparison against a fixed
       instrument/production commit will fail the same way the next time the champion advances.
       Grep the discovery plane for 40-hex constants compared with `==` and convert the ones that

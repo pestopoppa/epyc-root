@@ -15,7 +15,7 @@
 | INF-04 | angelslim techniques evaluation | [angelslim-techniques-evaluation.md](angelslim-techniques-evaluation.md) | BLOCKED: reopen when llama.cpp PR #22836 (AngleSlim kernels) merges + QAT checkpoints exist | — |
 | INF-05 | attention matching kv compaction | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated | — |
 | INF-06 | autokernel research loop | [autokernel-research-loop.md](autokernel-research-loop.md) | Await operator restart decision; preserve stopped v28 and diagnose GLM Q8/synchronization before another campaign | INF-48, EVL-47, INF-64 |
-| INF-64 | autokernel restart-loop fix | [autokernel-restart-and-strip.md](autokernel-restart-and-strip.md) | AK-INST-2: grep the discovery plane for 40-hex constants compared with `==` and convert the instrument pins | — |
+| INF-64 | autokernel restart-loop fix | [autokernel-restart-and-strip.md](autokernel-restart-and-strip.md) | Strip the 19 verified-dead modules (regenerate FOOTPRINT.md in the same commit); then build/runtime disk expiry | — |
 | INF-65 | autokernel aggregate candidate (champion) | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) | MTP-27B-1 — 27B is MTP-capable (PROD-BASE-1 denominator); HEAD-3 np=24/32 needs operator go | INF-06, INF-62, INF-64 |
 | INF-66 | autokernel teardown and rebuild | [autokernel-rebuild-program.md](autokernel-rebuild-program.md) | v10 PROMOTED (ffc1bac82/10303) and serving; next R23-64 thread re-sweep, then R23-62 champion-divergence closer | INF-06, INF-64, INF-65 |
 | INF-07 | batched decode measurement | [batched-decode-measurement.md](batched-decode-measurement.md) | E5 — the never-measured NUMA×batch 2D sweep; needs a post-promotion quiet window | — |
@@ -66,7 +66,7 @@
 | INF-73 | autokernel unified surface | [autokernel-unified-surface-program.md](autokernel-unified-surface-program.md) | Finish U3-SEED, relaunch GLM, and complete the remaining 15 healthy monitored iterations | INF-66, INF-65, INF-70 |
 | INF-74 | autokernel concurrent targets | [autokernel-concurrent-target-coordination.md](autokernel-concurrent-target-coordination.md) | Review CTC-REVIEW: model-independent stage coordination and resident GPU overlap; implementation requires approval | INF-73 |
 | INF-75 | autokernel cross-workload keep gate | [autokernel-cross-workload-keep-gate.md](autokernel-cross-workload-keep-gate.md) | AKX-P0d — run the W1–W6 base census on the current champion-of-record under stage claims, then AKX-P1b replay 732389d6 | INF-73, INF-66, INF-65 |
-| INF-76 | paw compiled specialists | [paw-compiled-specialists.md](paw-compiled-specialists.md) | PAW-1 — operator license decision package, then PAW-2 self-hosted compile spike with pinned weights | EVL-08 |
+| INF-76 | paw compiled specialists | [paw-compiled-specialists.md](paw-compiled-specialists.md) | PAW-2 — self-hosted compile spike (intake-1481 server + intake-1478 weights); then PAW-5 candidates list | EVL-08 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.

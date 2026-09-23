@@ -689,7 +689,11 @@ Canonical sources (always verify status in these files first):
   itself). Generalising H-4 so each daemon publishes `source_tree` and one supervisor tick restarts a
   divergent one is the proven shape and the right next step. Absolute-path launch recipes plus host-cron
   `once` ticks are an operator decision (OP-9/FW-3). Zero inference.
-  - [ ] **NIB2-81a — record the class where it will be found again.** An `INCIDENT_LOG.md` entry (a daemon
+  **Remedy (a) LANDED 2026-09-23** — `scripts/coordination/daemon_provenance.sh` (`dp_attest` refuses a launch from outside
+  canon/the view, warns on uncommitted edits, records provenance; `dp_stale_since_start` logs "running stale code" each
+  iteration) wired into the reaper, bus_supervisor `loop` and hub_supervisor `cmd_loop`; 15-case test. Read-only /proc
+  check found no live daemon on stale code today. Remaining: remedy (b) and the H-4 generalisation (self-restart).
+  - [x] **NIB2-81a — record the class where it will be found again.** ✅ 2026-09-23 — `INC-20260917-daemon-stale-script-inode` in INCIDENT_LOG.md; WORKTREE_MIGRATION.md now states the runtime-code rule (canon or the view, never a lane). An `INCIDENT_LOG.md` entry (a daemon
     executes a stale or orphaned script inode; observed 2026-09-17, three shapes) plus one paragraph in
     `scripts/coordination/WORKTREE_MIGRATION.md`: runtime-plane daemons execute from CANON or the VIEW only —
     **a lane may develop a daemon, never run it.** Verified absent today: neither file mentions `fd/255`, an
