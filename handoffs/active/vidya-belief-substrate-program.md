@@ -2553,3 +2553,57 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   swing from that flag alone, so a KV ratio quoted without it is a flash-attention number.
   Locator = run x arm x depth x metric, never a replicate file.
   Owner: the session that runs the sweep in the operator stack-down window.
+
+## VB-VRAM-1 — MI210 per-process VRAM decomposition (filed 2026-09-23)
+
+- [ ] **VB-VRAM-1 — author the read-side adapter for the VRAM headroom probe.** The producer already
+  emits a self-describing `epyc.vram_headroom_probe.v1` report (`scripts/measure/vram_headroom_probe.py`,
+  epyc-root `e9ecdda6`) and it has RUN TWICE, so the write side exists and the read side is the gap.
+  Author `scripts/vidya/adapters/vram_headroom.py`: `@register("vram-headroom-measurement")`, re-hash the
+  report at the adapter boundary, use `attestation_locator` (reports live in the research repo, outside
+  `REPO_ROOT`), and add a `Source(...)` row to `scripts/vidya/ingest_sources.py`.
+  **Project, do not grade** — `claim_tuple.grade()` decides and the `measurement` ladder is registered.
+  Carry all five cautions from the source-table row verbatim, especially: `transient_headroom_gib` is a
+  FLOOR for the workload named in `exercised` and must never be generalised; a `NOT TESTED` fragmentation
+  verdict is not `absent`; and **the first 2026-09-22 run is INADMISSIBLE** (its driver failed silently
+  after cycle 1, so its `RATCHET` verdict is an artifact of cycle marks landing in idle time) — the
+  admissible run is the six-verified-cycle one that replaced it.
+  Locator = run x metric. Owner: whoever next runs the probe.
+
+## VB-ARCH-CPU-QUAL — architect quality gate, CPU live-serving and GPU (filed 2026-09-23)
+
+- [ ] **VB-ARCH-CPU-QUAL — author the read-side adapter for the architect quality gate, covering BOTH the
+  CPU live-serving arms and the existing GPU control arms.** The WRITE side is already wired on both:
+  `v7_quality_gate_runner.py` emits producer-authored rows under `epyc.v7_quality_gate_runner.accuracy.v1`
+  via `v7_quality_gate_beliefs.attach_accuracy_beliefs`, EMBEDDED in the run's own `result.json` as
+  `belief_measurements` + `belief_attestation`. SC32 wired the GPU forwarder 2026-08-26 and SSU-F2 wired
+  the CPU forwarder 2026-09-23; **neither has ever been ingested** — there is no `Source("quality-gate", …)`
+  in `scripts/vidya/ingest_sources.py` and no adapter. One adapter covers both; they are one schema.
+  Author `scripts/vidya/adapters/v7_quality_gate.py`: `@register("v7-quality-gate-accuracy")`, import and
+  re-run the producer's own validation (pinning `v7_quality_gate_beliefs.py`'s sha256) so a mutated or
+  pre-hook row is refused and the WHOLE file voids to zero rows; re-hash the `attestation_path` result.json
+  at the adapter boundary to set `attestation_verified`; add the `Source(...)` row.
+  **Project, do not grade** — `claim_tuple.grade()` decides; the `measurement` ladder is registered.
+  Two cautions are load-bearing enough to restate: **`instrument_class` must reach the tuple** (CPU arms are
+  `serving`, GPU arms an owned bench; flattening them manufactures exactly the cross-class comparison the
+  measurement constitution forbids), and **truncation must be projected next to accuracy** — on 2026-09-23
+  Flash-Next scored 0.5650 mmlu_pro against the retired 122B's 0.6450 at an identical cap while truncating
+  46/200 against the incumbent's 0, so the accuracy alone reads as an 8-point regression the decomposition
+  does not support.
+  Pre-hook runs emit zero rows and are NEVER retrofitted. Locator = arm x suite.
+  Owner: whoever next touches either architect bench.
+
+- [ ] **SSU-F6 — `promotion_gates.yaml gates.quality` must record `max_tokens` explicitly, and that the cap
+  is NOT model-neutral.** The 64 was carried by CONVENTION into the v9 and v10 qualifications — precisely
+  the failure that file was created to end. Measured 2026-09-23: at that cap the retired Qwen3.5-122B
+  truncated 0/200 while Flash-Next truncated 46/200, because one answers with a letter and the other
+  derives in the visible channel. A gate cap that silently favours terse models is not a quality gate.
+  Record the value, and record that a per-model truncation audit is required before any accuracy from it is
+  comparable. **Blocker: none.**
+
+- [ ] **SSU-F7 — the live `:8074` process is missing two env knobs its own registry recipe declares.**
+  `GGML_NOHUGEPAGE_PROCESS=1` and `GGML_FA_SPLIT_KV=0` are in `recipe.env` for architect_critic but absent
+  from the running process's environ (verified 2026-09-23). One of them is the THP shim. The served process
+  is not running its own recipe, and nothing detects that. Decide whether the recipe or the launcher is
+  wrong, then make the disagreement detectable rather than discoverable by accident.
+  **Blocker: none.**
