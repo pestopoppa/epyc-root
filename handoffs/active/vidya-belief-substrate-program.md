@@ -1966,6 +1966,14 @@ no rate at all. A later session may extend the audit but may not report these fi
 
 ## VB-DSV41 — DeepSeek-V4.1-Flash port validation producer (2026-09-22)
 
+- [ ] **VB-DSV41b — wire the engram-gather benchmark producer before its first measured run**
+  (INF-77 DS41-B7b). Source row added to `scripts/vidya/adapters/README.md` 2026-09-23. It is a
+  kernel-lever measurement, so it projects through `claim_tuple.grade()` on the existing
+  measurement ladder; do not add a second ladder. Until a V4.1 model runs, every record is an
+  observation about a synthetic gather, never a serving claim — the projection must carry that
+  scope or the tuple overclaims.
+
+
 - [ ] **VB-DSV41 — wire the `deepseek41` validation/serving producer at write time, before DS41-T1.**
   Producer work: [INF-77](deepseek-v41-flash-evaluation.md) (successor to INF-69; VB-GLM53-MTP's
   subject was deleted 2026-09-22 and it produces no further records). Reuse the VB-GLM53-MTP carrier:

@@ -81,7 +81,7 @@ tensors" reading was wrong (DS41-B0).
 - [x] DS41-A1 — Fetch the official non-weight files (reference `inference/`, `encoding/`,
   `evaluation/`, tech report, config, tokenizer) and clone `deepseek-ai/deepseek-harness`
   @ `c36a83ff6b`. ✅ 2026-09-22
-- [ ] DS41-A2 — Join and verify the download. **The parts MUST be joined**: `blk.14.engram_embd`
+- [x] DS41-A2 — Join and verify the download. **DONE 2026-09-23**: both parts match their published SHA-256 (`6442b1f9…`, `7c3e1064…`) and exact sizes; joined to 518,596,067,328 B; header parses — GGUF v3, **1046 tensors**, `general.architecture=deepseek41`, alignment 16384, `engram.rows=[384006168, 384016682]`, `encoding=e4m3_e8m0_32_row264`, last tensor `blk.14.engram_embd.weight` ending 3,248 pad bytes before EOF, and **zero `mtp.*`** as expected. `part2` is retained for now (39 GB, deletable). ✅ 2026-09-23 — original text: **The parts MUST be joined**: `blk.14.engram_embd`
   is the last tensor and straddles the boundary (starts at 417,215,660,032; part1 ends at
   480,000,000,000). Expect 1046 tensors / 518,583,635,408 B = 482.97 GiB total, engram 188.83 GiB,
   main weights 294.14 GiB, padded to a 16,384 multiple. Confirmed from the part1 header already:
@@ -135,7 +135,7 @@ tensors" reading was wrong (DS41-B0).
   `ffc1bac82` = production-consolidated-v10 (champion reseeded on the freeze; 0 commits either
   way). Worktree `/mnt/raid0/llm/llama.cpp-experimental-deepseek41-20260923`. The frozen tree was
   not touched (still on `production-consolidated-v10`, clean). ✅ 2026-09-23
-- [ ] DS41-B1b — Build CPU and HIP on that branch and prove linkage with
+- [x] DS41-B1b — Build CPU and HIP **DONE 2026-09-23**: both green at version 10303 (`ffc1bac82`), `$ORIGIN` runpath, `verify_ggml_linkage.sh` PASS for each. ✅ 2026-09-23 — original text: on that branch and prove linkage with
   `verify_ggml_linkage.sh`; record the build dirs under `kernels/builds/` (pre-flight P4: never
   build into `tmp`, evidence from an ephemeral root is inadmissible). Re-base onto the champion tip
   whenever the champion moves, per *Kernel work rides the champion* below.
@@ -185,7 +185,8 @@ indexer run on these paths. Every gain was measured **only** on
 
 Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238fb41a35106a551e73c8409dfb751ac`** (MIT, reusable with notice; the branch `ds4.1flash` named on the model card **does not exist**); vcruz `runtime/deepseek41` @ `5210c7c5`; official reference under `models/deepseek-ai/DeepSeek-V4.1-Flash/`.
 
-- [ ] **DS41-B7 — Engram execution path** (**AutoKernel champion deliverable** — see *Kernel work
+- [x] **DS41-B7a — Engram gather op implemented** (2026-09-23): `ggml_gather_rows_e4m3_e8m0` on `ak/lever/engram-gather-20260923` @ `f13ab7669` (pushed), +188-4. A **dedicated op**, not an I8 case in `get_rows`: no existing graph can reach it, so champion-foldability is provable by inspection. Row width from `ne[0]/33`, so 264 bytes is just `k=8`; scalar CPU forward on the existing row/column-chunk split; vectorization deliberately left as a measured lever. Unit test compares bit-exact against hand-computed magnitudes over three geometries and passes — **its own spot-check was wrong on first run** (asserted -1.0 at a column carrying +1.0); corrected, and both columns kept. A second commit `8df1b5cf2` refreshes a stale `GGML_OP_COUNT` assert in `ggml-rpc.h` (101 vs the tree's 103; it only compiles under `GGML_RPC`, so it had drifted silently). **Not yet measured, not yet folded.**
+- [ ] **DS41-B7b — measure and fold the engram op into the champion** (**AutoKernel champion deliverable** — see *Kernel work
   rides the champion*; author it model-agnostically and fold it into the champion, do not leave it
   in the port branch).** The artifact ships `blk.{1,14}.engram_embd.weight` as
   GGML `I8`, `[264, rows]`, `deepseek41.engram.encoding = "e4m3_e8m0_32_row264"`: 256 E4M3 bytes +
@@ -209,7 +210,7 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
   with `POSIX_MADV_RANDOM` and suppresses `MAP_POPULATE` — **test that first**, it may approximate
   the same behaviour for free. Never with `--mlock`, `--no-mmap` or `--direct-io`. With 1.1 TB RAM,
   fully resident is also viable; measure page-fault cost per decode step either way.
-- [ ] **DS41-B10 — KV-key adapter + arch delta.** The artifact's ~67 KV keys are **raw HF config
+- [x] **DS41-B10 — KV-key adapter + arch delta. DONE 2026-09-23** — `experimental/deepseek41-port-20260923` @ `f493088b3` (pushed to fork), 13 files / +550-11, compiled and symbol-verified (`deepseek41.cpp.o`, 11 `deepseek41` symbols, engram tensor names in `libllama.so`). Adds a per-arch KV alias table (a shared-path change worth a review eye), `sqrtsoftplus` string->enum, ratios {0,1,2}, absent hash/nextn defaults, compressor/indexer tensors on the **source-layer** sets, engram tensors declared. `build_arch_graph` **deliberately aborts** instead of inheriting V4's graph, which would silently run plain SWA with the compressor/indexer/engram paths never built. Corrections found while implementing: the GGUF's `compress_ratios` has 40 entries (not 43), `rope_theta`/`compress_rope_theta` are UINT32 and `original_max_position_embeddings` FLOAT32 (type-strict getters, so no name alias), there is **no `rope_scaling.rope_type`** so the generic reader defaulted to *linear* and had to be overridden to YARN, and **no per-block name compat map is needed** — all 36 names already match, only presence differs. ✅ 2026-09-23 — original scope: The artifact's ~67 KV keys are **raw HF config
   names** (`deepseek41.hidden_size`, `.num_hidden_layers`, `.sliding_window`, `.hc_mult`, …), not
   llama.cpp canonical, so load fails in generic `load_hparams` before any V4.1 code runs. Map them;
   convert `scoring_func` string -> our `expert_gating_func` enum; accept `compress_ratios` {0,1,2}
