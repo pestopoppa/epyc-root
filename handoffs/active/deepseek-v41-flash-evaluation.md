@@ -262,6 +262,29 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
   `/mnt/raid0/llm/tmp/ds41-dspark-runtime/`). The runtime must carry acceptance-rate instrumentation
   (accepted/proposed per position) so the campaign measures alpha instead of assuming it. Original
   scope:
+- [x] **DS41-B13 — DONE 2026-09-23: the drafter is wired, measured and profitable.**
+  Drafter GGUF `DeepSeek-V4.1-Flash-DSpark.gguf` (9.32 GiB, 83 tensors, arch `deepseek41-dspark`),
+  16/16 conversion checks incl. a bit-exact expert round-trip and tokenizer KVs identical to the
+  target. Runtime on the port branch (patches 01-06 + 10): the tree already had a DSpark driver for
+  V4, so this was four V4.1 deltas, not a new runtime. **Serving-class results, -t 48 -tb 96:**
+
+  | arm | decode t/s | vs control |
+  |---|---|---|
+  | no drafter | 11.43 | — |
+  | greedy, serial verify (today's default path) | 7.18 | 0.63x |
+  | **greedy, batched verify** | **17.85 median** | **1.56x** |
+  | low-entropy prompts, batched | 18.79-22.08 | up to 1.75x |
+
+  Two traps caught on the way: a first crash was **not** the "missing target_hidden_size" warnings
+  (both paths independently computed the right 15360) but a graph input constructed at 5120 while
+  fed 15360 — and fixing only that would have traded a loud crash for **silent corruption**, since
+  `llama_decode` strides an embd batch at `n_embd_inp()` before the graph is built. The width is now
+  derived from the drafter's own `main_proj` weight, so a drafter distilled onto a differently-sized
+  target is rejected rather than silently mis-strided.
+- [x] DS41-B13b — **Block width matters more than the drafter**: block 5 is break-even (8.24),
+  block 3 gives 10.26 and block 2 gives 10.48 at temp 0.7, acceptance 31.3 / 44.4 / 51.6%. Verify
+  cost is ~86 ms + ~23 ms per block token, so break-even needs ~1.7 accepted at block 5 but ~1.1 at
+  block 3. Recipe default is block 2. ✅ 2026-09-23
 - [ ] **DS41-B13 (scope) — DSpark drafter (the spec-dec path), separately.** DSpark **does exist for this
   model**: the official checkpoint ships 2,401 `mtp.*` tensors in shards 44-46 (~8 GB) and
   `inference/model.py:1032-1156` implements it — a 3-block draft transformer over a **5-token
@@ -367,6 +390,45 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
 - [ ] DS41-C5 — Budget guidance for the loop: **decode is flat 24->96 threads**, so barrier and
   dispatch levers cannot pay on this model. Point the campaign at the memory path (engram gather,
   expert gemv), not at parallelism.
+
+### C6 — Targets (operator, 2026-09-23) and the arithmetic behind them
+
+- [x] DS41-C6 — **Gate 30 t/s, target 45-50 t/s, CPU decode.** Operator agreed to this ladder
+  rather than a single number, because the two halves have different costs. ✅ 2026-09-23
+
+  | achieved read BW | kernel-only | x speculation 1.56 |
+  |---|---|---|
+  | 101 GB/s (today) | 11.6 t/s | **17.85 measured** |
+  | ~165 GB/s (this host's gemv-pattern ceiling) | 19 t/s | **~30 = the gate** |
+  | 250 GB/s | 29 t/s | ~45 |
+  | 460.8 GB/s (sequential theoretical) | 53 t/s | ~83 (not reachable by decode) |
+
+  **Do not quote 460.8 as the roofline for decode.** INF-70 C0 measured this host under the
+  access pattern that matters: **gemv-pattern 153 GB/s at 48 threads, 167 at 96** (read-sum
+  152.6/165.6; copy 212). Decode is a gather of 4-bit blocks with dequant, not a sequential
+  stream, so ~165 GB/s is the pattern ceiling and we sit at ~61% of it, not 22% of 460.8.
+  The remaining 3x to theoretical needs the access pattern to change, not better kernels.
+
+  **Past ~45 t/s the lever is BYTES, not bandwidth**: dense attention is 5.01 GiB/token against
+  4.56 GiB for the routed experts, and the two output projections alone are 2.99 GiB, still Q8.
+  Taking those to 4-bit is ~1.4x on its own and compounds with streaming and with acceptance.
+  Anything past ~60 t/s needs a quantization change whose quality cost is unmeasured — earn it,
+  do not promise it.
+- [ ] DS41-C7 — **Per-op-class achieved bandwidth, before the campaign starts.** The 101 GB/s is
+  blended and the 8.7 GB/token is derived, not measured. The profiler (now actually compiled in,
+  DS41-C8) reports bytes and GB/s per weight path. If the dense projections stream near 165 while
+  the expert gather sits at 60, those are different problems with different fixes — and today we
+  cannot tell them apart. Run this first; it decides where the campaign aims.
+- [x] DS41-C8 — **The per-node profiler is compiled in at last.** INF-70 built it and there was
+  never a CMake option, so it has never been in a binary we shipped: `strings libggml-cpu.so |
+  grep -c GGML_CPU_PROF` returned **0**. Now `-DGGML_CPU_PROF=ON` in a separate `build-prof/`
+  tree, verified by `GGML_CPU_PROF_JSON_FILE` (2 hits) and `LLAMA_HOST_PROF_JSON_FILE` (1). The
+  measured build is untouched. ✅ 2026-09-23
+- [ ] DS41-C9 — **Host-side blind spot the node profiler can never see**: the dsv4 compressed-cache
+  plan (visibility counts, five index vectors, the full `[n_kv, n_tokens]` mask) is rebuilt on the
+  host **every ubatch** in O(n_tokens x ratio) loops, as is the engram hash and its 48-row scatter.
+  At long context this is plausibly the dominant host term. Patch 0002 accumulates host phases per
+  graph-input class; apply and verify it reconciles (attributed + unattributed within 5%).
 
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
 
