@@ -199,7 +199,20 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
   holds a CPU region claim per rep. **This is not llama-bench and carries no protocol id**, so its
   output is an OBSERVATION, never a serving claim; the floor is a calibrated A/A at unit=process,
   n=24 with an interval. ✅ 2026-09-23
-- [ ] **DS41-B7b — measure and fold the engram op into the champion** (**AutoKernel champion deliverable** — see *Kernel work
+- [x] **DS41-B7b — folded into the champion 2026-09-23.** `ak/champion/llama-cpp-ffc1bac82eec`
+  ffc1bac82 -> `8df1b5cf2`, a fast-forward, **published to `fork` only**: the local ref could not be
+  moved because `/mnt/raid0/llm/tmp/ak-loop-tree` has that branch checked out (clean, at the old
+  tip); its owner fast-forwards when convenient. Evidence, all structural plus the tests: additive
+  diff (8 files, +406-4, of which 218 lines are the test), the new enum appended immediately before
+  `GGML_OP_UNARY` with **no existing ordinal moved**, `grep` shows the symbol only in its own
+  declaration and definition — **zero emitters anywhere in `src/`, `tools/`, `examples/`** — so no
+  existing graph can reach it; unit test passes bit-exact, `test-backend-ops -o MUL_MAT` passes.
+  The synthetic gather numbers are **not** a gate on this fold and were not run for it: nothing
+  reaches the op, so the champion headline cannot move, and a headline re-measure here would be a
+  control with no knob fired. The harness (B7b-prep) stands ready for when a graph does emit the
+  op, which is when this becomes an ordinary keep under AKX-P5a.
+- [ ] DS41-B7c — re-screen the op as an ordinary keep once the deepseek41 graph emits it, and run
+  the synthetic harness then (cold/warm, p50/p90/p99) for the page-fault answer the port needs. (**AutoKernel champion deliverable** — see *Kernel work
   rides the champion*; author it model-agnostically and fold it into the champion, do not leave it
   in the port branch).** The artifact ships `blk.{1,14}.engram_embd.weight` as
   GGML `I8`, `[264, rows]`, `deepseek41.engram.encoding = "e4m3_e8m0_32_row264"`: 256 E4M3 bytes +
