@@ -5,13 +5,13 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+**Last compiled**: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
 `0.0`/`0.058` TEDS figures are formally voided and a three-stage instrument with a supported (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge) (2026-08-30: MiniMax-H3 lands as the page's first video-generation candidate — EVL-32: 33B dense H3-Omni-Transformer + Qwen3-VL-32B encoder, Ref2VA/FL2VA variants, 768p local / 2K API-only, 24 FPS 32 kHz stereo audio, a 56-model community quantization landscape, NSFW-capability finetune evidence, Ref2VA + beta4 INT8 ~165 GB deployment path, and an Excluded-Territories license; operator scope decision is the first gate before any download)
 **Sources**: 2 documents (added 2026-09-23 evening wrap-up compile: multimodal-pipeline S-15/S-16, the 2026-09-23 progress log) (added 2026-09-17: ERNIE evaluation MI210 run blocks, sub-occ1 progress log, ERNIE deep-dive link fix, completed OCC handoff) (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
 
 ## Compiled Update — 2026-09-23 (evening wrap-up compile): the vision role's token cap is lifted, which unblocks the Qwen3-VL promotion
 
-**Confidence: locally-measured** for the parse-failure counts that motivated the change (they come from our own vision evaluation); the config change itself is landed but **not yet live** — it takes effect at the next API reload.
+**Confidence: locally-measured** for the parse-failure counts that motivated the change (they come from our own vision evaluation); the config change is landed and **now live** (API reloaded 2026-09-23 20:31Z — see Open questions).
 
 ### Key findings
 
@@ -21,13 +21,14 @@ may never carry `verified`. Retagged 2026-07-31.
 
 ### Open questions
 
-- The change is not live until the API reload, and reload ownership sits with the session that owns the inference — so the ~9% no-letter rate at 2048 has not yet been re-measured under the new cap.
+- ~~The change is not live until the API reload~~ — **UPDATE, later 2026-09-23: LIVE.** The orchestrator API (uvicorn `:8000`) was reloaded at 20:31Z (pid `2815541`, on orch `3c6721ef`); health checked OK and the config reads 1024. The ~9% no-letter rate at 2048 has still not been re-measured under the new 1024 cap — that remains open.
 
 ### Source References (2026-09-23 evening wrap-up compile)
 
-- [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) — S-15 (landed) and the S-16 dependency.
+- [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) — S-15 (landed) and the S-16 dependency; the "LIVE" reload note.
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the operator item and the commit.
-- epyc-orchestrator commit `8a8e391c` — `default_vl_max_tokens` 512 to 1024 (not live until the next API reload).
+- [2026-09-23-noninf-roi.md](../progress/2026-09/2026-09-23-noninf-roi.md) — the round-2 API reload for S-15 (pid, timestamp, health check).
+- epyc-orchestrator commit `8a8e391c` — `default_vl_max_tokens` 512 to 1024, confirmed live after the 20:31Z reload.
 
 ## Compiled Update — 2026-09-23: Qwen-Image-2.1 weights are on disk for an ERNIE comparison, and the vision role is clarified
 
