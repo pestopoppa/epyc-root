@@ -56,21 +56,22 @@ dp_canonical_root_b() {
   readlink -f -- "$a" 2>/dev/null || printf '%s\n' "${DP_CANONICAL_ROOT:-/mnt/raid0/llm/epyc-root}"
 }
 
-# 0 iff already-realpath-resolved $1 sits at or under canonical root A or B.
-_dp_under_canonical_root() {
-  local p="$1" a b
-  a="$(dp_canonical_root_a)"; b="$(dp_canonical_root_b)"
-  [[ "$p" == "$a" || "$p" == "$a"/* || "$p" == "$b" || "$p" == "$b"/* ]]
-}
+# Root C is the read-only VIEW of main that the hub already serves from
+# (hub_supervisor.sh refresh_hub_view): a git worktree tracking origin/main, so
+# it is canon too. DP_VIEW_ROOT overrides it, for TESTS ONLY.
+dp_view_root() { printf '%s\n' "${DP_VIEW_ROOT:-/mnt/raid0/llm/views/epyc-root-main}"; }
 
-# Which canonical root matched (A or B) — that is the git root step 2 needs.
+# Which accepted root (canon A/B or the view) contains the already-realpath-
+# resolved $1 — that is the git root step 2 needs. Non-zero when none does.
 _dp_matching_root() {
-  local p="$1" a b
-  a="$(dp_canonical_root_a)"; b="$(dp_canonical_root_b)"
-  if [[ "$p" == "$a" || "$p" == "$a"/* ]]; then printf '%s\n' "$a"; return 0; fi
-  if [[ "$p" == "$b" || "$p" == "$b"/* ]]; then printf '%s\n' "$b"; return 0; fi
+  local p="$1" r
+  for r in "$(dp_canonical_root_a)" "$(dp_canonical_root_b)" "$(dp_view_root)"; do
+    if [[ -n "$r" && ( "$p" == "$r" || "$p" == "$r"/* ) ]]; then printf '%s\n' "$r"; return 0; fi
+  done
   return 1
 }
+
+_dp_under_canonical_root() { _dp_matching_root "$1" >/dev/null; }
 
 dp_log() { printf '%s [daemon_provenance] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" >&2; }
 
@@ -112,7 +113,7 @@ dp_attest() {
     else
       guess="$(basename -- "$real")"
     fi
-    dp_log "REFUSING to start: '$real' is not under the canonical root ($(dp_canonical_root_a) or $(dp_canonical_root_b)) — a lane may develop a daemon, never run it. Launch from $(dp_canonical_root_b)/${guess} instead."
+    dp_log "REFUSING to start: '$real' is not under the canonical root ($(dp_canonical_root_a) or $(dp_canonical_root_b)) or the view ($(dp_view_root)) — a lane may develop a daemon, never run it. Launch from $(dp_canonical_root_b)/${guess} instead."
     return 3
   fi
 

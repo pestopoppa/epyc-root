@@ -42,6 +42,10 @@ git -C "$CANON" init -q
 git -C "$CANON" -c user.email=t@t -c user.name=t add scripts/system/daemon.sh >/dev/null
 git -C "$CANON" -c user.email=t@t -c user.name=t commit -qm init >/dev/null
 export DP_CANONICAL_ROOT="$CANON"
+# The read-only VIEW of main (hub_supervisor's serving tree) is also canon.
+VIEW="$TMP/view"
+git clone -q "$CANON" "$VIEW"
+export DP_VIEW_ROOT="$VIEW"
 
 # A LANE dir, structurally identical, but never the canonical root.
 LANE="$TMP/lane-worktree"
@@ -97,6 +101,14 @@ if [ -e "$TMP/lane.provenance.json" ]; then
 else
   echo "  PASS  no provenance file written on refusal"; pass=$((pass+1))
 fi
+
+# ------------------------------------------------------- case 2b: the view
+rc=0; err="$(dp_attest "$VIEW/scripts/system/daemon.sh" "$TMP/view.provenance.json" 2>&1 1>/dev/null)" || rc=$?
+chk "script under the read-only view of main -> attest OK" "$rc" 0
+case "$err" in
+  *"differs from its committed blob"*) echo "  FAIL  view attest compared against the wrong repo: $err"; fail=$((fail+1));;
+  *) echo "  PASS  view attest checks the blob against the view's own HEAD"; pass=$((pass+1));;
+esac
 
 # --------------------------------------------------------- case 3: uncommitted
 echo '# a hotfix on canon' >> "$CANON/scripts/system/daemon.sh"
