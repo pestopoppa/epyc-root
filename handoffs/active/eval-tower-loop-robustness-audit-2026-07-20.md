@@ -169,7 +169,8 @@ fail-open — it exists *because* of the documented 2026-08-03 incident (a T1 ca
 correct purely because the orchestrator API was down), explicitly naming
 `feedback_fail_open_defaults_conceal_their_own_corruption`. Three specific holes remain:
 
-- [ ] **ETR-1 — We DROP BOTH failure classes; decide whether agent-caused should score 0.**
+- [x] **ETR-1 — We DROP BOTH failure classes; decide whether agent-caused should score 0.**
+      ✅ 2026-09-23 — operator RULED: agent-caused (`task_failed`) rows score 0 inside the denominator; infra/scoring failures stay excluded. Code: epyc-orchestrator `44d0d4a0` + `927380a5` (aggregate carries `quality_denominator_policy`, `task_failed_count`; EV-11 per-role accuracy uses the same helper). Era row E17 + MEASUREMENT.md §5 clause ship in `scripts/operator/ratify_trust_boundary_and_etr1_20260923.sh` (operator runs it).
       `eval_tower.py:5129` filters the quality denominator with `not r.error`, so an agent/config-caused
       failure and a platform-caused failure are treated **identically** — both leave the denominator.
       The distinction survives only into telemetry and `reliability`. The consequence: **a config that

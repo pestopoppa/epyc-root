@@ -1,0 +1,41 @@
+--- a/MEASUREMENT.md
++++ b/MEASUREMENT.md
+@@ -151,8 +151,16 @@
+ - **Amendments**: human-only, PR-reviewed, append-or-version — protocols are never silently
+   edited. An amendment appends to the owning annex file and adds a one-line entry to the
+   CHANGELOG block at the end of this core file. Superseding amendments name what they supersede.
+-- **Trust boundary**: this file, its `protocols/` annexes, the era registry, the eval tower, and
+-  scoring contracts are read-only for autonomous optimization processes (program.md).
++- **Trust boundary**: this file, its agent digest (`agents/shared/MEASUREMENT_POLICY.md`), its
++  `protocols/` annexes, the era registry, the eval tower, and scoring contracts are read-only for
++  autonomous optimization processes (program.md). The digest is inside the boundary: it restates
++  the rules, so amending it amends them, and it changes only by operator-run ratification.
++- **Quality denominator (ETR-1)**: in eval-tower quality, a row the agent or its configuration
++  failed (`task_failed`) scores 0 and stays in the denominator; only platform-caused rows
++  (`infra_failed`, `scoring_failed`) are excluded. A configuration that fails more MUST score
++  lower, never shrink its own denominator. Rows self-identify via
++  `quality_denominator_policy: task_failed_scores_zero_v1`; era `E17-eval-task-failed-scores-zero-quality`
++  marks the boundary, and pre-E17 quality (which dropped those rows) is not comparable across it.
+ - **Promotion is decided on the production-optimal configuration alone.** A regression in a
+   `BASELINE`-category measurement is NOT a promotion blocker and MUST NOT be cited as one;
+   a `BASELINE` improvement is NOT a promotion argument. Baselines are recorded to quantify
+@@ -276,6 +284,19 @@
+ 
+ ## CHANGELOG
+ 
++- **2026-09-23 (v2.x)** — AMENDMENT (NIB2-59): §5's trust boundary now names the agent digest
++  `agents/shared/MEASUREMENT_POLICY.md` explicitly. The digest already declared itself human-amendment-
++  only (its *Trust boundary* section) and every past edit to it was a ratified commit, but §5's list
++  omitted it, so nobody could tell whether an agent could edit it. Resolves that contradiction in the
++  direction practice already followed. No rule changes. Operator ruling 2026-09-23.
++
++- **2026-09-23 (v2.x)** — AMENDMENT (ETR-1): eval-tower quality counts agent/config-caused failures
++  (`task_failed`) as 0 inside the denominator; platform failures stay excluded. Previously both were
++  dropped, so a crashing configuration was not penalized. Opens era
++  `E17-eval-task-failed-scores-zero-quality` (scope `eval_quality`) in `instrument_eras.yaml`; this
++  fences pre-boundary quality evidence as priors. Implementation: epyc-orchestrator `44d0d4a0` +
++  `927380a5`. Operator ruling 2026-09-23.
++
+ - **2026-09-16 (v2.x)** — AMENDMENT (Annex Q, `P-CAL`): all four calibration baselines are marked
+   **CONTAMINATED by speculative decoding**, and P-CAL's decision uses are **SUSPENDED** pending EV-CONF-2
+   (a spec-off GPU probe). llama.cpp v7/v9 reports `prob=1.0` with an empty top-k for draft-accepted
