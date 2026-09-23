@@ -443,6 +443,29 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   dispatch levers cannot pay on this model. Point the campaign at the memory path (engram gather,
   expert gemv), not at parallelism.
 
+- [x] DS41-C12 — **All three in-tree profilers wired into the loop** ✅ 2026-09-23 (operator: "give
+  autokernel access to ALL the profiling tools"). llama.cpp `ebb68dc55`: Engram gather/per-layer
+  counters landed, compile-gated on `GGML_CPU_PROF` with `LLAMA_ENGRAM_PROF_JSON_FILE` (measured
+  `build-cpu` carries zero instrumentation strings). Research `c6a46674` (`loop/node_profile.py`,
+  17 tests on real dumps) + `e59c87ea`: `reprofile()` builds a `-DGGML_CPU_PROF=ON` sibling of the
+  anchor, launches it only inside the profile window with `GGML_CPU_PROF_JSON_FILE`,
+  `LLAMA_HOST_PROF_JSON_FILE`, `LLAMA_ENGRAM_PROF_JSON_FILE`, level 2, parses the three dumps into
+  `node_profile` in the planner context (per-op shares, host phases, Engram fault mix), cached by the
+  perf capture's key, never in a ranked A/B; `--node-profile` rides `--common-args`; teardown waits
+  180 s so a `--no-mmap` server's atexit dumps survive. Proven on run 3's anchor at 19:38:
+  `teardown: terminated`, all three `observed`; experts 42.1% / dense 38.3% of wall,
+  `ctx.graph_compute` 99.2% of the decode step, Engram 0 major / 0 minor faults per decode token.
+- [x] DS41-C13 — **Campaign restarted as run 3** ✅ 2026-09-23 19:28 (`state-run3/serial-run.pid`
+  = 1953258). Run 1 (perf only) stopped and archived (`store-run1-ad932bbd9`); run 2 refused —
+  the shared store pinned run 1's champion-of-record `ad932bbd9` against anchor `ebb68dc55`
+  ("never relabel the tip build"), so run 3 uses a fresh store with the inbox carried over.
+  Anchor/inputs/resolution rebound to `ebb68dc55`, artifact verification 5/5.
+- [ ] DS41-C14 — `--node-profile` is opt-in in `run.py` (default OFF) because run.py's hermetic
+  fixtures would gain a real build + a second launch if it defaulted on. Make the fixtures opt out
+  explicitly, then flip the default so no future campaign can launch without the instrument.
+- [ ] DS41-C15 — `node_profile` semantics under speculation: `llama-host-prof` counts one batched
+  verify call as `n_eval=1`, so `decode_us_per_token` is per graph eval, not per token, when DSpark
+  is on (carried as a limitation string; needs a no-drafter cross-check to state the ratio).
 - [ ] DS41-C10 — Watch the campaign through calibration into its first source iteration:
   `state/loop-status.json` + `store/` (the 48 A/A launches each reload 519 GB, ~2 h); confirm the
   serving floor lands with a unit, the planner's first proposal cites the inbox, and the critic
