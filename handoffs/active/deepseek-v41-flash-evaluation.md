@@ -360,7 +360,11 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   (`opencode run -m qwen-local/qwen3.8-flash-next --variant high`), which was the genuinely
   uncertain step since `Backend.argv` always passes `--variant`. Campaign store populated at
   `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/`. ✅ 2026-09-23
-- [ ] **DS41-C2d — LAUNCH BLOCKER: the recipe layer cannot express DSpark.**
+- [x] **DS41-C2d — LAUNCH BLOCKER: the recipe layer cannot express DSpark.** ✅ 2026-09-23 — research
+  `3d1bf4b2` (type, argv mapping, `--parallel 1` refusal, `LLAMA_SPEC_EXACT` required for greedy with a
+  `process_environ` witness) and `5125f7ab` (a greedy draft-dspark template was still not expressible
+  as a *canonical* launch: the projection is env-less by construction while the guard requires a
+  declared env — the compare now strips env and the frozen launch env is checked instead).
   `loop/resolved_recipe.py:27` has `SPECULATION_TYPES = {"none", "draft-dflash", "draft-mtp"}` —
   no `draft-dspark` — so the prepared recipe is forced to `spec_decode: {"type": "none"}` and the
   campaign would optimise the NO-DRAFTER surface we have already beaten by 1.56x. Patch in
@@ -369,7 +373,10 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   declared measurement key with a witness (its absence must REFUSE, not fall back to the serial
   path — that silent fallback produced the 7.18 t/s reading today), and the drafter in the recipe
   identity.
-- [ ] DS41-C2e — **Enrollment tooling defect, worked around not fixed**:
+- [x] DS41-C2e — **Enrollment tooling defect, fixed** ✅ 2026-09-23 (orchestrator `c3f2cbc2`: re-exec moved
+  under `__main__`; `test_orchestrator_stack_import_is_argv_safe.py`). Not used by the launch — the
+  campaign runs on the roster-free `--manifest` + `--registry-snapshot` route, which is orthogonal to
+  the production roster (operator, 2026-09-23). Original note:
   `epyc-orchestrator/scripts/server/autokernel_enrollment.py:276` does
   `from scripts.server import orchestrator_stack`, and that module parses `sys.argv` at import, so
   it sees the ENROLLMENT's flags, prints stack status and exits 0 without writing the output. The
@@ -377,11 +384,20 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   (`campaign_cli.py:201`), which is the route taken: a
   `epyc.autokernel.artifact_registry_snapshot.v1` file carrying model/build/recipe identities
   (`{schema, kind, ref, path, sha256}` each). Fix the import-time argparse separately.
-- [ ] DS41-C2b — Resolve the competing-inference block, then launch: `--surface tg128` (the default
+- [x] DS41-C2b — **LAUNCHED 2026-09-23 18:06** ✅ 2026-09-23 — `serial_run` PID `1586972` (run.py `1586978`),
+  store `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/`, inputs built by
+  `inputs/build_inputs.py` through the loop's own validators (canonical_launch.v1, frozen prompt v2,
+  IDENTITY receipt on `build-cpu`, manifest + snapshot, `--verify-artifacts` passed on all 5).
+  Serving metric `aggregate_tok_s` on the DSpark greedy-batched recipe, `--rounds 0`,
+  planner `opencode:qwen-local/qwen3.8-flash-next@high` (the live :8074 server, unchanged), critic
+  `codex:gpt-6-sol@high`. First launch had `perf record`+`perf stat` attached. It opens with the
+  loop's 48 matched calibration launches. Superseded launch note (llama-bench surface): `--surface tg128` (the default
   is `pp512` and MUST be overridden), `--confirm-surfaces dec-b4,dec-b8`, `-t 48`, cpu_list 0-95,
   np 1. There is no `tg512` surface. `Recipe` carries one `threads` field, so pp512 rows from this
   target are off-optimum and must not be reported as prefill results — prefill is a second target.
-- [ ] DS41-C3 — **The campaign measures the spec-dec-on surface**, not today's no-drafter decode.
+- [x] DS41-C3 — **The campaign measures the spec-dec-on surface** ✅ 2026-09-23 — target declares
+  `speculation: external_draft` + `drafter_ref local:ds41:drafter-dspark`; new type `draft-dspark`, not
+  `draft-mtp` (the assumption below was wrong, as suspected). Original:
   Blocked on DS41-B13. The schema already supports it (`TargetSpec.speculation` ∈
   `{none,self_draft,external_draft}` + `drafter_ref`; `spec_decode:{type:"draft-mtp",…}` →
   `-md/-ngld/--spec-type/--spec-draft-n-max`, `draft_n_max: 5` from DSpark's block). The target
@@ -419,9 +435,22 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   first: every overhead figure above is arithmetic, not measured. Note the phase classifier
   (`n_tokens==1` -> decode) breaks once the 5-wide drafter lands, and the dlsym link surface is
   untested.
-- [ ] DS41-C5 — Budget guidance for the loop: **decode is flat 24->96 threads**, so barrier and
+- [x] DS41-C5 — Seeded ✅ 2026-09-23 as `store/inbox/30-ds41-seeded-hypotheses.md` (ranked H2 requant
+  ladder, H1b verify-marginal attribution, H3 rowexact-on-dense, H4 entropy-gated block, H1 demoted,
+  H6, H7; measured basis and falsifiers; re-read by the planner every iteration). The
+  `opportunities.json` profile form stays unbound (placeholder digests) — the inbox is the channel.
+  Budget guidance: **decode is flat 24->96 threads**, so barrier and
   dispatch levers cannot pay on this model. Point the campaign at the memory path (engram gather,
   expert gemv), not at parallelism.
+
+- [ ] DS41-C10 — Watch the campaign through calibration into its first source iteration:
+  `state/loop-status.json` + `store/` (the 48 A/A launches each reload 519 GB, ~2 h); confirm the
+  serving floor lands with a unit, the planner's first proposal cites the inbox, and the critic
+  answers. Kill only `state/serial-run.pid`'s tree, verify dead.
+- [ ] DS41-C11 — Pre-existing test failures found while landing `5125f7ab`, reproduced on a clean HEAD
+  checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
+  `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or
+  re-fixture.
 
 ### C6 — Targets (operator, 2026-09-23) and the arithmetic behind them
 
