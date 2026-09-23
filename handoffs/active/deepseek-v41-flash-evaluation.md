@@ -345,6 +345,38 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
      UNOWNED `llama-server` as competing and **raises**. :8074's parent is a containerd shim, so it
      is outside every owned scope and there is no allowlist parameter. **The server is safe; the
      campaign is blocked.** → OPERATOR DECISION (queued). ✅ 2026-09-23
+- [x] DS41-C2b-gate — **Competing-inference block resolved and landed** (research `a46c9d3d`): the
+  gate now brackets each measured span with cumulative `utime+stime` reads for the unowned
+  INFERENCE_LIKE processes, so it asks whether one did WORK, not whether one exists. Monotone
+  counters mean a burst between samples cannot hide. Allowance pinned to measurement: over a 279 s
+  idle observation all 13 resident servers accrued <= 0.06 core-seconds, so 0.5 core-s + 0.02
+  cores/s sits ~100x above idle and ~46x below one busy core. It also converts the operator's "the
+  planner never runs during measurement" into a checked invariant. 303 tests. ✅ 2026-09-23
+- [x] DS41-C2c — **Dry run steps 1-3 pass.** Binary rebuilt from the committed tree so it
+  self-identifies (`version 10310 (ad932bbd9)`, clean tree — it previously reported `7c18bb8c1`
+  from an uncommitted build, exactly the INF-70 C9 shape); `verify_ggml_linkage.sh` PASS;
+  `verify_llama_cpp.sh` PASS on the frozen tree; critic `gpt-6-sol` high answered a live probe;
+  planner answered `{"ok":true}` through the loop's OWN invocation
+  (`opencode run -m qwen-local/qwen3.8-flash-next --variant high`), which was the genuinely
+  uncertain step since `Backend.argv` always passes `--variant`. Campaign store populated at
+  `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/`. ✅ 2026-09-23
+- [ ] **DS41-C2d — LAUNCH BLOCKER: the recipe layer cannot express DSpark.**
+  `loop/resolved_recipe.py:27` has `SPECULATION_TYPES = {"none", "draft-dflash", "draft-mtp"}` —
+  no `draft-dspark` — so the prepared recipe is forced to `spec_decode: {"type": "none"}` and the
+  campaign would optimise the NO-DRAFTER surface we have already beaten by 1.56x. Patch in
+  preparation adds the type, the `-md`/`--spec-type`/`--spec-draft-n-max` mapping, the
+  `--parallel 1` refusal (the server refuses multi-slot for draft-dspark), `LLAMA_SPEC_EXACT` as a
+  declared measurement key with a witness (its absence must REFUSE, not fall back to the serial
+  path — that silent fallback produced the 7.18 t/s reading today), and the drafter in the recipe
+  identity.
+- [ ] DS41-C2e — **Enrollment tooling defect, worked around not fixed**:
+  `epyc-orchestrator/scripts/server/autokernel_enrollment.py:276` does
+  `from scripts.server import orchestrator_stack`, and that module parses `sys.argv` at import, so
+  it sees the ENROLLMENT's flags, prints stack status and exits 0 without writing the output. The
+  campaign resolver accepts `--registry-snapshot` as an alternative to `--production-enrollment`
+  (`campaign_cli.py:201`), which is the route taken: a
+  `epyc.autokernel.artifact_registry_snapshot.v1` file carrying model/build/recipe identities
+  (`{schema, kind, ref, path, sha256}` each). Fix the import-time argparse separately.
 - [ ] DS41-C2b — Resolve the competing-inference block, then launch: `--surface tg128` (the default
   is `pp512` and MUST be overridden), `--confirm-surfaces dec-b4,dec-b8`, `-t 48`, cpu_list 0-95,
   np 1. There is no `tg512` surface. `Recipe` carries one `threads` field, so pp512 rows from this
