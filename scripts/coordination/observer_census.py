@@ -35,6 +35,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -154,12 +155,36 @@ def check_rule_b(reg: dict) -> list[str]:
     return out
 
 
+VALID_RUNTIME_MODES = ("daemon", "scheduled")
+
+
 def check_runtime_well_formed(reg: dict) -> list[str]:
     """NIB2-81 remedy (b): validate the optional `runtime` object on a row.
 
     Shape only — the SEMANTICS (is the live daemon actually current) are what
     ``live_check_row``/``--live`` answers at runtime; this is the same static,
     every-commit guarantee the rest of the file gives the contract fields.
+
+    TWO MODES (``runtime.mode``, default ``"daemon"`` so every row written
+    before mode existed is still valid unchanged):
+
+    ``daemon`` — a process that stays up between ticks; identity is a
+    pidfile + cmdline, staleness is an inode comparison. Requires pidfile,
+    expected_path, provenance (unchanged from before this addition).
+
+    ``scheduled`` — a target with NO persistent process between ticks: an
+    external scheduler (host cron, outside the container) invokes it as
+    repeated ``once``-shaped runs, so "no pidfile" is the EXPECTED state, not
+    evidence of anything (hub_supervisor.sh's actual deployment: no `loop`
+    running, `/workspace/logs/hub_supervisor.log` instead shows an
+    "once: hub healthy" line roughly every 2 minutes from a host-cron tick).
+    A daemon-mode check against that shape would read a permanently-absent
+    pidfile as `not_running` and alarm forever on a healthy target — a false
+    CRITICAL, the class of defect this whole contract exists to prevent.
+    Requires `log` (an absolute path) and `max_age_s` (a positive number);
+    pidfile/expected_path/provenance are NOT required (freshness comes from
+    the log's own mtime, not a resident process's identity) and
+    `restart_on_stale` may never be true here — there is no pid to signal.
     """
     bad = []
     for row in reg["observers"]:
@@ -170,6 +195,28 @@ def check_runtime_well_formed(reg: dict) -> list[str]:
         if not isinstance(rt, dict):
             bad.append(f"{rid}: 'runtime' must be an object, got {type(rt).__name__}")
             continue
+        mode = rt.get("mode", "daemon")
+        if mode not in VALID_RUNTIME_MODES:
+            bad.append(f"{rid}: runtime.mode must be one of {VALID_RUNTIME_MODES}, got {mode!r}")
+            continue
+
+        if mode == "scheduled":
+            log = rt.get("log")
+            if not isinstance(log, str) or not log.strip():
+                bad.append(f"{rid}: runtime.log must be a non-empty string (mode=scheduled)")
+            elif not log.startswith("/"):
+                bad.append(f"{rid}: runtime.log must be an absolute path, got {log!r}")
+            max_age = rt.get("max_age_s")
+            if not isinstance(max_age, (int, float)) or isinstance(max_age, bool) or max_age <= 0:
+                bad.append(f"{rid}: runtime.max_age_s must be a positive number (mode=scheduled)")
+            if rt.get("restart_on_stale"):
+                bad.append(
+                    f"{rid}: runtime.restart_on_stale may not be true in mode=scheduled — "
+                    "there is no pid to signal between ticks"
+                )
+            continue
+
+        # mode == "daemon" (default) — unchanged from before `mode` existed.
         for key in ("pidfile", "expected_path", "provenance"):
             v = rt.get(key)
             if not isinstance(v, str) or not v.strip():
@@ -294,7 +341,11 @@ def _static_main() -> int:
 # observer_guard.sh above suppress action rather than default to "fine").
 
 LIVE_STATES = ("running_current", "running_stale", "running_off_canon",
+               "scheduled_current", "scheduled_stale",
                "not_running", "cannot_tell")
+
+# States that mean "nothing to report" — the row is doing what it should.
+LIVE_GOOD_STATES = ("running_current", "scheduled_current")
 
 # One convention with daemon_provenance.sh's dp_canonical_root_a/b + dp_view_root
 # ON PURPOSE — two independent implementations of "what counts as canon" is how
@@ -397,8 +448,62 @@ def _resolve_open_script_fd(pid: int, basename: str) -> tuple[str | None, str | 
     return None, None
 
 
+def _live_check_scheduled(row: dict, rt: dict) -> dict:
+    """The ``mode: "scheduled"`` verdict: freshness of a LOG, not a pid.
+
+    A scheduled target has no process to be alive BETWEEN ticks — an external
+    scheduler (host cron, outside the container) invokes it repeatedly as
+    ``once``-shaped runs, so "no pidfile" is not evidence of anything and a
+    daemon-mode check against it would alarm forever on a healthy target
+    (hub_supervisor.sh's actual deployment: no `loop` running,
+    ``logs/hub_supervisor.log`` instead gains an "once: hub healthy" line
+    roughly every 2 minutes). ``max_age_s`` is the only judgment call this
+    makes — mtime only, no attempt to parse the newest line for an error, on
+    purpose: a log that stopped growing is unambiguous evidence nothing has
+    ticked; a log whose last line says something went wrong but is still
+    being written is a DIFFERENT, narrower question this field does not
+    answer (the target's own alarm path, if it has one, owns that).
+
+    A MISSING log is graded ``not_running`` — mirroring daemon mode's own
+    "missing pidfile = not_running" rather than "cannot_tell", because an
+    absent log is itself positive evidence (nothing has ever ticked here, or
+    the scheduler entry was removed), not an ambiguity. An UNREADABLE log
+    (exists, but ``stat`` fails — permissions, a race) is ``cannot_tell``:
+    that IS an ambiguity, and fails closed rather than guessing either way.
+    """
+    rid = row.get("id", "<no id>")
+
+    def result(state: str, detail: str) -> dict:
+        return {"id": rid, "state": state, "detail": detail, "pid": None}
+
+    log_path = rt.get("log")
+    max_age = rt.get("max_age_s")
+    if not log_path or not isinstance(max_age, (int, float)) or isinstance(max_age, bool) or max_age <= 0:
+        return result("cannot_tell", "runtime row (mode=scheduled) is missing log/max_age_s")
+
+    p = Path(log_path)
+    if not p.exists():
+        return result("not_running", f"scheduled log {log_path} does not exist — nothing has ticked")
+    try:
+        mtime = p.stat().st_mtime
+    except OSError:
+        return result("cannot_tell", f"scheduled log {log_path} exists but is unreadable")
+
+    age = time.time() - mtime
+    if age <= max_age:
+        return result(
+            "scheduled_current",
+            f"log {log_path} last written {age:.0f}s ago (<= max_age_s {max_age})",
+        )
+    return result(
+        "scheduled_stale",
+        f"log {log_path} last written {age:.0f}s ago (> max_age_s {max_age}) — nothing "
+        "has ticked recently",
+    )
+
+
 def live_check_row(row: dict, canonical_root: str | None = None) -> dict:
-    """Read-only /proc verdict for one registry row's ``runtime`` daemon.
+    """Read-only verdict for one registry row's ``runtime`` target.
 
     Returns ``{"id", "state", "detail", "pid"}``; ``state`` is one of
     ``LIVE_STATES``. Pure and side-effect-free — no alarm, no kill, no launch —
@@ -407,9 +512,18 @@ def live_check_row(row: dict, canonical_root: str | None = None) -> dict:
     inode-comparison idea in bash rather than shelling out to this, for the
     same reason ``daemon_provenance.sh`` is bash: a restart path with a Python
     dependency in the middle is one more way to fail closed into "did nothing".
+
+    Dispatches on ``runtime.mode`` (default ``"daemon"``, so every row
+    written before ``mode`` existed is unaffected): ``"scheduled"`` goes to
+    ``_live_check_scheduled`` (log-freshness, no pid at all); everything else
+    is the original pid+inode walk below.
     """
     rid = row.get("id", "<no id>")
     rt = row.get("runtime") or {}
+
+    if rt.get("mode", "daemon") == "scheduled":
+        return _live_check_scheduled(row, rt)
+
     pidfile = rt.get("pidfile")
     expected_path = rt.get("expected_path") or row.get("script")
 
@@ -513,6 +627,7 @@ LIVE_SEVERITY = {
     "running_stale": "critical",
     "not_running": "critical",
     "running_off_canon": "critical",
+    "scheduled_stale": "critical",
     "cannot_tell": "warning",
 }
 
@@ -540,7 +655,7 @@ def raise_live_alarms(
 
     for r in results:
         key = f"daemon-live:{r['id']}"
-        if r["state"] == "running_current":
+        if r["state"] in LIVE_GOOD_STATES:
             alarm_channel.clear_alarm(
                 key, message=f"{r['id']}: {r['detail']}", state_file=alarm_state, dry_run=dry_run
             )
@@ -563,15 +678,15 @@ def _print_live_report(results: list[dict]) -> int:
         return 0
     bad = 0
     for r in sorted(results, key=lambda x: x["id"]):
-        ok = r["state"] == "running_current"
+        ok = r["state"] in LIVE_GOOD_STATES
         bad += 0 if ok else 1
         marker = "OK " if ok else "!! "
         pid_s = f"pid={r['pid']}" if r.get("pid") is not None else "pid=-"
         print(f"  [{marker}] {r['id']:<28} {r['state']:<18} {pid_s:<12} {r['detail']}")
-    print(f"\n{len(results) - bad}/{len(results)} running current code.")
+    print(f"\n{len(results) - bad}/{len(results)} current ({'/'.join(LIVE_GOOD_STATES)}).")
     if bad:
         print(
-            "  Non-'running_current' verdicts are graded as problems (fail closed — "
+            "  Every other verdict is graded a problem (fail closed — "
             "tmp/daemon-staleness-20260917/report.md).",
         )
     return 1 if bad else 0

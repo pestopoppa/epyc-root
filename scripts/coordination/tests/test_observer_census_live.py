@@ -221,6 +221,72 @@ def test_run_live_census_skips_rows_without_runtime(canon):
 
 
 # --------------------------------------------------------------------------- #
+# mode: "scheduled" — a target with NO persistent process between ticks (an
+# external, host-side scheduler invokes it repeatedly instead). Corrected in
+# 2026-09-23: hub_supervisor.sh runs no `loop` today, only host-cron `once`
+# ticks, so its loop pidfile is PERMANENTLY absent by design — the first
+# --live run against it read that as not_running and would have alarmed
+# forever on a target that is, in fact, healthy.
+# --------------------------------------------------------------------------- #
+
+def _scheduled_row(log: Path, max_age_s=600, **extra) -> dict:
+    runtime = {"mode": "scheduled", "log": str(log), "max_age_s": max_age_s}
+    runtime.update(extra)
+    return {"id": "t_scheduled", "script": "x", "runtime": runtime}
+
+
+def test_scheduled_current_fresh_log(tmp_path):
+    log = tmp_path / "sched.log"
+    log.write_text("once: healthy\n")
+    r = census.live_check_row(_scheduled_row(log, max_age_s=600))
+    assert r["state"] == "scheduled_current", r
+    assert r["pid"] is None
+
+
+def test_scheduled_stale_old_log(tmp_path):
+    """An old mtime, forced via os.utime — no process involved at all, matching
+    the actual mechanism: a scheduler that stopped ticking leaves its log
+    exactly this way, with nothing left alive to signal or restart."""
+    log = tmp_path / "sched.log"
+    log.write_text("once: healthy\n")
+    old = time.time() - 1000
+    os.utime(log, (old, old))
+    r = census.live_check_row(_scheduled_row(log, max_age_s=600))
+    assert r["state"] == "scheduled_stale", r
+
+
+def test_scheduled_not_running_missing_log(tmp_path):
+    """Missing log => not_running (positive evidence nothing has ticked),
+    mirroring daemon mode's own 'missing pidfile = not_running' — documented
+    choice, see _live_check_scheduled's docstring."""
+    log = tmp_path / "does_not_exist.log"
+    r = census.live_check_row(_scheduled_row(log, max_age_s=600))
+    assert r["state"] == "not_running", r
+
+
+def test_scheduled_cannot_tell_missing_max_age(tmp_path):
+    log = tmp_path / "sched.log"
+    log.write_text("x\n")
+    row = {"id": "t", "script": "x", "runtime": {"mode": "scheduled", "log": str(log)}}
+    r = census.live_check_row(row)
+    assert r["state"] == "cannot_tell", r
+
+
+def test_scheduled_current_never_alarms_on_a_missing_daemon_pidfile(tmp_path):
+    """The exact regression this correction fixes: a row with mode=scheduled
+    must never be graded against pidfile presence at all."""
+    log = tmp_path / "sched.log"
+    log.write_text("once: healthy\n")
+    row = {
+        "id": "hub_like", "script": "x",
+        "runtime": {"mode": "scheduled", "log": str(log), "max_age_s": 600,
+                    "pidfile": str(tmp_path / "never_exists.pid")},
+    }
+    r = census.live_check_row(row)
+    assert r["state"] == "scheduled_current", r
+
+
+# --------------------------------------------------------------------------- #
 # Alarm integration — reuses alarm_channel.py, the SAME sink fleet_watch.sh
 # already raises through. Every test below points ALARM_STATE_PATH and
 # ALARM_FILE_PATH at temp files before calling in, so nothing here can ever
@@ -277,6 +343,21 @@ def test_raise_live_alarms_clears_a_healthy_daemon(alarm_env):
     good = [{"id": "reaper_fixture", "state": "running_current", "detail": "d2", "pid": 42}]
     census.raise_live_alarms(good, no_alarm=False, alarm_state=state)
     cleared = _events(record, "cleared", "daemon-live:reaper_fixture")
+    assert len(cleared) == 1, cleared
+
+
+def test_raise_live_alarms_clears_on_scheduled_current_too(alarm_env):
+    """scheduled_current must be treated as a GOOD state by the alarm path,
+    not just by the report printer — the exact axis the 'grade good states,
+    not one magic string' correction targets."""
+    state, record = alarm_env
+    bad = [{"id": "hub_like", "state": "scheduled_stale", "detail": "d", "pid": None}]
+    census.raise_live_alarms(bad, no_alarm=False, alarm_state=state)
+    assert _events(record, "raised", "daemon-live:hub_like")
+
+    good = [{"id": "hub_like", "state": "scheduled_current", "detail": "d2", "pid": None}]
+    census.raise_live_alarms(good, no_alarm=False, alarm_state=state)
+    cleared = _events(record, "cleared", "daemon-live:hub_like")
     assert len(cleared) == 1, cleared
 
 
