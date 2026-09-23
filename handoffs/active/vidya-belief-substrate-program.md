@@ -1966,14 +1966,6 @@ no rate at all. A later session may extend the audit but may not report these fi
 
 ## VB-DSV41 — DeepSeek-V4.1-Flash port validation producer (2026-09-22)
 
-- [ ] **VB-DSV41b — wire the engram-gather benchmark producer before its first measured run**
-  (INF-77 DS41-B7b). Source row added to `scripts/vidya/adapters/README.md` 2026-09-23. It is a
-  kernel-lever measurement, so it projects through `claim_tuple.grade()` on the existing
-  measurement ladder; do not add a second ladder. Until a V4.1 model runs, every record is an
-  observation about a synthetic gather, never a serving claim — the projection must carry that
-  scope or the tuple overclaims.
-
-
 - [ ] **VB-DSV41 — wire the `deepseek41` validation/serving producer at write time, before DS41-T1.**
   Producer work: [INF-77](deepseek-v41-flash-evaluation.md) (successor to INF-69; VB-GLM53-MTP's
   subject was deleted 2026-09-22 and it produces no further records). Reuse the VB-GLM53-MTP carrier:
@@ -2601,13 +2593,17 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   Pre-hook runs emit zero rows and are NEVER retrofitted. Locator = arm x suite.
   Owner: whoever next touches either architect bench.
 
-- [ ] **SSU-F6 — `promotion_gates.yaml gates.quality` must record `max_tokens` explicitly, and that the cap
+- [x] **SSU-F6 — `promotion_gates.yaml gates.quality` must record `max_tokens` explicitly, and that the cap
   is NOT model-neutral.** The 64 was carried by CONVENTION into the v9 and v10 qualifications — precisely
   the failure that file was created to end. Measured 2026-09-23: at that cap the retired Qwen3.5-122B
   truncated 0/200 while Flash-Next truncated 46/200, because one answers with a letter and the other
   derives in the visible channel. A gate cap that silently favours terse models is not a quality gate.
   Record the value, and record that a per-model truncation audit is required before any accuracy from it is
-  comparable. **Blocker: none.**
+  comparable. **RESOLVED 2026-09-23**: `max_tokens: 64` recorded as what v9/v10 actually ran, plus a
+  `truncation_audit` sub-gate (`required: true`) carrying the measured non-neutrality, the
+  method, and the caution that the cap may only be raised once the truncated rows are shown
+  non-degenerate. Verified the required-gate set is unchanged (the sub-gate is nested under
+  `quality`, so `package.sh`'s top-level enumeration does not see it as a seventh gate).
 
 - [ ] **SSU-F7 — the live `:8074` process is missing two env knobs its own registry recipe declares.**
   `GGML_NOHUGEPAGE_PROCESS=1` and `GGML_FA_SPLIT_KV=0` are in `recipe.env` for architect_critic but absent

@@ -70,6 +70,38 @@ gates:
       gpqa: 195            # the suite holds 195 items; 200 was requested, 195 exist
     seed: 42
     temperature: 0.0
+    # ADDED 2026-09-23. Until today this gate never recorded its own token cap: 64 was
+    # carried by CONVENTION into the v9 and v10 qualifications, which is exactly the
+    # failure this file was created to end. It is recorded here as WHAT WAS RUN, not as
+    # an endorsement -- see truncation_audit below, which is the gate that matters.
+    max_tokens: 64
+    truncation_audit:
+      required: true
+      added: 2026-09-23
+      rule: >
+        A pooled accuracy is NOT a reportable number while truncated.n > 0. Report the
+        truncated count beside every accuracy, and treat a capped accuracy as a LOWER
+        BOUND on the model, never as its score.
+      why: >
+        THE CAP IS NOT MODEL-NEUTRAL, and this was measured, not reasoned. At max_tokens
+        64 on mmlu_pro the retired Qwen3.5-122B truncated 0/200 while Qwen3.8-Flash-Next
+        truncated 46/200 (33 with nothing extractable) -- one model answers with a letter,
+        the other derives in the visible channel and is cut off mid-derivation, scoring
+        ~0.05 on work that was going fine. The pooled figures were 0.6450 vs 0.5650 and
+        Flash-Next was within an hour of being recorded as an 8-point REGRESSION. Re-run
+        over the same pinned 200 items at max_tokens 4096 it scores 0.7500 with 5
+        truncated -- roughly 10 points AHEAD. The whole 18.5-point swing was the
+        instrument. A cap that silently favours terse models is not a quality gate.
+      method: >
+        epyc-inference-research/scripts/benchmark/architect_bench_cpu_truncation_audit.py,
+        or any reader of per_question.jsonl that counts `truncated` and reports
+        untruncated-only accuracy alongside the pooled figure.
+      caution: >
+        Raising the cap is only legitimate once the truncated rows are shown NOT to be
+        degenerate. Check for repetition (a repeated n-gram shingle) before raising: a
+        genuine long derivation converges as the cap rises, a repetition loop never will
+        and no cap reaches zero. The 2026-09-23 rows were verified non-degenerate (top
+        repeated 60-char shingle = 1) before the cap was raised.
     runner: >
       epyc-inference-research/scripts/benchmark/v7_quality_gate_runner.py
       --suites mmlu_pro gpqa --n 200 --seed 42 --endpoint chat
@@ -83,6 +115,17 @@ gates:
     recorded_v10:
       worker_general:   {mmlu_pro: {v9: 0.3600, candidate: 0.3750}, gpqa: {v9: 0.2513, candidate: 0.2564}}
       architect_critic: {mmlu_pro: {v9: 0.6350, candidate: 0.6450}, gpqa: {v9: 0.5692, candidate: 0.5692}}
+    # Every number above was recorded at max_tokens 64 WITHOUT a truncation count, so each
+    # is a lower bound of unknown tightness, and they are comparable to each other only to
+    # the extent the models are equally terse. They are kept as the historical record of
+    # what v9 and v10 were gated on -- they are NOT a baseline a future candidate should be
+    # compared against without re-running both sides under truncation_audit.
+    recorded_20260923_architect_critic_cap_sweep:
+      model: Qwen3.8-Flash-Next-UD-IQ4_XS
+      note: same pinned 200-item manifest, live-serving :8074, instrument_class=serving
+      mmlu_pro:
+        - {max_tokens: 64,   pooled: 0.5650, untruncated: 0.7140, truncated: 46}
+        - {max_tokens: 4096, pooled: 0.7500, untruncated: 0.7590, truncated: 5}
 
   serving_floor:
     required: true
