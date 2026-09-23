@@ -678,6 +678,20 @@ Global constraints:
   V4.1-free workload today, so decide its keep-gate workload set: a synthetic gather benchmark
   plus, once DS41-T1 passes, the real V4.1 serving surface. Second: DS41-K1, which admits the 28
   GLM-5.3 keeps into the champion so the port inherits them by rebase.
+- [ ] **AKX-P5a — add a `FORWARD` admission class for levers no graph can reach yet.** The existing
+  gate passes the engram op **vacuously**: every production workload is INERT, the TOUCHED set is
+  empty, and there is no non-inferiority row to compute — a pass that means nothing. Proposal
+  (from the B7b harness work, `/mnt/raid0/llm/tmp/ds41-engram-bench/FOLD.md` §6): a class distinct
+  from `INERT` ("on an executed path, provably not taken") for "**no graph in the tree can reach
+  this code**", admitted on **structural** evidence only — diff scope, additive with no enum
+  ordinal moves, `grep` proving zero emitters outside tests, unchanged digests, token-identity as
+  a positive control — with **no non-inferiority row required and none fabricated**, the synthetic
+  numbers recorded as a non-gating observation, and a **mandatory expiry**: the admission names its
+  consumer (INF-77 DS41-B7) and is re-screened as an ordinary keep the moment a graph emits the op,
+  or reverted if the consumer dies (the GLM-5.3 precedent). Cost: zero benchmark-window compute.
+  Say it plainly in the fold record — **the champion headline cannot move, because nothing reaches
+  this op**; a headline re-measure is a *control on the fold*, expected at the floor, and reading it
+  as "no cost" would be a bounded null with no fired-knob control.
 - [ ] **AKX-P4c — belief kernel write side.**
   - Census rows and blast-radius rows are verified structural findings. Filed 2026-09-15 as **SC81** in `vidya-belief-substrate-program.md`, with a candidate source row in `scripts/vidya/adapters/README.md` (CLAUDE.md: surface the wiring immediately, not at P0). Tick this item when SC81 lands with AKX-P0a.
   - Non-regression rows reuse the existing serving A/B archive/belief export (INF-73 "Aggregate serving gates feed the original archive and belief consumer").

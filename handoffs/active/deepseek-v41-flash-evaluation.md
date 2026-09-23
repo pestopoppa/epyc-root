@@ -186,6 +186,19 @@ indexer run on these paths. Every gain was measured **only** on
 Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238fb41a35106a551e73c8409dfb751ac`** (MIT, reusable with notice; the branch `ds4.1flash` named on the model card **does not exist**); vcruz `runtime/deepseek41` @ `5210c7c5`; official reference under `models/deepseek-ai/DeepSeek-V4.1-Flash/`.
 
 - [x] **DS41-B7a — Engram gather op implemented** (2026-09-23): `ggml_gather_rows_e4m3_e8m0` on `ak/lever/engram-gather-20260923` @ `f13ab7669` (pushed), +188-4. A **dedicated op**, not an I8 case in `get_rows`: no existing graph can reach it, so champion-foldability is provable by inspection. Row width from `ne[0]/33`, so 264 bytes is just `k=8`; scalar CPU forward on the existing row/column-chunk split; vectorization deliberately left as a measured lever. Unit test compares bit-exact against hand-computed magnitudes over three geometries and passes — **its own spot-check was wrong on first run** (asserted -1.0 at a column carrying +1.0); corrected, and both columns kept. A second commit `8df1b5cf2` refreshes a stale `GGML_OP_COUNT` assert in `ggml-rpc.h` (101 vs the tree's 103; it only compiles under `GGML_RPC`, so it had drifted silently). **Not yet measured, not yet folded.**
+- [x] DS41-B7b-prep — measurement harness ready 2026-09-23 (not yet run):
+  `/mnt/raid0/llm/tmp/ds41-engram-bench/` — a perf harness patch against the lever (`git apply
+  --check` passes), `run_gather_bench.sh`, `PROTOCOL.md`, `FOLD.md`. It mmaps a 64 GiB synthetic
+  table at production geometry with `POSIX_MADV_RANDOM`, gathers 48 random rows per iteration, and
+  reports min/p50/p90/p99/max and GiB/s — never a bare mean — across three arms over identical
+  bytes in identical order (the op, a memcpy-only gather, an f32 `get_rows` at the same row
+  stride), with major/minor fault deltas and a `mincore` residency sample as witnesses. Cold is
+  `posix_fadvise(DONTNEED)` on that file only, not a global flush (unprivileged, and a global
+  `drop_caches` is refused while a region claim is held, so any flush must precede the claim). The
+  driver exports the canonical OMP/affinity/NUMA stack, verifies ggml linkage fail-closed, and
+  holds a CPU region claim per rep. **This is not llama-bench and carries no protocol id**, so its
+  output is an OBSERVATION, never a serving claim; the floor is a calibrated A/A at unit=process,
+  n=24 with an interval. ✅ 2026-09-23
 - [ ] **DS41-B7b — measure and fold the engram op into the champion** (**AutoKernel champion deliverable** — see *Kernel work
   rides the champion*; author it model-agnostically and fold it into the champion, do not leave it
   in the port branch).** The artifact ships `blk.{1,14}.engram_embd.weight` as
