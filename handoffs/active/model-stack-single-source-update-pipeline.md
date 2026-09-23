@@ -590,3 +590,49 @@ supplies the value under test cannot fail on it.
   next restarts. Raise the model-load log verbosity permanently in the launcher so the decomposition
   is in the log of every GPU role from the moment it starts. A capacity model that cannot be checked
   against the kernel's own numbers is a model nobody can falsify. **Blocker: none.**
+
+- [ ] **SSU-F11 — the registry's `recipe:` block is DECORATIVE: nothing reads it, and the served
+  process runs a hardcoded parallel configuration.** Root-caused 2026-09-23 while chasing SSU-F7's
+  two missing env knobs on `:8074`. The knobs are only the visible edge.
+
+  **The measurement.** `architect_critic` declares, in `model_registry.yaml` under
+  `recipe: {recipe_id: qwen38-flash-next-cpu-mtp}`: `threads: 48`, `cpu_shape: NUMA_FULL_T48`, and
+  `env: {GGML_NOHUGEPAGE_PROCESS: '1', GGML_FA_SPLIT_KV: '0'}`. The live process (pid 2021760) runs
+  `-t 96`, and its `/proc/<pid>/environ` contains `GGML_IQK=1` and the four OMP vars and **none of
+  the declared knobs**. `no_mmap`, `-ctk/-ctv f16` and `--spec-draft-n-max 4` do match — but they
+  match because the *launcher* and the `acceleration:` block independently say so, not because
+  anything consulted `recipe:`.
+
+  **Why: there is no reader.** `grep` for any consumer of `recipe.env` across `scripts/` and `src/`
+  returns **zero hits**. `build_launch_env()` (`scripts/server/stack_env.py:258`) composes its env
+  from a base copy, a canonical OMP block, and `_role_env_overrides()` — which reads
+  `_ROLE_ENV_BLOCKS`, a **hardcoded dict in that file**. For `architect_critic` that dict holds
+  exactly `{'GGML_NUMA_REPACK_INTERLEAVE': '0'}`, and not one of the eight role blocks mentions any
+  of the three recipe knobs. `GGML_IQK=1` is live because it is a launcher default, not because the
+  recipe asked for it — which is precisely why this looked like it was working.
+  `cpu_shape: NUMA_FULL_T48` has no definition in `stack_numa.py`, which is why the thread count
+  falls through to 96.
+
+  **Why it matters beyond hygiene.** `GGML_NOHUGEPAGE_PROCESS=1` is **CHAMP-2, ADOPTED 2026-09-08 by
+  operator ruling** (`model_registry_full.yaml:1758` says so in its own comment), it is a
+  SESSION-unit knob that must be exported AT LAUNCH, and it is not being exported. An adopted,
+  operator-ruled optimisation is not reaching production and nothing detects that.
+  **State direction only, never a magnitude**: `qwen38_flash_next_recipe.py` sets
+  `THP_SHIM["magnitude_claimed"] = False` deliberately, and the 86.4% figure in that module's tests
+  is about conflating the two THP knobs discarding most of the CHAMPION, not about this shim's own
+  effect. Do not quote it as the shim's value.
+
+  **Fix shape** — the same one SSU-F8 used, and for the same reason: derive, then make disagreement
+  detectable. Have `build_launch_env()` read `recipe.env` from the registry, with `_ROLE_ENV_BLOCKS`
+  either removed or reduced to a documented override layer; resolve `cpu_shape` against
+  `stack_numa.py` and FAIL on an undefined shape rather than silently falling through to a default;
+  and add "the served process's env and thread count equal its declared recipe" as a surface in
+  `scripts/validate/check_shared_with_derivations.py`, which is now the established home for exactly
+  this check. A declared recipe that nothing reads is not a source of truth, it is a comment.
+
+  **Carry this into any claim measured on `:8074`.** The architect CPU quality gate runs against
+  this process, so its rows are `instrument_class: serving` AND the served configuration is not the
+  recipe's — `-t 96` where the recipe measured `-t 48`, without the THP shim. The recipe's recorded
+  43.281 t/s decode was measured at `t=48` WITH the shim on the champion build, so it cannot be
+  expected to describe this process, and the two must never be quoted against each other.
+  **Blocker: none.**

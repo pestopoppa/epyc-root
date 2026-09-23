@@ -2605,7 +2605,7 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   non-degenerate. Verified the required-gate set is unchanged (the sub-gate is nested under
   `quality`, so `package.sh`'s top-level enumeration does not see it as a seventh gate).
 
-- [ ] **SSU-F7 — the live `:8074` process is missing two env knobs its own registry recipe declares.**
+- [x] **SSU-F7 — the live `:8074` process is missing two env knobs its own registry recipe declares.** **ROOT-CAUSED 2026-09-23, and it is larger than two knobs — see SSU-F11.**
   `GGML_NOHUGEPAGE_PROCESS=1` and `GGML_FA_SPLIT_KV=0` are in `recipe.env` for architect_critic but absent
   from the running process's environ (verified 2026-09-23). One of them is the THP shim. The served process
   is not running its own recipe, and nothing detects that. Decide whether the recipe or the launcher is
