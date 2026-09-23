@@ -173,6 +173,7 @@ coordination/session-bus/tokens/token-queue.md
 coordination/session-bus/tokens/unblock.md
 coordination/session-bus/tokens/unblock.pins.json
 logs/.current_session
+logs/.current_session.*
 
 # --- P0-7 / D5 (2026-08-16): the bus runtime lives OFF-TREE ---------------
 # Runtime data now lives at /mnt/raid0/llm/bus-runtime/. What remains here are

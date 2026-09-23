@@ -27,14 +27,18 @@ AGENT_LOG_DIR="${LOG_DIR}"
 _AGENT_LOG_SHARD_ID="${AGENT_ID:-unattributed}"
 _AGENT_LOG_SHARD_ID="${_AGENT_LOG_SHARD_ID//[^A-Za-z0-9_.-]/_}"
 AGENT_LOG_FILE="${AGENT_LOG_DIR}/agent_audit-${_AGENT_LOG_SHARD_ID}.log"
-unset _AGENT_LOG_SHARD_ID
 # Legacy monolithic log: frozen (no longer written) as of the shard cutover,
 # kept on disk for pre-cutover history. It is gitignored and untracked since
 # f1717d80, so a checkout that moves past that commit loses it; recover it with
 # `git show f1717d80^:logs/agent_audit.log`. Readers still see it via
 # agent_log_files/agent_log_merged (agent_audit*.log glob), never via this var.
 AGENT_LOG_LEGACY_FILE="${AGENT_LOG_DIR}/agent_audit.log"
-AGENT_SESSION_FILE="${AGENT_LOG_DIR}/.current_session"
+# Per-agent session-id file (KB-WM-5): one shared file let concurrent agents
+# log under each other's session id and delete it for everyone.
+AGENT_SESSION_FILE="${AGENT_LOG_DIR}/.current_session.${_AGENT_LOG_SHARD_ID}"
+unset _AGENT_LOG_SHARD_ID
+# The legacy shared logs/.current_session is never read or deleted here: it
+# would hand this agent a foreign session id.
 
 # Ensure log directory exists
 mkdir -p "$AGENT_LOG_DIR"
