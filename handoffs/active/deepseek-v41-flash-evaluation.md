@@ -474,6 +474,17 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or
   re-fixture.
+- [x] DS41-C12 — **v10 folded-lineage fix reaches this campaign** ✅ 2026-09-23 (non-inference ROI session,
+  research `714777e4`, fast-forwarded into the shared research clone 20:3xZ). At v10
+  `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, so `candidate_record.build_candidate_record`'s old
+  "instrument parents == (production,)" rule was unsatisfiable: the FIRST CPU candidate of this campaign to
+  reach recording (`campaign.py:5011`) would have raised `ValueError("instrument commit is not the ratified
+  single-child of the production base")`. The shared `worktree.instrument_lineage_ok` now accepts the folded
+  identity and still requires the source to descend from production (`ebb68dc55` descends from v10
+  `ffc1bac82` — verified). Same fix in `live_controls` preflight. Nothing had hit it yet (run3 still in
+  batch 0; no lineage error anywhere under the campaign dir). The running batch process keeps its
+  already-imported modules; the next batch process loads the fix — no mid-process version mixing
+  (all three modules are imported at load time).
 
 ### C6 — Targets (operator, 2026-09-23) and the arithmetic behind them
 

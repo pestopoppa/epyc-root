@@ -536,7 +536,7 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       A/B and the checkout/stash shapes. ✅ 2026-09-15 — `strip_redirections()` removes redirections at the same early
       point as heredoc bodies, so no rule can disagree about what is command and what is plumbing; 15 new paired
       tests. Hit live three times this session before it was fixed.
-- [ ] **NIB2-73b** (MED): **the lean registry must be recompiled and the priors re-pinned when the shared research
+- [x] **NIB2-73b** ✅ 2026-09-23 — done by the K4 `stack_change_pipeline update` (orch `3c6721ef`): lean registry "content fresh vs master", descriptors/priors/summary regenerated and committed together; the descriptor "drift" was symlink path spelling only. The check's 4 remaining errors are the `architect_critic` / `qwen38_flash_next_ud_iq4xs_local` strict known gaps — a REAL gap (no critic-suite quality run has ever been made on that model; `58b115ed` deliberately kept general-suite mmlu_pro/gpqa out of `quality_score`). Closing it needs an inference run. (MED): **the lean registry must be recompiled and the priors re-pinned when the shared research
       clone is next synced.** The compiler reads master from `/mnt/raid0/llm/epyc-inference-research`, which is ~298
       commits behind, so today's ledger is NOT yet in the compiled lean view and the pinned registry hash still
       matches (gate green). When that clone fast-forwards, the next `orchestrator_stack.py start` will compile the 8
@@ -660,7 +660,7 @@ Canonical sources (always verify status in these files first):
   **Not fixed here: it changes graph control flow on a path evals traverse, so it wants its own
   before/after test and the owning session's judgement on which reading is right.** Zero inference
   to verify (unit tests with a fake backend); zero compute.
-- [ ] **NIB2-81** (HIGH for the reaper instance, MED for the class): **a long-running daemon keeps executing the
+- [x] **NIB2-81** ✅ 2026-09-23 — remedy (a) (`daemon_provenance.sh`, above) and remedy (b): observer-registry `runtime` field (daemon mode: pidfile/expected_path/provenance; scheduled mode: log/max_age_s for cron-ticked targets), `observer_census.py --live` read-only /proc census (running_current / running_stale / running_off_canon / not_running / cannot_tell / scheduled_current / scheduled_stale) feeding `alarm_channel`, and `bus_supervisor.sh` restarting `restart_on_stale` rows (only the reaper) by own-pidfile identity, TERM→KILL, rate-limited. Live census 2026-09-23: reaper running_current, hub_supervisor + fleet_watch scheduled_current, **bus_supervisor not_running since 2026-09-20** (so neither the coordinator-daemon H-4 nor the new restart path is active until it is relaunched). (HIGH for the reaper instance, MED for the class): **a long-running daemon keeps executing the
   script inode it was launched with, so a committed fix never reaches it.** Investigated 2026-09-17 (read-only
   `/proc` census, no name patterns, nothing signalled): full report at
   `tmp/daemon-staleness-20260917/report.md`. **Three shapes, all live on this host:**

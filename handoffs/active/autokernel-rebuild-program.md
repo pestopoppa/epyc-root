@@ -630,7 +630,7 @@ failure mode this program exists to end.
         on first run — it laundered a collection error into a plausible "93 collected" (pytest
         prints the count on the same line as ", 1 error"), and its own test module had a
         cwd-dependent import. CI is green on research `main` with real counts in the log.
-  - [ ] P7.3 — **`test_experiments.py` silently depends on cwd.** It imports only from the repo
+  - [x] P7.3 ✅ 2026-09-23 — research `77b75dae`: `scripts/kernel_rnd/conftest.py` puts the repo root on `sys.path`; `test_experiments.py` 44/44 from both cwds (was 4 failed from kernel_rnd). **New finding:** `autokernel/controller` + `autokernel/execution` are NOT green from either cwd — identical 78 failed / 10 errors / 2279 passed from the repo root and from kernel_rnd, so the "CI is green from the root" premise below is stale; those failures are pre-existing and owned by this program. — **`test_experiments.py` silently depends on cwd.** It imports only from the repo
         root, so 4 `MemorySurvivesADeployment` tests fail with
         `ModuleNotFoundError: No module named 'scripts'` when pytest runs from
         `scripts/kernel_rnd`. CI is green only because it happens to run from the root. Add a
