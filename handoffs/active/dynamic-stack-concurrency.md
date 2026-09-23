@@ -147,10 +147,12 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
 
 ## Research Intake Update — 2026-08-21 (Stage-2b, intake-1274#record / intake-1279#record)
 
-- [ ] **K4 (Z) — the frontdoor's `-ub 8192` is silently inert.** `cparams.n_ubatch = std::min(cparams.n_batch, n_ubatch)`
+- [x] **K4 (Z) — the frontdoor's `-ub 8192` is silently inert.** `cparams.n_ubatch = std::min(cparams.n_batch, n_ubatch)`
       and `-b` is never passed, so the effective micro-batch is the **2048 default**. Either pass
       `-b 8192` or drop the flag — as it stands the launch config misrepresents itself, and any
       reasoning that assumes an 8192 ubatch is wrong. Independent of everything else here; fix regardless.
+      ✅ 2026-09-23 — epyc-orchestrator `3cb53971` + regenerated chain `3c6721ef`: manifest declares `default_ubatch_tokens: 2048` (the value llama.cpp was already clamping to — no effective change), `_warn_if_ubatch_exceeds_batch` on all three builders, 11 tests. `-b 8192` (a real change) stays a measurement question.
+- [ ] **K4a — the research master still declares `server_defaults.ubatch_size: 8192`** (mirrored into orch `model_registry.yaml:46` / `_full.yaml:490`). No code reads it today, so it is informational drift, but it restates the inert value; set it to 2048 in the master and recompile (SSU owns the master registry).
 - [ ] **G4 (G) — measure our actual post-restore prompt-reuse rate.** We call
       `/slots/{id}?action=save|restore` for full↔quarter slot migration (`llama_server.py:1242,1268`;
       `concurrency_aware.py:126,148`). Upstream issue #25913 (open, verified on master) reports restore

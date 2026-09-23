@@ -977,6 +977,7 @@ The single exception is already instrumented, zero-inference, and report-only, s
       check on the llm_judge path. Tests: a role name resolves; an unknown family blocks or labels; the judge
       path is covered. EV-6 ✅ 2026-04-15 shipped the permissive default as design; this supersedes it.
       (intake-1367#record; intake-1377#record; intake-875 already shows cross-family is a partial defense.)
+- [ ] **EV-6c — give llm_judge a non-Qwen judge.** Since EV-6b every llm_judge row is labelled `same_family` (default judge `architect_general` = Qwen3.8-27B; every served generator is Qwen): 3,806 pool items (physreason, zeroscrolls, leval, physics) are judged in-family. Choose a non-Qwen judge role (operator model choice; inference to validate), then re-baseline those suites.
 - [ ] **EV-16 (S3-EV-02) — judge-validity gate before AUTOPILOT_RUBRIC_JUDGE_ROLES is enabled for any run
       whose scores reach the quality axis.** Run a controlled-perturbation check on deep_research_* answers
       with the intended judge role: localized faithfulness / evidence-omission / fabrication edits, scored

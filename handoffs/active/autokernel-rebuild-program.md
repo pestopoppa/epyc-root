@@ -636,6 +636,7 @@ failure mode this program exists to end.
         `scripts/kernel_rnd`. CI is green only because it happens to run from the root. Add a
         `conftest.py` with a `sys.path` insertion so the suite is location-independent.
         (epyc-inference-research.)
+  - [ ] P7.3a — **triage the 78 failures / 10 errors in `autokernel/controller` + `autokernel/execution`** (identical from the repo root and from `scripts/kernel_rnd`, research `77b75dae`, measured 2026-09-23). CI cannot be green on these suites; classify stale fixtures vs real defects before the next campaign relies on them.
   - [ ] P7.4 — **THE LOC BUDGET IS NOW BINDING: 3400 of 3400, zero headroom** (was 3218/3400;
         `c39ecc43`'s promotion A/A guard consumed the rest). Verified by running the counter:
         `loop package: 3400 LOC across 15 files (budget 3400)`, `0 guard violation(s)` — **the

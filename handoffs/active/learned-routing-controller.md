@@ -204,6 +204,7 @@ routing classifier's own training labels, and skill-bank effectiveness.
       *observation #1* while its `q_value` has been refined thousands of times. Decide: update
       `outcome` alongside `q_value`, or formally demote `outcome` to "first-observation sign" and
       stop treating it as a label.
+  - [ ] EPD-1b — **(operator-gated, live store)** backfill historical labels: `UPDATE memories SET outcome = CASE WHEN q_value > 0.5 THEN 'success' ELSE 'failure' END WHERE update_count > 0`. Until then rows never updated again keep their first-observation label; EP-5 should filter to rows updated after 24b43990 or run after the backfill.
 - [~] **EPD-2 — OVERSTATED, largely withdrawn 2026-07-27.** The original claim was that `failure`
       conflates errors with cost penalties on correct answers (`reward <= 0 -> failure`, with reward
       carrying latency / escalation −0.15 / delegation-misattribution −0.10 penalties). Adversarial
