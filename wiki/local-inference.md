@@ -2,8 +2,77 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-09-18 (TD-1d re-measured at n=4: id-only 9.60x not 11.98x, the `inference_lock` serialization and the SSM checkpoint-quantized prefix reuse behind fan-out losing, `/v1` dropping `grammar`); 2026-09-17 (wrap-up sweep: the typed-decision worker-measured readout — id-only cue 11.98x at 15/16 agreement, batched fan-out 2.2x at 87.5%, and the llama-server multi-slot readout limit; sources: typed-decision-plane final rounds, the intake session record, vidya VB-TDP-1); 2026-09-17 (research-intake delta: PAW compiled specialists on the frozen v9 stack, the license-scope ruling, and the honest local one-pass speedup; incremental: rtx6kpro steals measured: p-min no-op on DFlash2, longest block wins, A/A noise absent at temp 0, RNG lead ruled out, steps/s only estimated); earlier: 2026-09-08 (the rtx6kpro intake — a same-class 96 GB single-GPU local-inference field wiki read for stealable hypotheses: p-min sweep, steps/s keep gate, long-context + sustained-C8 cells, A/A losslessness control, the RNG-entanglement lead, and the contradictions/non-transferables vs our record; earlier 2026-07-31 note: adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
-**Sources**: 45 documents (added 2026-09-18: the TD-1d re-measurement record, typed-decision-plane TD-1d.0–1d.4) (added 2026-09-17 wrap-up sweep: typed-decision-plane TD-1b/1c/1d/TD-3b, the intake session record, and vidya VB-TDP-1) (added 2026-09-17 research-intake: paw-compiled-specialists, typed-decision-plane, vidya-belief-substrate VB-TDP-1, and the intake session record) (added 2026-09-17: dflash2 handoff, sub-akfix, sub-gpu-prep, gpu-candidates)
+**Last compiled**: 2026-09-23 (DeepSeek-V4.1-Flash decodes on this stack: the `deepseek41` port off the v10-equal champion, the HF-key alias table, the lagged hyper-connection mix and `attn_factor`=1.0, Engram's 48 random rows/token, and the first canonical sweep — prefill 96 threads, decode 48); 2026-09-18 (TD-1d re-measured at n=4: id-only 9.60x not 11.98x, the `inference_lock` serialization and the SSM checkpoint-quantized prefix reuse behind fan-out losing, `/v1` dropping `grammar`); 2026-09-17 (wrap-up sweep: the typed-decision worker-measured readout — id-only cue 11.98x at 15/16 agreement, batched fan-out 2.2x at 87.5%, and the llama-server multi-slot readout limit; sources: typed-decision-plane final rounds, the intake session record, vidya VB-TDP-1); 2026-09-17 (research-intake delta: PAW compiled specialists on the frozen v9 stack, the license-scope ruling, and the honest local one-pass speedup; incremental: rtx6kpro steals measured: p-min no-op on DFlash2, longest block wins, A/A noise absent at temp 0, RNG lead ruled out, steps/s only estimated); earlier: 2026-09-08 (the rtx6kpro intake — a same-class 96 GB single-GPU local-inference field wiki read for stealable hypotheses: p-min sweep, steps/s keep gate, long-context + sustained-C8 cells, A/A losslessness control, the RNG-entanglement lead, and the contradictions/non-transferables vs our record; earlier 2026-07-31 note: adds the ggml-linkage landmine: `LD_LIBRARY_PATH` ordering silently loads the frozen production CPU-only ggml into fresh HIP builds, producing full-CPU runs that self-report `use gpu = 1`; every future ggml build on this host is exposed; earlier 2026-07-20 note: adds the deployed-lane throughput table, the living model-probe scoreboard + stop-list, and the CPU-prefill local lever; earlier 2026-07-19 note: adds v7 promotion boundary, GLM reviewer residency decision, and post-promotion P-GPU-1 certification)
+**Sources**: 47 documents (added 2026-09-23: deepseek-v41-flash-evaluation, the 2026-09-23 main-dsv41 and main-kernel progress logs) (added 2026-09-18: the TD-1d re-measurement record, typed-decision-plane TD-1d.0–1d.4) (added 2026-09-17 wrap-up sweep: typed-decision-plane TD-1b/1c/1d/TD-3b, the intake session record, and vidya VB-TDP-1) (added 2026-09-17 research-intake: paw-compiled-specialists, typed-decision-plane, vidya-belief-substrate VB-TDP-1, and the intake session record) (added 2026-09-17: dflash2 handoff, sub-akfix, sub-gpu-prep, gpu-candidates)
+
+## Compiled Update — 2026-09-23: DeepSeek-V4.1-Flash decodes on this stack — and two deltas that would have been silently wrong
+
+**Confidence: verified** for the port state, the commits and the throughput sweep (canonical CPU recipe,
+`taskset -c 0-95`, `numactl --interleave=all`, OMP stack, `GGML_IQK=1`, `-fa 1 -mmp 0`, binary
+`experimental/deepseek41-port-20260923` @ `7c18bb8c1`, build 10303, `DeepSeek-V4.1-Flash-Q4.gguf`
+482.97 GiB). The numbers are `llama-bench`, so **observation-grade**: no protocol id, np=1, no drafter.
+
+### Key findings
+
+- **The port exists and it decodes.** Branch `experimental/deepseek41-port-20260923` @ `7c18bb8c1`, cut
+  off the AutoKernel champion `ak/champion/llama-cpp-ffc1bac82eec` — which is exactly
+  production-consolidated-v10 `ffc1bac82`, so the freeze was never touched. Four commits: arch + KV
+  adapter, the engram gather op, engram hashing/state/injection, the V4.1 graph. `The capital of France
+  is` → ` Paris. In the course of history,` (greedy, seed 42).
+- **`deepseek41` is not `deepseek4` with new numbers.** Its GGUF carries **raw HF config key names**, so
+  generic `load_hparams` fails before any V4.1 code runs and a per-arch **alias table** is required;
+  `compress_ratios` are {0,1,2} where our loader admitted only {0,4,128}; compressor and indexer tensors
+  exist on the **source layers only**; `rope_scaling.rope_type` is absent, so the generic reader silently
+  defaulted to *linear* and had to be forced to YARN. No per-block name compat map was needed after all —
+  all 36 names match, only presence differs. `build_arch_graph` **deliberately aborts** rather than
+  inherit V4's graph, which would have run plain SWA with compressor/indexer/engram never built.
+- **Two silent-wrongness deltas, caught by reading DeepSeek's reference and `antirez/ds4` instead of
+  inheriting.** (a) The hyper-connection pre-mix is **lagged one sublayer** — and that is *why*
+  `output_hc_*` is absent from the weights: the head reuses the last block's leftover mix, so the missing
+  tensor is a consequence of the lag, not an unspecified collapse. (b) `attn_factor` must be **literally
+  1.0**; inheriting V4's value would have been a logit-scale error on 38 of 40 layers. Neither would have
+  raised an error — both would have produced plausible, wrong logits.
+- **Engram is the shape of the problem.** 188.83 GiB of conditional memory stored as GGML `I8`
+  (264-byte rows: 256 E4M3 + 8 E8M0), addressed by a bit-exact hash the GGUF itself ships, at
+  **48 rows per token** = ~12.4 KB of random reads on the decode critical path with zero prefetch depth
+  (the 4-gram suffix ends at the token just sampled).
+- **The artifact has no drafter.** `num_nextn_predict_layers=3` is the 3-block **DSpark** drafter, not
+  three next-token heads; antirez's converter omits every `mtp.*` tensor (1046 tensors, `blk.0-39`,
+  zero `mtp.*`), and vcruz's GGUF strips it too. The official shards 44-46 (~8 GB) carry it, and the
+  accept/verify loop **does not exist even in DeepSeek's own release**.
+
+### First canonical throughput, and the operating point
+
+| test | t=24 | t=48 | t=64 | t=96 | t=192 |
+|---|---|---|---|---|---|
+| pp512 | — | 137.03 | 137.66 | **144.03 / 145.80** | 104.09 |
+| tg128 | 12.89 | **13.18** | 12.90 | 12.74 / 12.81 | 4.99 |
+| tg512 | — | **11.70** | — | 10.59 | — |
+
+**Prefill wants 96 threads, decode wants 48** — on a server that is `--threads 48 --threads-batch 96`.
+Both phases collapse at 192 (SMT siblings; decode −61%). Placement was proven **in-window**: four samples
+on the live process, resident 47.6 → 187.8 GiB, **25.0% on each of the four NUMA nodes at every sample**.
+The t=96 columns are two independent runs in one sweep and double as a repeatability control (0.5% on
+tg128, 1.2% on pp512).
+
+### Open questions
+
+- Engram residency: v10 already auto-registers >4 GiB tensors as lazy mmap ranges with
+  `POSIX_MADV_RANDOM` — does that approximate antirez's 16-reader `pread` design for free? Measure
+  page-fault cost per decode step, **major vs minor**, before choosing (DS41-B9).
+- Sparse attention disposition (dense mask vs real gather) and the top-k / candidate-block cap semantics
+  are unmeasured here; vcruz's branch is still a mask, ours is a gather (DS41-T2).
+- Reference parity (T3) is open, including F32-vs-bf16 rounding; the official harness is a TypeScript
+  agent framework and **not** a usable parity instrument.
+
+### Source References (2026-09-23)
+
+- [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — INF-77:
+  artifact identity, the B10 KV-adapter corrections, B7/B8/B9 Engram scope, B13 DSpark, the T6 sweep.
+- [2026-09-23 — main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md) — the four port commits, the
+  decode smoke, the operator max-performance directive and the `-t 48` preliminary recipe.
+- [2026-09-23 — main-kernel](../progress/2026-09/2026-09-23-main-kernel.md) — the champion
+  fast-forward review that fixes the branch point (`ffc1bac82` → `8df1b5cf2`).
 
 ## Compiled Update — 2026-09-18: the id-only readout re-measured at n=4, and two mechanisms behind fan-out losing on this GPU
 

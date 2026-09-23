@@ -255,7 +255,14 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
   by the weights; (b) `attn_compressor_gate` exists on layers {2,8,14} but **not on layer 20**
   (ratio 1), so layer 20's compressor is an ungated projection; (c) ratios 1/2 vs our 4/128 change
   the pooling factor and therefore the DSv4 cache geometry.
-- [ ] **DS41-B13 — DSpark drafter (the spec-dec path), separately.** DSpark **does exist for this
+- [~] **DS41-B13 — DSpark drafter: IN PROGRESS 2026-09-23** (operator: wire it in). Official shards
+  44-46 downloading (~8 GB); the tied `embed`/`head`/`norm` live in shards 2 and 43 and are **not**
+  being downloaded — they come from the GGUF we already serve, saving ~21 GB. Conversion and runtime
+  are being built in parallel (`/mnt/raid0/llm/tmp/ds41-dspark-convert/`,
+  `/mnt/raid0/llm/tmp/ds41-dspark-runtime/`). The runtime must carry acceptance-rate instrumentation
+  (accepted/proposed per position) so the campaign measures alpha instead of assuming it. Original
+  scope:
+- [ ] **DS41-B13 (scope) — DSpark drafter (the spec-dec path), separately.** DSpark **does exist for this
   model**: the official checkpoint ships 2,401 `mtp.*` tensors in shards 44-46 (~8 GB) and
   `inference/model.py:1032-1156` implements it — a 3-block draft transformer over a **5-token
   block, bidirectional in-block**, own 128-expert/top-3 MoE, rank-256 Markov bias and a confidence
@@ -272,6 +279,94 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
   row writes that fire only when a group completes, and the n-gram hash state. The accumulators
   cannot be undone by rewinding a counter — the pre-step slot values must be saved. A naive port of
   `llama_kv_cache_seq_rm` corrupts them silently. This is the precondition for DS41-T4.
+
+### C — AutoKernel campaign (operator-directed 2026-09-23)
+
+*"Start an autokernel routine to improve everything about the champion kernel running this model on
+CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec decode in the recipe**.
+
+- [x] DS41-C0 — **Preliminary canonical recipe fixed at `-t 48`** (operator: decode matters more
+  than prefill). Basis: tg128 13.18 @48t vs 12.74/12.81 @96t; tg512 11.70 @48t vs 10.59 @96t;
+  pp512 144-146 @96t vs 137.0 @48t. Prefill keeps 96 where a tool supports the split
+  (`--threads-batch`); llama-bench does not. ✅ 2026-09-23
+- [x] DS41-C1 — **Codified 2026-09-23**, research `2c68bc1a`: `scripts/lib/deepseek_v41_flash_recipe.py`
+  on the qwen38 sibling precedent, inheriting the canonical prefix/OMP/IQK/pre-evict/placement-proof
+  with `assert_inherits_canonical()` proving no fork; 23 contract tests pass. Category **CANDIDATE,
+  not OPTIMUM**. Every `SPEC_DEC` field is present and `None` with an explicit `flips_on`, and
+  `build_serve_command()` **refuses by default** unless the caller passes `spec_dec=False`, so the
+  unmet max-performance requirement surfaces at the call site instead of silently. **The thread
+  split cannot be expressed by the bench path**: `llama-bench` parses only `-t` and calls
+  `llama_set_n_threads(ctx, n, n)`, and the autokernel serving path raises on `-tb != -t` — only a
+  direct `llama-server`/`llama-cli` launch can carry 48/96, so a bench pp512 row is not this
+  recipe's served prefill rate. ✅ 2026-09-23
+- [x] DS41-C2 — **Campaign config prepared 2026-09-23** (`/mnt/raid0/llm/tmp/ds41-ak-config/`:
+  CONFIG/LIFECYCLE/LAUNCH/SPECDEC + three ready config files). Four findings:
+  1. **`gpt-6-sol` does not exist** — the model cache lists `gpt-5.6-sol`, `gpt-6-astra`,
+     `gpt-5.6-terra`, `gpt-5.6-luna`, `gpt-5.5`; zero occurrences of `gpt-6-sol` anywhere in either
+     repo, and no hosted fallback (`OPENAI_API_KEY` unset, the `openai` backend pinned to gpt-4o
+     with no live dispatcher). **Reachable gpt-6 is `gpt-6-astra`, effort `high`** → OPERATOR
+     DECISION (queued).
+  2. **Both actor swaps are CLI flags, not code**, on the unified loop plane (`loop/run.py:670-679`
+     exposes `--planner-model/-effort` and `--critic-model/-effort`). The sealed GPU
+     `discovery_controller` cannot host a CPU campaign at all (roster exact-equality,
+     `ALLOWED_DEVICE_IDS={"mi210_0"}`). Planner needs no source change either: add an
+     openai-compatible provider at `http://127.0.0.1:8074/v1` in the opencode config. Smoke-test
+     first that the local model holds the structured-output contract.
+  3. **Lifecycle: NO — the loop cannot touch :8074.** Every kill targets a `Popen` handle, a
+     `start_new_session` pgid or an owned cgroup leaf; the ban on name-pattern signalling is
+     enforced by four AST auditors plus a regression test, not convention. Zero `orchestrator_stack`
+     call sites, zero `drop_caches`/`munlock`/pre-evict code. The server also runs `--mlock
+     --no-mmap`, so its weights are unevictable. The guarantee is structural — there is no knob
+     because there is no path.
+  4. **The blocker is the inverse of the question**: `competing_inference_witness()` classifies any
+     UNOWNED `llama-server` as competing and **raises**. :8074's parent is a containerd shim, so it
+     is outside every owned scope and there is no allowlist parameter. **The server is safe; the
+     campaign is blocked.** → OPERATOR DECISION (queued). ✅ 2026-09-23
+- [ ] DS41-C2b — Resolve the competing-inference block, then launch: `--surface tg128` (the default
+  is `pp512` and MUST be overridden), `--confirm-surfaces dec-b4,dec-b8`, `-t 48`, cpu_list 0-95,
+  np 1. There is no `tg512` surface. `Recipe` carries one `threads` field, so pp512 rows from this
+  target are off-optimum and must not be reported as prefill results — prefill is a second target.
+- [ ] DS41-C3 — **The campaign measures the spec-dec-on surface**, not today's no-drafter decode.
+  Blocked on DS41-B13. The schema already supports it (`TargetSpec.speculation` ∈
+  `{none,self_draft,external_draft}` + `drafter_ref`; `spec_decode:{type:"draft-mtp",…}` →
+  `-md/-ngld/--spec-type/--spec-draft-n-max`, `draft_n_max: 5` from DSpark's block). The target
+  declares `speculation` from day one so no interim number can be mistaken for a spec-dec result,
+  and the drafter lands as a **second target**, not an edit. **Biggest unverified assumption:**
+  whether `--spec-type draft-mtp` can drive an *external* DSpark-shaped drafter at all — it was
+  built for self-drafting heads and may need a new speculation type plus a server path.
+- [ ] DS41-C4 — **Engram profiling: designed and prepared 2026-09-23**
+  (`/mnt/raid0/llm/tmp/ds41-engram-profile/`, two patches, `git apply --check` clean against
+  `7c18bb8c1`; not applied yet because the DSpark runtime patches land on the same files first).
+  Split so the op keeps no `deepseek41` symbol: op-side counters keyed by the *table address*
+  (champion), engram-side counters in `llama-dsv41-engram.*` (port), joined at run time by `dlsym`
+  so `libllama` gains no dependency on the CPU backend; an op slot maps to a layer by row count, so
+  the model file needs no edit.
+  **Level 1 is ~0.013% of a 78 ms token**: calls, rows, bytes, thread-0 span + log2 histogram, host
+  hashing time, the decode-step wall as denominator, plus per-layer distinct rows, repeat-of-previous
+  and a simulated row cache at 4K/64K/1M/4M rows. **Level 2 (~0.2-0.5%/token) attributes minor vs
+  major faults** per thread via `getrusage(RUSAGE_THREAD)`, and the artifact records `fault_source`
+  so a level-1 zero can never be misread as "no faults".
+  **The first number: gather share of the decode step.** 48 resident random reads cost ~4.8 us
+  (0.006% of a token); 48 major faults cost ~4.8 ms (~6%). So if the share is under ~1%, **Engram is
+  exonerated and the whole lever table dies at once** — which is exactly the result worth getting
+  before a campaign spends its budget there.
+  **Already refuted without running anything: prefetch, for plain decode.** All 24 columns include
+  the token just sampled, so no column is knowable early; prefetch is reachable only behind
+  speculative decoding. Not measurable and deliberately not faked: a resident-row *hit* (residency is
+  only the absence of a fault, so re-hits undercount and can never become a hit rate), TLB/LLC/DRAM
+  traffic, and whether Engram explains the flat 24->96 scaling at all — that needs a comparison arm,
+  which is a protocol, not a counter.
+  Remaining scope: time in the gather vs the rest of the token, rows/bytes touched, **major vs minor page
+  faults** (disk vs page cache have opposite fixes), row-index distribution (does a cache pay?), and
+  a machine-readable per-run artifact split by layer (1 and 14 differ). Prepared under
+  `/mnt/raid0/llm/tmp/ds41-engram-profile/`.
+- [ ] DS41-C4b — apply the profiling patches after the DSpark runtime lands, rebuild, and run an A/A
+  first: every overhead figure above is arithmetic, not measured. Note the phase classifier
+  (`n_tokens==1` -> decode) breaks once the 5-wide drafter lands, and the dlsym link surface is
+  untested.
+- [ ] DS41-C5 — Budget guidance for the loop: **decode is flat 24->96 threads**, so barrier and
+  dispatch levers cannot pay on this model. Point the campaign at the memory path (engram gather,
+  expert gemv), not at parallelism.
 
 ### T — Gates (translated from INF-69 T0-T4 / T0-SPEC / T15)
 
@@ -334,7 +429,16 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
 - [ ] DS41-T6b — repeat at claim grade once the operating point is fixed: unit=launch, n>=3, the
   noise floor with its unit, and a serving-shaped run (`llama-server`, np sweep) — llama-bench
   tg128 must never be quoted as a serving rate.
-- [ ] DS41-T6c — **defect in `bench_canonical.sh`**: its in-window placement sampler never fired on
+- [x] **DS41-T6c — FIXED 2026-09-23**, research `2c68bc1a`. Root cause, one line:
+  `read -r kids < "$f" || kids=""` — `/proc/<pid>/task/<tid>/children` has **no trailing
+  newline**, so `read` returns 1 at EOF *after* assigning and the `||` guard then threw the pid list
+  away. `largest_rss_descendant` therefore never enqueued a child, always returned the root subshell
+  (~2.3 MB), never cleared the 1 GiB floor, and the failure was swallowed by `|| true`. Region-lock
+  daemonizing, the `>(tee)` subshell, the floor and the RSS-stability condition were each checked
+  and **exonerated** — the walk would have found the binary on iteration one. Failure is now loud
+  (`placement.log.reason` with a diagnosis and descendant dump), and selection stays structural over
+  our own descendants: no `/proc` scan, no name pattern. ✅ 2026-09-23 — original:
+- [ ] DS41-T6c (original) — **defect in `bench_canonical.sh`**: its in-window placement sampler never fired on
   this model (no `placement.log`, no `.rc`) across five runs, so every canonical run self-reported
   as OBSERVATION. `largest_rss_descendant` walks `/proc/<pid>/task/*/children` from the wrapper
   chain (region-lock -> env -> taskset -> numactl -> llama-bench) and did not reach the binary;

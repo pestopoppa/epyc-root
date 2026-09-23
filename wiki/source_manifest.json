@@ -4,15 +4,30 @@
     "handoff-active": 169,
     "handoff-blocked": 2,
     "handoff-completed": 196,
-    "progress": 475,
+    "progress": 477,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-22T13:00:35Z",
-  "mode": "touch",
-  "scan_time": "2026-09-22T13:00:35Z",
+  "last_touch": {
+    "advanced": {
+      "added": 2,
+      "changed": 2,
+      "removed": 0
+    },
+    "at": "2026-09-23T11:45:28Z",
+    "scope_paths": [
+      "handoffs/active/autokernel-cross-workload-keep-gate.md",
+      "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "progress/2026-09/2026-09-23-main-dsv41.md",
+      "progress/2026-09/2026-09-23-main-kernel.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-23T11:45:28Z",
   "schema_version": 1,
-  "source_set_hash": "4f7bb3bfd32795641f5aa3a7da58b1a4af9da0be6648f1dcda53f8135b210f60",
+  "source_set_hash": "d1048497a3f005c7646f180130e29a6285e5b8b570a51b886cfdf9305d4e7b15",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -95,10 +110,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2f818c962b86cd75825e1beee6f449efe6a6efd213c8c1240981b7f24b1b095a",
-      "modified": "2026-09-22T12:56:02Z",
+      "content_hash": "960fef1b8cd9d84feadc2dc3989b5af6f82008e8f7ff863c99ebba7a9014f6d3",
+      "modified": "2026-09-23T11:40:28Z",
       "path": "handoffs/active/autokernel-cross-workload-keep-gate.md",
-      "size": 75051,
+      "size": 77057,
       "title": "AutoKernel Cross-Workload Keep Gate \u2014 census, blast-radius screen, multi-workload non-regression",
       "type": "handoff-active"
     },
@@ -327,10 +342,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "477086d118adf7a896ac536edb66910c566d254886eb8c7c18dac7203678a539",
-      "modified": "2026-09-22T12:56:02Z",
+      "content_hash": "20ec41bcde7558f44d31fcef803ed47cbf8e544d1be3fb95c239860818ff78b3",
+      "modified": "2026-09-23T11:44:11Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 16487,
+      "size": 43921,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -7871,6 +7886,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "8c2acfe7794739441630ced683a7f2305e38d5444a0fd31c59852dc13c45c125",
+      "modified": "2026-09-23T11:41:29Z",
+      "path": "progress/2026-09/2026-09-23-main-dsv41.md",
+      "size": 3772,
+      "title": "2026-09-23 \u2014 main-dsv41",
+      "type": "progress"
+    },
+    {
+      "content_hash": "43f3cba8c89faec7cd67b61007f72566879e489fc1aa900b137c7c8f5f85760a",
+      "modified": "2026-09-23T11:40:28Z",
+      "path": "progress/2026-09/2026-09-23-main-kernel.md",
+      "size": 14850,
+      "title": "2026-09-23 \u2014 main-kernel",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
       "modified": "2026-09-22T12:56:02Z",
       "path": "docs/coordination/session-bus-task-flow-STATUS.md",
@@ -8727,7 +8758,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1089,
+  "total_new": 1091,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

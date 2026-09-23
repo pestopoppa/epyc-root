@@ -30,6 +30,8 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-40 | **DeepSeek-V4.1 campaign critic model**: `gpt-6-sol` does not exist (cache lists gpt-5.6-sol, gpt-6-astra, gpt-5.6-terra, gpt-5.6-luna, gpt-5.5; no hosted fallback, OPENAI_API_KEY unset). Substitute **`gpt-6-astra` effort high**, or name another | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | 2026-09-23 |
+| OP-41 | **DeepSeek-V4.1 campaign is blocked by the competing-inference gate**: it classifies any UNOWNED `llama-server` as competing and raises, and :8074 (the requested planner) sits outside every owned scope with no allowlist parameter. Either (B) add a scoped, journalled pid allowlist — a source change that weakens a gate with INC-20260731 lineage — or (C) keep the default planner and stop :8074 for the window. The operator has said the stack stays up | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | 2026-09-23 |
 | OP-1 | P0.1–P0.3 sign-off bundle | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | 2026-07-11 |
 | OP-5 | Reviewer control-plane decision bundle (P-REV-1 amendment) | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-16 |
 | OP-6 | Consolidated quiet window — reviewer-plane baselines on the v8 reference lineup | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-17 |
@@ -79,7 +81,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 57 | 784 | 15 | 2026-07-29 |
+| inference-research | 57 | 789 | 15 | 2026-07-29 |
 | pipeline-integration | 5 | 71 | 1 | 2026-07-29 |
 | research-evaluation | 43 | 431 | 12 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
