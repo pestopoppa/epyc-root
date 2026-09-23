@@ -9,10 +9,23 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-23T17:39:49Z",
-  "mode": "touch",
-  "scan_time": "2026-09-23T17:39:49Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 2,
+      "removed": 0
+    },
+    "at": "2026-09-23T17:54:16Z",
+    "scope_paths": [
+      "handoffs/active/cpu-decode-roofline-program.md",
+      "handoffs/active/model-stack-single-source-update-pipeline.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-23T17:54:16Z",
   "schema_version": 1,
-  "source_set_hash": "172f279814a0e91fdecd8b2de0f4640884a048790bb1811cf725fc6549a1fd60",
+  "source_set_hash": "5e65e9e4bd1d65bc6374bd01068c805cfb35af8accc0d38d2aa453541a76695e",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -271,10 +284,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d70ee2a1a496e4a563ec2c583f3639719ee5e0e5ab92819aa14c36fd5172bc99",
-      "modified": "2026-09-23T17:23:05Z",
+      "content_hash": "979164234c8672bec6b2e5544c33047d65f3f40b25f886a06d202822e2fb1af7",
+      "modified": "2026-09-23T17:53:49Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 453534,
+      "size": 455172,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
@@ -807,10 +820,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "40ab7736abfa0660615d700df56dd4b7da8571090e0a8586bb82a2dd229018dc",
-      "modified": "2026-09-23T17:23:05Z",
+      "content_hash": "b7784085341e0f6b99704335d3c82f58ebb76ded7c4e2a7b681dc8f99df57c59",
+      "modified": "2026-09-23T17:50:27Z",
       "path": "handoffs/active/model-stack-single-source-update-pipeline.md",
-      "size": 48119,
+      "size": 48481,
       "title": "Model Stack Single-Source Update Pipeline",
       "type": "handoff-active"
     },
