@@ -640,7 +640,8 @@ The compile was then run against the correct 51 and the watermark advanced norma
         - Also fixed: stale comments and docs (`agent_log.sh`, `session_init.sh`,
           `WORKTREE_MIGRATION.md`).
         - `test_agent_log_merge_format.sh` gains 6 checks and passes 11/11.
-- [ ] **KB-WM-5 — `logs/.current_session` is one file shared by every agent** (filed 2026-09-17,
+- [x] **KB-WM-5 — `logs/.current_session` is one file shared by every agent** (filed 2026-09-17,
+      ✅ 2026-09-23 — epyc-root `c8dbb5d4`: session file sharded per AGENT_ID (`logs/.current_session.<id>`), legacy file left inert; 4-test two-writer suite.
       KB-WM-3 audit). Every writer puts its session id in the same `LOG_DIR` file
       (`scripts/utils/agent_log.sh`: `AGENT_SESSION_FILE`). Concurrent agents therefore log under
       each other's session ids, and `agent_session_end` deletes the file for everyone. Shard it per

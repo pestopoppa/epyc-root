@@ -288,7 +288,7 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
     `wiki/` is written by the serialized wrap-up, so fix it in the next compile.
 - [x] **OBS-3a** (LOW, follow-up 2026-08-23): add a mutation case to `scripts/nightshift/tests/test_inference_guard.sh` for "MemAvailable unreadable → `failed`" (awk-shim pattern as used in the OBS-3 fix scratch harness) — the existing suite predates the mem-channel fail-closed semantics. ✅ 2026-08-23 — mutation M-D added (PATH-shimmed `/bin/false` awk): asserts state=failed, RSS channel still measured 0 while failed, MEMAVAIL_GB=unknown, ACTIVE unset, "MEASUREMENT FAILED" wording, and no all-clear printed. Suite 15 → 21 passed; guard untouched.
 - [x] **NIB2-58b** (LOW, follow-up 2026-08-23): re-point `smoke_test_llama_v3.sh` / `prove_paged_attention.sh` binary paths from the extinct `build/bin` to the named experimental build dirs (`build-v9-cpu` / `build-v9-hip`) — operator-flagged convention change; the scripts currently fail fast with a clear message, which is correct behavior until then. ✅ 2026-08-23 — ground truth: `build-v9-cpu` is the only named CPU dir with the full binary set (llama-server/cli/bench/completion); both scripts re-pointed to it (CPU-oriented), verifier expected-roots updated; fail-fast preserved; live `verify_ggml_linkage.sh` runs on all four binaries PASS (exit 0).
-- [ ] **OBS-13** (MED, found 2026-08-30): **the wiki source scanner is blind in every lane worktree,
+- [x] **OBS-13** ✅ 2026-09-23 — closed by `0ea91f3e` (2026-09-08: scanner selects by content hash against the tracked `source_manifest.json`, never mtime); box was never ticked. (MED, found 2026-08-30): **the wiki source scanner is blind in every lane worktree,
   and its watermark is not shared.** `.claude/skills/project-wiki/scripts/compile_sources.py`
   selects sources with `md_file.stat().st_mtime > since` — filesystem mtime. In a lane worktree
   every file's mtime is the **checkout time**, which is later than any watermark, so the scan
@@ -395,7 +395,7 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
 - [ ] **NIB2-67** (LOW): **`cache/huggingface` 127G** — re-downloadable HF cache, all files touched
   <30d ago (in active use by sessions). Reclaim only when disk pressure returns; `pip`/`uv`/`dflash`
   caches also live under `cache/`.
-- [ ] **NIB2-68** (MED): **wiki compile watermark is per-worktree** — `wiki/.last_compile` (and the
+- [x] **NIB2-68** ✅ 2026-09-23 — closed by the same `0ea91f3e` (tracked manifest; `--touch` advances it). (MED): **wiki compile watermark is per-worktree** — `wiki/.last_compile` (and the
   manifest write) is gitignored, so a lane worktree never sees the shared clone's watermark: the
   scanner run from a lane reports the full-history backlog (919 phantom "new" sources measured
   2026-09-01 vs the true delta of 2), and a lane `--touch` would write a lane-local watermark the
@@ -541,10 +541,12 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       matches (gate green). When that clone fast-forwards, the next `orchestrator_stack.py start` will compile the 8
       entries into the lean file and the pin will mismatch — run `stack_change_pipeline.py update` and commit the
       regenerated descriptors/priors/summary in the same change. This is the standing master→recompile→verify flow.
-- [ ] **NIB2-74** (MED): **`scripts/benchmark/debug_scorer.py` runs code tasks with bare `python3` from PATH**, so
+- [x] **NIB2-74** (MED): **`scripts/benchmark/debug_scorer.py` runs code tasks with bare `python3` from PATH**, so
+      ✅ 2026-09-23 — epyc-orchestrator `46e79e27`: both code-execution sites use `sys.executable`; AST guard test.
       without the venv every pandas-dependent task silently scores False. Same shape as OBS-12. Found while
       triaging the NIB2-69 unit failures.
-- [ ] **NIB2-75** (MED): **12 E8 unit tests are now `skipif`-skipped because their sealed staging bundles are gone
+- [x] **NIB2-75** (MED): **12 E8 unit tests are now `skipif`-skipped because their sealed staging bundles are gone
+      ✅ 2026-09-23 — operator ruled RETIRE (per OP-19). epyc-orchestrator `5fa290be`: 24 bundle-dependent tests removed (28 skips → 0), 386 remaining pass.
       from the host** (no copy under `/mnt/raid0/llm`). Real coverage loss, owner = the E8 quality-baseline
       campaign: restore the bundles, rebuild equivalent fixtures, or retire the tests deliberately.
 - [ ] **NIB2-76** (LOW): **two residuals of the NIB2-69 gate fix.** (a) standalone `scripts/registry/stack_change_guard.py`
@@ -606,7 +608,7 @@ Canonical sources (always verify status in these files first):
 - [`user-facing-harness-index.md`](user-facing-harness-index.md) — user-facing harness work (formerly Hermes B-series)
 - [`master-handoff-index.md`](master-handoff-index.md) — cross-domain priorities
 
-- [ ] **NI-IO (rtx6kpro intake 2026-09-07)** — NVMe/md-RAID0 I/O scheduler check: `cat /sys/block/nvme*/queue/scheduler`
+- [x] **NI-IO (rtx6kpro intake 2026-09-07)** ✅ 2026-09-23 — all 3 NVMe queues already read `[none]`; `group_thread_cnt` is RAID5/6-only (ours is RAID0); no inference containers here. Nothing to change. — NVMe/md-RAID0 I/O scheduler check: `cat /sys/block/nvme*/queue/scheduler`
       should be `none` (external: 91.8k vs 48.6k IOPS under BFQ); md `group_thread_cnt=8` for RAID5/6 only;
       Docker overlay2 `syncfs` stall fix only if inference containers exist here. 2-minute check.
 
@@ -628,14 +630,19 @@ Canonical sources (always verify status in these files first):
   cannot self-match, and `db_fd` walks `/proc/*/fd` for an open descriptor on the event DB — argv-independent,
   and the thing VACUUM actually cares about. A missing DB is `unavailable`, never `absent`. New `observe`
   subcommand reports state/why/vacuum without touching anything. 15 tests + 1 skip; census OK (17 observers).
-  - [ ] **NI-OC-a.1 — restart the reaper daemon so the adopted script is the one running (OPERATOR / owning
+  - [x] **NI-OC-a.1 — restart the reaper daemon so the adopted script is the one running (OPERATOR / owning
     session).** The live daemon (pid from `/mnt/raid0/llm/tmp/opencode-reaper.pid`) holds its script open from
     **another lane's worktree** (`worktrees/mains/ak-rebuild-20260828/...`, a different inode from the tracked
     file), so it is still executing the OLD two-state code and will keep doing so until someone restarts it
     from the tracked path. Deliberately not done here: this session did not start that process, and the house
     rule is to kill only PIDs you captured yourself. It is also the second instance of a daemon serving a
     stale copy of its own script from a lane worktree — worth a look at how these are launched.
-- [ ] **NIB2-80** (MED): **the `EARLY_ABORT` escalation path bypasses its own budget gate.** In
+    ✅ 2026-09-23 (operator-directed) — the old pid had died with the 2026-09-21 host restart, so the reaper
+    was simply not running (last log line 2026-09-20T00:05Z). Relaunched detached from the TRACKED path
+    `/workspace/scripts/system/opencode_event_reaper.sh` (pid 1833821, fd/255 verified to the tracked file);
+    first pass 19:17Z: VACUUM 55 s, integrity ok, db 10.8 GB. Nothing relaunches it after a reboot — NIB2-81.
+- [x] **NIB2-80** (MED): **the `EARLY_ABORT` escalation path bypasses its own budget gate.** In
+      ✅ 2026-09-23 — epyc-orchestrator `d1f5bf02`: reading (1) — immediate escalation kept, bounded by `max_escalations` at all FIVE early-abort sites (not just the cited one); at budget it falls through to the sibling gate/retry/fail chain. Residual: early-abort escalation still skips the role-cycle check.
   `epyc-orchestrator/src/graph/nodes.py:235-241` an `ErrorCategory.EARLY_ABORT` bumps
   `state.escalation_count`, records the role change and returns `CoderEscalationNode()` **without
   calling `_should_escalate`**. Every other escalation site in that file gates on it
@@ -688,7 +695,7 @@ Canonical sources (always verify status in these files first):
     **a lane may develop a daemon, never run it.** Verified absent today: neither file mentions `fd/255`, an
     inode, or this failure. That migration note already pins runtime *state* to `/workspace` and is silent on
     runtime *code*, which is the gap the class fell through. Zero inference.
-  - [ ] **NIB2-81b — the orphaned `:8101` hub (pid 2098198).** Its worktree is deleted, and it has no registry
+  - [x] **NIB2-81b — the orphaned `:8101` hub (pid 2098198).** ✅ 2026-09-23 — moot: pid 2098198 is gone (host restarted 2026-09-21) and nothing listens on :8101. Its worktree is deleted, and it has no registry
     row, pidfile or probe, so nothing watches it and nothing would restart it. It presents 2026-09-15 code as
     current, and a lazy import will ENOENT against the missing tree. OPERATOR / owning session: stop it
     (identity from its own pid record, **never** a name pattern) or register it properly. Zero inference.

@@ -967,7 +967,8 @@ The single exception is already instrumented, zero-inference, and report-only, s
 
 ## Research Intake Update — 2026-09-15 (judge independence and judge validity)
 
-- [ ] **EV-6b (S3-EV-01) — check_cross_family is VACUOUS on its only production call site.** eval_tower passes
+- [x] **EV-6b (S3-EV-01) — check_cross_family is VACUOUS on its only production call site.** eval_tower passes
+      ✅ 2026-09-23 — epyc-orchestrator `21cb7756`: roles resolve to served models via the lean registry; unknown family fails closed as `unverified`; +gpt-oss/glm/kimi/nemotron/minimax; rubric-judge path gates, llm_judge path LABELS each row (`judge_independence`, `judge_independence_counts`) rather than refusing — with the all-Qwen lineup every llm_judge row now reads `same_family`, which is the finding. 39 tests.
       a ROLE name (e.g. architect_general) as verifier_model, no VERIFICATION_FAMILIES pattern matches a role,
       the family resolves unknown, and the permissive default returns True for every generator. The llm_judge
       path has no family check at all. Fix: resolve role → served model via model_registry.yaml before the

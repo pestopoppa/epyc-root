@@ -194,7 +194,8 @@ routing classifier's own training labels, and skill-bank effectiveness.
       the right reading; rewriting it would silently redefine a historical field. **The genuinely
       broken sibling was `update_count`** — see below — which DOES feed a live gate. Retained as
       context; original text follows.
-  - [ ] EPD-1-orig — `outcome` is written once at INSERT and NEVER updated. Verified directly:
+  - [x] EPD-1-orig — `outcome` is written once at INSERT and NEVER updated. Verified directly:
+        ✅ 2026-09-23 — epyc-orchestrator `24b43990`: `update_q_value` re-derives `outcome` from the updated Q (success iff Q>0.5) on every update; INSERT mapping shared. No backfill (live store; SQL shape in the commit).
       `orchestration/repl_memory/episodic_store.py:723-725` is
       `UPDATE memories SET q_value = ?, updated_at = ?, update_count = ? WHERE id = ?` — `outcome`
       is absent from the SET clause, while the INSERT at `:435` writes it once.
