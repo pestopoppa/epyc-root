@@ -5,9 +5,25 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+**Last compiled**: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
 `0.0`/`0.058` TEDS figures are formally voided and a three-stage instrument with a supported (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge) (2026-08-30: MiniMax-H3 lands as the page's first video-generation candidate — EVL-32: 33B dense H3-Omni-Transformer + Qwen3-VL-32B encoder, Ref2VA/FL2VA variants, 768p local / 2K API-only, 24 FPS 32 kHz stereo audio, a 56-model community quantization landscape, NSFW-capability finetune evidence, Ref2VA + beta4 INT8 ~165 GB deployment path, and an Excluded-Territories license; operator scope decision is the first gate before any download)
 **Sources**: 2 documents (added 2026-09-17: ERNIE evaluation MI210 run blocks, sub-occ1 progress log, ERNIE deep-dive link fix, completed OCC handoff) (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
+
+## Compiled Update — 2026-09-23: Qwen-Image-2.1 weights are on disk for an ERNIE comparison, and the vision role is clarified
+
+### Key findings
+
+- **The complete public `Qwen/Qwen-Image-2.1` Diffusers repository is local** at `/mnt/raid0/llm/models/diffusion/qwen-image-2.1/`: four text-encoder shards, two diffusion-transformer shards, VAE, configs, tokenizer and license. Weight files total **33,115,613,408 bytes**, with no `.incomplete` shards (re-verified on disk 2026-09-23). It is staged for a future local comparison against ERNIE-Image-Turbo. **No generation benchmark or quality comparison has been run**, so nothing about its quality is locally measured.
+- **Qwen-Image's Qwen3-VL 8B encoder is a conditioning component, not a vision-chat model.** The served `worker_vision` reader is Qwen3-VL-30B-A3B-Instruct on `:8086`, and Qwen2.5-VL-7B is retired. Downloading Qwen-Image does not add a chat-capable vision role.
+
+### Open questions
+
+- Does Qwen-Image-2.1 avoid the MI210 ≥1024² white-image defect that ERNIE-Image-Turbo still shows? That needs a run under the ERNIE evaluation's admissibility rules.
+
+### Sources
+- [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the download record and the vision-role clarification.
+- [ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md) — the comparison target and its MI210 defect record.
+- `epyc-orchestrator` `orchestration/stack_topology.yaml` (`worker_vision`, `:8086`) — the served vision reader.
 
 ## Compiled Update — 2026-09-17: the ROCm f32 fix does not clear the MI210 ≥1024² white-image defect, and the local vision-reader inventory
 

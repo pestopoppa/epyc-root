@@ -74,3 +74,13 @@ KLPO, HelixDB, FrontiersMindAI/GQE, jaredpalmer/kev, plus two operator inline di
   staged by another main. Those belong to the mains that own them and were left alone.
 - **typed-decision-plane.md:** the owner line now names the research-intake lane. The `intake-jev-sageattn` session is closed, and its orchestrator worktree is retired.
 - **`research-intake` skill:** Stage 4 now ends with a lane close-out rule.
+
+## After the first wrap-up (operator: "take ownership of all these")
+| Item | What was done | Evidence |
+|---|---|---|
+| SSU-F9a | Ticked. The D9 ack is the `D9-ack: operator, 2026-09-23` trailer on `0f9a4ef1` (on origin/main), and the wiki line that flagged it is updated. | `8c5512ab` |
+| Champion VMA B (`:8074`, PID 2021760) | Read-only root cause: the 18.90 GiB region is the CPU **repack** buffer, and it is never mlocked by design. `src/llama-model.cpp:1640` mlocks only host buffers, and `ggml/src/ggml-cpu/repack.cpp:4854` sets `is_host = nullptr`. It is not a failed mlock that was never retried, so a restart does not fix it. It was still 0% locked at 17:50 UTC, with 23 MiB swapped (2.27 GiB at ~13:53). The wiki is corrected, and RES-VMAB-1/2 are filed in INF-70. Nothing was restarted. | `861f8322` |
+| Shared clone `/workspace` | Classified every dirty tracked path against HEAD, origin/main and history. Restored 30 files deleted locally but present upstream (the glm53 autokernel evidence artifacts and `2026-09-22-main-dsv41.md`). Unstaged two stale staged snapshots (`master-handoff-index.md`, `deepseek-v41-flash-evaluation.md`) and reset them to HEAD; backups are in `/workspace/tmp/intake-jev-exl3/shared-clone-backup-20260923/round2/`. Left alone on purpose: 3 unique local files (`.devc/overrides.json`, `.devcontainer/devcontainer.json`, `data/benchmark_artifact_inventory.json`) and 2 session-bus runtime files. | — |
+| Unpushed `2fb245f3` | Operator-approved. Its claim was verified (33,115,613,408 bytes, no incomplete shards), then it was cherry-picked and pushed. The shared clone's main was moved to origin/main with `reset --keep`, which leaves local changes intact. | `5e040f05` |
+| Worktrees | Removed the scratch worktrees `wrapup-intake-jev-exl3-20260923` and `ownership-intake-jev-exl3-20260923` and their branches. Both were clean and fully on origin/main. | — |
+| Orphan PID 1292526 | A pytest fake llama-server from the DeepSeek-V4.1 session's tests (cwd `/mnt/raid0/llm/tmp/ds41-dso-identity/scratch`), reparented to the container shim. Nothing was connected to `:37857`, no other process referenced it, and no autokernel process was involved. SIGTERM was enough; confirmed dead and the port is free. | — |
