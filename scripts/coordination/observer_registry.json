@@ -24,6 +24,25 @@
     "  exempt    — reviewed and out of scope, with the reason recorded. Reviewed, not",
     "              forgotten: the row is the review.",
     "",
+    "NIB2-81 remedy (b) (2026-09-23): a row for a long-running daemon may ALSO carry a",
+    "`runtime` object — {pidfile, expected_path, provenance[, restart_on_stale,",
+    "start_argv, log]} — read-only-/proc-walked by `observer_census.py --live`. This",
+    "answers a DIFFERENT question than the contract values above: not 'can a watchdog",
+    "see its TARGET' but 'is the process at <pidfile> still executing the inode that is",
+    "committed at <expected_path> NOW, or one it opened at launch that a later commit",
+    "orphaned' (tmp/daemon-staleness-20260917/report.md — three live shapes:",
+    "lane-pinned, orphaned-inode, orphaned-tree). `expected_path` MUST equal the row's",
+    "own `script`. `provenance` names the `<pidfile>.provenance.json` remedy (a)",
+    "(`daemon_provenance.sh`'s `dp_attest`) writes next to it when that daemon is wired",
+    "to it — the live check reads the process's own open fd directly, not the",
+    "provenance snapshot, so the field is documentation, not a dependency of the",
+    "verdict. `restart_on_stale: true` hands the daemon to bus_supervisor.sh's",
+    "registry-restart tick (the H-4 generalisation) and REQUIRES `start_argv` (an argv",
+    "list, `{canonical_root}` substituted); reserved for a daemon whose restart is",
+    "provably safe — today ONLY the opencode reaper (idempotent, stateless: a spurious",
+    "restart costs one skipped 30-minute reap, never a corrupted DB). Every other",
+    "runtime row is report/alarm only.",
+    "",
     "Origin: 2026-08-12. bus_supervisor.sh identified the coordinator-daemon with",
     "`pgrep -f 'session_bus_coordinator\\.py run'`; the live daemon's argv had",
     "'--bus-root <path>' between '.py' and 'run'. The pattern matched nothing, the",
@@ -116,7 +135,12 @@
       "contract": "unadopted",
       "owning_handoff": "handoffs/active/session-bus-thin-dispatcher.md",
       "task_marker": "OBS-1",
-      "notes": "THE SPECIMEN. Being repaired in a parallel session (C49) as this row is written — the repair replaces the pattern with the heartbeat pid, which removes the instance. This row keeps the FILE enrolled so the class stays enforced afterwards: adopting observer_guard.sh + an `observe` entrypoint is what subjects it to the battery. Not edited from here; the file has a live owner."
+      "notes": "THE SPECIMEN. Being repaired in a parallel session (C49) as this row is written — the repair replaces the pattern with the heartbeat pid, which removes the instance. This row keeps the FILE enrolled so the class stays enforced afterwards: adopting observer_guard.sh + an `observe` entrypoint is what subjects it to the battery. Not edited from here; the file has a live owner.",
+      "runtime": {
+        "pidfile": "/mnt/raid0/llm/epyc-root/logs/bus_supervisor.pid",
+        "expected_path": "scripts/coordination/bus_supervisor.sh",
+        "provenance": "/mnt/raid0/llm/epyc-root/logs/bus_supervisor.pid.provenance.json"
+      }
     },
     {
       "id": "hub_supervisor",
@@ -124,7 +148,12 @@
       "contract": "unadopted",
       "owning_handoff": "handoffs/active/dashboard-architecture-restructure.md",
       "task_marker": "OBS-2",
-      "notes": "Identity is correctly port-based (it already migrated off `pgrep -f 'dashboard\\.server .*--port 8100'`) and hub_source_is_newer() is a model three-valued predicate returning a distinct 2 for every unknown. But health_ok() is two-valued: a curl timeout, a removed curl binary, a hub moved off :8100 and a genuinely dead hub are one value, and cmd_loop restarts on it. Separately, check_hub_stale_source is called only from cmd_once and never from cmd_loop — the C42 bug the bus supervisor already fixed — while the header claims the running supervisor now notices a stale hub. Not edited from here: the hub supervisor is a long-running script and editing a running .sh is its own incident class."
+      "notes": "Identity is correctly port-based (it already migrated off `pgrep -f 'dashboard\\.server .*--port 8100'`) and hub_source_is_newer() is a model three-valued predicate returning a distinct 2 for every unknown. But health_ok() is two-valued: a curl timeout, a removed curl binary, a hub moved off :8100 and a genuinely dead hub are one value, and cmd_loop restarts on it. Separately, check_hub_stale_source is called only from cmd_once and never from cmd_loop — the C42 bug the bus supervisor already fixed — while the header claims the running supervisor now notices a stale hub. Not edited from here: the hub supervisor is a long-running script and editing a running .sh is its own incident class.",
+      "runtime": {
+        "pidfile": "/mnt/raid0/llm/epyc-root/logs/hub_supervisor.pid",
+        "expected_path": "scripts/dashboard/hub_supervisor.sh",
+        "provenance": "/mnt/raid0/llm/epyc-root/logs/hub_supervisor.pid.provenance.json"
+      }
     },
     {
       "id": "nightshift_inference_guard",
@@ -221,6 +250,14 @@
         "observe_argv": [
           "observe"
         ]
+      },
+      "runtime": {
+        "pidfile": "/mnt/raid0/llm/tmp/opencode-reaper.pid",
+        "expected_path": "scripts/system/opencode_event_reaper.sh",
+        "provenance": "/mnt/raid0/llm/tmp/opencode-reaper.pid.provenance.json",
+        "restart_on_stale": true,
+        "start_argv": ["/bin/bash", "{canonical_root}/scripts/system/opencode_event_reaper.sh", "run"],
+        "log": "/mnt/raid0/llm/tmp/opencode-reaper.log"
       }
     },
     {
