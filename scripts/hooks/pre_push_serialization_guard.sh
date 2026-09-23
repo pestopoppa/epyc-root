@@ -22,8 +22,11 @@ set -euo pipefail
 # message bus). Convention is exactly what this guard replaces: a push that has
 # not taken the serialization lock is refused, mechanically, at the point of
 # push. The companion writer is scripts/coordination/serialized_push.py, which
-# takes the lock and then runs the push. This guard NEVER imports it, calls it,
-# or assumes its internals — it depends only on the lock FILE.
+# takes the lock and then runs the push. This guard never imports it and never
+# assumes its internals — it depends only on the lock FILE. It does ASK that
+# writer one question, `--print-lock-file`, so that the two sides cannot disagree
+# about WHERE the lock lives (see SSU-F9 in section 6); when the writer is absent
+# or unrunnable the guard derives the path itself and keeps working.
 #
 # ─── DECISION: WHICH REFS ARE GUARDED ────────────────────────────────────────
 #
@@ -283,12 +286,21 @@ fi
 #               push's grandparent. Nothing needs to be exported for that to be
 #               true, and nothing a caller sets can fake it.
 #
-# The structural proof is here because it is load-bearing, not decorative: the
-# companion wrapper's do_push() shells out to `git push` WITHOUT putting the
-# holder id in the child's environment (read 2026-08-12), so on a host where a
-# session has not exported AGENT_ID the declared proof is simply unavailable and
-# the compliant path would refuse itself. Ancestry is checked by reading
-# /proc/<pid>/status — no signals are sent, nothing is started or stopped.
+# The structural proof is here because it is load-bearing, not decorative: until
+# SSU-F9 the companion wrapper's do_push() shelled out to `git push` WITHOUT
+# putting the holder id in the child's environment (read 2026-08-12), so on a
+# host where a session has not exported AGENT_ID the declared proof was simply
+# unavailable. Ancestry is checked by reading /proc/<pid>/status — no signals are
+# sent, nothing is started or stopped.
+#
+# SINCE 2026-09-23 the wrapper DOES export EPYC_PUSH_LOCK_HOLDER into its push,
+# because the structural proof only exists when --acquire and --push are the same
+# process: an agent driving this through two tool calls acquires in one process
+# and pushes from another, and its own compliant push was being refused for want
+# of an identity it had never been told to set. That export does not loosen
+# anything here — a declared id is still checked AGAINST the lock file, and a
+# push with no lock is still refused, as it was for the caller who set AGENT_ID
+# by hand. Both proofs remain, and either still suffices.
 
 SESSION_ID="${EPYC_PUSH_LOCK_HOLDER:-${AGENT_ID:-}}"
 SESSION_ID="${SESSION_ID#"${SESSION_ID%%[![:space:]]*}"}"
@@ -333,6 +345,26 @@ pid_is_ancestor() {
 #
 # EPYC_PUSH_LOCK_FILE (exact path) and EPYC_PUSH_LOCK_DIR (directory) override,
 # in that order, for tests and for an operator relocating the lock.
+#
+# SSU-F9, 2026-09-23 — ONE RESOLVER, NOT TWO DERIVATIONS.
+# Reproducing the writer's derivation here was the defect, not the safeguard.
+# The writer derives the DIRECTORY from the git COMMON dir's parent, so that all
+# worktrees of a clone contend for one lease; this hook hardcoded
+# /workspace/coordination/push-locks. For epyc-root those happen to be the same
+# string, so the divergence was invisible here and fatal everywhere else: in
+# epyc-orchestrator the writer takes the lock under
+# /mnt/raid0/llm/epyc-orchestrator/coordination/push-locks while this hook looked
+# under /workspace — same key, two directories, so `--acquire` truthfully reported
+# the lock taken and this guard truthfully reported it NOT HELD. Four consecutive
+# failed pushes of one reviewed commit (2026-09-23).
+#
+# So the hook now ASKS the writer: `serialized_push.py --print-lock-file`. The
+# shell derivation below survives as a FALLBACK for when the writer is absent or
+# unrunnable (the hook must keep working without it) — and that fallback now
+# derives the directory the same way the writer does, from the common dir's
+# parent, instead of hardcoding /workspace.
+#
+# EPYC_SERIALIZED_PUSH overrides where the writer is looked for.
 
 LOCK_FILE="${EPYC_PUSH_LOCK_FILE:-}"
 if [[ -z "$LOCK_FILE" ]]; then
@@ -354,8 +386,62 @@ if [[ -z "$LOCK_FILE" ]]; then
            "guarded refs: ${GUARDED_REFS[*]}" \
            "set EPYC_PUSH_LOCK_FILE=<path> to name the lock explicitly"
   fi
-  LOCK_DIR="${EPYC_PUSH_LOCK_DIR:-${SERIALIZED_PUSH_LOCK_DIR:-/workspace/coordination/push-locks}}"
-  LOCK_FILE="${LOCK_DIR}/push-${REPO_KEY}.json"
+  # ── 6a. ask the writer (the shared resolver) ──────────────────────────────
+  LOCK_SOURCE_OF_TRUTH=""
+  RESOLVER="${EPYC_SERIALIZED_PUSH:-$(dirname "$COMMON_DIR")/scripts/coordination/serialized_push.py}"
+  if [[ -r "$RESOLVER" ]] && command -v python3 >/dev/null 2>&1; then
+    RESOLVER_ARGS=( "$RESOLVER" --agent pre-push-guard --repo "$PWD" --print-lock-file )
+    if [[ -n "${EPYC_PUSH_LOCK_DIR:-${SERIALIZED_PUSH_LOCK_DIR:-}}" ]]; then
+      RESOLVER_ARGS+=( --lock-dir "${EPYC_PUSH_LOCK_DIR:-${SERIALIZED_PUSH_LOCK_DIR}}" )
+    fi
+    RESOLVED="$(python3 "${RESOLVER_ARGS[@]}" 2>/dev/null | tail -n 1 || true)"
+    RESOLVED="${RESOLVED%$'\r'}"
+    if [[ -n "$RESOLVED" && "$RESOLVED" == /* ]]; then
+      # The writer is authoritative about the DIRECTORY, never about the KEY: a
+      # key mismatch would mean the two sides disagree about which repository is
+      # being pushed, which is precisely the condition this guard must not paper
+      # over. Fail closed and name it.
+      if [[ "$(basename "$RESOLVED")" != "push-${REPO_KEY}.json" ]]; then
+        refuse "the writer and this guard disagree about which repo is being pushed" \
+               "this guard's key : push-${REPO_KEY}.json (device+inode of ${COMMON_DIR})" \
+               "the writer's lock: ${RESOLVED}" \
+               "guarded refs: ${GUARDED_REFS[*]}" \
+               "refusing rather than guess which of the two locks serializes this push"
+      fi
+      LOCK_FILE="$RESOLVED"
+      LOCK_SOURCE_OF_TRUTH="serialized_push.py --print-lock-file"
+    fi
+  fi
+
+  # ── 6b. fallback: the writer's derivation, reproduced ─────────────────────
+  if [[ -z "$LOCK_FILE" ]]; then
+    LOCK_DIR="${EPYC_PUSH_LOCK_DIR:-${SERIALIZED_PUSH_LOCK_DIR:-$(dirname "$COMMON_DIR")/coordination/push-locks}}"
+    LOCK_FILE="${LOCK_DIR}/push-${REPO_KEY}.json"
+    LOCK_SOURCE_OF_TRUTH="derived in-hook (writer not runnable at ${RESOLVER})"
+  fi
+
+  # ── 6c. transition: a lock taken before this fix ──────────────────────────
+  # Until every session has picked up the fixed writer, a lease may still be
+  # sitting in the location this hook used to hardcode. Ignoring it would be
+  # strictly worse than the bug being fixed: it would let this push past a lock
+  # ANOTHER session is holding right now. So a legacy lock is honoured when the
+  # canonical path has none, and two disagreeing locks refuse. Skipped entirely
+  # when the lock location was overridden explicitly.
+  if [[ -z "${EPYC_PUSH_LOCK_DIR:-}" && -z "${SERIALIZED_PUSH_LOCK_DIR:-}" ]]; then
+    LEGACY_LOCK_FILE="/workspace/coordination/push-locks/push-${REPO_KEY}.json"
+    if [[ "$LEGACY_LOCK_FILE" != "$LOCK_FILE" && -e "$LEGACY_LOCK_FILE" ]]; then
+      if [[ -e "$LOCK_FILE" ]]; then
+        refuse "TWO serialization locks exist for this repo (key ${REPO_KEY})" \
+               "canonical: ${LOCK_FILE}" \
+               "legacy   : ${LEGACY_LOCK_FILE}  (pre-SSU-F9 location)" \
+               "guarded refs: ${GUARDED_REFS[*]}" \
+               "the guard will not choose which one serializes this push; release the stale one"
+      fi
+      note "no lock at ${LOCK_FILE}; honouring the pre-SSU-F9 lock at ${LEGACY_LOCK_FILE}"
+      LOCK_FILE="$LEGACY_LOCK_FILE"
+      LOCK_SOURCE_OF_TRUTH="legacy (pre-SSU-F9) lock location"
+    fi
+  fi
 fi
 
 # ── 7. lock present? ─────────────────────────────────────────────────────────

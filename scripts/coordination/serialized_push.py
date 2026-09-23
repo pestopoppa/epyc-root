@@ -901,15 +901,33 @@ def render_manifest(pf: dict, man: dict, limit: int = 40) -> str:
 # ---------------------------------------------------------------------------
 
 
-def do_push(repo: os.PathLike | str, pf: dict) -> str:
+def do_push(repo: os.PathLike | str, pf: dict, agent: str | None = None) -> str:
     """Plain, non-forcing push of the current branch to its configured upstream.
 
     No --force, no --force-with-lease, no refspec guessing: the destination comes
     from the branch's own upstream config, verified in preflight.
+
+    THE CHILD IS TOLD WHO HOLDS THE LOCK. The pre-push guard accepts a push two
+    ways: STRUCTURALLY (the lock-holding pid is an ancestor of the hook) or
+    DECLARED (EPYC_PUSH_LOCK_HOLDER / AGENT_ID equals the recorded holder). The
+    structural proof only exists when --acquire and --push are the SAME process;
+    an agent driving this through two tool calls acquires in one process and
+    pushes from another, so the holder pid is not an ancestor and the guard fell
+    through to an environment this wrapper never set -- refusing the one caller
+    that did everything right (SSU-F9, measured 2026-09-23).
+
+    This is not a loosening of the guard. We assert only what we have just proved
+    with O_EXCL: this process holds THIS repo's push lock under this id. A push
+    with no lock file is still refused, and a push whose declared id does not match
+    the recorded holder is still refused -- the declaration is checked against the
+    lock, never trusted on its own.
     """
+    env = dict(os.environ)
+    if agent:
+        env["EPYC_PUSH_LOCK_HOLDER"] = agent
     proc = subprocess.run(
         ["git", "-C", str(repo), "push", pf["remote"], f"HEAD:{pf['merge_ref']}"],
-        capture_output=True, text=True,
+        capture_output=True, text=True, env=env,
     )
     output = (proc.stdout + proc.stderr).strip()
     if proc.returncode != 0:
@@ -919,6 +937,27 @@ def do_push(repo: os.PathLike | str, pf: dict) -> str:
             condition="push-rejected",
         )
     return output
+
+
+def unpushed_commits(repo: os.PathLike | str, pf: dict) -> list[str] | None:
+    """`git cherry <upstream> HEAD` -- what HEAD still has that the upstream ref lacks.
+
+    Returns the '+ <sha>' lines (empty list == everything landed), or None if the
+    question could not be answered. "I ran the push command" is not evidence the
+    push landed; this is the check the wrap-up contract already requires a human to
+    run, moved inside the tool that makes the claim.
+
+    Read against the REMOTE-TRACKING ref, which a successful `git push` updates in
+    the same operation. If the push was refused, the ref is untouched and the
+    commits are still listed -- which is exactly the signal wanted.
+    """
+    proc = subprocess.run(
+        ["git", "-C", str(repo), "cherry", pf["upstream_ref"], "HEAD"],
+        capture_output=True, text=True, check=False,
+    )
+    if proc.returncode != 0:
+        return None
+    return [ln for ln in proc.stdout.splitlines() if ln.startswith("+")]
 
 
 def do_fetch(repo: os.PathLike | str, remote: str, remote_branch: str) -> str:
@@ -977,6 +1016,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--token-file",
                    help="private mode-0600 operation token for a long-lived --acquire hold; "
                         "required again for idempotent acquire, push-under-hold, and release")
+    p.add_argument("--print-lock-file", action="store_true",
+                   help="print the resolved lock FILE path for --repo and exit. This is the "
+                        "shared resolver: the pre-push guard calls it instead of "
+                        "reproducing the derivation, so the writer and the guard cannot "
+                        "disagree about where the lock lives (SSU-F9, 2026-09-23).")
+    p.add_argument("--print-lock-dir", action="store_true",
+                   help="print the resolved lock DIRECTORY for --repo and exit")
     return p
 
 
@@ -1022,6 +1068,19 @@ def main(argv: list[str] | None = None) -> int:
               f"is not the repository's canonical {canonical_dir}; contenders using "
               f"the default will NOT see this lock.", file=sys.stderr)
     path = lock_path(args.lock_dir, key, args.lock_name)
+
+    # ---- the shared resolver (read-only; no lock is taken, nothing is written) --
+    # The pre-push guard shells out to this rather than reproducing the derivation
+    # in shell. Before SSU-F9 the guard hardcoded <repo>/coordination/push-locks
+    # with a /workspace fallback while this writer derived the directory from the
+    # git COMMON dir -- same key, two directories, so a correctly-held lock read as
+    # NOT HELD. One derivation, one caller of it.
+    if args.print_lock_dir:
+        print(Path(args.lock_dir))
+        return EXIT_OK
+    if args.print_lock_file:
+        print(path)
+        return EXIT_OK
 
     # ---- pure lock operations ------------------------------------------------
     try:
@@ -1109,11 +1168,52 @@ def main(argv: list[str] | None = None) -> int:
             return EXIT_OK
         print("")
         print(f"PUSHING as {args.agent!r} under the push lock ...")
-        print(do_push(repo, pf))
-        print(f"published {man['ahead']} commit(s) to {pf['remote']}/{pf['remote_branch']}")
+
+        # THE LAST LINE IS THE VERDICT, AND IT IS ON STDOUT.
+        # Before SSU-F9 this printed the whole manifest, ended on "PUSHING as ...",
+        # and let git's "error: failed to push some refs" go to stderr -- where a
+        # caller reading the tail of the combined output saw it BEFORE the manifest,
+        # i.e. buried, and read a clean-looking manifest as success. Four consecutive
+        # failed pushes of one reviewed commit went unnoticed that way (2026-09-23).
+        # So: git's own output is captured and reprinted AFTER the manifest, the
+        # outcome is VERIFIED against the upstream ref rather than inferred from the
+        # exit status of the push command, and the verdict is the final line.
+        dest = f"{pf['remote']}/{pf['remote_branch']}"
+        try:
+            push_output = do_push(repo, pf, agent=args.agent)
+        except PushFailedError as exc:
+            print()
+            print(str(exc))
+            print()
+            print(f"PUSH FAILED — {dest} unchanged; {man['ahead']} commit(s) NOT published")
+            return EXIT_PUSH_FAILED
+        if push_output:
+            print(push_output)
+
+        still = unpushed_commits(repo, pf)
+        if still is None:
+            print()
+            print(f"PUSH REPORTED OK but could not be VERIFIED — `git cherry "
+                  f"{pf['upstream_ref']} HEAD` failed; check {dest} yourself")
+            return EXIT_PUSH_FAILED
+        if still:
+            print()
+            print(f"git cherry {pf['upstream_ref']} HEAD still lists "
+                  f"{len(still)} commit(s):")
+            for ln in still[:args.limit]:
+                print(f"    {ln}")
+            print()
+            print(f"PUSH FAILED — git push exited 0 but {dest} does NOT carry "
+                  f"{len(still)} commit(s) of HEAD")
+            return EXIT_PUSH_FAILED
+        print(f"published {man['ahead']} commit(s) to {dest}")
+        print(f"PUSH VERIFIED — `git cherry {pf['upstream_ref']} HEAD` is empty; "
+              f"{dest} carries HEAD")
         return EXIT_OK
-    except (PushFailedError, SerializedPushError) as exc:
+    except SerializedPushError as exc:
         print(f"serialized_push: FAILED — {exc}", file=sys.stderr)
+        print()
+        print(f"PUSH FAILED — {exc.condition}; nothing was published")
         return EXIT_PUSH_FAILED
     finally:
         # Always give the lock back, success or failure: a wedged lock blocks the

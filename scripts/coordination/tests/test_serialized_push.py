@@ -809,7 +809,15 @@ def test_non_fast_forward_push_fails_loudly_and_frees_the_lock(tmp_path):
     res = _cli("--agent", "mainA", "--repo", str(work), "--push", "--fetch",
                "--lock-dir", str(lock_dir))
     assert res.returncode == EXIT_PUSH_FAILED, res.stdout + res.stderr
-    assert "push-rejected" in res.stderr
+    assert "push-rejected" in res.stdout
+    # SSU-F9: the VERDICT is the last line of stdout. Git's rejection used to go to
+    # stderr, where a caller reading the combined tail saw it BEFORE the manifest and
+    # read a manifest ending in "PUSHING as ..." as success -- four consecutive failed
+    # pushes went unnoticed that way (2026-09-23).
+    last = res.stdout.strip().splitlines()[-1]
+    assert last.startswith("PUSH FAILED — "), f"last stdout line was {last!r}"
+    assert "unchanged" in last
+    assert "PUSHING as" not in last
     assert _bare_ref(bare) == remote_before, "a rejected push must not have changed the remote"
     assert not lock_path(lock_dir, repo_key(work)).exists(), \
         "a FAILED push must still free the lock; a wedged lock blocks the whole fleet"
@@ -840,6 +848,68 @@ def test_cli_acquire_hold_then_push_then_release(tmp_path):
     assert blocked.returncode == EXIT_LOCKED and "mainA" in blocked.stderr
     assert _cli("--agent", "mainA", *common, "--push").returncode == EXIT_OK
     assert _bare_ref(bare) == _head(work)
+
+
+def test_push_tells_its_own_hook_who_holds_the_lock(tmp_path):
+    """SSU-F9: --push exports EPYC_PUSH_LOCK_HOLDER into the git it spawns.
+
+    The pre-push guard accepts a push either STRUCTURALLY (the lock-holding pid is
+    an ancestor of the hook) or DECLARED (the environment names the holder). The
+    structural proof only exists when --acquire and --push are ONE process; an
+    agent driving this through two tool calls has neither, and its own compliant
+    push was refused for want of an identity nothing ever told it to set
+    (measured 2026-09-23, four consecutive failed pushes of one reviewed commit).
+
+    A stand-in pre-push hook records what the child was actually given, so this
+    asserts the observed environment of the real `git push`, not the source.
+    """
+    work, bare = _clone_with_remote(tmp_path)
+    seen = tmp_path / "hook-saw-env.txt"
+    hook = Path(work) / ".git" / "hooks" / "pre-push"
+    hook.write_text(
+        "#!/bin/sh\n"
+        f'printf "%s\\n" "${{EPYC_PUSH_LOCK_HOLDER-<unset>}}" > {seen}\n'
+        "exit 0\n",
+        encoding="utf-8",
+    )
+    hook.chmod(0o755)
+    _write_commit(work, "docs/b.md", "b\n", "docs: add b")
+    lock_dir = tmp_path / "locks"
+    token = tmp_path / "hold.token"
+    common = ["--repo", str(work), "--lock-dir", str(lock_dir),
+              "--token-file", str(token)]
+    # two SEPARATE processes, exactly as a tool-driven agent runs them
+    assert _cli("--agent", "mainD", *common, "--acquire").returncode == EXIT_OK
+    res = _cli("--agent", "mainD", *common, "--push")
+    assert res.returncode == EXIT_OK, res.stdout + res.stderr
+    assert seen.read_text().strip() == "mainD", \
+        "the push must name its lock holder to the hook it spawns"
+    assert _bare_ref(bare) == _head(work)
+    # and the verdict is the last line, verified rather than assumed
+    last = res.stdout.strip().splitlines()[-1]
+    assert last.startswith("PUSH VERIFIED — "), f"last stdout line was {last!r}"
+
+
+def test_print_lock_file_is_the_one_resolver(tmp_path):
+    """SSU-F9: the guard asks this, instead of re-deriving the path itself.
+
+    Two derivations of one path is what broke: the writer derived the directory
+    from the git COMMON dir (so every lane worktree contends for one lease) while
+    the guard hardcoded a repo-relative default, so `--acquire` truthfully reported
+    the lock taken and the guard truthfully reported it NOT HELD.
+    """
+    work, _ = _clone_with_remote(tmp_path)
+    res = _cli("--agent", "probe", "--repo", str(work), "--print-lock-file")
+    assert res.returncode == EXIT_OK, res.stdout + res.stderr
+    printed = Path(res.stdout.strip())
+    from scripts.coordination.serialized_push import default_lock_dir
+    assert printed == lock_path(default_lock_dir(work), repo_key(work))
+    assert printed.name == f"push-{repo_key(work)}.json"
+    assert not printed.exists(), "the resolver must not create anything"
+    # an explicit --lock-dir is honoured, so the guard can be pointed elsewhere too
+    res2 = _cli("--agent", "probe", "--repo", str(work), "--print-lock-file",
+                "--lock-dir", str(tmp_path / "elsewhere"))
+    assert Path(res2.stdout.strip()) == lock_path(tmp_path / "elsewhere", repo_key(work))
 
 
 def test_cli_status_reports_free_and_held(tmp_path):

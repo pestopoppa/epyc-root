@@ -673,6 +673,80 @@ else
 fi
 
 # ─────────────────────────────────────────────────────────────────────────────
+# CASE 20 — DEFAULT lock location (SSU-F9). Every case above pins the location
+#           with EPYC_PUSH_LOCK_DIR, so none of them could ever have caught the
+#           defect: with no override the guard used to look in a hardcoded
+#           /workspace/coordination/push-locks while the writer derives the
+#           directory from the git COMMON dir's parent. Same key, two
+#           directories — `--acquire` reported the lock taken and the guard
+#           reported it NOT HELD (measured 2026-09-23).
+#
+#           Both resolution routes are exercised: with the writer reachable (the
+#           guard asks it, `--print-lock-file`) and without it (the guard's own
+#           fallback derivation). They must agree, and a lock in the OTHER
+#           location must not satisfy either.
+# ─────────────────────────────────────────────────────────────────────────────
+new_sandbox
+DEFAULT_LOCKFILE="$(python3 - "$SANDBOX/work" <<'PYEOF'
+import os, subprocess, sys
+common = subprocess.run(
+    ["git", "-C", sys.argv[1], "rev-parse", "--path-format=absolute", "--git-common-dir"],
+    capture_output=True, text=True).stdout.strip()
+st = os.stat(common)
+print(os.path.join(os.path.dirname(common), "coordination", "push-locks",
+                   "push-%d-%d.json" % (st.st_dev, st.st_ino)))
+PYEOF
+)"
+mkdir -p "$(dirname "$DEFAULT_LOCKFILE")"
+ENVS="-u EPYC_PUSH_LOCK_DIR -u SERIALIZED_PUSH_LOCK_DIR AGENT_ID=mainA"
+
+# (a) no writer reachable → the guard's fallback derivation. A lock in the
+#     sandbox's OTHER directory must not count.
+printf '{"holder": "mainA"}\n' > "$SANDBOX/locks/push-decoy.json"
+run_push "$ENVS" origin main
+if refused_with "serialization lock is NOT HELD" && err_has "$DEFAULT_LOCKFILE"; then
+  pass "default location (no writer): the guard looks where the WRITER would write, not /workspace"
+else
+  fail "default location (no writer)" "the guard did not name $DEFAULT_LOCKFILE"
+fi
+printf '{"holder": "mainA"}\n' > "$DEFAULT_LOCKFILE"
+run_push "$ENVS" origin main
+if [[ "$RC" -eq 0 ]] && [[ -n "$(origin_sha refs/heads/main)" ]]; then
+  pass "default location (no writer): a lock in the derived directory allows the push"
+else
+  fail "default location (no writer)" "exit $RC — a correctly-placed lock did not satisfy the guard"
+fi
+
+# (b) the real writer reachable where the guard looks for it: the guard must ask
+#     it and land on the same file.
+new_sandbox
+mkdir -p "$SANDBOX/work/scripts/coordination"
+ln -sf /workspace/scripts/coordination/serialized_push.py \
+       "$SANDBOX/work/scripts/coordination/serialized_push.py"
+DEFAULT_LOCKFILE="$SANDBOX/work/coordination/push-locks/push-$(stat -c '%d-%i' "$SANDBOX/work/.git").json"
+mkdir -p "$(dirname "$DEFAULT_LOCKFILE")"
+WRITER_SAYS="$(cd "$SANDBOX/work" && python3 /workspace/scripts/coordination/serialized_push.py \
+                 --agent probe --repo "$SANDBOX/work" --print-lock-file 2>/dev/null)"
+if [[ "$WRITER_SAYS" == "$DEFAULT_LOCKFILE" ]]; then
+  pass "default location: the writer's --print-lock-file is the path the suite derived independently"
+else
+  fail "default location: resolver" "writer says '$WRITER_SAYS', suite derived '$DEFAULT_LOCKFILE'"
+fi
+run_push "$ENVS" origin main
+if refused_with "serialization lock is NOT HELD" && err_has "$DEFAULT_LOCKFILE"; then
+  pass "default location (writer reachable): the guard consults the writer's own answer"
+else
+  fail "default location (writer reachable)" "the guard did not name $DEFAULT_LOCKFILE"
+fi
+printf '{"holder": "mainA"}\n' > "$DEFAULT_LOCKFILE"
+run_push "$ENVS" origin main
+if [[ "$RC" -eq 0 ]] && [[ -n "$(origin_sha refs/heads/main)" ]]; then
+  pass "default location (writer reachable): the lock the writer would take satisfies the guard"
+else
+  fail "default location (writer reachable)" "exit $RC — the writer's own lock location did not satisfy the guard"
+fi
+
+# ─────────────────────────────────────────────────────────────────────────────
 
 printf '\n----------------------------------------\n'
 printf 'PASS: %d   FAIL: %d   TOTAL: %d\n' "$PASSES" "$FAILURES" "$((PASSES + FAILURES))"
