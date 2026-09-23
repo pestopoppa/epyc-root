@@ -565,16 +565,35 @@ supplies the value under test cannot fail on it.
   Commit with `D9-ack: <who authorised, why>` once granted.
   **Blocker: the operator's authorisation. This is the decision, and it is genuinely theirs.**
 
-- [ ] **SSU-F9b — the push guard is installed in epyc-root ONLY, and epyc-orchestrator is where the
-  defect actually bites.** In `/workspace` the writer's and the guard's derivations coincidentally
-  produced the same string, which is why this was invisible here. In `epyc-orchestrator` they do
-  not: the writer takes the lock under `/mnt/raid0/llm/epyc-orchestrator/coordination/push-locks`
-  while the guard looked under `/workspace`. But `epyc-orchestrator` and `epyc-inference-research`
-  have **LFS-only `pre-push` hooks** — no serialization guard at all. So the repo where the
-  divergence is fatal is also the repo with no control on the path, and pushes there are
-  unserialized today. Installing the guard in the two sub-repos is an operator-facing change to how
-  those repos publish, so it is filed rather than taken.
-  **Blocker: none for the analysis; the install itself is an operator decision.**
+- [x] **SSU-F9b — WITHDRAWN 2026-09-23: the premise was false, and SSU-F9 had already fixed the
+  real problem.** The task claimed `epyc-orchestrator` and `epyc-inference-research` carry LFS-only
+  `pre-push` hooks with no serialization guard. **They do not.** Both carry the identical chained
+  hook installed 2026-08-12 — serialization guard first, `git lfs pre-push` second — byte-identical
+  to epyc-root's. This was a subagent claim relayed without verification; checking it took one
+  `cat`.
+
+  **Verified by running**, in each repo, feeding the guard a real ref-update line:
+  ```
+  PUSH REFUSED — pre-push serialization guard
+  cause: the push serialization lock is NOT HELD — no lock file at
+         /mnt/raid0/llm/epyc-orchestrator/coordination/push-locks/push-2431-96371138.json
+         /mnt/raid0/llm/epyc-inference-research/coordination/push-locks/push-2431-96371209.json
+  ```
+  Installed, functional, refusing.
+
+  **What WAS true, and is the more interesting half.** Those paths are each repo's OWN
+  `coordination/push-locks`, which is what the SSU-F9 fix produces. Before it, the guard hardcoded
+  `/workspace/coordination/push-locks` while `serialized_push.py` took the lock in the repo's own
+  directory — so in these two repos the guard would have reported NOT HELD for a correctly held
+  lock and refused **every** push, on every attempt, forever. In epyc-root the two derivations
+  coincidentally produced the same string, which is why the breakage was invisible from there.
+  So SSU-F9 did not merely fix epyc-root's four failed pushes; it repaired the push path in the two
+  sub-repos, where the divergence was total rather than intermittent. Today's pushes to both
+  (`b14ed228`, `58b115ed`) are the demonstration — they ran through the wrapper and ended on
+  `PUSH VERIFIED`.
+
+  **Nothing to install. No operator decision required.** Filed as a decision because the premise
+  said so; the premise was wrong.
 
 - [ ] **SSU-F9c — `promote_lane.py:519` has the same defect one lease over.** It defaults
   `--lock-dir` to `serialized_push.DEFAULT_LOCK_DIR`, the `__file__`-relative fallback, which in a
