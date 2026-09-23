@@ -82,9 +82,9 @@ lane's code forever, and a daemon started from canon keeps executing whatever in
 at launch even after a later commit replaces that path with a new one
 (`INC-20260917-daemon-stale-script-inode`,
 `docs/reference/agent-config/INCIDENT_LOG.md`). The rule this plane implies for code, stated
-explicitly: **runtime-plane daemons execute from canon only — a lane may develop a daemon,
-never run it.** Enforced at startup by `scripts/coordination/daemon_provenance.sh`'s `dp_attest`,
-which refuses to start a daemon whose own script does not resolve under the canonical root; a daemon
+explicitly: **runtime-plane daemons execute from canon or the read-only view of main
+(`/mnt/raid0/llm/views/epyc-root-main`) only — a lane may develop a daemon, never run it.** Enforced at startup by `scripts/coordination/daemon_provenance.sh`'s `dp_attest`,
+which refuses to start a daemon whose own script resolves under neither; a daemon
 that also polls its sibling `dp_stale_since_start` once per loop iteration can additionally LOG
 (never act on) the fact that a commit has since replaced the file it is executing. Neither function
 moves a running daemon back onto fresh code — that still requires a human, or a future supervisor,
