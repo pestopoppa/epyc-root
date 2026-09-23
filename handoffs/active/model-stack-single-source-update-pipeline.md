@@ -429,7 +429,7 @@ blocker rather than sitting in prose.
   Until this lands, `stack_change_pipeline.py check` cannot pass strict and the
   gate stays skipped. **Blocker: none — this is buildable work.**
 
-- [ ] **SSU-F3 — explain the 2.24 GiB the capacity model does not account for on the MI210.**
+- [x] **SSU-F3 — explain the 2.24 GiB the capacity model does not account for on the MI210.** **RESOLVED 2026-09-23 by READING, not subtracting** — `:8083` reloaded with `LLAMA_ARG_LOG_VERBOSITY=4` at the gate's boundary; full decomposition in `artifacts/operator/vram-gap-27b-20260923.md`. The subtraction had understated the compute residual by 0.277 GiB because it could not see the DRAFT graph's own `sched_reserve` block. Two things the log confirms independently of the original argument: the kernel prints `98304 cells, 16 layers` on a 64-block model, which is the `full_attention_interval = 4` correction stated in the server's own words rather than inferred from a GGUF key; and `2 cells, 64 layers, 2 seqs 8 rs_seq` prices the MTP recurrent cache at ~0.329 GiB per unit of draft depth, so 8 -> 4 returns ~1.3 GiB. What that costs in tokens/s is STILL unmeasured and is still the input the 262144 decision needs.
   Measured 2026-09-22 under six verified load cycles: usable 63.98, steady
   63.069, so 0.91 GiB free against a predicted 3.15. The 27B holds 38.61 GiB
   against a declaration implying ~33.7. Fragmentation and transient peaks are
@@ -581,3 +581,12 @@ supplies the value under test cannot fail on it.
   lane worktree is that lane's **private** directory — so the *promote* lease serializes nothing
   across lanes, exactly the 2026-09-01 incident that the push lease's git-common-dir derivation was
   introduced to fix. Different lease, same shape, still live. **Blocker: none.**
+
+- [ ] **SSU-F10 — every GPU role on this host is un-auditable for VRAM between reloads, by
+  default.** The per-buffer breakdown (`load_tensors:`, `llama_kv_cache:`,
+  `llama_memory_recurrent:`, `sched_reserve:`) is suppressed at the launcher's default log
+  verbosity, which is why SSU-F3 had to be answered by subtraction in the first place — and why the
+  subtraction was wrong by 0.277 GiB. The 2026-09-23 reload settled `:8083` only, and only until it
+  next restarts. Raise the model-load log verbosity permanently in the launcher so the decomposition
+  is in the log of every GPU role from the moment it starts. A capacity model that cannot be checked
+  against the kernel's own numbers is a model nobody can falsify. **Blocker: none.**
