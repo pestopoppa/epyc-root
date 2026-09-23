@@ -469,6 +469,275 @@ check_stale_source() {
   start_daemon || true
 }
 
+# --------------------------------------------------------- registry restart
+#
+# NIB2-81 remedy (b), SCOPED TIGHTLY (tmp/daemon-staleness-20260917/report.md).
+# H-4 above restarts exactly ONE daemon: the one THIS script watches via its
+# own heartbeat's `source_tree` marker. This generalises the same idea — a
+# running inode that has drifted from the committed one — to OTHER registered
+# daemons, reusing the identical shape (identity from the CANDIDATE'S OWN
+# pidfile + cmdline, never a name pattern; SIGTERM, re-verify identity every
+# second of the drain, escalate to SIGKILL; rate-limited restarts; fail closed
+# on anything unreadable). It is deliberately NOT a blanket "restart every
+# stale registered daemon": this repo's own doctrine is "restart identity from
+# the daemon's own pid record, never a name pattern" AND "never patch a
+# running supervisor in place" (production kernels are frozen for the same
+# reason), so an automatic kill-and-relaunch of, say, the hub or bus
+# supervisor itself belongs to a human at a chosen boundary, not to a poll
+# tick. Only registry rows the operator has explicitly marked
+# `runtime.restart_on_stale: true` are ever touched here — today exactly ONE,
+# the opencode reaper, because it is idempotent and stateless (a spurious
+# restart costs one skipped 30-minute reap cycle against the live
+# opencode.db, never a corrupted one; reap_once re-derives its whole answer
+# from the DB every call, nothing carries over in-process). Every other
+# runtime-enrolled row is report/alarm only — `observer_census.py --live`
+# above, fed to the SAME alarm channel this script's own stale-source ALARM
+# branch already uses.
+REGISTRY_PATH="${REGISTRY_PATH:-${EPYC_ROOT}/scripts/coordination/observer_registry.json}"
+
+# registry_restart_candidates — one TAB-separated line per registry row with
+# runtime.restart_on_stale == true: id, pidfile, expected_path, provenance,
+# start_argv (as a JSON array), log. Never fails the caller: a missing or
+# unreadable registry, or one with zero such rows, is silent empty output —
+# "nothing to restart", not an error this loop should ever abort on.
+registry_restart_candidates() {
+  [[ -r "$REGISTRY_PATH" ]] || return 0
+  python3 - "$REGISTRY_PATH" <<'PY_EOF' 2>/dev/null || true
+import json, sys
+try:
+    reg = json.load(open(sys.argv[1]))
+except Exception:
+    raise SystemExit(0)
+for row in reg.get("observers", []):
+    rt = row.get("runtime") or {}
+    if not rt.get("restart_on_stale"):
+        continue
+    print("\t".join([
+        str(row.get("id", "")),
+        str(rt.get("pidfile", "")),
+        str(rt.get("expected_path", "")),
+        str(rt.get("provenance", "")),
+        json.dumps(rt.get("start_argv") or []),
+        str(rt.get("log", "")),
+    ]))
+PY_EOF
+}
+
+# registry_daemon_identity <pidfile> <expected_basename>
+#
+# Sets REG_STATE (alive|dead|unknown) / REG_PID (only when alive) / REG_WHY,
+# the same three-valued shape as resolve_daemon() above but keyed off a THIRD
+# PARTY's OWN pidfile + cmdline rather than this supervisor's heartbeat. Never
+# trusts the pid number alone — a recycled pid belongs to a stranger, and
+# `unknown` (an unreadable pidfile or cmdline) never becomes `dead`: this
+# function only ever SUPPRESSES a restart, never causes one, so the fail-safe
+# direction is UNKNOWN, not DEAD.
+REG_PID=""; REG_STATE=""; REG_WHY=""
+registry_daemon_identity() {
+  local pidfile="$1" basename="$2" pid cmdline
+  REG_PID=""; REG_STATE=""; REG_WHY=""
+  if [[ ! -f "$pidfile" ]]; then
+    REG_STATE="dead"; REG_WHY="no pidfile at $pidfile"; return 0
+  fi
+  pid="$(cat "$pidfile" 2>/dev/null || true)"
+  if [[ ! "$pid" =~ ^[0-9]+$ ]]; then
+    REG_STATE="unknown"; REG_WHY="pidfile $pidfile carries no usable pid"; return 0
+  fi
+  if [[ ! -d "/proc/$pid" ]]; then
+    REG_STATE="dead"; REG_WHY="pid $pid (from $pidfile) does not exist"; return 0
+  fi
+  cmdline="$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null || true)"
+  if [[ -z "$cmdline" ]]; then
+    REG_STATE="unknown"; REG_WHY="pid $pid argv unreadable (zombie or vanished mid-read)"; return 0
+  fi
+  if [[ "$cmdline" != *"$basename"* ]]; then
+    REG_STATE="dead"
+    REG_WHY="pid $pid was RECYCLED — argv is '${cmdline:0:70}', not $basename"
+    return 0
+  fi
+  REG_STATE="alive"; REG_PID="$pid"; REG_WHY="pid $pid is alive and is $basename"
+}
+
+# registry_script_is_stale <pid> <expected_path>
+#
+# 0 = STALE, 1 = current, 2 = cannot tell (FAIL CLOSED, never acted on). Reads
+# the RUNNING inode straight from the candidate's own open fd (255 first, the
+# bash script-fd convention observed on every live daemon censused
+# 2026-09-17, then a full fd scan) and compares it to whatever inode is on
+# disk at EPYC_ROOT/<expected_path> RIGHT NOW — the same mechanism
+# observer_census.py's live_check_row implements, and delegated to a tiny
+# python3 helper rather than bash's own `stat`, DELIBERATELY: this host's
+# `stat` is uutils-coreutils, which was measured (while writing this) to
+# report a DIFFERENT, WRONG inode for a `/proc/<pid>/fd/<n>` symlink than for
+# the same file's real path — `os.stat()` (what observer_census.py already
+# uses, and what this helper uses) resolves both to the identical, correct
+# value. A restart path built on a `stat`-through-/proc comparison would fail
+# closed into "cannot tell" on THIS host on every single call, which is a
+# worse failure than the one this remedy exists to fix — a python dependency
+# here is one line, not the class of gap a missing python3 would be.
+registry_script_is_stale() {
+  local pid="$1" expected_path="$2"
+  python3 - "$pid" "$EPYC_ROOT" "$expected_path" <<'PY_EOF'
+import os, sys
+pid, root, expected = sys.argv[1], sys.argv[2], sys.argv[3]
+name = os.path.basename(expected)
+
+
+def _fd_matching(pid: str, name: str) -> str | None:
+    try:
+        link = os.readlink(f"/proc/{pid}/fd/255")
+        bare = link[: -len(" (deleted)")] if link.endswith(" (deleted)") else link
+        if os.path.basename(bare) == name:
+            return "255"
+    except OSError:
+        pass
+    try:
+        entries = os.listdir(f"/proc/{pid}/fd")
+    except OSError:
+        return None
+    for entry in entries:
+        if entry == "255":
+            continue
+        try:
+            link = os.readlink(f"/proc/{pid}/fd/{entry}")
+        except OSError:
+            continue
+        bare = link[: -len(" (deleted)")] if link.endswith(" (deleted)") else link
+        if os.path.basename(bare) == name:
+            return entry
+    return None
+
+
+fd = _fd_matching(pid, name)
+if fd is None:
+    sys.exit(2)
+try:
+    running = os.stat(f"/proc/{pid}/fd/{fd}")
+except OSError:
+    sys.exit(2)
+try:
+    current = os.stat(os.path.join(root, expected))
+except OSError:
+    sys.exit(0)  # the expected path no longer exists on disk at all -> stale
+sys.exit(0 if (running.st_dev, running.st_ino) != (current.st_dev, current.st_ino) else 1)
+PY_EOF
+}
+
+# stop_registry_daemon <pidfile> <basename> — stop_wedged's exact shape
+# (SIGTERM, poll for up to 10s re-verifying identity every second, escalate to
+# SIGKILL), pointed at a THIRD PARTY confirmed via ITS OWN pidfile + cmdline.
+# Never signals anything registry_daemon_identity did not just confirm alive.
+stop_registry_daemon() {
+  local pidfile="$1" basename="$2" pid cmdline
+  registry_daemon_identity "$pidfile" "$basename"
+  if [[ "$REG_STATE" != "alive" || -z "$REG_PID" ]]; then
+    log "  registry-restart: not signalling anything for $basename — $REG_STATE: $REG_WHY"
+    return 0
+  fi
+  pid="$REG_PID"
+  log "  registry-restart: stopping stale $basename, pid $pid"
+  kill "$pid" 2>/dev/null || true
+  for _ in $(seq 1 10); do
+    sleep 1
+    [[ -d "/proc/$pid" ]] || { log "    pid $pid is gone"; return 0; }
+    cmdline="$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null || true)"
+    if [[ "$cmdline" != *"$basename"* ]]; then
+      log "    pid $pid is no longer $basename — it exited during the drain; not escalating"
+      return 0
+    fi
+  done
+  log "    escalating to SIGKILL on pid $pid"
+  kill -9 "$pid" 2>/dev/null || true
+  sleep 1
+}
+
+# start_registry_daemon <start_argv-as-json> <log-path>
+#
+# `{canonical_root}` is substituted with EPYC_ROOT — "restart FROM ITS
+# CANONICAL PATH" is the whole point (the class this closes is a daemon
+# running a copy that is NOT the canonical path). `9>&-` mirrors start_daemon
+# above: without closing this supervisor's own lock fd, a relaunched child
+# would inherit it and lock out every future supervisor.
+start_registry_daemon() {
+  local argv_json="$1" log_path="${2:-/dev/null}" argv=() tok
+  while IFS= read -r tok; do
+    argv+=("${tok//\{canonical_root\}/$EPYC_ROOT}")
+  done < <(python3 -c 'import json,sys; [print(x) for x in json.loads(sys.argv[1])]' \
+             "$argv_json" 2>/dev/null)
+  if [[ ${#argv[@]} -eq 0 ]]; then
+    log "  registry-restart: no start_argv given — cannot relaunch"
+    return 1
+  fi
+  log "  registry-restart: launching ${argv[*]}"
+  [[ -n "$log_path" && "$log_path" != "None" ]] || log_path=/dev/null
+  mkdir -p "$(dirname -- "$log_path")" 2>/dev/null || true
+  nohup "${argv[@]}" 9>&- >>"$log_path" 2>&1 &
+  disown
+}
+
+# check_registry_restarts — the tick. Independent of the coordinator-daemon's
+# OWN health (unlike check_stale_source, which only makes sense for a healthy
+# daemon) — a registry candidate's staleness has nothing to do with whether
+# this supervisor's own watched daemon is up, so it runs unconditionally from
+# both `once` and every `loop` iteration. Rate-limited exactly like H-4's own
+# stale-source restart: at most one restart attempt per candidate per
+# RESTART_MIN_INTERVAL_S, so a predicate that keeps firing after a restart
+# cannot loop-restart the daemon it is meant to protect.
+check_registry_restarts() {
+  local id pidfile expected_path provenance argv_json log_path basename
+  while IFS=$'\t' read -r id pidfile expected_path provenance argv_json log_path; do
+    [[ -n "$id" ]] || continue
+    basename="$(basename -- "$expected_path")"
+    registry_daemon_identity "$pidfile" "$basename"
+    if [[ "$REG_STATE" != "alive" ]]; then
+      # not_running is deliverable-3 territory (report/alarm via
+      # observer_census.py --live) — nothing to restart FROM here, and
+      # relaunching a daemon that never claimed to be running is not what
+      # this tick is for.
+      continue
+    fi
+    local rc=0
+    registry_script_is_stale "$REG_PID" "$expected_path" || rc=$?
+    if (( rc == 2 )); then
+      log "  registry-restart[$id]: STALE CHECK UNAVAILABLE — not acting (fail closed)"
+      continue
+    fi
+    (( rc == 1 )) && continue  # current — nothing to do, the common case every tick
+
+    local stamp="${LOG_DIR}/registry_restart.${id}.last"
+    local now last age
+    now=$(date +%s); last=0
+    if [[ -f "$stamp" ]]; then
+      last="$(cat "$stamp" 2>/dev/null || echo 0)"
+      [[ "$last" =~ ^[0-9]+$ ]] || last=0
+    fi
+    age=$(( now - last ))
+    if (( last > 0 && age < RESTART_MIN_INTERVAL_S )); then
+      log "  registry-restart[$id]: STALE AGAIN ${age}s after the last restart — NOT restarting"
+      log "    (limit is one per ${RESTART_MIN_INTERVAL_S}s; a restart that does not clear this"
+      log "    verdict is not fixing it — a human closes this)"
+      continue
+    fi
+
+    log "registry-restart[$id]: $basename (pid $REG_PID) is running a STALE inode — restarting from canon"
+    echo "$now" > "$stamp"
+    stop_registry_daemon "$pidfile" "$basename"
+    start_registry_daemon "$argv_json" "$log_path" || true
+
+    local waited=0
+    while (( waited < STARTUP_TIMEOUT )); do
+      sleep 1; waited=$(( waited + 1 ))
+      registry_daemon_identity "$pidfile" "$basename"
+      [[ "$REG_STATE" == "alive" ]] && break
+    done
+    if [[ "$REG_STATE" == "alive" ]]; then
+      log "  registry-restart[$id]: relaunched — new pid $REG_PID ($REG_WHY)"
+    else
+      log "  registry-restart[$id]: relaunch did NOT come up healthy within ${STARTUP_TIMEOUT}s — $REG_STATE: $REG_WHY"
+    fi
+  done < <(registry_restart_candidates)
+}
+
 # ------------------------------------------------------------- lock contention
 #
 # C43 (2026-08-12). A relaunch attempt at 00:25:09Z logged "another supervisor
@@ -682,6 +951,10 @@ case "${1:-loop}" in
     # only by accident.
     rc=0
     check_once || rc=$?
+    # NIB2-81 remedy (b): independent of the coordinator-daemon's own health —
+    # never lets a registry-restart failure change THIS command's exit code,
+    # same reasoning as check_stale_source's own `|| true` call sites above.
+    check_registry_restarts || true
     exit "$rc"
     ;;
   loop)
@@ -706,6 +979,12 @@ case "${1:-loop}" in
       if [[ "$dp_rc" -eq 0 ]]; then
         log "running stale code; restart from ${BASH_SOURCE[0]}"
       fi
+      # NIB2-81 remedy (b): runs EVERY tick, unconditionally — a registry
+      # candidate's staleness has nothing to do with whether the coordinator-
+      # daemon this supervisor watches is itself healthy, unlike check_stale_source
+      # below (which is specifically about THAT daemon and only fires once it is
+      # confirmed up and answering).
+      check_registry_restarts || true
       if health_ok; then
         backoff=0; fails=0; gave_up=0
         # C42 BUGFIX 2026-08-12: this `continue` skipped check_once, which is where
