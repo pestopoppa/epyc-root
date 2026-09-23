@@ -568,6 +568,14 @@ Zero were bulk-acked. What survived as live work:
   docstring documents, it cost four agents a retry, and a guard that fires spuriously is how a real block
   eventually gets bypassed (`epyc-orchestrator` `scripts/hooks/check_commit_hygiene.py:282-310`; raised
   independently by 7 agents) (found 2026-09-14, noninf sweep).
+  - *+1 2026-09-23 (intake-jev-exl3):* `git commit -q -F - <<'EOF'` refused as a pathspec commit; `--file=<path>` passed.
+- [ ] **The hygiene hook's documented override is unreachable from an agent — make the refusal say how the operator applies it.**
+  `check_commit_hygiene.py:504` reads `EPYC_ALLOW_COMMIT_HYGIENE_BYPASS` from the hook's own environment, so the inline form
+  the refusal text suggests (`EPYC_ALLOW_COMMIT_HYGIENE_BYPASS=1 git restore …`) never reaches it — the hook refused it twice on
+  2026-09-23 even after the operator typed that exact command, because the operator's message arrived as chat text rather
+  than a `!` shell line. Either name the operator path in the refusal ("the operator runs it with a `!` prompt line, or sets it
+  in the session env") or accept a one-shot operator token. The present text invites an agent to try, fail, and then be
+  tempted to route around the guard with an equivalent write (found 2026-09-23, research-lane cleanup).
 - [x] **One shared implementation instead of four.** ✅ 2026-08-18 (`2f5a0c63`). `shell_scan.py` now
   owns `SEPARATORS`/`strip_quoted`/`strip_heredocs`/`strip_comments`/`segments()`; four scanners
   import it. −73/+17, `strip_comments` de-triplicated (one copy substituted `""` where the others
