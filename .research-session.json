@@ -5,7 +5,7 @@
   "phase": 5,
   "stage": "stage4-complete",
   "session_kind": "research-intake (4 repo URLs + 2 operator inline digests)",
-  "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-jev-exl3-20260923 (branch intake/jev-exl3-20260923 off origin/main 85f22ea8). Shared clone /workspace has another session's uncommitted edits to research/intake_index.yaml (stale, missing intake-1493/1494), so all intake writes happen in this worktree. Scratch: /workspace/tmp/intake-jev-exl3/. Previous session file (intake-jev-ultrafast-20260918, stage4-complete) is preserved in git history.",
+  "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-jev-exl3-20260923 (branch intake/jev-exl3-20260923 off origin/main 85f22ea8). Shared clone /workspace carried stale research-lane leftovers (working copies older than HEAD, missing intake-1493/1494) from earlier intake runs \u2014 NOT another session (operator correction 2026-09-23); cleaned up at close-out. Scratch: /workspace/tmp/intake-jev-exl3/. Previous session file (intake-jev-ultrafast-20260918, stage4-complete) is preserved in git history.",
   "previous_session": "intake-jev-ultrafast-20260918",
   "mandate": "Ingest KLPO, HelixDB, GQE, jaredpalmer/kev repos + operator digest A (OrcaRouter on Jev) + operator digest B (EXL3 VRAM tiers).",
   "raw_submissions": {

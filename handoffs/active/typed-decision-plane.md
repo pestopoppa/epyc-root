@@ -1,6 +1,6 @@
 # Typed Decision Plane — one-pass typed decisions over the local stack
 
-**Status**: in progress — **Owner: research-intake session `intake-jev-sageattn`** (operator-assigned 2026-09-17). Implementation lives in `epyc-orchestrator` on branch `intake/jev-typed-decisions-20260917` (worktree `/mnt/raid0/llm/worktrees/sub-jev-tdp-orch`).
+**Status**: in progress — **Owner: the research-intake lane** (operator-assigned 2026-09-17 to `intake-jev-sageattn`; that session is closed, and the lane owns this handoff from 2026-09-23). Implementation landed in `epyc-orchestrator` main from branch `intake/jev-typed-decisions-20260917` (merged; its worktree was retired 2026-09-23 — cut a fresh lane worktree from origin/main for new TD work).
 **Created**: 2026-09-17 (via research intake, operator-approved 2026-09-17)
 **Categories**: routing_intelligence, cost_aware_routing, inference_serving, tool_implementation, agent_architecture
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)

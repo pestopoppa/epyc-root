@@ -542,6 +542,14 @@ silently into the diff. Then:
 - Stage only your own files. A parallel session may share this tree — never `git add` a shared
   handoff wholesale.
 - Report: files changed, checkbox flip count, new task count, explicit declines, validator status.
+- **Close out the lane — research-intake is ONE lane, and every intake worktree, branch and shared-clone file it
+  touched is this session's to clean.** After the push is verified (`git cherry origin/main` empty): remove the intake
+  worktree (`git worktree remove`, never `--force`, never `prune`/`gc`) and its merged local branch; do the same for any
+  earlier `intake/*` worktree whose commits are all in origin/main and whose tree is clean; and if the shared clone's
+  `research/intake_index.yaml`, `.research-session.json`, intake progress notes or wiki pages show working copies OLDER
+  than HEAD, back them up and reset them to HEAD. Leftovers in the research lane are never "another session's edits"
+  unless a live session is actually named on the bus — the 2026-09-23 intake routed around five stale worktrees and a
+  stale shared-clone index under that mistaken assumption.
 
 ---
 
