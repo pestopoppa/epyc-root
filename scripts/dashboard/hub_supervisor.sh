@@ -119,7 +119,19 @@ SUP_LOG="${LOG_DIR}/hub_supervisor.log"       # this supervisor's own log
 HUB_LOG="${LOG_DIR}/handoff_dashboard.log"    # the hub's stdout/stderr
 LOCK_FILE="/tmp/hub_supervisor_${HUB_PORT}.lock"
 SUP_PIDFILE="${LOG_DIR}/hub_supervisor.pid"
+SUP_PROVENANCE="${SUP_PIDFILE}.provenance.json"  # NIB2-81 dp_attest record
 HUB_PIDFILE="${LOG_DIR}/hub_supervisor_hub.pid"
+
+# NIB2-81 startup self-attestation for THIS supervisor's own script — distinct
+# from `refuse_noncanonical_home` above, which guards the supervisor's HOME
+# (EPYC_ROOT: logs/pidfiles), not the inode of the script executing it. The
+# 2026-09-17 census found this exact process (pid 639194) holding a `(deleted)`
+# inode after a `git reset --hard` orphaned it, content-identical that day but
+# one commit away from silent divergence — refuse_noncanonical_home would not
+# have caught that (EPYC_ROOT was already canonical). Same directory as this
+# script, so it resolves even when EPYC_ROOT is unset.
+# shellcheck source=./daemon_provenance.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../coordination" && pwd)/daemon_provenance.sh"
 
 # The hub is stdlib-only, so any python3 runs it; prefer the interpreter the
 # stack manager uses so the relaunched process matches the managed one.
@@ -705,12 +717,24 @@ cmd_once() {
 
 cmd_loop() {
   refuse_noncanonical_home
+  # NIB2-81: attest BEFORE writing the pidfile, so a refusal leaves no stale
+  # pidfile for a peer to trust. Refuses only on step 1 (not under the
+  # canonical root); an uncommitted local edit warns and continues.
+  dp_attest "${BASH_SOURCE[0]}" "${SUP_PROVENANCE}" || exit $?
   acquire_lock
   echo "$$" > "${SUP_PIDFILE}"
   trap 'log "supervisor exiting (pid $$)"; rm -f "${SUP_PIDFILE}"' EXIT
   log "supervisor started (pid $$); watching :${HUB_PORT}${HEALTH_PATH} every ${POLL_INTERVAL}s"
   local backoff="${POLL_INTERVAL}"
   while true; do
+    # Per-iteration staleness LOG ONLY for this supervisor's OWN script — a
+    # separate question from check_hub_stale_source below, which is about the
+    # HUB it serves. No restart, no self-re-exec: that is remedy (b), out of
+    # scope for NIB2-81a. 2 (cannot tell) is silent, fail-closed by design.
+    dp_rc=0; dp_stale_since_start "${BASH_SOURCE[0]}" "${SUP_PROVENANCE}" || dp_rc=$?
+    if [[ "${dp_rc}" -eq 0 ]]; then
+      log "running stale code; restart from ${BASH_SOURCE[0]}"
+    fi
     if health_ok; then
       reconcile_hub_pid
       # DEPLOYMENT (2026-08-28). These were missing here while `loop` is the mode

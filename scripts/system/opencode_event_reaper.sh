@@ -46,6 +46,10 @@ IDLE_HOURS="${IDLE_HOURS:-2}"
 INTERVAL="${INTERVAL:-1800}"
 PRUNE="${REAPER_PRUNE:-${REAPER_DIR}/prune_agent_event_store.py}"
 REAPER_PIDFILE="${REAPER_PIDFILE:-/mnt/raid0/llm/tmp/opencode-reaper.pid}"
+# NIB2-81 (daemon_provenance.sh): where `run` records what it attested at start,
+# so `dp_stale_since_start` can compare against it every iteration. Sits next to
+# the pidfile by the same convention the report recommended.
+REAPER_PROVENANCE="${REAPER_PROVENANCE:-${REAPER_PIDFILE}.provenance.json}"
 # `-` not `:-`: an explicitly EMPTY OPENCODE_DB disables the db_fd channel (the contract sandbox has
 # no real DB and a stand-in that holds nothing open); unset means the production default.
 OPENCODE_DB="${OPENCODE_DB-/home/node/.local/share/opencode/opencode.db}"
@@ -55,6 +59,8 @@ OPENCODE_PIDFILE="${OPENCODE_PIDFILE:-}"
 # shellcheck source=scripts/coordination/observer_guard.sh
 source "${EPYC_ROOT}/scripts/coordination/observer_guard.sh"
 og_init opencode_event_reaper
+# shellcheck source=scripts/coordination/daemon_provenance.sh
+source "${EPYC_ROOT}/scripts/coordination/daemon_provenance.sh"
 
 # db_fd channel: present|absent|unavailable. Read-only. NOT a kill target (nothing here is).
 # `unavailable` when the DB path cannot be resolved or when not a single /proc/<pid>/fd directory
@@ -153,9 +159,23 @@ case "${1:-run}" in
     exit 0
     ;;
   run)
+    # NIB2-81 startup self-attestation: refuse to start from a lane worktree or
+    # a deleted tree ("a lane may develop a daemon, never run it" — this is the
+    # exact defect a stale reaper inode caused, tmp/daemon-staleness-20260917/
+    # report.md). Attest BEFORE writing the pidfile so a refusal leaves no stale
+    # pidfile behind for a supervisor to trust.
+    dp_attest "${BASH_SOURCE[0]}" "$REAPER_PROVENANCE" || exit $?
     echo $$ > "$REAPER_PIDFILE"
     while true; do
       reap_once
+      # Per-iteration staleness log ONLY — never a restart or self-re-exec here
+      # (that is remedy (b), the registry/census generalisation, out of scope
+      # for NIB2-81a). 2 (cannot tell) is silent by design, same fail-closed
+      # convention as bus_supervisor.sh's H-4 daemon_source_is_stale.
+      dp_rc=0; dp_stale_since_start "${BASH_SOURCE[0]}" "$REAPER_PROVENANCE" || dp_rc=$?
+      if [[ "$dp_rc" -eq 0 ]]; then
+        echo "[$(date -u +%FT%TZ)] running stale code; restart from ${BASH_SOURCE[0]}"
+      fi
       sleep "$INTERVAL"
     done
     ;;

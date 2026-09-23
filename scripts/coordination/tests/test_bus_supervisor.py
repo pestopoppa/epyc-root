@@ -180,7 +180,17 @@ while True:
              # Default: the stub publishes the tree it was committed at, i.e. the
              # ordinary CURRENT case. Cases that want staleness override it.
              "STUB_SOURCE_TREE": self.head_tree,
-             "STARTUP_TIMEOUT": "12"}
+             "STARTUP_TIMEOUT": "12",
+             # NIB2-81: SUP's own `loop` mode now self-attests (daemon_provenance.sh
+             # dp_attest) before it will start. Wherever this checkout actually
+             # lives — a lane worktree in dev, /workspace in canon, an arbitrary CI
+             # path — IS this test's "canonical root": the script under test sits
+             # inside it, so attesting against anything else would refuse every
+             # `loop` invocation this suite makes, unconditionally, everywhere but
+             # a canonical checkout. Same isolation principle as EPYC_ROOT/BUS_ROOT
+             # above, one directory up: SUP lives at
+             # <checkout>/scripts/coordination/bus_supervisor.sh.
+             "DP_CANONICAL_ROOT": str(SUP.resolve().parents[2])}
         e.update(extra)
         return e
 

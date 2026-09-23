@@ -59,6 +59,16 @@ if [[ -r "${BASH_SOURCE[0]%/*}/../lib/env.sh" ]]; then
   source "${BASH_SOURCE[0]%/*}/../lib/env.sh" 2>/dev/null || true
 fi
 EPYC_ROOT="${EPYC_ROOT:-/mnt/raid0/llm/epyc-root}"
+
+# NIB2-81 startup self-attestation for THIS supervisor's own script (never for
+# the daemon it watches — that is H-4, `daemon_source_is_stale` below, already
+# wired). Nothing watches the watcher's own inode: the 2026-09-17 census found
+# this exact process (pid 4137635) holding a `(deleted)` inode after a
+# `git reset --hard` orphaned it, content-identical that day but one commit
+# away from silent divergence. Same directory as this script, so it resolves
+# even when EPYC_ROOT is unset.
+# shellcheck source=./daemon_provenance.sh
+source "${BASH_SOURCE[0]%/*}/daemon_provenance.sh"
 BUS_ROOT="${BUS_ROOT:-${EPYC_BUS_ROOT:-${EPYC_ROOT}/coordination/session-bus}}"
 HEARTBEAT="${BUS_ROOT}/heartbeats/coordinator-daemon.json"
 DAEMON="${DAEMON:-${EPYC_ROOT}/scripts/coordination/session_bus_coordinator.py}"
@@ -73,6 +83,7 @@ SUP_LOG="${LOG_DIR}/bus_supervisor.log"
 DAEMON_LOG="${LOG_DIR}/coordinator_daemon.log"
 LOCK_FILE="${LOCK_FILE:-/tmp/bus_supervisor.lock}"   # overridable so tests isolate
 SUP_PIDFILE="${LOG_DIR}/bus_supervisor.pid"
+SUP_PROVENANCE="${SUP_PIDFILE}.provenance.json"      # NIB2-81 dp_attest record
 
 # C49 (2026-08-12): DAEMON_PATTERN IS GONE ON PURPOSE — do not reintroduce it.
 #
@@ -675,6 +686,10 @@ case "${1:-loop}" in
     ;;
   loop)
     acquire_supervisor_lock || exit 0
+    # NIB2-81: attest BEFORE writing the pidfile, so a refusal leaves no stale
+    # pidfile for a peer to trust. Refuses only on step 1 (not under the
+    # canonical root); an uncommitted local edit warns and continues.
+    dp_attest "${BASH_SOURCE[0]}" "$SUP_PROVENANCE" || exit $?
     echo $$ > "$SUP_PIDFILE"
     trap 'rm -f "$SUP_PIDFILE"; log "supervisor stopped"; exit 0' TERM INT
     log "supervisor started (poll ${POLL_INTERVAL}s, stale after ${STALE_AFTER}s)"
@@ -682,6 +697,15 @@ case "${1:-loop}" in
     fails=0
     gave_up=0
     while true; do
+      # Per-iteration staleness LOG ONLY for this supervisor's OWN script — the
+      # H-4 check below (check_stale_source) is about the DAEMON it watches, a
+      # separate question. No restart, no self-re-exec: that is remedy (b),
+      # out of scope for NIB2-81a. 2 (cannot tell) is silent, same fail-closed
+      # convention as daemon_source_is_stale.
+      dp_rc=0; dp_stale_since_start "${BASH_SOURCE[0]}" "$SUP_PROVENANCE" || dp_rc=$?
+      if [[ "$dp_rc" -eq 0 ]]; then
+        log "running stale code; restart from ${BASH_SOURCE[0]}"
+      fi
       if health_ok; then
         backoff=0; fails=0; gave_up=0
         # C42 BUGFIX 2026-08-12: this `continue` skipped check_once, which is where
