@@ -24,7 +24,14 @@ The completion-token distribution is bimodal — median 2 tokens, p90 exactly at
 |---|---|
 | 64 | 23.0% (46/200) |
 | 512 | 12.6% (partial, n=87) |
-| 4096 | 0 (0/56 at the time of writing) |
+| 4096 | 3.2% (3/94 at the time of writing — NOT zero) |
+
+**Correction.** An earlier version of this entry recorded cap 4096 as taking truncation to zero.
+That was extrapolated from the first 56 rows, which happened to contain none; by row 94 there were
+three. The tail is much thinner than at cap 64 but it is not empty, so the operator's instruction —
+raise the cap and rerun until truncation hits zero — is not yet satisfied at 4096 and the run
+continues at 8192 if the full 200 confirms a non-zero count. A partial count is not a converged
+one, which is the same lesson as the pooled-accuracy rule above, one level up.
 
 Untruncated-only accuracy at the gate cap was 0.714 on mmlu_pro and 0.618 on gpqa, against
 pooled 0.565 / 0.544 — the gap is the artifact.
@@ -118,7 +125,8 @@ Both on `origin/main`, `git cherry` empty.
 
 ## Open
 
-- cap-4096 arm to finish all 200; then apply the two prepared `performance:` blocks.
+- cap-4096 arm to finish all 200; if truncation is non-zero (it is 3/94 as of writing), rerun at
+  8192 per the operator's instruction, and only then apply the two prepared `performance:` blocks.
 - `:8083` reload with `LLAMA_ARG_LOG_VERBOSITY=4`, to convert the 1.802 GiB compute residual from
   a subtraction into a reading. Queued behind the gate by the bench guard, not by a decision.
 - SSU-F8 and SSU-F9 in flight.
