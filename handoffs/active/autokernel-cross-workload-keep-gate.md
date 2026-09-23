@@ -671,6 +671,13 @@ Global constraints:
 
 - [ ] **AKX-P4a — dashboard card per keep.** Show the workload × {INERT(T0/T1)/TOUCHED/UNKNOWN} matrix, row verdicts and the refusal remedy. Register it under the hub plane rule with a health probe and a freshness envelope (`dashboard/README.md`).
 - [ ] **AKX-P4b — champion standing is a workload vector.** It is never one number (R23-26), and each cell names its workload and recipe.
+- [ ] **AKX-P5 — admit the DeepSeek-V4.1 kernel levers as champion levers** (operator directive
+  2026-09-23: custom kernel work for the V4.1 port is an AutoKernel champion deliverable, not an
+  inline patch). First lever: the Engram row gather (INF-77 DS41-B7) — a generic I8 gather over
+  264-byte E4M3+E8M0 rows, 48 rows/token of random access on the decode critical path. It has no
+  V4.1-free workload today, so decide its keep-gate workload set: a synthetic gather benchmark
+  plus, once DS41-T1 passes, the real V4.1 serving surface. Second: DS41-K1, which admits the 28
+  GLM-5.3 keeps into the champion so the port inherits them by rebase.
 - [ ] **AKX-P4c — belief kernel write side.**
   - Census rows and blast-radius rows are verified structural findings. Filed 2026-09-15 as **SC81** in `vidya-belief-substrate-program.md`, with a candidate source row in `scripts/vidya/adapters/README.md` (CLAUDE.md: surface the wiring immediately, not at P0). Tick this item when SC81 lands with AKX-P0a.
   - Non-regression rows reuse the existing serving A/B archive/belief export (INF-73 "Aggregate serving gates feed the original archive and belief consumer").

@@ -130,11 +130,15 @@ tensors" reading was wrong (DS41-B0).
   Effort, component by component: attention skeleton S · indexer S · HC free · MoE free · quant
   free · compress ratios M · cross-layer KV share S-M · index share M · candidate blocks S ·
   loader/converter M · **Engram L** · **DSpark L** · vision L (dropped). ✅ 2026-09-22
-- [ ] DS41-B1 — Create the experimental branch from **production-consolidated-v10** (`ffc1bac82`,
-  build 10303, live in `kernels/production/{cpu,gpu}` since 2026-09-21), or from
-  `experimental/glm53-keeps-on-v10-20260922` if DS41-K1 admits it first. Record its exact SHA and
-  its descent from v10. Build CPU and HIP, and prove linkage with
-  `verify_ggml_linkage.sh`.
+- [x] DS41-B1a — Branch created: **`experimental/deepseek41-port-20260923`** off the **current
+  AutoKernel champion** `ak/champion/llama-cpp-ffc1bac82eec`, which today is exactly
+  `ffc1bac82` = production-consolidated-v10 (champion reseeded on the freeze; 0 commits either
+  way). Worktree `/mnt/raid0/llm/llama.cpp-experimental-deepseek41-20260923`. The frozen tree was
+  not touched (still on `production-consolidated-v10`, clean). ✅ 2026-09-23
+- [ ] DS41-B1b — Build CPU and HIP on that branch and prove linkage with
+  `verify_ggml_linkage.sh`; record the build dirs under `kernels/builds/` (pre-flight P4: never
+  build into `tmp`, evidence from an ephemeral root is inadmissible). Re-base onto the champion tip
+  whenever the champion moves, per *Kernel work rides the champion* below.
 - [ ] DS41-B2 — Arch registration and loader for `deepseek41`, with a tested antirez-name compat
   map and every tensor shape/type validated before weights load.
 - [ ] DS41-B3 — Engram: a custom FP8-row get_rows plus dequant op for the I8-packed
@@ -181,7 +185,9 @@ indexer run on these paths. Every gain was measured **only** on
 
 Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238fb41a35106a551e73c8409dfb751ac`** (MIT, reusable with notice; the branch `ds4.1flash` named on the model card **does not exist**); vcruz `runtime/deepseek41` @ `5210c7c5`; official reference under `models/deepseek-ai/DeepSeek-V4.1-Flash/`.
 
-- [ ] **DS41-B7 — Engram execution path.** The artifact ships `blk.{1,14}.engram_embd.weight` as
+- [ ] **DS41-B7 — Engram execution path** (**AutoKernel champion deliverable** — see *Kernel work
+  rides the champion*; author it model-agnostically and fold it into the champion, do not leave it
+  in the port branch).** The artifact ships `blk.{1,14}.engram_embd.weight` as
   GGML `I8`, `[264, rows]`, `deepseek41.engram.encoding = "e4m3_e8m0_32_row264"`: 256 E4M3 bytes +
   8 E8M0 bytes, one scale per 32 columns, `val = ldexpf(e4m3(code), scale-127)`, NaN guard on
   `code&127==127 || scale==255`. **`ggml_compute_forward_get_rows` has no I8 case — it `GGML_ABORT`s,
@@ -304,6 +310,29 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
 - *mHC is **not** dropped*: V4.1's `hc_*` hyper-connections are the same family and are covered by DS41-B4.
 
 ## Constraints
+
+### Kernel work rides the champion (operator directive, 2026-09-23)
+
+*"If any custom kernel work is required, make it part of an autokernel champion."* So the port
+splits in two, by where the code lives and how it is proven:
+
+| Layer | Where it lives | How it is proven |
+|---|---|---|
+| Model/graph: arch registration, loader, KV-key adapter, compress-ratio and RoPE deltas, DSpark graph | `experimental/deepseek41-port-20260923` only | DS41-T gates (parity, MTP, coherence) |
+| **Custom kernels**: the Engram I8/E4M3-row gather + dequant (DS41-B7), and any GEMM/quant work the port turns out to need | authored as **model-agnostic ggml commits** and folded into the AutoKernel champion `ak/champion/llama-cpp-<frozen-short>` | AutoKernel measurement against the champion's current headline, then folded in and the headline re-measured |
+
+Rules that follow:
+- A kernel commit must not depend on `deepseek41` symbols. The Engram op is a **generic I8 row
+  gather with an E4M3+E8M0 264-byte row layout**, usable by any model that adopts that layout.
+- Base every kernel lever on the **current champion tip**, never on this port branch and never on
+  pristine upstream; measure against the champion's current headline, fold in on validation, and
+  re-measure the headline immediately. Production promotion stays separately operator-gated.
+- The port branch **rebases onto the champion** whenever the champion moves, so the port never
+  accumulates on a stale tip (the INC-20260706 rule).
+- Consequence for the schedule: DS41-B7 is an AutoKernel deliverable with its own keep gate, not an
+  inline patch in the port branch. Its acceleration-path caveat is in DS41-T8.
+- This also puts the 28 GLM-5.3 keeps on the same track: DS41-K1 admits them into the champion, and
+  the port inherits them by rebasing, rather than by carrying a second branch.
 
 - Production kernels are frozen; all work goes on `llama.cpp-experimental` branches. The
   `llama.cpp-deepseek-v4` tree (antirez's V4 fork) is reference only.
