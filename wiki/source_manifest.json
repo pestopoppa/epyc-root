@@ -12,26 +12,28 @@
   "last_touch": {
     "advanced": {
       "added": 0,
-      "changed": 2,
+      "changed": 4,
       "removed": 0
     },
-    "at": "2026-09-24T20:15:59Z",
+    "at": "2026-09-24T20:18:47Z",
     "scope_paths": [
-      "handoffs/active/tool-output-compression.md",
-      "progress/2026-09/2026-09-24-td21.md"
+      "docs/reference/speech/cpu-speech-contention-20260924.md",
+      "handoffs/active/CURRENT-CAMPAIGN.md",
+      "handoffs/active/kv-unified-stack-rollout.md",
+      "handoffs/active/multimodal-pipeline.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-24T20:15:59Z",
+  "scan_time": "2026-09-24T20:18:47Z",
   "schema_version": 1,
-  "source_set_hash": "2ae95ba9fd4594c6588bdda664bd90a4b35ba8797a7d04267ce3cc74dba6e99d",
+  "source_set_hash": "1afa75e5ddf2bd9c24450d9172964a19c0945ba146cac0d393e6f3f92a3f8e43",
   "sources": [
     {
-      "content_hash": "8f7b845f2ac11bcadc2b5444f6119ca8858f87a39b922375d56dd9ccfade529f",
-      "modified": "2026-09-24T19:56:04Z",
+      "content_hash": "8595f5d9339b0046d8720c31a58567e781bd250c32406bdc381c523e28197e7d",
+      "modified": "2026-09-24T20:17:06Z",
       "path": "handoffs/active/CURRENT-CAMPAIGN.md",
-      "size": 29515,
+      "size": 29561,
       "title": "Current campaign state",
       "type": "handoff-active"
     },
@@ -700,10 +702,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "93d00a6280a6b1fd6d6a5d7dfc8decd2be1b1ccc1ee2c61aac4b07bef75fe216",
-      "modified": "2026-09-24T19:59:35Z",
+      "content_hash": "c86c8e873cbd25a1ed10ede2c911351a39a7af6acefb628443071b655e9c1f4a",
+      "modified": "2026-09-24T20:17:06Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 29996,
+      "size": 30608,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -876,10 +878,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "757b6aca1d2a29fd74cdbd386786ab196a14ab7882eb21c6650b405e968800f6",
-      "modified": "2026-09-24T19:56:04Z",
+      "content_hash": "888ebfacd725afccbeafde3d2bbd4d9781bc161390c6f4958f25ad0d53333967",
+      "modified": "2026-09-24T20:17:06Z",
       "path": "handoffs/active/multimodal-pipeline.md",
-      "size": 98732,
+      "size": 98765,
       "title": "Multimodal Pipeline: Vision + TTS + ASR",
       "type": "handoff-active"
     },
@@ -8700,10 +8702,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "3fbabf8775b20d01850938c893f3536b88f38b768bbad4cc0cfd775d20ec189f",
-      "modified": "2026-09-24T19:59:10Z",
+      "content_hash": "64adb6e702a6a1d3fbe0d8289db446ba0b3c132613467fd437b0c33b24eac4d7",
+      "modified": "2026-09-24T20:17:06Z",
       "path": "docs/reference/speech/cpu-speech-contention-20260924.md",
-      "size": 11407,
+      "size": 11582,
       "title": "CPU speech vs CPU LLM roles, and the GPU constraints behind it (2026-09-24)",
       "type": "docs"
     },
