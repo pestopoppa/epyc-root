@@ -963,6 +963,18 @@ the docker containers remain — a **candidate, unproven** source of that 800% p
         > GB/s per L3 domain, effect on this host unmeasured, needs its own A/A); E status quo (cooperative
         > lock plus the labelled tax). Our cpu_region_lock is a 50 ms non-blocking poll with no FIFO and
         > shares the starvation exposure. Authorizes no broker, slice, cgroup or resctrl work.
+        > **Evidence added 2026-09-24 (production-serving angle, not previously represented above):** DS41
+        > run 8's full-host CPU-floor calibration held the whole CPU region ~13:43Z→15:32Z (stopped by the
+        > operator), during which production frontdoor `/chat` placement timed out (HTTP 504) — the REPL
+        > layer masked this as a model-quality regression ("all comments" no-progress failures) until fixed
+        > (orch `32a52fba`), and a first OP-51 A/B ran invalid inside the same window before being repeated
+        > clean once the region was free (`handoffs/active/typed-decision-plane.md` TD-21.1a). This is the
+        > same cooperative-lock-has-no-priority-tiers gap E above already names, sharpened to a concrete
+        > production-availability cost (not just a research-arm cost/tax): the standing behaviour has no
+        > notion that a production role's admission request should ever outrank a research calibration's.
+        > Filed as evidence for the operator's OP-41 design, per U4-SEQ's own instruction, not as a new
+        > decision or a broker-build task — OP-41's "no action now" ruling already covers this exact space
+        > and remains unchanged by this incident.
 
 - **OP-40 IS NOW PART OF OP-41 — ONE item, owned by `ak-rebuild-20260828` (transferred 2026-09-08).**
   INF-70 closed today and, on an **operator ruling**, transferred its **OP-40** (unfenced tooling inside the

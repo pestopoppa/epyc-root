@@ -98,7 +98,7 @@ episodic memory writing."
     (orch `b284ede3`), so no declared `/completion` lane is needed. Verified live on frontdoor :8070 through
     `LlamaServerBackend` (same prompt: prose without a schema, schema-valid JSON with one) and end to end through
     the reloaded API (`/chat` + `output_schema` + `force_role=frontdoor` → `{"answer": true, "city": "Paris"}`).
-  - [ ] **TD-1d.2 — re-run the TD-1d native arm through `LLMPrimitives` on frontdoor.** The 0/24 above was the
+  - [x] **TD-1d.2 — re-run the TD-1d native arm through `LLMPrimitives` on frontdoor.** The 0/24 above was the
     dropped grammar; the schema path is now live, but the native candidate-probability readout over `/v1`
     (`logprobs`/`top_logprobs` instead of `/completion`'s `n_probs`) has not been re-measured. One short window
     with `src/typed_decisions/bench.py`; schedule it outside a CPU-decode campaign window.
@@ -111,10 +111,31 @@ episodic memory writing."
       verified faithful; that hypothesis was wrong.) Re-bench 13:38-13:41Z: JSON 0/24 now ends on `length`
       (1600-token budget too small for the schema+reasoning), native still unchanged (the flag appears not to
       reach the server). Diagnosis in flight.
-    - [ ] Raise the JSON arm's token budget above 1600 (measured ending on `length`, not a real parse failure)
-      and re-bench.
-    - [ ] Trace why the native `post_sampling_probs` request flag (orch `71be6ed3`) is not reaching the
-      server — native result unchanged across the fix.
+    - [x] Raise the JSON arm's token budget above 1600 (measured ending on `length`, not a real parse failure)
+      and re-bench. ✅ 2026-09-24 — schema-aware budget landed (`8977f540`); late-afternoon re-bench: **JSON arm
+      24/24 decisions, 23/24 vs labels.**
+    - [x] Trace why the native `post_sampling_probs` request flag (orch `71be6ed3`) is not reaching the
+      server — native result unchanged across the fix. ✅ 2026-09-24 — root cause is not the flag: the frozen
+      production kernel's MTP speculative-accept path never populates token probabilities at all (`// TODO: set
+      result.probs` in `server-context.cpp`) — ~94% of frontdoor tokens come from accepted MTP drafts, so
+      `post_sampling_probs` has nothing to read on those tokens regardless of the request flag. **Operator
+      decision (2026-09-24 ~15:45Z): NATIVE mode is out of reach on the current production kernel; patch the
+      spec-accept path in kernel research and advance the AutoKernel champion so future campaigns pick it up**,
+      rather than disabling MTP for frontdoor or reworking the flag further. Filed as its own task: TD-1d.5.
+    - ✅ 2026-09-24 **closed overall**: JSON arm cleared the bar (24/24, 23/24 vs labels, `8977f540`); the native
+      arm's remaining gap is not a bench defect but a kernel limitation with an explicit operator disposition
+      (patch-in-kernel-research, tracked as TD-1d.5). Nothing left dispatchable under TD-1d.2 itself.
+  - [ ] **TD-1d.5 — spec-accept path never fills token probabilities on the frozen production kernel (`llama.cpp`
+    `server-context.cpp`, MTP speculative-accept path, `// TODO: set result.probs`).** Blocks the native
+    typed-decision arm's candidate-probability readout (TD-1d.2) because ~94% of frontdoor tokens are accepted
+    MTP drafts with no probs attached, regardless of the `post_sampling_probs` request flag (orch `71be6ed3`).
+    Operator decision 2026-09-24 ~15:45Z: patch it via kernel research on an experimental branch (never patch
+    the frozen `production-consolidated-v10` tree in place — full experimental → validate → new-production
+    cycle per CLAUDE.md), then advance the AutoKernel champion so campaigns pick up the fix. A subagent is
+    preparing the patch on an experimental branch as of this wrap-up; build/validation needs an operator-granted
+    CPU window (**in flight**). Owner: `handoffs/active/speculative-decoding-mtp-refresh.md` **SW-7** (filed
+    there as the kernel-side task; this row tracks the typed-decision consumer side and is closed by SW-7
+    landing + a native re-bench).
   - [ ] **TD-1d.2 — concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`**
     (probed: parallel wall == serial wall, max 1 slot busy). A constraint on every future fan-out design, not
     just this one; independently matches the 09-17 note's `heavy_model` lock observation.
@@ -234,7 +255,9 @@ episodic memory writing."
     timeouts behind an AutoKernel CPU-floor calibration holding the whole CPU region — the REPL masked them as
     "all comments" no-progress failures (fixed: orch `32a52fba`, infra sentinels end the turn with the right
     status; live check → HTTP 504 in 1 turn). Suspended `6b26f3ae` meanwhile. Clean A/B 15:35Z with the region
-    free: on 3/3 HTTP 200 `{"result": 51}`, off 3/3 HTTP 200 bare `51`, 1 turn each.
+    free: on 3/3 HTTP 200 `{"result": 51}`, off 3/3 HTTP 200 bare `51`, 1 turn each. (DS41 run 8 held the region
+    ~13:43Z→15:32Z, stopped by the operator; the region-hog-vs-production-serving policy question is evidence
+    under `autokernel-unified-surface-program.md` U4-SEQ, not a new decision — OP-41 already rules that space.)
   - [x] **TD-21.2 — `scripts/autopilot/controller_io.py:739` autopilot ACTION block.** Shape: the fenced
     `json:autopilot_actions` object. Today: marker-index fish; on a miss the provider is failed, one fallback
     provider is re-prompted **from zero**, and a deterministic `seed_batch` default action is written into the
@@ -358,7 +381,17 @@ episodic memory writing."
     fixtures leaked the flag value across test files. Suspended 15:2xZ (`fcbb705f`, operator), fixed (only empty
     extractions are parse failures; fixtures restore the prior value; a guard asserts the pin sees the real flag),
     re-enabled with the fix. Rows 11:59Z–~15:26Z with `answer_parse_failed[exact_match|f1_list]` may be excluded
-    wrong answers; no backfill.
+    wrong answers; no backfill. **Investigated 2026-09-24: 0 affected rows, no correction needed.**
+    - [x] **Investigate and resolve the E19-affected rows** (scored 11:59Z–~15:26Z with
+      `answer_parse_failed[exact_match|f1_list]` under the defective exclusion). ✅ 2026-09-24 — resolved,
+      **zero rows affected**: nothing that uses `debug_scorer`/seeding_scoring persisted a row in
+      [11:59:11Z, 15:40Z]; AutoPilot was not running in that window (journals last written 2026-06-27 and
+      2026-08-09); the ratify/unit-test runs in the window were ephemeral pytest; TD-1d.2's bench measures
+      agreement and imports no scorer; the one gold-scored run in the window
+      (research `np_context_kvu_study`, 15:44-15:46Z) uses the independent research `answer_scoring.py`, which
+      carries no E19 flag; the AutoKernel loop is speed-only. `grep -rl answer_parse_failed` over
+      orchestrator `data/`+`orchestration/`+`logs/`, research `data/benchmarks` and root `data/`+`tmp/` returns
+      0 files. No backfill needed.
   - [x] **TD-21.15 — `scripts/autopilot/eval_tower.py:3887,:3911` rubric-judge scores** (call `:4464`). Shape:
     `{"scores":{dim: float in [0,1]}}`. Today: fence strip + brace slice with range validation; if EVERY judge
     is unparseable the question silently falls back to `deterministic_rubric_fallback` stamped

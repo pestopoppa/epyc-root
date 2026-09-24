@@ -11,21 +11,21 @@
   "last_compile": "2026-09-24T13:27:48Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 1,
+      "added": 0,
+      "changed": 2,
       "removed": 0
     },
-    "at": "2026-09-24T14:30:58Z",
+    "at": "2026-09-24T16:10:34Z",
     "scope_paths": [
-      "handoffs/active/ernie-image-turbo-evaluation.md",
-      "progress/2026-09/2026-09-24-qwen-image-production-cutover.md"
+      "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "handoffs/active/typed-decision-plane.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-24T14:30:58Z",
+  "scan_time": "2026-09-24T16:10:34Z",
   "schema_version": 1,
-  "source_set_hash": "fe2a79e838c131fb6db038068c1a19d2975a98c5f6e57f408e9540902924bcb1",
+  "source_set_hash": "d00804f7d5953867673118df219c1a9fb57b16b829121f7801e5c03d09223311",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -1204,10 +1204,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8adfd453ea47d0d46c3e122d3f6f9f79d83c3c4f6957258d3c34f0407b342cd0",
-      "modified": "2026-09-24T13:18:48Z",
+      "content_hash": "17259ad2ae803910ddc6d620fe2d5b781805fe655351a43bda5d073ce3dbbc37",
+      "modified": "2026-09-24T16:06:26Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 83489,
+      "size": 84848,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1316,10 +1316,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ae7e2b5f083fd5b9cb9f6f9be95fe0dc2c2e0c92b6b5a321b693918b5001840f",
-      "modified": "2026-09-24T13:56:01Z",
+      "content_hash": "128a6d098425d6e70b3ba160a05faa04aa3ca4cc8f9a0cc06c2e1ac7204363bc",
+      "modified": "2026-09-24T16:07:43Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 74510,
+      "size": 79448,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },

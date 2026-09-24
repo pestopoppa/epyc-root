@@ -683,10 +683,13 @@ supplies the value under test cannot fail on it.
   `scripts/validate/check_contention_matrix_fresh.py` is a pre-commit gate, so INF-41 S-11a (and any other
   `stack_manifest.py` change) cannot land until `scripts/server/contention_matrix.py` is re-run — a live
   bench sweep against production ports, i.e. an inference-session task.
-- [ ] **SSU-F15 — some `tests/unit` failures hit the host-wide `heavy_model` lock rather than a code defect.**
+- [x] **SSU-F15 — some `tests/unit` failures hit the host-wide `heavy_model` lock rather than a code defect.**
   A fix for a concurrent-import race on `inference_lock` was in flight as of 2026-09-24 (a background agent
   running the diagnosis); once landed, re-run the affected tests before attributing them to topology drift so
   SSU-F13's bucket count isn't inflated by a test-infra race.
+  ✅ 2026-09-24 — resolved by orch `f42b2895`: hermetic `heavy_model` lock/gate for unit tests plus the
+  `inference_lock` concurrent-import race fix. Re-run affected tests against this commit before folding any
+  remaining failures into SSU-F13's bucket.
 
 ### SSU-F2 outcome — the Flash-Next "quality gap" was a measurement artifact (2026-09-23)
 
