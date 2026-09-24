@@ -224,45 +224,77 @@ episodic memory writing."
     ✅ 2026-09-24 — same commit. Not dead after TD-21.4: it is a business-rule re-prompt (MCQ misroute), not a
     parse recovery. Converted: cheap fish kept; on a miss one `{"letter": enum A-D}` repair turn; on a further
     miss the prior schema-valid decision is kept.
-  - [ ] **TD-21.6 — `src/proactive_delegation/review_service.py:916` `_parse_review_response`.** Shape:
+  - [x] **TD-21.6 — `src/proactive_delegation/review_service.py:916` `_parse_review_response`.** Shape:
     `{d,f,s,c}` / `{d,s,f,p}` / TaskIR steps. Today: fence slice then a raw `find("{")`/`rfind("}")` re-slice;
     `parse_failure_count` is incremented but a **default verdict still flows** (`request_changes` / `ok` /
     `approve`, rubric axes default `True`). Action: adopt TD-1. **The constraint already exists**:
     `review_grammar.py:59,:102` ship the json_schema payloads and `:185,:213` the GBNF, and `llm_call` is
     simply never passed either.
-  - [ ] **TD-21.7 — `src/proactive_delegation/review_service.py:1030` → `review_grammar.py:298` ReviewDecision.**
+    ✅ 2026-09-24 — orch `2c72295d`: all four consumers send a closed schema on the first call and route a miss
+    through `parse_with_repair`. Terminal failure is typed, never a default verdict: `review()` withholds
+    `request_evidence` (was `request_changes`; the delegator's bounded iteration path is unchanged);
+    `review_plan()`/`review_plan_rubric()` write `parse_failure` (the ledger's `PARSE_FAILURE_DECISIONS` now buckets
+    it — was a fabricated `ok`/`approve`), rubric axes `None` not `True`; `generate_taskir()` returns an explicit
+    `parse_failed=True` step instead of an empty plan. Every `review_decision` event gains `repaired`. No review
+    era scope exists, so no era row; old rows not backfilled.
+  - [x] **TD-21.7 — `src/proactive_delegation/review_service.py:1030` → `review_grammar.py:298` ReviewDecision.**
     Shape: the full `orchestration/review_decision.schema.json` object. Today: balanced-brace fish + Draft202012
     + typed `ParseFailure`, withholding as `REQUEST_EVIDENCE` (admissibility-safe). Action: pass the schema that
     `review_grammar` already generates, then keep the withhold path as the residual. Measured warrant: 4.1%
     parse failure over 1,366 events (2026-08-13).
-  - [ ] **TD-21.8 — `scripts/review/review_replay_50.py:110` seam swallows the constraint.**
+    ✅ 2026-09-24 — same commit: `review_candidate()` sends `review_decision_response_schema()` (X4); the existing
+    fish + Draft 2020-12 validation + typed `ParseFailure` stays first, one repair turn before the
+    `REQUEST_EVIDENCE` withhold, which is now the residual.
+    **Decision (operator ask: wire or archive):** `rubric_review.py` (RD-2 engine, no runtime caller since
+    2026-07-17) and the rubric half of `review_grammar.py` were **archived by deletion** (repo precedent
+    `87c5f970`; git history is the archive). `review_plan_rubric` is the production rubric path; the persisted
+    `GradeResult` shape survives in `review_ledger.py`'s duck-typed adapter and `review_rubric.schema.json`.
+  - [x] **TD-21.8 — `scripts/review/review_replay_50.py:110` seam swallows the constraint.**
     `LiveServerPrimitives.llm_call(..., **_: Any)` discards `json_schema`/`grammar`/`seed`, so TD-21.6/21.7 are
     unobservable through this harness. Action: forward the kwargs. Zero inference; blocks the reviewer replay
     evidence for the two rows above.
+    ✅ 2026-09-24 — same commit: `LiveServerPrimitives.llm_call` forwards `json_schema` (as `response_format`),
+    `grammar` and `seed`, so reviewer replay exercises the constraint.
   - [ ] **TD-21.9 — `scripts/benchmark/debug_scorer.py:1111` LLM-judge boolean.** Shape: `true|false`.
     Today: `verdict.lower().startswith("true")`, and `output_schema` is forwarded only on the `/chat` branch
     (`:1169`). Action: enum-bound `true|false` — removes the prefix-match artifact at the source. Judge role is
     `LLM_JUDGE_ROLE` else `architect_general` :8083.
   - [ ] **TD-21.10 — `scripts/benchmark/debug_scorer.py:1211` raw llama-server judge branch.** Shape: the same
     verdict. Today: strict dict access with no schema sent on this branch. Action: send the schema here too.
-  - [ ] **TD-21.11 — `scripts/benchmark/debug_scorer.py:359` multiple-choice letter** (used `:234,:286,:294`).
+  - [x] **TD-21.11 — `scripts/benchmark/debug_scorer.py:359` multiple-choice letter** (used `:234,:286,:294`).
     Shape: one option letter. Today: five regex strategies, the last returning the final standalone letter
     unconditionally; an unparseable model answer returns `False` = **scored wrong**, with no counter. Action:
     native enum, and record a `parse_fail` category instead of `False` — the exclusion path already exists
     (`seeding_scoring.py:83-113`) and is simply never reached for model-side failures.
-  - [ ] **TD-21.12 — `scripts/benchmark/debug_scorer.py:1400`/`:1649` list-answer F1.** Shape: a list of items.
+    ✅ 2026-09-24 — orch `af8a4a1b`/`940e0553`/`ec412724`: a no-letter answer is a counted model-side parse failure; with
+    `EXCLUDE_UNPARSEABLE_ANSWERS` (default OFF) it raises `AnswerParseError` (a `ScoringUnavailableError`) and
+    leaves the denominator via `seeding_scoring.score_answer_or_error`. Default scores byte-identical.
+  - [x] **TD-21.12 — `scripts/benchmark/debug_scorer.py:1400`/`:1649` list-answer F1.** Shape: a list of items.
     Today: bullets → numbered → **comma-split** → one-per-line; a mis-parse silently lowers F1. Action: ask for
     a JSON array under a schema. This is the `feedback_substring_scorer_comma_brittle` class.
-  - [ ] **TD-21.13 — `scripts/benchmark/debug_scorer.py:1433,:1743,:1758` structural exact-match.** Shape: a
+    ✅ 2026-09-24 — same commits: only a sub-threshold F1 produced by the raw one-per-line fallback is a parse
+    failure; a cleanly extracted but wrong list stays wrong.
+  - [x] **TD-21.13 — `scripts/benchmark/debug_scorer.py:1433,:1743,:1758` structural exact-match.** Shape: a
     JSON/Python value after the last `solution =` marker. Today: marker fish + `json.loads`/`literal_eval` with a
     never-raising fallback; a missing marker returns `False` = scored wrong. Action: a schema makes the marker
     unnecessary.
-  - [ ] **TD-21.14 — `scripts/benchmark/debug_scorer.py:1477,:1495,:1595` answer / `\boxed{}` / is-this-JSON.**
+    ✅ 2026-09-24 — same commits: a missing `solution =` marker is a flag-gated parse failure.
+  - [x] **TD-21.14 — `scripts/benchmark/debug_scorer.py:1477,:1495,:1595` answer / `\boxed{}` / is-this-JSON.**
     Today: regex chain; `:1607-1611` is the classic `find("{")`/`rfind("}")` slice. Action: adopt TD-1 for the
     JSON and final-answer cases. Fence extraction (`:1550`) may stay wherever an execution oracle runs.
-    **Acceptance for TD-21.9..21.14 jointly**: report the per-arm parse-failure rate beside every accuracy
+    **Acceptance for TD-21.9..21.14 jointly**: report the per-arm parse-failure rate beside every accuracy ✅ 2026-09-24 for 21.11–21.14 (orch `940e0553`): `EvalTower._aggregate` reports
+    `parse_failure_count` / `parse_failure_by_method` / `parse_failure_rate` in `details` beside quality and accuracy
+    on every trial, counted per `eval_batch_id` so concurrent arms never mix; always on, independent of the flag.
+  - [ ] **TD-21.EQ1 — operator: ratify the exclusion (OP-50).** `bash scripts/operator/ratify_eq1_answer_parse_exclusion_20260924.sh --show`
+    then `--apply`: flips `EXCLUDE_UNPARSEABLE_ANSWERS`, appends era `E19-eval-answer-parse-failure-excluded-quality`
+    (`eval_quality`), moves the one default-contract test with the flip, runs the scorer suite, prints the commit.
+    Tension, stated in the era note: E17 pulled failures INTO the denominator; this pulls unparseable answers OUT —
+    guarded by the always-on parse-failure rate beside every accuracy.
     before and after, per the 2026-07-20 standing rule; the warrant is the verbose arm's 15% false
     parse-failures vs 0% and the gpqa 43.4% -> 53.0% re-score.
+    ✅ 2026-09-24 — same commits: only "fell back to the raw last line AND nothing matched" is a parse failure;
+    IFEval `json_valid` stays byte-identical (a real oracle — a first draft's `fish_json` swap would have passed
+    invalid JSON, reverted in review).
   - [ ] **TD-21.15 — `scripts/autopilot/eval_tower.py:3887,:3911` rubric-judge scores** (call `:4464`). Shape:
     `{"scores":{dim: float in [0,1]}}`. Today: fence strip + brace slice with range validation; if EVERY judge
     is unparseable the question silently falls back to `deterministic_rubric_fallback` stamped
@@ -279,15 +311,22 @@ episodic memory writing."
     `review_grammar` validator runs first (good), but extraction falls back to a local balanced-brace scanner.
     Action: adopt TD-1 on the extract side; `CritiqueEmissionStats.parse_failures` already gives the before/after
     metric.
-  - [ ] **TD-21.19 — `src/vision/analyzers/vl_describe.py:409` structured image extraction.** Shape: free-form
+  - [x] **TD-21.19 — `src/vision/analyzers/vl_describe.py:409` structured image extraction.** Shape: free-form
     JSON from an image. Today: fence split + `json.loads`; on failure `structured=None` with `parse_error` but
     `result.success` stays **True** — a fail-open silent default that downstream cannot distinguish from "nothing
     in the image". Action: adopt TD-1 against `worker_vision` :8086 (its payload at `:165-181` sets no schema, and
     that port is on the `/completion` lane, so no TD-21.0 dependency).
-  - [ ] **TD-21.20 — `src/api/routes/chat_pipeline/proactive_stage.py:57` plan-step decomposition.** Shape:
+    ✅ 2026-09-24 — orch `d8a88f73`: `VLStructuredAnalyzer` sends an open object schema (fields are genuinely
+    caller-open) and repairs on a fish miss against its own VL server; terminal failure now sets
+    `success=False` + `error` (the signal `vision/pipeline.py` already routes on) instead of fail-open `True`.
+    Describe/OCR payloads byte-identical.
+  - [x] **TD-21.20 — `src/api/routes/chat_pipeline/proactive_stage.py:57` plan-step decomposition.** Shape:
     `[{id, action, actor, depends_on, outputs}]`. Today: fence strip + trailing-comma regex; on failure returns
     `[]` and falls through to the standard pipeline with no counter and no telemetry — the whole architect call
     is discarded invisibly. Action: adopt TD-1, and count the failure.
+    ✅ 2026-09-24 — same commit: `_decompose_plan_steps` — fish unchanged (0 calls on the happy path), then one
+    repair turn on the architect role with `actor` ∈ {worker, coder, architect} (from the architect's own prompt
+    contract); a terminal failure is logged and counted, the `< 2 steps` fall-through rule is unchanged.
   - [ ] **TD-21.21 — `src/edit_transaction.py:333,:401` whole-file rewrite protocol** (parser `:85`). Shape:
     `<<<FILE: path>>>…<<<END>>>` / `<<<DELETE: path>>>`. Today: two regex families, fail-closed (nothing written),
     but the prompt carries the full scoped file corpus, so a dropped `<<<END>>>` throws away a max-context
@@ -305,10 +344,13 @@ episodic memory writing."
   - [ ] **TD-21.22a — `llm_batch` has no `json_schema` parameter.** Wire-schema forwarding for the batch path needs
     the parameter threaded through `_real_batch`/`_mock_batch`/`_worker_pool_batch` and every `llm_batch` caller in
     `src/llm_primitives/`; until then the batch schema is prompt text plus the repair turn.
-  - [ ] **TD-21.23 — `src/pipeline_monitor/model_grader.py:173` grader classification.** Shape: one letter from
+  - [x] **TD-21.23 — `src/pipeline_monitor/model_grader.py:173` grader classification.** Shape: one letter from
     `spec.choice_strings`, expected on the last line. Today: a last-line word-boundary regex; a mis-formatted reply
     silently becomes an ungraded row. Action: native enum — the path already runs `/chat` `force_mode=direct`,
     which supports `output_schema`.
+    ✅ 2026-09-24 — same commit: `grade_answer` sends `output_schema` = enum over `spec.choice_strings`; native
+    parse first, the last-line regex as backstop; unparseable → `classification="parse_error"` (score `None`, as
+    before) counted in `GRADER_CLASSIFICATION_OUTCOME_COUNTS` instead of a silent `None`.
   - [ ] **TD-21.24 — `scripts/analysis/reviewer_policy_arm_ab.py:337` A/B reviewer verdict.** Today:
     `find("{")`/`rfind("}")` then a bare first token; unparseable falls to `DEFAULT_DECISION` **silently** and that
     default is written into the A/B result. Action: adopt TD-1 — a silent default biases the measurement the
