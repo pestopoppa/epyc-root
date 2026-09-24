@@ -161,3 +161,27 @@ worktree is frozen because it is run 8's `EPYC_ROOT_REPO`. Run 8 was not touched
 
   Kept `/mnt/raid0/llm/tmp/ak-seat-ab` with its lane, the frozen ak-seat-handoffs worktree, and
   `/mnt/raid0/llm/tmp/ak-seat-vbseat-proof` (the evidence for b1).
+
+### Learnings persisted to repo docs (operator request: visible to every agent, not only Claude memory)
+
+Every claim was checked against research main `21ca61b0` and the audited opencode source at `350c726aa`
+(`/mnt/raid0/llm/harness/opencode`).
+
+| File | Section written |
+|---|---|
+| `docs/reference/harness-candidates/opencode-p03-audit-20260916.md` | New *Addendum 2026-09-24: `opencode run` as a headless actor — measured pitfalls*. A 7-row table (stdin re-quoting at `run.ts:288-290`; pipe truncation; agent `prompt` replacing the system prompt at `request.ts:60`; compaction echo; rc=1 with a complete reply; `hidden` is TUI-only; the unused `task` tool), plus the no-model-call config checks (`debug config`, `debug agent`, `mcp list`). |
+| `handoffs/active/harness-selection-and-integration.md` | HS-4 P7: a pointer to that addendum. |
+| `docs/guides/agent-workflows/agent-loop-design.md` | New *Launching and stopping a DS41-style serial run* (`PYTHONPATH`, `EPYC_ROOT_REPO`, the dry-run floor banner, no mid-run fast-forward, stop semantics before and after `21ca61b0`, the actor-seat default). New *Who owns fan-out and context: the orchestrator* (the operator ruling). The existing stop paragraph now points at the new section. |
+
+No research-repo doc was edited. The research roster doc covers the owner-map contract, and the root loop guide
+is where the `serial_run` CLI is operated.
+
+### TD-21.29/30 and run 8
+
+TD-21.29/30 landed on research main (`4915220f` + `34373dd8`). Run 8 does not carry them, by design: the shared
+clone stays at `21ca61b0` while run 8 runs. Two edits to the DS41 handoff:
+- a note under C10 on the semantics to expect when comparing run 9 with run 8;
+- **DS41-C10a**: fast-forward the shared research clone to ≥ `34373dd8` only after run 8 stops, before run 9.
+
+I did not tick TD-21.29/30 in `typed-decision-plane.md`. Those boxes belong to the TD-21 session, and on
+origin/main they are still unticked.
