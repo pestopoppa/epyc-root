@@ -190,10 +190,14 @@ episodic memory writing."
     and `primitives_completer`; counters `STRUCTURED_OUTPUT_REPAIR_COUNTS`. Closes the reference's TD-21.30
     (b)(d)(e) weaknesses in the shared copy. 33 tests; live smoke on :8070: prose → `repaired` in one call,
     an explicit refusal → `declined`, never a fabricated object.
-  - [ ] **TD-21.1 — `repl_executor.py:671` REPL `FINAL()` schema validation** (validator `src/graph/helpers.py:1336`).
+  - [x] **TD-21.1 — `repl_executor.py:671` REPL `FINAL()` schema validation** (validator `src/graph/helpers.py:1336`).
     Shape: the caller's `request.output_schema`. Today: strict `json.loads` + jsonschema with **retry from zero**
     — `turns=0`, role reset, the entire `run_task` graph re-run, up to 2 attempts, then the invalid answer is
     returned anyway. Action: adopt the TD-1 repair turn before the graph re-run. Highest failure cost in either repo.
+    ✅ 2026-09-24 — orch `d7202dc9`: on FINAL() schema failure ONE `parse_with_repair` turn (`site="repl_final"`,
+    producing role) runs before any graph re-run; fish-only recovery costs 0 calls, a hit costs 1 and no re-run; a
+    miss falls back to the old retry-from-zero path. Terminal defect fixed: exhausted → `error_code=422` +
+    `error_detail`, so `/chat` returns 422 with the full response body instead of a silent 200. No backfill.
   - [ ] **TD-21.2 — `scripts/autopilot/controller_io.py:739` autopilot ACTION block.** Shape: the fenced
     `json:autopilot_actions` object. Today: marker-index fish; on a miss the provider is failed, one fallback
     provider is re-prompted **from zero**, and a deterministic `seed_batch` default action is written into the
@@ -202,16 +206,24 @@ episodic memory writing."
   - [ ] **TD-21.3 — `scripts/autopilot/controller_io.py:776` action RATIONALE block.** Shape:
     `json:autopilot_rationale`. Today: same fish; returns `{}` silently and an empty rationale is persisted.
     Action: adopt TD-1 (same repair call as TD-21.2).
-  - [ ] **TD-21.4 — `src/api/routes/chat_delegation_decision.py:47,:107` TOON delegation decision.** Shape: a
+  - [x] **TD-21.4 — `src/api/routes/chat_delegation_decision.py:47,:107` TOON delegation decision.** Shape: a
     closed set — `D|<answer>` vs `I|brief:…|to:<role>|mode:<react|repl>`. Today: ~8 stacked regexes with **no
     failure mode** — unparsed architect prose is wrapped as `D|<prose>` and served as the user-visible answer,
     and `delegate_to`/`mode` are silently clamped. Action: adopt TD-1, or better a native enum (the decision
     is `{direct, investigate} x role x mode`). Server: `architect_general` :8083, already on the `/completion`
     lane, so no TD-21.0 dependency.
-  - [ ] **TD-21.5 — `src/api/routes/chat_delegation_decision.py:423` MCQ letter re-prompt.** Shape: one of A-D.
+    ✅ 2026-09-24 — orch `dc36350f`: `resolve_architect_decision` — strict fish (0 extra calls, happy path
+    byte-identical over 188 existing tests), then one repair turn on the same architect role against a schema
+    whose `delegate_to`/`delegate_mode` enums come from the live allow-lists. Repair failure: a ≤50-char reply
+    is kept as a short direct answer (the parser's own threshold); longer prose becomes the `[ERROR:` sentinel the
+    loop already breaks on — no `D|<prose>` leak to the user, no silent role clamp.
+  - [x] **TD-21.5 — `src/api/routes/chat_delegation_decision.py:423` MCQ letter re-prompt.** Shape: one of A-D.
     Today: `_extract_toon_decision` then `\b([A-D])\b`; on a miss it keeps the previous mis-routed decision.
     Action: native enum. Note this call ALREADY exists only to recover a parse failure from TD-21.4 — converting
     TD-21.4 may delete this site outright.
+    ✅ 2026-09-24 — same commit. Not dead after TD-21.4: it is a business-rule re-prompt (MCQ misroute), not a
+    parse recovery. Converted: cheap fish kept; on a miss one `{"letter": enum A-D}` repair turn; on a further
+    miss the prior schema-valid decision is kept.
   - [ ] **TD-21.6 — `src/proactive_delegation/review_service.py:916` `_parse_review_response`.** Shape:
     `{d,f,s,c}` / `{d,s,f,p}` / TaskIR steps. Today: fence slice then a raw `find("{")`/`rfind("}")` re-slice;
     `parse_failure_count` is incremented but a **default verdict still flows** (`request_changes` / `ok` /
@@ -283,10 +295,16 @@ episodic memory writing."
     the block form. Also fixes the J17/BEP arms (`internal_interaction_j17_live_ab.py:340`,
     `bep_edit_mode_wiring.py:118`) which share the parser — and whose in-code claim that "/chat does not expose
     constrained decoding" is only true for `/v1`-lane roles (TD-21.0).
-  - [ ] **TD-21.22 — `src/repl_environment/routing.py:605,:620` and `combined_ops.py:397,:412` schema delegation.**
+  - [x] **TD-21.22 — `src/repl_environment/routing.py:605,:620` and `combined_ops.py:397,:412` schema delegation.**
     Shape: "return only a JSON value matching this JSON Schema" — the schema is already in hand. Today: strict
     parse + jsonschema + up to 2 **full re-calls** (multiplied across a batch in `combined_ops`). Action: pass it
     as `json_schema=` and adopt TD-1 for the residual; the retry loop should become dead code.
+    ✅ 2026-09-24 (partial, orch `d7202dc9`) — `routing.py` `_delegate_single`: schema now on the wire +
+    repair before the full re-call (re-call kept as the fallback). `combined_ops.py` `_batch_llm_query`: repair
+    before re-call only — see TD-21.22a.
+  - [ ] **TD-21.22a — `llm_batch` has no `json_schema` parameter.** Wire-schema forwarding for the batch path needs
+    the parameter threaded through `_real_batch`/`_mock_batch`/`_worker_pool_batch` and every `llm_batch` caller in
+    `src/llm_primitives/`; until then the batch schema is prompt text plus the repair turn.
   - [ ] **TD-21.23 — `src/pipeline_monitor/model_grader.py:173` grader classification.** Shape: one letter from
     `spec.choice_strings`, expected on the last line. Today: a last-line word-boundary regex; a mis-formatted reply
     silently becomes an ungraded row. Action: native enum — the path already runs `/chat` `force_mode=direct`,
@@ -328,7 +346,7 @@ episodic memory writing."
     for them; (d) `REVIEW_SCHEMA` leaves `additionalProperties` unset, so a repair turn may legally return extra
     keys; (e) the repair body carries no `model` field, so a multi-model local endpoint would 400 and degrade
     silently to `None`.
-  - [ ] **TD-21.31 — Record the unreachable consumers rather than converting them.** `claude_codex_actor_critic.py:354,:373`
+  - [x] **TD-21.31 — Record the unreachable consumers rather than converting them.** `claude_codex_actor_critic.py:354,:373`
     and `claude_fable5_critic_actor.py:574` are already natively constrained (`--json-schema`, enum + `const`
     bindings) and need nothing. `discovery_controller.py:1416,:1434`, `loop_experiment_runner.py:517` (codex arm,
     which has **no schema enforcement at all**, only post-hoc validation), `evoengineer_arena.py:306` and the four
@@ -337,6 +355,14 @@ episodic memory writing."
     candidate** (`{"name":"raw","thought":"Failed to parse"}`) which then goes on to compile and evaluate — make it
     a typed failure. And `k_search_arena.py:170`'s OpenAI shim **drops any `response_format` the vendor supplies**.
     `arena_upstream_common.py:357` is the single chokepoint if these ever move onto the local server.
+    - [x] **TD-21.31 (a) — evoengineer typed failure + codex `response_format`** ✅ 2026-09-24 — research
+      `9f55e94c` + `432e409e` (self-pinning re-pin of `arena_campaign_v1.json`): the raw-reply fallback now raises
+      `EvoEngineerArenaError`; the vendored loop turns that into `Solution("")`, registered invalid and never
+      compiled or evaluated. `arena_upstream_common.CodexTextModel` forwards a `json_schema` `response_format` as
+      `codex --output-schema` (latent: the pinned k-search vendor never sends one today). Not on the live DS41
+      import path (verified). Unreachable-consumer verdicts confirmed per site: claude_codex_actor_critic and
+      claude_fable5_critic_actor natively constrained; discovery_controller, loop_experiment_runner (codex arm,
+      post-hoc validation only), evoengineer and the four vendored arms are CLI-only — recorded, not converted.
   - [ ] **TD-21.32 — Decide the judge binding before converting judge sites.** There is no declared `judge` role
     in the registry; the eval judge is still a prompt/model choice inside the harness, and CJ-11
     (`canonical-judge-suite-revamp.md`) calls for binding it at `src/llm.py:61-64`. TD-21.9/21.10/21.15 should land
