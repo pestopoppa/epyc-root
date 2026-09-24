@@ -149,8 +149,8 @@ case "$1" in
         [[ -f "${QSCORER}" ]] || { echo "REFUSED: no file at ${QSCORER}" >&2; exit 1; }
         [[ -f "${ERAS}" ]] || { echo "REFUSED: no file at ${ERAS}" >&2; exit 1; }
 
-        old_d_count="$(grep -oF "${SENTINEL_OLD_DURATION}" "${QSCORER}" | wc -l | tr -d ' ')"
-        new_d_count="$(grep -oF "${SENTINEL_NEW_DURATION}" "${QSCORER}" | wc -l | tr -d ' ')"
+        old_d_count="$({ grep -oF "${SENTINEL_OLD_DURATION}" "${QSCORER}" || true; } | wc -l | tr -d ' ')"
+        new_d_count="$({ grep -oF "${SENTINEL_NEW_DURATION}" "${QSCORER}" || true; } | wc -l | tr -d ' ')"
         if [[ "${old_d_count}" -eq 0 ]]; then
             if [[ "${new_d_count}" -gt 0 ]]; then
                 echo "REFUSED: ${QSCORER} already carries '${SENTINEL_NEW_DURATION}' — already applied." >&2
@@ -163,7 +163,7 @@ case "$1" in
             echo "REFUSED: expected exactly one occurrence of '${SENTINEL_OLD_DURATION}' in ${QSCORER}, found ${old_d_count}." >&2
             exit 1
         fi
-        old_t_count="$(grep -oF "${SENTINEL_OLD_TPS}" "${QSCORER}" | wc -l | tr -d ' ')"
+        old_t_count="$({ grep -oF "${SENTINEL_OLD_TPS}" "${QSCORER}" || true; } | wc -l | tr -d ' ')"
         if [[ "${old_t_count}" -ne 1 ]]; then
             echo "REFUSED: expected exactly one occurrence of '${SENTINEL_OLD_TPS}' in ${QSCORER}, found ${old_t_count}." >&2
             exit 1
