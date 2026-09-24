@@ -125,7 +125,7 @@ episodic memory writing."
     - ✅ 2026-09-24 **closed overall**: JSON arm cleared the bar (24/24, 23/24 vs labels, `8977f540`); the native
       arm's remaining gap is not a bench defect but a kernel limitation with an explicit operator disposition
       (patch-in-kernel-research, tracked as TD-1d.5). Nothing left dispatchable under TD-1d.2 itself.
-  - [ ] **TD-1d.5 — spec-accept path never fills token probabilities on the frozen production kernel (`llama.cpp`
+  - [x] **TD-1d.5 — spec-accept path never fills token probabilities on the frozen production kernel (`llama.cpp`
     `server-context.cpp`, MTP speculative-accept path, `// TODO: set result.probs`).** Blocks the native
     typed-decision arm's candidate-probability readout (TD-1d.2) because ~94% of frontdoor tokens are accepted
     MTP drafts with no probs attached, regardless of the `post_sampling_probs` request flag (orch `71be6ed3`).
@@ -136,6 +136,9 @@ episodic memory writing."
     CPU window (**in flight**). Owner: `handoffs/active/speculative-decoding-mtp-refresh.md` **SW-9** (filed
     there as the kernel-side task; this row tracks the typed-decision consumer side and is closed by SW-9
     landing + a native re-bench).
+    ✅ 2026-09-24 — fixed in the champion (`2b57340bf`, SW-9): native mode works on the champion build (16/16
+    decisions, ~11× faster than JSON). Production (v10) still lacks it — native stays out of reach in production
+    until a v11 promotion carries the champion.
   - [ ] **TD-1d.2 — concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`**
     (probed: parallel wall == serial wall, max 1 slot busy). A constraint on every future fan-out design, not
     just this one; independently matches the 09-17 note's `heavy_model` lock observation.
