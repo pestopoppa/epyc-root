@@ -171,6 +171,10 @@ def _typed_decisions(tmp: Path) -> Path:
     return _helpers("test_typed_decisions_measurement_adapter").write_corpus(tmp)
 
 
+def _ak_actor_seat(tmp: Path) -> Path:
+    return _helpers("test_autokernel_actor_seat_adapter").write_fixture(tmp)
+
+
 BUILDERS = {
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
@@ -195,6 +199,7 @@ BUILDERS = {
     "autopilot-reproposal-rate": _reproposal_rate,
     "reviewer-fa": _reviewer_fa,
     "typed-decisions-measurement": _typed_decisions,
+    "ak-actor-seat": _ak_actor_seat,
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.

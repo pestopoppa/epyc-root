@@ -136,6 +136,15 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "SC86 `opencode_shell_run.beliefs.jsonl`); a run dir without the belief sidecar "
                 "is pre-hook and declines",
            task="SC86"),
+    Source("ak-actor-seat", "autokernel_actor_seat",
+           _files("actor-calls.jsonl", "**/actor-calls.jsonl", "result-*.json",
+                  "**/result-*.json"),
+           note="AutoKernel actor-seat records: `actor-replies/actor-calls.jsonl` lines "
+                "(epyc.autokernel.actor_call.v1) and seat A/B `result-<arm>.json` "
+                "(epyc.autokernel.seat_ab_arm.v1); pre-hook lines/results and censored "
+                "(timeout/signal) sessions decline; every tuple is an OBSERVATION (n=1, no "
+                "codified protocol)",
+           task="VB-AK-SEAT"),
     Source("memento-lora", "memento_lora",
            _files("stage*_belief_measurements.json", "**/stage*_belief_measurements.json"),
            task="SC20"),
@@ -182,7 +191,8 @@ UNWIRED: dict[str, str] = {
     "dflash2_experimental_runtime": (
         "authority is experimental_runtime_no_kernel_champion_no_promotion, and the reader "
         "executes the reviewed research producer by digest; wire it with DF2-5, not generically"),
-    "autokernel_*": "dispatched by `ingest autokernel` (autokernel_corpus.py)",
+    "autokernel_*": "dispatched by `ingest autokernel` (autokernel_corpus.py), except "
+                    "autokernel_actor_seat, which is the file source `ak-actor-seat` above",
     "inf70_roofline_ledger": "dispatched by `ingest inf70`",
     "research_intake": "dispatched by `ingest intake` (literature class)",
 }
