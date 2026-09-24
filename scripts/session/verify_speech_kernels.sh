@@ -165,6 +165,69 @@ check whisper_cpp /mnt/raid0/llm/whisper.cpp /mnt/raid0/llm/whisper.cpp/build/bi
 check qwentts_cpp /mnt/raid0/llm/qwentts.cpp /mnt/raid0/llm/qwentts.cpp/build/tts-server
 
 echo
+echo "=== INF-41 S-13: qwentts.cpp stays a PINNED VERSIONED DEPENDENCY, never merged ==="
+#
+# Operator decision 2026-07-31 (multimodal-pipeline.md S-13): run the patched
+# qwentts.cpp fork indefinitely rather than merge its gfx90a argsort fix and
+# codec stack into our own llama.cpp. This is the FAST, always-on half of the
+# guard that makes a future "consolidate qwentts.cpp into production llama.cpp"
+# attempt fail LOUDLY instead of silently succeeding as a well-intentioned
+# cleanup — it runs on every session_init.sh with no python/JSON dependency.
+# The FULLER check (ggml submodule pin + a reachable-history grep for
+# "qwentts" mentions inside llama.cpp, on top of the same isolation-marker and
+# branch/commit checks) lives in epyc-inference-research
+# scripts/utils/verify_qwentts_pin_isolation.sh — run that one before a kernel
+# promotion or whenever S-13 compliance itself is in question, not just at
+# session start.
+#
+# Two independent checks here, because either one alone can be fooled: a
+# worktree add would pass check 1 (still a distinct .git) while literally
+# copying qwentts source into the llama.cpp tree; a documentation-only mention
+# of "qwentts" inside llama.cpp would fail check 2 on a false positive if it
+# matched on the string "qwentts" instead of qwentts-SPECIFIC source paths.
+LLAMA_CPP_TREE=/mnt/raid0/llm/llama.cpp
+QWENTTS_TREE=/mnt/raid0/llm/qwentts.cpp
+if [ -d "$LLAMA_CPP_TREE" ] && [ -d "$QWENTTS_TREE" ]; then
+    llama_top=$(git -C "$LLAMA_CPP_TREE" rev-parse --show-toplevel 2>/dev/null)
+    qwentts_top=$(git -C "$QWENTTS_TREE" rev-parse --show-toplevel 2>/dev/null)
+    if [ -z "$llama_top" ] || [ -z "$qwentts_top" ]; then
+        echo "  FAIL S-13: could not resolve a git toplevel for one or both trees"
+        echo "         llama.cpp: '${llama_top:-<none>}'  qwentts.cpp: '${qwentts_top:-<none>}'"
+        RC=1
+    elif [ "$llama_top" = "$qwentts_top" ]; then
+        echo "  FAIL S-13: llama.cpp and qwentts.cpp share ONE git toplevel ($llama_top)"
+        echo "         qwentts.cpp has been consolidated into the production tree. This"
+        echo "         VIOLATES the 2026-07-31 operator decision (pinned dependency, not a merge)."
+        RC=1
+    else
+        echo "  OK   S-13: qwentts.cpp ($qwentts_top) is a git tree DISTINCT from"
+        echo "         production llama.cpp ($llama_top)"
+    fi
+
+    # qwentts-SPECIFIC source paths (its TTS server, prompt builder). A
+    # substring match on "qwentts" would also fire on this comment or on an
+    # unrelated LD_LIBRARY_PATH reference elsewhere in the codebase, which is
+    # not the failure this guards — grep the FILE paths qwentts.cpp actually
+    # ships, not the string "qwentts".
+    consolidated=$(find "$LLAMA_CPP_TREE" \
+        \( -path "$LLAMA_CPP_TREE/tools/tts-server.cpp" \
+           -o -path "$LLAMA_CPP_TREE/src/tts-server.h" \
+           -o -path "$LLAMA_CPP_TREE/src/prompt-builder.h" \) \
+        2>/dev/null)
+    if [ -n "$consolidated" ]; then
+        echo "  FAIL S-13: qwentts.cpp-specific source found INSIDE the production llama.cpp tree:"
+        printf '%s\n' "$consolidated" | sed 's/^/         /'
+        echo "         Revert this — qwentts.cpp is a pinned dependency, not a merge target."
+        RC=1
+    else
+        echo "  OK   S-13: no qwentts.cpp-specific source found inside production llama.cpp"
+    fi
+else
+    echo "  FAIL S-13: expected tree(s) missing (llama.cpp: $([ -d "$LLAMA_CPP_TREE" ] && echo present || echo MISSING), qwentts.cpp: $([ -d "$QWENTTS_TREE" ] && echo present || echo MISSING))"
+    RC=1
+fi
+
+echo
 echo "=== ggml linkage (each speech tree runs its OWN ggml generation) ==="
 linkage whisper_cpp /mnt/raid0/llm/whisper.cpp/build/bin/whisper-server
 linkage qwentts_cpp /mnt/raid0/llm/qwentts.cpp/build/tts-server
