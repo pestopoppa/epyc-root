@@ -669,11 +669,24 @@ supplies the value under test cannot fail on it.
   `ingest_long_context` now alias-only, `worker_general` has no `NUMA_CONFIG` instance) and
   `tests/unit/test_stack_templates_v2.py::test_default_yaml_loads_and_validates`. Per test: decide stale
   fixture (derive from the source of truth, as SSU-F5) vs. a real template defect; do not re-pin constants.
+  - *2026-09-24 confirmation:* the `worker_general` / `NUMA_CONFIG` `KeyError` reproduces read-only in the
+    SHARED clone (`/mnt/raid0/llm/epyc-orchestrator`, `main`, unrelated dirty files in `src/services/image_*`)
+    via `.venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_fleet_layer_dispatch.py` — same
+    `KeyError: 'worker_general'` at collection. This is **real pre-cutover drift, not a worktree-only config
+    gap.**
+  - [ ] A wider `tests/unit` sweep reported by an agent this session found **~96 failures / 38 errors**,
+    which is far more than the 10 named above — re-run the full `tests/unit` suite, bucket every new failure
+    by root cause (same topology-parity class vs. genuinely new), and fold the ones that match this item's
+    scope in; file any that don't as their own row.
 - [ ] **SSU-F14 — `orchestration/contention_matrix.yaml` is stale and blocks every `stack_manifest.py`
   commit.** Stored `topology_hash` 171f86f9 ≠ live 1c548fce; last refreshed 2026-08-23 (> 30 days).
   `scripts/validate/check_contention_matrix_fresh.py` is a pre-commit gate, so INF-41 S-11a (and any other
   `stack_manifest.py` change) cannot land until `scripts/server/contention_matrix.py` is re-run — a live
   bench sweep against production ports, i.e. an inference-session task.
+- [ ] **SSU-F15 — some `tests/unit` failures hit the host-wide `heavy_model` lock rather than a code defect.**
+  A fix for a concurrent-import race on `inference_lock` was in flight as of 2026-09-24 (a background agent
+  running the diagnosis); once landed, re-run the affected tests before attributing them to topology drift so
+  SSU-F13's bucket count isn't inflated by a test-infra race.
 
 ### SSU-F2 outcome — the Flash-Next "quality gap" was a measurement artifact (2026-09-23)
 
