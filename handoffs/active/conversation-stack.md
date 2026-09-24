@@ -155,6 +155,12 @@ The interlocutor and the orchestrator split the work like this.
 
 ## Tasks
 
+### Done this session (2026-09-24)
+
+- [x] **CS-0a — audit the operator draft and ratify the vision.** ✅ 2026-09-24. Checked against the host, the code, prior research and primary sources, with four parallel read-only investigations. The operator settled D1–D12, recorded above.
+- [x] **CS-0b — file this handoff as the one home for speech.** ✅ 2026-09-24. The operator draft is preserved with a correction banner. S-14 and the Qwen-Audio-3.0 watch moved from INF-41, and the stale Path-C boxes were superseded. A KVU-11b cross-reference was added. INF-79 row added; INF-41's Next action re-pointed.
+- [x] **CS-0c — file the belief-kernel write side before any run.** ✅ 2026-09-24. A prospective row in `scripts/vidya/adapters/README.md` plus VB-SPEECH-CONV-1. Implementing it is CS-3.
+
 ### Phase 0: groundwork (now; no second GPU needed)
 
 - [ ] **CS-1 — run research intake on the design's sources.** None are in `research/intake_index.yaml` yet (checked 2026-09-24):
@@ -202,6 +208,7 @@ The interlocutor and the orchestrator split the work like this.
 - [ ] **CS-5 — build the PyTorch reference harness for both candidates**, measurement-only per D4, in `epyc-inference-research`, with pinned upstream commits.
   - It must run on ROCm gfx90a. That means patching Step's `token2wav.py` off its `.cuda()` hard-coding, and using the StepFun prompt format rather than the HF `tokenizer_config.json` chat template, which does not match training.
   - It emits CS-3 records.
+  - Runtime note: the only vLLM on the host is the docker image `rocm/vllm:rocm6.4.1_vllm_0.10.1_20250909`, which bundles ROCm 6.4.1, while the host driver stack is ROCm 6.2.0-66. Prove the container actually runs on gfx90a before relying on it; plain PyTorch-ROCm is the lower-risk reference.
   - It is prepared now and runs in the CS-8 bench window.
 - [ ] **CS-6 — write the second-GPU bench-window run plan**: an ordered run list, per-run duration estimates, the exact measurands, and exit criteria, so the window before 35B-A3B is commissioned is used fully. Order: CS-7, then CS-8 G1 (language, cheapest and most decisive), then CS-9, then the rest of CS-8, then CS-10.
 
@@ -235,6 +242,11 @@ The interlocutor and the orchestrator split the work like this.
   - Give each service its own `HIP_VISIBLE_DEVICES` and prove ggml linkage plus the engine's device line (Annex S).
   - Acceptance, carried from KVU-11b: re-run the live-contention harness with a CPU LLM generating, and require **STT RTF < 0.5 and TTS first packet < 1 s**. Record the 35B-A3B slowdown from CS-9.
   - Landing this resolves the CPU speech collapse that led the operator to choose option D.
+  - In the same package, fix the stale speech descriptions:
+    - the registry `description` strings still say "HIP/gfx90a, MI210" for CPU services (research `orchestration/model_registry.yaml:2068,2163`, mirrored in orch `model_registry_full.yaml`);
+    - the dashboard labels speech "GPU (MI210) · speech" (orch `src/api/routes/dashboard.py:2185`).
+
+    Make both device-true for wherever speech lands.
   - It retires the TTS `nprocs` shim concern for the GPU path; KVU-11c stays in RTG-57 for any CPU-fallback path.
 
 ### Phase 3: orchestrator voice-turn contract (independent of hardware; can start now)

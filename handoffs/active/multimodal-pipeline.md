@@ -327,6 +327,7 @@ Do not rebuild the C++ accelerator — its source is lost and it never worked.
       ✅ 2026-09-23 — `default_vl_max_tokens` 512→1024 (epyc-orchestrator `8a8e391c`); chat vision routes already request 2048. LIVE: API reloaded 2026-09-23 20:31Z (pid 2815541 on orch `3c6721ef`), config reads 1024.
 - [ ] **S-16 — promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role** and retire `Qwen2.5-VL-7B`. Evidence below (§ vision decision). Register per MRG-1; depends on S-15 landing first, or the promotion inherits the truncation defect.
 - [ ] **S-17 — audit the GPU resident-set budget before any further GPU model lands.** 27B Q8_0 (27.0) + Qwen3-VL-30B-A3B (21.0) + whisper (2.6) + Qwen3-TTS (1.2) ≈ **51.8 GB of 64**, leaving ~12 GB for KV — the 27B tops out near **90k tokens** on `q8_0` KV. A KV-quantization quality test is in flight to establish whether `q4_0` buys ~180k; do not add a fifth resident model before it reports.
+  - Note 2026-09-24: the figures above are stale. Speech has been at 0 VRAM since OP-56, and :8083 runs np4 with kv-unified. The current card-1 audit is `docs/reference/speech/cpu-speech-contention-20260924.md` §6 (1.88 GiB free). The second-MI210 co-residency audit is [`conversation-stack.md`](conversation-stack.md) CS-9.
 
 #### Vision decision — SETTLED 2026-07-31
 
@@ -663,7 +664,7 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
 ### Next Actions (scoped for this handoff)
 
 - [x] Check Qwen3.5-Omni for open-weight release / GGUF availability on HuggingFace ✅ 2026-07-14 DD2 (2026-04-22): API-only, no weights/GGUF
-- [ ] If available: estimate CPU inference cost for audio-codec path (ARIA pipeline) on one NUMA node
+- [x] If available: estimate CPU inference cost for audio-codec path (ARIA pipeline) on one NUMA node ✅ 2026-09-24 SUPERSEDED (not done): Qwen3.5-Omni stayed API-only, so this never triggered. Open-weight omni candidates are now evaluated in [`conversation-stack.md`](conversation-stack.md) (CS-8 bake-off, CS-44 watch).
 - [x] Decide whether Qwen3.5-Omni becomes a new TTS Path E or supersedes existing paths ✅ 2026-07-14 DD2 decided: Scenario C — no Path E, Path D stays primary
 
 ## Deep-Dive Integration — 2026-04-22 (DD2 verdict)
