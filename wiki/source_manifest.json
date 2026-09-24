@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-24T13:23:15Z",
+  "last_compile": "2026-09-24T13:27:48Z",
   "mode": "touch",
-  "scan_time": "2026-09-24T13:23:15Z",
+  "scan_time": "2026-09-24T13:27:48Z",
   "schema_version": 1,
-  "source_set_hash": "7106c8838eab957b3c6c499ac19e3168eb282f8b15ffe26881026df98434f6f2",
+  "source_set_hash": "583551a8909df1a65c714919bfa767228e76abe366634acdd6d7dba8996ff79f",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -335,10 +335,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "07c1e50dad87d19d85ae8ec59a9289996919de176237b5c06eda0c9d53113693",
-      "modified": "2026-09-24T13:19:52Z",
+      "content_hash": "1cac3814539db5c85fa47facd6bce9df6a41cba34c012331cce339866afaa190",
+      "modified": "2026-09-24T13:26:50Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 65532,
+      "size": 66810,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -623,10 +623,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bbbe5a1e16a52a3bbfb1a8402d1e5a42f7d09ff40edd9fe874f176988bbb751f",
-      "modified": "2026-09-24T13:18:48Z",
+      "content_hash": "bc205ef4fffba225747f6cd1c0d0e6bd4f8dadffbd42957471e1919bf66fc44e",
+      "modified": "2026-09-24T13:26:01Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 56159,
+      "size": 56497,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -7935,10 +7935,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "c1e84e5d3f7a6fef308c8229cf3bab52914aaef8e00c04af05fb0be45921e28e",
-      "modified": "2026-09-24T13:23:15Z",
+      "content_hash": "392f6d61f691a7cbb14ba8a3917e87de6f5064d3d8674e8b36c96f3975b8bbb6",
+      "modified": "2026-09-24T13:27:14Z",
       "path": "progress/2026-09/2026-09-24-main-ak-seat.md",
-      "size": 13599,
+      "size": 15550,
       "title": "2026-09-24 \u2014 main-ak-seat (DS41 run 7 halt, autokernel actor-seat repair, planner A/B)",
       "type": "progress"
     },
@@ -8159,10 +8159,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "9175f64c17f2469d84dc5b9c53bf8aead72f1748877cb52c30a2e8c8acc34ce2",
-      "modified": "2026-09-24T13:18:48Z",
+      "content_hash": "d6ef7f1c20d9bed5608239113bcaafc0a16b1f4f57d8184f00fec315a1d1d953",
+      "modified": "2026-09-24T13:26:21Z",
       "path": "docs/guides/agent-workflows/agent-loop-design.md",
-      "size": 24897,
+      "size": 29149,
       "title": "Designing an autonomous agent loop",
       "type": "docs"
     },
@@ -8511,10 +8511,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "03cff717b9ca464ce9a05923db569cdd653ba64c353ca34a0350cdeb3cf0b8de",
-      "modified": "2026-09-24T13:18:48Z",
+      "content_hash": "c366156dd13c1edd7f44d5a378ebb29a0a0b96d749e20814041d268248aa03dd",
+      "modified": "2026-09-24T13:26:01Z",
       "path": "docs/reference/harness-candidates/opencode-p03-audit-20260916.md",
-      "size": 23077,
+      "size": 27581,
       "title": "OpenCode Re-Audit at Tip: HS-4 P0.3 (2026-09-16)",
       "type": "docs"
     },

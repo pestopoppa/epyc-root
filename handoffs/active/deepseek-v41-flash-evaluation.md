@@ -400,6 +400,22 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   --owned-targets …/inputs/owned-targets.json --common-args …/inputs/common-args.json --batch-iterations 1 --rounds 0`.
   `EPYC_ROOT_REPO` must name a root checkout carrying the VB-AK-SEAT contract (the shared clone's working tree is
   stale) — do NOT remove that worktree while run 8 runs.
+  **Run 8 does NOT carry TD-21.29/30.** They landed on research main as `4915220f` + `34373dd8` (rebased on
+  `21ca61b0`; 87 failures, identical to clean `21ca61b0`). The shared research clone stays at `21ca61b0` on
+  purpose: each new batch's `run.py` imports from that clone, so a mid-run fast-forward would mix code versions
+  across batches (the DS41-C19 mechanism). When comparing run 9 with run 8, note what changes in the actor
+  replies with TD-21.29/30:
+  - A repaired reply is re-validated against the original schema, so an omitted required field now raises
+    `ProviderTransient` instead of receiving an invented value.
+  - A fished object with wrong types goes to repair.
+  - `actor_preparation` no longer burns its one-shot reservation on a malformed reply.
+  - `REVIEW_SCHEMA` rejects extra keys.
+
+  Expect somewhat more transients and fewer silently repaired replies.
+  - [ ] DS41-C10a — **Fast-forward the shared research clone to ≥ `34373dd8` only after run 8 stops, before run
+    9.** Confirm run 8 is stopped (its `serial-run.pid` tree is dead) before any `git merge --ff-only`; never
+    fast-forward mid-run. Acceptance: run 9's launch line names a research commit ≥ `34373dd8`, and its first
+    planner reply is read against the semantics above.
 - [ ] DS41-C11 — Pre-existing test failures found while landing `5125f7ab`, reproduced on a clean HEAD
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or

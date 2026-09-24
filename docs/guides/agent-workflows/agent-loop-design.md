@@ -365,7 +365,8 @@ recipe/request bytes and the existing provenance checks remain required.
 
 To stop, create `STOP` in the routing state directory, or signal the captured
 wrapper PID with SIGTERM/SIGINT. It signals only its captured child and waits for
-the existing owner to drain. STOP persists across wrapper restarts. Exit 0 without
+the existing owner to drain. STOP persists across wrapper restarts. What a stop does to an actor call already in
+flight changed at research `21ca61b0`; see *Launching and stopping a DS41-style serial run* below. Exit 0 without
 the same-target, same-input terminal continuation is not a successful batch.
 An unreconciled active batch refuses automatic relaunch rather than overlapping
 an unknown child. No broad process-name kills are part of this CLI.
@@ -400,6 +401,62 @@ that file, a restored COR differing from the current anchor requires its origina
 The published connector has hermetic rotation/keep/resume/STOP coverage, not a live
 CPU/GPU serial-hardware acceptance result. Production promotion and scientific
 qualification remain with the existing owners.
+
+### Launching and stopping a DS41-style serial run (measured 2026-09-24)
+
+These lessons come from DS41 runs 7 and 8 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C10, C20,
+C22). The code is research main `21ca61b0`.
+
+- **Launch from the research root with `PYTHONPATH=.:scripts/kernel_rnd:<orchestrator checkout>`.** The loop's
+  modules import the `autokernel` package directly (e.g. `census.py`: `from autokernel.controller import
+  workload_contract`), so without `scripts/kernel_rnd` on the path the launch fails at import. Run 8's exact
+  command is recorded under DS41-C10.
+- **`EPYC_ROOT_REPO` must name a root checkout that carries the VB-AK-SEAT contract**
+  (`scripts/vidya/adapters/autokernel_actor_seat_capture.py`). Every actor call's `actor-calls.jsonl` line is
+  built by that module. Without it, the line keeps the pre-hook shape plus a `v1_refused: <why>` field and
+  projects no claim. A lane worktree used this way is frozen for the life of the run (DS41-C24).
+- **Do not trust the dry-run floor banner.** Before run 8, `serial_run --dry-run` printed `request-bound floor
+  None [absent]`, yet the live run loaded the store's cached floor (5.097) and did not recalibrate. Check the
+  store for the cached floor instead of relying on the banner.
+- **Never fast-forward the shared research clone while a serial run is live.** Each new batch's `run.py`
+  imports from that clone, so a mid-run fast-forward mixes code versions across batches (the DS41-C19
+  mechanism). Land new loop code between runs.
+- **Stop semantics.**
+  - **Before `21ca61b0`:** SIGTERM/STOP is a graceful drain. A planner or critic call IS a forming stage, so the
+    drain waited out the whole actor call. An actor that was TERM'd (rc −15) was retried as a transient, so
+    `run.py` launched a new one. Stopping run 7 took TERM on the actor, then KILL on `run.py` and `serial_run`.
+  - **From `21ca61b0` (DS41-C22):** a stop TERMs the in-flight actor's whole process group, then KILLs it after
+    15 s. It raises `ActorStopped`, recorded as `stopped_mid_formation`, and is never retried or backed off.
+  - **rc < 0 with no stop asked is still retried, by design.** Killing one hung actor must not end the run.
+  - Only forming stages make actor calls, so a lane holding the serialized tail still finishes its A/B.
+- **Actor seat.** `--actor-seat plain` (bare `opencode run`) is the default, per the DS41-C20 A/B: plain 31.9
+  min vs bounded 44.3 min on one proposal, both schema-valid. `--actor-seat bounded` (per-run opencode config,
+  output-capped MCP tools, step cap) is opt-in; its deficit was perf-tool time (DS41-C20d). The pitfalls of
+  driving `opencode run` headless are listed in
+  [`opencode-p03-audit-20260916.md`](../../reference/harness-candidates/opencode-p03-audit-20260916.md) →
+  *Addendum 2026-09-24*.
+
+## Who owns fan-out and context: the orchestrator (operator ruling, 2026-09-24)
+
+**Parallel scouts (fan-out) and REPL-held context are the orchestrator's job. They are not the harness's job and
+not the AutoKernel loop's.** Anyone designing an actor, a harness integration or a new loop must not build
+either one into the harness or the loop.
+
+Why:
+- **Delegation.** Given an allowed `task` tool plus fan-out guidance, the 27B planner never delegated (0 scouts
+  in 69 steps).
+- **Context.** Every seat arm compacted exactly once however tool output was capped, because an opencode
+  conversation is append-only.
+
+What to build instead:
+- **Fan-out:** the orchestrator decides the split. For example, one read-only scout per top profile hotspot,
+  run concurrently through `repl_environment/parallel_dispatch.py`. The loop sends one request and never
+  implements fan-out itself (INF-78 OAB-8).
+- **Context:** the context bundle becomes a REPL variable that the model inspects instead of an inlined prompt
+  (the RLM pattern). Tool output lands in variables instead of the conversation (INF-78 OAB-7).
+
+Long term, the loop calls the orchestrator as a single `Backend`, and the orchestrator owns model choice
+(`handoffs/active/autokernel-orchestrator-actor-backend.md`, INF-78).
 
 ## Related
 

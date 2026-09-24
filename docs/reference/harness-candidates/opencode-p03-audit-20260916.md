@@ -197,3 +197,32 @@ The P0.1/P0.2 session guard returns 422 for an OpenCode request with no `x_sessi
   - A mutation run with the header removed fails, as expected.
   - Results: 45/45 with `EPYC_OPENCODE_CONTRACT=1`; 41 pass + 4 skip without the SDK.
 - **Still uncovered:** E12, the core v2 runner, uses `LLMClient`, not this SDK instance, so the template header is not shown to reach it. It remains a per-bump watch item.
+
+## Addendum 2026-09-24: `opencode run` as a headless actor — measured pitfalls
+
+The AutoKernel loop drives `opencode run` (1.18.31, same pin as above) headless as its planner/author seat
+(research `scripts/kernel_rnd/autokernel/loop/actors.py`, main `21ca61b0`). The DS41 campaign found six ways
+that invocation fails silently, and one behaviour to design around. Each one looks like a model failure
+(empty, truncated, quoted or abstaining reply) and is not one. Any launcher that runs `opencode run` headless —
+HS-4 shells, scripts, other loops — inherits all of them.
+
+| # | Pitfall | Evidence | Do this |
+|---|---|---|---|
+| 1 | **A positional prompt is re-quoted.** `run` joins its positionals as `arg.includes(" ") ? "\"" + arg.replace(/"/g, '\\"') + "\"" : arg` (`packages/opencode/src/cli/cmd/run.ts:288-290` at `350c726aa`). Any prompt containing a space reaches the model wrapped in quotes, with every inner quote backslash-escaped. | The DS41 run-7 planner prompt arrived with 2,982 escaped quotes, all in its JSON. | Pass the prompt on **stdin**. Piped stdin is read with `Bun.stdin.text()` and merged unchanged (`run.ts:416`). This also keeps a ~100 KB prompt clear of the kernel's 128 KiB per-argument limit. Reference: `actors.py` `Backend.argv` / `Backend.stdin_payload`. |
+| 2 | **Bun exits without draining a stdout pipe.** | The same `opencode export` read 65,536 or 98,304 bytes through a pipe, and 328,871 bytes when written to a file. | Capture stdout and stderr to **files**, never pipes. The reply is the tail of stdout, so a truncated pipe loses exactly the JSON the caller needs. Reference: `actors._run_agent` (`tempfile.TemporaryFile`). |
+| 3 | **An agent `prompt` REPLACES the system prompt.** `session/llm/request.ts:60` uses `agent.prompt` *instead of* `SystemPrompt.provider(model)`. | With guidance supplied as an agent `prompt`, the 27B decoded a median 1,626 tokens per step against 266 on the default prompt (~6x), and filled its 98k slot in 12 steps. | Put guidance in top-level **`instructions`** files, which are appended to the default system prompt. Reference: `actor_opencode_config.write_actor_config` (v2). |
+| 4 | **Compaction summaries go to stdout and quote the prompt.** When a session compacts, opencode prints its self-summary, and that summary quotes the reply template, e.g. `{"abstain":"<reason>"}`. | The bounded-v1 A/B driver recorded exactly that template echo as its "hypothesis". | Never take the first or last JSON object on stdout at face value. Refuse objects whose values are the template's own placeholders. Reference: `actors._is_template_echo` / `_extract_json`. |
+| 5 | **rc=1 with a complete reply.** After an internal error in its own bash tool (`(res.stderr \|\| "").trim is not a function`, triggered by `mkdir -p $HOME/...` probes) that the agent recovered from, `run` exits 1 while stdout holds a complete, schema-valid answer. | Run 7's first 27B proposal (39 min) was discarded unread and retried from zero. | Salvage a non-zero exit only when rc > 0 AND the reply is complete for your schema. A signal death (rc < 0) never finished its work. Reference: `actors._run_agent`. |
+| 6 | **`hidden: true` hides nothing from the model.** In the TUI it only filters the agent lists (`packages/tui/src/context/local.tsx:78-79`). | — | Restrict agents through `permission` (`task`, `edit`, tool globs), not `hidden`. |
+| 7 | **An offered subagent is not a used one.** | The 27B planner, given an allowed `task` tool plus fan-out guidance, made 0 scout calls in 69 bounded steps (DS41-C20c). | Do not count on model-initiated fan-out. Fan-out is the orchestrator's decision (see [`agent-loop-design.md`](../../guides/agent-workflows/agent-loop-design.md) → *Who owns fan-out and context*). |
+
+**Verify a per-run config with no model call.** Run each of these with `OPENCODE_CONFIG=<file>` set:
+- `opencode debug config` prints the merged configuration. The per-run file is merged OVER
+  `~/.config/opencode/opencode.jsonc`, so check the result, not the file.
+- `opencode debug agent <name>` prints one agent's resolved permissions and prompt.
+- `opencode mcp list` shows whether each configured MCP server starts.
+
+The commands live at `cli/cmd/debug/config.ts`, `cli/cmd/debug/agent.ts` and `cli/cmd/mcp.ts`.
+
+**Where these came from:** `handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C20 (and its C20c A/B), and
+HS-4 P7 in `handoffs/active/harness-selection-and-integration.md`, which carries the repo-wide stdin audit.

@@ -47,6 +47,14 @@ prompt, driver `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`:
   [autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) §Baseline, OAB-7, OAB-8;
   [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT;
   [completed DS41 §C ledger](../handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md))
+- **The standing homes for these lessons are now repo docs, readable by every agent.**
+  - The `opencode run` headless pitfalls (stdin, pipe truncation, agent `prompt` replacing the system prompt,
+    compaction echo, rc=1 with a complete reply, `hidden`, the unused `task` tool) are in
+    [opencode-p03-audit → Addendum 2026-09-24](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md).
+  - Serial-run launch and stop semantics, and the operator ruling that fan-out and REPL-held context belong to
+    the orchestrator, are in [agent-loop-design](../docs/guides/agent-workflows/agent-loop-design.md).
+  - TD-21.29/30 (research `34373dd8`) are on main but not in run 8. The shared research clone is fast-forwarded
+    only between runs (DS41-C10a), because a mid-run fast-forward mixes code versions across batches.
 
 ## Compiled Update — 2026-09-24 (operator wrap-up compile): the actor seat is where the planner's hours go, and the model's own deliberation fills its context
 
