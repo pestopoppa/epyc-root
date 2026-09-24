@@ -2,8 +2,33 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Last compiled**: 2026-09-24 (late operator wrap-up compile: OP-49 decided — the Claude Code bash-compressor MCP surface is DROPPED; an MCP shell tool sits outside every PreToolUse guard, which match `Bash` only); earlier: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
 primary sources with the staleness caveat demonstrated; edit-format rules from hashline/aider/Cursor
+
+## Compiled Update — 2026-09-24 (late): the bash-compressor MCP surface is dropped (OP-49)
+
+**Confidence: verified**: this is an operator decision, applied and checked in both repos.
+
+- **The decision.** The operator chose option C, drop, for P4e. `bash-compressor` is gone from both `.mcp.json`
+  files (orch `fd4f49cc`, root `778a491f`) and from the local `enabledMcpjsonServers`. The module, its tests and
+  the top-up analyzer stay in the tree, unregistered. The compressor library and the orchestrator-side
+  `TOOL_COMPRESSION` path are unchanged.
+- **What decided it was found while writing the options, not by the telemetry.**
+  - All 8 PreToolUse guards are matched on `Bash` only. That covers filesystem containment, the name-pattern kill
+    guard, commit hygiene, pytest safety and live-holder interference. An MCP tool that runs shell commands is
+    therefore checked by none of them, and promoting it would have given every session a way around the guards.
+  - Its allowlist is not read-only. `python`, `sed -i`, `find -exec` and `awk` can all write files or run code.
+  - It has no shell, so no pipes, and builds and bench commands aren't allowed. It could only compress the
+    commands whose output is already small, and Claude Code already caps Bash output.
+- **The general lesson.** A tool that duplicates a guarded built-in inherits none of that built-in's guards.
+  Hooks are keyed by tool name, not by what the tool does. Any future Claude Code output compression has to act
+  on the `Bash` tool's own path, where its hooks apply, not through a parallel MCP shell.
+
+### Source References (2026-09-24 late)
+
+- [tool-output-compression.md](../handoffs/active/tool-output-compression.md) P4e (decision record)
+- [progress/2026-09/2026-09-24-td21.md](../progress/2026-09/2026-09-24-td21.md) Late (4)
+- `.claude/settings.json` PreToolUse matchers (`Bash`, `Write|Edit`), read 2026-09-24
 
 ## Compiled Update — 2026-09-24 (wrap-up compile): the tool-output compressor's observation window never accrued because nothing ever calls the tool
 

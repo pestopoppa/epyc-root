@@ -9,10 +9,23 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-24T20:05:48Z",
-  "mode": "touch",
-  "scan_time": "2026-09-24T20:05:48Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 2,
+      "removed": 0
+    },
+    "at": "2026-09-24T20:15:59Z",
+    "scope_paths": [
+      "handoffs/active/tool-output-compression.md",
+      "progress/2026-09/2026-09-24-td21.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-24T20:15:59Z",
   "schema_version": 1,
-  "source_set_hash": "8694a2a642a9f8016d636ba2d5b07d3423b6aaaff8f182c9f039e576e7f68f21",
+  "source_set_hash": "2ae95ba9fd4594c6588bdda664bd90a4b35ba8797a7d04267ce3cc74dba6e99d",
   "sources": [
     {
       "content_hash": "8f7b845f2ac11bcadc2b5444f6119ca8858f87a39b922375d56dd9ccfade529f",
@@ -1271,10 +1284,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bcd4c976f3d40b0c807dc4e45f306b391792733324ad186f75796db5e4090bfd",
-      "modified": "2026-09-24T19:48:31Z",
+      "content_hash": "260f94c68e5f4f9a8b72f07f5758d0d2afa04d2b30d2c3e113f777f3e52a8b1f",
+      "modified": "2026-09-24T20:06:56Z",
       "path": "handoffs/active/tool-output-compression.md",
-      "size": 64929,
+      "size": 65815,
       "title": "Tool Token Optimization \u2014 Output Compression + Definition Reduction",
       "type": "handoff-active"
     },
@@ -7983,10 +7996,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "d6e856adeebcefcbcba05b4851cb61bcf4dc05327d84d449c0c9c81c61689c6f",
-      "modified": "2026-09-24T19:48:31Z",
+      "content_hash": "79f9495b1f6dfd32ba8627476080a6d13b2e63190ad581171a786e289f1c9655",
+      "modified": "2026-09-24T20:06:56Z",
       "path": "progress/2026-09/2026-09-24-td21.md",
-      "size": 18005,
+      "size": 18890,
       "title": "2026-09-24 \u2014 TD-21 free-text JSON consumer conversions (operator dispatch; no roster lane)",
       "type": "progress"
     },
