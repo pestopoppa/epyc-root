@@ -67,15 +67,18 @@ techniques fed back into the orchestrator (§Techniques).
   on stdin and printing the JSON, or a second seam in `_run_agent`. The CLI form keeps `_run_agent`,
   `_persist_reply` and `_record_call` unchanged — preferred.
 
-## Baseline (the number to beat) — PENDING
+## Baseline (the number to beat)
 
-Plain seat, first 27B proposal (DS41 run 7): 71 steps, 70 tool calls, 63.8k decoded tokens,
-40.3 min, 2 compactions, 46k-token initial prompt. Bounded seat: **A/B running, results pending**
-(`/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`; DS41-C20 records them; DS41-C21 copies the winner here).
+DS41-C20c, one pair on the 27B (:8083), same run-7 proposal prompt, driver
+`/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`. **Winner and campaign default: the plain opencode seat** on research
+main `21ca61b0` — **31.9 min, 23 steps, 25 tool calls, 57.7k decoded tokens, 1 compaction, schema-valid.** Bounded
+v2: 44.3 min, 34 steps, 60.2k decoded, 1 compaction, schema-valid and better grounded (its loss is perf-tool time,
+DS41-C20d). Pre-fix reference (run 7, escaped prompt): 40.3 min, 71 steps, 63.8k decoded, 2 compactions. Decode
+dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because opencode's context is append-only.
 
 ## Tasks
 
-- [ ] **OAB-0 — Do not start until DS41-C20 has recorded the seat A/B.** The reference must exist
+- [x] **OAB-0 — Do not start until DS41-C20 has recorded the seat A/B.** ✅ 2026-09-24 (DS41-C20c; §Baseline) The reference must exist
   before anything is built against it. Zero compute.
 - [ ] **OAB-1 — per-call worktree root + edit mode on `/chat`** (orchestrator). Add
   `ChatRequest.task_root: str | None` and `edit_mode: Literal["none","direct"]` (default `none`);
@@ -109,6 +112,21 @@ Plain seat, first 27B proposal (DS41 run 7): 71 steps, 70 tool calls, 63.8k deco
   N KB before rendering; measure prompt tokens before/after on one DS41 planner prompt (the seat's
   trims took the run-7 prompt 95.7k → 75.9k chars). Acceptance: byte-identical output when nothing
   repeats; a unit test on the DS41 prompt shows the reduction. Zero inference.
+
+- [ ] **OAB-7 — the context bundle is a REPL variable, not an inlined prompt.** The rendered context is ~38k tokens
+  of the 98k slot before step 1 (75.9k chars after the seat's diet). In the orchestrator REPL it becomes a `context`
+  object the model inspects (`peek`/`grep`/field access), so the root context carries only what the model prints —
+  the RLM pattern — and tool output lands in variables instead of the conversation. This is the structural answer to
+  DS41-C18: in the seat A/B every arm compacted once however tool output was capped (append-only conversation).
+  Acceptance: OAB-4's `orch` arm reports first-step context and max context well below the plain seat's 39k / 93k
+  with no compaction. Zero inference to build; OAB-4 measures it.
+- [ ] **OAB-8 — fan-out is the orchestrator's decision, not the model's.** Offered an allowed `task` tool plus
+  fan-out guidance, the 27B never delegated once in 69 bounded steps (DS41-C20c). Splitting is orchestration: for a
+  proposal, the orchestrator (`repl_environment/parallel_dispatch.py`) runs one read-only scout per top profile
+  hotspot / candidate file concurrently (≤ server slots) and hands the planner their summaries; the loop sends ONE
+  request and never implements fan-out itself (operator, 2026-09-24: this is the orchestrator's job, not the
+  harness's). Acceptance: OAB-4 `orch` arm shows ≥2 concurrent scout calls on :8083 per proposal and a planner
+  context built from their summaries.
 
 ## Future (recorded, NOT for now)
 

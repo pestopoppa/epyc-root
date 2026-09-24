@@ -378,6 +378,9 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   First data point (bounded v1, 2026-09-24): lever (b) alone did NOT prevent the overflow — tool output fell to
   42k chars yet the slot filled (97.7k) at step 12 from the model's own deliberation (1,626 decoded tokens/step);
   re-read C18 against bounded v2 and the plain arm (DS41-C20c) before choosing between (a) and (c).
+  A/B read (C20c): every arm still compacted once (plain within 23 steps, bounded v2 at step 32) — opencode's
+  conversation is append-only, so capping tool output only delays the overflow; the structural fix is a REPL
+  context (INF-78 OAB-7/OAB-8), not lever (a)/(b)/(c).
 - [ ] DS41-C10 — Watch run 7 (27B planner, schema repair active, started 09:10) into its first measured
   iteration; report planner→critic→author→build→A/B timings against the CPU planner's 41–97 min. Original:
   `state/loop-status.json` + `store/` (the 48 A/A launches each reload 519 GB, ~2 h); confirm the
@@ -389,11 +392,21 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   (`src/verify/replay.ts`) — both fixed under DS41-C20. `serial_run` and `run.py` did not exit on SIGTERM and
   `run.py` respawned the actor after its death: stopping needed TERM on the actor, then KILL on `run.py` +
   `serial_run` (root cause and fix task: DS41-C22). Carried to run 8, launched after DS41-C20.
+  **Run 8 launched 2026-09-24 13:06:55Z** from research main `21ca61b0` (seat + C22/C23, `--actor-seat plain`),
+  `state-run8/serial-run.pid` = 3359620, same store/inputs, floor 5.097 loaded from the cache (no recalibration).
+  Launch: from the research root, `EPYC_ROOT_REPO=/mnt/raid0/llm/worktrees/ak-seat-handoffs-20260924
+  PYTHONPATH=.:scripts/kernel_rnd:/mnt/raid0/llm/epyc-orchestrator setsid nohup .venv/bin/python -m
+  scripts.kernel_rnd.autokernel.loop.serial_run --state-dir …/state-run8 --resolved-campaign …/inputs/campaign-resolved.json
+  --owned-targets …/inputs/owned-targets.json --common-args …/inputs/common-args.json --batch-iterations 1 --rounds 0`.
+  `EPYC_ROOT_REPO` must name a root checkout carrying the VB-AK-SEAT contract (the shared clone's working tree is
+  stale) — do NOT remove that worktree while run 8 runs.
 - [ ] DS41-C11 — Pre-existing test failures found while landing `5125f7ab`, reproduced on a clean HEAD
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or
   re-fixture.
-- [ ] DS41-C20 — **Bounded opencode seat: merge gate.** Research worktree
+- [x] DS41-C20 — **Bounded opencode seat: merge gate.** ✅ 2026-09-24 — merged to research main `21ca61b0`
+  (seat `e9495971` + follow-ups `1c7d0a2d`), `--actor-seat` default **plain** per the A/B verdict below (operator
+  decision); run 8 launched from the merged tree (acceptance iii). Research worktree
   `/mnt/raid0/llm/tmp/ak-actor-seat-20260924` (`lane/ak-actor-seat-20260924`, committed as research
   `e9495971` and pushed to the LANE only, not to research `main`). Fixes the two
   defects that cost run 7's iteration 0: (1) `_run_agent` discarded any rc≠0 reply unread — opencode exits 1
@@ -409,7 +422,7 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   `loop/actor_opencode_config.py` (per-run agent prompt, step cap, `tool_output` cap, read-only scout fan-out,
   `MAX_CONCURRENT_SUBAGENTS=2`) + `loop/actor_tools_mcp.py` (outline / read_range / grep / code_search /
   profile_top / symbol_annotate, output-capped; runs under the orchestrator venv, the only one with `mcp`);
-  `run.py --actor-seat {bounded,plain}` (default `bounded`), `--actor-fan-out`, `--actor-steps`; per-call
+  `run.py --actor-seat {bounded,plain}` (default `plain` on main, `bounded` on the lane), `--actor-fan-out`, `--actor-steps`; per-call
   `actor-replies/actor-calls.jsonl`. Later fixes the same day, all found by the A/B itself:
   (3) **template echo** — opencode's compaction summary quotes the prompt's `{"abstain":"<reason>"}` template,
   and the bounded-v1 driver recorded exactly that object as its "hypothesis"; `_extract_json` now skips
@@ -432,7 +445,15 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   seat, one step 19k tokens, context full (97.7k) at step 12 → 1 compaction, tool outputs only 42k chars, 0
   scouts used, no hypothesis (template echo). Reading: the context is filled by the model's own deliberation,
   not by tool output — the output caps worked, the replaced system prompt made each step ~6x longer. **A/B
-  verdict PENDING**: the plain arm (new prompt) has run since ~11:19, bounded v2 is queued after it.
+  verdict (C20c): PLAIN is the default.** One pair on the 27B, same prompt: **plain** 31.9 min, 23 steps, 25 tool
+  calls, 57.7k decoded, 1 compaction, schema-valid (`unknown_source_screen`: keep `d8` scales in registers in
+  `mul_mat_qX_K_q8_2_X4_T`); **bounded v2** 44.3 min (`wall_s` 2658.7), 34 steps, 35 tool calls (8 on the MCP
+  tools), 60.2k decoded, 1 compaction (step 32), schema-valid and better grounded (`akm-q4k-x4-load-hoist`, cites
+  `symbol_annotate`'s hottest instructions: q2/q3 loads + `vpsrlw $4` at 13–14% of the symbol). Bounded's wall loss
+  is tool time, not decode: its perf-backed tools re-run `perf report` over the 25 MB profile per call (one 266 s
+  step decoded 611 tokens; 22.6 vs 30.1 tok/s effective). Neither arm used a scout (the `task` tool was offered and
+  allowed — `opencode debug agent` — but the 27B never considered delegating). The prompt fixes alone took the
+  plain seat 40.3 → 31.9 min. n=1 per arm: a direction, not a magnitude.
   Acceptance: (i) A/B result recorded here
   with steps / tool calls / decoded tokens / wall / compactions per arm and the schema-valid verdict of each
   reply; (ii) committed on the lane and merged to research `main` only if `bounded` is not worse on wall AND
@@ -441,8 +462,11 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   - [x] DS41-C20a — seat committed on the research lane (`e9495971`, 8 files, 167 tests green) and the lane
     pushed as a backup; research `main` untouched pending (ii) ✅ 2026-09-24
   - [x] DS41-C20b — bounded v1 arm run and stopped; numbers above; its failure produced fixes (3)–(5) ✅ 2026-09-24
-  - [ ] DS41-C20c — record the plain (new prompt) and bounded v2 arms with the five numbers + schema verdict.
-- [ ] DS41-C21 — **Hand the seat over as the reference an orchestrator backend must beat.** Once C20 records
+  - [x] DS41-C20c — plain (new prompt) and bounded v2 arms recorded above; default plain ✅ 2026-09-24
+  - [ ] DS41-C20d — **cache perf output in `actor_tools_mcp`** so `profile_top` / `symbol_annotate` run `perf report`
+    once per (profile, dso, sort) and serve later calls from the cache; then re-run the bounded arm once on the same
+    driver. Bounded's 12-minute wall deficit in C20c is tool time, and its proposal was the better grounded one.
+- [x] DS41-C21 — **Hand the seat over as the reference an orchestrator backend must beat.** ✅ 2026-09-24 — plain-seat numbers copied to INF-78 §Baseline; OAB-4 already names `driver.py`; INF-78 gained OAB-7 (context as a REPL variable) and OAB-8 (orchestrator-owned fan-out). Once C20 records
   the A/B, copy the winning arm's five numbers into `autokernel-orchestrator-actor-backend.md` §Baseline
   (INF-78) and point that handoff's OAB-4 at `driver.py`. No further orchestrator work in this handoff: the
   campaign keeps `opencode` + 27B :8083 planner and the cloud critic (operator, 2026-09-24).

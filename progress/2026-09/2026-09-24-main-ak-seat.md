@@ -106,3 +106,21 @@ with the DS41-C20 seat merge and is not on research `main`.
 | DS41-C23 `symbol_annotate` | ✅ Short or partial names now resolve against the DSO's `perf report --sort symbol` rows. An ambiguous name returns the candidate list. One read-only smoke (3.7 s) against the run-7 profile found perf 6.17's trailing `IPC` columns in those rows; fixed and pinned by a test (the smoke was not repeated). |
 | VB-AK-SEAT | Split three ways. **-a ✅** (subagent): ROOT contract `autokernel_actor_seat_capture.py` plus strict reader `autokernel_actor_seat.py`, class `measurement`, no new ladder, every tuple capped at `Judged/Located`; 33 tests. **-b1 ✅**: `actors._record_call` writes `actor_call.v1` using ROOT's writer; end-to-end dry-run ingest gave projected=1, refused=0, rows=2. **-b2 [ ]**: the arm record, which lands with OAB-4's driver revision (the live driver must not be edited, and both of its arms predate `HOOK_SINCE`). |
 | DS41 compaction | ✅ (subagent, operator-approved). Active file 783 → ~650 lines. C0–C19 (15 items) moved verbatim to `handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md`. The open `- [ ]` set is identical before and after (42); the Completed Scope table links the sibling. |
+
+## Seat A/B verdict, merge, run 8 (12:40–13:10Z)
+
+| Arm (27B :8083, same run-7 prompt) | Wall | Steps | Decoded | Compactions | Proposal |
+|---|---|---|---|---|---|
+| plain, pre-fix (run 7) | 40.3 min | 71 | 63.8k | 2 | valid (discarded by the old defects) |
+| **plain, fixed prompt** | **31.9 min** | 23 | 57.7k | 1 | valid |
+| bounded v1 (replaced system prompt) | stopped 35 min | 12 | 47.3k | 1 | none |
+| bounded v2 (`instructions`) | 44.3 min | 34 | 60.2k | 1 | valid, better grounded |
+
+- Operator chose "merge, default plain". Research main `21ca61b0` = seat `e9495971` + follow-ups `1c7d0a2d` +
+  `--actor-seat` default `plain`; 217 actor/champion tests passed. Bounded's deficit is perf-tool time (DS41-C20d).
+- No arm used a scout although `task` was offered and allowed; every arm compacted once (append-only context).
+  Operator ruling: fan-out is the orchestrator's job, not the harness's → INF-78 OAB-8; REPL-held context → OAB-7.
+- TD-21 session (workspace-8d) stacked TD-21.29/30 on `e9495971` (`td21/29-30-actors` @ `c0a00a8b`); told to
+  rebase onto `21ca61b0` and land; run 8 does not carry it.
+- **Run 8 launched 13:06:55Z** (`state-run8`, pid 3359620), floor 5.097 from the cache. `EPYC_ROOT_REPO` points at
+  `/mnt/raid0/llm/worktrees/ak-seat-handoffs-20260924` — keep that worktree while run 8 runs.
