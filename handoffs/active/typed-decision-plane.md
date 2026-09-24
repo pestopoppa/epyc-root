@@ -214,7 +214,7 @@ episodic memory writing."
     producing role) runs before any graph re-run; fish-only recovery costs 0 calls, a hit costs 1 and no re-run; a
     miss falls back to the old retry-from-zero path. Terminal defect fixed: exhausted → `error_code=422` +
     `error_detail`, so `/chat` returns 422 with the full response body instead of a silent 200. No backfill.
-  - [ ] **TD-21.1a — the FINAL() repair is INERT in production (OP-51).** All REPL schema validation — and so TD-21.1's
+  - [x] **TD-21.1a — the FINAL() repair is INERT in production (OP-51).** All REPL schema validation — and so TD-21.1's
     repair and 422 — sits behind `final_schema_validation` (default OFF since `86957b6e`; production runs
     `baseline`). Live 11:53Z: `/chat` `force_mode=repl` with `output_schema {result: int}` returned the bare `51`, no
     error. Enabling is a production-posture pin in `orchestration/runtime_flags.spec.yaml` (reason + since) plus the
@@ -229,6 +229,12 @@ episodic memory writing."
     - [ ] Root-cause the `coder_escalation → frontdoor (connection_error)` fallback logged during the OP-51
       smoke even though :8083 answers health checks — a live routing/connection defect independent of the
       schema-validation flag itself, surfaced only because OP-51 exercised the escalation path.
+    ✅ 2026-09-24 — ON in production (orch `07fcf422`). History: enabled `98edfeb0`; the 13:41Z smoke's HTTP 500
+    and the first A/B (all arms failing, flag on AND off, and the last-good d12202f2 too) were placement
+    timeouts behind an AutoKernel CPU-floor calibration holding the whole CPU region — the REPL masked them as
+    "all comments" no-progress failures (fixed: orch `32a52fba`, infra sentinels end the turn with the right
+    status; live check → HTTP 504 in 1 turn). Suspended `6b26f3ae` meanwhile. Clean A/B 15:35Z with the region
+    free: on 3/3 HTTP 200 `{"result": 51}`, off 3/3 HTTP 200 bare `51`, 1 turn each.
   - [x] **TD-21.2 — `scripts/autopilot/controller_io.py:739` autopilot ACTION block.** Shape: the fenced
     `json:autopilot_actions` object. Today: marker-index fish; on a miss the provider is failed, one fallback
     provider is re-prompted **from zero**, and a deterministic `seed_batch` default action is written into the
@@ -346,6 +352,13 @@ episodic memory writing."
     post-flip suite 271 passed): committed from a clean worktree as orch `eabc9b44`, era
     `E19-eval-answer-parse-failure-excluded-quality`, boundary `2026-09-24T11:59:11Z`.
     `EXCLUDE_UNPARSEABLE_ANSWERS` and `CONSTRAIN_JUDGE_OUTPUT` now both `True`.
+    **Defect found and fixed 2026-09-24 (orch `15e1b35a`):** the live E19 exclusion scored WRONG answers without a
+    structured marker ("Final answer: 999" vs 25) as unparseable and EXCLUDED them (TD-21.14; TD-21.12 mirror bug),
+    inflating accuracy. The golden pin (`test_b7_golden_corpus_pin.py`) missed it at ratification because two
+    fixtures leaked the flag value across test files. Suspended 15:2xZ (`fcbb705f`, operator), fixed (only empty
+    extractions are parse failures; fixtures restore the prior value; a guard asserts the pin sees the real flag),
+    re-enabled with the fix. Rows 11:59Z–~15:26Z with `answer_parse_failed[exact_match|f1_list]` may be excluded
+    wrong answers; no backfill.
   - [x] **TD-21.15 — `scripts/autopilot/eval_tower.py:3887,:3911` rubric-judge scores** (call `:4464`). Shape:
     `{"scores":{dim: float in [0,1]}}`. Today: fence strip + brace slice with range validation; if EVERY judge
     is unparseable the question silently falls back to `deterministic_rubric_fallback` stamped
