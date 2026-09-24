@@ -102,6 +102,19 @@ episodic memory writing."
     dropped grammar; the schema path is now live, but the native candidate-probability readout over `/v1`
     (`logprobs`/`top_logprobs` instead of `/completion`'s `n_probs`) has not been re-measured. One short window
     with `src/typed_decisions/bench.py`; schedule it outside a CPU-decode campaign window.
+    - *2026-09-24 live windows:* 12:07Z run through `LLMPrimitives` on frontdoor: JSON 0/24 (`no_json`), native
+      full 1/16, `id_only` 0/16. Two fixes landed from the review: orch `4610be60` — the streaming
+      repetition-loop guard ran unconditionally and aborted legitimately repetitive schema-constrained output,
+      now exempt when `json_schema`/`grammar` is set; and orch `71be6ed3` — native `n_probs` was captured
+      pre-grammar-mask by default, now the request sets `post_sampling_probs`. (The "noul" key one agent
+      suspected as a bug turned out to be the schema's own key for yes/no questions — grammar converter
+      verified faithful; that hypothesis was wrong.) Re-bench 13:38-13:41Z: JSON 0/24 now ends on `length`
+      (1600-token budget too small for the schema+reasoning), native still unchanged (the flag appears not to
+      reach the server). Diagnosis in flight.
+    - [ ] Raise the JSON arm's token budget above 1600 (measured ending on `length`, not a real parse failure)
+      and re-bench.
+    - [ ] Trace why the native `post_sampling_probs` request flag (orch `71be6ed3`) is not reaching the
+      server — native result unchanged across the fix.
   - [ ] **TD-1d.2 — concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`**
     (probed: parallel wall == serial wall, max 1 slot busy). A constraint on every future fan-out design, not
     just this one; independently matches the 09-17 note's `heavy_model` lock observation.
@@ -120,6 +133,9 @@ episodic memory writing."
     fallback for those 8. Not built; (c) is a routing policy, not a speed fix.
     Harness extension `run_typed_decisions_native_parallel` (`src/typed_decisions/native.py`, +251 lines, ruff
     clean, 209 native unit tests pass) is **uncommitted** pending TD-1d.0.
+    - [x] ✅ 2026-09-24 — orch `11818eb5`: the parked 2026-09-22 harness landed **UNWIRED** (taken over from the
+      other session at operator direction; the parked diff's silent `CueStyle` default reversion to `full` was
+      deliberately NOT carried over). Still gated on TD-1d.0 — landing the code is not adopting it.
     - *Options added 2026-09-23 (intake-1498, intake-1514#00):* (d) a trained option-end pointer readout (Kev) — viable only
       as a separate small decision model, not a zero-shot fix; TD-9's single-token codes already removed the TD-7 blocker.
       (e) score multi-token candidates as `seq_cp` branches (summed teacher-forced log-prob), on llama.cpp-experimental.
@@ -204,6 +220,15 @@ episodic memory writing."
     error. Enabling is a production-posture pin in `orchestration/runtime_flags.spec.yaml` (reason + since) plus the
     live flag; it changes what `/chat` callers receive (a conforming object or a 422, instead of an unvalidated
     value). Recommendation: enable.
+    - *2026-09-24:* OP-51 enabled (orch `98edfeb0`, `PRODUCTION_FEATURE_WAVE_OVERRIDES`), API reloaded. First
+      live smoke (13:41Z) of REPL `/chat` (`{17*3, output_schema {result:int}}`) returned **HTTP 500**
+      "repeated no-progress nudges at `coder_escalation`" (flag off it returned `51`), with `Model fallback:
+      coder_escalation → frontdoor (connection_error)` in the logs although :8083 is healthy. Operator chose to
+      **SUSPEND** → orch `6b26f3ae` (flag back OFF), API reloaded 13:48:02Z. Kept `[ ]` — regression diagnosis
+      in flight (schema preamble ```` ```json ```` fence vs escalation routing).
+    - [ ] Root-cause the `coder_escalation → frontdoor (connection_error)` fallback logged during the OP-51
+      smoke even though :8083 answers health checks — a live routing/connection defect independent of the
+      schema-validation flag itself, surfaced only because OP-51 exercised the escalation path.
   - [x] **TD-21.2 — `scripts/autopilot/controller_io.py:739` autopilot ACTION block.** Shape: the fenced
     `json:autopilot_actions` object. Today: marker-index fish; on a miss the provider is failed, one fallback
     provider is re-prompted **from zero**, and a deterministic `seed_batch` default action is written into the
@@ -307,7 +332,7 @@ episodic memory writing."
     **Acceptance for TD-21.9..21.14 jointly**: report the per-arm parse-failure rate beside every accuracy ✅ 2026-09-24 for 21.11–21.14 (orch `940e0553`): `EvalTower._aggregate` reports
     `parse_failure_count` / `parse_failure_by_method` / `parse_failure_rate` in `details` beside quality and accuracy
     on every trial, counted per `eval_batch_id` so concurrent arms never mix; always on, independent of the flag.
-  - [ ] **TD-21.EQ1 — operator: ratify the exclusion (OP-50).** `bash scripts/operator/ratify_eq1_answer_parse_exclusion_20260924.sh --show`
+  - [x] **TD-21.EQ1 — operator: ratify the exclusion (OP-50).** `bash scripts/operator/ratify_eq1_answer_parse_exclusion_20260924.sh --show`
     then `--apply`: flips `EXCLUDE_UNPARSEABLE_ANSWERS`, appends era `E19-eval-answer-parse-failure-excluded-quality`
     (`eval_quality`), moves the one default-contract test with the flip, runs the scorer suite, prints the commit.
     Tension, stated in the era note: E17 pulled failures INTO the denominator; this pulls unparseable answers OUT —
@@ -317,6 +342,10 @@ episodic memory writing."
     ✅ 2026-09-24 — same commits: only "fell back to the raw last line AND nothing matched" is a parse failure;
     IFEval `json_valid` stays byte-identical (a real oracle — a first draft's `fish_json` swap would have passed
     invalid JSON, reverted in review).
+    ✅ 2026-09-24 — **applied by the operator** (`ratify_eq1_answer_parse_exclusion_20260924.sh --apply`,
+    post-flip suite 271 passed): committed from a clean worktree as orch `eabc9b44`, era
+    `E19-eval-answer-parse-failure-excluded-quality`, boundary `2026-09-24T11:59:11Z`.
+    `EXCLUDE_UNPARSEABLE_ANSWERS` and `CONSTRAIN_JUDGE_OUTPUT` now both `True`.
   - [x] **TD-21.15 — `scripts/autopilot/eval_tower.py:3887,:3911` rubric-judge scores** (call `:4464`). Shape:
     `{"scores":{dim: float in [0,1]}}`. Today: fence strip + brace slice with range validation; if EVERY judge
     is unparseable the question silently falls back to `deterministic_rubric_fallback` stamped
@@ -444,13 +473,17 @@ episodic memory writing."
     `_judge.json` now records `pairs_total`/`pairs_judged`/`judge_parse_failures` per model, and a model with
     zero judged pairs gets an explicit failing row instead of silent omission (the gate can no longer pass a
     model that was never judged).
-  - [ ] **TD-21.29 — `epyc-inference-research:scripts/kernel_rnd/autokernel/loop/actor_preparation.py:333,:369`.**
+  - [x] **TD-21.29 — `epyc-inference-research:scripts/kernel_rnd/autokernel/loop/actor_preparation.py:333,:369`.**
     Shapes: source-actor advice `{mechanism, target_surface, target_symbol, implementation_plan}` (or a build
     recipe); critic verdict `{accepted, reason}`. Today: calls `actors._extract_json` **raw**, with no repair —
     the same path `ad2b89ff` just converted one file away. A `PreparationRefused` burns a **one-shot reservation**
     that cannot be re-invoked. Action: route both through `actors._parse_reply` with the matching schema
     (`:369` is literally `REVIEW_SCHEMA`); reachable whenever the `ActorProfile` names an opencode `provider/model`.
-  - [ ] **TD-21.30 — Close the `actors.py` residuals left by `ad2b89ff`.** (a) `:181` `_first_json_or_none` is
+    ✅ 2026-09-24 — research `4915220f` (repair coverage for `actor_preparation.py` + `actors.py` residuals),
+    coordinated directly with the DS41 session (workspace-76) on their seat branch `e9495971`, merged after
+    their `21ca61b0`, landed on research main. `actor_preparation` through `_parse_reply` — no burned reservation
+    on a malformed reply.
+  - [x] **TD-21.30 — Close the `actors.py` residuals left by `ad2b89ff`.** (a) `:181` `_first_json_or_none` is
     still a raw probe and silently decides what `_parse_reply` later sees; (b) `:344` accepts any object where
     `"abstain" in body or _complete(body, schema)`, so a partial or hallucinated object carrying the required keys
     short-circuits repair entirely; (c) `_schema_repair` returns `None` for non-opencode backends, so the two
@@ -462,6 +495,11 @@ episodic memory writing."
     ([`autokernel-orchestrator-actor-backend.md`](autokernel-orchestrator-actor-backend.md)): its reply comes back
     through `/chat` with `output_schema` and TD-21.1's `repl_final` repair, so no loop-side repair is needed for
     that kind; codex/claude kinds remain uncovered.
+    ✅ 2026-09-24 — research `4915220f` (same commit as TD-21.29): schema-aware stream choice; full type
+    validation before skipping repair; `REVIEW_SCHEMA` closed (additionalProperties); `model` added on the
+    repair wire. Same DS41-coordinated landing on research main; `loop/` suite 87 failures identical to clean
+    `21ca61b0` (pre-existing, unrelated to this change). Shared research clone deliberately NOT fast-forwarded
+    to this SHA (their run 8 in flight); the DS41 session holds the SHA.
   - [x] **TD-21.31 — Record the unreachable consumers rather than converting them.** `claude_codex_actor_critic.py:354,:373`
     and `claude_fable5_critic_actor.py:574` are already natively constrained (`--json-schema`, enum + `const`
     bindings) and need nothing. `discovery_controller.py:1416,:1434`, `loop_experiment_runner.py:517` (codex arm,
@@ -493,6 +531,18 @@ episodic memory writing."
     `confidence`, insight trial ids, env_synth (`verifier.type` exempt), architect decision (`mode`/`delegate_to`/
     `delegate_mode` exempt), MCQ letter; OFF only for the single-enum A/B verdict. Fixtures that "repaired" to values
     absent from their own raw text were the pattern the guard catches — they were made evidence-compliant.
+  - [x] **TD-21.35 — the repair grammar no longer forces required fields.** Operator question (2026-09-24): can
+    the harness limit which schema entries a repair turn is allowed to touch? Answer: the repair wire schema
+    drops `required` except for const/single-enum discriminators, and the repaired object is still validated
+    against the ORIGINAL schema (not the relaxed one).
+    ✅ 2026-09-24 — orch `f09efc64`; the actors.py repair wire got the same treatment in research `34373dd8`
+    (same DS41-coordinated landing as TD-21.29/21.30). **Live finding (smoke 13:43Z):** relaxing `required`
+    alone did NOT stop invention — without `require_evidence` (TD-21.34) the model still filled an optional
+    tier field (repaired `tier: 2` for a draft naming none). The relaxation removes the *forcing*; the evidence
+    check is what actually prevents invention. Answers the operator's two questions this session: why the
+    eval-quality changes were switched off earlier (era discipline — a scoring change is an era boundary,
+    human-only registry) and whether the harness can constrain repair scope (yes, via `required`-dropping plus
+    the pre-existing evidence guard, which is load-bearing here).
   - [x] **TD-21.33 — carry the actors.py grounding + min-report refusal into the shared helper.**
     `src/structured_output/repair.py` `parse_with_repair` (`:373`) fishes, validates, declines, extracts — but will
     happily "repair" an EMPTY or near-empty report into a schema-valid object, and never checks that a repaired
@@ -518,13 +568,19 @@ episodic memory writing."
     (`chat_delegation.py`, `chat_completion_call`, `chat_pipeline/telemetry.py` — which runs under `to_thread`
     exactly like the TD-21.21 bug — `typed_decisions/measure.py` (+ judge_redundancy, tool_args_pilot) and
     `bench.py`), each with an `isinstance` guard for test doubles; 2 interleaving race tests.
-  - [ ] **TD-21.33a — `graph/helpers.py::_execute_turn` still reads meta across a thread hop.** The call runs in
+  - [x] **TD-21.33a — `graph/helpers.py::_execute_turn` still reads meta across a thread hop.** The call runs in
     `asyncio.to_thread` and the read happens in the parent, where a ContextVar set in the child is invisible; it got
     a getter-first/attribute-fallback hybrid (never worse than before) but the real fix is to return the meta from
     the thread alongside `code`, as the edit-transaction path now does.
-  - [ ] **TD-21.33b — `typed_decisions/native.py:517,:1272` read the shared attribute right after their own call.**
+    ✅ 2026-09-24 — orch `f769f3e1`: closed for real — meta is now captured inside the thread via
+    `_call_llm_capturing_meta` and returned alongside `code`, instead of read after the hop.
+  - [x] **TD-21.33b — `typed_decisions/native.py:517,:1272` read the shared attribute right after their own call.**
     Same-context, migratable; not touched because another session holds uncommitted work in that file (in the
     shared orchestrator clone since 2026-09-22). For that session, or once the file is free.
+    ✅ 2026-09-24 — orch `d63a11ed`: native.py's last two `_last_inference_meta` readers migrated. Taken over at
+    operator direction alongside the parked 2026-09-22 `native.py` work (TD-1d.4); the parked copy was captured
+    byte-identical under `/mnt/raid0/llm/worktrees/td21/native-capture/` before this landed, and the shared
+    orchestrator clone is clean for the first time today.
   - [ ] **TD-21.33 — `primitives._last_inference_meta` is read across a SHARED `LLMPrimitives`.**
     `_init_primitives` reuses one instance per worker across concurrent requests, so any code that reads the
     last call's meta after the fact can see another request's values: `graph/helpers.py:~941`,

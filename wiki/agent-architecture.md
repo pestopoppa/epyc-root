@@ -137,8 +137,12 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
 - MF-VBS-2's effect cannot be sized: the multi-file tasks hit the 8-turn cap or error in every run, so
   their forced-stop rate is a bigger and separate defect than verify-before-stop.
   Filed as MF-FS-1: classify those forced stops by reason from the existing traces first.
-- TD-21.29 — the *preparation* actors (`actor_preparation.py:333,:369`) still call `_extract_json` raw, and
-  a `PreparationRefused` burns a one-shot reservation. Same path `ad2b89ff` converted one file away.
+- ~~TD-21.29 — the *preparation* actors (`actor_preparation.py:333,:369`) still call `_extract_json` raw, and
+  a `PreparationRefused` burns a one-shot reservation. Same path `ad2b89ff` converted one file away.~~
+  Closed 2026-09-24 afternoon — see the compiled update below.
+- Live: does the `coder_escalation → frontdoor (connection_error)` fallback (surfaced during the OP-51 smoke,
+  :8083 otherwise healthy) share a root cause with the schema-preamble question, or is it an independent
+  routing defect? Diagnosis in flight.
 
 ### Source References (2026-09-24 wrap-up compile)
 
@@ -184,6 +188,48 @@ the audit. This is a software-path audit, not a model-quality benchmark.
 
 - Which of the ranked TD-21 consumers have completed conversion, and do their producers retain schema and
   failure disposition without changing scoring or campaign authority?
+
+## Compiled Update — 2026-09-24 (afternoon operator follow-ups): relaxing a repair schema's `required` list does not by itself stop invention — the evidence guard does
+
+**Confidence: verified** — live smoke tests on the frontdoor/REPL path, cited commits on `origin/main` in both repos.
+
+### Key findings
+
+- **OP-50 (eval-quality scorer boundary) ratified and applied.** `EXCLUDE_UNPARSEABLE_ANSWERS` and
+  `CONSTRAIN_JUDGE_OUTPUT` are now both `True` under era `E19-eval-answer-parse-failure-excluded-quality`,
+  post-flip suite 271 passed. ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.EQ1, orch
+  `eabc9b44`)
+- **TD-21.29/TD-21.30 landed: the AutoKernel loop's preparation and residual JSON consumers now go through
+  repair.** Coordinated directly with the concurrent DS41 campaign session rather than waiting for it to end,
+  merged after their seat branch tip. ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.29,
+  TD-21.30, research `4915220f`, `34373dd8`)
+- **Relaxing a repair schema's `required` constraint does not, by itself, stop the model from inventing
+  optional fields — the evidence guard is what does.** TD-21.35 dropped `required` from the repair wire schema
+  (except const/single-enum discriminators) so a repair turn can no longer be *forced* to supply a field the
+  source text never named. Live smoke without the evidence check still showed the model filling an optional
+  `tier` field for a draft that named none. TD-21.34's `require_evidence` (already landed, unrelated commit)
+  is the mechanism that actually catches this — the two are complementary, not redundant, and a design that
+  ships one without the other is not protected against invention.
+  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.34, TD-21.35, orch `f09efc64`, research
+  `34373dd8`)
+- **A production-posture flag flip can surface an unrelated routing defect.** Enabling `final_schema_validation`
+  (OP-51) for a live smoke produced HTTP 500 with `Model fallback: coder_escalation → frontdoor
+  (connection_error)`, even though the `coder_escalation` backend (:8083) answered health checks — the flag
+  exercised an escalation path that a normal request does not take, exposing a defect the flag itself did not
+  cause. The operator suspended the flag rather than debug live; root-cause is filed, not fixed.
+  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.1a, orch `98edfeb0` enable, `6b26f3ae`
+  suspend)
+- **Cross-process meta reads across a thread hop need the value returned from the thread, not re-read after
+  it.** TD-21.33a's fix (`_call_llm_capturing_meta`) captures inference meta *inside* `asyncio.to_thread` and
+  returns it alongside the result, instead of reading a ContextVar set in the child from the parent afterward
+  — the general pattern for any per-call state crossing a thread boundary in this codebase.
+  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.33a, orch `f769f3e1`)
+
+### Open question
+
+- The `coder_escalation` connection_error under OP-51 and the JSON arm's `length`-truncation under TD-1d.2 are
+  both live-smoke findings against a healthy stack from this same afternoon — worth checking whether they share
+  a cause (an escalation/repair path both exercise) before treating them as two separate defects.
 
 ## Compiled Update — 2026-09-23 (evening wrap-up compile): a daemon runs the script inode it opened at launch, so every commit to a tracked script can orphan a live process
 
