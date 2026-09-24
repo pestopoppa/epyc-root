@@ -9,10 +9,24 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-24T18:09:16Z",
-  "mode": "touch",
-  "scan_time": "2026-09-24T18:09:16Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 3,
+      "removed": 0
+    },
+    "at": "2026-09-24T19:30:35Z",
+    "scope_paths": [
+      "handoffs/active/kv-unified-stack-rollout.md",
+      "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "handoffs/active/typed-decision-plane.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-24T19:30:35Z",
   "schema_version": 1,
-  "source_set_hash": "6d6fc218a79e5ec67662f0f7dbb297df10beae897109426e973c40438531db9b",
+  "source_set_hash": "93174dc95854c3f9bbf76d0af4a9d8af82b680858df6daa159a7a09b1ed00752",
   "sources": [
     {
       "content_hash": "eaf7ea54524d1000470b56a89875321cb9337b8455d39f4cc3e8e7b78da58531",
@@ -687,10 +701,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ee03c8be3537e2bc8746044d9f7dfd2b5ee2a487280c5d137283078f046d30d3",
-      "modified": "2026-09-24T18:08:43Z",
+      "content_hash": "583c57e12c6c1eef09d80caf74432aa14f723fb1e33e02b856d78a1fb8b90934",
+      "modified": "2026-09-24T18:34:25Z",
       "path": "handoffs/active/kv-unified-stack-rollout.md",
-      "size": 18924,
+      "size": 19522,
       "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
       "type": "handoff-active"
     },
@@ -1199,10 +1213,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ec803f8026335a1befb47dbb959c59cc3f86e20c5c141d4c5b3e627c31010fbb",
-      "modified": "2026-09-24T17:45:03Z",
+      "content_hash": "ebf25701d6c0354f9ff4988ac46fe3f3a9de1141000e5f90c1d4d8b2f1a4ffa8",
+      "modified": "2026-09-24T19:28:41Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 86012,
+      "size": 88797,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1311,10 +1325,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "409c98d53b137c81591c56b92050c5a8cefc3ca85a5fd830d8baa084be9b2795",
-      "modified": "2026-09-24T17:45:03Z",
+      "content_hash": "d106e474be5d2927926b24058772994ee6056c53f11bdceed658893bc8c7a99a",
+      "modified": "2026-09-24T18:34:25Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 79448,
+      "size": 79725,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },
