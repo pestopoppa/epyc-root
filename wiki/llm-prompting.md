@@ -2,8 +2,8 @@
 
 **Category**: `llm_prompting`
 **Confidence**: verified (CPU/prompting findings) · observation (2026-07-06 CoT-scaffold GPU-study numbers — single-sample, no protocol-id per MEASUREMENT.md)
-**Last compiled**: 2026-08-23 (prompt-construction & sampling determinism: D1–D2 closed, D3–D4 open, the OpenAI-compatible sampling propagation, and the 2026-08-21 chat-template round — a chat template is executable code in the prompt-construction position, the frozen v9 engine is first-party `common/jinja/` with input marking (NOT minja), a top-level `reasoning_effort` is silently dropped server-side (`chat_template_kwargs` is the only body→template route), and a template swap invalidates certified effort levels (E-7 `template_sha` stamp) — see the end of the page; earlier 2026-07-06 note: ⚠️ 2026-07-06 CoT-scaffold-injection subsection flagged for human review — see Key Findings)
-**Sources**: 14 documents (2 deep-dives, 1 active handoff, 11 intake entries across llm_prompting/prompt_optimization/prompt_sensitivity/instruction_following)
+**Last compiled**: 2026-09-24 (speech-lane wrap-up compile: planner-prompt lessons from the opencode seat: tokenize rather than estimate, keep provenance digests and inherited AGENTS.md out of a planner's context, pick inline context from what replies cite, an instruction is not a guard); earlier: 2026-08-23 (prompt-construction & sampling determinism: D1–D2 closed, D3–D4 open, the OpenAI-compatible sampling propagation, and the 2026-08-21 chat-template round — a chat template is executable code in the prompt-construction position, the frozen v9 engine is first-party `common/jinja/` with input marking (NOT minja), a top-level `reasoning_effort` is silently dropped server-side (`chat_template_kwargs` is the only body→template route), and a template swap invalidates certified effort levels (E-7 `template_sha` stamp) — see the end of the page; earlier 2026-07-06 note: ⚠️ 2026-07-06 CoT-scaffold-injection subsection flagged for human review — see Key Findings)
+**Sources**: 14 documents (added 2026-09-24 speech-lane wrap-up compile: agent-loop-design seat techniques, autokernel-orchestrator-actor-backend §1) (2 deep-dives, 1 active handoff, 11 intake entries across llm_prompting/prompt_optimization/prompt_sensitivity/instruction_following)
 
 ## Summary
 
@@ -237,3 +237,30 @@ The same round extended the reasoning-effort certification contract: the chat te
 - [Chat Templates](chat-templates.md) — the compiled engine finding (`common/jinja/` with input marking, NOT minja) and the endpoint routing surface
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — the chat-template intake round (commit `612fbd99`, 12 closed tasks via 5-agent fan-out) that produced PCD-T1, PRB-T3 and the E-7 amendment
 - [`progress/2026-08/2026-08-22-research-intake.md`](../progress/2026-08/2026-08-22-research-intake.md) — the CT-E7 terse-pilot recalibration
+
+## Compiled Update — 2026-09-24 (speech-lane wrap-up): what a planner prompt should not carry
+
+**Confidence: verified** for the token measurements (27B tokenizer on the real DS41 planner prompts). **inferred**
+for the prescriptions, which have not been A/B'd (INF-78 OAB-9).
+
+- **Tokenize with the real vocab; never estimate from characters.** chars/3.5 undercounted the DS41 planner prompt
+  by about 30%, because the hex digests in it run at 2.46 chars/token.
+- **Do not show provenance digests to a planner.** The target JSON was 37% of prompt tokens and nearly useless for
+  planning. Digests belong in the record, not in the prompt.
+- **Do not inherit a working tree's `AGENTS.md` into a planner's context.** For a llama.cpp lane that file is
+  ~2.5–3k tokens of contributor guidance. It is part of a ~13.2k-token fixed overhead per call that no prompt edit
+  removes.
+- **Pick the inline context from what replies actually cite.** Run 7's one complete hypothesis copied
+  `target_symbol` verbatim from the profile/hotspot section, so that section stays inline. Move the rest to
+  addressable files; see [context-management](context-management.md).
+- **An instruction is not a guard.** A planner told "never build" still compiled `.o` files into `/tmp`. Enforce
+  prohibitions through permissions, as the opencode audit does for agents.
+- **After compaction, a template-shaped reply may be quoted text.** A compaction summary quotes the reply template,
+  and that looks like a model failure when it is not one.
+
+### Source References (2026-09-24 speech-lane)
+
+- [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files* and its *Traps*.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §1 (*Avoid*
+  list).
+- [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): row 6 (restrict agents through `permission`, not through a flag that only looks restrictive).

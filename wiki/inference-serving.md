@@ -1131,6 +1131,12 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   now. A comment-only banner was added at the head of
   `gpu_shadow_lane_np_ceiling.yaml` specifically to block the obvious wrong reaction —
   "whisper isn't landing, so free up its 1.6 GiB."
+  *Overtaken 2026-09-24:* W2 happened anyway. whisper.cpp on HIP served on the MI210 from
+  2026-07-31, and the operator then moved STT and TTS to the CPU on 2026-09-24 (KVU-11). Speech
+  placement is now owned by the conversation-stack program: CS-12 puts the cascade on the
+  second MI210, and CS-9 measures co-residency. P2-9 carries a cross-reference for its owner to
+  close. ([conversation-stack](../handoffs/active/conversation-stack.md),
+  [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md))
   [p2-2-tenant-landing-readiness](../docs/reference/p2-2-tenant-landing-readiness-20260729.md),
   [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md)
 

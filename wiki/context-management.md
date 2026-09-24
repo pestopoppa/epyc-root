@@ -2,8 +2,54 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-09-24 (late operator wrap-up compile: OP-49 decided — the Claude Code bash-compressor MCP surface is DROPPED; an MCP shell tool sits outside every PreToolUse guard, which match `Bash` only); earlier: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Last compiled**: 2026-09-24 (speech-lane wrap-up compile: context as files on the opencode seat (INF-78 OAB-7s); a 79% smaller planner prompt); earlier: 2026-09-24 (late operator wrap-up compile: OP-49 decided — the Claude Code bash-compressor MCP surface is DROPPED; an MCP shell tool sits outside every PreToolUse guard, which match `Bash` only); earlier: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
 primary sources with the staleness caveat demonstrated; edit-format rules from hashline/aider/Cursor
+
+## Compiled Update — 2026-09-24 (speech-lane wrap-up): context as files on the opencode seat — a 79% smaller planner prompt, built but not yet A/B'd
+
+**Confidence: verified** for the token counts and the losslessness check. Both were measured with the 27B
+tokenizer on real DS41 prompts. **inferred** for any effect on model behaviour: the live A/B (INF-78 OAB-9) has
+not run, and the code (research `ce5800cb`) is unmerged.
+
+- **An append-only agent conversation keeps every inlined byte in every step until compaction.** A large
+  context bundle is therefore paid for once per *step*, not once per call. The seat-side build writes the bundle
+  to a per-call directory **beside** the working tree. It must never go inside the tree, because a file there
+  rides into the authored diff. The bundle holds sections, per-key JSON, an `INDEX.md` with sizes, and a manifest
+  bound to the prompt's sha256. The prompt itself carries the index plus a small inline set.
+- **Measured:** the run-8 planner prompt went from 26,293 to 5,510 tokens (−79%), and the run-7 pre-diet prompt
+  from 32,917 to 5,629 (−83%).
+- **Choose the inline set from evidence, not taste.** Inline what past replies actually cited: run 7's one
+  complete hypothesis copied `target_symbol` verbatim from the profile/hotspot section. Also inline the scope
+  directives and this turn's instruction blocks. Everything else goes to files: the target JSON, the program,
+  shared history and serving observations.
+- **Tokenize, never estimate.** chars/3.5 undercounted this prompt by about 30%. The target JSON is mostly hex
+  digests at 2.46 chars/token, which made it 37% of prompt tokens while being nearly useless to the planner.
+- **Budget the fixed overhead separately.** About 13.2k tokens of every call are opencode's system prompt, its
+  tool schemas and the working tree's `AGENTS.md`, which alone is ~2.5–3k tokens of contributor guidance. No
+  prompt change removes that overhead.
+- **Lossless and reversible by construction.** The section files concatenate back to the inline text byte for
+  byte, and each JSON block implodes to the identical object. A bundle that cannot be written falls back to
+  inline and says so. So an inline/variable pair differs only in *where* the context sits, not *what* it holds,
+  and any A/B claim has to be scoped that way.
+- **Files outlive compaction.** The planner re-read `INDEX.md` after compacting. The design depends on that
+  property.
+- **The tool surface decides the design.** A bare `opencode run` seat has no MCP server, only native
+  `read`/`grep`/`glob`/`bash`, so files are the only "variable" it can inspect. Reads outside its `--dir` work
+  only because `--auto` approves opencode's `external_directory: ask` default. A read-only critic gets no
+  `--auto`, so it stays inline. Grant out-of-tree reads explicitly rather than through blanket approval.
+- **A manifest records what was OFFERED, never what was READ.** Reads have to come from the export's tool parts
+  (OAB-12). The belief-kernel join is VB-AK-CTX-1; see [knowledge-management](knowledge-management.md).
+
+**Open (only the OAB-9 A/B answers these):** Does the 27B read the required files without being prompted? Does
+critic acceptance change? Does it just read everything anyway? The predictions are not results: first-step context
+39.5k → ~18.7k tokens, peak 93.5k → ~79k, and 0 compactions instead of 1.
+
+### Source References (2026-09-24 speech-lane)
+
+- [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files, per-call metrics, tool-output caching*.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §1 (numbers,
+  inline-set rationale, predictions).
+- [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): row 8 (no MCP on a bare seat; `--auto` out-of-tree reads).
 
 ## Compiled Update — 2026-09-24 (late): the bash-compressor MCP surface is dropped (OP-49)
 
