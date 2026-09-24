@@ -185,7 +185,15 @@ is free.
   bare production, never a second lineage, never the frozen `production-consolidated-v10` tree in place), then
   re-measure the champion's headline; production promotion (v11) stays separately operator-gated. The DS41
   campaign anchor (`ebb68dc55`) is advanced only in coordination with the DS41 session, before run 9's first
-  full-target calibration (an anchor advance costs ~4 h floor recalibration per scope). A subagent is preparing the patch as of this wrap-up; build and
+  full-target calibration (an anchor advance costs ~4 h floor recalibration per scope).
+  **Patch ready 2026-09-24:** `experimental/mtp-spec-probs-fix-20260924` @ `2b57340bf` (pushed to `fork`) = champion
+  tip `ak/champion/llama-cpp-ffc1bac82eec` @ `8df1b5cf2` + 1 commit (common/sampling.{h,cpp}, tools/server/
+  server-context.cpp; target-model distribution captured at accept time; gated on n_probs>0/post_sampling_probs;
+  2 server tests). **ADMIT (operator, 2026-09-24)** for folding into the champion. Sequence (agreed with the DS41
+  session): OP-52 CPU window AFTER DS41's STT/TTS + Flash-Next measurements → build, `test_speculative.py`
+  n_probs tests, live MTP n_probs check, speed-neutrality A/B vs champion tip (n_probs=0), TD-1d.2 native re-bench
+  → champion ff (`ak-loop-tree` confirmed idle) → DS41 rebases its port (ebb68dc55, a clean descendant) and
+  rebuilds its anchor → run 9. Out of scope: `sample_and_accept_dspark_serial` (not on the draft-mtp path). A subagent is preparing the patch as of this wrap-up; build and
   validation need an operator-granted CPU window (**in flight; CPU-window grant is a pending operator
   decision — see the operator queue**). Closes when the fix lands on a new champion and TD-1d.2's native arm
   is re-benched with non-null probs on MTP-accepted tokens.
