@@ -2,8 +2,65 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-09-23 (evening wrap-up compile: the episodic store's outcome field was written once at INSERT and never updated; update_q_value now re-derives it from the updated Q on every update, with NO backfill, so rows either side of the fix carry two different semantics); earlier: 2026-09-23 (research-intake jev-exl3: TD-9's AUROC 0.758 is not calibration evidence — the same receipt carries ECE 0.2416; Laya's fitted calibration holds in-task only (ECE 0.030 vs 0.204 held-out); the Kev pointer head is a trained readout, not a zero-shot fix; TD-16..20 filed; the DAR "≥5% regret" gate: implemented metric identically 0, single-draw oracle regret sits near noise, 8.40/8.09pp has no committed artifact, DAR-SPLIT-1 filed); 2026-09-19 (routing replay settled: TD-7 diagnostic 3.0% agreement / native 0/200 on multi-token labels; TD-9 single-token codes → 200/200 resolved, 93.5% agreement as incumbent anchoring; TD-10 counterfactual −0.0104, enforcement OFF; TD-11 filed; TD-6 id_only default); 2026-09-17 (wrap-up sweep: the typed-decision shadow implemented at the routing review gate — flag off, no enforcement; the TD-2 6.25%/37.5% contamination and 0.0625/0.267 ECE numbers; TD-7 replay is the labeled window); 2026-09-17 (research-intake delta: RI-14/LRC-TD-1 file a candidate-scoring arm for the routing classifier, gated on TD-2 calibration; incremental: DAR-6 swarm fan-out code deleted and flag inert; A9 livecodebench stratum labels vacuous); earlier: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
-**Sources**: 92+ documents (added 2026-09-23 evening wrap-up compile: learned-routing-controller EPD-1/EPD-1-orig) (added 2026-09-23: typed-decision-plane TD-16..20 and the TD-9 receipt note, decision-aware-routing URE-1/DAR-SPLIT-1/regret-gate notes, routing-intelligence RI-15 and the Laya comparator, learned-routing-controller freeze annotations, the 2026-09-23 intake-jev-exl3 session record) (added 2026-09-19: typed-decision-plane TD-6/7/9/10/11/15, the 2026-09-18 intake-jev-sageattn session record) (added 2026-09-17 wrap-up sweep: typed-decision-plane TD-2/TD-3b/TD-5/TD-7, the intake session record, and the backlog-churn note) (added 2026-09-17 research-intake: RI-14, LRC-TD-1, the typed-decision-plane stub, and the intake session record) (added 2026-09-17: DAR-6 removal note, A9 livecodebench caveat, sub-scorer-fix consumer map)
+**Last compiled**: 2026-09-24 (wrap-up compile: RTG-09 — the reward's speed axis becomes wall-clock task duration against derived per-role p50/p90 baselines, landed DEFAULT-OFF and byte-identical because a reward-distribution change is a `routing_reward` era boundary, awaiting the OP-47 ratification; a host-only alias was leaking into scoring as its own role); earlier: 2026-09-23 (evening wrap-up compile: the episodic store's outcome field was written once at INSERT and never updated; update_q_value now re-derives it from the updated Q on every update, with NO backfill, so rows either side of the fix carry two different semantics); earlier: 2026-09-23 (research-intake jev-exl3: TD-9's AUROC 0.758 is not calibration evidence — the same receipt carries ECE 0.2416; Laya's fitted calibration holds in-task only (ECE 0.030 vs 0.204 held-out); the Kev pointer head is a trained readout, not a zero-shot fix; TD-16..20 filed; the DAR "≥5% regret" gate: implemented metric identically 0, single-draw oracle regret sits near noise, 8.40/8.09pp has no committed artifact, DAR-SPLIT-1 filed); 2026-09-19 (routing replay settled: TD-7 diagnostic 3.0% agreement / native 0/200 on multi-token labels; TD-9 single-token codes → 200/200 resolved, 93.5% agreement as incumbent anchoring; TD-10 counterfactual −0.0104, enforcement OFF; TD-11 filed; TD-6 id_only default); 2026-09-17 (wrap-up sweep: the typed-decision shadow implemented at the routing review gate — flag off, no enforcement; the TD-2 6.25%/37.5% contamination and 0.0625/0.267 ECE numbers; TD-7 replay is the labeled window); 2026-09-17 (research-intake delta: RI-14/LRC-TD-1 file a candidate-scoring arm for the routing classifier, gated on TD-2 calibration; incremental: DAR-6 swarm fan-out code deleted and flag inert; A9 livecodebench stratum labels vacuous); earlier: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
+**Sources**: 92+ documents (added 2026-09-24 wrap-up compile: decision-aware-routing RTG-09, the 2026-09-24 noninf-tier2 progress log) (added 2026-09-23 evening wrap-up compile: learned-routing-controller EPD-1/EPD-1-orig) (added 2026-09-23: typed-decision-plane TD-16..20 and the TD-9 receipt note, decision-aware-routing URE-1/DAR-SPLIT-1/regret-gate notes, routing-intelligence RI-15 and the Laya comparator, learned-routing-controller freeze annotations, the 2026-09-23 intake-jev-exl3 session record) (added 2026-09-19: typed-decision-plane TD-6/7/9/10/11/15, the 2026-09-18 intake-jev-sageattn session record) (added 2026-09-17 wrap-up sweep: typed-decision-plane TD-2/TD-3b/TD-5/TD-7, the intake session record, and the backlog-churn note) (added 2026-09-17 research-intake: RI-14, LRC-TD-1, the typed-decision-plane stub, and the intake session record) (added 2026-09-17: DAR-6 removal note, A9 livecodebench caveat, sub-scorer-fix consumer map)
+
+## Compiled Update — 2026-09-24 (wrap-up compile): the reward's speed axis becomes wall-clock duration, landed DEFAULT-OFF because a reward change is an era boundary
+
+**Confidence: verified** — landed orchestrator commits with tests, and a byte-identical live-reward check.
+The new axis is **implemented and inert**; it takes an operator signature to become live.
+
+### Key findings
+
+- **Wall-clock task duration replaces tokens/sec as the reward's speed axis** (RTG-09, orch `b8035db9` +
+  `88e24ef0`). `compute_reward` Dimension 0 is 0 at the role's p50 and reaches the full
+  `cost_lambda_duration` at p90, saturating above. `task_duration_s` is wired at **all three** call sites
+  (`QScorer._score_task`, the replay engine, `rescore_rewards_from_progress.py`). A missing duration, or a
+  role with no baseline, skips **only that dimension** and warns once — the reward degrades per-axis rather
+  than failing or silently zeroing.
+  ([decision-aware-routing](../handoffs/active/decision-aware-routing.md))
+- **The baselines are derived under a declared id, not hand-set.** `scripts/analysis/derive_duration_baselines.py`
+  → `orchestration/derived/duration_baselines_by_role.json`, protocol id `RTG09-DURATION-BASELINE-v1` —
+  explicitly an *analysis* id, not a MEASUREMENT.md protocol. 137,256 task pairs across 117 logs
+  (2026-02-27..09-23), minimum n=30 per role: frontdoor p50 27.6 s / p90 116.1 s, worker_general 16.2 /
+  55.1, coder_escalation 9.1 / 75.4. `toolrunner` and `worker_explore` fall under n=30 and therefore have
+  no baseline — which is exactly the case the skip-and-warn path exists for.
+  ([decision-aware-routing](../handoffs/active/decision-aware-routing.md))
+- **Why it ships off: a reward-distribution change is a `routing_reward` era boundary.** Rewards feed Q
+  updates continuously, so flipping the weights mid-stream would make pre- and post-change Q values
+  incomparable with nothing recording the seam. It lands with `cost_lambda_duration=0.0` and
+  `cost_penalty_lambda=0.15`, and the live reward is **byte-identical** (tested); 120 tests pass. The flip
+  to 0.20 / 0.05 and the `E18-routing-reward-duration-axis` era row are packaged as a single operator
+  ratification script (OP-47) — one command, one commit, then an API reload. This is the same discipline
+  the E9 boundary established.
+  ([decision-aware-routing](../handoffs/active/decision-aware-routing.md);
+  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+- **A first implementation that flipped the live reward was reworked, not shipped.** Recorded in the
+  session's own review notes: the initial version changed the live reward with no era boundary and was
+  reworked into the default-off + ratification shape. The correction happened on the main thread reviewing
+  a subagent's result, which is where it is supposed to happen.
+  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) §"Corrections made in
+  main-thread review")
+- **A host-only alias was leaking into scoring as its own role.** Found in passing while fixing three stale
+  q_scorer tests: the host-only alias `worker` surfaced as a scoring role via stack priors; fixed with
+  `_NON_SCORING_HOST_ALIASES` (orch `42e304ac`, `test_q_scorer.py` 78/78). A name that exists only as a
+  serving-host alias must not acquire a Q value of its own — otherwise the router accumulates statistics
+  for an entity that never receives a task.
+  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+
+### Open questions
+
+- OP-47 is pending the operator: until `ratify_rtg09_duration_reward_20260924.sh --apply` runs, the speed
+  axis is dead code in production and DAR-5 stays blocked.
+- The optional replay-rescore of historical rows (so the 174K-row episodic store carries post-fix rewards)
+  is still open; the logs remain the source of truth and can be replayed on demand.
+
+### Source References (2026-09-24 wrap-up compile)
+
+- [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md) — RTG-09 implementation, the
+  baseline derivation and its protocol id, the default-off rationale and the ratification command.
+- [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the RTG-09 row, the
+  main-thread correction, and the q_scorer host-alias leak.
 
 ## Compiled Update — 2026-09-23 (evening wrap-up compile): the episodic store's `outcome` is re-derived on every Q update, and the rows written before the fix keep their insert-time value
 

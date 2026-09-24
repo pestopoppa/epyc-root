@@ -2,8 +2,53 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Last compiled**: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
 primary sources with the staleness caveat demonstrated; edit-format rules from hashline/aider/Cursor
+
+## Compiled Update — 2026-09-24 (wrap-up compile): the tool-output compressor's observation window never accrued because nothing ever calls the tool
+
+**Confidence: verified** — the write path was exercised end to end and the call census is a complete scan
+of the retained transcript corpus.
+
+### Key findings
+
+- **P4e was never blocked on telemetry volume; it was blocked on zero invocations.** Across **all 1,092
+  retained Claude Code transcripts (2026-08-24 → 09-24)** there are **0 `mcp__*` tool_use blocks of any
+  kind** and 0 ToolSearch queries for the compressor. The 2026-09-14 observation that
+  `logs/tool_compression_monitor.jsonl` did not exist on disk was therefore the symptom, not the defect.
+  ([tool-output-compression](../handoffs/active/tool-output-compression.md) P4e / UFH-07)
+- **Everything except the trigger is correct, and that was proven rather than assumed.** Registration is
+  right in both `.mcp.json` files and in `enabledMcpjsonServers`; a real FastMCP in-memory
+  `call_tool("run_bash_compressed", {"command": "git status"})` wrote a **full P4c row with every follow-up
+  field populated**; 19/19 unit tests pass. The gap is that MCP tools surface as **deferred** tools and no
+  agent file or skill points a session at `run_bash_compressed` — so the capability exists and is
+  unreachable in practice.
+  ([tool-output-compression](../handoffs/active/tool-output-compression.md) P4e;
+  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) UFH-07)
+- **A deferred capability that nothing advertises is indistinguishable from a broken one, and the usual
+  diagnosis goes to the wrong layer.** The three months of "telemetry is underpowered" readings all measured
+  a sink with no producer. The general rule: before debugging a write path, count the calls.
+- **The gate has collapsed into its own experiment.** The data P4e needs can only be collected by directing
+  agents at the tool — which **is option (i), promote-to-default, in effect**. So the decision gate is no
+  longer data-driven; it is an operator choice, filed as **OP-49** with three options: direct agents to the
+  tool (option (i) by another name), a **tagged canary** whose rows stay out of the top-up-rate
+  calculation, or drop the tool. The canary is the only one of the three that preserves the top-up-rate
+  measurement the gate was designed around.
+  ([tool-output-compression](../handoffs/active/tool-output-compression.md) P4e)
+
+### Open questions
+
+- OP-49 is with the operator. Until it is answered, `top_up_rate` has no denominator and the
+  `min_compressed_calls=100` threshold cannot be reached by any passive means.
+- If the canary option is chosen, the exclusion of canary rows from the top-up-rate calculation has to be
+  built — today the analyzer has no notion of a tagged row.
+
+### Source References (2026-09-24 wrap-up compile)
+
+- [tool-output-compression.md](../handoffs/active/tool-output-compression.md) — P4e, the UFH-07 root cause,
+  the verified write path, and the three OP-49 options.
+- [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the UFH-07 row and the
+  OP-49 filing.
 
 ## Compiled Update — 2026-09-17: spilled output can now be recalled exactly, and the "total tokens per episode" telemetry never existed
 

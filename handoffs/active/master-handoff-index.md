@@ -30,7 +30,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
-| OP-40 | **DeepSeek-V4.1 campaign critic model**: `gpt-6-sol` does not exist (cache lists gpt-5.6-sol, gpt-6-astra, gpt-5.6-terra, gpt-5.6-luna, gpt-5.5; no hosted fallback, OPENAI_API_KEY unset). Substitute **`gpt-6-astra` effort high**, or name another | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | 2026-09-23 |
 | OP-41 | **DeepSeek-V4.1 campaign is blocked by the competing-inference gate**: it classifies any UNOWNED `llama-server` as competing and raises, and :8074 (the requested planner) sits outside every owned scope with no allowlist parameter. Either (B) add a scoped, journalled pid allowlist — a source change that weakens a gate with INC-20260731 lineage — or (C) keep the default planner and stop :8074 for the window. The operator has said the stack stays up | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | 2026-09-23 |
 | OP-47 | **RTG-09 duration reward axis**: apply `scripts/operator/ratify_rtg09_duration_reward_20260924.sh` (flip 0.20/0.05 + era E18 `routing_reward`, then reload API) or decline — unblocks DAR-5 | [decision-aware-routing.md](decision-aware-routing.md) | 2026-09-24 |
 | OP-48 | **Capacity gate sees speech VRAM (INF-41 S-11a)**: sign the prepared fold (GPU margin 5.85 → 1.17 GiB); lands only after `contention_matrix.yaml` is refreshed by a live bench | [multimodal-pipeline.md](multimodal-pipeline.md) | 2026-09-24 |
@@ -84,7 +83,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 57 | 791 | 15 | 2026-07-29 |
+| inference-research | 57 | 792 | 15 | 2026-07-29 |
 | pipeline-integration | 5 | 71 | 1 | 2026-08-11 |
 | research-evaluation | 43 | 432 | 12 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |

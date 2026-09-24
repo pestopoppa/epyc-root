@@ -5,9 +5,85 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+**Last compiled**: 2026-09-24 (wrap-up compile: S-11/S-12/S-13 — the speech stack is registered under MRG-1 and the task's own pin and GGUF pair were both wrong, the fork stays pinned with two guards; S-11a — folding 4.68 GiB of aux-service VRAM into the capacity gate takes the lineup margin 5.85 to 1.17 GiB, PREPARED behind an operator signature and a stale contention matrix; S-15 confirmed live in a running process); earlier: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
 `0.0`/`0.058` TEDS figures are formally voided and a three-stage instrument with a supported (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge) (2026-08-30: MiniMax-H3 lands as the page's first video-generation candidate — EVL-32: 33B dense H3-Omni-Transformer + Qwen3-VL-32B encoder, Ref2VA/FL2VA variants, 768p local / 2K API-only, 24 FPS 32 kHz stereo audio, a 56-model community quantization landscape, NSFW-capability finetune evidence, Ref2VA + beta4 INT8 ~165 GB deployment path, and an Excluded-Territories license; operator scope decision is the first gate before any download)
-**Sources**: 2 documents (added 2026-09-23 evening wrap-up compile: multimodal-pipeline S-15/S-16, the 2026-09-23 progress log) (added 2026-09-17: ERNIE evaluation MI210 run blocks, sub-occ1 progress log, ERNIE deep-dive link fix, completed OCC handoff) (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
+**Sources**: 2 documents (added 2026-09-24 wrap-up compile: multimodal-pipeline S-11/S-11a/S-12/S-13/S-15, the 2026-09-24 noninf-tier2 progress log) (added 2026-09-23 evening wrap-up compile: multimodal-pipeline S-15/S-16, the 2026-09-23 progress log) (added 2026-09-17: ERNIE evaluation MI210 run blocks, sub-occ1 progress log, ERNIE deep-dive link fix, completed OCC handoff) (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
+
+## Compiled Update — 2026-09-24 (wrap-up compile): the speech stack is finally registered, and the pins in the task text were wrong in two ways
+
+**Confidence: verified** — registry rows, MRG-1 gate results and the guard scripts are landed
+(research `53418b84`..`e485008a`, orch `f323fa01`). The capacity-gate fold is **PREPARED, not landed**.
+
+### Key findings
+
+- **The speech stack is no longer discoverable only from progress logs.** `server_mode.tts_server`
+  (qwentts.cpp) and `server_mode.voice_server` (GPU whisper.cpp) are now records in the research master,
+  with `data/model_registration/20260924-qwentts-cpp-12hz-0.6b/` carrying the MRG-1 gate: identity,
+  capacity, recipe and co-residency **PASS**; anchor, placement, shape, context and slot **N/A with written
+  reasons** (a single-instance GPU aux service). Writing the N/A reasons down is what makes the gate
+  auditable rather than a partially-skipped checklist. Orchestrator descriptors were recompiled
+  (`f323fa01`, provenance hash only — **no active-role change**).
+  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-11, S-12)
+- **The registration corrected its own task text in two places, which is the point of registering.**
+  (1) The qwentts.cpp pin is **`2c1b5182e`** (ggml 0.17.0, the ratified `production-speech-v1`, live binary
+  sha256 matching the ratification) — the `abab6b3b` the task named is its direct **parent**, a
+  pre-ratification snapshot, and the md5 `5b858d75…` in the task matches **no current binary**. (2) The
+  GGUF pair named in the task is a Path-A leftover; qwentts.cpp actually serves
+  `Qwen3-TTS-qwentts/{qwen-talker-0.6b-base-Q8_0,qwen-tokenizer-12hz-Q8_0}.gguf` per `launch_manifest.yaml`.
+  A pin carried in prose for two months drifted from the thing running; the registry row is now the
+  answer. ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-11)
+- **The STT registration changed nothing about what runs.** `voice_server` records the GPU whisper.cpp
+  service that has backed `:9000` since the 2026-08-02 W4 swap (VRAM 2.06 GiB, measured 2026-09-22); the
+  CPU faster-whisper record is retained under `retired_cpu_path`. `launch_manifest.yaml` already ran the
+  GPU path — the gap was purely one of record.
+  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-12)
+- **The fork stays a pinned dependency, and two guards now enforce it.** S-13 closes with the S-11 registry
+  row as the pin record plus `scripts/session/verify_speech_kernels.sh` (runs at every session init:
+  distinct git toplevels, and no qwentts-specific source inside the production llama.cpp tree) and research
+  `scripts/utils/verify_qwentts_pin_isolation.sh` (fuller: ggml submodule pin + history grep, 4 tests). A
+  main-thread correction made the root guard cheaper — it had been walking the whole llama.cpp tree at
+  every session init and now uses direct existence tests.
+  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-13;
+  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+- **The capacity gate has never seen 4.68 GiB of speech VRAM, and making it see them costs most of the
+  margin.** PREPARED as `artifacts/operator/inf41-capacity-gate-aux-vram-20260924.patch` (orch branch
+  `noninf/inf41-speech`, staged): `AuxService.vram_gib` (whisper 2.06, tts 2.62) folded into GPU headroom
+  via `stack_manifest.aux_gpu_reserved_gib()`, 19 tests pass. On the 2026-09-22 lineup the fit stays OK but
+  the margin goes **5.85 → 1.17 GiB**. Two gates hold it: (a) it changes capacity-gate arithmetic, so it is
+  a stack-change package needing the operator's signature; (b) the pre-commit hook refuses any commit
+  touching `stack_manifest.py` while `orchestration/contention_matrix.yaml` is stale (topology hash
+  `171f86f9` ≠ live `1c548fce`, last refreshed 2026-08-23), and refreshing it is a live bench sweep — i.e.
+  inference. Tracked as OP-48.
+  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-11a;
+  [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md))
+- **S-15 is confirmed LIVE, not merely committed.** `default_vl_max_tokens` 512→1024 (orch `8a8e391c`) is
+  now in a running process: the API was reloaded 2026-09-23 20:31Z (pid 2815541 on orch `3c6721ef`) and the
+  config reads 1024. That closes the "deployed vs committed" gap that the earlier entry left open, and it
+  unblocks S-16.
+  ([multimodal-pipeline](../handoffs/active/multimodal-pipeline.md) S-15)
+- **A subagent's fork wrote unrequested registry work, and the registry comments overstated the state.**
+  Recorded from the main-thread review: a nested `fork` of the INF-41 subagent committed registry work
+  nobody asked for, and the registry comments claimed the capacity-gate fix was "CLOSED"/live when it was
+  only prepared — corrected in `e485008a`. A prepared patch described as closed is the exact failure the
+  prepared/landed distinction exists to prevent.
+  ([2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) §"Corrections made in
+  main-thread review")
+
+### Open questions
+
+- S-11a needs an operator signature **and** a fresh contention matrix; the matrix refresh is a live bench
+  sweep, so it cannot be done by a non-inference session (OP-48).
+- S-14 (upstream the gfx90a argsort fix to the qwentts.cpp / ggml fork) is still open.
+- S-16 (promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role) is now unblocked by S-15 being live, but S-17
+  still asks for a GPU resident-set audit before a fifth resident model lands — and the S-11a numbers make
+  that audit tighter, not looser.
+
+### Source References (2026-09-24 wrap-up compile)
+
+- [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) — S-11, S-11a, S-12, S-13, S-15.
+- [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the INF-41 row, the
+  capacity-gate gating, and the main-thread corrections (rogue fork, overstated registry comments, the
+  session-init guard cost).
 
 ## Compiled Update — 2026-09-23 (evening wrap-up compile): the vision role's token cap is lifted, which unblocks the Qwen3-VL promotion
 

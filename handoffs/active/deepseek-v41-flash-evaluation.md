@@ -482,7 +482,14 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   stderr fallback (`704ef037`), partial output kept on timeout (`3471fe3c`), `stage_timeout_s` 900→2700
   (perf profile was refused at the 900 s cap). Filed: planner server :8074 runs `-t 96` while the registry
   recipe says `threads: 48` (`NUMA_FULL_T48`) — launch/registry divergence, stack owner's.
-- [ ] DS41-C10 — Watch the campaign through calibration into its first source iteration:
+- [ ] DS41-C18 — **27B planner overflows its slot context** (found 09:42, run 7): `:8083` runs `-c 196608 -np 2`
+  → 98,304 tokens per slot; the planner session passed it at ~45 agentic steps (103,679 and 98,441-token
+  requests refused), and opencode recovered by `agent=compaction` (self-summary), which costs a call and
+  drops detail each time. Levers, in order of cheapness: (a) `-np 1` on `:8083` while it serves the
+  campaign (stack owner's; the role is idle otherwise); (b) cap tool-output bytes in the actor prompt;
+  (c) opencode `--attach` with a larger `-c`. Measure proposals/hour before and after.
+- [ ] DS41-C10 — Watch run 7 (27B planner, schema repair active, started 09:10) into its first measured
+  iteration; report planner→critic→author→build→A/B timings against the CPU planner's 41–97 min. Original:
   `state/loop-status.json` + `store/` (the 48 A/A launches each reload 519 GB, ~2 h); confirm the
   serving floor lands with a unit, the planner's first proposal cites the inbox, and the critic
   answers. Kill only `state/serial-run.pid`'s tree, verify dead.
@@ -490,7 +497,7 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or
   re-fixture.
-- [x] DS41-C12 — **v10 folded-lineage fix reaches this campaign** ✅ 2026-09-23 (non-inference ROI session,
+- [x] DS41-C19 — **v10 folded-lineage fix reaches this campaign** ✅ 2026-09-23 (non-inference ROI session,
   research `714777e4`, fast-forwarded into the shared research clone 20:3xZ). At v10
   `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, so `candidate_record.build_candidate_record`'s old
   "instrument parents == (production,)" rule was unsatisfiable: the FIRST CPU candidate of this campaign to

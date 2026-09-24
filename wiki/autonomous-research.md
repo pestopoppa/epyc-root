@@ -2,8 +2,90 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
-**Sources**: 130+ documents (added 2026-09-23 evening wrap-up compile: deepseek-v41-flash-evaluation DS41-C2b/C2e/C5/C10/C11/C13, autokernel-restart-and-strip AK-INST-2, the 2026-09-23 main-dsv41 progress log) (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
+**Last compiled**: 2026-09-24 (wrap-up compile: the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase; the planner seat moved to the production 27B on the MI210; all three in-tree profilers are wired into the loop and kept out of ranked A/Bs; a schema-constrained repair turn replaced 90-minute retries-from-zero; the v10 folded-lineage fix reached this campaign before its first recorded candidate); earlier: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
+**Sources**: 130+ documents (added 2026-09-24 wrap-up compile: deepseek-v41-flash-evaluation DS41-C12/C14/C15/C16/C17/C10/C18 and the 2026-09-24 main-dsv41 progress log) (added 2026-09-23 evening wrap-up compile: deepseek-v41-flash-evaluation DS41-C2b/C2e/C5/C10/C11/C13, autokernel-restart-and-strip AK-INST-2, the 2026-09-23 main-dsv41 progress log) (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
+
+## Compiled Update — 2026-09-24 (wrap-up compile): the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase, and the seat moved onto the GPU
+
+**Confidence: verified** for the run outcomes, timings, commits and the operator ruling — all observed
+in-session on this host. The campaign has produced **one accepted proposal and no completed A/B yet**, so
+nothing here is a kernel result; the findings are about the *loop's* economics, not about the kernel.
+
+### Key findings
+
+- **All three in-tree profilers are now wired into the loop** (operator: "give autokernel access to ALL the
+  profiling tools"). llama.cpp `ebb68dc55` adds Engram gather / per-layer counters, compile-gated on
+  `GGML_CPU_PROF` with `LLAMA_ENGRAM_PROF_JSON_FILE` — and the measured `build-cpu` carries **zero**
+  instrumentation strings, which is the structural check this project requires before reasoning from a
+  binary. Research `c6a46674` + `e59c87ea`: `reprofile()` builds a `-DGGML_CPU_PROF=ON` *sibling* of the
+  anchor and launches it **only inside the profile window**, parses the three dumps into a `node_profile`
+  in the planner context (per-op shares, host phases, Engram fault mix), caches it by the perf capture's
+  key, and **never lets it into a ranked A/B** — so the instrumented build can never contaminate a
+  comparison. Teardown waits 180 s so a `--no-mmap` server's atexit dumps survive. Proven on run 3's anchor:
+  all three dumps `observed`. ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C12 (profilers))
+- **The planner's wall time is not the model thinking — it is two different bottlenecks in sequence.**
+  Decomposed from opencode part timestamps: tool execution is **0–5% of wall**; *proposing* is
+  **prefill-bound** (124 k tokens of tool output at 92 t/s ≈ 22 min of a 41 min call); *authoring* is
+  **decode-bound** (91 k generated tokens). This is the finding that makes the seat a hardware question
+  rather than a prompt question, and it is why a single "planner is slow" number was useless.
+  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md) §"Planner cost decomposition")
+- **Four nights of runs, and what each one cost.** Run 3 (19:28, CPU flash-next planner): serving floor
+  5.097 after 48 A/A launches at ~5.2 min each; two planner calls killed at the 30-min actor timeout.
+  Run 4 (01:26, `--actor-timeout-s 7200`): a complete proposal after **91 min** was retried **from zero**
+  because the loop could not see the actor's stdout. Run 5 (03:45, replies persisted): proposal #1 at
+  97 min rejected by the critic in 41 s (non-invariant hoist); proposal #2 at 41 min **accepted** in 2 min
+  (`akm-q4k-q82x4-zmm-scale-apply`); authoring #1 killed at the 2 h budget after 91 k output tokens.
+  Run 6 (08:52) moved the planner to the GPU. For scale, prior campaigns on external planners ran 313
+  attempts in 9 days, median 8.5 min per *whole attempt*.
+  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md) §"What the night measured")
+- **Operator ruling: the planner seat is the production Qwen3.8-27B Q8_0 on the MI210** (`:8083`, idle
+  stack), replacing the local flash-next planner entirely. Measured basis 86 t/s decode / 302 t/s prefill
+  versus 50 / 92 for flash-next; opencode tool-calling proven in 14 s. Run 6 launched 08:52 (request r3),
+  run 7 relaunched 09:10 on research `ad2b89ff` so the schema-constrained repair is active in the loop —
+  same store, floor and profiles cached. Two incidental facts worth carrying: `--variant` is a **no-op**
+  on a plain OpenAI-compatible provider (no `variants` in `opencode.jsonc`), and thinking was already off.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C17)
+- **Stopping a loop must also kill its actor child.** An orphaned actor from the run-3 stop shared the
+  single-slot planner server with run 4 for **40 min**, i.e. a dead run silently taxed a live one. Related
+  fixes landed the same night: `ef287ba9` (`--actor-timeout-s`), `704ef037` (raw reply persistence +
+  stderr fallback — the fix for run 4's blind retry), `3471fe3c` (partial output kept on timeout),
+  `stage_timeout_s` 900→2700 (a perf profile had been refused at the 900 s cap).
+  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md), DS41-C17)
+- **The v10 folded-lineage defect would have fired on this campaign's first recorded CPU candidate.** At
+  v10 `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, so `build_candidate_record`'s old rule "instrument parents
+  == (production,)" was unsatisfiable and the first candidate to reach recording (`campaign.py:5011`) would
+  have raised `ValueError("instrument commit is not the ratified single-child of the production base")`.
+  The shared `worktree.instrument_lineage_ok` now accepts the folded identity while still requiring descent
+  from production (`ebb68dc55` descends from v10 `ffc1bac82`, verified). Nothing had hit it yet — run 3 was
+  still in batch 0 — and the running batch process keeps its already-imported modules, so the next batch
+  process picks the fix up with **no mid-process version mixing**.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C12 (lineage))
+- **A GPU planner brings its own context ceiling.** At 09:42 the 27B planner overflowed its 98 k per-slot
+  context twice (`:8083` runs `-c 196608 -np 2`) and opencode compacted the session to continue — filed as
+  DS41-C18, with `-np 1` on `:8083` named as the cheap lever and left to the stack owner.
+  ([2026-09-24 main-dsv41](../progress/2026-09/2026-09-24-main-dsv41.md))
+
+### Open questions
+
+- DS41-C10 — run 7 (27B planner, schema repair active) has not yet reached a measured iteration. The thing
+  to report is the planner→critic→author→build→A/B timing chain against the CPU planner's 41–97 min.
+- DS41-C14 — `--node-profile` is still **opt-in** (default OFF) because run.py's hermetic fixtures would
+  gain a real build and a second launch. Until the fixtures opt out explicitly and the default flips, a
+  campaign can still launch without the instrument.
+- DS41-C15 — `node_profile` semantics under speculation are unresolved: `llama-host-prof` counts one
+  batched verify call as `n_eval=1`, so `decode_us_per_token` is per graph eval, not per token, when DSpark
+  is on. Carried as a limitation string; needs a no-drafter cross-check to state the ratio.
+- The DS41 handoff now carries **two different tasks numbered DS41-C12** (the profiler wiring and the v10
+  folded-lineage fix). Cite by text, not by id, until the owning session renumbers.
+- Launch/registry divergence, filed and unowned by the campaign: the planner server `:8074` runs `-t 96`
+  while the registry recipe says `threads: 48` (`NUMA_FULL_T48`) — stack owner's.
+
+### Source References (2026-09-24 wrap-up compile)
+
+- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C12 (both:
+  profiler wiring and the v10 folded-lineage fix), C14, C15, C16, C17, C10 (rewritten to run 7).
+- [2026-09-24-main-dsv41.md](../progress/2026-09/2026-09-24-main-dsv41.md) — the run table, the planner cost
+  decomposition, the seat-move ruling, the orphaned-actor measurement, DS41-C18.
 
 ## Compiled Update — 2026-09-23 (evening wrap-up compile): the DS41 AutoKernel campaign launched on the roster-free route, and a store's champion-of-record cannot be relabelled by a moving anchor
 
