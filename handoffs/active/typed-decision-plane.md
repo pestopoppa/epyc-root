@@ -133,8 +133,8 @@ episodic memory writing."
     the frozen `production-consolidated-v10` tree in place — full experimental → validate → new-production
     cycle per CLAUDE.md), then advance the AutoKernel champion so campaigns pick up the fix. A subagent is
     preparing the patch on an experimental branch as of this wrap-up; build/validation needs an operator-granted
-    CPU window (**in flight**). Owner: `handoffs/active/speculative-decoding-mtp-refresh.md` **SW-7** (filed
-    there as the kernel-side task; this row tracks the typed-decision consumer side and is closed by SW-7
+    CPU window (**in flight**). Owner: `handoffs/active/speculative-decoding-mtp-refresh.md` **SW-9** (filed
+    there as the kernel-side task; this row tracks the typed-decision consumer side and is closed by SW-9
     landing + a native re-bench).
   - [ ] **TD-1d.2 — concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`**
     (probed: parallel wall == serial wall, max 1 slot busy). A constraint on every future fan-out design, not

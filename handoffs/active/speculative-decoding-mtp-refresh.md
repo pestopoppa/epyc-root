@@ -174,16 +174,18 @@ is free.
 - [x] **SW-4 — record in the registry that composed spec-dec is launch-fixed** ✅ 2026-09-14 — `speculative_decoding_policy.runtime_switchability` added to the MASTER registry (epyc-inference-research `d28ab833`; lean view regenerated, epyc-orchestrator `a1d36daf`). Records per knob, with file:line AT `0db32c06e3e550065b78311a6031ef3dd2c4f27c` / `production-consolidated-v9`: spec TYPE launch-fixed (`common/arg.cpp:3934-3946`), draft MODEL launch-fixed (`:3927`), ngram composition + all ngram params launch-fixed and **not selectively disableable** (`:3945-4004`; selective ngram needs separate server instances), `n_min`/`p_min` launch-fixed (`:3868`/`:3883`) — and `speculative.n_max` **per-request but LOWER-ONLY** (`tools/server/server-schema.cpp:205-207`, clamped `min(request, launch)` at `:542-547`, second min in the slot at `server-context.cpp:437`). Autopilot can skip or shorten drafting per request; it can never raise the budget, switch drafter, or disable one lane — those are relaunches. Tests 838 passed/6 skipped before and after; `stack_change_pipeline check` 57 pre-existing errors unchanged, none spec-related. Pairs with the NG3 decline note.
 - [ ] **SW-5 — add a one-line "this view is compiled, edit the master" note wherever the lean registry is cited for editing**, because `epyc-orchestrator/orchestration/model_registry.yaml` is regenerated from the research master at every stack start (its own banner, lines 1-16) so a prose edit aimed at `:1461`/`:2341` of the generated view writes into sand (found 2026-09-14, noninf sweep).
 - [ ] **SW-6 — canonicalize the `--master` path in `_format_header_banner`, or refuse a non-canonical one**, since it is embedded verbatim and compiling from a worktree or temp copy produces an artifact advertising that throwaway path as the source of truth (corrected by hand in `a1d36daf`) (`src/registry/registry_compiler.py:303-320`) (found 2026-09-14, noninf sweep).
-- [ ] **SW-7 — the MTP speculative-accept path never populates token probabilities** (`tools/server/server-context.cpp`,
+- [ ] **SW-9 — the MTP speculative-accept path never populates token probabilities** (`tools/server/server-context.cpp`,
   `// TODO: set result.probs`), found 2026-09-24 while re-measuring the typed-decision native arm
   (`handoffs/active/typed-decision-plane.md` TD-1d.2/TD-1d.5): on frontdoor ~94% of served tokens come from
   accepted MTP drafts, and none of them carry `result.probs`, so any consumer of per-token probabilities
   (native typed decisions, calibration, confidence-gated routing) silently gets nothing on the majority of
   tokens regardless of request-level flags (`post_sampling_probs`, orch `71be6ed3`, ruled out as the cause).
-  **Operator decision 2026-09-24 ~15:45Z:** patch the spec-accept path on a fresh `llama.cpp-experimental`
-  branch off current production (never patch the frozen `production-consolidated-v10` tree in place — full
-  experimental → validate → new-production cycle per CLAUDE.md's kernel workflow), then advance the AutoKernel
-  champion so campaigns pick up the fix. A subagent is preparing the patch as of this wrap-up; build and
+  **Operator decision 2026-09-24 ~15:45Z:** patch the spec-accept path in kernel research and advance the
+  champion so AutoKernel campaigns pick it up — folded INTO the ONE llama.cpp champion (commit onto its tip; never
+  bare production, never a second lineage, never the frozen `production-consolidated-v10` tree in place), then
+  re-measure the champion's headline; production promotion (v11) stays separately operator-gated. The DS41
+  campaign anchor (`ebb68dc55`) is advanced only in coordination with the DS41 session, before run 9's first
+  full-target calibration (an anchor advance costs ~4 h floor recalibration per scope). A subagent is preparing the patch as of this wrap-up; build and
   validation need an operator-granted CPU window (**in flight; CPU-window grant is a pending operator
   decision — see the operator queue**). Closes when the fix lands on a new champion and TD-1d.2's native arm
   is re-benched with non-null probs on MTP-accepted tokens.
