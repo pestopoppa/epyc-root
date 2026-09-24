@@ -307,10 +307,13 @@ episodic memory writing."
   - [ ] **TD-21.17 — `scripts/autopilot/planner_coordinator.py:342,:379` draft-action usability gate.** Today:
     delegates to the TD-21.2 fish; `_mark_failure` opens a per-provider circuit breaker and re-invokes a fallback
     from zero. Action: inherits TD-21.2's repair; verify the circuit breaker no longer trips on parse alone.
-  - [ ] **TD-21.18 — `scripts/autopilot/review_policy_trials.py:251,:263` critique extraction.** Today: the
+  - [x] **TD-21.18 — `scripts/autopilot/review_policy_trials.py:251,:263` critique extraction.** Today: the
     `review_grammar` validator runs first (good), but extraction falls back to a local balanced-brace scanner.
     Action: adopt TD-1 on the extract side; `CritiqueEmissionStats.parse_failures` already gives the before/after
     metric.
+    ✅ 2026-09-24 — orch `b7416130`: the only caller feeds `codex exec` text (external CLI), so no repair turn;
+    the local first-brace scanner is replaced by the shared `fish_json`, which recovers a critique truncated
+    inside its own fence; a genuine miss stays a typed `ParseFailure` counted in `CritiqueEmissionStats`.
   - [x] **TD-21.19 — `src/vision/analyzers/vl_describe.py:409` structured image extraction.** Shape: free-form
     JSON from an image. Today: fence split + `json.loads`; on failure `structured=None` with `parse_error` but
     `result.success` stays **True** — a fail-open silent default that downstream cannot distinguish from "nothing
@@ -341,9 +344,18 @@ episodic memory writing."
     ✅ 2026-09-24 (partial, orch `d7202dc9`) — `routing.py` `_delegate_single`: schema now on the wire +
     repair before the full re-call (re-call kept as the fallback). `combined_ops.py` `_batch_llm_query`: repair
     before re-call only — see TD-21.22a.
-  - [ ] **TD-21.22a — `llm_batch` has no `json_schema` parameter.** Wire-schema forwarding for the batch path needs
+  - [x] **TD-21.22a — `llm_batch` has no `json_schema` parameter.** Wire-schema forwarding for the batch path needs
     the parameter threaded through `_real_batch`/`_mock_batch`/`_worker_pool_batch` and every `llm_batch` caller in
     `src/llm_primitives/`; until then the batch schema is prompt text plus the repair turn.
+    ✅ 2026-09-24 — orch `b8778dad`: `llm_batch`/`llm_batch_async` take `json_schema`/`grammar` (per batch),
+    threaded through `_real_batch`, `_worker_pool_batch` (→ worker-pool `/completion` payload),
+    `_fallback_batch` and `_mock_batch` with conditional kwargs (omitted ⇒ byte-identical, proven against
+    fixed-arity fakes); `combined_ops._batch_llm_query` now sends the schema on the wire. Side finding: two
+    callers pass `n_tokens` to `llm_batch`, which never accepted it → real-mode TypeError silently degrading
+    to sequential calls — see TD-21.22b.
+  - [ ] **TD-21.22b — `llm_batch(..., n_tokens=)` raises at `chat_summarization.py:233` and
+    `repl_environment/context.py:141`**, caught and silently degraded to sequential calls. Fix in flight
+    (2026-09-24).
   - [x] **TD-21.23 — `src/pipeline_monitor/model_grader.py:173` grader classification.** Shape: one letter from
     `spec.choice_strings`, expected on the last line. Today: a last-line word-boundary regex; a mis-formatted reply
     silently becomes an ungraded row. Action: native enum — the path already runs `/chat` `force_mode=direct`,
@@ -351,28 +363,45 @@ episodic memory writing."
     ✅ 2026-09-24 — same commit: `grade_answer` sends `output_schema` = enum over `spec.choice_strings`; native
     parse first, the last-line regex as backstop; unparseable → `classification="parse_error"` (score `None`, as
     before) counted in `GRADER_CLASSIFICATION_OUTCOME_COUNTS` instead of a silent `None`.
-  - [ ] **TD-21.24 — `scripts/analysis/reviewer_policy_arm_ab.py:337` A/B reviewer verdict.** Today:
+  - [x] **TD-21.24 — `scripts/analysis/reviewer_policy_arm_ab.py:337` A/B reviewer verdict.** Today:
     `find("{")`/`rfind("}")` then a bare first token; unparseable falls to `DEFAULT_DECISION` **silently** and that
     default is written into the A/B result. Action: adopt TD-1 — a silent default biases the measurement the
     script exists to produce.
-  - [ ] **TD-21.25 — `scripts/autopilot/species/evolution_manager.py:326,:343,:363` insight distillation.**
+    ✅ 2026-09-24 — orch `b7416130`: `extract_decision` is fish-only and returns `None` on a miss (never the old
+    `request_changes` default); `resolve_reviewer_decision` spends one repair turn against the reviewer role's
+    own llama-server (via `get_config().server_urls`, never :8000) with a closed decision enum, then a typed
+    `parse_failure`. `compute_policy_comparison` excludes parse failures from paired agreement/kappa and
+    reports the per-arm parse-failure rate beside the verdict distributions.
+  - [x] **TD-21.25 — `scripts/autopilot/species/evolution_manager.py:326,:343,:363` insight distillation.**
     Shape: a JSON list of insights, plus evidence trial ids. Today: marker fish returning `[]` on failure (a
     silent zero-insight round, indistinguishable from "nothing to learn"), and `_coerce_trial_ids` silently drops
     unparseable tokens so an insight is stored with weaker grounding. Action: adopt TD-1 against the local
     `explore` endpoint; count dropped ids.
-  - [ ] **TD-21.26 — `scripts/autopilot/species/env_synth/task_synthesizer.py:207` and `etd_agent.py:86`.**
+    ✅ 2026-09-24 — orch `4f171de8`: fish → schema → one repair turn only when `use_local_model=True` (the
+    Claude-CLI default is unreachable → typed failure); `distill()` reports `insight_parse_status`, repair calls
+    and `evidence_ids_dropped` (was a silent `[]`); `TRIAL_ID_COERCION_COUNTS`.
+  - [x] **TD-21.26 — `scripts/autopilot/species/env_synth/task_synthesizer.py:207` and `etd_agent.py:86`.**
     Shapes: a synthesized task object; a list of candidate environments. Today: strict `json.loads` with no fence
     tolerance — the synthesizer **retries the whole generation `max_retries+1` times from zero**, the ETD agent
     returns `[]` with no counter. Action: adopt TD-1; this is the exact retry-from-zero cost DS41 measured.
-  - [ ] **TD-21.27 — `scripts/autopilot/species/prompt_forge.py:2696,:3450` mutation extraction.** Shapes: a
+    ✅ 2026-09-24 — same commit: new `parse_with_repair_async` in the shared helper; both sites fish (fence
+    tolerant) then one repair turn against the same injected `llm` before a from-zero regeneration / typed `[]`.
+  - [x] **TD-21.27 — `scripts/autopilot/species/prompt_forge.py:2696,:3450` mutation extraction.** Shapes: a
     mutated prompt-file body; mutated Python source. Today: fence heuristics (">100 chars", "largest non-json
     block"); on failure it logs and **returns the original**, so the mutation is a silent no-op while a git commit
     may still be cut around it. Action: a delimiter contract plus a repair turn; the backend is the Claude CLI, so
     the repair must go to a local server or the contract must be made unambiguous.
-  - [ ] **TD-21.28 — `scripts/benchmark/corpus_quality_gate.py:670` judged-pair fields.** Shape: 8 numeric A/B
+    ✅ 2026-09-24 — same commit: Claude CLI → fish only; both extractors share one line-anchored fenced-block
+    helper; an extraction miss now sets `safety_valid=False` (`mutation_extraction_failed`) instead of silently
+    returning the original (an invisible no-op mutation that still burned an eval cycle); counted.
+  - [x] **TD-21.28 — `scripts/benchmark/corpus_quality_gate.py:670` judged-pair fields.** Shape: 8 numeric A/B
     quality fields. Today: fence regex + `json.loads`; on failure the pair is **silently dropped** from the judged
     set with no counter, so the gate's denominator moves without anyone seeing it. Action: count the drops at
     minimum; adopt TD-1 if the judge moves onto a local server (it is `claude -p` today).
+    ✅ 2026-09-24 — same commit: Claude CLI → fish only; `fish_json` + full validation of the 8 numeric fields;
+    `_judge.json` now records `pairs_total`/`pairs_judged`/`judge_parse_failures` per model, and a model with
+    zero judged pairs gets an explicit failing row instead of silent omission (the gate can no longer pass a
+    model that was never judged).
   - [ ] **TD-21.29 — `epyc-inference-research:scripts/kernel_rnd/autokernel/loop/actor_preparation.py:333,:369`.**
     Shapes: source-actor advice `{mechanism, target_surface, target_symbol, implementation_plan}` (or a build
     recipe); critic verdict `{accepted, reason}`. Today: calls `actors._extract_json` **raw**, with no repair —
@@ -408,7 +437,7 @@ episodic memory writing."
       import path (verified). Unreachable-consumer verdicts confirmed per site: claude_codex_actor_critic and
       claude_fable5_critic_actor natively constrained; discovery_controller, loop_experiment_runner (codex arm,
       post-hoc validation only), evoengineer and the four vendored arms are CLI-only — recorded, not converted.
-  - [ ] **TD-21.32 — Decide the judge binding before converting judge sites.** There is no declared `judge` role
+  - [x] **TD-21.32 — Decide the judge binding before converting judge sites.** There is no declared `judge` role
     in the registry; the eval judge is still a prompt/model choice inside the harness, and CJ-11
     (`canonical-judge-suite-revamp.md`) calls for binding it at `src/llm.py:61-64`. TD-21.9/21.10/21.15 should land
     after or alongside that binding, or they convert against a moving target. Coordinate, do not duplicate.
@@ -427,6 +456,17 @@ episodic memory writing."
     an object; a repaired `target_symbol` absent from the report → `failed`. Consumers to opt in first: `repl_final`
     (TD-21.1) and the autokernel orchestrator backend (INF-78), which must get its repair coverage HERE rather than
     in `actors._schema_repair` (returns `None` for any non-opencode backend — TD-21.30 (c)). Zero inference.
+    ✅ 2026-09-24 — **decided (main session):** judge BINDING (which model; CJ-11 is about the vendored BEAM
+    harness's `src/llm.py`) and judge OUTPUT SHAPE (21.9/21.10/21.15) are orthogonal. The shape conversions go
+    ahead now, resolving the judge only through its existing seam (`LLM_JUDGE_ROLE` / the pinned rubric-judge
+    role) so a later rebinding changes nothing in them. Because constraining a judge changes eval scores, they
+    ship behind a default-OFF `CONSTRAIN_JUDGE_OUTPUT`, and its flip is folded into the OP-50 ratification (one
+    command, one era row) rather than a second boundary.
+  - [ ] **TD-21.33 — `primitives._last_inference_meta` is read across a SHARED `LLMPrimitives`.**
+    `_init_primitives` reuses one instance per worker across concurrent requests, so any code that reads the
+    last call's meta after the fact can see another request's values: `graph/helpers.py:~941`,
+    `chat_delegation.py:~470` today (and TD-21.21's first draft, caught in review). Give callers a per-call meta
+    channel and migrate those reads. Found 2026-09-24.
 
 ## Wiring policy (2026-09-18, operator-directed)
 
