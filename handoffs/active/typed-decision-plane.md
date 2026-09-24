@@ -193,7 +193,8 @@ episodic memory writing."
 - [ ] **TD-18 — Calibration receipt upgrade (zero inference).** Extend the typed_decisions calibration receipt (today n, ECE, Brier, 10 bins; no floor, no model-pin field) with, per question kind: a resampled perfectly-calibrated ECE noise floor; a record/template-clustered paired bootstrap; tie-aware coverage at a stated error budget and AURC; NLL and refit-T sensitivity to the log floor and clamp; exact-0 / exact-1 endpoint rates; a flag when a fitted temperature lands on a search bound; a single in-distribution temperature with a group-disjoint out-of-fold check; and the model pin. Clean-room from the patterns in `kev/metrics.py` and `kev/calibrate.py` (Apache-2.0). Evidence: intake-1498, intake-1504, intake-1516.
 - [ ] **TD-19 — External OOD read via a `/v1/systemone` shim.** Expose our typed-decision path behind Kev's `/v1/systemone` contract (`kev/predictors.py:61-92`, `kev/benchmark.py:34-66`) and score it with `kev.benchmark --remote` on Kev's committed transfer-v4 dev (764 records) and scienthoon-v1. Multi-token candidates return JSON-arm probabilities; send options in insertion order (Kev is order-sensitive; gojev sorts keys). Report accuracy, ECE and coverage against the committed Kev/Jev reports — the Jev figures are report-level only, and the Kev-vs-Jev coverage CI already includes 0. Evidence: intake-1498, intake-1515. Inference-gated, one window.
 - [ ] **TD-20 — (conditional on TD-19 showing a trained decider beats our path) Serve Kev-4B on llama.cpp-experimental.** Branch from fresh production ffc1bac; port `common/decision.{h,cpp}` + `tools/kev/kev-decide.cpp` + 2 CMake lines as new files with a sidecar `head.json` (no `src/` change, no fork merge). Source weights from `taigrr/kev-4b-gguf` at a pinned sha, sha256-verified against `manifest.json` (merged GGUF avoids the 4B/9B `out_proj` LoRA conversion gap). Parity vs HF-fp32 on committed decision-v7 dev rows plus fixtures with unsorted keys, a long state and 4B; test `seq_cp` fan-out against v10's recurrent rollback-index abort on shared cells. Evidence: intake-1498, intake-1514#00, intake-1514#05, intake-1515.
-- [ ] **TD-21 — Re-audit of every free-text JSON consumer (operator, 2026-09-24).** The consumer list for
+- [x] **TD-21 — Re-audit of every free-text JSON consumer (operator, 2026-09-24).** ✅ 2026-09-24 — every
+  sub-row landed (the last, TD-21.33c, orch `c347600e`). The consumer list for
   TD-1 never named the AutoKernel loop actors, which fished JSON out of free text with `_extract_json` and
   retried 90-minute calls when it failed; that was closed 2026-09-24 in `epyc-inference-research`
   `ad2b89ff` (`scripts/kernel_rnd/autokernel/loop/actors.py` `_parse_reply` / `_schema_repair` — fish first,
@@ -630,7 +631,12 @@ episodic memory writing."
     operator direction alongside the parked 2026-09-22 `native.py` work (TD-1d.4); the parked copy was captured
     byte-identical under `/mnt/raid0/llm/worktrees/td21/native-capture/` before this landed, and the shared
     orchestrator clone is clean for the first time today.
-  - [ ] **TD-21.33 — `primitives._last_inference_meta` is read across a SHARED `LLMPrimitives`.**
+  - [x] **TD-21.33 — `primitives._last_inference_meta` is read across a SHARED `LLMPrimitives`.** ✅ 2026-09-24 —
+    per-call ContextVar channel + reader migration (orch `d12202f2`), residuals TD-21.33a (`f769f3e1`) and
+    TD-21.33b (`d63a11ed`), and **TD-21.33c** (`c347600e`, found at the late re-check): `_real_call` itself
+    re-read the shared attribute for three follow-up writes (`tool_calls`, `max_tokens_clamped`,
+    `completion_reason=context_limit`), which a concurrent `to_thread` call could misdirect. They now use a local
+    handle. The regression test fails on the old code; 253 related tests pass. Live after the next API reload.
     `_init_primitives` reuses one instance per worker across concurrent requests, so any code that reads the
     last call's meta after the fact can see another request's values: `graph/helpers.py:~941`,
     `chat_delegation.py:~470` today (and TD-21.21's first draft, caught in review). Give callers a per-call meta
