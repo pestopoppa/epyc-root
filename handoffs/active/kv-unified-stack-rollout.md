@@ -1,7 +1,10 @@
 # Unified KV (`--kv-unified`) stack rollout and shared-pool serving
 
-**Status**: ACTIVE. Diagnosis, package, inventory, audit, orchestrator branches and the 27B GPU measurements are
-done (2026-09-24). What is left is operator signatures, bring-up, and the follow-ups below.
+**Status**: ACTIVE. The GPU-residency package (OP-54) is **applied and serving-proven** (2026-09-24 ~18:45–18:55Z,
+orch `0a564a1f`, research `75ee1b8e`): :8083 runs `-np 4 -c 196608 --kv-unified --spec-draft-n-max 4 -ub 2048
+--cache-ram 65536`, STT/TTS run on CPU cores 0-23 / 24-39. The overflow branch and the gate fix are merged. What is
+left: the CPU-speech contention decision (OP-57, KVU-11b), the depth-4 production confirmation (KVU-1b / M-3b),
+the opencode limit (KVU-1a, operator), and the follow-ups below.
 **Created**: 2026-09-24 (main-ak-seat, stack-configuration window)
 **Priority**: HIGH. :8083 caps every request at 98,304 tokens today, and that ceiling emptied DS41 run 8's planner reply.
 **Categories**: inference_serving, kv_cache, orchestration, stack_lifecycle
@@ -37,11 +40,13 @@ Rule for every agent: the rule and the output-divergence caveat are in
 | Stack-change package (patches, capacity table, bring-up, serving proof, rollback) | [`artifacts/operator/stack-change-kvu-20260924/PACKAGE.md`](../../artifacts/operator/stack-change-kvu-20260924/PACKAGE.md). The scratch original is `/mnt/raid0/llm/tmp/stack-change-kvu-20260924/`, which also holds the scratch clones |
 | Stack-wide `-kvu` inventory: every live server, and the ranked candidates | [`artifacts/operator/kvu-stack-inventory-20260924.md`](../../artifacts/operator/kvu-stack-inventory-20260924.md) |
 | Serving-engine technique audit (vLLM / SGLang / TGI / TRT-LLM), with the steal list T1–T14 | [`artifacts/operator/serving-engine-technique-audit-20260924.md`](../../artifacts/operator/serving-engine-technique-audit-20260924.md) |
-| GPU np × ctx study: 27B split vs unified, O-2, pool-full repro, MTP depth | research `artifacts/np_context_kvu_study_20260924/` on research main `21cf444c` (README + SHA256SUMS; the 35B-A3B run `q36_35b_a3b_q8_h/` is not committed yet). The study README cites the package at its scratch path; the committed copy is the root path in the first row |
-| CPU STT/TTS real-time study | research `artifacts/speech_cpu_realtime_20260924/README.md`. Research `21cf444c` holds the 17:14Z snapshot. An SMT-sibling (`smtC`) run was still writing to the shared clone at 17:53Z and is not committed (KVU-11a) |
+| GPU np × ctx study: 27B split vs unified, O-2, pool-full repro, MTP depth; 35B-A3B matrix; load-only footprints; M-3; M-4 | research `artifacts/np_context_kvu_study_20260924/` (README §1–§9 + SHA256SUMS): first commit `21cf444c`; the 35B-A3B matrix, 27B load-only, M-3 (`m3_depth_production.md`) and M-4 (`m4_np4_concurrent_live.json`) in `07060eaa`. The study README cites the package at its scratch path; the committed copy is the root path in the first row |
+| Signed GPU-residency package (revision 3, the one OP-54 applied) | [`artifacts/operator/stack-change-kvu-20260924/revision-3/PACKAGE.md`](../../artifacts/operator/stack-change-kvu-20260924/revision-3/PACKAGE.md) with `patches/` (copied 2026-09-24 from the scratch `v2/` + `patches/v2/`; the files at the directory's top level are revision 1) |
+| CPU STT/TTS real-time study | research `artifacts/speech_cpu_realtime_20260924/README.md`: 17:14Z snapshot `21cf444c`; option C (`smtC`) `07060eaa`; addendum 3 (the live production layout under CPU LLM load) `6afc7eed` |
+| Durable reference: CPU speech vs CPU LLM contention, speech options, and the GPU constraints voice work depends on | [`docs/reference/speech/cpu-speech-contention-20260924.md`](../../docs/reference/speech/cpu-speech-contention-20260924.md) |
 | Live working view (database-backed page) | https://claude.ai/artifact/Lr4Xd1jBwUW3ToDCQJCEjm |
-| Orchestrator: context-overflow handling | `feat/context-overflow-handling-20260924` @ `8bbe2a3c` (pushed; 80 tests; worktree `/mnt/raid0/llm/tmp/orch-ctx-overflow-20260924`) |
-| Orchestrator: promotion-gate fix | `fix/promotion-gate-red-20260924` @ `d7ab368e` (pushed). Strict is green via option A: `9692c7f9` was merged on the operator's direction |
+| Orchestrator: context-overflow handling | `feat/context-overflow-handling-20260924` @ `8bbe2a3c` (80 tests), plus `5ca21957` route-by-live-limit; **merged as orch main `8a0c0944`** |
+| Orchestrator: promotion-gate fix | `fix/promotion-gate-red-20260924` @ `d7ab368e`, **merged as orch main `ff67bbec`**. Strict is green via option A: `9692c7f9` was merged on the operator's direction |
 
 **Measured on the 27B (Qwen3.8-27B Q8_0, v10 GPU binary, MTP draft).** Each cell is one sample, and the workload
 is olympiad-style reasoning.
@@ -65,6 +70,9 @@ is olympiad-style reasoning.
 
 ## Start here
 
+0. **2026-09-24 ~19:50Z:** OP-54 applied and serving-proven (KVU-1). The open operator decision is **OP-57**: CPU
+   speech is not real time while a `-t 96` CPU LLM role generates, and the collision is two-sided (KVU-11b).
+   Everything below this line is the history of how the package got signed.
 1. OP-54 (package signature) gates KVU-1. **Operator rulings 2026-09-24 ~17:50-18:10Z:** OP-55 decided — ALL recommended (reroute only `ingest_long_context`; route by the LIVE per-request limit instead of the ~5k threshold; cache_ram 65536 :8083 / 32768 :8070 / 16-32k :8074 / 0 :8086 via the package; opencode bypass = live /slots + retry, /v1 routing later under HS-4). OP-56 decided — move whisper STT to CPU ("move it back to CPU"); cores from the option-C (SMT siblings) result; it is what makes :8083 `-np 4` fit. OP-52 (CPU window for the MTP-probs fix) granted and validated by the TD-21 session. Revised package in preparation (np4 + kvu + O-2 + depth 4 + whisper→CPU). Work everything else
    meanwhile.
 2. Before applying any patch, re-run `git apply --check` on each one. The package was cut against orchestrator
@@ -89,12 +97,23 @@ is olympiad-style reasoning.
 - [x] **KVU-0f — 27B GPU matrix, split vs unified**, with O-2, the pool-full 3× repro and MTP depth 4/6/8.
   ✅ 2026-09-24
 - [x] **KVU-0g — CPU STT/TTS real-time study (C1).** ✅ 2026-09-24
+- [x] **KVU-0i — bare-`OK` final answer dropped on the /v1 REPL path** (found post-reload during the KVU-1
+  serving proof; pre-existing). `FINAL(OK)` with an unquoted identifier raised `NameError` and returned empty
+  content; `rescue_bare_name_final` now rescues it. Orch `41ecf9fc`, merged `3a61c153`; API reloaded, repro
+  fixed. ✅ 2026-09-24
 - [x] **KVU-0h — promotion gate reduced from 14 errors to 4** on `fix/promotion-gate-red-20260924` (stale tests
   re-fixtured to the 2026-09-22 lineup, sources pinned repo-relative, derived artifacts recompiled). Strict went
   green at `d7ab368e` via option A (KVU-4). ✅ 2026-09-24
 
 ### A — :8083 bring-up
-- [ ] **KVU-1 — apply the signed `-kvu` package and prove it serves** (OP-54).
+- [x] **KVU-1 — apply the signed `-kvu` package and prove it serves** (OP-54). ✅ 2026-09-24 — applied as the
+  revised revision-3 package (not the np2 funding below): `-np 4 -c 196608 --kv-unified --spec-draft-n-max 4 -ub
+  2048 --cache-ram 65536`, O-2 **dropped** (a q8_0 draft cache adds a 768 MiB FA conversion buffer), STT → CPU
+  0-23, TTS → CPU 24-39 via the `nprocs` shim. Orch `0a564a1f` (plus the contention-matrix re-bench, topology
+  `4893e37e`), research `75ee1b8e`. Serving proof: :8083 pid 2009477 logs `n_slots = 4, n_ctx_slot = 196608,
+  kv_unified = 'true'`; a 124k-token request served; jfk.wav RTF 0.20; TTS first packet 97 ms; both speech
+  services 0 VRAM; `orchestrator_stack.py status` shows no attestation warnings; promotion gate green. The text
+  below is the pre-revision plan, kept for the record.
   - Defaults: patches 1–3. Recommended funding: `-np 2 + -kvu + O-2`.
   - O-2 measured neutral: per-request 39.4 vs 37.1 tok/s at 2k and 41.0 vs 41.3 at 8k, acceptance 0.428/0.420 vs
     0.403/0.448. The package's buffer model says it frees 0.35 GiB, which raises card headroom from 0.18 to
@@ -110,18 +129,41 @@ is olympiad-style reasoning.
   `/v1/models` `context_length` (T7) is live and opencode reads it.
 - [ ] **KVU-1b — production-traffic confirmation of MTP depth 4** before changing `--spec-draft-n-max`. Compare
   `mean len` and t/s on real planner traffic at equal prompt length, with the §6 rollback thresholds.
-- [ ] **KVU-1c — add the context-checkpoint read to the serving proof.** With `-lv 4`, confirm `created context
+  - **2026-09-24 M-3 (log-only): NOT confirmed.** Depth 4 went live with OP-54 before this check. Depth-8
+    production arm n=240 (median context 63.5k, mean accepted 4.86, acceptance 0.483, 38.2 tok/s); depth-4 arm
+    0 organic requests (its 22 are probes or M-4). A truncation projection from the depth-8 log — a model, not a
+    measurement — puts depth 4 at 0.93× depth 8 for the median request and 1.01× aggregate; positions 5–8 carry
+    27.5% of accepted tokens on production traffic. Research
+    `artifacts/np_context_kvu_study_20260924/m3_depth_production.md` (`07060eaa`).
+  - [ ] **M-3b — resolve depth 4 vs 8 at production context.** Let organic depth-4 traffic accrue to ~175
+    requests (resolves an effect of ~8%), re-run the M-3 log read, and if the difference is inside 8% run a
+    same-window A/B (depth 8 vs 4 alternating on :8083) for the ~2.5% effect. If depth 4 loses by more than the
+    §6 rollback threshold, revert `draft_max` to 8 through a stack-change reload.
+- [x] **KVU-1c — add the context-checkpoint read to the serving proof.** ✅ 2026-09-24 — :8083 was reloaded
+  with `LLAMA_ARG_LOG_VERBOSITY=4`; its log since the np4/kvu launch holds 26 `created context checkpoint` lines
+  (first: slot 3, task 1, `checkpoint 1 of 32`, 150.2 MiB), read-only from
+  `epyc-orchestrator/logs/llama-server-8083.log` at 19:54Z. Original task: With `-lv 4`, confirm `created context
   checkpoint` fires on :8083 (audit #8 / T14). This is the only partial-prefix reuse the hybrids get.
-- [ ] **KVU-1d — replace the `vram_non_kv_gib` UNVALIDATED line** with KFD − 6.375 from the M-1 reading. Record the
+- [ ] **KVU-1d — replace the `vram_non_kv_gib` UNVALIDATED line** (still open after bring-up: research
+  `75ee1b8e` declares 32.80 as UNVALIDATED, and the package's proof step 2 reading was not written back) with KFD − 6.375 from the M-1 reading. Record the
   reading through SSU-F3's prepared claim tuple (RTG-19).
-- [ ] **KVU-2 — size `serving_shape.cache_ram` per server** (audit #4 / T8; OP-55). Today every server runs the
+- [x] **KVU-1e — M-4: np4 aggregate under concurrent load, live.** ✅ 2026-09-24 — live :8083 (np4, kvu, depth
+  4), fixed-length 1024-token generations (`ignore_eos`), 2 waves per level: aggregate 40.2 / 39.9 tok/s at
+  concurrency 1, 71.4 / 67.8 at 2, 95.3 / 93.1 at 4; per-request median 40.5 / 40.2, 36.4 / 34.9, 27.6 / 26.1.
+  Research `m4_np4_concurrent_live.json` (`07060eaa`). Feeds KVU-8.
+- [x] **KVU-2 — size `serving_shape.cache_ram` per server** ✅ 2026-09-24 — applied with OP-54: live argv
+  `--cache-ram 65536` on :8083, `32768` on :8070 and :8074 (and the frontdoor halves), `0` on :8086 (read from
+  `/proc/<pid>/cmdline`). (audit #4 / T8; OP-55). Today every server runs the
   8192 MiB default, and one full-pool 27B prompt (~9.2 GiB, inferred) does not fit.
   - Recommendations: 65536 MiB on :8083 (floor 24576), 32768 on :8070, 16384–32768 on :8074, 0 on :8086.
   - The value compiles to `-cram` already. Land it at the same :8083 reload if the operator agrees; a second
     reload costs a planner transient.
 
 ### B — orchestrator
-- [ ] **KVU-3 — land `feat/context-overflow-handling-20260924` @ `8bbe2a3c`** once OP-55 decides:
+- [x] **KVU-3 — land `feat/context-overflow-handling-20260924` @ `8bbe2a3c`** once OP-55 decides: ✅ 2026-09-24 —
+  OP-55 decided "all recommended"; `5ca21957` added route-by-live-limit; merged as orch `8a0c0944` (351 targeted
+  tests pass on the merge), shared clone fast-forwarded, API reloaded (orchestrator only); `/v1/models` shows the
+  live per-request context. Original decision list:
   - reroute roles (add `architect_critic` at 262144?);
   - the long-context threshold (tokens, ~5k now);
   - `cache_ram` sizes (KVU-2);
@@ -136,7 +178,9 @@ is olympiad-style reasoning.
   `option/critic-general-suite-evidence-20260924` @ `9692c7f9` was merged into the fix branch as `d7ab368e`.
   Strict now counts `general_suite_quality` as per-axis evidence, never as `overall`. The role-purpose critic-suite
   gap remains open as RTG-19 SSU-F16.
-- [ ] **KVU-4a — clear the gate's only remaining failure: runtime attestation.** :8070, :8074, :8080 and :8180 run
+- [x] **KVU-4a — clear the gate's only remaining failure: runtime attestation.** ✅ 2026-09-24 — :8180, :8080,
+  :8074, :8070 reloaded on `-ub 2048` (18:16–18:18Z, healthy, frontdoor completion ok); the branch merged as orch
+  `ff67bbec`; the promotion gate is green. :8083 followed with KVU-1. :8070, :8074, :8080 and :8180 run
   with `-ub 8192` live, but K4 declares 2048. The change is inert, because effective ubatch was already 2048 by
   clamp. :8083 rides KVU-1.
   - The owning session reloads those four after the running speech test, then merges
@@ -157,11 +201,18 @@ is olympiad-style reasoning.
     takes it.
 - [ ] **KVU-13a — ambient `LLAMA_ARG_*` env is invisible to the cmdline attestation.** `-kvu` on argv wins, but an
   ambient `LLAMA_ARG_N_PARALLEL` would not be seen. Extend `_live_kv_unified()` (patch 3) to read
-  `/proc/<pid>/environ`, or scrub `LLAMA_ARG_*` from the launch env.
+  `/proc/<pid>/environ`, or scrub `LLAMA_ARG_*` from the launch env. Same class (package revision 3 §9): an
+  ambient `LD_PRELOAD` / `SHIM_NPROCS` in the launcher's parent env would reach every aux service, because
+  `build_service_env` starts from `os.environ`; scrub both unless the service entry declares them.
 - [ ] **KVU-13b — the stack-change skill's DERIVATION source list omits the files a new launch flag needs**
-  (`src/registry/stack_priors.py`, `scripts/server/stack_commands.py`, `scripts/server/orchestrator_stack.py`).
+  (`src/registry/stack_priors.py`, `scripts/server/stack_commands.py`, `scripts/server/orchestrator_stack.py`, and
+  per package revision 3 §9 also `scripts/server/stack_manifest.py` and `scripts/voice/`).
   Also, `preflight.sh`, `capacity.sh` and `topology_check.py` hardcode the real ORCH path, so they cannot run
   against a scratch clone. Fix both in `.claude/skills/stack-change/`.
+- [ ] **KVU-13c — the capacity gate runs at import of `stack_manifest`.** A lineup that fails capacity makes the
+  launcher and the pipeline un-importable, so the tool you would use to fix the lineup cannot load (hit in the
+  package scratch, revision 3 §9). Move the gate to an explicit call (pipeline `check` / launcher pre-start) and
+  keep import side-effect-free; test: a failing lineup still imports and `check` reports the failure.
 
 ### C — kernel candidate (v11, guarded)
 - [ ] **KVU-7 — the MTP pool-full exception is a v11 experimental-kernel candidate.** v10 `ffc1bac82` with
@@ -177,11 +228,22 @@ is olympiad-style reasoning.
     reopens it. The orchestrator already classifies the error (KVU-0e).
 
 ### D — measurement follow-ups
-- [ ] **KVU-8 — confirm the throughput verdict with fixed-length or multi-wave generation.** Every cell is n=1, and
+- [x] **KVU-8 — confirm the throughput verdict with fixed-length or multi-wave generation.** ✅ 2026-09-24 —
+  confirmed, with one named substitution. (1) 35B-A3B, both arms, fixed-length L 2048 cells: unified within 2% of
+  split in all 4 (per-request −0.6..−1.7%, aggregate −0.7..−1.1%); at 8k/32k the per-request spread is −5.3..+5.6%
+  with no consistent sign because the arms' completions differ even at np 1. (2) 27B L 2048 cells, where every
+  request in both arms ran to the cap: unified aggregate +5.1% at np 4. (3) M-4 (KVU-1e): the live np4 kvu shape
+  at fixed length, 2 waves, gives 95.3 / 93.1 tok/s aggregate at concurrency 4, in line with the study's split
+  np4 cells (92.9–102.0). So the single-wave −8% / −16% "aggregate loss" was the answer-length artifact. The
+  substitution: no fixed-length **split** arm was re-run on the 27B; the claim rests on (1)–(3), n ≤ 2 per cell.
+  Original task: Every cell is n=1, and
   the np4 aggregate gap tracks divergent completions. Rerun the np 2/4 cells with fixed-length generation
   (`ignore_eos` + `n_predict`) or at least 3 waves, both arms on the same binary. Carry the write-side hook
   (VB-KVU-1) from the first run.
-- [ ] **KVU-9 — finish, commit and read the Qwen3.6-35B-A3B-MTP Q8_0 GPU matrix.** Research
+- [x] **KVU-9 — finish, commit and read the Qwen3.6-35B-A3B-MTP Q8_0 GPU matrix.** ✅ 2026-09-24 — 24 cells,
+  0 errors, np 8 fits at every L (44–45 GiB at 32k); committed research `07060eaa` (README §7, SHA256SUMS). Read
+  in KVU-8. :8083 and :8086 were restored (18:30Z) and :8083 then came up on the OP-54 shape. The 35B ran at
+  depth 4. Original task: Research
   `artifacts/np_context_kvu_study_20260924/q36_35b_a3b_q8_h/` was running from ~17:12Z with driver pid 1224153.
   - After the driver exits: verify it, add the run to the study README and SHA256SUMS, and commit it to research
     main.
@@ -197,13 +259,19 @@ is olympiad-style reasoning.
   different relative behaviour.
 
 ### E — speech residency
-- [ ] **KVU-11a — commit the speech study's follow-up run.** After 17:14Z the study kept writing to the shared
+- [x] **KVU-11a — commit the speech study's follow-up run.** ✅ 2026-09-24 — option C (`smtC`) committed in
+  research `07060eaa` (README addendum, SHA256SUMS regenerated); the shared clone's untracked copies were moved
+  aside and the clone fast-forwarded (it is at `6afc7eed`, ≥ `34373dd8`). Option C failed: TTS 20–37× slower than
+  real time with the frontdoor generating. Original task: After 17:14Z the study kept writing to the shared
   research clone: an `smtC` SMT-sibling run, an edited `speech_cpu_bench.py`, and a grown
   `raw/whisper_bench_encoder_matrix.txt`. Once it finishes:
   - commit the delta onto research main (`artifacts/speech_cpu_realtime_20260924/`, SHA256SUMS regenerated);
   - update the README's option C;
   - after a checksum match, remove the shared clone's untracked copies, so DS41-C10a's fast-forward is not blocked.
-- [ ] **KVU-11 — decide where STT/TTS live** (OP-56). Research `artifacts/speech_cpu_realtime_20260924/README.md`.
+- [x] **KVU-11 — decide where STT/TTS live** (OP-56). ✅ 2026-09-24 — operator: STT **and** TTS to CPU (STT
+  24@0-23, TTS 16@24-39); applied with OP-54 (KVU-1). Voice turns route their reasoning step to
+  architect_general (:8083), a requirement for the voice-pipeline handoff the operator is drafting. The
+  follow-up measurement showed this layout collides with the CPU LLM roles (KVU-11b). Original options: Research `artifacts/speech_cpu_realtime_20260924/README.md`.
   - (A) Stay on GPU. Recommended: whisper costs ~2.2 GB VRAM, plus TTS when it runs.
   - (B) Give speech its own cores. Shrink the `-t 96` frontdoor and :8074 to free 24–40 physical cores. The
     frontdoor cost is unmeasured and needs a frontdoor relaunch.
@@ -214,12 +282,41 @@ is olympiad-style reasoning.
   - Couples with OP-48 (capacity gate sees speech VRAM) and package N-5 (TTS does not fit next to kvu today).
   - The operator is drafting a separate conversation-stack handoff (STT → frontdoor → TTS). Do not file the
     omni/Moshi intake here.
+- [ ] **KVU-11b — CPU speech is not real time while a CPU LLM role generates: decide and apply (OP-57).**
+  Measured 2026-09-24 19:19–19:43Z against the live layout (research
+  `artifacts/speech_cpu_realtime_20260924/README.md` addendum 3, `6afc7eed`; harness `live_llm_contention.py`):
+  - With :8074 or :8070 generating (`-t 96` on 0-95): STT RTF ≥ 58 (one 11 s clip took ~10.7 min), TTS first
+    packet 13.4–13.6 s and then stalls. The collision is two-sided: :8074 falls 31.2 → 0.59 tok/s and :8070
+    36.8 → 1.05 tok/s, because speech threads sit inside the LLMs' core masks and their barriers wait on them.
+  - Partition test (a TEST Flash-Next instance, `-t 56` on 40-95): STT back to quiet levels (RTF 0.22–0.44), TTS
+    marginal (first packet 0.24–1.0 s, RTF 0.93–1.40 vs 0.55–0.63 quiet), LLM decode −22..26% (23.0 / 24.5 vs
+    31.1 / 31.3 tok/s). The frontdoor under the same partition was not measured (inferred similar).
+  - No priority-pause mechanism exists today.
+  - Options (OP-57): **(A, recommended)** partition the CPU LLM roles to 40-95 **and** move TTS back to the GPU
+    (0.92 GB of weights; re-check VRAM headroom against the np4 :8083 + VL resident set first); (B) partition
+    only (TTS stays marginal); (C) keep the layout and build a decode throttle that pauses LLM decode while TTS
+    streams; (D) do nothing (any speech request during a `-t 96` generation wrecks both).
+  - Acceptance for A/B: the live-contention harness re-run against the new layout gives STT RTF < 0.5 and TTS
+    first packet < 1 s with a CPU LLM generating, and the LLM decode loss is recorded.
+  - The voice-pipeline handoff the operator's parallel agent is drafting must carry this contention as a
+    requirement; that handoff did not exist at 2026-09-24 ~19:50Z, so no cross-reference was written.
+  - Layout hygiene seen in the same run: `megasync` (unpinned) ran at 60–100% on core 16, inside whisper's 0-23
+    mask — a possible straggler source (quiet STT RTF spread 0.22–0.39). Pin it outside 0-39 as part of whichever
+    option lands.
+- [ ] **KVU-11c — replace the TTS `nprocs` shim with a real thread flag.** The shim (`LD_PRELOAD` interposer on
+  `get_nprocs()`, orch `scripts/voice/`) is the accepted stopgap (package revision 3 §4.2). Add a thread-count
+  flag to qwentts.cpp on an `experimental` branch and promote it as the next speech kernel version; then drop the
+  shim and `SHIM_NPROCS` from the launch manifest.
 
 ## Not filed here (explicit)
 - SSU-F3 structural capacity model (RS, draft KV, compute terms): owned by RTG-19. INF-41 aux VRAM in the gate:
   owned by OP-48 / INF-41.
 - Package §10 items that the overflow branch already fixes: the 20,000-char routing threshold (now tokens and
   capacity-fenced), the 32768 compaction fallback, and 400 / "Context size has been exceeded." handling.
+- The speech addendum's "priority pause instead of partitioning" alternative: not filed as its own task, because a
+  pause cannot act mid-token and no mechanism exists; it survives as OP-57 option C (KVU-11b).
+- Frontdoor-under-partition measurement: not filed separately; it is part of KVU-11b's acceptance re-run for
+  options A/B.
 - A Stage-1 intake sweep of the audit's new primary sources (vLLM / SGLang / TGI / TRT-LLM / LMDeploy / LMCache
   docs): no claim here relies on them. Intake runs only when the operator invokes it.
 
@@ -235,4 +332,4 @@ is olympiad-style reasoning.
 
 ## Reporting
 Flip the box here, update RTG-57's `Next action`, and append to `progress/YYYY-MM/`. Operator decisions go through
-OP-54, OP-55 and OP-56 in the master index. The gate's known-gap choice was decided before filing: option A.
+the master index: OP-54, OP-55 and OP-56 are decided and applied; OP-57 (CPU speech contention, KVU-11b) is open. The gate's known-gap choice was decided before filing: option A.

@@ -1,0 +1,62 @@
+numa_mode: ok
+  detail: evaluated numa_mode: both (source: explicit:--numa-mode)
+shared_with_derivations: ok
+  detail: port_map, role_launch_meta, numa_config, roles.<alias>.model and _LEGACY_SERVER_URL_FALLBACKS all recompute from server_mode.*.shared_with
+lean_registry: ok
+  detail: recompiled from master: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/v2/reg/orchestration/model_registry.yaml -> /mnt/raid0/llm/tmp/stack-change-kvu-20260924/v2/full-orch/orchestration/model_registry.yaml
+  detail: 16 roles projected through the active manifest
+descriptors: updated
+  detail: wrote 4 descriptor(s): /mnt/raid0/llm/tmp/stack-change-kvu-20260924/v2/full-orch/orchestration/model_descriptors.yaml
+stack_priors: updated
+  detail: wrote 16 role prior(s): /mnt/raid0/llm/tmp/stack-change-kvu-20260924/v2/full-orch/orchestration/derived/stack_priors.yaml
+  detail: numa mode source: explicit:--numa-mode
+procedure_enums: updated
+  detail: synced: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/v2/full-orch/orchestration/procedures/add_model_to_registry.yaml, /mnt/raid0/llm/tmp/stack-change-kvu-20260924/v2/full-orch/orchestration/procedure.schema.json
+operator_summary: updated
+  detail: wrote generated operator summary: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/v2/full-orch/docs/generated/current_stack_summary.md
+guard: ok
+guard_all_surfaces: warnings
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:143: # (qwen35_122b_q4km / glm_52_ud_iq2m) unresolved to exercise that path. [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:62: reviewer_agent, architect_coding) that Role._missing_ resolves. If this [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:74: "architect_coding", [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:307: scoring_config={"timeout": 5, "judge_role": "thinking_reasoning"}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:309: assert calls[0]["json"]["force_role"] == "thinking_reasoning" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_fleet_layer_fallback.py:48: "architect_critic": {"port": 8074, "model_role": "qwen35_122b_q4km"}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:133: assert "thinking_reasoning" not in WORKING_VALUES  # Role with no server [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:272: "thinking_reasoning",  # a Role member with no server (retired) [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_pipeline_routing.py:32: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_q_reward_role_key.py:106: for role in ("architect_coding", "mock"): [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: iterates the legacy "architect_coding" key to prove q-reward role-key handling stays stable for historical replay data. Migrating would drop legacy-key regression coverage.]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_registry_loader.py:18: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/chapters/10-escalation-and-routing.md:429: signals.thinking_requested = True  # Route to thinking_reasoning model [remediation: generate current stack tables or label snapshot as historical]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/diagrams/orchestration_topology.md:34: THR[thinking_reasoning] [remediation: generate current stack tables or label snapshot as historical]
+guard_strict: ok
+reasoning_effort_certifications: ok
+  detail: declared prompt-effort levels match their certified model/quant/kernel era
+stack_manifest_registry: ok
+  detail: stack manifest launch roles match registry process_layout/server_mode
+q_scorer_priors: ok
+  detail: live q_scorer prior sources are stack-prior derived
+runtime_attestation: failed
+  error: live process drift: known stack port 8000 has unmanaged listener pid(s) 1934625,1934627,1934628,1934629,1934630,1934631,1934632
+  error: live process drift: known stack port 8070 has unmanaged listener pid(s) 1884323
+  error: live process drift: known stack port 8074 has unmanaged listener pid(s) 1881256
+  error: live process drift: known stack port 8080 has unmanaged listener pid(s) 1879977
+  error: live process drift: known stack port 8083 has unmanaged listener pid(s) 1887789
+  error: live process drift: known stack port 8086 has unmanaged listener pid(s) 1892835
+  error: live process drift: known stack port 8090 has unmanaged listener pid(s) 2022735
+  error: live process drift: known stack port 8091 has unmanaged listener pid(s) 2022949
+  error: live process drift: known stack port 8092 has unmanaged listener pid(s) 2023219
+  error: live process drift: known stack port 8093 has unmanaged listener pid(s) 2023456
+  error: live process drift: known stack port 8094 has unmanaged listener pid(s) 2023679
+  error: live process drift: known stack port 8095 has unmanaged listener pid(s) 2023882
+  error: live process drift: known stack port 8180 has unmanaged listener pid(s) 1879273
+  error: live process drift: known stack port 8190 has unmanaged listener pid(s) 3655271
+  error: live process drift: known stack port 9000 has unmanaged listener pid(s) 2025089
+  error: live process drift: known stack port 9001 has unmanaged listener pid(s) 2024574
+simulated_fixtures: reference
+  detail: data-only stack-change fixture target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py
+promotion_gate: reference
+  detail: no-inference promotion target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py tests/unit/test_build_server_command_helpers.py tests/unit/test_seeding_infra.py tests/unit/test_seeding_infra_additional.py tests/unit/test_seeding_infra_branching.py tests/unit/test_seed_specialist_routing_main_and_retry.py
+summary: failed
+acceptance: blocked
+promotion_gate: fix 16 error(s) before promotion

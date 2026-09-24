@@ -1,0 +1,19 @@
+--- a/.config/opencode/opencode.jsonc
++++ b/.config/opencode/opencode.jsonc
+@@ -20,7 +20,15 @@
+       "name": "Local llama-server (MI210, Qwen3.8-27B)",
+       "options": { "baseURL": "http://127.0.0.1:8083/v1" },
+       "models": {
+-        "qwen3.8-27b": { "name": "Qwen3.8-27B Q8_0 (author)" }
++        "qwen3.8-27b": {
++          "name": "Qwen3.8-27B Q8_0 (author)",
++          // :8083 serves ONE unified 196608-token KV pool shared by 4 slots (-np 4 -kvu,
++          // GPU-residency change set 2026-09-24): a lone request may use all of it; concurrent
++          // requests share it. `output` caps max_tokens (reasoning is billed against it) and
++          // reserves room before opencode compacts. Keep `context` equal to
++          // server_mode.architect_general.serving_shape.n_ctx.
++          "limit": { "context": 196608, "output": 32768 }
++        }
+       }
+     }
+   },

@@ -2722,9 +2722,21 @@ Owner: RTG-57 (`kv-unified-stack-rollout.md`).
   - Carry the three cautions from the source row: KV mode as an argv fact, output divergence across arms, and
     headroom.
   - Never edit a driver while it runs. The 35B driver was live at filing time.
+  - [ ] **VB-KVU-1a — the two production-follow-up producers in the same study directory** (added 2026-09-24,
+    wrap-up #4). `m4_np4_concurrent_live.py` (live-server fixed-length concurrency) writes one JSON with no schema
+    version, row hash or server identity; give it the same emitter, with the live pid, `/proc/<pid>/cmdline` and
+    the launch log's `kv_unified` line captured at run time. `m3_depth_production.md` is a log-derived analysis
+    whose depth-4 figure is a truncation **projection**: if a script produces it, its rows must mark the
+    projection as a model (`estimate_kind: projection`), never as a measured arm, and carry the log window and
+    the organic/probe split.
 - [ ] **VB-SPEECH-CPU-1 — write side for `speech_cpu_bench.py`, before any CPU speech re-measurement** (KVU-11 B/C).
   - Add a schema version, row hash, whisper/qwentts binary digests, the exact core list and thread count, and
     `SHIM_NPROCS`. Also capture the co-tenant state: frontdoor `-t`/cores and whether it was generating, sampled
     during the row.
   - Then the adapter. Carry the three cautions from the source row: layout is part of the measurand, the shim is
     the only thread control, and co-tenant state decides the result.
+  - [ ] **VB-SPEECH-CPU-1a — write side for `live_llm_contention.py`** (the addendum-3 harness, research
+    `6afc7eed`; added 2026-09-24, wrap-up #4). Its `raw/live_contention.jsonl` rows carry RTF, first packet and
+    `llm_overlap` but no schema version, row hash, binary digests or the co-tenant LLM's pid/argv/cores. Add them
+    (sampled during the row), and record each speech request's cap and whether a guard aborted the arm, so a
+    capped or aborted row can never read as a completed measurement.

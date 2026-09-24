@@ -1,0 +1,607 @@
+diff --git a/docs/generated/current_stack_summary.md b/docs/generated/current_stack_summary.md
+index fcd8daf4..42a9f673 100644
+--- a/docs/generated/current_stack_summary.md
++++ b/docs/generated/current_stack_summary.md
+@@ -9,17 +9,17 @@ uv run python scripts/registry/stack_change_pipeline.py update
+ Source: `orchestration/derived/stack_priors.yaml`
+ 
+ Source fingerprints:
+-- orchestration/derived/stack_priors.yaml: `f12bfb8bda6086d0d6183c9fc9db3d671fe1b1570f19125ad42eec0d11b8e5b9`
+-- orchestration/model_registry.yaml: `82cd7b96ffb3ce4e5edc07ccb449c65a54c197449797b9a8d8a25d961eed6f2b`
+-- orchestration/model_descriptors.yaml: `290469fc4f3e8911406f763c4b8d9d442e77c4c2dfb87c55d18dc6bab25da0f6`
++- orchestration/derived/stack_priors.yaml: `0fc745fc98c025b230d911540d5c98b7341d237f6d834e05a97a45ce6d2aea78`
++- orchestration/model_registry.yaml: `4789616b45bb17a567a806a72aaebcd94b2338151d88dcfcd4d1c776cd72bc1d`
++- orchestration/model_descriptors.yaml: `b17f7801fee96ef2dfd88bd8a099a1eb66c337573aad0465f852cb52b8869b43`
+ 
+ | Role | Port | Model | Tier | Acceleration | Requirements | Throughput | Description |
+ |---|---:|---|---|---|---|---:|---|
+ | architect_critic | 8074 | Qwen3.8-Flash-Next-UD-IQ4_XS | hot | draft-mtp (lookup=false, draft_max=4) | draft=mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf | 52.7 | live_stack; binding=server_mode.direct; status=compiled |
+-| architect_general | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=8) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=server_mode.direct; status=compiled |
+-| coder_escalation | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=8) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
++| architect_general | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=server_mode.direct; status=compiled |
++| coder_escalation | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
+ | frontdoor | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.direct; status=compiled |
+-| ingest_long_context | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=8) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
++| ingest_long_context | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
+ | toolrunner | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.shared_with; status=compiled |
+ | vision_escalation | 8086 | Qwen3-VL-30B-A3B-Instruct | hot | baseline | mmproj=mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf | 112.2 | live_stack; binding=server_mode.shared_with; status=compiled |
+ | worker | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.direct; status=compiled |
+diff --git a/orchestration/derived/stack_priors.yaml b/orchestration/derived/stack_priors.yaml
+index 635149f1..81130436 100644
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,47 +48,47 @@ contract:
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+-compiled_at: '2026-09-24T17:50:51Z'
++compiled_at: '2026-09-24T18:37:00Z'
+ status: compiled
+ coverage_scope: descriptor_role_bindings
+ precedence_spec: docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+     path: orchestration/model_registry.yaml
+-    sha256: 82cd7b96ffb3ce4e5edc07ccb449c65a54c197449797b9a8d8a25d961eed6f2b
+-    repo_commit: 64837d58
++    sha256: 4789616b45bb17a567a806a72aaebcd94b2338151d88dcfcd4d1c776cd72bc1d
++    repo_commit: ff67bbec
+   descriptors:
+     path: orchestration/model_descriptors.yaml
+-    sha256: 290469fc4f3e8911406f763c4b8d9d442e77c4c2dfb87c55d18dc6bab25da0f6
+-    repo_commit: 64837d58
++    sha256: b17f7801fee96ef2dfd88bd8a099a1eb66c337573aad0465f852cb52b8869b43
++    repo_commit: ff67bbec
+   stack_manifest:
+     path: scripts/server/stack_manifest.py
+-    sha256: 0a5849e2702ac029973a96e9a7427067c7a6f5deb1e7060c60586b3a98d91c75
+-    repo_commit: 64837d58
++    sha256: efa61d09c5d2fa3daa33ae78447a001fff47f193e41672fed65a1ad0050a6c30
++    repo_commit: ff67bbec
+   stack_numa:
+     path: scripts/server/stack_numa.py
+     sha256: 8a9e4eade957c71b9694160668f982deff31960d3ec5ad0f2d8fc50369b3c703
+-    repo_commit: 64837d58
++    repo_commit: ff67bbec
+   launch_manifest:
+     path: orchestration/launch_manifest.yaml
+-    sha256: 5e215c3ce062655b3f7ce17a41fc9644422bbf114a78d813bbff3e199bbaebd6
+-    repo_commit: 64837d58
++    sha256: 84b83ff9872519ddf10d34470840678c2f14ba9b36332c1b3ef318a71f3e3f91
++    repo_commit: ff67bbec
+   stack_topology:
+     path: orchestration/stack_topology.yaml
+     sha256: f802ef5b1636bec903344f800ce6ecbb7e97af20018dec678080b3af538dfbea
+-    repo_commit: 64837d58
++    repo_commit: ff67bbec
+   orchestrator_stack:
+     path: scripts/server/orchestrator_stack.py
+-    sha256: 80be29efbc6d309b093a0c1a77cf7892b02fbb637c531549783ae1b6ba792a99
+-    repo_commit: 64837d58
++    sha256: 439ae4dc1636bdbc3f872c0b658d07d36d3403c3b3df7fac45af8bfb94d83b47
++    repo_commit: ff67bbec
+   stack_paths:
+     path: scripts/server/stack_paths.py
+     sha256: 4a7ca842a87b6ffec022f4f6433d755751cac32b9102747d88f3f4f2e4cb24de
+-    repo_commit: 64837d58
++    repo_commit: ff67bbec
+   stack_runtime:
+     path: scripts/server/stack_runtime.py
+     sha256: 984d27262e1f1d5a5332d0b4a3e6fb96fb8095fc890ddaa93da07bff52eb1c99
+-    repo_commit: 64837d58
++    repo_commit: ff67bbec
+ roles:
+   architect_critic:
+     role: architect_critic
+@@ -140,6 +140,9 @@ roles:
+             kv_type_k: f16
+             kv_type_v: f16
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_critic
+@@ -150,7 +153,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: null
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 32768
+             chat_template_file: null
+             reasoning: 'off'
+             override_kv: []
+@@ -281,7 +284,7 @@ roles:
+       binding: server_mode.direct
+       ports:
+       - 8083
+-      slots: 2
++      slots: 4
+       tier: hot
+       effective_context_tokens: 196608
+       binary: llama.cpp
+@@ -295,7 +298,7 @@ roles:
+           mode: default
+           alias: false
+           cpu_shape_class: gpu_host_lane
+-          slots: 2
++          slots: 4
+         primary_roles:
+         - architect_general
+         modes:
+@@ -314,13 +317,16 @@ roles:
+           kmp_blocktime: null
+           cache:
+             context_tokens: 196608
+-            slots: 2
++            slots: 4
+             slots_by_port:
+-              8083: 2
++              8083: 4
+             ubatch: 2048
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: true
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: false
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
+@@ -331,7 +337,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: all
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 65536
+             chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+             reasoning: null
+             override_kv: []
+@@ -340,7 +346,7 @@ roles:
+               type: draft-mtp
+               disabled_by: null
+               draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-              draft_max: 8
++              draft_max: 4
+               draft_min: null
+               draft_p_min: null
+               draft_p_split: null
+@@ -384,8 +390,8 @@ roles:
+       kv:
+         k: null
+         v: null
+-      draft_max: 8
+-      k: 8
++      draft_max: 4
++      k: 4
+       p_split: 0
+       lookup: false
+     model:
+@@ -504,7 +510,7 @@ roles:
+       binding: stack_manifest.alias->server_mode.direct
+       ports:
+       - 8083
+-      slots: 2
++      slots: 4
+       tier: hot
+       effective_context_tokens: 196608
+       binary: llama.cpp
+@@ -518,7 +524,7 @@ roles:
+           mode: default
+           alias: true
+           cpu_shape_class: gpu_host_lane
+-          slots: 2
++          slots: 4
+         primary_roles:
+         - architect_general
+         modes:
+@@ -537,13 +543,16 @@ roles:
+           kmp_blocktime: null
+           cache:
+             context_tokens: 196608
+-            slots: 2
++            slots: 4
+             slots_by_port:
+-              8083: 2
++              8083: 4
+             ubatch: 2048
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: true
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: false
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
+@@ -554,7 +563,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: all
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 65536
+             chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+             reasoning: null
+             override_kv: []
+@@ -607,8 +616,8 @@ roles:
+       kv:
+         k: null
+         v: null
+-      draft_max: 8
+-      k: 8
++      draft_max: 4
++      k: 4
+       p_split: 0
+       lookup: false
+     model:
+@@ -784,6 +793,9 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -794,7 +806,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: null
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 32768
+             chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+             reasoning: 'off'
+             override_kv: []
+@@ -940,7 +952,7 @@ roles:
+       binding: stack_manifest.alias->server_mode.direct
+       ports:
+       - 8083
+-      slots: 2
++      slots: 4
+       tier: hot
+       effective_context_tokens: 196608
+       binary: llama.cpp
+@@ -954,7 +966,7 @@ roles:
+           mode: default
+           alias: true
+           cpu_shape_class: gpu_host_lane
+-          slots: 2
++          slots: 4
+         primary_roles:
+         - architect_general
+         modes:
+@@ -973,13 +985,16 @@ roles:
+           kmp_blocktime: null
+           cache:
+             context_tokens: 196608
+-            slots: 2
++            slots: 4
+             slots_by_port:
+-              8083: 2
++              8083: 4
+             ubatch: 2048
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: true
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: false
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
+@@ -990,7 +1005,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: all
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 65536
+             chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+             reasoning: null
+             override_kv: []
+@@ -1043,8 +1058,8 @@ roles:
+       kv:
+         k: null
+         v: null
+-      draft_max: 8
+-      k: 8
++      draft_max: 4
++      k: 4
+       p_split: 0
+       lookup: false
+     model:
+@@ -1356,8 +1371,8 @@ roles:
+       kv:
+         k: null
+         v: null
+-      draft_max: 8
+-      k: 8
++      draft_max: 4
++      k: 4
+       p_split: 0
+       lookup: false
+     model:
+@@ -1646,6 +1661,9 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -1656,7 +1674,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: null
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 32768
+             chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+             reasoning: 'off'
+             override_kv: []
+@@ -1843,6 +1861,9 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: false
+             mlock: false
+             slot_save_path: null
+@@ -2043,6 +2064,9 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: false
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2242,6 +2266,9 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2252,7 +2279,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: null
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 32768
+             chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+             reasoning: 'off'
+             override_kv: []
+@@ -2441,6 +2468,9 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2451,7 +2481,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: null
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 32768
+             chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+             reasoning: 'off'
+             override_kv: []
+@@ -2640,6 +2670,9 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2650,7 +2683,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: null
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 32768
+             chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+             reasoning: 'off'
+             override_kv: []
+@@ -2839,6 +2872,9 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2849,7 +2885,7 @@ roles:
+             device_draft: null
+             n_gpu_layers: null
+             image_min_tokens: null
+-            cache_ram: null
++            cache_ram: 32768
+             chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+             reasoning: 'off'
+             override_kv: []
+@@ -3036,6 +3072,9 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
+             no_mmap: false
+             mlock: false
+             slot_save_path: null
+diff --git a/orchestration/model_descriptors.yaml b/orchestration/model_descriptors.yaml
+index 33f28c27..2016853e 100644
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+-compiled_at: '2026-09-24T17:50:51Z'
++compiled_at: '2026-09-24T18:37:00Z'
+ status: compiled
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+     path: orchestration/model_registry.yaml
+-    repo_commit: 64837d58
+-    sha256: 82cd7b96ffb3ce4e5edc07ccb449c65a54c197449797b9a8d8a25d961eed6f2b
++    repo_commit: ff67bbec
++    sha256: 4789616b45bb17a567a806a72aaebcd94b2338151d88dcfcd4d1c776cd72bc1d
+   research:
+-    path: /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
+-    repo_commit: 21ca61b0
+-    sha256: 7c99288828d3206538300bb2ff999a58bfa8729b80814c00b6b970102833a3f7
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/v2/reg/orchestration/model_registry.yaml
++    repo_commit: 05c89fe
++    sha256: 42e2475249f642217fd673538623cac31b8a3f60f358918813204ef5bf4ae47c
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+@@ -479,8 +479,8 @@ models:
+     kv:
+       k: null
+       v: null
+-    draft_max: 8
+-    k: 8
++    draft_max: 4
++    k: 4
+     p_split: 0
+     lookup: false
+   serving:
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index 526bbf63..2d369451 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -2,7 +2,7 @@
+ # AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW.
+ #
+ # This file is compiled at every `orchestrator_stack.py start` from the master
+-# registry at /workspace/repos/epyc-inference-research/orchestration/model_registry.yaml
++# registry at /mnt/raid0/llm/tmp/stack-change-kvu-20260924/v2/reg/orchestration/model_registry.yaml
+ # by src/registry/registry_compiler.py.
+ #
+ # Runtime stack truth lives in the MASTER registry. The next start detects master
+@@ -10,8 +10,8 @@
+ # temporarily skip the compile (e.g. during a master schema change), set
+ # ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+ #
+-# Compiled at: 2026-09-23T17:16:14+00:00
+-# Cache key:   33b98acbc7e49666...
++# Compiled at: 2026-09-24T18:36:59+00:00
++# Cache key:   b37a1edc1112480c...
+ # Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+ # =============================================================================
+ 
+@@ -1676,6 +1676,7 @@ server_mode:
+     url: http://localhost:8070
+     port: 8070
+     slots: 4
++    cache_ram: 32768
+     serving_shape:
+       n_ctx: 262144
+       slots_by_shape:
+@@ -1812,14 +1813,16 @@ server_mode:
+     no_mmap: true
+     url: http://localhost:8083
+     port: 8083
+-    slots: 2
++    slots: 4
++    cache_ram: 65536
+     serving_shape:
+       n_ctx: 196608
++      kv_unified: true
+       kv_quant:
+         k: q8_0
+         v: q8_0
+       kv_kib_per_token_f16: 64.0
+-      vram_non_kv_gib: 27.33
++      vram_non_kv_gib: 32.8
+     chat_template_kwargs:
+       enable_thinking: true
+       reasoning_effort: medium
+@@ -1847,7 +1850,7 @@ server_mode:
+     acceleration:
+       type: speculative_decoding
+       spec_type: draft-mtp
+-      draft_max: 8
++      draft_max: 4
+       draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+       lookup: false
+     device: ROCm0
+@@ -1862,6 +1865,7 @@ server_mode:
+     url: http://localhost:8074
+     port: 8074
+     slots: 1
++    cache_ram: 32768
+     serving_shape:
+       n_ctx: 262144
+       slots_by_shape:
+@@ -1915,7 +1919,7 @@ server_mode:
+   ingest_long_context:
+     url: http://localhost:8083
+     port: 8083
+-    slots: 2
++    slots: 4
+     kv_quant:
+       k: q8_0
+       v: q8_0
+@@ -1926,9 +1930,10 @@ server_mode:
+       reasoning_effort: medium
+     description: 'Long-context ingest alias — resolves to the architect_general process (Qwen3.8-27B dense Q8, MI210 ROCm0, :8083). Not a distinct model and not a distinct server. 2026-09-22: replaces Qwen3-Next-80B-A3B-Instruct-Q4_K_M
+       (RETIRED), which ran three dedicated CPU instances on :8085/:8185/:8285.'
+-    alias_note: '⚠ THE ROLE''S DEFINING PROPERTY DOES NOT FULLY SURVIVE THE SWAP. The 27B''s ctx_max is 262144, so the model can carry the role''s declared context in principle, but the DEPLOYED per-slot
+-      context on :8083 is 98304 (196608 over 2 slots). Raising it is an OPERATOR call, not an arithmetic impossibility: on the 2026-09-22 corrected KV rate -c 262144 would fit with ~1.0 GiB of margin instead
+-      of 3.15 — see server_mode.architect_general.serving_shape. 196608 is the allocation the operator took. Any caller that relies on 262144 must be re-pointed or must accept truncation.'
++    alias_note: '⚠ THE ROLE''S DEFINING PROPERTY DOES NOT FULLY SURVIVE THE SWAP. The 27B''s ctx_max is 262144, so the model can carry the role''s declared context in principle, but the DEPLOYED context
++      on :8083 is a UNIFIED 196608-token pool (2026-09-24 -kvu): a lone request may use all of it, two concurrent requests share it. Raising it is an OPERATOR call, not an arithmetic impossibility: on the
++      2026-09-22 corrected KV rate -c 262144 would fit with ~1.0 GiB of margin instead of 3.15 — see server_mode.architect_general.serving_shape. 196608 is the allocation the operator took. Any caller that
++      relies on 262144 must be re-pointed or must accept truncation.'
+     previous_model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf
+     agent_file_compression_operating_point: medium
+     model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+@@ -1939,7 +1944,7 @@ server_mode:
+       type: none
+       inherits_spec_from: architect_general
+       spec_type: draft-mtp
+-      draft_max: 8
++      draft_max: 4
+       lookup: false
+     throughput: null
+     throughput_previous_model: 14.4-20.8
+@@ -2105,7 +2110,7 @@ roles:
+       type: none
+       inherits_spec_from: architect_general
+       spec_type: draft-mtp
+-      draft_max: 8
++      draft_max: 4
+     performance:
+       baseline_tps: null
+       optimized_tps: null
+@@ -2160,8 +2165,8 @@ roles:
+       type: speculative_decoding
+       spec_type: draft-mtp
+       draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-      draft_max: 8
+-      k: 8
++      draft_max: 4
++      k: 4
+       p_split: 0
+       lookup: false
+       notes: '2026-07-31: architect MTP via the MTP-embedded Qwen3.6-27B variant (draft = same GGUF as model; launcher omits -md for same-realpath drafts). Served on MI210 (ROCm0) with -ngl all -fa on.
