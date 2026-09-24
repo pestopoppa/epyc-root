@@ -256,7 +256,7 @@ Qwen3.8-27B Q8_0 with MTP draft, olympiad-style prompts, n=1 per cell. Numbers a
 - **MTP depth (→17:07Z):**
   - depth 4 acceptance 0.63–0.66 vs 0.37–0.46 at depth 8;
   - per-request within ±2.5% except one +7.8% cell;
-  - 1014 MiB less at production shape (`-np 2 -c 196608 -kvu`, load-only KFD).
+  - 1014 MiB less at production shape (`-np 2 -c 196608 -kvu`, whole-device VRAM, load-only).
   - Confirm on production traffic before changing the recipe (KVU-1b).
 - **35B-A3B matrix (Qwen3.6-35B-A3B-MTP Q8_0, from ~17:12Z, driver pid 1224153)** was still running at wrap-up and
   is not committed (KVU-9). Preliminary page rows (unverified against files) cover 16 cells, np 1–8 × L 2k/8k,

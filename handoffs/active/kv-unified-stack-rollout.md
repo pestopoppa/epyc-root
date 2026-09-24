@@ -55,8 +55,8 @@ is olympiad-style reasoning.
   from the package's buffer model at `-c 196608`, not from these runs.
 - MTP draft depth 4 vs 8:
   - acceptance 0.63–0.66 vs 0.37–0.46 (all depth-8 cells);
-  - per-request decode within ±2.5% (+7.8%, −2.4%, +2.4%);
-  - 1014 MiB less at production shape (load-only KFD reading).
+  - per-request decode +7.8% (np2 2k), −2.4% (np2 8k), +2.4% (np4 8k);
+  - 1014 MiB less at production shape (whole-device VRAM, load-only: 64,582 vs 63,568 MiB).
 - np 8 does not fit in either arm. At L2048 it was skipped with 63 GB in use; at 8k and 32k it fails to load
   (out of memory on KV, compute or `rs cache` buffers).
 - With a full pool, unified fails one request with `speculative batch index 8 is not inside the current sub-batch
@@ -101,7 +101,7 @@ is olympiad-style reasoning.
     0.53 GiB.
   - Optional: MTP depth 8 → 4, measured neutral. Acceptance is 0.63–0.66 vs 0.40–0.46; per-request 40.0 vs 37.1
     (np2 2k), 40.3 vs 41.3 (np2 8k), 29.7 vs 29.0 (np4 8k), i.e. within ±2.5% except the +7.8% cell. It uses
-    1014 MiB less KFD at `-np 2 -c 196608 -kvu`.
+    1014 MiB less whole-device VRAM at `-np 2 -c 196608 -kvu` (load-only).
     That workload was olympiad-style, so **confirm on production traffic** (KVU-1b) before the recipe changes.
   - Run package §5 phases 7–8 and all seven §6 serving proofs. Report what each proof returned; `healthy` is not
     proof.

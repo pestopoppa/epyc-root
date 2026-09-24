@@ -5,9 +5,115 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-09-24 (wrap-up compile: S-11/S-12/S-13 — the speech stack is registered under MRG-1 and the task's own pin and GGUF pair were both wrong, the fork stays pinned with two guards; S-11a — folding 4.68 GiB of aux-service VRAM into the capacity gate takes the lineup margin 5.85 to 1.17 GiB, PREPARED behind an operator signature and a stale contention matrix; S-15 confirmed live in a running process); earlier: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+**Last compiled**: 2026-09-24 (evening wrap-up compile, main-ak-seat: production STT/TTS measured on the CPU alone — STT RTF 0.12–0.20 at 24–32 threads, TTS RTF 0.55–0.60 at ≥16 threads, real time together on separate cores, but next to a generating `-t 96` frontdoor TTS RTF goes to 7.8–9.4 and the frontdoor from 43 to 0.3 tok/s; whisper layout collapse and a shim-only TTS thread control; ~2 s CPU ASR floor from 30 s padding; recommendation stay on GPU, options A/B/C an operator decision (OP-56 / RTG-57 KVU-11), the SMT-sibling follow-up uncommitted (KVU-11a)); earlier: 2026-09-24 (wrap-up compile: S-11/S-12/S-13 — the speech stack is registered under MRG-1 and the task's own pin and GGUF pair were both wrong, the fork stays pinned with two guards; S-11a — folding 4.68 GiB of aux-service VRAM into the capacity gate takes the lineup margin 5.85 to 1.17 GiB, PREPARED behind an operator signature and a stale contention matrix; S-15 confirmed live in a running process); earlier: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
 `0.0`/`0.058` TEDS figures are formally voided and a three-stage instrument with a supported (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge) (2026-08-30: MiniMax-H3 lands as the page's first video-generation candidate — EVL-32: 33B dense H3-Omni-Transformer + Qwen3-VL-32B encoder, Ref2VA/FL2VA variants, 768p local / 2K API-only, 24 FPS 32 kHz stereo audio, a 56-model community quantization landscape, NSFW-capability finetune evidence, Ref2VA + beta4 INT8 ~165 GB deployment path, and an Excluded-Territories license; operator scope decision is the first gate before any download)
-**Sources**: 2 documents (added 2026-09-24 wrap-up compile: multimodal-pipeline S-11/S-11a/S-12/S-13/S-15, the 2026-09-24 noninf-tier2 progress log) (added 2026-09-23 evening wrap-up compile: multimodal-pipeline S-15/S-16, the 2026-09-23 progress log) (added 2026-09-17: ERNIE evaluation MI210 run blocks, sub-occ1 progress log, ERNIE deep-dive link fix, completed OCC handoff) (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
+**Sources**: 6 documents (added 2026-09-24 evening wrap-up compile: research artifacts/speech_cpu_realtime_20260924/README.md at 21cf444c (17:14Z snapshot), kv-unified-stack-rollout KVU-11/KVU-11a, vidya VB-SPEECH-CPU-1, deepseek-v41-flash-evaluation DS41-C10a, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 wrap-up compile: multimodal-pipeline S-11/S-11a/S-12/S-13/S-15, the 2026-09-24 noninf-tier2 progress log) (added 2026-09-23 evening wrap-up compile: multimodal-pipeline S-15/S-16, the 2026-09-23 progress log) (added 2026-09-17: ERNIE evaluation MI210 run blocks, sub-occ1 progress log, ERNIE deep-dive link fix, completed OCC handoff) (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
+
+## Compiled Update — 2026-09-24: production STT/TTS are real time on the CPU alone, but collapse next to the CPU frontdoor
+
+**Claim class: `locally-measured`.** The source is research `artifacts/speech_cpu_realtime_20260924/` on research
+main `21cf444c`, the 17:14Z snapshot.
+- The frozen production binaries were run in CPU mode. No build was needed, and nothing was written inside either
+  kernel tree.
+- Every run was pinned inside cores 0-79.
+- Values are medians with (min-max). Several rows are single repetitions.
+- **An SMT-sibling (`smtC`) follow-up run was still writing to the shared research clone at 17:53Z and is not
+  committed.** Nothing below comes from it (RTG-57 KVU-11a).
+
+The question was whether STT (whisper.cpp) and TTS (qwentts.cpp) could move off the MI210 and still work for an
+STT → frontdoor → TTS conversation loop. The move would free about 3+ GiB of VRAM: whisper `:9000` held 2.23 GB per
+`rocm-smi --showpids`, and TTS `:9002` is declared but was not running. The S-12 record in the section below carries
+2.06 GiB, measured 2026-09-22. To pass, speech had to stay real time, run concurrently, and run alongside the CPU
+frontdoor.
+
+### Key findings
+
+- **Each one alone is real time.**
+  - **STT** (whisper large-v3-turbo, `whisper-server` defaults): RTF 0.12–0.20 at 24–32 threads, 5–8× headroom.
+
+    | Threads@cores | 11 s clip | 86.5 s clip |
+    |---|---|---|
+    | 24@0-23 | 2.17 s / RTF 0.197 | 14.4 s / 0.167 |
+    | 32@0-39 | 1.53 s / 0.140 | 10.5 s / 0.122 |
+
+  - **TTS** (Qwen3-TTS 0.6B, Q8_0 talker + 12 Hz tokenizer): pcm RTF 0.55–0.60 at 16 or more threads, about 1.7×
+    headroom.
+
+    | Threads@cores | Sentence (4.24 s audio): first packet / RTF | Paragraph (35.7 s audio): first packet / RTF |
+    |---|---|---|
+    | 16@0-15 | 0.084 s / 0.547 | 0.238 s / 0.595 |
+    | 24@0-23 | 0.075 s / 0.609 | 0.185 s / 0.589 |
+
+    TTS stops improving at about 16 threads, because frame-by-frame autoregressive decoding of a 0.6B model is bound
+    by latency. For comparison, GPU TTS RTF at freeze was 0.169.
+- **The two together, on separate cores, stay real time.** Layout `main40` puts STT on 24@0-23 and TTS on 16@24-39:
+
+  | Metric | Each alone | Together |
+  |---|---|---|
+  | STT RTF, 11 s clip | 0.206 | 0.199 |
+  | STT RTF, 86.5 s clip | 0.187 | 0.243 |
+  | TTS RTF, sentence | 0.692 | 0.593 |
+  | TTS RTF, paragraph | 0.600 | 0.606 |
+
+  - Prebuffer is at most 0.47 s, so a 0.5 s jitter buffer covers every run outside the frontdoor case.
+  - Idle residency costs the frontdoor nothing: it ran 41–46 tok/s with both speech servers resident but idle.
+- **Next to a generating frontdoor, both collapse, and so does the frontdoor.**
+  - **`main40` plus a 300-token frontdoor generation:**
+    - STT RTF 1.54 (1.13-1.87) on the 11 s clip and 2.91 on 86.5 s.
+    - TTS RTF 9.11 on the sentence (prebuffer 32.8 s) and 7.84 on the paragraph (prebuffer 243 s).
+    - The frontdoor took **906 s for 300 tokens, 0.3 tok/s**, with a TTFT of 29 s for 4 prompt tokens. Solo it ran
+      43.3 tok/s.
+    - This phase was stopped after 1 of its 2 planned repetitions, because it was holding production at 0.3 tok/s.
+  - **Even `lean16`** (STT 8@64-71, TTS 8@72-79, frontdoor capped at 120 s): STT RTF 0.799, TTS RTF 7.90, and the
+    frontdoor at **7.4 tok/s vs 43.1**.
+  - **The cause:** the frontdoor runs `-t 96` across physical cores 0-95, so no core in the allowed 0-79 set is free
+    of it. Both sides use spin-barrier threadpools, so whenever one thread is time-sliced, every other thread waits.
+    That mechanism is inferred; the effect is measured.
+- **Hazard: whisper's layout collapse is deterministic.** A single 30 s encode hangs for more than 60–300 s at
+  `20@0-19`, `28@0-27`, `24@0-31`, `32@0-31` and `32@24-55`. It is healthy at `16@0-15`, `16@0-23`, `24@0-23`,
+  `32@0-39` and `32@0-47` (3 repetitions each, `raw/whisper_bench_encoder_matrix.txt`).
+  - On the server, 32@0-31 took the 11 s clip to 20.5 s (RTF 1.86), and the 86.5 s clip was aborted after more than
+    8 min.
+  - Per-core sampling showed threads stacked two to three per core while cores in the mask sat idle.
+  - Both builds have `GGML_OPENMP_ENABLED=OFF`, so ggml rebuilds its own spin-polling pool for every graph. The
+    inferred cause is that per-graph thread spawn meets the scheduler's placement, and the spin barriers amplify it.
+  - **Any CPU speech launcher must use a measured layout, or a build with a persistent, pinned threadpool.**
+- **Hazard: the TTS thread count can only be controlled through a `get_nprocs` shim.** qwentts.cpp has no CLI flag.
+  `src/backend.h` hardcodes `hardware_concurrency()/2`, which ignores affinity and gives 96 here. An LD_PRELOAD shim
+  (`nprocs_shim.c`) sets `get_nprocs()` = `SHIM_NPROCS` = 2N, and each server log confirms `CPU threads: N`. Without
+  it, the server starts 96 spinning threads.
+- **CPU ASR has a latency floor that counts against the move, co-tenancy aside.** Whisper pads every input to a 30 s
+  window, so an utterance of any length costs about 2 s at 24 threads. The 3.5 s clip took 1.97 s (1.92–2.03), RTF
+  0.56. The GPU does the 11 s clip in 0.21 s (freeze record, whisper `b3073792` commit message).
+- **Recommendation: keep speech on the GPU while the host is partitioned as it is today. Where it lives is an operator
+  decision (OP-56 / RTG-57 KVU-11).**
+  - **(A) Stay on GPU (recommended).** Costs about 2.2 GB of VRAM for whisper, plus TTS when it runs. The TTS figure,
+    about 1–2 GB, is inferred from 0.92 GB of weights and a 0.9 GB KV cache on CPU. This option avoids the frontdoor
+    collision entirely.
+  - **(B) Give speech its own cores.** Shrink the `-t 96` frontdoor and `:8074` to free 24–40 physical cores (STT
+    16–24, TTS 16). The cost to the frontdoor is **unmeasured**; measuring it needs a frontdoor relaunch.
+  - **(C) Run speech on the SMT siblings 96–175.** This removes the time-slicing but still shares execution ports.
+    **It is untested in the committed snapshot.** The `smtC` run was in flight and uncommitted at 17:53Z. KVU-11a
+    commits that delta, regenerates SHA256SUMS and updates option C. It then removes the shared clone's untracked
+    copies, so DS41-C10a's fast-forward is not blocked.
+
+  Either CPU option needs a measured layout and the shim. The decision is coupled to OP-48 (the capacity gate seeing
+  speech VRAM, S-11a below) and to package N-5 (TTS does not fit next to `-kvu` today). Before any CPU speech is
+  re-measured, `speech_cpu_bench.py` needs a write side (VB-SPEECH-CPU-1).
+- **Scope limits:** transcripts were sanity-checked only (jfk comes back verbatim). No WER was measured, and no
+  GPU-side accuracy comparison was made. The CPU binaries predate their freeze commits by about 5 h, and those commits
+  carry only GPU patches. That the CPU path is identical is **inferred**.
+
+### Source References (2026-09-24 CPU speech)
+
+- Research `artifacts/speech_cpu_realtime_20260924/README.md` (research main `21cf444c`, the 17:14Z snapshot), with
+  `raw/summary_tables.md` and `raw/whisper_bench_encoder_matrix.txt`.
+- [kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md) (RTG-57): KVU-11 (options A/B/C,
+  OP-56), KVU-11a (follow-up commit).
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-SPEECH-CPU-1.
+- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C10a (the untracked
+  speech copies block the shared clone's fast-forward).
+- [2026-09-24-main-ak-seat.md](../progress/2026-09/2026-09-24-main-ak-seat.md): §"CPU: C1 speech done, C2 skipped".
 
 ## Compiled Update — 2026-09-24 (wrap-up compile): the speech stack is finally registered, and the pins in the task text were wrong in two ways
 
