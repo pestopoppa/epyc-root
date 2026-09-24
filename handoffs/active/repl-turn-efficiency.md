@@ -26,6 +26,16 @@ Do not add new REPL tools before S4. The current risk is whether the shipped eff
     fixture response with `turns=3` lands as `RoleResult.turns == 3`; backfill is impossible
     (never captured) — note the era boundary in the record. Acceptance: one seeding run shows
     non-zero `turns` on `frontdoor:repl` rows. Zero inference to fix; one short run to prove.
+    **Comparability target (added 2026-09-24):** the AutoKernel opencode seat now records a per-call row,
+    `epyc.autokernel.actor_call_metrics.v1` (research `lane/ak-turns-20260924` `0bf2d7c2`,
+    `loop/actor_metrics.py`; INF-78 OAB-4m). It has steps, tool calls by name, compactions,
+    prompt/decoded/cache-read/cache-write tokens, first/max context, and predicted schema-valid/repair-ran. Where
+    S4-T1 adds fields beyond `turns`, use the same names and definitions, so the orchestrator and the opencode seat
+    land in comparable columns for INF-78 OAB-4. In particular, **"decoded" there means `tokens.output` summed over
+    steps, reasoning tokens included**: say which one `tokens_generated` means, and keep the two convertible. One
+    difference: the seat counts an opencode *step* (one assistant message), while `ChatResponse.turns` counts REPL
+    turns. Record which unit a row uses, and never equate the two. Vocabulary and traps:
+    `autokernel-orchestrator-actor-backend.md` → *Techniques learned in the opencode seat* §2.
   - [ ] **S4-T2 — the Omega A/B has an ARM but no RUNNER.** The intervention prompt landed
     2026-08-13 (box below, `orchestration/prompts/root_lm_system.s4_omega.md`), yet nothing selects
     it per arm, pins the question set, or emits turns/tokens/accuracy per arm. Write

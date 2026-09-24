@@ -533,3 +533,15 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
 - [ ] **TOC-SP-3 — Verified-quote receipt for the spill worker summary.** `_spill_output` (`environment.py:658-687`) summarises only the last 4,000 chars and accepts it unverified. Replace with quotes byte-verified against the full spill, exit-status agreement, failure evidence required inside quote content (stricter than SoL-Pi's label-only check), fail-open to head/tail. Measure evidence retention vs the current summary on real failing test logs (inference). `intake-1350#03`.
 - [x] **TOC-RD-1 — Redact before compressing.** ✅ 2026-09-14 — merged to epyc-orchestrator main `35b05fde` (pushed to origin 2026-09-14) (commit `118b65e5`). `tool_output_compressor_mcp.py` returned output without redaction; now `redact_if_enabled` runs on raw text before compression, on the returned text, and inside direct `run_bash_compressed` calls (after the 200k cap). The `redaction.py` PEM rule now also redacts from an unterminated BEGIN header to end-of-text (terminated keys unchanged). Note: an unterminated key redacts everything after it, by design. New PEM tests live in `tests/unit/test_credential_redaction_truncated_pem.py` because the root `pii_precommit.sh` hook blocks edits to the existing credential test file.
   - [ ] **TOC-RD-1a — PII pre-commit hook gaps (root `scripts/hooks/pii_precommit.sh`).** Its PEM pattern does not match `OPENSSH`/`ED25519` private-key headers (the redactor does), and it blocks any edit to `tests/unit/test_credential_redaction.py` because that file already holds fake credentials. Operator decision: widen the hook pattern AND add a reviewed allow-list for credential-fixture test files together (widening alone would also block the new truncated-PEM test file). `intake-1350#record`.
+  - [ ] **TOC-RD-1b — PII hook over-blocks perf sample periods in markdown table cells** (filed 2026-09-24,
+    main-ak-seat). Committing research `ce5800cb`'s fixture (`loop/fixtures/ds41-run8-planner-prompt.txt`, a real
+    DS41 planner prompt) tripped the `account_number` rule (`\b[0-9]{12,19}\b`) on 12-13-digit `perf` sample periods
+    in 7 markdown table cells. The author redacted them. The committed bytes therefore differ from the real prompt. Inline
+    mode's byte-for-byte fidelity was shown against the copy recovered from the opencode store (sha equal to the call
+    record's), not against the committed fixture. Candidate exemption: a digit run in a `|`-delimited cell whose column header or row
+    names a perf field (`Period`, `Samples`, `period`), with no account/card/customer/iban/routing/ssn token on the
+    line — the same guard the config exemption uses.
+    - Add a must-block negative-control fixture row (an account number in a markdown table) in the SAME change.
+      `reviewer-calibration-accounting.md` flags this exemption surface for being tuned on its own over-blocks.
+    - Do not change the hook outside that reviewed change. Acceptance: the unredacted fixture commits, and the
+      negative control still blocks.

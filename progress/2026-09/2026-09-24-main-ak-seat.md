@@ -441,3 +441,56 @@ closes, with one substitution named in the box.
 **Note on KVU-11b.** The coordinator relayed an operator choice for the speech layout mid-wrap-up. The permission
 classifier refused to let this subagent write that relayed choice into the handoff, so KVU-11b is left as
 filed. The owning session records the operator's decision.
+
+## Reduced-scope planner build (evening, 20:30–21:45Z)
+
+**Problem.** The operator directed a reduced-scope build on the opencode seat, run in parallel with DS41 run 9's
+floor calibration. The goal was to learn what the final orchestrator wiring must copy; the operator called the
+learnings "immensely important" to it. The builds were worktrees only: no inference, no `perf record`, tests
+pinned to cores 72-79, and the shared research clone untouched (run 9 spawns from it).
+
+**Built.** Three research lanes, all off research `origin/main` `170c763c`, pushed and unmerged, **none A/B'd**:
+
+| Lane @ commit | What | Measured |
+|---|---|---|
+| `lane/ak-ctxvar-20260924` @ `ce5800cb` | `--actor-context-mode variable`: the bundle goes to files under `workers/actor-context/*/` with an index in the prompt (default inline, byte-identical). Manifest `epyc.autokernel.actor_context_bundle.v1`. 143 tests. | run-8 planner prompt 26,293 → 5,510 tokens (−79%); run 7 32,917 → 5,629 (−83%), 27B tokenizer |
+| `lane/ak-turns-20260924` @ `0bf2d7c2` | `epyc.autokernel.actor_call_metrics.v1` row per actor call (before the v1 line), plus a summarizer | reproduced DS41-C20c exactly: 23 steps, 25 tools `{bash 11, glob 1, read 13}`, 1 compaction, 57,702 decoded |
+| `lane/ak-perfcache-20260924` @ `f4a5d240` | perf report/annotate cache in `actor_tools_mcp` (DS41-C20d). 111 tests. | run-7 profile (25.7 MB): 1.283 s → 0.0012 s, byte-identical |
+
+**Findings that change plans:**
+- **The plain seat has no MCP server** and never called the perf tools. Context as FILES is the only
+  "variable" it can use. Reads outside `--dir` work only via `--auto`, and the critic runs without it.
+- **The DS41-C20d premise is likely wrong or partial.** At 1.3 s per call, perf-tool time cannot explain the
+  bounded seat's ~12-minute loss. The A/B's per-call metrics will attribute it. opencode has no per-tool latency,
+  so it is inferred from step timestamps or reported as unknown.
+- **chars/3.5 undercounts this prompt by ~30%.** The target JSON runs at 2.46 chars/token and is 37% of prompt
+  tokens.
+- **About 13.2k tokens of every call is fixed.** The lane `AGENTS.md` alone is ~2.5-3k tokens of llama.cpp
+  contributor guidance.
+- **Three planner defects:**
+  - `render_context` never printed `node_profile`;
+  - the plain planner read the anchor build tree, not its lane;
+  - it compiled `.o` files into `/tmp` despite "never build".
+- **Pre-existing test failures on research `origin/main`:** the `oracle()` stand-ins lack `require_reference`
+  after `37d326ac`, and there is a `test_shared_history` WAL `-shm` mtime failure. Being fixed on the integration
+  lane.
+- **The PII pre-commit hook redacted 7 perf sample-period cells** in `ce5800cb`'s fixture.
+
+**Root documentation (this wrap-up):**
+
+| File | Change |
+|---|---|
+| `handoffs/active/autokernel-orchestrator-actor-backend.md` (INF-78) | New section *Techniques learned in the opencode seat*, mapped to OAB-6/7/8, R4 and S4-T1. `[x]` OAB-7s, OAB-4m, R4c; `[ ]` OAB-9 (live A/B), OAB-10 (AGENTS.md trim), OAB-11 (anchor-tree reads, `/tmp` builds), OAB-12 (pull accounting). Baseline's perf-tool attribution marked doubted |
+| `handoffs/active/deepseek-v41-flash-evaluation.md` (INF-77) | DS41-C20d progress: `[x]` C20d1 (cache built), `[ ]` C20d2 (re-run; premise doubtful). `[ ]` C20e (`node_profile`), C20f (anchor-tree reads), C20g (`/tmp` `.o` builds), C20h (merge the three lanes and relaunch). DS41-C24 acceptance-wording note |
+| `handoffs/active/repl-turn-efficiency.md` | S4-T1: `actor_call_metrics.v1` named as the comparability target; the step vs REPL-turn unit warning |
+| `docs/guides/agent-workflows/agent-loop-design.md` | New section *Context as files, per-call metrics, tool-output caching*, with the traps |
+| `docs/reference/harness-candidates/opencode-p03-audit-20260916.md` | Addendum rows 8-10: no MCP in the plain seat; export observability limits; no parent/child sessions |
+| `scripts/vidya/adapters/README.md` + `handoffs/active/vidya-belief-substrate-program.md` | Source rows plus `[ ]` VB-AK-METRICS-1 (`actor_call_metrics.v1`) and VB-AK-CTX-1 (`actor_context_bundle.v1`, joined on `prompt.sha256`) |
+| `handoffs/active/tool-output-compression.md` | `[ ]` TOC-RD-1b: PII hook exemption for perf periods in markdown table cells (hook unchanged) |
+
+**Next (operator-confirmed morning sequence, 21:40Z):**
+1. When calibration ends (~04:45Z), stop run 9.
+2. Merge `lane/ak-planner-integ-20260924`.
+3. Run the ctx A/B: 3 pairs, or 2 if short on time.
+4. Relaunch run 9 with the winner.
+5. Per-task wrap-up.

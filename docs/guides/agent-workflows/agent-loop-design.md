@@ -436,6 +436,61 @@ C22). The code is research main `21ca61b0`.
   [`opencode-p03-audit-20260916.md`](../../reference/harness-candidates/opencode-p03-audit-20260916.md) →
   *Addendum 2026-09-24*.
 
+## Context as files, per-call metrics, tool-output caching (seat-side, 2026-09-24)
+
+The operator directed these three techniques to be built on the opencode seat as a reduced-scope precursor to the
+orchestrator wiring below. They are built on research lanes `ce5800cb`, `0bf2d7c2` and `f4a5d240` (off `170c763c`,
+unmerged) and **not yet A/B'd**. The full write-up and its mapping to OAB-7/OAB-4/R4/S4-T1 are in
+`handoffs/active/autokernel-orchestrator-actor-backend.md` → *Techniques learned in the opencode seat*.
+
+**Context as files.** Do not inline a large context bundle into an append-only agent conversation. Every byte of
+it stays in every step, until compaction.
+- **Write the bundle to a per-call directory beside the working tree**, never inside it: a file there rides into
+  the authored diff. The layout is sections, per-key JSON, `INDEX.md` with sizes, and a manifest bound to the
+  prompt's sha256.
+- **Send an index plus a small inline set.** Choose the inline set from evidence — what past replies actually
+  cited — and include the this-turn directives.
+- **Measured on the DS41 planner prompt:** 26,293 → 5,510 tokens (−79%).
+- **Tokenize with the real vocab.** chars/3.5 undercounted by ~30%, because hex digests run at 2.46 chars/token.
+- **Keep it lossless and reversible:** the files concatenate back to the inline text, and a failed bundle falls
+  back to inline.
+- **Know your tool surface first.** The plain opencode seat has no MCP server, only native `read`/`grep`/`glob`/
+  `bash`. Reads outside its `--dir` work only under `--auto`, which a read-only critic does not get.
+- **Budget the fixed overhead** separately: about 13.2k tokens of system prompt, tool schemas and the working
+  tree's `AGENTS.md`.
+- **Do not show provenance digests to a planner.**
+
+**Per-call metrics.** Record one efficiency row per actor call as the call happens. Do not recompute it from
+exports afterwards.
+- **Schema:** `epyc.autokernel.actor_call_metrics.v1`, written as a sibling line to the closed, self-hashed
+  `actor_call.v1` record. Do not widen the closed record.
+- **Columns:** steps, tool calls by name, compactions, prompt/decoded/cache tokens, first/max context.
+- **Define "decoded" once:** output tokens including reasoning.
+- **Metrics failure is recorded as `metrics_error`** and never fails the call.
+- **opencode export has no per-tool latency, no per-step wall time, and no compaction step.** Say "unknown"
+  rather than zero.
+- **Scouts are the sessions new since the call began.** Session listings carry no parent/child link.
+
+**Tool-output caching.** Cache a deterministic tool's output keyed by its exact argv plus its input's identity:
+path, size, `mtime_ns`, a content hash, the tool version, and a build-id for inputs rewritten in place. A hit is then
+the literal bytes of a prior run. Keep client-side knobs such as `limit` out of the key. Keep the cache outside any
+integrity-checked directory. Measured: 1.283 s → 0.0012 s, byte-identical.
+
+**Before building a speed fix, check it against the loss it claims to fix.** At 1.3 s per call, the cache cannot
+explain the ~12-minute loss it was built for. Measure first.
+
+**Traps (each looked like a model failure):**
+- `opencode export` truncates through a pipe (98,304 bytes), so export to a file.
+- A compaction summary quotes the reply template.
+- `rc=1` can come with a complete reply.
+- Gate real-CLI hooks on the resolved binary, not a kind string, or test doubles shell out.
+- A planner told "never build" still compiled `.o` files into `/tmp`, and read the anchor build tree instead of its
+  lane.
+
+More opencode pitfalls:
+[`opencode-p03-audit-20260916.md`](../../reference/harness-candidates/opencode-p03-audit-20260916.md) →
+*Addendum 2026-09-24*.
+
 ## Who owns fan-out and context: the orchestrator (operator ruling, 2026-09-24)
 
 **Parallel scouts (fan-out) and REPL-held context are the orchestrator's job. They are not the harness's job and

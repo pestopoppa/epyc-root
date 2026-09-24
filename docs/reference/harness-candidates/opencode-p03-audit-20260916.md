@@ -202,7 +202,8 @@ The P0.1/P0.2 session guard returns 422 for an OpenCode request with no `x_sessi
 
 The AutoKernel loop drives `opencode run` (1.18.31, same pin as above) headless as its planner/author seat
 (research `scripts/kernel_rnd/autokernel/loop/actors.py`, main `21ca61b0`). The DS41 campaign found six ways
-that invocation fails silently, and one behaviour to design around. Each one looks like a model failure
+that invocation fails silently, and one behaviour to design around (rows 8-10, added later on 2026-09-24,
+record the plain seat's tool surface and the export's observability limits). Each one looks like a model failure
 (empty, truncated, quoted or abstaining reply) and is not one. Any launcher that runs `opencode run` headless —
 HS-4 shells, scripts, other loops — inherits all of them.
 
@@ -215,6 +216,9 @@ HS-4 shells, scripts, other loops — inherits all of them.
 | 5 | **rc=1 with a complete reply.** After an internal error in its own bash tool (`(res.stderr \|\| "").trim is not a function`, triggered by `mkdir -p $HOME/...` probes) that the agent recovered from, `run` exits 1 while stdout holds a complete, schema-valid answer. | Run 7's first 27B proposal (39 min) was discarded unread and retried from zero. | Salvage a non-zero exit only when rc > 0 AND the reply is complete for your schema. A signal death (rc < 0) never finished its work. Reference: `actors._run_agent`. |
 | 6 | **`hidden: true` hides nothing from the model.** In the TUI it only filters the agent lists (`packages/tui/src/context/local.tsx:78-79`). | — | Restrict agents through `permission` (`task`, `edit`, tool globs), not `hidden`. |
 | 7 | **An offered subagent is not a used one.** | The 27B planner, given an allowed `task` tool plus fan-out guidance, made 0 scout calls in 69 bounded steps (DS41-C20c). | Do not count on model-initiated fan-out. Fan-out is the orchestrator's decision (see [`agent-loop-design.md`](../../guides/agent-workflows/agent-loop-design.md) → *Who owns fan-out and context*). |
+| 8 | **Bare `opencode run` has no MCP server; out-of-tree reads ride on `--auto`.** With no `OPENCODE_CONFIG`, the global config has no `mcp` block. `external_directory` defaults to `ask`, and `--auto` approves every non-denied ask. | The plain DS41 seat used only `bash`/`read`/`grep`/`glob` (C20c export: 25 calls, 0 MCP). Run 8 read the anchor tree and `/tmp` from a lane `--dir`. A read-only critic (no `--auto`) cannot. | Hand a plain seat context as FILES, not MCP tools. Grant out-of-tree reads explicitly rather than by blanket approval (research `ce5800cb`). |
+| 9 | **`opencode export` has per-step tokens, but no per-tool latency, no per-step wall and no compaction step.** A `compaction` part carries only `tail_start_id`. | Research `0bf2d7c2` `actor_metrics.py` against the real C20c export. | Report tool time as "unknown", or derive it from step timestamps; never report zero. |
+| 10 | **`opencode session list` has no parent/child link.** | Same. | Snapshot sessions before the call; scouts = sessions new since then; primary = most steps. |
 
 **Verify a per-run config with no model call.** Run each of these with `OPENCODE_CONFIG=<file>` set:
 - `opencode debug config` prints the merged configuration. The per-run file is merged OVER

@@ -559,6 +559,46 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   - [ ] DS41-C20d — **cache perf output in `actor_tools_mcp`** so `profile_top` / `symbol_annotate` run `perf report`
     once per (profile, dso, sort) and serve later calls from the cache; then re-run the bounded arm once on the same
     driver. Bounded's 12-minute wall deficit in C20c is tool time, and its proposal was the better grounded one.
+    **Progress 2026-09-24 (evening, reduced-scope build): the cache is built and measured. The re-run is still
+    pending, and the premise may be wrong.**
+    - Built on research `lane/ak-perfcache-20260924` `f4a5d240` (unmerged, 111 tests): `perf_cache.py`, plus
+      `actor_tools_mcp` `cache=`, which the live server always constructs. An optional `cpu_profile` prewarm is
+      gated behind `AK_PERF_CACHE_PREWARM=1`, default OFF.
+    - The key is the exact perf argv plus the profile's identity (realpath, size, `mtime_ns`, first/last-1 MiB
+      hash) plus a memoized `perf --version`. `limit` never reaches perf, so one report serves every limit.
+    - The cache lives beside, never inside, the integrity-checked `cpu-raw` dir.
+    - Real run-7 profile (25.7 MB): uncached `perf report` 1.283 s, cache hit 0.0012 s, byte-identical.
+    - **The premise is doubtful.** 1.3 s per call cannot explain a ~12-minute deficit, `annotate` is unmeasured,
+      and the plain seat never calls these tools: the C20c plain export shows 25 calls, `{bash 11, glob 1,
+      read 13}`, 0 MCP. The per-call metrics row (`actor_call_metrics.v1`, research `lane/ak-turns-20260924`
+      `0bf2d7c2`) is what will show where the bounded seat's time went. Techniques write-up:
+      `autokernel-orchestrator-actor-backend.md` → *Techniques learned in the opencode seat*.
+    - Closes when the bounded arm is re-run once on the same driver with the cache and the metrics rows, and the
+      deficit is attributed: to tool time from step timestamps, or explicitly "unknown" if the export lacks them.
+    - [x] DS41-C20d1 — perf report/annotate cache built and measured (`f4a5d240`); built, not yet re-run ✅ 2026-09-24
+    - [ ] DS41-C20d2 — re-run the bounded arm once with the cache and the metrics rows (after the integration lane
+      merges; campaign-idle GPU window) and attribute the C20c deficit, or record it as unattributed
+  - [ ] DS41-C20e — **`render_context` never prints `node_profile`**, although the program directive tells the
+    planner to "Read node_profile". Found building `ce5800cb`. Fix it in BOTH context arms (inline and variable)
+    before the INF-78 OAB-9 A/B, so the two arms stay comparable; it changes the inline control's prompt, so record
+    the new prompt sha. In flight on the integration lane `lane/ak-planner-integ-20260924`.
+  - [ ] DS41-C20f — **the plain planner reads the anchor build tree instead of its lane.** Run 8's first tool call
+    went to `/mnt/raid0/llm/llama.cpp-experimental-deepseek41-20260923/...` (the target JSON's build dir), not to
+    `workers/laneN`. A proposal grounded in the anchor tree can disagree with the lane's source. Point the
+    context's source path at the lane and label the build dir "binary only". Fix task: INF-78 OAB-11.
+  - [ ] DS41-C20g — **the plain planner compiled `.o` files into `/tmp` despite "never build".** It burns CPU during
+    a planner call (a competing-work witness hazard, DS41-C2b-gate) and ignores the directive. Deny compiler
+    invocations to planner `bash` via `permission`, or detect them in the per-call metrics (tool parts naming
+    `cc`/`c++`/`cmake`) and flag them. Fix task: INF-78 OAB-11.
+  - [ ] DS41-C20h — **merge the three reduced-scope lanes and relaunch.** At run 9's calibration boundary (~04:45Z),
+    stop run 9 (floors persist per anchor). Merge `lane/ak-planner-integ-20260924`:
+    - `ce5800cb`, `0bf2d7c2` and `f4a5d240`;
+    - the C20e fix;
+    - the pre-existing test fixes on research `origin/main`: the `oracle()` stand-ins lack `require_reference`
+      after `37d326ac` (`test_loop_cpu_profile.py`, `test_shared_history.py`), and the `test_shared_history` WAL
+      `-shm` mtime failure.
+
+    Then run INF-78 OAB-9 and relaunch with the winning arm. Launch from the merged tree, never from a worktree.
 - [x] DS41-C21 — **Hand the seat over as the reference an orchestrator backend must beat.** ✅ 2026-09-24 — plain-seat numbers copied to INF-78 §Baseline; OAB-4 already names `driver.py`; INF-78 gained OAB-7 (context as a REPL variable) and OAB-8 (orchestrator-owned fan-out). Once C20 records
   the A/B, copy the winning arm's five numbers into `autokernel-orchestrator-actor-backend.md` §Baseline
   (INF-78) and point that handoff's OAB-4 at `driver.py`. No further orchestrator work in this handoff: the
@@ -621,6 +661,10 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   `scripts/vidya/adapters/autokernel_actor_seat_capture.py`, so run 9 needs no `EPYC_ROOT_REPO` override, and the
   lane worktree `/mnt/raid0/llm/worktrees/ak-seat-handoffs-20260924` was removed (clean, on origin; plain `git
   worktree remove`). Closes on the run-9 launch line.
+  **Watch the acceptance wording after DS41-C20h.** Once the metrics lane (`0bf2d7c2`) is merged, every call writes
+  an `epyc.autokernel.actor_call_metrics.v1` line just BEFORE its `actor_call.v1` line. From then on the literal
+  "first line is `actor_call.v1`" is false by design, so check the first `actor_call.v1` line. Run 9 was launched
+  from pre-merge code (20:15Z) and has written no actor call yet (calibration), so its check is unaffected.
 
 ### C6 — Targets (operator, 2026-09-23) and the arithmetic behind them
 

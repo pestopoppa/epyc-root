@@ -2696,6 +2696,30 @@ row: `scripts/vidya/adapters/README.md`. Project, do not grade.
   it. Add `n_ctx` per slot as well: it is 98,304 split vs 196,608 unified on :8083 (RTG-57), and it decides
   whether a reply could be truncated. Keep the v1 contract, or version it to v2 if the fields become required.
   Acceptance: the next campaign call line carries non-null values and still ingests with `refused=0`.
+- [ ] **VB-AK-METRICS-1 — make `epyc.autokernel.actor_call_metrics.v1` contract-grade, then project it** (filed
+  2026-09-24, main-ak-seat, reduced-scope planner build). Producer: research `lane/ak-turns-20260924` `0bf2d7c2`,
+  `loop/actor_metrics.py`, which writes a sibling line to `actor-calls.jsonl` just BEFORE each `actor_call.v1`
+  line. Source-table row: `scripts/vidya/adapters/README.md`.
+  - Today the row has no self-hash, no root contract module and no `call_id` join.
+  - Add a closed schema plus a reference writer and validator in root, beside `autokernel_actor_seat_capture.py`,
+    so writer and reader share one definition (the VB-AK-SEAT-a pattern).
+  - Carry an explicit join to the v1 record: return the v1 `call_id` from `build_call_record`'s caller path, or
+    bind both lines to one shared `call_nonce`.
+  - Carry the four cautions from the source row: decoded includes reasoning; totals over novelty-identified
+    sessions; absent, never zero, for per-tool latency; `metrics_error` is not zero cost.
+  - Then add a projection: extend `autokernel-actor-seat`, or register a sibling. Project, do not grade.
+  - Do it before the INF-78 OAB-9 A/B verdict gates a campaign default. Acceptance: one post-hook metrics row that
+    `cli.py ingest ak-actor-seat --dry-run` projects with `refused=0`.
+- [ ] **VB-AK-CTX-1 — join `epyc.autokernel.actor_context_bundle.v1` manifests to their call records** (filed
+  2026-09-24, main-ak-seat). Producer: research `lane/ak-ctxvar-20260924` `ce5800cb`, `loop/actor_context.py`,
+  writing `workers/actor-context/<stamp>-<role>-*/manifest.json` bound to the prompt sha256.
+  - Read the manifest as the context-provenance facet of an `actor_call.v1` claim, joined on `prompt.sha256`, so a
+    variable-arm call says which sections were inline and which were file-only.
+  - Refuse a manifest whose prompt sha matches no call record, or whose section files no longer concatenate to the
+    recorded digest.
+  - The manifest records what was OFFERED, never what was READ. Reads come from the export's tool parts (INF-78
+    OAB-12) and must not be synthesized from the manifest.
+  - Acceptance: an OAB-9 variable-arm call projects with its bundle facet; an inline-arm call projects with none.
 
 ## VB-KVU-1 / VB-SPEECH-CPU-1 — stack-window measurement sources (filed 2026-09-24, main-ak-seat)
 
