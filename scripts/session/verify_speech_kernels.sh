@@ -209,11 +209,15 @@ if [ -d "$LLAMA_CPP_TREE" ] && [ -d "$QWENTTS_TREE" ]; then
     # unrelated LD_LIBRARY_PATH reference elsewhere in the codebase, which is
     # not the failure this guards — grep the FILE paths qwentts.cpp actually
     # ships, not the string "qwentts".
-    consolidated=$(find "$LLAMA_CPP_TREE" \
-        \( -path "$LLAMA_CPP_TREE/tools/tts-server.cpp" \
-           -o -path "$LLAMA_CPP_TREE/src/tts-server.h" \
-           -o -path "$LLAMA_CPP_TREE/src/prompt-builder.h" \) \
-        2>/dev/null)
+    # Direct existence tests, not a find: this runs on every session_init and the
+    # llama.cpp tree (build dirs included) is far too large to walk each time.
+    consolidated=""
+    for f in tools/tts-server.cpp src/tts-server.h src/prompt-builder.h; do
+        if [ -e "$LLAMA_CPP_TREE/$f" ]; then
+            consolidated+="$LLAMA_CPP_TREE/$f"$'\n'
+        fi
+    done
+    consolidated=${consolidated%$'\n'}
     if [ -n "$consolidated" ]; then
         echo "  FAIL S-13: qwentts.cpp-specific source found INSIDE the production llama.cpp tree:"
         printf '%s\n' "$consolidated" | sed 's/^/         /'
