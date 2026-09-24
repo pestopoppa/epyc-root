@@ -12,21 +12,19 @@
   "last_touch": {
     "advanced": {
       "added": 0,
-      "changed": 3,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-09-24T19:30:35Z",
+    "at": "2026-09-24T19:31:26Z",
     "scope_paths": [
-      "handoffs/active/kv-unified-stack-rollout.md",
-      "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "handoffs/active/typed-decision-plane.md"
+      "progress/2026-09/2026-09-24-td21.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-24T19:30:35Z",
+  "scan_time": "2026-09-24T19:31:26Z",
   "schema_version": 1,
-  "source_set_hash": "93174dc95854c3f9bbf76d0af4a9d8af82b680858df6daa159a7a09b1ed00752",
+  "source_set_hash": "2f15b038c0ff9befb4b476c38f0f7beebb862114884a8aa3a15db2fb890589e7",
   "sources": [
     {
       "content_hash": "eaf7ea54524d1000470b56a89875321cb9337b8455d39f4cc3e8e7b78da58531",
@@ -7997,10 +7995,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "d7c6124f6d2f8876f913ad57d5b2b3dc2c4bebcebf5553e054a869d8bf6ab3ec",
-      "modified": "2026-09-24T17:45:03Z",
+      "content_hash": "7b81cdff7ec396e4d9133e2b3e4528c957ca8aeda7fcf2d0c61a89cb33388385",
+      "modified": "2026-09-24T19:30:07Z",
       "path": "progress/2026-09/2026-09-24-td21.md",
-      "size": 15009,
+      "size": 16499,
       "title": "2026-09-24 \u2014 TD-21 free-text JSON consumer conversions (operator dispatch; no roster lane)",
       "type": "progress"
     },
