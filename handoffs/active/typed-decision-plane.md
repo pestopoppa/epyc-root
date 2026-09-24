@@ -198,14 +198,24 @@ episodic memory writing."
     producing role) runs before any graph re-run; fish-only recovery costs 0 calls, a hit costs 1 and no re-run; a
     miss falls back to the old retry-from-zero path. Terminal defect fixed: exhausted → `error_code=422` +
     `error_detail`, so `/chat` returns 422 with the full response body instead of a silent 200. No backfill.
-  - [ ] **TD-21.2 — `scripts/autopilot/controller_io.py:739` autopilot ACTION block.** Shape: the fenced
+  - [x] **TD-21.2 — `scripts/autopilot/controller_io.py:739` autopilot ACTION block.** Shape: the fenced
     `json:autopilot_actions` object. Today: marker-index fish; on a miss the provider is failed, one fallback
     provider is re-prompted **from zero**, and a deterministic `seed_batch` default action is written into the
     journal. Action: adopt TD-1 against the local planner (`AUTOPILOT_LOCAL_PLANNER_URL`, :8000) at
     `_loads_json_payload` (`:687`), which is the natural hook. Highest call volume in the audit.
-  - [ ] **TD-21.3 — `scripts/autopilot/controller_io.py:776` action RATIONALE block.** Shape:
+    ✅ 2026-09-24 — orch `4b4b30b8` + `dd07cedd` + `e3401b47`: `extract_action_with_repair` fishes first (0 calls on
+    a clean draft), then one repair turn against a `oneOf` over all 15 `_ACTION_SCHEMAS`, sent to the role's
+    llama-server (`get_config().server_urls`, default frontdoor — a first draft targeted :8000, which refuses
+    `response_format`, caught in review). A live smoke then showed the repair INVENTING a required `tier`; the
+    shared helper gained `require_evidence` (repaired numbers / short strings must appear in the reply), ON here.
+    Live 11:25Z: no tier in the draft → `failed` (unevidenced `tier`); "tier 1" → `{"type":"deep_eval","tier":1}`.
+    Journaled with `action_parse_status` / repair calls; no backfill. Also fixed an uncaught `ValueError` on an
+    unterminated fence in `extract_action`.
+  - [x] **TD-21.3 — `scripts/autopilot/controller_io.py:776` action RATIONALE block.** Shape:
     `json:autopilot_rationale`. Today: same fish; returns `{}` silently and an empty rationale is persisted.
     Action: adopt TD-1 (same repair call as TD-21.2).
+    ✅ 2026-09-24 — same commits: `extract_rationale_with_repair`, evidence-guarded; an absent block stays the soft
+    empty default, a malformed one is repaired or flagged `failed` instead of an indistinguishable empty default.
   - [x] **TD-21.4 — `src/api/routes/chat_delegation_decision.py:47,:107` TOON delegation decision.** Shape: a
     closed set — `D|<answer>` vs `I|brief:…|to:<role>|mode:<react|repl>`. Today: ~8 stacked regexes with **no
     failure mode** — unparsed architect prose is wrapped as `D|<prose>` and served as the user-visible answer,
@@ -304,9 +314,11 @@ episodic memory writing."
     Shape: `{decision, confidence, issues[], revised_action, revised_rationale}`. Today: marker fish; a
     `parse_error` routes to a **fallback critic provider**, i.e. one extra full critic call per iteration.
     Action: adopt TD-1 before the fallback provider.
-  - [ ] **TD-21.17 — `scripts/autopilot/planner_coordinator.py:342,:379` draft-action usability gate.** Today:
+  - [x] **TD-21.17 — `scripts/autopilot/planner_coordinator.py:342,:379` draft-action usability gate.** Today:
     delegates to the TD-21.2 fish; `_mark_failure` opens a per-provider circuit breaker and re-invokes a fallback
     from zero. Action: inherits TD-21.2's repair; verify the circuit breaker no longer trips on parse alone.
+    ✅ 2026-09-24 — same commits: a recovered parse fills `action`, so `_draft_unusable_reason` is empty → no
+    `_mark_failure`, no circuit-breaker trip, no fallback re-prompt (test pins it); unrepairable behaves as before.
   - [x] **TD-21.18 — `scripts/autopilot/review_policy_trials.py:251,:263` critique extraction.** Today: the
     `review_grammar` validator runs first (good), but extraction falls back to a local balanced-brace scanner.
     Action: adopt TD-1 on the extract side; `CritiqueEmissionStats.parse_failures` already gives the before/after
@@ -441,6 +453,10 @@ episodic memory writing."
     in the registry; the eval judge is still a prompt/model choice inside the harness, and CJ-11
     (`canonical-judge-suite-revamp.md`) calls for binding it at `src/llm.py:61-64`. TD-21.9/21.10/21.15 should land
     after or alongside that binding, or they convert against a moving target. Coordinate, do not duplicate.
+  - [ ] **TD-21.34 — evidence guard on the already-landed repair sites.** `require_evidence` arrived after
+    TD-21.1/4/6/19/20/24/25/26 landed; review each site (ON where numbers/short strings must come from the reply,
+    OFF where short strings are enum classifications of prose) and add `require_evidence` to
+    `parse_with_repair_async`. In flight 2026-09-24.
   - [ ] **TD-21.33 — carry the actors.py grounding + min-report refusal into the shared helper.**
     `src/structured_output/repair.py` `parse_with_repair` (`:373`) fishes, validates, declines, extracts — but will
     happily "repair" an EMPTY or near-empty report into a schema-valid object, and never checks that a repaired
