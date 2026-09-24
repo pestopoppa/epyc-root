@@ -8,11 +8,11 @@
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-24T09:49:57Z",
+  "last_compile": "2026-09-24T09:51:29Z",
   "mode": "touch",
-  "scan_time": "2026-09-24T09:49:57Z",
+  "scan_time": "2026-09-24T09:51:29Z",
   "schema_version": 1,
-  "source_set_hash": "67f820bf40047df8f1064fa40fbdf6826a6df7fd61e19b65c8323d4936bb7fa5",
+  "source_set_hash": "7d6521d055546c9a357ed779563fd99f37557508bcff84115814466b2bc843b0",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -1319,10 +1319,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b3d570573de21fb46529d143962a964d243342f42b6fcecb2034b18432181b86",
-      "modified": "2026-09-24T09:37:22Z",
+      "content_hash": "a7989f86c76fc860e4bf8891fd4d8b78d72c08d43749fff1f6d16e6b444dc0bb",
+      "modified": "2026-09-24T09:50:38Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 238070,
+      "size": 239317,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -7919,10 +7919,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "8c2d81e9d752fceb973f812dab3ea1bace297facb5e0e9f539cd14b55be41f3a",
-      "modified": "2026-09-24T09:23:09Z",
+      "content_hash": "83f90f6463f024d2a5fe34bb3e21f5b3ef696ce3e078d53cf688332b9cb28ed1",
+      "modified": "2026-09-24T09:50:38Z",
       "path": "progress/2026-09/2026-09-24-inference.md",
-      "size": 743,
+      "size": 1862,
       "title": "2026-09-24 \u2014 Qwen-Image-2.1 acquisition wrap-up",
       "type": "progress"
     },

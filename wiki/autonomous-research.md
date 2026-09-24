@@ -86,6 +86,40 @@ nothing here is a kernel result; the findings are about the *loop's* economics, 
   profiler wiring and the v10 folded-lineage fix), C14, C15, C16, C17, C10 (rewritten to run 7).
 - [2026-09-24-main-dsv41.md](../progress/2026-09/2026-09-24-main-dsv41.md) — the run table, the planner cost
   decomposition, the seat-move ruling, the orphaned-actor measurement, DS41-C18.
+## Compiled Update — 2026-09-24: AutoKernel's actor-reply repair works; planner throughput is not a campaign result
+
+**Confidence: verified** for the local actor-schema cases, server throughput observations and workflow timings in
+the cited run record. The V4.1 campaign remained in progress; these operational observations do not establish a
+kernel keep, serving-quality result or campaign outcome.
+
+### Key findings
+
+- **Actor JSON repair now uses constrained schema turns, but the repair pattern's write-side evidence is a
+  separate task.** Three designs failed distinctly (optional abstain was filled beside a real hypothesis,
+  `anyOf` selected its cheap abstain branch, and an in-band marker over-abstained); the final two-stage
+  `response_format: json_schema` repair uses an explicit decline boolean followed by pure extraction. Five
+  shapes passed on the local 27B in 2–12 seconds. This applies the typed-decision plane's TD-1 idiom to
+  AutoKernel actors; reviews omit the decline boolean. ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
+  [DS41 handoff](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C16,
+  [typed-decision plane](../handoffs/active/typed-decision-plane.md) TD-1)
+- **Runs 3–5 exposed workflow defects, not an accepted kernel result.** The research fixes added an actor-timeout
+  control, reply persistence with stderr fallback, and partial output retention on timeout; stopping the loop
+  must also terminate its actor child. One Q4_K×Q8_2 proposal passed the critic, but it is not yet an admitted
+  performance keep. ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
+  [DS41 handoff](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C17)
+- **The planner seat moved to the MI210 Qwen3.8-27B (:8083):** the recorded serving rate was 86 t/s decode /
+  302 t/s prefill, compared with 50 / 92 for CPU flash-next. Proposal calls were prefill-bound (124k tool-output
+  tokens, about 22 minutes of a 41-minute call); 91k-token authoring was decode-bound. Run 6 was still running
+  at report time. These are operational measurements, not a model-quality or kernel-speed claim.
+  ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
+  [DS41 handoff](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C17)
+
+### Open questions
+
+- The local planner endpoint launches with `-t 96`, while its registry recipe says `threads: 48` (`NUMA_FULL_T48`).
+  Resolve the launch/registry divergence before treating these timings as a repeatable planner baseline.
+- The 2026-09-24 operational observations are retrospective; the source table now tracks a prospective,
+  producer-authored evidence hook. Do not reconstruct claim tuples from this progress narrative.
 
 ## Compiled Update — 2026-09-23 (evening wrap-up compile): the DS41 AutoKernel campaign launched on the roster-free route, and a store's champion-of-record cannot be relabelled by a moving anchor
 

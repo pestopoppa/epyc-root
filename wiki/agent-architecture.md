@@ -107,6 +107,39 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
 - [multi-file-coding-completion-capability.md](../handoffs/active/multi-file-coding-completion-capability.md) —
   MF-VBS-1 measurement and caveats; MF-VBS-2 filed.
 
+**Additional sources (2026-09-24)**: TD-21 consumer census, the audit artifact, and the VB-TD-21-CENSUS prospective evidence gap.
+
+## Compiled Update — 2026-09-24: structured-output census finds free-text parsers and a dropped backend constraint
+
+**Confidence: verified** for the static consumer inventory and the local server compatibility checks recorded in
+the audit. This is a software-path audit, not a model-quality benchmark.
+
+### Key findings
+
+- **The cross-stack audit classified 62 structured-output consumers; 36 still extract structured data from free
+  text, and 31 are locally reachable for same-server constrained repair.** Failure paths include silent defaults
+  written to persistent state or shown to users, retries restarting the full call graph, and parser failures
+  counted as wrong answers in scorers. The full inventory and ranked conversion list are in the audit artifact.
+  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21,
+  [consumer audit](../artifacts/audits/td-json-consumer-audit-20260924.md))
+- **The backend's llama-server `/v1` chat payload builder omits `response_format`.** The audit reports that local
+  llama-server `/v1` honors `response_format: {type: "json_schema", ...}`; the `/completion` adapter forwards
+  the constraint but the `/v1` adapter does not. TD-21.0 tracks this payload fix before conversions in that lane.
+  This is distinct from the orchestrator `/v1` API contract documented in the 2026-09-18 section below: that
+  role-keyed routing layer intentionally returns 422 for an unavailable forced role.
+  ([TD-21 handoff](../handoffs/active/typed-decision-plane.md) TD-21.0,
+  [consumer audit](../artifacts/audits/td-json-consumer-audit-20260924.md))
+- **Capture the audit and the applied repair prospectively; do not invent retrospective claim tuples.** DS41-C16
+  validated same-server repair on five actor-reply shapes; the evidence handoff now separately tracks the future
+  TD-21 census/repair writer. ([DS41 progress](../progress/2026-09/2026-09-24-main-dsv41.md),
+  [belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-DS41-OPS and
+  VB-TD-21-CENSUS)
+
+### Open question
+
+- Which of the ranked TD-21 consumers have completed conversion, and do their producers retain schema and
+  failure disposition without changing scoring or campaign authority?
+
 ## Compiled Update — 2026-09-23 (evening wrap-up compile): a daemon runs the script inode it opened at launch, so every commit to a tracked script can orphan a live process
 
 **Confidence: verified** — the census was a read-only `/proc` walk, and each of the three shapes was observed live on this host the same night.
