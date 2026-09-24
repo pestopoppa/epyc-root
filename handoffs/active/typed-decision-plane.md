@@ -198,6 +198,12 @@ episodic memory writing."
     producing role) runs before any graph re-run; fish-only recovery costs 0 calls, a hit costs 1 and no re-run; a
     miss falls back to the old retry-from-zero path. Terminal defect fixed: exhausted → `error_code=422` +
     `error_detail`, so `/chat` returns 422 with the full response body instead of a silent 200. No backfill.
+  - [ ] **TD-21.1a — the FINAL() repair is INERT in production (OP-51).** All REPL schema validation — and so TD-21.1's
+    repair and 422 — sits behind `final_schema_validation` (default OFF since `86957b6e`; production runs
+    `baseline`). Live 11:53Z: `/chat` `force_mode=repl` with `output_schema {result: int}` returned the bare `51`, no
+    error. Enabling is a production-posture pin in `orchestration/runtime_flags.spec.yaml` (reason + since) plus the
+    live flag; it changes what `/chat` callers receive (a conforming object or a 422, instead of an unvalidated
+    value). Recommendation: enable.
   - [x] **TD-21.2 — `scripts/autopilot/controller_io.py:739` autopilot ACTION block.** Shape: the fenced
     `json:autopilot_actions` object. Today: marker-index fish; on a miss the provider is failed, one fallback
     provider is re-prompted **from zero**, and a deterministic `seed_batch` default action is written into the
@@ -319,10 +325,15 @@ episodic memory writing."
     ✅ 2026-09-24 — same commit: flag ON sends `RUBRIC_JUDGE_SCHEMA` and spends one repair turn against the same
     judge role on a lenient-fish miss. The `heuristic_fallback` stays as is: already marked by `rubric_source` and
     counted per arm (SCORE-08 `rubric_source_counts`) — changing fallback policy is not a parse fix.
-  - [ ] **TD-21.16 — `scripts/autopilot/planner_coordinator.py:971` critic verdict** (`_extract_json_payload:1447`).
+  - [x] **TD-21.16 — `scripts/autopilot/planner_coordinator.py:971` critic verdict** (`_extract_json_payload:1447`).
     Shape: `{decision, confidence, issues[], revised_action, revised_rationale}`. Today: marker fish; a
     `parse_error` routes to a **fallback critic provider**, i.e. one extra full critic call per iteration.
     Action: adopt TD-1 before the fallback provider.
+    ✅ 2026-09-24 — orch `325cfb36`: `extract_critique_with_repair` — fish (unchanged `extract_critique`) → full
+    `autopilot_critique_schema()` → one repair turn via `action_repair_completer()` with `require_evidence` (so a
+    repair cannot invent an approve/revise/reject the critic never stated) → typed failure. A recovered verdict no
+    longer trips `_mark_failure` or spends the fallback-critic call (the fallback critic got the same treatment);
+    `critic_parse_status`/`critic_repair_calls` persisted; old rows read as `""`, not `parsed`.
   - [x] **TD-21.17 — `scripts/autopilot/planner_coordinator.py:342,:379` draft-action usability gate.** Today:
     delegates to the TD-21.2 fish; `_mark_failure` opens a per-provider circuit breaker and re-invokes a fallback
     from zero. Action: inherits TD-21.2's repair; verify the circuit breaker no longer trips on parse alone.
@@ -472,11 +483,17 @@ episodic memory writing."
     in the registry; the eval judge is still a prompt/model choice inside the harness, and CJ-11
     (`canonical-judge-suite-revamp.md`) calls for binding it at `src/llm.py:61-64`. TD-21.9/21.10/21.15 should land
     after or alongside that binding, or they convert against a moving target. Coordinate, do not duplicate.
-  - [ ] **TD-21.34 — evidence guard on the already-landed repair sites.** `require_evidence` arrived after
+  - [x] **TD-21.34 — evidence guard on the already-landed repair sites.** `require_evidence` arrived after
     TD-21.1/4/6/19/20/24/25/26 landed; review each site (ON where numbers/short strings must come from the reply,
     OFF where short strings are enum classifications of prose) and add `require_evidence` to
     `parse_with_repair_async`. In flight 2026-09-24.
-  - [ ] **TD-21.33 — carry the actors.py grounding + min-report refusal into the shared helper.**
+    ✅ 2026-09-24 — orch `2ffc3f51`: helper gained `evidence_exempt` (keys/paths whose subtree is a classification)
+    and `require_evidence` on `parse_with_repair_async`. Per site: ON for FINAL/delegate/batch answers, VL
+    extraction, plan steps (`actor` exempt), review verdict content (`d`/`op`/`decision` exempt), rubric/candidate
+    `confidence`, insight trial ids, env_synth (`verifier.type` exempt), architect decision (`mode`/`delegate_to`/
+    `delegate_mode` exempt), MCQ letter; OFF only for the single-enum A/B verdict. Fixtures that "repaired" to values
+    absent from their own raw text were the pattern the guard catches — they were made evidence-compliant.
+  - [x] **TD-21.33 — carry the actors.py grounding + min-report refusal into the shared helper.**
     `src/structured_output/repair.py` `parse_with_repair` (`:373`) fishes, validates, declines, extracts — but will
     happily "repair" an EMPTY or near-empty report into a schema-valid object, and never checks that a repaired
     file/symbol field names something the report itself names. DS41 run 7 (2026-09-24) hit exactly this: an empty
@@ -497,6 +514,17 @@ episodic memory writing."
     role) so a later rebinding changes nothing in them. Because constraining a judge changes eval scores, they
     ship behind a default-OFF `CONSTRAIN_JUDGE_OUTPUT`, and its flip is folded into the OP-50 ratification (one
     command, one era row) rather than a second boundary.
+    ✅ 2026-09-24 — orch `d12202f2`: same-context readers migrated to `get_last_inference_meta()`
+    (`chat_delegation.py`, `chat_completion_call`, `chat_pipeline/telemetry.py` — which runs under `to_thread`
+    exactly like the TD-21.21 bug — `typed_decisions/measure.py` (+ judge_redundancy, tool_args_pilot) and
+    `bench.py`), each with an `isinstance` guard for test doubles; 2 interleaving race tests.
+  - [ ] **TD-21.33a — `graph/helpers.py::_execute_turn` still reads meta across a thread hop.** The call runs in
+    `asyncio.to_thread` and the read happens in the parent, where a ContextVar set in the child is invisible; it got
+    a getter-first/attribute-fallback hybrid (never worse than before) but the real fix is to return the meta from
+    the thread alongside `code`, as the edit-transaction path now does.
+  - [ ] **TD-21.33b — `typed_decisions/native.py:517,:1272` read the shared attribute right after their own call.**
+    Same-context, migratable; not touched because another session holds uncommitted work in that file (in the
+    shared orchestrator clone since 2026-09-22). For that session, or once the file is free.
   - [ ] **TD-21.33 — `primitives._last_inference_meta` is read across a SHARED `LLMPrimitives`.**
     `_init_primitives` reuses one instance per worker across concurrent requests, so any code that reads the
     last call's meta after the fact can see another request's values: `graph/helpers.py:~941`,
