@@ -3,6 +3,7 @@
 **Created**: 2026-02-18 (consolidated from `vision-pipeline.md` + `qwen3-tts-voice-synthesis.md` + `minicpm-o-4_5-integration.md`)
 **Status**: Mixed — Vision live-server/tool/API/OpenAI-compat path validated, ~~TTS blocked~~ **TTS SOLVED 2026-07-31 (qwentts.cpp, round-trip WER 0.0%)**, ~~MiniCPM-O testing pending~~ **MiniCPM-O DEPRECATED + DELETED 2026-07-31**, **ASR arm opened 2026-07-31 (Qwen3-ASR on MI210, config-broken)**
 **Priority**: LOW
+**Speech moved (2026-09-24)**: STT/TTS/voice work now lives in [`conversation-stack.md`](conversation-stack.md) (INF-79), the one home for speech, following the operator-ratified vision. This handoff keeps **vision**. The speech sections below are history; do not add speech tasks here.
 
 ---
 
@@ -321,11 +322,12 @@ Do not rebuild the C++ accelerator — its source is lost and it never worked.
     generates** (STT RTF ≥ 58, TTS first packet ~13 s, and the LLM collapses too). The operator chose D
     (no change) on 2026-09-24 pending their own STT/TTS integration plan ([`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md)
     KVU-11b; numbers in `docs/reference/speech/cpu-speech-contention-20260924.md`).
-- [ ] **S-14 — upstream the gfx90a argsort fix** (thread-strided bitonic sort) to the qwentts.cpp / ggml fork as wrap-up hygiene. Operator-sanctioned; no dependency on our own kernel cycle.
+- [x] **S-14 — upstream the gfx90a argsort fix** (thread-strided bitonic sort) to the qwentts.cpp / ggml fork as wrap-up hygiene. Operator-sanctioned; no dependency on our own kernel cycle. ✅ 2026-09-24 CLOSED HERE, MOVED (not completed): carried to [`conversation-stack.md`](conversation-stack.md) CS-43.
 - [x] **S-15 — set `max_tokens ≥ 1024` on the vision role.** A `max_tokens=128` cap silently penalised reasoning models during vision evaluation (3 parse failures for the incumbent vs **41 and 50** for the Qwen3-VL arms — truncated mid-reasoning and scored wrong). Even at 2048 the Qwen3-VL models emit no letter on ~9 % of hard questions, so 1024 is a floor, not a target. This is a **production config change**, not an evaluation-harness change.
       ✅ 2026-09-23 — `default_vl_max_tokens` 512→1024 (epyc-orchestrator `8a8e391c`); chat vision routes already request 2048. LIVE: API reloaded 2026-09-23 20:31Z (pid 2815541 on orch `3c6721ef`), config reads 1024.
 - [ ] **S-16 — promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role** and retire `Qwen2.5-VL-7B`. Evidence below (§ vision decision). Register per MRG-1; depends on S-15 landing first, or the promotion inherits the truncation defect.
 - [ ] **S-17 — audit the GPU resident-set budget before any further GPU model lands.** 27B Q8_0 (27.0) + Qwen3-VL-30B-A3B (21.0) + whisper (2.6) + Qwen3-TTS (1.2) ≈ **51.8 GB of 64**, leaving ~12 GB for KV — the 27B tops out near **90k tokens** on `q8_0` KV. A KV-quantization quality test is in flight to establish whether `q4_0` buys ~180k; do not add a fifth resident model before it reports.
+  - Note 2026-09-24: the figures above are stale. Speech has been at 0 VRAM since OP-56, and :8083 runs np4 with kv-unified. The current card-1 audit is `docs/reference/speech/cpu-speech-contention-20260924.md` §6 (1.88 GiB free). The second-MI210 co-residency audit is [`conversation-stack.md`](conversation-stack.md) CS-9.
 
 #### Vision decision — SETTLED 2026-07-31
 
@@ -580,9 +582,9 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
 **Advantage over Path A**: No C++ debugging needed — uses official PyTorch inference. **Advantage over Path B**: Independent service, doesn't couple TTS to a specific vision model. **Disadvantage**: Separate inference stack to maintain (PyTorch, not llama-server).
 
 **Action items** (when TTS becomes a priority):
-- [ ] Prototype: FastAPI wrapper around `Qwen3TTSModel.from_pretrained()` on port 8110
-- [ ] Benchmark VRAM and latency on EPYC hardware
-- [ ] Add `worker_tts` role to model_registry.yaml (gated behind feature flag)
+- [x] Prototype: FastAPI wrapper around `Qwen3TTSModel.from_pretrained()` on port 8110 ✅ 2026-09-24 SUPERSEDED (not done): Path C was overtaken by qwentts.cpp (S-2/S-6/S-9/S-11); speech now lives in [`conversation-stack.md`](conversation-stack.md).
+- [x] Benchmark VRAM and latency on EPYC hardware ✅ 2026-09-24 SUPERSEDED (not done): Path C was overtaken by qwentts.cpp (S-2/S-6/S-9/S-11); speech now lives in [`conversation-stack.md`](conversation-stack.md).
+- [x] Add `worker_tts` role to model_registry.yaml (gated behind feature flag) ✅ 2026-09-24 SUPERSEDED (not done): Path C was overtaken by qwentts.cpp (S-2/S-6/S-9/S-11); speech now lives in [`conversation-stack.md`](conversation-stack.md).
 - [x] Design voice cloning guardrails before enabling ✅ 2026-07-29 — **default deny; no cloning is enabled by this design.** Any future `worker_tts` must accept a reference only through an enrolled `voice_id`, not arbitrary request audio. Enrollment requires the rightsholder's recorded authorization, scope (approved uses, expiry, and languages), a SHA-256 of the source asset, and a revocable owner record; retain only the minimum needed reference material under a defined retention/deletion path. Refuse minors, public figures, and any voice lacking an auditable authorization record; do not accept prompts that request imitation of a named/identifiable person or an "in the style of" substitute. Each generated asset must carry synthetic-audio disclosure plus request/voice/authorization/model hashes in an access-controlled audit record; do not log raw reference audio or text more broadly than the approved retention policy. Before any feature-flag enable, require: authorization and expiry enforcement, negative/refusal tests, per-voice revocation and emergency global disable, rate limits, operator-visible audit/review path, and a signed operator decision covering the serving boundary. This is an operational control design, not a legal-compliance determination.
 
 ## Research Intake Update — 2026-03-17
@@ -662,7 +664,7 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
 ### Next Actions (scoped for this handoff)
 
 - [x] Check Qwen3.5-Omni for open-weight release / GGUF availability on HuggingFace ✅ 2026-07-14 DD2 (2026-04-22): API-only, no weights/GGUF
-- [ ] If available: estimate CPU inference cost for audio-codec path (ARIA pipeline) on one NUMA node
+- [x] If available: estimate CPU inference cost for audio-codec path (ARIA pipeline) on one NUMA node ✅ 2026-09-24 SUPERSEDED (not done): Qwen3.5-Omni stayed API-only, so this never triggered. Open-weight omni candidates are now evaluated in [`conversation-stack.md`](conversation-stack.md) (CS-8 bake-off, CS-44 watch).
 - [x] Decide whether Qwen3.5-Omni becomes a new TTS Path E or supersedes existing paths ✅ 2026-07-14 DD2 decided: Scenario C — no Path E, Path D stays primary
 
 ## Deep-Dive Integration — 2026-04-22 (DD2 verdict)
@@ -681,7 +683,7 @@ Alibaba broke its Apache-2.0 tradition and released Qwen3.5-Omni on 2026-03-30 a
 - **ARIA dynamic rate-cap**: even without weights, the ARIA mechanism (adaptive per-prefix text/speech ratio cap to prevent cascading generation errors) is a candidate **debug intervention for Path A** if Path A's noise-output issue is ever revisited. Pattern documented here for future reference.
 - **Thinker+Talker split**: generic pattern (generator + speech head) is already in our existing Path C plan; Qwen3.5-Omni validates it at scale.
 
-**Monitor**: **Qwen3-Omni-30B-A3B (Apache 2.0)** is the open-weight sibling to Qwen3.5-Omni. Quarterly check for CPU-viable GGUF conversions. If it lands, it supersedes Path D and becomes a credible Path E.
+**Monitor**: **Qwen3-Omni-30B-A3B (Apache 2.0)** is the open-weight sibling to Qwen3.5-Omni. Quarterly check for CPU-viable GGUF conversions. If it lands, it supersedes Path D and becomes a credible Path E. **Superseded 2026-09-24:** Qwen3-Omni-30B-A3B is now a bake-off candidate in [`conversation-stack.md`](conversation-stack.md) CS-8.
 
 **Cross-references**:
 - `/workspace/research/deep-dives/qwen35-omni-tts-unblock.md` (full analysis)
@@ -759,7 +761,7 @@ Watch list: SHANKS (arxiv:2510.06917) is sibling not supersession — different 
 - **[intake-826] "Qwen-Audio-3.0-Realtime (Plus + Flash)"** (X/Twitter promo; resolved via a Twitter mirror — third-party news account 智东西/@Chinazhidx, NOT the Qwen team)
   - Relevance: Alibaba announced two new realtime-audio models (Plus + Flash tiers) live on the **Bailian cloud console — API-only, no open weights / GGUF / checkpoints**. The post carries zero technical substance (no architecture, codec, latency, or benchmarks) — a contentless link-drop.
   - Verdict **not_applicable** (nothing to port to the CPU/llama.cpp path), but **not hard-rejected** per research-intake policy. Direct parallel to intake-432 (Qwen3.5-Omni), where the same API-only / no-CPU-path pattern led to non-adoption.
-- [ ] Monitor-hook (operator-review candidate): watch for a **Qwen-Audio-3.0 open-weights / GGUF** release via this handoff's existing Alibaba audio/omni monitoring loop (alongside Qwen3-Omni-30B-A3B); re-intake the primary technical release note if/when Alibaba publishes weights or details.
+- [x] Monitor-hook (operator-review candidate): watch for a **Qwen-Audio-3.0 open-weights / GGUF** release via this handoff's existing Alibaba audio/omni monitoring loop (alongside Qwen3-Omni-30B-A3B); re-intake the primary technical release note if/when Alibaba publishes weights or details. ✅ 2026-09-24 CLOSED HERE, MOVED (not completed): carried to [`conversation-stack.md`](conversation-stack.md) CS-44.
 
 ### MiniCPM-o deterministic promotion runbook (filed 2026-07-23, operator-directed) — ⛔ SUBJECT CANCELLED 2026-07-31
 

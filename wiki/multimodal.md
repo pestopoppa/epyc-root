@@ -5,9 +5,92 @@
 `upstream-published` (a paper's own numbers, on the paper's hardware), `projected-unmeasured` (an extrapolation
 authored here and never run), and `locally-measured` (run on this host, with an artifact). A projected number
 may never carry `verified`. Retagged 2026-07-31.
-**Last compiled**: 2026-09-24 (late, main-ak-seat: KVU-11b decided — the operator chose D, no change to the CPU speech layout, pending their own STT/TTS integration plan); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: the live CPU speech layout collapses under a generating CPU LLM, both ways); earlier: 2026-09-24 (evening wrap-up compile, main-ak-seat: production STT/TTS measured on the CPU alone — STT RTF 0.12–0.20 at 24–32 threads, TTS RTF 0.55–0.60 at ≥16 threads, real time together on separate cores, but next to a generating `-t 96` frontdoor TTS RTF goes to 7.8–9.4 and the frontdoor from 43 to 0.3 tok/s; whisper layout collapse and a shim-only TTS thread control; ~2 s CPU ASR floor from 30 s padding; recommendation stay on GPU, options A/B/C an operator decision (OP-56 / RTG-57 KVU-11), the SMT-sibling follow-up uncommitted (KVU-11a)); earlier: 2026-09-24 (wrap-up compile: S-11/S-12/S-13 — the speech stack is registered under MRG-1 and the task's own pin and GGUF pair were both wrong, the fork stays pinned with two guards; S-11a — folding 4.68 GiB of aux-service VRAM into the capacity gate takes the lineup margin 5.85 to 1.17 GiB, PREPARED behind an operator signature and a stale contention matrix; S-15 confirmed live in a running process); earlier: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
+**Last compiled**: 2026-09-24 (speech-vision compile: the operator ratified a speech-native interlocutor with the orchestrator as its one tool — INF-79 conversation-stack, D1–D12, a Step-Audio 2 mini vs Qwen3-Omni-30B-A3B bake-off with the cascade as baseline and fallback; speech moved out of INF-41; the whisper.cpp MI210 WER corrected 2.35% → 3.37%; KAME revival gate 3 met); earlier: 2026-09-24 (late, main-ak-seat: KVU-11b decided — the operator chose D, no change to the CPU speech layout, pending their own STT/TTS integration plan); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: the live CPU speech layout collapses under a generating CPU LLM, both ways); earlier: 2026-09-24 (evening wrap-up compile, main-ak-seat: production STT/TTS measured on the CPU alone — STT RTF 0.12–0.20 at 24–32 threads, TTS RTF 0.55–0.60 at ≥16 threads, real time together on separate cores, but next to a generating `-t 96` frontdoor TTS RTF goes to 7.8–9.4 and the frontdoor from 43 to 0.3 tok/s; whisper layout collapse and a shim-only TTS thread control; ~2 s CPU ASR floor from 30 s padding; recommendation stay on GPU, options A/B/C an operator decision (OP-56 / RTG-57 KVU-11), the SMT-sibling follow-up uncommitted (KVU-11a)); earlier: 2026-09-24 (wrap-up compile: S-11/S-12/S-13 — the speech stack is registered under MRG-1 and the task's own pin and GGUF pair were both wrong, the fork stays pinned with two guards; S-11a — folding 4.68 GiB of aux-service VRAM into the capacity gate takes the lineup margin 5.85 to 1.17 GiB, PREPARED behind an operator signature and a stale contention matrix; S-15 confirmed live in a running process); earlier: 2026-09-23 (later: S-15 confirmed LIVE — API reloaded 20:31Z, pid `2815541`, config reads 1024); earlier: 2026-09-23 (evening wrap-up compile: S-15 landed — default_vl_max_tokens 512 to 1024, live only at the next API reload; the old 128-token cap was a scoring artifact (3 parse failures for the incumbent vs 41 and 50 for the Qwen3-VL arms), and its landing satisfies the dependency S-16 was sequenced behind); earlier: 2026-09-23 (incremental: Qwen-Image-2.1 weights staged for an ERNIE comparison, unrun; vision role clarified); earlier: 2026-09-17 (incremental: the ROCm f32 fix and every recipe §5 variant fail to clear the MI210 ≥1024² ERNIE white-image defect; local vision-reader inventory; ERNIE-ROCM-NEXT filed outside the DiT linears); earlier: 2026-08-25 (the document-specialist VLM lane: PaddleOCR-VL's off-label (the outstanding TTS stack-lifecycle wiring task was closed by **finding it already done ten days earlier** — correct output was zero new code, and live runtime remains explicitly unverified; earlier 2026-07-31 note: session 3: MMMU val settles the vision role on Qwen3-VL-30B-A3B Q4_K_M and retires MiniCPM-o-4.5 as a candidate entirely — deprecated, weights deleted; whisper.cpp large-v3-turbo on MI210 settles STT and Qwen3-ASR is dropped; the post-ARGSORT-fix TTS numbers supersede the pre-fix reading two sections below; earlier 2026-07-26 note: adds bounded M-1 observation and M-2 pinned-interface closure; prior promotion runbook and demand gate retained)
 `0.0`/`0.058` TEDS figures are formally voided and a three-stage instrument with a supported (added 2026-07-24 the vision_escalation MiniCPM-o promotion runbook and the worker_vision quantitative trigger gate; 2026-07-17 MiniCPM-o/frontdoor service-matrix activation evidence, Qwen3-VL-30B escalation defect mitigation, and PaddleOCR-VL document-specialist checkpoint; 2026-06-22 vision-pipeline live-server registration + the TTS path-elimination matrix; 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge) (2026-08-30: MiniMax-H3 lands as the page's first video-generation candidate — EVL-32: 33B dense H3-Omni-Transformer + Qwen3-VL-32B encoder, Ref2VA/FL2VA variants, 768p local / 2K API-only, 24 FPS 32 kHz stereo audio, a 56-model community quantization landscape, NSFW-capability finetune evidence, Ref2VA + beta4 INT8 ~165 GB deployment path, and an Excluded-Territories license; operator scope decision is the first gate before any download)
-**Sources**: 6 documents (added 2026-09-24 wrap-up #4: see the top section\'s Source References) (added 2026-09-24 evening wrap-up compile: research artifacts/speech_cpu_realtime_20260924/README.md at 21cf444c (17:14Z snapshot), kv-unified-stack-rollout KVU-11/KVU-11a, vidya VB-SPEECH-CPU-1, deepseek-v41-flash-evaluation DS41-C10a, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 wrap-up compile: multimodal-pipeline S-11/S-11a/S-12/S-13/S-15, the 2026-09-24 noninf-tier2 progress log) (added 2026-09-23 evening wrap-up compile: multimodal-pipeline S-15/S-16, the 2026-09-23 progress log) (added 2026-09-17: ERNIE evaluation MI210 run blocks, sub-occ1 progress log, ERNIE deep-dive link fix, completed OCC handoff) (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
+**Sources**: 50 documents (distinct relative in-repo links on this page) (added 2026-09-24 speech-vision compile: conversation-stack INF-79, the operator draft, the multimodal-pipeline speech-moved delta, the kv-unified-stack-rollout KVU-11b cross-reference, Annex S `measurement/protocols/speech.md`, the 2026-09-24 speech-vision progress log) (added 2026-09-24 wrap-up #4: see the top section\'s Source References) (added 2026-09-24 evening wrap-up compile: research artifacts/speech_cpu_realtime_20260924/README.md at 21cf444c (17:14Z snapshot), kv-unified-stack-rollout KVU-11/KVU-11a, vidya VB-SPEECH-CPU-1, deepseek-v41-flash-evaluation DS41-C10a, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 wrap-up compile: multimodal-pipeline S-11/S-11a/S-12/S-13/S-15, the 2026-09-24 noninf-tier2 progress log) (added 2026-09-23 evening wrap-up compile: multimodal-pipeline S-15/S-16, the 2026-09-23 progress log) (added 2026-09-17: ERNIE evaluation MI210 run blocks, sub-occ1 progress log, ERNIE deep-dive link fix, completed OCC handoff) (added 2026-08-30: EVL-32 MiniMax-H3 handoff + 2026-08-30 progress log)
+
+## Speech-native interlocutor program (2026-09-24)
+
+**Confidence:** `verified` for the operator decisions and for host and code facts checked first-hand; `external` for
+candidate-model facts (model cards, repos, issue trackers, checked against primary sources the same day, **not run
+here**); `inferred` for the training-feasibility estimate. No candidate interlocutor has been run on this host.
+
+**Speech has one home now.** All STT, TTS and voice work moved from `multimodal-pipeline.md` (INF-41, which keeps
+vision) to [`conversation-stack.md`](../handoffs/active/conversation-stack.md) (INF-79). The speech sections further
+down this page are history; new speech facts belong here. The option-D decision in the next section is an input to
+this program, not a rival plan.
+
+**The ratified vision.** *A permanently resident speech-native interlocutor hears, interprets and speaks. It has one
+external tool, the orchestrator, which supplies the cognition. Preserve speech-native state locally; export only the
+cognitive problem.* The interlocutor owns hearing, paralinguistics, timing, turn-taking, backchannel and delivery. The
+orchestrator owns memory, reasoning, retrieval, code and tools, and returns substance, never the conversation. A
+model-agnostic voice controller in `epyc-orchestrator` sits between them, so the interlocutor is a backend, not an
+architecture. The input was the operator's own design report, preserved verbatim with a correction banner:
+[`speech-native-interlocutor-operator-draft-20260924.md`](../docs/reference/speech/speech-native-interlocutor-operator-draft-20260924.md).
+
+**Decisions that shape everything downstream (D1–D12):**
+- **A bake-off picks the interlocutor (D1):** Step-Audio 2 mini leads, Qwen3-Omni-30B-A3B challenges (a ~Q4 Thinker
+  is acceptable, D1a — the ceiling comes from the orchestrator). Gates in order: language, then paralinguistics, then
+  routing and exact-value fidelity, then serving (CS-8).
+- **Language is the first gate (D2):** English is mandatory, Italian strongly wanted, German and French desirable.
+- **The whisper + qwentts cascade stays (D8)** as the baseline and the permanent fallback. It already speaks
+  en/it/de/fr (qwentts supports 10 languages), so per-language fallback keeps D2 satisfiable whichever model wins.
+- **Runtime and placement (D3, D4):** production runs on our own llama.cpp-family port, promoted as a new kernel
+  version. vLLM and PyTorch are measurement instruments only. Placement is decided by measurement; the operator leans
+  GPU.
+- **Routing (D5):** every substantive turn goes to the orchestrator; local answers are social, backchannel, control.
+- **Contract, client and hardware (D6, D7, D9):** a dedicated streaming voice-turn contract. The client is deferred,
+  but the end state is remote (laptop or phone), so nothing may assume the microphone is on the host. A **second
+  MI210 arrives within about a month**, planned for Qwen3.6-35B-A3B and possibly the speech plane, and serves as the
+  bake-off bench first.
+- **Latency hiding is a ladder (D11):** native spoken preamble, then streamed answer, then *untrained* mid-generation
+  injection. KAME-style front-end training is a gated research track (CS-42).
+
+**Candidate facts** (`external`; primary sources checked 2026-09-24):
+- **Step-Audio 2 mini emits 1 text token per 4 audio tokens (TA4) at 25 Hz**, so it needs **about 31.25 AR steps per
+  second of speech**, not 25.
+- Its audio input costs **12.5 tokens/s**, and the official pattern re-feeds past turns, so its **16k context fills in
+  about 9–12 minutes**. Context management is a first-phase requirement.
+- **A Step tool call comes only after `<tts_end>`**, so a tool use takes two generations. There are **no published
+  tool-call numbers for mini** (only for the full Step-Audio 2), and upstream issue #27 reports poor slot filling.
+- **Neither candidate has a runtime on our hardware.** Step has no llama.cpp support, `token2wav.py` hard-codes
+  `.cuda()`, and its ROCm report (#86) shows only a server starting.
+- **Qwen3-Omni:** our llama.cpp handles Thinker audio input (with an open upstream bug, #27136), but there is no
+  Talker or Code2Wav port. Its speech output covers **en, zh, fr, de, ru, it, es, pt, ja, ko**; Step shows no evidence
+  for it/de/fr.
+- **The Qwen3-Omni Talker voices whatever text it is given**, so orchestrator text could be spoken directly.
+
+**Corrections to the operator draft**, recorded so nobody re-imports them (`verified`):
+- There is **one MI210 today**, with 0.9–1.9 GiB free.
+- Decode-usable CPU bandwidth is **about 150–220 GB/s, not 460**, so a Q8 Step decoder at 31.25 steps/s (~250 GB/s)
+  is unrealistic on the CPU.
+- The orchestrator has **no voice path, no real streaming** (`/v1` replays a finished answer character by character)
+  and **no conversation store**.
+- STITCH (arXiv 2507.15375) is Microsoft/NTU work, not Kyutai's.
+
+**Training is feasible; data realism is the risk** (`inferred`, unmeasured). A KAME-style oracle fine-tune of an 8B
+front-end fits one MI210 as LoRA. A full fine-tune needs both MI210s with ZeRO-3/FSDP or CPU optimizer offload. One
+epoch (~85M tokens) comes to about 15–20 h per GPU. The binding risk is synthetic training speech eroding the
+paralinguistic perception the interlocutor was chosen for.
+
+**Carried-over and superseded items:**
+- From INF-41: S-14 (the argsort upstream) becomes CS-43 and the Qwen-Audio-3.0 open-weights watch becomes CS-44
+  (intake-826#record). The Qwen3-Omni quarterly watch is superseded (it is now a candidate), and the stale Path-C
+  boxes are closed as superseded by qwentts.cpp.
+- KVU-11b's contention measurements and acceptance (STT RTF < 0.5, TTS first packet < 1 s) become CS-11/CS-12
+  ([`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md)). The near-term item is CS-12,
+  which moves the cascade onto the second MI210 and clears the CPU collapse without partitioning the CPU LLMs.
+
+### Source References (speech-native interlocutor program)
+
+- [`conversation-stack.md`](../handoffs/active/conversation-stack.md) — vision, D1–D12, *Facts*, draft corrections, CS-1…CS-44.
+- [Operator draft](../docs/reference/speech/speech-native-interlocutor-operator-draft-20260924.md) — the input document.
+- [`multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — speech-moved banner, S-14/monitor hook moved, Path-C and Qwen3-Omni watch superseded.
+- [`kv-unified-stack-rollout.md`](../handoffs/active/kv-unified-stack-rollout.md) — KVU-11b cross-reference; [session record](../progress/2026-09/2026-09-24-speech-vision.md).
+- [Annex S](../measurement/protocols/speech.md) — receipt-defect note and Appendix S-A (the WER correction in the 2026-07-31 session-3 section).
+- External, not yet ingested (CS-1, intake pending): Step-Audio 2 (arXiv 2507.16632,
+  <https://huggingface.co/stepfun-ai/Step-Audio-2-mini>), Qwen3-Omni (arXiv 2509.17765,
+  <https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct>), STITCH (arXiv 2507.15375), SHANKS (arXiv 2510.06917).
 
 ## Compiled Update — 2026-09-24 (late): the CPU speech contention is decided — D, no change
 
@@ -18,6 +101,7 @@ may never carry `verified`. Retagged 2026-07-31.
 - **Why:** the operator is drafting a larger STT/TTS integration plan that supersedes options A-C (partition the CPU
   LLM roles and return TTS to the GPU; partition only; a decode throttle). Those options and their measurements are
   input to that plan, not pending work. Do not re-propose partitioning or a throttle as standalone work.
+  *(Later the same day the plan landed as INF-79; see the section above.)*
 - **The hazard is known and accepted:** a speech request that arrives while :8070 or :8074 generates wrecks both the
   speech and the LLM (numbers in the section below).
 - The A/B acceptance criterion (STT RTF < 0.5 and TTS first packet < 1 s with a CPU LLM generating, LLM decode loss
@@ -468,6 +552,8 @@ The EPYC multimodal pipeline spans four modalities: speech-to-text (production),
 
 Speech-to-text is the only multimodal component in production: faster-whisper large-v3-turbo running on port 9000 with int8 quantization at a MEASURED WER of 2.35% (LibriSpeech test-clean, n=100, 2026-07-31) with a ~4.2s FIXED per-request latency floor — the former '2.8x real-time' figure was unsourced and length-dependent, see multimodal-pipeline.md. The vision pipeline is code-complete at approximately 4,500 lines across 23 files with 1,234 tests passing, covering EXIF analysis, face detection/embedding (InsightFace), VL description (llama-mtmd-cli), CLIP embeddings, batch processing, video frame extraction, ChromaDB integration, and 11 API endpoints. It needs live validation with model servers running (Qwen2.5-VL-7B on 8086, Qwen3-VL-30B on 8087).
 
+*Superseded for speech (2026-09-24):* production STT is now whisper.cpp `production-speech-v1` and TTS is qwentts.cpp, both on the CPU since OP-56, and all speech work lives in [`conversation-stack.md`](../handoffs/active/conversation-stack.md) (INF-79). See the speech-native interlocutor section at the top of this page.
+
 TTS has three existing paths, all blocked, plus one newly viable CPU-native candidate. Path A (Qwen3-TTS C++ port in llama.cpp) generates codec tokens at 1.5x real-time but outputs unintelligible noise -- the divergence point between PyTorch reference and C++ token generation has not been identified. Path B (MiniCPM-O 4.5 built-in CosyVoice2 TTS) requires the llama.cpp-omni fork and is untested. Path C (Qwen3-TTS as standalone PyTorch sidecar on port 8110) is viable for GPU-available deployments -- 97ms first-packet latency, 10-language support, voice cloning from 3 seconds of audio, Apache 2.0 licensed. Path D (ZipVoice-Distill / LuxTTS CPU sidecar) is the strongest candidate for CPU-only EPYC: the parent model (k2-fsa ZipVoice-Distill, ASRU 2025, Apache 2.0) achieves RTF=1.22 on a single Xeon thread at 4 flow-matching steps -- projected RTF of 0.15-0.22 on EPYC 9655 with 16 threads. LuxTTS is a thin fine-tune atop ZipVoice-Distill that adds a community-trained 48kHz Vocos vocoder; the 48kHz vocoder adds negligible overhead (<5% of total inference) and is not the bottleneck. Path D is a deployment exercise, not a research port -- upstream already ships ONNX export, INT8 quantization, and a sherpa-onnx C++ runtime. TADA (Hume AI, intake-402) introduces a distinct architectural approach (1:1 text-acoustic dual alignment over a Llama 3.2 backbone) suited for coherent long-form synthesis (up to 700 seconds), but is GPU-bound as shipped with no CPU benchmark or GGUF/ONNX path; it is shelved until long-form narration becomes a workload or GPU becomes available. Voicebox (intake-396) is a multi-engine TTS studio whose architecture patterns (TTSBackend Protocol, chunked_tts.py, serial asyncio queue) are directly reusable (~550 lines) for building an EPYC TTS sidecar; its claimed ROCm support is README-only with no implementation code.
 
 Moondream 3 (9B total / 2B active MoE VLM) was evaluated and deferred. Despite interesting native detect/point capabilities, it is blocked by BSL 1.1 licensing, uncertain llama.cpp GGUF support for its novel MoE architecture (64 experts, learned attention temperature scaling), lack of tool calling (required for agentic vision), and preview-state unoptimized inference with no published standard benchmarks. The current Qwen2.5-VL-7B stack is more mature with full llama.cpp support and an escalation path to Qwen3-VL-30B-A3B.
@@ -528,14 +614,14 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - **Vision live validation (immediate)**: Start Qwen2.5-VL-7B on 8086 and Qwen3-VL-30B on 8087, run existing test suite with live model endpoints. This is the final step before production.
 - **TTS Path D feasibility benchmark (highest TTS priority)**: `pip install zipvoice`, download k2-fsa/ZipVoice-Distill (~500MB), measure RTF + first-packet latency on EPYC 9655 with 16 threads (FP32, no GPU). Target: RTF < 0.35, first-packet < 400ms. If it passes, continue to ONNX path (Phase D2) and FastAPI sidecar (Phase D4). Decision criteria for promotion: RTF < 0.35, WER < 2.5, memory < 2 GB. [luxtts-cpu-tts-candidate.md]
 - **Adopt voicebox chunking utilities**: Copy `chunked_tts.py` (~240 lines), `task_queue.py` (~40 lines), and `TTSBackend` Protocol + `ModelConfig` (~200 lines) into the EPYC TTS sidecar. Add bounded queue size. Voicebox license is MIT. [voicebox-multi-engine-tts-studio.md]
-- **TTS Path C prototype (when prioritized)**: Build FastAPI wrapper around `Qwen3TTSModel.from_pretrained()` on port 8110. Benchmark VRAM and latency on EPYC hardware. Gate behind `ORCHESTRATOR_TTS_ENABLED` flag.
+- ~~**TTS Path C prototype (when prioritized)**~~ **SUPERSEDED 2026-09-24** (overtaken by qwentts.cpp; boxes closed in multimodal-pipeline.md): Build FastAPI wrapper around `Qwen3TTSModel.from_pretrained()` on port 8110. Benchmark VRAM and latency on EPYC hardware. Gate behind `ORCHESTRATOR_TTS_ENABLED` flag.
 - **MiniCPM-O Phase 1 testing**: Run `llama-mtmd-cli` with Q4_K_M + vision mmproj. Compare vision quality against Qwen2.5-VL-7B on same prompts. No fork needed for vision-only.
 - **Activation decision for `vision_escalation` is now service-policy work, not candidate discovery.** MiniCPM-o's MI210 `--reasoning off` lane is quality-clean and passed the bounded frontdoor coexistence matrix, so the next action is an operator decision on MI210 scheduling policy or a deliberately separate multi-request stress pass. Sources: [Progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
 - **Document-OCR specialization should now compare PaddleOCR-VL directly against LightOnOCR/ODL rather than treating it as another generic VLM candidate.** The producer/runtime path is closed; the open work is table post-processing or parser comparison on structural/table/reading-order metrics. Sources: [Progress 2026-07-17](../progress/2026-07/2026-07-17.md), [K35 optimized stack throughput/context report](../research/deep-dives/k35-optimized-stack-throughput-context-report-2026-07-17.md).
 - **Voice cloning guardrails**: Must be designed before enabling any TTS path. 3-second cloning raises ethical/misuse concerns.
 - **Monitor Gemma 4 GGUF**: Once llama.cpp conversion is available, evaluate E4B as potential unified multimodal worker that replaces separate STT + Vision + TTS services.
 - **Do NOT resume Qwen3-TTS C++ debugging** unless MiniCPM-O TTS and PyTorch sidecar both fail.
-- **Add `worker_tts` role** to model_registry.yaml (gated behind feature flag) when TTS path is selected.
+- ~~**Add `worker_tts` role** to model_registry.yaml (gated behind feature flag) when TTS path is selected.~~ **SUPERSEDED 2026-09-24** with Path C; the TTS service is registered under MRG-1 (S-11/S-12).
 - **Shelve TADA** until: (a) long-form (>2 min) coherent narration becomes a required workload, OR (b) GPU becomes available in the EPYC deployment. Re-entry triggers: community llama.cpp port appears, or long-form use case is confirmed. [hume-tada-text-acoustic-alignment.md]
 - **Do NOT run LuxTTS and TADA CPU evaluations in parallel**: TADA CPU viability requires porting three separate components (modified Llama backbone, flow-matching head, codec) before any measurement is possible; LuxTTS benchmark is a 1-day exercise. Sequential evaluation is cheaper. [hume-tada-text-acoustic-alignment.md]
 
@@ -550,6 +636,9 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - Does ZipVoice-Distill's 0.657 SIM-o (speaker similarity) meet EPYC's voice-cloning quality bar? Qwen3-TTS reaches 0.789; the gap is meaningful for voice-identity use cases. [luxtts-cpu-tts-candidate.md]
 - If Path D passes RTF threshold, is the 48kHz Vocos head upgrade (LuxTTS's main addition over upstream) worth the ~1.3× overhead? Requires A/B test on same text+reference. [luxtts-cpu-tts-candidate.md]
 - If long-form TTS (>2 min) becomes a workload, would TADA's 700s context outperform voicebox-style chunk-and-crossfade using LuxTTS? No benchmark exists. [hume-tada-text-acoustic-alignment.md]
+- **Which interlocutor wins the bake-off, if either?** Step-Audio 2 mini has no evidence of Italian speech output (D2's first gate) and no published tool-call accuracy for mini; Qwen3-Omni clears the language gate on paper but has no Talker/Code2Wav runtime. If both fail G1 or G3, the recommendation says so and Kimi-Audio re-enters. Answered by CS-8 in the second-MI210 bench window. [conversation-stack.md](../handoffs/active/conversation-stack.md)
+- **Does ROCm per-queue CU masking (`HSA_CU_MASK`, `hipExtStreamCreateWithCUMask`) work on gfx90a at all**, and if so, does a speech CU reservation protect speech latency next to a decoding 35B-A3B, and at what LLM cost? MI210 has no hard compute partitioning, unlike MI300. CS-9. [conversation-stack.md](../handoffs/active/conversation-stack.md)
+- **Does untrained mid-generation injection work?** Appending orchestrator text at a TA4 group boundary is untested against the model's training; coherence, content-use rate and exact-value retention decide whether KAME-style training (CS-42) is ever opened. CS-10(b), then CS-39. [conversation-stack.md](../handoffs/active/conversation-stack.md)
 
 ## Related Categories
 
@@ -580,6 +669,10 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - [vision-escalation-minicpmo-promotion.md](../docs/runbooks/vision-escalation-minicpmo-promotion.md) -- the 7-step, adversarially-verified deterministic promotion/rollback runbook for the vision_escalation role (master-registry rebind, pipeline gates, additive server swap, §H recert, affinity attestation, eval-path smoke, rollback)
 - [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) §MiniCPM-o deterministic promotion runbook, §Trigger Gate -- the runbook filing narrative and the worker_vision 4×quarters demand/capability trigger gate (measured tap-window baseline, two-condition trip logic, MI210-suspension rule)
 - [progress 2026-07-23](../progress/2026-07/2026-07-23.md) -- OP-7 residuals landing session: MiniCPM-o runbook persistence and the worker_vision trigger gate authorship
+- [conversation-stack.md](../handoffs/active/conversation-stack.md) -- INF-79, the one home for speech since 2026-09-24: ratified interlocutor vision, D1–D12, candidate facts, CS-8 bake-off, CS-9 CU masking, CS-10/CS-39 injection, CS-42 KAME-style training feasibility
+- [speech-native-interlocutor-operator-draft-20260924.md](../docs/reference/speech/speech-native-interlocutor-operator-draft-20260924.md) -- the operator's input design report, preserved with a correction banner
+- [measurement/protocols/speech.md](../measurement/protocols/speech.md) -- Annex S; the receipt-defect note and Appendix S-A correct the whisper.cpp MI210 WER to 3.37%
+- [progress 2026-09-24 speech-vision](../progress/2026-09/2026-09-24-speech-vision.md) -- the vision-alignment session: draft audit, D1–D12, INF-79 filing, items moved from INF-41
 
 ## KAME — tandem speech-to-speech with parallel oracle injection (2026-04-30)
 
@@ -614,9 +707,11 @@ In order of likelihood:
 
 1. **CPU-only audio codec stack** lands — Mimi/Moshi-class neural codecs port to llama.cpp/GGUF, OR a credible CPU PyTorch path (AVX-512 BF16) exists. Same prerequisite as Paths A/D/E. If this resolves, multiple TTS systems unblock together and KAME becomes one of several candidates with an unusually clean backend-swap story.
 2. **Open-weight KAME checkpoint** ships from Sakana (HF model card intake-515 exists; check periodically). Without weights, training requires GPU compute we don't have plus the audio + simulated-oracle pipelines.
-3. **An EPYC voice-interface use case appears** that justifies the integration effort. Currently `multimodal-pipeline.md` is LOW priority; voice S2S has no production driver.
+3. **An EPYC voice-interface use case appears** that justifies the integration effort. Currently `multimodal-pipeline.md` is LOW priority; voice S2S has no production driver. **MET 2026-09-24:** the operator-ratified conversation-stack program (INF-79) is exactly this use case, and it names KAME-style training as its gated research track (CS-42). Gates 1 and 2 are unchanged.
 
 Items 1 and 2 are strongly coupled: if Sakana ships weights AND the codec stack ports, KAME becomes the first TTS Path with a fully-defined adoption sequence.
+
+**Stale premise (2026-09-24):** the verdict and gates above assume a CPU-only host with no GPU compute. That no longer holds: one MI210 is resident and a second arrives within about a month. The CS-42 estimate (`inferred`, unmeasured) puts a LoRA oracle fine-tune of an 8B front-end on one MI210 and a full fine-tune on both, at about 15–20 h per epoch per GPU. It names training-data realism, not compute, as the binding risk, and the same-day audit noted that KAME's near-zero latency depends on its retrained front-end ([progress](../progress/2026-09/2026-09-24-speech-vision.md)). For Step-Audio 2 mini (single-stream), the oracle would be injected segments at TA4 boundaries, not a fourth stream. See [`conversation-stack.md`](../handoffs/active/conversation-stack.md) CS-42 and intake-511#record.
 
 ### Watch list
 
@@ -641,6 +736,8 @@ Items 1 and 2 are strongly coupled: if Sakana ships weights AND the codec stack 
 Sources: [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md).
 
 ## Multimodal pipeline (Vision + TTS + ASR) handoff
+
+*Speech moved out 2026-09-24:* `multimodal-pipeline.md` now keeps vision only; STT/TTS/voice live in [`conversation-stack.md`](../handoffs/active/conversation-stack.md) (INF-79).
 
 Coordinating handoff [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) tracks the integrated multimodal stack: vision (Qwen2.5-VL-7B at port 8086 + Qwen3-VL-30B-A3B at port 8087), ASR (faster-whisper large-v3-turbo at port 9000), and TTS (planned). Image generation candidates (ERNIE-Image-Turbo, others) feed into this handoff via intake.
 
@@ -1020,11 +1117,18 @@ vision role requires `max_tokens ≥ 1024`**.
 
 | metric | CPU incumbent | MI210 whisper.cpp | |
 |---|---|---|---|
-| WER | 2.35% | **2.35%** | identical |
+| WER | 2.35% | ~~**2.35%**~~ **3.37%** (corrected 2026-09-24) | ~~identical~~ no detectable difference at n=100 |
 | wall median | 4.240 s | **0.124 s** | 34× |
 | wall max | — | **0.218 s** | GPU max is **19× below the incumbent's minimum** |
 | encode | 3751 ms | **110 ms** | 34× |
 | VRAM | — | 2.56 GB | frees 48 CPU cores |
+
+**Correction (2026-09-24):** the MI210 whisper.cpp WER was **3.37%** (63/1870 words, bootstrap 95% CI [2.26, 4.67]),
+not 2.35%. The 2.35% came from the faster-whisper CPU arm of the same results file (44/1870, CI [1.56, 3.20]) and
+was copied into the freeze receipt as whisper.cpp's anchor. The two intervals overlap heavily, so "identical" was
+never supportable in either direction. Fixing the ratified receipt is a human-only superseding-receipt amendment
+(conversation-stack CS-2). Source: Annex S [`speech.md`](../measurement/protocols/speech.md), the receipt-defect note
+and Appendix S-A.
 
 Greedy decoding (not beam-5), `large-v3-turbo` (not `large-v3`). **The ~4.2 s fixed floor is gone** —
 that floor (30 s mel padding, paid regardless of utterance length) is precisely what disqualified CPU

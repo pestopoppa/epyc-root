@@ -2764,3 +2764,27 @@ Owner: RTG-57 (`kv-unified-stack-rollout.md`).
     `llm_overlap` but no schema version, row hash, binary digests or the co-tenant LLM's pid/argv/cores. Add them
     (sampled during the row), and record each speech request's cap and whether a guard aborted the arm, so a
     capped or aborted row can never read as a completed measurement.
+
+## VB-SPEECH-CONV-1 — conversation-stack voice measurements (filed 2026-09-24, speech vision session)
+
+The operator ratified the speech vision on 2026-09-24. It lives in
+[`conversation-stack.md`](conversation-stack.md) (INF-79), and it will produce a new measurement family:
+
+- the interlocutor bake-off on a PyTorch reference harness;
+- GPU co-residency and CU masking on the second MI210;
+- end-to-end voice turns;
+- a quantization ladder for the ported model.
+
+No run exists yet, so the write side is filed **before** the first run. The row is in
+`scripts/vidya/adapters/README.md` → *Known and candidate sources*. Owner: INF-79.
+
+- [ ] **VB-SPEECH-CONV-1 — write side for the conversation-stack harnesses, before the first CS-8/CS-9 run.**
+  - Every harness row carries: a schema version, a row hash, `protocol_id` (null until the CS-2 Annex S amendment
+    is ratified, so the row is an observation), reps and reps basis, `metric` with an explicit per-metric
+    `metric_direction`, the model and quant, the runtime (reference vs port) with binary or upstream digest, the
+    device and host-lane placement, and the co-tenant state (LLM, device, np, generating yes/no) sampled during
+    the row.
+  - Then write the adapter (`@register("conversation-stack-measurement")`, `attestation_locator`, a `Source(...)` row).
+    Project, do not grade: `claim_tuple.grade()` decides.
+  - Carry the four cautions from the source row: mixed directions, co-tenant state as measurand, LLM-judged fidelity
+    (SC58), and reference-harness numbers as never being serving claims.

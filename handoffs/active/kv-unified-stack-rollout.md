@@ -305,6 +305,9 @@ is olympiad-style reasoning.
     first packet < 1 s with a CPU LLM generating, and the LLM decode loss is recorded.
   - The voice-pipeline handoff the operator's parallel agent is drafting must carry this contention as a
     requirement; that handoff did not exist at 2026-09-24 ~19:50Z, so no cross-reference was written.
+  - Cross-reference (added 2026-09-24, later): the operator's plan landed as
+    [`conversation-stack.md`](conversation-stack.md) (INF-79). This contention and the acceptance above are carried
+    there as CS-11 (partition measurement) and CS-12 (cascade onto the second MI210). KVU-11c stays here.
   - Layout hygiene seen in the same run: `megasync` (unpinned) ran at 60–100% on core 16, inside whisper's 0-23
     mask — a possible straggler source (quiet STT RTF spread 0.22–0.39). Pin it outside 0-39 as part of whichever
     option lands.

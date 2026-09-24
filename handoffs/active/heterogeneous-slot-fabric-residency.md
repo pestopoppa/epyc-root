@@ -65,6 +65,11 @@ breaking the VRAM invariant, so it runs flat-out, ungated.
 Two big IQ2 don't co-fit (122B 40 GB + 80B 26 GB); realistic 2-resident = **1 big GDN (122B-IQ2) + 1
 small (35B-A3B IQ4) ≈ 58 GB**.
 
+> **Correction 2026-09-24 (conversation-stack session):** the premise below, that the orchestrator already stores the transcript, is
+> false for `/v1`. `x_session_id` is recorded only (orch `src/api/models/openai.py:192-202`), and the session store has no
+> messages table (`src/session/sqlite_store.py:123-257`). A session-keyed conversation store is filed as
+> [`conversation-stack.md`](conversation-stack.md) CS-15. Until it lands, v1 teleport depends on client-resent history.
+
 **Teleport = re-prefill (v1).** Transcript-only (the orchestrator already stores it → **no KV
 plumbing**). Quant-asymmetric teleport makes a *copied* KV wrong (computed from different weights), so
 re-prefill regenerates correct KV at the target quant. **KV-copy = v2**, long-context only — and
