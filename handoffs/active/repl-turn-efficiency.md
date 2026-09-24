@@ -16,6 +16,26 @@ Do not add new REPL tools before S4. The current risk is whether the shipped eff
 ## Outstanding Tasks
 
 - [ ] **S4 Omega A/B**: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface changes.
+  - [ ] **S4-T1 — BUG: turns per task are never recorded.** `ChatResponse.turns`
+    (`src/api/models/responses.py:97`) is populated on every path
+    (`chat_pipeline/stages.py:117`, `direct_stage.py:144,:287`) and `RoleResult.turns` exists
+    (`scripts/benchmark/seeding_types.py:579`), but the `RoleResult(...)` constructor in
+    `scripts/benchmark/seeding_eval.py:411-470` copies ~50 response fields and not `turns`, so
+    every seeding record carries `turns=0` and the S4 metric has never had data. Fix: add
+    `turns=resp.get("turns", 0)` beside `tokens_generated`; add a test asserting a REPL-mode
+    fixture response with `turns=3` lands as `RoleResult.turns == 3`; backfill is impossible
+    (never captured) — note the era boundary in the record. Acceptance: one seeding run shows
+    non-zero `turns` on `frontdoor:repl` rows. Zero inference to fix; one short run to prove.
+  - [ ] **S4-T2 — the Omega A/B has an ARM but no RUNNER.** The intervention prompt landed
+    2026-08-13 (box below, `orchestration/prompts/root_lm_system.s4_omega.md`), yet nothing selects
+    it per arm, pins the question set, or emits turns/tokens/accuracy per arm. Write
+    `scripts/benchmark/s4_omega_ab.py` (or a `seeding_eval` mode): two arms × one pinned suite,
+    same role/mode (`frontdoor:repl`), records `turns` (needs S4-T1), `tokens_generated`,
+    `prompt_tokens`, `passed`, elapsed. Acceptance: a dry run on 3 questions produces two arm
+    records with the four columns; the real run is inference-gated. Overlap: schema/parse failures
+    on this path are TD-21.1 (`typed-decision-plane.md`) — do not re-file; the orchestrator-backend
+    program (INF-78, [`autokernel-orchestrator-actor-backend.md`](autokernel-orchestrator-actor-backend.md))
+    consumes this same per-call `turns` field as its actor-cost metric.
 - [x] **ColGREP post-telemetry soak check**: 2026-06-14 warmed synthetic REPL soak closed the latency/fallback/quality portion; see telemetry below.
 - [x] **Cold-start daemon decision**: do not build now. The measured latency gate did not fire; revisit only if a future live workload trips the multi-search or sustained-call-rate gates.
 - [x] **Version/index hygiene**: `epyc-orchestrator` `9b209d3` pins the default runtime path to `/mnt/raid0/llm/UTILS/bin/colgrep-1.2.0`; no ColGREP re-index-on-commit hook for now.

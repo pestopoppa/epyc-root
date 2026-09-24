@@ -488,11 +488,19 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   drops detail each time. Levers, in order of cheapness: (a) `-np 1` on `:8083` while it serves the
   campaign (stack owner's; the role is idle otherwise); (b) cap tool-output bytes in the actor prompt;
   (c) opencode `--attach` with a larger `-c`. Measure proposals/hour before and after.
+  Lever (b) now exists as the bounded seat's `tool_output` cap + output-capped MCP tools (DS41-C20);
+  measure C18 on the `bounded` arm before reaching for (a) or (c).
 - [ ] DS41-C10 — Watch run 7 (27B planner, schema repair active, started 09:10) into its first measured
   iteration; report planner→critic→author→build→A/B timings against the CPU planner's 41–97 min. Original:
   `state/loop-status.json` + `store/` (the 48 A/A launches each reload 519 GB, ~2 h); confirm the
   serving floor lands with a unit, the planner's first proposal cites the inbox, and the critic
   answers. Kill only `state/serial-run.pid`'s tree, verify dead.
+  **Partial 2026-09-24:** run 7 STOPPED ~10:18 on operator request at iteration 0, 0 measurements
+  (`state-run7/STOPPED.txt`). First 27B proposal `akm-q4k-q82x4-weight-prefetch` landed in ~39 min (09:16→09:55)
+  but was discarded by an actor-seat defect, and the critic then rejected a repair-fabricated stand-in
+  (`src/verify/replay.ts`) — both fixed under DS41-C20. `serial_run` and `run.py` ignore SIGTERM and `run.py`
+  respawns the actor after its death: stopping needs TERM on the actor, then KILL on `run.py` + `serial_run`.
+  Carried to run 8, launched after DS41-C20.
 - [ ] DS41-C11 — Pre-existing test failures found while landing `5125f7ab`, reproduced on a clean HEAD
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or
@@ -508,6 +516,35 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   batch 0; no lineage error anywhere under the campaign dir). The running batch process keeps its
   already-imported modules; the next batch process loads the fix — no mid-process version mixing
   (all three modules are imported at load time).
+- [ ] DS41-C20 — **Bounded opencode seat: merge gate.** Research worktree
+  `/mnt/raid0/llm/tmp/ak-actor-seat-20260924` (`lane/ak-actor-seat-20260924`, uncommitted). Fixes the two
+  defects that cost run 7's iteration 0: (1) `_run_agent` discarded any rc≠0 reply unread — opencode exits 1
+  after a recovered tool error (`(res.stderr || "").trim is not a function`), so a complete hypothesis was
+  retried from zero; now a reply COMPLETE for the caller's schema is salvaged, anything else stays a transient;
+  (2) `_parse_reply` ran the constrained repair over an EMPTY retry reply and it invented
+  `replay-verification / src/verify/replay.ts`; now no repair runs without a report, and a repaired
+  `target_surface`/`target_symbol` the report never names is refused. Also: the opencode prompt now rides
+  STDIN — opencode 1.18 re-quotes any positional with a space and backslash-escaped all 2,982 quotes of the
+  run-7 prompt (and a ~100 KB prompt sat near the 128 KiB per-argument limit); prompt diet
+  (`_dedupe_subtrees`, `_slim_shared_history`: 95.7k → 75.9k chars on the run-7 prompt); `ActorSeat` +
+  `loop/actor_opencode_config.py` (per-run agent prompt, step cap, `tool_output` cap, read-only scout fan-out,
+  `MAX_CONCURRENT_SUBAGENTS=2`) + `loop/actor_tools_mcp.py` (outline / read_range / grep / code_search /
+  profile_top / symbol_annotate, output-capped; runs under the orchestrator venv, the only one with `mcp`);
+  `run.py --actor-seat {bounded,plain}` (default `bounded`), `--actor-fan-out`, `--actor-steps`; per-call
+  `actor-replies/actor-calls.jsonl`. Tests: actor suites 157 green; full `autokernel/loop` suite shows the
+  same 152 pre-existing failures as the branch point `e485008a` plus one flaky test failing on both — no
+  regression. Planner A/B `plain` vs `bounded` on the same run-7 prompt
+  (`/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`) is RUNNING — results pending. Reference for the plain seat,
+  first 27B proposal (opencode export): 71 steps, 70 tool calls (54 bash), 63.8k decoded tokens, 40.3 min,
+  2 compactions, 46k-token initial prompt, tool results up to 58 KB. Acceptance: (i) A/B result recorded here
+  with steps / tool calls / decoded tokens / wall / compactions per arm and the schema-valid verdict of each
+  reply; (ii) committed on the lane and merged to research `main` only if `bounded` is not worse on wall AND
+  yields a schema-valid hypothesis — otherwise keep `plain` as default and record why; (iii) the next
+  campaign run launched from the merged tree, never from the worktree.
+- [ ] DS41-C21 — **Hand the seat over as the reference an orchestrator backend must beat.** Once C20 records
+  the A/B, copy the winning arm's five numbers into `autokernel-orchestrator-actor-backend.md` §Baseline
+  (INF-78) and point that handoff's OAB-4 at `driver.py`. No further orchestrator work in this handoff: the
+  campaign keeps `opencode` + 27B :8083 planner and the cloud critic (operator, 2026-09-24).
 
 ### C6 — Targets (operator, 2026-09-23) and the arithmetic behind them
 

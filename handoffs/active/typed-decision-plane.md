@@ -387,7 +387,10 @@ episodic memory writing."
     the idiom is live only on an explicit `provider/model` opt-in, and the DS41 retry-from-zero cost is unchanged
     for them; (d) `REVIEW_SCHEMA` leaves `additionalProperties` unset, so a repair turn may legally return extra
     keys; (e) the repair body carries no `model` field, so a multi-model local endpoint would 400 and degrade
-    silently to `None`.
+    silently to `None`. — (c) is closed for free for the `orchestrator` Backend kind proposed in INF-78
+    ([`autokernel-orchestrator-actor-backend.md`](autokernel-orchestrator-actor-backend.md)): its reply comes back
+    through `/chat` with `output_schema` and TD-21.1's `repl_final` repair, so no loop-side repair is needed for
+    that kind; codex/claude kinds remain uncovered.
   - [x] **TD-21.31 — Record the unreachable consumers rather than converting them.** `claude_codex_actor_critic.py:354,:373`
     and `claude_fable5_critic_actor.py:574` are already natively constrained (`--json-schema`, enum + `const`
     bindings) and need nothing. `discovery_controller.py:1416,:1434`, `loop_experiment_runner.py:517` (codex arm,
@@ -409,6 +412,21 @@ episodic memory writing."
     in the registry; the eval judge is still a prompt/model choice inside the harness, and CJ-11
     (`canonical-judge-suite-revamp.md`) calls for binding it at `src/llm.py:61-64`. TD-21.9/21.10/21.15 should land
     after or alongside that binding, or they convert against a moving target. Coordinate, do not duplicate.
+  - [ ] **TD-21.33 — carry the actors.py grounding + min-report refusal into the shared helper.**
+    `src/structured_output/repair.py` `parse_with_repair` (`:373`) fishes, validates, declines, extracts — but will
+    happily "repair" an EMPTY or near-empty report into a schema-valid object, and never checks that a repaired
+    file/symbol field names something the report itself names. DS41 run 7 (2026-09-24) hit exactly this: an empty
+    retry reply was repaired into `replay-verification / src/verify/replay.ts` and a critic pass was spent rejecting
+    it. The research reference now does both (research worktree `lane/ak-actor-seat-20260924`, DS41-C20):
+    `actors.py` `REPAIR_MIN_REPORT_CHARS = 20` (no JSON and below it → no repair turn, typed transient) and
+    `_grounded` / `_ungrounded_fields` (a required path/symbol field must appear in the report text — any path it
+    carries or that path's basename, else its longest identifier — or the repair is refused; prose fields may
+    paraphrase). Add to `parse_with_repair`: `min_report_chars` (default 20) and an optional
+    `grounded_fields: Sequence[str]`; a failed grounding returns `RepairResult(status="failed",
+    reason="ungrounded:<field>")` and bumps `STRUCTURED_OUTPUT_REPAIR_COUNTS`. Tests: empty report → `failed`, never
+    an object; a repaired `target_symbol` absent from the report → `failed`. Consumers to opt in first: `repl_final`
+    (TD-21.1) and the autokernel orchestrator backend (INF-78), which must get its repair coverage HERE rather than
+    in `actors._schema_repair` (returns `None` for any non-opencode backend — TD-21.30 (c)). Zero inference.
 
 ## Wiring policy (2026-09-18, operator-directed)
 
