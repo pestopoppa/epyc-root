@@ -2,8 +2,76 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-24 (wrap-up compile: the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase; the planner seat moved to the production 27B on the MI210; all three in-tree profilers are wired into the loop and kept out of ranked A/Bs; a schema-constrained repair turn replaced 90-minute retries-from-zero; the v10 folded-lineage fix reached this campaign before its first recorded candidate); earlier: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
-**Sources**: 130+ documents (added 2026-09-24 wrap-up compile: deepseek-v41-flash-evaluation DS41-C12/C14/C15/C16/C17/C10/C18 and the 2026-09-24 main-dsv41 progress log) (added 2026-09-23 evening wrap-up compile: deepseek-v41-flash-evaluation DS41-C2b/C2e/C5/C10/C11/C13, autokernel-restart-and-strip AK-INST-2, the 2026-09-23 main-dsv41 progress log) (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
+**Last compiled**: 2026-09-24 (operator wrap-up compile, main-ak-seat: run 7 lost a finished 27B proposal to two actor-seat defects, fixed on a research lane; a bounded opencode seat whose replaced system prompt made each step ~6x longer — the planner's context is filled by its own deliberation, not by tool output; a perf "no samples" that was a symbol-filter miss; SIGTERM is a drain that never reaps the in-flight actor; the orchestrator-as-backend program INF-78); earlier: 2026-09-24 (wrap-up compile: the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase; the planner seat moved to the production 27B on the MI210; all three in-tree profilers are wired into the loop and kept out of ranked A/Bs; a schema-constrained repair turn replaced 90-minute retries-from-zero; the v10 folded-lineage fix reached this campaign before its first recorded candidate); earlier: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
+**Sources**: 135+ documents (added 2026-09-24 operator wrap-up compile: deepseek-v41-flash-evaluation DS41-C10/C18/C20/C20a-c/C21/C22/C23, autokernel-orchestrator-actor-backend (INF-78), repl-turn-efficiency S4-T1/T2, harness-selection HS-4 P6/P7, vidya VB-AK-SEAT, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 wrap-up compile: deepseek-v41-flash-evaluation DS41-C12/C14/C15/C16/C17/C10/C18 and the 2026-09-24 main-dsv41 progress log) (added 2026-09-23 evening wrap-up compile: deepseek-v41-flash-evaluation DS41-C2b/C2e/C5/C10/C11/C13, autokernel-restart-and-strip AK-INST-2, the 2026-09-23 main-dsv41 progress log) (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
+
+## Compiled Update — 2026-09-24 (operator wrap-up compile): the actor seat is where the planner's hours go, and the model's own deliberation fills its context
+
+- **Run 7 lost a finished proposal to the seat, not to the model.** The first 27B planner proposal
+  (`akm-q4k-q82x4-weight-prefetch`, a Q4_K weight prefetch in `mul_mat_qX_K_q8_2_X4_T<DequantizerQ4K_AVX2,1>`)
+  landed in ~39 min. opencode then exited rc=1 after an error it had recovered from in its own bash tool, and
+  `_run_agent` discarded every rc≠0 reply unread and retried from zero. The retry returned empty stdout, and the
+  schema repair turned that empty report into a fabricated `src/verify/replay.ts :: replay`. The critic's rejection
+  was correct and took 30 s. Fixes, on research lane `e9495971` (not on `main` until the A/B verdict): salvage a
+  reply only when it is schema-complete AND rc > 0 (a signal death stays a transient); never repair a report under
+  20 chars; refuse a repaired path/symbol that the report never names. The general rule: **a repair step that can
+  run on empty input is a generator, not a repair.** The same grounding rule is filed for the orchestrator's shared
+  helper as TD-21.33.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10/C20;
+  [typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-21.33)
+- **Three transport defects between the loop and opencode, each silent:**
+  - opencode 1.18 re-quotes any positional argument that contains a space, so the run-7 prompt reached the model
+    with 2,982 backslash-escaped quotes. A ~100 KB prompt also sat near the 128 KiB per-argument limit. Fix: the
+    prompt goes on stdin.
+  - opencode/Bun exits without draining a pipe. The same export read 65,536 or 98,304 bytes through a pipe and
+    328,871 through a file, and the reply JSON is at the tail. Fix: capture to files.
+  - opencode's compaction summary quotes the prompt's `{"abstain":"<reason>"}` template, and a driver recorded that
+    quoted template as the hypothesis. Fix: refuse template echoes.
+
+  Each of these looks like a model failure (empty, truncated or abstaining reply) and is not one.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C20;
+  [harness-selection](../handoffs/active/harness-selection-and-integration.md) HS-4 P7)
+- **Capping tool output did not stop the context overflow. The model's deliberation did the overflowing.** The
+  plain-seat reference for one proposal: 71 steps, 70 tool calls, 63.8k decoded tokens, 40.3 min, 2 compactions,
+  275k chars of tool output. The first bounded arm (output-capped MCP tools, 12 KB `tool_output` cap, step cap,
+  and an agent `prompt` that REPLACED opencode's default system prompt) was stopped at ~35 min after only 12 steps.
+  Its median was 1,626 decoded tokens per step against 266 for the plain seat, it filled the 97.7k slot at step 12
+  and compacted, and it produced only 42k chars of tool output. The caps worked; the replaced system prompt made
+  each step ~6x longer. Config v2 moves the guidance into an opencode `instructions` file. The A/B verdict (plain
+  on the new prompt vs bounded v2) is PENDING. Until it lands, "cap the tool output" is not a demonstrated remedy
+  for the slot overflow (DS41-C18).
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C18/C20;
+  [progress 2026-09-24 main-ak-seat](../progress/2026-09/2026-09-24-main-ak-seat.md))
+- **"has no samples!" from `perf annotate` was a filter miss. The profile had 114K samples.** The planner passed
+  the short template name to `--symbol`. perf matches that option against the full demangled signature
+  (`void (anonymous namespace)::mul_mat_qX_K_q8_2_X4_T<(anonymous namespace)::DequantizerQ4K_AVX2, 1>(int, ...)`),
+  and it reports a filter that matched nothing as an empty profile. The same session's `perf report` showed the
+  symbol at 19.28%. Lesson: a tool's "nothing here" message is only evidence of absence once its filter is known
+  to have matched. The bounded seat's `symbol_annotate` must resolve short names first (DS41-C23).
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C23)
+- **SIGTERM to the loop is a drain, and the drain cannot see an actor call.** Forming lanes abandon at their next
+  stage boundary. But a planner call IS the stage, and the retry inside the call never checks `should_stop()`, so
+  a TERM'd actor (rc −15) was relaunched as a transient. Halting run 7 took TERM on the actor plus KILL on
+  `run.py` and `serial_run`. Filed as DS41-C22: TERM a forming lane's in-flight actor on stop, and never retry it.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C22)
+- **Direction (operator): the loop should call the orchestrator, not individual models.** INF-78 records the
+  requirements a backend must meet:
+  - an agentic tool loop in a per-call worktree root;
+  - no trailing async work after the reply, because the next step is a measurement window, and the check is a
+    witness (60 s of flat CPU time), not a promise;
+  - one schema-conforming object from a 35–75k-char prompt;
+  - bounded tool output;
+  - a `Backend` kind that is a thin CLI, so `_run_agent` stays unchanged.
+
+  The bounded seat is the reference that backend must beat on the same driver. The operator dropped the idea of
+  splitting heavy planning from fast authoring; it is not filed.
+  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-orchestrator-actor-backend.md);
+  [repl-turn-efficiency](../handoffs/active/repl-turn-efficiency.md) S4-T1 — `RoleResult.turns` was never
+  copied, so every seeding record carries `turns=0`)
+- **Belief-kernel wiring filed on the write side** (VB-AK-SEAT): per-call `actor-calls.jsonl` and the A/B's
+  `result-<arm>.json` are measurements. Today they are n = 1 per arm, and the arms differ by prompt as well as by
+  seat, so they are observations and not a measured seat effect.
+  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT)
 
 ## Compiled Update — 2026-09-24 (wrap-up compile): the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase, and the seat moved onto the GPU
 

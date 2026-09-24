@@ -1,33 +1,35 @@
 {
   "by_type": {
     "docs": 108,
-    "handoff-active": 169,
+    "handoff-active": 170,
     "handoff-blocked": 2,
     "handoff-completed": 196,
-    "progress": 484,
+    "progress": 485,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-24T09:51:29Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
+      "added": 2,
       "changed": 4,
       "removed": 0
     },
-    "at": "2026-09-24T09:53:52Z",
+    "at": "2026-09-24T11:39:27Z",
     "scope_paths": [
-      "handoffs/active/model-stack-single-source-update-pipeline.md",
-      "handoffs/active/multi-file-coding-completion-capability.md",
-      "handoffs/active/scoring-infra-standardization.md",
-      "progress/2026-09/2026-09-24-noninf-tier2.md"
+      "handoffs/active/autokernel-orchestrator-actor-backend.md",
+      "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "handoffs/active/harness-selection-and-integration.md",
+      "handoffs/active/repl-turn-efficiency.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "progress/2026-09/2026-09-24-main-ak-seat.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-24T09:53:52Z",
+  "scan_time": "2026-09-24T11:39:27Z",
   "schema_version": 1,
-  "source_set_hash": "5337c24c92050f5280ef7634700c0416d7b4774e7127e5d913c99d52a6f6d862",
+  "source_set_hash": "de94b8dc29844d8d1f977635ef104c0959e07685c4986a4c768a001a2d75d2b0",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -115,6 +117,14 @@
       "path": "handoffs/active/autokernel-cross-workload-keep-gate.md",
       "size": 77057,
       "title": "AutoKernel Cross-Workload Keep Gate \u2014 census, blast-radius screen, multi-workload non-regression",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "a41bb7f1240313e6be01c1305635790629dbe095c0f0b5aaa92e1af58c6bfd84",
+      "modified": "2026-09-24T11:14:31Z",
+      "path": "handoffs/active/autokernel-orchestrator-actor-backend.md",
+      "size": 10255,
+      "title": "AutoKernel \u2014 the orchestrator as planner/author backend",
       "type": "handoff-active"
     },
     {
@@ -342,10 +352,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e91486170b78cdccb15bb6bde08da1c6091cf7b63d2ea2aeca8e6dd096d29b39",
-      "modified": "2026-09-24T09:49:30Z",
+      "content_hash": "143ee710204883145554c74cbf77347258beaf2945c1adb43dce3815949808be",
+      "modified": "2026-09-24T11:33:58Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 62269,
+      "size": 71399,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -630,10 +640,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "143a29b0eca03979db31f9d9bd725516abcc4404136b61926a387d4bbe51e0ed",
-      "modified": "2026-09-18T00:28:55Z",
+      "content_hash": "bbbe5a1e16a52a3bbfb1a8402d1e5a42f7d09ff40edd9fe874f176988bbb751f",
+      "modified": "2026-09-24T11:13:40Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 53905,
+      "size": 56159,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -1046,10 +1056,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3863fc7b908ec618cc4f200c164ebf35cddc3751e92a771ebcb2107e814a0ed5",
-      "modified": "2026-09-07T19:29:30Z",
+      "content_hash": "67a7affb32d23b30719292f7d960b0de71bf0edb2a629e42430f311a6e5d8301",
+      "modified": "2026-09-24T11:13:39Z",
       "path": "handoffs/active/repl-turn-efficiency.md",
-      "size": 25014,
+      "size": 26848,
       "title": "REPL Turn Efficiency - Active Gates",
       "type": "handoff-active"
     },
@@ -1334,10 +1344,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a7989f86c76fc860e4bf8891fd4d8b78d72c08d43749fff1f6d16e6b444dc0bb",
-      "modified": "2026-09-24T09:50:38Z",
+      "content_hash": "b4675cf78f33ad2b9df450a9a2b3067e71473f813038cd2b9f1e907af8876c8a",
+      "modified": "2026-09-24T11:35:09Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 239317,
+      "size": 240269,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -7934,6 +7944,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "03abe756ea406d6bdea3ec9400e93952f2cc4973147439f010253ff37ca6c2ec",
+      "modified": "2026-09-24T11:34:33Z",
+      "path": "progress/2026-09/2026-09-24-main-ak-seat.md",
+      "size": 7793,
+      "title": "2026-09-24 \u2014 main-ak-seat (DS41 run 7 halt, autokernel actor-seat repair, planner A/B)",
+      "type": "progress"
+    },
+    {
       "content_hash": "2b95c4edcbd7ff9291f91bb2524d9c1057a3c44c676a427270fa75b914faf171",
       "modified": "2026-09-24T09:42:54Z",
       "path": "progress/2026-09/2026-09-24-main-dsv41.md",
@@ -8822,7 +8840,7 @@
       "type": "progress"
     }
   ],
-  "total_new": 1099,
+  "total_new": 1101,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
