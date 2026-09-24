@@ -416,6 +416,54 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     9.** Confirm run 8 is stopped (its `serial-run.pid` tree is dead) before any `git merge --ff-only`; never
     fast-forward mid-run. Acceptance: run 9's launch line names a research commit ≥ `34373dd8`, and its first
     planner reply is read against the semantics above.
+    **Blocker found 2026-09-24 (wrap-up):** research main now tracks
+    `artifacts/np_context_kvu_study_20260924/{driver,q38_27b_q8,q38_27b_q8_h,q38_27b_q8_depth}/` and
+    `artifacts/speech_cpu_realtime_20260924/`, and the shared clone still holds untracked copies of the same files.
+    `git merge --ff-only` refuses to overwrite untracked files, even identical ones (checked).
+    - The kvu copies are checksum-identical to research `21cf444c`.
+    - The speech copies are not: an `smtC` follow-up run kept writing there after the 17:14Z snapshot (RTG-57
+      KVU-11a). Commit that delta first.
+    - Then, before the fast-forward, `sha256sum -c SHA256SUMS` each copy against the committed checksums, remove
+      only the copies that match, and fast-forward.
+    - The 35B `q36_35b_a3b_q8_h/` directory is not tracked yet and must be left alone.
+  **Run 8 STOPPED 2026-09-24 ~15:32Z** on operator request, for the stack-configuration window (`state-run8/STOPPED.txt`).
+  - Why: `run.py` held every CPU region lock through the full-target floor calibration, and that timed out the
+    production frontdoor's `/chat` on :8070.
+  - State at stop: batch 0 lost its half-screen proposal to a mid-generation slot overflow. The 27B hit
+    `finish=length` at the 98,304-token split-KV slot, and the C20 fix refused the empty reply safely, with no
+    fabrication. This is the failure `-kvu` removes (RTG-57).
+  - Batch 1 was ~2 h into the first full-target floor calibration (48 `matched_process_v2` launches, each reloading
+    the 519 GB model). That partial was discarded.
+  - Result: iteration 0, 0 measurements. The half-screen floor stays cached.
+  - The stop needed KILL: TERM during calibration only drains (DS41-C26).
+  - Relaunch as run 9 through DS41-C25.
+- [ ] DS41-C25 — **Run 9 relaunch: do the prerequisites in this order.** Floors are bound to the anchor, so any
+  anchor advance must land before run 9's first full-target calibration (~4 h per scope).
+  1. OP-52 CPU window for the SW-9 spec-accept-probs fix. `experimental/mtp-spec-probs-fix-20260924` @ `2b57340bf`
+     is the champion `ak/champion/llama-cpp-ffc1bac82eec` @ `8df1b5cf2` + 1. It needs build + tests + the MTP n_probs
+     check + a speed A/B. The operator ADMIT was given 2026-09-24. Its preconditions are met: C1 STT/TTS finished
+     17:10Z, and the operator skipped the Flash-Next matrix 17:25Z.
+  2. Fast-forward the champion to the fix. This is the TD-21 session's step (SW-9).
+  3. Rebase the DS41 port onto the new champion tip. The anchor `ebb68dc55` is a clean descendant of `8df1b5cf2`
+     (+6), so the rebase is expected to be mechanical. This step is main-ak-seat's.
+  4. Rebuild the anchor. Its first full-target floor calibration is owed (~4 h).
+  5. DS41-C10a (shared research clone fast-forward to ≥ `34373dd8`, including the untracked-copy step) and
+     DS41-C24 (`EPYC_ROOT_REPO` off the lane worktree).
+  6. `-kvu` live on :8083 and `cache_ram` sized (RTG-57 KVU-1 / KVU-2, operator OP-54 / OP-55), so the planner
+     gets a 196,608-token slot.
+
+  Scheduling constraint: the full-target calibration holds every CPU region lock for hours and blocks the
+  production frontdoor, so agree its window with the operator (OP-41 owns the admission-control design).
+  Acceptance: run 9's launch line names the rebuilt anchor, a research commit ≥ `34373dd8`, no lane path, and a
+  `-kvu` :8083. Its first planner reply is not truncated at 98,304 tokens.
+- [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
+  Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
+  its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
+  `serial_run` and the calibration server.
+  - Fix: calibration consults `should_stop()` before each launch, and on a stop it TERMs its own captured
+    llama-server pid, never a name pattern. Discard the partial floor, and never cache it.
+  - Test: a fake calibration launcher with a stop asked mid-series → no further launch, the child is reaped, and
+    the process exits.
 - [ ] DS41-C11 — Pre-existing test failures found while landing `5125f7ab`, reproduced on a clean HEAD
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or

@@ -185,3 +185,127 @@ clone stays at `21ca61b0` while run 8 runs. Two edits to the DS41 handoff:
 
 I did not tick TD-21.29/30 in `typed-decision-plane.md`. Those boxes belong to the TD-21 session, and on
 origin/main they are still unticked.
+
+## Stack-configuration window: unified KV, overflow handling, GPU matrices, CPU speech (13:40–18:00Z)
+
+The operator opened a stack-configuration window. The running plan is `/mnt/raid0/llm/tmp/stack-window-plan-20260924.md`.
+The live results page (database-backed, the working view, not the record) is https://claude.ai/artifact/Lr4Xd1jBwUW3ToDCQJCEjm.
+All follow-up work now lives in the new handoff `handoffs/active/kv-unified-stack-rollout.md` (RTG-57).
+
+### Problem: DS41 run 8 lost its first planner reply to a 98,304-token ceiling
+
+Run 8's batch 0 planner call (13:12→13:32Z, 1235.7 s) returned an empty reply. The 27B hit `finish=length` at
+:8083's per-slot limit, and the C20 fix refused the empty reply safely without fabricating anything. The registry
+said :8083 serves a unified 196,608-token pool, so the cap should not have existed.
+
+**Root cause: production was never unified.**
+- The frozen v10 server turns on `kv_unified` only when `-np` is absent: auto becomes 4 slots plus unified
+  (`tools/server/server.cpp:145-150`). Otherwise the default is `false` (`common/common.h:580`).
+- The orchestrator always passes `-np`, and nothing in it mentions kv-unified. Every live llama-server logs
+  `kv_unified = 'false'`.
+- The "unified" registry text came from bench launches that had no `-np`, or passed `--kv-unified` by hand.
+- :8083 (`-np 2 -c 196608`) therefore gives each request 98,304 tokens.
+
+This rule and the output-divergence caveat below are now in `agents/shared/OPERATING_CONSTRAINTS.md` →
+*Inference and Benchmarks* and in `wiki/kv-cache.md`.
+
+### Run 8 stopped (15:32Z)
+
+The operator stopped run 8 for the window.
+- `run.py` held **every CPU region lock** through the full-target floor calibration, which timed out the
+  production frontdoor's `/chat` on :8070.
+- TERM only drained: calibration started its next launch. Ending the run took KILL on `run.py` (3508990),
+  `serial_run` (3359620) and the calibration llama-server (3961920). All were verified dead, and the region locks
+  were free afterwards.
+- State at stop: iteration 0, 0 measurements. The partial full-target calibration (~2 h) was discarded; the
+  half-screen floor stays cached. See `state-run8/STOPPED.txt`.
+- The stop path's gap during calibration is filed as DS41-C26. The run-9 prerequisites, in order, are DS41-C25.
+
+### What was built (all 2026-09-24)
+
+| Item | Where | Notes |
+|---|---|---|
+| `-kvu` stack-change package for :8083 | root `artifacts/operator/stack-change-kvu-20260924/` (copied from `/mnt/raid0/llm/tmp/stack-change-kvu-20260924/`) | Patches 1–3 are the default; O-2 (`-ctkd/-ctvd q8_0`) is optional. It includes the capacity table (np2 kvu 0.18 GiB free, with O-2 0.53), the bring-up, a 7-point serving proof and the rollback. **Not signed yet (OP-54)** |
+| Stack-wide `-kvu` inventory | root `artifacts/operator/kvu-stack-inventory-20260924.md` | Every live server runs split KV. Rollout order: :8083, then the embedders (per-slot 256 < bge 512), then :8070 only if long jobs go there, then :8086 only if `-np` rises |
+| Serving-engine technique audit | root `artifacts/operator/serving-engine-technique-audit-20260924.md` | vLLM / SGLang / TGI / TRT-LLM vs llama-server v10 plus the orchestrator. Steal list T1–T14. T2, T3, T5, T6 and T7 went onto the overflow branch; #4, #6, #7 and #8 are filed as KVU-2, 5, 6 and 1c |
+| Context-overflow handling | orchestrator `feat/context-overflow-handling-20260924` @ `8bbe2a3c` (pushed, not merged) | `fca70439`: detection on all four transports, limits from `/props`, FCFS token admission, retry → reroute → typed 413/503. `8bbe2a3c`: live `/slots` occupancy, adaptive decode reservation, bounded queue → 503, `max_tokens` clamp, `context_length` on `/v1/models`, the MTP sub-batch error classified as `pool_exhausted`, split truncation classified as `context_limit`. 80 tests. **Operator decisions pending (OP-55)**. Streamed chat truncation is still undetectable (KVU-3a) |
+| Promotion-gate fix | orchestrator `fix/promotion-gate-red-20260924` @ `d7ab368e` (pushed, not merged) | 14 errors → 4 (`aa322456`). The operator then chose option A, and `9692c7f9` (general_suite_quality counts as per-axis evidence) was merged as `d7ab368e`, so **strict is green**. The only remaining failure is runtime attestation: `-ub 8192` live vs 2048 expected on :8070, :8074, :8080 and :8180. The owning session reloads those four after the speech test, then merges and re-runs the gate (KVU-4a). The critic-suite instrument is filed as SSU-F16 |
+| GPU np × ctx study, 27B | research `artifacts/np_context_kvu_study_20260924/` (research main `21cf444c`) | Details below |
+| CPU STT/TTS real-time study (C1) | research `artifacts/speech_cpu_realtime_20260924/` (`21cf444c`, the 17:14Z snapshot) | Details below. An SMT-sibling follow-up run was still writing at 17:53Z (KVU-11a) |
+
+### GPU sweeps (production v10 GPU binary; :8083 stopped 15:36Z, :8086 stopped for the 35B run with operator approval)
+
+Qwen3.8-27B Q8_0 with MTP draft, olympiad-style prompts, n=1 per cell. Numbers are verified against the committed
+`summary.tsv` / `server.stderr`, and where they differ from the page, the files win.
+
+- **v1 (15:37–15:45Z)** used `c = L·np`, which left no room for the prompt. Split silently truncated at the slot.
+  Unified np2 hit a server exception under the full pool. v1 is kept as edge-behaviour evidence.
+  - Long prompt: 124,174 tokens accepted under unified (399.9 tok/s prefill, 310.5 s). Split returns HTTP 400 at
+    98,304.
+- **v2 headroom matrix (15:49–16:51Z)**, `c = (L+1024)·np`:
+  - Per-request decode, unified vs split: equal within 1.1% at np1, with byte-identical outputs; +0.3% to +5.7% at
+    np2/np4.
+  - Aggregate np4 is −8% (8k) and −16% (32k) under unified, but the two arms generated different answers there. The
+    KV layout changes float summation order, and sampling diverges at temperature 0.6. **Verdict: unified KV does
+    not cost throughput.** A fixed-length or multi-wave confirmation is still owed (KVU-8).
+  - np8 does not fit in either arm (skipped at 63 GB in use for L2048; out of memory at load for 8k and 32k).
+  - O-2 costs no per-request speed.
+  - **Pool-full repro:** unified fails exactly one request with `speculative batch index 8 is not inside the current
+    sub-batch [0, 8)` in 4/4 runs. Split never errors and silently truncates at the slot. This is a v11 kernel
+    candidate (KVU-7, guarded), and the overflow branch already classifies it.
+- **MTP depth (→17:07Z):**
+  - depth 4 acceptance 0.63–0.66 vs 0.37–0.46 at depth 8;
+  - per-request within ±2.5% except one +7.8% cell;
+  - 1014 MiB less at production shape (`-np 2 -c 196608 -kvu`, load-only KFD).
+  - Confirm on production traffic before changing the recipe (KVU-1b).
+- **35B-A3B matrix (Qwen3.6-35B-A3B-MTP Q8_0, from ~17:12Z, driver pid 1224153)** was still running at wrap-up and
+  is not committed (KVU-9). Preliminary page rows (unverified against files) cover 16 cells, np 1–8 × L 2k/8k,
+  MTP depth 4. They are not a clean "unified is free" result yet:
+  - per-request unified vs split is −0.6% to −5.3% in 7 of 8 pairs and +5.6% at np8 8k;
+  - the −5.3% cell (np1 8k) tracks lower draft acceptance on different answer text.
+
+  Read this after the run completes, with KVU-8's fixed-length method. :8083 and :8086 stay stopped until the
+  run ends; the owning session restores them.
+
+### CPU: C1 speech done, C2 skipped
+
+- **C1 (16:05–17:10Z).** STT (whisper large-v3-turbo) runs 5–8× faster than real time at 24–32 threads. TTS
+  (Qwen3-TTS 0.6B) runs ~1.7× real time, with a first packet in 75–113 ms. Both together stay real time.
+  - Next to a generating frontdoor (`-t 96` on 0-95), both collapse: TTS RTF ~8, and the frontdoor drops from 43
+    to 0.3 tok/s.
+  - Whisper hangs on some core layouts (e.g. 32@0-31).
+  - Recommendation: keep speech on the GPU. The residency decision is operator option A/B/C (OP-56, KVU-11).
+- **C2 (Flash-Next CPU np × ctx) was skipped by the operator at 17:25Z.** The GPU matrix shows no unified-KV
+  throughput cost, and the CPU's relative behaviour is not expected to differ. Reopen only if needed (KVU-12).
+
+### TD-21 coordination (SW-9 spec-accept-probs fix, champion order)
+
+- The TD-21 session's fix is `experimental/mtp-spec-probs-fix-20260924` @ `2b57340bf` (on `fork`), the champion
+  `ak/champion/llama-cpp-ffc1bac82eec` @ `8df1b5cf2` + 1.
+- The DS41 anchor `ebb68dc55` is a clean descendant of `8df1b5cf2` (+6).
+- The operator gave the ADMIT. OP-52's CPU window was sequenced after C1 and the Flash-Next matrix; C1 is done and
+  the matrix was skipped.
+- Agreed order: **champion ff → main-ak-seat rebases the DS41 port onto the new tip → anchor rebuild → run 9**
+  (DS41-C25). Floors are bound to the anchor, so the advance must precede run 9's first full-target calibration.
+- `/mnt/raid0/llm/tmp/ak-loop-tree` is unused by this session.
+
+### Derived actionables
+
+**Filed:**
+- DS41-C25 (run-9 order), DS41-C26 (stop during calibration).
+- SSU-F16 (critic-suite instrument, text prepared by the gate-fix agent).
+- RTG-57 KVU-1..KVU-13b (including KVU-3a streamed truncation, KVU-11a speech follow-up commit,
+  KVU-13a ambient `LLAMA_ARG_*` env, KVU-13b stack-change skill source list).
+- OAB-4a (pin :8083's KV mode per arm).
+- VB-KVU-1, VB-SPEECH-CPU-1, VB-AK-SEAT-b1w.
+
+**Explicit declines, recorded in the RTG-57 "Not filed here" section:**
+- SSU-F3 capacity model (RTG-19);
+- INF-41 aux VRAM (OP-48);
+- package §10 items the overflow branch already fixes;
+- a Stage-1 intake sweep of the audit's primary sources (no claim relies on them; intake runs only when the operator
+  invokes it).
+- The campaign holding every CPU region lock through calibration: not filed separately, because OP-41 owns
+  admission control. DS41-C25 carries the scheduling constraint.
+
+**Closed in this wrap-up:** VB-AK-SEAT-b1v. Run 8's one call line ingests with matched=1, projected=1, refused=0.

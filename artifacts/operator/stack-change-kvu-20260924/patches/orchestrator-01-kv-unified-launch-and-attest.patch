@@ -1,0 +1,308 @@
+diff --git a/scripts/server/orchestrator_stack.py b/scripts/server/orchestrator_stack.py
+index 9253118f..6dfaf3b3 100644
+--- a/scripts/server/orchestrator_stack.py
++++ b/scripts/server/orchestrator_stack.py
+@@ -539,6 +539,16 @@ def _append_runtime_kv_args(cmd: list[str], cache: dict[str, Any]) -> None:
+     kv_type_v = cache.get("kv_type_v")
+     if isinstance(kv_type_k, str) and isinstance(kv_type_v, str):
+         cmd.extend(["-ctk", kv_type_k, "-ctv", kv_type_v])
++    # Unified KV pool. Emitted in BOTH directions when declared, never when not:
++    # llama-server's own default is "unified only if -np is auto"
++    # (tools/server/server.cpp:145-150), and this launcher always passes -np, so an
++    # undeclared role gets split KV -- which is what :8083 silently ran while the
++    # registry asserted the opposite (stack-change-kvu, 2026-09-24).
++    kv_unified = cache.get("kv_unified")
++    if kv_unified is True:
++        cmd.append("--kv-unified")
++    elif kv_unified is False:
++        cmd.append("--no-kv-unified")
+     if cache.get("kv_hadamard") is True:
+         # 2026-06-26 v6 cutover: --kv-hadamard removed in v6 (no role sets kv_hadamard true today)
+         # cmd.append("--kv-hadamard")
+diff --git a/scripts/server/stack_commands.py b/scripts/server/stack_commands.py
+index 6d5ff1e3..43542549 100644
+--- a/scripts/server/stack_commands.py
++++ b/scripts/server/stack_commands.py
+@@ -559,6 +559,9 @@ _RUNTIME_FIELD_CHECKS: dict[str, tuple[str, tuple[str, ...], str]] = {
+     "runtime.cache.no_mmap": ("dedicated", (), ""),
+     "runtime.cache.mlock": ("dedicated", (), ""),
+     "runtime.cache.slot_save_path": ("dedicated", (), ""),
++    # Unified KV pool: a BOOLEAN whose live truth depends on TWO flags (-kvu and
++    # -np), so it cannot be a token check -- see the dedicated block below.
++    "runtime.cache.kv_unified": ("dedicated", (), ""),
+     # --kv-hadamard was removed in the v6 binary (it would crash), so the launcher's
+     # emission site is commented out. A role declaring it true would therefore get a
+     # silent no-op, which is exactly the kind of unkept declaration worth reporting.
+@@ -849,6 +852,24 @@ def _derived_runtime_field_warnings(
+     return warnings
+ 
+ 
++_KV_UNIFIED_ON_FLAGS: frozenset[str] = frozenset({"-kvu", "--kv-unified"})
++_KV_UNIFIED_OFF_FLAGS: frozenset[str] = frozenset({"-no-kvu", "--no-kv-unified"})
++
++
++def _live_kv_unified(cmdline: list[str]) -> bool:
++    """What llama-server resolved ``kv_unified`` to for this cmdline.
++
++    Last explicit flag wins (argparse semantics). With neither flag, the server
++    default applies: unified iff ``-np``/``--parallel`` is absent (auto slots).
++    """
++    for token in reversed(cmdline):
++        if token in _KV_UNIFIED_ON_FLAGS:
++            return True
++        if token in _KV_UNIFIED_OFF_FLAGS:
++            return False
++    return _last_cmdline_flag_value(cmdline, "-np", "--parallel") is None
++
++
+ def _runtime_attestation_warnings(
+     name: str,
+     info: ProcessInfo,
+@@ -962,6 +983,19 @@ def _runtime_attestation_warnings(
+         if actual != expected:
+             warnings.append(_runtime_value_warning(name, info, key, expected, actual))
+ 
++    # kv_unified: the LIVE value is whatever llama-server resolved, which is the last
++    # -kvu/--kv-unified/-no-kvu/--no-kv-unified on the cmdline, else "auto" -- and
++    # auto means unified ONLY when -np is absent (tools/server/server.cpp:145-150).
++    # Checking flag presence alone would pass a process that runs split KV while its
++    # declaration says unified, which is the exact defect this field was added for.
++    expected_kvu = cache.get("kv_unified")
++    if isinstance(expected_kvu, bool):
++        actual_kvu = _live_kv_unified(cmdline)
++        if actual_kvu != expected_kvu:
++            warnings.append(_runtime_value_warning(
++                name, info, "kv_unified", expected_kvu, actual_kvu
++            ))
++
+     slot_save_path = cache.get("slot_save_path")
+     if isinstance(slot_save_path, str) and slot_save_path:
+         actual = _last_cmdline_flag_value(cmdline, "--slot-save-path")
+diff --git a/src/registry/stack_priors.py b/src/registry/stack_priors.py
+index a6644d2a..659c0ea4 100644
+--- a/src/registry/stack_priors.py
++++ b/src/registry/stack_priors.py
+@@ -1535,6 +1535,44 @@ def _runtime_flag_int_prior(
+     return None
+ 
+ 
++def _runtime_flag_bool_prior(
++    server_cfg: dict[str, Any] | None,
++    role_cfg: dict[str, Any] | None,
++    *,
++    key: str,
++) -> bool | None:
++    """Resolve an optional BOOLEAN launcher fact from registry serving metadata.
++
++    The boolean twin of ``_runtime_flag_int_prior``, with the same search order
++    (``serving_shape`` first, then the row itself, then the role-local ``server`` /
++    ``serving`` / ``launch`` sub-mappings). ``False`` is a DECLARED value, not an
++    absent one: it compiles to an explicit negative flag, so a fact the operator
++    pinned never silently reverts to whatever the kernel's default happens to be.
++    Returns ``None`` when undeclared, and the launcher then emits nothing.
++
++    Origin (2026-09-24, stack-change-kvu): llama-server enables a unified KV pool
++    ONLY when ``-np`` is left on auto (``tools/server/server.cpp:145-150``); the
++    launcher always passes ``-np``, so ``:8083`` ran split KV while the master
++    registry asserted "KV IS UNIFIED". A default is not a declaration.
++    """
++    for cfg in (server_cfg, role_cfg):
++        if not isinstance(cfg, dict):
++            continue
++        for source in (
++            cfg.get("serving_shape"),
++            cfg,
++            cfg.get("server"),
++            cfg.get("serving"),
++            cfg.get("launch"),
++        ):
++            if not isinstance(source, dict):
++                continue
++            value = source.get(key)
++            if isinstance(value, bool):
++                return value
++    return None
++
++
+ # Registry spellings for GPU offload depth, in precedence order. Two are in live
+ # use with different value types; see _n_gpu_layers_prior.
+ _N_GPU_LAYERS_KEYS: tuple[str, ...] = ("n_gpu_layers", "ngl", "gpu_layers")
+@@ -2278,6 +2316,15 @@ def _launch_runtime_record(
+             "kv_type_k": kv_types[0] if kv_types else None,
+             "kv_type_v": kv_types[1] if kv_types else None,
+             "kv_hadamard": bool(primary_role in _V2_ROLES and LLAMA_SERVER_V2.exists()),
++            # Unified KV pool (llama-server -kvu / --no-kv-unified). None when
++            # undeclared -> the launcher emits nothing and the kernel default
++            # applies (split KV whenever -np is explicit, which it always is).
++            # Declared as `server_mode.<role>.serving_shape.kv_unified`: with it,
++            # ONE request may use the whole -c pool; without it each slot is
++            # hard-capped at -c / -np. See _runtime_flag_bool_prior.
++            "kv_unified": _runtime_flag_bool_prior(server_cfg, role_cfg, key="kv_unified")
++            if mode == "default"
++            else None,
+             # 2026-06-26 v6 cutover: no_mmap is no longer hardcoded to worker_pool+explore.
+             # It now flows through from the role's config (server_mode then roles block),
+             # defaulting to False when absent — so non-worker quarter roles (N12 private
+diff --git a/tests/unit/test_build_server_command_helpers.py b/tests/unit/test_build_server_command_helpers.py
+index 9a132474..e547894d 100644
+--- a/tests/unit/test_build_server_command_helpers.py
++++ b/tests/unit/test_build_server_command_helpers.py
+@@ -837,6 +837,71 @@ def test_resolve_binary_for_role_defaults_to_llama_server() -> None:
+     assert oss._resolve_binary_for_role("architect_general") == oss.LLAMA_SERVER
+ 
+ 
++@pytest.mark.parametrize(
++    ("declared", "expected_tail"),
++    [
++        (True, ["--kv-unified"]),
++        (False, ["--no-kv-unified"]),
++        (None, []),
++    ],
++)
++def test_append_runtime_kv_args_emits_declared_kv_unified_both_ways(
++    declared: bool | None, expected_tail: list[str]
++) -> None:
++    # A declared fact is emitted explicitly in BOTH directions; an undeclared one
++    # emits nothing (every CPU role keeps its current cmdline byte-for-byte).
++    cmd: list[str] = []
++    oss._append_runtime_kv_args(
++        cmd, {"kv_type_k": "q8_0", "kv_type_v": "q8_0", "kv_unified": declared}
++    )
++    assert cmd == ["-ctk", "q8_0", "-ctv", "q8_0", *expected_tail]
++
++
++def test_build_role_command_emits_declared_kv_unified_with_explicit_np(
++    tmp_path: Path,
++    monkeypatch,
++) -> None:
++    # End-to-end over the DATA path, at the :8083 shape: -np 2 stays, and -kvu
++    # is added so ONE request may use the whole -c pool.
++    priors = _write_launch_prior(
++        tmp_path,
++        "architect_general",
++        requirements={},
++        runtime={
++            "binary_path": "/prior/llama-server",
++            "cache": {
++                "context_tokens": 196608,
++                "slots": 2,
++                "ubatch": 2048,
++                "kv_type_k": "q8_0",
++                "kv_type_v": "q8_0",
++                "kv_unified": True,
++            },
++            "flags": {
++                "flash_attn": True,
++                "jinja": True,
++                "reasoning": None,
++                "override_kv": [],
++                "spec": {"enabled": False},
++            },
++        },
++    )
++    monkeypatch.setattr(oss, "STACK_PRIORS_PATH", priors)
++    role = SimpleNamespace(
++        name="architect_general",
++        model=SimpleNamespace(full_path="/fallback/27b.gguf"),
++        acceleration=SimpleNamespace(type="none", experts=None, draft_role=None),
++    )
++
++    cmd = oss._build_role_command(role, port=9083, prepare_runtime_dirs=False)
++
++    assert _flag_value(cmd, "-np") == "2"
++    assert _flag_value(cmd, "-c") == "196608"
++    assert cmd.count("--kv-unified") == 1
++    assert "--no-kv-unified" not in cmd
++    assert stack_commands._live_kv_unified(cmd) is True
++
++
+ def test_append_kv_quant_args_emits_q8_for_frontdoor() -> None:
+     cmd: list[str] = []
+     oss._append_kv_quant_args(cmd, "frontdoor")
+diff --git a/tests/unit/test_orchestrator_stack_reload.py b/tests/unit/test_orchestrator_stack_reload.py
+index e33bfd3a..43f8d77c 100644
+--- a/tests/unit/test_orchestrator_stack_reload.py
++++ b/tests/unit/test_orchestrator_stack_reload.py
+@@ -1598,6 +1598,50 @@ def test_runtime_attestation_ignores_kv_hadamard_declared_false() -> None:
+     )
+ 
+ 
++@pytest.mark.parametrize(
++    ("declared", "extra", "expect_warning"),
++    [
++        # Declared unified, launched with -kvu: clean.
++        (True, ["-np", "2", "--kv-unified"], False),
++        (True, ["-np", "2", "-kvu"], False),
++        # THE 2026-09-24 DEFECT: declared unified, launched with an explicit -np and
++        # no -kvu. llama-server resolves split KV (server.cpp:145-150). Must warn.
++        (True, ["-np", "2"], True),
++        # Last flag wins: a trailing negation defeats an earlier -kvu.
++        (True, ["-np", "2", "-kvu", "--no-kv-unified"], True),
++        # No -np at all = auto slots = unified by the kernel's own default.
++        (True, [], False),
++        # Declared split: explicit -np with no flag IS split; -kvu is drift.
++        (False, ["-np", "2"], False),
++        (False, ["-np", "2", "--no-kv-unified"], False),
++        (False, ["-np", "2", "--kv-unified"], True),
++    ],
++)
++def test_runtime_attestation_checks_kv_unified_as_resolved_by_the_server(
++    declared: bool, extra: list[str], expect_warning: bool
++) -> None:
++    warnings = stack_commands._runtime_attestation_warnings(
++        "architect_general",
++        _attestation_info(),
++        _ATTEST_BASE_CMDLINE + extra,
++        _attest_contract(cache={"kv_unified": declared}),
++    )
++    kvu = [w for w in warnings if "kv_unified" in w]
++    assert bool(kvu) is expect_warning, warnings
++
++
++def test_runtime_attestation_ignores_undeclared_kv_unified() -> None:
++    assert (
++        stack_commands._runtime_attestation_warnings(
++            "architect_general",
++            _attestation_info(),
++            _ATTEST_BASE_CMDLINE + ["-np", "2"],
++            _attest_contract(cache={"kv_unified": None}),
++        )
++        == []
++    )
++
++
+ def test_runtime_attestation_accepts_embedded_nextn_without_md() -> None:
+     info = stack_commands.ProcessInfo(
+         role="frontdoor",
+diff --git a/tests/unit/test_stack_priors_compiler.py b/tests/unit/test_stack_priors_compiler.py
+index 7257d33c..17d7bf83 100644
+--- a/tests/unit/test_stack_priors_compiler.py
++++ b/tests/unit/test_stack_priors_compiler.py
+@@ -1743,3 +1743,27 @@ def test_compile_projects_ctx_model_max_and_policy_hints(tmp_path: Path) -> None
+     assert policy["tap_safe_non_stream"] is False
+     assert policy["high_cost"] is False
+     assert policy["model_mem_gb"] == 37.0
++
++
++# ── stack-change-kvu (2026-09-24): kv_unified is a DECLARED boolean ──────────
++@pytest.mark.parametrize(
++    ("server_cfg", "role_cfg", "expected"),
++    [
++        # serving_shape is the canonical home and outranks a flat copy.
++        ({"serving_shape": {"kv_unified": True}, "kv_unified": False}, None, True),
++        # False is a declaration, not an absence.
++        ({"serving_shape": {"kv_unified": False}}, None, False),
++        # Role-local serving block works too.
++        (None, {"serving": {"kv_unified": True}}, True),
++        # Undeclared -> None (launcher emits nothing).
++        ({"serving_shape": {"n_ctx": 196608}}, {}, None),
++        # A non-bool is not coerced (1 is not True here).
++        ({"serving_shape": {"kv_unified": 1}}, None, None),
++    ],
++)
++def test_runtime_flag_bool_prior_resolves_kv_unified(server_cfg, role_cfg, expected) -> None:
++    from src.registry.stack_priors import _runtime_flag_bool_prior
++
++    assert (
++        _runtime_flag_bool_prior(server_cfg, role_cfg, key="kv_unified") is expected
++    )

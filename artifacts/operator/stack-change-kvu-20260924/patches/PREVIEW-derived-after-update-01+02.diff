@@ -1,0 +1,420 @@
+diff --git a/docs/generated/current_stack_summary.md b/docs/generated/current_stack_summary.md
+index d9f44527..1dff9c15 100644
+--- a/docs/generated/current_stack_summary.md
++++ b/docs/generated/current_stack_summary.md
+@@ -9,9 +9,9 @@ uv run python scripts/registry/stack_change_pipeline.py update
+ Source: `orchestration/derived/stack_priors.yaml`
+ 
+ Source fingerprints:
+-- orchestration/derived/stack_priors.yaml: `7c40813a8f0657e3416ae5be254cfa68f8985f6a68efda362be2f3bd09151ba7`
+-- orchestration/model_registry.yaml: `82cd7b96ffb3ce4e5edc07ccb449c65a54c197449797b9a8d8a25d961eed6f2b`
+-- orchestration/model_descriptors.yaml: `80e9ab1cdcd7b6b5cfe5c9208b6b7510297df06b98b389e6bd76d8d28ba1fdc6`
++- orchestration/derived/stack_priors.yaml: `dc9b212d6186099336e1554ccad6a98c53b6c417561a9bdcd9742e7b6564bbd3`
++- orchestration/model_registry.yaml: `e981ca316e1add1eb1bafd6ec6ffbf5a571fb031d25bf87cd45f50dd458226c4`
++- orchestration/model_descriptors.yaml: `4f8626be88c9baa4f5f91d8e3b56abd7a2ea1bc216c2180316b1ce5337a5b400`
+ 
+ | Role | Port | Model | Tier | Acceleration | Requirements | Throughput | Description |
+ |---|---:|---|---|---|---|---:|---|
+diff --git a/orchestration/derived/stack_priors.yaml b/orchestration/derived/stack_priors.yaml
+index ffb9f1d7..43458708 100644
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,47 +48,47 @@ contract:
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+-compiled_at: '2026-09-24T09:15:12Z'
++compiled_at: '2026-09-24T13:56:35Z'
+ status: compiled_with_gaps
+ coverage_scope: descriptor_role_bindings
+-precedence_spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++precedence_spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+-    path: /mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml
+-    sha256: 82cd7b96ffb3ce4e5edc07ccb449c65a54c197449797b9a8d8a25d961eed6f2b
+-    repo_commit: 86471b1f
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/orchestration/model_registry.yaml
++    sha256: e981ca316e1add1eb1bafd6ec6ffbf5a571fb031d25bf87cd45f50dd458226c4
++    repo_commit: 6b26f3ae
+   descriptors:
+-    path: /mnt/raid0/llm/epyc-orchestrator/orchestration/model_descriptors.yaml
+-    sha256: 80e9ab1cdcd7b6b5cfe5c9208b6b7510297df06b98b389e6bd76d8d28ba1fdc6
+-    repo_commit: 86471b1f
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/orchestration/model_descriptors.yaml
++    sha256: 4f8626be88c9baa4f5f91d8e3b56abd7a2ea1bc216c2180316b1ce5337a5b400
++    repo_commit: 6b26f3ae
+   stack_manifest:
+-    path: /mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/scripts/server/stack_manifest.py
+     sha256: 0a5849e2702ac029973a96e9a7427067c7a6f5deb1e7060c60586b3a98d91c75
+-    repo_commit: 86471b1f
++    repo_commit: 6b26f3ae
+   stack_numa:
+-    path: /mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_numa.py
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/scripts/server/stack_numa.py
+     sha256: 8a9e4eade957c71b9694160668f982deff31960d3ec5ad0f2d8fc50369b3c703
+-    repo_commit: 86471b1f
++    repo_commit: 6b26f3ae
+   launch_manifest:
+-    path: /mnt/raid0/llm/epyc-orchestrator/orchestration/launch_manifest.yaml
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/orchestration/launch_manifest.yaml
+     sha256: 0b918378cf0992d8bbe58241f2ae7dbd1ed030b782dc0f6abd3949ba065e12ee
+-    repo_commit: 86471b1f
++    repo_commit: 6b26f3ae
+   stack_topology:
+-    path: /mnt/raid0/llm/epyc-orchestrator/orchestration/stack_topology.yaml
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/orchestration/stack_topology.yaml
+     sha256: f802ef5b1636bec903344f800ce6ecbb7e97af20018dec678080b3af538dfbea
+-    repo_commit: 86471b1f
++    repo_commit: 6b26f3ae
+   orchestrator_stack:
+-    path: /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py
+-    sha256: 8703b0603af9f8c615ac44dcac2767f239db9644b82dd428382a7be4f21ef017
+-    repo_commit: 86471b1f
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/scripts/server/orchestrator_stack.py
++    sha256: b5406c7dfba4b8867fed449d50f15857a106d0442462a4297d9337c73d26ed1d
++    repo_commit: 6b26f3ae
+   stack_paths:
+-    path: /mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_paths.py
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/scripts/server/stack_paths.py
+     sha256: 4a7ca842a87b6ffec022f4f6433d755751cac32b9102747d88f3f4f2e4cb24de
+-    repo_commit: 86471b1f
++    repo_commit: 6b26f3ae
+   stack_runtime:
+-    path: /mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_runtime.py
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/scripts/server/stack_runtime.py
+     sha256: 984d27262e1f1d5a5332d0b4a3e6fb96fb8095fc890ddaa93da07bff52eb1c99
+-    repo_commit: 86471b1f
++    repo_commit: 6b26f3ae
+ roles:
+   architect_critic:
+     role: architect_critic
+@@ -140,6 +140,7 @@ roles:
+             kv_type_k: f16
+             kv_type_v: f16
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_critic
+@@ -217,7 +218,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - architect_critic
+       alias_overrides: []
+@@ -319,6 +320,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: true
+             no_mmap: true
+             mlock: false
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
+@@ -402,7 +404,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - architect_general
+       - coder_escalation
+@@ -542,6 +544,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: true
+             no_mmap: true
+             mlock: false
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
+@@ -625,7 +628,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - architect_general
+       - coder_escalation
+@@ -782,6 +785,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -894,7 +898,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - frontdoor
+       - worker
+@@ -978,6 +982,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: true
+             no_mmap: true
+             mlock: false
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
+@@ -1061,7 +1066,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - architect_general
+       - coder_escalation
+@@ -1261,7 +1266,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - frontdoor
+       - worker
+@@ -1374,7 +1379,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - architect_general
+       - coder_escalation
+@@ -1537,7 +1542,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - architect_critic
+       alias_overrides: []
+@@ -1642,6 +1647,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -1754,7 +1760,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - frontdoor
+       - worker
+@@ -1839,6 +1845,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: false
+             mlock: false
+             slot_save_path: null
+@@ -1935,7 +1942,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - worker_vision
+       alias_overrides: []
+@@ -2039,6 +2046,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: false
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2151,7 +2159,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - frontdoor
+       - worker
+@@ -2238,6 +2246,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2350,7 +2359,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - frontdoor
+       - worker
+@@ -2437,6 +2446,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2549,7 +2559,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - frontdoor
+       - worker
+@@ -2636,6 +2646,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2748,7 +2759,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - frontdoor
+       - worker
+@@ -2835,6 +2846,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: true
+             mlock: true
+             slot_save_path: /mnt/raid0/llm/cache/kv_slots/frontdoor
+@@ -2947,7 +2959,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - frontdoor
+       - worker
+@@ -3032,6 +3044,7 @@ roles:
+             kv_type_k: q8_0
+             kv_type_v: q8_0
+             kv_hadamard: false
++            kv_unified: null
+             no_mmap: false
+             mlock: false
+             slot_save_path: null
+@@ -3128,7 +3141,7 @@ roles:
+       precedence:
+         serving: server_mode/stack_manifest outrank roles metadata
+         memory_cost: server_mode.tier
+-        spec: /mnt/raid0/llm/epyc-orchestrator/docs/reference/stack-truth-precedence.md
++        spec: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+       - worker_vision
+       alias_overrides: []
+diff --git a/orchestration/model_descriptors.yaml b/orchestration/model_descriptors.yaml
+index da81787f..0f9ec199 100644
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+-compiled_at: '2026-09-24T09:15:11Z'
++compiled_at: '2026-09-24T13:56:34Z'
+ status: compiled_with_gaps
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+-    path: /mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml
+-    repo_commit: 86471b1f
+-    sha256: 82cd7b96ffb3ce4e5edc07ccb449c65a54c197449797b9a8d8a25d961eed6f2b
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/epyc-orchestrator/orchestration/model_registry.yaml
++    repo_commit: 6b26f3ae
++    sha256: e981ca316e1add1eb1bafd6ec6ffbf5a571fb031d25bf87cd45f50dd458226c4
+   research:
+-    path: /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
+-    repo_commit: e485008a
+-    sha256: 7c99288828d3206538300bb2ff999a58bfa8729b80814c00b6b970102833a3f7
++    path: /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/research/orchestration/model_registry.yaml
++    repo_commit: null
++    sha256: 266b1b81751b36b22aa631c605ea0714625784b883b490addc11a67f5a158995
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index 526bbf63..1db22a52 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -2,7 +2,7 @@
+ # AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW.
+ #
+ # This file is compiled at every `orchestrator_stack.py start` from the master
+-# registry at /workspace/repos/epyc-inference-research/orchestration/model_registry.yaml
++# registry at /mnt/raid0/llm/tmp/stack-change-kvu-20260924/full/research/orchestration/model_registry.yaml
+ # by src/registry/registry_compiler.py.
+ #
+ # Runtime stack truth lives in the MASTER registry. The next start detects master
+@@ -10,8 +10,8 @@
+ # temporarily skip the compile (e.g. during a master schema change), set
+ # ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+ #
+-# Compiled at: 2026-09-23T17:16:14+00:00
+-# Cache key:   33b98acbc7e49666...
++# Compiled at: 2026-09-24T13:56:34+00:00
++# Cache key:   4101dede8f6805a2...
+ # Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+ # =============================================================================
+ 
+@@ -1815,11 +1815,12 @@ server_mode:
+     slots: 2
+     serving_shape:
+       n_ctx: 196608
++      kv_unified: true
+       kv_quant:
+         k: q8_0
+         v: q8_0
+       kv_kib_per_token_f16: 64.0
+-      vram_non_kv_gib: 27.33
++      vram_non_kv_gib: 33.03
+     chat_template_kwargs:
+       enable_thinking: true
+       reasoning_effort: medium
+@@ -1926,9 +1927,10 @@ server_mode:
+       reasoning_effort: medium
+     description: 'Long-context ingest alias — resolves to the architect_general process (Qwen3.8-27B dense Q8, MI210 ROCm0, :8083). Not a distinct model and not a distinct server. 2026-09-22: replaces Qwen3-Next-80B-A3B-Instruct-Q4_K_M
+       (RETIRED), which ran three dedicated CPU instances on :8085/:8185/:8285.'
+-    alias_note: '⚠ THE ROLE''S DEFINING PROPERTY DOES NOT FULLY SURVIVE THE SWAP. The 27B''s ctx_max is 262144, so the model can carry the role''s declared context in principle, but the DEPLOYED per-slot
+-      context on :8083 is 98304 (196608 over 2 slots). Raising it is an OPERATOR call, not an arithmetic impossibility: on the 2026-09-22 corrected KV rate -c 262144 would fit with ~1.0 GiB of margin instead
+-      of 3.15 — see server_mode.architect_general.serving_shape. 196608 is the allocation the operator took. Any caller that relies on 262144 must be re-pointed or must accept truncation.'
++    alias_note: '⚠ THE ROLE''S DEFINING PROPERTY DOES NOT FULLY SURVIVE THE SWAP. The 27B''s ctx_max is 262144, so the model can carry the role''s declared context in principle, but the DEPLOYED context
++      on :8083 is a UNIFIED 196608-token pool (2026-09-24 -kvu): a lone request may use all of it, two concurrent requests share it. Raising it is an OPERATOR call, not an arithmetic impossibility: on the
++      2026-09-22 corrected KV rate -c 262144 would fit with ~1.0 GiB of margin instead of 3.15 — see server_mode.architect_general.serving_shape. 196608 is the allocation the operator took. Any caller that
++      relies on 262144 must be re-pointed or must accept truncation.'
+     previous_model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf
+     agent_file_compression_operating_point: medium
+     model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf

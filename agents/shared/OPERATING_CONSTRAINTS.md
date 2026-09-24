@@ -109,6 +109,18 @@ investigation; Appendix)
 - Throughput numbers only via the codified recipes (`bench_canonical.sh` / `canonical_recipe.py` in epyc-inference-research) — never hand-typed bench commands.
 - Host-health preflight before trusting any measurement: uptime ≤1wk → `drop_caches` + NUMA-interleave re-warm; ≥1wk → reboot required.
 - **"I invoked the HIP build" is not evidence of a HIP run, and `ldd` cannot supply the missing evidence** — llama.cpp **dlopens** `libggml-hip.so`, so the executable shows zero HIP linkage whether or not it ever touched the GPU, while `/etc/environment` places the CPU build early in `LD_LIBRARY_PATH` so a HIP binary resolves ANOTHER TREE'S ggml, finds no GPU, and runs full-CPU printing success. A GPU number becomes a claim only with residency proven from outside the binary: `epyc-inference-research/scripts/utils/verify_ggml_linkage.sh <binary> <tree_root>` (the script lives in the research repo), **non-zero VRAM sampled DURING the run** (§ Observation Windows), and a KFD process count (`/sys/class/kfd/kfd/proc/`, or `rocm-smi --showpids`). The three ggml generations on this host and the per-launcher `LD_LIBRARY_PATH` requirement are canonical in `CLAUDE.md` § Experimental Kernel Workflow & Production-Kernel Immutability. (origin: INC-20260731-ggml-linkage-silent-cpu-fallback, reproduced 2026-08-12)
+- **The llama-server KV mode is an argv fact, not a default.** The server turns on unified KV by itself only when
+  `-np` is absent: auto slots means 4 slots plus unified. With an explicit `-np N` it runs split KV, where each
+  request is capped at `-c / N`.
+  - So a bench launched without `-np` measures a different server than a production launcher that passes `-np`.
+  - Every serving recipe and every A/B arm must pass `--kv-unified` or `--no-kv-unified` explicitly and read the
+    launch log's `kv_unified =` line back.
+  - Unified vs split also **changes outputs at the same seed**, because float summation order changes. Replay,
+    determinism and output-comparing A/B tooling must pin the mode, and aggregate t/s across modes confounds answer
+    length.
+  - Details and measurements: `wiki/kv-cache.md`.
+  - (origin: 2026-09-24. :8083 was documented as unified but ran split in every production launch, which capped
+    DS41's planner at 98,304 tokens; RTG-57)
 - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
 - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management for the mechanics — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it **and do not approve one around the owner**: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. The owner-side duty to *own the reload timing* is stated in `agents/inference-main.md` → Guardrails. (origin: INC-20260728-reload-preemption)
 - **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule

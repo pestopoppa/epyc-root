@@ -690,6 +690,17 @@ supplies the value under test cannot fail on it.
   ✅ 2026-09-24 — resolved by orch `f42b2895`: hermetic `heavy_model` lock/gate for unit tests plus the
   `inference_lock` concurrent-import race fix. Re-run affected tests against this commit before folding any
   remaining failures into SSU-F13's bucket.
+- [ ] **SSU-F16 — build the architect_critic CRITIC-SUITE instrument and run it on Qwen3.8-Flash-Next.**
+  Operator chose option A on 2026-09-24 (orch `9692c7f9`, merged in `d7ab368e` on
+  `fix/promotion-gate-red-20260924`). Strict now counts `performance.general_suite_quality`
+  (mmlu_pro 0.7550 / gpqa 0.6513) as per-axis evidence, never as `overall`, so the gate no longer blocks
+  on it. The role-purpose gap that research `58b115ed` deliberately left open is **still open**:
+  `quality_score` means the adversarial-critique suite on this role, it stays null, and no critic-suite
+  instrument exists anywhere. Build one (plan-critique items, DELETE-lens scoring, truncation audit per
+  `promotion_gates.yaml`), run it on live :8074 at a CPU-quiet boundary, and record the result in
+  `roles.architect_critic.performance.quality_score`. Blocker: none (buildable); the run needs an
+  inference window. Emit producer-authored belief rows from the first run, as the SSU-F2 CPU bench does
+  (root `CLAUDE.md` → *Belief Kernel*).
 
 ### SSU-F2 outcome — the Flash-Next "quality gap" was a measurement artifact (2026-09-23)
 

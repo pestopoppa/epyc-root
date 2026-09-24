@@ -7,6 +7,17 @@
 
 ---
 
+> **2026-09-24 ~18:00Z — posture update (main-ak-seat wrap-up). The 2026-09-08 banner below is superseded
+> in part.**
+> - Production is **v10** (`ffc1bac82`, binary `10303`), served from the kernel store since 2026-09-22 (see
+>   `CLAUDE.md`), not v9.
+> - The DS41 AutoKernel campaign (INF-77) is **stopped**: run 8 stopped 15:32Z. Run 9 waits on DS41-C25
+>   (SW-9 champion ff → port rebase → anchor rebuild → `-kvu` live).
+> - A GPU np × ctx sweep was live on :18072 (driver pid 1224153). :8083 (architect_general) and :8086 (vision)
+>   were **deliberately stopped** for it, and main-ak-seat restores them. Verify live state before relying on
+>   this line.
+> - :8083's `--kv-unified` package awaits OP-54 (RTG-57).
+
 > **🟢 2026-09-08 — NOTHING IS RUNNING. THE CHAMPION IS CONSOLIDATED AT `ef81196d5`; THE HOST IS IDLE.**
 > **Every "IS LIVE / DO NOT TOUCH" banner below this line is HISTORICAL — no AutoKernel run is live, and
 > the pids they name are gone.** Read this banner first.
