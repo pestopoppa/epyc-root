@@ -166,20 +166,14 @@ ERA_ID="E19-eval-answer-parse-failure-excluded-quality"
 #   would otherwise make stale.
 #
 #   TD-21.9/21.10/21.15 (judge OUTPUT SHAPE, td21/judge branch, landed 2026-09-24):
-#   3397144c lands debug_scorer.py's CONSTRAIN_JUDGE_OUTPUT flag +
+#   62ab94ed lands debug_scorer.py's CONSTRAIN_JUDGE_OUTPUT flag +
 #   _parse_judge_boolean_verdict (TD-21.9) + the raw-branch response_format forwarding
 #   (TD-21.10) + judge_parse_stats, and eval_tower.py's RUBRIC_JUDGE_SCHEMA +
 #   parse_with_repair wiring in _rubric_scores_for_answer (TD-21.15), all DEFAULT-OFF,
 #   plus tests/unit/test_td21_judge_output_shape.py.
 #
-# *** RE-PIN REQUIRED BEFORE THIS SCRIPT CAN --apply ***: 3397144c is the commit SHA on
-# the ISOLATED `td21/judge` worktree branch this was authored on
-# (/mnt/raid0/llm/worktrees/td21/judge/orch), not yet rebased onto or pushed to
-# epyc-orchestrator's origin/main. A rebase-and-push changes the SHA. The owning session
-# MUST replace that entry below with the real post-push SHA (`git log --oneline` on
-# origin/main after merge) before --apply's ancestry check below can ever pass; --show and
-# `bash -n` do not require this and work against the placeholder as-is.
-TD21_COMMITS=(af8a4a1b 940e0553 ec412724 3397144c)  # last entry: PLACEHOLDER, re-pin after rebase-and-push, see above
+# Re-pinned 2026-09-24 to the landed epyc-orchestrator main SHA (62ab94ed).
+TD21_COMMITS=(af8a4a1b 940e0553 ec412724 62ab94ed)
 SENTINEL_OLD_FLAG='EXCLUDE_UNPARSEABLE_ANSWERS = False'
 SENTINEL_NEW_FLAG='EXCLUDE_UNPARSEABLE_ANSWERS = True'
 SENTINEL_OLD_TEST_MARK='#EQ1_RATIFICATION_TEST_SENTINEL: EXCLUDE_UNPARSEABLE_ANSWERS ships False'
@@ -399,7 +393,7 @@ case "$1" in
                 echo "  judge-output-shape TD-21.9/21.10/21.15 commit)." >&2
                 echo "  Merge/fast-forward td21/scorer and td21/judge into that clone's checked-out branch first," >&2
                 echo "  or update TD21_COMMITS in this script if a branch was squash-merged under a new SHA (the" >&2
-                echo "  judge-output-shape entry ships as a PLACEHOLDER until the owning session re-pins it post-push)." >&2
+                echo "  the judge-output-shape entry must be the landed main SHA)." >&2
                 exit 1; }
         done
 

@@ -265,12 +265,18 @@ episodic memory writing."
     evidence for the two rows above.
     ✅ 2026-09-24 — same commit: `LiveServerPrimitives.llm_call` forwards `json_schema` (as `response_format`),
     `grammar` and `seed`, so reviewer replay exercises the constraint.
-  - [ ] **TD-21.9 — `scripts/benchmark/debug_scorer.py:1111` LLM-judge boolean.** Shape: `true|false`.
+  - [x] **TD-21.9 — `scripts/benchmark/debug_scorer.py:1111` LLM-judge boolean.** Shape: `true|false`.
     Today: `verdict.lower().startswith("true")`, and `output_schema` is forwarded only on the `/chat` branch
     (`:1169`). Action: enum-bound `true|false` — removes the prefix-match artifact at the source. Judge role is
     `LLM_JUDGE_ROLE` else `architect_general` :8083.
-  - [ ] **TD-21.10 — `scripts/benchmark/debug_scorer.py:1211` raw llama-server judge branch.** Shape: the same
+    ✅ 2026-09-24 — orch `62ab94ed`, behind `CONSTRAIN_JUDGE_OUTPUT` (default OFF, flip in OP-50): strict
+    `true`/`false` replaces the prefix match; an unparseable judge reply raises `ScoringUnavailableError` (a
+    SCORER-side failure → `scoring_failed`, excluded under E17 — distinct from the model-side `AnswerParseError`).
+    Always-on `judge_parse_stats` report the strict outcome even while OFF, surfaced per arm in `_aggregate`.
+  - [x] **TD-21.10 — `scripts/benchmark/debug_scorer.py:1211` raw llama-server judge branch.** Shape: the same
     verdict. Today: strict dict access with no schema sent on this branch. Action: send the schema here too.
+    ✅ 2026-09-24 — same commit: flag ON sends the schema as `response_format` on the raw `/v1` branch (none
+    before); OFF proven byte-identical on the wire.
   - [x] **TD-21.11 — `scripts/benchmark/debug_scorer.py:359` multiple-choice letter** (used `:234,:286,:294`).
     Shape: one option letter. Today: five regex strategies, the last returning the final standalone letter
     unconditionally; an unparseable model answer returns `False` = **scored wrong**, with no counter. Action:
@@ -305,11 +311,14 @@ episodic memory writing."
     ✅ 2026-09-24 — same commits: only "fell back to the raw last line AND nothing matched" is a parse failure;
     IFEval `json_valid` stays byte-identical (a real oracle — a first draft's `fish_json` swap would have passed
     invalid JSON, reverted in review).
-  - [ ] **TD-21.15 — `scripts/autopilot/eval_tower.py:3887,:3911` rubric-judge scores** (call `:4464`). Shape:
+  - [x] **TD-21.15 — `scripts/autopilot/eval_tower.py:3887,:3911` rubric-judge scores** (call `:4464`). Shape:
     `{"scores":{dim: float in [0,1]}}`. Today: fence strip + brace slice with range validation; if EVERY judge
     is unparseable the question silently falls back to `deterministic_rubric_fallback` stamped
     `rubric_source="heuristic_fallback"` **and written into the eval results**. Action: adopt TD-1 — the judge
     role is pinned and on the same server, making this the cheapest high-value conversion in the autopilot.
+    ✅ 2026-09-24 — same commit: flag ON sends `RUBRIC_JUDGE_SCHEMA` and spends one repair turn against the same
+    judge role on a lenient-fish miss. The `heuristic_fallback` stays as is: already marked by `rubric_source` and
+    counted per arm (SCORE-08 `rubric_source_counts`) — changing fallback policy is not a parse fix.
   - [ ] **TD-21.16 — `scripts/autopilot/planner_coordinator.py:971` critic verdict** (`_extract_json_payload:1447`).
     Shape: `{decision, confidence, issues[], revised_action, revised_rationale}`. Today: marker fish; a
     `parse_error` routes to a **fallback critic provider**, i.e. one extra full critic call per iteration.
@@ -342,13 +351,21 @@ episodic memory writing."
     ✅ 2026-09-24 — same commit: `_decompose_plan_steps` — fish unchanged (0 calls on the happy path), then one
     repair turn on the architect role with `actor` ∈ {worker, coder, architect} (from the architect's own prompt
     contract); a terminal failure is logged and counted, the `< 2 steps` fall-through rule is unchanged.
-  - [ ] **TD-21.21 — `src/edit_transaction.py:333,:401` whole-file rewrite protocol** (parser `:85`). Shape:
+  - [x] **TD-21.21 — `src/edit_transaction.py:333,:401` whole-file rewrite protocol** (parser `:85`). Shape:
     `<<<FILE: path>>>…<<<END>>>` / `<<<DELETE: path>>>`. Today: two regex families, fail-closed (nothing written),
     but the prompt carries the full scoped file corpus, so a dropped `<<<END>>>` throws away a max-context
     generation. Action: a GBNF for the delimiter protocol, or a TD-1 repair turn that re-expresses the reply into
     the block form. Also fixes the J17/BEP arms (`internal_interaction_j17_live_ab.py:340`,
     `bep_edit_mode_wiring.py:118`) which share the parser — and whose in-code claim that "/chat does not expose
     constrained decoding" is only true for `/v1`-lane roles (TD-21.0).
+    ✅ 2026-09-24 — orch `e784f281` + `8d1790ca`. GBNF rejected with evidence: llama.cpp grammars have no
+    "any text until literal" primitive (token negation needs a one-token marker; `<<<END>>>` is not), and real
+    files — this one included — contain `<<<END>>>`/`<<<`, so a grammar would mangle exactly the files that need the
+    protocol. Instead the backend's own finish reason decides a trailing open FILE block: natural stop → closed and
+    written (content never invented; `.py` still compile-checked); length cutoff → dropped as before, now counted;
+    unknown → fail-closed as before. Finish reason read per call via a new `ContextVar`
+    (`get_last_inference_meta()`) — the first draft read the shared instance attribute, which a concurrent request
+    can overwrite (reproduced: a truncated `.txt` was written); caught in review. Outcomes counted.
   - [x] **TD-21.22 — `src/repl_environment/routing.py:605,:620` and `combined_ops.py:397,:412` schema delegation.**
     Shape: "return only a JSON value matching this JSON Schema" — the schema is already in hand. Today: strict
     parse + jsonschema + up to 2 **full re-calls** (multiplied across a batch in `combined_ops`). Action: pass it
@@ -365,9 +382,11 @@ episodic memory writing."
     fixed-arity fakes); `combined_ops._batch_llm_query` now sends the schema on the wire. Side finding: two
     callers pass `n_tokens` to `llm_batch`, which never accepted it → real-mode TypeError silently degrading
     to sequential calls — see TD-21.22b.
-  - [ ] **TD-21.22b — `llm_batch(..., n_tokens=)` raises at `chat_summarization.py:233` and
-    `repl_environment/context.py:141`**, caught and silently degraded to sequential calls. Fix in flight
-    (2026-09-24).
+  - [x] **TD-21.22b — `llm_batch(..., n_tokens=)` raises at `chat_summarization.py:233` and
+    `repl_environment/context.py:141`**, caught and silently degraded to sequential calls. 
+    ✅ 2026-09-24 — orch `318c4d27`: `llm_batch`/`llm_batch_async` take `n_tokens` through every batch path
+    (worker pool as its own `max_tokens`); both call sites now run as real batches; the silent except in
+    `repl_environment/context.py` now logs a warning.
   - [x] **TD-21.23 — `src/pipeline_monitor/model_grader.py:173` grader classification.** Shape: one letter from
     `spec.choice_strings`, expected on the last line. Today: a last-line word-boundary regex; a mis-formatted reply
     silently becomes an ungraded row. Action: native enum — the path already runs `/chat` `force_mode=direct`,
