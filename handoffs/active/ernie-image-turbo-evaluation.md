@@ -128,6 +128,12 @@ enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor
 
 ## Progress checklist
 
+- [x] Acquire the requested Qwen-Image-2.1 Diffusers weights for comparison ✅ 2026-09-23 — complete public bundle at
+      `/mnt/raid0/llm/models/diffusion/qwen-image-2.1/` (33,115,613,408 bytes; all text-encoder and transformer
+      shards plus VAE present). Acquisition is not a generation benchmark; no Qwen-vs-ERNIE outputs or comparative
+      claims are recorded yet.
+- [ ] Run a matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record prompt, settings, outputs,
+      and admissibility before drawing quality or speed conclusions.
 - [x] Production functional on CPU via sd-server Q8 + conv-direct; Q4 rejected (text corruption) ✅
 - [x] **File the missing intake row and close the `intake-528` mis-citation** ✅ 2026-07-29 — the deployed
       `image_generate` model had NO index row for its entire deployed life, while this handoff (4 places)
