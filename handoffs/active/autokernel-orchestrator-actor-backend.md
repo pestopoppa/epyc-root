@@ -103,6 +103,12 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   orchestrator's `x_force_role` / `force_role` if needed), one arm at a time, report steps / tool calls
   / decoded tokens / wall / compactions / schema-valid. Acceptance: three paired runs per arm (host
   drift ~3% over hours; alternate ABAB). GPU inference, campaign-idle window only.
+- [ ] **OAB-4a — pin and record :8083's KV mode in every OAB-4 arm** (filed 2026-09-24, RTG-57). Unified vs
+  split KV changes outputs at the same seed, because float summation order changes. It also moves the per-request
+  ceiling from 98,304 to 196,608 tokens once the `-kvu` package lands. An arm pair that straddles the :8083 reload
+  compares two servers, not two backends. Record `kv_unified` from the launch log and `/props` `n_ctx` per arm,
+  and run both arms of a pair on the same server generation. OAB-7's "~38k of the 98k slot" is the split-KV
+  ceiling.
 - [ ] **OAB-5 — promotion rule.** The `orchestrator` kind becomes the campaign default only if OAB-4
   shows wall ≤ bounded seat AND schema-valid rate ≥ bounded seat over the paired runs; otherwise it
   stays an opt-in `--planner-model orch:auto` and this handoff records the gap. Zero compute.

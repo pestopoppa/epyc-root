@@ -1,0 +1,32 @@
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -1435,6 +1435,12 @@
+       # from 384 to 768 MiB F16 in EACH of the two compute graphs: +0.75 GiB VRAM, derived
+       # from source; confirm from the -lv 4 sched_reserve lines at bring-up.
+       kv_unified: true
++      # ── OPTIONAL FUNDING LEVER (package item O-2, operator's call) ──
++      # The MTP draft context ignores -ctk/-ctv and holds F16 KV (768 MiB at 196608 cells,
++      # 1 layer); -ctkd/-ctvd q8_0 makes it 408 MiB (-0.352 GiB). SSU-F3 fix #1.
++      # Acceptance-rate effect UNMEASURED: verify draft acceptance at bring-up vs the
++      # live log's `mean len` 3.0-4.6 before keeping it.
++      draft_kv_quant: {k: q8_0, v: q8_0}
+       kv_quant: {k: q8_0, v: q8_0}   # RECORDED, NOT CHANGED: the live :8083 process was
+                                      # already running -ctk q8_0 -ctv q8_0 (verified from
+                                      # /proc/2019908/cmdline, 2026-08-02). Declared only in
+@@ -1457,13 +1463,14 @@
+       #   - attention KV (server-reported 6528.00 MiB)                     =  6.375
+       #   = measured non-KV at the split shape                             = 32.282
+       #   + unified-KV KQ-mask growth, target + MTP draft graphs (2x384 MiB) =  0.750
+-      #   = 33.03  <- DERIVED, not yet read. Re-read at bring-up from KFD DURING residency
++      #   - draft KV F16 -> q8_0 (serving_shape.draft_kv_quant, 768 -> 408 MiB) =  0.352
++      #   = 32.68  <- DERIVED, not yet read. Re-read at bring-up from KFD DURING residency
+       #              and replace this line with the measured figure.
+       # ⚠ A SCALAR VALID AT ONE SHAPE ONLY: slots 2, --spec-draft-n-max 8, kv_unified true,
+       # n_ctx 196608. Each extra slot adds 1.315 GiB of GDN recurrent state
+       # (156,893,184 B x (1 + draft_max)); each unit of draft depth adds 0.292 GiB at 2 slots.
+       # The structural fix (separate RS / draft-KV / compute terms) is SSU-F3's, not this one's.
+-      vram_non_kv_gib: 33.03
++      vram_non_kv_gib: 32.68
+       # superseded provenance, kept for audit:
+       # (was) vram_non_kv_gib: 27.33 # 29.36 GiB resident (/sys/class/kfd, pid 2019908, 2026-08-02)
+                                      # minus the 2.03 GiB of q8_0 KV it was then holding at -c 16384.

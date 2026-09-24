@@ -2679,9 +2679,52 @@ row: `scripts/vidya/adapters/README.md`. Project, do not grade.
   (`/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`) must not be edited while its arms run, and both of its arms
   started before `HOOK_SINCE` (12:00Z), so they could not be v1 records anyway. Acceptance: one post-hook arm
   record that `cli.py ingest ak-actor-seat --dry-run` projects with `refused=0`.
-- [ ] **VB-AK-SEAT-b1v — prove the producer on a real campaign call.** Run 8 (research `21ca61b0`,
+- [x] **VB-AK-SEAT-b1v — prove the producer on a real campaign call.** ✅ 2026-09-24 Run 8 (research `21ca61b0`,
   `EPYC_ROOT_REPO` = the ak-seat-handoffs lane worktree) is the first campaign carrying b1; at 13:19Z its first
   planner call had not returned, so no line exists yet. When one does: read
   `state-run8/**/actor-replies/actor-calls.jsonl` (read-only), confirm the lines are `actor_call.v1` with no
   `v1_refused`, and run `cli.py ingest ak-actor-seat --path <that dir> --dry-run` → `refused=0`. A `v1_refused`
   line names its own cause; fix that in the producer rather than relaxing the contract.
+  **Proven (wrap-up, read-only):** run 8 wrote exactly one line before it stopped:
+  `state-run8/targets/71f54ec4…/workers/actor-replies/actor-calls.jsonl`, planner, `epyc.autokernel.actor_call.v1`,
+  rc 0, `wall_s` 1235.7, 13:12:03→13:32:39Z. Its stdout is 0 bytes. That is batch 0's reply lost to the 98,304-token
+  slot overflow, which the record captures faithfully. `cli.py ingest ak-actor-seat --path <that dir> --as-of
+  2026-09-24T18:00:00Z --dry-run` → matched=1 projected=1 declined=0 **refused=0**.
+- [ ] **VB-AK-SEAT-b1w — fill `server.build_info` and `server.served_model` in the call record.** Both are `null`
+  in run 8's line, so a call record cannot say which server build or model answered it. When the backend endpoint
+  is a llama-server, read `/props` (`build_info`, `model_alias` / `model_path`) once per actor process and cache
+  it. Add `n_ctx` per slot as well: it is 98,304 split vs 196,608 unified on :8083 (RTG-57), and it decides
+  whether a reply could be truncated. Keep the v1 contract, or version it to v2 if the fields become required.
+  Acceptance: the next campaign call line carries non-null values and still ingests with `refused=0`.
+
+## VB-KVU-1 / VB-SPEECH-CPU-1 — stack-window measurement sources (filed 2026-09-24, main-ak-seat)
+
+Two measurement sources landed on research main on 2026-09-24 without a write-side hook. Both rows are in
+`scripts/vidya/adapters/README.md` → *Known and candidate sources*. The retrospective records produce zero tuples,
+and they are **not** backfilled: a tuple invented on read would claim a warrant that the run never captured.
+Owner: RTG-57 (`kv-unified-stack-rollout.md`).
+
+- [ ] **VB-KVU-1 — write side for the np × ctx `--kv-unified` driver, before the KVU-8 rerun.**
+  - The drivers (research `artifacts/np_context_kvu_study_20260924/driver/study_*.sh`) write `summary.tsv` plus
+    per-cell `r.json` / `pq.jsonl` / `server.stderr`. None of these has a schema version, row hash or binary
+    digest.
+  - Move the per-cell summary into a small Python emitter with these parts:
+    - schema `epyc.vidya.np_ctx_kvu_capture.v1`;
+    - one self-hashed row per (model × arm × np × L × metric);
+    - fields: binary digest, `kv_unified` as read from the launch log, `n_ctx_slot`, `c`, draft depth and
+      draft KV type;
+    - a shared `validate_row()` that the adapter imports.
+  - Parse acceptance from the full log line, `draft acceptance = 0.36355 ( 1215 accepted /  3342 generated), mean
+    len =  3.91`. Record the token-weighted value as well as the per-request mean: the v1 driver's `draft
+    acceptance rate` pattern returned NA.
+  - Then write the adapter (`@register("np-ctx-kvu-measurement")`, `attestation_locator`, a `Source(...)` row).
+    Project, do not grade: `claim_tuple.grade()` decides.
+  - Carry the three cautions from the source row: KV mode as an argv fact, output divergence across arms, and
+    headroom.
+  - Never edit a driver while it runs. The 35B driver was live at filing time.
+- [ ] **VB-SPEECH-CPU-1 — write side for `speech_cpu_bench.py`, before any CPU speech re-measurement** (KVU-11 B/C).
+  - Add a schema version, row hash, whisper/qwentts binary digests, the exact core list and thread count, and
+    `SHIM_NPROCS`. Also capture the co-tenant state: frontdoor `-t`/cores and whether it was generating, sampled
+    during the row.
+  - Then the adapter. Carry the three cautions from the source row: layout is part of the measurand, the shim is
+    the only thread control, and co-tenant state decides the result.

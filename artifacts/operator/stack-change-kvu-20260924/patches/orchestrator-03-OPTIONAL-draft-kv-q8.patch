@@ -1,0 +1,159 @@
+diff --git a/scripts/server/orchestrator_stack.py b/scripts/server/orchestrator_stack.py
+index 6dfaf3b3..d4f8945f 100644
+--- a/scripts/server/orchestrator_stack.py
++++ b/scripts/server/orchestrator_stack.py
+@@ -544,6 +544,10 @@ def _append_runtime_kv_args(cmd: list[str], cache: dict[str, Any]) -> None:
+     # (tools/server/server.cpp:145-150), and this launcher always passes -np, so an
+     # undeclared role gets split KV -- which is what :8083 silently ran while the
+     # registry asserted the opposite (stack-change-kvu, 2026-09-24).
++    draft_k = cache.get("draft_kv_type_k")
++    draft_v = cache.get("draft_kv_type_v")
++    if isinstance(draft_k, str) and draft_k and isinstance(draft_v, str) and draft_v:
++        cmd.extend(["-ctkd", draft_k, "-ctvd", draft_v])
+     kv_unified = cache.get("kv_unified")
+     if kv_unified is True:
+         cmd.append("--kv-unified")
+diff --git a/scripts/server/stack_commands.py b/scripts/server/stack_commands.py
+index 43542549..04b00386 100644
+--- a/scripts/server/stack_commands.py
++++ b/scripts/server/stack_commands.py
+@@ -562,6 +562,16 @@ _RUNTIME_FIELD_CHECKS: dict[str, tuple[str, tuple[str, ...], str]] = {
+     # Unified KV pool: a BOOLEAN whose live truth depends on TWO flags (-kvu and
+     # -np), so it cannot be a token check -- see the dedicated block below.
+     "runtime.cache.kv_unified": ("dedicated", (), ""),
++    "runtime.cache.draft_kv_type_k": (
++        "int_or_token_flag",
++        ("-ctkd", "--spec-draft-type-k", "--cache-type-k-draft"),
++        "",
++    ),
++    "runtime.cache.draft_kv_type_v": (
++        "int_or_token_flag",
++        ("-ctvd", "--spec-draft-type-v", "--cache-type-v-draft"),
++        "",
++    ),
+     # --kv-hadamard was removed in the v6 binary (it would crash), so the launcher's
+     # emission site is commented out. A role declaring it true would therefore get a
+     # silent no-op, which is exactly the kind of unkept declaration worth reporting.
+diff --git a/src/registry/stack_priors.py b/src/registry/stack_priors.py
+index 659c0ea4..b71e2dba 100644
+--- a/src/registry/stack_priors.py
++++ b/src/registry/stack_priors.py
+@@ -1711,6 +1711,24 @@ def _kv_types_prior(
+     return None
+ 
+ 
++def _draft_kv_types_prior(
++    server_cfg: dict[str, Any] | None,
++    role_cfg: dict[str, Any] | None,
++) -> tuple[str, str] | None:
++    """Resolve the speculative draft context's KV types (``-ctkd``/``-ctvd``).
++
++    Only ``serving_shape.draft_kv_quant`` is read: this is a GPU-capacity lever
++    (SSU-F3 fix #1), not a legacy flat key with history to honour.
++    """
++    for cfg in (server_cfg, role_cfg):
++        candidate = _nested_mapping(cfg, "serving_shape", "draft_kv_quant")
++        if isinstance(candidate, dict):
++            k, v = candidate.get("k"), candidate.get("v")
++            if isinstance(k, str) and k and isinstance(v, str) and v:
++                return k, v
++    return None
++
++
+ def _worker_context_prior(
+     role_cfg: dict[str, Any] | None,
+     *,
+@@ -2325,6 +2343,12 @@ def _launch_runtime_record(
+             "kv_unified": _runtime_flag_bool_prior(server_cfg, role_cfg, key="kv_unified")
+             if mode == "default"
+             else None,
++            # Speculative DRAFT-context KV types (llama-server -ctkd/-ctvd). -ctk/-ctv
++            # do NOT reach the draft context: common_base_params_to_speculative copies
++            # speculative.draft.cache_type_{k,v}, which default to F16. Declared as
++            # `serving_shape.draft_kv_quant: {k, v}`; None when undeclared.
++            "draft_kv_type_k": (_draft_kv_types_prior(server_cfg, role_cfg) or (None, None))[0],
++            "draft_kv_type_v": (_draft_kv_types_prior(server_cfg, role_cfg) or (None, None))[1],
+             # 2026-06-26 v6 cutover: no_mmap is no longer hardcoded to worker_pool+explore.
+             # It now flows through from the role's config (server_mode then roles block),
+             # defaulting to False when absent — so non-worker quarter roles (N12 private
+diff --git a/tests/unit/test_build_server_command_helpers.py b/tests/unit/test_build_server_command_helpers.py
+index e547894d..b1a5784b 100644
+--- a/tests/unit/test_build_server_command_helpers.py
++++ b/tests/unit/test_build_server_command_helpers.py
+@@ -857,6 +857,27 @@ def test_append_runtime_kv_args_emits_declared_kv_unified_both_ways(
+     assert cmd == ["-ctk", "q8_0", "-ctv", "q8_0", *expected_tail]
+ 
+ 
++def test_append_runtime_kv_args_emits_declared_draft_kv_types() -> None:
++    cmd: list[str] = []
++    oss._append_runtime_kv_args(
++        cmd,
++        {
++            "kv_type_k": "q8_0",
++            "kv_type_v": "q8_0",
++            "draft_kv_type_k": "q8_0",
++            "draft_kv_type_v": "q8_0",
++            "kv_unified": True,
++        },
++    )
++    assert cmd == ["-ctk", "q8_0", "-ctv", "q8_0", "-ctkd", "q8_0", "-ctvd", "q8_0", "--kv-unified"]
++
++
++def test_append_runtime_kv_args_omits_half_declared_draft_kv_types() -> None:
++    cmd: list[str] = []
++    oss._append_runtime_kv_args(cmd, {"draft_kv_type_k": "q8_0", "draft_kv_type_v": None})
++    assert cmd == []
++
++
+ def test_build_role_command_emits_declared_kv_unified_with_explicit_np(
+     tmp_path: Path,
+     monkeypatch,
+diff --git a/tests/unit/test_orchestrator_stack_reload.py b/tests/unit/test_orchestrator_stack_reload.py
+index 43f8d77c..4e8e7c46 100644
+--- a/tests/unit/test_orchestrator_stack_reload.py
++++ b/tests/unit/test_orchestrator_stack_reload.py
+@@ -1630,6 +1630,21 @@ def test_runtime_attestation_checks_kv_unified_as_resolved_by_the_server(
+     assert bool(kvu) is expect_warning, warnings
+ 
+ 
++def test_runtime_attestation_checks_declared_draft_kv_types() -> None:
++    contract = _attest_contract(cache={"draft_kv_type_k": "q8_0", "draft_kv_type_v": "q8_0"})
++    clean = stack_commands._runtime_attestation_warnings(
++        "architect_general",
++        _attestation_info(),
++        _ATTEST_BASE_CMDLINE + ["-ctkd", "q8_0", "-ctvd", "q8_0"],
++        contract,
++    )
++    assert clean == []
++    drift = stack_commands._runtime_attestation_warnings(
++        "architect_general", _attestation_info(), _ATTEST_BASE_CMDLINE, contract
++    )
++    assert len([w for w in drift if "draft_kv_type" in w]) == 2, drift
++
++
+ def test_runtime_attestation_ignores_undeclared_kv_unified() -> None:
+     assert (
+         stack_commands._runtime_attestation_warnings(
+diff --git a/tests/unit/test_stack_priors_compiler.py b/tests/unit/test_stack_priors_compiler.py
+index 17d7bf83..1d5dd83c 100644
+--- a/tests/unit/test_stack_priors_compiler.py
++++ b/tests/unit/test_stack_priors_compiler.py
+@@ -1767,3 +1767,18 @@ def test_runtime_flag_bool_prior_resolves_kv_unified(server_cfg, role_cfg, expec
+     assert (
+         _runtime_flag_bool_prior(server_cfg, role_cfg, key="kv_unified") is expected
+     )
++
++
++@pytest.mark.parametrize(
++    ("server_cfg", "expected"),
++    [
++        ({"serving_shape": {"draft_kv_quant": {"k": "q8_0", "v": "q8_0"}}}, ("q8_0", "q8_0")),
++        ({"serving_shape": {"draft_kv_quant": {"k": "q8_0"}}}, None),
++        ({"serving_shape": {"kv_quant": {"k": "q8_0", "v": "q8_0"}}}, None),
++        (None, None),
++    ],
++)
++def test_draft_kv_types_prior_reads_only_serving_shape(server_cfg, expected) -> None:
++    from src.registry.stack_priors import _draft_kv_types_prior
++
++    assert _draft_kv_types_prior(server_cfg, None) == expected

@@ -1,37 +1,24 @@
 {
   "by_type": {
     "docs": 108,
-    "handoff-active": 170,
+    "handoff-active": 171,
     "handoff-blocked": 2,
     "handoff-completed": 197,
-    "progress": 486,
+    "progress": 487,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-09-24T13:27:48Z",
-  "last_touch": {
-    "advanced": {
-      "added": 0,
-      "changed": 2,
-      "removed": 0
-    },
-    "at": "2026-09-24T16:10:34Z",
-    "scope_paths": [
-      "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "handoffs/active/typed-decision-plane.md"
-    ],
-    "scope_types": []
-  },
-  "mode": "touch:scoped",
-  "scan_time": "2026-09-24T16:10:34Z",
+  "last_compile": "2026-09-24T18:09:16Z",
+  "mode": "touch",
+  "scan_time": "2026-09-24T18:09:16Z",
   "schema_version": 1,
-  "source_set_hash": "d00804f7d5953867673118df219c1a9fb57b16b829121f7801e5c03d09223311",
+  "source_set_hash": "6d6fc218a79e5ec67662f0f7dbb297df10beae897109426e973c40438531db9b",
   "sources": [
     {
-      "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
-      "modified": "2026-09-24T13:18:48Z",
+      "content_hash": "eaf7ea54524d1000470b56a89875321cb9337b8455d39f4cc3e8e7b78da58531",
+      "modified": "2026-09-24T17:59:05Z",
       "path": "handoffs/active/CURRENT-CAMPAIGN.md",
-      "size": 27858,
+      "size": 28588,
       "title": "Current campaign state",
       "type": "handoff-active"
     },
@@ -116,10 +103,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8ebfed14f2b9594d53eb6438242d982296bacd0fa0fc0c49a43db2a6989d49fd",
-      "modified": "2026-09-24T13:18:48Z",
+      "content_hash": "dd219a7b39797d4e2cd25389676def01f20ac2fcf3f7ce9beb35e39abc5b4684",
+      "modified": "2026-09-24T17:52:49Z",
       "path": "handoffs/active/autokernel-orchestrator-actor-backend.md",
-      "size": 12119,
+      "size": 12689,
       "title": "AutoKernel \u2014 the orchestrator as planner/author backend",
       "type": "handoff-active"
     },
@@ -148,10 +135,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e650a0ae2f44964d7400be68fa8749ad53b5b28c86fe611410c5b174d9ca51c7",
-      "modified": "2026-09-24T13:18:48Z",
+      "content_hash": "49b76b85fb01443dfb5fa9b387733956a99da2940c29c5922414101d1dcccd22",
+      "modified": "2026-09-24T17:45:03Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 352227,
+      "size": 353452,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
@@ -348,10 +335,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1cac3814539db5c85fa47facd6bce9df6a41cba34c012331cce339866afaa190",
-      "modified": "2026-09-24T13:26:50Z",
+      "content_hash": "2c8986750f6747a9204126bb8136df46945bb312a87caaacd7a1b994e9fd2a6a",
+      "modified": "2026-09-24T17:55:26Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 66810,
+      "size": 70976,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -421,7 +408,7 @@
     },
     {
       "content_hash": "c750849c5fb49ad307dcd8edceb88a08c28d3d74c56aaf66cb743ae7307502f2",
-      "modified": "2026-09-24T14:27:35Z",
+      "modified": "2026-09-24T17:45:03Z",
       "path": "handoffs/active/ernie-image-turbo-evaluation.md",
       "size": 23761,
       "title": "ERNIE-Image-Turbo Evaluation",
@@ -700,6 +687,14 @@
       "type": "handoff-active"
     },
     {
+      "content_hash": "ee03c8be3537e2bc8746044d9f7dfd2b5ee2a487280c5d137283078f046d30d3",
+      "modified": "2026-09-24T18:08:43Z",
+      "path": "handoffs/active/kv-unified-stack-rollout.md",
+      "size": 18924,
+      "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
+      "type": "handoff-active"
+    },
+    {
       "content_hash": "3ac16feb4376d91d60d304d885442208bea21ee665cc6afc98d7893724573ad6",
       "modified": "2026-09-24T13:18:48Z",
       "path": "handoffs/active/laguna-s21-cpu-port.md",
@@ -828,10 +823,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3e89ec32e1dcb4aa98dca7aec99d05746872c219607aa35a470286fee46d5cfe",
-      "modified": "2026-09-24T13:18:48Z",
+      "content_hash": "b4347088f471aaf6515009d60f70d400b10139a2c3537f9fa5288890d682def5",
+      "modified": "2026-09-24T17:59:49Z",
       "path": "handoffs/active/model-stack-single-source-update-pipeline.md",
-      "size": 50290,
+      "size": 52797,
       "title": "Model Stack Single-Source Update Pipeline",
       "type": "handoff-active"
     },
@@ -1204,10 +1199,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "17259ad2ae803910ddc6d620fe2d5b781805fe655351a43bda5d073ce3dbbc37",
-      "modified": "2026-09-24T16:06:26Z",
+      "content_hash": "ec803f8026335a1befb47dbb959c59cc3f86e20c5c141d4c5b3e627c31010fbb",
+      "modified": "2026-09-24T17:45:03Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 84848,
+      "size": 86012,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1316,8 +1311,8 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "128a6d098425d6e70b3ba160a05faa04aa3ca4cc8f9a0cc06c2e1ac7204363bc",
-      "modified": "2026-09-24T16:07:43Z",
+      "content_hash": "409c98d53b137c81591c56b92050c5a8cefc3ca85a5fd830d8baa084be9b2795",
+      "modified": "2026-09-24T17:45:03Z",
       "path": "handoffs/active/typed-decision-plane.md",
       "size": 79448,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
@@ -1340,10 +1335,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f6c175ad6283208183b88256d1a89fcbbdec8879159da3cca7d5ff73ef89f8af",
-      "modified": "2026-09-24T13:19:52Z",
+      "content_hash": "e494b5d909913363ce7679adef51b3a8742ebd363879b38b31ffc3601ad4dd36",
+      "modified": "2026-09-24T17:55:26Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 243803,
+      "size": 247368,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -7948,10 +7943,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "392f6d61f691a7cbb14ba8a3917e87de6f5064d3d8674e8b36c96f3975b8bbb6",
-      "modified": "2026-09-24T13:27:14Z",
+      "content_hash": "46bf21b56d6d26ee0a509c68d360b448b5749212311458f401a8fe1354520cbf",
+      "modified": "2026-09-24T18:08:43Z",
       "path": "progress/2026-09/2026-09-24-main-ak-seat.md",
-      "size": 15550,
+      "size": 25534,
       "title": "2026-09-24 \u2014 main-ak-seat (DS41 run 7 halt, autokernel actor-seat repair, planner A/B)",
       "type": "progress"
     },
@@ -7973,17 +7968,25 @@
     },
     {
       "content_hash": "ab8794eddddc4b4af36d14606216310422b2a61fc401d0487a9416fa0eed54fe",
-      "modified": "2026-09-24T14:25:16Z",
+      "modified": "2026-09-24T17:45:03Z",
       "path": "progress/2026-09/2026-09-24-qwen-image-production-cutover.md",
       "size": 1520,
       "title": "2026-09-24 \u2014 Qwen-Image-2.1 production cutover and session wrap-up",
       "type": "progress"
     },
     {
-      "content_hash": "652b51534d33bc823481dd40363360b8f22589b180e92bf18f7e557f8f491652",
-      "modified": "2026-09-24T13:57:14Z",
+      "content_hash": "686c9decbf35ef987a6461dbd092cf642948c919a7cf7bdf4beee200ca793c6b",
+      "modified": "2026-09-24T17:45:03Z",
+      "path": "progress/2026-09/2026-09-24-td21-wrapup2.md",
+      "size": 6061,
+      "title": "2026-09-24 \u2014 operator-invoked wrap-up for TD-21 late-afternoon delta (td21-wrapup2)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d7c6124f6d2f8876f913ad57d5b2b3dc2c4bebcebf5553e054a869d8bf6ab3ec",
+      "modified": "2026-09-24T17:45:03Z",
       "path": "progress/2026-09/2026-09-24-td21.md",
-      "size": 13483,
+      "size": 15009,
       "title": "2026-09-24 \u2014 TD-21 free-text JSON consumer conversions (operator dispatch; no roster lane)",
       "type": "progress"
     },
@@ -8852,7 +8855,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1103,
+  "total_new": 1105,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

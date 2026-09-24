@@ -1,0 +1,8 @@
+{
+  "schema": "epyc.stack_change_scratch.v1",
+  "taken_at": "2026-09-24T13:40:47Z",
+  "research_head": "21ca61b0a8a849913167ecdafb7c66ef873e6d72",
+  "orchestrator_head": "71be6ed3fbfc2ae81f0e23b119a25f36e694dc65",
+  "research_dirty": true,
+  "orchestrator_dirty": false
+}

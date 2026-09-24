@@ -1,0 +1,27 @@
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -1449,7 +1449,23 @@
+                                      # 3.2x the 35B's corrected 20.0 — but that density no
+                                      # longer caps this process anywhere near where the
+                                      # block_count form said it did.
+-      vram_non_kv_gib: 27.33         # 29.36 GiB resident (/sys/class/kfd, pid 2019908, 2026-08-02)
++      # ── 2026-09-24 (stack-change-kvu): 27.33 -> 33.03. UNVALIDATED until bring-up. ──
++      # 27.33 was measured on a DIFFERENT artifact (Qwen3.6-27B-MTP, -c 16384, 2026-08-02)
++      # and ignored three terms this process carries (SSU-F3,
++      # epyc-root artifacts/operator/vram-gap-27b-20260923.md). Re-derived:
++      #   KFD, pid 3343847, 2026-09-24 (np 2, split KV):  41,507,569,664 B = 38.657 GiB
++      #   - attention KV (server-reported 6528.00 MiB)                     =  6.375
++      #   = measured non-KV at the split shape                             = 32.282
++      #   + unified-KV KQ-mask growth, target + MTP draft graphs (2x384 MiB) =  0.750
++      #   = 33.03  <- DERIVED, not yet read. Re-read at bring-up from KFD DURING residency
++      #              and replace this line with the measured figure.
++      # ⚠ A SCALAR VALID AT ONE SHAPE ONLY: slots 2, --spec-draft-n-max 8, kv_unified true,
++      # n_ctx 196608. Each extra slot adds 1.315 GiB of GDN recurrent state
++      # (156,893,184 B x (1 + draft_max)); each unit of draft depth adds 0.292 GiB at 2 slots.
++      # The structural fix (separate RS / draft-KV / compute terms) is SSU-F3's, not this one's.
++      vram_non_kv_gib: 33.03
++      # superseded provenance, kept for audit:
++      # (was) vram_non_kv_gib: 27.33 # 29.36 GiB resident (/sys/class/kfd, pid 2019908, 2026-08-02)
+                                      # minus the 2.03 GiB of q8_0 KV it was then holding at -c 16384.
+                                      # GGUF on disk is 27.05 GiB, so ~0.28 GiB is graph buffers.
+                                      # NOT `vram_gib: 36.70` below — that figure is KV-INCLUSIVE.

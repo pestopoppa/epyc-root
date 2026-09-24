@@ -2,8 +2,111 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-24 (operator wrap-up compile #2, main-ak-seat: the seat A/B resolved — the plain seat wins on wall, 31.9 vs 44.3 min, and the bounded seat's loss is perf-tool time, not deliberation; offered subagents, the 27B never delegated; every arm compacted once because the conversation is append-only; research main 21ca61b0 and run 8); earlier: 2026-09-24 (operator wrap-up compile, main-ak-seat: run 7 lost a finished 27B proposal to two actor-seat defects, fixed on a research lane; a bounded opencode seat whose replaced system prompt made each step ~6x longer — the planner's context is filled by its own deliberation, not by tool output; a perf "no samples" that was a symbol-filter miss; SIGTERM is a drain that never reaps the in-flight actor; the orchestrator-as-backend program INF-78); earlier: 2026-09-24 (wrap-up compile: the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase; the planner seat moved to the production 27B on the MI210; all three in-tree profilers are wired into the loop and kept out of ranked A/Bs; a schema-constrained repair turn replaced 90-minute retries-from-zero; the v10 folded-lineage fix reached this campaign before its first recorded candidate); earlier: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
-**Sources**: 137+ documents (added 2026-09-24 operator wrap-up compile #2: deepseek-v41-flash-evaluation DS41-C20/C20c/C20d/C22/C23/C24 and its completed-through-2026-09-24 sibling, autokernel-orchestrator-actor-backend §Baseline/OAB-7/OAB-8, vidya VB-AK-SEAT-a/b1/b2/b1v, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 operator wrap-up compile: deepseek-v41-flash-evaluation DS41-C10/C18/C20/C20a-c/C21/C22/C23, autokernel-orchestrator-actor-backend (INF-78), repl-turn-efficiency S4-T1/T2, harness-selection HS-4 P6/P7, vidya VB-AK-SEAT, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 wrap-up compile: deepseek-v41-flash-evaluation DS41-C12/C14/C15/C16/C17/C10/C18 and the 2026-09-24 main-dsv41 progress log) (added 2026-09-23 evening wrap-up compile: deepseek-v41-flash-evaluation DS41-C2b/C2e/C5/C10/C11/C13, autokernel-restart-and-strip AK-INST-2, the 2026-09-23 main-dsv41 progress log) (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
+**Last compiled**: 2026-09-24 (evening wrap-up compile, main-ak-seat: DS41 run 8 lost its batch-0 planner reply to the 98,304-token split-KV slot — C20 refused the empty reply, the actor-seat call record captured it and ingests refused=0 (VB-AK-SEAT-b1v closed, b1w filed); the operator stopped run 8 at ~15:32Z because region locks held through full-target calibration blocked production /chat, and TERM during calibration only drains (DS41-C26); run 9's prerequisites are ordered (DS41-C25); the shared research clone's fast-forward is blocked by untracked copies git will not overwrite even when identical (DS41-C10a); OAB-4a pins :8083's KV mode per arm); earlier: 2026-09-24 (operator wrap-up compile #2, main-ak-seat: the seat A/B resolved — the plain seat wins on wall, 31.9 vs 44.3 min, and the bounded seat's loss is perf-tool time, not deliberation; offered subagents, the 27B never delegated; every arm compacted once because the conversation is append-only; research main 21ca61b0 and run 8); earlier: 2026-09-24 (operator wrap-up compile, main-ak-seat: run 7 lost a finished 27B proposal to two actor-seat defects, fixed on a research lane; a bounded opencode seat whose replaced system prompt made each step ~6x longer — the planner's context is filled by its own deliberation, not by tool output; a perf "no samples" that was a symbol-filter miss; SIGTERM is a drain that never reaps the in-flight actor; the orchestrator-as-backend program INF-78); earlier: 2026-09-24 (wrap-up compile: the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase; the planner seat moved to the production 27B on the MI210; all three in-tree profilers are wired into the loop and kept out of ranked A/Bs; a schema-constrained repair turn replaced 90-minute retries-from-zero; the v10 folded-lineage fix reached this campaign before its first recorded candidate); earlier: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
+**Sources**: 138+ documents (added 2026-09-24 evening wrap-up compile: kv-unified-stack-rollout RTG-57 KVU-1/KVU-11a (new), deepseek-v41-flash-evaluation DS41-C10 run-8 stop/C10a/C25/C26, vidya VB-AK-SEAT-b1v/b1w, autokernel-orchestrator-actor-backend OAB-4a, the 2026-09-24 main-ak-seat progress log §Stack-configuration window) (added 2026-09-24 operator wrap-up compile #2: deepseek-v41-flash-evaluation DS41-C20/C20c/C20d/C22/C23/C24 and its completed-through-2026-09-24 sibling, autokernel-orchestrator-actor-backend §Baseline/OAB-7/OAB-8, vidya VB-AK-SEAT-a/b1/b2/b1v, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 operator wrap-up compile: deepseek-v41-flash-evaluation DS41-C10/C18/C20/C20a-c/C21/C22/C23, autokernel-orchestrator-actor-backend (INF-78), repl-turn-efficiency S4-T1/T2, harness-selection HS-4 P6/P7, vidya VB-AK-SEAT, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 wrap-up compile: deepseek-v41-flash-evaluation DS41-C12/C14/C15/C16/C17/C10/C18 and the 2026-09-24 main-dsv41 progress log) (added 2026-09-23 evening wrap-up compile: deepseek-v41-flash-evaluation DS41-C2b/C2e/C5/C10/C11/C13, autokernel-restart-and-strip AK-INST-2, the 2026-09-23 main-dsv41 progress log) (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
+
+## Compiled Update — 2026-09-24 (evening): DS41 run 8 stopped for the stack window; the run-9 order; calibration ignores a drain
+
+**Confidence: verified.** Sources: the run-8 stop record, the one actor-call line run 8 wrote, and the DS41 / RTG-57 /
+INF-78 handoffs. Run 8 ended at iteration 0 with 0 measurements, so nothing here is a campaign result.
+
+### Key findings
+
+- **Run 8's first planner reply was lost to a 98,304-token ceiling, and nothing was fabricated.** Batch 0's planner
+  call ran 13:12:03→13:32:39Z (`wall_s` 1235.7, rc 0) and returned 0 bytes of stdout. The 27B hit `finish=length` at
+  `:8083`'s per-slot limit. The DS41-C20 fix refused the empty reply safely instead of repairing it into an invented
+  proposal. The registry said `:8083` serves a unified 196,608-token pool, so the cap should not have existed.
+  Production was never unified:
+  - the frozen v10 server turns on `kv_unified` only when `-np` is absent (`tools/server/server.cpp:145-150`);
+  - the orchestrator always passes `-np`;
+  - so `:8083` (`-np 2 -c 196608`) gives each request 98,304 tokens.
+
+  This is the failure the `-kvu` package removes. The KV-side diagnosis lives in [kv-cache](kv-cache.md) and RTG-57.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10 run-8 STOPPED note;
+  [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md))
+- **The actor-seat call record captured the lost reply faithfully, which closes VB-AK-SEAT-b1v.** Run 8 wrote exactly
+  one line, at `state-run8/targets/71f54ec4…/workers/actor-replies/actor-calls.jsonl`. It is a planner call, schema
+  `epyc.autokernel.actor_call.v1`, rc 0, `wall_s` 1235.7, stdout 0 bytes. Running
+  `cli.py ingest ak-actor-seat --as-of 2026-09-24T18:00:00Z --dry-run` gives matched=1, projected=1, declined=0 and
+  **refused=0**. So the producer is proven on a real campaign call.
+  - What the record cannot say yet is which server build and model answered. `server.build_info` and
+    `server.served_model` are both `null`.
+  - VB-AK-SEAT-b1w fills them from `/props`, read once per actor process. It also adds per-slot `n_ctx` (98,304
+    split vs 196,608 unified on `:8083`), because that value decides whether a reply could have been truncated.
+
+  ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) VB-AK-SEAT-b1v, VB-AK-SEAT-b1w)
+- **Why the operator stopped it (~15:32Z): the region locks, held through calibration, starved production.** `run.py`
+  held **every CPU region lock** through the full-target floor calibration, and that timed out the production
+  frontdoor's `/chat` on `:8070`. Batch 1 was ~2 h into the first full-target calibration: 48 `matched_process_v2`
+  launches, each reloading the 519 GB model. That partial was discarded. The half-screen floor stays cached
+  (`state-run8/STOPPED.txt`). No separate task was filed for the lock-holding itself, because OP-41 owns admission
+  control; DS41-C25 carries it as a scheduling constraint.
+  ([2026-09-24 main-ak-seat progress](../progress/2026-09/2026-09-24-main-ak-seat.md) §"Run 8 stopped")
+- **TERM during calibration only drains (DS41-C26).** DS41-C22 made a stop TERM the in-flight actor's process group,
+  but it covers actor calls only.
+  - What happened during calibration: TERM to `serial_run` and `run.py` drained, and calibration then started its
+    next `matched_process_v2` launch (llama-server 3961920).
+  - Ending the run took KILL on `run.py` (3508990), `serial_run` (3359620) and that calibration server. All three
+    were verified dead, and the region locks were free afterwards.
+  - The fix: calibration consults `should_stop()` before each launch. On a stop it TERMs its own captured
+    llama-server pid (never a name pattern), and it discards the partial floor without caching it.
+  - The test: a fake launcher with a stop requested mid-series must launch nothing further, reap its child and exit.
+
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C26)
+- **Run 9 has an ordered list of prerequisites (DS41-C25), because floors are bound to the anchor.** Any anchor
+  advance must land before run 9's first full-target calibration, which costs ~4 h per scope.
+  1. OP-52 CPU window for the SW-9 spec-accept-probs fix: `experimental/mtp-spec-probs-fix-20260924` @ `2b57340bf`,
+     which is the champion `ak/champion/llama-cpp-ffc1bac82eec` @ `8df1b5cf2` + 1. It needs build, tests, the MTP
+     n_probs check and a speed A/B. The operator gave the ADMIT, and its preconditions are met: C1 STT/TTS finished
+     17:10Z, and the operator skipped the Flash-Next matrix at 17:25Z.
+  2. Fast-forward the champion to the fix (the TD-21 session's step, SW-9).
+  3. Rebase the DS41 port onto the new tip. The anchor `ebb68dc55` is a clean descendant of `8df1b5cf2` (+6), so the
+     rebase is expected to be mechanical. This step is main-ak-seat's.
+  4. Rebuild the anchor. Its first full-target calibration (~4 h) is owed.
+  5. DS41-C10a (shared research clone fast-forward, below) and DS41-C24 (`EPYC_ROOT_REPO` off the lane worktree).
+  6. `-kvu` live on `:8083` and `cache_ram` sized (RTG-57 KVU-1/KVU-2, operator OP-54/OP-55), so the planner gets a
+     196,608-token slot.
+
+  Acceptance: run 9's launch line names the rebuilt anchor, a research commit ≥ `34373dd8`, no lane path and a
+  `-kvu` `:8083`, and its first planner reply is not truncated at 98,304 tokens. The calibration window must be
+  agreed with the operator, because it blocks the production frontdoor for hours.
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C25;
+  [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding-mtp-refresh.md) SW-9)
+- **The shared research clone cannot fast-forward past its own untracked copies (DS41-C10a blocker).** Research main
+  now tracks `artifacts/np_context_kvu_study_20260924/{driver,q38_27b_q8,q38_27b_q8_h,q38_27b_q8_depth}/` and
+  `artifacts/speech_cpu_realtime_20260924/`, and the shared clone still holds untracked copies of the same files.
+  **`git merge --ff-only` refuses to overwrite untracked files, even identical ones (checked).**
+  - The kvu copies are checksum-identical to research `21cf444c`.
+  - The speech copies are not. An `smtC` follow-up run kept writing there after the 17:14Z snapshot, so that delta
+    is committed first (RTG-57 KVU-11a).
+  - Then: `sha256sum -c SHA256SUMS` each copy against the committed checksums, remove only the copies that match,
+    and fast-forward.
+  - The 35B `q36_35b_a3b_q8_h/` directory is not tracked yet and must be left alone.
+
+  ([deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) DS41-C10a;
+  [kv-unified-stack-rollout](../handoffs/active/kv-unified-stack-rollout.md) KVU-11a)
+- **Every OAB-4 arm must pin and record `:8083`'s KV mode (OAB-4a).** Unified and split KV give different outputs at
+  the same seed, because float summation order changes. Once `-kvu` lands, the per-request ceiling also moves from
+  98,304 to 196,608 tokens.
+  - An arm pair that straddles the `:8083` reload compares two servers, not two backends.
+  - For each arm, record `kv_unified` from the launch log and `n_ctx` from `/props`, and run both arms of a pair on
+    the same server generation.
+  - OAB-7's "~38k of the 98k slot" is the split-KV ceiling.
+
+  ([autokernel-orchestrator-actor-backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) OAB-4a)
+- **Generalisable shape:** the empty reply became a diagnosis rather than a fabricated proposal because of two
+  pieces landed earlier the same day. The C20 refusal kept the loop from inventing content, and the call record kept
+  the evidence (rc 0, 1235.7 s, 0 bytes) that pointed at the slot ceiling instead of at the model.
+
+### Source References (2026-09-24 evening)
+
+- [deepseek-v41-flash-evaluation.md](../handoffs/active/deepseek-v41-flash-evaluation.md): DS41-C10 (run 8 STOPPED
+  note), DS41-C10a (blocker note), DS41-C25, DS41-C26.
+- [kv-unified-stack-rollout.md](../handoffs/active/kv-unified-stack-rollout.md) (RTG-57): KVU-1, KVU-11a.
+- [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md): VB-AK-SEAT-b1v
+  (proven), VB-AK-SEAT-b1w.
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): OAB-4a.
+- [2026-09-24-main-ak-seat.md](../progress/2026-09/2026-09-24-main-ak-seat.md): §"Stack-configuration window".
 
 ## Compiled Update — 2026-09-24 (operator wrap-up compile #2): the seat A/B resolved — plain wins on wall, bounded loses on tool time, and nobody delegates
 
