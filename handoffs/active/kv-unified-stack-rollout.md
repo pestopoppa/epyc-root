@@ -3,7 +3,7 @@
 **Status**: ACTIVE. The GPU-residency package (OP-54) is **applied and serving-proven** (2026-09-24 ~18:45–18:55Z,
 orch `0a564a1f`, research `75ee1b8e`): :8083 runs `-np 4 -c 196608 --kv-unified --spec-draft-n-max 4 -ub 2048
 --cache-ram 65536`, STT/TTS run on CPU cores 0-23 / 24-39. The overflow branch and the gate fix are merged. What is
-left: the CPU-speech contention decision (OP-57, KVU-11b), the depth-4 production confirmation (KVU-1b / M-3b),
+left: the depth-4 production confirmation (KVU-1b / M-3b),
 the opencode limit (KVU-1a, operator), and the follow-ups below.
 **Created**: 2026-09-24 (main-ak-seat, stack-configuration window)
 **Priority**: HIGH. :8083 caps every request at 98,304 tokens today, and that ceiling emptied DS41 run 8's planner reply.
@@ -70,8 +70,9 @@ is olympiad-style reasoning.
 
 ## Start here
 
-0. **2026-09-24 ~19:50Z:** OP-54 applied and serving-proven (KVU-1). The open operator decision is **OP-57**: CPU
-   speech is not real time while a `-t 96` CPU LLM role generates, and the collision is two-sided (KVU-11b).
+0. **2026-09-24 ~19:50Z:** OP-54 applied and serving-proven (KVU-1). CPU speech is not real time while a `-t 96` CPU
+   LLM role generates, and the collision is two-sided (KVU-11b). Operator decision 2026-09-24: **D, no change**,
+   superseded by the operator's forthcoming STT/TTS integration plan.
    Everything below this line is the history of how the package got signed.
 1. OP-54 (package signature) gates KVU-1. **Operator rulings 2026-09-24 ~17:50-18:10Z:** OP-55 decided — ALL recommended (reroute only `ingest_long_context`; route by the LIVE per-request limit instead of the ~5k threshold; cache_ram 65536 :8083 / 32768 :8070 / 16-32k :8074 / 0 :8086 via the package; opencode bypass = live /slots + retry, /v1 routing later under HS-4). OP-56 decided — move whisper STT to CPU ("move it back to CPU"); cores from the option-C (SMT siblings) result; it is what makes :8083 `-np 4` fit. OP-52 (CPU window for the MTP-probs fix) granted and validated by the TD-21 session. Revised package in preparation (np4 + kvu + O-2 + depth 4 + whisper→CPU). Work everything else
    meanwhile.
@@ -282,7 +283,11 @@ is olympiad-style reasoning.
   - Couples with OP-48 (capacity gate sees speech VRAM) and package N-5 (TTS does not fit next to kvu today).
   - The operator is drafting a separate conversation-stack handoff (STT → frontdoor → TTS). Do not file the
     omni/Moshi intake here.
-- [ ] **KVU-11b — CPU speech is not real time while a CPU LLM role generates: decide and apply (OP-57).**
+- [x] **KVU-11b — CPU speech is not real time while a CPU LLM role generates: decided.** ✅ 2026-09-24
+  **Operator decision 2026-09-24 ~20:00Z (first-hand to main-ak-seat): option D, no change to the layout.** The
+  operator is drafting a larger STT/TTS integration plan that supersedes options A-C; the measurements below are its
+  input, collected in [`docs/reference/speech/cpu-speech-contention-20260924.md`](../../docs/reference/speech/cpu-speech-contention-20260924.md).
+  Do not re-propose partitioning or a throttle as standalone work.
   Measured 2026-09-24 19:19–19:43Z against the live layout (research
   `artifacts/speech_cpu_realtime_20260924/README.md` addendum 3, `6afc7eed`; harness `live_llm_contention.py`):
   - With :8074 or :8070 generating (`-t 96` on 0-95): STT RTF ≥ 58 (one 11 s clip took ~10.7 min), TTS first
@@ -292,11 +297,11 @@ is olympiad-style reasoning.
     marginal (first packet 0.24–1.0 s, RTF 0.93–1.40 vs 0.55–0.63 quiet), LLM decode −22..26% (23.0 / 24.5 vs
     31.1 / 31.3 tok/s). The frontdoor under the same partition was not measured (inferred similar).
   - No priority-pause mechanism exists today.
-  - Options (OP-57): **(A, recommended)** partition the CPU LLM roles to 40-95 **and** move TTS back to the GPU
+  - Options presented: **(A, was recommended)** partition the CPU LLM roles to 40-95 **and** move TTS back to the GPU
     (0.92 GB of weights; re-check VRAM headroom against the np4 :8083 + VL resident set first); (B) partition
     only (TTS stays marginal); (C) keep the layout and build a decode throttle that pauses LLM decode while TTS
     streams; (D) do nothing (any speech request during a `-t 96` generation wrecks both).
-  - Acceptance for A/B: the live-contention harness re-run against the new layout gives STT RTF < 0.5 and TTS
+  - Acceptance that would have applied to A/B (keep for the operator's plan): the live-contention harness re-run against the new layout gives STT RTF < 0.5 and TTS
     first packet < 1 s with a CPU LLM generating, and the LLM decode loss is recorded.
   - The voice-pipeline handoff the operator's parallel agent is drafting must carry this contention as a
     requirement; that handoff did not exist at 2026-09-24 ~19:50Z, so no cross-reference was written.
@@ -314,9 +319,9 @@ is olympiad-style reasoning.
 - Package §10 items that the overflow branch already fixes: the 20,000-char routing threshold (now tokens and
   capacity-fenced), the 32768 compaction fallback, and 400 / "Context size has been exceeded." handling.
 - The speech addendum's "priority pause instead of partitioning" alternative: not filed as its own task, because a
-  pause cannot act mid-token and no mechanism exists; it survives as OP-57 option C (KVU-11b).
-- Frontdoor-under-partition measurement: not filed separately; it is part of KVU-11b's acceptance re-run for
-  options A/B.
+  pause cannot act mid-token and no mechanism exists; it survived as option C (KVU-11b; operator chose D).
+- Frontdoor-under-partition measurement: not filed; the operator chose D (KVU-11b), and any re-run belongs to
+  the operator's STT/TTS plan.
 - A Stage-1 intake sweep of the audit's new primary sources (vLLM / SGLang / TGI / TRT-LLM / LMDeploy / LMCache
   docs): no claim here relies on them. Intake runs only when the operator invokes it.
 
@@ -332,4 +337,5 @@ is olympiad-style reasoning.
 
 ## Reporting
 Flip the box here, update RTG-57's `Next action`, and append to `progress/YYYY-MM/`. Operator decisions go through
-the master index: OP-54, OP-55 and OP-56 are decided and applied; OP-57 (CPU speech contention, KVU-11b) is open. The gate's known-gap choice was decided before filing: option A.
+the master index: OP-54, OP-55 and OP-56 are decided and applied; the CPU speech contention (KVU-11b) was decided D (no change) by
+the operator directly, with no queue row. The gate's known-gap choice was decided before filing: option A.

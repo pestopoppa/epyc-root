@@ -1,8 +1,9 @@
 # CPU speech vs CPU LLM roles, and the GPU constraints behind it (2026-09-24)
 
 Reference for anyone planning STT/TTS layout, voice turns, or :8083 capacity. It collects what was measured
-on 2026-09-24 so the next plan starts from numbers, not from memory. It records no decision. The
-decision history is in [`handoffs/active/kv-unified-stack-rollout.md`](../../../handoffs/active/kv-unified-stack-rollout.md)
+on 2026-09-24 so the next plan starts from numbers, not from memory. **Decision 2026-09-24: the operator chose
+option D (no change to the layout)** because a larger STT/TTS integration plan is being drafted; options A-C below
+are input to that plan, not pending work. The decision history is in [`handoffs/active/kv-unified-stack-rollout.md`](../../../handoffs/active/kv-unified-stack-rollout.md)
 (RTG-57, KVU-11 and KVU-11b).
 
 **Primary sources.** Each number below comes from one of these. Where they disagree with this page, the

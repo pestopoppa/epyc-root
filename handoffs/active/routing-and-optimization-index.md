@@ -59,7 +59,7 @@
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-1d.0 — re-settle the n=1 acceptance: a 4-round re-measure gives 9.60x vs the accepted 11.98x, bar not cleared | — |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-1 — on OP-54 sign-off apply the revised GPU-residency package (np4+kvu, whisper→CPU); KVU-3 land overflow branch | RTG-19, RTG-36, INF-41 |
+| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-1b/M-3b — re-read depth 4 vs 8 at ~175 organic requests; KVU-1a opencode limit | RTG-19, RTG-36, INF-41 |
 
 ## Cross-domain
 

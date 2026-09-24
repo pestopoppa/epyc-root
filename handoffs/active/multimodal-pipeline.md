@@ -318,9 +318,9 @@ Do not rebuild the C++ accelerator — its source is lost and it never worked.
   `orchestration/contention_matrix.yaml` is stale (topology hash 171f86f9 ≠ live 1c548fce, last refreshed
   2026-08-23) — refreshing it is a live bench sweep (`scripts/server/contention_matrix.py`), i.e. inference.
   - *Cross-reference 2026-09-24 ~19:50Z:* speech on CPU is **not real time while a `-t 96` CPU LLM role
-    generates** (STT RTF ≥ 58, TTS first packet ~13 s, and the LLM collapses too). Decision OP-57 and the
-    follow-up live in [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md) KVU-11b; option A would return
-    TTS to the GPU, which would revive this item's fold for TTS only.
+    generates** (STT RTF ≥ 58, TTS first packet ~13 s, and the LLM collapses too). The operator chose D
+    (no change) on 2026-09-24 pending their own STT/TTS integration plan ([`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md)
+    KVU-11b; numbers in `docs/reference/speech/cpu-speech-contention-20260924.md`).
 - [ ] **S-14 — upstream the gfx90a argsort fix** (thread-strided bitonic sort) to the qwentts.cpp / ggml fork as wrap-up hygiene. Operator-sanctioned; no dependency on our own kernel cycle.
 - [x] **S-15 — set `max_tokens ≥ 1024` on the vision role.** A `max_tokens=128` cap silently penalised reasoning models during vision evaluation (3 parse failures for the incumbent vs **41 and 50** for the Qwen3-VL arms — truncated mid-reasoning and scored wrong). Even at 2048 the Qwen3-VL models emit no letter on ~9 % of hard questions, so 1024 is a floor, not a target. This is a **production config change**, not an evaluation-harness change.
       ✅ 2026-09-23 — `default_vl_max_tokens` 512→1024 (epyc-orchestrator `8a8e391c`); chat vision routes already request 2048. LIVE: API reloaded 2026-09-23 20:31Z (pid 2815541 on orch `3c6721ef`), config reads 1024.
