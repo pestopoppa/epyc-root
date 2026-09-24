@@ -112,11 +112,11 @@ ERAS="${ORCH_ROOT}/orchestration/instrument_eras.yaml"
 TEST_FILE="${ORCH_ROOT}/tests/unit/test_debug_scorer_td21_parse_exclusion.py"
 ERA_ID="E19-eval-answer-parse-failure-excluded-quality"
 # The TD-21.11..21.14 commits on the epyc-orchestrator td21/scorer branch (landed
-# 2026-09-24): 4362f140 lands the four-site conversion DEFAULT-OFF; 5c105473 reverts the
+# 2026-09-24): af8a4a1b lands the four-site conversion DEFAULT-OFF; 940e0553 reverts the
 # out-of-scope fish_json swap on _is_valid_json, arm-keys the parse-failure counters, and
-# wires the per-arm rate into EvalTower._aggregate; 3f258c77 hardens the one SCORE-26
+# wires the per-arm rate into EvalTower._aggregate; ec412724 hardens the one SCORE-26
 # golden fixture that this flip would otherwise make stale.
-TD21_COMMITS=(4362f140 5c105473 3f258c77)
+TD21_COMMITS=(af8a4a1b 940e0553 ec412724)
 SENTINEL_OLD_FLAG='EXCLUDE_UNPARSEABLE_ANSWERS = False'
 SENTINEL_NEW_FLAG='EXCLUDE_UNPARSEABLE_ANSWERS = True'
 SENTINEL_OLD_TEST_MARK='#EQ1_RATIFICATION_TEST_SENTINEL: EXCLUDE_UNPARSEABLE_ANSWERS ships False'
