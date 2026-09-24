@@ -87,13 +87,21 @@ episodic memory writing."
       baseline (n>=4, alternated) and keep the acceptance if it survives, or downgrade "ACCEPTED" to
       "best-effort 6.4–9.6x, bar not cleared". Do not adopt id_only as the native default on the n=1 number
       alone. Inference-gated (one short window; the whole sweep above took ~20 min including model load).
-  - [ ] **TD-1d.1 — `/v1` drops `grammar`/`json_schema`, so the native path cannot run through `LLMPrimitives`.**
+  - [x] **TD-1d.1 — `/v1` drops `grammar`/`json_schema`, so the native path cannot run through `LLMPrimitives`.**
     `frontdoor` routes to `/v1/chat/completions` (`use_chat_completions=True`), which forwards neither field:
     measured 515 free-form tokens and **0/24 decisions** (`native_unknown_candidate` x16). Every arm above used a
     direct `/completion` adapter mirroring `_build_payload`, and TD-1c's result must have gone the same way.
     **No typed-decision arm is deployable through the normal primitives path until this is closed** — decide
     whether `/v1` forwards the fields for internal callers, or whether typed decisions keep a declared direct
     `/completion` lane. Zero inference to decide.
+    ✅ 2026-09-24 — closed by **TD-21.0** (folded here, per the TD-21 dispatch): `/v1` now forwards both
+    (orch `b284ede3`), so no declared `/completion` lane is needed. Verified live on frontdoor :8070 through
+    `LlamaServerBackend` (same prompt: prose without a schema, schema-valid JSON with one) and end to end through
+    the reloaded API (`/chat` + `output_schema` + `force_role=frontdoor` → `{"answer": true, "city": "Paris"}`).
+  - [ ] **TD-1d.2 — re-run the TD-1d native arm through `LLMPrimitives` on frontdoor.** The 0/24 above was the
+    dropped grammar; the schema path is now live, but the native candidate-probability readout over `/v1`
+    (`logprobs`/`top_logprobs` instead of `/completion`'s `n_probs`) has not been re-measured. One short window
+    with `src/typed_decisions/bench.py`; schedule it outside a CPU-decode campaign window.
   - [ ] **TD-1d.2 — concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`**
     (probed: parallel wall == serial wall, max 1 slot busy). A constraint on every future fan-out design, not
     just this one; independently matches the 09-17 note's `heavy_model` lock observation.
@@ -158,7 +166,7 @@ episodic memory writing."
   wrong answer). Cite intake-1472 (contract) and intake-1473 (pattern set); the measured warrant is TD-4
   (closed-set 18/18 vs free-form 6/18, the free-form failures being parse/schema failures) and the 2026-08-13
   review-plane rate of 4.1% parse failure over 1,366 `review_decision` events.
-  - [ ] **TD-21.0 — PREREQUISITE: forward `response_format`/`json_schema` on the `/v1` chat payload.**
+  - [x] **TD-21.0 — PREREQUISITE: forward `response_format`/`json_schema` on the `/v1` chat payload.**
     `src/backends/llama_server.py:607-616` (and the streaming variant at `:1397`) builds the chat payload with
     `messages`/`max_tokens`/`stream`/`tools`/`logprobs`/`stop`/`chat_template_kwargs` and **no schema field**,
     while the native `/completion` builder forwards both (`:1228-1231`). So every role on the `/v1` lane —
@@ -168,6 +176,20 @@ episodic memory writing."
     llama-server's own `/v1` DOES honour `response_format json_schema` (`actors.py:305-318`, live on :8083),
     so the fix is three lines in our payload builder, not a declared `/completion` lane. Every TD-21.x
     conversion on a `/v1`-lane role is a no-op until this lands. Zero inference to decide.
+    ✅ 2026-09-24 — orch `b284ede3`: `_apply_schema_constraint` puts `response_format {type: json_schema}` and a
+    raw `grammar` on both the non-streaming and streaming `/v1` builders (every `llm_call` reaches them through
+    `_call_caching_backend` → `LlamaServerBackend.infer`); no-schema payloads are byte-identical; also fixed audit
+    X5 (`direct_stage.py` retry now forwards `n_probs`). 121 tests. Gates: `stack_change_pipeline check` at its
+    4-known-gap baseline, `validate_or_raise` OK, runtime attestation n/a (API-only change). API reloaded 09:57Z
+    (no autopilot, 0 connections on :8000); verified live — see TD-1d.1. Server note (frozen tree): with
+    `response_format` and `grammar` both set, precedence is chat-format-dependent, so callers pass one.
+  - [x] **TD-21.H — shared repair helper** ✅ 2026-09-24 — orch `c4570158` + `577ccc5e`:
+    `src/structured_output/repair.py` — `fish_json` (string-aware, fences first), `parse_with_repair` (fish →
+    full-schema Draft 2020-12 validation → optional stage-1 boolean decline turn → one extraction turn →
+    typed `failed`; never fabricates), `http_chat_completer` (temperature 0, thinking off, `model` on the wire)
+    and `primitives_completer`; counters `STRUCTURED_OUTPUT_REPAIR_COUNTS`. Closes the reference's TD-21.30
+    (b)(d)(e) weaknesses in the shared copy. 33 tests; live smoke on :8070: prose → `repaired` in one call,
+    an explicit refusal → `declined`, never a fabricated object.
   - [ ] **TD-21.1 — `repl_executor.py:671` REPL `FINAL()` schema validation** (validator `src/graph/helpers.py:1336`).
     Shape: the caller's `request.output_schema`. Today: strict `json.loads` + jsonschema with **retry from zero**
     — `turns=0`, role reset, the entire `run_task` graph re-run, up to 2 attempts, then the invalid answer is
