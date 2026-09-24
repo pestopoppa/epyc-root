@@ -490,6 +490,9 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   (c) opencode `--attach` with a larger `-c`. Measure proposals/hour before and after.
   Lever (b) now exists as the bounded seat's `tool_output` cap + output-capped MCP tools (DS41-C20);
   measure C18 on the `bounded` arm before reaching for (a) or (c).
+  First data point (bounded v1, 2026-09-24): lever (b) alone did NOT prevent the overflow — tool output fell to
+  42k chars yet the slot filled (97.7k) at step 12 from the model's own deliberation (1,626 decoded tokens/step);
+  re-read C18 against bounded v2 and the plain arm (DS41-C20c) before choosing between (a) and (c).
 - [ ] DS41-C10 — Watch run 7 (27B planner, schema repair active, started 09:10) into its first measured
   iteration; report planner→critic→author→build→A/B timings against the CPU planner's 41–97 min. Original:
   `state/loop-status.json` + `store/` (the 48 A/A launches each reload 519 GB, ~2 h); confirm the
@@ -498,9 +501,9 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   **Partial 2026-09-24:** run 7 STOPPED ~10:18 on operator request at iteration 0, 0 measurements
   (`state-run7/STOPPED.txt`). First 27B proposal `akm-q4k-q82x4-weight-prefetch` landed in ~39 min (09:16→09:55)
   but was discarded by an actor-seat defect, and the critic then rejected a repair-fabricated stand-in
-  (`src/verify/replay.ts`) — both fixed under DS41-C20. `serial_run` and `run.py` ignore SIGTERM and `run.py`
-  respawns the actor after its death: stopping needs TERM on the actor, then KILL on `run.py` + `serial_run`.
-  Carried to run 8, launched after DS41-C20.
+  (`src/verify/replay.ts`) — both fixed under DS41-C20. `serial_run` and `run.py` did not exit on SIGTERM and
+  `run.py` respawned the actor after its death: stopping needed TERM on the actor, then KILL on `run.py` +
+  `serial_run` (root cause and fix task: DS41-C22). Carried to run 8, launched after DS41-C20.
 - [ ] DS41-C11 — Pre-existing test failures found while landing `5125f7ab`, reproduced on a clean HEAD
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or
@@ -517,10 +520,12 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   already-imported modules; the next batch process loads the fix — no mid-process version mixing
   (all three modules are imported at load time).
 - [ ] DS41-C20 — **Bounded opencode seat: merge gate.** Research worktree
-  `/mnt/raid0/llm/tmp/ak-actor-seat-20260924` (`lane/ak-actor-seat-20260924`, uncommitted). Fixes the two
+  `/mnt/raid0/llm/tmp/ak-actor-seat-20260924` (`lane/ak-actor-seat-20260924`, committed as research
+  `e9495971` and pushed to the LANE only, not to research `main`). Fixes the two
   defects that cost run 7's iteration 0: (1) `_run_agent` discarded any rc≠0 reply unread — opencode exits 1
   after a recovered tool error (`(res.stderr || "").trim is not a function`), so a complete hypothesis was
-  retried from zero; now a reply COMPLETE for the caller's schema is salvaged, anything else stays a transient;
+  retried from zero; now a reply COMPLETE for the caller's schema is salvaged, and only when rc > 0 (a signal
+  death stays a transient); anything else stays a transient;
   (2) `_parse_reply` ran the constrained repair over an EMPTY retry reply and it invented
   `replay-verification / src/verify/replay.ts`; now no repair runs without a report, and a repaired
   `target_surface`/`target_symbol` the report never names is refused. Also: the opencode prompt now rides
@@ -531,20 +536,66 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   `MAX_CONCURRENT_SUBAGENTS=2`) + `loop/actor_tools_mcp.py` (outline / read_range / grep / code_search /
   profile_top / symbol_annotate, output-capped; runs under the orchestrator venv, the only one with `mcp`);
   `run.py --actor-seat {bounded,plain}` (default `bounded`), `--actor-fan-out`, `--actor-steps`; per-call
-  `actor-replies/actor-calls.jsonl`. Tests: actor suites 157 green; full `autokernel/loop` suite shows the
-  same 152 pre-existing failures as the branch point `e485008a` plus one flaky test failing on both — no
-  regression. Planner A/B `plain` vs `bounded` on the same run-7 prompt
-  (`/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`) is RUNNING — results pending. Reference for the plain seat,
-  first 27B proposal (opencode export): 71 steps, 70 tool calls (54 bash), 63.8k decoded tokens, 40.3 min,
-  2 compactions, 46k-token initial prompt, tool results up to 58 KB. Acceptance: (i) A/B result recorded here
+  `actor-replies/actor-calls.jsonl`. Later fixes the same day, all found by the A/B itself:
+  (3) **template echo** — opencode's compaction summary quotes the prompt's `{"abstain":"<reason>"}` template,
+  and the bounded-v1 driver recorded exactly that object as its "hypothesis"; `_extract_json` now skips
+  template-echo objects and refuses them as abstentions; (4) **actor stdout/stderr go to FILES, not pipes** —
+  opencode/Bun exits without draining a pipe: the same session export read 65,536 / 98,304 bytes via a pipe vs
+  328,871 via a file (`/mnt/raid0/llm/tmp/ak-seat-ab/bounded-ses_*.json` is the 98,304-byte truncated copy), and
+  the reply JSON is the TAIL, so a long run would lose it; (5) **config v2** — guidance rides an opencode
+  `instructions` file instead of an agent `prompt` that REPLACED opencode's terse default system prompt (the v1
+  cause below). Tests: actor suites **167** green (`test_actors`, `test_actor_opencode_config`,
+  `test_actor_tools_mcp`, `test_actor_lifecycle`, `test_actor_preparation`); full `autokernel/loop` suite shows
+  the same 152 pre-existing failures as the branch point `e485008a` plus one flaky test
+  (`test_gpu_runtime::test_gpu_calibration_actual_http_keeps_both_original_claims_and_device_trace`) failing
+  intermittently on both — no regression. Planner A/B `plain` vs `bounded` on the same (un-escaped, dieted)
+  run-7 prompt, 27B :8083, own detached lane `/mnt/raid0/llm/tmp/ak-seat-ab/lane` @ `ebb68dc55`
+  (`/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`). Reference for the plain seat,
+  first 27B proposal (run-7 opencode export): 71 steps, 70 tool calls (54 bash), 63.8k decoded tokens, 40.3 min,
+  2 compactions, 46k-token initial prompt, tool results 275k chars total (max 58 KB). **Bounded v1** (agent
+  `prompt` replaces opencode's system prompt): STOPPED at ~35 min (`wall_s` 2180.5,
+  `result-bounded-v1-stopped.json`) after **12 steps**, median **1,626 decoded tokens/step vs 266** on the plain
+  seat, one step 19k tokens, context full (97.7k) at step 12 → 1 compaction, tool outputs only 42k chars, 0
+  scouts used, no hypothesis (template echo). Reading: the context is filled by the model's own deliberation,
+  not by tool output — the output caps worked, the replaced system prompt made each step ~6x longer. **A/B
+  verdict PENDING**: the plain arm (new prompt) has run since ~11:19, bounded v2 is queued after it.
+  Acceptance: (i) A/B result recorded here
   with steps / tool calls / decoded tokens / wall / compactions per arm and the schema-valid verdict of each
   reply; (ii) committed on the lane and merged to research `main` only if `bounded` is not worse on wall AND
   yields a schema-valid hypothesis — otherwise keep `plain` as default and record why; (iii) the next
   campaign run launched from the merged tree, never from the worktree.
+  - [x] DS41-C20a — seat committed on the research lane (`e9495971`, 8 files, 167 tests green) and the lane
+    pushed as a backup; research `main` untouched pending (ii) ✅ 2026-09-24
+  - [x] DS41-C20b — bounded v1 arm run and stopped; numbers above; its failure produced fixes (3)–(5) ✅ 2026-09-24
+  - [ ] DS41-C20c — record the plain (new prompt) and bounded v2 arms with the five numbers + schema verdict.
 - [ ] DS41-C21 — **Hand the seat over as the reference an orchestrator backend must beat.** Once C20 records
   the A/B, copy the winning arm's five numbers into `autokernel-orchestrator-actor-backend.md` §Baseline
   (INF-78) and point that handoff's OAB-4 at `driver.py`. No further orchestrator work in this handoff: the
   campaign keeps `opencode` + 27B :8083 planner and the cloud critic (operator, 2026-09-24).
+- [ ] DS41-C22 — **A stop must reap a forming lane's in-flight actor, and never retry it.** Run 7's halt
+  (2026-09-24 ~10:17): TERM to `serial_run` + `run.py` did not end the run, and after the actor was TERM'd
+  `run.py` launched a new one (two `rc-15` replies, 10:17:04 and 10:17:49, in `state-run7/.../actor-replies/`).
+  Code read (research `e9495971`): SIGTERM is by design a *drain* (`run.py` `_ask_stop` → forming lanes abandon
+  at their next stage boundary; the tail holder finishes its A/B) — but a planner/critic call IS the stage, so a
+  forming lane waits out the whole actor call (up to `--actor-timeout-s`), and the actor retry inside that call
+  never consults `should_stop()`, so a signal-killed actor (rc −15) is retried as a transient. Fix: pass
+  `should_stop` into the actor call; when a stop is asked, TERM the in-flight actor of a FORMING lane (it holds no
+  device time) and treat its death as an abandon, never a retry; a lane holding the tail keeps today's drain.
+  Test: a fake backend killed by SIGTERM with stop asked → zero relaunches, lane abandoned, process exits.
+  Build it in a fresh worktree off `e9495971`, never in `/mnt/raid0/llm/tmp/ak-actor-seat-20260924` while C20c
+  runs (the queued bounded-v2 arm imports `actors.py` from there; editing it changes the arm under test).
+- [ ] DS41-C23 — **`symbol_annotate` must resolve the short symbol name the planner actually types.** Run 7's
+  planner ran `perf annotate --symbol='mul_mat_qX_K_q8_2_X4_T<DequantizerQ4K_AVX2, 1>' --dsos=libggml-cpu.so`
+  twice and got `... measurement-record.data data has no samples!`. The profile is NOT empty (checked read-only
+  2026-09-24: `store/cpu-profiles/cpu-raw-0316509f.../measurement-record.data` 25.7 MB, 114K `cycles:u` samples;
+  the same session's `perf report` shows that symbol at 19.28%). perf matches `--symbol` against the FULL
+  demangled name `void (anonymous namespace)::mul_mat_qX_K_q8_2_X4_T<(anonymous namespace)::DequantizerQ4K_AVX2,
+  1>(int, void const*, unsigned long, DataInfo const&, int)` and reports a filter that matched nothing as "no
+  samples". The bounded seat's `symbol_annotate` passes the name through unchanged, so it inherits the trap (its
+  message at least points at `profile_top`). Fix: resolve the requested name against the DSO's `perf report
+  --sort symbol` rows (exact, else a unique substring after stripping `(anonymous namespace)::` and the argument
+  list; ambiguous → list the candidates), then annotate the resolved full name. Test on the fixture with a
+  templated name. Same worktree rule as C22 (the A/B's MCP server is spawned from the worktree's file).
 
 ### C6 — Targets (operator, 2026-09-23) and the arithmetic behind them
 

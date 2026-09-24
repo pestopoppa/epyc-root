@@ -2636,3 +2636,15 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   Locator = report × suite × metric. Reports older than orch `8a829233` must have their
   `run_unstable`/`brittle`/flip_rate claims refused wherever an input run was error-dominated (RTG-16);
   their MDE/pass_rate stay admissible. Project, do not grade.
+
+## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat)
+
+- [ ] **VB-AK-SEAT — bind the actor-seat call records and the seat A/B arm results on the WRITE side.**
+  Producer: research lane `lane/ak-actor-seat-20260924` @ `e9495971` (`loop/actors.py` appends
+  `actor-replies/actor-calls.jsonl` per call; `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py` writes
+  `result-<arm>.json`). Capture at write time: seat arm + config digest (`actor_opencode_config.py` output),
+  backend/model/server, prompt digest and size, wall, rc, and for an A/B arm the opencode session export digest
+  with steps / tool calls / decoded tokens / compactions / schema-valid verdict. The A/B that gates DS41-C20 is
+  n = 1 per arm with a prompt that differs between the old plain run and the new arms — record that as the
+  claim's scope, never as a seat effect. Source-table row: `scripts/vidya/adapters/README.md`. Project, do not
+  grade.
