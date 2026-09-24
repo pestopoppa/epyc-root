@@ -91,3 +91,18 @@ Why the three late fixes were needed:
   bounded v2 queued). The lane commit `e9495971` defaults to `--actor-seat bounded`. If bounded loses,
   acceptance (ii) flips the default to `plain` before the merge.
 - **Run 8.** Launches from the merged tree after C20, per C20(iii).
+
+## Follow-ups executed (operator direction via coordinator, ~11:45–12:30 UTC)
+
+The wrap-up's filed items were handed back to this lane to execute. All research code went into a NEW
+worktree `/mnt/raid0/llm/tmp/ak-actor-seat-followups-20260924` on branch
+`lane/ak-actor-seat-20260924-followups` (off `e9495971`). The A/B worktree was not touched, because the
+queued bounded-v2 arm imports from it. The research commit is `1c7d0a2d`, pushed to its lane only; it rides
+with the DS41-C20 seat merge and is not on research `main`.
+
+| Item | Result |
+|---|---|
+| DS41-C22 stop path | ✅ `loop.ActorStopped` added. On stop, the actor's process group gets TERM, then KILL after 15 s. The stop is never retried and is recorded as `stopped_mid_formation`. rc<0 without a stop stays a retried transient (deliberate). 11 tests use real child and grandchild processes. |
+| DS41-C23 `symbol_annotate` | ✅ Short or partial names now resolve against the DSO's `perf report --sort symbol` rows. An ambiguous name returns the candidate list. One read-only smoke (3.7 s) against the run-7 profile found perf 6.17's trailing `IPC` columns in those rows; fixed and pinned by a test (the smoke was not repeated). |
+| VB-AK-SEAT | Split three ways. **-a ✅** (subagent): ROOT contract `autokernel_actor_seat_capture.py` plus strict reader `autokernel_actor_seat.py`, class `measurement`, no new ladder, every tuple capped at `Judged/Located`; 33 tests. **-b1 ✅**: `actors._record_call` writes `actor_call.v1` using ROOT's writer; end-to-end dry-run ingest gave projected=1, refused=0, rows=2. **-b2 [ ]**: the arm record, which lands with OAB-4's driver revision (the live driver must not be edited, and both of its arms predate `HOOK_SINCE`). |
+| DS41 compaction | ✅ (subagent, operator-approved). Active file 783 → ~650 lines. C0–C19 (15 items) moved verbatim to `handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md`. The open `- [ ]` set is identical before and after (42); the Completed Scope table links the sibling. |

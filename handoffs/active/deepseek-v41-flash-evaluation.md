@@ -73,6 +73,28 @@ tensors" reading was wrong (DS41-B0).
    in-window contention witnesses. A GLM Q8 "win" of 1.0497x was an 8.41-vs-1.82 CPU-equivalent
    load artifact. Record every quality claim with `(prompt tokens, top-k settings)`.
 
+## Completed Scope
+
+Completed detail through 2026-09-24: [deepseek-v41-flash-evaluation-completed-through-2026-09-24.md](../completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md).
+
+| Item | One-line outcome | Where |
+|---|---|---|
+| DS41-C0 | Canonical recipe fixed at `-t 48` (decode-favoring) from a t24/48/96 sweep. | §C |
+| DS41-C1 | Recipe codified as `deepseek_v41_flash_recipe.py`, CANDIDATE grade, 23 contract tests. | §C |
+| DS41-C2 | Campaign config prepared; surfaced the gpt-6-sol/lifecycle/competing-inference blockers. | §C |
+| DS41-C2b-gate | Competing-inference gate fixed to a work-based (utime+stime) test, not existence. | §C |
+| DS41-C2c | Dry run steps 1-3 pass (binary self-ID, linkage, critic/planner probes). | §C |
+| DS41-C2d | `draft-dspark` speculation type added; recipe layer can now express DSpark. | §C |
+| DS41-C2e | Enrollment argv-parsing defect fixed; campaign uses the manifest/snapshot route instead. | §C |
+| DS41-C2b | Campaign launched 2026-09-23 18:06 (`serial_run` 1586972) on the DSpark greedy-batched recipe. | §C |
+| DS41-C3 | Campaign confirmed to measure the spec-dec-ON surface via `external_draft`/`draft-dspark`. | §C |
+| DS41-C5 | Seeded hypotheses (H1-H7) written to the campaign inbox with falsifiers. | §C |
+| DS41-C12 | All three in-tree profilers (Engram/node/host) wired into the loop and proven on run 3. | §C |
+| DS41-C13 | Campaign restarted as run 3 on a fresh store, anchor rebound to `ebb68dc55`. | §C |
+| DS41-C16 | Schema-constrained repair turn added for actor JSON replies (TD-1 idiom). | §C |
+| DS41-C17 | Planner seat moved to `qwen-gpu/qwen3.8-27b` (MI210 :8083) off the CPU planner. | §C |
+| DS41-C19 | v10 folded-lineage fix landed so the first candidate record does not raise. | §C |
+
 ## Tasks
 
 ### A — Acquisition and reference
@@ -308,103 +330,6 @@ Sources pinned 2026-09-22: antirez runtime `antirez/ds4` **`main` @ `0aaea5a238f
 *"Start an autokernel routine to improve everything about the champion kernel running this model on
 CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec decode in the recipe**.
 
-- [x] DS41-C0 — **Preliminary canonical recipe fixed at `-t 48`** (operator: decode matters more
-  than prefill). Basis: tg128 13.18 @48t vs 12.74/12.81 @96t; tg512 11.70 @48t vs 10.59 @96t;
-  pp512 144-146 @96t vs 137.0 @48t. Prefill keeps 96 where a tool supports the split
-  (`--threads-batch`); llama-bench does not. ✅ 2026-09-23
-- [x] DS41-C1 — **Codified 2026-09-23**, research `2c68bc1a`: `scripts/lib/deepseek_v41_flash_recipe.py`
-  on the qwen38 sibling precedent, inheriting the canonical prefix/OMP/IQK/pre-evict/placement-proof
-  with `assert_inherits_canonical()` proving no fork; 23 contract tests pass. Category **CANDIDATE,
-  not OPTIMUM**. Every `SPEC_DEC` field is present and `None` with an explicit `flips_on`, and
-  `build_serve_command()` **refuses by default** unless the caller passes `spec_dec=False`, so the
-  unmet max-performance requirement surfaces at the call site instead of silently. **The thread
-  split cannot be expressed by the bench path**: `llama-bench` parses only `-t` and calls
-  `llama_set_n_threads(ctx, n, n)`, and the autokernel serving path raises on `-tb != -t` — only a
-  direct `llama-server`/`llama-cli` launch can carry 48/96, so a bench pp512 row is not this
-  recipe's served prefill rate. ✅ 2026-09-23
-- [x] DS41-C2 — **Campaign config prepared 2026-09-23** (`/mnt/raid0/llm/tmp/ds41-ak-config/`:
-  CONFIG/LIFECYCLE/LAUNCH/SPECDEC + three ready config files). Four findings:
-  1. **`gpt-6-sol` does not exist** — the model cache lists `gpt-5.6-sol`, `gpt-6-astra`,
-     `gpt-5.6-terra`, `gpt-5.6-luna`, `gpt-5.5`; zero occurrences of `gpt-6-sol` anywhere in either
-     repo, and no hosted fallback (`OPENAI_API_KEY` unset, the `openai` backend pinned to gpt-4o
-     with no live dispatcher). **Reachable gpt-6 is `gpt-6-astra`, effort `high`** → OPERATOR
-     DECISION (queued).
-  2. **Both actor swaps are CLI flags, not code**, on the unified loop plane (`loop/run.py:670-679`
-     exposes `--planner-model/-effort` and `--critic-model/-effort`). The sealed GPU
-     `discovery_controller` cannot host a CPU campaign at all (roster exact-equality,
-     `ALLOWED_DEVICE_IDS={"mi210_0"}`). Planner needs no source change either: add an
-     openai-compatible provider at `http://127.0.0.1:8074/v1` in the opencode config. Smoke-test
-     first that the local model holds the structured-output contract.
-  3. **Lifecycle: NO — the loop cannot touch :8074.** Every kill targets a `Popen` handle, a
-     `start_new_session` pgid or an owned cgroup leaf; the ban on name-pattern signalling is
-     enforced by four AST auditors plus a regression test, not convention. Zero `orchestrator_stack`
-     call sites, zero `drop_caches`/`munlock`/pre-evict code. The server also runs `--mlock
-     --no-mmap`, so its weights are unevictable. The guarantee is structural — there is no knob
-     because there is no path.
-  4. **The blocker is the inverse of the question**: `competing_inference_witness()` classifies any
-     UNOWNED `llama-server` as competing and **raises**. :8074's parent is a containerd shim, so it
-     is outside every owned scope and there is no allowlist parameter. **The server is safe; the
-     campaign is blocked.** → OPERATOR DECISION (queued). ✅ 2026-09-23
-- [x] DS41-C2b-gate — **Competing-inference block resolved and landed** (research `a46c9d3d`): the
-  gate now brackets each measured span with cumulative `utime+stime` reads for the unowned
-  INFERENCE_LIKE processes, so it asks whether one did WORK, not whether one exists. Monotone
-  counters mean a burst between samples cannot hide. Allowance pinned to measurement: over a 279 s
-  idle observation all 13 resident servers accrued <= 0.06 core-seconds, so 0.5 core-s + 0.02
-  cores/s sits ~100x above idle and ~46x below one busy core. It also converts the operator's "the
-  planner never runs during measurement" into a checked invariant. 303 tests. ✅ 2026-09-23
-- [x] DS41-C2c — **Dry run steps 1-3 pass.** Binary rebuilt from the committed tree so it
-  self-identifies (`version 10310 (ad932bbd9)`, clean tree — it previously reported `7c18bb8c1`
-  from an uncommitted build, exactly the INF-70 C9 shape); `verify_ggml_linkage.sh` PASS;
-  `verify_llama_cpp.sh` PASS on the frozen tree; critic `gpt-6-sol` high answered a live probe;
-  planner answered `{"ok":true}` through the loop's OWN invocation
-  (`opencode run -m qwen-local/qwen3.8-flash-next --variant high`), which was the genuinely
-  uncertain step since `Backend.argv` always passes `--variant`. Campaign store populated at
-  `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/`. ✅ 2026-09-23
-- [x] **DS41-C2d — LAUNCH BLOCKER: the recipe layer cannot express DSpark.** ✅ 2026-09-23 — research
-  `3d1bf4b2` (type, argv mapping, `--parallel 1` refusal, `LLAMA_SPEC_EXACT` required for greedy with a
-  `process_environ` witness) and `5125f7ab` (a greedy draft-dspark template was still not expressible
-  as a *canonical* launch: the projection is env-less by construction while the guard requires a
-  declared env — the compare now strips env and the frozen launch env is checked instead).
-  `loop/resolved_recipe.py:27` has `SPECULATION_TYPES = {"none", "draft-dflash", "draft-mtp"}` —
-  no `draft-dspark` — so the prepared recipe is forced to `spec_decode: {"type": "none"}` and the
-  campaign would optimise the NO-DRAFTER surface we have already beaten by 1.56x. Patch in
-  preparation adds the type, the `-md`/`--spec-type`/`--spec-draft-n-max` mapping, the
-  `--parallel 1` refusal (the server refuses multi-slot for draft-dspark), `LLAMA_SPEC_EXACT` as a
-  declared measurement key with a witness (its absence must REFUSE, not fall back to the serial
-  path — that silent fallback produced the 7.18 t/s reading today), and the drafter in the recipe
-  identity.
-- [x] DS41-C2e — **Enrollment tooling defect, fixed** ✅ 2026-09-23 (orchestrator `c3f2cbc2`: re-exec moved
-  under `__main__`; `test_orchestrator_stack_import_is_argv_safe.py`). Not used by the launch — the
-  campaign runs on the roster-free `--manifest` + `--registry-snapshot` route, which is orthogonal to
-  the production roster (operator, 2026-09-23). Original note:
-  `epyc-orchestrator/scripts/server/autokernel_enrollment.py:276` does
-  `from scripts.server import orchestrator_stack`, and that module parses `sys.argv` at import, so
-  it sees the ENROLLMENT's flags, prints stack status and exits 0 without writing the output. The
-  campaign resolver accepts `--registry-snapshot` as an alternative to `--production-enrollment`
-  (`campaign_cli.py:201`), which is the route taken: a
-  `epyc.autokernel.artifact_registry_snapshot.v1` file carrying model/build/recipe identities
-  (`{schema, kind, ref, path, sha256}` each). Fix the import-time argparse separately.
-- [x] DS41-C2b — **LAUNCHED 2026-09-23 18:06** ✅ 2026-09-23 — `serial_run` PID `1586972` (run.py `1586978`),
-  store `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/`, inputs built by
-  `inputs/build_inputs.py` through the loop's own validators (canonical_launch.v1, frozen prompt v2,
-  IDENTITY receipt on `build-cpu`, manifest + snapshot, `--verify-artifacts` passed on all 5).
-  Serving metric `aggregate_tok_s` on the DSpark greedy-batched recipe, `--rounds 0`,
-  planner `opencode:qwen-local/qwen3.8-flash-next@high` (the live :8074 server, unchanged), critic
-  `codex:gpt-6-sol@high`. First launch had `perf record`+`perf stat` attached. It opens with the
-  loop's 48 matched calibration launches. Superseded launch note (llama-bench surface): `--surface tg128` (the default
-  is `pp512` and MUST be overridden), `--confirm-surfaces dec-b4,dec-b8`, `-t 48`, cpu_list 0-95,
-  np 1. There is no `tg512` surface. `Recipe` carries one `threads` field, so pp512 rows from this
-  target are off-optimum and must not be reported as prefill results — prefill is a second target.
-- [x] DS41-C3 — **The campaign measures the spec-dec-on surface** ✅ 2026-09-23 — target declares
-  `speculation: external_draft` + `drafter_ref local:ds41:drafter-dspark`; new type `draft-dspark`, not
-  `draft-mtp` (the assumption below was wrong, as suspected). Original:
-  Blocked on DS41-B13. The schema already supports it (`TargetSpec.speculation` ∈
-  `{none,self_draft,external_draft}` + `drafter_ref`; `spec_decode:{type:"draft-mtp",…}` →
-  `-md/-ngld/--spec-type/--spec-draft-n-max`, `draft_n_max: 5` from DSpark's block). The target
-  declares `speculation` from day one so no interim number can be mistaken for a spec-dec result,
-  and the drafter lands as a **second target**, not an edit. **Biggest unverified assumption:**
-  whether `--spec-type draft-mtp` can drive an *external* DSpark-shaped drafter at all — it was
-  built for self-drafting heads and may need a new speculation type plus a server path.
 - [ ] DS41-C4 — **Engram profiling: designed and prepared 2026-09-23**
   (`/mnt/raid0/llm/tmp/ds41-engram-profile/`, two patches, `git apply --check` clean against
   `7c18bb8c1`; not applied yet because the DSpark runtime patches land on the same files first).
@@ -435,53 +360,13 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   first: every overhead figure above is arithmetic, not measured. Note the phase classifier
   (`n_tokens==1` -> decode) breaks once the 5-wide drafter lands, and the dlsym link surface is
   untested.
-- [x] DS41-C5 — Seeded ✅ 2026-09-23 as `store/inbox/30-ds41-seeded-hypotheses.md` (ranked H2 requant
-  ladder, H1b verify-marginal attribution, H3 rowexact-on-dense, H4 entropy-gated block, H1 demoted,
-  H6, H7; measured basis and falsifiers; re-read by the planner every iteration). The
-  `opportunities.json` profile form stays unbound (placeholder digests) — the inbox is the channel.
-  Budget guidance: **decode is flat 24->96 threads**, so barrier and
-  dispatch levers cannot pay on this model. Point the campaign at the memory path (engram gather,
-  expert gemv), not at parallelism.
 
-- [x] DS41-C12 — **All three in-tree profilers wired into the loop** ✅ 2026-09-23 (operator: "give
-  autokernel access to ALL the profiling tools"). llama.cpp `ebb68dc55`: Engram gather/per-layer
-  counters landed, compile-gated on `GGML_CPU_PROF` with `LLAMA_ENGRAM_PROF_JSON_FILE` (measured
-  `build-cpu` carries zero instrumentation strings). Research `c6a46674` (`loop/node_profile.py`,
-  17 tests on real dumps) + `e59c87ea`: `reprofile()` builds a `-DGGML_CPU_PROF=ON` sibling of the
-  anchor, launches it only inside the profile window with `GGML_CPU_PROF_JSON_FILE`,
-  `LLAMA_HOST_PROF_JSON_FILE`, `LLAMA_ENGRAM_PROF_JSON_FILE`, level 2, parses the three dumps into
-  `node_profile` in the planner context (per-op shares, host phases, Engram fault mix), cached by the
-  perf capture's key, never in a ranked A/B; `--node-profile` rides `--common-args`; teardown waits
-  180 s so a `--no-mmap` server's atexit dumps survive. Proven on run 3's anchor at 19:38:
-  `teardown: terminated`, all three `observed`; experts 42.1% / dense 38.3% of wall,
-  `ctx.graph_compute` 99.2% of the decode step, Engram 0 major / 0 minor faults per decode token.
-- [x] DS41-C13 — **Campaign restarted as run 3** ✅ 2026-09-23 19:28 (`state-run3/serial-run.pid`
-  = 1953258). Run 1 (perf only) stopped and archived (`store-run1-ad932bbd9`); run 2 refused —
-  the shared store pinned run 1's champion-of-record `ad932bbd9` against anchor `ebb68dc55`
-  ("never relabel the tip build"), so run 3 uses a fresh store with the inbox carried over.
-  Anchor/inputs/resolution rebound to `ebb68dc55`, artifact verification 5/5.
 - [ ] DS41-C14 — `--node-profile` is opt-in in `run.py` (default OFF) because run.py's hermetic
   fixtures would gain a real build + a second launch if it defaulted on. Make the fixtures opt out
   explicitly, then flip the default so no future campaign can launch without the instrument.
 - [ ] DS41-C15 — `node_profile` semantics under speculation: `llama-host-prof` counts one batched
   verify call as `n_eval=1`, so `decode_us_per_token` is per graph eval, not per token, when DSpark
   is on (carried as a limitation string; needs a no-drafter cross-check to state the ratio).
-- [x] DS41-C16 — **Schema-constrained repair turn for actor replies** ✅ 2026-09-24 (research `ad2b89ff`,
-  `HEAD`, `loop/actors.py` `_parse_reply`/`_schema_repair`): the typed-decision plane's TD-1 idiom
-  applied to the loop's planner/author/critic replies — when the agentic reply's JSON is missing or
-  incomplete, two constrained `response_format json_schema` turns on the same local server (explicit
-  decline boolean, then pure extraction; reviews skip the boolean). Proven on the 27B with the report
-  lost at 03:09 plus four shapes, 2–12 s each; three refuted designs recorded in the module.
-  **Intake gap:** `typed-decision-plane.md` never listed AutoKernel's actors as a consumer of the
-  pattern; the loop was the largest free-text-JSON consumer in the stack.
-- [x] DS41-C17 — **Planner seat moved to `qwen-gpu/qwen3.8-27b`** (MI210, :8083) ✅ 2026-09-24
-  08:52, run 6, request r3. Measured basis: 27B 86 t/s decode / 302 t/s prefill vs flash-next 50 / 92;
-  CPU planner proposals 97 and 41 min (prefill-bound, 124 k tokens of tool output), authoring #1 killed
-  at the 7200 s budget after 91 k output tokens (decode-bound). `--variant` is a no-op on a plain
-  OpenAI-compatible provider. Related fixes: `--actor-timeout-s` (`ef287ba9`), raw reply persistence +
-  stderr fallback (`704ef037`), partial output kept on timeout (`3471fe3c`), `stage_timeout_s` 900→2700
-  (perf profile was refused at the 900 s cap). Filed: planner server :8074 runs `-t 96` while the registry
-  recipe says `threads: 48` (`NUMA_FULL_T48`) — launch/registry divergence, stack owner's.
 - [ ] DS41-C18 — **27B planner overflows its slot context** (found 09:42, run 7): `:8083` runs `-c 196608 -np 2`
   → 98,304 tokens per slot; the planner session passed it at ~45 agentic steps (103,679 and 98,441-token
   requests refused), and opencode recovered by `agent=compaction` (self-summary), which costs a call and
@@ -508,17 +393,6 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or
   re-fixture.
-- [x] DS41-C19 — **v10 folded-lineage fix reaches this campaign** ✅ 2026-09-23 (non-inference ROI session,
-  research `714777e4`, fast-forwarded into the shared research clone 20:3xZ). At v10
-  `MEASUREMENT_COMMIT == PRODUCTION_COMMIT`, so `candidate_record.build_candidate_record`'s old
-  "instrument parents == (production,)" rule was unsatisfiable: the FIRST CPU candidate of this campaign to
-  reach recording (`campaign.py:5011`) would have raised `ValueError("instrument commit is not the ratified
-  single-child of the production base")`. The shared `worktree.instrument_lineage_ok` now accepts the folded
-  identity and still requires the source to descend from production (`ebb68dc55` descends from v10
-  `ffc1bac82` — verified). Same fix in `live_controls` preflight. Nothing had hit it yet (run3 still in
-  batch 0; no lineage error anywhere under the campaign dir). The running batch process keeps its
-  already-imported modules; the next batch process loads the fix — no mid-process version mixing
-  (all three modules are imported at load time).
 - [ ] DS41-C20 — **Bounded opencode seat: merge gate.** Research worktree
   `/mnt/raid0/llm/tmp/ak-actor-seat-20260924` (`lane/ak-actor-seat-20260924`, committed as research
   `e9495971` and pushed to the LANE only, not to research `main`). Fixes the two
@@ -572,7 +446,7 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   the A/B, copy the winning arm's five numbers into `autokernel-orchestrator-actor-backend.md` §Baseline
   (INF-78) and point that handoff's OAB-4 at `driver.py`. No further orchestrator work in this handoff: the
   campaign keeps `opencode` + 27B :8083 planner and the cloud critic (operator, 2026-09-24).
-- [ ] DS41-C22 — **A stop must reap a forming lane's in-flight actor, and never retry it.** Run 7's halt
+- [x] DS41-C22 — **A stop must reap a forming lane's in-flight actor, and never retry it.** ✅ 2026-09-24 Run 7's halt
   (2026-09-24 ~10:17): TERM to `serial_run` + `run.py` did not end the run, and after the actor was TERM'd
   `run.py` launched a new one (two `rc-15` replies, 10:17:04 and 10:17:49, in `state-run7/.../actor-replies/`).
   Code read (research `e9495971`): SIGTERM is by design a *drain* (`run.py` `_ask_stop` → forming lanes abandon
@@ -584,7 +458,21 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   Test: a fake backend killed by SIGTERM with stop asked → zero relaunches, lane abandoned, process exits.
   Build it in a fresh worktree off `e9495971`, never in `/mnt/raid0/llm/tmp/ak-actor-seat-20260924` while C20c
   runs (the queued bounded-v2 arm imports `actors.py` from there; editing it changes the arm under test).
-- [ ] DS41-C23 — **`symbol_annotate` must resolve the short symbol name the planner actually types.** Run 7's
+  **Done 2026-09-24, research `1c7d0a2d`** (lane `lane/ak-actor-seat-20260924-followups`, off `e9495971`;
+  rides with the C20 seat merge, not on research `main`). `loop.ActorStopped(ActorTransient)`; `_iterate`
+  routes propose / critic pass 1 / author / critic pass 2 through `actor_call()`, so a stop mid-call becomes
+  the existing `stopped_mid_formation` outcome, still naming the in-flight hypothesis. With the loop's
+  `should_stop` (now passed by `run.py` to `AgentPlanner`/`AgentCritic`), `_run_agent` runs the actor in its
+  own process group, polls every `STOP_POLL_S` (1 s), and on stop TERMs the GROUP (opencode's MCP server and
+  Bun workers included), KILLs after `STOP_GRACE_S` (15 s), records the call and raises `ActorStopped`; a
+  signal death while a stop is asked is also a stop. `_with_backoff` draws no attempt and sleeps no backoff
+  once a stop is asked, and never retries `ActorStopped`. **Kept as today, deliberately:** rc < 0 with NO stop
+  asked is still a retried transient — an operator killing one hung actor, or earlyoom, wants the call
+  retried; only a stop of the run means "do not relaunch". Only forming stages make actor calls, so the tail
+  holder's drain is unchanged; `serial_run` already TERMs `run.py` and waits for its drain, which now ends
+  promptly. Tests: `test_actor_stop.py` (11, real child + grandchild processes: the whole group dies, the
+  planner launches exactly once, no backoff is slept, rc −15 without a stop stays a transient).
+- [x] DS41-C23 — **`symbol_annotate` must resolve the short symbol name the planner actually types.** ✅ 2026-09-24 Run 7's
   planner ran `perf annotate --symbol='mul_mat_qX_K_q8_2_X4_T<DequantizerQ4K_AVX2, 1>' --dsos=libggml-cpu.so`
   twice and got `... measurement-record.data data has no samples!`. The profile is NOT empty (checked read-only
   2026-09-24: `store/cpu-profiles/cpu-raw-0316509f.../measurement-record.data` 25.7 MB, 114K `cycles:u` samples;
@@ -596,6 +484,15 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   --sort symbol` rows (exact, else a unique substring after stripping `(anonymous namespace)::` and the argument
   list; ambiguous → list the candidates), then annotate the resolved full name. Test on the fixture with a
   templated name. Same worktree rule as C22 (the A/B's MCP server is spawned from the worktree's file).
+  **Done 2026-09-24, research `1c7d0a2d`** (same lane as C22). On "no samples", the typed name is resolved
+  against the DSO's `perf report --sort symbol` rows: exact, else ONE symbol with the same core (no
+  `(anonymous namespace)::`, return type, argument list or whitespace), else one substring match; several →
+  the candidate list with overheads, never a guess between template instances (`<Q4K, 1>` vs `<Q4K, 2>`). An
+  exact name still costs one perf call. The one allowed read-only smoke against the run-7 profile (3.7 s)
+  found a second defect: perf 6.17 appends `IPC  [IPC Coverage]` columns (`-      -`) to `--sort symbol` rows,
+  so the parsed name carried them and the resolved annotate missed. Fixed (the name ends at the first double
+  space) and pinned by a test on that verbatim row shape; not re-smoked (one invocation was the budget). Tests:
+  9 new in `test_actor_tools_mcp.py` with the real run-7 symbol names.
 
 ### C6 — Targets (operator, 2026-09-23) and the arithmetic behind them
 

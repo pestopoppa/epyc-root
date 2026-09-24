@@ -2639,12 +2639,43 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
 
 ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat)
 
-- [ ] **VB-AK-SEAT — bind the actor-seat call records and the seat A/B arm results on the WRITE side.**
-  Producer: research lane `lane/ak-actor-seat-20260924` @ `e9495971` (`loop/actors.py` appends
-  `actor-replies/actor-calls.jsonl` per call; `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py` writes
-  `result-<arm>.json`). Capture at write time: seat arm + config digest (`actor_opencode_config.py` output),
-  backend/model/server, prompt digest and size, wall, rc, and for an A/B arm the opencode session export digest
-  with steps / tool calls / decoded tokens / compactions / schema-valid verdict. The A/B that gates DS41-C20 is
-  n = 1 per arm with a prompt that differs between the old plain run and the new arms — record that as the
-  claim's scope, never as a seat effect. Source-table row: `scripts/vidya/adapters/README.md`. Project, do not
-  grade.
+Producer: research lane `lane/ak-actor-seat-20260924` @ `e9495971` (`loop/actors.py` appends
+`actor-replies/actor-calls.jsonl` per call; `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py` writes
+`result-<arm>.json`). The A/B that gates DS41-C20 is n = 1 per arm with a prompt that differs between
+the old plain run and the new arms — recorded as the claim's scope, never as a seat effect. Source-table
+row: `scripts/vidya/adapters/README.md`. Project, do not grade.
+
+- [x] **VB-AK-SEAT-a — contract + strict read-side adapter, registered and tested.** ✅ 2026-09-24
+  Contract (the exact producer field list, closed schemas, reference writers `build_call_record` /
+  `build_arm_record`, validators): `scripts/vidya/adapters/autokernel_actor_seat_capture.py` —
+  `epyc.autokernel.actor_call.v1` (one `actor-calls.jsonl` line per call → `actor_call_wall_s`) and
+  `epyc.autokernel.seat_ab_arm.v1` (one `result-<arm>.json` per arm → wall / steps / tool calls /
+  decoded tokens / compactions, totals over root + scouts). Reader:
+  `scripts/vidya/adapters/autokernel_actor_seat.py`, `@register("autokernel-actor-seat")`, class
+  `measurement`, no ladder; `cli.py ingest ak-actor-seat --path <dir|file>` (`Source` row in
+  `ingest_sources.py`). Every tuple is an OBSERVATION (`Judged/Located`: empty `protocol_id`, n = 1);
+  pre-hook lines/results emit zero rows (the real 2026-09-24 corpus replays to 0 — pinned); a v1 record
+  that fails validation, predates `HOOK_SINCE` (2026-09-24T12:00Z) or is backfilled is refused;
+  timeout/signal sessions emit zero rows (censored wall). Tests:
+  `tests/vidya/test_autokernel_actor_seat_adapter.py` (33) + the `ak-actor-seat` end-to-end fixture in
+  `test_ingest_sources.py`.
+- [x] **VB-AK-SEAT-b1 — call-record producer in `actors._record_call`.** ✅ 2026-09-24 Research `1c7d0a2d`
+  (lane `lane/ak-actor-seat-20260924-followups`, rides with the DS41-C20 seat merge). Every actor call appends
+  an `epyc.autokernel.actor_call.v1` line built by THIS repo's `build_call_record`, loaded by file from
+  `EPYC_ROOT_REPO` (default `/workspace`), so writer and reader share one definition. Role from the call's
+  schema; seat arm/knobs from env keys `_seated` adds; per-run config, instructions and global
+  `opencode.jsonc` digests; opencode version from its npm `package.json`; producer commit read from the git
+  files (no subprocess per call); reply files bound by sha256/bytes; timeouts as `timed_out` with rc −1. When
+  the contract cannot be met, the line keeps the pre-hook shape plus `v1_refused: <why>` (projects nothing,
+  says why). Proof: two post-hook records (planner via opencode, critic via codex) →
+  `cli.py ingest ak-actor-seat --dry-run`: `projected=1 declined=0 refused=0 rows=2`. Tests:
+  `test_actor_call_record.py` (7). Note: the producer reads the contract from the ROOT checkout at
+  `EPYC_ROOT_REPO`; until `/workspace` carries this commit's module, a campaign run writes `v1_refused` lines.
+- [ ] **VB-AK-SEAT-b2 — arm-record producer in the seat A/B driver.** Emit `epyc.autokernel.seat_ab_arm.v1`
+  via `build_arm_record` from the driver that OAB-4 (`autokernel-orchestrator-actor-backend.md`) extends:
+  `ab_id`/`arm_id`/`category`/`scope`, driver and lane-anchor identity, the schema-valid verdict
+  (`template_echo` recorded as itself), per-session export digests with one `root: true`, totals over root +
+  scouts; a session whose export fails to parse is not written as v1. Not done now: the live DS41-C20c driver
+  (`/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`) must not be edited while its arms run, and both of its arms
+  started before `HOOK_SINCE` (12:00Z), so they could not be v1 records anyway. Acceptance: one post-hook arm
+  record that `cli.py ingest ak-actor-seat --dry-run` projects with `refused=0`.
