@@ -16,6 +16,7 @@ a private landing worktree (`noninf/landing-20260924`), not the shared index.
 | INF-41 S-11a | Capacity-gate fold of the 4.68 GiB PREPARED only (`artifacts/operator/inf41-capacity-gate-aux-vram-20260924.patch`): needs a signature (margin 5.85→1.17 GiB) and a fresh contention matrix (stale since 08-23; blocks every `stack_manifest.py` commit; refresh = live bench) → OP-48 | — |
 | RTG-09 | Duration axis implemented and wired at all 3 call sites, landed DEFAULT-OFF (live reward byte-identical) because a reward change is a `routing_reward` era boundary; ratification script flips 0.20/0.05 + era E18 → OP-47 | orch `b8035db9`, `88e24ef0`; root ratify script |
 | Found in passing | 3 stale q_scorer tests + a real leak: the host-only alias `worker` surfaced as its own scoring role via stack priors → `_NON_SCORING_HOST_ALIASES`; `test_q_scorer.py` 78/78 | orch `42e304ac` |
+| Found in passing (2) | The same `worker` alias made `cmd_start(validate_only=True)` HARD-FAIL the stack-template parity check — a stack start would have refused. Fixed at source; plus 3 stale/vacuous fixtures (bilinear ×2 were silently asserting on live production registry state; gpu_shadow_lane derived from `NUMA_CONFIG`). 142 pass. Recorded as SSU-F12 | orch `8d7633d0` |
 
 ## Corrections made in main-thread review
 - EVL-42: README claimed the whole `scripts/benchmark/` glob runs — it has 4 collection errors; scoped to the 4 suites. Report's per-file counts were wrong (total right).
@@ -23,9 +24,21 @@ a private landing worktree (`noninf/landing-20260924`), not the shared index.
 - INF-41: a nested `fork` of the subagent committed unrequested registry work (see memory `feedback_fork_status_checks_can_go_rogue_and_write`); registry comments claimed the gate fix was "CLOSED"/live when it was only prepared → corrected in `e485008a`. Root guard walked the whole llama.cpp tree at every session init → direct existence tests.
 - RTG-21: re-checked the "0 executions" claim against in-REPL verification (imports/asserts after the write): 0/14.
 
+## Derived actionables filed at wrap-up
+SSU-F13 (10 more pre-cutover topology tests), SSU-F14 (stale contention matrix blocks every `stack_manifest.py`
+commit — inference task), MF-FS-1 (t2–t5 never stop voluntarily), EVL-42 1e (4 collection errors in research
+`scripts/benchmark/`). Declined: the 3 pytest tmpdir leftovers under `/mnt/raid0/llm/tmp/sub-nib2-69/` (test
+debris, not telemetry — reclaim with any tmp sweep); `toolrunner`/`worker_explore` below the n=30 duration
+baseline (the reward already skips-and-warns for them; they fill in on re-derivation).
+
 ## Belief kernel
 Source rows + tasks filed: VB-MFVBS-1 (verify-before-stop), VB-EVALDISC-1 (discriminability audit; pre-`8a829233` instability flags inadmissible where a run was error-dominated).
 
 ## Open, not blocked on this session
 OP-47 (RTG-09 ratify), OP-48 (S-11a signature + contention-matrix bench), OP-49 (compressor telemetry path).
 This session had no lane: all root edits went through the private landing worktree; shared clones were only fast-forwarded (a peer's staged `src/typed_decisions/native.py` in the orchestrator clone was left untouched).
+
+## Next in this session (not part of this wrap-up)
+TD-21 (operator dispatch 2026-09-24) is in flight: Phase A = TD-21.0 `/v1` schema forwarding, the shared
+schema-repair helper, TD-21.31 evoengineer typed failure. A direct constrained request to live :8070 `/v1`
+returned schema-valid JSON, so TD-21.0 is pure payload plumbing.

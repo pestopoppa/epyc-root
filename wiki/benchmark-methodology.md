@@ -79,7 +79,8 @@
 - [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — TD-21's parse-failure-as-wrong-answer
   count and the per-arm acceptance rule for the scorer conversions.
 - [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — RTG-16 and EVL-42 rows plus
-  the main-thread review corrections.
+  the main-thread review corrections; follow-up EVL-42 1e — the research `scripts/benchmark/` directory has 4
+  collection errors, so only the four scorer suites run under the pinned `[test]` extra.
 - [2026-09-24-main-dsv41.md](../progress/2026-09/2026-09-24-main-dsv41.md) — the 8-token-probe correction.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-EVALDISC-1
   admissibility caution for pre-`8a829233` reports.

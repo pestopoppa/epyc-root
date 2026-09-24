@@ -656,6 +656,25 @@ supplies the value under test cannot fail on it.
   expected to describe this process, and the two must never be quoted against each other.
   **Blocker: none.**
 
+- [x] **SSU-F12 — the host-only `worker` alias leaked into two consumers after the 2026-09-22 cutover.**
+  ✅ 2026-09-24. `server_mode.worker` (alias_of frontdoor, listed in `shared_with`) compiles
+  `deployment_status: live_stack`, so it surfaced (a) as its own scoring role in `ScoringConfig` (q_scorer
+  stack-priors path; orch `42e304ac`, `_NON_SCORING_HOST_ALIASES`) and (b) in the stack-template parity check,
+  where `cmd_start(validate_only=True)` HARD-FAILED with "live stack-prior role 'worker' is missing from default
+  stack template" — a stack start would have refused (orch `8d7633d0`). Both now skip any live-stack role name
+  that is not a canonical `Role`. 7 stale/vacuous fixtures fixed alongside (q_scorer ×3, bilinear ×2 now
+  hermetic, gpu_shadow_lane ×1, stack_reload ×1).
+- [ ] **SSU-F13 — 10 more unit tests still encode the pre-cutover topology.** Fail on clean origin/main
+  (2026-09-24, after `8d7633d0`): `tests/unit/test_default_template_topology_parity.py` (9 — e.g.
+  `ingest_long_context` now alias-only, `worker_general` has no `NUMA_CONFIG` instance) and
+  `tests/unit/test_stack_templates_v2.py::test_default_yaml_loads_and_validates`. Per test: decide stale
+  fixture (derive from the source of truth, as SSU-F5) vs. a real template defect; do not re-pin constants.
+- [ ] **SSU-F14 — `orchestration/contention_matrix.yaml` is stale and blocks every `stack_manifest.py`
+  commit.** Stored `topology_hash` 171f86f9 ≠ live 1c548fce; last refreshed 2026-08-23 (> 30 days).
+  `scripts/validate/check_contention_matrix_fresh.py` is a pre-commit gate, so INF-41 S-11a (and any other
+  `stack_manifest.py` change) cannot land until `scripts/server/contention_matrix.py` is re-run — a live
+  bench sweep against production ports, i.e. an inference-session task.
+
 ### SSU-F2 outcome — the Flash-Next "quality gap" was a measurement artifact (2026-09-23)
 
 The CPU-shape architect quality bench exists (`architect_bench_cpu_{lib,arm,phase}.sh` +

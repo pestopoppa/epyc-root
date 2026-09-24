@@ -92,6 +92,7 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
   lands, roughly half the conversion list cannot be validated.
 - MF-VBS-2's effect cannot be sized: the multi-file tasks hit the 8-turn cap or error in every run, so
   their forced-stop rate is a bigger and separate defect than verify-before-stop.
+  Filed as MF-FS-1: classify those forced stops by reason from the existing traces first.
 - TD-21.29 — the *preparation* actors (`actor_preparation.py:333,:369`) still call `_extract_json` raw, and
   a `PreparationRefused` burns a one-shot reservation. Same path `ad2b89ff` converted one file away.
 

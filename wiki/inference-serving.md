@@ -46,6 +46,18 @@
   - a stale parity exception still live in `launch_manifest.yaml` that pre-excuses the next real divergence.
 
   ([model-stack-single-source-update-pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md) SSU-F8)
+- **A host-only alias is not a role, and two consumers forgot it (SSU-F12).** The cutover kept `server_mode.worker`
+  (alias_of frontdoor) in `shared_with` so legacy lookups resolve; it therefore compiles `deployment_status: live_stack`.
+  The q_scorer stack-priors path then scored `worker` as its own role, and the stack-template parity check made
+  `cmd_start(validate_only=True)` **hard-fail** ("live stack-prior role 'worker' is missing from default stack
+  template") — a stack start would have refused. Both now skip any live-stack name that is not a canonical `Role`
+  (orch `42e304ac`, `8d7633d0`). Rule: derive "is this a role?" from `Role.from_string`, never from presence in the
+  priors. Ten more tests still encode the pre-cutover topology (SSU-F13).
+- **The contention matrix is a pre-commit gate, and it is stale (SSU-F14).** `check_contention_matrix_fresh.py`
+  refuses any commit touching `stack_manifest.py` while `contention_matrix.yaml`'s topology hash disagrees with live
+  `NUMA_CONFIG` (171f86f9 vs 1c548fce, last refreshed 2026-08-23). Refreshing it is a live bench sweep, so every
+  capacity-gate change — including the prepared speech-VRAM fold (INF-41 S-11a) — waits on an inference session.
+  ([model-stack-single-source-update-pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md) SSU-F12..F14)
 - **MI210 VRAM headroom, measured.** Six verified cycles exercised all three transient allocators: the 27B at a 15,177-token prompt, a real image through VL-30B's mmproj, and whisper transcribing. The two questions were answered separately:
 
   | question | answer |

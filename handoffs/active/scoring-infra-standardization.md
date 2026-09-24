@@ -137,6 +137,9 @@ already has bare-letter handling).
       52 passed. research `6cf4a076`..`cbb12fc7`. A whole-directory `scripts/benchmark/` run still has 4
       collection errors (`test_aa_omniscience_manifest`, `test_m12_review_fixes`, `test_rope_position_probe`,
       `tests/test_run_benchmark_suite_selection`) — outside this scorer scope.
+- [ ] **1e. Fix the 4 collection errors in research `scripts/benchmark/`** (`test_aa_omniscience_manifest`,
+      `test_m12_review_fixes`, `test_rope_position_probe`, `tests/test_run_benchmark_suite_selection`) so the
+      whole directory runs under the pinned `[test]` extra, not just the four scorer suites. Found 2026-09-24 (1d).
 
 ### Track 2 — Tool-use / coding eval harness
 - [x] **2a-i. `datasets` + code-execution scorer scaffold.** ✅ 2026-07-24 — DONE. Installed the `benchmark`

@@ -9,10 +9,25 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-24T09:51:29Z",
-  "mode": "touch",
-  "scan_time": "2026-09-24T09:51:29Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 4,
+      "removed": 0
+    },
+    "at": "2026-09-24T09:53:52Z",
+    "scope_paths": [
+      "handoffs/active/model-stack-single-source-update-pipeline.md",
+      "handoffs/active/multi-file-coding-completion-capability.md",
+      "handoffs/active/scoring-infra-standardization.md",
+      "progress/2026-09/2026-09-24-noninf-tier2.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-24T09:53:52Z",
   "schema_version": 1,
-  "source_set_hash": "7d6521d055546c9a357ed779563fd99f37557508bcff84115814466b2bc843b0",
+  "source_set_hash": "5337c24c92050f5280ef7634700c0416d7b4774e7127e5d913c99d52a6f6d862",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -807,10 +822,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b7784085341e0f6b99704335d3c82f58ebb76ded7c4e2a7b681dc8f99df57c59",
-      "modified": "2026-09-23T17:57:19Z",
+      "content_hash": "3e89ec32e1dcb4aa98dca7aec99d05746872c219607aa35a470286fee46d5cfe",
+      "modified": "2026-09-24T09:49:11Z",
       "path": "handoffs/active/model-stack-single-source-update-pipeline.md",
-      "size": 48481,
+      "size": 50290,
       "title": "Model Stack Single-Source Update Pipeline",
       "type": "handoff-active"
     },
@@ -839,10 +854,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cf7b5d84decc3e0a0163eff46cf22aa13b526c400a753b9b7fe8c9c719ab44f4",
-      "modified": "2026-09-24T09:37:22Z",
+      "content_hash": "50d3593ad3f8cde348997b8c8de2a74f36bc85a2c4c3404acc85f0dbb02248e2",
+      "modified": "2026-09-24T09:49:11Z",
       "path": "handoffs/active/multi-file-coding-completion-capability.md",
-      "size": 28764,
+      "size": 29255,
       "title": "Multi-file coding completion \u2014 diagnosed agentic read\u2192edit\u2192finish protocol gap",
       "type": "handoff-active"
     },
@@ -1143,10 +1158,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "060dffa7ae81a3fc73dc3d29160eb536991afa0b66193a35eff2dedafabae4ea",
-      "modified": "2026-09-24T09:37:22Z",
+      "content_hash": "0d197fb2548c3d538fd24c03a593656bf203aa2436df979c3c09de778d23d92a",
+      "modified": "2026-09-24T09:49:11Z",
       "path": "handoffs/active/scoring-infra-standardization.md",
-      "size": 44151,
+      "size": 44485,
       "title": "Scoring Infrastructure Standardization + Tool-Use Eval Harness",
       "type": "handoff-active"
     },
@@ -6679,14 +6694,6 @@
       "type": "progress"
     },
     {
-      "content_hash": "9a00608393e14776394406e3fffb5c65f24894bec04e3c96aa240aa3e8c764ba",
-      "modified": "2026-08-25T14:58:00Z",
-      "path": "progress/2026-08/2026-08-25.md",
-      "size": 3039,
-      "title": "2026-08-25",
-      "type": "progress"
-    },
-    {
       "content_hash": "0c8c65f719c7dcccd6ffa4d1242dce644a80ab04b37b87fb149ece34cbc22f93",
       "modified": "2026-08-27T05:55:50Z",
       "path": "progress/2026-08/2026-08-26.md",
@@ -7935,10 +7942,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "2df3dfd5f10bb3554dd6b9d8613bf0b2c50b35481eb0c92cf11f066e804edbe9",
-      "modified": "2026-09-24T09:37:22Z",
+      "content_hash": "3e2f3d93b019e16d34bb722e9001f912a4ce4cd015a837e81a5d8b0b5de1b6e1",
+      "modified": "2026-09-24T09:49:40Z",
       "path": "progress/2026-09/2026-09-24-noninf-tier2.md",
-      "size": 4332,
+      "size": 5613,
       "title": "2026-09-24 \u2014 non-inference Tier-2 tasks (ad-hoc, operator-spawned; no roster lane)",
       "type": "progress"
     },
@@ -8805,6 +8812,14 @@
       "size": 32349,
       "title": "Runbook \u2014 Deterministic `vision_escalation` \u2192 MiniCPM-o Promotion (port 8087, MI210)",
       "type": "docs"
+    },
+    {
+      "content_hash": "9a00608393e14776394406e3fffb5c65f24894bec04e3c96aa240aa3e8c764ba",
+      "modified": "2026-08-25T14:58:00Z",
+      "path": "progress/2026-08/2026-08-25.md",
+      "size": 3039,
+      "title": "2026-08-25",
+      "type": "progress"
     }
   ],
   "total_new": 1099,
