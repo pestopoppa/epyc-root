@@ -16,7 +16,7 @@
 - **A scorer that shells to bare `python3` scores False without saying why.** `scripts/benchmark/debug_scorer.py` ran code tasks with `python3` from PATH, so outside the venv every pandas-dependent task silently scored False — the same shape as OBS-12. Both code-execution sites now use `sys.executable`, with an AST guard test (orchestrator `46e79e27`). ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-74)
 - **Skipped tests are not coverage, and retiring them is a deliberate act.** The 12 E8 unit tests whose sealed staging bundles had left the host were `skipif`-skipped. Operator ruled RETIRE (per OP-19): 24 bundle-dependent tests removed, 28 skips → 0, the remaining 386 pass (orchestrator `5fa290be`). The alternative readings — restore the bundles or rebuild equivalent fixtures — were rejected by the owning campaign rather than left implicit. ([non-inference-backlog](../handoffs/active/non-inference-backlog.md) NIB2-75)
 - **An A/A calibration phase is measuring the floor, not wasting time.** The AutoKernel loop opens with 48 matched A/A launches (~2 h, each reloading 519 GB) to measure **relaunch dispersion** — the noise every candidate pays, because a new binary is a new process. Removing it would mean keeping weights in RAM via mmap, which changes NUMA placement and therefore changes what is measured. ([2026-09-23 main-dsv41](../progress/2026-09/2026-09-23-main-dsv41.md))
-- **"n is cheap" is a premise that must be measured before it is spent.** EVL-08's CJ-1d run size was decided by measuring the host rather than by assumption: with host load at 190→261 under six-session churn, a 27B dense Q8_0 decoded 0.7-1.6 t/s and a 35B-A3B 2.8 t/s, making the full pinned 198 questions ~33 h/arm against ~10 h/arm at n=50. The seeded slice is the first 50 of the seed-42-shuffled pinned 198, paired so both arms see identical items. ([2026-08-25 progress](../progress/2026-08/2026-08-25.md))
+- **CJ-1d retained the full pinned 198-question set after measuring the actual tradeoff.** The canonical plan estimates at most 5.3 MI210 GPU-hours per model; n=198 gives a ±5.5-point CI at 81% versus ±7.7 points at n=100, while paired sign-test power for a 7-point gap at 18% discordance is only 0.59 even at n=198. The former 2026-08-25 progress link and its n=50/host-throughput rationale were not traceable to a surviving source and conflict with the completed full-set plan, so they are retired. ([canonical-judge-suite-revamp](../handoffs/active/canonical-judge-suite-revamp.md) CJ-1d)
 
 ### Open questions
 
@@ -31,7 +31,7 @@
 - [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — NIB2-74 (`sys.executable`), NIB2-75 (E8 test retirement).
 - [2026-09-23.md](../progress/2026-09/2026-09-23.md) — the non-inference ROI batch: what landed where, and the pending ratify script.
 - [2026-09-23-main-dsv41.md](../progress/2026-09/2026-09-23-main-dsv41.md) — calibration as a measured relaunch-dispersion floor.
-- [2026-08-25.md](../progress/2026-08/2026-08-25.md) — EVL-08 cold-start sizing measured against live host throughput.
+- [canonical-judge-suite-revamp](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-1d's full 198-item plan, cost estimate and power calculation.
 
 ## Compiled Update — 2026-09-23 (later): the ETR-1 amendment is RATIFIED, and NIB2-73b closes on a symlink-spelling false alarm
 

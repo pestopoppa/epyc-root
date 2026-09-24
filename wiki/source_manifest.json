@@ -4,7 +4,7 @@
     "handoff-active": 169,
     "handoff-blocked": 2,
     "handoff-completed": 196,
-    "progress": 481,
+    "progress": 482,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
@@ -12,20 +12,19 @@
   "last_touch": {
     "advanced": {
       "added": 1,
-      "changed": 1,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-09-24T09:15:07Z",
+    "at": "2026-09-24T09:44:20Z",
     "scope_paths": [
-      "handoffs/active/ernie-image-turbo-evaluation.md",
-      "progress/2026-09/2026-09-24-inference.md"
+      "progress/2026-09/2026-09-24-main-dsv41.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-24T09:15:07Z",
+  "scan_time": "2026-09-24T09:44:20Z",
   "schema_version": 1,
-  "source_set_hash": "ddb6df58402bb34c3541053f5d1d80d4dd9ad8aef43624ce4ce9e78e89689313",
+  "source_set_hash": "3f6b8be950ede68b84527087b920d6c92fb3730a3899e2a5b1aef7026ed9721b",
   "sources": [
     {
       "content_hash": "81cf0b62b96aa45a42a08be55a2affc300f5876e9ae0dbb8419150e112833c69",
@@ -340,10 +339,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "15522e313c75da3473ed32add7f3497a682f2e1d526a697a57bd04190a4eb462",
-      "modified": "2026-09-23T21:40:17Z",
+      "content_hash": "f441116f1e7a1329ade44a9ce0481f26114b864304d8dd04885a99dd4cdfe803",
+      "modified": "2026-09-24T09:09:18Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 59928,
+      "size": 61520,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -1308,10 +1307,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4ff63649ae2506c926370c48553d11be1890a017f1d6ebe1604e2438d7a2a2c5",
-      "modified": "2026-09-23T21:40:17Z",
+      "content_hash": "54e806a1a6f0b39970da9a6baa3b7e18748597e4021a1e4222bf894bba1054e5",
+      "modified": "2026-09-24T09:27:43Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 28857,
+      "size": 46733,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },
@@ -1332,10 +1331,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "73895099c416326b3b671cda5be406301f7614bfdcabf086383252a3965f5fc0",
-      "modified": "2026-09-23T21:40:17Z",
+      "content_hash": "0cef750981a9683e58e51d8625a5c8be8d864283b79bd3bf5a67ba2a98b928a1",
+      "modified": "2026-09-24T09:35:40Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 236940,
+      "size": 238187,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -7924,11 +7923,19 @@
       "type": "progress"
     },
     {
-      "content_hash": "8c2d81e9d752fceb973f812dab3ea1bace297facb5e0e9f539cd14b55be41f3a",
-      "modified": "2026-09-24T09:12:46Z",
+      "content_hash": "83f90f6463f024d2a5fe34bb3e21f5b3ef696ce3e078d53cf688332b9cb28ed1",
+      "modified": "2026-09-24T09:43:43Z",
       "path": "progress/2026-09/2026-09-24-inference.md",
-      "size": 743,
+      "size": 1862,
       "title": "2026-09-24 \u2014 Qwen-Image-2.1 acquisition wrap-up",
+      "type": "progress"
+    },
+    {
+      "content_hash": "90a705338c4275a0060c7fa31dbc4e0ea98cbc747a5ea25cccecba6c8966f684",
+      "modified": "2026-09-24T09:09:18Z",
+      "path": "progress/2026-09/2026-09-24-main-dsv41.md",
+      "size": 2330,
+      "title": "2026-09-24 \u2014 main-dsv41 (DS41 AutoKernel: runs 3\u21926, planner economics, schema repair)",
       "type": "progress"
     },
     {
@@ -8796,7 +8803,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1096,
+  "total_new": 1097,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
