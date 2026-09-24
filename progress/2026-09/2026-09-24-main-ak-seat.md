@@ -124,3 +124,40 @@ with the DS41-C20 seat merge and is not on research `main`.
   rebase onto `21ca61b0` and land; run 8 does not carry it.
 - **Run 8 launched 13:06:55Z** (`state-run8`, pid 3359620), floor 5.097 from the cache. `EPYC_ROOT_REPO` points at
   `/mnt/raid0/llm/worktrees/ak-seat-handoffs-20260924` — keep that worktree while run 8 runs.
+
+## Operator-invoked wrap-up #2 (13:15–13:40Z)
+
+This ran in a fresh lane worktree, `/mnt/raid0/llm/worktrees/ak-seat-wrapup-20260924b`. The ak-seat-handoffs
+worktree is frozen because it is run 8's `EPYC_ROOT_REPO`. Run 8 was not touched.
+
+- **Checklist sync.** The segment's ticks (C20, C20c, C21, OAB-0) had already landed in `44836aab`. Nothing was
+  left to flip.
+- **Derived actionables: 2 filed, 3 declined.**
+  - Filed **DS41-C24**: release run 8's `EPYC_ROOT_REPO` pin on a lane worktree before run 9. Point it at a root
+    checkout that follows main, then remove the lane worktree.
+  - Filed **VB-AK-SEAT-b1v**: prove the producer on run 8's first real call. At 13:19Z no call line existed
+    yet, because the first planner call had not returned.
+  - Declined: TD-21.29/30 rebase. It belongs to the TD-21 session, which the coordinator has already told to
+    rebase onto `21ca61b0`, and its rows live in `typed-decision-plane.md`.
+  - Declined: replicating the n=1 A/B. OAB-4 already requires three ABAB pairs per arm, and C20d re-runs the
+    bounded arm after caching.
+  - Declined: "every arm compacted". This is OAB-7.
+- **Index.** `index_state.py --check` reports 0 problems. The generated signal has **0 prune candidates** (165
+  open-tasks, 2 no-checkboxes, 1 open-assertion, 1 undispatchable). Proposed for a human read only:
+  - `design-backlog-triage-2026-07-23.md` (EVL-09): a dated triage document with no boxes.
+  - `cpu-shape-specialized-gemv-decode.md` (INF-10): 0 open, carries a re-open trigger.
+  - `model-stack-change-standardization-audit.md` (RTG-18): 0 open, 11 guarded boxes.
+- **README freshness.** Passes.
+- **Wiki.** Compiled the whole delta (8 sources, including the three TD-21 sources left out last time):
+  - `autonomous-research.md`: the seat A/B verdict and run 8.
+  - `agent-architecture.md`: TD-21 landed, and the lesson that the repair turn needs evidence.
+  - `routing-intelligence.md`: OP-47 makes era E18 live.
+- **Cleanup.** Removed four research worktrees with `git worktree remove` and no `--force`. Each was clean, had
+  its HEAD on `origin/main`, and had no process using it:
+  - `ak-seat-merge-20260924`
+  - `ak-actor-seat-20260924-base`
+  - `ak-actor-seat-20260924`
+  - `ak-actor-seat-followups-20260924`
+
+  Kept `/mnt/raid0/llm/tmp/ak-seat-ab` with its lane, the frozen ak-seat-handoffs worktree, and
+  `/mnt/raid0/llm/tmp/ak-seat-vbseat-proof` (the evidence for b1).

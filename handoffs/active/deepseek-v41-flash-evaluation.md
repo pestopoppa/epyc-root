@@ -517,6 +517,13 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   so the parsed name carried them and the resolved annotate missed. Fixed (the name ends at the first double
   space) and pinned by a test on that verbatim row shape; not re-smoked (one invocation was the budget). Tests:
   9 new in `test_actor_tools_mcp.py` with the real run-7 symbol names.
+- [ ] DS41-C24 — **Release run 8's pin on a lane worktree for `EPYC_ROOT_REPO`.** Run 8 reads the VB-AK-SEAT
+  call-record contract from `/mnt/raid0/llm/worktrees/ak-seat-handoffs-20260924` because the shared clone's working
+  tree (`/workspace`, the default) predates root `ee0d48f1`; that lane worktree is frozen while run 8 runs. Before
+  run 9: point `EPYC_ROOT_REPO` at a root checkout that follows `origin/main` (the shared clone once its working tree
+  carries `scripts/vidya/adapters/autokernel_actor_seat_capture.py`), drop the override from the launch recipe
+  above, then remove the lane worktree (`git worktree remove`, never `--force`/`prune`). Acceptance: the run-9 launch
+  line has no lane path and its first `actor-calls.jsonl` line is `epyc.autokernel.actor_call.v1`.
 
 ### C6 — Targets (operator, 2026-09-23) and the arithmetic behind them
 
