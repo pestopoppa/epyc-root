@@ -30,10 +30,10 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-54 | **Sign the revised :8083 GPU-residency package** (being revised 2026-09-24): `-np 4 -c 196608 --kv-unified` + O-2 (draft KV q8_0) + MTP depth 4 + `-ub 2048` + `--cache-ram 65536`, whisper STT moved to CPU (frees the 2.2 GB that makes np4 fit; measured projection ≈ +1.5 GiB free with VL resident), cache-ram on :8070/:8074, opencode `limit` 196608. Depth 4 to be confirmed on production traffic after bring-up | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) KVU-1 | 2026-09-24 |
 | OP-53 | **DeepSeek-V4.1 campaign is blocked by the competing-inference gate**: it classifies any UNOWNED `llama-server` as competing and raises, and :8074 (the requested planner) sits outside every owned scope with no allowlist parameter. Either (B) add a scoped, journalled pid allowlist — a source change that weakens a gate with INC-20260731 lineage — or (C) keep the default planner and stop :8074 for the window. The operator has said the stack stays up | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | 2026-09-23 |
 | OP-48 | **Capacity gate sees speech VRAM (INF-41 S-11a)**: sign the prepared fold (GPU margin 5.85 → 1.17 GiB); lands only after `contention_matrix.yaml` is refreshed by a live bench | [multimodal-pipeline.md](multimodal-pipeline.md) | 2026-09-24 |
 | OP-49 | **Compressor telemetry (UFH-07 P4e)**: `run_bash_compressed` has 0 calls ever — direct agents to it (effectively P4e "promote"), run a tagged canary, or drop the tool | [tool-output-compression.md](tool-output-compression.md) | 2026-09-24 |
-| OP-52 | **Grant a CPU window for the spec-accept-probs kernel fix (SW-9 / TD-1d.5)** — ADMIT given 2026-09-24; sequence AFTER the DS41 STT/TTS + Flash-Next measurements: build + tests + MTP n_probs check + speed A/B, then champion ff, then DS41 anchor rebase before run 9 | [speculative-decoding-mtp-refresh.md](speculative-decoding-mtp-refresh.md) | 2026-09-24 |
 | OP-1 | P0.1–P0.3 sign-off bundle | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | 2026-07-11 |
 | OP-5 | Reviewer control-plane decision bundle (P-REV-1 amendment) | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-16 |
 | OP-6 | Consolidated quiet window — reviewer-plane baselines on the v8 reference lineup | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-17 |
@@ -83,11 +83,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 58 | 804 | 15 | 2026-07-29 |
+| inference-research | 58 | 807 | 15 | 2026-07-29 |
 | pipeline-integration | 5 | 71 | 1 | 2026-08-11 |
-| research-evaluation | 43 | 439 | 12 | 2026-07-29 |
+| research-evaluation | 43 | 441 | 12 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 49 | 491 | 18 | 2026-07-29 |
+| routing-and-optimization | 50 | 512 | 18 | 2026-07-29 |
 | user-facing-harness | 8 | 58 | 2 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

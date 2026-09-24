@@ -65,7 +65,7 @@ is olympiad-style reasoning.
 
 ## Start here
 
-1. OP-54 (package signature) gates KVU-1. OP-55 gates KVU-2/KVU-3. OP-56 gates KVU-11. Work everything else
+1. OP-54 (package signature) gates KVU-1. **Operator rulings 2026-09-24 ~17:50-18:10Z:** OP-55 decided — ALL recommended (reroute only `ingest_long_context`; route by the LIVE per-request limit instead of the ~5k threshold; cache_ram 65536 :8083 / 32768 :8070 / 16-32k :8074 / 0 :8086 via the package; opencode bypass = live /slots + retry, /v1 routing later under HS-4). OP-56 decided — move whisper STT to CPU ("move it back to CPU"); cores from the option-C (SMT siblings) result; it is what makes :8083 `-np 4` fit. OP-52 (CPU window for the MTP-probs fix) granted and validated by the TD-21 session. Revised package in preparation (np4 + kvu + O-2 + depth 4 + whisper→CPU). Work everything else
    meanwhile.
 2. Before applying any patch, re-run `git apply --check` on each one. The package was cut against orchestrator
    `71be6ed3` and research `21ca61b0`, and both mains have moved since.
