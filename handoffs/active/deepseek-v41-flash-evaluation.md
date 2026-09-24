@@ -466,6 +466,22 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
 - [ ] DS41-C15 — `node_profile` semantics under speculation: `llama-host-prof` counts one batched
   verify call as `n_eval=1`, so `decode_us_per_token` is per graph eval, not per token, when DSpark
   is on (carried as a limitation string; needs a no-drafter cross-check to state the ratio).
+- [x] DS41-C16 — **Schema-constrained repair turn for actor replies** ✅ 2026-09-24 (research `ad2b89ff`,
+  `HEAD`, `loop/actors.py` `_parse_reply`/`_schema_repair`): the typed-decision plane's TD-1 idiom
+  applied to the loop's planner/author/critic replies — when the agentic reply's JSON is missing or
+  incomplete, two constrained `response_format json_schema` turns on the same local server (explicit
+  decline boolean, then pure extraction; reviews skip the boolean). Proven on the 27B with the report
+  lost at 03:09 plus four shapes, 2–12 s each; three refuted designs recorded in the module.
+  **Intake gap:** `typed-decision-plane.md` never listed AutoKernel's actors as a consumer of the
+  pattern; the loop was the largest free-text-JSON consumer in the stack.
+- [x] DS41-C17 — **Planner seat moved to `qwen-gpu/qwen3.8-27b`** (MI210, :8083) ✅ 2026-09-24
+  08:52, run 6, request r3. Measured basis: 27B 86 t/s decode / 302 t/s prefill vs flash-next 50 / 92;
+  CPU planner proposals 97 and 41 min (prefill-bound, 124 k tokens of tool output), authoring #1 killed
+  at the 7200 s budget after 91 k output tokens (decode-bound). `--variant` is a no-op on a plain
+  OpenAI-compatible provider. Related fixes: `--actor-timeout-s` (`ef287ba9`), raw reply persistence +
+  stderr fallback (`704ef037`), partial output kept on timeout (`3471fe3c`), `stage_timeout_s` 900→2700
+  (perf profile was refused at the 900 s cap). Filed: planner server :8074 runs `-t 96` while the registry
+  recipe says `threads: 48` (`NUMA_FULL_T48`) — launch/registry divergence, stack owner's.
 - [ ] DS41-C10 — Watch the campaign through calibration into its first source iteration:
   `state/loop-status.json` + `store/` (the 48 A/A launches each reload 519 GB, ~2 h); confirm the
   serving floor lands with a unit, the planner's first proposal cites the inbox, and the critic
