@@ -1,11 +1,11 @@
-"""Hermes plugin: local self-hosted image_generate via ERNIE-Image-Turbo.
+"""Hermes plugin: local self-hosted image_generate via Qwen-Image-2.1.
 
 Registered tool name: image_generate (overrides the FAL cloud
 implementation that ships with hermes-agent's model_tools.py).
 
 The handler delegates to src.services.image_generator.ImageGenerator from
-the epyc-orchestrator repo, which submits a request to the local
-sd-server backend and returns a saved file path + base64 bytes.
+the epyc-orchestrator repo, which submits a request to the local Qwen
+service and returns a saved file path + base64 bytes.
 """
 
 from __future__ import annotations
@@ -29,10 +29,9 @@ _TOOL_SCHEMA = {
     "function": {
         "name": "image_generate",
         "description": (
-            "Generate an image from a text prompt using ERNIE-Image-Turbo "
-            "(self-hosted, single-stream DiT, 8-step distilled). Bilingual "
-            "EN+ZH, strong on dense in-image text rendering (posters, "
-            "infographics, comics). Saves the result under "
+            "Generate an image from a text prompt using the self-hosted "
+            "Qwen-Image-2.1 model. Uses 40 denoising steps by default. "
+            "Saves the result under "
             "/mnt/raid0/llm/output/images/YYYY-MM-DD/ and returns the path "
             "plus base64 bytes."
         ),
@@ -60,8 +59,18 @@ _TOOL_SCHEMA = {
                 },
                 "steps": {
                     "type": "integer",
-                    "description": "Sampling steps (default 8 — model is distilled for 8-step).",
-                    "default": 8,
+                    "description": "Sampling steps (default 40, the model's recommended setting).",
+                    "default": 40,
+                },
+                "reference_images": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": (
+                        "Optional local image paths used as Qwen visual references (up to 10). "
+                        "Allowed roots: /mnt/raid0/llm/output/images and "
+                        "/mnt/raid0/llm/epyc-root/tmp."
+                    ),
+                    "default": [],
                 },
                 "enhance_prompt": {
                     "type": ["string", "boolean"],
@@ -99,8 +108,9 @@ async def _handle_image_generate(args, **_kw):
         width=int(args.get("width", 1024)),
         height=int(args.get("height", 1024)),
         seed=args.get("seed"),
-        steps=int(args.get("steps", 8)),
+        steps=int(args.get("steps", 40)),
         enhance=enhance,
+        reference_images=tuple(args.get("reference_images", [])),
     )
 
     gen = ImageGenerator()
@@ -126,9 +136,9 @@ def register(ctx):
         handler=_handle_image_generate,
         is_async=True,
         description=(
-            "Generate an image from a text prompt via local ERNIE-Image-Turbo "
-            "(sd-server-backed replacement for the disabled FAL cloud adapter)."
+            "Generate an image from a text prompt via local Qwen-Image-2.1 "
+            "(self-hosted replacement for the disabled FAL cloud adapter)."
         ),
         emoji="🎨",
     )
-    logger.info("local-image-generate plugin: image_generate now points at local sd-server")
+    logger.info("local-image-generate plugin: image_generate now points at local Qwen-Image-2.1")

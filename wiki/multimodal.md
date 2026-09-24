@@ -106,7 +106,21 @@ may never carry `verified`. Retagged 2026-07-31.
 - [2026-09-23-noninf-roi.md](../progress/2026-09/2026-09-23-noninf-roi.md) — the round-2 API reload for S-15 (pid, timestamp, health check).
 - epyc-orchestrator commit `8a8e391c` — `default_vl_max_tokens` 512 to 1024, confirmed live after the 20:31Z reload.
 
-## Compiled Update — 2026-09-23: Qwen-Image-2.1 weights are on disk for an ERNIE comparison, and the vision role is clarified
+## Compiled Update — 2026-09-24: Qwen-Image-2.1 is the production image-generation backend
+
+### Verified update
+
+- **The orchestrator now serves Qwen-Image-2.1 on CPU at port 8190** through an isolated Diffusers service that preserves the existing `image_generate` API and sdapi-compatible endpoints. The Qwen weights were already downloaded locally; the production cutover adds a CPU-only environment and launcher.
+- **ERNIE-Image-Turbo remains on disk as a rollback option, not the active production backend.** The production switch is operationally verified, but it is not a matched quality or speed comparison. No generation was run during the cutover; Qwen-vs-ERNIE comparison remains open.
+- The PhotoMaker V2 stack and its test output were removed, reclaiming about 27 GB. That cleanup is separate from model-quality evidence.
+
+### Sources (2026-09-24 wrap-up)
+
+- [Qwen image production cutover progress](../progress/2026-09/2026-09-24-qwen-image-production-cutover.md) — implementation, runtime verification, cleanup and test results.
+- [ERNIE image evaluation handoff](../handoffs/active/ernie-image-turbo-evaluation.md) — current production decision and the still-open matched comparison.
+- [Pipeline chapter](../repos/epyc-orchestrator/docs/chapters/05-data-processing-pipelines.md) — current service architecture and compatibility contract.
+
+## Compiled Update — 2026-09-23: Qwen-Image-2.1 weights were staged for an ERNIE comparison, and the vision role was clarified
 
 ### Key findings
 
@@ -347,7 +361,7 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - **Kimi-K2.7-Code's "now multimodal" selling point does NOT apply on EPYC today**: the model became multimodal via a 400M MoonViT vision encoder shipped as separate mmproj GGUFs (mmproj-Q8_0 0.7GB, mmproj-f16 1.1GB), but **MoonViT is UNSUPPORTED in our llama.cpp fork (no moonvit handling)** — only the text path (deepseek2/MLA + kimi-k2 tokenizer) is plausibly usable. The vision capability is unreachable on our stack regardless of the larger storage/decode-throughput blockers. [intake-703] `verified` (fork)
 - **MoonViT support is fork-state, not mainline-state**: MoonViT is supported in *mainline* llama.cpp (PR #15458, Kimi-VL, merged 2025-08-26 — relevant to intake-680/683 LocateAnything), but that support has not been carried into our production fork. Do not infer Kimi-K2.7-Code vision-runnability from the mainline LocateAnything analysis. [intake-703] `verified` (fork)
 - **UniRL is a multi-GPU RL training framework, not_applicable on CPU-only EPYC**: Tencent Hunyuan's UniRL (Ray + FSDP, Flow-DPPO and other GRPO/PPO trust-region variants) trains unified diffusion/multimodal *generators* — it is training code only, with no inference/serving path and no training GPU on the EPYC host. The blocker is "no training GPU," not "no image role." [intake-709] `external/DGX-gated`
-- **A CPU image-generation role IS already deployed** (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp, port 8190), so UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune that exact model — but only on a future training GPU (DGX Spark). Held as a DGX-gated passive watch-item, not a rejection. [intake-709] `external/DGX-gated`
+- **A CPU image-generation role is deployed** (`sd_server` / Qwen-Image-2.1 via Diffusers, port 8190); ERNIE-Image-Turbo via stable-diffusion.cpp is retained for rollback. UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune an image model — but only on a future training GPU (DGX Spark). Held as a DGX-gated passive watch-item, not a rejection. [intake-709] `external/DGX-gated`
 
 ## Actionable for EPYC
 
@@ -474,7 +488,7 @@ Source: [handoffs/active/multimodal-pipeline.md](../handoffs/active/multimodal-p
 
 ## Image generation deployment (production 2026-05-07)
 
-ERNIE-Image-Turbo Q8 GGUF runs in production via stable-diffusion.cpp's native ggml backend (`sd-server`, port 8190), replacing an initial ComfyUI + ComfyUI-GGUF + PyTorch deployment. The swap delivered **2.54× wall-clock speedup** at production scale (~188 s vs 478 s @ 1024² 8 steps) without quality cost, by skipping ComfyUI-GGUF's per-layer dequant-to-BF16 step in favor of ggml's native Q8 GEMM kernels (AVX-512BW + VNNI on Zen 5).
+**Historical (superseded 2026-09-24):** ERNIE-Image-Turbo Q8 GGUF ran in production via stable-diffusion.cpp's native ggml backend (`sd-server`, port 8190), replacing an initial ComfyUI + ComfyUI-GGUF + PyTorch deployment. That swap delivered **2.54× wall-clock speedup** at production scale (~188 s vs 478 s @ 1024² 8 steps) without quality cost, by skipping ComfyUI-GGUF's per-layer dequant-to-BF16 step in favor of ggml's native Q8 GEMM kernels (AVX-512BW + VNNI on Zen 5). ERNIE remains available for rollback.
 
 Stack integration mirrors the document_formalizer (OCR) pattern: `start_sd_server()` in `orchestrator_stack.py`, launcher script at `scripts/diffusion/start_sd_server.sh`, registry entry `sd_server` (managed_by: orchestrator_stack), API exposed via `/sdapi/v1/txt2img` (sd-webui-compatible). The Hermes plugin path (`scripts/hermes/plugins/local-image-generate/`) routes through `ImageGenerator` → `SDServerClient` and replaces the disabled cloud `image_generate` (FAL) tool.
 
@@ -522,7 +536,7 @@ Two intake items touch the multimodal stack from opposite ends — a frontier co
 
 **Kimi-K2.7-Code (intake-703) — multimodality unreachable in our fork.** Moonshot AI's Code-specialized ~1T MoE (mradermacher GGUF quants) became multimodal via a **400M MoonViT vision encoder** shipped as separate mmproj GGUFs (mmproj-Q8_0 0.7 GB, mmproj-f16 1.1 GB). The decisive point for this category: **MoonViT is UNSUPPORTED in our production llama.cpp fork (no moonvit handling)** — only the text path (deepseek2/MLA + kimi-k2 tokenizer) is plausibly usable, so the "now multimodal" selling point does not apply on EPYC. This is a *fork* limitation: MoonViT is in mainline llama.cpp (PR #15458, Kimi-VL, merged 2025-08-26, relevant to the intake-680/683 LocateAnything thread) but that support was never carried into our fork. The model's primary disposition is as a text-only coder_escalation contender, where it is independently storage-gated (Q4_K_M GGUF 620.7 GB vs ~633 GB raid0 free) and tracked under the large-MoE expert-parallelism handoff — not here.
 
-**UniRL (intake-709) — multi-GPU RL trainer, DGX-gated.** Tencent Hunyuan's UniRL is a reinforcement-learning *training* framework (Ray + FSDP) for unified multimodal/diffusion generators, bundling several GRPO/PPO trust-region variants (Flow-DPPO et al.). It is **not_applicable on CPU-only EPYC**: it is training code only (no inference/serving path) and there is no training GPU on the host. The README has no benchmark numbers; the three team algorithms are incremental trust-region variants (observations, not decision-grade). It is *not* rejected outright, because a CPU image-generation role IS already deployed (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp, port 8190) — UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune that exact model. Held as a DGX-gated passive watch-item under the GPU-acceleration path: the blocker is "no training GPU," not "no image role."
+**UniRL (intake-709) — multi-GPU RL trainer, DGX-gated.** Tencent Hunyuan's UniRL is a reinforcement-learning *training* framework (Ray + FSDP) for unified multimodal/diffusion generators, bundling several GRPO/PPO trust-region variants (Flow-DPPO et al.). It is **not_applicable on CPU-only EPYC**: it is training code only (no inference/serving path) and there is no training GPU on the host. The README has no benchmark numbers; the three team algorithms are incremental trust-region variants (observations, not decision-grade). It is *not* rejected outright, because a CPU image-generation role is deployed (`sd_server` / Qwen-Image-2.1 via Diffusers, port 8190) — UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune that or another model. Held as a DGX-gated passive watch-item under the GPU-acceleration path: the blocker is "no training GPU," not "no image role."
 
 Sources: intake-703 (Kimi-K2.7-Code-GGUF, MoonViT fork-unsupported — verified), intake-709 (UniRL, Tencent Hunyuan — external/DGX-gated), [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md).
 

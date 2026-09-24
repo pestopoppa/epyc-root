@@ -786,7 +786,7 @@ by this planning session. The next step is iteration on that notebook, not execu
 
 ### Source References (September 8 close-out and autonomy design)
 
-- [Unified-surface handoff, §8](../handoffs/active/autokernel-unified-surface-program.md#autonomy-design-20260908) — accepted preferences, explicit authority boundary and implementation proposals.
+- [Unified-surface handoff, §8](../handoffs/active/autokernel-unified-surface-program.md) — accepted preferences, explicit authority boundary and implementation proposals.
 - [Champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — current assembled identity and separate record/production gates.
 - [September 8 rebuild report](../progress/2026-09/2026-09-08-ak-rebuild-20260828.md) — serving repeat, fold gates and final retest dispositions.
 - [Rescued-ref consolidation audit](../docs/design/champion-consolidation-audit-20260908.md) — corrected provenance and candidate/refuted/must-not-fold distinctions.

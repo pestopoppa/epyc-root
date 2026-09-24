@@ -1,10 +1,12 @@
 # ERNIE-Image-Turbo Evaluation
 
-**Status**: REFRESHED 2026-05-28 — production via sd-server Q8 + conv-direct; active only for operational QA and GPU/Spark rebench
+**Status**: UPDATED 2026-09-24 — Qwen-Image-2.1 is the production backend; ERNIE retained on disk for rollback and comparison
 **Created**: 2026-05-06 (via research intake)
-**Updated**: 2026-05-28 (executor-facing remaining-work gate clarified)
+**Updated**: 2026-09-24 (Qwen-Image-2.1 production cutover)
 **Priority**: MEDIUM — operational. Remaining latency (~3 min @ 1024²) acceptable for non-interactive use; **the GPU rebench lever (~10-20× est) is now UNBLOCKED — the MI210 (gfx90a, 64 GB) landed 2026-07-02** (the "Spark/GPU next big lever" gate fired). Runnable: build sd-server/ComfyUI on the ROCm/HIP path and rebench the 8-step distilled DiT on the MI210 (operator-approved; no published gfx90a numbers exist, so this is a measure-not-extrapolate task). Sequence behind the frontdoor-residency GPU program (findings-02) — image-gen is a latency-tolerant tenant, not a residency competitor.
 **Categories**: multimodal, quantization, local_inference
+
+> **Production backend update (2026-09-24).** The operator selected Qwen-Image-2.1 for the production image-generation path. The orchestrator's `sd_server` role now launches the local CPU-only Qwen Diffusers service while preserving the existing image-generation API; ERNIE weights and its launcher remain on disk for rollback. This is a backend cutover, not a matched quality comparison. The comparison checkbox below remains open, and no image generation was performed as part of the cutover.
 
 ## Objective
 
@@ -132,6 +134,7 @@ enhancer**. This does **NOT** validate ERNIE's own 0.9655: both sides are vendor
       `/mnt/raid0/llm/models/diffusion/qwen-image-2.1/` (33,115,613,408 bytes; all text-encoder and transformer
       shards plus VAE present). Acquisition is not a generation benchmark; no Qwen-vs-ERNIE outputs or comparative
       claims are recorded yet.
+- [x] Switch the production `image_generate` backend to Qwen-Image-2.1, preserving the API and keeping ERNIE for rollback ✅ 2026-09-24 — CPU-only Diffusers service is healthy on port 8190; no generation-quality claim is made.
 - [ ] Run a matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record prompt, settings, outputs,
       and admissibility before drawing quality or speed conclusions.
 - [x] Production functional on CPU via sd-server Q8 + conv-direct; Q4 rejected (text corruption) ✅
