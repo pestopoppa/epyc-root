@@ -145,6 +145,180 @@ episodic memory writing."
 - [ ] **TD-18 — Calibration receipt upgrade (zero inference).** Extend the typed_decisions calibration receipt (today n, ECE, Brier, 10 bins; no floor, no model-pin field) with, per question kind: a resampled perfectly-calibrated ECE noise floor; a record/template-clustered paired bootstrap; tie-aware coverage at a stated error budget and AURC; NLL and refit-T sensitivity to the log floor and clamp; exact-0 / exact-1 endpoint rates; a flag when a fitted temperature lands on a search bound; a single in-distribution temperature with a group-disjoint out-of-fold check; and the model pin. Clean-room from the patterns in `kev/metrics.py` and `kev/calibrate.py` (Apache-2.0). Evidence: intake-1498, intake-1504, intake-1516.
 - [ ] **TD-19 — External OOD read via a `/v1/systemone` shim.** Expose our typed-decision path behind Kev's `/v1/systemone` contract (`kev/predictors.py:61-92`, `kev/benchmark.py:34-66`) and score it with `kev.benchmark --remote` on Kev's committed transfer-v4 dev (764 records) and scienthoon-v1. Multi-token candidates return JSON-arm probabilities; send options in insertion order (Kev is order-sensitive; gojev sorts keys). Report accuracy, ECE and coverage against the committed Kev/Jev reports — the Jev figures are report-level only, and the Kev-vs-Jev coverage CI already includes 0. Evidence: intake-1498, intake-1515. Inference-gated, one window.
 - [ ] **TD-20 — (conditional on TD-19 showing a trained decider beats our path) Serve Kev-4B on llama.cpp-experimental.** Branch from fresh production ffc1bac; port `common/decision.{h,cpp}` + `tools/kev/kev-decide.cpp` + 2 CMake lines as new files with a sidecar `head.json` (no `src/` change, no fork merge). Source weights from `taigrr/kev-4b-gguf` at a pinned sha, sha256-verified against `manifest.json` (merged GGUF avoids the 4B/9B `out_proj` LoRA conversion gap). Parity vs HF-fp32 on committed decision-v7 dev rows plus fixtures with unsorted keys, a long state and 4B; test `seq_cp` fan-out against v10's recurrent rollback-index abort on shared cells. Evidence: intake-1498, intake-1514#00, intake-1514#05, intake-1515.
+- [ ] **TD-21 — Re-audit of every free-text JSON consumer (operator, 2026-09-24).** The consumer list for
+  TD-1 never named the AutoKernel loop actors, which fished JSON out of free text with `_extract_json` and
+  retried 90-minute calls when it failed; that was closed 2026-09-24 in `epyc-inference-research`
+  `ad2b89ff` (`scripts/kernel_rnd/autokernel/loop/actors.py` `_parse_reply` / `_schema_repair` — fish first,
+  then ONE `response_format json_schema` turn at temperature 0 back to the SAME local server, plus a stage-1
+  boolean decline probe so an abstention is never fabricated; measured on the 27B at :8083, five shapes
+  correct in 2-12 s, three designs refuted on the way). A full re-audit of both stacks follows. **Audit file:
+  `artifacts/audits/td-json-consumer-audit-20260924.md`** (62 consumers classified; 36 still fish structured
+  output out of free text, 31 of those reachable by the same-server repair idiom; 13 write a silent default
+  into persisted state or serve it to a user, 6 retry a full call from zero, 9 score a parse failure as a
+  wrong answer). Cite intake-1472 (contract) and intake-1473 (pattern set); the measured warrant is TD-4
+  (closed-set 18/18 vs free-form 6/18, the free-form failures being parse/schema failures) and the 2026-08-13
+  review-plane rate of 4.1% parse failure over 1,366 `review_decision` events.
+  - [ ] **TD-21.0 — PREREQUISITE: forward `response_format`/`json_schema` on the `/v1` chat payload.**
+    `src/backends/llama_server.py:607-616` (and the streaming variant at `:1397`) builds the chat payload with
+    `messages`/`max_tokens`/`stream`/`tools`/`logprobs`/`stop`/`chat_template_kwargs` and **no schema field**,
+    while the native `/completion` builder forwards both (`:1228-1231`). So every role on the `/v1` lane —
+    `frontdoor`, `worker*`, `toolrunner` (:8070/:8080/:8180) and `architect_critic` (:8074) — is silently
+    unconstrained even when the caller passed a schema, and `/chat`'s `output_schema` (`direct_stage.py:133`)
+    is advisory for exactly those roles. **This is TD-1d.1, and the actors.py measurement shrinks it**:
+    llama-server's own `/v1` DOES honour `response_format json_schema` (`actors.py:305-318`, live on :8083),
+    so the fix is three lines in our payload builder, not a declared `/completion` lane. Every TD-21.x
+    conversion on a `/v1`-lane role is a no-op until this lands. Zero inference to decide.
+  - [ ] **TD-21.1 — `repl_executor.py:671` REPL `FINAL()` schema validation** (validator `src/graph/helpers.py:1336`).
+    Shape: the caller's `request.output_schema`. Today: strict `json.loads` + jsonschema with **retry from zero**
+    — `turns=0`, role reset, the entire `run_task` graph re-run, up to 2 attempts, then the invalid answer is
+    returned anyway. Action: adopt the TD-1 repair turn before the graph re-run. Highest failure cost in either repo.
+  - [ ] **TD-21.2 — `scripts/autopilot/controller_io.py:739` autopilot ACTION block.** Shape: the fenced
+    `json:autopilot_actions` object. Today: marker-index fish; on a miss the provider is failed, one fallback
+    provider is re-prompted **from zero**, and a deterministic `seed_batch` default action is written into the
+    journal. Action: adopt TD-1 against the local planner (`AUTOPILOT_LOCAL_PLANNER_URL`, :8000) at
+    `_loads_json_payload` (`:687`), which is the natural hook. Highest call volume in the audit.
+  - [ ] **TD-21.3 — `scripts/autopilot/controller_io.py:776` action RATIONALE block.** Shape:
+    `json:autopilot_rationale`. Today: same fish; returns `{}` silently and an empty rationale is persisted.
+    Action: adopt TD-1 (same repair call as TD-21.2).
+  - [ ] **TD-21.4 — `src/api/routes/chat_delegation_decision.py:47,:107` TOON delegation decision.** Shape: a
+    closed set — `D|<answer>` vs `I|brief:…|to:<role>|mode:<react|repl>`. Today: ~8 stacked regexes with **no
+    failure mode** — unparsed architect prose is wrapped as `D|<prose>` and served as the user-visible answer,
+    and `delegate_to`/`mode` are silently clamped. Action: adopt TD-1, or better a native enum (the decision
+    is `{direct, investigate} x role x mode`). Server: `architect_general` :8083, already on the `/completion`
+    lane, so no TD-21.0 dependency.
+  - [ ] **TD-21.5 — `src/api/routes/chat_delegation_decision.py:423` MCQ letter re-prompt.** Shape: one of A-D.
+    Today: `_extract_toon_decision` then `\b([A-D])\b`; on a miss it keeps the previous mis-routed decision.
+    Action: native enum. Note this call ALREADY exists only to recover a parse failure from TD-21.4 — converting
+    TD-21.4 may delete this site outright.
+  - [ ] **TD-21.6 — `src/proactive_delegation/review_service.py:916` `_parse_review_response`.** Shape:
+    `{d,f,s,c}` / `{d,s,f,p}` / TaskIR steps. Today: fence slice then a raw `find("{")`/`rfind("}")` re-slice;
+    `parse_failure_count` is incremented but a **default verdict still flows** (`request_changes` / `ok` /
+    `approve`, rubric axes default `True`). Action: adopt TD-1. **The constraint already exists**:
+    `review_grammar.py:59,:102` ship the json_schema payloads and `:185,:213` the GBNF, and `llm_call` is
+    simply never passed either.
+  - [ ] **TD-21.7 — `src/proactive_delegation/review_service.py:1030` → `review_grammar.py:298` ReviewDecision.**
+    Shape: the full `orchestration/review_decision.schema.json` object. Today: balanced-brace fish + Draft202012
+    + typed `ParseFailure`, withholding as `REQUEST_EVIDENCE` (admissibility-safe). Action: pass the schema that
+    `review_grammar` already generates, then keep the withhold path as the residual. Measured warrant: 4.1%
+    parse failure over 1,366 events (2026-08-13).
+  - [ ] **TD-21.8 — `scripts/review/review_replay_50.py:110` seam swallows the constraint.**
+    `LiveServerPrimitives.llm_call(..., **_: Any)` discards `json_schema`/`grammar`/`seed`, so TD-21.6/21.7 are
+    unobservable through this harness. Action: forward the kwargs. Zero inference; blocks the reviewer replay
+    evidence for the two rows above.
+  - [ ] **TD-21.9 — `scripts/benchmark/debug_scorer.py:1111` LLM-judge boolean.** Shape: `true|false`.
+    Today: `verdict.lower().startswith("true")`, and `output_schema` is forwarded only on the `/chat` branch
+    (`:1169`). Action: enum-bound `true|false` — removes the prefix-match artifact at the source. Judge role is
+    `LLM_JUDGE_ROLE` else `architect_general` :8083.
+  - [ ] **TD-21.10 — `scripts/benchmark/debug_scorer.py:1211` raw llama-server judge branch.** Shape: the same
+    verdict. Today: strict dict access with no schema sent on this branch. Action: send the schema here too.
+  - [ ] **TD-21.11 — `scripts/benchmark/debug_scorer.py:359` multiple-choice letter** (used `:234,:286,:294`).
+    Shape: one option letter. Today: five regex strategies, the last returning the final standalone letter
+    unconditionally; an unparseable model answer returns `False` = **scored wrong**, with no counter. Action:
+    native enum, and record a `parse_fail` category instead of `False` — the exclusion path already exists
+    (`seeding_scoring.py:83-113`) and is simply never reached for model-side failures.
+  - [ ] **TD-21.12 — `scripts/benchmark/debug_scorer.py:1400`/`:1649` list-answer F1.** Shape: a list of items.
+    Today: bullets → numbered → **comma-split** → one-per-line; a mis-parse silently lowers F1. Action: ask for
+    a JSON array under a schema. This is the `feedback_substring_scorer_comma_brittle` class.
+  - [ ] **TD-21.13 — `scripts/benchmark/debug_scorer.py:1433,:1743,:1758` structural exact-match.** Shape: a
+    JSON/Python value after the last `solution =` marker. Today: marker fish + `json.loads`/`literal_eval` with a
+    never-raising fallback; a missing marker returns `False` = scored wrong. Action: a schema makes the marker
+    unnecessary.
+  - [ ] **TD-21.14 — `scripts/benchmark/debug_scorer.py:1477,:1495,:1595` answer / `\boxed{}` / is-this-JSON.**
+    Today: regex chain; `:1607-1611` is the classic `find("{")`/`rfind("}")` slice. Action: adopt TD-1 for the
+    JSON and final-answer cases. Fence extraction (`:1550`) may stay wherever an execution oracle runs.
+    **Acceptance for TD-21.9..21.14 jointly**: report the per-arm parse-failure rate beside every accuracy
+    before and after, per the 2026-07-20 standing rule; the warrant is the verbose arm's 15% false
+    parse-failures vs 0% and the gpqa 43.4% -> 53.0% re-score.
+  - [ ] **TD-21.15 — `scripts/autopilot/eval_tower.py:3887,:3911` rubric-judge scores** (call `:4464`). Shape:
+    `{"scores":{dim: float in [0,1]}}`. Today: fence strip + brace slice with range validation; if EVERY judge
+    is unparseable the question silently falls back to `deterministic_rubric_fallback` stamped
+    `rubric_source="heuristic_fallback"` **and written into the eval results**. Action: adopt TD-1 — the judge
+    role is pinned and on the same server, making this the cheapest high-value conversion in the autopilot.
+  - [ ] **TD-21.16 — `scripts/autopilot/planner_coordinator.py:971` critic verdict** (`_extract_json_payload:1447`).
+    Shape: `{decision, confidence, issues[], revised_action, revised_rationale}`. Today: marker fish; a
+    `parse_error` routes to a **fallback critic provider**, i.e. one extra full critic call per iteration.
+    Action: adopt TD-1 before the fallback provider.
+  - [ ] **TD-21.17 — `scripts/autopilot/planner_coordinator.py:342,:379` draft-action usability gate.** Today:
+    delegates to the TD-21.2 fish; `_mark_failure` opens a per-provider circuit breaker and re-invokes a fallback
+    from zero. Action: inherits TD-21.2's repair; verify the circuit breaker no longer trips on parse alone.
+  - [ ] **TD-21.18 — `scripts/autopilot/review_policy_trials.py:251,:263` critique extraction.** Today: the
+    `review_grammar` validator runs first (good), but extraction falls back to a local balanced-brace scanner.
+    Action: adopt TD-1 on the extract side; `CritiqueEmissionStats.parse_failures` already gives the before/after
+    metric.
+  - [ ] **TD-21.19 — `src/vision/analyzers/vl_describe.py:409` structured image extraction.** Shape: free-form
+    JSON from an image. Today: fence split + `json.loads`; on failure `structured=None` with `parse_error` but
+    `result.success` stays **True** — a fail-open silent default that downstream cannot distinguish from "nothing
+    in the image". Action: adopt TD-1 against `worker_vision` :8086 (its payload at `:165-181` sets no schema, and
+    that port is on the `/completion` lane, so no TD-21.0 dependency).
+  - [ ] **TD-21.20 — `src/api/routes/chat_pipeline/proactive_stage.py:57` plan-step decomposition.** Shape:
+    `[{id, action, actor, depends_on, outputs}]`. Today: fence strip + trailing-comma regex; on failure returns
+    `[]` and falls through to the standard pipeline with no counter and no telemetry — the whole architect call
+    is discarded invisibly. Action: adopt TD-1, and count the failure.
+  - [ ] **TD-21.21 — `src/edit_transaction.py:333,:401` whole-file rewrite protocol** (parser `:85`). Shape:
+    `<<<FILE: path>>>…<<<END>>>` / `<<<DELETE: path>>>`. Today: two regex families, fail-closed (nothing written),
+    but the prompt carries the full scoped file corpus, so a dropped `<<<END>>>` throws away a max-context
+    generation. Action: a GBNF for the delimiter protocol, or a TD-1 repair turn that re-expresses the reply into
+    the block form. Also fixes the J17/BEP arms (`internal_interaction_j17_live_ab.py:340`,
+    `bep_edit_mode_wiring.py:118`) which share the parser — and whose in-code claim that "/chat does not expose
+    constrained decoding" is only true for `/v1`-lane roles (TD-21.0).
+  - [ ] **TD-21.22 — `src/repl_environment/routing.py:605,:620` and `combined_ops.py:397,:412` schema delegation.**
+    Shape: "return only a JSON value matching this JSON Schema" — the schema is already in hand. Today: strict
+    parse + jsonschema + up to 2 **full re-calls** (multiplied across a batch in `combined_ops`). Action: pass it
+    as `json_schema=` and adopt TD-1 for the residual; the retry loop should become dead code.
+  - [ ] **TD-21.23 — `src/pipeline_monitor/model_grader.py:173` grader classification.** Shape: one letter from
+    `spec.choice_strings`, expected on the last line. Today: a last-line word-boundary regex; a mis-formatted reply
+    silently becomes an ungraded row. Action: native enum — the path already runs `/chat` `force_mode=direct`,
+    which supports `output_schema`.
+  - [ ] **TD-21.24 — `scripts/analysis/reviewer_policy_arm_ab.py:337` A/B reviewer verdict.** Today:
+    `find("{")`/`rfind("}")` then a bare first token; unparseable falls to `DEFAULT_DECISION` **silently** and that
+    default is written into the A/B result. Action: adopt TD-1 — a silent default biases the measurement the
+    script exists to produce.
+  - [ ] **TD-21.25 — `scripts/autopilot/species/evolution_manager.py:326,:343,:363` insight distillation.**
+    Shape: a JSON list of insights, plus evidence trial ids. Today: marker fish returning `[]` on failure (a
+    silent zero-insight round, indistinguishable from "nothing to learn"), and `_coerce_trial_ids` silently drops
+    unparseable tokens so an insight is stored with weaker grounding. Action: adopt TD-1 against the local
+    `explore` endpoint; count dropped ids.
+  - [ ] **TD-21.26 — `scripts/autopilot/species/env_synth/task_synthesizer.py:207` and `etd_agent.py:86`.**
+    Shapes: a synthesized task object; a list of candidate environments. Today: strict `json.loads` with no fence
+    tolerance — the synthesizer **retries the whole generation `max_retries+1` times from zero**, the ETD agent
+    returns `[]` with no counter. Action: adopt TD-1; this is the exact retry-from-zero cost DS41 measured.
+  - [ ] **TD-21.27 — `scripts/autopilot/species/prompt_forge.py:2696,:3450` mutation extraction.** Shapes: a
+    mutated prompt-file body; mutated Python source. Today: fence heuristics (">100 chars", "largest non-json
+    block"); on failure it logs and **returns the original**, so the mutation is a silent no-op while a git commit
+    may still be cut around it. Action: a delimiter contract plus a repair turn; the backend is the Claude CLI, so
+    the repair must go to a local server or the contract must be made unambiguous.
+  - [ ] **TD-21.28 — `scripts/benchmark/corpus_quality_gate.py:670` judged-pair fields.** Shape: 8 numeric A/B
+    quality fields. Today: fence regex + `json.loads`; on failure the pair is **silently dropped** from the judged
+    set with no counter, so the gate's denominator moves without anyone seeing it. Action: count the drops at
+    minimum; adopt TD-1 if the judge moves onto a local server (it is `claude -p` today).
+  - [ ] **TD-21.29 — `epyc-inference-research:scripts/kernel_rnd/autokernel/loop/actor_preparation.py:333,:369`.**
+    Shapes: source-actor advice `{mechanism, target_surface, target_symbol, implementation_plan}` (or a build
+    recipe); critic verdict `{accepted, reason}`. Today: calls `actors._extract_json` **raw**, with no repair —
+    the same path `ad2b89ff` just converted one file away. A `PreparationRefused` burns a **one-shot reservation**
+    that cannot be re-invoked. Action: route both through `actors._parse_reply` with the matching schema
+    (`:369` is literally `REVIEW_SCHEMA`); reachable whenever the `ActorProfile` names an opencode `provider/model`.
+  - [ ] **TD-21.30 — Close the `actors.py` residuals left by `ad2b89ff`.** (a) `:181` `_first_json_or_none` is
+    still a raw probe and silently decides what `_parse_reply` later sees; (b) `:344` accepts any object where
+    `"abstain" in body or _complete(body, schema)`, so a partial or hallucinated object carrying the required keys
+    short-circuits repair entirely; (c) `_schema_repair` returns `None` for non-opencode backends, so the two
+    DEFAULT roles (planner = codex `gpt-5.6-sol`, critic = Claude Fable 5.1) have **zero repair coverage today** —
+    the idiom is live only on an explicit `provider/model` opt-in, and the DS41 retry-from-zero cost is unchanged
+    for them; (d) `REVIEW_SCHEMA` leaves `additionalProperties` unset, so a repair turn may legally return extra
+    keys; (e) the repair body carries no `model` field, so a multi-model local endpoint would 400 and degrade
+    silently to `None`.
+  - [ ] **TD-21.31 — Record the unreachable consumers rather than converting them.** `claude_codex_actor_critic.py:354,:373`
+    and `claude_fable5_critic_actor.py:574` are already natively constrained (`--json-schema`, enum + `const`
+    bindings) and need nothing. `discovery_controller.py:1416,:1434`, `loop_experiment_runner.py:517` (codex arm,
+    which has **no schema enforcement at all**, only post-hoc validation), `evoengineer_arena.py:306` and the four
+    vendored arena arms run behind external CLIs with no local server, so the repair idiom cannot reach them.
+    Flag one defect anyway: `evoengineer_arena.py:306`'s last fallback **silently returns the whole raw reply as a
+    candidate** (`{"name":"raw","thought":"Failed to parse"}`) which then goes on to compile and evaluate — make it
+    a typed failure. And `k_search_arena.py:170`'s OpenAI shim **drops any `response_format` the vendor supplies**.
+    `arena_upstream_common.py:357` is the single chokepoint if these ever move onto the local server.
+  - [ ] **TD-21.32 — Decide the judge binding before converting judge sites.** There is no declared `judge` role
+    in the registry; the eval judge is still a prompt/model choice inside the harness, and CJ-11
+    (`canonical-judge-suite-revamp.md`) calls for binding it at `src/llm.py:61-64`. TD-21.9/21.10/21.15 should land
+    after or alongside that binding, or they convert against a moving target. Coordinate, do not duplicate.
 
 ## Wiring policy (2026-09-18, operator-directed)
 
