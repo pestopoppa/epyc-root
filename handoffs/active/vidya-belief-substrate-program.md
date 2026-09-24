@@ -2679,3 +2679,9 @@ row: `scripts/vidya/adapters/README.md`. Project, do not grade.
   (`/mnt/raid0/llm/tmp/ak-seat-ab/driver.py`) must not be edited while its arms run, and both of its arms
   started before `HOOK_SINCE` (12:00Z), so they could not be v1 records anyway. Acceptance: one post-hook arm
   record that `cli.py ingest ak-actor-seat --dry-run` projects with `refused=0`.
+- [ ] **VB-AK-SEAT-b1v — prove the producer on a real campaign call.** Run 8 (research `21ca61b0`,
+  `EPYC_ROOT_REPO` = the ak-seat-handoffs lane worktree) is the first campaign carrying b1; at 13:19Z its first
+  planner call had not returned, so no line exists yet. When one does: read
+  `state-run8/**/actor-replies/actor-calls.jsonl` (read-only), confirm the lines are `actor_call.v1` with no
+  `v1_refused`, and run `cli.py ingest ak-actor-seat --path <that dir> --dry-run` → `refused=0`. A `v1_refused`
+  line names its own cause; fix that in the producer rather than relaxing the contract.
