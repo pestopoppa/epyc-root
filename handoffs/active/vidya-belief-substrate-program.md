@@ -1975,6 +1975,13 @@ no rate at all. A later session may extend the audit but may not report these fi
   `inference/` revision and fixture scope, with quantization drift kept separate from port defects.
   Categorical verdicts stay categorical. Source-table row filed in `scripts/vidya/adapters/README.md`.
 
+- [ ] **VB-AK-DS41-OPS — add a prospective write-side producer for AutoKernel actor-repair and planner-seat
+  operational measurements before the next such run.** Record actor repair shape/outcome and latency, planner
+  endpoint/model plus prefill/decode rates, proposal/author timings, and timeout/partial-output disposition with
+  run, recipe and artifact identity. The 2026-09-24 progress narrative is retrospective and yields zero tuples;
+  do not backfill. Any eligible native record projects through `ClaimTuple` and `claim_tuple.grade()`; no new
+  ladder or campaign/keep authority. Source-table row: `scripts/vidya/adapters/README.md`.
+
 ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep)
 
 Ported by wrap-up pass 2 from the /workspace working copy. The sub-gpu-prep producers `a454b7fd` and
@@ -2514,6 +2521,10 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
 ## Research Intake Update — 2026-09-17 (typed-decision / PAW measurement wiring)
 
 - [ ] **VB-TDP-1 — Wire the write side before the first typed-decision / PAW measurement run.** One self-hashed ClaimTuple per TD-2/TD-3/PAW-3 run at the source table (scripts/vidya/adapters/README.md row + this task); a tuple invented on read cannot gate a decision. (Covers `typed-decision-plane.md` RTG-56 and `paw-compiled-specialists.md` INF-76.)
+
+## VB-TD-21-CENSUS — structured-output consumer audit capture (filed 2026-09-24)
+
+- [ ] **VB-TD-21-CENSUS — add a prospective, source-pinned evidence writer before the next consumer census or re-audit.** Capture consumer identity, parse/constraint path, failure disposition, and endpoint capability in a self-hashed native record; the 2026-09-24 static census/audit stays retrospective and emits zero tuples. Project eligible fields through `ClaimTuple` and `claim_tuple.grade()`; no backfill, new grading rule, or conversion/promotion authority. Source row: `scripts/vidya/adapters/README.md`.
 
 ## VB-FW-1 — GUI-authored fuzzy workflows (filed 2026-09-17, FW-4)
 
