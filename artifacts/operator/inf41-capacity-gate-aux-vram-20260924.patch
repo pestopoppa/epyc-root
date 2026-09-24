@@ -1,0 +1,275 @@
+diff --git a/orchestration/launch_manifest.yaml b/orchestration/launch_manifest.yaml
+index f1573d45..4a0c01a6 100644
+--- a/orchestration/launch_manifest.yaml
++++ b/orchestration/launch_manifest.yaml
+@@ -791,6 +791,12 @@ aux_services:
+     health_path: /health
+     health_timeout: 90
+     model_label: whisper.cpp large-v3-turbo (HIP gfx90a, ggml 0.18.0)
++    # INF-41 S-11/S-12: measured 2026-09-22 from live
++    # /sys/class/kfd/kfd/proc/<pid>/vram_57300 DURING the serving stack:
++    # 2,210,533,376 B = 2.06 GiB. Consumed by
++    # stack_manifest.aux_gpu_reserved_gib() to close the capacity-gate blind
++    # spot documented at serving_shape_capacity_report().
++    vram_gib: 2.06
+     log: whisper.log
+ 
+   - name: tts
+@@ -825,6 +831,12 @@ aux_services:
+         response_format: wav
+       min_bytes: 1024
+       timeout: 180
++    # INF-41 S-11/S-12: measured 2026-09-22 from live
++    # /sys/class/kfd/kfd/proc/<pid>/vram_57300 DURING the serving stack:
++    # 2,815,950,848 B = 2.62 GiB. Consumed by
++    # stack_manifest.aux_gpu_reserved_gib() to close the capacity-gate blind
++    # spot documented at serving_shape_capacity_report().
++    vram_gib: 2.62
+     log: tts.log
+ 
+   - name: handoff_dashboard
+diff --git a/scripts/server/stack_manifest.py b/scripts/server/stack_manifest.py
+index 32a14015..9a0428f4 100644
+--- a/scripts/server/stack_manifest.py
++++ b/scripts/server/stack_manifest.py
+@@ -314,6 +314,22 @@ class AuxService(NamedTuple):
+     # bytes for a request it cannot satisfy, which every status-code check
+     # passes. Absent -> not checked.
+     smoke: dict[str, Any] | None = None
++    # GPU VRAM this service holds resident on ROCm0 while running, in GiB, or
++    # None for a host-only service. INF-41 S-11/S-12: whisper.cpp (STT) and
++    # qwentts.cpp (TTS) are BOTH GPU-resident and BOTH invisible to
++    # `serving_shape_capacity_report()` before this field existed — they are
++    # aux_services, never role_launch_meta entries, so `serving_shape_instances()`
++    # (which joins role_launch_meta x NUMA_CONFIG) structurally cannot enumerate
++    # them. This field is the fix: measured, not estimated (see the two call
++    # sites below), and summed as EXTRA GPU headroom in
++    # `serving_shape_capacity_report()` rather than routed through
++    # `device_model.vram_fit`'s role-keyed lookup, because these are not
++    # NUMA-placed llama-server roles and forcing them into that machinery
++    # would require a synthetic `n_ctx`/`kv_kib_per_token_f16` for a model
++    # class (whisper cross-attention, TTS codec/talker) this schema was never
++    # built to describe — see stack-change skill DERIVATION.md before ever
++    # trying to fold these into NUMA_CONFIG/role_launch_meta instead.
++    vram_gib: float | None = None
+ 
+ 
+ _AUX_LD_MODES = ("prepend", "replace")
+@@ -358,6 +374,11 @@ def _aux_service(entry: dict[str, Any]) -> AuxService:
+         health_path=str(entry.get("health_path", "/health")),
+         health_timeout=int(entry.get("health_timeout", 60)),
+         smoke=entry.get("smoke") if isinstance(entry.get("smoke"), dict) else None,
++        vram_gib=(
++            float(entry["vram_gib"])
++            if isinstance(entry.get("vram_gib"), (int, float))
++            else None
++        ),
+     )
+ 
+ 
+@@ -1474,6 +1495,26 @@ def _host_memtotal_gib() -> float | None:
+     return None
+ 
+ 
++def aux_gpu_reserved_gib() -> float:
++    """Total VRAM held resident by GPU aux_services (whisper, tts, ...), in GiB.
++
++    INF-41 S-11/S-12. These services never appear in `serving_shape_instances()`
++    (they are not `role_launch_meta` x `NUMA_CONFIG` roles — see the `vram_gib`
++    field docstring on `AuxService`), so `serving_shape_capacity_report()` folds
++    this total in as EXTRA GPU headroom rather than as a per-role `vram_fit`
++    entry. Services with no declared `vram_gib` (host-only aux services, e.g.
++    `document_formalizer`, `sd_server`) contribute nothing.
++    """
++    return round(
++        sum(
++            service.vram_gib
++            for service in AUX_SERVICES.values()
++            if isinstance(service.vram_gib, (int, float)) and service.vram_gib > 0
++        ),
++        4,
++    )
++
++
+ def serving_shape_capacity_report() -> dict:
+     """Per-device footprint of the declared lineup. Pure arithmetic, no processes.
+ 
+@@ -1484,11 +1525,20 @@ def serving_shape_capacity_report() -> dict:
+     each GPU role's VRAM is `vram_non_kv_gib + kv_gib` for its declared shape,
+     with `priors={}` so it cannot reach past the closed world it was given.
+ 
++    GPU aux_services (whisper, tts) are NOT llama-server roles and carry no
++    `serving_shape`, so they cannot be added to `synthetic_server_mode` the same
++    way — they are folded into `vram_fit`'s `headroom_gib` instead (INF-41
++    S-11/S-12; see `aux_gpu_reserved_gib()`). This closes the gate's previously
++    documented 4.68 GiB blind spot (whisper 2.06 + qwentts 2.62, measured
++    2026-09-22 from live `/sys/class/kfd/kfd/proc/<pid>/vram_57300`): the gate
++    used to be able to PASS a lineup that, together with these two ALWAYS-ON
++    speech services, does not actually fit.
++
+     Host has no such helper — device_model is VRAM-only — so the host sum lives
+     here, sharing the same per-instance KV numbers so the two can never disagree
+     about what a KV cache costs.
+     """
+-    from src.scheduling.device_model import vram_fit
++    from src.scheduling.device_model import vram_fit, vram_headroom_gib
+ 
+     rows = serving_shape_instances()
+ 
+@@ -1513,10 +1563,12 @@ def serving_shape_capacity_report() -> dict:
+             "The capacity check needs the KV-FREE resident figure; `vram_gib` is a "
+             "KV-inclusive total at some past context and using it would double-count."
+         )
++    aux_reserved = aux_gpu_reserved_gib()
+     fit = vram_fit(
+         [row["role"] for row in gpu_rows],
+         priors={},
+         server_mode=synthetic_server_mode,
++        headroom_gib=vram_headroom_gib() + aux_reserved,
+     )
+ 
+     host_rows = [row for row in rows if not row["on_gpu"]]
+@@ -1550,6 +1602,11 @@ def serving_shape_capacity_report() -> dict:
+             "capacity_gib": fit.capacity_gib,
+             "per_role": dict(fit.per_role),
+             "kv_gib": round(sum(row["kv_gib"] for row in gpu_rows), 4),
++            # INF-41 S-11/S-12: the GPU aux_services (whisper, tts) reserved
++            # headroom, already folded into `fit.headroom_gib` / `fit.budget_gib`
++            # above — surfaced separately here so a reader (or a test) can see
++            # what changed vs the pre-fix report without re-deriving it.
++            "aux_gpu_reserved_gib": aux_reserved,
+         },
+         "host": {
+             "gated": host_budget is not None,
+@@ -1573,13 +1630,19 @@ def validate_serving_shape_capacity() -> None:
+     and only the GPU leg binds — a container that cannot see host RAM must not
+     be able to pass a check it never ran.
+ 
+-    KNOWN UNDERCOUNT, recorded rather than papered over: whisper.cpp (STT) and
+-    Qwen3-TTS also tenant this MI210 when active. Neither has a `server_mode` row
+-    — voice_server still describes a CPU faster-whisper service and TTS has no
+-    entry at all — so the GPU sum is ~2.5 GiB optimistic whenever they are up.
+-    Both were ABSENT from the card at the 2026-08-02 measurement (rocm-smi
+-    --showpids showed only the two llama-servers). The 2.0 GiB `vram_fit`
+-    headroom does not cover them; giving them registry rows is the real fix.
++    CLOSED 2026-09-24 (INF-41 S-11/S-12), was a KNOWN UNDERCOUNT: whisper.cpp
++    (STT) and Qwen3-TTS also tenant this MI210 whenever active, and neither is a
++    `role_launch_meta` x `NUMA_CONFIG` role, so neither could ever appear in
++    `serving_shape_instances()`'s per-role sum — they are aux_services, launched
++    and reloaded through a completely different table. The fix is
++    `AuxService.vram_gib` (declared per aux service in `launch_manifest.yaml`,
++    measured 2026-09-22 from live `/sys/class/kfd/kfd/proc/<pid>/vram_57300`:
++    whisper 2.06 GiB, tts 2.62 GiB) folded into `vram_fit`'s `headroom_gib` by
++    `serving_shape_capacity_report()` via `aux_gpu_reserved_gib()`. This gate's
++    2.0 GiB first-execution headroom was never meant to also cover two
++    permanently-resident sibling services; it does not, on its own, any more
++    than it did before — the two headroom components are now both counted,
++    instead of one of them being silently absent.
+     """
+     report = serving_shape_capacity_report()
+     problems: list[str] = []
+diff --git a/tests/unit/test_aux_gpu_capacity_visibility.py b/tests/unit/test_aux_gpu_capacity_visibility.py
+new file mode 100644
+index 00000000..e99ac5de
+--- /dev/null
++++ b/tests/unit/test_aux_gpu_capacity_visibility.py
+@@ -0,0 +1,99 @@
++"""The GPU capacity gate must see VRAM held by GPU aux_services (whisper, tts).
++
++Found 2026-08-02, closed 2026-09-24 (INF-41 S-11/S-12). `whisper` (STT,
++whisper.cpp large-v3-turbo, HIP/gfx90a) and `tts` (qwentts.cpp, Qwen3-TTS
++12Hz-0.6B) are BOTH GPU-resident, always-on aux_services — never
++`role_launch_meta` x `NUMA_CONFIG` roles — so `serving_shape_instances()`
++structurally could not enumerate them and `serving_shape_capacity_report()`
++could PASS a lineup that, together with these two services, does not actually
++fit the 64 GiB MI210. Measured 2026-09-22 from live
++`/sys/class/kfd/kfd/proc/<pid>/vram_57300` DURING the serving stack: whisper
++2,210,533,376 B = 2.06 GiB, qwentts 2,815,950,848 B = 2.62 GiB, total 4.68 GiB
++(epyc-inference-research orchestration/model_registry.yaml,
++server_mode.architect_general.serving_shape comment).
++
++The fix: `AuxService.vram_gib` (declared per aux service in
++`launch_manifest.yaml`) is summed by `aux_gpu_reserved_gib()` and folded into
++`vram_fit`'s `headroom_gib` by `serving_shape_capacity_report()`. These tests
++pin the two measured figures and prove the report actually uses them, rather
++than asserting a headroom_gib that could pass with either summed in or left
++out.
++"""
++
++from __future__ import annotations
++
++import importlib
++import sys
++from pathlib import Path
++
++import pytest
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path.insert(0, str(ROOT))
++sys.path.insert(0, str(ROOT / "scripts" / "server"))
++
++
++@pytest.fixture(scope="module")
++def sm():
++    return importlib.import_module("stack_manifest")
++
++
++def test_whisper_and_tts_declare_the_measured_vram(sm) -> None:
++    """Regression guard for the two measured 2026-09-22 figures, not estimates."""
++    whisper = sm.AUX_SERVICES["whisper"]
++    tts = sm.AUX_SERVICES["tts"]
++    assert whisper.vram_gib == pytest.approx(2.06)
++    assert tts.vram_gib == pytest.approx(2.62)
++
++
++def test_aux_gpu_reserved_gib_sums_only_gpu_resident_services(sm) -> None:
++    """document_formalizer/sd_server declare no `vram_gib` and must not count."""
++    total = sm.aux_gpu_reserved_gib()
++    assert total == pytest.approx(4.68)
++    for name in ("document_formalizer", "sd_server"):
++        assert sm.AUX_SERVICES[name].vram_gib is None
++
++
++def test_capacity_report_headroom_includes_the_aux_reservation(sm) -> None:
++    """The GPU leg's headroom must be the BASE headroom plus the aux reservation,
++    never just one of the two — that disjunction is exactly how the blind spot
++    shipped the first time (a headroom that silently covered only one figure).
++    """
++    from src.scheduling.device_model import vram_headroom_gib
++
++    report = sm.serving_shape_capacity_report()
++    gpu = report["gpu"]
++    assert gpu["aux_gpu_reserved_gib"] == pytest.approx(4.68)
++    expected_headroom = vram_headroom_gib() + 4.68
++    assert gpu["fit"].headroom_gib == pytest.approx(expected_headroom)
++    # Sanity: the declared lineup must still fit WITH the reservation counted —
++    # if this ever flips to False, that is real news about the fleet, not a
++    # test to relax.
++    assert gpu["fit"].ok is True
++
++
++def test_removing_the_aux_reservation_would_have_hidden_headroom(sm) -> None:
++    """Proves the fix actually changes the number, not just that a field exists.
++
++    Calls `device_model.vram_fit` directly with `headroom_gib` held at the base
++    value only, mirroring what `serving_shape_capacity_report()` computed BEFORE
++    this fix, and asserts the reported budget was more optimistic by exactly the
++    aux reservation.
++    """
++    from src.scheduling.device_model import vram_fit, vram_headroom_gib
++
++    rows = sm.serving_shape_instances()
++    gpu_rows = [row for row in rows if row["on_gpu"]]
++    synthetic_server_mode = {
++        row["role"]: {"vram_gib": round(float(row["vram_non_kv_gib"]) + row["kv_gib"], 4)}
++        for row in gpu_rows
++    }
++
++    fixed_report = sm.serving_shape_capacity_report()
++    pre_fix_fit = vram_fit(
++        [row["role"] for row in gpu_rows],
++        priors={},
++        server_mode=synthetic_server_mode,
++        headroom_gib=vram_headroom_gib(),
++    )
++    assert pre_fix_fit.budget_gib - fixed_report["gpu"]["fit"].budget_gib == pytest.approx(4.68)

@@ -2611,3 +2611,17 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   is not running its own recipe, and nothing detects that. Decide whether the recipe or the launcher is
   wrong, then make the disagreement detectable rather than discoverable by accident.
   **Blocker: none.**
+
+## VB-MFVBS-1 / VB-EVALDISC-1 — two orchestrator analysis sources (filed 2026-09-24)
+
+- [ ] **VB-MFVBS-1 — author the read-side adapter for the verify-before-stop measurement.** Producer:
+  orch `scripts/analysis/mf_vbs1_verify_before_stop.py` (`86471b1f`), deterministic JSON with n,
+  denominator and Wilson CI per rate. `@register("verify-before-stop-measurement")`, re-hash at the
+  boundary, `Source(...)` row in `scripts/vidya/ingest_sources.py`. Carry the three source-table cautions
+  (one day / one role / one voluntarily-stopping task; the rider never asks for verification; forced stops
+  outside the voluntary denominator). Project, do not grade.
+- [ ] **VB-EVALDISC-1 — author the read-side adapter for the eval-suite discriminability audit.**
+  Producer: orch `scripts/analysis/eval_suite_discriminability.py` (`eval_suite_discriminability_report.v1`).
+  Locator = report × suite × metric. Reports older than orch `8a829233` must have their
+  `run_unstable`/`brittle`/flip_rate claims refused wherever an input run was error-dominated (RTG-16);
+  their MDE/pass_rate stay admissible. Project, do not grade.

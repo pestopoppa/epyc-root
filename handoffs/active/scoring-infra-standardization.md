@@ -125,12 +125,18 @@ already has bare-letter handling).
       now marked `deprecated` in the schema, the description no longer falsely claims REPL `CALL()` exposure,
       and `/chat` logs a warning when a caller sets them. Removal becomes safe once the log shows no callers.
       6 new tests.
-- [ ] **1d. Pin a runnable test environment for the research repo's eval-scorer tests.** Found 2026-08-12
+- [x] **1d. Pin a runnable test environment for the research repo's eval-scorer tests.** Found 2026-08-12
       (suite-retirement lane): `test_score_with_claude.py` uses pytest fixtures with no stdlib fallback, but
       NO pytest exists in system python, `.venv-exec`, or user site — a stale `__pycache__` pyc proves pytest
       9.1.1 ran once and vanished. The tests were unrunnable as found; both auditor lanes verified via
       ad-hoc scratch venvs (`/workspace/tmp/effibench-venv`). Fix = a pinned dev-requirements (or repo venv)
       that `--check`-style CI or session-init can assert, so "tests pass" claims are reproducible.
+      ✅ 2026-09-24 — research `pyproject.toml` gains a `test` extra pinning `pytest==9.1.1`; README
+      "Running Tests" installs it into a gitignored `.venv-test` (never `.venv-exec`) and runs the four scorer
+      suites (`test_score_with_claude`, `test_debug_scorer`, `test_niah_scorer`, `test_architect_bench_rescore`):
+      52 passed. research `6cf4a076`..`cbb12fc7`. A whole-directory `scripts/benchmark/` run still has 4
+      collection errors (`test_aa_omniscience_manifest`, `test_m12_review_fixes`, `test_rope_position_probe`,
+      `tests/test_run_benchmark_suite_selection`) — outside this scorer scope.
 
 ### Track 2 — Tool-use / coding eval harness
 - [x] **2a-i. `datasets` + code-execution scorer scaffold.** ✅ 2026-07-24 — DONE. Installed the `benchmark`
