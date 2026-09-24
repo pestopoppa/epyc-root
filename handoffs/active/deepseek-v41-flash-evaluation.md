@@ -426,6 +426,11 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     - Then, before the fast-forward, `sha256sum -c SHA256SUMS` each copy against the committed checksums, remove
       only the copies that match, and fast-forward.
     - The 35B `q36_35b_a3b_q8_h/` directory is not tracked yet and must be left alone.
+    **Prep done 2026-09-24 (~19:00Z):** the speech delta and the 35B directory were committed (research
+    `07060eaa`, then `6afc7eed`), the shared clone's untracked copies were moved aside to
+    `/mnt/raid0/llm/tmp/research-untracked-backup-20260924`, and the shared research clone was fast-forwarded; it
+    is at `6afc7eed` (≥ `34373dd8`, checked with `merge-base --is-ancestor`). This box closes on run 9's launch
+    line and first planner reply (its acceptance), not before.
   **Run 8 STOPPED 2026-09-24 ~15:32Z** on operator request, for the stack-configuration window (`state-run8/STOPPED.txt`).
   - Why: `run.py` held every CPU region lock through the full-target floor calibration, and that timed out the
     production frontdoor's `/chat` on :8070.
@@ -456,6 +461,30 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   production frontdoor, so agree its window with the operator (OP-41 owns the admission-control design).
   Acceptance: run 9's launch line names the rebuilt anchor, a research commit ≥ `34373dd8`, no lane path, and a
   `-kvu` :8083. Its first planner reply is not truncated at 98,304 tokens.
+
+  Progress 2026-09-24 (prerequisite steps; the parent box closes on the run-9 acceptance above):
+  - [x] C25.1 — OP-52 CPU window: the TD-21 session validated the fix (probs 96/96, speed +0.43%, native 16/16).
+    ✅ 2026-09-24
+  - [x] C25.2 — champion fast-forwarded: `ak/champion/llama-cpp-ffc1bac82eec` = `2b57340bf` (SW-9, TD-21
+    session). ✅ 2026-09-24
+  - [x] C25.3 — port moved onto the new tip as a clean **merge**, not a rebase: anchor **`5a60152ae`** (merge of
+    champion `2b57340bf` into port `ebb68dc55`) on `experimental/deepseek41-port-20260924`, worktree
+    `/mnt/raid0/llm/llama.cpp-experimental-deepseek41-20260924`. ✅ 2026-09-24
+  - [x] C25.4 — anchor rebuilt: `build-cpu/bin/llama-server` reports `version: 10313 (5a60152ae)`, sha256
+    `763e1474f070fdf521f5f64ccbba890db191113fc14a08db6f9682f97f5ed8f7`; ggml linkage PASS;
+    `tests/test_speculative.py` 9/9 PASS (7 existing + 2 n_probs), relayed to workspace-8d. Campaign inputs
+    re-resolved (request r4): `TARGET_ID ds41-5a60152ae-cpu-t48-dspark-b2`, `verified_resolution`, 0 errors, in
+    `campaign-manifest.json`, `campaign-resolved.json`, `owned-targets.json` and the launch/recipe JSONs under
+    `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/`; run-8 inputs backed up to
+    `inputs/bak-20260924-run8/`. Run-9 dry run rc=0. ✅ 2026-09-24
+  - [x] C25.6 — `-kvu` live on :8083 with `cache_ram` sized (RTG-57 KVU-1 / KVU-2, OP-54 applied 18:45–18:55Z):
+    `n_slots = 4, n_ctx_slot = 196608, kv_unified = 'true'`. ✅ 2026-09-24
+  - C25.5 is C10a + C24: both are prepared (see those boxes) and close on the launch line.
+  - **Both floors must recalibrate** (the anchor changed): ~8.5 h holding every CPU region lock. That overlaps
+    the CPU speech cores 0-39 and blocks :8070. **Operator decision 2026-09-24 ~19:40Z: run 9 OFF-HOURS**,
+    launched by main-ak-seat late tonight after the wrap-up, state dir `state-run9`. Before launch: the API reload
+    for orch `c347600e` (TD-21.33c; `orchestrator_stack.py reload orchestrator`, API only; verify pid lstart >
+    commit time).
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
@@ -588,6 +617,10 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   carries `scripts/vidya/adapters/autokernel_actor_seat_capture.py`), drop the override from the launch recipe
   above, then remove the lane worktree (`git worktree remove`, never `--force`/`prune`). Acceptance: the run-9 launch
   line has no lane path and its first `actor-calls.jsonl` line is `epyc.autokernel.actor_call.v1`.
+  **Prep done 2026-09-24:** the shared root clone `/workspace` carries
+  `scripts/vidya/adapters/autokernel_actor_seat_capture.py`, so run 9 needs no `EPYC_ROOT_REPO` override, and the
+  lane worktree `/mnt/raid0/llm/worktrees/ak-seat-handoffs-20260924` was removed (clean, on origin; plain `git
+  worktree remove`). Closes on the run-9 launch line.
 
 ### C6 — Targets (operator, 2026-09-23) and the arithmetic behind them
 

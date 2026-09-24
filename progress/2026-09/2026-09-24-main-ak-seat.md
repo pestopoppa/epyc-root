@@ -309,3 +309,135 @@ Qwen3.8-27B Q8_0 with MTP draft, olympiad-style prompts, n=1 per cell. Numbers a
   admission control. DS41-C25 carries the scheduling constraint.
 
 **Closed in this wrap-up:** VB-AK-SEAT-b1v. Run 8's one call line ingests with matched=1, projected=1, refused=0.
+
+## Stack window, part 2: OP-54 applied, M-3/M-4, 35B matrix, CPU speech under load, DS41 run-9 prep (18:00–19:55Z)
+
+The plan file `/mnt/raid0/llm/tmp/stack-window-plan-20260924.md` has the minute-by-minute record. This section records what landed.
+
+### GPU residency applied (OP-54, signed ~18:40Z, applied 18:45–18:55Z)
+
+The operator signed revision 3 of the package. Revision 3 replaced the np2 funding: it runs np 4, drops O-2, and
+moves speech to CPU. The signed copy is now in root:
+`artifacts/operator/stack-change-kvu-20260924/revision-3/` (PACKAGE.md, patches, argv, capacity).
+
+| Service | Live now |
+|---|---|
+| :8083 architect_general (pid 2009477) | `-np 4 -c 196608 --kv-unified --spec-draft-n-max 4 -ub 2048 --cache-ram 65536`. The log reads `n_slots = 4, n_ctx_slot = 196608, kv_unified = 'true'` |
+| STT :9000 | CPU `-t 24 -ng` on 0-23, 0 VRAM |
+| TTS :9002 | CPU on 24-39, 16 threads via the `nprocs` shim, 0 VRAM |
+| CPU roles | `--cache-ram 32768` on :8070/:8074 (+ halves); :8086 `--cache-ram 0` |
+
+Serving proof:
+- a 124k-token request served;
+- jfk.wav RTF 0.20;
+- TTS first packet 97 ms;
+- `status` shows no attestation warnings;
+- the promotion gate is green;
+- 26 `created context checkpoint` lines since the launch, which closes KVU-1c.
+
+| Repo | Commit | What |
+|---|---|---|
+| orchestrator | `0a564a1f` | the package, plus the contention-matrix re-bench (topology `4893e37e`; worst pair architect_critic+worker_vision 0.08) |
+| orchestrator | `41ecf9fc` → merge `3a61c153` | bare `FINAL(OK)` NameError rescue on /v1 (`rescue_bare_name_final`). Found during the serving proof; the bug predates OP-54. API reloaded, repro fixed |
+| orchestrator | `8a0c0944`, `ff67bbec` | overflow-branch merge and gate-fix merge (18:10–18:30Z). The CPU-role reloads on `-ub 2048` ran 18:16–18:18Z |
+| research | `75ee1b8e` | registry: architect_general np4 + kv_unified + depth 4 + cache_ram; speech aux on CPU |
+
+### Measurements (research `07060eaa`, `6afc7eed`)
+
+**M-4: live np4 kvu, fixed-length 1024 tokens, 2 waves.**
+
+| Concurrency | Aggregate tok/s (wave 1 / wave 2) |
+|---|---|
+| 1 | 40.2 / 39.9 |
+| 2 | 71.4 / 67.8 |
+| 4 | 95.3 / 93.1 |
+
+These match the split-KV study cells. The single-wave "aggregate loss" was an answer-length artifact, so KVU-8
+closes, with one substitution named in the box.
+
+**M-3: production depth 4 vs 8. NOT confirmed.**
+- Depth-8 production arm: n=240, median context 63.5k, mean accepted 4.86, acceptance 0.483, 38.2 tok/s.
+- Depth-4 arm: 0 organic requests.
+- Log projection (a model, not a measurement): depth 4 = 0.93× for the median request, 1.01× aggregate.
+  Positions 5–8 carry 27.5% of accepted tokens.
+- Filed as M-3b.
+
+**35B-A3B kvu matrix (24 cells, 0 errors, depth 4):**
+- Unified is within 2% of split in the fixed-length L 2048 cells.
+- At 8k/32k the delta is −5.3..+5.6% with no consistent sign, because completions diverge even at np 1.
+- np 8 fits.
+
+**27B load-only (server MiB):**
+
+| Shape | MiB |
+|---|---|
+| split d8 | 39,018 |
+| np2/196k unified | 39,026 |
+| np4/196k | 40,522 |
+| np2/262k | 42,362 |
+| np4/262k | 43,858 |
+
+**CPU speech vs live CPU LLMs (addendum 3): not real time, and the collision is two-sided.**
+- With :8074 or :8070 generating (`-t 96` on 0-95):
+  - STT RTF ≥ 58;
+  - TTS first packet 13.4–13.6 s, then a stall;
+  - :8074 falls 31.2 → 0.59 tok/s and :8070 falls 36.8 → 1.05 tok/s.
+- Partition test (`-t 56` on 40-95):
+  - STT 0.22–0.44;
+  - TTS marginal (first packet 0.24–1.0 s, RTF 0.93–1.40);
+  - LLM −22..26%.
+- No priority-pause mechanism exists.
+- Findings persisted for future STT/TTS planning in
+  `docs/reference/speech/cpu-speech-contention-20260924.md` (new).
+
+### DS41 run-9 prep (C25)
+
+- Champion ff to `2b57340bf`.
+- Port merged onto it: anchor **`5a60152ae`** on `experimental/deepseek41-port-20260924`.
+- `build-cpu` is version 10313, sha256 `763e1474…f8f7`. ggml linkage PASS. `test_speculative.py` 9/9, relayed
+  to workspace-8d.
+- Inputs re-resolved (r4, `ds41-5a60152ae-cpu-t48-dspark-b2`, verified). Backups are in `bak-20260924-run8/`.
+- Dry run rc=0.
+- Shared research clone fast-forwarded (C10a prep). `/workspace` carries the seat capture contract, and the old
+  lane worktree was removed (C24 prep).
+- Both floors recalibrate (~8.5 h, all CPU region locks).
+- **Operator: run 9 OFF-HOURS, launched tonight by main-ak-seat after this wrap-up.** Not launched at wrap-up
+  time. The pending API reload for orch `c347600e` (TD-21.33c) comes first.
+
+### workspace-8d coordination
+
+- It needed no CPU window: SSU-F14 is satisfied by `0a564a1f`'s matrix.
+- It closed OP-48 on its side (root `baa0d036`, S-11a superseded). Its rows were not touched here.
+
+## Operator-invoked wrap-up #4 (19:50–20:10Z)
+
+**Checklist sync: 9 flips + 7 completed-this-session boxes added (16 `[x]` lines).**
+- RTG-57 flips: KVU-1, 1c, 2, 3, 4a, 8, 9, 11, 11a.
+- Added as `[x]`: KVU-0i, KVU-1e; DS41 C25.1–C25.4 and C25.6.
+
+**Derived actionables: 6 filed (+2 extended), 5 declined** (RTG-57 "Not filed here" plus below).
+- Filed:
+  - M-3b (under KVU-1b);
+  - KVU-11b (CPU speech contention decision; see the note below);
+  - KVU-11c (qwentts thread flag, to retire the shim);
+  - KVU-13c (capacity gate at `stack_manifest` import);
+  - VB-KVU-1a;
+  - VB-SPEECH-CPU-1a.
+- Extended: KVU-13a (ambient `LD_PRELOAD`/`SHIM_NPROCS`) and KVU-13b (the skill source list).
+- Declined:
+  - a priority pause as its own task (it survives as option C);
+  - the frontdoor-under-partition measurement (part of the layout decision's re-run);
+  - pinning `megasync` (recorded in the reference doc);
+  - the package §9 `worker_general` tests (already SSU-F13);
+  - the opencode limit (KVU-1a stays open: the operator applies it outside containment, and
+    `~/.config/opencode/opencode.jsonc` has no 196608 limit yet).
+
+**Fixed in passing:**
+- research `afbc6bea` (main `170c763c`): the addendum-3 side note said `HIP_VISIBLE_DEVICES` was unset.
+  `/proc/<pid>/environ` shows `-1` on both speech services.
+- The signed revision-3 package was only in scratch while orch `0a564a1f` cited the root path. It is now copied
+  into root.
+
+**Note on KVU-11b.** The coordinator relayed an operator choice for the speech layout mid-wrap-up. The permission
+classifier refused to let this subagent write that relayed choice into the handoff, so KVU-11b is left as
+filed. The owning session records the operator's decision.

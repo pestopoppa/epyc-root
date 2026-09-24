@@ -1,0 +1,866 @@
+diff --git a/orchestration/launch_manifest.yaml b/orchestration/launch_manifest.yaml
+index 9f0048b7..4b2de727 100644
+--- a/orchestration/launch_manifest.yaml
++++ b/orchestration/launch_manifest.yaml
+@@ -773,19 +773,41 @@ aux_services:
+     #   WAV ONLY — whisper.cpp's --convert needs ffmpeg, which is NOT installed on
+     #           this host. faster-whisper accepted arbitrary containers. Do not set
+     #           --convert until ffmpeg exists.
+-    description: whisper.cpp STT (large-v3-turbo, HIP/gfx90a)
++    #
++    # 2026-09-24 GPU-RESIDENCY CHANGE SET: :9000 MOVES TO THE CPU (operator-directed),
++    # freeing ~2.2 GB of MI210 VRAM for architect_general's 4 slots. Same frozen
++    # production-speech-v1 binary and tree (`backend: stt`, linkage check unchanged);
++    # `-ng` + HIP_VISIBLE_DEVICES=-1 keep it off the GPU. Evidence and hazards:
++    # epyc-inference-research artifacts/speech_cpu_realtime_20260924/README.md.
++    #   * `-t` and `cpuset` are ONE measured pair. whisper.cpp HANGS (>60-300 s per
++    #     encode) on some layouts -- 20@0-19, 28@0-27, 24@0-31, 32@0-31, 32@24-55 --
++    #     and is healthy on others. 24@0-23 (with TTS 16@24-39) is healthy 3/3 solo and
++    #     real-time concurrently with TTS, frontdoor IDLE (STT RTF 0.20/0.24). Change
++    #     it only via scripts/voice/check_speech_layout.py, which enforces that rule.
++    #   * ⚠ A GENERATING CPU frontdoor collapses both speech servers (STT RTF 1.5-2.9,
++    #     TTS RTF 7.8-9.4): every core in 0-95 is in the frontdoor's -t 96 set. Voice
++    #     turns must reason on the GPU (architect_general) — voice-pipeline requirement.
++    #   * cpuset is honoured exactly: the bench guard may refuse it, never re-pin it
++    #     (orchestrator_stack._aux_spawn_prefix).
++    #   * Latency: ~2 s per utterance of any length on CPU (30 s window padding) vs
++    #     0.12 s on the GPU.
++    description: whisper.cpp STT (large-v3-turbo, CPU; HIP hidden)
+     backend: stt
+     argv: ["whisper-server",
+            "-m", "{llm_root}/models/whisper-ggml/ggml-large-v3-turbo.bin",
+            "--host", "127.0.0.1",
+            "--port", "9000",
+            "--inference-path", "/v1/audio/transcriptions",
+-           "-t", "8"]
++           "-t", "24",
++           "-ng"]
++    cpuset: "0-23"
++    env:
++      HIP_VISIBLE_DEVICES: "-1"
+     cwd: "{llm_root}/whisper.cpp"
+     verify_ggml_linkage: true
+     health_path: /health
+     health_timeout: 90
+-    model_label: whisper.cpp large-v3-turbo (HIP gfx90a, ggml 0.18.0)
++    model_label: whisper.cpp large-v3-turbo (CPU -ng, ggml 0.18.0)
+     log: whisper.log
+ 
+   - name: tts
+@@ -793,7 +815,21 @@ aux_services:
+     optional: true
+     # 2026-08-02 W4: first registration. No TTS process has ever run under stack
+     # management; 9002 was verified free before being claimed.
+-    description: qwentts.cpp TTS server (Qwen3-TTS 12Hz 0.6B, HIP/gfx90a)
++    #
++    # 2026-09-24 GPU-RESIDENCY CHANGE SET: :9002 RUNS ON THE CPU (operator decision).
++    # It was declared on the MI210 but could never fit there (2.62 GiB vs <1 GiB free).
++    # Same frozen production-speech-v1 binary; GGML_BACKEND=CPU + HIP_VISIBLE_DEVICES=-1
++    # keep it off the GPU. 16 threads @ cores 24-39, measured real-time concurrently with
++    # STT 24@0-23, frontdoor idle: RTF 0.59-0.61, first packet 91/311 ms
++    # (epyc-inference-research artifacts/speech_cpu_realtime_20260924/README.md).
++    #   * THREAD COUNT: the binary has no flag (src/backend.h: hardware_concurrency()/2,
++    #     affinity-blind -> 96 threads). scripts/voice/nprocs_shim.c, built OUT of the
++    #     frozen tree by scripts/voice/build_nprocs_shim.sh, is LD_PRELOADed with
++    #     SHIM_NPROCS=32 -> 16 threads. The launcher refuses to start the service if the
++    #     preload file is missing (glibc would otherwise ignore it with a warning and run
++    #     96 spinning threads on 16 cores). Serving proof: the log says `CPU threads: 16`.
++    #   * Same frontdoor-contention caveat as whisper above.
++    description: qwentts.cpp TTS server (Qwen3-TTS 12Hz 0.6B, CPU; HIP hidden)
+     backend: tts
+     argv: ["tts-server",
+            "--model", "{llm_root}/models/Qwen3-TTS-qwentts/qwen-talker-0.6b-base-Q8_0.gguf",
+@@ -801,11 +837,17 @@ aux_services:
+            "--alias", "qwen3-tts-12hz-0.6b",
+            "--host", "127.0.0.1",
+            "--port", "9002"]
++    cpuset: "24-39"
++    env:
++      GGML_BACKEND: "CPU"
++      HIP_VISIBLE_DEVICES: "-1"
++      SHIM_NPROCS: "32"
++      LD_PRELOAD: "/mnt/raid0/llm/cache/shims/nprocs_shim.so"
+     cwd: "{llm_root}/qwentts.cpp"
+     verify_ggml_linkage: true
+     health_path: /health
+     health_timeout: 90
+-    model_label: Qwen3-TTS-12Hz-0.6B Talker Q8_0 + 12hz codec (HIP gfx90a, ggml 0.17.0)
++    model_label: Qwen3-TTS-12Hz-0.6B Talker Q8_0 + 12hz codec (CPU 16t, ggml 0.17.0)
+     # Prove it can SYNTHESISE, not just answer /health. This server returns
+     # HTTP 200 with ZERO audio bytes for a request it cannot satisfy (an unknown
+     # `voice`, a codec that failed to load), so a status-code check passes while
+diff --git a/scripts/server/orchestrator_stack.py b/scripts/server/orchestrator_stack.py
+index 7e88481b..85077444 100644
+--- a/scripts/server/orchestrator_stack.py
++++ b/scripts/server/orchestrator_stack.py
+@@ -34,6 +34,7 @@ from __future__ import annotations
+ import argparse
+ import json
+ import os
++import re
+ import subprocess
+ import sys
+ import time
+@@ -539,6 +540,20 @@ def _append_runtime_kv_args(cmd: list[str], cache: dict[str, Any]) -> None:
+     kv_type_v = cache.get("kv_type_v")
+     if isinstance(kv_type_k, str) and isinstance(kv_type_v, str):
+         cmd.extend(["-ctk", kv_type_k, "-ctv", kv_type_v])
++    # Unified KV pool. Emitted in BOTH directions when declared, never when not:
++    # llama-server's own default is "unified only if -np is auto"
++    # (tools/server/server.cpp:145-150), and this launcher always passes -np, so an
++    # undeclared role gets split KV -- which is what :8083 silently ran while the
++    # registry asserted the opposite (stack-change-kvu, 2026-09-24).
++    draft_k = cache.get("draft_kv_type_k")
++    draft_v = cache.get("draft_kv_type_v")
++    if isinstance(draft_k, str) and draft_k and isinstance(draft_v, str) and draft_v:
++        cmd.extend(["-ctkd", draft_k, "-ctvd", draft_v])
++    kv_unified = cache.get("kv_unified")
++    if kv_unified is True:
++        cmd.append("--kv-unified")
++    elif kv_unified is False:
++        cmd.append("--no-kv-unified")
+     if cache.get("kv_hadamard") is True:
+         # 2026-06-26 v6 cutover: --kv-hadamard removed in v6 (no role sets kv_hadamard true today)
+         # cmd.append("--kv-hadamard")
+@@ -2629,6 +2644,37 @@ def _run_aux_smoke(service) -> str | None:
+     return None
+ 
+ 
++_AUX_CPUSET_RE = re.compile(r"\d+(-\d+)?(,\d+(-\d+)?)*")
++
++
++def _aux_spawn_prefix(service: Any, *, bench_force: bool) -> list[str] | None:
++    """Spawn prefix for one aux service; None means "refuse this launch".
++
++    Undeclared placement (every service but a CPU-pinned one): SS-BENCH-GATE-b
++    as before -- default affinity, or a non-overlapping subset under a live bench.
++
++    Declared `cpuset`: that exact list, or nothing. The bench guard may REFUSE it
++    (overlap with a live bench's claim; `--allow-during-bench` bypasses), but it
++    may never RE-PIN it: the declared list is a measured-safe layout, and
++    whisper.cpp hangs on unmeasured ones (speech_cpu_realtime_20260924).
++    """
++    label = f"aux service {service.name}"
++    cpuset = getattr(service, "cpuset", None)
++    if not cpuset:
++        return _bench_guarded_numa_prefix(None, 0, bench_force=bench_force, label=label)
++    if not _AUX_CPUSET_RE.fullmatch(cpuset):
++        print(f"    [FAIL] {service.name}: declared cpuset {cpuset!r} is not a cpu list")
++        return None
++    pinned = enforce_placement(cpuset, force=bench_force, label=label)
++    if pinned is not None and pinned != cpuset:
++        print(
++            f"    [FAIL] {service.name}: bench guard wanted to re-pin the declared "
++            f"cpuset {cpuset} to {pinned}; refusing (declared layouts are measured-safe)"
++        )
++        return None
++    return ["taskset", "-c", cpuset]
++
++
+ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | None:
+     """Start one declared auxiliary service. Returns None on any failure."""
+     service = AUX_SERVICES.get(name)
+@@ -2640,12 +2686,9 @@ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | Non
+     label = service.description or service.name
+     print(f"  Starting {service.name} ({label}) on port {service.port}")
+ 
+-    # SS-BENCH-GATE-b: aux services spawn without an explicit placement
+-    # (default affinity = every core). Under a live bench, pin to a
+-    # non-overlapping subset of host cores (refuse only when none exists).
+-    spawn_prefix = _bench_guarded_numa_prefix(
+-        None, 0, bench_force=bench_force, label=f"aux service {service.name}"
+-    )
++    spawn_prefix = _aux_spawn_prefix(service, bench_force=bench_force)
++    if spawn_prefix is None:
++        return None
+ 
+     try:
+         argv, ld_paths, tree = _resolve_aux_launch(service)
+@@ -2662,6 +2705,17 @@ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | Non
+         return None
+ 
+     env = _build_aux_env(service, ld_paths)
++    # A missing LD_PRELOAD object is NOT fatal to the dynamic loader: glibc prints a
++    # warning and runs the binary without it. For the CPU TTS that silently means
++    # 96 spinning threads on a 16-core cpuset instead of 16 (see nprocs_shim.c), so
++    # a declared preload that does not exist fails THIS service's launch.
++    for preload in (service.env.get("LD_PRELOAD") or "").replace(":", " ").split():
++        if not Path(preload).is_file():
++            print(
++                f"    [FAIL] {service.name}: declared LD_PRELOAD {preload} does not exist "
++                f"(build it: scripts/voice/build_nprocs_shim.sh)"
++            )
++            return None
+     if ld_paths:
+         verb = ":=" if service.ld_library_path_mode == "replace" else "+="
+         print(f"    LD_LIBRARY_PATH {verb} {ld_paths}")
+diff --git a/scripts/server/stack_commands.py b/scripts/server/stack_commands.py
+index 6d5ff1e3..04b00386 100644
+--- a/scripts/server/stack_commands.py
++++ b/scripts/server/stack_commands.py
+@@ -559,6 +559,19 @@ _RUNTIME_FIELD_CHECKS: dict[str, tuple[str, tuple[str, ...], str]] = {
+     "runtime.cache.no_mmap": ("dedicated", (), ""),
+     "runtime.cache.mlock": ("dedicated", (), ""),
+     "runtime.cache.slot_save_path": ("dedicated", (), ""),
++    # Unified KV pool: a BOOLEAN whose live truth depends on TWO flags (-kvu and
++    # -np), so it cannot be a token check -- see the dedicated block below.
++    "runtime.cache.kv_unified": ("dedicated", (), ""),
++    "runtime.cache.draft_kv_type_k": (
++        "int_or_token_flag",
++        ("-ctkd", "--spec-draft-type-k", "--cache-type-k-draft"),
++        "",
++    ),
++    "runtime.cache.draft_kv_type_v": (
++        "int_or_token_flag",
++        ("-ctvd", "--spec-draft-type-v", "--cache-type-v-draft"),
++        "",
++    ),
+     # --kv-hadamard was removed in the v6 binary (it would crash), so the launcher's
+     # emission site is commented out. A role declaring it true would therefore get a
+     # silent no-op, which is exactly the kind of unkept declaration worth reporting.
+@@ -849,6 +862,24 @@ def _derived_runtime_field_warnings(
+     return warnings
+ 
+ 
++_KV_UNIFIED_ON_FLAGS: frozenset[str] = frozenset({"-kvu", "--kv-unified"})
++_KV_UNIFIED_OFF_FLAGS: frozenset[str] = frozenset({"-no-kvu", "--no-kv-unified"})
++
++
++def _live_kv_unified(cmdline: list[str]) -> bool:
++    """What llama-server resolved ``kv_unified`` to for this cmdline.
++
++    Last explicit flag wins (argparse semantics). With neither flag, the server
++    default applies: unified iff ``-np``/``--parallel`` is absent (auto slots).
++    """
++    for token in reversed(cmdline):
++        if token in _KV_UNIFIED_ON_FLAGS:
++            return True
++        if token in _KV_UNIFIED_OFF_FLAGS:
++            return False
++    return _last_cmdline_flag_value(cmdline, "-np", "--parallel") is None
++
++
+ def _runtime_attestation_warnings(
+     name: str,
+     info: ProcessInfo,
+@@ -962,6 +993,19 @@ def _runtime_attestation_warnings(
+         if actual != expected:
+             warnings.append(_runtime_value_warning(name, info, key, expected, actual))
+ 
++    # kv_unified: the LIVE value is whatever llama-server resolved, which is the last
++    # -kvu/--kv-unified/-no-kvu/--no-kv-unified on the cmdline, else "auto" -- and
++    # auto means unified ONLY when -np is absent (tools/server/server.cpp:145-150).
++    # Checking flag presence alone would pass a process that runs split KV while its
++    # declaration says unified, which is the exact defect this field was added for.
++    expected_kvu = cache.get("kv_unified")
++    if isinstance(expected_kvu, bool):
++        actual_kvu = _live_kv_unified(cmdline)
++        if actual_kvu != expected_kvu:
++            warnings.append(_runtime_value_warning(
++                name, info, "kv_unified", expected_kvu, actual_kvu
++            ))
++
+     slot_save_path = cache.get("slot_save_path")
+     if isinstance(slot_save_path, str) and slot_save_path:
+         actual = _last_cmdline_flag_value(cmdline, "--slot-save-path")
+diff --git a/scripts/server/stack_manifest.py b/scripts/server/stack_manifest.py
+index 32a14015..7497f97a 100644
+--- a/scripts/server/stack_manifest.py
++++ b/scripts/server/stack_manifest.py
+@@ -314,6 +314,14 @@ class AuxService(NamedTuple):
+     # bytes for a request it cannot satisfy, which every status-code check
+     # passes. Absent -> not checked.
+     smoke: dict[str, Any] | None = None
++    # OPTIONAL declared CPU placement (a `taskset -c` cpu list). Needed by any
++    # CPU-resident ggml service whose threadpool is layout-sensitive: whisper.cpp
++    # HANGS on some (threads, cpuset) pairs (epyc-inference-research
++    # artifacts/speech_cpu_realtime_20260924/README.md, "Layout collapse"), so it
++    # must run on a MEASURED-SAFE pair, never on whatever the bench guard picks.
++    # Validated at LAUNCH (orchestrator_stack.start_aux_service), not at import:
++    # a bad value must fail that one service, not every importer of this module.
++    cpuset: str | None = None
+ 
+ 
+ _AUX_LD_MODES = ("prepend", "replace")
+@@ -358,6 +366,7 @@ def _aux_service(entry: dict[str, Any]) -> AuxService:
+         health_path=str(entry.get("health_path", "/health")),
+         health_timeout=int(entry.get("health_timeout", 60)),
+         smoke=entry.get("smoke") if isinstance(entry.get("smoke"), dict) else None,
++        cpuset=str(entry["cpuset"]).strip() if entry.get("cpuset") not in (None, "") else None,
+     )
+ 
+ 
+diff --git a/scripts/voice/build_nprocs_shim.sh b/scripts/voice/build_nprocs_shim.sh
+new file mode 100755
+index 00000000..9d4c6cd4
+--- /dev/null
++++ b/scripts/voice/build_nprocs_shim.sh
+@@ -0,0 +1,21 @@
++#!/bin/bash
++# Build the nprocs LD_PRELOAD shim for the CPU TTS aux service (see nprocs_shim.c).
++# Output lives OUTSIDE every frozen tree, at the path aux_services.tts.env.LD_PRELOAD names.
++# Idempotent: rebuilds only when the source hash changes; records the hash next to the .so.
++set -euo pipefail
++SRC="$(cd "$(dirname "$0")" && pwd)/nprocs_shim.c"
++OUT_DIR="${NPROCS_SHIM_OUT_DIR:-/mnt/raid0/llm/cache/shims}"   # override only for tests
++OUT="$OUT_DIR/nprocs_shim.so"
++mkdir -p "$OUT_DIR"
++want="$(sha256sum "$SRC" | cut -d' ' -f1)"
++if [ -f "$OUT" ] && [ "$(cat "$OUT.src.sha256" 2>/dev/null)" = "$want" ]; then
++  echo "up to date: $OUT (src $want)"; exit 0
++fi
++tmp="$(mktemp "$OUT_DIR/.nprocs_shim.XXXXXX.so")"
++cc -O2 -Wall -Wextra -shared -fPIC -o "$tmp" "$SRC" -ldl
++# Prove it interposes before publishing it: a PLT call to get_nprocs() must see 7.
++# (Not `nproc`: glibc's sysconf reaches get_nprocs internally, where no preload can.)
++got="$(SHIM_NPROCS=7 LD_PRELOAD="$tmp" python3 -c 'import ctypes; l=ctypes.CDLL(None); print(l.get_nprocs(), l.get_nprocs_conf())')"
++[ "$got" = "7 7" ] || { rm -f "$tmp"; echo "REFUSING: shim did not interpose (got '$got')" >&2; exit 1; }
++mv -f "$tmp" "$OUT"; echo "$want" > "$OUT.src.sha256"
++echo "built: $OUT (src $want)"
+diff --git a/scripts/voice/check_speech_layout.py b/scripts/voice/check_speech_layout.py
+new file mode 100644
+index 00000000..fca27e80
+--- /dev/null
++++ b/scripts/voice/check_speech_layout.py
+@@ -0,0 +1,62 @@
++#!/usr/bin/env python3
++"""Check the speech aux services' declared CPU layout against scripts/voice/speech_layouts.yaml.
++
++Exit 0 when the declared (threads, cpuset) of whisper (and tts, when both are CPU-pinned)
++satisfies the acceptance rule stated in that file; non-zero with the reason otherwise.
++Read-only: parses the launch manifest, starts nothing.
++"""
++from __future__ import annotations
++
++import sys
++from pathlib import Path
++
++import yaml
++
++REPO = Path(__file__).resolve().parents[2]
++LAYOUTS = REPO / "scripts" / "voice" / "speech_layouts.yaml"
++MANIFEST = REPO / "orchestration" / "launch_manifest.yaml"
++
++
++def _threads(entry: dict, name: str) -> int | None:
++    argv = [str(t) for t in entry.get("argv", [])]
++    if name == "whisper":
++        return int(argv[argv.index("-t") + 1]) if "-t" in argv else None
++    nprocs = (entry.get("env") or {}).get("SHIM_NPROCS")
++    return int(nprocs) // 2 if nprocs else None  # qwentts uses hardware_concurrency()/2
++
++
++def declared_layouts(manifest: Path = MANIFEST) -> dict[str, dict]:
++    services = {s["name"]: s for s in yaml.safe_load(manifest.read_text())["aux_services"]}
++    out = {}
++    for name in ("whisper", "tts"):
++        entry = services.get(name) or {}
++        if entry.get("cpuset"):
++            out[name] = {"threads": _threads(entry, name), "cpuset": str(entry["cpuset"])}
++    return out
++
++
++def check(manifest: Path = MANIFEST, layouts: Path = LAYOUTS) -> list[str]:
++    table = yaml.safe_load(layouts.read_text())
++    decl = declared_layouts(manifest)
++    problems: list[str] = []
++    stt, tts = decl.get("whisper"), decl.get("tts")
++    if stt and stt in table.get("stt_known_bad", []):
++        problems.append(f"whisper {stt} is a KNOWN-BAD layout (encode hangs)")
++    if stt and tts:
++        if not any(p["stt"] == stt and p["tts"] == tts for p in table.get("concurrent_ok", [])):
++            problems.append(f"whisper {stt} + tts {tts} is not a measured concurrent_ok pair")
++    elif stt:
++        if stt not in table.get("stt_solo_ok", []):
++            problems.append(f"whisper {stt} is not a measured stt_solo_ok layout")
++    elif tts:
++        if not any(p["tts"] == tts for p in table.get("concurrent_ok", [])):
++            problems.append(f"tts {tts} has no measured layout")
++    return problems
++
++
++if __name__ == "__main__":
++    issues = check()
++    for issue in issues:
++        print(f"REFUSING: {issue}", file=sys.stderr)
++    print("speech layout OK" if not issues else "speech layout NOT measured-safe")
++    sys.exit(1 if issues else 0)
+diff --git a/scripts/voice/nprocs_shim.c b/scripts/voice/nprocs_shim.c
+new file mode 100644
+index 00000000..882300db
+--- /dev/null
++++ b/scripts/voice/nprocs_shim.c
+@@ -0,0 +1,20 @@
++// nprocs_shim — LD_PRELOAD interposer that makes get_nprocs()/get_nprocs_conf()
++// (and therefore std::thread::hardware_concurrency()) return $SHIM_NPROCS.
++//
++// WHY: qwentts.cpp @ production-speech-v1 has no thread-count flag; src/backend.h
++// hardcodes hardware_concurrency()/2, which ignores CPU affinity, so a CPU TTS
++// pinned to 16 cores would still start 96 spinning threads on this host. The
++// speech tree is FROZEN, so the count is set from OUTSIDE it: SHIM_NPROCS=2N gives
++// N threads. Unset or <= 0 -> the real libc answer (the shim is then inert).
++//
++// This is the exact source that produced the 2026-09-24 CPU speech measurements
++// (epyc-inference-research artifacts/speech_cpu_realtime_20260924/nprocs_shim.c);
++// do not change its behaviour without re-measuring. The durable fix is a thread
++// flag in qwentts.cpp on an experimental branch -> the next speech kernel version.
++// Build: scripts/voice/build_nprocs_shim.sh (out of every frozen tree).
++#define _GNU_SOURCE
++#include <stdlib.h>
++#include <dlfcn.h>
++static int val(void){ const char*s=getenv("SHIM_NPROCS"); return s?atoi(s):-1; }
++int get_nprocs(void){ int v=val(); if(v>0) return v; int(*f)(void)=dlsym(RTLD_NEXT,"get_nprocs"); return f();}
++int get_nprocs_conf(void){ int v=val(); if(v>0) return v; int(*f)(void)=dlsym(RTLD_NEXT,"get_nprocs_conf"); return f();}
+diff --git a/scripts/voice/speech_layouts.yaml b/scripts/voice/speech_layouts.yaml
+new file mode 100644
+index 00000000..4dd32180
+--- /dev/null
++++ b/scripts/voice/speech_layouts.yaml
+@@ -0,0 +1,32 @@
++# Measured CPU layouts for the speech aux services (whisper.cpp STT :9000, qwentts.cpp TTS :9002).
++#
++# ACCEPTANCE RULE (operator, 2026-09-24): a layout may be declared in
++# orchestration/launch_manifest.yaml aux_services only if it was measured SAFE with the
++# CPU frontdoor IDLE: solo (STT: healthy 3/3 in the encoder matrix) or, when both speech
++# servers are declared, as a CONCURRENT pair. tests/unit/test_aux_service_env.py enforces it.
++#
++# FRONTDOOR-CONTENTION CAVEAT (measured, not a rule of this file): every core in 0-95 is in
++# the CPU frontdoor's -t 96 set. With a frontdoor generation running, STT RTF went to 1.5-2.9,
++# TTS RTF to 7.8-9.4 and the frontdoor to 0.3-7.4 tok/s. Voice turns must therefore reason on
++# the GPU (architect_general); that routing is the voice pipeline's requirement.
++#
++# Evidence: epyc-inference-research artifacts/speech_cpu_realtime_20260924/
++#   (README.md; raw/whisper_bench_encoder_matrix.txt; raw/concurrent*.stdout)
++stt_solo_ok:            # whisper-server -t N under taskset -c CPUSET, healthy 3/3, frontdoor idle
++  - {threads: 8,  cpuset: "0-7"}
++  - {threads: 8,  cpuset: "0-11"}
++  - {threads: 16, cpuset: "0-15"}
++  - {threads: 16, cpuset: "0-23"}
++  - {threads: 24, cpuset: "0-23"}
++  - {threads: 32, cpuset: "0-39"}
++  - {threads: 16, cpuset: "96-111"}   # SMT siblings (option C)
++stt_known_bad:          # encode hangs >60-300 s — never declare
++  - {threads: 20, cpuset: "0-19"}
++  - {threads: 28, cpuset: "0-27"}
++  - {threads: 24, cpuset: "0-31"}
++  - {threads: 32, cpuset: "0-31"}
++  - {threads: 32, cpuset: "24-55"}
++concurrent_ok:          # STT and TTS resident AND serving together, frontdoor idle
++  - name: main40
++    stt: {threads: 24, cpuset: "0-23"}      # RTF 0.199 (11 s) / 0.243 (86.5 s)
++    tts: {threads: 16, cpuset: "24-39"}     # RTF 0.593/0.606, first packet 91/311 ms
+diff --git a/src/registry/stack_priors.py b/src/registry/stack_priors.py
+index a5142daf..36b6fcec 100644
+--- a/src/registry/stack_priors.py
++++ b/src/registry/stack_priors.py
+@@ -1547,6 +1547,44 @@ def _runtime_flag_int_prior(
+     return None
+ 
+ 
++def _runtime_flag_bool_prior(
++    server_cfg: dict[str, Any] | None,
++    role_cfg: dict[str, Any] | None,
++    *,
++    key: str,
++) -> bool | None:
++    """Resolve an optional BOOLEAN launcher fact from registry serving metadata.
++
++    The boolean twin of ``_runtime_flag_int_prior``, with the same search order
++    (``serving_shape`` first, then the row itself, then the role-local ``server`` /
++    ``serving`` / ``launch`` sub-mappings). ``False`` is a DECLARED value, not an
++    absent one: it compiles to an explicit negative flag, so a fact the operator
++    pinned never silently reverts to whatever the kernel's default happens to be.
++    Returns ``None`` when undeclared, and the launcher then emits nothing.
++
++    Origin (2026-09-24, stack-change-kvu): llama-server enables a unified KV pool
++    ONLY when ``-np`` is left on auto (``tools/server/server.cpp:145-150``); the
++    launcher always passes ``-np``, so ``:8083`` ran split KV while the master
++    registry asserted "KV IS UNIFIED". A default is not a declaration.
++    """
++    for cfg in (server_cfg, role_cfg):
++        if not isinstance(cfg, dict):
++            continue
++        for source in (
++            cfg.get("serving_shape"),
++            cfg,
++            cfg.get("server"),
++            cfg.get("serving"),
++            cfg.get("launch"),
++        ):
++            if not isinstance(source, dict):
++                continue
++            value = source.get(key)
++            if isinstance(value, bool):
++                return value
++    return None
++
++
+ # Registry spellings for GPU offload depth, in precedence order. Two are in live
+ # use with different value types; see _n_gpu_layers_prior.
+ _N_GPU_LAYERS_KEYS: tuple[str, ...] = ("n_gpu_layers", "ngl", "gpu_layers")
+@@ -1685,6 +1723,24 @@ def _kv_types_prior(
+     return None
+ 
+ 
++def _draft_kv_types_prior(
++    server_cfg: dict[str, Any] | None,
++    role_cfg: dict[str, Any] | None,
++) -> tuple[str, str] | None:
++    """Resolve the speculative draft context's KV types (``-ctkd``/``-ctvd``).
++
++    Only ``serving_shape.draft_kv_quant`` is read: this is a GPU-capacity lever
++    (SSU-F3 fix #1), not a legacy flat key with history to honour.
++    """
++    for cfg in (server_cfg, role_cfg):
++        candidate = _nested_mapping(cfg, "serving_shape", "draft_kv_quant")
++        if isinstance(candidate, dict):
++            k, v = candidate.get("k"), candidate.get("v")
++            if isinstance(k, str) and k and isinstance(v, str) and v:
++                return k, v
++    return None
++
++
+ def _worker_context_prior(
+     role_cfg: dict[str, Any] | None,
+     *,
+@@ -2290,6 +2346,21 @@ def _launch_runtime_record(
+             "kv_type_k": kv_types[0] if kv_types else None,
+             "kv_type_v": kv_types[1] if kv_types else None,
+             "kv_hadamard": bool(primary_role in _V2_ROLES and LLAMA_SERVER_V2.exists()),
++            # Unified KV pool (llama-server -kvu / --no-kv-unified). None when
++            # undeclared -> the launcher emits nothing and the kernel default
++            # applies (split KV whenever -np is explicit, which it always is).
++            # Declared as `server_mode.<role>.serving_shape.kv_unified`: with it,
++            # ONE request may use the whole -c pool; without it each slot is
++            # hard-capped at -c / -np. See _runtime_flag_bool_prior.
++            "kv_unified": _runtime_flag_bool_prior(server_cfg, role_cfg, key="kv_unified")
++            if mode == "default"
++            else None,
++            # Speculative DRAFT-context KV types (llama-server -ctkd/-ctvd). -ctk/-ctv
++            # do NOT reach the draft context: common_base_params_to_speculative copies
++            # speculative.draft.cache_type_{k,v}, which default to F16. Declared as
++            # `serving_shape.draft_kv_quant: {k, v}`; None when undeclared.
++            "draft_kv_type_k": (_draft_kv_types_prior(server_cfg, role_cfg) or (None, None))[0],
++            "draft_kv_type_v": (_draft_kv_types_prior(server_cfg, role_cfg) or (None, None))[1],
+             # 2026-06-26 v6 cutover: no_mmap is no longer hardcoded to worker_pool+explore.
+             # It now flows through from the role's config (server_mode then roles block),
+             # defaulting to False when absent — so non-worker quarter roles (N12 private
+diff --git a/stack_templates/default.yaml b/stack_templates/default.yaml
+index fa0d8f3b..9c32de11 100644
+--- a/stack_templates/default.yaml
++++ b/stack_templates/default.yaml
+@@ -137,7 +137,9 @@ roles:
+         # drafting at 24 against a measured-4 artifact. Now 8 = the measured optimum for
+         # Qwen3.8-27B (sweep: n6 55.22 / n8 55.46 / n12 51.14 t/s; curve turns over past 8).
+         # Keep in step with speculative_decoding_policy.draft_max in the MASTER registry.
+-        draft_max: 8
++        # 2026-09-24: 8 -> 4 with the master (production shape np 4 + unified KV; depth 4 is
++        # equal-or-faster there: np_context_kvu_study_20260924/q38_27b_q8_depth).
++        draft_max: 4
+         p_split: 0
+ 
+   architect_critic:
+diff --git a/tests/unit/test_aux_service_env.py b/tests/unit/test_aux_service_env.py
+index 3a4d6f0b..39a12538 100644
+--- a/tests/unit/test_aux_service_env.py
++++ b/tests/unit/test_aux_service_env.py
+@@ -210,3 +210,85 @@ def test_aux_services_do_not_inherit_the_llama_omp_recipe() -> None:
+     for key in ("OMP_PROC_BIND", "OMP_PLACES", "OMP_WAIT_POLICY", "KMP_BLOCKTIME", "GGML_IQK"):
+         if key not in base:
+             assert key not in env, f"aux service inherited llama-server tuning: {key}"
++
++
++# ── 2026-09-24 GPU-residency change set: whisper on CPU, pinned to a declared cpuset ──
++def test_whisper_is_declared_cpu_resident_with_a_pinned_cpuset() -> None:
++    whisper = AUX_SERVICES["whisper"]
++    assert "-ng" in whisper.argv
++    assert whisper.env.get("HIP_VISIBLE_DEVICES") == "-1"
++    assert whisper.cpuset, "a CPU whisper must declare its measured-safe cpuset"
++    assert whisper.backend == "stt" and whisper.verify_ggml_linkage
++
++
++def test_declared_cpuset_is_used_verbatim(monkeypatch) -> None:
++    from scripts.server import orchestrator_stack as oss
++
++    monkeypatch.setattr(oss, "enforce_placement", lambda placement, **_kw: None)
++    svc = AUX_SERVICES["whisper"]._replace(cpuset="96-111")
++    assert oss._aux_spawn_prefix(svc, bench_force=False) == ["taskset", "-c", "96-111"]
++
++
++def test_declared_cpuset_is_never_repinned_by_the_bench_guard(monkeypatch) -> None:
++    from scripts.server import orchestrator_stack as oss
++
++    monkeypatch.setattr(oss, "enforce_placement", lambda placement, **_kw: "0-7")
++    svc = AUX_SERVICES["whisper"]._replace(cpuset="96-111")
++    assert oss._aux_spawn_prefix(svc, bench_force=False) is None
++
++
++@pytest.mark.parametrize("bad", ["@WHISPER_CPUSET@", "96-111;rm", "a-b", "96-"])
++def test_malformed_cpuset_fails_only_that_launch(monkeypatch, bad: str) -> None:
++    from scripts.server import orchestrator_stack as oss
++
++    monkeypatch.setattr(oss, "enforce_placement", lambda placement, **_kw: None)
++    svc = AUX_SERVICES["whisper"]._replace(cpuset=bad)
++    assert oss._aux_spawn_prefix(svc, bench_force=False) is None
++
++
++def test_undeclared_cpuset_keeps_the_bench_guarded_default(monkeypatch) -> None:
++    from scripts.server import orchestrator_stack as oss
++
++    calls: list[tuple] = []
++    monkeypatch.setattr(
++        oss,
++        "_bench_guarded_numa_prefix",
++        lambda role, inst, **kw: calls.append((role, inst)) or [],
++    )
++    svc = AUX_SERVICES["whisper"]._replace(cpuset=None)
++    assert oss._aux_spawn_prefix(svc, bench_force=False) == []
++    assert calls == [(None, 0)]
++
++
++# ── 2026-09-24: TTS on CPU (shim-controlled threads) + declared layouts are measured-safe ──
++def test_tts_is_declared_cpu_resident_with_shim_and_cpuset() -> None:
++    tts = AUX_SERVICES["tts"]
++    assert tts.env.get("GGML_BACKEND") == "CPU"
++    assert tts.env.get("HIP_VISIBLE_DEVICES") == "-1"
++    assert tts.env.get("LD_PRELOAD", "").endswith("/nprocs_shim.so")
++    assert int(tts.env["SHIM_NPROCS"]) // 2 == 16
++    assert tts.cpuset == "24-39"
++
++
++def test_declared_speech_layouts_are_measured_safe() -> None:
++    # Recompute-and-diff gate for the restated (threads, cpuset) facts: the manifest may
++    # only declare what scripts/voice/speech_layouts.yaml records as measured-safe.
++    from scripts.voice.check_speech_layout import check
++
++    assert check() == []
++
++
++def test_missing_ld_preload_fails_only_that_launch(tmp_path, monkeypatch) -> None:
++    from scripts.server import orchestrator_stack as oss
++
++    svc = AUX_SERVICES["tts"]._replace(
++        env={**AUX_SERVICES["tts"].env, "LD_PRELOAD": str(tmp_path / "absent.so")}
++    )
++    monkeypatch.setitem(oss.AUX_SERVICES, "tts", svc)
++    monkeypatch.setattr(oss, "enforce_placement", lambda placement, **_kw: None)
++    monkeypatch.setattr(oss, "_resolve_aux_launch", lambda s: (["/bin/true"], [], None))
++    monkeypatch.setattr(oss, "_verify_aux_ggml_linkage", lambda *a, **k: True)
++    popen = []
++    monkeypatch.setattr(oss.subprocess, "Popen", lambda *a, **k: popen.append(a) or None)
++    assert oss.start_aux_service("tts") is None
++    assert popen == []
+diff --git a/tests/unit/test_build_server_command_helpers.py b/tests/unit/test_build_server_command_helpers.py
+index 56dce418..af30b706 100644
+--- a/tests/unit/test_build_server_command_helpers.py
++++ b/tests/unit/test_build_server_command_helpers.py
+@@ -911,6 +911,92 @@ def test_resolve_binary_for_role_defaults_to_llama_server() -> None:
+     assert oss._resolve_binary_for_role("architect_general") == oss.LLAMA_SERVER
+ 
+ 
++@pytest.mark.parametrize(
++    ("declared", "expected_tail"),
++    [
++        (True, ["--kv-unified"]),
++        (False, ["--no-kv-unified"]),
++        (None, []),
++    ],
++)
++def test_append_runtime_kv_args_emits_declared_kv_unified_both_ways(
++    declared: bool | None, expected_tail: list[str]
++) -> None:
++    # A declared fact is emitted explicitly in BOTH directions; an undeclared one
++    # emits nothing (every CPU role keeps its current cmdline byte-for-byte).
++    cmd: list[str] = []
++    oss._append_runtime_kv_args(
++        cmd, {"kv_type_k": "q8_0", "kv_type_v": "q8_0", "kv_unified": declared}
++    )
++    assert cmd == ["-ctk", "q8_0", "-ctv", "q8_0", *expected_tail]
++
++
++def test_append_runtime_kv_args_emits_declared_draft_kv_types() -> None:
++    cmd: list[str] = []
++    oss._append_runtime_kv_args(
++        cmd,
++        {
++            "kv_type_k": "q8_0",
++            "kv_type_v": "q8_0",
++            "draft_kv_type_k": "q8_0",
++            "draft_kv_type_v": "q8_0",
++            "kv_unified": True,
++        },
++    )
++    assert cmd == ["-ctk", "q8_0", "-ctv", "q8_0", "-ctkd", "q8_0", "-ctvd", "q8_0", "--kv-unified"]
++
++
++def test_append_runtime_kv_args_omits_half_declared_draft_kv_types() -> None:
++    cmd: list[str] = []
++    oss._append_runtime_kv_args(cmd, {"draft_kv_type_k": "q8_0", "draft_kv_type_v": None})
++    assert cmd == []
++
++
++def test_build_role_command_emits_declared_kv_unified_with_explicit_np(
++    tmp_path: Path,
++    monkeypatch,
++) -> None:
++    # End-to-end over the DATA path, at the :8083 shape: -np 2 stays, and -kvu
++    # is added so ONE request may use the whole -c pool.
++    priors = _write_launch_prior(
++        tmp_path,
++        "architect_general",
++        requirements={},
++        runtime={
++            "binary_path": "/prior/llama-server",
++            "cache": {
++                "context_tokens": 196608,
++                "slots": 2,
++                "ubatch": 2048,
++                "kv_type_k": "q8_0",
++                "kv_type_v": "q8_0",
++                "kv_unified": True,
++            },
++            "flags": {
++                "flash_attn": True,
++                "jinja": True,
++                "reasoning": None,
++                "override_kv": [],
++                "spec": {"enabled": False},
++            },
++        },
++    )
++    monkeypatch.setattr(oss, "STACK_PRIORS_PATH", priors)
++    role = SimpleNamespace(
++        name="architect_general",
++        model=SimpleNamespace(full_path="/fallback/27b.gguf"),
++        acceleration=SimpleNamespace(type="none", experts=None, draft_role=None),
++    )
++
++    cmd = oss._build_role_command(role, port=9083, prepare_runtime_dirs=False)
++
++    assert _flag_value(cmd, "-np") == "2"
++    assert _flag_value(cmd, "-c") == "196608"
++    assert cmd.count("--kv-unified") == 1
++    assert "--no-kv-unified" not in cmd
++    assert stack_commands._live_kv_unified(cmd) is True
++
++
+ def test_append_kv_quant_args_emits_q8_for_frontdoor() -> None:
+     cmd: list[str] = []
+     oss._append_kv_quant_args(cmd, "frontdoor")
+diff --git a/tests/unit/test_orchestrator_stack_reload.py b/tests/unit/test_orchestrator_stack_reload.py
+index e33bfd3a..4e8e7c46 100644
+--- a/tests/unit/test_orchestrator_stack_reload.py
++++ b/tests/unit/test_orchestrator_stack_reload.py
+@@ -1598,6 +1598,65 @@ def test_runtime_attestation_ignores_kv_hadamard_declared_false() -> None:
+     )
+ 
+ 
++@pytest.mark.parametrize(
++    ("declared", "extra", "expect_warning"),
++    [
++        # Declared unified, launched with -kvu: clean.
++        (True, ["-np", "2", "--kv-unified"], False),
++        (True, ["-np", "2", "-kvu"], False),
++        # THE 2026-09-24 DEFECT: declared unified, launched with an explicit -np and
++        # no -kvu. llama-server resolves split KV (server.cpp:145-150). Must warn.
++        (True, ["-np", "2"], True),
++        # Last flag wins: a trailing negation defeats an earlier -kvu.
++        (True, ["-np", "2", "-kvu", "--no-kv-unified"], True),
++        # No -np at all = auto slots = unified by the kernel's own default.
++        (True, [], False),
++        # Declared split: explicit -np with no flag IS split; -kvu is drift.
++        (False, ["-np", "2"], False),
++        (False, ["-np", "2", "--no-kv-unified"], False),
++        (False, ["-np", "2", "--kv-unified"], True),
++    ],
++)
++def test_runtime_attestation_checks_kv_unified_as_resolved_by_the_server(
++    declared: bool, extra: list[str], expect_warning: bool
++) -> None:
++    warnings = stack_commands._runtime_attestation_warnings(
++        "architect_general",
++        _attestation_info(),
++        _ATTEST_BASE_CMDLINE + extra,
++        _attest_contract(cache={"kv_unified": declared}),
++    )
++    kvu = [w for w in warnings if "kv_unified" in w]
++    assert bool(kvu) is expect_warning, warnings
++
++
++def test_runtime_attestation_checks_declared_draft_kv_types() -> None:
++    contract = _attest_contract(cache={"draft_kv_type_k": "q8_0", "draft_kv_type_v": "q8_0"})
++    clean = stack_commands._runtime_attestation_warnings(
++        "architect_general",
++        _attestation_info(),
++        _ATTEST_BASE_CMDLINE + ["-ctkd", "q8_0", "-ctvd", "q8_0"],
++        contract,
++    )
++    assert clean == []
++    drift = stack_commands._runtime_attestation_warnings(
++        "architect_general", _attestation_info(), _ATTEST_BASE_CMDLINE, contract
++    )
++    assert len([w for w in drift if "draft_kv_type" in w]) == 2, drift
++
++
++def test_runtime_attestation_ignores_undeclared_kv_unified() -> None:
++    assert (
++        stack_commands._runtime_attestation_warnings(
++            "architect_general",
++            _attestation_info(),
++            _ATTEST_BASE_CMDLINE + ["-np", "2"],
++            _attest_contract(cache={"kv_unified": None}),
++        )
++        == []
++    )
++
++
+ def test_runtime_attestation_accepts_embedded_nextn_without_md() -> None:
+     info = stack_commands.ProcessInfo(
+         role="frontdoor",
+diff --git a/tests/unit/test_stack_priors_compiler.py b/tests/unit/test_stack_priors_compiler.py
+index 7257d33c..1d5dd83c 100644
+--- a/tests/unit/test_stack_priors_compiler.py
++++ b/tests/unit/test_stack_priors_compiler.py
+@@ -1743,3 +1743,42 @@ def test_compile_projects_ctx_model_max_and_policy_hints(tmp_path: Path) -> None
+     assert policy["tap_safe_non_stream"] is False
+     assert policy["high_cost"] is False
+     assert policy["model_mem_gb"] == 37.0
++
++
++# ── stack-change-kvu (2026-09-24): kv_unified is a DECLARED boolean ──────────
++@pytest.mark.parametrize(
++    ("server_cfg", "role_cfg", "expected"),
++    [
++        # serving_shape is the canonical home and outranks a flat copy.
++        ({"serving_shape": {"kv_unified": True}, "kv_unified": False}, None, True),
++        # False is a declaration, not an absence.
++        ({"serving_shape": {"kv_unified": False}}, None, False),
++        # Role-local serving block works too.
++        (None, {"serving": {"kv_unified": True}}, True),
++        # Undeclared -> None (launcher emits nothing).
++        ({"serving_shape": {"n_ctx": 196608}}, {}, None),
++        # A non-bool is not coerced (1 is not True here).
++        ({"serving_shape": {"kv_unified": 1}}, None, None),
++    ],
++)
++def test_runtime_flag_bool_prior_resolves_kv_unified(server_cfg, role_cfg, expected) -> None:
++    from src.registry.stack_priors import _runtime_flag_bool_prior
++
++    assert (
++        _runtime_flag_bool_prior(server_cfg, role_cfg, key="kv_unified") is expected
++    )
++
++
++@pytest.mark.parametrize(
++    ("server_cfg", "expected"),
++    [
++        ({"serving_shape": {"draft_kv_quant": {"k": "q8_0", "v": "q8_0"}}}, ("q8_0", "q8_0")),
++        ({"serving_shape": {"draft_kv_quant": {"k": "q8_0"}}}, None),
++        ({"serving_shape": {"kv_quant": {"k": "q8_0", "v": "q8_0"}}}, None),
++        (None, None),
++    ],
++)
++def test_draft_kv_types_prior_reads_only_serving_shape(server_cfg, expected) -> None:
++    from src.registry.stack_priors import _draft_kv_types_prior
++
++    assert _draft_kv_types_prior(server_cfg, None) == expected

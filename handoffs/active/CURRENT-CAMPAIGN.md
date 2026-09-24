@@ -7,6 +7,16 @@
 
 ---
 
+> **2026-09-24 ~19:55Z — posture update (main-ak-seat wrap-up #4). Supersedes the 18:00Z block below.**
+> - **OP-54 applied** (orch `0a564a1f`, research `75ee1b8e`): :8083 serves `-np 4 -c 196608 --kv-unified`, MTP
+>   depth 4, `-ub 2048`, `--cache-ram 65536`; STT :9000 on CPU 0-23, TTS :9002 on CPU 24-39 (0 VRAM); CPU roles
+>   `--cache-ram 32768`. :8086 is back. The GPU sweeps are finished; nothing is stopped for them.
+> - **Hazard until OP-57 is decided:** a speech request that arrives while :8070 or :8074 generates (`-t 96` on
+>   0-95) wrecks both the speech and the LLM (RTG-57 KVU-11b).
+> - **DS41 run 9 is READY, not launched.** Anchor `5a60152ae` (build 10313), inputs re-resolved, dry run rc=0. The
+>   operator ruled OFF-HOURS: main-ak-seat launches it late 2026-09-24 (`state-run9`). Both floors recalibrate
+>   (~8.5 h, every CPU region lock, blocks :8070). Verify live state before relying on this line.
+
 > **2026-09-24 ~18:00Z — posture update (main-ak-seat wrap-up). The 2026-09-08 banner below is superseded
 > in part.**
 > - Production is **v10** (`ffc1bac82`, binary `10303`), served from the kernel store since 2026-09-22 (see

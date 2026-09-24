@@ -1,0 +1,7 @@
+8083: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 8083 -np 4 -c 196608 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --device ROCm0 --slot-save-path /mnt/raid0/llm/cache/kv_slots/architect_general
+8070: --cache-ram 32768 (-np 4 -t 96)
+8080: --cache-ram 32768 (-np 1 -t 48)
+8180: --cache-ram 32768 (-np 1 -t 48)
+8074: --cache-ram 32768 (-np 1 -t 96)
+9000: taskset -c 0-23 /mnt/raid0/llm/whisper.cpp/build/bin/whisper-server -m /mnt/raid0/llm/models/whisper-ggml/ggml-large-v3-turbo.bin --host 127.0.0.1 --port 9000 --inference-path /v1/audio/transcriptions -t 24 -ng | env {'HIP_VISIBLE_DEVICES': '-1'} | LD_LIBRARY_PATH=/mnt/raid0/llm/whisper.cpp/build/bin:/opt/rocm/lib
+9002: taskset -c 24-39 /mnt/raid0/llm/qwentts.cpp/build/tts-server --model /mnt/raid0/llm/models/Qwen3-TTS-qwentts/qwen-talker-0.6b-base-Q8_0.gguf --codec /mnt/raid0/llm/models/Qwen3-TTS-qwentts/qwen-tokenizer-12hz-Q8_0.gguf --alias qwen3-tts-12hz-0.6b --host 127.0.0.1 --port 9002 | env {'GGML_BACKEND': 'CPU', 'HIP_VISIBLE_DEVICES': '-1', 'SHIM_NPROCS': '32', 'LD_PRELOAD': '/mnt/raid0/llm/cache/shims/nprocs_shim.so'} | LD_LIBRARY_PATH=/mnt/raid0/llm/qwentts.cpp/build:/opt/rocm/lib

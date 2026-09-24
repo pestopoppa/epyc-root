@@ -1,0 +1,13 @@
+role                   inst   port          class     dev    n_ctx  slots    kv GiB  nonKV GiB
+architect_critic          0   8074           full    host   262144      1    24.000        nan
+architect_general         0   8083  gpu_host_lane     GPU   196608      4     6.375      32.80
+frontdoor                 0   8070           full    host   262144      4     2.656        nan
+frontdoor                 1   8080           half    host   262144      1     2.656        nan
+frontdoor                 2   8180           half    host   262144      1     2.656        nan
+worker_vision             0   8086  gpu_host_lane     GPU    65536      1     3.188      19.26
+
+GPU  required 61.62 GiB / budget 62.00 GiB (capacity 64.00), KV 9.56 -> OK
+       architect_general          39.17 GiB
+       worker_vision              22.45 GiB
+HOST required 232.97 GiB (201.00 weights + 31.97 KV) / budget 1069.4157 GiB
+CAPACITY PASS
