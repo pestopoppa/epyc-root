@@ -76,13 +76,10 @@ ORCH_ROOT="${ORCH_ROOT:-/mnt/raid0/llm/epyc-orchestrator}"
 QSCORER="${ORCH_ROOT}/orchestration/repl_memory/q_scorer.py"
 ERAS="${ORCH_ROOT}/orchestration/instrument_eras.yaml"
 ERA_ID="E18-routing-reward-duration-axis"
-# noninf/rtg09-duration branch tip commits (epyc-orchestrator worktree
-# /mnt/raid0/llm/worktrees/noninf-20260924/rtg09/orch, rebased on origin/main
-# 86471b1f): d9d84492 adds the duration dimension + derivation artifact,
-# 9439409f reworks it DEFAULT-OFF per this ratification's own precondition.
-# If the branch is squash-merged rather than fast-forwarded, update these to
-# the resulting main-branch commit SHA(s) before running --apply.
-RTG09_COMMITS=(d9d84492 9439409f)
+# The RTG-09 commits on epyc-orchestrator main (landed 2026-09-24): b8035db9 adds
+# the duration dimension + derivation artifact, 88e24ef0 lands it DEFAULT-OFF per
+# this ratification's own precondition.
+RTG09_COMMITS=(b8035db9 88e24ef0)
 SENTINEL_OLD_DURATION='cost_lambda_duration: float = 0.0'
 SENTINEL_NEW_DURATION='cost_lambda_duration: float = 0.20'
 SENTINEL_OLD_TPS='cost_penalty_lambda: float = 0.15'
