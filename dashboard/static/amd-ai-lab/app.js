@@ -39,7 +39,8 @@ function buildModels() {
       name: "Qwen3.8-27B",
       type: "gpu",
       family: "DENSE · TEXT",
-      quant: "Q8_0 + DFlash2 drafter",
+      quant: "Q8_0",
+      recipe: "DFlash2 drafter",
       value: "80.87",
       unit: "tok/s",
       caption: "Best measured recipe · 1 request · median of 3 launches",
@@ -55,7 +56,8 @@ function buildModels() {
       name: "Qwen3.6-35B-A3B",
       type: "gpu",
       family: "MIXTURE OF EXPERTS · TEXT",
-      quant: "Q8_0 · native MTP",
+      quant: "Q8_0",
+      recipe: "Native MTP",
       value: "104.8",
       unit: "tok/s",
       caption: "Best observed cell · split KV · 8k generation · n=1",
@@ -70,7 +72,8 @@ function buildModels() {
       name: "Qwen3-VL-30B-A3B",
       type: "gpu",
       family: "VISION-LANGUAGE MODEL",
-      quant: "Q4_K_M · text-only speed test",
+      quant: "Q4_K_M",
+      recipe: "Text-only speed test",
       value: "116.04",
       unit: "tok/s",
       caption: "Single request · speculative decoding off",
@@ -84,7 +87,8 @@ function buildModels() {
       name: "Qwen3.6-35B-A3B",
       type: "cpu",
       family: "MIXTURE OF EXPERTS · TEXT",
-      quant: "Q8_0 · native MTP depth 4",
+      quant: "Q8_0",
+      recipe: "Native MTP depth 4",
       value: "64.38",
       unit: "tok/s",
       caption: "Frozen v10 CPU qualification · 5 repetitions",
@@ -98,7 +102,8 @@ function buildModels() {
       name: "Whisper large-v3-turbo",
       type: "cpu",
       family: "SPEECH RECOGNITION",
-      quant: "F16 · frozen speech-v1",
+      quant: "F16",
+      recipe: "Frozen speech-v1",
       value: "10.52",
       unit: "seconds",
       caption: "86.5 seconds of audio · 32 threads · n=2",
@@ -112,7 +117,8 @@ function buildModels() {
       name: "Qwen3-TTS 0.6B",
       type: "cpu",
       family: "STREAMING SPEECH SYNTHESIS",
-      quant: "Q8_0 talker + codec · speech-v1",
+      quant: "Q8_0 talker + Q8_0 codec",
+      recipe: "Frozen speech-v1",
       value: "75",
       unit: "ms first packet",
       caption: "24 threads · short PCM · median of 3 · range 74–76 ms",
@@ -127,7 +133,9 @@ function renderCatalog() {
   const visible = models.filter(
     (m) =>
       (filter === "all" || m.type === filter) &&
-      (m.name + " " + m.family + " " + m.quant).toLowerCase().includes(query),
+      (m.name + " " + m.family + " " + m.quant + " " + m.recipe)
+        .toLowerCase()
+        .includes(query),
   );
   grid.innerHTML =
     visible
@@ -139,9 +147,11 @@ function renderCatalog() {
           (m.type === "gpu" ? "MI210" : "EPYC") +
           "</span></div><h3>" +
           escape(m.name) +
-          '</h3><div class="subtitle">' +
+          '</h3><div class="card-recipe"><span>WEIGHT QUANTIZATION</span><strong>' +
           escape(m.quant) +
-          '</div><div class="metric"><strong>' +
+          "</strong><small>" +
+          escape(m.recipe) +
+          '</small></div><div class="metric"><strong>' +
           escape(m.value) +
           "</strong><span>" +
           escape(m.unit) +
@@ -788,7 +798,11 @@ function renderDetail() {
     (m.type === "gpu" ? "AMD Instinct MI210 · gfx90a" : "AMD EPYC 9655") +
     '</span><h2 id="detail-title">' +
     escape(m.name) +
-    "</h2><p>" +
+    '</h2><div class="detail-quant">Weight quantization <strong>' +
+    escape(m.quant) +
+    "</strong><span>· " +
+    escape(m.recipe) +
+    "</span></div><p>" +
     escape(m.description) +
     '</p></div><div class="tabs" aria-label="Model sections">' +
     tabs
