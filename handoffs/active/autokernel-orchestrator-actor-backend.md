@@ -505,8 +505,26 @@ Not measured:
   accounting. Emit one tap record per scout call (role, slot, prompt/decoded tokens, wall), tagged with the parent
   request id. Acceptance: an OAB-4 `orch`-arm call shows its scout calls in the tap next to the planner turn.
 - [ ] **OAB-17 — triage the unfixed second-review items F8-F11, F15, F16 and R2-R4.** F1-F7 and F12-F14 landed in
-  `86cdeaf3` / `b9e004e3`. The item text is in main-ak-seat's Fable review report (2026-09-25 ~12:50Z): copy each
-  item here, then fix it or decline it in writing. Acceptance: every item has a disposition.
+  `86cdeaf3` / `b9e004e3`. Items (Fable review, 2026-09-25 ~12:50Z, file:line against 7d0ce447):
+  - F8 MED: scout `/slots` cap is a one-shot snapshot from a 1.5 s-TTL process-wide cache (`scout_stage.py:719-723`,
+    `context_limits.py:441-453,521`); two scouted requests (or 6 workers) can both launch and violate `reserve_slots`.
+    Fix: `resolver.invalidate(url)` after launch + in-process inflight counter; cross-worker needs a shared counter.
+  - F9 MED: scouts share the loop's default ThreadPoolExecutor (32) with chat.py's own `to_thread` handlers
+    (`scout_stage.py:880`); 4 scouted requests x 8 scouts starve other handlers. Fix: dedicated bounded executor.
+  - F10 LOW: default-path substring patterns `context.get(`/`context.json(`/`context.index(`/`context[` added to
+    `exploration_patterns` (`code_utils.py:659-664`) match ANY request (`context[:5000]` idiom now executes silently
+    instead of FINAL). Fix: gate on a bundle being attached, or anchor `(?<![\w.])context[\[.]`.
+  - F11 LOW: pulled-span list unbounded (`context_bundle.py:744-748`, ~125 B/span). Fix: merge intervals past ~1k.
+  - F15 LOW (scouts): `_last_alternatives` shared across scout threads; `definitions()` lacks per-file
+    `read_denial`; FIFO/device with a source suffix blocks `read_text` (require S_ISREG); no block-level cap on the
+    scout block (~37K tokens worst case); `_EVIDENCE_RE` quadratic; augmented prompt feeds `_select_mode`.
+  - F16 LOW (bundle): refused `chunk_context` still charges the budget; structured mode caps twice; `json()` counts
+    the indent=2 dump; `get()` on a JSON path records no span; the 8 MiB check runs after full parse; no app-level
+    body limit (pre-existing).
+  - R2 LOW: `AK_ORCHESTRATOR_SCOUTS="false"/"off"/"3.0"` raise ValueError in `backend_for`.
+  - R3 LOW: `orchestrator-variable` context mode has no inline fallback (unlike `variable`).
+  - R4 INFO: `_sealed` seals without `role`; per-call files under `<workspace>/../actor-orchestrator/` never cleaned.
+  Fix or decline each in writing. Acceptance: every item has a disposition.
 - [ ] **OAB-18 — turn on `PREFIX_STABLE_ORDER` for scoped REPL calls, or measure why not.** With the prod default
   (off), each turn's state block precedes the task, so the whole task is re-prefilled every turn: measured on the
   DS41 control prompt, 27,803 → 6,555 uncached tokens per turn with the bundle, and 122 → 1,201 with the flag on
