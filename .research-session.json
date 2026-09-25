@@ -1,9 +1,9 @@
 {
   "session_id": "intake-exl3-sglang-throughput-20260925",
   "started_at": "2026-09-25T13:40:00Z",
-  "last_checkpoint": "2026-09-25T13:53:06Z",
+  "last_checkpoint": "2026-09-25T15:05:00Z",
   "phase": 5,
-  "stage": "stage1-complete-awaiting-dive-selection",
+  "stage": "stage2-complete-awaiting-stage2b-selection",
   "session_kind": "research-intake (CIRU EXL3/SGLang serving package and throughput path)",
   "previous_session": "intake-exl3-mi210-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-exl3-sglang-20260925/previous-research-session-stage4.json)",
   "mandate": "Ingest the CIRU Qwen3.8-27B EXL3/SGLang package and establish what the published throughput requires so the CPU and MI210 program targets the complete serving path.",
@@ -44,6 +44,14 @@
       "verbatim": "We MUST be able to get to these throughput speeds also",
       "disposition": "planned",
       "plan_ref": "preliminary-actionable-throughput-parity"
+    },
+    {
+      "seq": 3,
+      "stage": 2,
+      "ts": "2026-09-25T14:10:00Z",
+      "verbatim": "proceed as recommended",
+      "disposition": "planned",
+      "plan_ref": "stage2-dive-intake-1563-through-1566"
     }
   ],
   "source_fetches": {
@@ -95,22 +103,33 @@
   "preliminary_actionables": [
     {
       "id": "THR-1",
-      "intakes": ["intake-1563", "intake-1564"],
+      "intakes": [
+        "intake-1563",
+        "intake-1564"
+      ],
       "action": "[unverified] Add an end-to-end INF-80 serving milestone after operator integration: exact c1/c2/c4/c8 request shapes, decode-only and full-wall throughput, no cache hits, fixed token corpus, draft acceptance and complete runtime identities."
     },
     {
       "id": "THR-2",
-      "intakes": ["intake-1564"],
+      "intakes": [
+        "intake-1564"
+      ],
       "action": "[unverified] Build a component attribution matrix across EXL3 target bytes and kernels, none/MTP/DFlash2 verification, scheduling and graph capture, KV/attention precision and recurrent-state handling; quantization alone is not an adequate explanation."
     },
     {
       "id": "THR-3",
-      "intakes": ["intake-1565", "intake-1566"],
+      "intakes": [
+        "intake-1565",
+        "intake-1566"
+      ],
       "action": "[unverified] Use the pinned mul1 target and draft as full-model fixtures after standalone correctness, with Q8 versus EXL3 and none/MTP/DFlash2 matched arms on MI210."
     },
     {
       "id": "THR-4",
-      "intakes": ["intake-1563", "intake-1564"],
+      "intakes": [
+        "intake-1563",
+        "intake-1564"
+      ],
       "action": "[unverified] Preserve the external 405.6 single-request decode and 826.2 c8 aggregate figures as source-derived workload-specific targets; do not use them as local claims until a reproducible public corpus or project-owned equivalent exists."
     }
   ],
@@ -160,8 +179,209 @@
     }
   ],
   "stage1_gate": {
-    "status": "awaiting-operator-dive-selection",
-    "recommended": ["intake-1564", "intake-1563", "intake-1565", "intake-1566"],
+    "status": "selected-and-complete",
+    "recommended": [
+      "intake-1564",
+      "intake-1563",
+      "intake-1565",
+      "intake-1566"
+    ],
+    "handoff_writes": 0
+  },
+  "selected_for_dive": [
+    "intake-1564",
+    "intake-1563",
+    "intake-1565",
+    "intake-1566"
+  ],
+  "stage2_dives": {
+    "intake-1563": {
+      "verification": "dive-verified",
+      "claim_effects": [
+        "narrowed",
+        "unaffected",
+        "unaffected",
+        "unaffected",
+        "unaffected"
+      ],
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1563/REPORT.md"
+    },
+    "intake-1564": {
+      "verification": "dive-verified",
+      "claim_effects": [
+        "unaffected",
+        "unaffected",
+        "narrowed",
+        "unaffected",
+        "narrowed"
+      ],
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1564/REPORT.md"
+    },
+    "intake-1565": {
+      "verification": "dive-verified",
+      "claim_effects": [
+        "narrowed",
+        "narrowed",
+        "unaffected",
+        "unaffected"
+      ],
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1565/REPORT.md"
+    },
+    "intake-1566": {
+      "verification": "dive-verified",
+      "claim_effects": [
+        "unaffected",
+        "unaffected",
+        "reattributed",
+        "narrowed"
+      ],
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1566/REPORT.md"
+    }
+  },
+  "stage2_findings": [
+    "405.575949 tok/s is a verified median decode-only rate for one 2048-input plus 2048-output request; full-wall output rate is about 368.97 tok/s.",
+    "826.171840 tok/s is verified c8 aggregate output divided by full batch wall for 1024 input plus 512 output per request; same-cell NVIDIA NVFP4 is 1097.429121 tok/s.",
+    "The complete stack is packed EXL3 plus DFlash2 block 8, SGLang scheduling, decode graphs, target NVFP4 KV, draft FP8 KV and ReplaySSM; the benchmark is not a codec-only result.",
+    "Published launcher disables optional custom EXL3 paths, but measured c84 receipts do not bind its environment/image/source, so the measured kernel-path attribution is unproven.",
+    "The target supplies 573 valid mul1 packed quartets, while tensor_storage lists only 401 and omits vision/MTP; loader discovery must be safetensors-first.",
+    "The draft has 36 packed modules; fc is the DFlash input projection, not the selector. The acceptance-neutral wording lacks an equivalence test.",
+    "Synthetic c8 acceptance is near the block-8 ceiling, requiring realistic-content and fail-fast acceptance panels for any local throughput claim."
+  ],
+  "stage2_surfaced_sources": [
+    {
+      "url": "https://github.com/r0b0tlab/qwen38-exl3-dflash2",
+      "revision": "75d4ec5a4829d39d515fc442ee8ee4664246797c",
+      "bears_on": [
+        "intake-1565",
+        "intake-1566"
+      ],
+      "settles": "Raw native ExLlamaV3/DFlash2 protocol, acceptance and RTX 3090 package results.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/r0b0tlab/exllamav3",
+      "revision": "355c6ee10fbd25b79070316a81ea0708cc18155a",
+      "bears_on": [
+        "intake-1564",
+        "intake-1565",
+        "intake-1566"
+      ],
+      "settles": "Exact packed CUDA operators, reconstruction thresholds, mul1 decoding and Qwen/DFlash loader contracts.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36010",
+      "bears_on": [
+        "intake-1564"
+      ],
+      "settles": "Why stock NVFP4 KV plus speculative verification was insufficient and which SGLang gaps the package patched.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/satellitedown/fast-long-context",
+      "revision": "b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849",
+      "bears_on": [
+        "intake-1564"
+      ],
+      "settles": "NVFP4 target-KV verification and long-context prefill patch provenance.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://inco.ai/blog/dflash2/",
+      "bears_on": [
+        "intake-1566"
+      ],
+      "settles": "First-party DFlash2 mechanism, acceptance claims and intended serving contract.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/39087",
+      "bears_on": [
+        "intake-1564",
+        "intake-1566"
+      ],
+      "settles": "Quantized DFlash can load while accepting approximately zero tokens; defines a necessary fail-fast guard.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/xenodeve/Qwen-3.8-27B-Tuning/blob/main/docs/reports/29-DFLASH2-AND-THE-PROMPT-THAT-FLATTERED-NGRAM.md",
+      "bears_on": [
+        "intake-1563",
+        "intake-1564",
+        "intake-1566"
+      ],
+      "settles": "Independent content-sensitivity evidence where synthetic and real-code acceptance reverse throughput conclusions.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/it-dainb/dgx-spark-qwen38/blob/main/docs/BENCHMARKS.md",
+      "bears_on": [
+        "intake-1563",
+        "intake-1564",
+        "intake-1566"
+      ],
+      "settles": "Independent serving evidence for acceptance, content effects and recurrent-state rollback.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/r0b0tlab/buun-llama-qwen3.8-27b-exl3-4.00bpw",
+      "revision": "813766ddaeba18f47f61926d20d9784b9b977132",
+      "bears_on": [
+        "intake-1565"
+      ],
+      "settles": "Alternative native EXL3 runtime loadability and whether its unpinned artifact identity can be repaired.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/syv-ai/HyperQwen/issues/72",
+      "bears_on": [
+        "intake-1566"
+      ],
+      "settles": "Different-stack sm80 DFlash cumulative out-of-bounds failure mode.",
+      "recommendation": "decline unless broader cross-runtime stability evidence is desired",
+      "reason": "Different vLLM/sm80 stack and does not directly settle CPU or gfx90a design."
+    },
+    {
+      "url": "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
+      "bears_on": [
+        "intake-1563"
+      ],
+      "settles": "Additional Blackwell serving observations under a different model and configuration.",
+      "recommendation": "decline",
+      "reason": "Different model/configuration with weak bearing on the exact target."
+    },
+    {
+      "url": "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2",
+      "bears_on": [
+        "intake-1566"
+      ],
+      "settles": "Exact unquantized parent artifact metadata.",
+      "recommendation": "decline",
+      "reason": "Lineage is already established by the pinned draft and DFlash sources; intake-1265 already covers the first-party GGUF companion."
+    }
+  ],
+  "stage2_gate": {
+    "status": "awaiting-operator-stage2b-selection",
+    "recommended_ingest_and_dive": [
+      "https://github.com/r0b0tlab/qwen38-exl3-dflash2",
+      "https://github.com/r0b0tlab/exllamav3",
+      "https://github.com/sgl-project/sglang/issues/36010",
+      "https://github.com/satellitedown/fast-long-context",
+      "https://inco.ai/blog/dflash2/",
+      "https://github.com/sgl-project/sglang/issues/39087",
+      "https://github.com/xenodeve/Qwen-3.8-27B-Tuning/blob/main/docs/reports/29-DFLASH2-AND-THE-PROMPT-THAT-FLATTERED-NGRAM.md",
+      "https://github.com/it-dainb/dgx-spark-qwen38/blob/main/docs/BENCHMARKS.md",
+      "https://github.com/r0b0tlab/buun-llama-qwen3.8-27b-exl3-4.00bpw"
+    ],
+    "recommended_declines": [
+      "https://github.com/syv-ai/HyperQwen/issues/72",
+      "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
+      "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2"
+    ],
     "handoff_writes": 0
   }
 }
