@@ -1,9 +1,9 @@
 {
   "session_id": "intake-exl3-sglang-throughput-20260925",
   "started_at": "2026-09-25T13:40:00Z",
-  "last_checkpoint": "2026-09-25T15:05:00Z",
+  "last_checkpoint": "2026-09-25T14:58:00Z",
   "phase": 5,
-  "stage": "stage2-complete-awaiting-stage2b-selection",
+  "stage": "stage2b-complete-awaiting-surfaced-source-selection",
   "session_kind": "research-intake (CIRU EXL3/SGLang serving package and throughput path)",
   "previous_session": "intake-exl3-mi210-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-exl3-sglang-20260925/previous-research-session-stage4.json)",
   "mandate": "Ingest the CIRU Qwen3.8-27B EXL3/SGLang package and establish what the published throughput requires so the CPU and MI210 program targets the complete serving path.",
@@ -12,12 +12,21 @@
     "operator_goal": "We MUST be able to get to these throughput speeds also"
   },
   "max_existing_intake_id_at_start": 1562,
-  "next_intake_id": 1567,
+  "next_intake_id": 1576,
   "entries_processed": [
     "intake-1563",
     "intake-1564",
     "intake-1565",
-    "intake-1566"
+    "intake-1566",
+    "intake-1567",
+    "intake-1568",
+    "intake-1569",
+    "intake-1570",
+    "intake-1571",
+    "intake-1572",
+    "intake-1573",
+    "intake-1574",
+    "intake-1575"
   ],
   "entries_remaining": [],
   "expansion_cap": 10,
@@ -52,6 +61,14 @@
       "verbatim": "proceed as recommended",
       "disposition": "planned",
       "plan_ref": "stage2-dive-intake-1563-through-1566"
+    },
+    {
+      "seq": 4,
+      "stage": "2b",
+      "ts": "2026-09-25T15:15:00Z",
+      "verbatim": "proceed as recommended",
+      "disposition": "planned",
+      "plan_ref": "stage2b-recommended-nine-ingests-three-declines"
     }
   ],
   "source_fetches": {
@@ -155,7 +172,18 @@
       "reason": "Exact draft artifact responsible for the high-acceptance block-8 path; verify packed tensors and acceptance claims."
     }
   ],
-  "explicit_declines": [],
+  "explicit_declines": [
+    {
+      "url": "https://github.com/syv-ai/HyperQwen/issues/72",
+      "accepted_at": "stage2b",
+      "reason": "Different vLLM/sm80 failure mode; does not settle CPU or gfx90a design."
+    },
+    {
+      "url": "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
+      "accepted_at": "stage2b",
+      "reason": "Different model and configuration; weak bearing on the exact target."
+    }
+  ],
   "stage2_source_candidates": [
     {
       "url": "https://github.com/sgl-project/sglang/issues/36010",
@@ -365,7 +393,7 @@
     }
   ],
   "stage2_gate": {
-    "status": "awaiting-operator-stage2b-selection",
+    "status": "operator-selection-received",
     "recommended_ingest_and_dive": [
       "https://github.com/r0b0tlab/qwen38-exl3-dflash2",
       "https://github.com/r0b0tlab/exllamav3",
@@ -382,6 +410,197 @@
       "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
       "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2"
     ],
-    "handoff_writes": 0
-  }
+    "handoff_writes": 0,
+    "selected_ingest_and_dive": [
+      "https://github.com/r0b0tlab/qwen38-exl3-dflash2",
+      "https://github.com/r0b0tlab/exllamav3",
+      "https://github.com/sgl-project/sglang/issues/36010",
+      "https://github.com/satellitedown/fast-long-context",
+      "https://inco.ai/blog/dflash2/",
+      "https://github.com/sgl-project/sglang/issues/39087",
+      "https://github.com/xenodeve/Qwen-3.8-27B-Tuning/blob/main/docs/reports/29-DFLASH2-AND-THE-PROMPT-THAT-FLATTERED-NGRAM.md",
+      "https://github.com/it-dainb/dgx-spark-qwen38/blob/main/docs/BENCHMARKS.md",
+      "https://github.com/r0b0tlab/buun-llama-qwen3.8-27b-exl3-4.00bpw"
+    ],
+    "accepted_declines": [
+      "https://github.com/syv-ai/HyperQwen/issues/72",
+      "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
+      "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2"
+    ]
+  },
+  "stage2b_dives": {
+    "intake-1567": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1567/REPORT.md"
+    },
+    "intake-1568": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1568/REPORT.md"
+    },
+    "intake-1569": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1569/REPORT.md"
+    },
+    "intake-1570": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1570/REPORT.md"
+    },
+    "intake-1571": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1571/REPORT.md"
+    },
+    "intake-1572": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1572/REPORT.md"
+    },
+    "intake-1573": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1573/REPORT.md"
+    },
+    "intake-1574": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1574/REPORT.md"
+    },
+    "intake-1575": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1575/REPORT.md"
+    }
+  },
+  "stage2b_findings": [
+    "The RTX 3090 ExLlamaV3 package reaches 162.9 tok/s on its GSM8K setup, but its M32/M64 CUDA path cannot explain m8 decode and the result remains a complete target-plus-draft serving measurement.",
+    "The exact ExLlamaV3 fork accelerates dense CUDA rows m32-m192 by 1.35-1.92x while leaving m1/m8/m16 unchanged; its CPU executor is routed-MoE mul1-only and it has no working HIP/gfx90a executor.",
+    "The exact buun-llama.cpp engine pinned by the reproducible package contains dense and grouped CPU EXL3 K1-K8 for cb0/MCG/mul1 with scalar and AVX2/FMA paths; this is the strongest immediate CPU donor and correctness oracle.",
+    "Neither examined runtime supplies a full MI210 EXL3 backend. The buun engine explicitly declines its wave32 GPU path on HIP wave64, so gfx90a requires native wave64 GEMV/GEMM kernels.",
+    "SGLang NVFP4 speculative verification can fail with missing prefix metadata under graphs-on and graphs-off paths; candidate fixes keep the workspace device-resident, but all evidence is SM120 CUDA.",
+    "Quantized DFlash2 can load and serve while accepting only the bonus token. Later open fixes reattribute the failure from a selector hypothesis to silently skipped packed fc tensors and broader name/ignore resolution defects.",
+    "The fast-long-context package reports 239-341 tok/s generation-only across 8K-260K on one RTX 5090, but has no concurrency-above-one, EXL3, CPU or AMD evidence.",
+    "DFlash2 scores adjacent candidate pairs in parallel but still performs a sequential final path walk; its five-dataset Qwen3.8 mean acceptance is 4.80 versus MTP 4.28 and DSpark 3.62 at block size 8.",
+    "Independent tests show speculative gains depend strongly on prompt content. The xenodeve synthetic -9.2% result is inside its own 13.6% drift floor, while real-code DFlash2 is +34.7% versus ngram-mod.",
+    "The DGX Spark report narrates 135-148 tok/s at c8 and 258 at c32 without committed raw exact-cell rows; its rollback correction invalidates an older losslessness inference but does not prove rollback caused the prior deficit.",
+    "The throughput objective must qualify a complete serving path: packed EXL3 target and draft, acceptance, recurrent-state restore/commit, scheduler concurrency, KV/attention precision and launch strategy, with operator microbenchmarks reported separately."
+  ],
+  "reopened_declines": [
+    {
+      "url": "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2",
+      "originally_accepted_at": "stage2b-selection",
+      "reason": "The deeper source wave found that exact checkpoint configuration and tensor inventory could settle loader-contract claims; return to the operator gate rather than silently retaining the decline."
+    }
+  ],
+  "stage2b_surfaced_sources": [
+    {
+      "url": "https://github.com/mudler/vllm.cpp",
+      "recommendation": "ingest-and-dive",
+      "priority": "highest",
+      "settles": "Independent current CPU EXL3 implementation and serving path."
+    },
+    {
+      "url": "https://github.com/mudler/vllm.cpp/issues/2495",
+      "recommendation": "decline",
+      "settles": "Historical mul1 refusal appears superseded by current repository support."
+    },
+    {
+      "url": "https://github.com/r0b0tlab/glm53-flash-exl3-dflash2-sm121",
+      "recommendation": "ingest-and-dive",
+      "priority": "lower",
+      "settles": "Same-author Blackwell package and architecture scaling; no AMD support."
+    },
+    {
+      "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wa1jkb/exllamav3_comfortably_beats_llamacpp_running/",
+      "recommendation": "decline",
+      "settles": "Uncontrolled CPU-offload anecdote."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/36038",
+      "recommendation": "ingest-and-dive",
+      "settles": "Native packed-FP4 routing repair with mixed-length XQA coverage."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/36045",
+      "recommendation": "ingest-and-dive",
+      "settles": "Device-resident Triton workspace and long-prefix cost data."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/36340",
+      "recommendation": "ingest-and-dive",
+      "settles": "Merged SM100/SM103 implementation bounds the architecture split."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36001",
+      "recommendation": "decline",
+      "settles": "Withdrawn report without reliable independent evidence."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/31641",
+      "paired_with": "https://github.com/sgl-project/sglang/pull/31667",
+      "recommendation": "ingest-and-dive-as-pair",
+      "settles": "c1-correct SM120 XQA path silently corrupts under batching; directly informs c8 qualification."
+    },
+    {
+      "url": "https://huggingface.co/heswithme/Huihui-Qwen3.8-27B-Abliterated-Gittensor-Style-NVFP4-RTX5090",
+      "recommendation": "decline-unless-separate-artifact-audit",
+      "settles": "Adds weights while exact recipe pin is already captured."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/39254",
+      "recommendation": "ingest-and-dive",
+      "settles": "Direct packed-fc repair with before/after W4A16 evidence and loader tests."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/40884",
+      "recommendation": "ingest-and-dive",
+      "priority": "highest",
+      "settles": "Broader name/ignore and fail-closed loader fix with 200-example GPU comparison."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36599",
+      "recommendation": "ingest-and-dive",
+      "settles": "Same quant-config loss class in NextN models."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36118",
+      "recommendation": "decline",
+      "settles": "BF16 success is already represented and does not change the quantized-loader finding."
+    },
+    {
+      "url": "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2",
+      "recommendation": "ingest-and-dive",
+      "priority": "high",
+      "settles": "Exact parent checkpoint configuration and tensor inventory for loader-contract claims. This reopens the prior decline."
+    },
+    {
+      "url": "https://forums.developer.nvidia.com/t/qwen3-8-27b-at-34-38-tok-s-on-dgx-spark-open-source-one-command-setup-sglang-nvfp4-dspark/380257",
+      "recommendation": "ingest-and-dive",
+      "settles": "Independent evolving GB10 serving discussion and reproductions."
+    },
+    {
+      "url": "https://github.com/thkempka/spark-arena-recipes",
+      "recommendation": "ingest-and-dive",
+      "settles": "Reproducible Spark arena recipe and workload evidence."
+    },
+    {
+      "url": "https://github.com/MiaAI-Lab/Qwen3.8-27B-SGLang-DGX-Spark",
+      "recommendation": "ingest-and-dive",
+      "settles": "Independent measured DFlash2/DSpark/MTP serving package and state sizing."
+    },
+    {
+      "url": "https://github.com/hasso5703/dgx-spark-qwen38/issues/2",
+      "recommendation": "ingest-and-dive-lower-priority",
+      "settles": "Long-context client/runtime behavior in the same community package family."
+    }
+  ],
+  "stage2b_gate": {
+    "status": "awaiting-operator-selection",
+    "handoff_writes": 0,
+    "instruction": "Stage 3 remains gated until every surfaced source is selected for intake/dive or explicitly declined."
+  },
+  "stage2b_expansion_count": 9
 }

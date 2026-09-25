@@ -6977,7 +6977,14 @@
     - intake-191
     - intake-192
     - intake-193
-  notes: 'RE-ENCOUNTERED 2026-08-21: submitted DIRECTLY by the operator as one of 10 URLs in a
+  notes: 'RE-ENCOUNTERED 2026-09-25 through intake-1575: the reproducible Qwen3.8 EXL3 benchmark
+      package pins spiritbuun/buun-llama-cpp at 1d0f493c73817176f6953069b7c10211de9555a1. The pinned
+      engine contains dense and grouped CPU EXL3 execution for K1-K8 and cb0/MCG/mul1, with scalar and
+      AVX2/FMA paths, but no full ggml-hip EXL3 executor. This is new Stage-2b evidence attached here
+      instead of minting a duplicate engine entry; intake-1575 records the companion benchmark package.
+
+
+      RE-ENCOUNTERED 2026-08-21: submitted DIRECTLY by the operator as one of 10 URLs in a
     /research-intake batch. Exact url collision on https://github.com/spiritbuun/buun-llama-cpp, so NO new
     entry was minted (skill Phase 1 step 2b). This is the SECOND recorded re-encounter and the first by
     direct operator submission rather than by expansion. Nothing below is revised: no fetch was performed
@@ -180287,7 +180294,9 @@
   dive_corrections: '2026-09-25 Stage 2: CONFIRMED the package topology, launch profile, exact raw medians
     and distinct throughput denominators. NARROWED the repository-content description to include .gitattributes.
     The synthetic c8 workload runs DFlash2 near its block-8 acceptance ceiling, so the verified rates
-    are workload-specific package targets rather than EXL3-kernel or general-traffic claims.'
+    are workload-specific package targets rather than EXL3-kernel or general-traffic claims. Stage 2b:
+    the operator accepted declining MarcoPizeta/flash-next-rtxpro6000-bench because its different model
+    and configuration do not settle this exact target package.'
 - id: intake-1564
   arxiv_id: null
   url: https://github.com/ciru-ai/qwen38-exl3-sglang-runner
@@ -180879,4 +180888,1763 @@
     modules. REATTRIBUTED fc from candidate selection to the DFlash input layer and completed the raw-F16
     companion inventory. NARROWED acceptance-neutral to descriptive n=40 means without an equivalence
     test; NARROWED 162.9 tok/s to the arithmetic mean of prompt-inclusive per-request output rates for
-    the complete RTX 3090 stack.'
+    the complete RTX 3090 stack. Stage 2b: the operator accepted declining syv-ai/HyperQwen issue 72
+    because it is a different vLLM/sm80 failure mode. The earlier decline of the upstream
+    incoai/Qwen3.8-27B-DFlash2 artifact is reopened for operator review because the deeper source wave
+    found that its exact checkpoint configuration and tensor inventory could settle loader-contract claims.'
+- id: intake-1567
+  arxiv_id: null
+  url: https://github.com/r0b0tlab/qwen38-exl3-dflash2
+  source_type: repo
+  title: Qwen3.8-27B EXL3 plus native DFlash2 RTX 3090 serving package
+  authors:
+  - r0b0tlab
+  categories:
+  - quantization
+  - inference_serving
+  - speculative_decoding
+  - hardware_optimization
+  - local_inference
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1564
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - The pinned source is a complete NVIDIA RTX 3090 serving package combining the exact EXL3 target and draft with
+    ExLlamaV3 community 355c6ee; its results do not isolate the codec or one kernel.
+  - On GSM8K greedy at context 8192 and maximum 512 new tokens, it self-reports DFlash2 n=40 mean acceptance length
+    5.657 and mean per-request 162.9 tok/s, MTP n=20 at 4.120 and 116.3, and AR n=10 at 1.0 and 42.8; the unequal
+    denominators narrow comparison strength.
+  - In a one-sequence cq3 long-context run it self-reports 150000-token prefill at 594 tok/s and 200-token decode
+    at 25.3 tok/s with acceptance length 1.82 and peak 23.13 GB.
+  - The new dense M32/M64 tile path cannot explain the m8 DFlash2 decode gain because the source says m8 is unchanged
+    and attributes the gain to the CUDA drafter plus GDN rewind.
+  - The package compiles CUDA 13 for sm86 and supplies no CPU, ROCm, gfx90a or MI210 implementation or result.
+  techniques:
+  - native CUDA DFlash2
+  - GDN rewind
+  - packed EXL3 target and draft
+  - cq3 KV
+  - dense shared-decode M32/M64 tiles
+  reported_results:
+  - 'SELF-REPORTED, RTX 3090, GSM8K: DFlash2 n=40 mean 162.928623 tok/s and AL 5.657218; MTP n=20 116.307224 tok/s
+    and AL 4.119981; AR n=10 42.772949 tok/s.'
+  - 'SELF-REPORTED, one sequence: 150000-token prefill 594 tok/s; 200-token decode 25.3 tok/s; AL 1.82; peak 23.13
+    GB.'
+  - 'SELF-REPORTED Q200v2 n=180 summary only: mean 152.82, p50 159.29, aggregate 144.73 tok/s, 115404 completion
+    tokens, one worker.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    - agentic-rocm-kernel-authoring.md
+    - qwen38-27b-replace-qwen36.md
+    experiments: []
+    intake_entries:
+    - intake-872
+    - intake-1264
+    - intake-1265
+    - intake-1506
+    - intake-1528
+    - intake-1563
+    - intake-1564
+    - intake-1565
+    - intake-1566
+  recommended_actions:
+  - 'Project-derived candidate: preserve exact target/draft revisions and distinguish operator, drafter and complete-package
+    rates in local CPU/MI210 gates.'
+  - 'Project-derived candidate: rerun matched arms with equal n, identical prompt serialization and explicit cap
+    contacts.'
+  contradicting_evidence:
+  - The source itself says the M32/M64 dense tile path leaves m8 decode unchanged.
+  - The three GSM8K arms use n=40, n=20 and n=10 rather than equal denominators.
+  - No independent reproduction of these exact rates surfaced in the 2026-09-25 adversarial search.
+  notes: Read at 75d4ec5a4829d39d515fc442ee8ee4664246797c on 2026-09-25. notes/ACCEPTANCE.md:21 says MTP 4.420,
+    but its table and raw JSON say 4.120/4.119981. The 48-sample-per-arm T=1 result is a coarse smoke, not equivalence
+    proof.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Use the pinned package as an NVIDIA complete-stack target and its raw acceptance rows
+    as workload evidence; do not attribute 162.9 tok/s to EXL3 kernels alone or transplant sm86 settings to MI210.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: reattributed
+    note: The evidence is a full target+draft+runtime package, not an isolated codec or kernel result.
+  - claim_index: 1
+    effect: narrowed
+    note: Raw values are confirmed, but DFlash2/MTP/AR use unequal n and several outputs hit the 512-token cap.
+  - claim_index: 2
+    effect: unaffected
+    note: The source gives the exact prompt/decode sizes and rates for one cq3 sequence.
+  - claim_index: 3
+    effect: reattributed
+    note: The source explicitly attributes m8 improvement to CUDA drafter plus rewind, not the M32/M64 dense kernels.
+  - claim_index: 4
+    effect: unaffected
+    note: The package is explicitly NVIDIA CUDA sm86; no CPU or AMD result exists in the pinned tree.
+  depends_on: []
+  dive_corrections: '2026-09-25 Stage 2b: CONFIRMED the pinned package and self-reported raw results; NARROWED the
+    GSM8K comparison for unequal n and cap contacts; REATTRIBUTED the m8 gain away from dense M32/M64; corrected
+    the MTP 4.420 prose typo to 4.120; classified all rates as NVIDIA complete-package evidence.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:3-8
+    quote: 'The published EXL3 quants — [`r0b0tlab/Qwen3.8-27B-EXL3-4.00bpw`](https://huggingface.co/r0b0tlab/Qwen3.8-27B-EXL3-4.00bpw)
+
+      (target) and [`r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw`](https://huggingface.co/r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw)
+
+      (draft) — tuned for a 24 GB RTX 3090, running at the model''s full advertised 262,144-token context
+
+      with block-diffusion speculative decoding through **native DFlash2 in ExLlamaV3**. Engine pin:
+
+      [`r0b0tlab/exllamav3`](https://github.com/r0b0tlab/exllamav3) branch `community` @ `355c6ee`
+
+      (upstream native DFlash2 CUDA, GDN rewind, dense M=32/64 TILEBLOCKS_M).'
+    quote_sha256: 64e1d58b15bf86e8e2ff05d71906e865d3f6173c4d30da1f22bdbaef1309e0c4
+    source_revision: 75d4ec5a4829d39d515fc442ee8ee4664246797c
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: notes/ACCEPTANCE.md:10-14
+    quote: '| Drafter | Mean acceptance length | tok/s | n | hit cap |
+
+      | --- | --- | --- | --- | --- |
+
+      | DFlash2 EXL3 (4.00 bpw) | **5.657** | 162.9 | 40 | 5/40 |
+
+      | MTP head | 4.120 | 116.3 | 20 | 3/20 |
+
+      | Autoregressive baseline | 1.000 | 42.8 | 10 | 2/10 |'
+    quote_sha256: e3b9cb00224839517a66d8db1bae2037e12abd1d9c49caa9d06ac256398bdc15
+    source_revision: 75d4ec5a4829d39d515fc442ee8ee4664246797c
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: notes/RESULTS.md:31-34
+    quote: '- Load at 262,144 ctx with `-cq 3`: no OOM, peak 23.13 GB.
+
+      - Prefill 150,000 tokens: 252.4 s = **594 tok/s** (overlay 599; reconstruct path, flat).
+
+      - Decode 200 tokens at 150k depth: **25.3 tok/s**, acceptance 1.82 (overlay 24.5 / 1.79).
+
+      - Raw: `notes/long-context-native.log`.'
+    quote_sha256: 6368f12004bdb9868f47eb502b98e566495f69780765b8fd466529651d85fca4
+    source_revision: 75d4ec5a4829d39d515fc442ee8ee4664246797c
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:127-129
+    quote: "- Dense GEMM shapes 5/6: M=32/64 tiles share one decoded B fragment (verify/prefill\n  m>=32). Decode\
+      \ at the DFlash2 window (m=8) is unchanged by this path; GSM8K still\n  gained from the CUDA drafter + rewind."
+    quote_sha256: 3fc6258b54ffd2f9a2d1097b6d6e6c271ee77f583505e2893d45f2a5fa1c65bf
+    source_revision: 75d4ec5a4829d39d515fc442ee8ee4664246797c
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: container/Dockerfile:19-24
+    quote: "FROM nvidia/cuda:13.0.0-devel-ubuntu24.04 AS build\n\nENV DEBIAN_FRONTEND=noninteractive \\\n    PYTHONUNBUFFERED=1\
+      \ \\\n    TORCH_CUDA_ARCH_LIST=8.6 \\\n    MAX_JOBS=8 \\"
+    quote_sha256: 4a4266d27d1f4c4a5298283b1c8dee1288f66fc18623dd5a01d9bd47d49f51e0
+    source_revision: 75d4ec5a4829d39d515fc442ee8ee4664246797c
+    verified_by: research-intake/stage2b-second-reader
+- id: intake-1568
+  arxiv_id: null
+  url: https://github.com/r0b0tlab/exllamav3
+  source_type: repo
+  title: r0b0tlab ExLlamaV3 community fork — dense shared-decode CUDA tiles and mul1 CPU MoE
+  authors:
+  - r0b0tlab
+  - turboderp-org
+  categories:
+  - quantization
+  - hardware_optimization
+  - inference_serving
+  - local_inference
+  - moe_optimization
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1564
+  verdict: adopt_component
+  credibility_score: 2
+  key_claims:
+  - The fork adds dense M32/M64 tiles that reuse one decoded B fragment; its RTX 3090 operator microbench reports
+    1.35x–1.92x gains for m32–192 while m1/8/16 are unchanged, so this is operator evidence rather than an m8 or
+    end-to-end gain.
+  - The CUDA kernel tables instantiate K1–K8 for cb0, cb1 MCG and cb2 mul1, and source exposes exact MCG multiplier
+    0xCBAC1FED and mul1 multiplier 0x83DCD12D decode mechanics.
+  - Its CPU executor is a routed MoE expert operator for mul1 only, K1–K8, with scalar, AVX2, AVX512BW, VNNI and
+    VBMI tiers; it is a valuable donor but does not implement dense Qwen3.8 or MCG CPU execution.
+  - The GPU tree is CUDA/PTX-specific and setup.py constructs a CUDAExtension; a HIP preprocessor define alone does
+    not establish ROCm, gfx90a or MI210 support.
+  techniques:
+  - shared decoded-B fragments
+  - K1-K8 trellis extraction
+  - procedural cb0 MCG mul1 codebooks
+  - fused mul1 byte-sum integer dot products
+  - ISA runtime dispatch
+  reported_results:
+  - 'SELF-REPORTED RTX 3090 operator microbench: up/down m32 1.35x/1.58x; m64 1.48x/1.87x; m128 1.49x/1.92x; m192
+    1.50x/1.92x; m1/8/16 unchanged.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - agentic-rocm-kernel-authoring.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-872
+    - intake-1506
+    - intake-1563
+    - intake-1564
+    - intake-1565
+    - intake-1566
+    - intake-1567
+  recommended_actions:
+  - 'Project-derived candidate: use this source as the exact codebook/window oracle and adapt its mul1 CPU fusion
+    patterns into a dense EPYC executor.'
+  - 'Project-derived candidate: implement native wave64 gfx90a kernels from the format semantics and layouts, retaining
+    bit-exact cross-backend fixtures.'
+  contradicting_evidence:
+  - The source itself reports no gain at m1/8/16, so dense M32/M64 cannot explain decode-window improvements.
+  - CPU coverage is limited to routed MoE and mul1; it does not cover the dense mul1 target or MCG CPU execution.
+  - No independent reproduction of the RTX 3090 operator timings surfaced on 2026-09-25.
+  notes: Read community 355c6ee10fbd25b79070316a81ea0708cc18155a on 2026-09-25; community is 12 commits beyond origin/dev
+    common ancestor abad6a1. GPU scan covered setup.py and all exllamav3_ext C/C++/CUDA headers and sources.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt the exact K1-K8/codebook mechanics and CPU mul1 fusion as donor components; do not
+    cite the RTX 3090 operator timings as full-stack or MI210 evidence, and write native wave64 kernels for gfx90a.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Confirmed only as RTX 3090 operator microbench; m1/8/16 are unchanged and no end-to-end rate is supplied.
+  - claim_index: 1
+    effect: unaffected
+    note: Source directly instantiates K1-K8 x cb0-2 and exposes the exact MCG and mul1 operations.
+  - claim_index: 2
+    effect: narrowed
+    note: The CPU path is routed MoE mul1-only rather than general dense/all-codebook EXL3.
+  - claim_index: 3
+    effect: narrowed
+    note: A HIP define exists, but the extension and GPU implementation remain CUDA/PTX-specific; no working MI210
+      backend is evidenced.
+  depends_on: []
+  dive_corrections: '2026-09-25 Stage 2b: CONFIRMED K1-K8 and cb0/MCG/mul1 mechanics plus dense shared-decode operator
+    timings; NARROWED those timings to RTX 3090 microbench evidence; NARROWED the CPU component to routed MoE mul1-only;
+    rejected superficial HIP detection as proof of gfx90a support.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: FORK.md:35-44
+    quote: "1. **Dense M=32/64 tile that shares a decoded B fragment across row-tiles. SHIPPED, measured\n   1.35x-1.92x\
+      \ on the verify pass.** On an RTX 3090 with `qwen38-27b-exl3` at 4.000 bpw,\n   default (autotuned) path:\n\
+      \   | m | up_proj (5120x17408) | down_proj (17408x5120) |\n   | --- | --- | --- |\n   | 1 / 8 / 16 | unchanged\
+      \ | unchanged |\n   | 32 | 0.120 ms vs 0.162 (1.35x) | 0.121 vs 0.191 (1.58x) |\n   | 64 | 0.215 vs 0.319\
+      \ (1.48x) | 0.202 vs 0.383 (1.87x) |\n   | 128 | 0.416 vs 0.619 (1.49x) | 0.410 vs 0.783 (1.92x) |\n   | 192\
+      \ | 0.621 vs 0.927 (1.50x) | 0.609 vs 1.160 (1.92x) |"
+    quote_sha256: a6ca6fb995bc42ff880a69e3a0d3249d27a89ce7b7da8127dafed9d82b9d50e8
+    source_revision: 355c6ee10fbd25b79070316a81ea0708cc18155a
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: exllamav3/exllamav3_ext/quant/exl3_kernel_map.cu:117-130
+    quote: "static fp_exl3_gemm_kernel* const tab_gemm_fp32[9][3] =\n{\n    { nullptr, nullptr, nullptr },\n   \
+      \ EXL3_KERNEL_TABLE_ROW(fp32, 1), EXL3_KERNEL_TABLE_ROW(fp32, 2), EXL3_KERNEL_TABLE_ROW(fp32, 3),\n    EXL3_KERNEL_TABLE_ROW(fp32,\
+      \ 4), EXL3_KERNEL_TABLE_ROW(fp32, 5), EXL3_KERNEL_TABLE_ROW(fp32, 6),\n    EXL3_KERNEL_TABLE_ROW(fp32, 7),\
+      \ EXL3_KERNEL_TABLE_ROW(fp32, 8)\n};\n\nstatic fp_exl3_gemm_kernel* const tab_gemm_fp16[9][3] =\n{\n    {\
+      \ nullptr, nullptr, nullptr },\n    EXL3_KERNEL_TABLE_ROW(fp16, 1), EXL3_KERNEL_TABLE_ROW(fp16, 2), EXL3_KERNEL_TABLE_ROW(fp16,\
+      \ 3),\n    EXL3_KERNEL_TABLE_ROW(fp16, 4), EXL3_KERNEL_TABLE_ROW(fp16, 5), EXL3_KERNEL_TABLE_ROW(fp16, 6),\n\
+      \    EXL3_KERNEL_TABLE_ROW(fp16, 7), EXL3_KERNEL_TABLE_ROW(fp16, 8)"
+    quote_sha256: d3f07d8c39031c3a18ed8d1b1c2c166cd182eea541c4203a04093f210d056282
+    source_revision: 355c6ee10fbd25b79070316a81ea0708cc18155a
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: exllamav3/exllamav3_ext/quant/codebook.cuh:67-88
+    quote: "if constexpr (cb == 1)\n    {\n        x *= 0xCBAC1FEDu;\n        // x = mul_const_u32<0xCBAC1FEDu>(x);\n\
+      \n        asm (\"lop3.b32 %0, %0, 0x8fff8fff, 0x3b603b60, 0x6a;\" : \"+r\"(x));\n        half2_uint32 xu(x);\n\
+      \        return __hadd(__low2half(xu.as_half2), __high2half(xu.as_half2));\n    }\n    if constexpr (cb ==\
+      \ 2)\n    {\n        x *= 0x83DCD12Du;\n        const uint32_t acc = 0x6400u;  // 0x6400 -> 1024.0 ..  0x67FF\
+      \ -> 2047.0\n        // Byte sum via dp4a, bit-identical to the previous vabsdiff4(x, 0, acc) but native on\
+      \ Blackwell\n        // where vabsdiff4 is emulated. dp4a also wins om Ampere now, possibly after compiler\
+      \ changes, and ties on Ada\n        // uint32_t sum;\n        // asm (\"vabsdiff4.u32.u32.u32.add %0, %1,\
+      \ %2, %3;\" : \"=r\"(sum) : \"r\"(x), \"r\"(0), \"r\"(acc) : );\n        uint32_t sum = __dp4a(x, 0x01010101u,\
+      \ acc);\n        const __half k_inv_h = __ushort_as_half(0x1eee);  //  0.00677 = 1/147.7\n        const __half\
+      \ k_bias_h = __ushort_as_half(0xc931);  // -10.39 = (-1024.0 - 510.0) * k_inv_h\n        half_uint16 h((uint16_t)\
+      \ sum);\n        return __hfma(h.as_half, k_inv_h, k_bias_h);"
+    quote_sha256: 78cef46dcdea45acd29aea570373453bbc0a597981554523f013912a32221391
+    source_revision: 355c6ee10fbd25b79070316a81ea0708cc18155a
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: exllamav3/exllamav3_ext/cpu/moe_mul1.h:7-15
+    quote: '// CPU-side MoE expert GEMM for mul1 (cb2) EXL3 tensors, standalone from the module code so it
+
+      // can be benchmarked and driven directly. A layer is registered once (raw pointers into CPU
+
+      // trellis/suh/svh tensors, which the caller must keep alive) and then invoked per forward with
+
+      // the routing results. Kernels dispatch at runtime on scalar / AVX2 / AVX-512BW / AVX-512+VNNI;
+
+      // the mul1 codebook is affine in a byte-sum, so dequantization and the activation product
+
+      // fuse into integer dot products (see exl3_moe_cpu_forward for the math).
+
+      //
+
+      // Current limits: mul1 codebook only, K in [1, 8]. Gated experts with silu/gelu/swiglu_oai
+
+      // (act_limit) or gateless with relu2; optional per-expert biases (uniform per projection).'
+    quote_sha256: c8c46b2a22d3da4d4f602a34dd97b460cce6d6bc6d717b9150e60f1050dfaac1
+    source_revision: 355c6ee10fbd25b79070316a81ea0708cc18155a
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: setup.py:49-74
+    quote: "if torch and torch_version.hip:\n    extra_cuda_cflags += [\"-DHIPBLAS_USE_HIP_HALF\"]\n\nextra_compile_args\
+      \ = {\n    \"cxx\": extra_cflags,\n    \"nvcc\": extra_cuda_cflags,\n}\n\nlibrary_dir = \"exllamav3\"\nsources_dir\
+      \ = os.path.join(library_dir, extension_name)\nsources = [\n    os.path.relpath(os.path.join(root, file),\
+      \ start=os.path.dirname(__file__))\n    for root, _, files in os.walk(sources_dir)\n    for file in files\n\
+      \    if file.endswith(('.c', '.cpp', '.cu'))\n]\n\nsetup_kwargs = (\n    {\n        \"ext_modules\": [\n \
+      \           cpp_extension.CUDAExtension(\n                extension_name,\n                sources,\n    \
+      \            extra_compile_args=extra_compile_args,\n                libraries=[\"cublas\"] if windows else\
+      \ [],"
+    quote_sha256: 4f05b36bae4a6a83550fd96a06c0e310b74a87ab4f3bc89b08d8f9fbc516f899
+    source_revision: 355c6ee10fbd25b79070316a81ea0708cc18155a
+    verified_by: research-intake/stage2b-second-reader
+- id: intake-1569
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/issues/36010
+  source_type: repo
+  title: 'SGLang #36010 — NVFP4 KV speculative verification consumes absent host prefix metadata on SM120'
+  authors:
+  - 0xdespot
+  - jerry-he
+  - chengye75-star
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - hardware_optimization
+  - gpu_inference
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1564
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - 'On unpatched SGLang SM120 paths, NVFP4 KV plus speculative target verification reaches FlashInfer''s dequant
+    workspace with extend_prefix_lens_cpu unset: speculative verification constructs device tensors to avoid a per-step
+    device-to-host sync, while the workspace builder dereferences host prefix lengths. The failure occurs during
+    graph capture with graphs enabled and on the first request with graphs disabled.'
+  - Copying prefix lengths back to the host can unblock eager execution but does not make CUDA graph replay safe.
+    The two open fixes instead keep verification metadata device-resident or route TARGET_VERIFY and draft-extend
+    phases through native packed-FP4 decode, reset stale workspace metadata, and fail clearly on invalid routing.
+  - 'A second official-0.5.20 reproduction showed a separate silent failure: FP8 KV allowed NEXTN to serve while
+    acceptance stayed at rate 0.00 and length 1.00 on every observed batch. Boot and HTTP success therefore cannot
+    stand in for speculative-path viability; acceptance counters need an explicit gate.'
+  - The issue reproductions cover one RTX 5090 and two RTX 5060 Ti cards; candidate-fix evidence also covers an
+    RTX PRO 5000 Blackwell and another RTX 5090. All are NVIDIA SM120. Neither CPU, ROCm nor gfx90a behavior is
+    measured; the portable result is that replayable device regions must keep verification metadata device-resident
+    and fail closed on stale or absent state.
+  techniques:
+  - device-resident speculative verification metadata
+  - native packed-NVFP4 target verification
+  - CUDA graph-safe workspace preparation
+  - stale workspace metadata reset
+  - acceptance-counter viability gate
+  reported_results:
+  - 'SELF-REPORTED: RTX 5090 SM120 on SGLang db570fe crashed during decode-graph capture with graphs enabled and
+    on the first request with graphs disabled; no throughput benchmark was supplied.'
+  - 'INDEPENDENT ISSUE COMMENT: SGLang 0.5.20 on 2× RTX 5060 Ti reproduced the same startup failure twice; removing
+    only speculative flags let the NVFP4 pool allocate.'
+  - 'SIDE OBSERVATION: on that 0.5.20 setup, FP8 E4M3 KV booted but reported accept rate 0.00 and accept length
+    1.00 across every decode batch; the comment gives no batch count or prompt corpus.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-461
+    - intake-490
+    - intake-1563
+    - intake-1564
+    intake_entry_notes:
+    - intake-461 (SGLang serving substrate)
+    - intake-490 (SGLang hybrid-model state handling)
+    - intake-1563 and intake-1564 (the EXL3 package whose NVFP4 target-KV path motivated this dive)
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: require target-verify and draft-extend metadata to stay device-resident on the MI210
+    graph/replay path; prohibit an implicit host mirror in the steady-state verification loop.'
+  - 'Project-derived candidate: add fail-closed guards for absent or stale verification workspace metadata and cover
+    graph/eager, changed-length replay, mixed request lengths and target/draft paths.'
+  - 'Project-derived candidate: make sustained bonus-token-only acceptance a startup/qualification failure with
+    counters captured on calibrated synthetic and realistic prompt panels.'
+  - 'Project-derived decline: do not port the NVFP4, FlashInfer or TRTLLM implementation code to gfx90a; carry its
+    metadata, guard and coverage contracts into HIP-native kernels.'
+  contradicting_evidence:
+  - 'The issue''s opening universal wording is too broad: merged PR #36340 supports native NVFP4 speculative decoding
+    on SM100/SM103, while the reported defect and second reproduction are SM120 paths.'
+  - 'Open PRs #36038 and #36045 report successful SM120 candidate fixes, but neither was merged at retrieval and
+    their CI summaries showed failures, so they do not establish released support.'
+  - The issue author's claim that graphs were roughly 2.6× faster on this model has no workload, raw rows or denominator
+    and is not carried forward as a verified result.
+  notes: 'Read GitHub issue API through updated_at 2026-09-23T03:31:27Z, retrieved 2026-09-25. Issue JSON sha256
+    c8f914948de1da0f74c7dfda80e8ac6020f0c5b6c157de94f4ea6464a289726d; comments JSON sha256 503e1db3901f1c796ad10ee48e39c46e065717baa35961f3d3f2ff35a3df1011.
+    Adversarial follow-up inspected open PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa, open PR #36045
+    head c619891359d2f4a17bf27b4307b1d2e6d5f4096f and merged PR #36340; none supplies CPU/ROCm/gfx90a evidence.'
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: 'Treat #36010 as a verified SM120 state-interface failure and import its device-resident
+    metadata, fail-closed guard and acceptance-gate patterns; do not treat it as NVFP4 or kernel evidence for CPU/MI210.'
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 1
+    kind: line-range
+    locator: 'PR #36038 body §Modifications, lines 24-30'
+    quote: Route both `TARGET_VERIFY` and `DRAFT_EXTEND_V2` through the decode backend.
+    quote_sha256: 1cc9ebdd0d9e70fd9965e1d409450c4d7ff582bc124f388af3482b7c92aab999
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+    cost_note: Candidate fix is open and unmerged as retrieved; its E2E evidence is author-reported.
+  - claim_index: 1
+    kind: line-range
+    locator: 'PR #36038 body §Modifications, lines 28-30'
+    quote: Reset stale FlashInfer dequant-workspace metadata between forwards and fail with a clear error if speculative
+      execution is incorrectly routed to that workspace.
+    quote_sha256: 2c181737f099a78bf78e68fb17fcace50abb77cb120c3c98bdd91190d1573997
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+    cost_note: Candidate fix is open and unmerged as retrieved.
+  - claim_index: 3
+    kind: line-range
+    locator: issue body §Environment, lines 127-134
+    quote: GPU RTX 5090 (SM120), driver 595.84
+    quote_sha256: 649e830f401c844eb76c0a152d656098e02334d167f00b1cfecd6cf12cc73341
+    source_revision: 'GitHub issue #36010 node I_kwDOLCAjRs8AAAABN1W1qg updated 2026-09-23T03:31:27Z; issue API
+      sha256 c8f914948de1da0f74c7dfda80e8ac6020f0c5b6c157de94f4ea6464a289726d'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: comment 5788493111 line 3
+    quote: 2× RTX 5060 Ti 16 GB (sm_120), TP=2, driver 595.84, torch 2.13.0+cu130, flashinfer 0.6.18.
+    quote_sha256: 461c08ad21ed343bbc8a5791001668edfc9803b0dce3b11eb6e58a7f0c7fd977
+    source_revision: GitHub issue comment 5788493111 created 2026-09-23T03:31:26Z; comments API sha256 503e1db3901f1c796ad10ee48e39c46e065717baa35961f3d3f2ff35a3df1011
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: issue-body.md:92-95
+    quote: '`_prepare_dequant_extend_workspace` needs host-side prefix lengths to pick which pages to dequantize.'
+    quote_sha256: 768d098217af5a0539a93ee3c226d85497d8d5c6333406952acf7dabb58ca474
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: issue-body.md:94-95
+    quote: Those two assumptions collide, so the field is None whenever spec decode meets an NVFP4 KV pool.
+    quote_sha256: 3f698c17c08eedfa066a757dd63cdea23498fbe3fad2e85a154c003c28a10ee1
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: comment-5788493111.md:15
+    quote: 'before the server ever answers health — same call chain as the OP, pinned to the 0.5.20 wheel:'
+    quote_sha256: 912070c036daf6fcad8d04bb376ff5ae514f7e7aaa3179fc6e7733ac2ac82053
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: issue-body.md:103-105
+    quote: Populating the `_cpu` mirrors in the spec verify batch is enough to get it running with CUDA graphs disabled.
+    quote_sha256: 638b716be747fc4a86a40d52a0b07845c853688488a1b2961e92aed468727ea1
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: issue-body.md:107
+    quote: That does not cover the graphs-on case.
+    quote_sha256: d78b3356624ce28a802bb30dcbfb5a0b025a24f759b662fd02b3de2d286e69b0
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: comment-5788493111.md:30
+    quote: '`accept rate: 0.00` / `accept len: 1.00` across every decode batch'
+    quote_sha256: 3bb98619a82c2b7094943d1e490186da84523eae05c29d0674b0ea8231da9c94
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: issue-body.md:24
+    quote: '**Graphs on - dies during decode graph capture, before the server is up:**'
+    quote_sha256: 44a9fa656eaeab21423c55952b466fc27d50b1487d33de49d8db81e51fa779d3
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: issue-body.md:44
+    quote: '**Graphs off - starts cleanly, then dies on the first request.**'
+    quote_sha256: 977ce127afade7eb52b2711caeb0929e767353f36305ef24b94ae31e27ad40fd
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: pr-36045-body.md:10
+    quote: all request indices, sequence lengths, mappings, and output locations remain device-resident during capture/replay.
+    quote_sha256: de6fb7685bdddb6044743af3799d3ab2482f2237a2941aaa45ca77e22ce47f79
+    source_revision: 'SGLang PR #36038 head 76d50837f6506b9febeff2ceb63255d5f395dcaa; API retrieved 2026-09-25;
+      API sha256 7771b7187cb3b8baaad863b96cb3d8a8400fd21c5d6368546e80b796643508e2'
+    verified_by: research-intake/stage2b-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Confirmed on two SM120 configurations including official 0.5.20; narrowed the issue's universal wording
+      to the unpatched SM120 path because SM100 support later merged.
+  - claim_index: 1
+    effect: unaffected
+    note: The issue and two candidate PRs agree that a host-mirror eager workaround is insufficient for graph replay
+      and show the two device-side repair strategies.
+  - claim_index: 2
+    effect: narrowed
+    note: The zero-acceptance result is a separate single-checkpoint side observation with no stated batch count;
+      it supports a fail-fast requirement, not a general MTP defect.
+  - claim_index: 3
+    effect: unaffected
+    note: Issue reproductions are RTX 5090 and 2× RTX 5060 Ti; candidate-fix evidence adds RTX PRO 5000 Blackwell
+      and another RTX 5090. All remain SM120 CUDA.
+  dive_corrections: '2026-09-25 Stage 2b: CONFIRMED the absent-host-metadata call chain, eager-versus-graph distinction
+    and official-0.5.20 reproduction. NARROWED the scope to unpatched SM120 because SM100 support merged and two
+    SM120 fixes remain open. Preserved the silent zero-acceptance observation only as a scoped fail-fast signal.'
+- id: intake-1570
+  arxiv_id: null
+  url: https://github.com/satellitedown/fast-long-context
+  source_type: repo
+  title: fast-long-context — patched SGLang NVFP4-KV and DFlash2 recipe for 262K context on one RTX 5090
+  authors:
+  - satellitedown
+  - Nerv
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - hardware_optimization
+  - gpu_inference
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1564
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - The repository pins a hash-checked four-file patch onto the SGLang 0.5.20 CPython 3.12 wheel, immutable target
+    and draft revisions, and a single-request RTX 5090 profile using NVFP4 target weights/KV, FP8 draft KV, DFlash2
+    block 8, a 262144-token context limit and a 263168-token pool.
+  - 'The patch has two narrow functions: fixed-length causal top-1 speculative verification is routed through native
+    packed-NVFP4 XQA with a causal mask, while prefill gathers and dequantizes arbitrary packed NVFP4 cache slots
+    directly into a caller-owned FP8 workspace through a Triton kernel instead of materializing a large intermediate
+    tensor.'
+  - For one synthetic coding request at a time, the published two-run generation-only means are 302.68 tok/s at
+    8192 prompt tokens, 340.67 at 32768, 292.05 at 122000, 291.85 at 196608 and 239.20 at 260000. The 260000-token
+    cold time to first token is 133.708633 seconds; these rates exclude prefill and do not measure concurrency.
+  - 'Published historical checks report bit-exact finite gather/dequant output through 260003 gathered tokens, native-attention
+    relative RMS error about 0.0022–0.0038 with CUDA graph replay, and two successful six-marker recall runs at
+    260000 tokens. They do not prove general quality equivalence: NVFP4 passed 27/30 matched coding checks while
+    the paired FP8 arm passed 30/30.'
+  - The implementation and measurements are CUDA/NVIDIA-specific and explicitly provide no AMD or CPU support. The
+    portable material is the fused gather/dequant interface, graph-safe fixed geometry, hash-bound deployment recipe
+    and long-context validation matrix; the NVFP4/XQA code itself is not evidence for ROCm or gfx90a.
+  techniques:
+  - native NVFP4 fixed-length causal verification
+  - bit-packed XQA speculative mask
+  - fused packed-NVFP4 gather and FP8 workspace conversion
+  - hash-checked wheel patching
+  - cold/warm exact-token long-context measurement
+  - marker recall and generated-code checks
+  reported_results:
+  - 'SELF-REPORTED, RTX 5090, concurrency 1, generation only, mean of two code runs: 302.68, 340.67, 292.05, 291.85
+    and 239.20 tok/s at prompt lengths 8192, 32768, 122000, 196608 and 260000 respectively.'
+  - 'SELF-REPORTED, 260000-token prompt: cold TTFT 133.708633 s and warm TTFT 0.100108 s; the second run reused
+    258976 cached tokens, so the warm number is not a second cold-prefill result.'
+  - 'SELF-REPORTED quality: six of six placed markers recalled in each of two 260000-token runs; 27/30 matched deterministic
+    coding checks passed for NVFP4 versus 30/30 for FP8.'
+  - 'SELF-REPORTED numerical checks: gather/dequant bit-exact for finite BF16-to-FP8 reference through 260003 tokens;
+    six native-attention cases reported relative RMS error 0.00223–0.00378 and CUDA graph replay pass.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-461
+    - intake-490
+    - intake-1264
+    - intake-1563
+    - intake-1564
+    intake_entry_notes:
+    - intake-461 and intake-490 (SGLang and hybrid-model serving context)
+    - intake-1264 (local DFlash2 implementation context)
+    - intake-1563 and intake-1564 (EXL3 package and runner targets with different weights and throughput workloads)
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: carry the direct-to-caller-owned-workspace interface into HIP and CPU packed-cache
+    kernels, with no large transient prefix tensor and with per-layer traffic measured separately.'
+  - 'Project-derived candidate: reproduce its exact 8K/32K/122K/196608/260K c1 prompt grid on MI210, reporting generation-only
+    rate, cold TTFT, full wall rate, cached-token count and DFlash acceptance; retain the CIRU c1/c8 grid separately
+    for throughput targets.'
+  - 'Project-derived candidate: require changed-length graph/replay, marker recall, generated-code checks, numeric
+    reference error and exact runtime/model/patch hashes in the EXL3 qualification bundle.'
+  - 'Project-derived candidate: add c2/c4/c8 mixed-length and radix-reuse correctness before treating any c1-native
+    attention result as a serving result.'
+  contradicting_evidence:
+  - The README headline says roughly 240–300 tok/s, but its raw two-run mean at 32768 tokens is 340.67 tok/s; the
+    per-depth table and raw rows are the values to preserve.
+  - The repository labels kernel and benchmark records historical and not rerun for publication. Its recipe revisions
+    pin downloadable artifacts, while historical server metadata did not record immutable target/draft revisions.
+  - The paired FP8 arm is faster at 8192 tokens (376.935 versus 302.68 tok/s), and NVFP4 misses three of 30 paired
+    coding checks; NVFP4 is a capacity path, not a uniform speed or quality win.
+  - 'All throughput is concurrency 1. Closed SGLang issue #31641 documents that an earlier SM120 NVFP4 XQA path
+    was correct at batch 1 but corrupted output under batch >1; the current repository supplies no c2/c4/c8 correctness
+    evidence.'
+  notes: 'Read immutable commit b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849, retrieved 2026-09-25. SHA-256: README
+    c49a1b61acbca185b39d69ee764d02fcb60972ea9a09cb954dad4f6bbd912cd3; runtime manifest 937ed0e7ca1174d75841c12eb5b576108cb2afb9a0aade3d40e162fec6401955;
+    summary 96475d216a164a92ab32142b0ab6963b8a67046ae7f44f1c109fbd468c02aca0; NVFP4 raw results 722282b953621da3bb9c980632ccbfd1d90ab95c28492b47e2772abd7c349ff7;
+    kernel checks 4dc9026ce5b2ce7bb2035405e337fb254fc8cff44560e4d5ceeef9a9f9a54c84; patch b43c25d20e81f8caaa94efee1aa45ac5c63496fa0c9038cb7fb8f56b038dbc72.
+    Recomputed every per-depth mean from results/nvfp4.json and results/fp8.json. No CPU, ROCm, gfx90a, concurrency>1
+    or EXL3 result is present.'
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Use this as a reproducible CUDA c1 long-context package and a portable fused-workspace
+    validation pattern; keep its 239.2 tok/s at 260K tied to generation-only c1 and do not attribute it to EXL3
+    or transfer it numerically to MI210.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: runtime-manifest.json:2-12
+    quote: '"description": "Hash-checked patch against the published SGLang 0.5.20 CPython 3.12 Linux x86_64 wheel."'
+    quote_sha256: 990ebada7aac1593d9ae6017d9e699ae77c4a8b549e112249664b39a1f42e506
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: runtime-manifest.json:26-38
+    quote: '"patch_sha256": "b43c25d20e81f8caaa94efee1aa45ac5c63496fa0c9038cb7fb8f56b038dbc72"'
+    quote_sha256: d5c7b1caa08bcf508dc2711754d7ac3529aabba4dc44d129c934b20bf2805c1a
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: scripts/serve.sh:54-64
+    quote: --context-length 262144
+    quote_sha256: 684b71e999d62cd3ea0588367c5f77218a4fbd1dd1bc1cda559dd75f9a3f7e73
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: scripts/serve.sh:92-100
+    quote: --max-running-requests 1
+    quote_sha256: f989b8f4dc121de5280f21a5efda9c329b729f063fbd53990fa83f1a135aefa9
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:56
+    quote: A new Triton kernel, `nvfp4_dequant.py`, gathers and converts directly into the shared FP8 prefill workspace,
+      wired through the cache quantization and memory-pool code.
+    quote_sha256: ccc64795f2de1c461d54b31998e509a648236fbbf7448384ba843c2b44484c02
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: results/summary.json:62-79
+    quote: '"code_decode_tok_s_mean": 302.68'
+    quote_sha256: 06354d9aea4006c5b99107692b30e153ed41724e92cfe92f2763f4c385d1fd32
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: results/summary.json:82-99
+    quote: '"code_decode_tok_s_mean": 340.67'
+    quote_sha256: e0e4608fd9e8d97b53131f02fad95b979643ed5a603cb62b7c50d9fa1c921df9
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: results/summary.json:102-119
+    quote: '"code_decode_tok_s_mean": 292.05'
+    quote_sha256: ef97a27c10937c641da73b7de4372284b8010d16f2d13b6c935bdd8d12d703ae
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: results/summary.json:122-139
+    quote: '"code_decode_tok_s_mean": 291.85'
+    quote_sha256: 76553237d373fc790b65c248a2c093816ecec0cb1e328a07dbe35ab10c686549
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: results/summary.json:142-159
+    quote: '"code_decode_tok_s_mean": 239.2'
+    quote_sha256: 04cdb8ee7b3c8a65bdbca9f5a6644a319626b671048a5501f6c096291d51f12c
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: results/summary.json:142-159
+    quote: '"cold_ttft_s": 133.708633'
+    quote_sha256: 9f2bf3d09cf4311acffb36ff1e7997331f9cddbc53b92c569c2b350098485278
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: results/summary.json:38-58
+    quote: '"decode_rate": "(last streamed completion count - first streamed completion count) / (last token-event
+      time - first token-event time)"'
+    quote_sha256: 4c95c5bb1d056d3f70700f54d7ddd26e586831e9bcc5faa4baecf86a5eea2c60
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: json-pointer
+    locator: results/kernel-check.json:/workspace_gather/4
+    quote: '"gather_tokens": 260003, "reference": "bit-exact finite BF16-to-FP8; NaNs equivalent", "temporary_tensor_bytes":
+      0'
+    quote_sha256: 08fa5bb368eca55a33430201999ea7adb7ddb2ac61cac3ab5305f4f1e8e7fb8a
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+    cost_note: Historical result published without rerunning at repository publication time.
+  - claim_index: 3
+    kind: json-pointer
+    locator: results/kernel-check.json:/native_attention/4
+    quote: '"query_tokens": 8, "relative_rms_error": 0.0032204187009483576, "max_abs_error": 0.006425023078918457,
+      "cuda_graph_replay": "pass"'
+    quote_sha256: f420c8823ca76f060ea91f3119b162d7bd06e070ae5999b4bd54273d7e75ad81
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+    cost_note: Historical result published without rerunning at repository publication time.
+  - claim_index: 3
+    kind: json-pointer
+    locator: results/summary.json:185-192
+    quote: Three of six matched NVFP4 generations missed expired-MRU cleanup; all six FP8 generations passed all
+      five checks.
+    quote_sha256: 63419e89cfb98b10dc1d535bf26ce8a2bc774006a052bd36d5fbe9e0a9b9b75a
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: json-pointer
+    locator: results/summary.json:142-159, both recall rows
+    quote: '"correct": 6, "total": 6, "all_correct": true'
+    quote_sha256: a2f69225aac6b22c7439384deb9748d09d39460e97c69615889770005d7cf734
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+    cost_note: The same short quote appears for multiple depths; locator scopes this anchor to the two 260000-token
+      rows.
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:60-62
+    quote: Other NVIDIA GPUs are untested. **No Apple, AMD, or CPU support.**
+    quote_sha256: f308e26146ac6be81fd76a3a5e12eda04949b6f2d55fd5f382ad80529b114ade
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:53-55
+    quote: The patch adds causal masks and multi-token routing in `trtllm_mha_backend.py`, reusing FlashInfer's
+      native NVFP4 kernel with CUDA graphs.
+    quote_sha256: 2cef10df0209f7be8dd82fb1c4b24813d30d85a95ce3c70577eee16ac91ab628
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:55
+    quote: Support is scoped to fixed-length, causal, top-1 verification.
+    quote_sha256: 5a08f674ce78872e552a51c436f7411d74aa830c405a2b67d07a7441098194b9
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: results/kernel-check.json:3
+    quote: '"measurement_status": "historical; not rerun for publication"'
+    quote_sha256: abafee1ccb72cf7669f731b23edd9e16309a01b8dbaec6766f29191eaa5abcc3
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: results/kernel-check.json:/native_attention/1
+    quote: '"query_tokens": 8, "relative_rms_error": 0.0022275110241025686, "max_abs_error": 0.01207733154296875,
+      "cuda_graph_replay": "pass"'
+    quote_sha256: 2ca9689f13159bc89c0f0c0258621bbbd979ce24ca32ced8416ad9f5785d7e5b
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: results/kernel-check.json:/native_attention/5
+    quote: '"query_tokens": 8, "relative_rms_error": 0.0037795323878526688, "max_abs_error": 0.0011380016803741455,
+      "cuda_graph_replay": "pass"'
+    quote_sha256: 591820227eb5e328f37333c664f96ed14a886f9c61719c701e79e7a4d209b251
+    source_revision: satellitedown/fast-long-context@b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849
+    verified_by: research-intake/stage2b-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The pinned manifest and launcher establish the wheel, patch, model revisions, c1 profile and context envelope.
+  - claim_index: 1
+    effect: unaffected
+    note: README and patch source agree on fixed top-1 native verification and direct gather/dequant into the FP8
+      workspace.
+  - claim_index: 2
+    effect: narrowed
+    note: Recomputed raw means match the table; narrowed the headline to generation-only concurrency 1, exposed
+      the cold TTFT and separated cached warm runs.
+  - claim_index: 3
+    effect: narrowed
+    note: Confirmed numerical and recall checks while retaining the published 27/30 versus 30/30 coding difference
+      and historical-not-rerun status.
+  - claim_index: 4
+    effect: unaffected
+    note: The source explicitly states NVIDIA-only support and provides no CPU/AMD evidence.
+  dive_corrections: '2026-09-25 Stage 2b: CONFIRMED the patch scope, immutable deployment pins, raw c1 long-context
+    rates and numerical/recall checks. NARROWED the throughput claim to generation-only concurrency 1 and the quality
+    claim to a small synthetic suite; preserved the FP8 wins at 8K, three NVFP4 coding misses, historical-not-rerun
+    status and total absence of CPU/ROCm/EXL3 evidence.'
+- id: intake-1571
+  arxiv_id: null
+  url: https://inco.ai/blog/dflash2/
+  source_type: blog
+  title: DFlash 2 — parallel candidate-pair scoring, local convolution and Qwen3.8 acceptance evidence
+  authors:
+  - Inco AI
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - ssm_hybrid
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1566
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - DFlash2 retains 16 candidates per position and scores adjacent candidate pairs in parallel, but selecting the
+    final path still requires a sequential walk over the precomputed scores.
+  - The drafter inserts a dynamic depthwise two-tap convolution before and after each attention and MLP sublayer;
+    the convolution is block-local and stateless.
+  - Across five datasets at default sampling and block size 8, Qwen3.8-27B mean acceptance length is 4.80 for DFlash2,
+    4.28 for native MTP and 3.62 for a community DSpark drafter.
+  - The article says rejection sampling restores the exact target distribution but supplies no GDN or mamba rollback
+    test, so it does not establish rejected-branch state restoration for a recurrent target.
+  - The reported 2.7–3.4× comparison names autoregressive batch-1 decoding as its baseline but gives no absolute
+    tok/s, hardware, engine revision, run count or variance.
+  techniques:
+  - top-16 candidate lattice
+  - low-rank adjacent-token path scoring
+  - dynamic depthwise two-tap convolution
+  - rejection-sampling verification
+  reported_results:
+  - 'SELF-REPORTED five-dataset Qwen3.8-27B mean acceptance length: DFlash2 4.80, MTP 4.28, DSpark 3.62, default
+    sampling, block size 8.'
+  - 'SELF-REPORTED headline: 2.7–3.4× autoregressive batch-1 throughput; absolute rates and hardware are omitted.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    experiments: []
+    intake_entries:
+    - intake-1264
+    - intake-1265
+    - intake-1505
+    - intake-1506
+    - intake-1566
+  recommended_actions:
+  - 'Project-derived candidate: implement candidate-pair scoring and the final path walk as separate measured stages.'
+  - 'Project-derived candidate: require recurrent-state rollback/commit tests before treating exact-distribution
+    language as end-to-end correctness.'
+  contradicting_evidence:
+  - The final path walk is explicitly sequential, narrowing any description of the entire selector as parallel.
+  - The acceptance table covers five datasets, not five model or workload families.
+  - The throughput headline lacks the experimental detail needed for replay or CPU/MI210 transfer.
+  notes: Live HTML captured 2026-09-25 and content-pinned by byte SHA-256; the publisher does not expose an immutable
+    revision.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt the selector and convolution contracts, but measure the sequential walk separately
+    and require explicit recurrent-state rollback tests; treat 4.80 acceptance as CUDA-source context rather than
+    a CPU/MI210 performance claim.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Pair scoring is parallel, while the final path walk is sequential.
+  - claim_index: 1
+    effect: unaffected
+    note: The convolution placement and stateless block-local scope are directly stated.
+  - claim_index: 2
+    effect: narrowed
+    note: The table aggregates five datasets, not five families, and supplies no throughput or AMD evidence.
+  - claim_index: 3
+    effect: narrowed
+    note: Exact-distribution wording does not establish recurrent-state rollback correctness.
+  - claim_index: 4
+    effect: narrowed
+    note: The baseline and batch size are stated, but absolute rates and reproducibility details are absent.
+  dive_corrections: '2026-09-25 Stage 2b: NARROWED selector parallelism to parallel pair scoring plus a sequential
+    final walk; corrected five-family to five-dataset; confirmed the batch-1 AR denominator while preserving the
+    missing absolute-rate and protocol caveats.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: A Lightweight Path Selector, paragraphs 1-2; visible-text lines 151-168
+    quote: 'DFlash 2 keeps the top 16 candidates at each position and scores every adjacent pair: for predecessor
+      a and current candidate b, S_t(a,b)=U_t(b)+⟨A(a)⊙H(h_t),B(b)⟩. The score has two parts. The first, U_t(b),
+      is DFlash''s own logit: how much the drafter already liked b on its own. The second asks how well b follows
+      a: A and B give each token a compact 256-dimensional embedding, and the two embeddings are matched under a
+      context gate H(h_t) that decides which parts of the match count. In essence, this is a low-rank bilinear attention
+      over adjacent candidates. Scoring stays fully parallel. Every adjacent pair at every position is scored in
+      one shot, with no extra backbone or LM-head pass. The only sequential work is the final walk over precomputed
+      scores: starting from the last verified token, greedy follows the best successor at each step, sampling draws
+      from the same scores, and rejection sampling restores the exact target distribution.'
+    quote_sha256: 6145a4cf9e00d17cffb315d538a292e721816fe6db0c4a0a2e1bca1ef6cef27b
+    source_revision: live page sha256:df0adf6c29c620c91d57b7128db69e962176a0fe4b87cf6a288c9b80364b9cf6 fetched 2026-09-25
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: A Lightweight Local Convolution, Figure 4 caption and following paragraph; visible-text lines 479-482
+    quote: Figure 4. The two-tap dynamic convolution. One sits before and after each attention and MLP sublayer
+      of every drafter layer. Inside it, each position mixes its own representation with its predecessor's, and
+      the first position reads the last verified token. The convolution is block-local and stateless, so it drops
+      into DFlash without changing attention, the LM head, or verification.
+    quote_sha256: eb5806c82543070e83bc65971c1d34b416a7bb586892e8f37d7642a97829072d
+    source_revision: live page sha256:df0adf6c29c620c91d57b7128db69e962176a0fe4b87cf6a288c9b80364b9cf6 fetched 2026-09-25
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: Table 4; visible-text lines 628-659
+    quote: Qwen3.8-27B Dataset MTP DSpark DFlash 2 GSM8K 5.02 4.36 5.46 MATH-500 4.72 3.92 5.28 HumanEval 3.91 3.30
+      4.39 MBPP 3.99 3.51 4.79 MT-Bench 3.74 3.01 4.10 Mean 4.28 3.62 4.80 Table 4. Qwen3.8-27B per-request mean
+      acceptance length with the model's default sampling and a block size of 8, against its native MTP path and
+      a community DSpark drafter.
+    quote_sha256: cb70303b18b0b3c315e15bf0e82c45ce9ca6047e6e53c932ee720e4b65254045
+    source_revision: live page sha256:df0adf6c29c620c91d57b7128db69e962176a0fe4b87cf6a288c9b80364b9cf6 fetched 2026-09-25
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: A Lightweight Path Selector, paragraph 2; visible-text lines 163-168
+    quote: sampling draws from the same scores, and rejection sampling restores the exact target distribution.
+    quote_sha256: 126c6107e4ab9c10b92e8c25a2ae936037465260eb6a4a8313a23a92710aba5c
+    source_revision: live page sha256:df0adf6c29c620c91d57b7128db69e962176a0fe4b87cf6a288c9b80364b9cf6 fetched 2026-09-25
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: Introduction; visible-text lines 39-40
+    quote: Qwen3.8-27B drafter released today, SGLang serves at 2.7–3.4× the throughput of autoregressive decoding
+      at batch size 1.
+    quote_sha256: 158e2b400fd7ed0ca8451e7c9822aa10921d40035077bbb45d6913d72597b42a
+    source_revision: live page sha256:df0adf6c29c620c91d57b7128db69e962176a0fe4b87cf6a288c9b80364b9cf6 fetched 2026-09-25
+    verified_by: research-intake/stage2b-second-reader
+- id: intake-1572
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/issues/39087
+  source_type: repo
+  title: 'SGLang #39087 — quantized DFlash2 drafts can load silently with bonus-token-only acceptance'
+  authors:
+  - noonghunna
+  - greatyingzi
+  - huihanglai
+  categories:
+  - speculative_decoding
+  - quantization
+  - inference_serving
+  - benchmark_methodology
+  - gpu_inference
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1564
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - On stock SGLang 0.5.19 with 2× RTX 3090, a compressed-tensors W4A16 DFlash2 draft loaded into the expected class
+    and served but produced accept length 1.03 and rate 0.004 across 422 decode-log batches at about 38 tok/s; the
+    BF16 form reported 3.71, 0.61 and about 171 tok/s across 100 batches.
+  - A second 2× RTX 3090 reproduction with a different W4A16 target found quantized-draft median acceptance 1.05
+    on code and 1.00 on narrative, versus BF16 5.25 and 1.70. The quantized draft ran at 42.6/41.3 tok/s, below
+    the 61 tok/s no-speculation baseline; acceptance is workload-dependent even for the working BF16 draft.
+  - The broken configuration passed completion, tool, streaming, reasoning, coherence and vision smoke checks because
+    rejected drafts leave the target path producing plausible output. Engine acceptance counters were the only observed
+    failure signal, so functional API checks alone cannot qualify a speculative stack.
+  - 'The issue''s untested CandidateSelector-corruption hypothesis was reattributed by later open repair PRs: pack-quantized
+    fc tensors were silently skipped because fc was built as a plain Linear, and broader module-prefix/ignore-list
+    mismatches could also drop projection tensors. The proposed repair makes layers quantization-aware and refuses
+    checkpoint tensors that a present module cannot consume.'
+  - The reported performance and end-to-end fixes are NVIDIA-only. CPU tests in the open repair cover loader structure,
+    which makes the loader-completeness invariant portable to CPU/ROCm, but no CPU, HIP, MI210 or gfx90a throughput
+    result is supplied; accept length includes the bonus token and must be interpreted accordingly.
+  techniques:
+  - quantized-draft acceptance canary
+  - checkpoint-to-runtime tensor-consumption audit
+  - quantization-aware DFlash fc projection
+  - fail-closed unresolved-tensor loader
+  - content-stratified speculative acceptance
+  reported_results:
+  - 'SELF-REPORTED, stock 0.5.19, 2× RTX 3090: W4A16 draft accept length 1.03 over n=422 decode batches, accept
+    rate 0.004 and ~38 tok/s; BF16 draft 3.71 over n=100, 0.61 and ~171 tok/s.'
+  - 'INDEPENDENT ISSUE COMMENT, identical prompts and 1200 generated tokens per case: W4A16 code/narrative median
+    accept 1.05/1.00 and 42.6/41.3 tok/s; BF16 5.25/1.70 and 187.1/93.9; no-spec baseline 61 tok/s.'
+  - 'OPEN PR #39254 follow-up: after loading packed fc correctly, one five-prompt aggregate measured accept length
+    1.85 and accept rate 12.1% versus 1.10/1.4% unpatched; the author warns these are not a controlled throughput
+    benchmark.'
+  - 'OPEN PR #40884, one RTX 6000 Ada, 200 GSM8K requests: W8A16 repair reported score 0.970 and mean accept length
+    6.031 versus BF16 0.970/6.035; the PR remained open with failing CI summary at retrieval.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    experiments: []
+    intake_entries:
+    - intake-1264
+    - intake-1265
+    - intake-1506
+    - intake-1564
+    - intake-1566
+    intake_entry_notes:
+    - intake-1264 and intake-1265 (local implementation and first-party drafter)
+    - intake-1506 and intake-1566 (quantized DFlash2 artifacts)
+    - intake-1564 (package-level SGLang integration)
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: make every on-disk draft tensor resolve to an expected runtime parameter or an explicit
+    allowlisted ignore; reject random or uninitialized packed projections before server startup.'
+  - 'Project-derived candidate: add a short calibrated startup canary that fails when acceptance remains near bonus-token-only
+    across both structured/code and narrative prompts; record accept length, rate, proposed/accepted counts and
+    no-draft throughput.'
+  - 'Project-derived candidate: run EXL3 target and draft loader-completeness tests on CPU before HIP execution,
+    including fused-module names, ignored shards, fc and output-head exceptions and tensor-count reconciliation.'
+  - 'Project-derived candidate: keep acceptance gates content-stratified and baseline-relative because valid acceptance
+    differs sharply between code and narrative prompts.'
+  contradicting_evidence:
+  - 'The issue''s leading CandidateSelector hypothesis is contradicted by bit-identical excluded selector tensors
+    and reattributed by PR #39254 to silently skipped packed fc tensors; PR #40884 identifies an additional module-name/ignore
+    mismatch class.'
+  - The issue says tensor names are identical and rules out tensor naming, but later evidence shows the relevant
+    defect is runtime module-name and parameter-shape resolution, not file-key inequality.
+  - 'The source''s statement that speculative rejection preserves correctness by construction is too broad for this
+    project: its smoke suite observed plausible output, while our local speculative verification has documented
+    numerical non-parity. The verified conclusion is only that smoke tests missed this draft failure.'
+  - Both repair PRs were open and their displayed CI summaries were failing at retrieval; their positive GPU runs
+    are useful evidence, not released support.
+  notes: 'Read GitHub issue API through updated_at 2026-09-12T21:35:10Z, retrieved 2026-09-25. Issue JSON sha256
+    686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402; comments JSON sha256 ddc0ee7c340f5bca179af6f781fdb20414b9217314e0af06cd32cf9b152e8cb0.
+    Adversarial follow-up read open PR #39254 head 96a8ee2e86c28a82a55121a7c56cc18092a08448 and open PR #40884 head
+    3b7b681d6ef253f75a22290aa07d03297fcf5d67. Exact URL dedup found no existing entry.'
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Treat a quantized draft that boots with accept length near 1 as broken until proven otherwise;
+    enforce complete tensor consumption and content-stratified acceptance/throughput canaries before CPU or MI210
+    qualification.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: issue body §Result, lines 39-46
+    quote: '| syvai (compressed-tensors) | **1.03** (n=422) | **0.004** | ~38 tok/s |'
+    quote_sha256: f08461415f8c6aa66065b089cc1f66a6dcdc50926806fab45637e16132fc9aa0
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: issue body §Result, lines 39-46
+    quote: '| z-lab (BF16, `unquant`) | **3.71** (n=100) | 0.61 | ~171 tok/s |'
+    quote_sha256: b3aac22ed6297cce8b1ff99508c87b75fdade2c03ec076fcdb8d45182b748f5e
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: comment 5643355560 lines 10-17
+    quote: '| W4A16 | 1.05 | 42.6 | 1.00 | 41.3 |'
+    quote_sha256: 8460bf81e2cc6bf1ba1c12a5ca45b8adc45ad36ec71f0450a08ddeb6d6a4b679
+    source_revision: GitHub issue comment 5643355560 created 2026-09-12T04:06:54Z; comments API sha256 ddc0ee7c340f5bca179af6f781fdb20414b9217314e0af06cd32cf9b152e8cb0
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: issue body §Why this is easy to miss, lines 50-57
+    quote: Our functional test suite reported **"All checks passed"** on the broken configuration (completion, tool
+      calls, streaming, reasoning split, a 2K-token coherence check, vision).
+    quote_sha256: c9b7cf0f1abdcdd08b74abce1db6a1b8dad25cf924a1e7933f1b36001a778943
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: issue body line 57
+    quote: The only signal is the engine's own `accept len:` / `accept rate:` counters in the decode-batch log.
+    quote_sha256: b76050a110eba71ea4d9fb43ab015e9a99bc2c306868f3b34e55c80533f93146
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: 'PR #39254 body lines 11-15'
+    quote: As a result, the packed `fc` checkpoint tensors could not be resolved by `load_weights()` and were silently
+      skipped. The `fc` layer therefore remained randomly initialized.
+    quote_sha256: 8b8d64a87db9468edc5f12dbd373ba00d9c4d1e353fc45bb5839b92708dbdeae
+    source_revision: 'SGLang PR #39254 head 96a8ee2e86c28a82a55121a7c56cc18092a08448; API updated 2026-09-19T07:19:08Z;
+      API sha256 dde9b7292f8edf99cd43bdb07b998c9380be771c3e31716863e6eca94a1e7c34'
+    verified_by: research-intake/stage2b-second-reader
+    cost_note: Open, unmerged candidate fix; end-to-end validation is author/commenter reported.
+  - claim_index: 3
+    kind: line-range
+    locator: 'PR #40884 body lines 11-15'
+    quote: '`load_weights` refuses a checkpoint tensor whose module the draft has, under a parameter name that module
+      does not have'
+    quote_sha256: ee7ef795cc2681e3203fb7976ecf0da016c715c4ac4d7618dd0130999b27c916
+    source_revision: 'SGLang PR #40884 head 3b7b681d6ef253f75a22290aa07d03297fcf5d67; API updated 2026-09-23T08:39:32Z;
+      API sha256 f9d9ccd3c44cc3753daf1386fe449ce2d407ca5165cea9ccbd149fbf57a257c2'
+    verified_by: research-intake/stage2b-second-reader
+    cost_note: Open, unmerged broader repair.
+  - claim_index: 4
+    kind: line-range
+    locator: 'PR #40884 body lines 65-73'
+    quote: Accept length is the mean of the scheduler's `accept len` over every decode-log window of the run, bonus
+      token included.
+    quote_sha256: eda7d417c48098d387414d0a27c38a8565fa64037d75b3e177b7122059850d52
+    source_revision: 'SGLang PR #40884 head 3b7b681d6ef253f75a22290aa07d03297fcf5d67; API updated 2026-09-23T08:39:32Z;
+      API sha256 f9d9ccd3c44cc3753daf1386fe449ce2d407ca5165cea9ccbd149fbf57a257c2'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: issue body §Environment, lines 89-90
+    quote: 2× RTX 3090 (sm_86), PCIe, no NVLink, TP=2, `--disable-custom-all-reduce`
+    quote_sha256: f4735d25d0b6b29437c0b755ff09638c1c154babcee3301479e55c17eae91e2c
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: comment-5643355560.md:17
+    quote: W4A16 accept stayed at exactly 1.00 across 155 decode batches — the drafter contributes nothing
+    quote_sha256: aee20b9efeb9aa2d8bbcbfaf22d1336ea2765a41dc4a11b8aa0dd786d22e8c43
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: comment-5643355560.md:17
+    quote: decode is *slower* than with no speculation at all (61 tok/s baseline on this box).
+    quote_sha256: 36d7505292a893a5b0b95ecd1ce95cf7652ee7aa77650c2608aea5e3977e5daa
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: issue-body.md:71-72
+    quote: The `CandidateSelector` codebooks / `hidden_projection` are loaded through the compressed-tensors path
+      and end up wrong
+    quote_sha256: a512f74efbd0d51ee1512bba3d792e1e7f1e7bdc1f3381b44ec018744147042a
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: pr-39254-comments.json:comment created 2026-09-19T01:39:00Z
+    quote: '| this PR applied | 227.7 | 256.9 | 214.3 | 58.0 | 65.5 | 115.3 t/s | 1.85 | 12.1% |'
+    quote_sha256: 68cb9119fda7c8754c16cf6e8b621cdc3f62220c1ec8567ac693bafd89dcfc8a
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: pr-40884-body.md:69
+    quote: '| `z-lab/Qwen3.8-27B-DFlash2` (BF16) | this PR | serves | 0.970 | 6.035 |'
+    quote_sha256: 9fadb3cbe35246233b59482fa3302af3e62669922c4a9f3332e12b994f6e9052
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: pr-40884-body.md:71
+    quote: '| W8A16 from the recipe | this PR | serves, fused KV materialization back on | 0.970 | 6.031 |'
+    quote_sha256: 681822130f9dacf95bc02f8b8a39c7e03f37ef42d022d4a18e93dcd483d6d50c
+    source_revision: 'GitHub issue #39087 node I_kwDOLCAjRs8AAAABQ0sFzw updated 2026-09-12T21:35:10Z; issue API
+      sha256 686c3bac98125a0b15429bcedd5fa98f647a7e40edad3784b77b59064703e402'
+    verified_by: research-intake/stage2b-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The original raw acceptance and throughput figures are internally consistent and independently reproduced.
+  - claim_index: 1
+    effect: unaffected
+    note: A different target and prompt split reproduces bonus-token-only acceptance and shows workload dependence.
+  - claim_index: 2
+    effect: narrowed
+    note: Confirmed that the listed smoke tests passed, but did not retain the source's universal correctness-by-construction
+      wording.
+  - claim_index: 3
+    effect: reattributed
+    note: Later PR evidence replaces the untested selector hypothesis with skipped packed fc tensors and a broader
+      name/ignore resolution defect.
+  - claim_index: 4
+    effect: unaffected
+    note: GPU evidence is CUDA-only; CPU coverage is structural loader testing, not performance or ROCm validation.
+  dive_corrections: '2026-09-25 Stage 2b: CONFIRMED two independent silent acceptance collapses and the inadequacy
+    of API smoke tests. REATTRIBUTED the issue''s untested selector hypothesis to silently skipped packed fc tensors
+    and broader runtime-name/ignore resolution defects from open PRs #39254/#40884. NARROWED correctness and portability
+    claims; no CPU/ROCm performance is shown.'
+- id: intake-1573
+  arxiv_id: null
+  url: https://github.com/xenodeve/Qwen-3.8-27B-Tuning/blob/main/docs/reports/29-DFLASH2-AND-THE-PROMPT-THAT-FLATTERED-NGRAM.md
+  source_type: repo
+  title: DFlash2 and the prompt that flattered ngram — content-sensitive speculative benchmark
+  authors:
+  - xenodeve
+  categories:
+  - speculative_decoding
+  - benchmark_methodology
+  - inference_serving
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1563
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - The test uses llama.cpp build 10499 at PR commit 1deefcca3, a UD-IQ2_XXS Dynamic V3 target, 16384-token context,
+    q4_0 K/V cache and target-only 65+0 residency.
+  - The harness runs four decoder arms for three rounds with three timed generations per arm after one discarded
+    full-length warm turn; the 24 raw rows cover two prompt regimes.
+  - DFlash2 reports 69.5/69.1/69.8 tok/s and +34.7% versus ngram-mod on real code; its synthetic 108.6/108.4/108.6
+    tok/s result is −9.2%, inside the report's 13.6% drift floor.
+  - Reported DFlash2 acceptance is 91.6% on a 66.2%-duplicate synthetic prompt and 46.2% on a 4.7%-duplicate real-code
+    prompt.
+  - Output identity was expected but not tested. The evidence is NVIDIA/CUDA/Windows-specific; ROCm is untested
+    rather than shown non-portable.
+  techniques:
+  - paired prompt-regime benchmark
+  - round medians
+  - warm-turn discard
+  - ngram and DFlash2 arms
+  reported_results:
+  - 'SELF-REPORTED real code: DFlash2 69.5/69.1/69.8 tok/s, +34.7% versus ngram-mod, acceptance 46.2%.'
+  - 'SELF-REPORTED synthetic prompt: 108.6/108.4/108.6 tok/s, −9.2% within a 13.6% drift floor, acceptance 91.6%.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    experiments: []
+    intake_entries:
+    - intake-1264
+    - intake-1265
+    - intake-1563
+    - intake-1564
+    - intake-1566
+  recommended_actions:
+  - 'Project-derived candidate: include low- and high-duplication prompts and preserve per-content acceptance and
+    throughput.'
+  - 'Project-derived candidate: run output-identity checks and report deltas only when they exceed a measured floor.'
+  contradicting_evidence:
+  - The synthetic −9.2% result is below the report's own 13.6% floor and is not evidence of regression.
+  - The output-identity script was written but not run.
+  - No CPU, ROCm or AMD execution is reported.
+  notes: Pinned report SHA-256 f7f74b6a; driver SHA-256 66bfdf15; raw JSONL SHA-256 c5bf6df6.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt the content-stratified benchmark and noise-floor rule; the source proves acceptance
+    and throughput are prompt-sensitive, while output identity and ROCm transfer remain untested.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Pinned setup is directly recorded.
+  - claim_index: 1
+    effect: unaffected
+    note: Driver and raw rows mechanically confirm four arms, three rounds and three timed generations.
+  - claim_index: 2
+    effect: unaffected
+    note: Reported round medians and paired deltas reproduce; −9.2% remains inside the stated floor.
+  - claim_index: 3
+    effect: unaffected
+    note: Acceptance values are direct but lack accepted-token denominators.
+  - claim_index: 4
+    effect: narrowed
+    note: Output identity was not run; absence of ROCm evidence establishes an evidence gap only.
+  dive_corrections: '2026-09-25 Stage 2b: CONFIRMED the four-arm, three-round, three-generation protocol and raw
+    rows; preserved the report''s verdict that synthetic −9.2% is inside its 13.6% floor; NARROWED correctness and
+    portability because identity and ROCm were not tested.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: docs/reports/29-DFLASH2-AND-THE-PROMPT-THAT-FLATTERED-NGRAM.md:3-5
+    quote: '2026-08-22. Build 10499, compiled from llama.cpp PR #27342 (commit `1deefcca3`). Artifact `UD-IQ2_XXS`
+      (Dynamic V3), `ctx 16,384`, `-ctk/-ctv q4_0`, all arms `65+0` resident in every round.'
+    quote_sha256: 53f3face3fae42fb38aa8f703de09dd94a038b460d449c5fec937925cf8a7bbb
+    source_revision: xenodeve/Qwen-3.8-27B-Tuning@cfe1930a3272767c65e0e0bcaf23c23b53f5db18
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: qwen38-tuning/bench/dflash2_arena.py:109,143-150,2299-2315,2457; raw rows 1-24
+    quote: 'N_GEN = 3 # timed generations per arm per round, after a warm turn ARMS = [ ("none", []), ("ngram-mod",
+      SERVED_NGRAM), ("dflash2", ["--spec-type", "draft-dflash"] + DFLASH), ("dflash2+ngram", ["--spec-type", "draft-dflash,ngram-mod"]
+      + DFLASH + NGRAM), ] ap.add_argument("--rounds", type=int, default=3)'
+    quote_sha256: b4ec1e298866585e161fc28b38ed04d753992be3234f181f11c1e37684dd1aed
+    source_revision: xenodeve/Qwen-3.8-27B-Tuning@cfe1930a3272767c65e0e0bcaf23c23b53f5db18
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: report lines 18-34
+    quote: '`draft-dflash` | 69.5, 69.1, 69.8 | **+34.7 % [+31.1, +41.6]** | **RESOLVED** `draft-dflash` | 108.6,
+      108.4, 108.6 | −9.2 % [−9.3, −9.0] | within the floor'
+    quote_sha256: 1468162f68dfbf107ebd10c1f4c60aaf2b0e77eb1e3d9990af28ff17f4f575d3
+    source_revision: xenodeve/Qwen-3.8-27B-Tuning@cfe1930a3272767c65e0e0bcaf23c23b53f5db18
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: report lines 62-72
+    quote: '| `draft-dflash` | **91.6 %** | 46.2 % |'
+    quote_sha256: aa6c6ce48897c5493a0fa8f221960bbd275c5b549f020c939d688720c68bcead
+    source_revision: xenodeve/Qwen-3.8-27B-Tuning@cfe1930a3272767c65e0e0bcaf23c23b53f5db18
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: report lines 127-130
+    quote: That output is unchanged. Speculative decoding in llama.cpp is verification-based and should be byte-identical
+      to no speculation; `bench/spec_output_identity.py` was written to check it and **has not been run**.
+    quote_sha256: e555053111d9466d7ae6cb696cfe69332f49038c94a31a86099056c48b64c025
+    source_revision: xenodeve/Qwen-3.8-27B-Tuning@cfe1930a3272767c65e0e0bcaf23c23b53f5db18
+    verified_by: research-intake/stage2b-second-reader
+- id: intake-1574
+  arxiv_id: null
+  url: https://github.com/it-dainb/dgx-spark-qwen38/blob/main/docs/BENCHMARKS.md
+  source_type: repo
+  title: DGX Spark Qwen3.8 serving benchmarks — content sensitivity, concurrency and rollback correction
+  authors:
+  - it-dainb
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - benchmark_methodology
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1563
+  verdict: adopt_patterns
+  credibility_score: 1
+  key_claims:
+  - The source measures one ASUS Ascent GX10 with GB10 and 128 GB unified memory under stock DGX OS; speeds are
+    batch-1 decode except separately labeled concurrency cells.
+  - In the reported DSpark/MTP comparison, DSpark acceptance spans 2.80–5.42 on repository probes but falls to 1.25–1.52
+    on German prose, while MTP stays at 4.35–4.77.
+  - The repository narratively reports 135–148 aggregate tok/s at concurrency 8 and 258 tok/s at concurrency 32,
+    but the pinned tree has no committed raw exact-cell rows.
+  - A correction marks an earlier losslessness study suspect because GDN rollback never ran. A seed-depth diagnostic
+    reports 0% CLEAN/66% BROKEN with rollback disabled and 100% CLEAN enabled at n=60 per arm, but does not prove
+    rollback caused the earlier quality deficit.
+  - A repeated llama.cpp text prompt measured 203 tok/s versus 25 tok/s cold; SGLang+DSpark repeats stayed within
+    ±0.2 tok/s, motivating fresh prompts for speculative benchmarks.
+  techniques:
+  - content-stratified acceptance
+  - concurrency scaling
+  - GDN rollback diagnostic
+  - fresh-prompt control
+  reported_results:
+  - 'SELF-REPORTED narrative cells: DFlash2 135–148 aggregate tok/s at c8 and 258 tok/s at c32; no raw exact-cell
+    rows committed.'
+  - 'SELF-REPORTED rollback diagnostic: 0% CLEAN/66% BROKEN disabled and 100% CLEAN enabled, n=60 per arm.'
+  - 'SELF-REPORTED prompt reuse artifact: 203 tok/s repeated versus 25 tok/s cold in llama.cpp.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    experiments: []
+    intake_entries:
+    - intake-1264
+    - intake-1265
+    - intake-1563
+    - intake-1564
+    - intake-1566
+    - intake-1573
+  recommended_actions:
+  - 'Project-derived candidate: require raw rows for c8/c32 throughput claims and bind each to prompt mix, token
+    totals and runtime identity.'
+  - 'Project-derived candidate: use fresh prompts and explicit GDN rollback/commit canaries in speculative validation.'
+  contradicting_evidence:
+  - The exact c8/c32 rates occur only in narrative documentation and derivative changelog text.
+  - The rollback correction invalidates the old inference but does not identify rollback as the cause of the earlier
+    two-point deficit.
+  - The 203 tok/s repeated-prompt result is an artifact, not cold attainable throughput.
+  notes: Pinned BENCHMARKS.md SHA-256 078b3ce0. An exhaustive tree audit found no raw exact-cell c8/c32 throughput
+    rows; data/benchmarks.sqlite contains tool-evaluation tables instead.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt fresh-prompt, rollback and content-stratified controls; retain 135–148 c8 and 258
+    c32 only as narrative self-reports until raw rows permit recomputation.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Hardware and batch-1 scope are directly stated; concurrency cells are separately scoped.
+  - claim_index: 1
+    effect: unaffected
+    note: Content-sensitive DSpark/MTP acceptance ranges are directly reported.
+  - claim_index: 2
+    effect: unaffected
+    note: Exact rates are present in narrative docs, but no raw exact-cell evidence is committed.
+  - claim_index: 3
+    effect: narrowed
+    note: The correction makes the old study suspect; it does not prove rollback caused the earlier deficit.
+  - claim_index: 4
+    effect: unaffected
+    note: Repeated-versus-cold behavior and DSpark control are directly reported.
+  dive_corrections: '2026-09-25 Stage 2b: CONFIRMED the narrative c8/c32 cells and absence of committed raw exact-cell
+    rows; NARROWED the rollback correction so it invalidates the prior inference without assigning causality; confirmed
+    prompt reuse can inflate llama.cpp speculative throughput by about 8×.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: docs/BENCHMARKS.md:3
+    quote: Everything here was measured on one ASUS Ascent GX10 (GB10, 128 GB unified, stock DGX OS) on 2026-08-14/15
+      (v1.0-v1.1 sections) and 2026-08-19/20 (v1.2, the boot-lottery campaign), plus independent reproductions by
+      other GB10 owners. Speeds are **batch-1 decode**
+    quote_sha256: 270acd02b3b266e79998a625ca4a52ad3933fabd41d33e068ca65b411b843736
+    source_revision: it-dainb/dgx-spark-qwen38@ced143330b327d853b6e0856f75af5ab67c71425
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: docs/BENCHMARKS.md:52
+    quote: 'The acceptance numbers explain the flip. vLLM''s MTP head is conditioned on the target''s hidden states
+      at every step, so acceptance stays stable (4.35-4.77) on everything they threw at it. The DSpark drafter is
+      a separate 1.36B model that writes whole 7-token blocks from its own distribution: 2.80-5.42 accepted on this
+      repo''s probes, but **1.25-1.52 on German prose**: the block dies at verify, and the plain MTP head wins.'
+    quote_sha256: bc6c3586c76d09c855f0e5ee004d9907af2a68991ba71905da5c319edaac4a14
+    source_revision: it-dainb/dgx-spark-qwen38@ced143330b327d853b6e0856f75af5ab67c71425
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: docs/BENCHMARKS.md:184-190
+    quote: 'With the same deterministic stack, the z-lab DFlash2 drafter (merged into SGLang main 2026-08-19) measured
+      on this box, thinking on, quality canaries passing: **wins every single-stream cell of the battery** (prose
+      FR 20.2 vs 14.0 stock, reasoning FR 43.5 vs 30.5, code DE 39.4 vs 25.4, math at parity) and lifts aggregate
+      throughput to **135-148 tok/s at c8 and 258 tok/s at c32** (max-running-requests 32), still climbing at c32.'
+    quote_sha256: 19740ee871e90244931de22aa5cd8708a3451a7404227eb973dbea1b8aeb9a44
+    source_revision: it-dainb/dgx-spark-qwen38@ced143330b327d853b6e0856f75af5ab67c71425
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: docs/BENCHMARKS.md:193-213
+    quote: 'Measured with rollback disabled: 0% CLEAN / 66% BROKEN (`bench-seed-depth.py`, n=60/arm); with it enabled
+      (the shipped, verified state, see CLAUDE.md and commit 8b741cc): 100% CLEAN.'
+    quote_sha256: 742c4bafcad38153afed8fb518f58bcd694658fb98ef367517f0e93d7fb2d47a
+    source_revision: it-dainb/dgx-spark-qwen38@ced143330b327d853b6e0856f75af5ab67c71425
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: docs/BENCHMARKS.md:252-254
+    quote: 'Repeated text prompts on llama.cpp with a separate `-hfd` draft model replay at chunked-verify speed:
+      203 tok/s measured on a prompt whose true cold rate was 25. SGLang+DSpark did not show this effect (repeats
+      reproduce within ±0.2 tok/s), but fresh prompts are the only safe protocol for any speculative bench.'
+    quote_sha256: 1a18f47b203f74af72872f030def57fe4fcaf6dddc21986e3760f96c95c6300b
+    source_revision: it-dainb/dgx-spark-qwen38@ced143330b327d853b6e0856f75af5ab67c71425
+    verified_by: research-intake/stage2b-second-reader
+- id: intake-1575
+  arxiv_id: null
+  url: https://github.com/r0b0tlab/buun-llama-qwen3.8-27b-exl3-4.00bpw
+  source_type: repo
+  title: Qwen3.8-27B EXL3 on buun-llama.cpp — reproducible RTX 3090 package and CPU EXL3 donor
+  authors:
+  - r0b0tlab
+  - spiritbuun
+  categories:
+  - quantization
+  - inference_serving
+  - speculative_decoding
+  - hardware_optimization
+  - local_inference
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1563
+  verdict: adopt_component
+  credibility_score: 2
+  key_claims:
+  - The package pins engine 1d0f493c73817176f6953069b7c10211de9555a1, final image sha256:8d6d67a5..., recipe hash,
+    low reasoning, one active slot and an RTX 3090 CUDA build, enabling exact complete-package replay.
+  - 'Its final-image results are complete-package rates: GSM8K n=40 mean per-request E2E 149.19 tok/s and AL 5.917;
+    mixed n=6 aggregate 107.95 tok/s; 150000+200 prefill/decode 525.30/27.84 tok/s; Q200 n=180 aggregate 124.705
+    tok/s.'
+  - A 160-request controlled same-process study shows prompt serialization and reasoning materially change acceptance
+    and throughput; the historical 162.93 native result remains an unmatched cross-engine comparator and cannot
+    prove a kernel ceiling.
+  - The exact engine pin contains a dense and grouped CPU EXL3 executor for K1–K8 and cb0/MCG/mul1, with scalar
+    fallback and compile-time AVX2/FMA path, making it the strongest direct CPU donor and correctness oracle in
+    this intake.
+  - At the exact engine pin no full EXL3 executor exists under ggml-hip; HIP wave64 explicitly declines the wave32
+    GPU path, while the only HIP-specific EXL3 exercise found is a byte-dot helper test, so MI210 still requires
+    native gfx90a kernels.
+  techniques:
+  - native safetensors EXL3 loader
+  - dense and grouped CPU EXL3 MUL_MAT
+  - scalar and AVX2 trellis dot products
+  - one-slot DFlash2 block8 adaptive serving
+  - VBR t8/t3
+  - fused draft convolution
+  reported_results:
+  - 'SELF-REPORTED final image, RTX 3090: GSM8K n=40 mean per-request E2E 149.188637 tok/s and AL 5.917031; one
+    512-token cap.'
+  - 'SELF-REPORTED mixed n=6: aggregate 107.948877 tok/s, mean 115.912896, median TTFT 0.174917 s, median engine
+    decode 137.683827.'
+  - 'SELF-REPORTED long context: 150000-token prefill 525.295853 tok/s; 200-token decode 27.836688 tok/s; AL 1.575;
+    292.7 s wall; no truncation.'
+  - 'SELF-REPORTED Q200 n=180: mean 138.699991, median 144.779690 and aggregate 124.705033 tok/s over 111149 completion
+    tokens and 891.295225 summed request seconds.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    - agentic-rocm-kernel-authoring.md
+    - qwen38-27b-replace-qwen36.md
+    experiments: []
+    intake_entries:
+    - intake-194
+    - intake-872
+    - intake-1264
+    - intake-1506
+    - intake-1563
+    - intake-1564
+    - intake-1565
+    - intake-1566
+    - intake-1567
+    - intake-1568
+  recommended_actions:
+  - 'Project-derived candidate: extract the engine CPU EXL3 implementation and tests as the initial ggml-format
+    oracle/donor, then add runtime AVX2/AVX512 dispatch and benchmark dense Qwen3.8 shapes on EPYC.'
+  - 'Project-derived candidate: implement a native wave64 gfx90a EXL3 GEMV/GEMM backend and retain the engine CPU
+    executor as the cross-backend oracle.'
+  - 'Project-derived candidate: reproduce package throughput with fixed prompts, equal reasoning/template settings
+    and explicit one-slot versus real batching labels.'
+  contradicting_evidence:
+  - The repository itself demonstrates that the prior ExLlamaV3-versus-buun acceptance comparison mixed prompt serialization
+    and reasoning settings.
+  - Queued n=1/2/4 results use one active slot and therefore are queue throughput, not multi-slot batching evidence.
+  - The engine design document still says CPU is unsupported, but later commit 7384bcdf and live ggml-cpu code supersede
+    that stale prose.
+  - No full EXL3 implementation was found under ggml/src/ggml-hip at engine head 1d0f493; generic tests skip unsupported
+    backends.
+  notes: Benchmark repo read at 813766ddaeba18f47f61926d20d9784b9b977132; exact companion engine read at 1d0f493c73817176f6953069b7c10211de9555a1
+    on 2026-09-25. spiritbuun/buun-llama-cpp is already intake-194, so this re-encounter must update that record
+    rather than mint another entry.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt the exact engine CPU executor as the immediate K1-K8/all-codebook dense+grouped
+    donor and oracle; treat the published RTX 3090 numbers as one-slot complete-package targets, and build native
+    wave64 gfx90a kernels for MI210.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Pinned provenance, final image, engine, recipe and one-slot configuration are directly recorded.
+  - claim_index: 1
+    effect: reattributed
+    note: All throughput values are complete-package measurements; queued clients are one-slot queueing and not
+      true batching.
+  - claim_index: 2
+    effect: narrowed
+    note: Controlled same-process data confirms a large prompt effect, but does not produce a fresh fully matched
+      cross-engine rate.
+  - claim_index: 3
+    effect: unaffected
+    note: The exact engine directly implements dense and grouped CPU EXL3 for K1-K8 and all three codebooks; stale
+      design prose predates the CPU commit.
+  - claim_index: 4
+    effect: unaffected
+    note: Tree-wide scan finds no ggml-hip EXL3 executor; source explicitly says HIP wave64 declines the wave32
+      path.
+  depends_on: []
+  dive_corrections: '2026-09-25 Stage 2b: CONFIRMED reproducible package identity and exact denominators; REATTRIBUTED
+    all speeds to the complete one-slot CUDA package; CONFIRMED prompt serialization as a material confounder; discovered
+    and verified the exact engine CPU K1-K8/all-codebook dense+grouped executor; confirmed no full gfx90a EXL3 backend
+    at the pinned head.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: metrics/optimized/provenance.json:2-21
+    quote: "\"schema\": \"buun.production-suite.v1\",\n  \"run_id\": \"q200v2-buun-optimized-final-20260919\",\n\
+      \  \"status\": \"COMPLETED_WITH_Q200_FAILURE\",\n  \"serve_image\": \"sha256:8d6d67a5b1ac856882731d5638b1291f5b81f89f75ac8e664df39cd7991b5652\"\
+      ,\n  \"engine_sha\": \"1d0f493c73817176f6953069b7c10211de9555a1\",\n  \"recipe\": \"recipes/dflash2-optimized.env\"\
+      ,\n  \"recipe_sha256\": \"bc2e27fdaba716aabb5ede98043b143dab8298b272f57fc719497f0b5776fe81\",\n  \"reasoning_effort\"\
+      : \"low\",\n  \"host_recipe_mount\": false,\n  \"checks\": {\n    \"unit_tests\": \"5 passed\",\n    \"mixed_throughput\"\
+      : \"completed\",\n    \"gsm8k_throughput\": \"40 requests completed\",\n    \"queued_clients\": \"1/2/4 client\
+      \ batches completed on one active slot\",\n    \"long_context\": \"150000 prompt + 200 generated; no truncation\"\
+      ,\n    \"niah\": \"2n and 3n passed at261888 prompt tokens\",\n    \"q200v2\": \"Official kit transport/closure\
+      \ INCOMPLETE (171/8/1), preserved unchanged\",\n    \"q200v2_adjudication\": \"COMPLETE:171 correct,9 failed,0\
+      \ pending; q200v2-adjudicated.json\",\n    \"bfcl\": \"SCORED:13/20 structural-hard20; zero timing errors\"\
+      ,\n    \"sampling\": \"48 requests/arm completed; limited smoke, not losslessness proof\""
+    quote_sha256: b1ab6133c56551dafc68961a342c91796a750af7b009fea27a060b9ee59e9c0b
+    source_revision: 813766ddaeba18f47f61926d20d9784b9b977132
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:13-22
+    quote: '| Final-image test | Result |
+
+      | --- | --- |
+
+      | GSM8K throughput, n=40 | mean E2E 149.19 tok/s; mean AL5.917 |
+
+      | Mixed short requests | aggregate107.95 tok/s; median TTFT0.175s |
+
+      | 150000-token prefill + 200 decode | passed; prefill525.30 tok/s, decode27.84 tok/s |
+
+      | NIAH 2n/3n | passed at261888 input tokens, 256-token response reserve |
+
+      | Q200v2 text-180 | Adjudication complete: 171 correct / 9 failed / 0 pending; capped row counted as failed
+      |
+
+      | BFCL v4 structural-hard20 | SCORED:13/20 correct;20 unique cases; zero timing errors |
+
+      | Q200v2 E2E throughput | mean138.70 /median144.78 /aggregate124.71 tok/s |
+
+      | Peak VRAM across primary suite | 23518 MiB |'
+    quote_sha256: 522e918dc190c967dc579c787bb317ff23b5399fb34f114ed474fcf2c586fea2
+    source_revision: 813766ddaeba18f47f61926d20d9784b9b977132
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: notes/ACCEPTANCE-GAP.md:23-32
+    quote: 'Two pairs, 160 recorded requests with 160 unique (mode, question-index) keys:
+
+
+      | Prompt variant | Mean per-request AL | Accepted/proposed drafts | Mean per-request E2E tok/s |
+
+      | --- | ---: | ---: | ---: |
+
+      | Raw native benchmark ChatML; no injected system or think prefix | 5.6284 | 58.95% | 133.03 |
+
+      | Raw ChatML + think prefix; equivalent rendered medium reasoning here | 6.3127 | 64.06% | 143.09 |
+
+      | xhigh system instruction, no think prefix | 4.6758 | 44.86% | 106.48 |
+
+      | Default buun template: xhigh system + think prefix | 4.8106 | 45.81% | 108.68 |
+
+
+      Historical native n=40 mean AL: 5.6572182794531445. Prompt-matched buun mean AL: 5.628413949309527; difference
+      0.028804330143617385. This is not a fresh fully matched cross-engine parity run: native used different width/KV/runtime,
+      and its result is historical.'
+    quote_sha256: 2ce9bfb1604b7745a21fb4dda2ea18628e411f4a08d32a648ddd4feabc836b82
+    source_revision: 813766ddaeba18f47f61926d20d9784b9b977132
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: ggml/src/ggml-cpu/exl3.cpp:43-65
+    quote: "float codebook_value(uint32_t state, int cb) {\n    if (cb == 2) {\n        const uint32_t x = state\
+      \ * 0x83dcd12du;\n        const uint16_t sum = 0x6400 + (x & 255) + ((x >> 8) & 255) +\n                 \
+      \            ((x >> 16) & 255) + (x >> 24);\n        return half_round(std::fma(GGML_FP16_TO_FP32(sum),\n\
+      \            GGML_FP16_TO_FP32(ggml_fp16_t(0x1eee)), GGML_FP16_TO_FP32(ggml_fp16_t(0xc931))));\n    }\n  \
+      \  uint32_t x = cb == 1 ? state * 0xcbac1fedu : state * 89226354u + 64248484u;\n    x = (x & 0x8fff8fffu)\
+      \ ^ 0x3b603b60u;\n    return half_round(GGML_FP16_TO_FP32(ggml_fp16_t(x)) + GGML_FP16_TO_FP32(ggml_fp16_t(x\
+      \ >> 16)));\n}\n\nconst float * codebook(int cb) {\n    struct tables {\n        float values[3][65536];\n\
+      \        tables() {\n            for (int c = 0; c < 3; ++c)\n                for (int i = 0; i < 65536; ++i)\
+      \ values[c][i] = codebook_value(i, c);\n        }\n    };\n    static const tables lut;\n    return lut.values[cb];"
+    quote_sha256: cea643576e4d22153575ca6c09188d62badcfc7f6bf3cf60f397f61f4c0a8a3f
+    source_revision: 1d0f493c73817176f6953069b7c10211de9555a1
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: ggml/src/ggml-cpu/exl3.cpp:153-189
+    quote: "// Resolve bit width once per operation so circular-window extraction does\n// not perform integer division\
+      \ for every decoded weight.\nusing dot_fn = void (*)(const uint8_t *, const float *, const float *, int64_t,\
+      \ int64_t, float *);\nconstexpr dot_fn dot_kernels[] = {dot128<1>, dot128<2>, dot128<3>, dot128<4>,\n    \
+      \                             dot128<5>, dot128<6>, dot128<7>, dot128<8>};\n\nbool auxiliary_shape(const ggml_tensor\
+      \ * tensor, int64_t width, int64_t experts) {\n    return tensor && tensor->type == GGML_TYPE_F16 && tensor->ne[0]\
+      \ == width &&\n        tensor->ne[1] == experts && tensor->ne[2] == 1 && tensor->ne[3] == 1 &&\n        ggml_is_contiguous(tensor);\n\
+      }\n\n} // namespace\n\nbool ggml_cpu_exl3_supports(const ggml_tensor * dst) {\n    if (dst->op != GGML_OP_MUL_MAT\
+      \ && dst->op != GGML_OP_MUL_MAT_ID) return false;\n    const auto * w = dst->src[0];\n    const auto * x =\
+      \ dst->src[1];\n    if (!w || !x || !ggml_type_is_exl3(w->type) || w->ne[0] % had_size || w->ne[1] % had_size\
+      \ ||\n        !ggml_is_contiguous(w) || w->ne[3] != 1 || x->type != GGML_TYPE_F32 ||\n        x->nb[0] !=\
+      \ sizeof(float) || x->ne[0] != w->ne[0] || x->ne[3] != 1 ||\n        dst->type != GGML_TYPE_F32 || !ggml_is_contiguous(dst))\
+      \ return false;\n\n    const bool grouped = dst->op == GGML_OP_MUL_MAT_ID;\n    const auto * svh = dst->src[grouped\
+      \ ? 3 : 2];\n    const auto * suh = dst->src[grouped ? 4 : 3];\n    if (grouped) {\n        const auto * ids\
+      \ = dst->src[2];\n        if (!ids || ids->type != GGML_TYPE_I32 || ids->nb[0] != sizeof(int32_t) ||\n   \
+      \         ids->ne[2] != 1 || ids->ne[3] != 1 || x->ne[2] != ids->ne[1] ||\n            x->ne[1] < 1 || ids->ne[0]\
+      \ % x->ne[1] != 0) return false;\n    } else if (w->ne[2] != 1 || x->ne[2] != 1) {\n        return false;\n\
+      \    }\n    // Loader placement probes precede attachment of the scale/sign tensors.\n    return (!svh &&\
+      \ !suh) || (auxiliary_shape(svh, w->ne[1], w->ne[2]) &&\n                               auxiliary_shape(suh,\
+      \ w->ne[0], w->ne[2]));"
+    quote_sha256: c19613e32fb4b957fd5bb119b108859e9bd751fcc4f64ef1021a637e8c3512ed
+    source_revision: 1d0f493c73817176f6953069b7c10211de9555a1
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: tests/test-exl3-gpu-common.h:6-15
+    quote: "// Probe the backend's standalone executor, not the independent CPU/cache bridge.\n// In particular,\
+      \ HIP wave64 devices intentionally decline this wave32 path.\nstatic bool exl3_gpu_supported(ggml_backend_t\
+      \ backend) {\n    auto * ctx = ggml_init({4096, nullptr, true});\n    auto * w = ggml_new_tensor_2d(ctx, ggml_exl3_type(2,\
+      \ 2), 128, 128);\n    auto * x = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, 128, 1);\n    auto * y = ggml_mul_mat(ctx,\
+      \ w, x);\n    const bool supported = ggml_backend_supports_op(backend, y);\n    ggml_free(ctx);\n    return\
+      \ supported;"
+    quote_sha256: 0f8066cf291a65ccad934daa09906b0496c1bdd625f2b42e46f64b87157bf12a
+    source_revision: 1d0f493c73817176f6953069b7c10211de9555a1
+    verified_by: research-intake/stage2b-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: ggml/src/ggml-cpu/exl3.cpp:137-139
+    quote: '#if defined(__AVX2__) && defined(__FMA__) dot_tile<bits>(tile, x+kt*16, lut, sum+col); #else'
+    quote_sha256: abe575d3aef9d19d672a4cfb38f22a6d1e09926d753062f87336315c1c683d00
+    source_revision: 1d0f493c73817176f6953069b7c10211de9555a1
+    verified_by: research-intake/stage2b-second-reader
