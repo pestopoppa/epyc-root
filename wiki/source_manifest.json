@@ -4,15 +4,28 @@
     "handoff-active": 172,
     "handoff-blocked": 2,
     "handoff-completed": 197,
-    "progress": 488,
+    "progress": 489,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-24T21:38:10Z",
-  "mode": "touch",
-  "scan_time": "2026-09-24T21:38:10Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-09-25T11:53:01Z",
+    "scope_paths": [
+      "docs/reference/kernel-freeze-runbook.md",
+      "progress/2026-09/2026-09-25-codex.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-25T11:53:01Z",
   "schema_version": 1,
-  "source_set_hash": "a2dbfb04f038b89475949e8f9619c3e47f692cd5b9eb063b4c93b3dce9254dc9",
+  "source_set_hash": "f3d43fa1f350e0563a940c7d4285ca87774cbcf26e3e9fea86d411ed20f93dbd",
   "sources": [
     {
       "content_hash": "8595f5d9339b0046d8720c31a58567e781bd250c32406bdc381c523e28197e7d",
@@ -8007,6 +8020,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "73ec314175b654735d839eaf8c2a921135f01109b34a08c41d102d3d6a6b307e",
+      "modified": "2026-09-25T11:51:12Z",
+      "path": "progress/2026-09/2026-09-25-codex.md",
+      "size": 2128,
+      "title": "Production release runbook and AMD site wrap-up \u2014 2026-09-25",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
       "modified": "2026-09-24T21:13:58Z",
       "path": "docs/coordination/session-bus-task-flow-STATUS.md",
@@ -8567,10 +8588,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "b031f743c56daa2a47e16876a6b38cc93c2ed8e836ff887036745f43fadd69e4",
-      "modified": "2026-09-24T21:13:58Z",
+      "content_hash": "75cadf3e3f2b5a80d48026e6b1e36f26a77dd93ee2da8395209cc76d83700ea4",
+      "modified": "2026-09-25T11:50:49Z",
       "path": "docs/reference/kernel-freeze-runbook.md",
-      "size": 22645,
+      "size": 25256,
       "title": "Kernel freeze runbook",
       "type": "docs"
     },
@@ -8887,7 +8908,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1109,
+  "total_new": 1110,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

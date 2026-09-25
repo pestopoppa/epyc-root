@@ -267,6 +267,35 @@ loads it yet.
   GLM `indexer_top_k` schedule and quant profile are VOID for the new subject. GC-4b sizes the always-
   resident set at ~294 GiB plus KV, and residency stays an operator decision.
 
+## Compiled Update — 2026-09-25: public distribution is downstream of the serving store
+
+**Confidence: verified** for the published tag, release assets, binary identity, and fresh-extract
+checks. The public release is a convenience distribution surface, not a serving authority.
+
+- The llama.cpp release is anchored to immutable tag `production-consolidated-v10` and source commit
+  `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`, while live CPU/GPU serving remains selected by
+  `/mnt/raid0/llm/kernels/production/{cpu,gpu}`. A GitHub tag or release must never select the binary
+  used by production.
+- The release covers only the llama.cpp CPU and gfx90a/ROCm surfaces. The frozen
+  `production-speech-v1` whisper.cpp and qwentts.cpp kernels require separate release identities or
+  an explicitly versioned kernel-set manifest; they must not be implied by a llama.cpp release.
+- Future promotion packages must be assembled from versioned store targets and include provenance,
+  checksums, runtime layout, a weights-not-included warning, recipes, and a verifier that executes
+  the freshly extracted binaries. The first v10 package was verified after extraction but did not
+  include native store `PROVENANCE.md` or store `SHA256SUMS`; that gap is recorded rather than
+  silently treating the package as the future template.
+
+### Source References (2026-09-25)
+
+- [kernel-freeze-runbook.md](../docs/reference/kernel-freeze-runbook.md) — section 8g, the downstream
+  public-distribution checklist.
+- [production-release-v10-20260925.json](../artifacts/operator/production-release-v10-20260925.json)
+  — release URL, asset hashes, binary verification, scope, and documented provenance gap.
+- [2026-09-25-codex.md](../progress/2026-09/2026-09-25-codex.md) — session verification and published
+  commit record.
+- [ratify_v10_final_freeze_20260922.json](../artifacts/operator/ratify_v10_final_freeze_20260922.json)
+  — frozen production identity and ratification boundary.
+
 ### Source References (2026-09-22)
 
 - [`progress/2026-09/2026-09-22-kernel-promotion.md`](../progress/2026-09/2026-09-22-kernel-promotion.md) — store cutover, freeze addendum, verifier re-point, overlay non-commit
