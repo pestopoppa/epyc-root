@@ -24,6 +24,9 @@
     "fresh_extract_verified": true,
     "quickstart_included": true,
     "verify_release_included": true,
-    "model_weights_included": false
-  }
+    "model_weights_included": false,
+    "provenance_included": false,
+    "store_sha256_included": false
+  },
+  "follow_up": "The v10 release shipped archive and binary manifests, but not the store PROVENANCE.md/SHA256SUMS. Future promotions must include them or a clearly derived provenance manifest as required by kernel-freeze-runbook.md 8g."
 }
