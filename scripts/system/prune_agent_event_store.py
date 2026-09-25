@@ -77,10 +77,22 @@ for i in range(0, len(victims), a.batch):
 left = con.execute("SELECT count(*), coalesce(sum(octet_length(data)),0) FROM event").fetchone()
 print(f"remaining events: {left[0]:,} ({left[1]/1073741824:.1f} GB); freelist_count="
       f"{con.execute('PRAGMA freelist_count').fetchone()[0]:,} pages")
-if a.vacuum:
+# VACUUM only when there is something to reclaim. A VACUUM holds the exclusive write lock for its
+# whole run (34-48 s on the 10.8 GB store) and rewrites the entire db through the WAL; opencode waits
+# only `busy_timeout = 5000` ms for that lock. On 2026-09-25 07:59Z a no-op VACUUM (freelist 0)
+# started in the gap between two AutoKernel actor calls and the next `opencode run` failed its first
+# write ("Failed query: insert into project"). Every VACUUM since 04:54Z that day found 0 free pages.
+MIN_FREE_PAGES = 1024
+freelist = con.execute("PRAGMA freelist_count").fetchone()[0]
+if a.vacuum and freelist < MIN_FREE_PAGES:
+    print(f"VACUUM skipped: freelist_count={freelist:,} < {MIN_FREE_PAGES:,} pages, nothing to reclaim")
+elif a.vacuum:
     print("VACUUM ...", flush=True); t1 = time.time()
     try:
         con.execute("VACUUM"); print(f"VACUUM done in {time.time()-t1:.0f}s")
+        # VACUUM rewrites the whole db through the WAL; truncate it so it does not sit at db size.
+        busy, wal_pages, ckpt = con.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+        print(f"post-VACUUM wal_checkpoint(TRUNCATE): busy={busy} wal_pages={wal_pages} ckpt={ckpt}")
     except sqlite3.OperationalError as exc:
         # another connection (the live TUI) holds the DB: freed pages are still REUSED by
         # sqlite, so the file stops growing even without VACUUM; shrink it next quiet run.
