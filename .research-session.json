@@ -1,9 +1,9 @@
 {
   "session_id": "intake-exl3-sglang-throughput-20260925",
   "started_at": "2026-09-25T13:40:00Z",
-  "last_checkpoint": "2026-09-25T20:32:28Z",
+  "last_checkpoint": "2026-09-25T21:10:18Z",
   "phase": 5,
-  "stage": "stage2e-complete-awaiting-surfaced-source-selection",
+  "stage": "stage2f-complete-awaiting-surfaced-source-selection",
   "session_kind": "research-intake (CIRU EXL3/SGLang serving package and throughput path)",
   "previous_session": "intake-exl3-mi210-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-exl3-sglang-20260925/previous-research-session-stage4.json)",
   "mandate": "Ingest the CIRU Qwen3.8-27B EXL3/SGLang package and establish what the published throughput requires so the CPU and MI210 program targets the complete serving path.",
@@ -12,7 +12,7 @@
     "operator_goal": "We MUST be able to get to these throughput speeds also"
   },
   "max_existing_intake_id_at_start": 1562,
-  "next_intake_id": 1744,
+  "next_intake_id": 1756,
   "entries_processed": [
     "intake-1563",
     "intake-1564",
@@ -62,7 +62,19 @@
     "intake-1740",
     "intake-1741",
     "intake-1742",
-    "intake-1743"
+    "intake-1743",
+    "intake-1744",
+    "intake-1745",
+    "intake-1746",
+    "intake-1747",
+    "intake-1748",
+    "intake-1749",
+    "intake-1750",
+    "intake-1751",
+    "intake-1752",
+    "intake-1753",
+    "intake-1754",
+    "intake-1755"
   ],
   "entries_remaining": [],
   "expansion_cap": 10,
@@ -129,6 +141,14 @@
       "verbatim": "Proceed with recommended",
       "disposition": "planned",
       "plan_ref": "stage2e-fifteen-selected-ingests-sixteen-declines"
+    },
+    {
+      "seq": 8,
+      "stage": "2f",
+      "ts": "2026-09-25T20:46:26Z",
+      "verbatim": "Proceed as recommended",
+      "disposition": "planned",
+      "plan_ref": "stage2f-twelve-selected-ingests-seventeen-declines"
     }
   ],
   "source_fetches": {
@@ -289,6 +309,102 @@
       "url": "https://github.com/r0b0tlab/qwen38-27b-nvfp4-sm121-vllm",
       "source_revisions": [
         "r0b0tlab/qwen38-27b-nvfp4-sm121-vllm@a96186f8973023365bddb34b6b34fa889d4c40ae (retrieved 2026-09-25)"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1744-stage2f": {
+      "url": "https://github.com/Reederey87/glm53-flash-exl3-2x-dgx-spark",
+      "source_revisions": [
+        "Reederey87/glm53-flash-exl3-2x-dgx-spark@8e443d6b534e286cef073d4e52acdbdfdf9252b1 (2026-09-20)"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1745-stage2f": {
+      "url": "https://github.com/sgl-project/sglang/issues/35150",
+      "source_revisions": [
+        "sgl-project/sglang PR #38977 discussion updated 2026-09-19T16:24:44Z, fetched 2026-09-25",
+        "sgl-project/sglang issue #35150 open, updated 2026-08-27T16:47:23Z, fetched 2026-09-25; issue API sha256 cacc40340ef69f25f2ae3ae862e915ba887e93e8ca78accd7a4952d9caf81f29",
+        "sgl-project/sglang issue #35150 updated 2026-08-27T16:47:23Z, fetched 2026-09-25; issue API sha256 cacc40340ef69f25f2ae3ae862e915ba887e93e8ca78accd7a4952d9caf81f29",
+        "sgl-project/sglang issue #36548 open, updated 2026-08-27T16:47:22Z, fetched 2026-09-25; issue API sha256 0303f5cc970c3d6e7ac88132f883dac61a86b35b74512b22e7802f99aa009a1f",
+        "sgl-project/sglang issue #38975 updated 2026-09-11T01:46:15Z, fetched 2026-09-25"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1746-stage2f": {
+      "url": "https://github.com/sgl-project/sglang/issues/36548",
+      "source_revisions": [
+        "sgl-project/sglang issue #36548 updated 2026-08-27T16:47:22Z, fetched 2026-09-25; issue API sha256 0303f5cc970c3d6e7ac88132f883dac61a86b35b74512b22e7802f99aa009a1f"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1747-stage2f": {
+      "url": "https://github.com/sgl-project/sglang/pull/35825",
+      "source_revisions": [
+        "SGLang PR #35825 head 8ec0792d7290cf6653daff61c76e993d7844bcc1, merged as 4cb5aebfe08fa0abbd5fbcf84b29ad3d541bd5d3 on 2026-08-22, fetched 2026-09-25"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1748-stage2f": {
+      "url": "https://github.com/tonyd2wild/GLM-5.3-Flash-NVFP4-DFlash2-2x-DGX-Spark",
+      "source_revisions": [
+        "tonyd2wild/GLM-5.3-Flash-NVFP4-DFlash2-2x-DGX-Spark@abb38bb0c4225855919d55309cd3e506d7941468 (2026-09-24)"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1749-stage2f": {
+      "url": "https://github.com/vllm-project/vllm/issues/53116",
+      "source_revisions": [
+        "vllm PR #53122 head 647fb1d0cb524734bdf5e73ea9d924df3204729c, open",
+        "vllm PR #57934 head a1f327c2836f2e0180e66273034cc5f17b4fd9af, merged as 73a78e6f1f38e280986b81e0f2a9aa5e1ee6fe47",
+        "vllm merge commit 73a78e6f1f38e280986b81e0f2a9aa5e1ee6fe47",
+        "vllm-project/vllm issue #53116 updated 2026-08-20T14:11:41Z; retrieved 2026-09-25"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1750-stage2f": {
+      "url": "https://github.com/vllm-project/vllm/pull/57934",
+      "source_revisions": [
+        "vllm-project/vllm PR #57934 head a1f327c2836f2e0180e66273034cc5f17b4fd9af, merged 2026-09-25 as 73a78e6f1f38e280986b81e0f2a9aa5e1ee6fe47"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1751-stage2f": {
+      "url": "https://huggingface.co/TechPrototyper/Qwen3.8-27B-DFlash2-fp8-vllm",
+      "source_revisions": [
+        "TechPrototyper/Qwen3.8-27B-DFlash2-fp8-vllm@a59c3ad40eab93501e7704dfe154e7c33e6633ff, retrieved 2026-09-25",
+        "vllm merge commit 73a78e6f1f38e280986b81e0f2a9aa5e1ee6fe47"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1752-stage2f": {
+      "url": "https://huggingface.co/brandonmusic/GLM-5.3-Flash-tr3-4bpw",
+      "source_revisions": [
+        "Derived mechanically from all 120 .materialization/shards/*.json files at HF brandonmusic/GLM-5.3-Flash-tr3-4bpw@a5fee929cf4888b1824323e33e8a19b60129e025 (2026-09-10)",
+        "HF brandonmusic/GLM-5.3-Flash-tr3-4bpw@a5fee929cf4888b1824323e33e8a19b60129e025 (2026-09-10)"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1753-stage2f": {
+      "url": "https://huggingface.co/canada-quant/glm-5.3-w4a16-mtp",
+      "source_revisions": [
+        "canada-quant/GLM-5.3-Flash-W4A16-MTP@5723f4d02af36366c23ace8668866ca7775855c1 (retrieved 2026-09-25)",
+        "https://github.com/vllm-project/vllm/issues/55800 updated 2026-09-08T03:05:47Z, fetched 2026-09-25; API artifact sha256 13dfcc9f8cbdec40c40d811e8ac825d0148e36fe1ac4a68d9d5bcfd6cbda29dd",
+        "https://github.com/vllm-project/vllm/issues/56064 updated 2026-09-10T03:58:01Z, fetched 2026-09-25; API artifact sha256 4c39d293158f6fed8aa452eff422de807ed3acec57e620a1cd633e719f146166"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1754-stage2f": {
+      "url": "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-NVFP4-RTX5090",
+      "source_revisions": [
+        "gittensor-model-hub/Qwen3.8-27B-NVFP4-RTX5090@5b7a687fc8211a5d631c8ca6a593dd37eb26ce33 (retrieved 2026-09-25)"
+      ],
+      "retrieved": "2026-09-25"
+    },
+    "intake-1755-stage2f": {
+      "url": "https://huggingface.co/incoai/GLM-5.3-Flash-DFlash2",
+      "source_revisions": [
+        "SGLang PR #36708 head 2d4b6acea720f5eb5a2b2c269f1cc9dcbc8b10c0, merged as c4d5d45e506dcd978a65661a503eda1a272c39a4 on 2026-08-27T18:23:30Z; API artifact sha256 2ae5607d06d6102c969fbbdb238cecb475820952150b5d30970486a50f4422a4",
+        "incoai/GLM-5.3-Flash-DFlash2@bf582e4eacc1810f76656d1811693ff6c6737d2a (retrieved 2026-09-25)"
       ],
       "retrieved": "2026-09-25"
     }
@@ -502,6 +618,91 @@
       "url": "https://huggingface.co/r0b0tlab/Qwen3.8-27B-NVFP4-MTP-sm121",
       "accepted_at": "stage2e",
       "reason": "Campaign repository already pins the artifact and publishes the runtime metadata needed here."
+    },
+    {
+      "url": "https://github.com/NVIDIA/cutlass/commit/147f5673d0c1c3dcf66f78d677fd647e4a020219",
+      "accepted_at": "stage2f",
+      "reason": "Pinned NVIDIA template dependency already captured; no CPU/MI210 or additional claim."
+    },
+    {
+      "url": "https://github.com/TechPrototyper/local-ai-lab/blob/master/probes/lmhead_quant_method_guard_probe.py",
+      "accepted_at": "stage2f",
+      "reason": "Historical reproduction for a guard already removed and superseded on current main."
+    },
+    {
+      "url": "https://github.com/flashinfer-ai/flashinfer/pull/3684",
+      "accepted_at": "stage2f",
+      "reason": "Merged VO-split dependency and state already directly captured in intake-1732."
+    },
+    {
+      "url": "https://github.com/sgl-project/FlashMLA/commit/05e26647fe840b8baedae486c2d86d5ce4efeb7c",
+      "accepted_at": "stage2f",
+      "reason": "Exact SM100 dependency already pinned; adds no portable EXL3 contract beyond the entry."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/commit/42b5af8c62e37b744e351e85867ada4a383f17d3",
+      "accepted_at": "stage2f",
+      "reason": "Exact unfused source revision is embedded and anchored in intake-1730."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/commit/ecbadf0b",
+      "accepted_at": "stage2f",
+      "reason": "Minimum runtime-support commit; artifact reproduction dependency rather than a standalone empirical source."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/28054",
+      "accepted_at": "stage2f",
+      "reason": "Peripheral DiffusionGemma follow-up with no bearing on the adjudicated Qwen/MI210 path."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34859",
+      "accepted_at": "stage2f",
+      "reason": "Merged predecessor pattern fully subsumed by current quantized-head support."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35462",
+      "accepted_at": "stage2f",
+      "reason": "Closed unmerged implementation superseded by selected merged PR #35496."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35580",
+      "accepted_at": "stage2f",
+      "reason": "Conditional selector-config guard; no current CPU/MI210 throughput or codec evidence."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35581",
+      "accepted_at": "stage2f",
+      "reason": "Selector shard-metadata cleanup with no additional quant correctness or throughput evidence."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/53107",
+      "accepted_at": "stage2f",
+      "reason": "Misleading symptom already explained by #53116 and selected PR #53122."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/53428",
+      "accepted_at": "stage2f",
+      "reason": "Full regression issue is already captured by the merged repair packet and its field comment."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/43669",
+      "accepted_at": "stage2f",
+      "reason": "Fail-fast precedent adds no additional packed-state lifecycle or hardware evidence."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/52560",
+      "accepted_at": "stage2f",
+      "reason": "Historical merge cause already pinned by the repair entry."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/53978",
+      "accepted_at": "stage2f",
+      "reason": "Adjacent DFlash2 work that does not change the supersession or CPU/MI210 conclusions."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/54160",
+      "accepted_at": "stage2f",
+      "reason": "Merged class-guard successor already read and anchored in intake-1734."
     }
   ],
   "stage2_source_candidates": [
@@ -2253,7 +2454,7 @@
     }
   ],
   "stage2e_gate": {
-    "status": "awaiting-operator-source-selection",
+    "status": "selected-and-complete",
     "selected_entries": [
       "intake-1729",
       "intake-1730",
@@ -2323,7 +2524,710 @@
       "https://github.com/vllm-project/vllm/pull/53978",
       "https://github.com/vllm-project/vllm/pull/54160"
     ],
-    "pending_count": 29,
+    "pending_count": 0,
+    "handoff_writes": 0,
+    "selected_ingest_and_dive": [
+      "https://github.com/Reederey87/GLM-5.3-Flash-EXL3-2x-DGX-Sparks",
+      "https://github.com/sgl-project/sglang/issues/35150",
+      "https://github.com/sgl-project/sglang/issues/36548",
+      "https://github.com/sgl-project/sglang/pull/35825",
+      "https://github.com/tonyd2wild/GLM-5.3-Flash-NVFP4-DFlash2-2x-DGX-Spark",
+      "https://github.com/vllm-project/vllm/issues/53116",
+      "https://github.com/vllm-project/vllm/pull/57934",
+      "https://huggingface.co/TechPrototyper/Qwen3.8-27B-DFlash2-fp8-vllm",
+      "https://huggingface.co/brandonmusic/GLM-5.3-Flash-tr3-4bpw",
+      "https://huggingface.co/canada-quant/glm-5.3-w4a16-mtp",
+      "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-NVFP4-RTX5090",
+      "https://huggingface.co/incoai/GLM-5.3-Flash-DFlash2"
+    ],
+    "selected_declines": [
+      "https://github.com/NVIDIA/cutlass/commit/147f5673d0c1c3dcf66f78d677fd647e4a020219",
+      "https://github.com/TechPrototyper/local-ai-lab/blob/master/probes/lmhead_quant_method_guard_probe.py",
+      "https://github.com/flashinfer-ai/flashinfer/pull/3684",
+      "https://github.com/sgl-project/FlashMLA/commit/05e26647fe840b8baedae486c2d86d5ce4efeb7c",
+      "https://github.com/sgl-project/sglang/commit/42b5af8c62e37b744e351e85867ada4a383f17d3",
+      "https://github.com/sgl-project/sglang/commit/ecbadf0b",
+      "https://github.com/sgl-project/sglang/pull/28054",
+      "https://github.com/sgl-project/sglang/pull/34859",
+      "https://github.com/sgl-project/sglang/pull/35462",
+      "https://github.com/sgl-project/sglang/pull/35580",
+      "https://github.com/sgl-project/sglang/pull/35581",
+      "https://github.com/vllm-project/vllm/issues/53107",
+      "https://github.com/vllm-project/vllm/issues/53428",
+      "https://github.com/vllm-project/vllm/pull/43669",
+      "https://github.com/vllm-project/vllm/pull/52560",
+      "https://github.com/vllm-project/vllm/pull/53978",
+      "https://github.com/vllm-project/vllm/pull/54160"
+    ],
+    "accepted_declines": [
+      "https://github.com/NVIDIA/cutlass/commit/147f5673d0c1c3dcf66f78d677fd647e4a020219",
+      "https://github.com/TechPrototyper/local-ai-lab/blob/master/probes/lmhead_quant_method_guard_probe.py",
+      "https://github.com/flashinfer-ai/flashinfer/pull/3684",
+      "https://github.com/sgl-project/FlashMLA/commit/05e26647fe840b8baedae486c2d86d5ce4efeb7c",
+      "https://github.com/sgl-project/sglang/commit/42b5af8c62e37b744e351e85867ada4a383f17d3",
+      "https://github.com/sgl-project/sglang/commit/ecbadf0b",
+      "https://github.com/sgl-project/sglang/pull/28054",
+      "https://github.com/sgl-project/sglang/pull/34859",
+      "https://github.com/sgl-project/sglang/pull/35462",
+      "https://github.com/sgl-project/sglang/pull/35580",
+      "https://github.com/sgl-project/sglang/pull/35581",
+      "https://github.com/vllm-project/vllm/issues/53107",
+      "https://github.com/vllm-project/vllm/issues/53428",
+      "https://github.com/vllm-project/vllm/pull/43669",
+      "https://github.com/vllm-project/vllm/pull/52560",
+      "https://github.com/vllm-project/vllm/pull/53978",
+      "https://github.com/vllm-project/vllm/pull/54160"
+    ],
+    "resolved_stage2f_entries": [
+      "intake-1744",
+      "intake-1745",
+      "intake-1746",
+      "intake-1747",
+      "intake-1748",
+      "intake-1749",
+      "intake-1750",
+      "intake-1751",
+      "intake-1752",
+      "intake-1753",
+      "intake-1754",
+      "intake-1755"
+    ]
+  },
+  "stage2f_id_map": {
+    "intake-1744": "https://github.com/Reederey87/glm53-flash-exl3-2x-dgx-spark",
+    "intake-1745": "https://github.com/sgl-project/sglang/issues/35150",
+    "intake-1746": "https://github.com/sgl-project/sglang/issues/36548",
+    "intake-1747": "https://github.com/sgl-project/sglang/pull/35825",
+    "intake-1748": "https://github.com/tonyd2wild/GLM-5.3-Flash-NVFP4-DFlash2-2x-DGX-Spark",
+    "intake-1749": "https://github.com/vllm-project/vllm/issues/53116",
+    "intake-1750": "https://github.com/vllm-project/vllm/pull/57934",
+    "intake-1751": "https://huggingface.co/TechPrototyper/Qwen3.8-27B-DFlash2-fp8-vllm",
+    "intake-1752": "https://huggingface.co/brandonmusic/GLM-5.3-Flash-tr3-4bpw",
+    "intake-1753": "https://huggingface.co/canada-quant/glm-5.3-w4a16-mtp",
+    "intake-1754": "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-NVFP4-RTX5090",
+    "intake-1755": "https://huggingface.co/incoai/GLM-5.3-Flash-DFlash2"
+  },
+  "stage2f_submitted_url_aliases": {
+    "https://github.com/Reederey87/GLM-5.3-Flash-EXL3-2x-DGX-Sparks": "https://github.com/Reederey87/glm53-flash-exl3-2x-dgx-spark"
+  },
+  "stage2f_expansion_count": 12,
+  "stage2f_dives": {
+    "intake-1744": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1744/REPORT.md",
+      "claim_effects": [
+        "narrowed",
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed"
+      ]
+    },
+    "intake-1745": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1745/REPORT.md",
+      "claim_effects": [
+        "narrowed",
+        "narrowed",
+        "unaffected",
+        "narrowed",
+        "reattributed"
+      ]
+    },
+    "intake-1746": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1746/REPORT.md",
+      "claim_effects": [
+        "narrowed",
+        "narrowed",
+        "unaffected",
+        "narrowed",
+        "reattributed"
+      ]
+    },
+    "intake-1747": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1747/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed",
+        "overturned"
+      ]
+    },
+    "intake-1748": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1748/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "reattributed",
+        "narrowed",
+        "narrowed"
+      ]
+    },
+    "intake-1749": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1749/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "unaffected",
+        "reattributed",
+        "narrowed",
+        "unaffected"
+      ]
+    },
+    "intake-1750": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1750/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "unaffected",
+        "unaffected",
+        "narrowed",
+        "narrowed"
+      ]
+    },
+    "intake-1751": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1751/REPORT.md",
+      "claim_effects": [
+        "narrowed",
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "unaffected"
+      ]
+    },
+    "intake-1752": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1752/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "reattributed",
+        "narrowed"
+      ]
+    },
+    "intake-1753": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1753/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed",
+        "narrowed"
+      ]
+    },
+    "intake-1754": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1754/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed",
+        "narrowed"
+      ]
+    },
+    "intake-1755": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1755/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "unaffected",
+        "reattributed",
+        "narrowed",
+        "narrowed"
+      ]
+    }
+  },
+  "stage2f_source_revisions": {
+    "intake-1744": [
+      "Reederey87/glm53-flash-exl3-2x-dgx-spark@8e443d6b534e286cef073d4e52acdbdfdf9252b1 (2026-09-20)"
+    ],
+    "intake-1745": [
+      "sgl-project/sglang PR #38977 discussion updated 2026-09-19T16:24:44Z, fetched 2026-09-25",
+      "sgl-project/sglang issue #35150 open, updated 2026-08-27T16:47:23Z, fetched 2026-09-25; issue API sha256 cacc40340ef69f25f2ae3ae862e915ba887e93e8ca78accd7a4952d9caf81f29",
+      "sgl-project/sglang issue #35150 updated 2026-08-27T16:47:23Z, fetched 2026-09-25; issue API sha256 cacc40340ef69f25f2ae3ae862e915ba887e93e8ca78accd7a4952d9caf81f29",
+      "sgl-project/sglang issue #36548 open, updated 2026-08-27T16:47:22Z, fetched 2026-09-25; issue API sha256 0303f5cc970c3d6e7ac88132f883dac61a86b35b74512b22e7802f99aa009a1f",
+      "sgl-project/sglang issue #38975 updated 2026-09-11T01:46:15Z, fetched 2026-09-25"
+    ],
+    "intake-1746": [
+      "sgl-project/sglang issue #36548 updated 2026-08-27T16:47:22Z, fetched 2026-09-25; issue API sha256 0303f5cc970c3d6e7ac88132f883dac61a86b35b74512b22e7802f99aa009a1f"
+    ],
+    "intake-1747": [
+      "SGLang PR #35825 head 8ec0792d7290cf6653daff61c76e993d7844bcc1, merged as 4cb5aebfe08fa0abbd5fbcf84b29ad3d541bd5d3 on 2026-08-22, fetched 2026-09-25"
+    ],
+    "intake-1748": [
+      "tonyd2wild/GLM-5.3-Flash-NVFP4-DFlash2-2x-DGX-Spark@abb38bb0c4225855919d55309cd3e506d7941468 (2026-09-24)"
+    ],
+    "intake-1749": [
+      "vllm PR #53122 head 647fb1d0cb524734bdf5e73ea9d924df3204729c, open",
+      "vllm PR #57934 head a1f327c2836f2e0180e66273034cc5f17b4fd9af, merged as 73a78e6f1f38e280986b81e0f2a9aa5e1ee6fe47",
+      "vllm merge commit 73a78e6f1f38e280986b81e0f2a9aa5e1ee6fe47",
+      "vllm-project/vllm issue #53116 updated 2026-08-20T14:11:41Z; retrieved 2026-09-25"
+    ],
+    "intake-1750": [
+      "vllm-project/vllm PR #57934 head a1f327c2836f2e0180e66273034cc5f17b4fd9af, merged 2026-09-25 as 73a78e6f1f38e280986b81e0f2a9aa5e1ee6fe47"
+    ],
+    "intake-1751": [
+      "TechPrototyper/Qwen3.8-27B-DFlash2-fp8-vllm@a59c3ad40eab93501e7704dfe154e7c33e6633ff, retrieved 2026-09-25",
+      "vllm merge commit 73a78e6f1f38e280986b81e0f2a9aa5e1ee6fe47"
+    ],
+    "intake-1752": [
+      "Derived mechanically from all 120 .materialization/shards/*.json files at HF brandonmusic/GLM-5.3-Flash-tr3-4bpw@a5fee929cf4888b1824323e33e8a19b60129e025 (2026-09-10)",
+      "HF brandonmusic/GLM-5.3-Flash-tr3-4bpw@a5fee929cf4888b1824323e33e8a19b60129e025 (2026-09-10)"
+    ],
+    "intake-1753": [
+      "canada-quant/GLM-5.3-Flash-W4A16-MTP@5723f4d02af36366c23ace8668866ca7775855c1 (retrieved 2026-09-25)",
+      "https://github.com/vllm-project/vllm/issues/55800 updated 2026-09-08T03:05:47Z, fetched 2026-09-25; API artifact sha256 13dfcc9f8cbdec40c40d811e8ac825d0148e36fe1ac4a68d9d5bcfd6cbda29dd",
+      "https://github.com/vllm-project/vllm/issues/56064 updated 2026-09-10T03:58:01Z, fetched 2026-09-25; API artifact sha256 4c39d293158f6fed8aa452eff422de807ed3acec57e620a1cd633e719f146166"
+    ],
+    "intake-1754": [
+      "gittensor-model-hub/Qwen3.8-27B-NVFP4-RTX5090@5b7a687fc8211a5d631c8ca6a593dd37eb26ce33 (retrieved 2026-09-25)"
+    ],
+    "intake-1755": [
+      "SGLang PR #36708 head 2d4b6acea720f5eb5a2b2c269f1cc9dcbc8b10c0, merged as c4d5d45e506dcd978a65661a503eda1a272c39a4 on 2026-08-27T18:23:30Z; API artifact sha256 2ae5607d06d6102c969fbbdb238cecb475820952150b5d30970486a50f4422a4",
+      "incoai/GLM-5.3-Flash-DFlash2@bf582e4eacc1810f76656d1811693ff6c6737d2a (retrieved 2026-09-25)"
+    ]
+  },
+  "stage2f_findings": [
+    "The active Reederey87 kit contains direct packed K4/MCG CUDA expert kernels with fused Hadamard/scatter and same-image A/B receipts; its stack rates are GB10-specific, the essay lane missed its preregistered gate, and the submitted repository spelling was a 404 alias.",
+    "SGLang correctness evidence now points away from the early BF16-beta repair: newer open evidence keeps packed-decode sigmoid(beta) in FP32, while forced-reject and affected-only c8 tests still show unresolved Qwen3.8 divergence.",
+    "The 111/304, 37/304 and 1/304 rows are affected-only self-reported denominators without attached raw JSONL; concurrency is consistent with amplification of an in-kernel decode-versus-verify difference but does not establish cross-request state bleed.",
+    "SGLang PR #35825 is a merged documentation/configuration grid rather than a kernel change; its NVIDIA boot/serve coverage is useful, while accuracy equivalence is unsupported by an N/A test field and unmatched Terminal-Bench denominators.",
+    "The current NVFP4 DGX Spark recipe has raw healthy-fleet receipts, but its final arm jointly changes RoCE all-reduce, prefix caching and KV allocation, so its gains are not codec-isolated.",
+    "vLLM issue #53116 separates two draft-quant defects: merged #57934 fixes raw packed context-KV access through per-layer operator dispatch, while draft packed-module mapping remains unresolved because the merged helper still skips architecture configuration.",
+    "Merged vLLM #57934 adds LiLiCorr with mixed quantized and floating modules and substantial unit coverage, but its only hardware claim is unquantified identical acceptance length on 4×GB200.",
+    "The TechPrototyper FP8 DFlash2 artifact is a precise mixed-format loader oracle but publishes no acceptance, throughput, latency or quality benchmark and still depends on an open mapping fix.",
+    "The Brandon Music GLM artifact closes the uniform-K4/MCG inventory and encoder/evaluator chain; its clean KLD advantage over NVFP4 is cross-stack and cannot be attributed to codec alone.",
+    "W4A16 is a serious EXL3 alternative: the author-labelled matched DGX Spark table favors W4A16 at c1 and EXL3 at c2/c4, while Hopper tables report strong W4A16 concurrency; public raw rows are absent, so this is objective-dependent author evidence rather than a general codec ranking.",
+    "The Qwen3.8 RTX 5090 target distinguishes three speed envelopes: 85.8–92.9 tok/s bare server, 161.7 tok/s SGLang plus DSpark, and a 420.2 tok/s one-code-prompt non-server harness cell; vLLM overtakes SparkInfer at c8/c16.",
+    "The GLM DFlash2 artifact is an 81-tensor all-BF16, five-layer block-8 draft with a merged SGLang hidden-state adapter and no final checkpoint benchmark; it is a codec-independent component contract rather than EXL3 or MI210 evidence."
+  ],
+  "stage2f_surfaced_sources": [
+    {
+      "url": "https://github.com/local-inference-lab/sparkinfer/pull/49",
+      "bearing": [
+        "intake-1744"
+      ],
+      "settles": "Whether a generic native-MCG grouped kernel supersedes the model-specific fat-expert path.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/local-inference-lab/vllm/pull/139",
+      "bearing": [
+        "intake-1744"
+      ],
+      "settles": "Runtime integration and raw decode/prefill evidence for the Sparkinfer Trellis path.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/34899",
+      "bearing": [
+        "intake-1745"
+      ],
+      "settles": "Exact cache-correctness roadmap for bit-exact verification.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35541",
+      "bearing": [
+        "intake-1745",
+        "intake-1746"
+      ],
+      "settles": "First deterministic target-verify parity repair in the evolving beta lineage.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/36014",
+      "bearing": [
+        "intake-1745",
+        "intake-1746"
+      ],
+      "settles": "BF16 target-verify beta change later contradicted by packed-decode evidence.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/38975",
+      "bearing": [
+        "intake-1745",
+        "intake-1746"
+      ],
+      "settles": "Newer packed-decode diagnosis that reverses the earlier beta-fix direction.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/38977",
+      "bearing": [
+        "intake-1745",
+        "intake-1746"
+      ],
+      "settles": "Current FP32-beta packed-decode repair and validation evidence.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/38009",
+      "bearing": [
+        "intake-1745",
+        "intake-1746",
+        "intake-1747"
+      ],
+      "settles": "Independent DFlash2 greedy-divergence report with attached raw A/B outputs.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/z-lab/dflash/issues/159",
+      "bearing": [
+        "intake-1745",
+        "intake-1746"
+      ],
+      "settles": "Independent MLX autoregressive divergence with the official DFlash2 block size.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/40362",
+      "bearing": [
+        "intake-1745"
+      ],
+      "settles": "NPU/other-path closure outside the present CPU/gfx90a campaign.",
+      "recommendation": "decline",
+      "reason": "Different accelerator path and no direct bearing on the current CPU/MI210 implementation decision."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/34297",
+      "bearing": [
+        "intake-1745"
+      ],
+      "settles": "Historical navigation context for the correctness chain.",
+      "recommendation": "decline",
+      "reason": "Context only; later selected sources carry the active correctness contract."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35539",
+      "bearing": [
+        "intake-1745"
+      ],
+      "settles": "Closed predecessor in the parity-fix lineage.",
+      "recommendation": "decline",
+      "reason": "Closed and superseded by the selected later repair lineage."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36048",
+      "bearing": [
+        "intake-1745"
+      ],
+      "settles": "AWQ/Ada fast-path behavior.",
+      "recommendation": "decline",
+      "reason": "Unrelated quant format and hardware fast path."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36291",
+      "bearing": [
+        "intake-1746"
+      ],
+      "settles": "Deterministic-inference flag and concurrency correctness adjacent to the c8 failures.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35725",
+      "bearing": [
+        "intake-1746"
+      ],
+      "settles": "ReplaySSM commit-fold control unavailable in the examined reproduction.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36889",
+      "bearing": [
+        "intake-1746"
+      ],
+      "settles": "GLM capacity failure from a different lineage.",
+      "recommendation": "decline",
+      "reason": "Different model and capacity failure; it does not settle the Qwen correctness mechanism."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36941",
+      "bearing": [
+        "intake-1746"
+      ],
+      "settles": "GLM prefill failure from a different lineage.",
+      "recommendation": "decline",
+      "reason": "Different model and prefill failure; it does not settle the Qwen correctness mechanism."
+    },
+    {
+      "url": "https://github.com/tonyd2wild/GLM-5.3-Flash-NVFP4-DFlash2-2x-DGX-Spark/issues/23",
+      "bearing": [
+        "intake-1748"
+      ],
+      "settles": "Checkpoint probe context behind the repository-local guard.",
+      "recommendation": "decline",
+      "reason": "The bearing entry already retains and anchors the issue evidence; a separate row adds no independent result."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/54150",
+      "bearing": [
+        "intake-1748"
+      ],
+      "settles": "Upstream status of partial-attention ModelOpt corruption.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/nvidia/GLM-5.3-Flash-NVFP4",
+      "bearing": [
+        "intake-1748"
+      ],
+      "settles": "Exact current NVIDIA NVFP4 module coverage and payload revision.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/RedHatAI/GLM-5.3-Flash-NVFP4",
+      "bearing": [
+        "intake-1748"
+      ],
+      "settles": "Exact W4A4 comparator identity for the older expected rows.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://arxiv.org/abs/2608.20530",
+      "bearing": [
+        "intake-1750"
+      ],
+      "settles": "LiLiCorr method, evaluation, and limitations behind the merged vLLM component.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/37462",
+      "bearing": [
+        "intake-1750"
+      ],
+      "settles": "Cross-engine LiLiCorr implementation behavior and receipts.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/46995",
+      "bearing": [
+        "intake-1750"
+      ],
+      "settles": "DSpark implementation lineage reused by LiLiCorr.",
+      "recommendation": "decline",
+      "reason": "Lower-priority lineage; the merged LiLiCorr source already bounds the reused interface."
+    },
+    {
+      "url": "https://github.com/brandonmmusic-max/glm-5.3-flash-exl3-4bpw",
+      "bearing": [
+        "intake-1752"
+      ],
+      "settles": "Exact runtime and kernel revisions behind the EXL3 artifact receipts.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/brandonmusic/GLM-5.3-Flash-BF16-Teacher-Logits",
+      "bearing": [
+        "intake-1752"
+      ],
+      "settles": "Teacher-logit payload inventory and capture provenance for matched KLD work.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/55800",
+      "bearing": [
+        "intake-1753"
+      ],
+      "settles": "DFlash2 sliding-window admission and execution allocation failure plus proposed fix.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/56064",
+      "bearing": [
+        "intake-1753"
+      ],
+      "settles": "SM121 Marlin no-split-K M=256 fault and exact repro shape.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/canada-quant/vllm-glm53-flash-sm121",
+      "bearing": [
+        "intake-1753"
+      ],
+      "settles": "Serving package and receipts behind the DGX Spark W4A16 rows.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/canada-quant/GLM-5.3-Flash-DFlash2-G",
+      "bearing": [
+        "intake-1753"
+      ],
+      "settles": "Current DFlash2 drafter replacing the version used for banked Spark rows.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/53906",
+      "bearing": [
+        "intake-1753"
+      ],
+      "settles": "Upstream GLM-5.3-Flash enablement dependency.",
+      "recommendation": "decline",
+      "reason": "Model enablement dependency; it does not add EXL3/W4A16 comparison evidence."
+    },
+    {
+      "url": "https://github.com/gittensor-ai-lab/sparkinfer",
+      "bearing": [
+        "intake-1754"
+      ],
+      "settles": "Engine source behind the strongest low-concurrency and bench-harness rates.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-DSpark-NVFP4",
+      "bearing": [
+        "intake-1754"
+      ],
+      "settles": "Exact speculative drafter behind the reported SGLang and SparkInfer gains.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/QUASAR-QAT/Qwen3.8-27B-QUASAR-NVFP4",
+      "bearing": [
+        "intake-1754"
+      ],
+      "settles": "Matched quality and throughput comparator for the target artifact.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4",
+      "bearing": [
+        "intake-1754"
+      ],
+      "settles": "Official matched NVFP4 comparator and module-allocation contrast.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/gittensor-ai-lab/sparkinfer/issues/983",
+      "bearing": [
+        "intake-1754"
+      ],
+      "settles": "Fixed API modality-advertising defect.",
+      "recommendation": "decline",
+      "reason": "Unrelated to quantization throughput or CPU/MI210 feasibility."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/36708",
+      "bearing": [
+        "intake-1755"
+      ],
+      "settles": "Merged GLM hidden-state capture and mHC contraction adapter required by the draft.",
+      "recommendation": "ingest-and-dive"
+    }
+  ],
+  "stage2f_dedup": {
+    "method": "Unbounded normalized URL scan of every persisted URL after the twelve-entry append; exact current-wave and existing-entry sources were removed from the new-source gate.",
+    "existing_or_current_sources_not_reoffered": [
+      "https://github.com/turboderp-org/exllamav3 -> intake-1568",
+      "https://github.com/sgl-project/sglang/issues/35860 -> intake-1742",
+      "https://github.com/sgl-project/sglang/issues/35150 -> intake-1745",
+      "https://github.com/sgl-project/sglang/issues/36548 -> intake-1746",
+      "https://github.com/sgl-project/sglang/pull/35496 -> intake-1733",
+      "https://github.com/vllm-project/vllm/pull/53122 -> intake-1735",
+      "https://github.com/vllm-project/vllm/pull/57934 -> intake-1750",
+      "https://github.com/vllm-project/vllm/pull/52816 -> intake-1723",
+      "https://github.com/z-lab/dflash -> intake-297",
+      "https://inco.ai/blog/dflash2/ -> intake-1571",
+      "https://github.com/malaiwah/quant-fidelity-suite -> existing QFS intake",
+      "https://huggingface.co/brandonmusic/GLM-5.3-Flash-tr3-4bpw/discussions/1 -> intake-1508"
+    ],
+    "pending_candidate_collisions": []
+  },
+  "stage2f_gate": {
+    "status": "awaiting-operator-selection",
+    "selected_entries": [
+      "intake-1744",
+      "intake-1745",
+      "intake-1746",
+      "intake-1747",
+      "intake-1748",
+      "intake-1749",
+      "intake-1750",
+      "intake-1751",
+      "intake-1752",
+      "intake-1753",
+      "intake-1754",
+      "intake-1755"
+    ],
+    "resolved_verifications": {
+      "intake-1744": "dive-verified",
+      "intake-1745": "dive-verified",
+      "intake-1746": "dive-verified",
+      "intake-1747": "dive-verified",
+      "intake-1748": "dive-verified",
+      "intake-1749": "dive-verified",
+      "intake-1750": "dive-verified",
+      "intake-1751": "dive-verified",
+      "intake-1752": "dive-verified",
+      "intake-1753": "dive-verified",
+      "intake-1754": "dive-verified",
+      "intake-1755": "dive-verified"
+    },
+    "all_selected_entries_resolved": true,
+    "surfaced_sources_presented": true,
+    "recommended_ingest_and_dive": [
+      "https://github.com/local-inference-lab/sparkinfer/pull/49",
+      "https://github.com/local-inference-lab/vllm/pull/139",
+      "https://github.com/sgl-project/sglang/issues/34899",
+      "https://github.com/sgl-project/sglang/pull/35541",
+      "https://github.com/sgl-project/sglang/pull/36014",
+      "https://github.com/sgl-project/sglang/issues/38975",
+      "https://github.com/sgl-project/sglang/pull/38977",
+      "https://github.com/sgl-project/sglang/issues/38009",
+      "https://github.com/z-lab/dflash/issues/159",
+      "https://github.com/sgl-project/sglang/issues/36291",
+      "https://github.com/sgl-project/sglang/pull/35725",
+      "https://github.com/vllm-project/vllm/issues/54150",
+      "https://huggingface.co/nvidia/GLM-5.3-Flash-NVFP4",
+      "https://huggingface.co/RedHatAI/GLM-5.3-Flash-NVFP4",
+      "https://arxiv.org/abs/2608.20530",
+      "https://github.com/sgl-project/sglang/pull/37462",
+      "https://github.com/brandonmmusic-max/glm-5.3-flash-exl3-4bpw",
+      "https://huggingface.co/brandonmusic/GLM-5.3-Flash-BF16-Teacher-Logits",
+      "https://github.com/vllm-project/vllm/issues/55800",
+      "https://github.com/vllm-project/vllm/issues/56064",
+      "https://github.com/canada-quant/vllm-glm53-flash-sm121",
+      "https://huggingface.co/canada-quant/GLM-5.3-Flash-DFlash2-G",
+      "https://github.com/gittensor-ai-lab/sparkinfer",
+      "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-DSpark-NVFP4",
+      "https://huggingface.co/QUASAR-QAT/Qwen3.8-27B-QUASAR-NVFP4",
+      "https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4",
+      "https://github.com/sgl-project/sglang/pull/36708"
+    ],
+    "recommended_declines": [
+      "https://github.com/sgl-project/sglang/issues/40362",
+      "https://github.com/sgl-project/sglang/issues/34297",
+      "https://github.com/sgl-project/sglang/pull/35539",
+      "https://github.com/sgl-project/sglang/issues/36048",
+      "https://github.com/sgl-project/sglang/issues/36889",
+      "https://github.com/sgl-project/sglang/issues/36941",
+      "https://github.com/tonyd2wild/GLM-5.3-Flash-NVFP4-DFlash2-2x-DGX-Spark/issues/23",
+      "https://github.com/vllm-project/vllm/pull/46995",
+      "https://github.com/vllm-project/vllm/pull/53906",
+      "https://github.com/gittensor-ai-lab/sparkinfer/issues/983"
+    ],
+    "pending_count": 37,
     "handoff_writes": 0
   }
 }
