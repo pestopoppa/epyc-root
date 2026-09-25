@@ -546,6 +546,14 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
 
   Until one of these exists, the operator is told of the expected daytime impact before it starts. Acceptance:
   the full-target floor for `5a60152ae` is written without a daytime frontdoor timeout.
+  - **2026-09-25 04:26Z, a failed first try:** `touch state-run9b/STOP` was meant as a batch-boundary drain, but
+    `serial_run` forwards SIGTERM to the running `run.py` as soon as it sees STOP (`serial_run.py` ~L2338). `run.py`
+    abandoned batch 0's planner call after ~18 min (`stopped_mid_formation`, 0 measurements). No damage beyond that
+    call: floors intact, all processes dead, CPU locks free. The right tools for a boundary stop are the serial
+    control plane's `pause` (`serial_control.py`: it completes the current batch, then waits with no child or claims)
+    or a bounded `--rounds N`. Decision: no daytime relaunch (the half-screen measurement uses cores 0-47, which
+    overlap the speech cores and the frontdoor); relaunch in the evening as `state-run9c` on the same store, so
+    batch 0 and batch 1's calibration run overnight.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,

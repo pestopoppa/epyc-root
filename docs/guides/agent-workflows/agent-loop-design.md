@@ -365,7 +365,10 @@ recipe/request bytes and the existing provenance checks remain required.
 
 To stop, create `STOP` in the routing state directory, or signal the captured
 wrapper PID with SIGTERM/SIGINT. It signals only its captured child and waits for
-the existing owner to drain. STOP persists across wrapper restarts. What a stop does to an actor call already in
+the existing owner to drain. STOP persists across wrapper restarts. **STOP is not a between-batches drain:** the
+wrapper forwards SIGTERM to the running child at once, so a forming lane (e.g. an in-flight planner call) is
+abandoned (measured 2026-09-25, DS41-C28). To stop between batches, use the control plane's `pause` (below) or a
+bounded `--rounds N`. What a stop does to an actor call already in
 flight changed at research `21ca61b0`; see *Launching and stopping a DS41-style serial run* below. Exit 0 without
 the same-target, same-input terminal continuation is not a successful batch.
 An unreconciled active batch refuses automatic relaunch rather than overlapping
