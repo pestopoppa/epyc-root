@@ -90,6 +90,12 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("kv-quant-27b-v10-measurement", "kv_quant_27b_v10",
+           _files("belief_measurements.jsonl", "*/belief_measurements.jsonl",
+                  "*/*/belief_measurements.jsonl"),
+           default=Path("/workspace/repos/epyc-inference-research/data/gpu-mi210/kv-quant-27b-v10-sweep"),
+           note="v10 MI210 KV-quant sweep sidecars; pre-hook/failed runs yield no claims",
+           task="VB-KVQ-V10"),
     Source("kb-rag-qlen", "kb_rag_query_length",
            _files("*query_length*.json", "**/*query_length*.json"),
            note="persisted `query_length_report.py --out` snapshots", task="VB-KBRAG-QLEN-R"),

@@ -4,7 +4,7 @@
     "handoff-active": 174,
     "handoff-blocked": 2,
     "handoff-completed": 197,
-    "progress": 491,
+    "progress": 492,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
@@ -15,17 +15,17 @@
       "changed": 1,
       "removed": 0
     },
-    "at": "2026-09-25T14:17:05Z",
+    "at": "2026-09-25T15:11:21Z",
     "scope_paths": [
-      "handoffs/active/amd-ai-lab-website-publication.md",
-      "progress/2026-09/2026-09-25-codex.md"
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "progress/2026-09/2026-09-25-codex-vidya.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-25T14:17:05Z",
+  "scan_time": "2026-09-25T15:11:21Z",
   "schema_version": 1,
-  "source_set_hash": "18e4854a458be3ef04eadd6bc599c9ef238376b96be0722f1cfb1a7a2878dc17",
+  "source_set_hash": "e71d458c81ff2a5a88aab9350bdb818323bb48093b56625ad9f8a8be80863bc7",
   "sources": [
     {
       "content_hash": "8595f5d9339b0046d8720c31a58567e781bd250c32406bdc381c523e28197e7d",
@@ -1372,10 +1372,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "85821f558dd745b5ab4fca0212a3a10abf2bd904b91920919bf1b38345c19d20",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "138e19c434bb1e5c0a150bb2307d6f35afb6ca70475edbcadb7d685ce8a94f41",
+      "modified": "2026-09-25T15:06:35Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 257351,
+      "size": 259604,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -8044,6 +8044,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "9552bfe5edabfccf1588fda2648620bfb36ca29a7ab24e732d75e719c804ac71",
+      "modified": "2026-09-25T15:08:38Z",
+      "path": "progress/2026-09/2026-09-25-codex-vidya.md",
+      "size": 3207,
+      "title": "2026-09-25 \u2014 Vidya v10 KV-quant reader and planner consumption",
+      "type": "progress"
+    },
+    {
       "content_hash": "dbf47334f11b1da9f8d46bf33745ad7d7c798aad576b1b3fcecb0a7a3612ad7e",
       "modified": "2026-09-25T14:15:16Z",
       "path": "progress/2026-09/2026-09-25-codex.md",
@@ -8940,7 +8948,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1114,
+  "total_new": 1115,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
