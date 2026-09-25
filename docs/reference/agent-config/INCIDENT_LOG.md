@@ -288,3 +288,25 @@ a registry `runtime:` field plus `observer_census.py --live` — remains open as
 out of scope here. Rule fed: runtime-plane daemons execute from canon only (CLAUDE.md § Working-tree
 identity; `scripts/coordination/WORKTREE_MIGRATION.md` § The two planes;
 `handoffs/active/non-inference-backlog.md` NIB2-81/NIB2-81a).
+
+## INC-20260925-parallel-repack-lost-in-bundled-revert
+The OpenMP tensor-repack parallelization (52ddd3200, 2025-12-21, 1.5-2.5x CPU model-load speedup;
+upstream PR #18239 closed unmerged) shipped in production-consolidated v1-v5, but its test
+(tests/test-repack-parallel.cpp) never followed it past v1 (be03cc3ae). The v6 fresh-upstream rebuild
+forward-ported it inside one bundled commit, v6 Stage 1a 814e81782 (2026-06-23: AVX-512BW Q8_0/Q6_K
+8x8 kernels + OpenMP repack + CPU_REPACK NUMA mbind). When the kernels (-9% at 96 threads, not
+byte-exact) and the mbind (neutral-to-negative) failed their gates, the whole commit was
+`git revert`ed (358f0c748, 2026-06-24), taking the orthogonal, never-measured load-time feature with
+it. The v6 plan's commit list, the kernel-reconciliation audit ("deliberately reverted") and the
+kernel-lineage memory all labelled the commit only as "CPU2 AVX-512BW repack kernels", so v7-v10 and
+the AutoKernel champion carried zero omp pragmas in repack.cpp unnoticed for three months. It
+surfaced 2026-09-25 when each 519 GB DS41 calibration launch was found spending ~3.5 min in a
+single-threaded load (~2.8 h per 48-launch calibration); the loader thread was additionally pinned to
+ONE CPU by libgomp under `OMP_PROC_BIND=spread`, so every production CPU server load ran on a single
+core. Re-ported onto champion 2b57340bf as 25132e042 (test restored and extended), alongside a
+parallel pread reader run as an OpenMP team (90c12df42, `--load-threads` / `LLAMA_ARG_LOAD_THREADS`),
+which is what actually speeds up the DS41 recipe (under GGML_IQK=1 it hits no CPU_REPACK tensors);
+bit-exact vs the champion, ~3.2x warm / ~2.1x cold on a 27B load. Rule fed (proposed, operator to
+ratify into CLAUDE.md § Experimental Kernel Workflow): forward-port one feature per commit; before
+reverting a bundled commit, split it and revert only the gated-out parts; a feature's test travels
+with it through every consolidation.
