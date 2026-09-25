@@ -47,7 +47,7 @@ No session-derived actionable remains only in conversation prose. The 53 open ta
 - Compiled the research into seven durable wiki categories: agent architecture, autonomous research, benchmark methodology, routing intelligence, multimodal systems, formal verification, and knowledge management.
 - Added measured writer-review evidence for each page. All seven review validations passed, and project-wiki lint reported zero errors.
 - Advanced the wiki source manifest only for the 17 Stage 4 sources, this wrap-up report, and the new AutoPilot history ledger. Six later or concurrent source changes remain visible for their owning compilation pass: agent-loop design, two AutoKernel handoffs, DeepSeek-V4.1 evaluation, the later Vidya update, and the main-ak-seat progress report.
-- Compacted `autopilot-continuous-optimization.md` from 3,603 to roughly 840 lines. The exact prior file is preserved in a reciprocal history sibling, and all 101 open checkbox items remain in the active handoff.
+- Compacted `autopilot-continuous-optimization.md` from 3,603 to 901 lines. The exact prior file is preserved in a reciprocal history sibling, and all 101 open checkbox items remain in the active handoff.
 - Refreshed RTG-02, EVL-04, EVL-13, EVL-14, REV-02, REV-03, REV-09, and UFH-01 to current runnable next actions. No active handoff or index row qualified for pruning.
 - Kept the README unchanged after its freshness check passed.
 

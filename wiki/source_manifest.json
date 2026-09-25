@@ -15,16 +15,16 @@
       "changed": 1,
       "removed": 0
     },
-    "at": "2026-09-25T19:40:20Z",
+    "at": "2026-09-25T19:42:53Z",
     "scope_paths": [
-      "handoffs/active/autopilot-continuous-optimization.md"
+      "progress/2026-09/2026-09-25-codex-system1-wrapup.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-25T19:40:20Z",
+  "scan_time": "2026-09-25T19:42:53Z",
   "schema_version": 1,
-  "source_set_hash": "87df6e389c32d03924f4e2d3b0b91cc8a4976ba08a0bfe63bcf3af6d46e605b6",
+  "source_set_hash": "6a5b7fb492dcee40c2cb0d93f9bd5679eaba3c2aef6929a5614c0bd04e7d70d6",
   "sources": [
     {
       "content_hash": "8595f5d9339b0046d8720c31a58567e781bd250c32406bdc381c523e28197e7d",
@@ -8059,10 +8059,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "cbfa3fa2df6a14fe36b16b07a0a331ab423af9e3ae6888eb67552cd6bbbd23a9",
-      "modified": "2026-09-25T19:37:45Z",
+      "content_hash": "fab339cdcf1f0301c6d08ed77aa43918c05618fad01dd2113d27739a669afe0f",
+      "modified": "2026-09-25T19:42:41Z",
       "path": "progress/2026-09/2026-09-25-codex-system1-wrapup.md",
-      "size": 6010,
+      "size": 6002,
       "title": "System One and Evolution Research Intake Wrap-Up \u2014 2026-09-25",
       "type": "progress"
     },
