@@ -389,6 +389,58 @@ See step 0 below. A promotion with no anchor is not a promotion, it is a one-way
     (i) whether a `production-consolidated-vN` branch is cut and the tree advanced, and (ii) the
     CLAUDE.md freeze block, which the ratification writes, not an agent.
 
+### 8g. Public distribution is downstream of the store freeze
+
+The GitHub distribution is a convenience layer for outside users; it is not a
+second production authority. Publish it only after the store cutover, store
+verifier, provenance, linkage, and ratification checks above pass.
+
+For the llama.cpp production surface, use an immutable annotated tag named
+`production-consolidated-vN` pointing at the exact frozen source commit. Do not
+move `main` to mean "production": `main` is a development/upstream-facing ref,
+whereas the tag is the reproducibility identity. A public release may be created
+from that tag, but it must never be used to select the serving binary.
+
+The release checklist is:
+
+1. Prove the tag, store provenance, and live production versions agree:
+
+   ```bash
+   TAG=production-consolidated-vN
+   SOURCE=/mnt/raid0/llm/llama.cpp
+   for B in cpu gpu; do
+     TARGET=$(readlink -f "/mnt/raid0/llm/kernels/production/$B")
+     SHA=$(git -C "$SOURCE" rev-parse "refs/tags/$TAG^{}")
+     test "$SHA" = "$(sed -n 's/^- commit `\([0-9a-f]*\).*/\1/p' \
+       "${TARGET%/bin}/PROVENANCE.md")"
+     "$TARGET/llama-server" --version
+   done
+   bash scripts/session/verify_kernel_store.sh
+   ```
+
+2. Build release archives from the versioned store target
+   (`readlink -f /mnt/raid0/llm/kernels/production/$B`), never from a source-tree
+   build directory or `/mnt/raid0/llm/tmp`. Preserve the runtime layout, include
+   the complete executable and library set, ship `PROVENANCE.md`, and carry the
+   store `SHA256SUMS` or a manifest derived from the exact release archive.
+
+3. Ship the release-side `QUICKSTART.md`, `verify-release.sh`, recipe files, and
+   a warning that model weights are not included. The verifier must be run after a
+   fresh download and extraction; it must check archive hashes, `--version`, the
+   frozen commit marker, and backend-specific linkage. A package that only checks
+   the archive checksum but never executes the packaged binary is incomplete.
+
+4. Upload the CPU and HIP assets to the GitHub release for the immutable tag and
+   record the release URL, asset names, and hashes in the freeze record. The
+   llama.cpp release covers only the CPU/GPU surfaces; the frozen speech kernels
+   (`production-speech-v1`) require their own project releases or an explicitly
+   versioned kernel-set manifest. Never imply that a llama.cpp release contains
+   whisper.cpp or qwentts.cpp.
+
+5. Treat a release asset rebuild, replacement, or retag as a new release event.
+   Never overwrite an asset under an existing production tag without a new
+   ratification and a new tag.
+
 
 ## Gate
 
