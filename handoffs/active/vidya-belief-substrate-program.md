@@ -2710,6 +2710,14 @@ row: `scripts/vidya/adapters/README.md`. Project, do not grade.
   - Then add a projection: extend `autokernel-actor-seat`, or register a sibling. Project, do not grade.
   - Do it before the INF-78 OAB-9 A/B verdict gates a campaign default. Acceptance: one post-hook metrics row that
     `cli.py ingest ak-actor-seat --dry-run` projects with `refused=0`.
+  - **Update 2026-09-25.** The producer is merged to research main `30631761`. OAB-9 ran and kept the existing
+    default (`inline`), so no default changed on an unprojected record. Post-hook rows now exist for the acceptance
+    check:
+    - research `605e8301` `artifacts/autokernel_ctx_ab_20260925/actor-calls.jsonl` (4 calls);
+    - DS41 run 9b's `state-run9b/targets/*/workers/actor-replies/actor-calls.jsonl` (live).
+
+    The A/B driver's own `results.jsonl` is NOT a separate source. Its columns are these rows plus a server
+    fingerprint, and its read counts belong to VB-AK-CTX-1's read facet.
 - [ ] **VB-AK-CTX-1 — join `epyc.autokernel.actor_context_bundle.v1` manifests to their call records** (filed
   2026-09-24, main-ak-seat). Producer: research `lane/ak-ctxvar-20260924` `ce5800cb`, `loop/actor_context.py`,
   writing `workers/actor-context/<stamp>-<role>-*/manifest.json` bound to the prompt sha256.
@@ -2720,6 +2728,13 @@ row: `scripts/vidya/adapters/README.md`. Project, do not grade.
   - The manifest records what was OFFERED, never what was READ. Reads come from the export's tool parts (INF-78
     OAB-12) and must not be synthesized from the manifest.
   - Acceptance: an OAB-9 variable-arm call projects with its bundle facet; an inline-arm call projects with none.
+  - **Update 2026-09-25.** The producer is merged to research main `30631761`. Both OAB-9 variable-arm manifests
+    and their prompt indexes are committed in research `135b8492`
+    (`artifacts/autokernel_ctx_ab_20260925/bundle-manifests/`). The manifests are byte-identical. The INDEX copies
+    carry the PII hook's period redaction (TOC-RD-1b); the originals are under `/mnt/raid0/llm/tmp/ak-ctx-ab/`.
+    Their call records are in `actor-calls.jsonl` beside them. The A/B driver derived the READ side from the
+    export's tool parts (`results.jsonl` → `bundle.access`: read counts per section, no bytes). That derivation is
+    the reference for the read facet once OAB-12 moves it into the exporter.
 
 ## VB-KVU-1 / VB-SPEECH-CPU-1 — stack-window measurement sources (filed 2026-09-24, main-ak-seat)
 

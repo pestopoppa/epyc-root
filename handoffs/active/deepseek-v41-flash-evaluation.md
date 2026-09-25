@@ -431,6 +431,11 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     `/mnt/raid0/llm/tmp/research-untracked-backup-20260924`, and the shared research clone was fast-forwarded; it
     is at `6afc7eed` (≥ `34373dd8`, checked with `merge-base --is-ancestor`). This box closes on run 9's launch
     line and first planner reply (its acceptance), not before.
+    **Launch-line half satisfied 2026-09-25.** Run 9 launched from the shared clone at `6afc7eed`. Run 9b launched
+    from `30631761` (cwd `/mnt/raid0/llm/epyc-inference-research`, read from `/proc`), and both are ≥
+    `34373dd8`. Run 9 produced no planner reply to read: its one call was stopped at 61 min and recorded as rc −15.
+    **Still open on run 9b's first planner reply** (opencode 3284175, in flight since 04:09Z). Read it against the
+    TD-21.29/30 semantics above, then tick.
   **Run 8 STOPPED 2026-09-24 ~15:32Z** on operator request, for the stack-configuration window (`state-run8/STOPPED.txt`).
   - Why: `run.py` held every CPU region lock through the full-target floor calibration, and that timed out the
     production frontdoor's `/chat` on :8070.
@@ -485,6 +490,62 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     launched by main-ak-seat late tonight after the wrap-up, state dir `state-run9`. Before launch: the API reload
     for orch `c347600e` (TD-21.33c; `orchestrator_stack.py reload orchestrator`, API only; verify pid lstart >
     commit time).
+
+  **Run 9 / 9b (2026-09-24 20:14Z → 2026-09-25 04:04Z, main-ak-seat).** Acceptance status: the launch line
+  satisfies every clause:
+  - target `ds41-5a60152ae-cpu-t48-dspark-b2`;
+  - research `6afc7eed`, then `30631761`, both ≥ `34373dd8`;
+  - no lane path;
+  - :8083 `-kvu`, `n_ctx_slot` 196,608.
+
+  The remaining clause, "first planner reply not truncated at 98,304", waits on run 9b's first planner reply
+  (in flight since 04:09Z). Tick this box when that reply lands.
+  - **First attempt REFUSED.** The store's champion of record was the old port anchor `ebb68dc55`, not the anchor
+    `5a60152ae` (0 keeps, 1 experiment row). The operator approved the fresh-store route at 20:14Z, following the
+    DS41-C13 precedent:
+    - the old store is archived as `store-run8-cor-ebb68dc55/` (`ARCHIVED.txt`; reversible by `mv`);
+    - a fresh `store/` carries over `inbox/` (the seeded hypotheses);
+    - the refused state dir is kept as `state-run9-refused-cor/`.
+
+    The run-9 dry run (rc=0) did not exercise this check (→ DS41-C27).
+  - **Run 9 launched 2026-09-24 20:14:55Z**: `serial_run` 2580766, `run.py` 2580771, `state-run9/`.
+  - **Half-screen floor written 2026-09-25 00:25Z**, in `store/runtime-source-floors/5b995a27…/3a0b8832…/`:
+    - cores 0-47, `-t 48`, `matched_process_v2`, 48 launches (~4.7 min each);
+    - **floor 5.789%** (interval 2.91-9.55%), between-launch SD 2.79%, MDE 3.0%;
+    - run 7's floor on the old anchor was 5.097%.
+  - **Loop order learned (the pre-launch plan was wrong).** It is: half floor → batch 0 half-screen PROPOSAL and
+    its measurement → batch 1 full-target calibration (~4 h). It is NOT both floors back to back (~8.5 h). So the
+    full-target calibration comes after batch 0, not overnight (→ DS41-C28).
+  - **Run 9 STOPPED 2026-09-25 01:30Z** at the half-floor → batch-0 boundary, for the morning sequence (merge the
+    integration lane, then run the INF-78 OAB-9 A/B). The batch-0 planner had been live 61 min on the old inline
+    code, and that call was discarded. TERM went to `run.py` 2580771 and `serial_run` 2580766, and everything died,
+    including opencode 3054534, with no KILL: **the DS41-C22 stop path worked on a live actor call.** The CPU
+    locks were freed, and `state-run9/STOPPED.txt` was written.
+  - **Research main fast-forwarded** `170c763c` → `30631761` (the integration lane: `f4a5d240`, `ce5800cb`,
+    `0bf2d7c2`, `535391b6`, `8a9d2a40`, `30631761`). The shared clone was fast-forwarded after run 9 was dead.
+  - **Run 9b launched 2026-09-25 04:04Z**:
+    - `serial_run` 3279632, `run.py` 3279639, `state-run9b/`, same store;
+    - default `inline` context mode (the OAB-9 winner), now with `node_profile` and per-call metrics;
+    - `EPYC_ROOT_REPO=/mnt/raid0/llm/worktrees/root-main-epyc-root-repo`, a detached checkout of root
+      `origin/main` `80c7c1df`, not a lane.
+
+    The half floor was reused: it went straight to the planner call (opencode 3284175, 04:09Z) with no
+    re-calibration. **Batch 1's full-target calibration (~4 h, every CPU region lock) follows batch 0's proposal and
+    measurement, so it will likely run mid-day. That is a known daytime frontdoor (:8070) impact** (DS41-C28).
+- [ ] DS41-C27 — **The dry run must check the store's champion of record against the anchor.** Run 9's dry run
+  returned rc=0, and the live launch was then refused on COR `ebb68dc55` ≠ anchor `5a60152ae`. A refusal found
+  only at launch costs an off-hours window. Fix: `serial_run --dry-run` (and `run.py`'s dry path) reads the store's
+  COR the same way the live preflight does and fails with the same refusal text. The failure should name the two
+  remedies: the DS41-C13 fresh-store route, or rebinding the anchor. Test: a store whose COR differs from the
+  resolved anchor makes the dry run exit non-zero with that reason; a matching store passes.
+- [ ] DS41-C28 — **Schedule batch 1's full-target calibration off-hours.** Run 9b reaches it after batch 0's
+  proposal and measurement, likely mid-day on 2026-09-25. It holds every CPU region lock for ~4 h (48 launches
+  × ~4.7 min, cores 0-95), which blocks the production frontdoor (:8070) and the CPU speech cores. Options:
+  - let run 9b stop at the batch-0 → batch-1 boundary and relaunch in the evening (floors persist per anchor);
+  - have `serial_run` hold calibration outside an operator-set window (OP-41 admission control).
+
+  Until one of these exists, the operator is told of the expected daytime impact before it starts. Acceptance:
+  the full-target floor for `5a60152ae` is written without a daytime frontdoor timeout.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
@@ -497,6 +558,12 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   checkout: `test_existing_cpu_run` (3: `oracle()` unexpected kwarg `require_reference`) and
   `test_serial_roster` (3: "issued selection awaits settlement"). Not this session's change; fix or
   re-fixture.
+  **Re-checked 2026-09-25 on research `605e8301`** (orchestrator venv pytest, cores 72-79):
+  - `test_existing_cpu_run` passes (the `oracle()` stand-in was fixed by `535391b6`);
+  - `test_serial_roster` still fails 3 of its tests, with the same `SerialSchedulingRefused: … issued selection
+    awaits settlement`.
+
+  That half is still open.
 - [x] DS41-C20 — **Bounded opencode seat: merge gate.** ✅ 2026-09-24 — merged to research main `21ca61b0`
   (seat `e9495971` + follow-ups `1c7d0a2d`), `--actor-seat` default **plain** per the A/B verdict below (operator
   decision); run 8 launched from the merged tree (acceptance iii). Research worktree
@@ -578,7 +645,8 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     - [x] DS41-C20d1 — perf report/annotate cache built and measured (`f4a5d240`); built, not yet re-run ✅ 2026-09-24
     - [ ] DS41-C20d2 — re-run the bounded arm once with the cache and the metrics rows (after the integration lane
       merges; campaign-idle GPU window) and attribute the C20c deficit, or record it as unattributed
-  - [ ] DS41-C20e — **`render_context` never prints `node_profile`**, although the program directive tells the
+  - [x] DS41-C20e — ✅ 2026-09-25 — fixed in both context modes by research `8a9d2a40` (merged to main
+    `30631761`). The new inline control prompt is 79,890 chars, sha256 `a265a03a…`. **`render_context` never prints `node_profile`**, although the program directive tells the
     planner to "Read node_profile". Found building `ce5800cb`. Fix it in BOTH context arms (inline and variable)
     before the INF-78 OAB-9 A/B, so the two arms stay comparable; it changes the inline control's prompt, so record
     the new prompt sha. In flight on the integration lane `lane/ak-planner-integ-20260924`.
@@ -590,7 +658,14 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     a planner call (a competing-work witness hazard, DS41-C2b-gate) and ignores the directive. Deny compiler
     invocations to planner `bash` via `permission`, or detect them in the per-call metrics (tool parts naming
     `cc`/`c++`/`cmake`) and flag them. Fix task: INF-78 OAB-11.
-  - [ ] DS41-C20h — **merge the three reduced-scope lanes and relaunch.** At run 9's calibration boundary (~04:45Z),
+  - [x] DS41-C20h — ✅ 2026-09-25:
+    - run 9 was stopped at 01:30Z, at the half-floor → batch-0 boundary;
+    - `lane/ak-planner-integ-20260924` was merged, fast-forwarding research main `170c763c` → `30631761`, and the
+      shared clone was fast-forwarded after run 9 was dead;
+    - INF-78 OAB-9 ran, and inline won;
+    - run 9b was relaunched from the merged tree at 04:04Z on the default `inline` (C25's run 9 / 9b block).
+
+    **merge the three reduced-scope lanes and relaunch.** At run 9's calibration boundary (~04:45Z),
     stop run 9 (floors persist per anchor). Merge `lane/ak-planner-integ-20260924`:
     - `ce5800cb`, `0bf2d7c2` and `f4a5d240`;
     - the C20e fix;
@@ -650,7 +725,15 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   so the parsed name carried them and the resolved annotate missed. Fixed (the name ends at the first double
   space) and pinned by a test on that verbatim row shape; not re-smoked (one invocation was the budget). Tests:
   9 new in `test_actor_tools_mcp.py` with the real run-7 symbol names.
-- [ ] DS41-C24 — **Release run 8's pin on a lane worktree for `EPYC_ROOT_REPO`.** Run 8 reads the VB-AK-SEAT
+- [x] DS41-C24 — ✅ 2026-09-25 — acceptance met:
+  - run 9's first `actor-calls.jsonl` line is `epyc.autokernel.actor_call.v1` (planner, rc −15 at the 01:30Z stop,
+    `seat.arm` plain);
+  - no launch line carries a lane path;
+  - run 9b's `EPYC_ROOT_REPO` (read from `/proc`) is `/mnt/raid0/llm/worktrees/root-main-epyc-root-repo`, a detached
+    checkout of root `origin/main` `80c7c1df` that carries the capture module.
+
+  From run 9b on, the metrics line precedes each v1 line, so check the first `actor_call.v1` line (below).
+  **Release run 8's pin on a lane worktree for `EPYC_ROOT_REPO`.** Run 8 reads the VB-AK-SEAT
   call-record contract from `/mnt/raid0/llm/worktrees/ak-seat-handoffs-20260924` because the shared clone's working
   tree (`/workspace`, the default) predates root `ee0d48f1`; that lane worktree is frozen while run 8 runs. Before
   run 9: point `EPYC_ROOT_REPO` at a root checkout that follows `origin/main` (the shared clone once its working tree

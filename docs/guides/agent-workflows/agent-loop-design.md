@@ -134,7 +134,7 @@ re-run costs 90 seconds, while proving a run was honest cost 3,869 lines in
 
 **The only durable output is a row saying faster-or-not.** This is the anti-regrowth
 property, and it is a design requirement rather than an aesthetic one. If the loop's
-sole product is an entry in `experiments.md` and a commit on the champion branch, no
+sole product is an entry in the store's experiments ledger and a commit on the champion branch, no
 agent can spend a week on receipts and call it progress.
 
 **Hypotheses are generated, not selected from a frozen list.** A static portfolio goes
@@ -431,20 +431,78 @@ C22). The code is research main `21ca61b0`.
   - Only forming stages make actor calls, so a lane holding the serialized tail still finishes its A/B.
 - **Actor seat.** `--actor-seat plain` (bare `opencode run`) is the default, per the DS41-C20 A/B: plain 31.9
   min vs bounded 44.3 min on one proposal, both schema-valid. `--actor-seat bounded` (per-run opencode config,
-  output-capped MCP tools, step cap) is opt-in; its deficit was perf-tool time (DS41-C20d). The pitfalls of
+  output-capped MCP tools, step cap) is opt-in; its deficit was attributed to perf-tool time, which is now
+  doubted (the cache measures 1.3 s per uncached call; DS41-C20d). The pitfalls of
   driving `opencode run` headless are listed in
-  [`opencode-p03-audit-20260916.md`](../../reference/harness-candidates/opencode-p03-audit-20260916.md) →
+  [`docs/reference/harness-candidates/opencode-p03-audit-20260916.md`](../../reference/harness-candidates/opencode-p03-audit-20260916.md) →
   *Addendum 2026-09-24*.
+
+**Added from run 9 (2026-09-24/25, research `6afc7eed` then `30631761`, anchor `5a60152ae`):**
+
+- **Loop order after an anchor change.** The pre-launch plan assumed both floors calibrate back to back
+  (~8.5 h), and that was wrong. The real order is:
+  1. The half-screen floor (cores 0-47, `-t 48`, 48 `matched_process_v2` launches, ~4.7 min each, ~4 h).
+  2. **Batch 0's half-screen PROPOSAL and its measurement.** This includes a planner call, which ran 61 min in
+     run 9.
+  3. **Batch 1's full-target calibration** (cores 0-95, ~4 h, every CPU region lock).
+
+  So an off-hours launch at ~20:00Z puts the full-target calibration, and its frontdoor (:8070) impact, well into
+  the next morning. Plan the window around step 3, not around "calibration". Floors persist per anchor in
+  `store/runtime-source-floors/`, so a relaunch on the same anchor goes straight to the planner (DS41-C28).
+- **A store whose champion of record (COR) is not the anchor refuses the launch**, and the dry run does not
+  check it. Run 9's first attempt was refused because the store's COR was the old port anchor `ebb68dc55`, with 0
+  keeps and 1 experiment row. The route the operator approved follows the DS41-C13 precedent:
+  - archive the store (`store-run8-cor-ebb68dc55/ARCHIVED.txt`);
+  - start a fresh store, carrying over `inbox/`;
+  - keep the refused state dir (`state-run9-refused-cor`).
+
+  Until the dry run checks COR against the anchor (DS41-C27), compare them by hand before an off-hours launch.
+- **`EPYC_ROOT_REPO`: point it at a detached checkout of root `origin/main`, not a lane**
+  (run 9b: `/mnt/raid0/llm/worktrees/root-main-epyc-root-repo`). Refresh that checkout between runs, never
+  during one.
+- **The DS41-C22 stop path works on a live actor call.** Run 9 was stopped 61 min into a planner call. TERM on
+  `run.py` and `serial_run` ended everything, including opencode, and freed the CPU locks with no KILL. The first
+  `actor-calls.jsonl` line was an `actor_call.v1` with rc −15. A stop *during calibration* still needs DS41-C26.
 
 ## Context as files, per-call metrics, tool-output caching (seat-side, 2026-09-24)
 
 The operator directed these three techniques to be built on the opencode seat as a reduced-scope precursor to the
-orchestrator wiring below. They are built on research lanes `ce5800cb`, `0bf2d7c2` and `f4a5d240` (off `170c763c`,
-unmerged) and **not yet A/B'd**. The full write-up and its mapping to OAB-7/OAB-4/R4/S4-T1 are in
+orchestrator wiring below. They were built on research lanes `ce5800cb`, `0bf2d7c2` and `f4a5d240`, merged to
+research main `30631761` (2026-09-25), and the context placement was A/B'd (INF-78 OAB-9, below). The full
+write-up and its mapping to OAB-7/OAB-4/R4/S4-T1 are in
 `handoffs/active/autokernel-orchestrator-actor-backend.md` → *Techniques learned in the opencode seat*.
 
-**Context as files.** Do not inline a large context bundle into an append-only agent conversation. Every byte of
-it stays in every step, until compaction.
+**A/B result: context as files LOST on the 27B plain seat** (2 pairs, research `605e8301`,
+`artifacts/autokernel_ctx_ab_20260925/`):
+
+| | wall (min) | steps | tool calls | decoded | peak context |
+|---|---|---|---|---|---|
+| inline | 37.6 / 28.7 | 23 / 24 | 25 / 26 | 52.9k / 43.8k | 104k / 92k |
+| variable | 54.4 / 33.6 | 49 / 29 | 54 / 35 | 68.9k / 47.7k | 163k / 118k |
+
+Every call had 0 compactions and a schema-valid reply. The variable arm's first-step context was half the inline
+arm's (19.1k vs 40.6k).
+
+What the result teaches:
+- **A thin prompt made the model explore MORE, not less.** It read all six file-only sections back, which is
+  everything inline carried, then explored lane source further. Moving context out of the prompt does not by
+  itself reduce work.
+- **The RLM-style benefit presupposes a model or scaffold that pulls precisely.** A 27B left to pull freely does
+  not pull precisely.
+- **On a 196k slot, compaction is no longer the binding cost.** Inline no longer compacted, so the main predicted
+  benefit had nothing to fix. Re-test on a small slot before generalising.
+- **The next levers are elsewhere:**
+  - fixed overhead (INF-78 OAB-10);
+  - the planner reading its own lane and never building (OAB-11);
+  - orchestrator-side scouts that pull on the model's behalf (OAB-8).
+
+  Hiding context is not one of them.
+- **n = 2 with a fixed inline-first order**, so the magnitudes are soft; the direction held on every cost metric.
+
+**Context as files.** Every byte of an inlined bundle stays in every step of an append-only conversation until
+compaction. That motivated this technique, but **the A/B above shows that moving the bytes to files does not
+remove them on a model that reads everything back.** Use files when compaction binds (small slot) or when the
+reader pulls precisely (a scaffold with pull caps, OAB-12); otherwise inline wins. The mechanics, if you use it:
 - **Write the bundle to a per-call directory beside the working tree**, never inside it: a file there rides into
   the authored diff. The layout is sections, per-key JSON, `INDEX.md` with sizes, and a manifest bound to the
   prompt's sha256.
@@ -488,7 +546,7 @@ explain the ~12-minute loss it was built for. Measure first.
   lane.
 
 More opencode pitfalls:
-[`opencode-p03-audit-20260916.md`](../../reference/harness-candidates/opencode-p03-audit-20260916.md) →
+[`docs/reference/harness-candidates/opencode-p03-audit-20260916.md`](../../reference/harness-candidates/opencode-p03-audit-20260916.md) →
 *Addendum 2026-09-24*.
 
 ## Who owns fan-out and context: the orchestrator (operator ruling, 2026-09-24)
@@ -508,7 +566,9 @@ What to build instead:
   run concurrently through `repl_environment/parallel_dispatch.py`. The loop sends one request and never
   implements fan-out itself (INF-78 OAB-8).
 - **Context:** the context bundle becomes a REPL variable that the model inspects instead of an inlined prompt
-  (the RLM pattern). Tool output lands in variables instead of the conversation (INF-78 OAB-7).
+  (the RLM pattern). Tool output lands in variables instead of the conversation (INF-78 OAB-7). Its seat-side
+  precursor lost the 2026-09-25 A/B on the 27B plain seat, so the orchestrator version must add what the seat
+  lacked: exact pull accounting with a byte cap (OAB-12) and scouts that pull for the model (OAB-8).
 
 Long term, the loop calls the orchestrator as a single `Backend`, and the orchestrator owns model choice
 (`handoffs/active/autokernel-orchestrator-actor-backend.md`, INF-78).

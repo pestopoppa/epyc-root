@@ -1,6 +1,7 @@
 # AutoKernel — the orchestrator as planner/author backend
 
-**Status**: ACTIVE — PLANNED 2026-09-24 (operator direction); reference seat A/B pending
+**Status**: ACTIVE — PLANNED 2026-09-24 (operator direction). Seat A/Bs done: plain beats bounded (DS41-C20c),
+and inline beats context-as-files (OAB-9, 2026-09-25). Next: OAB-1.
 **Created**: 2026-09-24
 **Priority**: MEDIUM (long-term direction; the campaign keeps opencode + 27B meanwhile)
 **Categories**: agent_architecture, autonomous_research, hardware_optimization
@@ -126,6 +127,14 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   DS41-C18: in the seat A/B every arm compacted once however tool output was capped (append-only conversation).
   Acceptance: OAB-4's `orch` arm reports first-step context and max context well below the plain seat's 39k / 93k
   with no compaction. Zero inference to build; OAB-4 measures it.
+  **Status 2026-09-25: the seat-side precursor was built and A/B'd, and it LOSES on the 27B plain seat.** OAB-7s
+  merged to research main `30631761`. In OAB-9 it halved first-step context, but it raised peak context
+  (163k/118k vs 104k/92k), steps, tool calls and wall in both pairs. The model read the whole bundle back, then
+  explored more. OAB-7 therefore stays open only as an orchestrator design that must carry what the seat lacked:
+  - exact pulls counted and capped (OAB-12);
+  - scouts that pull for the planner (OAB-8).
+
+  It should not be built as "move the context out of the prompt" alone. See §Techniques learned → 4.
 - [ ] **OAB-8 — fan-out is the orchestrator's decision, not the model's.** Offered an allowed `task` tool plus
   fan-out guidance, the 27B never delegated once in 69 bounded steps (DS41-C20c). Splitting is orchestration: for a
   proposal, the orchestrator (`repl_environment/parallel_dispatch.py`) runs one read-only scout per top profile
@@ -154,7 +163,8 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
 
 The operator directed a reduced-scope build on the opencode seat while DS41 run 9 calibrated, to learn
 what the orchestrator wiring must copy. Three research lanes came out of it. All three branch from research
-`origin/main` `170c763c`, are pushed and unmerged, and **none has been A/B'd yet**. The operator called
+`origin/main` `170c763c`. They were merged to research main `30631761` on 2026-09-25 through
+`lane/ak-planner-integ-20260924`, and the context placement was A/B'd the same night (→ 4; **inline won**). The operator called
 these learnings "immensely important" to the final orchestrator wiring. Chronology:
 `progress/2026-09/2026-09-24-main-ak-seat.md` → *Reduced-scope planner build (evening)*. How-to form:
 [`agent-loop-design.md`](../../docs/guides/agent-workflows/agent-loop-design.md) → *Context as files,
@@ -272,18 +282,80 @@ cap them in bytes (OAB-12).
   from step timestamps if the export carries them; otherwise report it as unknown, never as zero. Status:
   DS41-C20d in [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md).
 
+### 4. The context-placement A/B (OAB-9, 2026-09-25): inline wins
+
+**Setup.** Two ABAB pairs, run 01:28Z to 04:03Z. Pair 3 did not fit the 3.5 h budget.
+- Plain opencode seat, research `30631761`.
+- :8083 Qwen3.8-27B Q8_0, one server generation (pid 2009477): `-kvu`, a 196,608-token slot, 4 slots.
+- The inline control is run 8's planner prompt plus `node_profile` (79,890 chars, sha `a265a03a`). The variable
+  arm's prompt is the index only (18,055 chars).
+- Evidence: research `605e8301`, `artifacts/autokernel_ctx_ab_20260925/` (README, `driver.py`, `results.jsonl`).
+  The replies and bundles stay under `/mnt/raid0/llm/tmp/ak-ctx-ab/`.
+
+| | wall (min) | steps | tool calls | decoded | first ctx | peak ctx | compactions |
+|---|---|---|---|---|---|---|---|
+| inline p1 / p2 | 37.6 / 28.7 | 23 / 24 | 25 / 26 (bash 22+21, read 3+4, grep 0+1) | 52.9k / 43.8k | 40.6k | 104k / 92k | 0 / 0 |
+| variable p1 / p2 | 54.4 / 33.6 | 49 / 29 | 54 / 35 (bash 35+26, read 19+8, grep 0+1) | 68.9k / 47.7k | 19.1k | 163k / 118k | 0 / 0 |
+
+- All four replies were schema-valid: inline gave 1 abstain and 1 hypothesis (`akm-q4k-x4-avx512`); variable gave
+  2 abstains. Contention was negligible: 6 of 132 (inline) and 2 of 172 (variable) `/slots` samples had another
+  slot busy.
+- **Bundle use.** The variable arm used the bundle as designed: 6-7 bundle calls, all 3 required files read, and 0
+  `INDEX.md` re-reads. It also read all six file-only sections, which is everything inline carries. Its extra
+  calls went to lane SOURCE, with 3-4x inline's tool output (204k/136k vs 65k/34k chars).
+
+**Predictions from → 1, checked:**
+- first-step context halves: **confirmed** (40.6k → 19.1k);
+- peak falls to ~79k: **refuted** (it rose);
+- 0 compactions instead of 1: **moot**, because inline no longer compacts on the kvu slot;
+- modest wall gain: **refuted** (+45% and +17% slower).
+
+Not measured:
+- critic acceptance (planner-only driver);
+- per-tool latency (unknown: `opencode export` has no per-tool or per-step wall).
+
+**Learnings (for OAB-7, OAB-8 and the orchestrator wiring):**
+- **A thin prompt made the 27B explore MORE, not less.** Where context is placed does not, by itself, reduce the
+  work a planner does. It moves the reads into tool calls, and each tool call re-bills the growing conversation.
+- **The RLM-style benefit presupposes a model or scaffold that pulls precisely.** A 27B left to pull freely read
+  everything and then some. The orchestrator version has to supply the precision itself, with pull caps (OAB-12)
+  and scouts that summarise on the planner's behalf (OAB-8).
+- **With 196k slots, compaction is no longer the binding cost.** The OAB-7 rationale ("every arm compacted once")
+  came from the split-KV 98k slot. On `-kvu`, inline fits.
+- **The next levers are:**
+  - the fixed overhead (~13.2k tokens per call, OAB-10);
+  - the planner reading its own lane and never building (OAB-11);
+  - orchestration-side scouts (OAB-8).
+
+  Hiding context is not one of them.
+- **What could change the verdict:**
+  - n = 2 with inline always first. Pair 2 was faster for both arms, which looks like a warm prefix cache or
+    drift. A 3rd pair tightens the magnitude, but it is unlikely to flip a direction that held on every cost
+    metric.
+  - A different planner model, one that pulls selectively.
+  - A small slot, where inline compacts again.
+  - Pull caps.
+
+  Any of these re-opens the question (OAB-9b).
+
 ### Tasks
 
 - [x] **OAB-7s — seat-side precursor of OAB-7: the context bundle as files.** ✅ 2026-09-24 — research
-  `lane/ak-ctxvar-20260924` `ce5800cb` (143 tests). **Built, not yet A/B'd**; unmerged until the integration lane
-  lands.
+  `lane/ak-ctxvar-20260924` `ce5800cb` (143 tests). Merged to research main `30631761` (2026-09-25). **A/B'd in
+  OAB-9: it loses to inline on the 27B plain seat**, so the default stays `inline` and `variable` is opt-in.
 - [x] **OAB-4m — seat-side precursor of the OAB-4/S4-T1 columns: per-call metrics.** ✅ 2026-09-24 — research
   `lane/ak-turns-20260924` `0bf2d7c2` (`actor_call_metrics.v1` + summarizer; DS41-C20c reproduced exactly).
-  **Built, not yet A/B'd.**
+  Merged to `30631761`. It supplied every OAB-9 column, and it is live in run 9b.
 - [x] **R4c — seat-side precursor of R4: cache tool output keyed by exact argv + input identity.** ✅ 2026-09-24
-  — research `lane/ak-perfcache-20260924` `f4a5d240` (111 tests; 1.283 s → 0.0012 s, byte-identical). **Built,
-  not yet A/B'd.**
-- [ ] **OAB-9 — live A/B: plain inline vs plain variable, AFTER run-9 calibration.** At the calibration boundary
+  — research `lane/ak-perfcache-20260924` `f4a5d240` (111 tests; 1.283 s → 0.0012 s, byte-identical). Merged to
+  `30631761`. Its effect on the bounded seat has not been re-measured yet (DS41-C20d2).
+- [x] **OAB-9 — live A/B: plain inline vs plain variable, AFTER run-9 calibration.** ✅ 2026-09-25 — **INLINE
+  wins both pairs** (§Techniques learned → 4; research `605e8301`). Wall 37.6/28.7 vs 54.4/33.6 min, peak
+  context 104k/92k vs 163k/118k, 0 compactions and schema-valid everywhere. Predictions: the first-step halving was
+  confirmed; the peak, compaction and wall predictions were refuted or moot. Critic acceptance was not measured
+  (planner-only driver), and per-tool latency is unknown. 2 pairs; pair 3 was over budget. Run 9 was relaunched
+  as `state-run9b` (04:04Z) on the default `inline`, same store, half floor reused. (Run 9 was actually stopped
+  at 01:30Z, at the half-floor → batch-0 boundary, not at ~04:45Z; see DS41-C28.) Original spec: at the calibration boundary
   (~04:45Z), stop run 9 (the floors persist per anchor) and merge the integration lane
   `lane/ak-planner-integ-20260924`: the three lanes, the `node_profile` fix in both arms, and the pre-existing
   test fixes. Then run the arms on the same :8083 generation (OAB-4a) with the new metrics rows: 3 pairs
@@ -296,6 +368,17 @@ cap them in bytes (OAB-12).
 
   Relaunch run 9 with the winner: same anchor, floors reused, new state dir. Acceptance: the predictions above are confirmed or refuted in
   writing. Inference: campaign-idle GPU window.
+- [ ] **OAB-9b — re-open the context-placement question only when a precondition changes.** The trigger is any
+  of:
+  - OAB-12 pull caps exist in the seat or the orchestrator;
+  - the planner model changes;
+  - the planner runs on a slot small enough that inline compacts again (≤ 98k).
+
+  Then re-run `artifacts/autokernel_ctx_ab_20260925/driver.py` with **n ≥ 3 in counterbalanced order (ABBA)**,
+  because the 2026-09-25 run always put inline first. Also give the driver a byte count per bundle section: it
+  records read counts only (`bundle.access`). Acceptance: a verdict per trigger with the same columns as → 4.
+  GPU inference, campaign-idle window. Do not run it on an unchanged setup: 2/2 on every cost metric is not worth
+  re-buying.
 - [ ] **OAB-10 — trim the lane `AGENTS.md` out of the planner's fixed overhead.** It is 8.9k chars (~2.5–3k tokens)
   of llama.cpp contributor guidance in every planner call. Options:
   - a planner-specific instruction file;
@@ -318,3 +401,8 @@ cap them in bytes (OAB-12).
   First, have the metrics exporter derive per-section pull counts and bytes from the export's tool parts. Then
   make it a first-class orchestrator feature: exact pulls logged per call, and a byte cap per call. Acceptance:
   OAB-9's report carries per-section pull bytes; OAB-7's orchestrator design names the cap.
+  **Progress 2026-09-25.** OAB-9 ran without this. The A/B driver derived per-section read COUNTS from the tool
+  parts (`bundle.access`: every file-only section read once, `INDEX.md` never re-read), plus total
+  `tool_output_chars`, but no per-section bytes. The seat exporter (`actor_call_metrics.v1`) carries only
+  `bundle_tool_calls`. OAB-9's result makes this task the precondition for any retry of context-as-files (OAB-9b):
+  the arm lost because nothing capped what it pulled.

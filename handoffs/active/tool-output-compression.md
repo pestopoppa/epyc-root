@@ -545,3 +545,7 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
       `reviewer-calibration-accounting.md` flags this exemption surface for being tuned on its own over-blocks.
     - Do not change the hook outside that reviewed change. Acceptance: the unredacted fixture commits, and the
       negative control still blocks.
+    - **Recurred 2026-09-25 (research `135b8492`).** The hook redacted 7 period cells in each of the two committed
+      OAB-9 bundle `INDEX.md` copies (`artifacts/autokernel_ctx_ab_20260925/bundle-manifests/`). This time it
+      rewrote the files in place, with `[period redacted]`, rather than blocking. So evidence copies silently
+      stop being byte-exact, and the artifact README has to say so. Same exemption shape, second instance.
