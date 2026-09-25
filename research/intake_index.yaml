@@ -180100,3 +180100,261 @@
   integration_disposition: integrated
   disposition_evidence:
   - 'Routed into the active INF-80 CPU/gfx90a implementation program by the operator-approved 2026-09-25 Stage-3 plan.'
+- id: intake-1563
+  arxiv_id: null
+  url: https://huggingface.co/jcbtc/Qwen3.8-27b-CIRU-EXL3-SGLANG
+  source_type: repo
+  title: Qwen3.8-27b-CIRU-EXL3-SGLANG — packed EXL3 target and draft served through SGLang on one RTX 5090
+  authors:
+  - CIRU
+  - jcbtc
+  categories:
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  - speculative_decoding
+  - local_inference
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  credibility_score: 1
+  key_claims:
+  - The card describes a serving integration rather than a weight repository. It links an unchanged 4.00-bpw EXL3 Qwen3.8-27B target and an unchanged 4.00-bpw EXL3 DFlash2 draft, while the Hugging Face repository itself contains only the card and artwork.
+  - CIRU reports direct execution of packed EXL3 projections inside SGLang, including the 6-bit output head, without a persistent dense or NVFP4 weight copy. SGLang supplies scheduling, attention, CUDA-graph decode and shared KV/recurrent-state management.
+  - The published text profile uses one RTX 5090, DFlash2 block 8, NVFP4 target KV, FP8 draft KV, FP32 recurrent state, a 270336-token shared pool and a 262144-token request limit.
+  - The speed figures use different denominators. The card reports 405.6 decode tok/s for one 2048-input plus 2048-output request, 512.3 aggregate output tok/s for two simultaneous 1024-input plus 512-output requests, and 826.2 aggregate output tok/s for eight such requests.
+  - The card explicitly characterizes its comparisons as complete serving-package comparisons with different runtime and KV settings, so they do not isolate EXL3 quantization.
+  techniques:
+  - packed EXL3 projections in SGLang
+  - block-8 DFlash2 verification
+  - CUDA graph decode
+  - NVFP4 target KV and FP8 draft KV
+  - shared recurrent-state management
+  reported_results:
+  - 'SELF-REPORTED, RTX 5090, median of three: 405.6 decode tok/s and 5.6 s wall for one 2048-input plus 2048-output request; original EXL3 server 89.5 decode tok/s and 23.5 s wall.'
+  - 'SELF-REPORTED, full-context single request: 300.5 decode tok/s, 160.7 s wall and 28.88 GiB peak GPU use for 260094 input plus 2048 output.'
+  - 'SELF-REPORTED, varied prompts with prefill included: 512.3 aggregate output tok/s at concurrency 2 and 826.2 at concurrency 8 for 1024 input plus 512 output per request.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    - agentic-rocm-kernel-authoring.md
+    experiments: []
+    intake_entries:
+    - intake-872
+    - intake-1264
+    - intake-1265
+    - intake-1506
+    - intake-1528
+  recommended_actions:
+  - 'Project-derived candidate: deep-dive the linked runner and raw rows before using any published rate as a target or attributing it to EXL3 kernels.'
+  - 'Project-derived candidate: evaluate a controlled end-to-end serving matrix during Stage 3 with concurrency 1/2/4/8, fixed prompt/output shapes, decode-only and full-wall rates, acceptance length, cache state and exact runtime identities.'
+  - 'Project-derived candidate: treat the complete serving stack as the object to reproduce on MI210, including packed EXL3 kernels, block verification, scheduling, graph capture or an equivalent launch strategy, attention/KV and recurrent-state paths.'
+  contradicting_evidence:
+  - The card itself says the package comparisons do not isolate quantization.
+  - The linked report shows NVIDIA NVFP4 ahead at 1024-input concurrency 8 and at the 2048-input concurrency 4 and 8 cells; the peak winner depends on workload and actual concurrency.
+  - No independent reproduction surfaced in bounded exact-name and exact-rate searches on 2026-09-25.
+  notes: 'HF revision 53c26d85fa02262ae2dfae2778ed021a3dad7a83, retrieved 2026-09-25; README sha256 83fffb0200d9035efdd454184bf68c27d392ecb55347b80cddc4193eedfae979. Complete revision-pinned tree contains README.md, .gitattributes and assets/robotciru.png only; no weights, configs, tokenizer, source, lockfiles or raw results. The card links the implementation and evidence repository indexed separately as intake-1564 and the exact target/draft artifacts indexed as intake-1565 and intake-1566.'
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Unverified Stage 1 record; do not use the rates as MI210 or CPU thresholds and do not attribute them to EXL3 alone before the runner and raw evidence are dived.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - The source is directly relevant to INF-80 and supplies an end-to-end throughput target, but its package-level rates require primary-source verification and attribution before planning.
+- id: intake-1564
+  arxiv_id: null
+  url: https://github.com/ciru-ai/qwen38-exl3-sglang-runner
+  source_type: repo
+  title: CIRU Qwen3.8 EXL3 SGLang runner — pinned loader, speculative-state bridge and repeated RTX 5090 evidence
+  authors:
+  - CIRU
+  categories:
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  - speculative_decoding
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1563
+  verdict: adopt_patterns
+  credibility_score: 1
+  key_claims:
+  - The runner registers EXL3 as an SGLang quant method, maps fused Qwen projection names to packed checkpoint tensors and delegates linear execution to a pinned ExLlamaV3 extension; it keeps only zero-size marker weights in SGLang.
+  - The published launch profile combines DFlash2 block 8, a maximum of eight requests, decode CUDA graphs, FlashInfer prefill, TRTLLM MHA decode, NVFP4 target KV, FP8 E4M3 draft KV, FP32 recurrent state and a patched Gated DeltaNet ReplaySSM verify/commit path.
+  - The optional custom EXL3 MLP and row-17-to-32 CUDA kernels are disabled in the published launcher, and their source files are absent from the repository. The reported rates therefore use the pinned ExLlamaV3 packed execution path rather than those optional kernels.
+  - The repository publishes repeated raw JSONL rows and manifests. Recomputed medians match 405.6 single-request decode tok/s and 826.2 concurrency-8 aggregate output tok/s, while the full concurrency table shows the NVIDIA NVFP4 comparator ahead in several high-concurrency cells.
+  - Exact independent replay is incomplete because the token-ID prompt corpus and benchmark harness are omitted, and the archived result manifest does not bind a pullable image digest or source commit for the measured private image.
+  techniques:
+  - SGLang quantization-method adapter
+  - native packed ExLlamaV3 linear delegation
+  - outer runtime-owned CUDA graphs
+  - DFlash2 GDN ReplaySSM bridge
+  - raw concurrency and context evidence manifests
+  reported_results:
+  - 'RAW ROWS, RTX 5090: 2048-input single-request decode rows 404.96, 405.58 and 406.25 tok/s; median 405.58.'
+  - 'RAW ROWS, RTX 5090: concurrency-8 varied 1024-input plus 512-output aggregate rows 826.17, 828.61 and 821.33 tok/s; median 826.17.'
+  - 'RAW ROWS, same concurrency-8 cell: NVIDIA NVFP4 median 1097.43 aggregate output tok/s, higher than CIRU EXL3 in that cell.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-461
+    - intake-490
+    - intake-872
+    - intake-1030
+    - intake-1264
+    - intake-1528
+    - intake-1530
+  recommended_actions:
+  - 'Project-derived candidate: separate operator throughput from serving throughput by qualifying EXL3 GEMV/GEMM first, then measuring the complete target plus DFlash2 plus scheduler and state stack.'
+  - 'Project-derived candidate: port the adapter architecture rather than CUDA code, with canonical packed tensors, explicit projection mapping, one runtime-owned graph boundary and separate target/draft quant methods.'
+  - 'Project-derived candidate: publish a fixed token-ID workload and preserve the complete concurrency curve so an isolated peak cannot stand in for a serving result.'
+  - 'Project-derived candidate: use local DFlash2 evidence as the starting comparator, then attribute gains across target bytes, verification acceptance, batched kernel efficiency, launch overhead, KV/attention and state handling.'
+  contradicting_evidence:
+  - The optional custom MLP kernels are off in scripts/start_server.sh, so the headline rates do not demonstrate a new EXL3 weight kernel.
+  - At concurrency 8 with 1024-token prompts, the NVIDIA NVFP4 package reaches 1097.4 aggregate tok/s versus 826.2 for CIRU; at 2048-token prompts CIRU peaks at concurrency 4 and falls at 8.
+  - The measured private image/source snapshot is not released as a pullable immutable image and the prompt corpus is represented only by a hash.
+  - No CPU, ROCm, gfx90a or MI210 build or result is present.
+  notes: 'Read runner main f83cc0c94f64e0b53a9cb6d72419ba7522eeaf61, retrieved 2026-09-25. Hashes: README 61484f58731b204e1498422f871fe5dd99cd947996e40b3fa27e02dc3067975d; REPORT abc36a2b9dd5c8fb604b667ff667ca41d822f644f9adca023d68bdd32099cf7b; exl3_bridge beae736c874a24e720b5dd28f4700252d6d1c61a67ff0d2ad754e13240e7bb6f; spec_bridge d981e16d1952b2ba7b7015bcbd02c4de09a326428ce9a7f2c577e8288e6b81f0; ciru-concurrency JSONL 83784e17db96579b078a5b69b1ce27435bf65b76fb7e64a93dc5dbccdbd9a47d. Pins SGLang 0.5.20, torch 2.13.0+cu130, FlashInfer 0.6.18 and ExLlamaV3 community 355c6ee. Candidate Stage-2-surfaced sources include SGLang issue 36010, r0b0tlab/qwen38-exl3-dflash2 at 75d4ec5a, r0b0tlab/exllamav3 community 355c6ee and SatelliteDown/fast-long-context at b8095a5b.'
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Unverified Stage 1 record; do not treat the RTX 5090 rates as an EXL3-kernel ablation or a directly comparable MI210 target until the raw protocol, source identity and component attribution are dived.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - The repository is the primary implementation and raw-evidence source needed to turn the user-requested throughput objective into a controlled INF-80 milestone.
+- id: intake-1565
+  arxiv_id: null
+  url: https://huggingface.co/r0b0tlab/Qwen3.8-27B-EXL3-4.00bpw
+  source_type: repo
+  title: r0b0tlab Qwen3.8-27B EXL3 4.00-bpw target checkpoint
+  authors:
+  - r0b0tlab
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  - speculative_decoding
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1563
+  verdict: adopt_component
+  credibility_score: 2
+  key_claims:
+  - The checkpoint is a Qwen3.8-27B EXL3 conversion made with ExLlamaV3 1.5.0 at 4.00 bpw for decoder projections, 6 bpw for the output head and vision tower, and 4 bpw for the native MTP head.
+  - Its quantization metadata declares the mul1 codebook, calibration shape 250 by 2048, always-present output scales and trellis tensors with suh and svh scales; the language model uses hidden size 5120 and 64 layers.
+  - The repository reports 15.4 GiB of target weights and pairs the target with the separately published 1.2 GiB EXL3 DFlash2 draft.
+  - The card reports RTX 3090 native DFlash2 decode and long-context results, but supplies no CPU, ROCm, gfx90a or MI210 result.
+  techniques:
+  - EXL3 mul1 trellis quantization
+  - mixed tensor bit allocation
+  - revision-pinned packed target fixture
+  reported_results:
+  - 'SELF-REPORTED, RTX 3090: DFlash2 mean acceptance length 5.657 and 162.9 decode tok/s at 8K context.'
+  - 'SELF-REPORTED, RTX 3090: 150K-token prefill at 594 tok/s and 262K context load with cq3 KV.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-872
+    - intake-1264
+    - intake-1265
+    - intake-1506
+    - intake-1528
+  recommended_actions:
+  - 'Project-derived candidate: use the pinned checkpoint as the first full-model mul1 target after standalone EXL3 operator parity, while retaining smaller synthetic and real-tile fixtures for bring-up.'
+  - 'Project-derived candidate: bind all loader and benchmark receipts to the exact model revision, quantization metadata and content hashes.'
+  - 'Project-derived candidate: compare Q8 and EXL3 target arms with the same DFlash2 policy to isolate target-byte and packed-kernel effects.'
+  contradicting_evidence:
+  - All speed and memory results are same-author RTX 3090 observations with no CPU, AMD or independent reproduction.
+  - The full checkpoint is too large and structurally complex to replace the small mandatory correctness fixtures in EXL3-1.
+  notes: 'HF revision 3f1771b8c21f83cbb8e82169559ced9f38ca04e5, retrieved 2026-09-25. README sha256 6a97069b311eab7db2aeacb08238b91b492edf252a4171a6bf30a019661542bb; config sha256 48137231d2890db30458c92df9cc6f8bc4fc2f353d4a6c460f38010966b7b9aa; quantization_config sha256 18896f21bd6e98859bb983082880de734fb68f1aaa6d4c50533772ae0e6bd7ed. The CIRU runner lock records 16533419632 total bytes and verifies individual files.'
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Unverified Stage 1 record; treat this as a candidate revision-pinned mul1 integration fixture, not as evidence for CPU or MI210 throughput.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - The checkpoint matches the target model and codebook needed for the requested end-to-end EXL3 path, but its metadata and suitability as an INF-80 fixture require a dive.
+- id: intake-1566
+  arxiv_id: null
+  url: https://huggingface.co/r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw
+  source_type: repo
+  title: r0b0tlab Qwen3.8-27B DFlash2 EXL3 4.00-bpw speculative draft checkpoint
+  authors:
+  - r0b0tlab
+  categories:
+  - quantization
+  - speculative_decoding
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1563
+  verdict: adopt_component
+  credibility_score: 2
+  key_claims:
+  - The artifact is a five-layer block-diffusion DFlash2 draft quantized with EXL3 1.5.0 at 4.00 bpw using the mul1 codebook, paired with the separately published Qwen3.8-27B EXL3 target.
+  - The draft config uses block size 8, a 2048-token sliding window, convolution kernel size 2 with group size 16, selector rank 256 and target layers 5, 19, 33, 47 and 61.
+  - Backbone linears and the candidate FC are packed EXL3; dynamic-convolution base kernels and candidate-selector codebooks remain FP16 according to the card.
+  - The card reports near-neutral acceptance versus its BF16 draft in one overlay measurement and 162.9 tok/s in the native RTX 3090 engine, but no MI210, CPU or complete-package isolation.
+  techniques:
+  - EXL3-quantized block-diffusion drafter
+  - five target-layer taps
+  - block-8 verification
+  - sliding-window draft attention
+  reported_results:
+  - 'SELF-REPORTED overlay: mean acceptance 5.474 for the EXL3 draft versus 5.463 for the BF16 draft.'
+  - 'SELF-REPORTED native RTX 3090 engine: mean acceptance length 5.657 and 162.9 decode tok/s.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-1264
+    - intake-1265
+    - intake-1505
+    - intake-1506
+    - intake-1565
+  recommended_actions:
+  - 'Project-derived candidate: pair this exact draft revision with the exact EXL3 target in the end-to-end MI210 campaign after target and draft packed operators pass independently.'
+  - 'Project-derived candidate: preserve no-draft, MTP and DFlash2 arms and report accepted length, per-position acceptance, verifier steps and aggregate output throughput separately.'
+  - 'Project-derived candidate: verify the FP16 residual tensors and every packed draft projection in the canonical EXL3 manifest before integration.'
+  contradicting_evidence:
+  - The acceptance-neutral claim is same-author and protocol-light; the published result does not establish parity on the local prompt suite or at concurrency.
+  - The reported speed combines draft quantization with a particular CUDA runtime and target configuration and does not isolate the draft codec.
+  - Existing MI210 DFlash2 results use a Q8 GGUF target and draft, so direct numerical comparison would confound target format, runtime and workload.
+  notes: 'HF revision 265b5240592907d2d55ff0dc4d5f66569692604d, retrieved 2026-09-25. README sha256 096b4a8c6e0ea80285188de108aa99f5b740f425bbaec86c6d0ed3009648d2e7; config sha256 98f252301f486dc4dc7630fb00a7fa871dae9b91e7455f5e14300428d0656caa; quantization_config sha256 7d0221dac106605b761e34e70ee8992d4f30dfafb81bc6d40e7e4e81fa098090. The CIRU runner lock records the exact revision and per-file hashes. The upstream unquantized DFlash2 model, official implementation and DFlash paper are candidate dive-surfaced sources, with the paper already represented elsewhere in the intake corpus.'
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Unverified Stage 1 record; treat this as the candidate packed draft artifact for a controlled EXL3 plus DFlash2 serving study, not as proof of local acceptance or speed.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - The draft is a direct dependency of the submitted high-throughput package and is required to separate target-kernel gains from speculative-decoding gains.

@@ -1,734 +1,167 @@
 {
-  "session_id": "intake-exl3-mi210-20260925",
-  "started_at": "2026-09-25T09:39:21Z",
-  "last_checkpoint": "2026-09-25T13:13:36Z",
+  "session_id": "intake-exl3-sglang-throughput-20260925",
+  "started_at": "2026-09-25T13:40:00Z",
+  "last_checkpoint": "2026-09-25T13:53:06Z",
   "phase": 5,
-  "stage": "stage4-complete",
-  "session_kind": "research-intake (EXL3 Hopper report + CPU/MI210 implementation path)",
-  "previous_session": "intake-jev-exl3-20260923 (stage4-complete; preserved at /tmp/exl3-intake/previous-research-session-20260923.json)",
-  "mandate": "Research-intake the 2026-09-25 0xSero EXL3-on-Hopper report and its linked implementations/checkpoint; build a viable experimental path for EXL3 on project CPU and MI210 (gfx90a), including custom kernels as a first-class option.",
+  "stage": "stage1-complete-awaiting-dive-selection",
+  "session_kind": "research-intake (CIRU EXL3/SGLang serving package and throughput path)",
+  "previous_session": "intake-exl3-mi210-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-exl3-sglang-20260925/previous-research-session-stage4.json)",
+  "mandate": "Ingest the CIRU Qwen3.8-27B EXL3/SGLang package and establish what the published throughput requires so the CPU and MI210 program targets the complete serving path.",
   "raw_submissions": {
-    "x-post": "https://x.com/0xSero/status/2103402800155709514",
-    "operator-goal": "Build toward a viable project path for EXL3 on CPU and MI210; custom kernels are explicitly in scope; aspirational objective is first working implementation on this hardware architecture."
+    "url": "https://huggingface.co/jcbtc/Qwen3.8-27b-CIRU-EXL3-SGLANG",
+    "operator_goal": "We MUST be able to get to these throughput speeds also"
   },
-  "max_existing_intake_id_at_start": 1527,
-  "next_intake_id": 1563,
+  "max_existing_intake_id_at_start": 1562,
+  "next_intake_id": 1567,
   "entries_processed": [
-    "intake-1528",
-    "intake-1529",
-    "intake-1530",
-    "intake-1531",
-    "intake-1532",
-    "intake-1533",
-    "intake-1534",
-    "intake-1535",
-    "intake-1536",
-    "intake-1537",
-    "intake-1538",
-    "intake-1539",
-    "intake-1540",
-    "intake-1541",
-    "intake-1542",
-    "intake-1543",
-    "intake-1544",
-    "intake-1545",
-    "intake-1546",
-    "intake-1547",
-    "intake-1548",
-    "intake-1549",
-    "intake-1550",
-    "intake-1551",
-    "intake-1552",
-    "intake-1553",
-    "intake-1554",
-    "intake-1555",
-    "intake-1556",
-    "intake-1557",
-    "intake-1558",
-    "intake-1559",
-    "intake-1560",
-    "intake-1561",
-    "intake-1562"
+    "intake-1563",
+    "intake-1564",
+    "intake-1565",
+    "intake-1566"
   ],
   "entries_remaining": [],
   "expansion_cap": 10,
-  "expansion_count": 4,
+  "expansion_count": 3,
   "expansion_entries": {
-    "intake-1529": "CarouselAether/rocm_exl3 \u2014 discovered by targeted ROCm/EXL3 implementation search; expanded from intake-872",
-    "intake-1530": "Zeuss5/cuda-exl3 \u2014 companion custom-kernel implementation from the supplied report; expanded from intake-872",
-    "intake-1531": "IST-DASLab/marlin \u2014 implementation baseline named by supplied report; expanded from intake-1528",
-    "intake-1533": "ExLlamaV3 doc/env_vars.md \u2014 companion CPU-kernel document; expanded from intake-872"
+    "intake-1564": "ciru-ai/qwen38-exl3-sglang-runner — implementation, raw evidence and exact launch profile linked from the submitted card",
+    "intake-1565": "r0b0tlab/Qwen3.8-27B-EXL3-4.00bpw — exact packed target artifact pinned by the runner",
+    "intake-1566": "r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw — exact packed speculative draft pinned by the runner"
   },
   "expansion_refused": [],
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 1,
-      "ts": "2026-09-25T09:39:21Z",
-      "verbatim": "We've ingested multiple EXL3-related research docs. I really want us to build up to a viable path forward for getting this quant working in our project (CPU and MI210) so we can tap into the same performance improvements other people are obtaining on thei nvidia cards.",
+      "ts": "2026-09-25T13:40:00Z",
+      "verbatim": "I think there's one more relevant EXL3 reference to run research-intake on: https://huggingface.co/jcbtc/Qwen3.8-27b-CIRU-EXL3-SGLANG",
       "disposition": "planned",
-      "plan_ref": "INF-80 objective"
+      "plan_ref": "stage1-intake-1563-through-1566"
     },
     {
       "seq": 2,
       "stage": 1,
-      "ts": "2026-09-25T09:39:21Z",
-      "verbatim": "remember that we are NEVER scared to build custom kernels ourselves!",
+      "ts": "2026-09-25T13:40:30Z",
+      "verbatim": "We MUST be able to get to these throughput speeds also",
       "disposition": "planned",
-      "plan_ref": "EXL3-2/3/4"
-    },
-    {
-      "seq": 3,
-      "stage": 1,
-      "ts": "2026-09-25T09:39:21Z",
-      "verbatim": "i'd be more than happy if we become the first people to get this working on this hardware architecture",
-      "disposition": "planned",
-      "plan_ref": "EXL3-3"
-    },
-    {
-      "seq": 4,
-      "stage": 2,
-      "ts": "2026-09-25T09:49:00Z",
-      "verbatim": "proceed with all recommended dives",
-      "disposition": "context-only",
-      "plan_ref": "CLOSED-RESEARCH-WAVE",
-      "note": "Stage-2 selection: intake-1528 through intake-1533"
-    },
-    {
-      "seq": 5,
-      "stage": "2b",
-      "ts": "2026-09-25T11:38:00Z",
-      "verbatim": "proceed as recommended",
-      "disposition": "context-only",
-      "plan_ref": "CLOSED-RESEARCH-WAVE",
-      "note": "Operator selected every source in stage2b_gate.recommended_ingest_and_dive (17 sources)."
-    },
-    {
-      "seq": 6,
-      "stage": "2b",
-      "ts": "2026-09-25T10:47:00Z",
-      "verbatim": "\"matched expert count data does not show a meaningful EXL3\n  quality advantage over W4A16\" - is W4A16 an alternative to EXL3?",
-      "disposition": "planned",
-      "plan_ref": "EXL3-9",
-      "note": "Stage-3 plan must frame W4A16 as a deployment-format family and require matched model, expert count, evaluation panel and storage-budget controls before choosing it or EXL3."
-    },
-    {
-      "seq": 7,
-      "stage": "2b",
-      "ts": "2026-09-25T11:07:22Z",
-      "verbatim": "proceed as recommended",
-      "disposition": "context-only",
-      "plan_ref": "CLOSED-RESEARCH-WAVE",
-      "note": "Operator selected all five surfaced_round2_recommended_ingest_and_dive sources and accepted all surfaced_round2_recommended_declines."
-    },
-    {
-      "seq": 8,
-      "stage": "2b",
-      "ts": "2026-09-25T11:29:28Z",
-      "verbatim": "proceed as recommended",
-      "disposition": "context-only",
-      "plan_ref": "CLOSED-RESEARCH-WAVE",
-      "note": "Operator selected all four surfaced_round3_recommended_ingest_and_dive sources and accepted both surfaced_round3_recommended_declines."
-    },
-    {
-      "seq": 9,
-      "stage": "2b",
-      "ts": "2026-09-25T11:50:19Z",
-      "verbatim": "proceed as recommended",
-      "disposition": "context-only",
-      "plan_ref": "CLOSED-RESEARCH-WAVE",
-      "note": "Operator selected all three surfaced_round4_recommended_ingest_and_dive sources and accepted the surfaced_round4 datasheet decline."
-    },
-    {
-      "seq": 10,
-      "stage": "2b",
-      "ts": "2026-09-25T12:11:12Z",
-      "verbatim": "accept declines and move to stage 3",
-      "disposition": "context-only",
-      "plan_ref": "CLOSED-RESEARCH-WAVE",
-      "note": "Operator accepted both final surfaced-source declines and authorized entry into Stage 3 plan drafting."
+      "plan_ref": "preliminary-actionable-throughput-parity"
     }
-  ],
-  "stage2_selected": [
-    "intake-1528",
-    "intake-1529",
-    "intake-1530",
-    "intake-1531",
-    "intake-1532",
-    "intake-1533"
   ],
   "source_fetches": {
-    "x-post-api": {
-      "url": "https://api.fxtwitter.com/0xSero/status/2103402800155709514",
-      "sha256": "34e43414b113b4aafd0d7a02d4a13bd78d860bf6895c45eeaec0b49e6c0e1829",
+    "hf-card": {
+      "url": "https://huggingface.co/jcbtc/Qwen3.8-27b-CIRU-EXL3-SGLANG",
+      "revision": "53c26d85fa02262ae2dfae2778ed021a3dad7a83",
+      "readme_sha256": "83fffb0200d9035efdd454184bf68c27d392ecb55347b80cddc4193eedfae979",
       "retrieved": "2026-09-25"
     },
-    "x-figure-1": {
-      "url": "https://pbs.twimg.com/media/HTDGqqbWwAARC_X.jpg?name=orig",
-      "sha256": "d324576d9e501f4026ab1128d8de2081f0a2469b72dc99c65363d771e5cbe5c7"
+    "ciru-runner": {
+      "url": "https://github.com/ciru-ai/qwen38-exl3-sglang-runner",
+      "revision": "f83cc0c94f64e0b53a9cb6d72419ba7522eeaf61",
+      "report_sha256": "abc36a2b9dd5c8fb604b667ff667ca41d822f644f9adca023d68bdd32099cf7b",
+      "concurrency_jsonl_sha256": "83784e17db96579b078a5b69b1ce27435bf65b76fb7e64a93dc5dbccdbd9a47d",
+      "retrieved": "2026-09-25"
     },
-    "x-figure-2": {
-      "url": "https://pbs.twimg.com/media/HTDHXyFWAAAc76c.jpg?name=orig",
-      "sha256": "fceefde42f1e37a10bb3b6849ed78d91930e0401f50f0d8adfae2fd11679a96c"
+    "target-card": {
+      "url": "https://huggingface.co/r0b0tlab/Qwen3.8-27B-EXL3-4.00bpw",
+      "revision": "3f1771b8c21f83cbb8e82169559ced9f38ca04e5",
+      "readme_sha256": "6a97069b311eab7db2aeacb08238b91b492edf252a4171a6bf30a019661542bb",
+      "retrieved": "2026-09-25"
     },
-    "rocm-exl3-readme": {
-      "url": "https://raw.githubusercontent.com/CarouselAether/rocm_exl3/main/README.md",
-      "sha256": "ff46ae04f07dda874ad42fae2aaf0e5a8f59730be5a8de0bece0845bc6c8b4e7"
-    },
-    "cuda-exl3-readme": {
-      "url": "https://raw.githubusercontent.com/Zeuss5/cuda-exl3/master/README.md",
-      "sha256": "edf2bc1ee4b82d82da01e10308bc2f977a11b5d6bafa844633474a5d463c0091"
-    },
-    "marlin-readme": {
-      "url": "https://raw.githubusercontent.com/IST-DASLab/marlin/master/README.md",
-      "sha256": "932be7cfcd7eb90f2ce42f2c6ba75eda73400d635ede09961b83ffae9d23d5d1"
-    },
-    "glm-checkpoint-card": {
-      "url": "https://huggingface.co/davidsyoung/GLM-5.3-EXL3-TR3-3.42bpw/raw/main/README.md",
-      "sha256": "75a46c1f18f58f4a11b68deeda69a31ebdf7063d9368325c8fdb9b1bce048fba"
-    },
-    "exllamav3-env-vars": {
-      "url": "https://raw.githubusercontent.com/turboderp-org/exllamav3/master/doc/env_vars.md",
-      "sha256": "40e65503dd543e950a7dc31178dfbe06ff56f88cf6b0472c6b2bc9253aa62e1b"
+    "draft-card": {
+      "url": "https://huggingface.co/r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw",
+      "revision": "265b5240592907d2d55ff0dc4d5f66569692604d",
+      "readme_sha256": "096b4a8c6e0ea80285188de108aa99f5b740f425bbaec86c6d0ed3009648d2e7",
+      "retrieved": "2026-09-25"
     }
+  },
+  "dedup": {
+    "method": "Unbounded normalized URL scan of every persisted url field plus redirect resolution of the submitted Hugging Face URL.",
+    "existing_collisions": [],
+    "new_url_collisions": []
   },
   "cross_reference_summary": {
     "existing_exl3": "intake-872",
-    "existing_qtip": "intake-873",
-    "operator_digest": "intake-1500",
-    "related_closed_cpu_gate": "handoffs/completed/exl3-trellis-cpu-kernel.md (INF-71 NO-GO specific to Qwen3.8-Flash-Next operating point)",
-    "related_active_trellis_work": "handoffs/active/iqk-iquant-enablement.md and handoffs/active/tq3-quantization-evaluation.md"
-  },
-  "dedup": {
-    "method": "unbounded index scan for normalized submitted/resolved URLs, raw URL count checks, redirect-following GETs for all six newly indexed URLs, and normalized arXiv-ID scan for cited IDs",
-    "existing_collisions": [
-      "ExLlamaV3 repo https://github.com/turboderp-org/exllamav3 -> intake-872; re-encounter note updated with current CPU/ROCm scope",
-      "QTIP arXiv 2406.11235 -> intake-873; no new entry",
-      "GLM-5 technical report arXiv 2602.15763 -> existing index record; no new entry"
-    ],
-    "new_url_collisions": []
+    "existing_sglang": "intake-461 and intake-490",
+    "existing_dflash2": "intake-1264, intake-1265, intake-1505 and intake-1506",
+    "existing_hopper_target": "intake-1528",
+    "active_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (INF-80)",
+    "local_serving_baseline": "handoffs/active/dflash2-block-drafter-experimental-build.md and wiki/speculative-decoding.md: MI210 Q8 DFlash2 70.0 single-stream and 155.0 aggregate at eight in-flight"
   },
   "contradiction_pass": {
-    "intake-1528": "The author\u2019s own post says prefill up to +20%, while figure caption ranges imply roughly +51\u201360%; quality chart compares 256 EXL3 experts to 168 W4A16 experts. Bounded exact-claim search found no independent H200 reproduction (provisional).",
-    "intake-1529": "README excludes MI210 gfx90a and requires ROCm >=7.2.4; its direct validation is on gfx1151, so no evidence for MI210 (repository scope check; not a contradiction to RDNA support).",
-    "intake-1533": "Current docs support an AVX CPU MoE expert path, but the use case is CPU offload/CPU-tail within ExLlamaV3; optimized eligibility is mul1-specific, so MCG/general CPU-only support is not established."
+    "intake-1563": "The card says its comparisons are package-level, not quantization isolation. The full table has NVIDIA NVFP4 ahead at 1K/c8 and 2K/c4-c8. No independent reproduction surfaced.",
+    "intake-1564": "Published optional custom EXL3 MLP kernels are disabled and their sources are absent; the rate uses pinned ExLlamaV3 packed kernels plus the complete serving stack. Exact prompt corpus, harness and measured image are unavailable.",
+    "intake-1565": "All target results are same-author CUDA observations and provide no CPU/gfx90a evidence.",
+    "intake-1566": "Acceptance-neutral and speed claims are same-author and do not control runtime, target format or workload."
   },
+  "preliminary_actionables": [
+    {
+      "id": "THR-1",
+      "intakes": ["intake-1563", "intake-1564"],
+      "action": "[unverified] Add an end-to-end INF-80 serving milestone after operator integration: exact c1/c2/c4/c8 request shapes, decode-only and full-wall throughput, no cache hits, fixed token corpus, draft acceptance and complete runtime identities."
+    },
+    {
+      "id": "THR-2",
+      "intakes": ["intake-1564"],
+      "action": "[unverified] Build a component attribution matrix across EXL3 target bytes and kernels, none/MTP/DFlash2 verification, scheduling and graph capture, KV/attention precision and recurrent-state handling; quantization alone is not an adequate explanation."
+    },
+    {
+      "id": "THR-3",
+      "intakes": ["intake-1565", "intake-1566"],
+      "action": "[unverified] Use the pinned mul1 target and draft as full-model fixtures after standalone correctness, with Q8 versus EXL3 and none/MTP/DFlash2 matched arms on MI210."
+    },
+    {
+      "id": "THR-4",
+      "intakes": ["intake-1563", "intake-1564"],
+      "action": "[unverified] Preserve the external 405.6 single-request decode and 826.2 c8 aggregate figures as source-derived workload-specific targets; do not use them as local claims until a reproducible public corpus or project-owned equivalent exists."
+    }
+  ],
   "dive_recommendations": [
     {
       "rank": 1,
-      "intake": "intake-1529",
-      "reason": "Closest public HIP/EXL3 implementation; establish what must change to reach gfx90a/CDNA2.",
-      "settle": "Kernel inventory, WMMA-to-MFMA port scope, ROCm 6.2 versus 7.2.4 dependency, correctness harness and whether a custom MI210 implementation can be isolated."
+      "intake": "intake-1564",
+      "reason": "Primary implementation and raw-evidence source; settles the complete speed path, exact denominators, disabled optional kernels and reproducibility gaps."
     },
     {
       "rank": 2,
-      "intake": "intake-1533",
-      "reason": "Concrete current CPU trellis expert kernels directly inform the requested CPU path.",
-      "settle": "Actual kernel math/layout and codebook/tensor limits; what can be adapted into a CPU backend or GGUF/ggml operator, and which EPYC Zen 5 instructions apply."
+      "intake": "intake-1563",
+      "reason": "Operator-submitted front door and headline source; verify every published throughput and scope statement against the linked evidence."
     },
     {
       "rank": 3,
-      "intake": "intake-1528",
-      "reason": "Primary performance report motivating the work; attached figures were recovered and inspected.",
-      "settle": "Exact model/checkpoint/configuration, benchmark protocol, chart-vs-post discrepancy, reproducibility inputs and when promised source/report appears."
+      "intake": "intake-1565",
+      "reason": "Exact target artifact for the requested full-model path; verify tensor metadata, hashes and fixture suitability."
     },
     {
       "rank": 4,
-      "intake": "intake-1530",
-      "reason": "A recent custom CUDA implementation may expose algorithm/test patterns even though it targets Blackwell.",
-      "settle": "Which trellis decode and correctness structures are portable as specifications, and which gains are architecture/runtime-specific."
-    },
-    {
-      "rank": 5,
-      "intake": "intake-1531",
-      "reason": "Marlin is the unpack/GEMM comparator named by the Hopper post.",
-      "settle": "Exact baseline support and source-level unpack path; separate portable scheduling ideas from CUDA/Hopper-specific assumptions."
-    },
-    {
-      "rank": 6,
-      "intake": "intake-1532",
-      "reason": "The checkpoint illustrates current EXL3/TR3 quality measurement and mixed-K loader requirements.",
-      "settle": "What its reproducibility bundle actually proves and whether any smaller checkpoint is suitable for a project-side correctness fixture."
+      "intake": "intake-1566",
+      "reason": "Exact draft artifact responsible for the high-acceptance block-8 path; verify packed tensors and acceptance claims."
     }
   ],
-  "preliminary_actionables": [
+  "explicit_declines": [],
+  "stage2_source_candidates": [
     {
-      "intake": "intake-1533",
-      "action": "[unverified] Build a CPU path proposal around the public mul1 AVX reference, with a custom EPYC-optimized kernel as an option; scope it to a small validated operator/model before assessing full-model coverage."
+      "url": "https://github.com/sgl-project/sglang/issues/36010",
+      "bearing": "intake-1564",
+      "settles": "why stock NVFP4 KV plus speculative verification was insufficient"
     },
     {
-      "intake": "intake-1529",
-      "action": "[unverified] Build an MI210 gfx90a HIP/MFMA feasibility spike from the ROCm fork\u2019s format and test references; do not assume RDNA WMMA code itself is portable."
+      "url": "https://github.com/r0b0tlab/qwen38-exl3-dflash2",
+      "bearing": "intake-1564",
+      "settles": "native same-weight ExLlamaV3 baseline, draft-depth behavior and acceptance collapse with context"
     },
     {
-      "intake": "intake-1528",
-      "action": "[unverified] Use the H200 figures as provisional target bands only; obtain source/report and exact checkpoint+protocol before making a speed claim."
+      "url": "https://github.com/r0b0tlab/exllamav3/tree/355c6ee10fbd25b79070316a81ea0708cc18155a",
+      "bearing": "intake-1564",
+      "settles": "exact packed GEMM/GEMV/reconstruction runtime used by CIRU"
     },
     {
-      "intake": "intake-1530",
-      "action": "[unverified] Reuse CUDA code as a mathematical and test reference while authoring native HIP or CPU kernels; do not transplant CUDA launch code into production."
+      "url": "https://github.com/satellitedown/fast-long-context/tree/b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849",
+      "bearing": "intake-1564",
+      "settles": "NVFP4 target KV verification and prefill patch provenance"
     }
   ],
-  "explicit_declines": [
-    {
-      "url": "https://github.com/IST-DASLab/marlin/issues/7",
-      "reason": "an unresolved original H100 request adds little beyond the confirmed non-optimized Hopper status",
-      "bearing": "intake-1531"
-    },
-    {
-      "url": "https://github.com/MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks",
-      "reason": "NVIDIA deployment lineage is lower value for the CPU/gfx90a path",
-      "bearing": "intake-1542"
-    },
-    {
-      "url": "https://github.com/malaiwah/glm52-exl3-vast",
-      "reason": "NVIDIA turnkey qualification is already summarized by the audited checkpoint card and is not the first MI210 milestone",
-      "bearing": "intake-1532"
-    },
-    {
-      "url": "https://github.com/turboderp-org/exllamav3/issues/326",
-      "reason": "ambiguous old-Threadripper anecdote whose reporter questions the measurement",
-      "bearing": "intake-1533"
-    },
-    {
-      "url": "https://github.com/turboderp-org/exllamav3/issues/368",
-      "reason": "Windows hugepage behavior is outside the Linux EPYC track",
-      "bearing": "intake-1556"
-    },
-    {
-      "url": "https://github.com/turboderp-org/exllamav3/issues/372",
-      "reason": "superseded conda/memfd packaging failure",
-      "bearing": "intake-1556"
-    },
-    {
-      "url": "https://github.com/turboderp-org/exllamav3/issues/254",
-      "reason": "predictive expert caching proposal has no implemented kernel or result",
-      "bearing": "intake-1533"
-    },
-    {
-      "url": "https://rocm.docs.amd.com/projects/rocWMMA/en/latest/api-reference/api-reference-guide.html",
-      "reason": "rocWMMA and gfx90a support are already indexed under intake-303; cross-reference the current API instead of creating a duplicate source entry",
-      "bearing": "intake-1537"
-    },
-    {
-      "url": "https://github.com/ROCm/rocWMMA",
-      "reason": "already indexed as intake-303; cross-reference instead of duplicate entry",
-      "bearing": "intake-1537"
-    },
-    {
-      "url": "FxTwitter v2 thread endpoint for the submitted 0xSero post",
-      "reason": "supplemental evidence already folded into intake-1528, not a distinct research source",
-      "bearing": "intake-1528"
-    },
-    {
-      "url": "https://github.com/Luke458/qwen38-27b-exl3-rdna4/blob/main/patches/0002-wmma-gfx12-asm.patch",
-      "reason": "gfx12 wave32 implementation does not settle the gfx90a wave64 kernel",
-      "bearing": "intake-1534"
-    },
-    {
-      "url": "https://github.com/CarouselAether/rocm_exl3/issues/4",
-      "reason": "separate RDC build failure; revisit only if reproduced on the local ROCm 6.2 lane",
-      "bearing": "intake-1534"
-    },
-    {
-      "url": "https://github.com/ROCm/legacy-rocm-build/issues/6273",
-      "reason": "symptom-family corroboration that does not establish EXL3 cause or remedy",
-      "bearing": "intake-1535"
-    },
-    {
-      "url": "https://github.com/turboderp-org/exllamav3/pull/331",
-      "reason": "historical baseline context that does not change the pinned-arena implementation path",
-      "bearing": "intake-1540"
-    },
-    {
-      "url": "https://github.com/vcruz305/GLM-5.3-Flash-EXL3-K2-DGX-Spark-recipe",
-      "reason": "NVIDIA TP1 recipe is downstream qualification rather than a CPU/gfx90a kernel source",
-      "bearing": "intake-1542"
-    },
-    {
-      "url": "https://github.com/tpurtell/glm-5.3-flash-ext3-2x-rtx",
-      "reason": "decisive fork/kernel material is unavailable, so it cannot close the relayed race claim",
-      "bearing": "intake-1545"
-    },
-    {
-      "url": "https://github.com/Zeuss5/cuda-exl3/issues/5",
-      "reason": "NVIDIA MLA-prefill recalibration is already bounded by intake-1544 and does not affect the first MI210 operator",
-      "bearing": "intake-1544"
-    },
-    {
-      "url": "https://github.com/vllm-project/vllm/pull/51540",
-      "reason": "DCP/Mamba fix is outside the first EXL3 CPU/gfx90a operator unless that serving precondition enters scope",
-      "bearing": "intake-1545"
-    },
-    {
-      "url": "https://github.com/turboderp-org/exllamav3/commit/abad6a1553c22a384dfd7fbe63974e1bc051fb8d",
-      "bearing": "intake-1552",
-      "reason": "Python memfd fallback and huge-page documentation are already anchored in intake-1552 and do not change the first CPU/gfx90a operator"
-    },
-    {
-      "url": "https://github.com/vcruz305/exllamav3/commit/329e051385505b6ba981138d86a90bffe032c831",
-      "bearing": "intake-1554",
-      "reason": "the host-readback removal and self-reported two-percent FastAPI delta are already anchored in intake-1554 and do not settle MI210 kernel choice"
-    },
-    {
-      "url": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition datasheet 5349469 JUN26",
-      "bearing": "intake-1558",
-      "reason": "authoritative hardware correction is already anchored in intake-1558 and does not warrant a separate EXL3 intake record"
-    },
-    {
-      "url": "https://github.com/vcruz305/exllamav3/commit/39a031008553eba25f7cdfc1ac9412e4cc039e64",
-      "bearing": "intake-1561",
-      "reason": "the static half-bit ABI test scope is already anchored in intake-1561 and does not exercise the low-batch/no-BC GPU crash"
-    },
-    {
-      "url": "https://github.com/vcruz305/exllamav3/commit/2dd7c2cb24988820e3e80af4c2f0e9b78d08a100",
-      "bearing": "intake-1562",
-      "reason": "cleanup only removes accidental backup files already documented in intake-1562 and adds no kernel or measurement evidence"
-    }
-  ],
-  "stage3_actionable_map": {
-    "preliminary": {
-      "intake-1533": {
-        "filed": [
-          "EXL3-1",
-          "EXL3-2"
-        ]
-      },
-      "intake-1529": {
-        "filed": [
-          "EXL3-3",
-          "EXL3-4"
-        ],
-        "decline_ref": [
-          "EXL3-D1"
-        ]
-      },
-      "intake-1528": {
-        "filed": [
-          "EXL3-7"
-        ]
-      },
-      "intake-1530": {
-        "filed": [
-          "EXL3-1",
-          "EXL3-3",
-          "EXL3-4",
-          "EXL3-5"
-        ],
-        "decline_ref": [
-          "EXL3-D2"
-        ]
-      }
-    },
-    "derived_filed": {
-      "EXL3-1": [
-        "EXL3-A1",
-        "EXL3-A7",
-        "EXL3-B1"
-      ],
-      "EXL3-2": [
-        "EXL3-A4",
-        "EXL3-A5",
-        "EXL3-B2",
-        "EXL3-C3"
-      ],
-      "EXL3-3": [
-        "EXL3-A2",
-        "EXL3-C1"
-      ],
-      "EXL3-4": [
-        "EXL3-A3",
-        "EXL3-E4"
-      ],
-      "EXL3-5": [
-        "EXL3-B4",
-        "EXL3-C4",
-        "EXL3-E3",
-        "EXL3-E5",
-        "EXL3-E6",
-        "EXL3-F1",
-        "EXL3-F2",
-        "EXL3-F4"
-      ],
-      "EXL3-6": [
-        "EXL3-A6"
-      ],
-      "EXL3-7": [
-        "EXL3-A8",
-        "EXL3-B5",
-        "EXL3-F3"
-      ],
-      "EXL3-8": [
-        "EXL3-B3",
-        "EXL3-C2",
-        "EXL3-E1",
-        "EXL3-E2"
-      ],
-      "EXL3-9": [
-        "EXL3-A9",
-        "EXL3-B6",
-        "EXL3-C5"
-      ],
-      "EXL3-10": []
-    },
-    "derived_declined": {
-      "no_foreign_kernel_transplant": {
-        "ids": [
-          "EXL3-D1",
-          "EXL3-D2"
-        ],
-        "reason": "Do not bypass RDNA guards or transplant CUDA PTX, warp32 mappings, or Blackwell splits to gfx90a."
-      },
-      "no_cross_platform_defaults": {
-        "ids": [
-          "EXL3-D3",
-          "EXL3-B7",
-          "EXL3-C6",
-          "EXL3-E7",
-          "EXL3-F5"
-        ],
-        "reason": "Do not transfer foreign performance, policies, launch/probe constants, status/diagnostic behavior, unavailable provenance, or stale snapshot payloads to EPYC/MI210."
-      },
-      "bounded_first_milestone": {
-        "ids": [
-          "EXL3-D4"
-        ],
-        "reason": "Do not begin with the full GLM artifact or present hybrid routed-expert offload as complete CPU inference."
-      }
-    }
-  },
   "stage1_gate": {
-    "new_entries": 6,
-    "all_stage1_unverified": true,
-    "all_handoffs_updated_empty": true,
-    "all_handoffs_created_empty": true,
-    "validator": "bash scripts/validate/validate_intake.sh exit 0 (1529 entries validated)",
-    "gitnexus": "status up-to-date after wrapper reindex; impact target research/intake_index.yaml not present as a symbol (0 graph dependants; graph risk UNKNOWN)"
-  },
-  "stage2_outcomes": {
-    "intake-1528": "dive-verified: author-reported H200 chart and intervention confirmed; no released kernel/report or independent reproduction; prefill prose conflicts with caption and quality comparison is expert-count confounded",
-    "intake-1529": "dive-verified: RDNA wave32/WMMA fork confirmed; native gfx90a wave64/MFMA redesign required; ROCm 7.2.4 is fork-specific and does not block a standalone ROCm 6.2 implementation",
-    "intake-1530": "dive-verified: custom dense/MoE EXL3 CUDA implementation and portable decoder/test patterns confirmed; current build covers sm80 through sm120 while main benchmarks are Blackwell",
-    "intake-1531": "dive-overturned: Marlin helper produces four weights per four source operations and is called twice for eight; prior four-operations-per-eight count was false; generated SASS remains unverified",
-    "intake-1532": "dive-verified: real mixed K3/K4 MCG tensors and loader requirement confirmed; CN3 KLD receipt audited; official total is 753.33B; pack KLD does not reproduce the post's 0.0213",
-    "intake-1533": "dive-verified: mul1-only routed-expert CPU path and ISA ladder confirmed; EPYC 9655 selects VBMI; MCG, dense EXL3 and CPU-only runtime require new operators"
-  },
-  "stage2_second_read": {
-    "status": "complete",
-    "method": "different-agent mechanical quote re-find, normalized SHA-256 recomputation, and yes/no/partial support judgment for every persisted anchor",
-    "corrections_applied": [
-      "intake-1532 anchor quotes were expanded to the exact Markdown rows/sentences whose hashes were recorded",
-      "intake-1532 received additional shared-expert and four-window/two-machine anchors",
-      "intake-1529 received separate CUDA-build and README ROCm-floor anchors",
-      "intake-1533 received a fused/reconstruct eligibility anchor",
-      "intake-1530 and intake-1531 received additional implementation and two-call unpack anchors"
-    ]
-  },
-  "stage2_derived_actionables": [
-    {"id": "EXL3-A1", "disposition": "file-in-stage4-if-approved", "action": "Freeze architecture-neutral golden vectors for K1-K8 and cb0/MCG/mul1, including packed states, SUH/SVH, both Hadamards, reconstructed tiles and linear outputs."},
-    {"id": "EXL3-A2", "disposition": "file-in-stage4-if-approved", "action": "Build a standalone ROCm 6.2 gfx90a reconstruction oracle, then a wave64 m=1 GEMV for K3/K4 MCG and mul1 on MI210."},
-    {"id": "EXL3-A3", "disposition": "file-in-stage4-if-approved", "action": "Build a gfx90a MFMA 16x16x16 lane-map harness and fuse trellis decode for prefill and wider batches after GEMV correctness passes."},
-    {"id": "EXL3-A4", "disposition": "file-in-stage4-if-approved", "action": "Port the mul1 CPU matrix primitive as an experimental operator; build MCG separately as scalar oracle then AVX-512/VBMI decode plus vector FMA."},
-    {"id": "EXL3-A5", "disposition": "file-in-stage4-if-approved", "action": "Measure CPU ISA tiers and 1-96 physical cores across NUMA first-touch, interleave, node-local allocation, replicas, huge pages, swizzle, K and expert shape on EPYC 9655."},
-    {"id": "EXL3-A6", "disposition": "file-in-stage4-if-approved", "action": "Integrate exactly one EXL3 linear operator on a fresh experimental llama.cpp branch based on frozen v10 before dense/MoE dispatch expansion."},
-    {"id": "EXL3-A7", "disposition": "file-in-stage4-if-approved", "action": "Specify a fail-closed EXL3 mixed-K loader keyed by hybrid_tr3_tail, tier bitmap and trellis tensor schema; reject conflicting generic NVFP4 metadata."},
-    {"id": "EXL3-A8", "disposition": "file-in-stage4-if-approved", "action": "Define cache-cold dense and MoE benchmark gates for C1/C8/C16 with exact artifacts, effective-config echo, repetitions, dispersion, hardware observation and deterministic versus atomic modes."},
-    {"id": "EXL3-A9", "disposition": "file-in-stage4-if-approved", "action": "Use matched-expert-count controls for EXL3 versus W4A16 quality and record KLD/logit results through the existing ClaimTuple write path."},
-    {"id": "EXL3-D1", "disposition": "decline", "action": "Do not compile the complete RDNA fork for gfx90a by bypassing architecture or ROCm guards."},
-    {"id": "EXL3-D2", "disposition": "decline", "action": "Do not directly port CUDA PTX, warp32 fragment maps or Blackwell split heuristics to gfx90a."},
-    {"id": "EXL3-D3", "disposition": "decline", "action": "Do not predict MI210 or EPYC speedups from NVIDIA, Xeon or Threadripper measurements."},
-    {"id": "EXL3-D4", "disposition": "decline", "action": "Do not use the 332 GB GLM pack as the first kernel milestone or represent the existing CPU MoE module as a complete CPU-only runtime."}
-  ],
-  "stage2b_outcomes": {
-    "intake-1534": "dive-overturned: gfx1201 FP32-accumulating WMMA exists with the gfx12 four-VGPR form; pinned RDNA fork remains unpatched and does not transfer to gfx90a",
-    "intake-1535": "dive-overturned: teardown SIGSEGV reproduced but MES/reset/phantom-busy coupling did not generalize; workaround remains local",
-    "intake-1536": "dive-overturned: global MTP-off and generic-cc-selector diagnoses do not hold; concatenated wide-N projection remains a candidate experiment",
-    "intake-1537": "dive-verified: official gfx90a catalog exposes FP16-input/FP32-accumulating MFMA plus vector integer and dot operations; performance and ROCm-6.2 codegen remain local gates",
-    "intake-1538": "dive-verified: merged ExLlamaV3 CPU work supplies flat-tile decode scheduling, AVX tiers, swizzle and K1-K8 cross-tier test structure; no EPYC measurement",
-    "intake-1539": "dive-verified: open CUDA stream-decode prototype overlaps CPU compute with selected-expert PCIe transfer; gains are baseline- and CPU-strength-sensitive",
-    "intake-1540": "dive-verified: durable design is the merged pinned shared arena and direct DMA; original PR table predates the maintainer Linux implementation",
-    "intake-1541": "dive-verified: reusable single-load k-sweep and engagement checks; runner is CUDA-specific and its author result shows baseline drift",
-    "intake-1542": "dive-verified: useful mixed-K loader, procedural reference and plugin seam; no CPU executor, HIP kernel or current GPU qualification",
-    "intake-1543": "dive-verified: matched keep-192 raw KLD is effectively tied at 0.3610585 EXL3 versus 0.3572562 W4A16; protocol metadata conflicts and keep-168 EXL3 raw data is absent",
-    "intake-1544": "dive-verified: independent narrow sm121 A/B found no PDL signal above within-arm noise and no distinguishable patch cost; it is not a general race clearance",
-    "intake-1545": "dive-verified: stack-level partial-write/bounds failure patterns are useful test inputs; issue contains no completed race A/B and its SM12 mechanisms are not gfx90a work",
-    "intake-1546": "dive-verified: Marlin paper supplies scheduling and roofline context on NVIDIA; its measurements do not predict MI210",
-    "intake-1547": "dive-verified: QQQ supports separating memory-bound decode from compute-bound prefill; it does not evaluate EXL3 or AMD",
-    "intake-1548": "dive-verified: modern vLLM documents Marlin/AWQ on Hopper and an out-of-tree quantization plugin seam, but no AMD Marlin support",
-    "intake-1549": "dive-verified: official GLM metadata pins 753,329,940,480 parameters, 256 routed experts, top-8, one shared expert and one MTP layer",
-    "intake-1550": "dive-verified: full-logit bundle supplies a strong revision/checksum receipt pattern but is lineage-owned and too large for the first kernel fixture"
-  },
-  "stage2b_wave2_outcomes": {
-    "intake-1551": "dive-verified: LLVM maps MI210 exactly to gfx90a/amdgpu9.0a; gfx9-generic omits gfx90a, so the experimental kernel needs an explicit gfx90a target plus recorded XNACK/SRAMECC/code-object identity",
-    "intake-1552": "dive-verified: pinned shared-arena streaming and batched reconstruction are CUDA orchestration around routed MoE; later commits materially reworked and tested the design, and the first MI210 milestone should validate CPU and gfx90a primitives independently",
-    "intake-1553": "dive-verified: all AVX-512 tiers share the band-contiguous trellis layout while K8/AVX2/scalar remain native; performance ranges are author observations on other CPUs and the real-weight ladder can skip",
-    "intake-1554": "dive-verified: the fork supplies a useful half-bit mixed-K ABI, eligibility checks and runtime-K/grouped dispatch comparison; row tiling can create multiple launches and NVIDIA results conflict by hardware and shape",
-    "intake-1555": "dive-overturned: the named observation dataset cannot be anonymously pinned or inspected; only authentication failures and the downstream author's unpinned linkage are verified"
-  },
-  "stage2b_wave3_outcomes": {
-    "intake-1556": "dive-verified: c48bb5f chiefly adds Windows shared-section transport and a sustained-link probe; Linux zero-copy and 700-to-1850 tok/s predate it, probe tests are synthetic, and the anchored path is CUDA-specific",
-    "intake-1557": "dive-verified: fixed-order FP32 slot/gather is a useful deterministic reduction pattern, but RECON_DET defaults false independently, streamed fused and batched tiers can both remain atomic, top-k is capped at 32, and a later expert-slice fix is required",
-    "intake-1558": "dive-verified: unified mixed-K metadata and pointer-table design is concrete, but row bands can issue three calls, the original revision had a low-batch crash, token equality is weak correctness evidence, and RTX performance has no raw receipt",
-    "intake-1559": "dive-verified: per-call routed-row policy is implemented and GB10 decode regressed 15.70-to-17.91 percent; runtime dispatch still enters K-templated inner kernels and no threshold recovery was verified"
-  },
-  "stage2b_wave4_outcomes": {
-    "intake-1560": "dive-verified: deterministic gather must retain sentinel assignments for grouping while slicing local compute tables to E rows; the defect requires a sliced module, nonlocal pick, deterministic scratch and all-fused bypass, and no direct regression fixture exists",
-    "intake-1561": "dive-verified: bb912 closes a low-batch/no-BC Boolean dispatch hole by positively selecting reconstruction for mixed-K unified layers; it adds no native kernel or GPU regression test and later static ABI tests cannot reproduce the crash",
-    "intake-1562": "dive-verified: grouped legacy dispatch is selected per layer construction, handles compatible K/codebook buckets of at least four experts and leaves other work to existing fallbacks; GB10 profiler and speed values are unreceipted and CUDA launch knobs do not transfer to gfx90a"
-  },
-  "stage2b_derived_actionables": [
-    {"id": "EXL3-B1", "disposition": "file-in-stage4-if-approved", "action": "Specify separate CPU, gfx90a GEMV and gfx90a MFMA operators behind one architecture-neutral EXL3 tensor/metadata contract."},
-    {"id": "EXL3-B2", "disposition": "file-in-stage4-if-approved", "action": "Use ExLlamaV3 flat-tile scheduling, swizzle invariants and K1-K8 cross-tier equivalence tests as references for the EPYC mul1 path; implement MCG independently."},
-    {"id": "EXL3-B3", "disposition": "file-in-stage4-if-approved", "action": "Measure EPYC GEMV, registered-host-to-MI210 transfer and fused gfx90a expert time before implementing the complete concurrent stream-decode path."},
-    {"id": "EXL3-B4", "disposition": "file-in-stage4-if-approved", "action": "Add poisoned-tail, partial-write, lower/upper-bound and short-row tests to every CPU/HIP operator and separate kernel, combine and collective determinism."},
-    {"id": "EXL3-B5", "disposition": "file-in-stage4-if-approved", "action": "Harden the k-sweep into an interleaved HIP/MI210 measurement recipe with exact binary identity, raw per-run records, active-window KFD/VRAM evidence and ClaimTuple emission."},
-    {"id": "EXL3-B6", "disposition": "file-in-stage4-if-approved", "action": "Compare EXL3 and W4A16 at matched architecture, expert plan, evaluation panel and storage budget; keep codec, pruning and runtime effects separate."},
-    {"id": "EXL3-B7", "disposition": "decline", "action": "Do not adopt global MTP-off, RDNA sliced-GEMM, CUDA PDL or Triton-specialization policies for MI210 without local mechanism-specific evidence."}
-  ],
-  "stage2b_wave2_derived_actionables": [
-    {"id": "EXL3-C1", "disposition": "file-in-stage4-if-approved", "action": "Compile every experimental MI210 operator explicitly for gfx90a and record target ID, code-object version, XNACK/SRAMECC mode, compiler revision and disassembly with each benchmark."},
-    {"id": "EXL3-C2", "disposition": "file-in-stage4-if-approved", "action": "Use the current tested pinned-arena lineage as the hybrid-serving reference, but implement HIP host registration, copy streams and reconstruction only after separate CPU-output and gfx90a-output parity gates pass."},
-    {"id": "EXL3-C3", "disposition": "file-in-stage4-if-approved", "action": "Benchmark native and band-contiguous trellis layouts across K1-K8 and every supported EPYC ISA tier, backed by a project-owned real-weight fixture that cannot silently skip."},
-    {"id": "EXL3-C4", "disposition": "file-in-stage4-if-approved", "action": "Carry half-bit mixed-K metadata and fail-closed eligibility checks into the HIP ABI; retain both runtime-K and grouped compile-time-K kernels until MI210 decode and prefill measurements choose defaults."},
-    {"id": "EXL3-C5", "disposition": "file-in-stage4-if-approved", "action": "Treat expert-ranking provenance as unverified until the observation dataset is public or authorized, revision-pinned and includes raw scores plus collection and ranking-generator revisions."},
-    {"id": "EXL3-C6", "disposition": "decline", "action": "Do not use current LLVM main documentation, CUDA benchmark deltas or an unavailable observation dataset as evidence of ROCm-6.2/MI210 behavior."}
-  ],
-  "stage2b_wave3_derived_actionables": [
-    {"id": "EXL3-E1", "disposition": "file-in-stage4-if-approved", "action": "Implement and validate HIP registered-shared-arena ownership, failure-atomic attach, byte-exact DMA and teardown independently from trellis reconstruction and MFMA work."},
-    {"id": "EXL3-E2", "disposition": "file-in-stage4-if-approved", "action": "Build a ROCm-6.2 sustained-link probe that records the complete MI210 rate trace and effective threshold rather than copying CUDA sleep and bandwidth constants."},
-    {"id": "EXL3-E3", "disposition": "file-in-stage4-if-approved", "action": "Implement fixed routing-order FP32 slot/gather with one parsed deterministic configuration, explicit top-k bounds, streamed-tier coverage and TP/CPU expert-slice sentinels."},
-    {"id": "EXL3-E4", "disposition": "file-in-stage4-if-approved", "action": "Measure folded and unfolded reconstruction against the same unquantized teacher and report scratch occupancy, bandwidth and repeat-run determinism on MI210."},
-    {"id": "EXL3-E5", "disposition": "file-in-stage4-if-approved", "action": "Retain unified runtime-K and grouped K-specialized CPU/HIP paths and sweep device, model/pack and routed-row shape with raw launch, occupancy, HBM-byte and timing receipts."},
-    {"id": "EXL3-E6", "disposition": "file-in-stage4-if-approved", "action": "Require full operator-output or logit comparisons for mixed-K correctness; token-ID agreement alone does not qualify a kernel."},
-    {"id": "EXL3-E7", "disposition": "decline", "action": "Do not attribute performance reversal to one axis or transfer RTX/GB10 thresholds, probe constants or speedups to MI210 or EPYC."}
-  ],
-  "stage2b_wave4_derived_actionables": [
-    {"id": "EXL3-F1", "disposition": "file-in-stage4-if-approved", "action": "Encode local-expert table length E versus assignment/count length E+1 explicitly, validate every kernel boundary and add guard-filled all-local, all-nonlocal and mixed-sentinel fixtures around the fused threshold."},
-    {"id": "EXL3-F2", "disposition": "file-in-stage4-if-approved", "action": "Implement CPU/gfx90a mixed-K dispatch as an explicit capability truth table with a named executable fallback for every rejected optimized path and regression cases around BC absence, batch thresholds and expert slicing."},
-    {"id": "EXL3-F3", "disposition": "file-in-stage4-if-approved", "action": "Measure unified, grouped and leftover-expert fallback paths independently on MI210 and EPYC, including buckets below four experts, launch counts, rocprof traces, HBM traffic, output error and repeated timing distributions."},
-    {"id": "EXL3-F4", "disposition": "file-in-stage4-if-approved", "action": "Keep routing-k order stable while filtering nonlocal sentinel slots and compare CPU/GPU partials only after each side masks out-of-domain assignments."},
-    {"id": "EXL3-F5", "disposition": "decline", "action": "Do not transplant the experimental CUDA launch constants, misleading status behavior, ad hoc stderr diagnostics or stale backup-file snapshot into the project implementation."}
-  ],
-  "stage2b_gate": {
-    "status": "closed",
-    "uncapped": true,
-    "recommended_ingest_and_dive": [
-      {"url": "https://github.com/CarouselAether/rocm_exl3/issues/1", "bearing": "intake-1529", "settles": "actual gfx1201 port, fragment rewrite, LDS correction and differential results", "priority": "highest"},
-      {"url": "https://github.com/CarouselAether/rocm_exl3/issues/2", "bearing": "intake-1529", "settles": "runtime and cooperative-launch failures after the port", "priority": "highest"},
-      {"url": "https://github.com/CarouselAether/rocm_exl3/issues/3", "bearing": "intake-1529", "settles": "decode roofline, narrow GEMV weakness, sliced-GEMM regression and fusion proposal", "priority": "highest"},
-      {"url": "https://github.com/turboderp-org/exllamav3/pull/349", "bearing": "intake-1533", "settles": "CPU ISA implementation provenance, shapes, correctness and hardware caveats", "priority": "highest"},
-      {"url": "https://github.com/turboderp-org/exllamav3/pull/392", "bearing": "intake-1533", "settles": "current hybrid single-row CPU/GPU expert split and numeric limits", "priority": "highest"},
-      {"url": "https://github.com/lmganon16/exl3-stream-decode-bench", "bearing": "intake-1533", "settles": "reusable measurement harness for the hybrid expert split", "priority": "highest"},
-      {"url": "https://github.com/vcruz305/vllm-exl3", "bearing": "intake-1530", "settles": "independent fused MoE/GEMV implementation and launch geometry", "priority": "high"},
-      {"url": "https://huggingface.co/datasets/0xSero/glm-5.3-reap-fidelity-study", "bearing": "intake-1528", "settles": "matched-expert-count EXL3/W4A16 behavior and pruning confound", "priority": "highest"},
-      {"url": "https://github.com/NNNtrance/GLM-5.3-Flash-EXL3-DGX-Spark/blob/main/results/kernels/sm12-stack-patches-ab.md", "bearing": "intake-1530", "settles": "independent correctness and determinism study around cuda-exl3", "priority": "high"},
-      {"url": "https://github.com/Zeuss5/cuda-exl3/issues/6", "bearing": "intake-1530", "settles": "upstream correctness findings referenced by the independent study", "priority": "high"},
-      {"url": "https://github.com/turboderp-org/exllamav3/pull/341", "bearing": "intake-1533", "settles": "pinned arena design, streamed-prefill gains and platform caveats", "priority": "high"},
-      {"url": "https://arxiv.org/abs/2408.11743", "bearing": "intake-1531", "settles": "authoritative Marlin algorithm, benchmark scope and workload details", "priority": "high"},
-      {"url": "https://arxiv.org/abs/2406.09904", "bearing": "intake-1531", "settles": "independent larger-batch comparison bounding Marlin's compute-bound regime", "priority": "medium"},
-      {"url": "https://github.com/vllm-project/vllm/blob/main/docs/features/quantization/README.md", "bearing": "intake-1531", "settles": "current Marlin-family compatibility and Hopper support boundary", "priority": "medium"},
-      {"url": "https://rocm.docs.amd.com/projects/llvm-project/en/docs-6.4.1/LLVM/llvm/html/AMDGPU/AMDGPUAsmGFX90a.html", "bearing": "intake-1529,intake-1530", "settles": "exact gfx90a MFMA instruction repertoire", "priority": "high"},
-      {"url": "https://huggingface.co/zai-org/GLM-5.3", "bearing": "intake-1532", "settles": "canonical parameter count and MoE architecture", "priority": "medium"},
-      {"url": "https://huggingface.co/datasets/brandonmusic/GLM-5.3-BF16-full-logits", "bearing": "intake-1532", "settles": "teacher capture provenance and reproducible KLD inputs", "priority": "medium"}
-    ],
-    "recommended_declines": [
-      {"url": "https://github.com/IST-DASLab/marlin/issues/7", "reason": "an unresolved original H100 request adds little beyond the confirmed non-optimized Hopper status"},
-      {"url": "https://github.com/MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks", "reason": "NVIDIA deployment lineage is lower value for the CPU/gfx90a path"},
-      {"url": "https://github.com/malaiwah/glm52-exl3-vast", "reason": "NVIDIA turnkey qualification is already summarized by the audited checkpoint card and is not the first MI210 milestone"},
-      {"url": "https://github.com/turboderp-org/exllamav3/issues/326", "reason": "ambiguous old-Threadripper anecdote whose reporter questions the measurement"},
-      {"url": "https://github.com/turboderp-org/exllamav3/issues/368", "reason": "Windows hugepage behavior is outside the Linux EPYC track"},
-      {"url": "https://github.com/turboderp-org/exllamav3/issues/372", "reason": "superseded conda/memfd packaging failure"},
-      {"url": "https://github.com/turboderp-org/exllamav3/issues/254", "reason": "predictive expert caching proposal has no implemented kernel or result"},
-      {"url": "https://rocm.docs.amd.com/projects/rocWMMA/en/latest/api-reference/api-reference-guide.html", "reason": "rocWMMA and gfx90a support are already indexed under intake-303; cross-reference the current API instead of creating a duplicate source entry"},
-      {"url": "https://github.com/ROCm/rocWMMA", "reason": "already indexed as intake-303; cross-reference instead of duplicate entry"},
-      {"url": "FxTwitter v2 thread endpoint for the submitted 0xSero post", "reason": "supplemental evidence already folded into intake-1528, not a distinct research source"}
-    ],
-    "recommended_declines_accepted": true,
-    "recommended_declines_recorded_in_bearing_entries": [
-      "intake-1528", "intake-1531", "intake-1532", "intake-1533", "intake-1537", "intake-1542", "intake-1556"
-    ],
-    "wave1_selected_entries": [
-      "intake-1534", "intake-1535", "intake-1536", "intake-1537", "intake-1538", "intake-1539",
-      "intake-1540", "intake-1541", "intake-1542", "intake-1543", "intake-1544", "intake-1545",
-      "intake-1546", "intake-1547", "intake-1548", "intake-1549", "intake-1550"
-    ],
-    "wave1_validator": "bash scripts/validate/validate_intake.sh exit 0 (1546 entries validated)",
-    "wave1_second_read": "complete: 116 Stage-2b anchors independently re-found or mechanically audited; malformed quotes, a nonexistent commit identity, ambiguous locators and over-broad claims corrected",
-    "surfaced_round2_recommended_ingest_and_dive": [
-      {"url": "https://llvm.org/docs/AMDGPUUsage.html", "bearing": "intake-1537", "settles": "official gfx90a=MI210 mapping, wavefront model and ABI context for the native wave64 kernel", "priority": "highest"},
-      {"url": "https://github.com/turboderp-org/exllamav3/commit/893199c18b7013c23300b84f763b958d93f89970", "bearing": "intake-1539,intake-1540", "settles": "the actual merged Linux pinned-arena and batched reconstruct foundation to adapt with HIP", "priority": "highest"},
-      {"url": "https://github.com/turboderp-org/exllamav3/commit/49983698aaf2d51b92234048016ea678202534db", "bearing": "intake-1538", "settles": "the post-PR all-AVX512 swizzle implementation relevant to EPYC", "priority": "high"},
-      {"url": "https://github.com/vcruz305/exllamav3", "bearing": "intake-1542", "settles": "the concrete mixed-K CUDA ABI, fallback contract and tensor layout consumed by vllm-exl3", "priority": "high"},
-      {"url": "https://huggingface.co/datasets/0xSero/glm-5.3-reap-observations-v1", "bearing": "intake-1543", "settles": "the expert-observation inputs and ranking-plan provenance behind the pruning study", "priority": "high"}
-    ],
-    "surfaced_round2_recommended_declines": [
-      {"url": "https://github.com/Luke458/qwen38-27b-exl3-rdna4/blob/main/patches/0002-wmma-gfx12-asm.patch", "reason": "gfx12 wave32 implementation does not settle the gfx90a wave64 kernel"},
-      {"url": "https://github.com/CarouselAether/rocm_exl3/issues/4", "reason": "separate RDC build failure; revisit only if reproduced on the local ROCm 6.2 lane"},
-      {"url": "https://github.com/ROCm/legacy-rocm-build/issues/6273", "reason": "symptom-family corroboration that does not establish EXL3 cause or remedy"},
-      {"url": "https://github.com/turboderp-org/exllamav3/pull/331", "reason": "historical baseline context that does not change the pinned-arena implementation path"},
-      {"url": "https://github.com/vcruz305/GLM-5.3-Flash-EXL3-K2-DGX-Spark-recipe", "reason": "NVIDIA TP1 recipe is downstream qualification rather than a CPU/gfx90a kernel source"},
-      {"url": "https://github.com/tpurtell/glm-5.3-flash-ext3-2x-rtx", "reason": "decisive fork/kernel material is unavailable, so it cannot close the relayed race claim"},
-      {"url": "https://github.com/Zeuss5/cuda-exl3/issues/5", "reason": "NVIDIA MLA-prefill recalibration is already bounded by intake-1544 and does not affect the first MI210 operator"},
-      {"url": "https://github.com/vllm-project/vllm/pull/51540", "reason": "DCP/Mamba fix is outside the first EXL3 CPU/gfx90a operator unless that serving precondition enters scope"}
-    ],
-    "surfaced_round2_declines_accepted": true,
-    "surfaced_round2_declines_recorded_in_bearing_entries": [
-      "intake-1534", "intake-1535", "intake-1540", "intake-1542", "intake-1544", "intake-1545"
-    ],
-    "wave2_selected_entries": [
-      "intake-1551", "intake-1552", "intake-1553", "intake-1554", "intake-1555"
-    ],
-    "wave2_validator": "bash scripts/validate/validate_intake.sh exit 0 (1551 entries validated); JSON/YAML, sequential-ID, normalized-anchor-hash and no-premature-disposition audits passed",
-    "wave2_second_read": "complete: all 39 anchors independently re-found or mechanically audited; two under-supported CPU/mixed-K claims and six over-broad unavailable-dataset claims were corrected before validation",
-    "surfaced_round3_recommended_ingest_and_dive": [
-      {"url": "https://github.com/turboderp-org/exllamav3/commit/c48bb5f8ea80ecb2bcfe68d1299240294af9da5f", "bearing": "intake-1552", "settles": "the reworked page-locked shared arena, current tests and long-context prefill design", "priority": "highest"},
-      {"url": "https://github.com/turboderp-org/exllamav3/commit/1c8aff478a787fe096d231f9a0eaacc23b08701e", "bearing": "intake-1552", "settles": "current deterministic reduction and folded-Hadamard defaults that affect parity gates", "priority": "highest"},
-      {"url": "https://github.com/vcruz305/exllamav3/commit/5e0ba47852179eae45a2121e848ecc05d8688c38", "bearing": "intake-1554", "settles": "the original unified mixed-K kernel design and RTX PRO 6000 result", "priority": "high"},
-      {"url": "https://github.com/vcruz305/exllamav3/commit/13f1c1604ce13abaf894c30616e893fcb1560413", "bearing": "intake-1554", "settles": "the opposing GB10 decode regression, row-floor rationale and limits of runtime-K dispatch", "priority": "high"}
-    ],
-    "surfaced_round3_recommended_declines": [
-      {"url": "https://github.com/turboderp-org/exllamav3/commit/abad6a1553c22a384dfd7fbe63974e1bc051fb8d", "bearing": "intake-1552", "reason": "Python memfd fallback and huge-page documentation are already anchored in intake-1552 and do not change the first CPU/gfx90a operator"},
-      {"url": "https://github.com/vcruz305/exllamav3/commit/329e051385505b6ba981138d86a90bffe032c831", "bearing": "intake-1554", "reason": "the host-readback removal and self-reported two-percent FastAPI delta are already anchored in intake-1554 and do not settle MI210 kernel choice"}
-    ],
-    "surfaced_round3_declines_accepted": true,
-    "surfaced_round3_declines_recorded_in_bearing_entries": [
-      "intake-1552", "intake-1554"
-    ],
-    "wave3_selected_entries": [
-      "intake-1556", "intake-1557", "intake-1558", "intake-1559"
-    ],
-    "wave3_validator": "bash scripts/validate/validate_intake.sh exit 0 (1555 entries validated); JSON/YAML, sequential-ID, normalized-anchor-hash, unique-actionable-ID and no-premature-disposition audits passed",
-    "wave3_second_read": "complete: all 44 anchors independently re-found; test-coverage scope, CUDA qualification, streamed atomic defaults, pre-release defect wording, exact eligibility and confounded performance causality were corrected",
-    "surfaced_round4_recommended_ingest_and_dive": [
-      {"url": "https://github.com/turboderp-org/exllamav3/commit/398729b7e11c2c0724a88b30e066eec0254b97eb", "bearing": "intake-1557", "settles": "the required local-expert/sentinel gather-table correction for TP and CPU expert slices", "priority": "highest"},
-      {"url": "https://github.com/vcruz305/exllamav3/commit/bb912e82e13037c5fec3be2880a1b4ad85cae0e3", "bearing": "intake-1558", "settles": "the immediate low-batch/no-BC crash fix in unified mixed-K dispatch", "priority": "highest"},
-      {"url": "https://github.com/vcruz305/exllamav3/commit/f6e42ecbda974bf252eccaccea0c111d982511ba", "bearing": "intake-1558,intake-1559", "settles": "the run-wide legacy switch, second GB10 model result and profiler-based mechanism evidence", "priority": "high"}
-    ],
-    "surfaced_round4_recommended_declines": [
-      {"url": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition datasheet 5349469 JUN26", "bearing": "intake-1558", "reason": "authoritative hardware correction is already anchored in intake-1558 and does not warrant a separate EXL3 intake record"}
-    ],
-    "surfaced_round4_declines_accepted": true,
-    "surfaced_round4_declines_recorded_in_bearing_entries": [
-      "intake-1558"
-    ],
-    "wave4_selected_entries": [
-      "intake-1560", "intake-1561", "intake-1562"
-    ],
-    "wave4_validator": "bash scripts/validate/validate_intake.sh exit 0 (1558 entries validated); JSON/YAML, sequential-ID, normalized-anchor-hash, unique-actionable-ID and no-premature-disposition audits passed",
-    "wave4_second_read": "complete: all 37 anchors independently re-found; derived gfx90a guidance, diagnostic provenance, static-test scope, grouping keys, switch lifetime, fallback semantics, CMAX capacity and confounded causality were corrected",
-    "final_surfaced_recommended_declines": [
-      {"url": "https://github.com/vcruz305/exllamav3/commit/39a031008553eba25f7cdfc1ac9412e4cc039e64", "bearing": "intake-1561", "reason": "the static half-bit ABI test scope is already anchored in intake-1561 and does not exercise the low-batch/no-BC GPU crash"},
-      {"url": "https://github.com/vcruz305/exllamav3/commit/2dd7c2cb24988820e3e80af4c2f0e9b78d08a100", "bearing": "intake-1562", "reason": "cleanup only removes accidental backup files already documented in intake-1562 and adds no kernel or measurement evidence"}
-    ],
-    "final_surfaced_declines_accepted": true,
-    "final_surfaced_declines_recorded_in_bearing_entries": [
-      "intake-1561", "intake-1562"
-    ]
-  },
-  "stage2_gate": {
-    "validator": "bash scripts/validate/validate_intake.sh exit 0 (1558 entries validated)",
-    "artifact_audits": "clean for Stage 2, all 17 Stage-2b wave-1 dives, all 5 Stage-2b wave-2 dives, all 4 Stage-2b wave-3 dives, all 3 Stage-2b wave-4 dives and all second-reader passes",
-    "handoff_writes": 0,
-    "production_kernel_writes": 0
+    "status": "awaiting-operator-dive-selection",
+    "recommended": ["intake-1564", "intake-1563", "intake-1565", "intake-1566"],
+    "handoff_writes": 0
   }
 }
