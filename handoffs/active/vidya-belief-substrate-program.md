@@ -2522,6 +2522,20 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
 
 - [ ] **VB-TDP-1 — Wire the write side before the first typed-decision / PAW measurement run.** One self-hashed ClaimTuple per TD-2/TD-3/PAW-3 run at the source table (scripts/vidya/adapters/README.md row + this task); a tuple invented on read cannot gate a decision. (Covers `typed-decision-plane.md` RTG-56 and `paw-compiled-specialists.md` INF-76.)
 
+## VB-EXL3-CPU-GFX90A — prospective EXL3 CPU/MI210 evidence (filed 2026-09-25)
+
+- [ ] **VB-EXL3-CPU-GFX90A — wire EXL3 experimental receipts on the WRITE side before the first measured run.**
+  Before the first correctness, performance, or quality-producing run, add producer-authored native schemas
+  `epyc.exl3.measurement.v1` and `epyc.exl3.verifier.v1`, plus strict projections for both source kinds. Measurement
+  rows use the locator run × arm × backend × operator × shape × metric; verifier rows use run × fixture × backend/path
+  × proposition. Both carry schema and producer identity/hash, run/row IDs, self-hash, date, exact category, protocol
+  ID (empty when ineligible), attestation path/digest, comparator/arm identity, experimental/no-promotion authority,
+  and model/artifact/source/binary/library/toolchain/hardware/residency identities. Measurement rows contain exactly
+  one metric with units and `metric_direction`, repetitions and `reps_basis`, and the raw vector. Verifier rows add
+  checker identity/hash, fixture and read-set digests, exact `decided_proposition`, and verdict. Strict adapters accept
+  only post-hook rows, project eligible native records into `ClaimTuple`, and delegate grading to `claim_tuple.grade()`.
+  Historical runs are pre-hook and emit zero tuples; no new grading rule or production authority.
+
 ## VB-TD-21-CENSUS — structured-output consumer audit capture (filed 2026-09-24)
 
 - [ ] **VB-TD-21-CENSUS — add a prospective, source-pinned evidence writer before the next consumer census or re-audit.** Capture consumer identity, parse/constraint path, failure disposition, and endpoint capability in a self-hashed native record; the 2026-09-24 static census/audit stays retrospective and emits zero tuples. Project eligible fields through `ClaimTuple` and `claim_tuple.grade()`; no backfill, new grading rule, or conversion/promotion authority. Source row: `scripts/vidya/adapters/README.md`.

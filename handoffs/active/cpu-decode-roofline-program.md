@@ -3774,6 +3774,10 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       lever outright, is gated **behind** 5–7 sessions of porting. It can be answered for **~2–5 GB of targeted
       download and one zero-inference session, no bench lock.** If INF-71 is ever reopened, that is FIRST.
 
+      **Successor scope (2026-09-25):** the no-go above remains authoritative for that Qwen CPU operating point.
+      It does not decide the broader MCG/dense/gfx90a/hybrid architecture program now owned by
+      [`exl3-cpu-mi210-implementation.md`](exl3-cpu-mi210-implementation.md) (`INF-80`). Do not reuse retired `INF-71`.
+
 ## Tasks filed 2026-09-23 — champion residency (VMA B)
 
 _Found by main-dsv41 while checking the sibling model; root-caused 2026-09-23 by the research-intake session on operator ownership transfer._
@@ -4860,4 +4864,3 @@ headline is the served artifact's number; a delta is measured with the artifact 
 arms. The uniform IQ4_XS file is the required comparison baseline for this model until B5 replaces it by
 the same procedure. Every row carries: build id, thread count, artifact (path + SHA), recipe (with the OMP
 stack stated), n and reps, and — after C0 — achieved GB/s and % of the measured read bandwidth.
-

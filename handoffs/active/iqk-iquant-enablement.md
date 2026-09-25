@@ -93,6 +93,10 @@ Verified 2026-07-21: host load average ~48, seven llama-servers resident, and a 
 
 ## Adjacent: the KT/trellis family (folded in from tq3-quantization-evaluation.md)
 
+**Format boundary (2026-09-25):** IQ*_KT and EXL3 are distinct tensor formats, codebooks, loaders, and
+kernel paths. T2/T3 below govern IQ*_KT only. Project-owned EXL3 CPU and MI210 work is tracked by
+[`exl3-cpu-mi210-implementation.md`](exl3-cpu-mi210-implementation.md) (`INF-80`) and may proceed independently.
+
 Chasing the *trellis* stub is what uncovered the IQ-quant defect above, but the two are not comparable in cost and should not be sequenced together.
 
 **Trellis is 3-6 days and medium-high risk, not a flag flip.** `iqk_gemm_ktquants.cpp` is absent from `CMakeLists.txt`; the `block_iq2_kt`/`block_iq4_kt` structs do not exist in our tree (only in `/mnt/raid0/llm/ik_llama.cpp`); and the KT types are **synthetic casts at 153-158 against `GGML_TYPE_COUNT = 43` with no `type_traits` row**, so a KT GGUF cannot load at all — the same OOB class commit `715383cde` already had to fix once. Honouring ik's IDs against a dense `type_traits` array ripples into the CUDA/HIP per-type tables. KT is also CPU-only, so the MI210 cannot participate.

@@ -31,6 +31,7 @@
 | INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | DS41-C25/C10a — read run 9b's first planner reply and close both; then DS41-C28: schedule batch-1 full-target calibration off-hours | INF-31, RTG-57 |
 | INF-78 | autokernel orchestrator actor backend | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) | OAB-1 — per-call worktree root + edit mode on `/chat` (orchestrator); seat side next: OAB-10 AGENTS.md trim, OAB-11 lane reads | INF-77, INF-66, EVL-37, RTG-56, UFH-01 |
 | INF-79 | conversation stack (speech) | [conversation-stack.md](conversation-stack.md) | CS-1 — run research intake on the interlocutor sources (Step-Audio 2, Qwen3-Omni, Unmute, SHANKS, STITCH) | — |
+| INF-80 | exl3 cpu mi210 implementation | [exl3-cpu-mi210-implementation.md](exl3-cpu-mi210-implementation.md) | EXL3-1 — Freeze the backend-neutral artifact, metadata, oracle, and evidence contract. | — |
 | INF-18 | gpu acceleration path | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Explain the bidirectional-only mechanism before this becomes a placement input | — |
 | INF-19 | gpu cot scaffold sidecar | [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) | G3-4 — future decision instrument (separate from G3-3). Select and run a decision-grade, | — |
 | INF-20 | gpu drafter control redesign | [gpu-drafter-control-redesign.md](gpu-drafter-control-redesign.md) | DR-3 — broader K2 admission runner/package: build the dry-run-first K2 | — |

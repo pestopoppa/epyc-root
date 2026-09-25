@@ -238,6 +238,10 @@ Unlike KT this needs **none** of the hard parts: `IQ2_XXS=16`, `IQ3_XXS=18`, `IQ
 
 Both the IQ-quant un-stub and the KT/trellis sequencing now live in **[iqk-iquant-enablement.md](iqk-iquant-enablement.md)** (tasks B1-B5 and T1-T3 respectively), so there is one owner and one ordering. The analysis above stands; the executable tasks moved.
 
+**EXL3 ownership update (2026-09-25):** native EXL3 CPU and MI210/gfx90a implementation is owned by
+[`exl3-cpu-mi210-implementation.md`](exl3-cpu-mi210-implementation.md) (`INF-80`). This monitor remains
+the quantization context owner. IQ*_KT execution remains with `INF-26`; its T2/T3 gates do not gate EXL3.
+
 Two corrections to the section above, from the tensor-header parse: the whitelist covers **five** native types (IQ2_XXS, IQ2_XS, IQ2_S, IQ3_XXS, IQ3_S), not three — matching exactly what `iqk_gemm_iquants.cpp` implements in both its kernel and converter switches. And the change benefits **all four** IQ-quant registry models, not GLM-5.2 alone; **Qwen3-Next-80B i1-IQ2_M gains the largest share (433 of 807 tensors, 54%)**.
 
 ## 2026-08-03 — intake Stage-2: the Escha 2-bit assessment, and a quant-choice trap it exposes
