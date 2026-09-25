@@ -63,11 +63,12 @@ gate this program has already passed.
 
 ### Open work — start here
 
-Outstanding tasks live in **Source coverage** (`SC6-LIVE`, `SC7`, `SC12`, `SC12-ARTIFACT`, `SC14-B`,
-`SC18`, `SC19`, `SC20`, `SC21`, `SC32`, `SC37`–`SC45`, `SC49`–`SC51`) and **Consumption** (none —
-the correction queue is drained, the citation gate is wired into `index_state.py --check`, and the
-SC12-ENTRY blocker is closed). Everything else is complete and lives in the completed sibling
-linked under Completed Scope.
+For the current queue, use the open checkboxes in this handoff and the generated
+[`master-handoff-index.md`](master-handoff-index.md) rollup. The immediate KV-quant
+step is `VB-KVQ-V10-INGEST`: ingest the first complete post-hook 12-row sweep.
+The AutoPilot decision receipt is wired; automatic correction review for a
+decision that declared reliance remains `VB-KVQ-V10-RECONSIDER` below. Historical
+completed scope through 2026-08-10 lives in the sibling linked above.
 
 **2026-08-26 state:** the read side is now fully wired. `cite-check` gates every commit through
 `index_state.py --check` (self-heals a missing ledger by re-ingesting; scoped to changed
@@ -2561,7 +2562,7 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
 
 ## VB-KVQ-V10 — MI210 KV-quant decode sweep at v10 (filed 2026-09-22)
 
-- [ ] **VB-KVQ-V10 — author the read-side adapter for the v10 KV-quant sweep.** The WRITE side is already
+- [x] **VB-KVQ-V10 — author the read-side adapter for the v10 KV-quant sweep.** ✅ 2026-09-25. The WRITE side is already
   wired (research `scripts/benchmark/kv_quant_27b_v10_sweep.py`, schema
   `epyc.vidya.kv_quant_27b_v10_capture.v1`, sidecar `belief_measurements.jsonl` beside `summary.json`,
   self-hashed `row_sha256`, shared `validate_row()`), filed BEFORE the sweep runs — the read side cannot be
@@ -2578,6 +2579,31 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   swing from that flag alone, so a KV ratio quoted without it is a flash-attention number.
   Locator = run x arm x depth x metric, never a replicate file.
   Owner: the session that runs the sweep in the operator stack-down window.
+  The strict reader is `scripts/vidya/adapters/kv_quant_27b_v10.py`; `cli.py ingest
+  kv-quant-27b-v10-measurement` and the read-only `kvq_planner_context.py` are wired. The
+  AutoPilot planner includes a separate advisory KV-quant block; the active AutoKernel
+  `loop/run.py` → `AgentPlanner.propose()` path reads the same bounded context for the
+  matching Qwen3.8-27B-Q8_0 GPU target only. The existing 2026-09-22 run
+  directories contain zero `belief_measurements.jsonl` sidecars, so the real-corpus dry run
+  projects zero rows and the planner reports unavailable. Historical runs are not backfilled.
+  The 2026-09-25 fixture round-trip and focused tests pass (127 across the adapter, ingest and
+  shared ClaimTuple suites; 58 AutoPilot bridge/prompt tests).
+- [x] **VB-KVQ-V10-AP-RECEIPT — bind the AutoPilot planner's KV-quant evidence to its decision record.** ✅ 2026-09-25.
+  The Vidya lookup emits a structured run/frontier/fold-hash/12-claim manifest with its text;
+  AutoPilot passes one snapshot to its prompt and existing `planner_coordinator` archive row
+  with the trial ID. The rationale may declare exact `vidya_claim_ids`; the archive counts
+  only IDs actually shown, and clears reliance when an action is blocked or substituted
+  without a matching revised rationale. Invalid manifests fail closed. Focused validation:
+  192 orchestrator and 8 Vidya tests; no live KV-quant tuple exists yet.
+- [ ] **VB-KVQ-V10-INGEST — ingest the first post-hook complete v10 KV-quant sweep.** After the
+  owning stack-down session produces its new sidecar, run `cli.py ingest
+  kv-quant-27b-v10-measurement`, verify 12 rows from one run reach the fold, and check that the
+  AutoPilot planner block names the run, grades and bench-only cautions. No old summary or
+  pre-hook run may be backfilled into a ClaimTuple.
+- [ ] **VB-KVQ-V10-RECONSIDER — flag archived AutoPilot decisions that declared reliance when their Vidya support is corrected or retracted.**
+  Use the recorded claim IDs and fold frontier, preserve human promotion authority, and
+  distinguish a review prompt from an automatic reversal. Exercise against a synthetic
+  correction before enabling the live path.
 
 ## VB-VRAM-1 — MI210 per-process VRAM decomposition (filed 2026-09-23)
 

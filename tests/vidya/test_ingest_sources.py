@@ -220,7 +220,10 @@ def test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift():
 
 
 def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
-    assert set(ingest_sources.SOURCES) == set(BUILDERS) | {"sealed-manifest"}
+    # KVQ's exact producer pin and external-repo artifact path are exercised by
+    # test_kv_quant_27b_v10_adapter.py, including its CLI source and ledger fold.
+    assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
+        "sealed-manifest", "kv-quant-27b-v10-measurement"}
 
 
 def test_every_wired_adapter_projects_through_a_registered_projection():
