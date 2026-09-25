@@ -202563,3 +202563,2544 @@
     quote_sha256: 78d4bee62c2eb8e26b481cd52c2e003e20dbfb9299f172620f9f1be1af82d265
     source_revision: thkempka/spark-arena-recipes@acd06257ce9a0527abdee2b8b4616d9c74aa6416
     verified_by: research-intake/stage2c-second-reader
+- id: intake-1718
+  arxiv_id: null
+  url: https://github.com/mudler/vllm.cpp/issues/2597
+  source_type: repo
+  title: 'vllm.cpp issue #2597 — type-erased EXL3 weight operands preserve unaligned safety but lose compile-time type checking'
+  authors:
+  - Ettore Di Giacinto (mudler)
+  - vllm.cpp contributors
+  categories:
+  - quantization
+  - local_inference
+  - hardware_optimization
+  - formal_verification
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1708
+  verdict: adopt_patterns
+  credibility_score: 4
+  key_claims:
+  - 'Issue #2597 correctly identifies that the merged odd-address repair widened four public EXL3 decode/dequant declarations
+    plus the internal CPU MoE trellis operand from typed 16-bit pointers to const void*, while HadRowBlock similarly type-erased
+    borrowed scale operands.'
+  - At repository head b5d5bb56, all four public EXL3 declarations and the internal CPU paths still use const void* and no
+    Exl3Trellis or ByteSpan wrapper exists; the issue is open and its compile-time type-safety debt remains unresolved.
+  - 'The type erasure was introduced for a real correctness constraint: borrowed safetensors payloads can begin at odd byte
+    addresses, and the merged implementation now reads trellis words and FP16 scales through byte cursors plus LoadUnaligned
+    rather than forming misaligned uint16_t pointers.'
+  - The issue reports the EXL3 suites green under address/undefined sanitizers and the current tree contains an odd-address
+    versus even-address byte-equality regression case, but the sanitizer pass is self-reported in the issue rather than independently
+    reproduced in this intake.
+  - This issue changes no codec coverage, CPU SIMD, HIP/gfx90a support, or throughput. Its transferable requirement is to
+    keep byte-aligned storage access while restoring semantic operand types at the project-owned EXL3 API boundary.
+  techniques:
+  - alignment-safe byte cursors
+  - typed wrapper over byte-aligned storage
+  - compile-time EXL3 operand-domain checking
+  - odd-address byte-equality regression
+  reported_results:
+  - 'SELF-REPORTED: test_exl3_gemm, test_qwen35_exl3 and test_exl3_dequant are green under address,undefined sanitizers.'
+  - 'CODE-VERIFIED: the current tree retains the odd-address byte-equality test and byte-cursor LoadUnaligned implementation.'
+  - 'STATUS 2026-09-25: issue open; repository head b5d5bb56 still exposes const void* at the named EXL3 boundaries.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    experiments: []
+    intake_entries:
+    - intake-1708
+    intake_entry_notes:
+    - intake-1708 records this issue as an open donor-adaptation hazard.
+  recommended_actions:
+  - 'Project-derived candidate: define an alignment-1 Exl3Trellis/ByteSpan-style wrapper in EXL3-1 and require it at every
+    CPU/HIP decode boundary.'
+  - 'Project-derived candidate: add compile-fail or static-invocability checks showing scale arrays, byte counts and unrelated
+    tensors cannot bind as trellis operands.'
+  - 'Project-derived candidate: retain odd-base, poisoned-padding and byte-equality runtime fixtures while implementing the
+    typed wrapper; never restore raw uint16_t pointers over borrowed checkpoint bytes.'
+  contradicting_evidence:
+  - The issue explicitly says no existing caller is wrong today; it is a latent API hazard, not evidence of present decode
+    corruption.
+  - The current runtime regression protects address arithmetic, but it cannot restore the compiler diagnostic removed by const
+    void*.
+  - No performance, CPU ISA, ROCm, gfx90a or MI210 result is present, so this issue cannot support any throughput or hardware-readiness
+    claim.
+  notes: 'Retrieved 2026-09-25. Issue API sha256 3e477cf40a47cc691201395a354ebd317d3921d911eedb5536c153f80378542f; events
+    API sha256 1b1fe089100b5401a776258264f4090c50d3933b5bf260d8ed2f2c163ec106b9; merged PR #2581 API sha256 8b3f21d47c6ca159e45b32f792af467dabfda4b0bdb17dabb6b14f1a87913ef9.
+    Current default-branch head b5d5bb56f4992e3ccb87f6d6882f53e4023d2bd2; ops.h sha256 a31c63875bb6f52aad1a33f45187605e20e60d3da806fa8ff76d886cdbf47f06;
+    cpu_exl3_dequant.cpp sha256 a8fb255aa5597d2d5c144cad3e54d97ce78628099a5665c99e6070078040e027; test_exl3_gemm.cpp sha256
+    7a4083f4735443c3d8fbb8fd614886d19791274a4460529197b9f787928ecc80. Exact URL dedup over 1,713 lane entries found no collision.
+    Surfaced issues #2558/#2578 and merged PR #2581 are not recommended as separate entries: the current-head implementation
+    and #2597 directly subsume the alignment history needed here.'
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Carry the alignment-safe byte cursor forward, but restore semantic typing before adapting this donor
+    into project-owned CPU or gfx90a kernels. Treat the issue as an API hardening requirement, not a performance result.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: The issue inventory matches the merged and current source declarations.
+  - claim_index: 1
+    effect: unaffected
+    note: Current-head source and a tree-wide symbol scan confirm the type-erased signatures remain and the proposed wrapper
+      is absent.
+  - claim_index: 2
+    effect: unaffected
+    note: Merged code and current tests independently show the odd-address storage constraint and byte-cursor repair.
+  - claim_index: 3
+    effect: narrowed
+    note: The test design is code-verifiable, while the sanitizer pass remains author-reported and was not rerun.
+  - claim_index: 4
+    effect: narrowed
+    note: The source bears only on API safety; it adds no execution capability or measurement.
+  dive_corrections: '2026-09-25 Stage 2d: CONFIRMED the type-erasure inventory and unresolved current-head API debt; CONFIRMED
+    the underlying unaligned-access repair; NARROWED sanitizer evidence to self-report; OVERTURNED any reading of the issue
+    as new EXL3 performance or hardware coverage.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: issue body:7-17
+    quote: '#2581 repaired four CPU consumers that formed a `const uint16_t*` over a borrowed safetensors payload at an odd
+      address. Fixing the EXL3 pair meant the trellis cursor became a byte cursor, so five signatures widened their weight-side
+      operand from `const uint16_t*` to `const void*`:'
+    quote_sha256: 011607db66743f23f62e73244eff4c7981386be37b5ad2f23148f494df0b2f74
+    source_revision: 'GitHub issue #2597 updated 2026-09-02T19:20:15Z; API sha256 3e477cf40a47cc691201395a354ebd317d3921d911eedb5536c153f80378542f'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: issue body:21
+    quote: '`const void*` accepts ANY pointer type without a diagnostic.'
+    quote_sha256: b8a8b6e736e8f68677be444dcc0227b374b456668a6d76d7dd857088d86688c0
+    source_revision: 'GitHub issue #2597 updated 2026-09-02T19:20:15Z; API sha256 3e477cf40a47cc691201395a354ebd317d3921d911eedb5536c153f80378542f'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: include/vt/ops.h:6023
+    quote: uint16_t Exl3TileCodeword(const void* tile, int bits, int t);
+    quote_sha256: fd264efb0905fcb16bcf78c5434b15a0b7f250b762420aca6df3c5a85c00715f
+    source_revision: mudler/vllm.cpp@b5d5bb56f4992e3ccb87f6d6882f53e4023d2bd2
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: include/vt/ops.h:6086-6088
+    quote: "void Exl3DequantLinear(const void* trellis, const void* suh,\n                       const void* svh, int64_t\
+      \ k, int64_t n, int bits, int codebook,\n                       float* out);"
+    quote_sha256: b7221fcedc982f2484a5e0a3e57a0e16500bda81add88fa426a8d40b7e56414f
+    source_revision: mudler/vllm.cpp@b5d5bb56f4992e3ccb87f6d6882f53e4023d2bd2
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: src/vt/cpu/cpu_exl3_dequant.cpp:76-80
+    quote: "inline uint32_t TileWord32(const void* tile, int index) {\n  const auto* bytes = static_cast<const unsigned char*>(tile)\
+      \ + index * 4;\n  return static_cast<uint32_t>(LoadUnaligned<uint16_t>(bytes)) |\n         (static_cast<uint32_t>(LoadUnaligned<uint16_t>(bytes\
+      \ + 2)) << 16);\n}"
+    quote_sha256: bc516c7acbe92b0a49a2ea8c9af6afb03d1f6f3dcf2b25a769904839cdfb57e7
+    source_revision: mudler/vllm.cpp@b5d5bb56f4992e3ccb87f6d6882f53e4023d2bd2
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: issue body:23
+    quote: '`test_exl3_gemm`, `test_qwen35_exl3` and `test_exl3_dequant` are green under `address,undefined`, and #2581''s
+      new case compares the odd-address decode BYTE-FOR-BYTE against the even-address one, so a lost factor of two reds it.'
+    quote_sha256: db410ffe21e51582bfe552f0b644f05903d67451c4329984c39cd19f61fba30a
+    source_revision: 'GitHub issue #2597 updated 2026-09-02T19:20:15Z; API sha256 3e477cf40a47cc691201395a354ebd317d3921d911eedb5536c153f80378542f'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: issue body:27
+    quote: A one-member wrapper -- `struct Exl3Trellis { const void* words; }` or an equivalent `vt::ByteSpan` -- restores
+      the diagnostic without restoring the alignment requirement, because the wrapper's own alignment is 1.
+    quote_sha256: 11288cfe2d569c0650f38351aeb5717f6d71c06e54a2778dd2386694417eb9f7
+    source_revision: 'GitHub issue #2597 updated 2026-09-02T19:20:15Z; API sha256 3e477cf40a47cc691201395a354ebd317d3921d911eedb5536c153f80378542f'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: include/vt/ops.h:6065-6072
+    quote: "// Decode one packed tile into 256 f32 values in ROW-MAJOR 16x16 order.\nvoid Exl3DecodeTile(const void* tile,\
+      \ int bits, int codebook, float* out256);\n\n// `LinearEXL3.get_inner_weight_tensor` (`exl3.py:222-225`): the pre-Hadamard\n\
+      // reconstruct. `out` is f32 [k, n] row-major and holds exact fp16 codebook\n// values. `k` and `n` must be multiples\
+      \ of 16.\nvoid Exl3ReconstructInner(const void* trellis, int64_t k, int64_t n, int bits, int codebook,\n           \
+      \               float* out);"
+    quote_sha256: 6b5ad17e259309cb3bf28b802be8ae6c07b38bfd7b49b67d3a04ee56b04606f5
+    source_revision: mudler/vllm.cpp head b5d5bb56f4992e3ccb87f6d6882f53e4023d2bd2
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: src/vt/cpu/cpu_exl3_kernels.cpp:305-312
+    quote: "void MoeGemm(const uint16_t* a_had, const void* trellis, float* raw, int64_t m, int64_t k,\n             int64_t\
+      \ n, int bits, int codebook) {\n  // The same tile walk `Exl3GemmKernelCpu` step 2 performs, over an m-row batch,\n\
+      \  // and the same byte cursor for the same reason: an expert's trellis is kI8\n  // borrowed straight out of the mapping\
+      \ (#2558).\n  const int64_t tiles_n = n / 16;\n  const int64_t tile_bytes = 16 * static_cast<int64_t>(bits) * static_cast<int64_t>(sizeof(uint16_t));\n\
+      \  const auto* tw = static_cast<const unsigned char*>(trellis);"
+    quote_sha256: 975d007e731cd134f68196caadd6ae421f346499da67fe91eb898b8f419ad6c7
+    source_revision: mudler/vllm.cpp head b5d5bb56f4992e3ccb87f6d6882f53e4023d2bd2
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: json-pointer
+    locator: issue-2597.json:/state
+    quote: open
+    quote_sha256: 2348f998744212575d85959674f9607ab26f67708a917157472832386337c904
+    source_revision: 'GitHub issue #2597 API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: src/vt/cpu/cpu_exl3_dequant.cpp:67-79
+    quote: "// 2-byte one, and `tile[2 * index]` still indexes a `const uint16_t*`. A\n// safetensors payload starts at `8\
+      \ + <JSON header length>`\n// (`safetensors_reader.cpp:78`), a header length is arbitrary, and\n// `vt::Exl3Gemm` types\
+      \ the trellis as kI8 — opaque BYTES, alignment\n// requirement 1 — so an odd base is not an exotic case here but the\
+      \ expected\n// one. `-fsanitize=alignment` aborted `test_qwen35_exl3` on it (#2558). The\n// cursor is therefore a byte\
+      \ cursor and both halves come through\n// `vt::LoadUnaligned`, which at `-O2` is the same load the raw index compiled\n\
+      // to. See `.agents/specs/unaligned-safetensors-consumers.md`.\ninline uint32_t TileWord32(const void* tile, int index)\
+      \ {\n  const auto* bytes = static_cast<const unsigned char*>(tile) + index * 4;\n  return static_cast<uint32_t>(LoadUnaligned<uint16_t>(bytes))\
+      \ |\n         (static_cast<uint32_t>(LoadUnaligned<uint16_t>(bytes + 2)) << 16);"
+    quote_sha256: ba2e8e5cf1a2c14a32391fc4ccebfadf61ef26a065c67add6e0948522097d275
+    source_revision: mudler/vllm.cpp head b5d5bb56f4992e3ccb87f6d6882f53e4023d2bd2
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: src/vt/cpu/cpu_exl3_dequant.cpp:275-299
+    quote: "  // w *= suh[:, None] (exl3.py:233) — an fp16 multiply.\n  for (int64_t i = 0; i < k; ++i) {\n    const float\
+      \ s = F16ToF32(LoadUnaligned<uint16_t>(static_cast<const unsigned char*>(suh) + i * 2));\n    float* row = out + i *\
+      \ n;\n    for (int64_t j = 0; j < n; ++j) row[j] = RoundHalf(row[j] * s);\n  }\n\n  // preapply_had_r(w, 128) (quantize.py:349-356):\
+      \ blockwise over the n axis.\n  // The Sylvester Hadamard is symmetric, so `x @ H` down a row is the same\n  // butterfly\
+      \ as `H @ x` down a column.\n  for (int64_t i = 0; i < k; ++i) {\n    float* row = out + i * n;\n    for (int64_t b\
+      \ = 0; b < n; b += kHadDim) {\n      Fwht128(row + b, /*stride=*/1, /*lanes=*/1);\n      for (int64_t j = 0; j < kHadDim;\
+      \ ++j)\n        row[b + j] = RoundHalf(row[b + j] * scale);\n    }\n  }\n\n  // w *= svh[None, :] (exl3.py:235).\n \
+      \ for (int64_t i = 0; i < k; ++i) {\n    float* row = out + i * n;\n    for (int64_t j = 0; j < n; ++j)\n      row[j]\
+      \ = RoundHalf(\n          row[j] * F16ToF32(LoadUnaligned<uint16_t>(static_cast<const unsigned char*>(svh) + j * 2)));"
+    quote_sha256: 4e6f2a4ee40e385241e34fb00ee3631480a5c1b8a27826c154e5f7c549600f41
+    source_revision: mudler/vllm.cpp head b5d5bb56f4992e3ccb87f6d6882f53e4023d2bd2
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: tests/vt/test_exl3_gemm.cpp:1004-1056
+    quote: "TEST_CASE(\"exl3 gemm: the suh/svh scales and the trellis at ODD byte addresses decode the same\") {\n  vt::Queue\
+      \ q = CpuQueue();\n  const int64_t m = 2, k = 256, n = 128;\n  const Exl3Fixture f = MakeFixture(k, n, 3, 0x2545F491u);\n\
+      \n  Rng rng;\n  rng.s = 0x27220A95u;\n  std::vector<uint16_t> a_h(static_cast<size_t>(m * k));\n  for (auto& v : a_h)\
+      \ v = vt::F32ToF16(rng.next(1.0f));\n\n  // `off` bytes of lead-in before each of the three weight payloads. 0 is the\n\
+      \  // aligned control; 1 is what a 171-byte header produces.\n  auto run = [&](size_t off) {\n    const size_t tb_bytes\
+      \ = f.trellis.size() * sizeof(uint16_t);\n    const size_t su_bytes = f.suh.size() * sizeof(uint16_t);\n    const size_t\
+      \ sv_bytes = f.svh.size() * sizeof(uint16_t);\n    std::vector<unsigned char> tb_raw(tb_bytes + off, 0), su_raw(su_bytes\
+      \ + off, 0),\n        sv_raw(sv_bytes + off, 0);\n    std::memcpy(tb_raw.data() + off, f.trellis.data(), tb_bytes);\n\
+      \    std::memcpy(su_raw.data() + off, f.suh.data(), su_bytes);\n    std::memcpy(sv_raw.data() + off, f.svh.data(), sv_bytes);\n\
+      \    void* tb_p = tb_raw.data() + off;\n    void* su_p = su_raw.data() + off;\n    void* sv_p = sv_raw.data() + off;\n\
+      \    REQUIRE(reinterpret_cast<std::uintptr_t>(tb_p) % 2 == off % 2);\n    REQUIRE(reinterpret_cast<std::uintptr_t>(su_p)\
+      \ % 2 == off % 2);\n    REQUIRE(reinterpret_cast<std::uintptr_t>(sv_p) % 2 == off % 2);\n\n    std::vector<uint16_t>\
+      \ c_h(static_cast<size_t>(m * n), 0);\n    std::vector<uint16_t> a_had(static_cast<size_t>(m * k), 0);\n    vt::Tensor\
+      \ ta = vt::Tensor::Contiguous(a_h.data(), vt::DType::kF16, q.device, {m, k});\n    vt::Tensor tb = vt::Tensor::Contiguous(tb_p,\
+      \ vt::DType::kI8, q.device,\n                                           {k / 16, n / 16, 32 * f.bits});\n    vt::Tensor\
+      \ tsuh = vt::Tensor::Contiguous(su_p, vt::DType::kF16, q.device, {k});\n    vt::Tensor tsvh = vt::Tensor::Contiguous(sv_p,\
+      \ vt::DType::kF16, q.device, {n});\n    vt::Tensor tc = vt::Tensor::Contiguous(c_h.data(), vt::DType::kF16, q.device,\
+      \ {m, n});\n    vt::Tensor tah = vt::Tensor::Contiguous(a_had.data(), vt::DType::kF16, q.device, {m, k});\n    vt::Exl3GemmArgs\
+      \ args;\n    args.bits = f.bits;\n    args.codebook = 1;\n    vt::Exl3Gemm(q, tc, ta, tb, tsuh, tsvh, tah, args);\n\
+      \    return c_h;\n  };\n\n  const std::vector<uint16_t> aligned = run(0);\n  // The control must have DECODED something.\
+      \ An all-zero output would satisfy the\n  // equality below without either arm reading a single trellis byte.\n  size_t\
+      \ nonzero = 0;\n  for (const uint16_t v : aligned)\n    if (v != 0) ++nonzero;\n  REQUIRE(nonzero > aligned.size() /\
+      \ 2);\n\n  CHECK(run(1) == aligned);"
+    quote_sha256: 94e66ca63f4c0d3eaeb4895d29b72c7df3d6741d28d38448ed421957de9d9d7f
+    source_revision: mudler/vllm.cpp head b5d5bb56f4992e3ccb87f6d6882f53e4023d2bd2
+    verified_by: research-intake/stage2d-second-reader
+- id: intake-1719
+  arxiv_id: null
+  url: https://github.com/flashinfer-ai/flashinfer/pull/4050
+  source_type: repo
+  title: 'FlashInfer PR #4050 — reviewed but unmerged XQA query/output contiguity contract'
+  authors:
+  - mmangkad
+  - FlashInfer reviewers
+  categories:
+  - inference_serving
+  - hardware_optimization
+  - kv_cache
+  - formal_verification
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1712
+  verdict: adopt_patterns
+  credibility_score: 3
+  key_claims:
+  - 'PR #4050 proposes a fail-closed Python boundary for XQA: reject non-contiguous query, validate caller-provided output
+    shape/device, reject non-contiguous output, then reshape for multi-token query lengths.'
+  - The added regression is a Python contract test that monkeypatches the native XQA call; it checks q_len_per_req 1 and 2
+    plus query/output failure cases, but it does not execute an XQA GPU kernel or reproduce end-to-end corruption.
+  - The pinned head received reviewer approval and a successful final GitHub Test Results Summary rerun, while a later external
+    pipeline report failed at 10/20 passed. The PR closed unmerged at head 571a0758, and current FlashInfer main bf82326b
+    lacks this query/output contiguity guard.
+  - Current FlashInfer XQA explicitly admits only NVIDIA SM90, SM100 and SM120/121, and NVFP4 XQA only SM12x. The source contains
+    no CPU, HIP/gfx90a, MI210 or EXL3 weight kernel.
+  - 'The transferable result is a raw-pointer kernel boundary rule: either validate packed layout or materialize it before
+    launch, and validate caller-owned output shape/device/layout. This complements SGLang’s merged producer-side contiguous-Q
+    fix rather than replacing it.'
+  techniques:
+  - fail-closed tensor contiguity validation
+  - caller-owned output shape/device validation
+  - mocked Python boundary test
+  - packed-layout raw-pointer contract
+  reported_results:
+  - 'STATUS 2026-09-25: closed, unmerged, head 571a0758ffd5271d07b5891a777ee1cefedcb705.'
+  - 'CI/REVIEW: qsang-nv approved the pinned head; GitHub check-runs show an initial failed Test Results Summary and a later
+    successful rerun, while a later flashinfer-bot comment reports the external pipeline FAILED with 10/20 passed.'
+  - 'NO KERNEL PERFORMANCE RESULT: no latency, throughput, quality, CPU or AMD measurement is reported.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-1712
+    - intake-1709
+    - intake-1710
+    - intake-1711
+    intake_entry_notes:
+    - intake-1712 carries the reproduced SM120 corruption and merged SGLang producer-side fix.
+    - intake-1709 through intake-1711 cover newer NVFP4 speculative paths and current architecture limits.
+  recommended_actions:
+  - 'Project-derived candidate: make packed-row and output-buffer requirements explicit in the EXL3 CPU/HIP operator contract,
+    with fail-closed validation before raw-pointer launch.'
+  - 'Project-derived candidate: add non-contiguous activation/output fixtures, q_len 1 and greater-than-1 cases, and guard-filled
+    wrong-shape outputs to EXL3-2/3/5.'
+  - 'Project-derived decline: do not transplant XQA or infer MI210 support; implement the invariant in project-owned CPU/HIP
+    seams.'
+  contradicting_evidence:
+  - The PR title describes a bug fix, but the change never merged; current FlashInfer main lacks the guard.
+  - The regression monkeypatches XQA, so passing it cannot establish native-kernel correctness on any GPU.
+  - The source is CUDA/SM-specific and concerns attention tensors, not EXL3 weight reconstruction or GEMM.
+  - A later flashinfer-bot comment reports the external CI pipeline failed with 10/20 jobs passing, so the successful GitHub
+    Test Results Summary is not evidence of an entirely green CI state.
+  notes: 'Retrieved 2026-09-25. PR API sha256 5ac2bc70c794f0e7e393ee7bd124e75526290f1855cfae46a4bf3955d5256697; files API
+    sha256 dac1e75e8d77ec1b8cf0f4d6cea1550f75304ae8ce0d98a36bd6ecd441adb1b3; reviews API sha256 20ae953ff4627e053de6dc40c99e181fac8c5c5671692119a37e6d3078d37440;
+    check-runs API sha256 edc27908ebd403556adf0340465d8b0c5a277ca8617d344eca21bb6b302ff838. Pinned PR head 571a0758ffd5271d07b5891a777ee1cefedcb705;
+    current main bf82326b0c524048c7f810da9f0022f8316ac3ff. Pinned decode.py sha256 3a8daed8af4f65543dcb20bf668938f2f74fbd4787fbf3d831c7cdf6ba12cb7b;
+    current decode.py sha256 a86e20c139508fbd39faa7934e42f21be206d198bd784eae4cd0453190467866; current xqa.py sha256 6a3f7330980b976201cff0fcdf51e2958e454c4c5951ad2b30c1f2aa13722d33.
+    Exact URL dedup over 1,713 lane entries found no collision. Surfaced SGLang PR #31667 is already covered by intake-1712;
+    FlashInfer PR #2053 and merged PR #4137 are contextual XQA evolution, not separate recommendations for this contiguity
+    claim. Second-reader CI correction: comments API sha256 6706dfb62fa36573906ce0e25d20d5de41585f6eed6438ecd9a44a50cff58dbd
+    records the later external pipeline failure; the successful check-run is therefore not characterized as wholly green CI.'
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt the fail-closed layout contract and tests, while recording that FlashInfer did not merge this
+    guard. The PR provides no EXL3 or AMD kernel and no throughput evidence.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Pinned code directly implements the stated validation sequence.
+  - claim_index: 1
+    effect: narrowed
+    note: The test is useful boundary coverage but monkeypatches the native call and proves no GPU execution.
+  - claim_index: 2
+    effect: overturned
+    note: 'Any claim that FlashInfer shipped the guard is false: the PR is unmerged and current main lacks it. The pinned
+      head was approved and one GitHub summary rerun passed, but a later external pipeline report failed at 10/20.'
+  - claim_index: 3
+    effect: narrowed
+    note: Architecture checks bound XQA to NVIDIA SM targets; no AMD/CPU/EXL3 path surfaced.
+  - claim_index: 4
+    effect: reattributed
+    note: 'The portable value is the interface invariant; the deployed contiguous-Q repair lives in SGLang PR #31667, already
+      represented by intake-1712.'
+  dive_corrections: '2026-09-25 Stage 2d: CONFIRMED the proposed fail-closed boundary and test scope; NARROWED testing to
+    a mocked Python contract; OVERTURNED any claim that FlashInfer merged or currently ships the guard; bounded hardware support
+    to named NVIDIA SM targets. Second-reader correction: separated the successful final GitHub Test Results Summary from
+    a later external pipeline failure (10/20 passed).'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: flashinfer/decode.py:3664-3673
+    quote: "# XQA indexes query and output as packed buffers without using their strides.\n    if not query.is_contiguous():\n\
+      \        raise ValueError(\"query must be contiguous\")\n    if out is not None:\n        check_shape_dtype_device(out,\
+      \ query.shape, None, query.device, \"out\")\n        if not out.is_contiguous():\n            raise ValueError(\"out\
+      \ must be contiguous\")"
+    quote_sha256: ca140c83e58a552d048c80e7ef6fb734d667ca88f83b1efc875156e6fd484adb
+    source_revision: 'flashinfer-ai/flashinfer PR #4050 head 571a0758ffd5271d07b5891a777ee1cefedcb705'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: tests/attention/test_trtllm_gen_attention_decode_xqa.py:168-174
+    quote: "def capture_xqa(query, _k, _v, _block_tables, _seq_lens, out, *_args, **_kwargs):\n        captured[\"query\"\
+      ] = query\n        captured[\"out\"] = out\n\n    monkeypatch.setattr(flashinfer.decode, \"xqa\", capture_xqa)"
+    quote_sha256: cec3061f2b0b9eb225b7a191899c01c6f09bde903c6cd7a8ebb5ae892da6e8e5
+    source_revision: 'flashinfer-ai/flashinfer PR #4050 head 571a0758ffd5271d07b5891a777ee1cefedcb705'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: pull-4050.json:/merged
+    quote: 'false'
+    quote_sha256: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa
+    source_revision: 'GitHub PR #4050 API sha256 5ac2bc70c794f0e7e393ee7bd124e75526290f1855cfae46a4bf3955d5256697; head 571a0758ffd5271d07b5891a777ee1cefedcb705'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: current flashinfer/decode.py:4341-4355
+    quote: "if q_cu_seq_lens is not None:\n        # Ragged Q: query stays packed as [total_q_tokens, num_heads, head_dim]\n\
+      \        # and q_len_per_req is the max draft length across the batch.\n        assert q_len_per_req > 1, (\n      \
+      \      \"q_cu_seq_lens requires q_len_per_req to be the max draft length (> 1)\"\n        )\n        query_new = query\n\
+      \        out_shape_ref = query\n    else:\n        if q_len_per_req > 1:\n            batch_size = query.shape[0] //\
+      \ q_len_per_req\n            query = query.view(\n                batch_size, q_len_per_req, query.shape[1], query.shape[2]\n\
+      \            )"
+    quote_sha256: f070c5680cbee21237ecc81d378cb9ab940d3f443104cf656691e3c1fc190487
+    source_revision: flashinfer-ai/flashinfer@bf82326b0c524048c7f810da9f0022f8316ac3ff
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: current flashinfer/xqa.py:395-403
+    quote: "if k_cache.dtype == torch.uint8:\n        assert get_compute_capability(torch.device(device=\"cuda\"))[0] in [12],\
+      \ (\n            \"XQA NVFP4 KV is only supported on SM12x GPUs\"\n        )\n        assert k_sf_cache is not None,\
+      \ \"K SF cache is required when NVFP4 KV is used\"\n        assert v_sf_cache is not None, \"V SF cache is required\
+      \ when NVFP4 KV is used\"\n\n    if get_compute_capability(torch.device(device=\"cuda\"))[0] not in [9, 10, 12]:\n \
+      \       raise RuntimeError(\"XQA is only supported on SM90, SM100, SM120/SM121 GPUs\")"
+    quote_sha256: 629994edbcdb46d3122d76dc296a075b8245066ac516ab857a0d2d02f8efc5d6
+    source_revision: flashinfer-ai/flashinfer@bf82326b0c524048c7f810da9f0022f8316ac3ff
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: 'PR #4050 review comment, 2026-07-21T01:52:37Z'
+    quote: XQA doesn't support non-contiguous input, we should avoid such conversion.
+    quote_sha256: 7273add5b51b6140b68cb5e43d7055b4009ba88f1d6bf40944aaeeeec27808cc
+    source_revision: 'GitHub PR #4050 review-comments API sha256 2dca8625c71cdef3ed08caac8ea8f86cdb08af3d9edb65c019b29f5b07d8fb6a'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: tests/attention/test_trtllm_gen_attention_decode_xqa.py:129-187
+    quote: "@pytest.mark.parametrize(\"q_len_per_req\", [1, 2])\ndef test_xqa_query_and_output_contiguity_contract(monkeypatch,\
+      \ q_len_per_req):\n    batch_size = 2\n    num_qo_heads = 8\n    num_kv_heads = 2\n    head_dim = 128\n    num_tokens\
+      \ = batch_size * q_len_per_req\n    device = torch.device(\"cuda\")\n\n    non_contiguous_query = torch.randn(\n   \
+      \     num_tokens,\n        head_dim,\n        num_qo_heads,\n        dtype=torch.float16,\n        device=device,\n\
+      \    ).transpose(1, 2)\n    assert not non_contiguous_query.is_contiguous()\n\n    kv_cache = tuple(\n        torch.randn(\n\
+      \            batch_size,\n            1,\n            num_kv_heads,\n            head_dim,\n            dtype=torch.float16,\n\
+      \            device=device,\n        )\n        for _ in range(2)\n    )\n    workspace_buffer = torch.empty(\n    \
+      \    8 * 1024 * 1024 + 1, dtype=torch.uint8, device=device\n    )\n    block_tables = torch.arange(batch_size, dtype=torch.int32,\
+      \ device=device).view(\n        batch_size, 1\n    )\n    seq_lens = torch.ones(batch_size, dtype=torch.int32, device=device)\n\
+      \n    captured = {}\n\n    def capture_xqa(query, _k, _v, _block_tables, _seq_lens, out, *_args, **_kwargs):\n     \
+      \   captured[\"query\"] = query\n        captured[\"out\"] = out\n\n    monkeypatch.setattr(flashinfer.decode, \"xqa\"\
+      , capture_xqa)\n\n    with pytest.raises(ValueError, match=\"query must be contiguous\"):\n        flashinfer.decode.trtllm_batch_decode_with_kv_cache(\n\
+      \            non_contiguous_query,\n            kv_cache,\n            workspace_buffer,\n            block_tables,\n\
+      \            seq_lens,\n            max_seq_len=1,\n            backend=\"xqa\",\n            kv_layout=\"NHD\",\n \
+      \           enable_pdl=False,\n            q_len_per_req=q_len_per_req,\n        )\n    assert not captured"
+    quote_sha256: 20672fbe34c9cc742e48e8ac0b131ba8469f03c9798b302fdd4c52bd8970b9fd
+    source_revision: 'flashinfer-ai/flashinfer PR #4050 head 571a0758ffd5271d07b5891a777ee1cefedcb705'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: tests/attention/test_trtllm_gen_attention_decode_xqa.py:203-260
+    quote: "    assert output.is_contiguous()\n    assert captured[\"query\"].is_contiguous()\n    assert captured[\"out\"\
+      ].is_contiguous()\n\n    non_contiguous_out = torch.empty(\n        num_tokens,\n        head_dim,\n        num_qo_heads,\n\
+      \        dtype=query.dtype,\n        device=device,\n    ).transpose(1, 2)\n    with pytest.raises(ValueError, match=\"\
+      out must be contiguous\"):\n        flashinfer.decode.trtllm_batch_decode_with_kv_cache(\n            query,\n     \
+      \       kv_cache,\n            workspace_buffer,\n            block_tables,\n            seq_lens,\n            max_seq_len=1,\n\
+      \            out=non_contiguous_out,\n            backend=\"xqa\",\n            kv_layout=\"NHD\",\n            enable_pdl=False,\n\
+      \            q_len_per_req=q_len_per_req,\n        )\n\n    invalid_shape_out = torch.empty(\n        (*query.shape[:-1],\
+      \ head_dim - 1), dtype=query.dtype, device=device\n    )\n    with pytest.raises(ValueError, match=\"Invalid shape of\
+      \ out\"):\n        flashinfer.decode.trtllm_batch_decode_with_kv_cache(\n            query,\n            kv_cache,\n\
+      \            workspace_buffer,\n            block_tables,\n            seq_lens,\n            max_seq_len=1,\n     \
+      \       out=invalid_shape_out,\n            backend=\"xqa\",\n            kv_layout=\"NHD\",\n            enable_pdl=False,\n\
+      \            q_len_per_req=q_len_per_req,\n        )\n\n    invalid_device_out = torch.empty(query.shape, dtype=query.dtype,\
+      \ device=\"cpu\")\n    with pytest.raises(ValueError, match=\"Invalid device of out\"):\n        flashinfer.decode.trtllm_batch_decode_with_kv_cache(\n\
+      \            query,\n            kv_cache,\n            workspace_buffer,\n            block_tables,\n            seq_lens,\n\
+      \            max_seq_len=1,\n            out=invalid_device_out,\n            backend=\"xqa\",\n            kv_layout=\"\
+      NHD\",\n            enable_pdl=False,\n            q_len_per_req=q_len_per_req,"
+    quote_sha256: 82f92d5abbd14046625c487680146a84cc5a5a38323256cbdefa89d47609e4b2
+    source_revision: 'flashinfer-ai/flashinfer PR #4050 head 571a0758ffd5271d07b5891a777ee1cefedcb705'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: pull-4050.json:/state
+    quote: closed
+    quote_sha256: c3eefb58d7c42440a9d4abec51d629544d635a6d936ff3c4d3fca96d611b3cf3
+    source_revision: 'GitHub PR #4050 API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: pull-4050.json:/head/sha
+    quote: 571a0758ffd5271d07b5891a777ee1cefedcb705
+    quote_sha256: 6b049b0af144128fbd3b4013bfdb8cd7012975fce1d03339291b9fd22f8d33fe
+    source_revision: 'GitHub PR #4050 API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: reviews-4050.json:/9/state
+    quote: APPROVED
+    quote_sha256: f1995216dcfbca4efddfa35f22f1deceaa1d31ee7a829f9d6d72ed78a1aa258a
+    source_revision: 'GitHub PR #4050 reviews API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: check-runs-571a0758ffd5271d07b5891a777ee1cefedcb705.json:/check_runs/1/conclusion
+    quote: success
+    quote_sha256: aee408847d35e44e99430f0979c3357b85fe8dbb4535a494301198adbee85f27
+    source_revision: 'GitHub checks API for PR #4050 head 571a0758ffd5271d07b5891a777ee1cefedcb705 retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: json-pointer
+    locator: comments-4050.json:/4/body
+    quote: '[FAILED] Pipeline [#58936207](https://nv/flashinfer-ci/-/pipelines/58936207): 10/20 passed'
+    quote_sha256: 7c04932c2bce1ee2f24f3a524e98e6fa52420cafc24a33b9de7c84bdc2df351a
+    source_revision: 'GitHub PR #4050 comments API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: json-pointer
+    locator: sglang-pr-31667.json:/body
+    quote: "## Summary\r\n\r\nFixes corrupted batched TRT-LLM MHA decode by making Q contiguous before calling the kernel.\r\
+      \n\r\nWe could put `.contiguous()` inside `if self.is_nvfp4_kvcache`, since this only showed up with NVFP4. But keeping\
+      \ it general should be okay because the kernel expects packed Q, and already-contiguous tensors are not copied.\r\n\r\
+      \n## Root cause\r\n\r\nIn one failing batch, Q had shape `(4, 32, 128)` and stride `(6144, 128, 1)` instead of the packed\
+      \ stride `(4096, 128, 1)`.\r\n\r\nFlashInfer's XQA wrapper passes Q to CUDA without stride metadata, but the kernel\
+      \ indexes it as packed rows. Later requests in a strided batch can therefore be read from the wrong offsets.\r\n\r\n\
+      ## Validation\r\n\r\n```bash\r\nSGLANG_IS_IN_CI=true \\\r\nSGLANG_ENABLE_ASYNC_ASSERT=true \\\r\nSGLANG_CUDA_COREDUMP=1\
+      \ \\\r\npython test/registered/quant/test_llama8b_nvfp4_kv_cache_sm120.py -f\r\n\r\nRan 1 test in 78.260s\r\nOK\r\n\
+      ```\n\n<!-- pr-states:start -->\n---\n### CI States\n\nLatest PR Test (Base): <!-- slot:pr-test:start -->:x: [Run #29713597596](https://github.com/sgl-project/sglang/actions/runs/29713597596)<!--\
+      \ slot:pr-test:end -->\nLatest PR Test (Extra): <!-- slot:pr-test-extra:start -->:x: [Run #29713597516](https://github.com/sgl-project/sglang/actions/runs/29713597516)<!--\
+      \ slot:pr-test-extra:end -->\n<!-- pr-states:end -->"
+    quote_sha256: f0b345e92f01ff83914c6cc92a6a305146a7838efa2224b4ce95acbe68b5a02b
+    source_revision: 'GitHub SGLang PR #31667 API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+- id: intake-1720
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/pull/23354
+  source_type: repo
+  title: 'SGLang PR #23354 — superseded NVFP4/MXFP4 KV-cache strategy prototype and SM120 evidence'
+  authors:
+  - Tom-Zheng
+  - SGLang contributors
+  categories:
+  - kv_cache
+  - speculative_decoding
+  - inference_serving
+  - hardware_optimization
+  - quantization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1569
+  verdict: superseded
+  credibility_score: 2
+  key_claims:
+  - The title’s “all arch” scope is not supported. The branch documentation requires SM120, the NVFP4 strategy class names
+    SM100 and SM120, and server validation rejects non-CUDA KV4; no CPU, HIP/gfx90a or MI210 implementation or evidence exists.
+  - The prototype introduces a useful three-part KV-cache quantization design—quant method, storage pool and backend view
+    adaptation—with registered NVFP4 and MXFP4 recipes, packed uint8 data and scale sidecars, plus an optional shared FP8
+    dequant workspace.
+  - The documented execution split is native FP4 XQA decode, FP4-to-FP8 FlashInfer prefill, and MTP target_verify/draft_extend
+    routed through XQA decode with a causal mask; the docs also require radix cache off and identify no native FP4 prefill
+    in the default path.
+  - On four RTX PRO 6000 SM120 GPUs, the branch self-reports FP4 GSM8K 91.4% and 2528 tok/s versus FP8 91.0% and 350.6 tok/s,
+    while also reporting FP4 quality losses of 3.4 percentage points on GPQA and 2.7 points on LongBenchV2 versus BF16. No
+    raw results, matched throughput protocol, or CI receipt in the PR verifies these figures.
+  - 'The draft closed unmerged as supplanted by merged PRs #21954, #21601 and follow-ups. Review also found critical/high
+    correctness and dispatch defects, so this head is a historical design donor rather than a production implementation or
+    performance baseline.'
+  techniques:
+  - KV-cache quantization strategy registry
+  - packed FP4 data plus scale sidecars
+  - shared dequant workspace
+  - native XQA FP4 decode
+  - FP4-to-FP8 prefill
+  - speculative phase routing
+  reported_results:
+  - 'SELF-REPORTED on Qwen3.5-35B-A3B, 4x RTX PRO 6000 SM120 TP4: FP4 GSM8K 91.4% and 2528 tok/s; FP8 91.0% and 350.6 tok/s.'
+  - 'SELF-REPORTED quality: FP4 GPQA 80.1% versus BF16 83.5%; LongBenchV2 49.7% versus BF16 52.4%.'
+  - 'STATUS 2026-09-25: closed draft, unmerged, head 6e8aa9c6; check-runs contain only label/cancel administrative jobs and
+    no substantive test suite.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-1569
+    - intake-1570
+    - intake-1709
+    - intake-1710
+    - intake-1711
+    - intake-1712
+    intake_entry_notes:
+    - intake-1711 covers the newer merged SM100/SM103 native packed-NVFP4 path.
+    - intake-1709 and intake-1710 cover still-open SM120 speculative fixes; intake-1569 records the motivating SM120 defect.
+  recommended_actions:
+  - 'Project-derived candidate: reuse the quant-method/pool/backend separation and make packed data, scale sidecars and workspace
+    ownership explicit in project APIs.'
+  - 'Project-derived candidate: keep prefill, decode and speculative verification as separately qualified regimes; do not
+    infer one path’s result from another.'
+  - 'Project-derived candidate: treat the reported speed and quality figures only as hypothesis-generating context until raw,
+    matched and revision-pinned reproduction exists.'
+  - 'Project-derived decline: do not port this closed draft or treat “all arch” as AMD support; newer merged/open SGLang sources
+    own the NVIDIA implementation state.'
+  contradicting_evidence:
+  - Documentation says SM120 only while the strategy-class docstring says SM100 and SM120, directly contradicting the title’s
+    all-architecture wording.
+  - Server validation raises on non-CUDA KV4, and no HIP/gfx90a source or test is present.
+  - The PR is closed unmerged and the maintainer says it was supplanted.
+  - Review identified a hardcoded dispatch bypass, stale/uninitialized speculative dequant state and missing page-table construction.
+  - The reported GSM8K throughput advantage coexists with material GPQA and LongBenchV2 quality losses and lacks raw measurement
+    receipts.
+  notes: 'Retrieved 2026-09-25. PR API sha256 35b8921abe4ad6bf06677c4ef9db3cc179c11c70fe0ff5a19123fa49e4ceda2a; files API
+    sha256 a0952f1cefb3d2386aed7dfd2c153a8d1ed3a480bccf9c3f7adeedfba81d798d; comments API sha256 94626599ba4c93d4baf0d195370c0117d960466a730d2e9a705ac1ca501d8344;
+    review-comments API sha256 4d6147e23bb51df360fdd31fda9453f9a3d30fe88effce48dce0beb6d1b83ce2; checks API sha256 1a70f89cff764ff15bfcd98ce970a135d9859b1945dc4f49d828e236eb620bb5.
+    Head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe; 18 changed files, 3,612 additions, 372 deletions. docs sha256 80b81eea4734bd8a6b13f22bb433597b7211d2e1a1467d530f653ece1eeb6068;
+    kv_cache_quant_method.py sha256 fd3472b5642f90390ed00a93d1c86bb02883293240648f72a216399153381a2c. Exact URL dedup over
+    1,713 lane entries found no collision. Surfaced merged PRs #21601/#21954, roadmaps #29913/#31783 and issue #36010 are
+    not separately recommended here: later indexed intakes 1569 and 1709-1711 carry the live defect and implementation state,
+    while these sources establish only the supersession chain.'
+  verification: dive-overturned
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Use only the interface decomposition and failure lessons. The branch is a closed, superseded CUDA
+    prototype with self-reported SM120 results; it supplies neither a current SGLang implementation nor a CPU/MI210 path.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: overturned
+    note: The title’s all-architecture wording fails against the branch’s own SM120/Blackwell docs and non-CUDA rejection.
+  - claim_index: 1
+    effect: unaffected
+    note: The code directly implements the three-part abstraction, both registered recipes and buffer/sidecar/workspace layout.
+  - claim_index: 2
+    effect: narrowed
+    note: The documented dispatch exists on the draft branch but carries explicit limitations and cannot be generalized beyond
+      its CUDA paths.
+  - claim_index: 3
+    effect: narrowed
+    note: All figures are branch-authored summary tables; quality is mixed and no raw or CI-backed reproduction accompanies
+      them.
+  - claim_index: 4
+    effect: overturned
+    note: Closure and review evidence prevent treating this head as current or production-ready; current state belongs to
+      the newer sources already indexed.
+  dive_corrections: '2026-09-25 Stage 2d: OVERTURNED “all arch” and current-production readings; CONFIRMED the strategy/pool/backend
+    decomposition and documented phase split; NARROWED performance and quality to unverified SM120 self-report; marked the
+    source superseded after closure and unresolved critical/high review findings.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: docs/nvfp4_kv_cache.md:5-16
+    quote: '## Supported Hardware
+
+
+      NVFP4 KV cache requires SM120 architecture.
+
+
+      ## Installation
+
+
+      ### Prerequisites
+
+
+      - CUDA 13.0+
+
+      - PyTorch 2.9.1+
+
+      - FlashInfer >= 0.6.3 (latest main branch)
+
+      - SM120 GPU'
+    quote_sha256: c3aef66ae0d2dda6e4c45339fabdbd24b6a148354400040bd4e991f03d57f0f5
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: python/sglang/srt/server_args.py:2513-2514
+    quote: "else:\n            raise RuntimeError(\"KV4 is not tested on non-CUDA platforms.\")"
+    quote_sha256: 50c61a55621e2bc9e852d1d9d0a2637e4d84f3118c3f3f21bf11b1c4f3c31eb6
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: python/sglang/srt/layers/quantization/kv_cache_quant_method.py:15-23
+    quote: "KV cache quantization strategy pattern.\n\nThree-player design:\n  quant_method (pure compute)  ─►  Pool (buffer\
+      \ + batch dequant)  ─►  Backend (view adaptation)"
+    quote_sha256: 7a68aa5bcb079a673f43bbe0d6f60aa5f45385c26b379483b3f932dd235dd426
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: python/sglang/srt/layers/quantization/kv_cache_quant_method.py:461-465
+    quote: "# Registry: name → class.  Only classes for fp4_e2m1 dtype need to be listed.\nKV_CACHE_QUANT_REGISTRY: dict[str,\
+      \ type[KVCacheQuantMethod]] = {\n    \"nvfp4\": NVFP4Method,\n    \"mxfp4\": MXFP4Method,\n}"
+    quote_sha256: cf9283d5f0af1f23639d24eb38d25f0e712b256e26d68ca2bece708315965d11
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: docs/nvfp4_kv_cache.md:196-200
+    quote: '### Kernel Dispatch
+
+
+      - **Prefill**: FlashInfer dequantizes FP4→FP8 on-the-fly, then uses the standard FP8 prefill kernel
+
+      - **Decode**: TRT-LLM XQA kernel reads FP4 data natively with the two-level scales
+
+      - **MTP target_verify / draft_extend**: Uses the XQA decode kernel with causal masking (`--speculative-attention-mode
+      decode`)'
+    quote_sha256: fc271a3550b8f77b18b9b531c404e05132d9c5b5c3f37cc576b21d4b5404bf41
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: docs/nvfp4_kv_cache.md:127-139
+    quote: '| KV Cache | MTP | Accuracy | Throughput |
+
+      |----------|-----|----------|------------|
+
+      | BF16 | No | 91.3% | - |
+
+      | FP8 (fp8_e4m3) | No | 91.0% | 350.6 tok/s |
+
+      | **FP4 (fp4_e2m1)** | **No** | **91.4%** | **2528 tok/s** |
+
+
+      #### GPQA (198 questions, 8 repeats, temperature=0.6, max_tokens=81920)
+
+
+      | KV Cache | Mean Score | Scores (8 rounds) |
+
+      |----------|------------|-------------------|
+
+      | BF16 | 83.5% | 84.3, 83.8, 83.8, 84.3, 80.8, 85.4, 82.3, 82.8 |
+
+      | FP8 (fp8_e4m3) | 82.1% | 82.8, 80.3, 85.4, 81.3, 80.8, 82.3, 80.8, 82.8 |
+
+      | **FP4 (fp4_e2m1)** | **80.1%** | 81.8, 80.3, 79.3, 81.3, 80.3, 80.8, 79.3, 77.8 |'
+    quote_sha256: db418ff6c12bd5179b9de28cc47c6ea33a8809d755760f25a791d556582e75f9
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: json-pointer
+    locator: comments-23354.json:/1/body
+    quote: 'Hi @Tom-Zheng, closing as this appears supplanted - NVFP4 KV cache support has been landing incrementally on main
+      via a series of merged PRs (#21954, #21601, and follow-ups), with quantization/kernel plumbing now in modelopt_quant.py
+      and kvfp4_tensor.py. This draft has also been idle for ~4 months. If there is still a distinct piece not covered by
+      main, please reopen with a narrower rebased diff.'
+    quote_sha256: 1df0d45600c6d5d2203c58a02132574533672f6ab84941bfcf2e1203efb5318e
+    source_revision: 'GitHub PR #23354 comments API sha256 94626599ba4c93d4baf0d195370c0117d960466a730d2e9a705ac1ca501d8344'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: json-pointer
+    locator: review-comments-23354.json:/2/body
+    quote: The NVFP4 metadata preparation is currently restricted to `is_extend_without_speculative()`. However, other extend
+      modes like `is_target_verify()` and `is_draft_extend()` also require the dequantized FP8 buffer when using the FlashInfer
+      prefill kernel with NVFP4 KV cache. Restricting it here will result in stale or uninitialized data being used in the
+      dequant workspace during speculative decoding.
+    quote_sha256: 61ee86a92a250d6a0773bb63f626882d40a2b17795dfb6580a856eac1a7fc655
+    source_revision: 'GitHub PR #23354 review-comments API sha256 4d6147e23bb51df360fdd31fda9453f9a3d30fe88effce48dce0beb6d1b83ce2'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: python/sglang/srt/layers/quantization/kv_cache_quant_method.py:136-140
+    quote: "class NVFP4Method(KVCacheQuantMethod):\n    \"\"\"NVFP4 two-level scaling: global FP32 + per-block FP8 E4M3.\n\
+      \n    Supported on SM100 (B200) and SM120 (RTX 5090 / RTX PRO 6000 Blackwell).\n    \"\"\""
+    quote_sha256: 5ae1fa371ad95536102b4a825e2d44fa8da82e68312a92db23552062771d97bf
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: python/sglang/srt/layers/quantization/kv_cache_quant_method.py:227-273
+    quote: "    def create_buffers(\n        self, size: int, head_num: int, head_dim: int, layer_num: int, device: str\n\
+      \    ) -> dict:\n        m = size\n        n = head_num\n        k = head_dim\n        store_dtype = torch.uint8\n \
+      \       dq_dtype = torch.float8_e4m3fn\n\n        k_buffer = [\n            torch.zeros((m, n, k // 2), dtype=store_dtype,\
+      \ device=device)\n            for _ in range(layer_num)\n        ]\n        v_buffer = [\n            torch.zeros((m,\
+      \ n, k // 2), dtype=store_dtype, device=device)\n            for _ in range(layer_num)\n        ]\n        k_scale_buffer\
+      \ = [\n            torch.zeros(\n                (m, n, k // self.scale_block_size), dtype=store_dtype, device=device\n\
+      \            )\n            for _ in range(layer_num)\n        ]\n        v_scale_buffer = [\n            torch.zeros(\n\
+      \                (m, n, k // self.scale_block_size), dtype=store_dtype, device=device\n            )\n            for\
+      \ _ in range(layer_num)\n        ]\n        # Shared dequant workspace — only needed for the dequant-to-FP8 prefill\
+      \ path.\n        # When native_prefill is enabled, skip allocation to save GPU memory.\n        if not self.native_prefill:\n\
+      \            dq_k_buffer = torch.zeros((m, n, k), dtype=dq_dtype, device=device)\n            dq_v_buffer = torch.zeros((m,\
+      \ n, k), dtype=dq_dtype, device=device)\n        else:\n            dq_k_buffer = None\n            dq_v_buffer = None\n\
+      \n        return {\n            \"k_buffer\": k_buffer,\n            \"v_buffer\": v_buffer,\n            \"k_scale_buffer\"\
+      : k_scale_buffer,\n            \"v_scale_buffer\": v_scale_buffer,\n            \"dq_k_buffer\": dq_k_buffer,\n    \
+      \        \"dq_v_buffer\": dq_v_buffer,\n            \"store_dtype\": store_dtype,\n        }"
+    quote_sha256: 4b40bb0815f9af22c23c8d5a77f2fac12964442f27ba962c2ef6329014a7ac1f
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: docs/nvfp4_kv_cache.md:216-221
+    quote: '## Known Limitations
+
+
+      - NVFP4 KV cache is SM120 only (not SM90/SM100)
+
+      - The TRT-LLM context kernel does not support NVFP4 scales, so MTP must use `--speculative-attention-mode decode`
+
+      - FlashInfer prefill with NVFP4 dequantizes to FP8, not native FP4 prefill
+
+      - Radix cache must be disabled (`--disable-radix-cache`)'
+    quote_sha256: 6d80182df885de4d8c38ff6599b9bbb104930c7de52eb48e40393efabf80126d
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: docs/nvfp4_kv_cache.md:141-162
+    quote: '#### LongBench V2 (503 questions, 128K context, no thinking, max_tokens=16384)
+
+
+      | KV Cache | Score | Easy | Hard | Latency |
+
+      |----------|-------|------|------|---------|
+
+      | BF16 (3-round avg) | 52.4% +/- 0.3% | 56.3% | 50.2% | 1146s |
+
+      | **FP4 (fp4_e2m1)** | **49.7%** | 55.7% | 46.3% | 1059s |
+
+      | FP4 (3-round avg, old) | 48.9% +/- 0.5% | 52.8% | 46.7% | 1471s |
+
+
+      #### AIME25 (Majority Vote, n=16 beams, max_tokens=114688)
+
+
+      | KV Cache | Majority Vote | Pass@16 | Problems |
+
+      |----------|---------------|---------|----------|
+
+      | BF16 (B200 x2) | 93.3% (28/30) | 87.9% (422/480) | 30/30 |
+
+      | **FP4 (RTX 6000 x4)** | **(pending retest)** | - | - |
+
+
+      #### Summary
+
+
+      | Benchmark | FP4 | BF16 | FP8 | Delta (vs BF16) |
+
+      |-----------|-----|------|-----|-----------------|
+
+      | GSM8K | 91.4% | 91.3% | 91.0% | +0.1pp |
+
+      | GPQA | 80.1% | 83.5% | 82.1% | -3.4pp |
+
+      | LongBenchV2 128K | 49.7% | 52.4% | - | -2.7pp |'
+    quote_sha256: ed7bf095b358de0d481b305c1e0e6a69dc8b3fbba22c12e683607b27274681c3
+    source_revision: 'sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: json-pointer
+    locator: pull-23354.json:/state
+    quote: closed
+    quote_sha256: c3eefb58d7c42440a9d4abec51d629544d635a6d936ff3c4d3fca96d611b3cf3
+    source_revision: 'GitHub PR #23354 API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: json-pointer
+    locator: pull-23354.json:/merged
+    quote: 'false'
+    quote_sha256: fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa
+    source_revision: 'GitHub PR #23354 API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: json-pointer
+    locator: review-comments-23354.json:/0/body
+    quote: '![critical](https://www.gstatic.com/codereviewagent/critical.svg)
+
+
+      This hardcoded return statement bypasses the entire auto-dispatch logic for FP8 linear layers, which could lead to incorrect
+      backend selection or performance regressions on hardware where Triton is not the optimal choice (e.g., when DeepGemm
+      or FlashInfer should be used). Please remove this line.'
+    quote_sha256: 15041aba6e4d342015d01d64c4322ee1fbd3948c03e7b2450fff99613a092598
+    source_revision: 'GitHub PR #23354 review-comments API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: json-pointer
+    locator: review-comments-23354.json:/3/body
+    quote: '![high](https://www.gstatic.com/codereviewagent/high-priority.svg)
+
+
+      The logic for constructing `dq_page_table` is commented out, but this table is required for the NVFP4 prefill path in
+      the TRT-LLM backend (as seen in the usage at line 1025). Without this, the backend will likely fail or produce incorrect
+      results when using NVFP4 KV cache for prefill/extend. Please enable and verify this logic.'
+    quote_sha256: 1df7dd5e4f5bca7c71d70ef193ce9b885261cf789e738b98f4004067fed93cb6
+    source_revision: 'GitHub PR #23354 review-comments API retrieved 2026-09-25'
+    verified_by: research-intake/stage2d-second-reader
+- id: intake-1721
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/issues/29913
+  source_type: repo
+  title: SGLang FP4 KV roadmap and current NVIDIA implementation state
+  authors:
+  - samuellees
+  - jerry-he
+  categories:
+  - kv_cache
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1711
+  verdict: adopt_patterns
+  credibility_score: 3
+  key_claims:
+  - 'Open issue #29913 is an NVIDIA FP4-KV roadmap: it checks off the quantization abstraction and the original SM120 design/decode
+    work, while listing native SM100 prefill/decode, DSA/MLA, cross-SM prefill, and SM121 Gemma work as unfinished.'
+  - 'The checklist is stale as a release ledger. It still leaves PR #36340 unchecked although that PR merged on 2026-09-18,
+    and its checked SM120 seed PR #18314 was closed unmerged after moving to #21601; other unchecked items are a mix of open
+    and closed-unmerged work.'
+  - 'The landed NVFP4 lineage is narrower and concrete: PR #21601 merged SM120 storage/decode support, and PR #36340 later
+    merged native packed prefill/decode on SM100/SM103. Both paths are CUDA/NVIDIA implementations rather than CPU or ROCm
+    kernels.'
+  - 'Open PR #36121 reports that HiCache transfers packed FP4 data without its scale buffers and sizes the host pool with
+    a full-width formula, producing silent corruption after reload; its proposed mitigation is fail-fast and has CPU argument
+    tests but no GPU run.'
+  - No roadmap item establishes EXL3, CPU, ROCm, MI210, or gfx90a performance. The project-derived transferable contract is
+    that packed payload, scales/metadata, capacity accounting, and eviction/offload lifecycle must remain inseparable.
+  techniques:
+  - NVFP4 KV strategy abstraction
+  - packed FP4 KV plus block scales
+  - native packed attention consumption
+  - fail-fast unsupported cache lifecycle
+  - roadmap-to-release reconciliation
+  reported_results:
+  - 'ROADMAP STATUS, not benchmark: #21954, #21601 and #36340 are merged; #35237 and #36121 remain open; #23354 and #29304
+    are closed unmerged.'
+  - 'LINKED MERGED PR #36340, NVIDIA GB300: native FP4 reported 1.042x non-MTP full-decode speedup and 0.918x MTP-on decode
+    versus FP8; this result belongs to intake-1711, not the roadmap itself.'
+  - 'OPEN PR #36121: CPU-only argument validation; no GPU runtime verification.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-1711
+    - intake-1709
+    - intake-1710
+    intake_entry_notes:
+    - intake-1711 (merged SM100/SM103 implementation named by this roadmap)
+    - intake-1709/1710 (open SM120 kernel repairs in the same NVIDIA lineage)
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: treat roadmaps only as discovery surfaces; resolve every linked issue/PR to current merge
+    state before using it as an implementation matrix.'
+  - 'Project-derived candidate: make EXL3 packed payload, trellis/scales, workspace sizing, and eviction/offload movement
+    one validated manifest on CPU and HIP.'
+  - 'Project-derived candidate: add fail-fast guards for unsupported offload, prefix-cache, or graph-replay combinations until
+    metadata-preserving paths have dedicated correctness tests.'
+  contradicting_evidence:
+  - 'The unchecked #36340 item is already merged, so checkbox state contradicts current release state.'
+  - 'Checked #18314 and #17733 are closed unmerged seed branches; a checked box does not mean that exact PR landed.'
+  - 'Open #36121 reports a silent-corruption combination absent from the top-level roadmap checklist.'
+  notes: Exact URL dedup found no entry. Issue body sha256 471623d7387d3da690027b99191e8a9ee84b3303b97a8a518f0e5bcaf57c8f7f;
+    issue API sha256 c0a284cec858db5dbfb1bc754d121abd6563ebd6c88f591ef72bb9743ee2c4c1; linked PR API snapshot sha256 5c00926db442659e4b3f880f249e9a79d733415ae066ce07ca804d4cdd218f46.
+    No accepted decline was attached to this source in the assignment.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Use the roadmap to discover NVIDIA FP4-KV components, then resolve their actual states. Port the
+    payload/metadata lifecycle and fail-closed contracts to EXL3; do not infer CPU or gfx90a support from this tracker.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: issue body lines 4-9
+    quote: '- [x] NVFP4 KV Quant Method Implementation. https://github.com/sgl-project/sglang/pull/21954'
+    quote_sha256: db9fd4c5e9c8ab247bd40db97a0d489eee1bdc98e9233294150d64a633416dab
+    source_revision: 'SGLang issue #29913 node I_kwDOLCAjRs8AAAABHaX0oQ, updated 2026-09-11T01:40:25Z; API sha256 c0a284cec858db5dbfb1bc754d121abd6563ebd6c88f591ef72bb9743ee2c4c1'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: issue body lines 6-9
+    quote: '- [ ] NVFP4 KV Prefill and Decode implementation on SM100. https://github.com/sgl-project/sglang/pull/36340'
+    quote_sha256: 55e319c5a0ef2ea341a5899a906382bf4b353df7e4a93fd4fc95e342d5328119
+    source_revision: 'SGLang issue #29913 node I_kwDOLCAjRs8AAAABHaX0oQ, updated 2026-09-11T01:40:25Z; API sha256 c0a284cec858db5dbfb1bc754d121abd6563ebd6c88f591ef72bb9743ee2c4c1'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: 'PR #18314 body line 1'
+    quote: Rebased and moved to https://github.com/sgl-project/sglang/pull/21601
+    quote_sha256: dce6ff28067b518e4f6173595f95738a7aa7066c0979b73def23dd2200a4a976
+    source_revision: Linked SGLang PR API snapshot fetched 2026-09-25; sha256 5c00926db442659e4b3f880f249e9a79d733415ae066ce07ca804d4cdd218f46
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: json-pointer
+    locator: 'linked-prs.json: /4/merged_at'
+    quote: '"merged_at": "2026-09-18T21:50:46Z"'
+    quote_sha256: d674030c970326ad7405c6cbd89d02c5b7f5774d5575ba46b9baf62a8bab75fd
+    source_revision: Linked SGLang PR API snapshot fetched 2026-09-25; sha256 5c00926db442659e4b3f880f249e9a79d733415ae066ce07ca804d4cdd218f46
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: 'PR #21601 summary'
+    quote: Add NVFP4 (FP4 E2M1) KV cache quantization support for SM120 GPUs
+    quote_sha256: edc20e74fa5ac5425e0d6ad5871fdb9816e101119832f2830193d265afa2ea4a
+    source_revision: 'SGLang PR #21601 head 8ffb1feb84e9fd5099e645fbb6bdd13822866eb8, merged 2026-07-17; body sha256 2649ce2c3c0bef06c505e7d2cd1d6523d01613cadfde422d7732cc40fa82e931'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: 'PR #36340, What this implements'
+    quote: Native packed NVFP4 KV-cache prefill and decode on SM100/SM103 through TRT-LLM GenMHA.
+    quote_sha256: 38e17c4fc2e229eaf8807bacb7e533febd73ed8dff4f6306d9fa8a42653ef090
+    source_revision: 'SGLang PR #36340 head bc89aa35eed59a955b58be0f062445330039760d, merged 2026-09-18; body sha256 890fd235d81ff64e5884feee7e99e30bde151cc352c1cf97da08f6dce024b822'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: 'PR #36121, Motivation item 1'
+    quote: Scale buffers are never transferred to/from the host pool.
+    quote_sha256: ad887eb93e48c1d60b5719f3a5b667cce395396d10abed7158d17b5b994836d0
+    source_revision: 'SGLang PR #36121 head 9c936a7cb8adfa0f7ca4357e573935bd263c42e6, open; body sha256 abfc9730346b76b0df6176df524562d5326f1ab7de40ed1462581b3dedd949c8'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: 'PR #36121, Why fail-fast instead of a fix'
+    quote: Full FP4 HiCache support requires host-side scale-buffer transfer in every write-back/load-back path, an FP4-aware
+      host-pool capacity formula, and dedicated correctness validation
+    quote_sha256: 9e94f8d7516b32459c4f47f4cab16ecb65f7831c49f9b281ce6592e2aca46f12
+    source_revision: 'SGLang PR #36121 head 9c936a7cb8adfa0f7ca4357e573935bd263c42e6, open; body sha256 abfc9730346b76b0df6176df524562d5326f1ab7de40ed1462581b3dedd949c8'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: issue body lines 7-9
+    quote: '- [ ] NVFP4 KV for DSA/MLA on SM100. https://github.com/sgl-project/sglang/pull/35237'
+    quote_sha256: e5a1a445dbcf51dd42d157b08239ccf44fc8576074e1135eef567a38380e2fa9
+    source_revision: 'SGLang issue #29913 node I_kwDOLCAjRs8AAAABHaX0oQ, updated 2026-09-11T01:40:25Z; API sha256 c0a284cec858db5dbfb1bc754d121abd6563ebd6c88f591ef72bb9743ee2c4c1'
+    verified_by: research-intake/stage2d-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: The issue is a checklist of intended NVIDIA work, not proof that every checked item merged or every unchecked item
+      remains pending.
+  - claim_index: 1
+    effect: reattributed
+    note: Current linked-PR API state replaces checkbox state as the release ledger.
+  - claim_index: 2
+    effect: narrowed
+    note: Merged lineage is SM120 and SM100/SM103 CUDA support; it provides no CPU/ROCm implementation.
+  - claim_index: 3
+    effect: narrowed
+    note: The corruption analysis is code-inspection plus CPU argument validation; the proposed PR has no GPU runtime test.
+  - claim_index: 4
+    effect: unaffected
+    note: The absence of EXL3/CPU/ROCm evidence remains after exhaustive linked-item review; only the lifecycle invariant
+      transfers.
+  dive_corrections: '2026-09-25 Stage 2d: REATTRIBUTED checkbox state to a discovery-only roadmap after resolving every linked
+    PR; CONFIRMED the merged NVIDIA lineage; NARROWED HiCache evidence to code inspection and CPU validation; recorded no
+    CPU/ROCm/MI210 performance claim.'
+- id: intake-1722
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/pull/40883
+  source_type: repo
+  title: SGLang packed target lm_head sharing for NEXTN and DFlash2
+  authors:
+  - twu3202
+  categories:
+  - speculative_decoding
+  - quantization
+  - inference_serving
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1714
+  verdict: adopt_patterns
+  credibility_score: 3
+  key_claims:
+  - Pack-quantized target lm_heads have weight_packed/weight_scale/weight_shape but no .weight; on SGLang main this let the
+    target serve alone while NEXTN failed at startup and the DFlash2 selector failed during warm-up.
+  - 'PR #40883 admits non-ModelOpt packed heads through quant_method.apply, shares the whole packed module with compatible
+    drafts, and fails clearly when a consumer can share only a dense tensor. DSpark, Domino, and two direct .weight readers
+    remain explicitly out of scope.'
+  - 'On one RTX 6000 Ada with 200 sequential GSM8K prompts, the packed W8A16 head served after the patch: NEXTN scored 0.965
+    with mean accepted length 3.629 and DFlash scored 0.970 with 6.035. Completion identity was 172/200 and 167/200 against
+    the same packed target without speculation.'
+  - The PR reports 23 CPU cases passing, with 8 failing on main, but no clean timing. It remains open/blocked; the displayed
+    base, extra, and AMD workflows are red, and the head check-run snapshot shows the AMD finish failure with most AMD jobs
+    skipped.
+  - The project-derived portable contract is to share a packed operator plus its dispatch method, not a presumed dense tensor
+    pointer; incompatible consumers must fail before decode. This Python ownership rule transfers to CPU/HIP, while the source
+    supplies no ROCm or MI210 execution result.
+  techniques:
+  - quant-method operator sharing
+  - packed-head capability detection
+  - fail-fast incompatible consumer
+  - CPU loader contract tests
+  - matched non-speculative completion comparison
+  reported_results:
+  - 'SELF-REPORTED, one RTX 6000 Ada, n=200 sequential GSM8K: packed-head NEXTN 0.965 / accepted length 3.629; packed-head
+    DFlash 0.970 / 6.035.'
+  - 'SELF-REPORTED completion identity versus the same packed target without speculation: NEXTN 172/200; DFlash 167/200.'
+  - 'CPU validation: 23 new/modified cases pass and 8 fail on main; 31 related tests plus 4 ModelOpt guard cases pass. No
+    controlled throughput.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-1714
+    - intake-1715
+    - intake-1572
+    intake_entry_notes:
+    - intake-1714 (broader draft-loader contract and corroborating packed-target run)
+    - intake-1715 (official BF16 DFlash2 reference fixture)
+    - intake-1572 (silent quantized-draft acceptance collapse)
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: represent EXL3 target and draft linears as packed operator objects carrying codec metadata
+    and callable dispatch, never as optional dense weight pointers.'
+  - 'Project-derived candidate: add startup capability negotiation for every consumer of a shared head; fail before allocation
+    or decode when module sharing or packed dispatch is unsupported.'
+  - 'Project-derived candidate: reproduce BF16-head, packed-head, NEXTN, DFlash2, and non-speculative controls on MI210 with
+    exact token identity and controlled throughput.'
+  contradicting_evidence:
+  - The PR explicitly leaves several direct lm_head.weight readers broken, so it is not a universal packed-head repair.
+  - The 172/200 and 167/200 completion matches are not bit identity; the author attributes differences to numerics.
+  - Open/blocked status, red displayed workflows, and absent controlled timing prevent a released performance claim.
+  notes: Exact URL dedup found no entry. PR body sha256 f6304101ff89fa9bac1cf186f668c091b907ab7f28b0f455d52e3537bb0b10b7;
+    API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac; files API sha256 702c9e67df171bae1e430a135bbd42962f99f9734c7672b020fcbcd943614cd.
+    No accepted decline was attached to this source in the assignment.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt module-plus-dispatch sharing and fail-fast capability checks for EXL3. Treat the Ada accuracy
+    run as candidate correctness evidence only; this open PR supplies no controlled throughput or MI210 proof.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: PR body lines 3-8
+    quote: A compressed-tensors checkpoint that quantizes `lm_head` in the pack-quantized INT format stores the head as `weight_packed`
+      / `weight_scale` / `weight_shape`; the module has no `.weight`.
+    quote_sha256: eb67e7aaa62783394e3a0a26b293d1a6da466b825724e7175003f6a0313edb0b
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z;
+      API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: PR body lines 5-6
+    quote: '`--speculative-algorithm NEXTN` dies at startup in `get_embed_and_head`: `AttributeError: ''ParallelLMHead'' object
+      has no attribute ''weight''`.'
+    quote_sha256: 197e450c033ebbc4deb108a02bfd9595a0d57a7df9677b32a137d280f184d0d4
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z;
+      API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: PR body lines 14-18
+    quote: a head without a dense weight now takes the `quant_method.apply` branch
+    quote_sha256: 72502ec51e510f1802816b559aff3dbfb26b6a4b3ce227db7f703ea991bacf7b
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z;
+      API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: PR body line 17
+    quote: 'Out of scope: `dspark_draft_sampler.py`, `deepseek_v4_dspark.py` and `domino_utils.py` still read `lm_head.weight`
+      and keep failing on a packed head as before.'
+    quote_sha256: 03899030de5ef00204ffbe9c3fcc68ff8d6d9a57368569c37d7ab3e06a15d800
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z;
+      API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: PR body lines 56-60
+    quote: '| W8A16 packed | this PR | DFLASH | serves; the selector is folded into the draft CUDA graph | 0.970 | 6.035 |'
+    quote_sha256: 2568d45a7caa23d86241426eb760fee6248f4d77f98ac901f46a735796cfaf06
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z;
+      API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: PR body line 64
+    quote: With the packed head, 172/200 NEXTN and 167/200 DFLASH completions match the packed-head target decoding on its
+      own.
+    quote_sha256: 8fc7f0a8bc04596b5ce999b93e2af392d42e37ee1e10b113c801811fcef0d28c
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z;
+      API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: PR body line 66
+    quote: 'Unit tests (CPU): `test_spec_packed_target_lm_head.py` + `test_dflash_logits.py` 23 passed (8 fail on main)'
+    quote_sha256: cf6f1c9ecfab884cdb543f090513eb7287fc5fe94922824c5ad960b6a4185fa6
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z;
+      API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: PR body line 70
+    quote: I have no clean timing for it yet, since the GPU these runs used was shared with other jobs.
+    quote_sha256: 752bf0cd60c3ca7431b596fcf1ce25eda2b959718ea68a5290718e6a5c537edc
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z;
+      API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: PR body lines 84-86
+    quote: 'Latest PR Test (AMD ROCm 10): <!-- slot:pr-test-amd:start -->:x:'
+    quote_sha256: 11b2a3669fc44bfca692f6cdc6afa75362f34697e9bb4058b332ba490c669188
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z;
+      API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: test_spec_packed_target_lm_head.py lines 1-7
+    quote: 'These cases pin the shared contract: such a head is admitted through its quant method, and a NEXTN draft gets
+      it as a module.'
+    quote_sha256: 70ac9e46efabd48e1ddac53fceab4a8b3119376a1951c875981972d5dacf148e
+    source_revision: 'SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95; pinned changed-file tree; files API
+      sha256 702c9e67df171bae1e430a135bbd42962f99f9734c7672b020fcbcd943614cd'
+    verified_by: research-intake/stage2d-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Body, diff, and tests establish the no-.weight failure mode.
+  - claim_index: 1
+    effect: narrowed
+    note: The repair covers compatible module-sharing paths and explicitly leaves named direct-weight consumers out of scope.
+  - claim_index: 2
+    effect: narrowed
+    note: Scores and acceptance are one Ada self-report; completion comparison is not token identity.
+  - claim_index: 3
+    effect: narrowed
+    note: CPU cases exercise ownership/dispatch logic, while release CI and timing remain incomplete.
+  - claim_index: 4
+    effect: narrowed
+    note: The ownership contract transfers; no ROCm/MI210 execution or performance does.
+  dive_corrections: '2026-09-25 Stage 2d: CONFIRMED the packed-target-head failure and module-sharing repair; NARROWED coverage
+    to compatible consumers, Ada correctness evidence, open release state, and no controlled throughput or ROCm execution.'
+- id: intake-1723
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/52816
+  source_type: repo
+  title: Merged vLLM DFlash2 convolution, selector, and H200/GB200 throughput path
+  authors:
+  - SubSir
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - hardware_optimization
+  - benchmark_methodology
+  - quantization
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1715
+  verdict: adopt_component
+  credibility_score: 4
+  key_claims:
+  - 'Merged vLLM PR #52816 adds a separate DFlash2DraftModel path: grouped dynamic convolutions wrap attention and MLP, a
+    top-k candidate selector scores adjacent transitions, and configuration forces the V2 GPU speculator so the checkpoint
+    cannot silently run as DFlash1.'
+  - On one H200, the PR reports DFlash2 GSM8K output throughput of 224.6 tok/s at c1, 1,211.7 at c8, and 2,759.4 at c32, or
+    3.51x/2.91x/2.20x autoregressive. Each cell averages four same-GPU shard rates over 128×concurrency requests after warm-up.
+  - The isolated convolution plus selector costs 0.174/0.227/0.370 ms at batch 1/8/32, under 0.85% of the reported serving
+    step. The author measures the twenty convolution calls as launch-bound and estimates a hand-fused kernel could recover
+    most of a remaining 12x gap.
+  - 'A maintainer approval independently reports one-GB200 c64 GSM8K n=1319: probabilistic DFlash2 raised output from 2,470
+    to 4,551 tok/s with McNemar p=0.380, and greedy raised 2,531 to 4,642 with p=1.000. This supports throughput without a
+    significant accuracy difference on that setup.'
+  - 'The merge establishes the official BF16 GPU path, not general quantized-target, quantized-draft, CPU, or MI210 support.
+    Open #52883 fixes a quantized-body/unquantized-head guard; open #53122 adds draft quant mapping and reconstructs a transient
+    dense context-KV fusion buffer from several quantized layouts, but neither follow-up is merged.'
+  techniques:
+  - grouped dynamic depthwise convolution
+  - top-k adjacent-transition selector
+  - single Triton path-walk program per request
+  - V2 runner enforcement
+  - compiled selector and convolution regions
+  - per-request and pooled acceptance accounting
+  reported_results:
+  - 'SELF-REPORTED H200, GSM8K: DFlash2 224.6/1,211.7/2,759.4 output tok/s at c1/c8/c32, 3.51x/2.91x/2.20x AR.'
+  - 'SELF-REPORTED H200 isolated overhead: convolution+selector 0.174/0.227/0.370 ms at batch 1/8/32, 0.84%/0.71%/0.67% of
+    serving step.'
+  - 'MAINTAINER GB200 REVIEW, c64 GSM8K n=1319: 4,551 tok/s probabilistic and 4,642 greedy, 1.84x/1.83x AR; exact McNemar
+    p=0.380 and 1.000.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-1715
+    - intake-158
+    - intake-1714
+    intake_entry_notes:
+    - intake-1715 (official BF16 checkpoint and SGLang H200 grid)
+    - intake-158 (original DFlash mechanism baseline)
+    - intake-1714 (SGLang quantized draft loader contract)
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: port the merged DFlash2 component boundary—separate model class, grouped conv, selector, and
+    explicit runner capability check—into the CPU/HIP implementation.'
+  - 'Project-derived candidate: implement and benchmark a fused gfx90a grouped-convolution kernel across all twenty calls,
+    retaining a scalar CPU reference and graph-replay shape tests.'
+  - 'Project-derived candidate: reproduce the H200 c1/c8/c32 protocol on MI210 with the same 128×concurrency denominator,
+    four repeated shards, warm-up exclusion, raw rows, per-request AL, and pooled AL.'
+  - 'Project-derived candidate: treat quantized target head and fused quantized draft support as separate gates; integrate
+    fail-closed packed-operator dispatch before claiming EXL3 DFlash2 support.'
+  contradicting_evidence:
+  - 'The merged PR does not itself support all quantized targets or drafters; open #52883 and #53122 add those paths after
+    the merge.'
+  - 'A post-merge main regression from #52560 temporarily broke DFlash2 loading; merged #53435 repaired it, so merge existence
+    alone was not a durable runtime guarantee.'
+  - All throughput and accuracy runs are NVIDIA H200/GB200; generic Triton and PyTorch structure is promising but not MI210
+    evidence.
+  notes: 'Exact URL dedup found no entry. PR API sha256 e7eecd22a17dd72a9f62ea9c832c42bee9ba9531203f4833c565ae488e59c00d;
+    body sha256 31efb502954c84dcdebbb3aeddff7e3a0f33233be5e78da47666783809a5e54f; files API sha256 2ac7c8bbb28f988a0c3a9a8eb6658a4633c537baf1db4b5cc66b098f8477a7dd.
+    Head 3406ec1 had successful GitHub-visible DCO, pre-commit, pre-run, Meta, Summary checks; Buildkite #84945 was triggered
+    but its final result is not present in the pinned API artifacts. No accepted decline was attached to this source in the
+    assignment.'
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt the merged DFlash2 architecture and its benchmark protocol as the strongest throughput target.
+    Port and fuse the generic component boundaries for gfx90a, while separately closing packed target and quantized draft
+    loader/dispatch gaps.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: PR body lines 1-17
+    quote: a checkpoint declaring `DFlash2DraftModel` gets them, and every existing `DFlashDraftModel` checkpoint resolves
+      to the class it resolves to today, untouched by this PR.
+    quote_sha256: b3d053309a68854c3e7b8a3095b99c3d19b55cd3a49b5a05dc5b76b1b993c4a3
+    source_revision: 'vLLM PR #52816 head 3406ec1dae9916f920b90f0dbf90dcf54923d042, merged as b389ac29465b33f9e9c534df221ea3c129e9793f
+      on 2026-08-21; API sha256 e7eecd22a17dd72a9f62ea9c832c42bee9ba9531203f4833c565ae488e59c00d'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: PR body lines 33-36
+    quote: 'DFlash2 runs on the V2 model runner, which is where its speculator lives.
+
+      `use_v2_model_runner` selects V2 for a DFlash2 draft, as it already does for
+
+      DSpark: the V1 `DFlashProposer` has no candidate selector, so a DFlash2
+
+      checkpoint reaching it would draft as DFlash1 without raising.'
+    quote_sha256: 5f95464c3cb91730d5d8e38f5e7ffb5195bed87d1123ddf92d3c26f39bd6a402
+    source_revision: 'vLLM PR #52816 head 3406ec1dae9916f920b90f0dbf90dcf54923d042, merged as b389ac29465b33f9e9c534df221ea3c129e9793f
+      on 2026-08-21; API sha256 e7eecd22a17dd72a9f62ea9c832c42bee9ba9531203f4833c565ae488e59c00d'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: PR body lines 64-74
+    quote: '| 32 | 3,968 | 1,256.9 | 2,220.9 (1.77×) | **2,759.4 (2.20×)** |'
+    quote_sha256: 810cee58b62df545cca0ec061d66ec0be426a7deaec49b8b4b0d5862e96ba7eb
+    source_revision: 'vLLM PR #52816 head 3406ec1dae9916f920b90f0dbf90dcf54923d042, merged as b389ac29465b33f9e9c534df221ea3c129e9793f
+      on 2026-08-21; API sha256 e7eecd22a17dd72a9f62ea9c832c42bee9ba9531203f4833c565ae488e59c00d'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: PR body lines 64-68
+    quote: Each point is 128 × concurrency requests split over four shards, each shard one H200 serving at the stated concurrency;
+      the four shard rates are averaged, not summed
+    quote_sha256: febf489272830b86d38444f01115e8ba66ad9945012e376e268cecd03cc4094f
+    source_revision: 'vLLM PR #52816 head 3406ec1dae9916f920b90f0dbf90dcf54923d042, merged as b389ac29465b33f9e9c534df221ea3c129e9793f
+      on 2026-08-21; API sha256 e7eecd22a17dd72a9f62ea9c832c42bee9ba9531203f4833c565ae488e59c00d'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: PR body lines 89-93
+    quote: '| 32 | 0.173 | 0.173 | 0.018 | 0.006 | 0.197 | **0.370 ms** | 54.93 ms | **0.67%** |'
+    quote_sha256: c9d9bc5766488c8fdaa88542a0a34efb14be9f7641f352388a4c4e8b0c7b1dd2
+    source_revision: 'vLLM PR #52816 head 3406ec1dae9916f920b90f0dbf90dcf54923d042, merged as b389ac29465b33f9e9c534df221ea3c129e9793f
+      on 2026-08-21; API sha256 e7eecd22a17dd72a9f62ea9c832c42bee9ba9531203f4833c565ae488e59c00d'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: PR body lines 99-104
+    quote: A hand-fused kernel would collect most of the remaining 12×.
+    quote_sha256: ebe998f0cfe4bb49262be9f3ffac6f4b6ae5a75cb97b12b7befbe564b60faf72
+    source_revision: 'vLLM PR #52816 head 3406ec1dae9916f920b90f0dbf90dcf54923d042, merged as b389ac29465b33f9e9c534df221ea3c129e9793f
+      on 2026-08-21; API sha256 e7eecd22a17dd72a9f62ea9c832c42bee9ba9531203f4833c565ae488e59c00d'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: maintainer approval lines 7-13
+    quote: '| temp 1, top-p 0.95, top-k 20 | 88.10% (1162/1319) | 88.78% (1171/1319) | +0.68 pp | p = 0.380 | 2470 → 4551
+      (1.84×) |'
+    quote_sha256: 303325a47019e6643f5b2c550938ad5087ad5a78fd42d80d5ae9cd649bdd0c55
+    source_revision: 'vLLM PR #52816 approval by TheEpicDolphin, 2026-08-20; approval body sha256 72c2567c93fa3c0018c670bd868d28c6528ada304ccd147c33f6e2de034fe609'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: maintainer approval lines 11-13
+    quote: '| temp 0 (greedy) | 88.78% (1171/1319) | 88.86% (1172/1319) | +0.08 pp | p = 1.000 | 2531 → 4642 (1.83×) |'
+    quote_sha256: 327c2f21669e6d055f516297daf088acb56998929fceb256c70e820f2dfbba80
+    source_revision: 'vLLM PR #52816 approval by TheEpicDolphin, 2026-08-20; approval body sha256 72c2567c93fa3c0018c670bd868d28c6528ada304ccd147c33f6e2de034fe609'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: 'PR #52883 purpose'
+    quote: A quantized-body target with an unquantized head therefore fails to start
+    quote_sha256: cdf77823ea811fedbf12effecfd2b2fb11960fd2b46118f6ad8b20f593a077d3
+    source_revision: 'vLLM PR #52883 head ed34bf91959407b2b1b3eef4c64738b4df76ad72, open; body sha256 41ef24703f2a88a22da5232ba00a8a1474ebd2f2791daca1366156ea05b5629c'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: 'PR #53122 qwen3_dflash.py patch: _dequant_kv_slice'
+    quote: '+    def _dequant_kv_slice(attn: nn.Module, act_dtype: torch.dtype) -> torch.Tensor:
+
+      +        """The layer''s K/V rows in `act_dtype`, dequantizing if stored quantized.
+
+      +
+
+      +        `_project_context_kv` runs ONE fused `F.linear` over every layer''s K/V
+
+      +        weights, bypassing `quant_method.apply()`. Dequantizing here keeps that
+
+      +        cross-layer fusion; going through `apply()` per layer would give it up.'
+    quote_sha256: 39ce3c91fecb7f25b4f36fb420d555ae259ca0929d474b30109c919bcbfb6a35
+    source_revision: 'vLLM PR #53122 head 647fb1d0cb524734bdf5e73ea9d924df3204729c, open; files API sha256 15548440b48e45a8217c0803f6ed2103831b244cd73c30c7c96018b120b6acbc'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: 'PR #53122 qwen3_dflash.py patch: pack-quantized branch'
+    quote: '+            # compressed-tensors pack-quantized (W4A16 / W8A16): there is no plain
+
+      +            # `weight`; values are packed into int32 with group-wise scales.'
+    quote_sha256: aa1378a3d2bc16f32db131253d445ddb37a1c50f0d73eedd64014bb0c9de9c70
+    source_revision: 'vLLM PR #53122 head 647fb1d0cb524734bdf5e73ea9d924df3204729c, open; files API sha256 15548440b48e45a8217c0803f6ed2103831b244cd73c30c7c96018b120b6acbc'
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: 'PR #53122 qwen3_dflash.py patch: block-FP8 branch'
+    quote: '+        # Block-scaled FP8 (DeepSeek layout): the scale covers a 2-D tile rather
+
+      +        # than a row, and lives under `weight_scale_inv`'
+    quote_sha256: ba3bf90a8f7255e2b4c76133d9903143ec70256bd9b94e7211552bd7ae3b5738
+    source_revision: 'vLLM PR #53122 head 647fb1d0cb524734bdf5e73ea9d924df3204729c, open; files API sha256 15548440b48e45a8217c0803f6ed2103831b244cd73c30c7c96018b120b6acbc'
+    verified_by: research-intake/stage2d-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Merged diff and config enforce a distinct DFlash2 V2 path with convolution and selector.
+  - claim_index: 1
+    effect: narrowed
+    note: Rates are H200 GSM8K end-to-end output throughput under the stated four-shard averaging protocol.
+  - claim_index: 2
+    effect: narrowed
+    note: The 12x statement is an isolated launch-overhead estimate, not an end-to-end speedup claim.
+  - claim_index: 3
+    effect: narrowed
+    note: GB200 review supplies a larger correctness denominator and throughput corroboration for one model/task/hardware
+      setup.
+  - claim_index: 4
+    effect: narrowed
+    note: Merged BF16 path is real; quantized target/draft follow-ups remain open, and CPU/MI210 are unmeasured.
+  dive_corrections: '2026-09-25 Stage 2d: CONFIRMED merged DFlash2 architecture, H200 denominator, isolated overhead, and
+    independent GB200 review; NARROWED portability and quantization scope using post-merge regressions and open packed/quantized
+    follow-ups.'
+- id: intake-1724
+  arxiv_id: null
+  url: https://huggingface.co/z-lab/Qwen3.8-27B-DFlash2
+  source_type: repo
+  title: z-lab Qwen3.8-27B DFlash2 mirror — byte-identical BF16 draft and duplicated H200 tables
+  authors:
+  - Z Lab
+  - Inco AI
+  - Jian Chen
+  - Yesheng Liang
+  - Zhijian Liu
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - benchmark_methodology
+  novelty: low
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1715
+  verdict: already_integrated
+  credibility_score: 3
+  key_claims:
+  - 'At pinned revisions, the z-lab artifact is a true mirror of the Inco artifact: config bytes and the 3,848,817,896-byte
+    safetensors LFS SHA-256 are identical.'
+  - 'The mirror contains the same 81-tensor all-BF16 five-layer DFlash2 draft: block size 8, selector top-k 16/rank 256, two-tap
+    group-16 convolutions and target taps 5/19/33/47/61.'
+  - Its H200 acceptance and c1/c8/c32 throughput tables duplicate the Inco card rather than independently reproducing it;
+    no raw request rows, variance or run count are included.
+  - Both quick-start commands name incoai/Qwen3.8-27B-DFlash2, so the mirror is a durable alternate weight locator, not a
+    separately exercised serving recipe.
+  - The only performance setup is one NVIDIA H200 with CUDA attention backends. The BF16 mirror supplies no CPU, ROCm, MI210,
+    quantized-draft or EXL3 performance evidence.
+  techniques:
+  - DFlash2 BF16 mirror
+  - content-addressed artifact identity
+  - top-16 candidate path selector
+  - dynamic two-tap convolution
+  reported_results:
+  - 'SELF-REPORTED DUPLICATE, one H200/five tasks: acceptance length 4.10–5.46; no raw rows or repetitions.'
+  - 'SELF-REPORTED DUPLICATE: c1 184.0–236.1 tok/s, c8 1,090.2–1,368.3, c32 1,525.3–1,951.8.'
+  - 'MECHANICALLY VERIFIED: mirror and official config SHA-256 873e3556…; model LFS SHA-256 67fc76d6… and byte size 3,848,817,896
+    match.'
+  referenced_arxiv_ids:
+  - '2602.06036'
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-158
+    - intake-297
+    - intake-1715
+    intake_entry_notes:
+    - intake-158 (DFlash paper)
+    - intake-297 (implementation repo)
+    - intake-1583 (canonical Inco artifact with same bytes and tables)
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: accept either Hub locator only after pinning the same config and safetensors hashes; treat
+    50307d4c as a mirror locator for the canonical BF16 fixture.'
+  - 'Project-derived candidate: do not count the mirror card as independent H200 corroboration or a second performance sample.'
+  - 'Project-derived candidate: retain the 81-tensor BF16 manifest as the pre-quantization CPU/HIP loader oracle.'
+  contradicting_evidence:
+  - Direct hash comparison confirms artifact identity, so the mirror does not add an independent checkpoint or result.
+  - The card’s throughput tables have denominators only at task/concurrency level; raw rows, variance and repetition counts
+    are absent.
+  - The card’s losslessness sentence does not supply recurrent GDN rollback evidence.
+  notes: Exact URL dedup found no canonical URL collision; intake-1715 is a distinct official locator. Pinned mirror model
+    API sha256 82afb524bebddbd436a6aaf57ae203ef92d599249d9cf49078576d52f4e56a4, README sha256 0c06405ffff835f4da26115114a6dd7bb4a8b8a6881c17edd3a1086a99281269,
+    config sha256 873e3556509b0da06e29654ba00d4944888d4b5e8a33afde25f7eb27d321e980, header sha256 0c2c70601b30f8d1ca7d5794b817779ba2dcf1956cfc7d4f83e87091e1ab7c8c.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Use this URL only as a hash-verified mirror of intake-1583; never count its duplicated tables as
+    independent evidence or infer CPU/MI210 performance.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:23-25
+    quote: This repository is a mirror of [`incoai/Qwen3.8-27B-DFlash2`](https://huggingface.co/incoai/Qwen3.8-27B-DFlash2).
+    quote_sha256: a97613b139da995935a076a7b274871f74ca0f46f0d83396ea8c3aa4c78c27e0
+    source_revision: HF z-lab/Qwen3.8-27B-DFlash2 revision 50307d4c4cde6860d4eee73e2547cd786fe8e8a4; model LFS sha256 67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: json-pointer
+    locator: tree.json model.safetensors
+    quote: '"size":3848817896'
+    quote_sha256: 8861147c2b17108b1947e4c078919db633c32be0932000b9b366a633ed8bac5b
+    source_revision: HF z-lab/Qwen3.8-27B-DFlash2 revision 50307d4c4cde6860d4eee73e2547cd786fe8e8a4; model LFS sha256 67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: config.json:9-22
+    quote: '"block_size": 8, "conv_group_size": 16, "conv_kernel_size": 2'
+    quote_sha256: 5c294f682aa8f65457e93874f132d1cd67a2973235fd8b6786b79354ca3749dc
+    source_revision: HF z-lab/Qwen3.8-27B-DFlash2 revision 50307d4c4cde6860d4eee73e2547cd786fe8e8a4; model LFS sha256 67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: safetensors-header
+    locator: model.safetensors header fc.weight
+    quote: '"fc.weight":{"dtype":"BF16","shape":[5120,25600]'
+    quote_sha256: dfad98254981bc28e00359992be34bd7b00ad88a2966186e8673992532755685
+    source_revision: HF z-lab/Qwen3.8-27B-DFlash2 revision 50307d4c4cde6860d4eee73e2547cd786fe8e8a4; model LFS sha256 67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:69-73
+    quote: 'Runtime: SGLang on one NVIDIA H200, with FlashAttention 3 for target and draft attention'
+    quote_sha256: e8e571b2d3e7b8a09ded98b9dfb508cf4e2f902339f584d69341426db12181d0
+    source_revision: HF z-lab/Qwen3.8-27B-DFlash2 revision 50307d4c4cde6860d4eee73e2547cd786fe8e8a4; model LFS sha256 67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:123-127
+    quote: '| MT-Bench | 1,507.4 | 1,159.7 (0.77×) | 1,115.5 (0.74×) | **1,525.3 (1.01×)** |'
+    quote_sha256: 3e33398e770e5340f316ae86db0369e2980f68c47e132d0ef58d040a995d0471
+    source_revision: HF z-lab/Qwen3.8-27B-DFlash2 revision 50307d4c4cde6860d4eee73e2547cd786fe8e8a4; model LFS sha256 67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:40-48
+    quote: --speculative-draft-model-path incoai/Qwen3.8-27B-DFlash2
+    quote_sha256: b048e4643e5752cd67fe1b0fe5b5ee926e647e2de4534108e6f5f31183d95b91
+    source_revision: HF z-lab/Qwen3.8-27B-DFlash2 revision 50307d4c4cde6860d4eee73e2547cd786fe8e8a4; model LFS sha256 67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:69-73
+    quote: 'Runtime: SGLang on one NVIDIA H200, with FlashAttention 3 for target and draft attention'
+    quote_sha256: e8e571b2d3e7b8a09ded98b9dfb508cf4e2f902339f584d69341426db12181d0
+    source_revision: HF z-lab/Qwen3.8-27B-DFlash2 revision 50307d4c4cde6860d4eee73e2547cd786fe8e8a4; model LFS sha256 67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c
+    verified_by: research-intake/stage2d-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Mirror identity is confirmed by matching config bytes and LFS object identity.
+  - claim_index: 1
+    effect: unaffected
+    note: Pinned config and header establish the exact BF16 inventory.
+  - claim_index: 2
+    effect: narrowed
+    note: Numbers are card aggregates duplicated from the official artifact, not independent measurements.
+  - claim_index: 3
+    effect: unaffected
+    note: Both quick starts point at the official Inco locator.
+  - claim_index: 4
+    effect: narrowed
+    note: H200 evidence has no CPU/ROCm or quantized-draft transfer result.
+  dive_corrections: '2026-09-25 Stage 2d: CONFIRMED byte-identical mirror status and exact BF16 inventory; REATTRIBUTED all
+    performance tables to the same Inco result set and NARROWED portability.'
+- id: intake-1725
+  arxiv_id: null
+  url: https://huggingface.co/RadixArk/Qwen3.8-27B-DSpark
+  source_type: repo
+  title: RadixArk Qwen3.8-27B DSpark v2 — BF16 Markov/confidence draft with large self-reported evaluation
+  authors:
+  - RadixArk
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - benchmark_methodology
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1715
+  verdict: adopt_component
+  credibility_score: 3
+  key_claims:
+  - The pinned artifact is a 1.86B-parameter, five-layer, all-BF16 draft with 62 tensors, dense fc, rank-256 Markov embeddings/projection
+    and a confidence head over 5,376 features.
+  - The card reports DSpark v2 request-weighted acceptance length 3.428567 versus v1 2.721143 (+26.00%) over 64,675 requests
+    and 17 workloads on four GB300 GPUs.
+  - On one H200 with 128 prompts per cell, v2 reports 215.8–297.3 tok/s at c1, 1,195.5–1,575.1 at c8 and 1,973.0–2,545.2 at
+    c32.
+  - 'Acceptance and throughput are not one matched experiment: acceptance uses the NVFP4 target, while throughput uses the
+    FP8 target, so acceptance values cannot explain the throughput cells directly.'
+  - The artifact includes remote Python model code and a concrete SGLang recipe, but every performance run is NVIDIA CUDA;
+    it provides no CPU, ROCm, MI210 or EXL3-draft measurement.
+  techniques:
+  - semi-autoregressive DSpark draft
+  - rank-256 VanillaMarkov bias
+  - acceptance-probability head
+  - seven-token block drafting
+  - confidence-ready adaptive depth
+  reported_results:
+  - 'SELF-REPORTED acceptance, 64,675 requests/17 workloads: v1 2.721143 versus v2 3.428567 request-weighted (+26.00%).'
+  - 'SELF-REPORTED throughput, one H200/128 prompts each: c1 215.8–297.3, c8 1,195.5–1,575.1, c32 1,973.0–2,545.2 tok/s.'
+  - 'MECHANICALLY VERIFIED artifact: 3,714,723,322-byte safetensors, 62 BF16 tensors, LFS SHA-256 2aff025f…; no raw evaluation
+    rows are shipped.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - exl3-cpu-mi210-implementation.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-737
+    - intake-738
+    - intake-1715
+    intake_entry_notes:
+    - intake-737 (DeepSpec framework lineage)
+    - intake-738 (DSpark method evidence)
+    - intake-1583 (DFlash2 comparison artifact)
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: preserve the 62-tensor BF16 manifest and remote-code behavior as the loader/reference oracle
+    before any EXL3 draft conversion.'
+  - 'Project-derived candidate: reproduce v2 versus DFlash2 on the same target, prompts and hardware, recording proposed/accepted
+    tokens and raw rows.'
+  - 'Project-derived candidate: port Markov and confidence heads to CPU/HIP separately from the five-layer backbone, then
+    measure whether extra draft reads repay acceptance gains on MI210.'
+  contradicting_evidence:
+  - No independent reproduction or raw request-level data was located for the 64,675-request and H200 tables; search hits
+    restate the model card.
+  - The acceptance and throughput tables use different target quantizations, so their figures cannot be causally combined.
+  - At c32 MT-Bench, EAGLE reports 2,133.4 tok/s versus DSpark v2 1,973.0, so v2 is not uniformly best.
+  - The SGLang recipe uses different memory fractions for DSpark (0.80) and AR/EAGLE (0.85), limiting attribution.
+  notes: Exact URL dedup found no entry. Pinned HF revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393. Model API sha256 37adaa74c6fa98cab76f639a43e220b80ebee7fff6a662a6a3e19946d823a21d;
+    README sha256 9eea58fb8e2a51a46d03ea7502417d0398d9714226700e6d818782d7ae347d2b; config sha256 dd65fb1b01c2adea69512ff2990a79d58eb7fe2c7ea97375aa66f657a29a5bfd;
+    header sha256 992cdd260cf8761176cb7d6e94a64339189819e74609e7f0c2989ec33ee182f1.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt the pinned BF16 checkpoint as a DSpark reference candidate, but reproduce it on one matched
+    target and do not project its NVIDIA card tables onto CPU/MI210.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:23-35
+    quote: 'Draft parameters: 1,857,358,337 (1.86B)'
+    quote_sha256: 04acec76063ab441eb94efd40aeff9c759e3f3eca40ccaee634e6639024bc964
+    source_revision: HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: safetensors-header
+    locator: model.safetensors header confidence head
+    quote: '"confidence_head.proj.weight":{"dtype":"BF16","shape":[1,5376]'
+    quote_sha256: 4296e3d0a917012847029bb9a7d16768c3bec2267286ac5ae16ad05d5263aacf
+    source_revision: HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:39
+    quote: Results cover 64,675 completed requests across 17 workloads.
+    quote_sha256: 8979acc856440f89851499d21d279463f050b74f07875f939e27adb00c049f4a
+    source_revision: HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:63
+    quote: '| Request-count weighted, 64,675 prompts | 2.721143 | **3.428567** | **+26.00%** |'
+    quote_sha256: b34fa6668cbebe23e9e3243d53fe2d7835ed2c8d6b9f12fab78c144c9d220a4d
+    source_revision: HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:81
+    quote: '| GSM8K | 94.2 | 179.9 (1.91×) | 238.6 (2.53×) | **297.3 (3.16×)** |'
+    quote_sha256: 18741a1ab62136791d434b2acd8103ff4487cffcb4a5e075d421a8ea773a60a0
+    source_revision: HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:110-111
+    quote: 'Hardware and topology: one NVIDIA H200 per workload, TP1 × DP1'
+    quote_sha256: 8979d8793c5c983a6f23eea6e731668e69afb15a915224deeb002b2871dc5325
+    source_revision: HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:19
+    quote: The acceptance-length evaluation below uses the NVFP4 target. The throughput evaluation uses the FP8 target.
+    quote_sha256: da49e6d8a456817b9afea02132c4356477a3a8452ddd1b584f80a59d992d61c0
+    source_revision: HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:119-140
+    quote: --trust-remote-code
+    quote_sha256: 20ade65707e331dcb94ffe06e51c8feade263484f89a8eafc49ed564723e1386
+    source_revision: HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:110
+    quote: 'Hardware and topology: one NVIDIA H200 per workload, TP1 × DP1'
+    quote_sha256: 8979d8793c5c983a6f23eea6e731668e69afb15a915224deeb002b2871dc5325
+    source_revision: HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7
+    verified_by: research-intake/stage2d-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Config, remote code and safetensors header establish the exact architecture and inventory.
+  - claim_index: 1
+    effect: narrowed
+    note: Strong denominator and protocol are card-reported without raw rows or independent reproduction.
+  - claim_index: 2
+    effect: narrowed
+    note: H200 table is reproducible in outline but ships no raw cell data or variance.
+  - claim_index: 3
+    effect: reattributed
+    note: Acceptance and speed belong to distinct target quantization experiments.
+  - claim_index: 4
+    effect: narrowed
+    note: Runnable CUDA recipe does not establish CPU/ROCm portability or EXL3 draft behavior.
+  dive_corrections: '2026-09-25 Stage 2d: CONFIRMED artifact identity, architecture and stated denominators; NARROWED tables
+    to self-report, REATTRIBUTED acceptance/throughput to different targets, and found no CPU/ROCm transfer proof.'
+- id: intake-1726
+  arxiv_id: null
+  url: https://github.com/MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks
+  source_type: repo
+  title: MiaAI-Lab GLM-5.3 Flash EXL3 GB10 serving stack — custom SM121 kernels, recipes and mixed-strength receipts
+  authors:
+  - MiaAI-Lab
+  - repository contributors
+  categories:
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  - benchmark_methodology
+  - speculative_decoding
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1508
+  verdict: adopt_patterns
+  credibility_score: 3
+  key_claims:
+  - At commit f497020, the stack serves a ~164-GiB uniform-K4 MCG EXL3 GLM-5.3 checkpoint on 2–4 NVIDIA GB10 systems with
+    FP8 MLA KV and DFlash2.
+  - The main 2-node structured decode table reports 62.9 tok/s at c1 and 146.5 aggregate tok/s at c4; a second GB10 pair reportedly
+    reproduced the same broad bands.
+  - The E3 grouped routed-expert CUDA path reports 37–45% cold-prefill gains across 16K–256K prompts, but 32K/64K baselines
+    are interpolated and referenced raw logs are absent from the commit.
+  - The repo contains actual EXL3 CUDA and independent materialized/streaming CPU oracles; the kernel lab validates K1–K8
+    correctness but explicitly has no isolated SM121 timing or speedup claim.
+  - These kernels specialize CUDA SM121/GB10 and selected GLM shapes. CPU/MI210 can reuse the ABI, oracle, receipt and fail-closed
+    patterns, but the source supplies no HIP, ROCm, gfx90a or CPU serving result.
+  techniques:
+  - uniform-K4 MCG EXL3 serving
+  - grouped routed-expert CUDA prefill
+  - thin-decode CUDA specialization
+  - independent streaming/materialized EXL3 oracle
+  - hash-pinned fail-closed overlay
+  - DFlash2 adaptive verification
+  reported_results:
+  - 'AUTHOR-REPORTED 2× GB10 structured decode: c1 62.9 tok/s; c2 103.3 aggregate; c4 146.5 aggregate, warm/empty KV.'
+  - 'AUTHOR-REPORTED E3 prefill: 16K–256K 1,576–1,637 prompt tok/s, +37–45% versus E2; 32K/64K E2 values interpolated.'
+  - 'COMMITTED TP3 RAW ROWS, historical customized bundle: five repetitions per arm/prompt; +17.90% and +20.83% on two synthetic
+    c1 fixtures, without closing baseline.'
+  - 'KERNEL-LAB RECORDED correctness: K1–K8 oracle passed, worst max absolute error 1.08e-6; isolated SM121 timing not run.'
+  referenced_arxiv_ids:
+  - '2406.11235'
+  - '2407.10960'
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    - rocm-verify-profile-backend.md
+    experiments: []
+    intake_entries:
+    - intake-1508
+    - intake-1532
+    - intake-1568
+    intake_entry_notes:
+    - intake-1508 (quality panel for GLM EXL3 checkpoint family)
+    - intake-1532 (mixed-K GLM EXL3 comparison artifact)
+    - intake-1568 (ExLlamaV3 kernel lineage)
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: port the MCG ABI and dual materialized/streaming oracle first; require byte-level pack/decode
+    parity before gfx90a timing.'
+  - 'Project-derived candidate: adopt exact-shape receipt provenance and fail closed on backend commit, ABI, geometry or runtime
+    mismatch.'
+  - 'Project-derived candidate: prototype grouped MoE gather/gate-up/down/scatter on HIP, but derive gfx90a wave64 tiling
+    from measurement rather than transliterating SM121 CUDA.'
+  - 'Project-derived candidate: retain raw per-run receipts in-tree for every EPYC/MI210 throughput claim; do not accept tables
+    whose referenced logs are absent.'
+  contradicting_evidence:
+  - The kernel-lab document explicitly says no speedup is claimed and no isolated SM121 timing was run.
+  - Headline 2-node and E3 tables reference `logs/` paths not present at the pinned commit; recipes are reproducible, those
+    raw campaigns are not from this tree alone.
+  - The E3 table discloses interpolated E2 values at 32K and 64K, so those gains are not exact matched cells.
+  - The committed TP3 report warns its gains combine multiple changes, lacks a closing baseline and is not validation of the
+    newly assembled branch.
+  - Independent tonyd2wild results show EXL3 near NVFP4 on prose/code and ahead on mixed load/cache headroom, but not the
+    same absolute throughput or controlled recipe.
+  notes: Exact URL dedup found no entry. Pinned Git commit f4970207e9fb2bdeac40d88b7cbef18c98aea310, repository node R_kgDOUGOMYg,
+    README sha256 9ef2edaeb530ca7b9685d43848e44e172bc45f37f23104c55f563acbe6a7d2fe, kernel-lab sha256 73db8ec4c8c3729e3964051ec59b7cf0e7261a8f46d8be25092c4249b5746029,
+    TP3 report sha256 fb98c41450827cf630e41d9308e50e47223a5f0e51c0daa430111447aab7abf7. Current head is active, unarchived,
+    and moved on 2026-09-25.
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Mine the EXL3 ABI/oracle/receipt and grouped-MoE design patterns, while treating every CUDA rate
+    as GB10-specific and independently rebuilding the kernel schedule for gfx90a wave64.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:12-17
+    quote: uniform-K4 EXL3/TR3 routed-experts, 4 bpw, ~164 GiB, 120 shards
+    quote_sha256: 1eb86e4d443bef41e1cbeab8e35795ef32d9dd284bcea8fc2d0fcb53d7951756
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:32-36
+    quote: This is **EXL3 weights + fp8 KV** on GB10.
+    quote_sha256: 37880d782415e18981b8576db4814667a41332449d15dadec48ac34885eff77c
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:96-100
+    quote: '| **×1** | **719 ms** | **62.9** | **62.9** |'
+    quote_sha256: 88f0892005a7b823c761c95b65f33d1f3b7fbcdfbcbfa6d9924e3a3e37479be0
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:1424-1426
+    quote: Independently reproduced on a second GB10 pair (2026-08-28) — decode within the same bands
+    quote_sha256: 572804bf08437148f2604a160b7f3c4b36f3916e28a619546f0f2b5e03a5cb2d
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:72-76
+    quote: '| ~256k | 262,173 | 166.4 s | **1,576** | 1,087 | **+45%** |'
+    quote_sha256: 061e8d4ba6645a134a5953ca3aecadaf57edeaa244a9ab083636aff0548e980c
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:78-80
+    quote: 32k/64k interpolated.
+    quote_sha256: 7f9820aaf76b1ed677f1b0930d2b1fb6196137574ebc27096e5c0faf6c09a217
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: docs/exl3-sm121-kernel-lab.md:18
+    quote: No speedup is claimed until the checked-in sweep runs on SM121.
+    quote_sha256: 3f3567e7323a292f9ce46560c8024743b1a734561f8d0dbf21e6abb23f86eed8
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: docs/exl3-sm121-kernel-lab.md:129-133
+    quote: 'Worst maximum absolute error across that sweep: `1.08e-6`.'
+    quote_sha256: 0452d5564929c62b453a1ff9e70986b62f61192ea3c0782cff1f30ab061d2977
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: docs/exl3-sm121-kernel-lab.md:103-107
+    quote: SM121 is consumer Blackwell.
+    quote_sha256: a6bfc92e3ac8f04bf629f807b4c15900505c82661ed6c57f428eea6504824126
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: kernel_lab/exl3/reference.py:4
+    quote: CPU oracle for tests and diagnostics, not a serving implementation.
+    quote_sha256: d9be692d5468901f4dd2c0fb12a1f17fa83392f68c04653f8cbc3c9fca890d5e
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:1-19
+    quote: "<h1 align=\"center\">GLM-5.3 Flash EXL3 for 2-4x DGX Sparks</h1>\n\n<p align=\"center\">\n  <sub>by <a href=\"\
+      https://x.com/MiaAI_lab\">Mia'a AI Lab</a></sub>\n  <br><br>\n  <a href=\"https://github.com/sponsors/MiaAI-Lab\" target=\"\
+      _blank\" rel=\"noopener noreferrer\" style=\"display:inline-block;margin:0 8px;vertical-align:middle;\"><img src=\"\
+      https://img.shields.io/badge/Sponsor%20me%20on%20GitHub-181717?style=for-the-badge&logo=githubsponsors&logoColor=white\"\
+      \ alt=\"Sponsor me on GitHub\" height=\"28\" style=\"height:28px;width:auto;vertical-align:middle;border:0;\" /></a>\n\
+      \  <a href=\"https://x.com/MiaAI_lab\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"display:inline-block;margin:0\
+      \ 8px;vertical-align:middle;\"><img src=\"https://img.shields.io/badge/Follow%20me%20on%20X-000000?style=for-the-badge&logo=x&logoColor=white\"\
+      \ alt=\"Follow Mia on X\" height=\"28\" style=\"height:28px;width:auto;vertical-align:middle;border:0;\" /></a>\n</p>\n\
+      \nOpenAI-compatible vLLM serve of\n[zai-org/GLM-5.3-Flash](https://huggingface.co/zai-org/GLM-5.3-Flash) as\n**[Mia-AiLab/GLM-5.3-Flash-EXL3-TR3-4bpw](https://huggingface.co/Mia-AiLab/GLM-5.3-Flash-EXL3-TR3-4bpw)**\n\
+      — a byte-identical public mirror of\n[brandonmusic/GLM-5.3-Flash-tr3-4bpw](https://huggingface.co/brandonmusic/GLM-5.3-Flash-tr3-4bpw)\n\
+      snapshot `5ab363a8…` (uniform-K4 EXL3/TR3 routed-experts, 4 bpw, ~164 GiB, 120 shards)\nso this recipe stays fetchable\
+      \ if the upstream Hub id moves. On a **2× NVIDIA GB10**\nkit: tensor-parallel size 2 over CX7, native `sm_121a` cubins,\
+      \ API on `:8888`.\nA **3×** sibling is `./start-tp3.sh` on the same image and weights (see\n[3× Spark (TP=3)](#3x-spark-tp3)).\
+      \ Served model id: **`GLM-5.3-Flash-EXL3`**. EXL3/TR3 quant by"
+    quote_sha256: 9b6320a1ba24c066e9c095151183e706ae4ad10a805a023158dc542abc2ad373
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:32-38
+    quote: 'This is **EXL3 weights + fp8 KV** on GB10. Do not pass `--moe-backend marlin`.
+
+      The Hub card on brandonmusic (TP2/EP2/DCP2 + calibrated NVFP4 MLA KV) is the SM120 B12X
+
+      image (`verdictai/glm53-flash-exl3-k4:…-v84-dflash2`), not this overlay. Target KV
+
+      stays packed **`fp8_ds_mla`**. Speculator is **DFlash2 k=7**
+
+      ([incoai/GLM-5.3-Flash-DFlash2](https://huggingface.co/incoai/GLM-5.3-Flash-DFlash2));
+
+      draft attention is **FLASH_ATTN** (do not pin `TRITON_ATTN` — that mask is causal
+
+      inside the draft block on this image and collapses later-position accept).'
+    quote_sha256: 8a5d5e7fd9e93656bdc258c2fef76a2e7bea25d30e476c1900ff2e6bdbf4d209
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: docs/exl3-sm121-kernel-lab.md:7-18
+    quote: "The first optimization stage is implemented but not yet timed on an isolated\nSM121 device:\n\n- reuse ExLlamaV3's\
+      \ packed ABI and direct CUDA kernels;\n- accept arbitrary model/operator shapes rather than a model registry;\n- validate\
+      \ MCG K1-K8 with independent materialized and streaming CPU oracles;\n- enumerate ExLlamaV3's built-in tile shapes and\
+      \ SM quotas;\n- emit native Atlas receipts for every exact measured tactic;\n- keep the production ExLlamaV3 pin unchanged\
+      \ while enabling an isolated\n  current-upstream comparison from this development-only source checkout.\n\nNo speedup\
+      \ is claimed until the checked-in sweep runs on SM121."
+    quote_sha256: c90ff1704a3d1436076e6635cf01987fd2627b18f0a2a40d50fabec255981b15
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: kernel_lab/README.md:17-26
+    quote: "## Portable correctness\n\nThe NumPy oracle supports the upstream MCG trellis at every integer bitrate\nK1-K8.\
+      \ It compares a materialized reference with a tile-streaming matmul that\nnever constructs the complete decoded weight.\n\
+      \n```bash\npython3 -m kernel_lab.exl3.benchmark \\\n  --backend cpu-oracle --bits 1 2 3 4 5 6 7 8\npython3 -m pytest\
+      \ tests/test_exl3_kernel_lab.py -q"
+    quote_sha256: bee94a026a18ff8c27011bf087351ef21b77c5e3fac98b10c83306a5916f8db2
+    source_revision: MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Pinned README and code tree establish the GB10/K4/FP8/DFlash deployment scope.
+  - claim_index: 1
+    effect: narrowed
+    note: Table and second-kit statement are author reports; corresponding raw 2-node rows are not committed.
+  - claim_index: 2
+    effect: narrowed
+    note: E3 gains mix measured and interpolated baseline cells and point to absent logs.
+  - claim_index: 3
+    effect: unaffected
+    note: The tree contains actual kernels/oracles and explicitly refuses an unmeasured speed claim.
+  - claim_index: 4
+    effect: narrowed
+    note: Only methodology and ABI transfer; no HIP/ROCm or CPU serving evidence exists.
+  dive_corrections: '2026-09-25 Stage 2d: CONFIRMED deployable GB10 source, real CUDA kernels and oracle; NARROWED 2-node/E3
+    performance by raw-evidence availability and interpolation; OVERTURNED any direct CPU/MI210 transfer inference.'
+- id: intake-1727
+  arxiv_id: null
+  url: https://github.com/hasso5703/dgx-spark-qwen38
+  source_type: repo
+  title: 'DGX Spark Qwen3.8 serving package: 71.4 tok/s NVFP4+DFlash2, deterministic-kernel controls, and cross-era concurrency
+    caveat'
+  authors:
+  - hasso5703
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - benchmark_methodology
+  - hardware_optimization
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1717
+  verdict: adopt_patterns
+  credibility_score: 3
+  key_claims:
+  - 'The current one-box 27B lane is NVIDIA GB10-specific: a revision-pinned RadixArk NVFP4 target, official SGLang v0.5.19
+    image, calibrated modelopt_fp4 DFlash2 draft at depth 16, FP8 KV, FlashInfer attention and CUDA decode graphs.'
+  - The repository self-reports 71.4 tok/s as a batch-1 greedy streaming decode median net of TTFT for its current NVFP4 target
+    plus quantized depth-16 DFlash2 stack; published v1.9 free-prose probes were 23.0–24.7 tok/s. The tree commits the executable
+    instrument but not the 2026-09-17 raw response rows.
+  - The headline 135–148 tok/s at c8 and 258 tok/s at c32 are explicitly carried over from the older v1.2 BF16-draft/depth-8
+    battery. They are not measurements of the current quantized depth-16 lane and must not be combined with 71.4 as one same-revision
+    performance row.
+  - 'The package reports a controlled boot-instability result: disabling FlashInfer autotuning tightened c8 to ±1.6%, while
+    capturing decode graph batches 5–8 added 6.5% at c8. Kernel selection and graph coverage are therefore measurement variables,
+    not incidental launch details.'
+  - This is a valuable full-stack throughput target and methods source, but it supplies no EXL3, CPU, ROCm, gfx90a or MI210
+    execution. Its rates cannot be attributed to the weight codec or transferred to our hardware without component-matched
+    local measurement.
+  techniques:
+  - calibrated NVFP4 DFlash2 draft
+  - depth-16 speculative decoding
+  - FlashInfer autotune disable
+  - decode CUDA graph coverage
+  - streaming decode net of TTFT
+  - two-call prefill cancellation battery
+  reported_results:
+  - 'SELF-REPORTED current stack: 71.4 tok/s greedy batch-1 median on one GB10; 69.8 on the replaced image.'
+  - 'SELF-REPORTED older v1.2 battery: 135–148 aggregate tok/s at c8 and 258 at c32.'
+  - 'SELF-REPORTED controls: c8 within ±1.6% with autotune disabled; +6.5% c8 from graph coverage through batch 8.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1563
+    - intake-1564
+    - intake-1715
+    - intake-1717
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: reproduce the 71.4 instrument shape as a named full-stack MI210 target with raw rows, engine/binary
+    identity, warm-state labeling and decode net of TTFT.'
+  - 'Project-derived candidate: keep current-stack c1 and older-stack concurrency numbers as separate evidence rows; never
+    compose them into one curve.'
+  - 'Project-derived candidate: sweep HIP kernel/autotune choices and graph/capture coverage across c1/c2/c4/c8, with fixed
+    weight/draft artifacts and acceptance recorded.'
+  - 'Project-derived candidate: once EXL3 runs, compare codec-only AR, EXL3+DFlash2 and the current Q8+DFlash2 serving baseline
+    under the same corpus and scheduler.'
+  contradicting_evidence:
+  - The c8/c32 headline cells belong to v1.2 BF16 D8, while the 71.4 c1 cell belongs to the later NVFP4 D16 and official-image
+    configuration.
+  - The current repository includes benchmark code and narrative values but no committed raw response file for the 71.4 campaign.
+  - The 71.4 result is package-level and combines target quantization, a separately quantized draft, speculative depth, runtime
+    scheduling and NVIDIA kernels.
+  notes: 'Pinned at v1.18.7 / 6f21e1b3593418ed8ec4287268b1907728f180c2 on 2026-09-25. README sha256 06b6448b12c4286311f8aa2cb8a67a460971c0a66f9c0b075d25d459826746ab.
+    Full-tree scan included all tracked files. The operator-accepted decline of issue #2 remains in the session ledger and
+    is not reminted.'
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Use this as a full-stack NVIDIA target and measurement-control source. Keep its current c1 and historical
+    concurrency cells separate, and reproduce the component stack on MI210 rather than treating NVFP4+DFlash2 speed as EXL3
+    evidence.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: install.sh:102
+    quote: 'IMAGE="${IMAGE:-lmsysorg/sglang@sha256:d6e7288627be8b02be88e4bba38e73f6d50e2826869f753c13a4c4385ab3eda9}"  # =
+      lmsysorg/sglang:v0.5.19, 2026-09-04'
+    quote_sha256: 3658f729265e7beae9fccacf35829eb8e7175ffabb998ed4b2aa7cc7bf97a054
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: install.sh:106-107
+    quote: 'STOCK_REPO="RadixArk/Qwen3.8-27B-NVFP4"
+
+      STOCK_REV="52d1adc5f38aa5ebf099c29ed7025ba34cfbb854"'
+    quote_sha256: 9e2fc196932e49a5f77f4694d58f89eed85e9dbc8c9348e31b91c40569da3f88
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: install.sh:326-329
+    quote: 'DRAFT2_REPO="${DRAFT2_REPO:-maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal}"
+
+      DRAFT2_REV="${DRAFT2_REV:-bd7a934213c47a9e7ef69eef36bb3325f47fd1f1}"
+
+      DRAFT2_QUANT="${DRAFT2_QUANT:-modelopt_fp4}"
+
+      DRAFT2_TOKENS="${DRAFT2_TOKENS:-16}"'
+    quote_sha256: 8c3447f6a3314bc32974be7d4625cf24a79b0e19b189eadad1778b30d99cba79
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:424-426
+    quote: The whole 27B lane runs an fp8 KV cache; the NVFP4 checkpoints carry their own KV scales
+    quote_sha256: c3403eda66518dc0cfce44bb6193f1cd4acba15cc405be9b55a29b71e3f1c053
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: qwen38-sglang.service.template:34-36
+    quote: "--attention-backend flashinfer --chunked-prefill-size 8192 \\\n    --disable-prefill-cuda-graph --cuda-graph-max-bs\
+      \ 8 \\\n    --disable-flashinfer-autotune"
+    quote_sha256: 52169667f4bbd5bd7bec4bd715d0065dedebe683bab98d7d5656d014bce3d24f
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:155
+    quote: The headline **71.4 tok/s greedy median** is `./bench.sh` (streaming decode rate net of TTFT
+    quote_sha256: 863d8c12de4c6530e5906259d9e0b3ae9fca742e9309c33f277688060d599a71
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: bench.sh:55-58
+    quote: "\"27b\": (\"Qwen3.8-27B NVFP4+DFlash2 benchmark (batch 1 decode)\",\n            \"reference box (official release\
+      \ image, v1.14+): 71.4 greedy median\\n\""
+    quote_sha256: 9f115a46546cfd74f9f5718081c3b5ba58a723ebc587bc6484dfb02de8d0667a
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:161
+    quote: '**22 / 20 / 18** | 22 / 20 / 17'
+    quote_sha256: 7f26cddb0c3dff9048163b16ae4677a9739170183db607eb07462ff5e2ab48e4
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: bench.sh:1-3
+    quote: '#!/usr/bin/env bash
+
+      # Measure your decode tok/s against the running qwen38-sglang service.
+
+      # Deterministic greedy probes (repeatable ±0.2) + one eval-style peak probe.'
+    quote_sha256: dbe9a3650eb09b0461729154c3e66e3fcda09ea1049a8a16580ec052a9bf3e3f
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+    cost_note: The executable instrument is committed. A git-ls-tree/full-tree scan found no raw 2026-09-17 response receipts,
+      so the 71.4 result remains self-reported.
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:162
+    quote: '| **8 concurrent streams, aggregate** | **135-148 (v1.2 battery)** | 135-148 | 100-104 | ~92 |'
+    quote_sha256: 9c91333890f056c2c8cf06c1b682bc4065f54d1b6241a8fac3ffe7b17a4040a5
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:163
+    quote: '| **32 concurrent streams, aggregate** | **258 (v1.2 battery)** | 258 | not measured | not measured |'
+    quote_sha256: 4892d38dba84ac13bdc7a2711881d322f857359fbc59449898366d244380bbe0
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: BENCHMARKS.md:1187
+    quote: '| instrument | v1.9 (NVFP4 draft, D16) | v1.2 (BF16 draft, D8) |'
+    quote_sha256: adfd08b44835a298a282afefd85e83da7a08dffc971f71f1238cdb00aefa6bd7
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: BENCHMARKS.md:1140-1142
+    quote: 'The fix shipped in v1.1: `--disable-flashinfer-autotune`. With it, single-stream cells
+
+      reproduce to the decimal across boots, c8 lands within ±1.6 %'
+    quote_sha256: e0dd89b2a8ad69afe1d23b06ae61c63c906d8a296a92d3d1cc58d23cf38d4d91
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: BENCHMARKS.md:1142-1144
+    quote: '`--cuda-graph-max-bs 8` captures decode batches 5-8 that previously ran eager: +6.5 % at c8,
+
+      reproduced across boots.'
+    quote_sha256: 2f341d31e9c5dce68392cfcd0bd030e4a74c69956b146c76c0940f595367fb55
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:1
+    quote: '# Qwen3.8 on DGX Spark (GB10): 27B at 71 tok/s, Flash-Next 176B on one box'
+    quote_sha256: 6236f4954f5dac8e8e2cafffdaf8d602750e507c0dc513002134a8e3fd62d8c7
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+    cost_note: A case-insensitive full-tree scan found zero occurrences of EXL3, ROCm, gfx90a, or MI210 and no CPU benchmark/result;
+      absence is revision-scoped.
+  - claim_index: 4
+    kind: line-range
+    locator: qwen38-sglang.service.template:29-36
+    quote: "__IMAGE__ \\\n  python3 -m sglang.launch_server \\\n    --trust-remote-code --model-path __MODEL__ __MODEL_REV_ARGS__\
+      \ --tp-size 1"
+    quote_sha256: 196ed74325a413376338500e9ad56d2e5dea7f9823dd34268da2822ce13cacf6
+    source_revision: hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Pinned install defaults and service template directly establish the current NVIDIA serving stack.
+  - claim_index: 1
+    effect: narrowed
+    note: The 71.4 number is a package-level same-author observation; the instrument is present, raw campaign responses are
+      absent, and the cited prose range belongs to v1.9.
+  - claim_index: 2
+    effect: reattributed
+    note: The concurrency figures belong to the older BF16 depth-8 campaign, not the current quantized depth-16 lane.
+  - claim_index: 3
+    effect: unaffected
+    note: The source documents the boot A/B and exact flags; transfer to HIP remains an experiment proposal.
+  - claim_index: 4
+    effect: unaffected
+    note: A full-tree scan confirms no EXL3, ROCm, gfx90a, or MI210 evidence; the portability statement is an inference from
+      the NVIDIA-only scope.
+  dive_corrections: '2026-09-25 Stage 2d: CONFIRMED the current pinned GB10 package and its 71.4 tok/s c1 observation; REATTRIBUTED
+    the c8/c32 headline values to the older BF16 depth-8 battery; NARROWED the current claim because no raw 2026-09-17 response
+    rows are committed; confirmed no EXL3, CPU or gfx90a execution evidence. The previously accepted decline of issue #2 remains
+    declined. Second-reader replaced an analyst-written absence anchor with source text plus a revision-scoped scan note,
+    shortened every anchor, and dated the prose range to v1.9.'
+- id: intake-1728
+  arxiv_id: null
+  url: https://github.com/r0b0tlab/qwen38-27b-nvfp4-sm121-sglang
+  source_type: repo
+  title: 'Qwen3.8 SGLang SM121 evidence pack: DFlash2 versus DSpark, draft-block tradeoffs, and committed run receipts'
+  authors:
+  - r0b0tlab
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - benchmark_methodology
+  - hardware_optimization
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1715
+  verdict: adopt_patterns
+  credibility_score: 4
+  key_claims:
+  - The campaign is a single-GB10/SM121 CUDA serving study of a four-shard NVFP4 Qwen3.8 target, FP8 KV and an unquantized
+    z-lab DFlash2 draft at block 8; it is a strong comparator but not EXL3, CPU or ROCm evidence.
+  - Under the source-described matched node, image-base, target and harness protocol, the committed DFlash2 raw receipts yield
+    a 28.4016 tok/s c1 median (28.40 rounded), versus the DSpark summary at 20.97 (~35%); summary c8 values are 92.05 versus
+    82.53 (~12%). DFlash2 has five c1 raw receipts, 17 total raw performance rows, acceptance and zero-error fields; DSpark
+    has a summary but no committed per-run receipts.
+  - 'The draft-block sweep has no single throughput winner: block 8 maximized c1 (27.88), while block 6 maximized c8 (158.23);
+    block 9 reduced c8 to 123.16. Draft depth must therefore be tuned against the intended concurrency objective.'
+  - 'The source’s quality-parity wording is bounded: GSM8K-flex, HumanEval and IFEval match between DSpark and DFlash2, while
+    the 20-item agentic set is 18/20 versus 16/20. This small difference does not establish degradation, but “parity” is not
+    literal across every recorded family.'
+  - 'The repository is unusually useful as a replay design: it commits preflight identity, individual performance JSON rows,
+    summaries, a fixed quality set and an 11-lane core-subset record. The core-subset uses mem fraction 0.73 and a different
+    workload, so its 26.02 tok/s decode and 22,663 tok/s prefill are a separate evidence row from the 28.40 raw-receipt matched-comparison
+    result.'
+  techniques:
+  - matched DFlash2/DSpark A/B
+  - draft block sweep
+  - accept-length telemetry
+  - raw per-run JSON receipts
+  - core-subset quality and long-context gate
+  reported_results:
+  - 'MEASURED on one GB10: DFlash2 raw-receipt median 28.40 tok/s c1 and summary 92.05 c8 versus DSpark summary 20.97 and
+    82.53.'
+  - 'MEASURED block sweep: K8 best c1; K6 best c8; K9 c8 collapse.'
+  - 'MEASURED separate core-subset: 26.02 tok/s decode, 22,662.8 tok/s prefill, 11/11 lanes PASS.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - exl3-cpu-mi210-implementation.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1563
+    - intake-1564
+    - intake-1715
+    - intake-1727
+  depends_on: []
+  recommended_actions:
+  - 'Project-derived candidate: copy the receipt shape—preflight identity, per-run JSON, acceptance, errors, fixed corpus
+    and summary—into every MI210 EXL3 throughput run.'
+  - 'Project-derived candidate: tune draft block separately for c1 latency and aggregate concurrency; do not select one K
+    from a single scalar headline.'
+  - 'Project-derived candidate: run matched Q8/EXL3 target arms with the same DFlash2 draft, then matched AR/DFlash2 arms
+    within each codec to isolate codec and speculation gains.'
+  - 'Project-derived candidate: treat core-subset and synthetic random-token throughput as distinct recipes with distinct
+    claim rows.'
+  contradicting_evidence:
+  - The target weights are NVFP4 and execution is CUDA SM121; the source contains no EXL3, CPU, ROCm, gfx90a or MI210 result.
+  - Block 8 wins c1 but loses c8 to blocks 6 and 7, so “K8 winner” is objective-specific.
+  - The recorded 20-item agentic score differs by two between the draft methods despite parity on three larger families.
+  - The separate core-subset changes memory fraction and workload; its throughput cannot be pooled with the matched 17-run
+    comparison.
+  - README.md and CAMPAIGN-CERTIFICATION.json report DFlash2 c1 as 28.38, but the five committed raw receipts have median
+    28.401574 and perf-summary-dflash2.json rounds it to 28.4.
+  notes: 'Pinned at 535e580eea3e777306629746c9ab45153b653a1a on 2026-09-25. README sha256 0e1095683fdbf4bc7c4f406cb43d430340a3f4dc2a68512e5d738f0b11d85fcd;
+    perf summary sha256 3bb960c931eb9b675af11ba26d25d888184dca17a71ee73187627e9be910141d; core-subset sha256 af1b600be439eba897ef4c1d7fe69347532f0cab85e063b9bdea358ae6cc39da.
+    depends_on is empty: all entry claims are established by this pinned source rather than other intake records.'
+  verification: dive-verified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Adopt this repository’s receipt and matched-A/B structure. It demonstrates that speculative throughput
+    gains and optimal block size depend on concurrency, while remaining NVIDIA NVFP4 evidence rather than EXL3 or MI210 proof.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: CAMPAIGN-CERTIFICATION.json:3
+    quote: '"checkpoint": "r0b0tlab/Qwen3.8-27B-NVFP4-MTP-sm121 (4-of-4; kv_cache_quant_algo=FP8)"'
+    quote_sha256: 974b5990c2f0d96be00441f54072b730bc288588d58d453d240a01e171cbed08
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: CAMPAIGN-CERTIFICATION.json:4
+    quote: '"draft_primary": "z-lab/Qwen3.8-27B-DFlash2 @ ac04198556d7e8867853cbc356807b969f311b05 (DFlash2DraftModel, block
+      8 = K8, unquant)"'
+    quote_sha256: 147445469851fb59fb66ca9837c3a69685f7b3297efed9ea1b3c0dc7856790d8
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: line-range
+    locator: CAMPAIGN-CERTIFICATION.json:11
+    quote: '"host": "single GB10 / SM121, Docker --memory 100g --cpus 14"'
+    quote_sha256: 41fc41a38552e9ab4a3834ef2d3df50156efac96872e17730d8865c97cbe2979
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 0
+    kind: json-pointer
+    locator: evidence/perf/dflash2-20260819T014205Z/qwen38-dedicated-c1-r4.json /server_info/device
+    quote: '"device": "cuda"'
+    quote_sha256: d50f93b939f30ffa1b34308e81f05d38c8f24fcce3b6d385f38eaad3e3fef16d
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+    cost_note: A case-insensitive full-tree scan found zero occurrences of EXL3, ROCm, gfx90a, or MI210; absence is revision-scoped.
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:124-126
+    quote: 'Same node, same image base, same checkpoint, same harness, same run-id
+
+      protocol (`dflash2-20260819T014205Z`, zero errors, 17 runs).'
+    quote_sha256: eb32110f458a53669aaaf6828422e75eaab0171d5874557ec1130f13b45c9ca3
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: json-pointer
+    locator: evidence/perf/dflash2-20260819T014205Z/qwen38-dedicated-c1-r4.json /output_throughput
+    quote: '"output_throughput": 28.401574002855643'
+    quote_sha256: 02dc783fdc7c35aecd16f2b037244377580273fb5c240817366300b485936489
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: perf-summary-dflash2.json:8-16
+    quote: "\"dedicated_c1_median_tok_s\": 28.4,\n  \"dedicated_c1_best_tok_s\": 28.46,\n  \"dedicated_c1_reps\": [28.45,\
+      \ 28.46, 28.39, 28.4, 28.37]"
+    quote_sha256: 757c3cacb12a49f70d6c728da162e0f2d87c531febc16abd823bff81a35bafd5
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: perf-summary-dflash2.json:11-16
+    quote: "\"dedicated_c1_accept_mean\": 2.89,\n  \"ladder_best\": {\"c1\": 23.47, \"c2\": 36.14, \"c4\": 54.99, \"c8\":\
+      \ 92.05},\n  \"ladder_accept\": {\"c1\": 2.879, \"c2\": 3.154, \"c4\": 3.338, \"c8\": 3.575},\n  \"zero_errors\": true,\n\
+      \  \"runs\": 17"
+    quote_sha256: cb59674ac7fda3962a84476168fe40668722b27a68e480208dcebdb82d3bef80
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 1
+    kind: line-range
+    locator: perf-summary-dspark.json:8-14
+    quote: "\"dedicated_c1_median_tok_s\": 20.97,\n  \"dedicated_c1_best_tok_s\": 21.07,\n  \"dedicated_c1_reps\": [20.71,\
+      \ 20.83, 20.97, 21.04, 21.07]"
+    quote_sha256: e97fc916470bad99bb6a11e1f621978cc9ad912541bb4274a33cacf525632386
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+    cost_note: Only the aggregate DSpark summary is committed; no DSpark per-run performance receipts are present in this
+      revision.
+  - claim_index: 1
+    kind: line-range
+    locator: perf-summary-dspark.json:11-14
+    quote: "\"dedicated_c1_accept_mean\": 2.26,\n  \"ladder_best\": {\"c1\": 16.96, \"c2\": 26.20, \"c4\": 48.15, \"c8\":\
+      \ 82.53},\n  \"zero_errors\": true,\n  \"runs\": 17"
+    quote_sha256: 524aabc9c537882dcf9faad362427bd98f565d152bc0e6ae2a79d2d4b53bfbae
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: r0b0bench-core-subset-dflash2.json:15-20
+    quote: "  {\n   \"block\": 6,\n   \"c1_median_tok_s\": 25.28,\n   \"c8_best_aggregate_tok_s\": 158.23,\n   \"accept_length\"\
+      : 3.352\n  },"
+    quote_sha256: b7e8a3d3b23658a29d01d7b660341b03ed063225f0392ebb74f5c583a567383d
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: r0b0bench-core-subset-dflash2.json:21-26
+    quote: "  {\n   \"block\": 7,\n   \"c1_median_tok_s\": 25.79,\n   \"c8_best_aggregate_tok_s\": 157.82,\n   \"accept_length\"\
+      : 3.595\n  },"
+    quote_sha256: 24d0cc66b248db33cae4e4a14c44ba7ebf9a863bb5b64d8948131a352b9d6859
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: r0b0bench-core-subset-dflash2.json:27-32
+    quote: "  {\n   \"block\": 8,\n   \"c1_median_tok_s\": 27.88,\n   \"c8_best_aggregate_tok_s\": 153.9,\n   \"accept_length\"\
+      : 3.581\n  },"
+    quote_sha256: 83950f0dbb7fc4ab19868fe2cd21e80bba84bbdaca60ef6271fb73debfe69e75
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 2
+    kind: line-range
+    locator: r0b0bench-core-subset-dflash2.json:33-38
+    quote: "  {\n   \"block\": 9,\n   \"c1_median_tok_s\": 26.05,\n   \"c8_best_aggregate_tok_s\": 123.16,\n   \"accept_length\"\
+      : 3.592\n  }"
+    quote_sha256: db2a8eb8ee7b799081ef38291878ad36a230b661801f2cd18aa5f1572efed3da
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:139
+    quote: '| Q200 GSM8K flex score | 66/80 = 82.5% | **66/80 = 82.5%** | parity |'
+    quote_sha256: aafe70ef0f2b0892d3a54720893876a831bbfb6cd980182a589708a9d5f0a1cf
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:140
+    quote: '| Q200 HumanEval | 39/40 | 39/40 | parity |'
+    quote_sha256: 73133a189f77939e2caf2cb4a857a45db89b45e75afa4050aa3b5ddd3d2835fb
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:141
+    quote: '| Q200 IFEval | 37/40 | 37/40 | parity |'
+    quote_sha256: d566c2aed421a6b6239a067d386d9ee5e5e6bff7b19b21aede75ff3f462e442d
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:142
+    quote: '| Q200 agentic (n=20) | 18/20 | 16/20 | −2 (small-n) |'
+    quote_sha256: ee93a185a607f372c49ca1d0c60f15f768c360965653e77e3f3dd0574035d296
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+    cost_note: The source labels the difference small-n; this anchor does not establish a causal quality regression.
+  - claim_index: 4
+    kind: line-range
+    locator: evidence/perf/dflash2-20260819T014205Z/preflight.txt:1-5
+    quote: 'run_id=dflash2-20260819T014205Z
+
+      container=qwen38-dflash2 port=30000 model=qwen38-27b
+
+      levels=1 2 4 8 reps=3 input=1024 output=256 c1_tokens=2048
+
+      protocol=vllm-repo-run_perf_suite.sh
+
+      extra_request_body={"chat_template_kwargs":{"enable_thinking":false}}'
+    quote_sha256: 96b33f094e4e672bc47cbe63231894634065eb1838b3c8d43f6c741dcfb41d71
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: artifacts/quality-200.manifest.json:2-10
+    quote: "\"count\": 200,\n  \"families\": {\n    \"agentic_coding\": 20,\n    \"gsm8k\": 80,\n    \"humaneval\": 40,\n\
+      \    \"hard_reasoning\": 20,\n    \"ifeval\": 40\n  }"
+    quote_sha256: 24371e911f77ca56e5abe38d1c162f63d99c1fc82886e2a7410bde0954b38801
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: CAMPAIGN-CERTIFICATION.json:43-45
+    quote: "\"profile\": \"core-subset (11 lanes), think-off, K=8\",\n      \"result\": \"11/11 PASS, infra_errors_total=0,\
+      \ invalid_for_publish=false\""
+    quote_sha256: 88ef048a09db7157fa48aa10377035b8a561300fd206cf37eca758f56fc89477
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: CAMPAIGN-CERTIFICATION.json:57-60
+    quote: "\"serve_deltas\": [\n        \"--enable-metrics\",\n        \"mem-fraction-static 0.73 (KV 262611 >= full 262144\
+      \ window)\"\n      ]"
+    quote_sha256: c797c2f552ac757bf4f0e12d9c09a5d74d5c96bfac643cf38bb9d95fab06955c
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  - claim_index: 4
+    kind: line-range
+    locator: r0b0bench-core-subset-dflash2.json:85-91
+    quote: "\"throughput\": {\n   \"status\": \"PASS\",\n   \"infra_errors\": 0,\n   \"elapsed_s\": 415.4,\n   \"method\"\
+      : \"openai_portable_c1_throughput\",\n   \"decode_median_client_tok_s\": 26.02,\n   \"prefill_median_server_tok_s\"\
+      : 22662.8"
+    quote_sha256: 98f8a1e549328a00fad53fbd3b374819478bd88baed7d4f6c0544f729b519783
+    source_revision: r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)
+    verified_by: research-intake/stage2d-second-reader
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Campaign identity and a committed raw server-info record establish CUDA/GB10/NVFP4 scope; the EXL3/ROCm absence
+      is revision-scoped.
+  - claim_index: 1
+    effect: narrowed
+    note: The matched summaries support the comparison, but the committed DFlash raw median is 28.401574 (28.40), not 28.38,
+      and DSpark per-run receipts are absent.
+  - claim_index: 2
+    effect: narrowed
+    note: K8 is the c1 winner; K6 is the c8 winner, so no global best block follows.
+  - claim_index: 3
+    effect: narrowed
+    note: Parity holds on three listed families; agentic differs by two on n=20.
+  - claim_index: 4
+    effect: unaffected
+    note: Artifacts support the replay design, with the core-subset kept separate because recipe and memory fraction differ.
+  dive_corrections: '2026-09-25 Stage 2d: CONFIRMED the matched DFlash2-versus-DSpark performance receipts and replay artifacts;
+    NARROWED K8 from a global winner to the c1 objective winner; NARROWED quality parity to three matched families with a
+    small agentic difference; separated the core-subset throughput row from the matched 17-run protocol; confirmed no EXL3/CPU/gfx90a
+    evidence. Second-reader corrected the DFlash2 c1 value from the README/certification 28.38 to the committed raw-receipt
+    median 28.401574 (28.40), recorded that DSpark lacks per-run receipts, and replaced long anchors with compact source spans.'

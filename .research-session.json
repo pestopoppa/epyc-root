@@ -1,9 +1,9 @@
 {
   "session_id": "intake-exl3-sglang-throughput-20260925",
   "started_at": "2026-09-25T13:40:00Z",
-  "last_checkpoint": "2026-09-25T15:37:06Z",
+  "last_checkpoint": "2026-09-25T19:48:46Z",
   "phase": 5,
-  "stage": "stage2c-complete-awaiting-surfaced-source-selection",
+  "stage": "stage2d-complete-awaiting-surfaced-source-selection",
   "session_kind": "research-intake (CIRU EXL3/SGLang serving package and throughput path)",
   "previous_session": "intake-exl3-mi210-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-exl3-sglang-20260925/previous-research-session-stage4.json)",
   "mandate": "Ingest the CIRU Qwen3.8-27B EXL3/SGLang package and establish what the published throughput requires so the CPU and MI210 program targets the complete serving path.",
@@ -12,7 +12,7 @@
     "operator_goal": "We MUST be able to get to these throughput speeds also"
   },
   "max_existing_intake_id_at_start": 1562,
-  "next_intake_id": 1718,
+  "next_intake_id": 1729,
   "entries_processed": [
     "intake-1563",
     "intake-1564",
@@ -36,7 +36,18 @@
     "intake-1714",
     "intake-1715",
     "intake-1716",
-    "intake-1717"
+    "intake-1717",
+    "intake-1718",
+    "intake-1719",
+    "intake-1720",
+    "intake-1721",
+    "intake-1722",
+    "intake-1723",
+    "intake-1724",
+    "intake-1725",
+    "intake-1726",
+    "intake-1727",
+    "intake-1728"
   ],
   "entries_remaining": [],
   "expansion_cap": 10,
@@ -87,6 +98,14 @@
       "verbatim": "proceed as recommended",
       "disposition": "planned",
       "plan_ref": "stage2c-ten-source-groups-and-nine-declines"
+    },
+    {
+      "seq": 6,
+      "stage": "2d",
+      "ts": "2026-09-25T19:25:49Z",
+      "verbatim": "Proceed as recommended",
+      "disposition": "planned",
+      "plan_ref": "stage2d-eleven-selected-ingest-and-dive"
     }
   ],
   "source_fetches": {
@@ -917,7 +936,7 @@
     ]
   },
   "stage2c_gate": {
-    "status": "awaiting-operator-source-selection",
+    "status": "selected-and-complete",
     "selected_entries": [
       "intake-1708",
       "intake-1709",
@@ -930,10 +949,38 @@
       "intake-1716",
       "intake-1717"
     ],
-    "all_selected_entries_dive_verified": true,
+    "all_selected_entries_dive_verified": false,
     "surfaced_sources_presented": true,
     "pending_count": 11,
-    "handoff_writes": 0
+    "handoff_writes": 0,
+    "selected_ingest_and_dive": [
+      "https://github.com/mudler/vllm.cpp/issues/2597",
+      "https://github.com/sgl-project/sglang/pull/23354",
+      "https://github.com/sgl-project/sglang/issues/29913",
+      "https://github.com/flashinfer-ai/flashinfer/pull/4050",
+      "https://github.com/sgl-project/sglang/pull/40883",
+      "https://huggingface.co/z-lab/Qwen3.8-27B-DFlash2",
+      "https://github.com/vllm-project/vllm/pull/52816",
+      "https://huggingface.co/RadixArk/Qwen3.8-27B-DSpark",
+      "https://github.com/MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks",
+      "https://github.com/hasso5703/dgx-spark-qwen38",
+      "https://github.com/r0b0tlab/qwen38-27b-nvfp4-sm121-sglang"
+    ],
+    "selected_declines": [],
+    "all_selected_entries_resolved": true,
+    "resolved_entries": [
+      "intake-1718",
+      "intake-1719",
+      "intake-1720",
+      "intake-1721",
+      "intake-1722",
+      "intake-1723",
+      "intake-1724",
+      "intake-1725",
+      "intake-1726",
+      "intake-1727",
+      "intake-1728"
+    ]
   },
   "stage2c_concurrent_rebase": {
     "observed_origin_main": "304e663b6e559cd5185cce842ef13b1036c4fb65",
@@ -951,5 +998,525 @@
       "intake-1585": "intake-1717"
     },
     "reason": "Concurrent published intake wave occupied the originally reserved 1576-1585 range before this wave committed."
+  },
+  "stage2d_id_map": {
+    "intake-1718": "https://github.com/mudler/vllm.cpp/issues/2597",
+    "intake-1719": "https://github.com/flashinfer-ai/flashinfer/pull/4050",
+    "intake-1720": "https://github.com/sgl-project/sglang/pull/23354",
+    "intake-1721": "https://github.com/sgl-project/sglang/issues/29913",
+    "intake-1722": "https://github.com/sgl-project/sglang/pull/40883",
+    "intake-1723": "https://github.com/vllm-project/vllm/pull/52816",
+    "intake-1724": "https://huggingface.co/z-lab/Qwen3.8-27B-DFlash2",
+    "intake-1725": "https://huggingface.co/RadixArk/Qwen3.8-27B-DSpark",
+    "intake-1726": "https://github.com/MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks",
+    "intake-1727": "https://github.com/hasso5703/dgx-spark-qwen38",
+    "intake-1728": "https://github.com/r0b0tlab/qwen38-27b-nvfp4-sm121-sglang"
+  },
+  "stage2d_gate": {
+    "status": "awaiting-operator-source-selection",
+    "selected_entries": [
+      "intake-1718",
+      "intake-1719",
+      "intake-1720",
+      "intake-1721",
+      "intake-1722",
+      "intake-1723",
+      "intake-1724",
+      "intake-1725",
+      "intake-1726",
+      "intake-1727",
+      "intake-1728"
+    ],
+    "resolved_verifications": {
+      "intake-1718": "dive-verified",
+      "intake-1719": "dive-verified",
+      "intake-1720": "dive-overturned",
+      "intake-1721": "dive-verified",
+      "intake-1722": "dive-verified",
+      "intake-1723": "dive-verified",
+      "intake-1724": "dive-verified",
+      "intake-1725": "dive-verified",
+      "intake-1726": "dive-verified",
+      "intake-1727": "dive-verified",
+      "intake-1728": "dive-verified"
+    },
+    "all_selected_entries_resolved": true,
+    "surfaced_sources_presented": true,
+    "recommended_ingest_and_dive": [
+      "https://github.com/sgl-project/sglang/pull/36121",
+      "https://github.com/sgl-project/sglang/issues/39429",
+      "https://github.com/sgl-project/sglang/pull/35237",
+      "https://github.com/sgl-project/sglang/pull/29304",
+      "https://github.com/sgl-project/sglang/pull/35496",
+      "https://github.com/vllm-project/vllm/pull/52883",
+      "https://github.com/vllm-project/vllm/pull/53122",
+      "https://github.com/vllm-project/vllm/pull/53435",
+      "https://github.com/TechPrototyper/local-ai-lab/blob/master/notes/dflash2-drafter-fp8-quant.md",
+      "https://github.com/tonyd2wild/GLM-5.3-Flash-EXL3-on-2x-NVIDIA-DGX-Spark",
+      "https://github.com/abliter8-ai/glm-5.3-flash-exl3-prod",
+      "https://github.com/rodman80/glm-5.3-flash-w4a16-2x-DGX-Sparks",
+      "https://huggingface.co/maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal",
+      "https://github.com/sgl-project/sglang/issues/35860",
+      "https://github.com/r0b0tlab/qwen38-27b-nvfp4-sm121-vllm"
+    ],
+    "recommended_declines": [
+      "https://github.com/mudler/vllm.cpp/pull/2581",
+      "https://github.com/mudler/vllm.cpp/issues/2558",
+      "https://github.com/mudler/vllm.cpp/issues/2578",
+      "https://github.com/sgl-project/sglang/pull/31667",
+      "https://github.com/flashinfer-ai/flashinfer/pull/4137",
+      "https://github.com/flashinfer-ai/flashinfer/pull/2053",
+      "https://github.com/sgl-project/sglang/pull/21601",
+      "https://github.com/sgl-project/sglang/pull/21954",
+      "https://github.com/sgl-project/sglang/issues/31783",
+      "https://github.com/sgl-project/sglang/pull/39707",
+      "https://github.com/sgl-project/sglang/pull/27906",
+      "https://github.com/vllm-project/vllm/issues/51581",
+      "https://huggingface.co/RadixArk/Qwen3.8-27B-NVFP4",
+      "https://huggingface.co/Qwen/Qwen3.8-27B-FP8",
+      "https://github.com/sgl-project/SpecForge",
+      "https://huggingface.co/r0b0tlab/Qwen3.8-27B-NVFP4-MTP-sm121"
+    ],
+    "pending_count": 31,
+    "handoff_writes": 0
+  },
+  "stage2d_dives": {
+    "intake-1718": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1718/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "unaffected",
+        "unaffected",
+        "narrowed",
+        "narrowed"
+      ]
+    },
+    "intake-1719": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1719/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "overturned",
+        "narrowed",
+        "reattributed"
+      ]
+    },
+    "intake-1720": {
+      "verification": "dive-overturned",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1720/REPORT.md",
+      "claim_effects": [
+        "overturned",
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "overturned"
+      ]
+    },
+    "intake-1721": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1721/REPORT.md",
+      "claim_effects": [
+        "narrowed",
+        "reattributed",
+        "narrowed",
+        "narrowed",
+        "unaffected"
+      ]
+    },
+    "intake-1722": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1722/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed",
+        "narrowed"
+      ]
+    },
+    "intake-1723": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1723/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed",
+        "narrowed"
+      ]
+    },
+    "intake-1724": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1724/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "unaffected",
+        "narrowed",
+        "unaffected",
+        "narrowed"
+      ]
+    },
+    "intake-1725": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1725/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "reattributed",
+        "narrowed"
+      ]
+    },
+    "intake-1726": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1726/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "unaffected",
+        "narrowed"
+      ]
+    },
+    "intake-1727": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1727/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "reattributed",
+        "unaffected",
+        "unaffected"
+      ]
+    },
+    "intake-1728": {
+      "verification": "dive-verified",
+      "second_reader": "complete",
+      "report": "/mnt/raid0/llm/tmp/dive-1728/REPORT.md",
+      "claim_effects": [
+        "unaffected",
+        "narrowed",
+        "narrowed",
+        "narrowed",
+        "unaffected"
+      ]
+    }
+  },
+  "stage2d_source_revisions": {
+    "intake-1718": "GitHub issue #2597 updated 2026-09-02T19:20:15Z; API sha256 3e477cf40a47cc691201395a354ebd317d3921d911eedb5536c153f80378542f",
+    "intake-1719": "flashinfer-ai/flashinfer PR #4050 head 571a0758ffd5271d07b5891a777ee1cefedcb705",
+    "intake-1720": "sgl-project/sglang PR #23354 head 6e8aa9c625e9fa5d323bdc5178c4f908941d16fe",
+    "intake-1721": "SGLang issue #29913 node I_kwDOLCAjRs8AAAABHaX0oQ, updated 2026-09-11T01:40:25Z; API sha256 c0a284cec858db5dbfb1bc754d121abd6563ebd6c88f591ef72bb9743ee2c4c1",
+    "intake-1722": "SGLang PR #40883 head cfcd300b3f10146b2e0a2780b0aeee4cb367ea95, open/blocked, updated 2026-09-23T08:39:52Z; API sha256 c12d3d479a66f023b06e78db8d864c8f1ef680c2ef6243b919f0742e040c4eac",
+    "intake-1723": "vLLM PR #52816 head 3406ec1dae9916f920b90f0dbf90dcf54923d042, merged as b389ac29465b33f9e9c534df221ea3c129e9793f on 2026-08-21; API sha256 e7eecd22a17dd72a9f62ea9c832c42bee9ba9531203f4833c565ae488e59c00d",
+    "intake-1724": "HF z-lab/Qwen3.8-27B-DFlash2 revision 50307d4c4cde6860d4eee73e2547cd786fe8e8a4; model LFS sha256 67fc76d68dc5a9415511a4f394ef744d67510cd20e93b37cc2cc7d28e4bab65c",
+    "intake-1725": "HF RadixArk/Qwen3.8-27B-DSpark revision b9a5dbdf03bc999c6c73c426b19c2d9041cea393; model LFS sha256 2aff025f45823b40ebe726b9dfa40302f3512bd9a11c3a7347de32a567acd9a7",
+    "intake-1726": "MiaAI-Lab/GLM-5.3-Flash-EXL3-2x-DGX-Sparks commit f4970207e9fb2bdeac40d88b7cbef18c98aea310 (2026-09-25)",
+    "intake-1727": "hasso5703/dgx-spark-qwen38@6f21e1b3593418ed8ec4287268b1907728f180c2 (tag v1.18.7; retrieved 2026-09-25)",
+    "intake-1728": "r0b0tlab/qwen38-27b-nvfp4-sm121-sglang@535e580eea3e777306629746c9ab45153b653a1a (retrieved 2026-09-25)"
+  },
+  "stage2d_findings": [
+    "vllm.cpp issue #2597 confirms a live API-design debt: odd-address-safe EXL3 byte access is correct, while const-void type erasure should be replaced by semantic packed-operand wrappers without undoing unaligned safety.",
+    "FlashInfer PR #4050 is a sound but closed-unmerged XQA boundary guard. It contributes validation rules, not an AMD kernel or performance result.",
+    "SGLang PR #23354 is overturned as an all-architecture solution: it is a closed SM120/CUDA prototype with useful quant-method, pool and backend-view separation but unverified throughput and documented quality losses.",
+    "The SGLang FP4 roadmap is stale as a release ledger. Live implementations remain NVIDIA-only, and HiCache exposes a general silent-corruption risk when packed payloads move without scales and capacity metadata.",
+    "Packed speculative lm_head support must share the packed operator and its dispatch method; an open SGLang repair still has red workflows and no ROCm evidence.",
+    "Merged vLLM DFlash2 supplies the strongest public serving target in this wave: one-H200 224.6 c1, 1211.7 c8 and 2759.4 c32 tok/s, plus an independent GB200 c64 result, while quantized target/draft support remains separate open work.",
+    "The z-lab DFlash2 artifact is byte-identical to the official Inco BF16 fixture and duplicates its H200 tables; it is an alternate locator rather than independent corroboration.",
+    "RadixArk DSpark v2 reports a large acceptance study, but acceptance uses an NVFP4 target while throughput uses FP8, so the two tables cannot be causally combined.",
+    "MiaAI-Lab GLM-5.3 contributes real SM121 EXL3 CUDA kernels, independent materialized and streaming CPU oracles, exact-shape receipt patterns, and grouped-MoE ideas. Its headline logs are partly absent/interpolated and it contains no HIP or CPU serving result.",
+    "The 71.4 tok/s DGX package is NVFP4 target plus quantized depth-16 DFlash2. Its c8/c32 headline values belong to an older BF16 depth-8 campaign and must remain separate.",
+    "Committed r0b0tlab receipts show the DFlash2 raw c1 median is 28.4016 tok/s, not the narrative 28.38; block 8 wins c1 while block 6 wins c8, so draft depth is concurrency-objective-specific.",
+    "The project throughput ladder is now explicit: correct packed EXL3 execution, isolated codec AR throughput, matched DFlash2 integration, then concurrency-specific draft and scheduler tuning with raw receipts."
+  ],
+  "stage2d_surfaced_sources": [
+    {
+      "url": "https://github.com/mudler/vllm.cpp/pull/2581",
+      "bearing": [
+        "intake-1718"
+      ],
+      "settles": "Exact merged odd-address repair.",
+      "recommendation": "decline",
+      "reason": "Current head and intake-1718 already capture the merged code and regression."
+    },
+    {
+      "url": "https://github.com/mudler/vllm.cpp/issues/2558",
+      "bearing": [
+        "intake-1718"
+      ],
+      "settles": "Original alignment sanitizer failure.",
+      "recommendation": "decline",
+      "reason": "Historical trace subsumed by current implementation and regression evidence."
+    },
+    {
+      "url": "https://github.com/mudler/vllm.cpp/issues/2578",
+      "bearing": [
+        "intake-1718"
+      ],
+      "settles": "Companion unaligned-load history.",
+      "recommendation": "decline",
+      "reason": "Historical trace subsumed by current implementation."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/31667",
+      "bearing": [
+        "intake-1719"
+      ],
+      "settles": "Producer-side contiguous-Q fix.",
+      "recommendation": "decline",
+      "reason": "Already fully covered as the companion source in intake-1712."
+    },
+    {
+      "url": "https://github.com/flashinfer-ai/flashinfer/pull/4137",
+      "bearing": [
+        "intake-1719"
+      ],
+      "settles": "Later ragged-Q evolution.",
+      "recommendation": "decline",
+      "reason": "Orthogonal to the closed contiguity contract and current EXL3 path."
+    },
+    {
+      "url": "https://github.com/flashinfer-ai/flashinfer/pull/2053",
+      "bearing": [
+        "intake-1719"
+      ],
+      "settles": "Earlier XQA lineage.",
+      "recommendation": "decline",
+      "reason": "Historical context that does not settle CPU/gfx90a implementation."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/21601",
+      "bearing": [
+        "intake-1720",
+        "intake-1721"
+      ],
+      "settles": "Merged SM120 FP4 KV implementation.",
+      "recommendation": "decline",
+      "reason": "Its live behavior is already read and captured across intakes 1709-1711 and 1721."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/21954",
+      "bearing": [
+        "intake-1720",
+        "intake-1721"
+      ],
+      "settles": "Merged KV quant-method slice.",
+      "recommendation": "decline",
+      "reason": "Its design is already anchored in the selected roadmap/prototype lineage."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/31783",
+      "bearing": [
+        "intake-1720"
+      ],
+      "settles": "Broad 2026 H2 quantization roadmap.",
+      "recommendation": "decline",
+      "reason": "Broad roadmap adds no source-level CPU or MI210 kernel contract."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/36121",
+      "bearing": [
+        "intake-1721"
+      ],
+      "settles": "Exact HiCache packed-data/scale transfer and sizing defect.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/39429",
+      "bearing": [
+        "intake-1721"
+      ],
+      "settles": "Whether fused MX quantize-and-store removes cache-write cost.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35237",
+      "bearing": [
+        "intake-1721"
+      ],
+      "settles": "Native packed DSA/MLA storage, graph and offload contracts.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/29304",
+      "bearing": [
+        "intake-1721"
+      ],
+      "settles": "Closed SM121 prefix-cache and calibration failure modes.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/39707",
+      "bearing": [
+        "intake-1722"
+      ],
+      "settles": "Removal of a shadowed helper in the packed-head change.",
+      "recommendation": "decline",
+      "reason": "Narrow cleanup; #40883 already exposes the ownership contract."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35496",
+      "bearing": [
+        "intake-1722"
+      ],
+      "settles": "Merged DFlash2 selector quant-method path.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/27906",
+      "bearing": [
+        "intake-1722"
+      ],
+      "settles": "Origin of ModelOpt dense-layout guard.",
+      "recommendation": "decline",
+      "reason": "Context only; #40883 and #35496 carry the actionable current contract."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/52883",
+      "bearing": [
+        "intake-1723"
+      ],
+      "settles": "Quantized-body target with unquantized lm_head.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/53122",
+      "bearing": [
+        "intake-1723"
+      ],
+      "settles": "Draft quant mapping and transient fused context-KV reconstruction.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/53435",
+      "bearing": [
+        "intake-1723"
+      ],
+      "settles": "Whether the post-merge DFlash2 loader regression is repaired on main.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/51581",
+      "bearing": [
+        "intake-1723"
+      ],
+      "settles": "Original sliced-qkv failure behind #53122.",
+      "recommendation": "decline",
+      "reason": "Pairing issue is already captured by the current PR body and diff; #53122 is the live source."
+    },
+    {
+      "url": "https://github.com/TechPrototyper/local-ai-lab/blob/master/notes/dflash2-drafter-fp8-quant.md",
+      "bearing": [
+        "intake-1723"
+      ],
+      "settles": "Independent GB10 quantized-drafter methods and raw evidence.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/RadixArk/Qwen3.8-27B-NVFP4",
+      "bearing": [
+        "intake-1725",
+        "intake-1727"
+      ],
+      "settles": "Exact NVFP4 target for acceptance/package comparisons.",
+      "recommendation": "decline",
+      "reason": "Pinned package and checkpoint metadata already establish identity; artifact does not settle EXL3 or gfx90a."
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.8-27B-FP8",
+      "bearing": [
+        "intake-1725"
+      ],
+      "settles": "Exact FP8 target for DSpark throughput table.",
+      "recommendation": "decline",
+      "reason": "Target identity is pinned; the missing evidence is raw throughput rows, not artifact metadata."
+    },
+    {
+      "url": "https://github.com/sgl-project/SpecForge",
+      "bearing": [
+        "intake-1725"
+      ],
+      "settles": "Current DSpark training/evaluation implementation.",
+      "recommendation": "decline",
+      "reason": "Draft training is outside the approved CPU/MI210 runtime implementation scope."
+    },
+    {
+      "url": "https://github.com/tonyd2wild/GLM-5.3-Flash-EXL3-on-2x-NVIDIA-DGX-Spark",
+      "bearing": [
+        "intake-1726"
+      ],
+      "settles": "Independent same-class EXL3/NVFP4 raw comparison.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/abliter8-ai/glm-5.3-flash-exl3-prod",
+      "bearing": [
+        "intake-1726"
+      ],
+      "settles": "Independent production adoption and quality contradictions.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/rodman80/glm-5.3-flash-w4a16-2x-DGX-Sparks",
+      "bearing": [
+        "intake-1726"
+      ],
+      "settles": "Same-hardware W4A16 alternative and direct comparison method.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal",
+      "bearing": [
+        "intake-1727"
+      ],
+      "settles": "Exact quantized DFlash2 draft behind the 71.4 package.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/35860",
+      "bearing": [
+        "intake-1727"
+      ],
+      "settles": "Upstream field receipts and integration caveats.",
+      "recommendation": "ingest-and-dive"
+    },
+    {
+      "url": "https://huggingface.co/r0b0tlab/Qwen3.8-27B-NVFP4-MTP-sm121",
+      "bearing": [
+        "intake-1728"
+      ],
+      "settles": "Exact target artifact for the receipt campaign.",
+      "recommendation": "decline",
+      "reason": "Campaign repository already pins the artifact and publishes the runtime metadata needed here."
+    },
+    {
+      "url": "https://github.com/r0b0tlab/qwen38-27b-nvfp4-sm121-vllm",
+      "bearing": [
+        "intake-1728"
+      ],
+      "settles": "Sibling same-target vLLM evidence for engine separation.",
+      "recommendation": "ingest-and-dive"
+    }
+  ],
+  "stage2d_dedup": {
+    "method": "Unbounded normalized URL scan of every persisted URL after the eleven-entry append; current-wave URLs and existing exact URLs removed from the surfaced gate.",
+    "existing_collisions": [
+      "https://github.com/sgl-project/sglang/issues/36010 -> intake-1569",
+      "https://huggingface.co/z-lab/Qwen3.8-27B-DFlash2 -> intake-1724",
+      "https://huggingface.co/RadixArk/Qwen3.8-27B-DSpark -> intake-1725"
+    ],
+    "pending_candidate_collisions": []
   }
 }
