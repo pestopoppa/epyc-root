@@ -48996,7 +48996,7 @@
   discovered_via: input
   expanded_from: null
   ingested_date: '2026-07-21'
-  notes: 'DEEP-DIVE 2026-07-21: the trellis bench is NOT a flag flip — 3-6 days, medium-high risk. iqk_gemm_ktquants.cpp is absent from CMakeLists.txt:55-61; bl ock_iq2_kt/block_iq4_kt do not exist in our tree; the KT types are synthetic casts OUTSIDE the enum (153-158) against GGML_TYPE_COUNT=43 with no type_ traits row, so a KT GGUF cannot load at all (same OOB class commit 715383cde already fixed once). Honoring ik''s IDs against a dense type_traits ripple s into CUDA/HIP tables. Also CPU-only, so the MI210 cannot participate. AND the bpw arithmetic kills the GLM case: block_iq2_kt is 2.125 bpw vs IQ2_XX S 2.0625 — trellis is LARGER than what GLM-5.2 already uses, so zero bandwidth saved and arithmetic added. It is a quality-at-equal-bpw play mis-frame d as a speed play. THE REAL FINDING: chasing this stub revealed our IQ-quant kernels are stubbed under a model we DEPLOY — iqk_typeA_supported (iqk_di spatch.cpp:58) excludes every IQ type while GLM-5.2 UD-IQ2_M has 148 IQ2_XXS + 71 IQ3_XXS routed-expert tensors, so GGML_IQK=1 does NOTHING for the te nsors dominating GLM decode and prefill. Kernels already vendored (iqk_gemm_iquants.cpp:2760-2813), enum values already native: ~1 day. Exactly the co ndition iqk_stubs.cpp:11-12 warned about. RE-ENCOUNTER 2026-09-23 (research-intake jev-exl3, via intake-1500/1509): atomic.chat same-harness data (Gemma-4-12B, one RTX 5090, one qbench harness vs cached BF16 logits) puts GGUF Q5_K_M below EXL3 4.00 bpw on mean KLD at equal complete file size (0.01719 vs 0.02479), with llama.cpp decoding 15-21% faster in size-matched pairs (vendor, single run set); INF-71 NO-GO unaffected.'
+  notes: 'DEEP-DIVE 2026-07-21: the trellis bench is NOT a flag flip — 3-6 days, medium-high risk. iqk_gemm_ktquants.cpp is absent from CMakeLists.txt:55-61; bl ock_iq2_kt/block_iq4_kt do not exist in our tree; the KT types are synthetic casts OUTSIDE the enum (153-158) against GGML_TYPE_COUNT=43 with no type_ traits row, so a KT GGUF cannot load at all (same OOB class commit 715383cde already fixed once). Honoring ik''s IDs against a dense type_traits ripple s into CUDA/HIP tables. Also CPU-only, so the MI210 cannot participate. AND the bpw arithmetic kills the GLM case: block_iq2_kt is 2.125 bpw vs IQ2_XX S 2.0625 — trellis is LARGER than what GLM-5.2 already uses, so zero bandwidth saved and arithmetic added. It is a quality-at-equal-bpw play mis-frame d as a speed play. THE REAL FINDING: chasing this stub revealed our IQ-quant kernels are stubbed under a model we DEPLOY — iqk_typeA_supported (iqk_di spatch.cpp:58) excludes every IQ type while GLM-5.2 UD-IQ2_M has 148 IQ2_XXS + 71 IQ3_XXS routed-expert tensors, so GGML_IQK=1 does NOTHING for the te nsors dominating GLM decode and prefill. Kernels already vendored (iqk_gemm_iquants.cpp:2760-2813), enum values already native: ~1 day. Exactly the co ndition iqk_stubs.cpp:11-12 warned about. RE-ENCOUNTER 2026-09-23 (research-intake jev-exl3, via intake-1500/1509): atomic.chat same-harness data (Gemma-4-12B, one RTX 5090, one qbench harness vs cached BF16 logits) puts GGUF Q5_K_M below EXL3 4.00 bpw on mean KLD at equal complete file size (0.01719 vs 0.02479), with llama.cpp decoding 15-21% faster in size-matched pairs (vendor, single run set); INF-71 NO-GO unaffected. RE-ENCOUNTER 2026-09-25: current upstream ExLlamaV3 env_vars.md documents CPU ISA tiers and a CPU offload/decode path for mul1 MoE expert tensors (not a general host-only dense path); see completed/exl3-trellis-cpu-kernel.md for the previously inspected code scope. This does not establish CPU support for MCG or for llama.cpp. A separate public HIP fork, CarouselAether/rocm_exl3 (new intake-1529), targets RDNA gfx11 and does not list MI210 gfx90a; do not read it as upstream ROCm or MI210 support. Companion source intake-1533 records the current CPU ISA/offload documentation as a separate URL; its scope is CPU MoE expert work, not a complete CPU-only runtime.'
   cross_references:
     chapters: []
     handoffs:
@@ -173967,3 +173967,381 @@
   integration_disposition: integrated
   disposition_evidence:
   - Decision-package input and provenance note at the DAR >=5% regret operator decision; DAR-SPLIT-1 in decision-aware-routing.md.
+- id: intake-1528
+  arxiv_id: null
+  url: https://x.com/0xSero/status/2103402800155709514
+  source_type: blog
+  title: Exl3 on Hopper is solved — 0xSero H200 kernel and fidelity report (figures; source code/report forthcoming)
+  authors:
+  - 0xSero
+  categories:
+  - quantization
+  - hardware_optimization
+  - inference_serving
+  - moe_optimization
+  novelty: high
+  relevance: high
+  discovered_via: input
+  expanded_from: null
+  verdict: new_opportunity
+  credibility_score: 2
+  key_claims:
+  - The author reports replacing Marlin’s default 4-bit unpack path with an EXL3 trellis-window decoder for new dense and
+    MoE Hopper kernels; source and full report are not yet linked in the post.
+  - On one H200, the dense Qwen3.8-27B chart caption reports EXL3 decode improving from 57% to 83% of AWQ-4 decode at one
+    user and passing AWQ at 16 users; the caption reports 9,377–9,716 prefill tok/s versus 6,083–6,224 for AWQ.
+  - The Qwen3.6-35B-A3B MoE chart shows near parity with AWQ at one user, with lower EXL3 throughput at 8 and 16 users; the
+    post summarizes decode as around 95% of AWQ.
+  - The quality chart compares 256-expert EXL3 against a 168-expert W4A16 production configuration, reporting KL 0.021 versus
+    0.191 and top-1 agreement 94.6% versus 84.9%; this is not a matched quantizer-only comparison.
+  techniques:
+  - Marlin-style tiled GEMM with an EXL3 trellis-window unpack/decode path (implementation details not public in the post)
+  reported_results:
+  - 'H200 dense decode: ~57%→83% of AWQ at one user; EXL3 bar exceeds AWQ at 16 users.'
+  - 'H200 dense prefill chart caption: 9,377–9,716 tok/s EXL3 vs 6,083–6,224 tok/s AWQ; this conflicts in magnitude with the
+    post text “up to 20% better”.'
+  - 'H200 MoE decode: approximately AWQ parity at one user, below AWQ at higher listed concurrency.'
+  - 'GLM quality chart: KL 0.021 vs 0.191 and top-1 agreement 94.6% vs 84.9%, with 256-expert EXL3 vs 168-expert W4A16 configurations.'
+  cross_references:
+    handoffs:
+    - exl3-trellis-cpu-kernel.md
+    - cpu-decode-roofline-program.md
+    - iqk-iquant-enablement.md
+    - tq3-quantization-evaluation.md
+    intake_entries:
+    - intake-872
+    - intake-873
+    - intake-1500
+    - intake-1508
+    - intake-1509
+  recommended_actions:
+  - '[unverified] Request/monitor the promised source and report; reproduce the H200 baseline only if artifacts disclose exact
+    checkpoints, shapes, batch/concurrency, prompt length, warmup, clocks and sampling protocol.'
+  - '[unverified] Treat the 256-vs-168 expert KL result as a combined pruning-plus-quantization comparison, not an EXL3-vs-W4A16
+    codec result.'
+  contradicting_evidence:
+  - The post text says prefill is up to 20% better while its figure caption gives ranges implying roughly 51–60% higher throughput;
+    the discrepancy is unresolved.
+  - The post gives no public source, exact benchmark protocol, or matched-architecture quality comparison; the displayed figures
+    are author-reported observations.
+  notes: Retrieved 2026-09-25 from the public FxTwitter syndication endpoint for the linked X status; post JSON SHA-256 34e43414b113b4aafd0d7a02d4a13bd78d860bf6895c45eeaec0b49e6c0e1829.
+    Figure 1 SHA-256 d324576d9e501f4026ab1128d8de2081f0a2469b72dc99c65363d771e5cbe5c7; figure 2 SHA-256 fceefde42f1e37a10bb3b6849ed78d91930e0401f50f0d8adfae2fd11679a96c.
+    The chart ranges above were read from the attached images; they are self-reported and unverified. The post itself says
+    code and a full report will follow.
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Unverified author-reported Hopper results only. Do not treat the figures as independently reproduced,
+    the quality comparison as codec-matched, or the promised implementation as public until the source/report is retrieved.
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-1529
+  arxiv_id: null
+  url: https://github.com/CarouselAether/rocm_exl3
+  source_type: repo
+  title: CarouselAether/rocm_exl3 — ExLlamaV3 ROCm fork with HIP kernels for RDNA
+  authors:
+  - CarouselAether contributors
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  - inference_serving
+  - moe_optimization
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-872
+  verdict: new_opportunity
+  credibility_score: 2
+  key_claims:
+  - The fork ports selected ExLlamaV3 GPU paths to hand-written HIP/WMMA kernels while keeping CUDA paths separate.
+  - Its stated validated targets are RDNA3/RDNA3.5 (`gfx1100`/`gfx1101`/`gfx1102`/`gfx1150`/`gfx1151`); RDNA4 `gfx1200`/`gfx1201`
+    is compile-checked but described as not hardware-validated and uses a slower MoE path.
+  - The README requires ROCm 7.2.4 or newer and reports validation on gfx1151; its supported target list does not include
+    MI210/CDNA2 `gfx90a`.
+  - The README reports tests and coherent generations on four models on gfx1151, but does not report MI210 results or a matched
+    comparison with the Hopper kernel in intake-1528.
+  techniques:
+  - HIP/WMMA sibling kernels for ExLlamaV3 trellis operations
+  - Separate ROCm Python dispatch shims and hipcc build path
+  reported_results:
+  - README reports pytest suites 161/161 passing and end-to-end generation on four models, validated on gfx1151 (self-reported).
+  - No MI210/gfx90a result or MI210 throughput result is reported.
+  cross_references:
+    handoffs:
+    - exl3-trellis-cpu-kernel.md
+    - agentic-rocm-kernel-authoring.md
+    - autokernel-research-loop.md
+    intake_entries:
+    - intake-872
+    - intake-873
+  recommended_actions:
+  - '[unverified] Dive the kernel source and target guards; map the RDNA WMMA path against CDNA2 MFMA requirements to size
+    a custom gfx90a port.'
+  - '[unverified] Preserve CPU and MI210 as separate implementation tracks: the fork establishes a useful HIP reference, not
+    existing gfx90a support.'
+  contradicting_evidence:
+  - The repository’s explicit target list excludes gfx90a; the direct binary path is therefore not established for the project
+    MI210. The README requires ROCm 7.2.4+, while the frozen MI210 stack in project records is ROCm 6.2; compatibility has
+    not been established.
+  notes: Raw README fetched 2026-09-25 from https://raw.githubusercontent.com/CarouselAether/rocm_exl3/main/README.md; SHA-256
+    ff46ae04f07dda874ad42fae2aaf0e5a8f59730be5a8de0bece0845bc6c8b4e7. Repository says it tracks ExLlamaV3 v1.5.0 and reports
+    tests on gfx1151. Treat all test/performance statements as author-reported until a dive reads pinned code and artifacts.
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: This is a concrete HIP implementation reference, not MI210 support. Do not mark gfx90a supported
+    or assume RDNA WMMA maps directly to CDNA2 MFMA.
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-1530
+  arxiv_id: null
+  url: https://github.com/Zeuss5/cuda-exl3
+  source_type: repo
+  title: Zeuss5/cuda-exl3 — custom EXL3 CUDA GEMM kernels for Blackwell and vLLM
+  authors:
+  - Zeuss5 and contributors
+  categories:
+  - quantization
+  - hardware_optimization
+  - inference_serving
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-872
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - The repository implements custom dense and MoE EXL3 kernels and a vLLM plugin, targeting NVIDIA Blackwell rather than
+    the reported H200 kernel.
+  - Its README describes a tiled GEMM path intended to amortize trellis reads across rows; it is a separate implementation
+    and does not claim to replace Marlin’s unpack path.
+  - Its published comparisons use RTX PRO 6000 Blackwell and compare against ExLlamaV3/vLLM paths; they do not reproduce the
+    post’s H200/AWQ comparisons.
+  - The README identifies limitations including small-batch cases where upstream GEMV can be faster and nondeterminism from
+    floating-point atomics unless deterministic mode is used.
+  techniques:
+  - Custom tiled EXL3 dense and MoE GEMM
+  - vLLM backend integration
+  - Fused sparse-MLA attention backend
+  reported_results:
+  - Repository benchmarks are on Blackwell hardware; no MI210, CPU, or H200 result was identified in the inspected README.
+  - README describes some single-stream m≤16 cases where upstream GEMV may be marginally faster and flags atomic accumulation
+    nondeterminism.
+  cross_references:
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - iqk-iquant-enablement.md
+    - tq3-quantization-evaluation.md
+    intake_entries:
+    - intake-872
+    - intake-873
+    - intake-1528
+    - intake-1529
+  recommended_actions:
+  - '[unverified] Mine the repository for format/decode details and correctness tests that can serve as algorithmic references
+    when writing a HIP gfx90a or CPU kernel; do not port NVIDIA launch code blindly.'
+  contradicting_evidence:
+  - The repo targets Blackwell and uses CUDA/vLLM integration; its own measurements do not substantiate performance on Hopper,
+    CPU, or MI210.
+  notes: Raw README fetched 2026-09-25 from https://raw.githubusercontent.com/Zeuss5/cuda-exl3/master/README.md; SHA-256 edf2bc1ee4b82d82da01e10308bc2f977a11b5d6bafa844633474a5d463c0091.
+    The repository’s default branch was resolved through the raw master README after the raw main URL returned 404.
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Use as an NVIDIA implementation reference only. Its Blackwell benchmarks cannot validate the H200
+    post or predict MI210 performance.
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-1531
+  arxiv_id: null
+  url: https://github.com/IST-DASLab/marlin
+  source_type: repo
+  title: IST-DASLab Marlin — FP16×INT4 LLM inference kernel and unpack baseline
+  authors:
+  - IST-DASLab contributors
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1528
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - Marlin is a CUDA FP16×INT4 kernel that uses packed weights, carefully ordered dequantization and Tensor Core MMA to approach
+    memory-bound performance at medium batch sizes.
+  - The source dequant helper applies two LOP3 operations, one half2 subtract and one half2 FMA to reconstruct eight 4-bit
+    values from a packed word; this is the helper-level operation count, not a complete generated-SASS count.
+  - The original repository states it is not yet optimized for Hopper; this describes optimization status, not an absolute
+    inability to run on Hopper.
+  - Its CUDA tile, packed layout and scheduling are useful comparison material but are not directly transferable to CPU or
+    MI210 without reimplementation.
+  techniques:
+  - Packed INT4 weight dequantization
+  - Asynchronous global loads and shared-memory double buffering
+  - LDMatrix/MMA Tensor Core scheduling
+  reported_results:
+  - README claims near-ideal ~4× speedups through medium batch sizes of 16–32 tokens; this is repository-level context, not
+    an EPYC/MI210 result.
+  cross_references:
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - tq3-quantization-evaluation.md
+    - iqk-iquant-enablement.md
+    intake_entries:
+    - intake-1528
+    - intake-1529
+    - intake-1530
+  recommended_actions:
+  - '[unverified] During a future kernel dive, compare the Marlin tile/load/MMA schedule against EXL3 reconstruction costs;
+    treat its data layout and CUDA intrinsics as reference constraints, not portable code.'
+  contradicting_evidence:
+  - Marlin’s own README says the original kernel is not yet optimized for Hopper, so it is not a neutral fully tuned H200
+    baseline. It is NVIDIA-specific and offers no CPU or MI210 implementation.
+  notes: Raw README fetched 2026-09-25 from https://raw.githubusercontent.com/IST-DASLab/marlin/master/README.md; SHA-256
+    932be7cfcd7eb90f2ce42f2c6ba75eda73400d635ede09961b83ffae9d23d5d1. Source-level helper findings were supplied by the primary-source
+    read of marlin_cuda_kernel.cu; generated SASS was not inspected.
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: Marlin is a CUDA baseline and unpack/scheduling reference. Do not call it Hopper-optimized or apply
+    its source-level instruction count to CPU/HIP codegen.
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-1532
+  arxiv_id: null
+  url: https://huggingface.co/davidsyoung/GLM-5.3-EXL3-TR3-3.42bpw
+  source_type: repo
+  title: davidsyoung/GLM-5.3-EXL3-TR3-3.42bpw — mixed-K MCG trellis checkpoint and teacher-forced KL receipts
+  authors:
+  - davidsyoung
+  - Brandon Music (encoder lineage)
+  - dareposte (independent reproduction credited by card)
+  categories:
+  - quantization
+  - moe_optimization
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - The checkpoint applies EXL3/TR3 with an MCG codebook to routed experts in layers 3–78 including MTP, using 148 K3 and
+    108 K4 experts per layer for a reported average 3.42 bpw; dense/attention and shared expert tensors remain BF16 on disk.
+  - The card describes a data-free encode with identity Hessian and reports full-vocabulary teacher-forced KL from four held-out
+    windows, with independent reproduction credited to a second practitioner.
+  - The card states that its mixed-K layout requires a custom loader patch and is not loadable by vanilla ExLlamaV3’s uniform-K
+    path.
+  - The card’s serving qualification uses four RTX PRO 6000 Blackwell GPUs with a custom stack; it is not a CPU or MI210 result
+    and does not directly reproduce the X post’s 0.021 KL chart.
+  techniques:
+  - EXL3/TR3 mixed K3/K4 routed-expert quantization
+  - MCG codebook
+  - Per-layer K4 selection by K3 round-trip MSE
+  - Teacher-forced full-vocabulary KL evaluation
+  reported_results:
+  - Card reports mean KL 0.024105 and an independently reproduced 0.023966 for the stated four-window evaluation; treat as
+    checkpoint-specific and self-reported until dive.
+  - The checkpoint card’s 0.0241 result differs from the X post’s 0.021 figure; the post does not identify this exact checkpoint
+    or protocol.
+  cross_references:
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - exl3-trellis-cpu-kernel.md
+    - iqk-iquant-enablement.md
+    intake_entries:
+    - intake-872
+    - intake-873
+    - intake-1508
+    - intake-1528
+  recommended_actions:
+  - '[unverified] Use this card as a format/quality case study only; do not select this 755B model as the first CPU/MI210
+    kernel target.'
+  - '[unverified] Dive the mixed-K loader requirements and teacher-forced KL protocol if this checkpoint is considered for
+    future correctness or quality testing.'
+  contradicting_evidence:
+  - A custom mixed-K loader is required; generic ExLlamaV3 or HF example commands on the card do not establish compatibility
+    with the actual TR3 layout.
+  - The checkpoint is a four-Blackwell serving configuration and cannot substantiate a single-MI210 or CPU result.
+  - The checkpoint card calls the base model 755B; the official Z.ai card lists 753B. Keep the total-parameter figure source-attributed until the variant/counting convention is resolved.
+  notes: Raw model card fetched 2026-09-25 from https://huggingface.co/davidsyoung/GLM-5.3-EXL3-TR3-3.42bpw/raw/main/README.md;
+    SHA-256 75a46c1f18f58f4a11b68deeda69a31ebdf7063d9368325c8fdb9b1bce048fba. The repository page separately credits a CN3
+    independent reproduction; this intake has not read the receipts or reproduction bundle. Avoid equating its 0.0241 KL with
+    the X post’s 0.021 figure.
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: This is a mixed-K checkpoint case study with a loader requirement and checkpoint-specific KL result.
+    Do not infer MI210/CPU loadability or compare its KL directly with the X post without matching teacher, windows, precision
+    and configuration.
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-1533
+  arxiv_id: null
+  url: https://github.com/turboderp-org/exllamav3/blob/master/doc/env_vars.md
+  source_type: repo
+  title: ExLlamaV3 env_vars.md — AVX2/AVX-512/VNNI/VBMI CPU expert decode and MoE CPU offload
+  authors:
+  - turboderp-org contributors
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  - moe_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-872
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - The current ExLlamaV3 docs expose CPU MoE expert offload and CPU ISA dispatch across scalar, AVX2, AVX-512BW, VNNI and
+    VBMI tiers.
+  - The documented CPU kernels process the CPU tail of routed MoE experts while the broader inference stack can stream selected
+    experts to GPU; this is not evidence for a complete CPU-only dense-attention runtime.
+  - The docs describe `mul1`-specific eligibility for optimized fused/reconstruct expert paths and a swizzled expert-weight
+    layout; they do not establish that MCG uses the same optimized CPU kernels.
+  - The docs report improved CPU expert throughput from ISA selection and band-contiguous weight swizzling, but numbers are
+    self-reported and tied to named CPUs/configurations.
+  techniques:
+  - Threaded AVX2/AVX-512/VNNI/VBMI CPU expert GEMV
+  - Band-contiguous swizzled trellis layout for cold-expert reads
+  - CPU MoE offload / CPU-tail and GPU-streaming split
+  reported_results:
+  - Docs report the AVX-512BW/VNNI path at ~1.5× the AVX2 cold-expert decode throughput on a Xeon Gold 6148.
+  - Docs report swizzling gains of +45–75% on a Threadripper 7960X; the VNNI-tier gain is reported as +40% cold-expert decode
+    when forced on that CPU.
+  - These figures are upstream self-reports and are not measurements on the project EPYC 9655 host or MI210.
+  cross_references:
+    handoffs:
+    - exl3-trellis-cpu-kernel.md
+    - cpu-decode-roofline-program.md
+    - iqk-iquant-enablement.md
+    - tq3-quantization-evaluation.md
+    intake_entries:
+    - intake-872
+    - intake-873
+    - intake-1529
+  recommended_actions:
+  - '[unverified] Treat this as a concrete CPU-kernel reference for a custom project implementation; first map supported codebooks
+    and tensor scope, then estimate whether the CPU route is dense, MoE-only, or hybrid for our target model.'
+  - '[unverified] Preserve this CPU track independently of MI210 HIP work. Compare kernel arithmetic/layout to EPYC Zen 5
+    capabilities rather than assuming upstream CPU measurements transfer.'
+  contradicting_evidence:
+  - The documented optimized expert path is codebook- and MoE-specific (`mul1` eligibility); the GLM pack in intake-1532 uses
+    MCG and a mixed-K custom layout, so compatibility is not established.
+  - The CPU routines are an offload/selected-expert path inside a GPU inference system, not a demonstrated end-to-end CPU-only
+    backend.
+  notes: Raw Markdown fetched 2026-09-25 from https://raw.githubusercontent.com/turboderp-org/exllamav3/master/doc/env_vars.md;
+    SHA-256 40e65503dd543e950a7dc31178dfbe06ff56f88cf6b0472c6b2bc9253aa62e1b. Relevant current sections include EXL3_MOE_CPU_OFFLOAD,
+    EXL3_MOE_CPU_MAX_ISA, EXL3_MOE_CPU_SWIZZLE and GPU streaming thresholds. This is a distinct document URL from the whole-repository
+    entry intake-872 and is ingested separately as a companion artifact.
+  verification: stage1-unverified
+  ingested_date: '2026-09-25'
+  reader_should_conclude: This is a real CPU expert-decode building block and an implementation reference for custom AVX kernels.
+    Do not conclude that it supplies complete CPU-only inference, supports every codebook/format, or has measured performance
+    on EPYC 9655.
+  handoffs_updated: []
+  handoffs_created: []

@@ -1,207 +1,181 @@
 {
-  "session_id": "intake-jev-exl3-20260923",
-  "started_at": "2026-09-23T11:50:00Z",
-  "last_checkpoint": "2026-09-23T15:34:02Z",
+  "session_id": "intake-exl3-mi210-20260925",
+  "started_at": "2026-09-25T09:39:21Z",
+  "last_checkpoint": "2026-09-25T09:46:41Z",
   "phase": 5,
-  "stage": "stage4-complete",
-  "session_kind": "research-intake (4 repo URLs + 2 operator inline digests)",
-  "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-jev-exl3-20260923 (branch intake/jev-exl3-20260923 off origin/main 85f22ea8). Shared clone /workspace carried stale research-lane leftovers (working copies older than HEAD, missing intake-1493/1494) from earlier intake runs \u2014 NOT another session (operator correction 2026-09-23); cleaned up at close-out. Scratch: /workspace/tmp/intake-jev-exl3/. Previous session file (intake-jev-ultrafast-20260918, stage4-complete) is preserved in git history.",
-  "previous_session": "intake-jev-ultrafast-20260918",
-  "mandate": "Ingest KLPO, HelixDB, GQE, jaredpalmer/kev repos + operator digest A (OrcaRouter on Jev) + operator digest B (EXL3 VRAM tiers).",
+  "stage": "stage1-complete-awaiting-stage2-selection",
+  "session_kind": "research-intake (EXL3 Hopper report + CPU/MI210 implementation path)",
+  "previous_session": "intake-jev-exl3-20260923 (stage4-complete; preserved at /tmp/exl3-intake/previous-research-session-20260923.json)",
+  "mandate": "Research-intake the 2026-09-25 0xSero EXL3-on-Hopper report and its linked implementations/checkpoint; build a viable experimental path for EXL3 on project CPU and MI210 (gfx90a), including custom kernels as a first-class option.",
   "raw_submissions": {
-    "digest-A": {
-      "path": "/workspace/tmp/intake-jev-exl3/digest-A-jev-orcarouter.md",
-      "sha256": "0c90decead1aec208259f5866260e7403793d6c9f7a884f192472d729dca57f6"
-    },
-    "digest-B": {
-      "path": "/workspace/tmp/intake-jev-exl3/digest-B-exl3-vram-tiers.md",
-      "sha256": "62df1e2ba65c8ef23cc0bb7e185fd8b1a03be626f366c93f0964b22dbbf821c3"
-    }
+    "x-post": "https://x.com/0xSero/status/2103402800155709514",
+    "operator-goal": "Build toward a viable project path for EXL3 on CPU and MI210; custom kernels are explicitly in scope; aspirational objective is first working implementation on this hardware architecture."
   },
-  "max_existing_intake_id_at_start": 1494,
-  "next_intake_id": 1528,
+  "max_existing_intake_id_at_start": 1527,
+  "next_intake_id": 1534,
   "entries_processed": [
-    "intake-1495",
-    "intake-1496",
-    "intake-1497",
-    "intake-1498",
-    "intake-1499",
-    "intake-1500",
-    "intake-1501",
-    "intake-1502",
-    "intake-1503",
-    "intake-1504",
-    "intake-1505",
-    "intake-1506",
-    "intake-1507",
-    "intake-1508",
-    "intake-1509",
-    "intake-1510",
-    "intake-1511",
-    "intake-1512",
-    "intake-1513",
-    "intake-1514",
-    "intake-1515",
-    "intake-1516",
-    "intake-1517",
-    "intake-1518",
-    "intake-1519",
-    "intake-1520",
-    "intake-1521",
-    "intake-1522",
-    "intake-1523",
-    "intake-1524",
-    "intake-1525",
-    "intake-1526",
-    "intake-1527"
+    "intake-1528",
+    "intake-1529",
+    "intake-1530",
+    "intake-1531",
+    "intake-1532",
+    "intake-1533"
   ],
   "entries_remaining": [],
-  "dedup": {
-    "method": "unbounded normalized url/arxiv sweep + curl -sIL redirect check",
-    "collisions": [
-      "TheoLeeCJ/SemIf = 301 target of TheoLeeCJ/openjev (intake-1487): NOT minted; re-encounter note appended to intake-1487 notes",
-      "digest-A ref 1 typesafe.ai launch post = intake-1470",
-      "digest-B refs exllamav3 = intake-872, QTIP 2406.11235 = intake-873"
-    ]
-  },
   "expansion_cap": 10,
-  "expansion_count": 9,
+  "expansion_count": 4,
   "expansion_entries": {
-    "intake-1501": "DDnim/jev-vs-laya <- 1499",
-    "intake-1502": "Laya HF card <- 1499",
-    "intake-1503": "OrcaRouter X thread <- 1499",
-    "intake-1504": "scienthoon/jev-ood-calibration <- 1498",
-    "intake-1505": "arXiv 2607.04244 (title resolved) <- 1500",
-    "intake-1506": "MiaAI-Lab DFlash2 EXL3 drafter <- 1500",
-    "intake-1507": "malaiwah/quant-fidelity-suite <- 1500",
-    "intake-1508": "HF discussion GLM-5.3-Flash-tr3-4bpw #1 <- 1500",
-    "intake-1509": "atomic.chat exl3-vs-gguf <- 1500"
+    "intake-1529": "CarouselAether/rocm_exl3 \u2014 discovered by targeted ROCm/EXL3 implementation search; expanded from intake-872",
+    "intake-1530": "Zeuss5/cuda-exl3 \u2014 companion custom-kernel implementation from the supplied report; expanded from intake-872",
+    "intake-1531": "IST-DASLab/marlin \u2014 implementation baseline named by supplied report; expanded from intake-1528",
+    "intake-1533": "ExLlamaV3 doc/env_vars.md \u2014 companion CPU-kernel document; expanded from intake-872"
   },
-  "expansion_refused": [
-    {
-      "seed": "intake-1499",
-      "reason": "cap: low-value restatements not ingested (getmaxim explainer, systemonemodels.org x2, di-zhang RLCD theory post, kyegomez/open-jev random-weight sketch, OmniJev/awesome-jev inventory, laya.convaiinnovations.com site, orcarouter.ai/blog/jev-vs-kev and jev-vs-laya)"
-    },
-    {
-      "seed": "intake-1498",
-      "reason": "cap: archerhume jevs-architecture-unmasked, multimodalart jev-reproductions-tracker, SamuelSacco/jev-exploration, scienthoon/luce, bitnovus/jev-spam-eval, anisselbd/jev-phishing-bench deferred to a later session"
-    },
-    {
-      "seed": "intake-1500",
-      "reason": "cap: Cornell-RelaxML/qtip, TabbyAPI, PonyExl3, turboderp HF collection, mratsim GLM-4.6-EXL3, MiaAI-Lab dual-Spark repo, brandonmmusic-max repo, X @yume_arasaki (unretrievable), arXiv 2505.22179, 'Displacement Is Not Direction' (id unverified) not ingested"
-    },
-    {
-      "seed": "intake-1495/1496/1497",
-      "reason": "relevance low: no expansion from KLPO (BPO/Score-Centering ids unverified), HelixDB, GQE"
-    }
-  ],
-  "reader_disagreements_resolved": [
-    "intake-1508 v44 row regimes: receipts runtime-results/v44/kld/{fp8,nvfp4}-five-run-kld-receipt.json record FP8/NVFP4 MLA KV on EXL3 runtime (means 0.024629/0.060535); KV-cache reading adopted, recorded in entry",
-    "GLM-5.3-Flash is deleted from host (deepseek-v41-flash-evaluation.md:5-8), contrary to one reader"
-  ],
+  "expansion_refused": [],
   "steering_ledger": [
     {
       "seq": 1,
-      "stage": 2,
-      "verbatim": "Deep dive all 5 you recommended",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "note": "Stage-2 dive selection: intake-1498, 1504, 1502, 1507+1508 (pair), 1505"
+      "stage": 1,
+      "ts": "2026-09-25T09:39:21Z",
+      "verbatim": "We've ingested multiple EXL3-related research docs. I really want us to build up to a viable path forward for getting this quant working in our project (CPU and MI210) so we can tap into the same performance improvements other people are obtaining on thei nvidia cards.",
+      "disposition": "planned",
+      "plan_ref": null
     },
     {
       "seq": 2,
-      "stage": 2,
-      "verbatim": "ingest+dive all recommended please",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "note": "Stage-2b selection: close-out items 1-9 ingest-and-dive; items 10-14 declined (record in bearing entries' dive_corrections)"
+      "stage": 1,
+      "ts": "2026-09-25T09:39:21Z",
+      "verbatim": "remember that we are NEVER scared to build custom kernels ourselves!",
+      "disposition": "planned",
+      "plan_ref": null
     },
     {
       "seq": 3,
-      "stage": 2,
-      "verbatim": "A-D, then proceed to stage 3",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "note": "Stage-2b round-2 selection: arXiv 2407.09141, 2608.11212, 2605.02241, 2602.09924; other 17 dive-surfaced sources declined; then Stage 3"
-    },
-    {
-      "seq": 4,
-      "stage": 2,
-      "verbatim": "Ingest + dive all 5",
-      "disposition": "context-only",
-      "plan_ref": null,
-      "note": "Gate round 3 (AskUserQuestion): arXiv 2411.02355, 2606.05688, 2502.04428, 2603.20895, 2607.03436"
+      "stage": 1,
+      "ts": "2026-09-25T09:39:21Z",
+      "verbatim": "i'd be more than happy if we become the first people to get this working on this hardware architecture",
+      "disposition": "planned",
+      "plan_ref": null
     }
   ],
-  "validator": "validate_intake.sh exit 0 (1505 entries)",
-  "index_write": "text append of 15 serialized entries (intake-1495..1509) + one in-place notes edit on intake-1487; backup /workspace/tmp/intake-jev-exl3/backup-index-before-stage1.yaml; no YAML round-trip; handoffs untouched",
-  "stage2_selected": [
-    "intake-1498",
-    "intake-1504",
-    "intake-1502",
-    "intake-1507",
-    "intake-1508",
-    "intake-1505"
+  "source_fetches": {
+    "x-post-api": {
+      "url": "https://api.fxtwitter.com/0xSero/status/2103402800155709514",
+      "sha256": "34e43414b113b4aafd0d7a02d4a13bd78d860bf6895c45eeaec0b49e6c0e1829",
+      "retrieved": "2026-09-25"
+    },
+    "x-figure-1": {
+      "url": "https://pbs.twimg.com/media/HTDGqqbWwAARC_X.jpg?name=orig",
+      "sha256": "d324576d9e501f4026ab1128d8de2081f0a2469b72dc99c65363d771e5cbe5c7"
+    },
+    "x-figure-2": {
+      "url": "https://pbs.twimg.com/media/HTDHXyFWAAAc76c.jpg?name=orig",
+      "sha256": "fceefde42f1e37a10bb3b6849ed78d91930e0401f50f0d8adfae2fd11679a96c"
+    },
+    "rocm-exl3-readme": {
+      "url": "https://raw.githubusercontent.com/CarouselAether/rocm_exl3/main/README.md",
+      "sha256": "ff46ae04f07dda874ad42fae2aaf0e5a8f59730be5a8de0bece0845bc6c8b4e7"
+    },
+    "cuda-exl3-readme": {
+      "url": "https://raw.githubusercontent.com/Zeuss5/cuda-exl3/master/README.md",
+      "sha256": "edf2bc1ee4b82d82da01e10308bc2f977a11b5d6bafa844633474a5d463c0091"
+    },
+    "marlin-readme": {
+      "url": "https://raw.githubusercontent.com/IST-DASLab/marlin/master/README.md",
+      "sha256": "932be7cfcd7eb90f2ce42f2c6ba75eda73400d635ede09961b83ffae9d23d5d1"
+    },
+    "glm-checkpoint-card": {
+      "url": "https://huggingface.co/davidsyoung/GLM-5.3-EXL3-TR3-3.42bpw/raw/main/README.md",
+      "sha256": "75a46c1f18f58f4a11b68deeda69a31ebdf7063d9368325c8fdb9b1bce048fba"
+    },
+    "exllamav3-env-vars": {
+      "url": "https://raw.githubusercontent.com/turboderp-org/exllamav3/master/doc/env_vars.md",
+      "sha256": "40e65503dd543e950a7dc31178dfbe06ff56f88cf6b0472c6b2bc9253aa62e1b"
+    }
+  },
+  "cross_reference_summary": {
+    "existing_exl3": "intake-872",
+    "existing_qtip": "intake-873",
+    "operator_digest": "intake-1500",
+    "related_closed_cpu_gate": "handoffs/completed/exl3-trellis-cpu-kernel.md (INF-71 NO-GO specific to Qwen3.8-Flash-Next operating point)",
+    "related_active_trellis_work": "handoffs/active/iqk-iquant-enablement.md and handoffs/active/tq3-quantization-evaluation.md"
+  },
+  "dedup": {
+    "method": "unbounded index scan for normalized submitted/resolved URLs, raw URL count checks, redirect-following GETs for all six newly indexed URLs, and normalized arXiv-ID scan for cited IDs",
+    "existing_collisions": [
+      "ExLlamaV3 repo https://github.com/turboderp-org/exllamav3 -> intake-872; re-encounter note updated with current CPU/ROCm scope",
+      "QTIP arXiv 2406.11235 -> intake-873; no new entry",
+      "GLM-5 technical report arXiv 2602.15763 -> existing index record; no new entry"
+    ],
+    "new_url_collisions": []
+  },
+  "contradiction_pass": {
+    "intake-1528": "The author\u2019s own post says prefill up to +20%, while figure caption ranges imply roughly +51\u201360%; quality chart compares 256 EXL3 experts to 168 W4A16 experts. Bounded exact-claim search found no independent H200 reproduction (provisional).",
+    "intake-1529": "README excludes MI210 gfx90a and requires ROCm >=7.2.4; its direct validation is on gfx1151, so no evidence for MI210 (repository scope check; not a contradiction to RDNA support).",
+    "intake-1533": "Current docs support an AVX CPU MoE expert path, but the use case is CPU offload/CPU-tail within ExLlamaV3; optimized eligibility is mul1-specific, so MCG/general CPU-only support is not established."
+  },
+  "dive_recommendations": [
+    {
+      "rank": 1,
+      "intake": "intake-1529",
+      "reason": "Closest public HIP/EXL3 implementation; establish what must change to reach gfx90a/CDNA2.",
+      "settle": "Kernel inventory, WMMA-to-MFMA port scope, ROCm 6.2 versus 7.2.4 dependency, correctness harness and whether a custom MI210 implementation can be isolated."
+    },
+    {
+      "rank": 2,
+      "intake": "intake-1533",
+      "reason": "Concrete current CPU trellis expert kernels directly inform the requested CPU path.",
+      "settle": "Actual kernel math/layout and codebook/tensor limits; what can be adapted into a CPU backend or GGUF/ggml operator, and which EPYC Zen 5 instructions apply."
+    },
+    {
+      "rank": 3,
+      "intake": "intake-1528",
+      "reason": "Primary performance report motivating the work; attached figures were recovered and inspected.",
+      "settle": "Exact model/checkpoint/configuration, benchmark protocol, chart-vs-post discrepancy, reproducibility inputs and when promised source/report appears."
+    },
+    {
+      "rank": 4,
+      "intake": "intake-1530",
+      "reason": "A recent custom CUDA implementation may expose algorithm/test patterns even though it targets Blackwell.",
+      "settle": "Which trellis decode and correctness structures are portable as specifications, and which gains are architecture/runtime-specific."
+    },
+    {
+      "rank": 5,
+      "intake": "intake-1531",
+      "reason": "Marlin is the unpack/GEMM comparator named by the Hopper post.",
+      "settle": "Exact baseline support and source-level unpack path; separate portable scheduling ideas from CUDA/Hopper-specific assumptions."
+    },
+    {
+      "rank": 6,
+      "intake": "intake-1532",
+      "reason": "The checkpoint illustrates current EXL3/TR3 quality measurement and mixed-K loader requirements.",
+      "settle": "What its reproducibility bundle actually proves and whether any smaller checkpoint is suitable for a project-side correctness fixture."
+    }
   ],
-  "stage2_results": {
-    "intake-1498": "dive-verified; narrowed: released weights = v7 recipe + 1-epoch soft-target delta; hybrid prefix reuse serve-only; README 0.917/0.911 are pre-delta (released 0.910/0.900); coverage gap vs Jev CI includes 0; spend $557.31; llama.cpp feasible-with-work (merge-first for out_proj LoRA on 4B/9B; seq_cp driver)",
-    "intake-1504": "dive-verified; narrowed: 300 tickets x 3 q; tier visible so priority is policy-unknown not unknowable (oracle 97.3%); choice sign fragile; Brier computed; CC0 at file level; generator byte-reproduces",
-    "intake-1502": "dive-verified; narrowed: published loop = REINFORCE + CE weight 1.0; no ablation isolating RL; zero-shot split not held-out families; 0.466 baseline pre-clamp; CPU latency unprovenanced; RLCD-named only (intake-1460 note stands)",
-    "intake-1507": "dive-verified; self-compare is hash-proof identity not validation; registry carries v44 mislabel; P-KLD annex gap mapping (prepare only)",
-    "intake-1508": "dive-verified; row-label dispute settled (KV-cache variants, single window); mislabel by malaiwah ev5/7; W8A8 from config.json; depends_on intake-1507#02",
-    "intake-1505": "dive-verified; narrowed: RTX 5000 Ada proxy; latency not decode speedup; two-stage effect ~+1%; OVERTURNS entry framing that it bears on our DFlash collapse (our acceptance flat vs target precision)"
-  },
-  "second_reader": {
-    "A": "/mnt/raid0/llm/tmp/second-reader-20260923/SECOND-READER-A.yaml (1504,1502,1507,1508: 34 found-at, 3 found-elsewhere, 0 not-found; 35 yes, 2 partial on 1508); 1505 all clean per prose",
-    "B": "/mnt/raid0/llm/tmp/second-reader-20260923/SECOND-READER-B.yaml (1498: 9/9 yes; one json-pointer corrected to #/outcome)"
-  },
-  "index_write_stage2": "tail block intake-1495..1509 re-emitted via /workspace/tmp/intake-jev-exl3/merge_dives.py; head bytes asserted identical; backup backup-index-before-stage2.yaml; validator exit 0",
-  "stage2b_selected": [
-    "arXiv 2606.19558",
-    "rtx6kpro kimi-k3 distribution-fidelity doc",
-    "arXiv 2508.08192",
-    "adaptfm competition results",
-    "espetro/llama.cpp@kev",
-    "taigrr/gojev + kev-*-gguf",
-    "scienthoon/luce",
-    "ihubanov/hunch COMPARISON-laya",
-    "arXiv 2510.01237"
+  "preliminary_actionables": [
+    {
+      "intake": "intake-1533",
+      "action": "[unverified] Build a CPU path proposal around the public mul1 AVX reference, with a custom EPYC-optimized kernel as an option; scope it to a small validated operator/model before assessing full-model coverage."
+    },
+    {
+      "intake": "intake-1529",
+      "action": "[unverified] Build an MI210 gfx90a HIP/MFMA feasibility spike from the ROCm fork\u2019s format and test references; do not assume RDNA WMMA code itself is portable."
+    },
+    {
+      "intake": "intake-1528",
+      "action": "[unverified] Use the H200 figures as provisional target bands only; obtain source/report and exact checkpoint+protocol before making a speed claim."
+    },
+    {
+      "intake": "intake-1530",
+      "action": "[unverified] Reuse CUDA code as a mathematical and test reference while authoring native HIP or CPU kernels; do not transplant CUDA launch code into production."
+    }
   ],
-  "stage2b_declined": {
-    "intake-1502": [
-      "r33drichards/laya-vision PR#1",
-      "Luni/laya-jev-benchmark",
-      "Alexander-Ollman/laya-ft",
-      "arXiv 2503.23303"
-    ],
-    "intake-1504": [
-      "SamuelSacco/jev-exploration"
-    ],
-    "intake-1505": [
-      "nota-github/adaptfm-quant-dflash (read in dive)",
-      "hf z-lab/Qwen3.5-4B-DFlash",
-      "pith.science/paper/2607.04244"
-    ],
-    "intake-1498": [
-      "monatis/ggmlc",
-      "multimodalart/jev-reproductions-tracker"
-    ]
-  },
-  "stage3_plan": "/home/node/.claude/plans/cryptic-crafting-flurry.md (operator-approved 2026-09-23)",
-  "stage4": {
-    "handoffs_edited": 16,
-    "new_task_boxes": 12,
-    "ticks": 0,
-    "new_docs": [
-      "docs/research-intake/p-kld-annex-proposals-20260923.md",
-      "progress/2026-09/2026-09-23-intake-jev-exl3.md"
-    ],
-    "deviations_from_plan": [
-      "intake-1499 disposition knowledge_only (plan listed integrated): no handoff text cites it; its content landed via 1501/1502/1504",
-      "intake-1522 disposition integrated (plan listed knowledge_only): the LRC P1.5.4 annotation cites it",
-      "Entry-level citations of intake-1519/1524/1514/1256 narrowed to #NN or #record to satisfy cite-check (overturned sibling claims)"
-    ],
-    "validators": "validate_intake.sh exit 0 (1523 entries); index_state.py --check exit 0"
-  },
-  "steering_ledger_dispositions": "all 4 rows context-only (dive/ingest selections executed in Stages 2/2b)"
+  "explicit_declines": [],
+  "stage1_gate": {
+    "new_entries": 6,
+    "all_stage1_unverified": true,
+    "all_handoffs_updated_empty": true,
+    "all_handoffs_created_empty": true,
+    "validator": "bash scripts/validate/validate_intake.sh exit 0 (1529 entries validated)",
+    "gitnexus": "status up-to-date after wrapper reindex; impact target research/intake_index.yaml not present as a symbol (0 graph dependants; graph risk UNKNOWN)"
+  }
 }
