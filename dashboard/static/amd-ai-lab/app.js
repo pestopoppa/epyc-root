@@ -98,6 +98,21 @@ function buildModels() {
       cpu: true,
     },
     {
+      id: "flash-next",
+      name: "Qwen3.8-Flash-Next",
+      type: "cpu",
+      family: "125B MOE · TEXT",
+      quant: "UD-IQ4_XS",
+      recipe: "Shared Q8_0 MTP head",
+      value: "75.5",
+      unit: "% MMLU-Pro",
+      caption: "Frozen v10 · 200 questions · no truncated answers",
+      badge: "65.13% GPQA · 195 questions",
+      description:
+        "The production CPU critic uses a 125B-parameter MoE with 6B active parameters. Two quality suites were completed on the frozen v10 kernel and the served UD-IQ4_XS weights. A matching np × context decode sweep has not been run.",
+      flashNext: true,
+    },
+    {
       id: "stt",
       name: "Whisper large-v3-turbo",
       type: "cpu",
@@ -137,38 +152,55 @@ function renderCatalog() {
         .toLowerCase()
         .includes(query),
   );
-  grid.innerHTML =
-    visible
-      .map(
-        (m) =>
-          '<article class="card"><div class="card-top"><span class="family">' +
-          escape(m.family) +
-          '</span><span class="chip">' +
-          (m.type === "gpu" ? "MI210" : "EPYC") +
-          "</span></div><h3>" +
-          escape(m.name) +
-          '</h3><div class="card-recipe"><span>WEIGHT QUANTIZATION</span><strong>' +
-          escape(m.quant) +
-          "</strong><small>" +
-          escape(m.recipe) +
-          '</small></div><div class="metric"><strong>' +
-          escape(m.value) +
-          "</strong><span>" +
-          escape(m.unit) +
-          '</span></div><div class="metric-note">' +
-          escape(m.caption) +
-          '</div><div class="card-foot"><span>' +
-          escape(m.badge) +
-          '</span><button data-model="' +
-          m.id +
-          '" aria-label="Explore ' +
-          escape(m.name) +
-          " on " +
-          (m.type === "gpu" ? "MI210" : "EPYC") +
-          '">Explore ↗</button></div></article>',
-      )
-      .join("") ||
-    '<p class="empty">No models match. Try a different name or hardware filter.</p>';
+  const card = (m) =>
+    '<article class="card"><div class="card-top"><span class="family">' +
+    escape(m.family) +
+    '</span><span class="chip">' +
+    (m.type === "gpu" ? "MI210" : "EPYC") +
+    "</span></div><h3>" +
+    escape(m.name) +
+    '</h3><div class="card-recipe"><span>WEIGHT QUANTIZATION</span><strong>' +
+    escape(m.quant) +
+    "</strong><small>" +
+    escape(m.recipe) +
+    '</small></div><div class="metric"><strong>' +
+    escape(m.value) +
+    "</strong><span>" +
+    escape(m.unit) +
+    '</span></div><div class="metric-note">' +
+    escape(m.caption) +
+    '</div><div class="card-foot"><span>' +
+    escape(m.badge) +
+    '</span><button data-model="' +
+    m.id +
+    '" aria-label="Explore ' +
+    escape(m.name) +
+    " on " +
+    (m.type === "gpu" ? "MI210" : "EPYC") +
+    '">Explore ↗</button></div></article>';
+  grid.innerHTML = visible.length
+    ? [
+        ["gpu", "AMD Instinct MI210", "MI210"],
+        ["cpu", "AMD EPYC 9655", "EPYC"],
+      ]
+        .map(([type, title, className]) => {
+          const group = visible.filter((m) => m.type === type);
+          return group.length
+            ? '<section class="catalog-section"><div class="catalog-group-heading"><h3>' +
+                title +
+                "</h3><span>" +
+                group.length +
+                " model" +
+                (group.length === 1 ? "" : "s") +
+                '</span></div><div class="catalog-group ' +
+                className.toLowerCase() +
+                '">' +
+                group.map(card).join("") +
+                "</div></section>"
+            : "";
+        })
+        .join("")
+    : '<p class="empty">No models match. Try a different name or hardware filter.</p>';
 }
 const table = (headers, rows) =>
   '<div class="table-scroll"><table class="data-table"><thead><tr>' +
@@ -258,6 +290,23 @@ function performanceGrid(
   );
 }
 function performancePanel(m) {
+  if (m.flashNext)
+    return (
+      "<h3>Flash-Next · measured results</h3><p>EPYC 9655 · UD-IQ4_XS · shared Q8_0 MTP head · frozen v10. This model's CPU np × context throughput study was skipped on September 24.</p>" +
+      performanceGrid(
+        ["Context not swept"],
+        [{ label: "np = 1", cells: [null] }],
+        "Decode throughput: no matched frozen-v10 serving sweep for this weight file",
+      ) +
+      table(
+        ["Quality suite", "Accuracy", "Questions", "Truncated"],
+        [
+          ["MMLU-Pro", "75.50%", "200", "0"],
+          ["GPQA", "65.13%", "195", "0"],
+        ],
+      ) +
+      '<p class="note">The quality runs used the frozen v10 CPU binary and the production UD-IQ4_XS model. Their generation caps were 8,192 and 16,384 tokens respectively; these are output limits, not context sizes. The earlier 52.661 tok/s post-BIOS serving study used the predecessor binary and IQ4_XS-uniform weights, so it is not a speed claim for this production configuration.</p>'
+    );
   if (m.matrix && !m.curve) return matrixPanel(m);
   if (m.curve) {
     const points = m.curve.matrix || [
@@ -664,6 +713,23 @@ function overviewPanel(m) {
 }
 function recipePanel(m) {
   if (m.speech) return speechRecipe(m);
+  if (m.flashNext)
+    return (
+      "<h3>Flash-Next production CPU configuration</h3>" +
+      facts([
+        ["Target weights", "Qwen3.8-Flash-Next · UD-IQ4_XS · 3 shards"],
+        ["MTP head", "Shared Q8_0 · separate GGUF"],
+        ["Kernel", "production-consolidated-v10 · CPU"],
+        ["Serving recipe", "48 threads · native MTP depth 4 · draft p-min 0.5"],
+        ["KV cache", "F16 key and value"],
+        ["Quality runs", "MMLU-Pro cap 8,192 · GPQA cap 16,384"],
+      ]) +
+      '<p>The canonical recipe document measures a separate IQ4_XS-uniform weight file. Check the model path and benchmark source before comparing throughput. Download model weights and the MTP head separately.</p><p><a class="source-link" href="' +
+      sourceURL("scripts/lib/qwen38_flash_next_recipe.py") +
+      '">Inspect the serving recipe ↗</a></p><p><a class="source-link" href="' +
+      release +
+      '">Get the frozen CPU kernel ↗</a></p>'
+    );
   if (m.id === "qwen38")
     return (
       "<h3>The 80.87 tok/s configuration</h3>" +
@@ -737,6 +803,34 @@ function recipePanel(m) {
   );
 }
 function evidencePanel(m) {
+  if (m.flashNext)
+    return (
+      "<h3>Frozen-kernel quality evidence</h3><p>The September 23 runs identify production-consolidated-v10 and the three-shard UD-IQ4_XS weight file. Both suites converged without truncation.</p>" +
+      [
+        [
+          "MMLU-Pro · 151/200 · 75.50%",
+          "artifacts/architect-bench-cpu-20260923/runs/mmlu_pro/flashnext_ud_iq4xs_mtp_cap8192/result.json",
+        ],
+        [
+          "GPQA · 127/195 · 65.13%",
+          "artifacts/architect-bench-cpu-20260923/runs/gpqa/flashnext_ud_iq4xs_mtp_cap16384/result.json",
+        ],
+        [
+          "Predecessor serving study · different binary and weights",
+          "data/champion-maxperf-postbios-20260921/README.md",
+        ],
+      ]
+        .map(
+          ([label, path]) =>
+            '<p><a class="source-link" href="' +
+            sourceURL(path) +
+            '">' +
+            escape(label) +
+            " ↗</a></p>",
+        )
+        .join("") +
+      '<p class="note">No np × context throughput matrix was recorded for the production CPU weight file. Quality accuracy and decode throughput are different measurements.</p>'
+    );
   const ids =
     m.id === "qwen38"
       ? [
