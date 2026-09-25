@@ -46,6 +46,42 @@
       "headline": "896×896 stable; 1024×1024 blank-class",
       "detail": "HIP diffusion path is useful through 896×896; 1024 remains a known quality failure",
       "source": "docs/reference/models/model-admission-2026-07-16.md"
+    },
+    {
+      "id": "qwen38-27b-mi210-production-v10",
+      "status": "measured",
+      "title": "Qwen3.8-27B production traffic",
+      "hardware": "AMD Instinct MI210 · gfx90a · production v10",
+      "headline": "38.2 tok/s median decode",
+      "detail": "240 depth-8 production requests; 40.8 tok/s median for solo requests ≥100 generated tokens",
+      "source": "artifacts/np_context_kvu_study_20260924/m3_depth_production.md"
+    },
+    {
+      "id": "qwen36-35b-a3b-mi210-matrix",
+      "status": "measured",
+      "title": "Qwen3.6-35B-A3B GPU matrix",
+      "hardware": "AMD Instinct MI210 · gfx90a · Q8_0",
+      "headline": "93.9 tok/s at np1 / 2k",
+      "detail": "24-cell split versus unified-KV matrix; all cells completed, n=1 per cell; production-frontdoor model",
+      "source": "artifacts/np_context_kvu_study_20260924/README.md"
+    },
+    {
+      "id": "cpu-speech-production-baseline",
+      "status": "observed",
+      "title": "CPU speech baseline",
+      "hardware": "AMD EPYC 9655 · CPU-only whisper.cpp + qwentts.cpp",
+      "headline": "STT RTF 0.12–0.20 · TTS RTF 0.55–0.60",
+      "detail": "Both are real-time alone and together; either collapses when sharing cores with the 96-thread frontdoor",
+      "source": "artifacts/speech_cpu_realtime_20260924/README.md"
+    },
+    {
+      "id": "qwen38-27b-unified-context",
+      "status": "observed",
+      "title": "Unified KV context headroom",
+      "hardware": "AMD Instinct MI210 · Qwen3.8-27B Q8_0",
+      "headline": "196,608-token per-request ceiling",
+      "detail": "Unified KV accepted a 124,174-token prompt where split KV rejected it at the 98,304-token slot ceiling",
+      "source": "artifacts/np_context_kvu_study_20260924/README.md"
     }
   ]
 }
