@@ -39,16 +39,16 @@ function buildModels() {
       name: "Qwen3.8-27B",
       type: "gpu",
       family: "DENSE · TEXT",
-      quant: "Q8_0",
-      value: "39.9–40.2",
+      quant: "Q8_0 + DFlash2 drafter",
+      value: "80.87",
       unit: "tok/s",
-      caption: "Live native MTP · single request · two waves",
-      badge: "9-cell KV comparison",
+      caption: "Best measured recipe · 1 request · median of 3 launches",
+      badge: "184.48 summed tok/s · 8 requests",
       matrix: record("v10-qwen38-kv-unified-matrix"),
       curve: record("v10-mi210-qwen38-dflash2"),
       depth: 8,
       description:
-        "Run a dense 27B model on one MI210. Explore live concurrency, the native-MTP context study, and a separate DFlash2 qualification curve.",
+        "80.87 tok/s with a DFlash2 drafter on one MI210. Explore the best measured qualification recipe, its concurrency curve, and alternative native-MTP configurations.",
     },
     {
       id: "qwen36",
@@ -56,10 +56,10 @@ function buildModels() {
       type: "gpu",
       family: "MIXTURE OF EXPERTS · TEXT",
       quant: "Q8_0 · native MTP",
-      value: "93.9",
+      value: "104.8",
       unit: "tok/s",
-      caption: "Unified KV · 1 request · 2k generation limit",
-      badge: "12-cell KV comparison",
+      caption: "Best observed cell · split KV · 8k generation · n=1",
+      badge: "229.6 aggregate tok/s · np8 / 2k",
       matrix: record("v10-mi210-qwen36-matrix"),
       depth: 4,
       description:
@@ -74,7 +74,7 @@ function buildModels() {
       value: "116.04",
       unit: "tok/s",
       caption: "Single request · speculative decoding off",
-      badge: "Concurrency 1 → 4",
+      badge: "192.92 summed tok/s · 4 requests",
       curve: record("v10-mi210-qwen-vl30b"),
       description:
         "A vision-capable 30B MoE on one MI210. This qualification curve measures text-only requests, with no image projector or image workload.",
@@ -84,7 +84,7 @@ function buildModels() {
       name: "Qwen3.6-35B-A3B",
       type: "cpu",
       family: "MIXTURE OF EXPERTS · TEXT",
-      quant: "Q8_0 · MTP model",
+      quant: "Q8_0 · native MTP depth 4",
       value: "64.38",
       unit: "tok/s",
       caption: "Frozen v10 CPU qualification · 5 repetitions",
@@ -113,9 +113,9 @@ function buildModels() {
       type: "cpu",
       family: "STREAMING SPEECH SYNTHESIS",
       quant: "Q8_0 talker + codec · speech-v1",
-      value: "84",
+      value: "75",
       unit: "ms first packet",
-      caption: "Short sentence · PCM streaming · median of 3",
+      caption: "24 threads · short PCM · median of 3 · range 74–76 ms",
       badge: "Latency + real-time factor",
       description:
         "Streaming speech generation on CPU. Inspect first-packet latency, total generation time and audio duration across tested thread counts.",
@@ -197,6 +197,142 @@ function segments(key, options, value) {
     "</div>"
   );
 }
+function performanceGrid(
+  columns,
+  rows,
+  caption,
+  corner = "Concurrent requests (np)",
+) {
+  const values = rows
+    .flatMap((row) => row.cells)
+    .filter((cell) => cell && Number.isFinite(cell.value))
+    .map((cell) => cell.value);
+  const low = Math.min(...values),
+    high = Math.max(...values);
+  return (
+    '<table class="heatmap performance-grid"><caption class="muted">' +
+    escape(caption) +
+    '</caption><thead><tr><th scope="col">' +
+    escape(corner) +
+    "</th>" +
+    columns
+      .map((column) => '<th scope="col">' + escape(column) + "</th>")
+      .join("") +
+    "</tr></thead><tbody>" +
+    rows
+      .map(
+        (row) =>
+          '<tr><th scope="row">' +
+          escape(row.label) +
+          "</th>" +
+          row.cells
+            .map((cell) =>
+              !cell
+                ? '<td class="missing">Not measured</td>'
+                : '<td style="background:rgba(157,117,226,' +
+                  (
+                    0.14 +
+                    (0.55 * (cell.value - low)) / (high - low || 1)
+                  ).toFixed(3) +
+                  ')">' +
+                  escape(cell.label ?? cell.value.toFixed(2)) +
+                  "<small>" +
+                  escape(cell.note || "") +
+                  "</small></td>",
+            )
+            .join("") +
+          "</tr>",
+      )
+      .join("") +
+    "</tbody></table>"
+  );
+}
+function performancePanel(m) {
+  if (m.matrix && !m.curve) return matrixPanel(m);
+  if (m.curve) {
+    const points = m.curve.matrix || [
+      ["1", "116.04"],
+      ["2", "173.45"],
+      ["4", "192.92"],
+    ];
+    return (
+      "<h3>Best measured recipe · np × context</h3><p>" +
+      (m.id === "qwen38"
+        ? "DFlash2 Q8_0 drafter · depth 8"
+        : "Speculative decoding off · text-only workload") +
+      " · MI210 · post-BIOS · September 21.</p>" +
+      performanceGrid(
+        ["65,536 total context"],
+        points.map((row) => ({
+          label: "np = " + row[0],
+          cells: [{ value: Number(row[1]), note: "summed decode tok/s" }],
+        })),
+        "Median of 3 launches per point · sum of per-request decode rates · higher is faster",
+      ) +
+      '<p class="note">This sweep held context at 65,536. No other context columns were measured in this recipe. Concurrency rows describe a complete configuration; the maximum shown is a measured point, not a hardware ceiling.</p>' +
+      "<details><summary>View concurrency curve and measurement details</summary>" +
+      curvePanel(m) +
+      "</details>"
+    );
+  }
+  if (m.cpu)
+    return (
+      "<h3>Native MTP · np × context</h3><p>EPYC 9655 · Q8_0 · MTP depth 4 · post-BIOS · September 21.</p>" +
+      performanceGrid(
+        ["12,800 total context"],
+        [
+          {
+            label: "1 active request",
+            cells: [{ value: 64.38, note: "median decode tok/s · n=5" }],
+          },
+        ],
+        "One request measured per launch; server configured with np=4",
+      ) +
+      '<p class="note">Four configured slots are not four concurrent measured requests. This record has one context/active-concurrency point; other cells are unmeasured.</p>' +
+      "<details><summary>Qualification range, workload and settings</summary>" +
+      overviewPanel(m) +
+      "</details>"
+    );
+  const stt = m.id === "stt";
+  const samples = stt
+    ? [
+        [4.44, 25.54],
+        [2.78, 16.34],
+        [2.17, 14.42],
+        [1.53, 10.52],
+      ]
+    : [
+        [113, 329],
+        [84, 238],
+        [75, 185],
+        [85, 257],
+      ];
+  return (
+    "<h3>" +
+    (stt ? "Transcription" : "Streaming synthesis") +
+    " · workload matrix</h3><p>One active request. Speech has audio/text workloads rather than an LLM context pool; rows show CPU threads.</p>" +
+    performanceGrid(
+      stt
+        ? ["11 s audio", "86.5 s audio"]
+        : ["4.24 s output audio", "35.68 s output audio"],
+      [8, 16, 24, 32].map((threads, i) => ({
+        label: threads + " threads",
+        cells: samples[i].map((value) => ({
+          value,
+          label: stt ? value.toFixed(2) : String(value),
+          note: stt ? "processing seconds" : "ms to first PCM packet",
+        })),
+      })),
+      (stt ? "Median processing time" : "Median first-packet latency") +
+        " · lower is better · n=3 short / n=2 long",
+      "CPU threads · np=1",
+    ) +
+    '<p class="note">Affinity: 8/16/24 threads use cores 0–7/0–15/0–23; 32 threads use 0–39. Workload duration is not an LLM context length. Darker/lighter cells show magnitude, not a quality ranking.</p>' +
+    "<details><summary>Real-time factors, ranges and contention findings</summary>" +
+    speechPanel(m) +
+    "</details>"
+  );
+}
 function matrixPanel(m) {
   const r = m.matrix,
     aggregate = metric === "aggregate";
@@ -260,6 +396,11 @@ function matrixPanel(m) {
                 : mode === "unified"
                   ? (delta >= 0 ? "+" : "") + delta.toFixed(1) + "% vs split"
                   : "split KV") +
+              "</small><small>ctx " +
+              (
+                ({ "2k": 2048, "8k": 8192, "32k": 32768 }[ctx] + 1024) *
+                np
+              ).toLocaleString() +
               "</small></td>"
             );
           })
@@ -373,7 +514,7 @@ function curvePanel(m) {
 
 function livePanel() {
   return (
-    "<h3>One GPU. Four simultaneous requests.</h3><p>The live 27B server was tested with fixed 1,024-token outputs, two waves at each concurrency. These rates include elapsed wall time.</p>" +
+    "<h3>Long-context MTP · September 24, post-BIOS</h3><p>This alternative prioritizes a 196,608-token shared context pool. The live 27B server was tested with fixed 1,024-token outputs, two waves at each concurrency. These rates include elapsed wall time.</p>" +
     '<div class="bar-chart">' +
     [1, 2, 4]
       .map((np) => {
@@ -450,7 +591,10 @@ function speechPanel(m) {
     '<p class="note">Medians: n=3 short, n=2 long. The 16-thread short first-packet range was 84–420 ms. First packet is not playback-ready latency; the study used a 0.5-second playback buffer for its non-LLM-contention runs.</p>' +
     facts([
       ["16-thread long narration", "35.68 s audio generated in 21.24 s"],
-      ["Solo affinity", "0–15 (16-thread headline)"],
+      [
+        "Solo affinity",
+        "0–23 (24-thread headline); 0–15 (16-thread comparison)",
+      ],
       ["Voice settings", "seed 42 · no voice field · PCM"],
       ["RTF", "Processing time / audio duration · lower is better"],
     ]) +
@@ -476,7 +620,7 @@ function speechRecipe(m) {
             ["Kernel", "qwentts.cpp · production-speech-v1 · 2c1b518"],
             ["Models", "0.6B base Q8_0 talker + 12 Hz Q8_0 tokenizer"],
             ["CPU backend", "GGML_BACKEND=CPU · HIP_VISIBLE_DEVICES=-1"],
-            ["Threads", "16 via nprocs shim · SHIM_NPROCS=32"],
+            ["Threads", "24 via nprocs shim · SHIM_NPROCS=48"],
           ],
     ) +
     "<p>Each service must use its own build directory in LD_LIBRARY_PATH. The TTS thread limiter is host-specific and the binary has no thread-count CLI flag; consult the study harness before reproducing the configuration.</p>" +
@@ -510,6 +654,30 @@ function overviewPanel(m) {
 }
 function recipePanel(m) {
   if (m.speech) return speechRecipe(m);
+  if (m.id === "qwen38")
+    return (
+      "<h3>The 80.87 tok/s configuration</h3>" +
+      facts([
+        ["Target / drafter", "Qwen3.8-27B Q8_0 / DFlash2 Q8_0"],
+        [
+          "Acceleration",
+          "DFlash2 · draft maximum 8 · target and drafter on GPU",
+        ],
+        ["Context / KV", "65,536 total tokens · split KV · F16 cache"],
+        ["GPU / CPU", "MI210 gfx90a · 8 host threads pinned to 184–191"],
+        ["Batch / microbatch", "2,048 / 2,048 · flash attention"],
+        ["Measurement", "September 21 · post-BIOS · 3 launches per point"],
+      ]) +
+      '<p>Download both target and drafter weights separately. The sweep overrides the base recipe context to 65,536; preserve that setting when reproducing these results.</p><p><a class="source-link" href="' +
+      sourceURL(
+        "artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json",
+      ) +
+      '">DFlash2 recipe ↗</a></p><p><a class="source-link" href="' +
+      sourceURL("data/champion-maxperf-postbios-20260921/sweep_27b_moefix.py") +
+      '">Exact qualification sweep ↗</a></p><p><a class="source-link" href="' +
+      release +
+      '">Download the frozen kernel ↗</a></p><p class="note">The native-MTP KV matrix and long-context test use separate configurations. The 80.87 tok/s headline belongs to this DFlash2 recipe.</p>'
+    );
   if (m.cpu)
     return (
       "<h3>EPYC CPU qualification recipe</h3>" +
@@ -609,10 +777,9 @@ function evidencePanel(m) {
 function renderDetail() {
   const m = selected;
   const tabs = [
-    ...(m.id === "qwen38" ? [["live", "Live serving"]] : []),
-    ...(m.matrix ? [["matrix", "KV matrix"]] : []),
-    ...(m.curve ? [["curve", "Serving curve"]] : []),
-    ...(!m.matrix && !m.curve ? [["overview", "Results"]] : []),
+    ["performance", "Performance matrix"],
+    ...(m.matrix && m.curve ? [["matrix", "Native-MTP matrix"]] : []),
+    ...(m.id === "qwen38" ? [["live", "Long-context MTP"]] : []),
     ["recipe", "Configuration"],
     ["evidence", "Evidence"],
   ];
@@ -639,32 +806,27 @@ function renderDetail() {
       )
       .join("") +
     '</div><div class="panel">' +
-    (tab === "live"
-      ? livePanel()
-      : tab === "matrix"
-        ? matrixPanel(m)
-        : tab === "curve"
-          ? curvePanel(m)
-          : tab === "recipe"
-            ? recipePanel(m)
-            : tab === "evidence"
-              ? evidencePanel(m)
-              : overviewPanel(m)) +
+    (tab === "performance"
+      ? performancePanel(m)
+      : tab === "live"
+        ? livePanel()
+        : tab === "matrix"
+          ? matrixPanel(m)
+          : tab === "curve"
+            ? curvePanel(m)
+            : tab === "recipe"
+              ? recipePanel(m)
+              : tab === "evidence"
+                ? evidencePanel(m)
+                : overviewPanel(m)) +
     "</div>";
 }
 grid.addEventListener("click", (event) => {
   const button = event.target.closest("[data-model]");
   if (!button) return;
   selected = models.find((m) => m.id === button.dataset.model);
-  tab =
-    selected.id === "qwen38"
-      ? "live"
-      : selected.matrix
-        ? "matrix"
-        : selected.curve
-          ? "curve"
-          : "overview";
-  mode = "unified";
+  tab = "performance";
+  mode = selected.id === "qwen36" ? "split" : "unified";
   metric = "perreq";
   renderDetail();
   dialog.showModal();
