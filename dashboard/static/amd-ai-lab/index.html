@@ -1,47 +1,168 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0f14">
-  <title>AMD AI Lab — hardware recipes and results</title>
-  <meta name="description" content="Compact, evidence-backed AMD AI hardware recipes and benchmark results.">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="postbios.css">
-</head>
-<body>
-  <div class="site-shell">
-    <header class="topbar">
-      <a class="brand" href="#top"><span class="brand-mark">A</span><span>AMD AI LAB</span></a>
-      <nav class="nav" aria-label="Primary navigation"><a href="#models">Models</a><a href="#results">Results</a><a href="#method">Method</a></nav>
-      <span class="header-state"><i></i> draft / evidence-first</span>
-    </header>
-
-    <main id="top">
-      <section class="hero">
-        <div><p class="eyebrow"><span class="pulse"></span> AMD inference field guide</p><h1>Recipes for<br><span>AMD hardware.</span></h1><p class="hero-lede">Measured configurations for Radeon, Instinct, Ryzen AI, and EPYC. Every number carries its runtime, model, hardware, and evidence status.</p><div class="hero-actions"><a class="button button-accent" href="#results">View results <span>↓</span></a><a class="text-link" href="#method">Measurement contract <span>↗</span></a></div></div>
-        <div class="hero-stats" aria-label="Catalog summary"><div><strong>08</strong><span>evidence records</span></div><div><strong>03</strong><span>production surfaces</span></div><div><strong>08+</strong><span>coverage targets</span></div></div>
-      </section>
-
-      <section class="filterbar" id="models" aria-label="Catalog filters"><span class="filter-label">CATALOG</span><button class="filter active" data-filter="all">All hardware</button><button class="filter" data-filter="Radeon">Radeon</button><button class="filter" data-filter="Instinct">Instinct</button><button class="filter" data-filter="Ryzen AI">Ryzen AI</button><button class="filter" data-filter="EPYC">EPYC / CPU</button><span class="filter-count">Live catalog · evidence status shown per row</span></section>
-
-      <section class="results" id="results">
-        <div class="section-head"><div><p class="eyebrow">01 / Evidence catalog</p><h2>Results, not vibes.</h2></div><p class="section-note">Production-relevant records first.<br>Unknown is better than invented.</p></div>
-        <div class="catalog-grid" data-catalog-grid><div class="loading">Loading evidence catalog…</div></div>
-      </section>
-
-      <section class="postbios" id="postbios">
-        <div class="section-head"><div><p class="eyebrow">02 / Frozen production v10</p><h2>Current CPU serving matrix.</h2></div><p class="section-note">production-consolidated-v10<br>EPYC 9655 · 5 repetitions per cell</p></div>
-        <div class="postbios-grid"><div class="postbios-table"><div class="table-head"><span>Production workload</span><span>generation tok/s</span><span>kernel</span></div><div><span>Gemma 4 26B-A4B Q4_K_M</span><b>70.97</b><strong>v10</strong></div><div><span>Qwen3.5-122B-A10B UD-Q4_K_M</span><b>57.19</b><strong>v10</strong></div><div><span>Qwen3.6-35B-A3B-MTP Q8_0</span><b>64.38</b><strong>v10</strong></div><div><span>Qwen3-Next-80B-A3B Q4_K_M</span><b>41.26</b><strong>v10</strong></div></div><aside class="gpu-callout"><span class="callout-label">CURRENT GPU / MI210 / V10</span><strong>Qwen3.8-27B serving curve.</strong><p>DFlash2 at context 65,536: <b>80.87 / 108.75 / 168.64 / 184.48</b> tok/s at np 1 / 2 / 4 / 8. These are current frozen-v10 production numbers.</p></aside></div>
-      </section>
-
-      <section class="method" id="method"><div class="section-head"><div><p class="eyebrow">03 / Measurement contract</p><h2>What a result must show.</h2></div></div><div class="method-grid"><div><span>01</span><b>Machine identity</b><p>GPU architecture, memory, host CPU, driver, ROCm, and visible device.</p></div><div><span>02</span><b>Build identity</b><p>Runner commit, linked libraries, model artifact, command line, and environment.</p></div><div><span>03</span><b>Limits</b><p>Quality, residency, context, thermal, and cleanup evidence stay attached.</p></div></div></section>
-    </main>
-
-    <footer class="footer"><a class="brand" href="#top"><span class="brand-mark">A</span><span>AMD AI LAB</span></a><span>Draft concept · 2026</span><span>Measured in the open</span></footer>
-  </div>
-
-  <dialog class="detail-dialog" data-detail-dialog aria-labelledby="detail-title"><button class="dialog-close" data-close-detail aria-label="Close benchmark details">×</button><div class="dialog-inner" data-dialog-content></div></dialog>
-  <script src="app.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101116" />
+    <title>AMD AI Lab · Find your inference sweet spot</title>
+    <meta
+      name="description"
+      content="Explore measured AMD inference: model benchmarks, concurrency curves and interactive KV cache matrices."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <a class="brand" href="#top"
+          ><span class="mark" aria-hidden="true"
+            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">
+              <path
+                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"
+                stroke="currentColor"
+                stroke-width="3"
+              /></svg
+          ></span>
+          AMD AI LAB<span class="beta">FIELD NOTES</span></a
+        >
+        <nav>
+          <a href="#models">Models</a><a href="#method">How to read</a
+          ><a
+            href="https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10"
+            >Get the kernel ↗</a
+          >
+        </nav>
+      </header>
+      <main id="top">
+        <section class="hero">
+          <div class="eyebrow">
+            <span class="dot"></span> EPYC + INSTINCT / FROZEN KERNEL v10
+          </div>
+          <h1>Find your inference<br /><em>sweet spot.</em></h1>
+          <p>
+            Real models. Real AMD hardware. Explore how speed changes with
+            concurrency and context—then inspect the configuration behind the
+            numbers.
+          </p>
+          <div class="hero-foot">
+            <a class="primary" href="#models"
+              >Explore the models <span>↘</span></a
+            ><span>EPYC 9655 <b>+</b> Instinct MI210 · 64 GB</span>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="orb"></div>
+            <div class="axis">CONCURRENCY × CONTEXT</div>
+            <div class="art-grid">
+              <i style="--v: 0"></i><i style="--v: 0.35"></i
+              ><i style="--v: 0.7"></i><i style="--v: 0.1"></i
+              ><i style="--v: 0.45"></i><i style="--v: 0.8"></i
+              ><i style="--v: 0.2"></i><i style="--v: 0.55"></i
+              ><i style="--v: 0.9"></i><i style="--v: 0.3"></i
+              ><i style="--v: 0.65"></i><i style="--v: 0.05"></i
+              ><i style="--v: 0.4"></i><i style="--v: 0.75"></i
+              ><i style="--v: 0.15"></i><i style="--v: 0.5"></i
+              ><i style="--v: 0.85"></i><i style="--v: 0.25"></i
+              ><i style="--v: 0.6"></i><i style="--v: 0"></i
+              ><i style="--v: 0.35"></i><i style="--v: 0.7"></i
+              ><i style="--v: 0.1"></i><i style="--v: 0.45"></i
+              ><i style="--v: 0.8"></i><i style="--v: 0.2"></i
+              ><i style="--v: 0.55"></i><i style="--v: 0.9"></i
+              ><i style="--v: 0.3"></i><i style="--v: 0.65"></i
+              ><i style="--v: 0.05"></i><i style="--v: 0.4"></i>
+            </div>
+            <span class="art-caption">MEASURE. COMPARE. REPRODUCE.</span>
+          </div>
+        </section>
+        <section id="models">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">THE MODEL BENCH</span>
+              <h2>Less guessing. More signal.</h2>
+            </div>
+            <span class="muted">Measured on our hardware · September 2026</span>
+          </div>
+          <div class="toolbar">
+            <div class="filters" aria-label="Hardware filters">
+              <button data-filter="all" class="active" aria-pressed="true">
+                All models</button
+              ><button data-filter="gpu" aria-pressed="false">
+                Instinct MI210</button
+              ><button data-filter="cpu" aria-pressed="false">EPYC CPU</button>
+            </div>
+            <label class="search"
+              ><span aria-hidden="true"
+                ><svg
+                  viewBox="0 0 20 20"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle cx="8" cy="8" r="5" />
+                  <path d="m12 12 5 5" /></svg></span
+              ><input
+                type="search"
+                placeholder="Find a model…"
+                aria-label="Find a model"
+            /></label>
+          </div>
+          <div class="catalog" data-catalog-grid>
+            <p role="status">Loading model benchmarks…</p>
+          </div>
+          <p class="catalog-note">
+            Open a model for its measurements, settings, and source evidence.
+            Rates from different recipes are kept separate.
+          </p>
+        </section>
+        <section id="method" class="method">
+          <div>
+            <span class="eyebrow">A QUICK READING GUIDE</span>
+            <h2>The number is only<br />half the story.</h2>
+          </div>
+          <div>
+            <h3>One user or the whole server?</h3>
+            <p>
+              Per-request decode measures an individual response. Wall-clock
+              aggregate measures all completed tokens over elapsed time.
+              Qualification curves separately report the sum of request decode
+              rates. Higher concurrency can raise one while lowering the other.
+            </p>
+          </div>
+          <div>
+            <h3>Same kernel. Different evidence.</h3>
+            <p>
+              The KV studies use the frozen v10 binary, but one sample per cell
+              is exploratory. A measured difference is not a proven speedup.
+              Recipe and sample counts stay beside every chart.
+            </p>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <a class="brand" href="#top"
+          ><span class="mark" aria-hidden="true"
+            ><svg viewBox="0 0 32 32" width="26" height="26" fill="none">
+              <path
+                d="M16 2v28M2 16h28M6 6l20 20M6 26L26 6"
+                stroke="currentColor"
+                stroke-width="3"
+              /></svg
+          ></span>
+          AMD AI LAB</a
+        ><span
+          >Independent benchmarks. Model weights downloaded separately.</span
+        ><a href="data/catalog.json">Download evidence JSON ↗</a>
+      </footer>
+    </div>
+    <dialog aria-labelledby="detail-title">
+      <div class="dialog-top">
+        <span class="eyebrow">MODEL WORKSPACE</span
+        ><button data-close aria-label="Close model details">
+          Close <kbd>Esc</kbd>
+        </button>
+      </div>
+      <div data-detail></div>
+    </dialog>
+    <script src="app.js"></script>
+  </body>
 </html>
