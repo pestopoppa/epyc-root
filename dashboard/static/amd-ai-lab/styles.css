@@ -293,9 +293,36 @@ input {
   letter-spacing: -0.6px;
   margin: 17px 0 1px;
 }
-.subtitle {
+.card-recipe {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 5px 9px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+.card-recipe span {
+  font-size: 10px;
+  letter-spacing: 0.65px;
+  color: var(--muted);
+}
+.card-recipe strong,
+.detail-quant strong {
+  color: var(--mint);
+  font-weight: 700;
+}
+.card-recipe small {
+  flex-basis: 100%;
+  font-size: 11px;
+  color: var(--muted);
+}
+.detail-quant {
+  margin: 4px 0 14px;
   font-size: 12px;
   color: var(--muted);
+}
+.detail-quant strong {
+  margin-left: 5px;
 }
 .metric {
   margin: 22px 0 2px;
