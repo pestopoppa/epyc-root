@@ -1,31 +1,30 @@
 {
   "by_type": {
     "docs": 110,
-    "handoff-active": 174,
+    "handoff-active": 175,
     "handoff-blocked": 2,
-    "handoff-completed": 197,
-    "progress": 492,
+    "handoff-completed": 198,
+    "progress": 494,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-25T13:34:03Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
+      "added": 0,
       "changed": 1,
       "removed": 0
     },
-    "at": "2026-09-25T15:11:21Z",
+    "at": "2026-09-25T19:40:20Z",
     "scope_paths": [
-      "handoffs/active/vidya-belief-substrate-program.md",
-      "progress/2026-09/2026-09-25-codex-vidya.md"
+      "handoffs/active/autopilot-continuous-optimization.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-25T15:11:21Z",
+  "scan_time": "2026-09-25T19:40:20Z",
   "schema_version": 1,
-  "source_set_hash": "e71d458c81ff2a5a88aab9350bdb818323bb48093b56625ad9f8a8be80863bc7",
+  "source_set_hash": "87df6e389c32d03924f4e2d3b0b91cc8a4976ba08a0bfe63bcf3af6d46e605b6",
   "sources": [
     {
       "content_hash": "8595f5d9339b0046d8720c31a58567e781bd250c32406bdc381c523e28197e7d",
@@ -36,10 +35,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0a345b34600da1a0b72a03a9579f41a93554b7948b04524747b32332d5f6e269",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "e69ad3f64ffcf15bdacdfc470828506b9dcc3bdb35d7fcba8f517f443fc4f40f",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/agent-collab-rnd-harness.md",
-      "size": 9814,
+      "size": 10299,
       "title": "Agent-Collaboration Harness for Kernel/Orchestration R&D",
       "type": "handoff-active"
     },
@@ -60,10 +59,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9beba2fecf54492ea12f4e79a5b17e66486ae52ec97683512213726cfa1c5180",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "cc5b07250cb7649123bae42d2b9f8814dc8879fed9106fd7badac7415390eb92",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
-      "size": 117163,
+      "size": 118738,
       "title": "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness",
       "type": "handoff-active"
     },
@@ -140,10 +139,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "989fc58ee8c04f6804842d9cbcd934b97220479722471e814575cca9e0fd68e5",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "3298c63459dab055a3d4959a99e1e46f1de11fe52bc62e944f40681a9b4bf559",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 476940,
+      "size": 480113,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -164,10 +163,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6b8defa1b96f5cb68741c91fd4938ce02c766540556989c04e9077f5bd9b52ac",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "1007920a9639f0931fc69bd87901bf4553ec6ccd53b127ca150c4f094d4d6984",
+      "modified": "2026-09-25T19:39:47Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 400299,
+      "size": 84653,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -188,10 +187,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7796bd02591b9530630616e35619acbc1ca2dcead8cc4dba1d13c7f33af4dfda",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "45ca9095240f07df20a340e8d841956be21c7c3b0db16cd39a14a4f3d2516e28",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/autopilot-sequential-allocation.md",
-      "size": 30736,
+      "size": 31445,
       "title": "Autopilot Sequential Verdicts \u2014 the allocation rule, not the effect, was the binding constraint",
       "type": "handoff-active"
     },
@@ -244,10 +243,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0f5e02195bb713f6f57092e1d646dde8a131dd0a74a1d9e29b2fdd73ec972c04",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "23aea007f15675cc1653e7b90bf3578a205f91691a522372f83f08603aa85428",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/canonical-judge-suite-revamp.md",
-      "size": 46739,
+      "size": 47499,
       "title": "Canonical Judge Suite Revamp \u2014 Replace a Saturated Instrument with Execution-Verified Ones",
       "type": "handoff-active"
     },
@@ -348,10 +347,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4f6e6ac54072f46a4505cc32f1053008bc82a9c9fc269d5524cf1ebc71b5c460",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "5afed1f201a7551e5b7cbe56c06e26b063d629c561b28b64e270b5253927ae1a",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/decision-aware-routing.md",
-      "size": 86605,
+      "size": 87119,
       "title": "Decision-Aware Routing for Q-Scorer",
       "type": "handoff-active"
     },
@@ -468,10 +467,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "02e376fbb35c8b44b41f0aea314f728237c24062914dd9cb0c1ea3ec24366555",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "14014adabb16bbc6d67dd9cc49d6073bbe91678e09fed203fb13de339dd7c63d",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/eval-tower-verification.md",
-      "size": 122677,
+      "size": 127504,
       "title": "Eval Tower Verification Framework",
       "type": "handoff-active"
     },
@@ -545,6 +544,14 @@
       "path": "handoffs/active/fleet-fanout-measurement.md",
       "size": 13646,
       "title": "Fleet Fan-Out Measurement \u2014 per-subagent timing collector + failure grading",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "d3436f7bfc850305ede903f0077c7ad5e6db57a62219ed2f6e739339380b9297",
+      "modified": "2026-09-25T19:22:15Z",
+      "path": "handoffs/active/formal-artifact-reproducibility.md",
+      "size": 2118,
+      "title": "Formal Artifact Reproducibility",
       "type": "handoff-active"
     },
     {
@@ -660,10 +667,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bc205ef4fffba225747f6cd1c0d0e6bd4f8dadffbd42957471e1919bf66fc44e",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "331c6d79fe96aedd33621034997e3a2949c49156c84871f07c5398b557e1ea2b",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 56497,
+      "size": 57145,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -900,10 +907,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c1f212d05762385b2e1a42c2aa2cb10f1ae366c421697ef2839e3e2d2bb61deb",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "15778b0e38cd952ff95eca901d231cbc93184a64419085541306f73d1b5f4812",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/multimodal-pipeline.md",
-      "size": 100459,
+      "size": 101457,
       "title": "Multimodal Pipeline: Vision + TTS + ASR",
       "type": "handoff-active"
     },
@@ -1108,10 +1115,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b164f5ba74ea352c89a8d811616abaccf0c8f31955ad5f8eb3898cdc444dbff0",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "16402970361d3d0115824d81943484a03842046fa42705437c044a7f68487764",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/reviewer-calibration-accounting.md",
-      "size": 31214,
+      "size": 32714,
       "title": "Reviewer Control Plane \u2014 Calibration Accounting: FA/FR Ledger + Near-Miss Corpus + P-REV-1 (H4)",
       "type": "handoff-active"
     },
@@ -1140,10 +1147,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "46b9925c40effce2656e8a7a96ab1cf9b2cf94fc50128b71fb5e7bb3bc3f2a6d",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "db381afb5c69a98010adf57d4d5b37723436a03b1ac98d8237226c10abdb4dc8",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/reviewer-typed-artifacts.md",
-      "size": 20398,
+      "size": 22215,
       "title": "Reviewer Control Plane \u2014 Typed Artifact Schemas (H2)",
       "type": "handoff-active"
     },
@@ -1332,10 +1339,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4e4db53c4afbc09a91bdebd5d022ec64cf8a5a52c255e0b3a34caecd0810d60b",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "81dbb06b6243093d5bb36f7d98ccbc10b68d72695a716b5ccef8700c5eb95c42",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/tri-role-coordinator-architecture.md",
-      "size": 34903,
+      "size": 35043,
       "title": "Tri-Role Coordinator Architecture (Thinker / Worker / Verifier)",
       "type": "handoff-active"
     },
@@ -1348,10 +1355,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "43be4653f0df88902b3a7d2b7ff2f68024b7af36bb4fae2169c2697a3a12e51a",
-      "modified": "2026-09-25T13:23:22Z",
+      "content_hash": "97aeb47f15186dfd5e7bf5b993c5c17f8a009098d634f68c5f39c51835fe9650",
+      "modified": "2026-09-25T19:22:15Z",
       "path": "handoffs/active/typed-decision-plane.md",
-      "size": 80363,
+      "size": 86428,
       "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
       "type": "handoff-active"
     },
@@ -1372,10 +1379,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "138e19c434bb1e5c0a150bb2307d6f35afb6ca70475edbcadb7d685ce8a94f41",
-      "modified": "2026-09-25T15:06:35Z",
+      "content_hash": "08e3d2330c82c6dca8df67e2bd7e0ab092636ce6fd3e7868772a02b95ec1e1b0",
+      "modified": "2026-09-25T19:34:54Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 259604,
+      "size": 262653,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -1505,6 +1512,14 @@
       "path": "handoffs/completed/autopilot-authority-autoenable-proposal.md",
       "size": 8561,
       "title": "Proposal \u2014 Auto-enable AutoPilot authority on strict-readiness-pass",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "73c348828b8a821747c2697d599553af7f49222959ff085985c6a786a2e234da",
+      "modified": "2026-09-25T19:31:41Z",
+      "path": "handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "size": 406860,
+      "title": "AutoPilot Continuous Optimization \u2014 Historical Ledger, 2026-06-21 through 2026-09-25",
       "type": "handoff-completed"
     },
     {
@@ -8044,6 +8059,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "cbfa3fa2df6a14fe36b16b07a0a331ab423af9e3ae6888eb67552cd6bbbd23a9",
+      "modified": "2026-09-25T19:37:45Z",
+      "path": "progress/2026-09/2026-09-25-codex-system1-wrapup.md",
+      "size": 6010,
+      "title": "System One and Evolution Research Intake Wrap-Up \u2014 2026-09-25",
+      "type": "progress"
+    },
+    {
       "content_hash": "9552bfe5edabfccf1588fda2648620bfb36ca29a7ab24e732d75e719c804ac71",
       "modified": "2026-09-25T15:08:38Z",
       "path": "progress/2026-09/2026-09-25-codex-vidya.md",
@@ -8065,6 +8088,14 @@
       "path": "progress/2026-09/2026-09-25-main-ak-seat.md",
       "size": 8947,
       "title": "2026-09-25 \u2014 main-ak-seat (overnight: DS41 run 9 \u2192 stop \u2192 ctx A/B \u2192 run 9b)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3602855422328551fc299f70398311e08e9ec83e3470fad8ad15dcd61b7e2dce",
+      "modified": "2026-09-25T19:22:15Z",
+      "path": "progress/2026-09/2026-09-25.md",
+      "size": 1170,
+      "title": "Progress \u2014 2026-09-25",
       "type": "progress"
     },
     {
@@ -8948,7 +8979,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1115,
+  "total_new": 1119,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

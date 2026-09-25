@@ -2,7 +2,7 @@
 
 **Category**: `formal_verification`
 **Confidence**: verified
-**Last compiled**: 2026-09-08 (the SC69-73 audit survivors closed as verifications, not checks — SC61's `attested` binding producer landed and all five defects were fixed under the placement rule that made them findings, `5d7f14be`; plus the RC-12 16-threshold audit naming three selection-on-the-certification-sample VIOLATIONS; earlier: 2026-09-07, the belief kernel's own grading-implementation audit — 5 survivors from a mutation audit, led by a verifier grading Attested on a digest never checked; earlier: RustEvo2 verification gate)
+**Last compiled**: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-08 (the SC69-73 audit survivors closed as verifications, not checks — SC61's `attested` binding producer landed and all five defects were fixed under the placement rule that made them findings, `5d7f14be`; plus the RC-12 16-threshold audit naming three selection-on-the-certification-sample VIOLATIONS; earlier: 2026-09-07, the belief kernel's own grading-implementation audit — 5 survivors from a mutation audit, led by a verifier grading Attested on a digest never checked; earlier: RustEvo2 verification gate)
 **Sources**: 15 documents
 
 ## Summary
@@ -490,3 +490,18 @@ verification-failure-catalogue.md`), which is what makes the two records one the
   [agent-architecture](agent-architecture.md)).
 - [`docs/guides/agent-workflows/verification-failure-catalogue.md`](../docs/guides/agent-workflows/verification-failure-catalogue.md)
   — the fifteen faces, for the face-1 / face-4 / face-15 mappings above.
+
+## Compiled Update — 2026-09-25: Reproducible Formal Artifacts
+
+The formal-artifact track now has an explicit owner and evidence boundary. A reproducibility run must pin the repository revision, Lean and Lake toolchain, dependency lock state, platform, commands, and full logs. The baseline checks are a clean `lake build`, theorem inventory, and `#print axioms` or equivalent trust inspection for the claims under review. Native or kernel-backed decision procedures must be reported as part of the trusted computing boundary rather than collapsed into “Lean verified.”
+
+Three conclusions must remain separate. Build success shows that the artifact compiles in the pinned environment. Theorem inspection shows the formal statement and its assumptions. Benchmark performance shows how the implementation behaves on a dataset. None implies either of the other two. Where executable-search systems produce candidate proofs or programs, the evaluator must also preserve timeouts, rejected outputs, and the exact checker invocation.
+
+### Source References
+
+- [Formal artifact reproducibility](../handoffs/active/formal-artifact-reproducibility.md)
+- [Eval Tower verification](../handoffs/active/eval-tower-verification.md)
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
+
+**Confidence:** verified for the repository workflow and prospective evidence contract; external theorem and benchmark claims remain unverified until FAR-1 and FAR-2 produce receipts.

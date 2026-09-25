@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | HS-4 P0.4 — after an API reload (≥ orch 54b6439d), in a quiet window run hs4_p04_acceptance.py plan→prepare→run.sh→verify | — |
+| UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | HS-TD-4 — implement prepared-action freshness, authorization receipts, and mutation tests | — |
 | UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
 | UFH-04 | minddr deep research mode | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) | Phase-2 — Provision a pinned gfx90a training env, then run the MI210 training-viability smoke; the run waits on E5 Stage-B host release | — |
 | UFH-05 | reasoning compression | [reasoning-compression.md](reasoning-compression.md) | If validated: implement enforce mode (route easy→worker, hard→architect) | — |

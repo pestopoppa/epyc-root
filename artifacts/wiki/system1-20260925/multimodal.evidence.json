@@ -1,0 +1,23 @@
+{
+  "confidence": "verified",
+  "kind": "project-wiki-writer-evidence",
+  "review": {
+    "checks": [
+      "project-wiki structural lint",
+      "handoff index_state and citation check",
+      "source-reference count and link-target lint"
+    ],
+    "mode": "measured",
+    "verdict": "accept"
+  },
+  "schema_version": 1,
+  "source_references": [
+    "handoffs/active/multimodal-pipeline.md",
+    "handoffs/active/eval-tower-verification.md",
+    "progress/2026-09/2026-09-25.md"
+  ],
+  "writer": {
+    "execution": "codex-system1-wrapup",
+    "role": "worker_general"
+  }
+}

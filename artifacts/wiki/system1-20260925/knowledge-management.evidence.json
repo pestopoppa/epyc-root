@@ -1,0 +1,23 @@
+{
+  "confidence": "verified",
+  "kind": "project-wiki-writer-evidence",
+  "review": {
+    "checks": [
+      "project-wiki structural lint",
+      "handoff index_state and citation check",
+      "source-reference count and link-target lint"
+    ],
+    "mode": "measured",
+    "verdict": "accept"
+  },
+  "schema_version": 1,
+  "source_references": [
+    "handoffs/active/vidya-belief-substrate-program.md",
+    "handoffs/active/reviewer-typed-artifacts.md",
+    "progress/2026-09/2026-09-25-codex-system1-wrapup.md"
+  ],
+  "writer": {
+    "execution": "codex-system1-wrapup",
+    "role": "worker_general"
+  }
+}

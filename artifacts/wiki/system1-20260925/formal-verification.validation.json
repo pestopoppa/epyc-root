@@ -1,0 +1,8 @@
+{
+  "draft_path": "wiki/formal-verification.md",
+  "errors": [],
+  "evidence_path": "artifacts/wiki/system1-20260925/formal-verification.evidence.json",
+  "kind": "project-wiki-writer-validation",
+  "ok": true,
+  "schema_version": 1
+}
