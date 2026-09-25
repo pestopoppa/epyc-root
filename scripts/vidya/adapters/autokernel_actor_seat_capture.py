@@ -43,6 +43,27 @@ What the contract refuses to let anyone pretend:
 The metric vocabulary below (unit + direction) is fixed by the schema version: a producer that
 writes ``epyc.autokernel.actor_call.v1`` / ``seat_ab_arm.v1`` records that vocabulary; the reader
 never infers a direction from a metric name.
+
+**Backend kinds (INF-78 OAB-2, 2026-09-25).** :data:`BACKEND_KINDS` now includes
+``orchestrator`` alongside the three CLI kinds (``codex``/``claude``/``opencode``): the loop can
+call the orchestrator's ``/chat`` instead of one model directly (``actor_orchestrator
+.OrchestratorBackend``). No field was added -- the same closed ``CALL_FIELDS``/``SEAT_FIELDS``
+carry it, so the schema stays ``epyc.autokernel.actor_call.v1`` -- but two things this kind must
+never claim are now enforced in :func:`_server`:
+
+* the orchestrator's seat is its own ``/chat`` scoped to ``task_root`` (the existing
+  ``workspace`` field already carries the lane worktree path -- nothing new there) and it has no
+  opencode config, so the generic "not opencode" branches of :func:`_seat` already force
+  ``bounded=False`` and null the opencode-only fields for it, same as ``codex``/``claude``;
+* ``server.endpoint`` for this kind must be the orchestrator's own loopback base URL (default
+  ``http://127.0.0.1:8000``, or an ``AK_ORCHESTRATOR_URL`` override -- still loopback), never a
+  model-serving port; and ``server.served_model`` must be null, because the orchestrator routes
+  per call rather than serving one fixed model -- **model provenance for an orchestrator call is
+  the ``ChatResponse``'s ``routed_to``/``role_history``, which rides on the sibling
+  ``actor_call_metrics.v1`` row (``actor_orchestrator.collect`` -> ``record["orchestrator"]
+  ["provenance"]``), not on this closed VB-AK-SEAT contract.** A producer that has a served model
+  to report writes it under the ``opencode``/``codex``/``claude`` kinds as before; this rule only
+  narrows what an ``orchestrator`` record itself may assert.
 """
 
 from __future__ import annotations
@@ -73,7 +94,11 @@ WALL_TOLERANCE_S = 5.0
 
 ROLES = frozenset({"planner", "author", "critic"})
 ARM_ROLES = frozenset({"planner", "author"})
-BACKEND_KINDS = frozenset({"codex", "claude", "opencode"})
+#: INF-78 OAB-2 (2026-09-25): `orchestrator` added alongside the three CLI kinds -- the
+#: loop calls the ORCHESTRATOR's `/chat`, not one model, via `actor_orchestrator
+#: .OrchestratorBackend`. Same CALL_SCHEMA, no new fields: `_server` below gates what an
+#: orchestrator record may say about which model answered (see its docstring).
+BACKEND_KINDS = frozenset({"codex", "claude", "opencode", "orchestrator"})
 CATEGORIES = frozenset({"BASELINE", "CANDIDATE"})
 #: The arm's reply verdict, decided by the producer with ``actors._parse_reply`` /
 #: ``_is_template_echo`` at write time. ``template_echo`` is the 2026-09-24 bounded-v1 failure
@@ -261,13 +286,30 @@ def _backend(obj: Any) -> list[str]:
     return p
 
 
-def _server(obj: Any) -> list[str]:
+#: INF-78 OAB-2: the orchestrator's own base URL is always loopback (`AK_ORCHESTRATOR_URL`
+#: defaults to ``http://127.0.0.1:8000``; an operator override still targets this host).
+#: A model-serving port (e.g. ``:8083``, a llama-server slot) belongs to `served_model`,
+#: which the orchestrator kind is never allowed to fill in -- see below.
+_ORCHESTRATOR_ENDPOINT = re.compile(r"^https?://(127\.0\.0\.1|localhost)(:\d+)?/?$")
+
+
+def _server(obj: Any, backend: Any) -> list[str]:
     p = _closed(obj, SERVER_FIELDS, "server")
     if p:
         return p
     if not _text(obj["endpoint"]):
         p.append("server.endpoint must be recorded (a local base URL, or 'hosted:<kind>'), "
                  "never guessed")
+    kind = backend.get("kind") if isinstance(backend, Mapping) else None
+    if kind == "orchestrator":
+        if not _ORCHESTRATOR_ENDPOINT.match(str(obj["endpoint"])):
+            p.append("server.endpoint for the orchestrator kind must be its own loopback base "
+                     "URL (e.g. http://127.0.0.1:8000), never a model-serving port")
+        if obj["served_model"] is not None:
+            p.append("server.served_model must be null for the orchestrator kind: there is no "
+                     "single served model at this layer -- the orchestrator routes per call, so "
+                     "model provenance is the ChatResponse's routed_to/role_history, carried on "
+                     "the sibling actor_call_metrics.v1 row, never guessed into this field")
     for key in ("served_model", "build_info"):
         if not _nullable_text(obj[key]):
             p.append(f"server.{key} must be a non-empty string or null (null = not captured)")
@@ -395,7 +437,7 @@ def validate_call_record(record: Any) -> list[str]:
     p.extend(_producer(record["producer"]))
     p.extend(_backend(record["backend"]))
     p.extend(_seat(record["seat"], record["backend"]))
-    p.extend(_server(record["server"]))
+    p.extend(_server(record["server"], record["backend"]))
     p.extend(_prompt(record["prompt"]))
     p.extend(_times(record, MAX_CALL_RECORD_LAG_S))
     rc = record["returncode"]
@@ -516,7 +558,7 @@ def validate_arm_record(record: Any) -> list[str]:
     p.extend(_seat(record["seat"], record["backend"]))
     if isinstance(record["seat"], Mapping) and record["seat"].get("arm") != record["arm"]:
         p.append("arm must equal seat.arm")
-    p.extend(_server(record["server"]))
+    p.extend(_server(record["server"], record["backend"]))
     p.extend(_prompt(record["prompt"]))
     lp = _closed(record["lane"], LANE_FIELDS, "lane")
     if not lp:

@@ -2696,6 +2696,29 @@ row: `scripts/vidya/adapters/README.md`. Project, do not grade.
   it. Add `n_ctx` per slot as well: it is 98,304 split vs 196,608 unified on :8083 (RTG-57), and it decides
   whether a reply could be truncated. Keep the v1 contract, or version it to v2 if the fields become required.
   Acceptance: the next campaign call line carries non-null values and still ingests with `refused=0`.
+- [ ] **VB-AK-SEAT-b1x — accept the `orchestrator` backend kind (INF-78 OAB-2).** Root side done
+  2026-09-25 (`main-ak-seat`, root `lane/ak-seat-vbseat-orch-20260925`, merged to `main`): `BACKEND_KINDS` in
+  `autokernel_actor_seat_capture.py` now includes `orchestrator` alongside `codex`/`claude`/`opencode` —
+  no new field (`workspace` already carries the `task_root` scope, and the generic "not opencode"
+  branches of `_seat` already force a plain, config-less seat for it, same as `codex`/`claude`) — plus two
+  new `_server` rules specific to this kind: `endpoint` must be the orchestrator's own loopback base URL
+  (never a model-serving port) and `served_model` must stay null (model provenance is the `ChatResponse`'s
+  `routed_to`/`role_history`, carried on the sibling `actor_call_metrics.v1` row, not this contract). Tests:
+  `tests/vidya/test_autokernel_actor_seat_adapter.py` (46, +13). **Remaining, research side (not done here —
+  the owning session applies it):** `loop/actors.py` `_backend()`/`_call_record_v1` (~L822-833) already builds
+  a valid `orchestrator`-kind seat/backend/server for every `orch:` call; only root's contract was missing the
+  kind, so every orchestrator call today still writes the legacy `v1_refused` line via `_record_call`'s
+  `except` branch (~L556-561). Once research vendors this commit (or bumps its `EPYC_ROOT_REPO` pin), that
+  branch stops firing on its own — no producer code change needed, only re-vendoring root's module. The one
+  actual code edit needed research-side is the test fixture that pins the OLD behavior:
+  `scripts/kernel_rnd/autokernel/loop/test_actors.py::OrchestratorBackendKind
+  .test_a_schema_valid_reply_parses_and_records_provenance` (~L1536-1541) asserts
+  `self.assertIn("backend.kind must be one of", v1["v1_refused"])` and `v1["backend"] ==
+  "orchestrator:architect_general@high"` (the pre-hook legacy shape) — replace with a v1 record assertion
+  (`v1["schema"] == "epyc.autokernel.actor_call.v1"`, `v1["backend"]["kind"] == "orchestrator"`, no
+  `v1_refused` key) once the vendored contract module is current. Acceptance: `cli.py ingest ak-actor-seat
+  --dry-run` over a fresh orchestrator campaign call shows `refused=0` and one projected
+  `actor_call_wall_s` observation.
 - [ ] **VB-AK-METRICS-1 — make `epyc.autokernel.actor_call_metrics.v1` contract-grade, then project it** (filed
   2026-09-24, main-ak-seat, reduced-scope planner build). Producer: research `lane/ak-turns-20260924` `0bf2d7c2`,
   `loop/actor_metrics.py`, which writes a sibling line to `actor-calls.jsonl` just BEFORE each `actor_call.v1`

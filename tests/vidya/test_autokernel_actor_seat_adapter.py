@@ -47,6 +47,15 @@ BACKEND = {"kind": "opencode", "model": "qwen-gpu/qwen3.8-27b", "effort": "high"
 PLAIN_BACKEND = {**BACKEND, "agent": None}
 SERVER = {"endpoint": "http://127.0.0.1:8083/v1", "served_model": "qwen3.8-27b",
           "build_info": "10303-ffc1bac82"}
+#: INF-78 OAB-2: `orch:<role>` -> `actor_orchestrator.OrchestratorBackend`. `model` is the
+#: routed role (or "auto"), not a served model id; `agent` is opencode-only, always null here.
+ORCH_BACKEND = {"kind": "orchestrator", "model": "architect_general", "effort": "high",
+                "agent": None}
+#: The orchestrator's own loopback endpoint (`AK_ORCHESTRATOR_URL` default). Never a
+#: model-serving port, and `served_model` stays null: model provenance for this kind rides
+#: on the sibling `actor_call_metrics.v1` row's `orchestrator.provenance.routed_to`
+#: /`role_history`, not on this closed contract.
+ORCH_SERVER = {"endpoint": "http://127.0.0.1:8000", "served_model": None, "build_info": None}
 
 
 def seat(bounded: bool = True) -> dict:
@@ -62,6 +71,15 @@ def seat(bounded: bool = True) -> dict:
                              "sha256": "c" * 64, "bytes": 2100}}
 
 
+def orch_seat() -> dict:
+    """The orchestrator kind's seat: always non-bounded, no opencode config at all (the
+    generic "not opencode" branches of `_seat` already null these fields for it, the same
+    way they already do for `codex`/`claude`)."""
+    return {"arm": "plain", "bounded": False, "fan_out": False, "steps": None,
+            "opencode_version": None, "global_config_sha256": None,
+            "config": None, "instructions": None}
+
+
 def call_record(**over) -> dict:
     kw = dict(call_id="20260924T130000Z-4242-0a1b2c3d4e5f", role="planner",
               workspace="/mnt/raid0/llm/tmp/ak-seat-ab/lane", producer=PRODUCER, seat=seat(),
@@ -73,6 +91,17 @@ def call_record(**over) -> dict:
                                 "sha256": "d" * 64, "bytes": 10230},
                      "stderr": {"path": "20260924T132000-opencode-x-rc0.stderr",
                                 "sha256": "e" * 64, "bytes": 6794}})
+    kw.update(over)
+    return capture.build_call_record(**kw)
+
+
+def orch_call_record(**over) -> dict:
+    kw = dict(call_id="20260925T090000Z-orch-4242-0a1b2c3d4e5f", role="planner",
+              workspace="/mnt/raid0/llm/tmp/ak-seat-ab/lane", producer=PRODUCER,
+              seat=orch_seat(), backend=ORCH_BACKEND, server=ORCH_SERVER, prompt=PROMPT,
+              started_at="2026-09-25T09:00:00Z", finished_at="2026-09-25T09:20:00Z",
+              wall_s=1200.4, returncode=0, timed_out=False,
+              recorded_at="2026-09-25T09:20:01Z", reply=None)
     kw.update(over)
     return capture.build_call_record(**kw)
 
@@ -323,6 +352,89 @@ def test_the_reader_cannot_be_bypassed_with_a_hand_built_native(tmp_path):
     with pytest.raises(ct.ProjectionError):
         reader.project({"kind": "call", "metric": "actor_call_wall_s",
                         "record": json.loads(PRE_HOOK_LINE)})
+
+
+# --- orchestrator backend kind (INF-78 OAB-2) ---------------------------------------------------
+
+def test_orchestrator_call_record_validates_and_projects_as_an_observation(tmp_path):
+    log = write_log(tmp_path / "actor-calls.jsonl", orch_call_record())
+    (native,) = reader.native_rows(log)
+    tup = reader.project(native)
+    assert (tup.metric, tup.value, tup.unit) == ("actor_call_wall_s", 1200.4, "s")
+    assert tup.extra["backend"] == ORCH_BACKEND
+    assert tup.extra["server"] == ORCH_SERVER
+    assert tup.extra["seat"] == orch_seat()
+    assert "orchestrator:architect_general@high" in tup.claim
+    q, t, _ = ct.grade(tup)
+    assert (q, t) == ("Judged", "Located")
+
+
+def test_orchestrator_kind_does_not_disturb_the_existing_kinds(tmp_path):
+    """Regression: widening BACKEND_KINDS must not touch codex/claude/opencode behavior."""
+    log = write_log(tmp_path / "actor-calls.jsonl", call_record(),
+                    call_record(call_id="c-claude", backend=PLAIN_BACKEND))
+    natives = reader.native_rows(log)
+    assert len(natives) == 2
+    for native in natives:
+        assert reader.project(native).extra["backend"]["kind"] == "opencode"
+
+
+@pytest.mark.parametrize("bad_kind", ["orch", "Orchestrator", "ORCHESTRATOR", "orchestrator "])
+def test_a_kind_that_only_resembles_orchestrator_is_still_refused(tmp_path, bad_kind):
+    rec = orch_call_record()
+    rec["backend"]["kind"] = bad_kind
+    rehash(rec)
+    log = write_log(tmp_path / "actor-calls.jsonl", rec)
+    with pytest.raises(ct.ProjectionError, match="backend.kind must be one of"):
+        reader.native_rows(log)
+
+
+def test_orchestrator_served_model_must_be_null(tmp_path):
+    rec = orch_call_record()
+    rec["server"]["served_model"] = "architect_general"
+    log = write_log(tmp_path / "actor-calls.jsonl", rehash(rec))
+    with pytest.raises(ct.ProjectionError, match="served_model must be null for the "
+                                                 "orchestrator kind"):
+        reader.native_rows(log)
+
+
+@pytest.mark.parametrize("endpoint", [
+    "http://127.0.0.1:8083/v1",       # a model-serving llama-server slot, not the orchestrator
+    "hosted:orchestrator",             # the generic "no local endpoint" fallback
+    "http://10.0.0.5:8000",            # not loopback
+])
+def test_orchestrator_endpoint_must_be_its_own_loopback_url_not_a_model_port(tmp_path, endpoint):
+    rec = orch_call_record()
+    rec["server"]["endpoint"] = endpoint
+    log = write_log(tmp_path / "actor-calls.jsonl", rehash(rec))
+    with pytest.raises(ct.ProjectionError, match="server.endpoint for the orchestrator kind"):
+        reader.native_rows(log)
+
+
+def test_orchestrator_endpoint_accepts_a_url_override_still_on_loopback(tmp_path):
+    rec = orch_call_record()
+    rec["server"]["endpoint"] = "http://127.0.0.1:8123"
+    log = write_log(tmp_path / "actor-calls.jsonl", rehash(rec))
+    (native,) = reader.native_rows(log)
+    assert reader.project(native).value == 1200.4
+
+
+def test_orchestrator_seat_can_never_be_bounded(tmp_path):
+    rec = orch_call_record()
+    rec["seat"] = seat(bounded=True)   # an opencode-shaped bounded seat, wrong kind entirely
+    log = write_log(tmp_path / "actor-calls.jsonl", rehash(rec))
+    with pytest.raises(ct.ProjectionError, match="a bounded seat exists only for the opencode "
+                                                 "backend"):
+        reader.native_rows(log)
+
+
+def test_orchestrator_seat_carries_no_opencode_config(tmp_path):
+    rec = orch_call_record()
+    rec["seat"]["opencode_version"] = "1.18.31"
+    log = write_log(tmp_path / "actor-calls.jsonl", rehash(rec))
+    with pytest.raises(ct.ProjectionError, match="opencode_version/global_config_sha256 are "
+                                                 "opencode-only"):
+        reader.native_rows(log)
 
 
 # --- censored sessions and attestation ---------------------------------------------------------
