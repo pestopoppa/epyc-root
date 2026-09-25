@@ -13,16 +13,16 @@
 | EVL-01 | agent file prose compression | [agent-file-prose-compression.md](agent-file-prose-compression.md) | AFC-P5.E3 — run the n=30 compliance campaign. READY but HELD (operator: "I will tell | — |
 | EVL-02 | architect model selection bench | [architect-model-selection-bench.md](architect-model-selection-bench.md) | Decide :596 EffiBench-X adoption once the 2607.01211 ingest lands; gpqa_diamond_cot arm per ROI rule | — |
 | EVL-03 | autopilot decision plane audit 2026 07 22 | [autopilot-decision-plane-audit-2026-07-22.md](autopilot-decision-plane-audit-2026-07-22.md) | EV-CONF-2 — build an answer-span/salient-token confidence source, then re-baseline math AUROC before any math-domain use | — |
-| EVL-04 | autopilot sequential allocation | [autopilot-sequential-allocation.md](autopilot-sequential-allocation.md) | SEQ-SHINKA-1 — replay Shinka parent selection against the current policy on the frozen candidate graph | — |
+| EVL-04 | autopilot sequential allocation | [autopilot-sequential-allocation.md](autopilot-sequential-allocation.md) | SEQ-SHINKA-1 — replay Shinka parent selection against the current policy on the frozen candidate graph | RTG-02 |
 | EVL-05 | backlog roi audit 2026 07 14 | [backlog-roi-audit-2026-07-14.md](backlog-roi-audit-2026-07-14.md) | RE-1 — re-baseline math suites under math_verify (EV-11c) once EV-CONF real-confidence plumbing lands | — |
 | EVL-07 | bulk inference campaign | [bulk-inference-campaign.md](bulk-inference-campaign.md) | K-LCM-1 — LongCoT-Mini calibration run (~500-easy deterministic long-horizon suite) | — |
-| EVL-08 | canonical judge suite revamp | [canonical-judge-suite-revamp.md](canonical-judge-suite-revamp.md) | CJ-3d — wire a representative BFCL-V3 sample on the native function-call path (key bfcl_v3), then CJ-3e discrimination | — |
+| EVL-08 | canonical judge suite revamp | [canonical-judge-suite-revamp.md](canonical-judge-suite-revamp.md) | CJ-15 — freeze local judge-cascade fixtures; then run the CJ-16 hosted shadow | — |
 | EVL-09 | design backlog triage 2026 07 23 | [design-backlog-triage-2026-07-23.md](design-backlog-triage-2026-07-23.md) | REFERENCE SNAPSHOT, not a task list — cite it; dispatchable work lives in eval-tower-verification.md and autopilot-control-plane-integration | — |
 | EVL-10 | episodic memory integrity | [episodic-memory-integrity.md](episodic-memory-integrity.md) | M-12b BEAM three arms running on the reader (OP-42 window); then judge phase (gemma-4-26B) and score each arm | — |
 | EVL-11 | eval benchmark cost reduction | [eval-benchmark-cost-reduction.md](eval-benchmark-cost-reduction.md) | BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies | — |
 | EVL-12 | eval tower architecture audit 2026 07 20 | [eval-tower-architecture-audit-2026-07-20.md](eval-tower-architecture-audit-2026-07-20.md) | E1 ARCH-1 — finish splitting the eval_tower god-module: extract the concurrency ladder, one import bootstrap, rubric-parsing sidecar | — |
 | EVL-13 | eval tower loop robustness audit 2026 07 20 | [eval-tower-loop-robustness-audit-2026-07-20.md](eval-tower-loop-robustness-audit-2026-07-20.md) | H2.v8 — remeasure the contention matrix under frozen v8 (inference-gated) | — |
-| EVL-14 | eval tower verification | [eval-tower-verification.md](eval-tower-verification.md) | EV-RI-EXEC-1 — implement executable-search evaluator preflight and conformance fixtures | EVL-13 |
+| EVL-14 | eval tower verification | [eval-tower-verification.md](eval-tower-verification.md) | EV-RI-EXEC-1 — implement executable-search evaluator preflight and conformance fixtures | — |
 | EVL-15 | evidence plane instrument repair | [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) | W5 — Promote core_v2 once the operator rules on the E4/core autopilot_quality era row; then collect alarm-free W6 audit evidence | — |
 | EVL-16 | evidence plane ledger and sequential verdict | [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) | W8b — Continue live W8 candidate attempts; confirm a keepable replayable candidate, then collect sequential and promotion-eval evidence | — |
 | EVL-19 | fable5 window2 findings 01 optimizer integri | [fable5-window2-findings-01-optimizer-integrity.md](fable5-window2-findings-01-optimizer-integrity.md) | R2-current — Accrue a current-era trusted per-question ledger for a reproducible ≥40-item core selection; do not reuse the July-3 set | — |
@@ -53,7 +53,6 @@
 | EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L2 — quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD) | — |
 | EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-04 — refresh the E5 Stage-B readiness verification (14 days stale), then S-05's corrected re-measurement grid | INF-06, INF-07, RTG-46 |
 | EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | CME-3 — carry the BEAM harness-defect note on every BEAM number quoted outside the SC68 tuple | EVL-10 |
-| EVL-51 | formal artifact reproducibility | [formal-artifact-reproducibility.md](formal-artifact-reproducibility.md) | FAR-1 — rebuild the pinned Lean artifact and archive build, axiom, toolchain, dependency, and trust receipts | EVL-14 |
 
 ## Cross-domain
 

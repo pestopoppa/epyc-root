@@ -547,12 +547,12 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d3436f7bfc850305ede903f0077c7ad5e6db57a62219ed2f6e739339380b9297",
-      "modified": "2026-09-25T19:22:15Z",
-      "path": "handoffs/active/formal-artifact-reproducibility.md",
-      "size": 2118,
+      "content_hash": "f396678712eb14885aa4f91e6b458a5e7acd94bf09d57964f654f8e9fa119e70",
+      "modified": "2026-09-25T21:32:15Z",
+      "path": "handoffs/archived/formal-artifact-reproducibility.md",
+      "size": 2485,
       "title": "Formal Artifact Reproducibility",
-      "type": "handoff-active"
+      "type": "handoff-archived"
     },
     {
       "content_hash": "a8f1d0bb7229a4bd940a4b1e2149d8f35fb0cc10db1b63179acc68f3bd243630",
