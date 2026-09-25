@@ -421,7 +421,7 @@
       "status": "observed",
       "title": "Qwen3.6-35B-A3B GPU matrix",
       "hardware": "AMD Instinct MI210 · gfx90a · production-consolidated-v10",
-      "headline": "93.9 tok/s at np1 / 2k",
+      "headline": "104.8 tok/s best observed per-request cell · split KV · np1 / L8192 · n=1",
       "detail": "24-cell split versus unified-KV matrix; all cells completed, n=1 per cell",
       "matrix_label": "Concurrency × generation limit (context allocated as (L + 1024) × np)",
       "matrix_note": "per-request decode tok/s · n=1 per cell",
