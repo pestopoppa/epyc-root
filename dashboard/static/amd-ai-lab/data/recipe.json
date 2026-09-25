@@ -1,30 +1,39 @@
 {
   "schema": "amd-ai-lab.recipe.v1",
-  "id": "mi210-gemma4-26b-a4b-ud-iq4-xs-llama-cpp",
-  "status": "observed",
-  "title": "Gemma 4 26B-A4B UD-IQ4_XS on Instinct MI210",
+  "id": "v10-mi210-qwen38-dflash2",
+  "status": "measured",
+  "title": "Qwen3.8-27B Q8_0 on Instinct MI210",
+  "kernel": {
+    "family": "llama.cpp",
+    "release": "production-consolidated-v10",
+    "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115"
+  },
   "hardware": {
     "accelerator": "AMD Instinct MI210",
     "architecture": "gfx90a",
     "vram_gib": 64,
-    "host_cpu": "AMD EPYC 9655",
     "gpu_count": 1
   },
   "software": {
     "runtime": "ROCm/HIP",
-    "runner": "llama.cpp"
+    "runner": "llama.cpp",
+    "speculation": "DFlash2"
   },
   "model": {
-    "name": "Gemma4 26B-A4B UD-IQ4_XS",
+    "name": "Qwen3.8-27B-Q8_0",
     "format": "GGUF",
-    "quantization": "UD-IQ4_XS"
+    "context_tokens": 65536
   },
   "measurement": {
-    "prompt_tps_2048": 2449.01,
-    "generation_tps_256": 81.91,
-    "server_8k_generation_tps": 76.02,
-    "cpu_control_generation_tps_512": 11.15,
+    "aggregate_generation_tps_by_np": {
+      "1": 80.87,
+      "2": 108.75,
+      "4": 168.64,
+      "8": 184.48
+    },
+    "unit": "process",
+    "runs_per_point": 3,
     "workload": "text inference"
   },
-  "source_record": "epyc-inference-research/docs/reference/models/model-admission-2026-07-16.md"
+  "source_record": "epyc-inference-research/data/kernel-v9-candidate/promotion-plan-20260921/README.md"
 }
