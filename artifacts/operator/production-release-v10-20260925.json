@@ -1,0 +1,29 @@
+{
+  "release_type": "public-llama-cpp-production",
+  "tag": "production-consolidated-v10",
+  "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "release_url": "https://github.com/pestopoppa/llama.cpp/releases/tag/production-consolidated-v10",
+  "published_at": "2026-09-25",
+  "scope": [
+    "llama.cpp CPU Linux x86_64",
+    "llama.cpp gfx90a/ROCm Linux x86_64"
+  ],
+  "excluded_surfaces": [
+    "whisper.cpp production-speech-v1",
+    "qwentts.cpp production-speech-v1"
+  ],
+  "assets": {
+    "epyc-llama-v10-cpu-linux-x86_64.tar.gz": "e01c509b4f85a346a539ee96ffcb81cde667bae8d8729e82553220959749a809",
+    "epyc-llama-v10-gfx90a-linux-x86_64.tar.gz": "547f4f7edd79b035c88e2ee1b932b61c28455117de50fdd15562022260929df7",
+    "epyc-llama-v10-recipes.tar.gz": "1298ea1db2c6587ee9e37705f8645746e7e4a1f655ae3db9acf023e8c99c1d89"
+  },
+  "verification": {
+    "cpu_llama_server_sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+    "gpu_llama_server_sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+    "binary_version": "10303",
+    "fresh_extract_verified": true,
+    "quickstart_included": true,
+    "verify_release_included": true,
+    "model_weights_included": false
+  }
+}
