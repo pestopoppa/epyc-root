@@ -4,6 +4,24 @@
   "kernel_policy": "Only current frozen production kernel-set measurements are listed.",
   "records": [
     {
+      "id": "v10-flash-next-mmlu-pro",
+      "status": "measured",
+      "title": "Qwen3.8-Flash-Next MMLU-Pro quality",
+      "hardware": "AMD EPYC 9655 · production-consolidated-v10 · UD-IQ4_XS",
+      "headline": "75.50% accuracy · 151/200 · 0 truncated",
+      "detail": "CPU production weight file with shared Q8_0 MTP head; generation cap 8,192. Quality accuracy is not a throughput measurement.",
+      "source": "artifacts/architect-bench-cpu-20260923/runs/mmlu_pro/flashnext_ud_iq4xs_mtp_cap8192/result.json"
+    },
+    {
+      "id": "v10-flash-next-gpqa",
+      "status": "measured",
+      "title": "Qwen3.8-Flash-Next GPQA quality",
+      "hardware": "AMD EPYC 9655 · production-consolidated-v10 · UD-IQ4_XS",
+      "headline": "65.13% accuracy · 127/195 · 0 truncated",
+      "detail": "CPU production weight file with shared Q8_0 MTP head; generation cap 16,384. Quality accuracy is not a throughput measurement.",
+      "source": "artifacts/architect-bench-cpu-20260923/runs/gpqa/flashnext_ud_iq4xs_mtp_cap16384/result.json"
+    },
+    {
       "id": "v10-cpu-production-matrix",
       "status": "measured",
       "title": "Frozen v10 CPU production matrix",
