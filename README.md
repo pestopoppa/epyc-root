@@ -25,13 +25,14 @@ If you're new to the project, these four indices are the entry points:
 
 ## Repositories
 
-The codebase is split across three sibling repos; this one is governance-only.
+The codebase is split across four sibling repos; this one is governance-only.
 
 | Repo | Path on this machine | Purpose |
 |---|---|---|
 | epyc-root (this) | `/mnt/raid0/llm/epyc-root` | Governance, knowledge base, handoffs, agents, hooks |
 | [epyc-orchestrator](https://github.com/pestopoppa/epyc-orchestrator) | `/mnt/raid0/llm/epyc-orchestrator` | Production orchestration: multi-model llama-server fleet, AutoPilot, routing, REPL, MemRL |
 | [epyc-inference-research](https://github.com/pestopoppa/epyc-inference-research) | `/mnt/raid0/llm/epyc-inference-research` | Benchmarks, 79K-question eval pool across 38 suites, model registry |
+| [epyc-web](https://github.com/pestopoppa/epyc-web) | `/mnt/raid0/llm/epyc-web` | AMD AI Lab website and GitHub Pages publication |
 | [llama.cpp](https://github.com/pestopoppa/llama.cpp) (fork) | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork — production branch `production-consolidated-v9`, **frozen** at `0db32c06e` |
 
 Production runs **one** kernel. `production-consolidated-v9` is frozen and is never patched in place — new kernel work happens on `llama.cpp-experimental` branches and is promoted as a new version. `scripts/session/verify_llama_cpp.sh` enforces the current production branch, commit, version, and binary digests.

@@ -32,6 +32,7 @@ mkdir -p "$REPOS_DIR"
 repos=(
     epyc-orchestrator:epyc-orchestrator:epyc-orchestrator
     epyc-inference-research:epyc-inference-research:epyc-inference-research
+    epyc-web:epyc-web:epyc-web
     epyc-llama:llama.cpp:llama.cpp
 )
 

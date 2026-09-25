@@ -21,6 +21,7 @@ GET /api/kernel/health       Kernel-R&D producer/data health only (non-recursive
 GET /machine                 the machine / live-inference page (data plane: :8000 API)
 GET /autopilot               the autopilot-loop page (data plane: :8000 API)
 GET /cockpit                 the AP-50 decision cockpit (data plane: :8000 API)
+GET /amd-ai-lab/             the published AMD AI Lab static site from epyc-web
 GET /nav.js                  the ONE shared cross-dashboard nav, with the registry
                              injected ahead of it as ``window.__EPYC_DASHBOARDS``
 GET /api/dashboards          the dashboard directory (dashboard/registry.json) plus a
@@ -104,6 +105,8 @@ COCKPIT_HTML = _STATIC / "cockpit.html"
 #: were all dead or frozen. The constant is gone rather than left dangling so
 #: nothing can quietly re-serve the retired page by re-adding one table entry.
 LOOP_HTML = _STATIC / "loop.html"
+AMD_AI_LAB_DIR = _STATIC / "amd-ai-lab"
+AMD_AI_LAB_HTML = AMD_AI_LAB_DIR / "index.html"
 NAV_JS = _STATIC / "nav.js"
 
 # RTG-47 Phase 0. The MACHINE-READABLE dashboard directory: one file naming every
@@ -14403,6 +14406,35 @@ def nav_asset() -> bytes:
     return (prelude + body).encode("utf-8")
 
 
+def amd_ai_lab_asset(name: str) -> bytes:
+    """Read one allowlisted AMD AI Lab static asset.
+
+    The hub deliberately has no generic file server. These files are an explicit
+    publication snapshot copied from the separate ``epyc-web`` repository.
+    """
+    return (AMD_AI_LAB_DIR / name).read_bytes()
+
+
+def amd_ai_lab_styles() -> bytes:
+    return amd_ai_lab_asset("styles.css")
+
+
+def amd_ai_lab_postbios_styles() -> bytes:
+    return amd_ai_lab_asset("postbios.css")
+
+
+def amd_ai_lab_script() -> bytes:
+    return amd_ai_lab_asset("app.js")
+
+
+def amd_ai_lab_recipe() -> bytes:
+    return amd_ai_lab_asset("data/recipe.json")
+
+
+def amd_ai_lab_catalog() -> bytes:
+    return amd_ai_lab_asset("data/catalog.json")
+
+
 def panel_envelopes() -> dict:
     """Every registered panel's freshness envelope, keyed by panel id.
 
@@ -14776,6 +14808,7 @@ HTML_ROUTES = {
     "/loop": LOOP_HTML,
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
+    "/amd-ai-lab": AMD_AI_LAB_HTML,
 }
 
 #: ``route -> destination`` for RETIRED pages. A retired page answers a redirect,
@@ -14826,6 +14859,11 @@ REDIRECT_ROUTES = {
 #: ``HTML_ROUTES`` one rather than being silent.
 ASSET_ROUTES = {
     "/nav.js": ("application/javascript; charset=utf-8", nav_asset),
+    "/amd-ai-lab/styles.css": ("text/css; charset=utf-8", amd_ai_lab_styles),
+    "/amd-ai-lab/postbios.css": ("text/css; charset=utf-8", amd_ai_lab_postbios_styles),
+    "/amd-ai-lab/app.js": ("application/javascript; charset=utf-8", amd_ai_lab_script),
+    "/amd-ai-lab/data/recipe.json": ("application/json; charset=utf-8", amd_ai_lab_recipe),
+    "/amd-ai-lab/data/catalog.json": ("application/json; charset=utf-8", amd_ai_lab_catalog),
 }
 
 #: ``route -> () -> dict``, answered 200.

@@ -66,6 +66,23 @@
       "blurb": "benchmark artifact inventory (read-only)"
     },
     {
+      "id": "amd-ai-lab",
+      "title": "AMD AI Lab",
+      "chip": "draft",
+      "port": 8100,
+      "path": "/amd-ai-lab/",
+      "owner_repo": "epyc-web",
+      "health_path": "/health",
+      "blurb": "AMD hardware recipes and benchmark results — explicit publication snapshot from epyc-web",
+      "freshness": {
+        "kind": "static-snapshot",
+        "source": "epyc-web",
+        "artifact": "dashboard/static/amd-ai-lab/",
+        "stale_after_s": 2592000,
+        "absence_means": "the published epyc-web snapshot is missing from the hub checkout"
+      }
+    },
+    {
       "id": "orchestrator-legacy",
       "title": "Legacy (:8000)",
       "chip": "legacy",

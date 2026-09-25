@@ -63,6 +63,13 @@ three are checkable:
    must say what absence MEANS, or a panel that renders nothing is
    indistinguishable from a panel whose producer died.
 
+Static publication pages follow the same plane rule without pretending to be live
+data panels. Their registry entry carries the transport probe plus a
+`static-snapshot` freshness envelope naming the source repository, published
+artifact, staleness bound, and meaning of absence. The AMD AI Lab page is one such
+explicit snapshot from `epyc-web`; its benchmark claims remain labeled by the
+source site's evidence status.
+
 **No unregistered pages.** A page reachable but absent from the registry is
 invisible to the nav, has no probe, and no one learns it exists — which is how the
 7.6k-line `:8000/dashboard` page accreted in the first place. A **retired** route

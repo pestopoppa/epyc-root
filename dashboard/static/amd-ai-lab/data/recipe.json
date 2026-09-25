@@ -1,0 +1,30 @@
+{
+  "schema": "amd-ai-lab.recipe.v1",
+  "id": "mi210-gemma4-26b-a4b-ud-iq4-xs-llama-cpp",
+  "status": "observed",
+  "title": "Gemma 4 26B-A4B UD-IQ4_XS on Instinct MI210",
+  "hardware": {
+    "accelerator": "AMD Instinct MI210",
+    "architecture": "gfx90a",
+    "vram_gib": 64,
+    "host_cpu": "AMD EPYC 9655",
+    "gpu_count": 1
+  },
+  "software": {
+    "runtime": "ROCm/HIP",
+    "runner": "llama.cpp"
+  },
+  "model": {
+    "name": "Gemma4 26B-A4B UD-IQ4_XS",
+    "format": "GGUF",
+    "quantization": "UD-IQ4_XS"
+  },
+  "measurement": {
+    "prompt_tps_2048": 2449.01,
+    "generation_tps_256": 81.91,
+    "server_8k_generation_tps": 76.02,
+    "cpu_control_generation_tps_512": 11.15,
+    "workload": "text inference"
+  },
+  "source_record": "epyc-inference-research/docs/reference/models/model-admission-2026-07-16.md"
+}

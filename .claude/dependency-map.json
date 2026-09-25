@@ -31,6 +31,14 @@
       "from_patterns": ["scripts/hooks/*.sh", "scripts/validate/*.py"],
       "to_files": ["orchestration/task_ir.schema.json"],
       "notes": "Root governance hooks validate orchestrator artifacts. Development-time only."
+    },
+    {
+      "from": "epyc-root",
+      "to": "epyc-web",
+      "coupling": "publication",
+      "from_patterns": ["docs/design/amd-ai-lab-mvp/**"],
+      "to_files": ["index.html", "styles.css", "app.js", "data/**"],
+      "notes": "Root holds the design/audit draft; epyc-web is the publishable GitHub Pages project. Content is copied or promoted explicitly; no runtime dependency."
     }
   ]
 }

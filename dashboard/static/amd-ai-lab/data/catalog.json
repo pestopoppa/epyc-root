@@ -1,0 +1,51 @@
+{
+  "schema": "amd-ai-lab.catalog.v1",
+  "as_of": "2026-09-25",
+  "records": [
+    {
+      "id": "postbios-cpu-production-matrix",
+      "status": "measured",
+      "title": "Post-BIOS CPU production matrix",
+      "hardware": "AMD EPYC 9655",
+      "headline": "70.97 / 57.19 / 64.38 / 41.26 tok/s",
+      "detail": "Gemma 4 26B, Qwen3.5-122B, Qwen3.6-35B, and Qwen3-Next-80B on production recipes",
+      "source": "data/kernel-v9-candidate/promotion-plan-20260921/README.md"
+    },
+    {
+      "id": "postbios-mi210-qwen38",
+      "status": "measured",
+      "title": "Qwen3.8-27B on Instinct MI210",
+      "hardware": "AMD Instinct MI210 · gfx90a",
+      "headline": "80.87 → 184.48 tok/s",
+      "detail": "Champion DFlash2 at context 65,536; concurrency 1 → 8",
+      "source": "data/kernel-v9-candidate/promotion-plan-20260921/README.md"
+    },
+    {
+      "id": "postbios-mi210-vl30b",
+      "status": "measured",
+      "title": "Qwen3-VL-30B-A3B on Instinct MI210",
+      "hardware": "AMD Instinct MI210 · gfx90a",
+      "headline": "116.04 → 192.92 tok/s",
+      "detail": "Production vision serving at concurrency 1 → 4",
+      "source": "data/kernel-v9-candidate/promotion-plan-20260921/README.md"
+    },
+    {
+      "id": "mi210-speech-and-capacity",
+      "status": "observed",
+      "title": "MI210 speech and VRAM capacity",
+      "hardware": "AMD Instinct MI210 · gfx90a",
+      "headline": "2.06 GiB STT · 2.62 GiB TTS",
+      "detail": "GPU-resident whisper and qwentts services; 63.069–63.084 GiB measured in the workload cycle",
+      "source": "data/model_registration/20260924-whisper-large-v3-turbo-f16-mi210/REGISTRATION.md"
+    },
+    {
+      "id": "ernie-image-mi210",
+      "status": "observed",
+      "title": "ERNIE-Image-Turbo on Instinct MI210",
+      "hardware": "AMD Instinct MI210 · gfx90a",
+      "headline": "896×896 stable; 1024×1024 blank-class",
+      "detail": "HIP diffusion path is useful through 896×896; 1024 remains a known quality failure",
+      "source": "docs/reference/models/model-admission-2026-07-16.md"
+    }
+  ]
+}
