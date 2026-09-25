@@ -3198,7 +3198,7 @@ practices follow, all applied here:
 
 ## Compiled Update — 2026-09-25: Decision and Research Receipts
 
-The intake closed 135 surfaced records with explicit dispositions: 120 integrated, 12 retained as knowledge only, 2 placed on monitoring, and 1 declined. Fifty-three follow-up tasks remain open and three factual ingestion tasks were completed. These counts are useful because every source has a durable outcome instead of disappearing into an undifferentiated reading list.
+The intake closed 135 surfaced records with explicit dispositions: 120 integrated, 12 retained as knowledge only, 2 placed on monitoring, and 1 declined. Three factual ingestion tasks were completed. The initial 53 follow-up rows were subsequently compressed by the Stage 3 action-distillation pass into shared immediate packets and dormant trigger records; the original count describes intake output, not the current active backlog. These counts are useful because every source has a durable outcome instead of disappearing into an undifferentiated reading list.
 
 Decision-model and autonomous-research runs need write-side receipts before execution. The minimum record includes model, base and head hashes; dataset and split; candidate schema; prompt or contract version; environment and dependency identity; raw per-item outputs; timing and cost; fallback and validation outcomes; and a digest linking the aggregate to its rows. For evolutionary runs, add lineage, parent policy, mutation operator, evaluator version, seeds, budgets, rejected children, and archive events. A later narrative cannot reconstruct evidence that the original run never captured.
 
@@ -3212,3 +3212,55 @@ Vidya source registration records where future native artifacts enter the belief
 - [System One session wrap-up](../progress/2026-09/2026-09-25-codex-system1-wrapup.md)
 
 **Confidence:** verified from the committed intake plan, repository task records, and source-registration changes.
+
+## Compiled Update — 2026-09-25: Stage 3 Distills Research into an Execution Program
+
+Research intake now requires each verified actionable to name the project decision it can change, one
+owning handoff, every discoverable consumer, the reusable primitive or cheapest deciding probe, the
+minimum evidence controls, and the observable trigger for any broader follow-on. Consumer discovery is a
+repository search, not an inferred shortlist. Several papers may therefore collapse into one work packet,
+and fewer than three packets is valid when the decision surface is genuinely narrow.
+
+The default output is a small execution program: implement a deterministic primitive that is useful even
+if the learned method loses, run one bounded empirical screen, and keep expensive replications behind
+trigger records. A trigger record carries its condition, owner, inputs, and acceptance rule but no active
+checkbox or index next action until the condition fires. This preserves the research without turning every
+interesting paper into immediate backlog.
+
+The paired write-side rule is equally compact. Every empirical screen records a frozen manifest, incumbent
+baseline, per-item outputs, holdout or later window, complete denominator, and predeclared disposition.
+The shared Vidya envelope captures those fields prospectively; source-specific readers appear only after a
+parent trigger fires. This is sufficient rigor to guide an engineering decision while keeping full
+benchmark recreation available for claims that later require it.
+
+### Source References
+
+- [Research-intake Stage 3 action distillation](../.claude/skills/research-intake/references/stage3-action-distillation.md) — normative workflow.
+- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — canonical minimum execution contract and consumer map.
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — shared receipt and trigger-specific profiles.
+- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — worked compression from paper-specific tasks to one shared screen.
+- [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — applied reconciliation and validation record.
+
+**Confidence:** verified as the installed Claude/Codex research-intake workflow and committed project task structure.
+
+## Compiled Update — 2026-09-25: A Reader Does Not Complete the Write Side
+
+The generic AutoKernel belief reader surfaced three schema boundaries before its first governed use. The
+KV-quant producer emits statistics objects where the root adapter expects scalar numbers; the shared
+`ClaimTuple` projection drops applicability fields needed to match evidence to a model and backend; and
+repeated ingestion needs an idempotent run identity. The reader remains unmerged until the producer shape,
+adapter validation, applicability projection, and receipt contract agree.
+
+This is the write-side rule in concrete form: an implemented projection path is not evidence readiness.
+The producer must author the fields a future decision needs, and the adapter may only preserve and validate
+those fields. A later reader cannot infer missing applicability, completeness, or run identity without
+manufacturing warrant.
+
+### Source References
+
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-AK-BELIEF, producer/adapter mismatch, and applicability gap.
+- [Vidya adapter registry](../scripts/vidya/adapters/README.md) — canonical source and consumer contracts.
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — planner consumer boundary.
+- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day reader review.
+
+**Confidence:** verified from code review and strict failing fixtures; no historical record is backfilled.

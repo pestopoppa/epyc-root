@@ -6369,3 +6369,36 @@ New Vidya adapters registered during this intake are prospective write-side cont
 - [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
 
 **Confidence:** verified for the repository's stated offline replay numbers and evidence contracts; inferred for expected live behavior pending shadow execution.
+
+## Compiled Update — 2026-09-25: Minimum Viable Research Execution
+
+Research intake should first answer a project decision with the cheapest screen that can change that
+decision. A screen is rigorous enough for engineering triage when it has six controls: a frozen input
+manifest, the current production or policy baseline, retained per-item raw outputs, a held-out split or
+later-time window, every failure/invalid/abstention in the denominator, and a predeclared stop, reject,
+shadow, or promotion rule. Deterministic infrastructure may substitute pinned provenance and conformance
+fixtures for a held-out split when the receipt says why a statistical holdout is inapplicable.
+
+This creates three evidence levels. A **cheap screen** may reject or justify more work. A **governed
+comparison** may admit an observe-only shadow. A **claim-bearing reproduction** is reserved for a result
+that will support a public, benchmark, policy, or promotion claim. Paper-faithful environments, broad seed
+grids, and complete benchmark recreation remain dormant until the cheaper level finds a signal that needs
+them. An incomplete screen is repaired, monitored with a named trigger, or explicitly declined; it is not
+promoted by narrative.
+
+For the typed-decision lane this means building a local frozen fixture first, comparing the incumbent with
+available compact backends, and adding hosted Jev only when the response records the resolved model
+identity. The published 510-pair replay remains external observation because its rows are unavailable and
+its sequential latency was not measured. A later hosted shadow keeps the incumbent authoritative and must
+record queueing, fallback, billing, invalids, abstentions, calibration, slice quality, and raw per-row
+outputs before any enforcement decision.
+
+### Source References
+
+- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — canonical six-control floor and evidence ladder.
+- [Canonical judge-suite revamp](../handoffs/active/canonical-judge-suite-revamp.md) — local fixture and hosted shadow sequence.
+- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — common backend screen and trigger-gated follow-ons.
+- [Decision-aware routing](../handoffs/active/decision-aware-routing.md) — incumbent-authoritative shadow boundary.
+- [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — reconciliation and validation record.
+
+**Confidence:** verified as the repository's adopted execution contract; no new model-performance claim is made.

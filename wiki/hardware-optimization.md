@@ -5795,3 +5795,24 @@ recorded for the broker design are:
   admission control, not screening, as the MEAS-6 remedy.
 - `research/intake_index.yaml` — intake-1397#record (kernel/systemd cpuset semantics and the host facts),
   intake-1369#record (gflow), intake-1382#record (pueue), intake-1383#record (task-spooler).
+
+## Compiled Update — 2026-09-25: Parallel Model Loading Became the Champion
+
+Restoring parallel repack together with a parallel reader cut model loading by 3.2× on warm storage and
+2.1× cold. The 519 GB DS41 load fell from 254–278 seconds to 98.2 seconds. The loader change advanced the
+AutoKernel aggregate champion, but it also exposed a consolidation failure: the earlier feature had
+disappeared inside a bundled revert. Feature-sized commits and their tests must travel together through
+integration so a revert cannot silently remove an independent win.
+
+A loader change also changes the experimental floor even when decode kernels are byte-identical. Any
+campaign that includes launch or end-to-end wall time must recalibrate after adopting it; decode-only
+throughput remains a separate estimand.
+
+### Source References
+
+- [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — champion advance and loading measurements.
+- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — warm/cold chronology and DS41 load result.
+- [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — campaign floor and re-anchor implications.
+- [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — feature-isolation and campaign lifecycle rule.
+
+**Confidence:** verified from same-host measurements and the committed champion record.

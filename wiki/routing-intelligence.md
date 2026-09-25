@@ -1186,3 +1186,25 @@ The frozen 510-pair JEV-as-a-Judge replay reached 92.5% versus 93.1% for GPT-6 A
 - [Eval Tower verification](../handoffs/active/eval-tower-verification.md)
 
 **Confidence:** verified for the offline replay record and host-side repository contracts; inferred for vendor architecture and performance claims that lack independent live reproduction.
+
+## Compiled Update — 2026-09-25: The Smallest Typed-Decision Path to a Live Decision
+
+The next comparison starts with a hosted-independent EPYC fixture built from existing judge records plus
+targeted stress cases. It freezes row provenance, labels, scorer, calibration/evaluation split, expected
+outputs, and failures. The shared screen compares the incumbent constrained readout with one available
+compact local backend; hosted Jev joins only when the receipt can bind its resolved model identity.
+
+If that fixture clears predeclared quality, calibration, and operations thresholds, the hosted arm moves
+to sequential shadow while the incumbent remains authoritative. The shadow measures actual component and
+wall-clock latency, queueing, fallback behavior, billing, invalids, abstentions, calibration, and per-slice
+quality. Only then can a later-time traffic window support an enforcement decision. The unavailable
+published 510 rows and absent live latency cannot serve as EPYC's baseline.
+
+### Source References
+
+- [Canonical judge-suite revamp](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-15 local fixture and CJ-16 live shadow.
+- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — TD-23 shared backend screen.
+- [Decision-aware routing](../handoffs/active/decision-aware-routing.md) — URE-2a observe-only activation gate.
+- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — minimum execution controls and promotion grammar.
+
+**Confidence:** verified as the current execution plan; model quality and economics remain unmeasured locally.

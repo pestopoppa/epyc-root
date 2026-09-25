@@ -4648,3 +4648,51 @@ Provider-owned inner loops remain provider-owned unless the protocol exposes a c
 - [Autopilot continuous optimization](../handoffs/active/autopilot-continuous-optimization.md)
 
 **Confidence:** verified against the cited Keel/Jev intake handoffs and the repository's authorization and receipt boundaries.
+
+## Compiled Update — 2026-09-25: Prepared Actions Need One Reusable Envelope
+
+The typed-decision boundary now has a concrete host-side primitive: `decision_receipt.v1`. The receipt binds
+the task revision, offered choices, read-set or catalog fingerprint, expiry, selected ID or abstention,
+requested and resolved model identity, validation, authorization, fallback, timing, and downstream outcome.
+Immediately before dispatch, the host rechecks availability, freshness, tool existence, model identity,
+and authority against the stored action. `abstained`, `stale`, `expired`, `unauthorized`, `unknown_id`, and
+`incumbent_fallback` are distinct outcomes rather than one generic failure.
+
+One implementation owner builds this envelope and its deterministic conformance fixtures. Routing,
+review, tool-focus, computer-use, and later selector consumers reuse it and add separate tasks only where
+their integration or acceptance criteria differ. This keeps the authority rule executable: selection
+never grants permission, and a valid model choice cannot execute a changed or unauthorized action.
+
+### Source References
+
+- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — HS-TD-4 owner and consumer boundary.
+- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — deterministic conformance and receipt requirements.
+- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — selector and shadow consumers.
+- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md) — review-side prepared-action consumer.
+
+**Confidence:** verified as an adopted repository contract; implementation remains tracked by HS-TD-4.
+
+## Compiled Update — 2026-09-25: The Orchestrator Actor Reached the Pre-Comparison Boundary
+
+The AutoKernel orchestrator backend is deployed through its pre-A/B prerequisites. Request-scoped worktree
+containment and edit modes, the `orch:auto` backend, a post-reply trailing-work witness, a direct REPL
+context variable, and orchestrator-owned read-only scouts are live. On the DS41 control prompt, direct
+context reduced the first-turn root prompt from 30,106 to 7,810 tokens while exact pull accounting and a
+byte cap kept retrieved material out of later prompts. The result is architectural readiness, not an
+outcome win: the paired OAB-4 comparison remains open.
+
+The build also exposed two operational boundaries. Scouts bypass the ordinary contention, region-lock, and
+inference-tap path, so their usage remains under-counted until OAB-16 emits per-scout records. Separately, a
+no-op SQLite VACUUM held an exclusive lock for 34 seconds and caused a real author call to fail with
+`SQLITE_BUSY`; maintenance now skips small freelists, truncates WAL after real vacuum work, and gives store
+errors a distinct backoff class. Metrics are scoped to the call start so a failed author cannot inherit the
+planner's prior session.
+
+### Source References
+
+- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — deployed components, direct-context measurement, scout gap, and store incident.
+- [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — campaign boundary and pending A/B.
+- [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — lifecycle and dedicated-worktree conventions.
+- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — deployment chronology and measured timings.
+
+**Confidence:** verified for deployed mechanisms and incident measurements; comparative backend quality remains unmeasured.
