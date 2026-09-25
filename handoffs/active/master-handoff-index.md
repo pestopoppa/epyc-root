@@ -30,6 +30,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-57 | Choose an AMD AI Lab contact destination (dedicated email recommended, or booking/contact URL) and confirm the reviewed site is ready for public GitHub Pages launch | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) WEB-1 | 2026-09-25 |
 | OP-53 | **DeepSeek-V4.1 campaign is blocked by the competing-inference gate**: it classifies any UNOWNED `llama-server` as competing and raises, and :8074 (the requested planner) sits outside every owned scope with no allowlist parameter. Either (B) add a scoped, journalled pid allowlist — a source change that weakens a gate with INC-20260731 lineage — or (C) keep the default planner and stop :8074 for the window. The operator has said the stack stays up | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | 2026-09-23 |
 | OP-1 | P0.1–P0.3 sign-off bundle | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | 2026-07-11 |
 | OP-5 | Reviewer control-plane decision bundle (P-REV-1 amendment) | [reviewer-control-plane-index.md](reviewer-control-plane-index.md) | 2026-07-16 |
@@ -85,7 +86,7 @@ nobody is moving.
 | research-evaluation | 43 | 448 | 12 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
 | routing-and-optimization | 50 | 503 | 17 | 2026-07-29 |
-| user-facing-harness | 8 | 58 | 2 | 2026-07-29 |
+| user-facing-harness | 9 | 61 | 2 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

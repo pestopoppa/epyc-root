@@ -1,7 +1,7 @@
 {
   "by_type": {
     "docs": 110,
-    "handoff-active": 173,
+    "handoff-active": 174,
     "handoff-blocked": 2,
     "handoff-completed": 197,
     "progress": 491,
@@ -9,10 +9,23 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-25T13:34:03Z",
-  "mode": "touch",
-  "scan_time": "2026-09-25T13:34:03Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-09-25T14:17:05Z",
+    "scope_paths": [
+      "handoffs/active/amd-ai-lab-website-publication.md",
+      "progress/2026-09/2026-09-25-codex.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-25T14:17:05Z",
   "schema_version": 1,
-  "source_set_hash": "24e4dbd40926bfa86234442b7257a82d5a37350b9f8d8460913c23687e90f3a2",
+  "source_set_hash": "18e4854a458be3ef04eadd6bc599c9ef238376b96be0722f1cfb1a7a2878dc17",
   "sources": [
     {
       "content_hash": "8595f5d9339b0046d8720c31a58567e781bd250c32406bdc381c523e28197e7d",
@@ -52,6 +65,14 @@
       "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
       "size": 117163,
       "title": "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "19cfa533cfbb8ac39b33dc78f459b532940dbcb342da574dd9e554ab85ef4c54",
+      "modified": "2026-09-25T14:15:16Z",
+      "path": "handoffs/active/amd-ai-lab-website-publication.md",
+      "size": 3138,
+      "title": "AMD AI Lab website publication",
       "type": "handoff-active"
     },
     {
@@ -8023,10 +8044,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "85c87c517b0d86c2e20e4cd9d4838abbc319696dff8cf66c3da96aae9c8fd86c",
-      "modified": "2026-09-25T13:33:34Z",
+      "content_hash": "dbf47334f11b1da9f8d46bf33745ad7d7c798aad576b1b3fcecb0a7a3612ad7e",
+      "modified": "2026-09-25T14:15:16Z",
       "path": "progress/2026-09/2026-09-25-codex.md",
-      "size": 5590,
+      "size": 7308,
       "title": "Production release runbook and AMD site wrap-up \u2014 2026-09-25",
       "type": "progress"
     },
@@ -8919,7 +8940,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1113,
+  "total_new": 1114,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
