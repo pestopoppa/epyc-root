@@ -56,3 +56,7 @@ _Via /research-intake Stage 4 (operator-approved plan 2026-09-17). Sources dive-
 
 - [ ] **AC-CORAL — pin CORAL v0.7.20 (`bbae4f72`) and spike the shared-state design against orchestrator `/v1`.** Install via pinned tag; point opencode/codex runtimes at `/v1` (baseURL or embedded LiteLLM gateway); evaluate `.coral/public` shared state (attempts/notes/skills + heartbeat reflect-1/consolidate-10/pivot-5) as the persistent-workspace mechanism for kernel R&D against the current ad-hoc dispatch baseline (equal-spend control per the fan-out A/B constraints above). Sources: intake-1449, intake-1455.
 - [ ] **AC-branch-per-agent — draft the SwarmResearch-pattern search-harness spec.** Branch+worktree per search agent, fresh-context explorers, lineage findings.md, shepherd global context, width/depth adaptation with explicit spawn telemetry; reuse the released repro harness (intake-1450) as trial substrate where useful. Sources: intake-1439, intake-1450, intake-1444.
+
+## Research Intake Update — 2026-09-25 (ALE private evaluation)
+
+- [ ] **ACH-ALE-1 — Isolate the claim-bearing private grader.** Run private grading in a separate process or service with inaccessible instances, seeds, and standings, immutable one-shot receipts, and a non-resettable private-call budget. The search process may consume only the returned verdict; it may not inspect or tune against hidden cases. Sources: intake-1597#record, intake-1598#record, intake-1599#record.

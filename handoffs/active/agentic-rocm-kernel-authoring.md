@@ -1129,6 +1129,7 @@ KLineage and Kernel-Smith release **nothing at all**. Public-and-unlicensed is n
 ## Research Intake Update — 2026-09-15 (search-strategy confound)
 
 - [ ] **S3-INF03-01 — record that the eight-arm panel ranks WHOLE AGENTS, not search strategies.** Each arm brings its own editor/actor and there is no trivial search-policy arm (arm 1 is the no-authoring start state). Write this into the campaign contract, and add OR explicitly decline a greedy hill-climber arm that uses an existing actor as editor. intake-1375#00.
+- [ ] **S3-INF03-AIDE-1 — Separate search-policy effects from whole-agent effects.** Using one fixed actor, model, prompts, evaluator, context policy, task subset, seeds, and token/evaluator/wall budgets, compare greedy incumbent selection with an AIDE85-style five-arm UCB/fork policy. Keep the final evaluator inaccessible to the proposer and retain every proposal, branch, failure, score, and receipt. Sources: intake-1630#record and intake-1375#record.
 
 ## Research Intake Update — 2026-09-17 (SimpleTES code: RPUCG + ROCm eval path, intake-1454)
 
@@ -1189,3 +1190,8 @@ expectation. No external benchmark was re-measured here.
 ## Research Intake Update — 2026-09-17 (cross-ISA port evidence; intake-1491)
 
 **Cross-ISA port evidence (2026-09-17)**: a HIP-native SageAttention port exists but targets RDNA2/RDNA3 (gfx103x/gfx110x, WMMA/V_DOT — absent on CDNA2/MFMA); cite only as existence proof for cross-ISA porting, never as gfx90a evidence (intake-1491). CuTeDSL remains NVIDIA/CUTLASS-only and must not be imported (standing rule).
+
+## Research Intake Update — 2026-09-25 (adversarial program evolution)
+
+- [ ] **S3-INF03-DRQ-1 — Add an external and historical cross-play panel for evolutionary kernel candidates.** Evaluate retained champions against contemporaries, a stratified historical archive, and a frozen panel of unseen shapes, operators, and hardware-relevant edge cases. Emit the pairwise matrix, dominance graph, forgetting, regret/exploitability, cycle statistics, internal champion result, final-population mean, and external-panel result with repeated-seed/opponent intervals. Sources: intake-1600#record, intake-1612#record, intake-1613#record.
+- [ ] **S3-INF03-DRQ-2 — Run matched adversarial-evolution controls before crediting archive or LLM machinery.** Include random search, neutral accepted mutation, non-LLM mutation, static opponent, score-only/no-archive, no-history, and archive-depth ablations under equal evaluator, model-call, token, and wall budgets. Store every effective config and terminal summary in native receipts. Sources: intake-1600#record, intake-1611#record, intake-1616#record, intake-1617#record.

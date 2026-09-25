@@ -1,7 +1,7 @@
-# F1-DGM Scoping — DGM Synthetic Task-Generation for W4+ Corpus Expansion
+# F1 Corpus Expansion — Transposing DGM Search Patterns to Synthetic Task Generation
 
 **Type**: Design / scoping document (zero-cost design input — NO inference, NO code, NO commits in this pass)
-**Owner handoff**: [`handoffs/active/frontier-f1-real-task-corpus.md`](../handoffs/active/frontier-f1-real-task-corpus.md) (F1-DGM-1/2/3)
+**Owner handoff**: [`handoffs/completed/frontier-f1-real-task-corpus.md`](../handoffs/completed/frontier-f1-real-task-corpus.md) (historical F1-DGM-1/2/3 identifiers)
 **Plan**: Wave-2 B5 (`mnt-raid0-llm-epyc-root-tmp-deep-resear-cuddly-leaf.md`)
 **Sources read**: DGM/Hyperagents/ADAS intake (rec-002, intake-786/787/791), SkillsBench v3 (intake-096), Simula deep-dive (`research/deep-dives/simula-synthetic-data-generation.md`, esp. §2, §3, §8.1–8.5, L340–416), both `debug_scorer.py` copies (orchestrator + research), `scripts/autopilot/eval_tower.py`, `scripts/benchmark/seeding_scoring.py`, `scripts/autopilot/rubric_scoring.py`, the curated W3 ledger `benchmarks/prompts/debug/real_suite_v1.yaml`, `dataset_adapter_modules/registry.py`.
 **Date**: 2026-07-17
@@ -12,20 +12,20 @@
 
 > **Self-generated tasks MUST NOT enter the autopilot gate without human-curate confirmation.**
 >
-> DGM-generated tasks are, until a human curates them, **audit/promotion material only** — exactly the same power-discipline posture the F1 handoff already imposes on `llm_judge`/rubric items and on the real suite before *n* is large enough. This is not advisory: SkillsBench v3 (intake-096) is a direct empirical warning that self-generated content is **net-negative (−1.3pp avg) without validation gates against a curated baseline**. The curated W3 ledger (`real_suite_v1`, 50 rows, all deterministically scoreable) is that baseline.
+> F1-generated tasks are, until a human curates them, **audit/promotion material only** — exactly the same power-discipline posture the F1 handoff already imposes on `llm_judge`/rubric items and on the real suite before *n* is large enough. This is not advisory: SkillsBench v3 (intake-096) is a direct empirical warning that self-generated content is **net-negative (−1.3pp avg) without validation gates against a curated baseline**. The curated W3 ledger (`real_suite_v1`, 50 rows, all deterministically scoreable) is that baseline.
 
 The gate boundary in one line:
 
 ```
-DGM generate → schema/scoreability/parity gates → double-critic QC → HUMAN CURATE (hard gate)
+F1 generator → schema/scoreability/parity gates → double-critic QC → HUMAN CURATE (hard gate)
     → audit/promotion slice → [only after curation + n-discipline] → autopilot eval-tower gate
 ```
 
-No automated path skips the human-curate node. The eval-tower `SafetyGate` remains the autopilot-admission authority; DGM output reaches it only as already-curated suite rows.
+No automated path skips the human-curate node. The eval-tower `SafetyGate` remains the autopilot-admission authority; F1 generator output reaches it only as already-curated suite rows.
 
 ---
 
-## 1. F1-DGM-1 — DGM task-generation methodology for W4+ corpus expansion
+## 1. F1-DGM-1 — F1 task-generation methodology using transposed DGM search patterns
 
 ### 1.1 What F1 borrows from DGM, what it transposes, and what it drops
 
@@ -50,7 +50,7 @@ No automated path skips the human-curate node. The eval-tower `SafetyGate` remai
 > task-generation claim.
 
 
-DGM (Darwin-Gödel-Machine; Hu/Lu/Clune/Zhang lineage, ADAS → DGM → Hyperagents; handoff cites arxiv 2505.22954) is a **self-code-modification + empirical-validation loop**: an agent generates tasks, executes them, validates results, and iteratively improves both tasks and its own capability, using **archive-based evolution over a parallel exploration tree**.
+DGM is a self-code-modification and empirical-validation loop: an agent modifies its coding-agent codebase, evaluates functionality-valid variants on fixed human-supplied benchmark tasks, and retains eligible variants in a growing archive.
 
 For F1 we borrow DGM's **search patterns** and apply them to a different object —
 task variants rather than agent variants — and drop self-modification. The mapping
@@ -58,7 +58,7 @@ below is a transposition F1 owns, not a capability DGM demonstrates for tasks:
 
 | DGM element | F1 adoption |
 |---|---|
-| Archive-based evolution (keep a growing pool of validated tasks) | **Adopt** — the archive is the growing curated corpus; W3 `real_suite_v1` seeds it |
+| Archive-based evolution over functionality-valid agent variants | **Transpose, do not attribute** — F1 applies the archive pattern to its own curated task corpus |
 | Parallel exploration tree (branch task variants) | **Adopt (as generation strategy)** — branch candidate variants per workload class |
 | Empirical validation loop (execute → validate → keep/reject) | **Adopt, but gated** — validation = deterministic verifier + Simula double-critic + **human curate**, never self-admit |
 | Self-code-modification of the generating agent | **DROP** — EPYC does not self-modify production agents; production kernels/stack are frozen. Out of scope. |
@@ -98,7 +98,7 @@ generated (genprov stamped)
   → n-discipline soak       → autopilot eval-tower gate (deterministic rows only)
 ```
 
-This mirrors the reviewer-plane `shadow → advisory → narrow-canary → selective-authority` ramp from the umbrella plan: DGM tasks start as diagnostic/audit signal and earn gate authority only after human confirmation + accumulation.
+This mirrors the reviewer-plane `shadow → advisory → narrow-canary → selective-authority` ramp from the umbrella plan: F1-generated tasks start as diagnostic/audit signal and earn gate authority only after human confirmation + accumulation.
 
 ---
 
@@ -120,21 +120,21 @@ eval_tower.py (T0/T1/T2/T3 runner)
 
 ### 2.2 Scoring-method compatibility matrix
 
-Grade = how DGM output maps to each method. "Gate-admittable" = can enter the autopilot gate deterministically (no judge).
+Grade = how F1 generator output maps to each method. "Gate-admittable" = can enter the autopilot gate deterministically (no judge).
 
-| scoring_method | Deterministic? | Gate-admittable | Needs oracle/config | DGM-generatable | Notes for DGM |
+| scoring_method | Deterministic? | Gate-admittable | Needs oracle/config | F1-generatable | Notes for F1 |
 |---|---|---|---|---|---|
 | `exact_match` | ✅ pure | ✅ | `expected`; optional `extract_pattern` | ✅ easy | Numeric + number-word normalization built in; generate a crisp `<answer>`-taggable target |
 | `multiple_choice` | ✅ pure | ✅ | `expected` = letter A–H | ✅ easy | Generate stem + labeled choices + gold letter; last-match parsing is robust |
 | `substring` | ✅ pure | ✅ | `expected` substring | ✅ easy | **Orchestrator strips digit-group separators; research does not** (parity risk, §2.4). Comma-brittleness is a known scorer hazard (memory: `substring_scorer_comma_brittle`) |
 | `f1` | ✅ pure | ✅ | `expected`; `threshold` (def 0.5) | ✅ easy | Token-overlap; **orchestrator folds diacritics (NFKD), research does not** (parity risk) |
-| `programmatic` | ✅ pure | ✅ (expected-free set) | `verifier` name (+ params) | ✅ moderate | IFEval-style format checks; DGM must emit a supported `verifier` id. `language` verifier always passes (no langdetect) |
-| `code_execution` | ✅ (sandboxed) | ✅ **iff oracle present** | `test_code` (asserts/unittest/`TEST_CASES`) or `entry_point`+`expected` | ✅ moderate | **CRITICAL parity gap**: orchestrator rejects a row with `test_code` that lacks a real assertion/unittest oracle; research copy will `return result.returncode == 0` — a task with a syntactically valid function and no real test **passes vacuously**. DGM `code_execution` rows MUST carry a genuine executable oracle and MUST clear G3 |
-| `math_verify` | ✅ (symbolic) | ✅ | `extraction_mode`; needs `math-verify` lib | ⚠️ orchestrator-only | **Not present in the research copy** — falls back to `exact_match` there. Any DGM math task using `math_verify` fails G3 unless the research copy gains parity, or the task is authored to also pass `exact_match` |
+| `programmatic` | ✅ pure | ✅ (expected-free set) | `verifier` name (+ params) | ✅ moderate | IFEval-style format checks; F1 must emit a supported `verifier` id. `language` verifier always passes (no langdetect) |
+| `code_execution` | ✅ (sandboxed) | ✅ **iff oracle present** | `test_code` (asserts/unittest/`TEST_CASES`) or `entry_point`+`expected` | ✅ moderate | **CRITICAL parity gap**: orchestrator rejects a row with `test_code` that lacks a real assertion/unittest oracle; research copy will `return result.returncode == 0` — a task with a syntactically valid function and no real test **passes vacuously**. F1 `code_execution` rows MUST carry a genuine executable oracle and MUST clear G3 |
+| `math_verify` | ✅ (symbolic) | ✅ | `extraction_mode`; needs `math-verify` lib | ⚠️ orchestrator-only | **Not present in the research copy** — falls back to `exact_match` there. Any F1 math task using `math_verify` fails G3 unless the research copy gains parity, or the task is authored to also pass `exact_match` |
 | `llm_judge` | ❌ judge-dependent | ❌ (audit/promotion only) | judge server (port 8082) | ⚠️ generatable, **not gate-eligible** | Has a substring fast-path + substring fallback when judge is down, but the accept decision is a model call. Per F1 gate rule, rubric/judge items stay OUT of the autopilot gate |
-| `rubric` (eval_tower) | ❌ judge-dependent | ❌ (audit/promotion only) | cross-family judge roles + `deterministic_rubric_fallback` | ⚠️ audit lane | Rubric path in eval_tower uses judge roles with a deterministic fallback; still not gate-eligible. Route DGM open-ended tasks here as diagnostic signal |
+| `rubric` (eval_tower) | ❌ judge-dependent | ❌ (audit/promotion only) | cross-family judge roles + `deterministic_rubric_fallback` | ⚠️ audit lane | Rubric path in eval_tower uses judge roles with a deterministic fallback; still not gate-eligible. Route F1 open-ended tasks here as diagnostic signal |
 
-**Bottom line for the gate path**: DGM should generate against the **six pure-deterministic methods** (`exact_match`, `multiple_choice`, `substring`, `f1`, `programmatic`, `code_execution`-with-oracle). `math_verify` is admissible only if verifier-parity (G3) is first restored across the two repos. `llm_judge`/`rubric` tasks are welcome but land in the **audit/promotion lane, never the gate** — consistent with the existing F1 discipline.
+**Bottom line for the gate path**: F1 should generate against the **six pure-deterministic methods** (`exact_match`, `multiple_choice`, `substring`, `f1`, `programmatic`, `code_execution`-with-oracle). `math_verify` is admissible only if verifier-parity (G3) is first restored across the two repos. `llm_judge`/`rubric` tasks are welcome but land in the **audit/promotion lane, never the gate** — consistent with the existing F1 discipline.
 
 ### 2.3 Gate-admittability rule (reproduced from `eval_tower._is_scoreable_question`)
 
@@ -147,13 +147,13 @@ scoreable(q):
   else: has_expected(expected != "")  OR  method in {"programmatic"}   # expected-free set
 ```
 
-This is the exact predicate DGM rows must satisfy at G2. Note `rubric` returns scoreable=True here but is still excluded from the *autopilot gate* by F1 policy — G2 admits it to the eval tower's *scored* set, G6 + F1 power-discipline keep it audit-only.
+This is the exact predicate F1-generated rows must satisfy at G2. Note `rubric` returns scoreable=True here but is still excluded from the *autopilot gate* by F1 policy — G2 admits it to the eval tower's *scored* set, G6 + F1 power-discipline keep it audit-only.
 
 ### 2.4 Two-repo verifier-parity divergences (the G3 checklist)
 
-The two `debug_scorer.py` copies have drifted. A DGM task can score differently across them; G3 exists to catch exactly this. Known divergences today:
+The two `debug_scorer.py` copies have drifted. An F1-generated task can score differently across them; G3 exists to catch exactly this. Known divergences today:
 
-| Behavior | Orchestrator copy | Research copy | DGM impact |
+| Behavior | Orchestrator copy | Research copy | F1 impact |
 |---|---|---|---|
 | `math_verify` scorer | present | **absent** (→ `exact_match` fallback via unknown-method? actually raises `ValueError`) | Method unusable in research repo; G3 fails |
 | `code_execution` no-oracle | **rejects** (returns False) | **runs code, returns `returncode == 0`** (vacuous pass) | Silent false-positives in research repo; hard G3 fail — require genuine oracle |
@@ -169,9 +169,9 @@ The two `debug_scorer.py` copies have drifted. A DGM task can score differently 
 
 Simula (`simula-synthetic-data-generation.md`, intake-410) is the published QC layer for exactly this synthetic-eval-generation step. Three mechanisms fold in; all are **design inputs** here (inference deferred to the operator loop).
 
-### 3.1 Double-critic rejection sampling → validates the DGM reference answer (Gate G4)
+### 3.1 Double-critic rejection sampling → validates the F1-generated reference answer (Gate G4)
 
-The failure mode DGM shares with all self-generation: the generator can produce a `(prompt, expected)` pair where **`expected` itself is wrong**. A single "is this correct?" critic is sycophantic. Simula's fix (deep-dive §2):
+The failure mode in F1's proposed generator is that it can produce a `(prompt, expected)` pair where **`expected` itself is wrong**. A single "is this correct?" critic is sycophantic. Simula's fix (deep-dive §2):
 
 ```
 Critic-1: "Is this reference answer CORRECT for this task?"   → p(correct)
@@ -181,7 +181,7 @@ Disagreement → reject or auto-repair + re-critique
 ```
 
 - Lift condition: `p(y) > p(y_corrupt)` — the critic must accept correct answers more than corrupted ones. Holds only where the local judge is competent on the class.
-- **EPYC reuse target**: the double-critic pattern is already scoped for `q_scorer.py` (deep-dive §8.1; `orchestration/repl_memory/q_scorer.py` exists, 51KB). F1-DGM's G4 can share that critic implementation rather than build a second — one double-critic module, two callers (Q-scoring + DGM answer validation).
+- **EPYC reuse target**: the double-critic pattern is already scoped for `q_scorer.py` (deep-dive §8.1; `orchestration/repl_memory/q_scorer.py` exists, 51KB). F1-DGM's G4 can share that critic implementation rather than build a second — one double-critic module, two callers (Q-scoring + F1 answer validation).
 - Cost: 2× judge inference per candidate; runs offline in the operator loop, off the gate critical path.
 
 ### 3.2 Calibrated Elo complexity scoring → tiering + difficulty stratification (feeds G5)
@@ -223,7 +223,7 @@ This is the mechanistic reason SkillsBench-v3's −1.3pp shows up and why G5 bou
 
 **Decided in this scoping pass (design):**
 - The mandatory guard and the G1–G6 gate stack, with human-curate as a hard, non-overridable node.
-- DGM adoption = task-generation + archive + empirical-validation loop; **self-modification dropped**.
+- F1-owned transposition = offline task generation using DGM's archive, branching, and empirical-validation patterns; DGM itself does not generate tasks; self-modification remains dropped.
 - Gate path restricted to the six pure-deterministic scoring methods; `math_verify` conditional on parity; `llm_judge`/`rubric` → audit/promotion lane only.
 - Seed from W3 `real_suite_v1` + `workload_model.yaml` (7 classes), preserve per-class balance, report per-class/per-axis.
 - Simula fold: double-critic → G4 answer validation (share `q_scorer` critic); Elo complexity → tiering/stratification; weak-teacher caution → per-class complexity cap.
@@ -243,10 +243,10 @@ All builds are inference-gated and route through the operator's long-horizon `/l
 
 ## 5. Open questions for the implementation session
 
-1. **Intake-ID discrepancy**: the F1 handoff + `recommendations.md` cite DGM as `intake-786` / arxiv `2505.22954`, but `intake_index.yaml` row `intake-786` is **STOP** (arxiv `2310.02304`). Reconcile the canonical DGM intake ID before wiring provenance. (Does not block the methodology; the DGM description in the handoff stands.)
+1. **DGM source identity**: use `intake-772#record` / arXiv `2505.22954` as the canonical DGM record. Historical references to `intake-786` are incorrect and must not be wired into provenance.
 2. **G3 canonicalization**: reconcile the two `debug_scorer.py` copies now (single canonical scorer) or gate-time-assert parity per task? A single scorer is cleaner but touches two repos' import surfaces.
 3. **Double-critic judge model**: which local role is competent enough per class to satisfy `p(y) > p(y_corrupt)`? Weak classes (governance/ops/planning) may have **no** viable local critic → those classes may be human-curate-only from generation, not just at G6.
 4. **Elo batch budget**: K-appearances × batch size × pairwise calls is the dominant inference cost. What K/batch gives stable tiers at F1's few-hundred-row scale?
-5. **Corpus-vs-suite boundary**: does DGM output extend `real_suite_v1` in place (versioned `real_suite_v2`) or land in a separate `dgm_suite_v1` that is unioned only after soak? A separate suite keeps the human-curated W3 baseline pristine as the anchoring reference — recommended.
+5. **Corpus-vs-suite boundary**: does F1 generator output extend `real_suite_v1` in place (versioned `real_suite_v2`) or land in a separate `f1_synthetic_suite_v1` that is unioned only after soak? A separate suite keeps the human-curated W3 baseline pristine as the anchoring reference — recommended.
 6. **Anchoring thresholds**: numeric bounds for G5 class-share / diversity / complexity drift are unset — needs the baseline distribution measured first.
-7. **Weak-class policy**: confirm with the operator whether idiosyncratic EPYC classes should be generated at all, or captured passively only (W2/W3 path) and left out of DGM expansion.
+7. **Weak-class policy**: confirm with the operator whether idiosyncratic EPYC classes should be generated at all, or captured passively only (W2/W3 path) and left out of F1 expansion.

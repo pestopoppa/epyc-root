@@ -81,12 +81,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 60 | 843 | 33 | 2026-07-29 |
+| inference-research | 60 | 854 | 33 | 2026-07-29 |
 | pipeline-integration | 5 | 71 | 1 | 2026-08-11 |
-| research-evaluation | 43 | 449 | 12 | 2026-07-29 |
-| reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 50 | 503 | 17 | 2026-07-29 |
-| user-facing-harness | 9 | 61 | 2 | 2026-07-29 |
+| research-evaluation | 44 | 469 | 12 | 2026-07-29 |
+| reviewer-control-plane | 6 | 34 | 12 | 2026-07-29 |
+| routing-and-optimization | 50 | 518 | 17 | 2026-07-29 |
+| user-facing-harness | 9 | 62 | 2 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

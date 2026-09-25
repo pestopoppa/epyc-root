@@ -404,3 +404,7 @@ Record SEQ-3's outcome here with the trial count actually spent and the final E.
 crosses 20.0, the program has its first genuine confirm and the allocation rule should be
 re-specified. If it plateaus, that is equally decision-grade — and far cheaper than the ~347
 eval-hours already spent without a verdict.
+
+## Research Intake Update — 2026-09-25 (Shinka parent-selection replay)
+
+- [ ] **SEQ-SHINKA-1 — Replay Shinka-style parent selection against the current parent policy.** Compare the current allocator with rank power-law and weighted score-times-inverse-offspring selection over the same frozen candidate graph and evaluator outcomes. Equalize evaluator calls, proposer tokens/cost, and wall budget; use repeated seeds or bootstraps where replay permits; report selection disagreement and held-out continuation separately; pin source revision and complete controller config. No live selector change follows from an offline disagreement. Sources: intake-779#record, intake-1595#record, intake-1596#record.

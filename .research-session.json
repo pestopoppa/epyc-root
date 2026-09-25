@@ -1,606 +1,1148 @@
 {
-  "session_id": "intake-exl3-sglang-throughput-20260925",
-  "started_at": "2026-09-25T13:40:00Z",
-  "last_checkpoint": "2026-09-25T14:58:00Z",
+  "session_id": "e13c5399-7a56-4bca-b154-dd00d6083a08",
+  "started_at": "2026-09-25T08:17:00Z",
+  "last_checkpoint": "2026-09-25T15:25:39Z",
   "phase": 5,
-  "stage": "stage2b-complete-awaiting-surfaced-source-selection",
-  "session_kind": "research-intake (CIRU EXL3/SGLang serving package and throughput path)",
-  "previous_session": "intake-exl3-mi210-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-exl3-sglang-20260925/previous-research-session-stage4.json)",
-  "mandate": "Ingest the CIRU Qwen3.8-27B EXL3/SGLang package and establish what the published throughput requires so the CPU and MI210 program targets the complete serving path.",
-  "raw_submissions": {
-    "url": "https://huggingface.co/jcbtc/Qwen3.8-27b-CIRU-EXL3-SGLANG",
-    "operator_goal": "We MUST be able to get to these throughput speeds also"
-  },
-  "max_existing_intake_id_at_start": 1562,
-  "next_intake_id": 1576,
+  "stage": "stage4-complete",
+  "session_kind": "research-intake plus deep dives (System One decision models, six SakanaAI research families, and JEV-as-a-Judge)",
+  "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-system1-20260925 on branch intake/system1-20260925, rebased onto origin/main. Concurrent origin records occupied intake-1528..1575, so this session remapped its new records intake-1528..1659 to intake-1576..1707; existing intake-772/779/780 retain identity.",
+  "previous_session": "intake-exl3-sglang-throughput-20260925",
+  "mandate": "Ingest and deeply audit Apple LensVLM-9B, Archer Hume's Jev architecture post, four operator-supplied System One essays, DiscoPOP, Darwin Godel Machine, ShinkaEvolve, ALE-Bench, Digital Red Queen, The AI Scientist, and JEV-as-a-Judge.",
+  "max_existing_intake_id_at_start": 1575,
+  "next_intake_id": 1708,
   "entries_processed": [
-    "intake-1563",
-    "intake-1564",
-    "intake-1565",
-    "intake-1566",
-    "intake-1567",
-    "intake-1568",
-    "intake-1569",
-    "intake-1570",
-    "intake-1571",
-    "intake-1572",
-    "intake-1573",
-    "intake-1574",
-    "intake-1575"
+    "intake-1576",
+    "intake-1577",
+    "intake-1578",
+    "intake-1579",
+    "intake-1580",
+    "intake-1581",
+    "intake-1582",
+    "intake-1583",
+    "intake-1584",
+    "intake-1585",
+    "intake-1586",
+    "intake-1587",
+    "intake-1588",
+    "intake-1589",
+    "intake-1590",
+    "intake-1591",
+    "intake-1592",
+    "intake-1593",
+    "intake-1594",
+    "intake-1595",
+    "intake-1596",
+    "intake-1597",
+    "intake-1598",
+    "intake-1599",
+    "intake-1600",
+    "intake-1601",
+    "intake-1602",
+    "intake-1603",
+    "intake-1604",
+    "intake-1605",
+    "intake-1606",
+    "intake-1607",
+    "intake-1608",
+    "intake-1609",
+    "intake-1610",
+    "intake-1611",
+    "intake-1612",
+    "intake-1613",
+    "intake-1614",
+    "intake-1615",
+    "intake-1616",
+    "intake-1617",
+    "intake-1618",
+    "intake-1619",
+    "intake-1620",
+    "intake-1621",
+    "intake-1622",
+    "intake-1623",
+    "intake-1624",
+    "intake-1625",
+    "intake-1626",
+    "intake-1627",
+    "intake-1628",
+    "intake-1629",
+    "intake-1630",
+    "intake-1631",
+    "intake-1632",
+    "intake-1633",
+    "intake-1634",
+    "intake-1635",
+    "intake-1636",
+    "intake-1637",
+    "intake-1638",
+    "intake-1639",
+    "intake-1640",
+    "intake-1641",
+    "intake-1642",
+    "intake-1643",
+    "intake-1644",
+    "intake-1645",
+    "intake-1646",
+    "intake-1647",
+    "intake-1648",
+    "intake-1649",
+    "intake-1650",
+    "intake-1651",
+    "intake-1652",
+    "intake-1653",
+    "intake-1654",
+    "intake-1655",
+    "intake-1656",
+    "intake-1657",
+    "intake-1658",
+    "intake-1659",
+    "intake-1660",
+    "intake-1661",
+    "intake-1662",
+    "intake-1663",
+    "intake-1664",
+    "intake-1665",
+    "intake-1666",
+    "intake-1667",
+    "intake-1668",
+    "intake-1669",
+    "intake-1670",
+    "intake-1671",
+    "intake-1672",
+    "intake-1673",
+    "intake-1674",
+    "intake-1675",
+    "intake-1676",
+    "intake-1677",
+    "intake-1678",
+    "intake-1679",
+    "intake-1680",
+    "intake-1681",
+    "intake-1682",
+    "intake-1683",
+    "intake-1684",
+    "intake-1685",
+    "intake-1686",
+    "intake-1687",
+    "intake-1688",
+    "intake-1689",
+    "intake-1690",
+    "intake-1691",
+    "intake-1692",
+    "intake-1693",
+    "intake-1694",
+    "intake-1695",
+    "intake-1696",
+    "intake-1697",
+    "intake-1698",
+    "intake-1699",
+    "intake-1700",
+    "intake-1701",
+    "intake-1702",
+    "intake-1703",
+    "intake-1704",
+    "intake-1705",
+    "intake-1706",
+    "intake-1707"
   ],
   "entries_remaining": [],
-  "expansion_cap": 10,
-  "expansion_count": 3,
-  "expansion_entries": {
-    "intake-1564": "ciru-ai/qwen38-exl3-sglang-runner — implementation, raw evidence and exact launch profile linked from the submitted card",
-    "intake-1565": "r0b0tlab/Qwen3.8-27B-EXL3-4.00bpw — exact packed target artifact pinned by the runner",
-    "intake-1566": "r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw — exact packed speculative draft pinned by the runner"
+  "state": {
+    "cross_references_cache": {
+      "typed_decision_cluster": [
+        "typed-decision-plane.md",
+        "routing-intelligence.md",
+        "decision-aware-routing.md",
+        "learned-routing-controller.md"
+      ],
+      "multimodal_cluster": [
+        "multimodal-pipeline.md",
+        "opendataloader-pipeline-integration.md",
+        "document-parser-table-bench.md",
+        "optical-context-compression.md"
+      ]
+    },
+    "expansion_queue": [
+      {
+        "group": "JEV semantic robustness and calibration",
+        "priority": "critical",
+        "sources": [
+          "arXiv:2609.26758 current v2",
+          "github.com/jujumilk3/jev-calibration-audit"
+        ],
+        "question": "Do option names, abstention availability, and primitive choice dominate rubric semantics while preserving schema validity?"
+      },
+      {
+        "group": "DGM selection robustness",
+        "priority": "high",
+        "sources": [
+          "lemoz/darwin-godel-machine",
+          "arXiv:2609.17817",
+          "arXiv:2510.21614"
+        ],
+        "question": "How reproducible and attack-resistant are DGM's archive, parent-selection, and evaluator loops?"
+      },
+      {
+        "group": "Program-evolution baselines",
+        "priority": "high",
+        "sources": [
+          "Göther exact 26-circle audit",
+          "arXiv:2602.16805 Simple Baselines",
+          "arXiv:2605.15308 SMCEvolve"
+        ],
+        "question": "Do simpler search and verifier baselines erase ShinkaEvolve's claimed gains?"
+      },
+      {
+        "group": "Long-horizon algorithm-engineering agents",
+        "priority": "high",
+        "sources": [
+          "arXiv:2609.26457 AIDE2",
+          "arXiv:2601.21526 KAPSO",
+          "arXiv:2606.27369 RiVER",
+          "arXiv:2506.07972 HeuriGym"
+        ],
+        "question": "Which search, verification, and budget-allocation mechanisms generalize beyond one ALE campaign?"
+      },
+      {
+        "group": "Adversarial program evolution",
+        "priority": "medium",
+        "sources": [
+          "dietmarwo/drq_fast_mars",
+          "Population DRQ artifacts",
+          "arXiv:2605.27130 DEI",
+          "arXiv:2606.05408 Mutation Without Variation"
+        ],
+        "question": "Which DRQ findings survive independent implementations, population methods, and stronger controls?"
+      },
+      {
+        "group": "AI Scientist replication and successors",
+        "priority": "high",
+        "sources": [
+          "arXiv:2502.14297 and artifact",
+          "Papoyan companion analysis",
+          "arXiv:2504.08066 AI Scientist-v2"
+        ],
+        "question": "How often do end-to-end research agents produce executable, valid, and independently accepted results after full compute and human costs?"
+      },
+      {
+        "group": "JEV domain transfer",
+        "priority": "medium",
+        "sources": [
+          "arXiv:2609.27607v1",
+          "github.com/PavelRavvich/jev-bench",
+          "github.com/themsquared/jev-benchmark",
+          "github.com/danielgshea/jev-as-a-judge"
+        ],
+        "question": "Where does JEV remain competitive against specialized or inexpensive comparators under independently recorded workloads?"
+      }
+    ],
+    "stage2b_operator_selection": {
+      "selection": "all seven surfaced groups",
+      "status": "complete",
+      "groups": [
+        "JEV semantic robustness and calibration",
+        "DGM selection robustness",
+        "Program-evolution baselines",
+        "Long-horizon algorithm-engineering agents",
+        "Adversarial program evolution",
+        "AI Scientist replication and successors",
+        "JEV domain transfer"
+      ]
+    },
+    "stage2c_operator_selection": {
+      "selection": "all six recommended expansion groups",
+      "status": "complete",
+      "groups": [
+        "JEV robustness mechanisms and larger benchmark",
+        "DGM selector and evaluator coevolution",
+        "Minimal and conventional program-search baselines",
+        "Long-horizon benchmark artifacts and reproducibility",
+        "Adversarial evolution diagnostics and QD methodology",
+        "AI Scientist independent real-science evaluation"
+      ]
+    },
+    "stage2d_operator_selection": {
+      "selection": "all six recommended Stage-2c surfaced groups",
+      "status": "complete",
+      "groups": [
+        "JEV robustness replications and label-bias controls",
+        "HGM and RQGM implementation evidence",
+        "Program-search baselines and theorem boundaries",
+        "Long-horizon official artifacts and replay substrate",
+        "Formal open-ended evolution and QD controls",
+        "Independent real-science evaluation follow-up"
+      ]
+    },
+    "stage2d_completed_ids": [
+      "intake-1654",
+      "intake-1655",
+      "intake-1656",
+      "intake-1657",
+      "intake-1658",
+      "intake-1659",
+      "intake-1660",
+      "intake-1661",
+      "intake-1662",
+      "intake-1663",
+      "intake-1664",
+      "intake-1665",
+      "intake-1666",
+      "intake-1667",
+      "intake-1668",
+      "intake-1669",
+      "intake-1670",
+      "intake-1671",
+      "intake-1672",
+      "intake-1673",
+      "intake-1674",
+      "intake-1675"
+    ],
+    "stage2d_surface_queue": [
+      {
+        "group": "JEV robustness methodology and source dependencies",
+        "priority": "high",
+        "sources": [
+          "DOI:10.18653/v1/2024.findings-naacl.130",
+          "arXiv:2404.08382",
+          "ACL Anthology 2024.lrec-main.1229",
+          "huggingface.co/datasets/AreLit/PhishNChips revision 89afcc39610084298c4679159cb2e27d9ffffa46",
+          "github.com/IliasAarab/btzsc",
+          "OpenReview:IxMryAz2p3",
+          "BTZSC leaderboard dataset revision 70bcc8b0f978d8287ccc81fe6a29c74615ed666c"
+        ],
+        "question": "Which independent order, text-answer, corpus-provenance, and evaluator controls change the current JEV robustness conclusions?"
+      },
+      {
+        "group": "DGM and Red Queen implementation dependencies",
+        "priority": "high",
+        "sources": [
+          "github.com/ianyac/red-queen-godel-machine",
+          "github.com/observeco/rqgm-core",
+          "SWE-bench",
+          "mini-swe-agent",
+          "github.com/jennyzzt/dgm",
+          "udaykamath.substack.com/p/the-red-queen-godel-machine-co-evolving",
+          "linked RQGM Colab notebook"
+        ],
+        "question": "Which archive, evaluator, mutation, and benchmark dependencies are independently reproducible, and which toy reconstructions add evidence?"
+      },
+      {
+        "group": "Program theorem and executable artifacts",
+        "priority": "high",
+        "sources": [
+          "DOI:10.1214/23-AAP1989",
+          "DOI:10.1080/07362994.2012.684323",
+          "github.com/gerbicz/sums-and-differences-of-sets",
+          "github.com/linhaowei1/sum-diff-proof",
+          "DOI:10.7169/facm/1229618749",
+          "DOI:10.5281/zenodo.10244439",
+          "arXiv:2402.18297v2",
+          "arXiv:1205.6733v1",
+          "DOI:10.3150/17-BEJ988"
+        ],
+        "question": "Can publisher text, formal builds, and exact artifacts close theorem-version, metric-identity, and executable-baseline gaps?"
+      },
+      {
+        "group": "Formal open-ended evolution lineage",
+        "priority": "medium",
+        "sources": [
+          "DOI:10.1162/artl_a_00289",
+          "arXiv:2006.03079",
+          "DOI:10.1162/artl_a_00280",
+          "DOI:10.1162/isal_a_00721",
+          "arXiv:1606.01810",
+          "arXiv:2304.12454",
+          "arXiv:2304.05639",
+          "DOI:10.25560/124391"
+        ],
+        "question": "Which formal definitions and empirical diagnostics distinguish finite novelty, quality diversity, and open-ended evolution?"
+      },
+      {
+        "group": "Independent AI science validity studies",
+        "priority": "high",
+        "sources": [
+          "DOI:10.64898/2026.01.05.697809",
+          "DOI:10.64898/2026.06.23.734132",
+          "arXiv:2607.27191",
+          "arXiv:2605.08545"
+        ],
+        "question": "What system-level failure rates, artifact availability, and independent acceptance evidence exist beyond individual AI Scientist cases?"
+      },
+      {
+        "group": "Long-horizon replay dependencies",
+        "priority": "medium",
+        "sources": [
+          "FineWeb and FineWeb10B preprocessing and shard manifests",
+          "AIDE2 issue 3",
+          "KAPSO issue 2",
+          "associated LFS object",
+          "OpenReview:w98hMEjzu8"
+        ],
+        "question": "Which exact data and issue artifacts are required for deterministic replay rather than companion-only documentation?"
+      }
+    ],
+    "stage2e_operator_selection": {
+      "selection": "five recommended groups; long-horizon replay dependencies held until a replay campaign",
+      "status": "complete",
+      "groups": [
+        "JEV robustness methodology and source dependencies",
+        "DGM and Red Queen implementation dependencies",
+        "Program theorem and executable artifacts",
+        "Formal open-ended evolution lineage",
+        "Independent AI science validity studies"
+      ],
+      "deferred_groups": [
+        "Long-horizon replay dependencies"
+      ]
+    },
+    "stage2e_added_jev_decision_layer_material": {
+      "status": "complete",
+      "submitted_material": "Operator-supplied technical essay, Engineering a Fast Decision Layer for Agents: Separating Generation, Judgment, and Authority",
+      "source_count": 15,
+      "scope": [
+        "rari decision-layer post and thread",
+        "TypeSafe launch, concept, model, build, jaggedness, coding-agent, hierarchy, and homepage documentation",
+        "System One primitive explainer",
+        "independent day-run cost report",
+        "constrained-generation reconstruction",
+        "CLM project write-up",
+        "Jev Engineering explainer",
+        "Kahneman conceptual background"
+      ],
+      "deduplication_plan": "Re-encounter existing TypeSafe and CLM records where exact or corpus-equivalent; create new records only for sources that add attributable evidence; decline conceptual background as a standalone record unless it changes an operational conclusion.",
+      "verification_plan": "Check current product specifications against official TypeSafe documentation, pin accessible artifacts, separate schema-validity guarantees from judgment accuracy, and independently second-read every promoted claim.",
+      "result": "All 15 submitted references were dispositioned. The launch post, seven official product pages, homepage, and CLM page were exact, corpus, vendor-surface, or same-work re-encounters of intake-1470, intake-1472, intake-1581, intake-1589, and intake-1590. Six secondary/background sources did not meet the standalone-record threshold. Existing records were updated with current model, context, rate-limit, latency, parallel-question, hierarchy, host-authority, and Folkman cost qualifications.",
+      "new_candidate_count": 0,
+      "claim_anchor_count": 23
+    },
+    "stage2e_completed_ids": [
+      "intake-1676",
+      "intake-1677",
+      "intake-1678",
+      "intake-1679",
+      "intake-1680",
+      "intake-1681",
+      "intake-1682",
+      "intake-1683",
+      "intake-1684",
+      "intake-1685",
+      "intake-1686",
+      "intake-1687",
+      "intake-1688",
+      "intake-1689",
+      "intake-1690",
+      "intake-1691",
+      "intake-1692",
+      "intake-1693",
+      "intake-1694",
+      "intake-1695",
+      "intake-1696",
+      "intake-1697",
+      "intake-1698",
+      "intake-1699",
+      "intake-1700",
+      "intake-1701",
+      "intake-1702",
+      "intake-1703",
+      "intake-1704",
+      "intake-1705",
+      "intake-1706",
+      "intake-1707"
+    ],
+    "stage2e_counts": {
+      "new_records": 32,
+      "key_claims": 125,
+      "claim_anchors": 204,
+      "re_encounters_updated": [
+        "intake-1470",
+        "intake-1472",
+        "intake-1581",
+        "intake-1654",
+        "intake-1664",
+        "intake-1666"
+      ],
+      "package_groups": 6,
+      "standalone_candidates_from_added_jev_material": 0
+    },
+    "stage2e_surface_queue": [
+      {
+        "group": "JEV readout and benchmark artifact reproduction",
+        "priority": "high",
+        "sources": [
+          "arXiv:2603.25056",
+          "github.com/mainlp/MCQ-Robustness",
+          "huggingface.co/spaces/btzsc/btzsc-leaderboard"
+        ],
+        "question": "Do extractor, prompt, permutation, and immutable-row artifacts reproduce the current robustness conclusions across decoder and typed-decision paths?"
+      },
+      {
+        "group": "DGM benchmark provenance and decontamination",
+        "priority": "critical",
+        "sources": [
+          "arXiv:2310.06770",
+          "arXiv:2512.10218",
+          "arXiv:2505.20411",
+          "arXiv:2609.08149",
+          "official DGM Drive logs"
+        ],
+        "question": "Which DGM gains survive exact historical harness replay, cache isolation, leakage audits, and immutable campaign-log capture?"
+      },
+      {
+        "group": "Sequential selection with imperfect verifiers",
+        "priority": "high",
+        "sources": [
+          "arXiv:1204.2382",
+          "arXiv:2603.07887",
+          "arXiv:2404.17546",
+          "arXiv:2502.01618",
+          "arXiv:2510.03149"
+        ],
+        "question": "Which finite-sample and noisy-verifier controls transfer to long-horizon program search without violating their theorem assumptions?"
+      },
+      {
+        "group": "OEE measurement implementations and conceptual lineage",
+        "priority": "high",
+        "sources": [
+          "github.com/emilydolson/MODES-toolbox-paper",
+          "github.com/adaptive-intelligent-robotics/QDax",
+          "DOI:10.1162/artl_a_00290",
+          "DOI:10.1162/artl_a_00291"
+        ],
+        "question": "Can executable metrics and conceptual definitions separate finite novelty, quality diversity, and defensible open-endedness claims?"
+      },
+      {
+        "group": "Autonomous-science adjudication artifacts",
+        "priority": "medium-high",
+        "sources": [
+          "github.com/sage-princeton/crux-in-a-box",
+          "github.com/sage-princeton/crux-2-personas-CLEAN",
+          "Docent case-data companion",
+          "arXiv:2607.07916",
+          "arXiv:2605.20520"
+        ],
+        "question": "Can immutable run manifests, blinded review, and human-validated log judges produce comparable scientific-validity estimates?"
+      }
+    ],
+    "stage2c_completed_ids": [
+      "intake-1634",
+      "intake-1635",
+      "intake-1636",
+      "intake-1637",
+      "intake-1638",
+      "intake-1639",
+      "intake-1640",
+      "intake-1641",
+      "intake-1642",
+      "intake-1643",
+      "intake-1644",
+      "intake-1645",
+      "intake-1646",
+      "intake-1647",
+      "intake-1648",
+      "intake-1649",
+      "intake-1650",
+      "intake-1651",
+      "intake-1652",
+      "intake-1653"
+    ],
+    "stage2c_surface_queue": [
+      {
+        "group": "JEV robustness replications and label-bias controls",
+        "priority": "high",
+        "sources": [
+          "arXiv:2308.11483v1",
+          "github.com/adianliusie/robust-prompt-classifier",
+          "github.com/chujiezheng/LLM-MCQ-Bias",
+          "github.com/WallerChen/jev-measured",
+          "github.com/anisselbd/jev-phishing-bench",
+          "huggingface.co/btzsc/btzsc"
+        ],
+        "question": "Which label-binding, order-randomization, calibration, and raw-record controls generalize beyond the audited JEV benchmark slices?"
+      },
+      {
+        "group": "HGM and RQGM implementation evidence",
+        "priority": "high",
+        "sources": [
+          "github.com/weill-labs/hgm",
+          "github.com/kingkillery/red-queen-godel-machine",
+          "github.com/Wenyi-AI-Wang/swe-bench-experiments/tree/hgm/evaluation/lite/20251030_HGM_gpt5"
+        ],
+        "question": "What can independent implementations and endpoint logs establish about selector behavior, evaluator replacement, and final-selection provenance?"
+      },
+      {
+        "group": "Program-search baselines and theorem boundaries",
+        "priority": "medium-high",
+        "sources": [
+          "arXiv:2208.06672",
+          "arXiv:2405.19553",
+          "arXiv:1103.3970",
+          "arXiv:2607.27199",
+          "arXiv:2505.16105",
+          "arXiv:2506.01896"
+        ],
+        "question": "Which prior optimization, evolutionary-search, and SMC results define the strongest fair controls and the exact assumptions behind transferable guarantees?"
+      },
+      {
+        "group": "Long-horizon official artifacts and replay substrate",
+        "priority": "high",
+        "sources": [
+          "github.com/facebookresearch/llm-speedrunner",
+          "NeurIPS 2025 Automated LLM Speedrunning paper and supplement",
+          "KAPSO Zenodo record 10.5281/zenodo.22936775",
+          "arXiv:2506.22419v2 companion materials"
+        ],
+        "question": "Can official artifacts close the raw-output, scorer, environment, and effective-configuration gaps found in the paper and repository audits?"
+      },
+      {
+        "group": "Formal open-ended evolution and QD controls",
+        "priority": "high",
+        "sources": [
+          "arXiv:2302.00463",
+          "arXiv:2406.04235",
+          "Scientific Reports 7, 997 (2017), PMCID PMC5430523"
+        ],
+        "question": "Which formal innovation and counterfactual criteria distinguish sustained open-ended adaptation from long recurrence, descriptor drift, or archive noise?"
+      },
+      {
+        "group": "Independent real-science evaluation follow-up",
+        "priority": "critical",
+        "sources": [
+          "bioRxiv DOI 10.64898/2026.09.03.749176"
+        ],
+        "question": "Does the second Real Science study supply system-specific repetitions, public artifacts, or corrected validity evidence for autonomous research frameworks?"
+      }
+    ],
+    "stage2b_completed_ids": [
+      "intake-1607",
+      "intake-1608",
+      "intake-1609",
+      "intake-1610",
+      "intake-1611",
+      "intake-1612",
+      "intake-1613",
+      "intake-1614",
+      "intake-1615",
+      "intake-1616",
+      "intake-1617",
+      "intake-1618",
+      "intake-1619",
+      "intake-1620",
+      "intake-1621",
+      "intake-1622",
+      "intake-1623",
+      "intake-1624",
+      "intake-1625",
+      "intake-1626",
+      "intake-1627",
+      "intake-1628",
+      "intake-1629",
+      "intake-1630",
+      "intake-1631",
+      "intake-1632",
+      "intake-1633"
+    ],
+    "stage2b_surface_queue": [
+      {
+        "group": "JEV robustness mechanisms and larger benchmark",
+        "priority": "critical",
+        "sources": [
+          "arXiv:2309.04992v1",
+          "arXiv:2309.03882v4",
+          "github.com/AbdelStark/jev-benchmarks@0d610cc",
+          "jev-agent.com/benchmarks (dynamic page; require immutable artifact)"
+        ],
+        "question": "Which label, order, calibration, and coverage controls survive a larger probability-aware benchmark with immutable raw records?"
+      },
+      {
+        "group": "DGM selector and evaluator coevolution",
+        "priority": "high",
+        "sources": [
+          "github.com/froeschele/trusting-trust-revisited@93f1a8f",
+          "github.com/metauto-ai/HGM@013872d",
+          "github.com/Birfy/agentdescent@45e19c6",
+          "arXiv:2606.26294v2"
+        ],
+        "question": "Can selector effects be isolated from scheduler and final-selection changes while keeping evaluator authority outside the evolving system?"
+      },
+      {
+        "group": "Minimal and conventional program-search baselines",
+        "priority": "high",
+        "sources": [
+          "arXiv:2609.25510v1",
+          "arXiv:2601.05943v2",
+          "arXiv:1803.09365v3"
+        ],
+        "question": "Do incumbent-only search, conventional solvers, and the actual SMC theorem erase or sharply bound claimed evolutionary-search gains?"
+      },
+      {
+        "group": "Long-horizon benchmark artifacts and reproducibility",
+        "priority": "high",
+        "sources": [
+          "github.com/Leeroo-AI/kapso@d743bb4",
+          "github.com/cornell-zhang/heurigym@a4cf046",
+          "huggingface.co/datasets/heurigen/heurigen-data@c11ab2",
+          "openreview.net/forum?id=w98hMEjzu8"
+        ],
+        "question": "Can current code, data, metrics, and task exposure reproduce the paper protocols and distinguish long-horizon search from benchmark leakage or configuration drift?"
+      },
+      {
+        "group": "Adversarial evolution diagnostics and QD methodology",
+        "priority": "medium",
+        "sources": [
+          "arXiv:2602.21833",
+          "arXiv:2211.02193",
+          "doi:10.18653/v1/2025.acl-long.624",
+          "doi:10.1016/j.patter.2025.101451"
+        ],
+        "question": "How broadly do iterative rewrite attractors and diversity collapse replicate, and what benchmark methodology is needed for a causal QD comparison?"
+      },
+      {
+        "group": "AI Scientist independent real-science evaluation",
+        "priority": "high",
+        "sources": [
+          "bioRxiv:10.64898/2026.06.24.734302v1"
+        ],
+        "question": "Do autonomous research systems retain benchmark performance when evaluated on real scientific validity, execution, and independent review?"
+      }
+    ],
+    "expansions_ingested": [
+      "intake-1582",
+      "intake-1583",
+      "intake-1584",
+      "intake-1585",
+      "intake-1586",
+      "intake-1587",
+      "intake-1588",
+      "intake-1589",
+      "intake-1590",
+      "intake-1591"
+    ],
+    "validation": {
+      "command": "python3 .claude/skills/research-intake/scripts/validate_intake.py && bash scripts/validate/validate_intake.sh",
+      "status": "passed: 1655 index entries validated by both validators; Stage-2e added 32 records, 125 key claims, and 204 exact hash-checked anchors; five candidate packages plus the zero-candidate Jev decision-layer package received independent reads and correction passes; exact persisted-candidate comparison, session JSON parse, and git diff check passed"
+    },
+    "recommended_dive_order": [
+      {
+        "rank": 1,
+        "ids": [
+          "intake-1589",
+          "intake-1590",
+          "intake-1591"
+        ],
+        "question": "Reproduce JevBench's conflicting CLM result and audit adapter, prompt, cache, and aggregate parity."
+      },
+      {
+        "rank": 2,
+        "ids": [
+          "intake-1587",
+          "intake-1588",
+          "intake-1586"
+        ],
+        "question": "Audit GLiNER2.5-Decide's runnable component and public development suite without treating the held-out test score as reproducible."
+      },
+      {
+        "rank": 3,
+        "ids": [
+          "intake-1577",
+          "intake-1583"
+        ],
+        "question": "Recompute Archer Hume's Jev probe tables and separate observations from non-identifying architecture inference."
+      },
+      {
+        "rank": 4,
+        "ids": [
+          "intake-1582",
+          "intake-1576"
+        ],
+        "question": "Verify LensVLM's selective expansion protocol, compression accounting, and compatibility constraints."
+      },
+      {
+        "rank": 5,
+        "ids": [
+          "intake-1584",
+          "intake-1585"
+        ],
+        "question": "Trace Keel's implemented action envelope and receipts and compare the residual against EPYC's existing contracts."
+      }
+    ],
+    "operator_selected_dives": [
+      "intake-1576",
+      "intake-1577",
+      "intake-1582",
+      "intake-1583",
+      "intake-1584",
+      "intake-1585",
+      "intake-1586",
+      "intake-1587",
+      "intake-1588",
+      "intake-1589",
+      "intake-1590",
+      "intake-1591"
+    ],
+    "stage2_clusters": {
+      "clm_jevbench": [
+        "intake-1589",
+        "intake-1590",
+        "intake-1591"
+      ],
+      "gliner_decide": [
+        "intake-1586",
+        "intake-1587",
+        "intake-1588"
+      ],
+      "jev_black_box": [
+        "intake-1577",
+        "intake-1583"
+      ],
+      "lensvlm": [
+        "intake-1576",
+        "intake-1582"
+      ],
+      "keel_jev_engineering": [
+        "intake-1584",
+        "intake-1585"
+      ]
+    },
+    "operator_added_ingest_and_dive_wave": {
+      "new_ids_reserved": {
+        "intake-1592": "DiscoPOP paper",
+        "intake-1593": "LLM-squared blog",
+        "intake-1594": "Darwin Godel Machine blog",
+        "intake-1595": "ShinkaEvolve blog",
+        "intake-1596": "ShinkaEvolve repository",
+        "intake-1597": "ALE-Bench paper",
+        "intake-1598": "ALE-Bench blog",
+        "intake-1599": "ALE-Bench repository",
+        "intake-1600": "Digital Red Queen paper",
+        "intake-1601": "Digital Red Queen blog",
+        "intake-1602": "Digital Red Queen repository",
+        "intake-1603": "AI Scientist original preprint",
+        "intake-1604": "AI Scientist Nature announcement",
+        "intake-1605": "AI Scientist original project page",
+        "intake-1606": "JEV-as-a-Judge paper"
+      },
+      "existing_exact_matches_selected_for_dive": {
+        "intake-772": "Darwin Godel Machine paper",
+        "intake-779": "ShinkaEvolve paper",
+        "intake-780": "Nature paper"
+      },
+      "status": "deduplicated; combined ingest-and-dive complete"
+    },
+    "stage4_id_remap": {
+      "reason": "Concurrent origin/main intake occupied the originally reserved range.",
+      "old_range": "intake-1528..intake-1659",
+      "new_range": "intake-1576..intake-1707",
+      "offset": 48,
+      "preserved_existing_ids": [
+        "intake-772",
+        "intake-779",
+        "intake-780"
+      ],
+      "origin_predecessor_session": "intake-exl3-sglang-throughput-20260925"
+    },
+    "stage2_closeout": {
+      "status": "closed",
+      "closed_at": "2026-09-25T15:20:03Z",
+      "surfaced_group_count": 9,
+      "decision": "Further source expansion for this wave is closed; each surfaced group is declined for duplicate intake now or monitored behind a named execution trigger.",
+      "plan_ref": "Stage 3 plan §0"
+    },
+    "dive_surfaced_sources": [
+      {
+        "group": "JEV readout and benchmark artifacts",
+        "disposition": "declined_for_now",
+        "bearing_entries": [
+          "intake-1676",
+          "intake-1677",
+          "intake-1678",
+          "intake-1679",
+          "intake-1680",
+          "intake-1681"
+        ],
+        "owner_tasks": [
+          "TD-23",
+          "TD-27",
+          "CJ-15"
+        ]
+      },
+      {
+        "group": "DGM provenance and decontamination",
+        "disposition": "declined_for_now",
+        "bearing_entries": [
+          "intake-1684",
+          "intake-1686"
+        ],
+        "owner_tasks": [
+          "AP-DGM-PROV"
+        ]
+      },
+      {
+        "group": "Sequential selection with imperfect verifiers",
+        "disposition": "declined_for_now",
+        "bearing_entries": [
+          "intake-1694",
+          "intake-1695"
+        ],
+        "owner_tasks": [
+          "AP-RI-SMC-1"
+        ]
+      },
+      {
+        "group": "OEE implementations and lineage",
+        "disposition": "declined_for_now",
+        "bearing_entries": [
+          "intake-1701",
+          "intake-1702",
+          "intake-1703"
+        ],
+        "owner_tasks": [
+          "AK-OEE-OBS-1",
+          "AK-UQD-1",
+          "VB-AK-OEE"
+        ]
+      },
+      {
+        "group": "Autonomous-science adjudication artifacts",
+        "disposition": "declined_or_deferred",
+        "bearing_entries": [
+          "intake-1706",
+          "intake-1707"
+        ],
+        "owner_tasks": [
+          "RA-14",
+          "RC-13",
+          "VB-AISCI-1"
+        ]
+      },
+      {
+        "group": "LensVLM official repository",
+        "disposition": "declined_duplicate_record",
+        "bearing_entries": [
+          "intake-1582"
+        ],
+        "owner_tasks": [
+          "MM-LENS-1",
+          "MM-LENS-2"
+        ]
+      },
+      {
+        "group": "GLiNER and CLM companion artifacts",
+        "disposition": "declined_duplicate_record",
+        "bearing_entries": [
+          "intake-1587",
+          "intake-1591"
+        ],
+        "owner_tasks": [
+          "TD-24",
+          "TD-25",
+          "VB-TDP-EXT"
+        ]
+      },
+      {
+        "group": "Jev black-box and calibration companions",
+        "disposition": "declined_duplicate_record",
+        "bearing_entries": [
+          "intake-1583",
+          "intake-1623"
+        ],
+        "owner_tasks": [
+          "TD-13",
+          "TD-16",
+          "TD-17",
+          "TD-18",
+          "TD-23"
+        ]
+      },
+      {
+        "group": "Long-horizon replay dependencies",
+        "disposition": "monitor",
+        "bearing_entries": [
+          "intake-1630",
+          "intake-1631",
+          "intake-1645",
+          "intake-1648",
+          "intake-1670",
+          "intake-1671"
+        ],
+        "owner_tasks": [
+          "AK-RI-CONTEXT-1",
+          "AK-KAPSO-1",
+          "EV-RI-PACKAGE-1",
+          "EV-RI-SPEED-1"
+        ]
+      }
+    ],
+    "stage3_approval": {
+      "status": "approved",
+      "approved_at": "2026-09-25T15:20:03Z",
+      "verbatim": "ok, proceed with stage 4",
+      "plan_path": "/home/node/.claude/plans/system-one-evolution-stage3-20260925.md",
+      "plan_sha256": "12d960c865a4ad31afeff0724691a3dadbf19d3e4f1a047cb7c4d8138064b24f",
+      "scope_note": "Approval covers the complete Stage 3 plan. Stage-4 bookkeeping remapped session-owned intake IDs by +48 after concurrent origin records occupied the original range."
+    },
+    "stage4_validation": {
+      "validated_at": "2026-09-25T15:25:39Z",
+      "status": "passed",
+      "intake_entries": 1703,
+      "dispositions": {
+        "integrated": 120,
+        "knowledge_only": 12,
+        "monitor": 2,
+        "declined": 1
+      },
+      "new_open_tasks": 53,
+      "completed_findings": 3,
+      "new_handoffs": 1,
+      "new_source_rows": 7,
+      "commands": [
+        "python3 scripts/handoffs/index_state.py",
+        "python3 scripts/handoffs/index_state.py --check",
+        "python3 .claude/skills/research-intake/scripts/validate_intake.py",
+        "bash scripts/validate/validate_intake.sh",
+        "python3 scripts/vidya/cli.py cite-check --as-of 2026-09-25T15:20:03Z <changed-handoffs-and-docs>",
+        "git diff HEAD --check",
+        "python3 -m json.tool .research-session.json"
+      ],
+      "citation_result": "clean: 625 citations across 17 documents; 0 problems",
+      "index_result": "174 handoffs; generated state fresh; ownership/schema check passed"
+    }
   },
-  "expansion_refused": [],
+  "expansion_refused": [
+    {
+      "source": "LensVLM companion repository",
+      "reason": "The public apple-aiml-research/ml-lensvlm repository exists, but the model card and paper were selected as the higher-value pair under the ten-entry expansion cap."
+    },
+    {
+      "source": "Additional Archer Hume follow-up JSON files and third-party Jev audits",
+      "reason": "The evidence.json bundle is the highest-value machine-readable companion; further branches were deferred under the ten-entry expansion cap."
+    },
+    {
+      "source": "Keel announcement thread, Laya source, and laya-coreml",
+      "reason": "Keel and Jev Engineering are the direct artifacts needed to settle the submitted essay's host-boundary claims."
+    },
+    {
+      "source": "GLiNER2 lineage papers, documentation, and comparator model cards",
+      "reason": "The launch post, exact checkpoint, and Fast Decisions development set cover the decision-model claim; lineage and comparator cards add limited Stage-1 decision value."
+    },
+    {
+      "source": "CLM Notion blog, training datasets, and scaling-analysis companions",
+      "reason": "The implementation, exact head, and independent JevBench counterevidence form the highest-value three-source cluster under the expansion cap."
+    },
+    {
+      "source": "OrcaRouter synthesis references",
+      "reason": "The submitted material is content-equivalent to intake-1499 and its primary thread is intake-1503; further expansion would repeat the prior intake."
+    },
+    {
+      "source": "Rari, System One Models, Folkman, SGNT, Kahneman, and Made with Jev references from the added decision-layer essay",
+      "reason": "All six were read and explicitly dispositioned. They contribute secondary architecture guidance, conceptual background, speculative internals, derivative documentation, or a private-harness cost report without public replay artifacts. Current official facts were consolidated into intake-1470 and intake-1472; CLM was routed to intake-1581, intake-1589, and intake-1590. Reconsider Folkman's run if an immutable public harness and call ledger appear."
+    }
+  ],
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 1,
-      "ts": "2026-09-25T13:40:00Z",
-      "verbatim": "I think there's one more relevant EXL3 reference to run research-intake on: https://huggingface.co/jcbtc/Qwen3.8-27b-CIRU-EXL3-SGLANG",
-      "disposition": "planned",
-      "plan_ref": "stage1-intake-1563-through-1566"
+      "ts": "2026-09-25T08:17:00Z",
+      "verbatim": "Perform a thorough research-intake of the following:",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Initial intake mandate; Stage 1 executed against every submitted URL and inline essay."
     },
     {
       "seq": 2,
-      "stage": 1,
-      "ts": "2026-09-25T13:40:30Z",
-      "verbatim": "We MUST be able to get to these throughput speeds also",
+      "stage": 2,
+      "ts": "2026-09-25T08:43:00Z",
+      "verbatim": "proceed with all recommended deep dives",
       "disposition": "planned",
-      "plan_ref": "preliminary-actionable-throughput-parity"
+      "plan_ref": "Stage 3 plan §§2.1–2.6",
+      "note": "All five ranked Stage-1 clusters selected; twelve intake records entered Stage 2."
     },
     {
       "seq": 3,
       "stage": 2,
-      "ts": "2026-09-25T14:10:00Z",
-      "verbatim": "proceed as recommended",
+      "ts": "2026-09-25T08:47:00Z",
+      "verbatim": "Add all these to your ingest+deep dive also:",
       "disposition": "planned",
-      "plan_ref": "stage2-dive-intake-1563-through-1566"
+      "plan_ref": "Stage 3 plan §§2.7–2.16",
+      "note": "Six SakanaAI families and all 17 supplied artifacts accepted for combined ingest-and-dive. Three exact paper collisions route to existing intake-772, intake-779, and intake-780; fourteen new IDs reserved."
     },
     {
       "seq": 4,
-      "stage": "2b",
-      "ts": "2026-09-25T15:15:00Z",
+      "stage": 2,
+      "ts": "2026-09-25T09:51:00Z",
+      "verbatim": "Is it too late to add https://arxiv.org/html/2609.26550v1 to the deep dives?",
+      "disposition": "planned",
+      "plan_ref": "Stage 3 plan §§2.3–2.4 and §2.6; current JEV record intake-1654",
+      "note": "Added JEV-as-a-Judge as intake-1606 and completed a primary deep dive plus independent second read."
+    },
+    {
+      "seq": 5,
+      "stage": 2,
+      "ts": "2026-09-25T10:18:00Z",
+      "verbatim": "All seven surfaced groups.",
+      "disposition": "planned",
+      "plan_ref": "Stage 3 plan §§7–8",
+      "note": "Operator selected every surfaced group for uncapped Stage-2b combined ingest and deep dive."
+    },
+    {
+      "seq": 6,
+      "stage": 2,
+      "ts": "2026-09-25T11:18:00Z",
       "verbatim": "proceed as recommended",
       "disposition": "planned",
-      "plan_ref": "stage2b-recommended-nine-ingests-three-declines"
+      "plan_ref": "Stage 3 plan §§7–8",
+      "note": "Operator selected all six recommended Stage-2c expansion groups for combined ingest and independent deep dive."
+    },
+    {
+      "seq": 7,
+      "stage": 2,
+      "ts": "2026-09-25T12:13:00Z",
+      "verbatim": "proceed with recommended",
+      "disposition": "planned",
+      "plan_ref": "Stage 3 plan §§7–8",
+      "note": "Operator selected all six Stage-2c surfaced groups for combined ingest and independent deep dive."
+    },
+    {
+      "seq": 8,
+      "stage": 2,
+      "ts": "2026-09-25T13:24:35Z",
+      "verbatim": "proceed with recommended",
+      "disposition": "planned",
+      "plan_ref": "Stage 3 plan §0 and §§7–8",
+      "note": "Operator selected the five recommended Stage-2d surfaced groups for combined ingest and independent deep dive; long-horizon replay companion artifacts remain queued until a deterministic replay is scheduled."
+    },
+    {
+      "seq": 9,
+      "stage": 2,
+      "ts": "2026-09-25T13:50:02Z",
+      "verbatim": "More jev dive material:",
+      "disposition": "planned",
+      "plan_ref": "Stage 3 plan §§2.2, 2.6, and 8.1",
+      "note": "Accepted the attached Jev decision-layer essay and its complete 15-reference source set for deduplicated ingest and deep dive during Stage-2e."
+    },
+    {
+      "seq": 10,
+      "stage": 3,
+      "ts": "2026-09-25T14:02:00Z",
+      "verbatim": "proceed to stage 3",
+      "disposition": "planned",
+      "plan_ref": "Stage 3 plan, including §0 source closeout",
+      "note": "Advanced to the complete action audit and closed further source expansion for this wave."
+    },
+    {
+      "seq": 11,
+      "stage": 3,
+      "ts": "2026-09-25T14:03:00Z",
+      "verbatim": "This session has been very long. I truly hope you haven't lost any of the suggested actionables from the various ingestion/dive stages",
+      "disposition": "planned",
+      "plan_ref": "Stage 3 plan §§7–8",
+      "note": "Resolved through the full report/ledger crosswalk and exact 135-record disposition map."
+    },
+    {
+      "seq": 12,
+      "stage": 3,
+      "ts": "2026-09-25T14:04:00Z",
+      "verbatim": "I want your stage 3 to be fully informed",
+      "disposition": "planned",
+      "plan_ref": "Stage 3 plan §§0–10",
+      "note": "Resolved through parallel ownership and completeness audits covering every intake record, surfaced source group, and proposed owner."
     }
-  ],
-  "source_fetches": {
-    "hf-card": {
-      "url": "https://huggingface.co/jcbtc/Qwen3.8-27b-CIRU-EXL3-SGLANG",
-      "revision": "53c26d85fa02262ae2dfae2778ed021a3dad7a83",
-      "readme_sha256": "83fffb0200d9035efdd454184bf68c27d392ecb55347b80cddc4193eedfae979",
-      "retrieved": "2026-09-25"
-    },
-    "ciru-runner": {
-      "url": "https://github.com/ciru-ai/qwen38-exl3-sglang-runner",
-      "revision": "f83cc0c94f64e0b53a9cb6d72419ba7522eeaf61",
-      "report_sha256": "abc36a2b9dd5c8fb604b667ff667ca41d822f644f9adca023d68bdd32099cf7b",
-      "concurrency_jsonl_sha256": "83784e17db96579b078a5b69b1ce27435bf65b76fb7e64a93dc5dbccdbd9a47d",
-      "retrieved": "2026-09-25"
-    },
-    "target-card": {
-      "url": "https://huggingface.co/r0b0tlab/Qwen3.8-27B-EXL3-4.00bpw",
-      "revision": "3f1771b8c21f83cbb8e82169559ced9f38ca04e5",
-      "readme_sha256": "6a97069b311eab7db2aeacb08238b91b492edf252a4171a6bf30a019661542bb",
-      "retrieved": "2026-09-25"
-    },
-    "draft-card": {
-      "url": "https://huggingface.co/r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw",
-      "revision": "265b5240592907d2d55ff0dc4d5f66569692604d",
-      "readme_sha256": "096b4a8c6e0ea80285188de108aa99f5b740f425bbaec86c6d0ed3009648d2e7",
-      "retrieved": "2026-09-25"
-    }
-  },
-  "dedup": {
-    "method": "Unbounded normalized URL scan of every persisted url field plus redirect resolution of the submitted Hugging Face URL.",
-    "existing_collisions": [],
-    "new_url_collisions": []
-  },
-  "cross_reference_summary": {
-    "existing_exl3": "intake-872",
-    "existing_sglang": "intake-461 and intake-490",
-    "existing_dflash2": "intake-1264, intake-1265, intake-1505 and intake-1506",
-    "existing_hopper_target": "intake-1528",
-    "active_owner": "handoffs/active/exl3-cpu-mi210-implementation.md (INF-80)",
-    "local_serving_baseline": "handoffs/active/dflash2-block-drafter-experimental-build.md and wiki/speculative-decoding.md: MI210 Q8 DFlash2 70.0 single-stream and 155.0 aggregate at eight in-flight"
-  },
-  "contradiction_pass": {
-    "intake-1563": "The card says its comparisons are package-level, not quantization isolation. The full table has NVIDIA NVFP4 ahead at 1K/c8 and 2K/c4-c8. No independent reproduction surfaced.",
-    "intake-1564": "Published optional custom EXL3 MLP kernels are disabled and their sources are absent; the rate uses pinned ExLlamaV3 packed kernels plus the complete serving stack. Exact prompt corpus, harness and measured image are unavailable.",
-    "intake-1565": "All target results are same-author CUDA observations and provide no CPU/gfx90a evidence.",
-    "intake-1566": "Acceptance-neutral and speed claims are same-author and do not control runtime, target format or workload."
-  },
-  "preliminary_actionables": [
-    {
-      "id": "THR-1",
-      "intakes": [
-        "intake-1563",
-        "intake-1564"
-      ],
-      "action": "[unverified] Add an end-to-end INF-80 serving milestone after operator integration: exact c1/c2/c4/c8 request shapes, decode-only and full-wall throughput, no cache hits, fixed token corpus, draft acceptance and complete runtime identities."
-    },
-    {
-      "id": "THR-2",
-      "intakes": [
-        "intake-1564"
-      ],
-      "action": "[unverified] Build a component attribution matrix across EXL3 target bytes and kernels, none/MTP/DFlash2 verification, scheduling and graph capture, KV/attention precision and recurrent-state handling; quantization alone is not an adequate explanation."
-    },
-    {
-      "id": "THR-3",
-      "intakes": [
-        "intake-1565",
-        "intake-1566"
-      ],
-      "action": "[unverified] Use the pinned mul1 target and draft as full-model fixtures after standalone correctness, with Q8 versus EXL3 and none/MTP/DFlash2 matched arms on MI210."
-    },
-    {
-      "id": "THR-4",
-      "intakes": [
-        "intake-1563",
-        "intake-1564"
-      ],
-      "action": "[unverified] Preserve the external 405.6 single-request decode and 826.2 c8 aggregate figures as source-derived workload-specific targets; do not use them as local claims until a reproducible public corpus or project-owned equivalent exists."
-    }
-  ],
-  "dive_recommendations": [
-    {
-      "rank": 1,
-      "intake": "intake-1564",
-      "reason": "Primary implementation and raw-evidence source; settles the complete speed path, exact denominators, disabled optional kernels and reproducibility gaps."
-    },
-    {
-      "rank": 2,
-      "intake": "intake-1563",
-      "reason": "Operator-submitted front door and headline source; verify every published throughput and scope statement against the linked evidence."
-    },
-    {
-      "rank": 3,
-      "intake": "intake-1565",
-      "reason": "Exact target artifact for the requested full-model path; verify tensor metadata, hashes and fixture suitability."
-    },
-    {
-      "rank": 4,
-      "intake": "intake-1566",
-      "reason": "Exact draft artifact responsible for the high-acceptance block-8 path; verify packed tensors and acceptance claims."
-    }
-  ],
-  "explicit_declines": [
-    {
-      "url": "https://github.com/syv-ai/HyperQwen/issues/72",
-      "accepted_at": "stage2b",
-      "reason": "Different vLLM/sm80 failure mode; does not settle CPU or gfx90a design."
-    },
-    {
-      "url": "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
-      "accepted_at": "stage2b",
-      "reason": "Different model and configuration; weak bearing on the exact target."
-    }
-  ],
-  "stage2_source_candidates": [
-    {
-      "url": "https://github.com/sgl-project/sglang/issues/36010",
-      "bearing": "intake-1564",
-      "settles": "why stock NVFP4 KV plus speculative verification was insufficient"
-    },
-    {
-      "url": "https://github.com/r0b0tlab/qwen38-exl3-dflash2",
-      "bearing": "intake-1564",
-      "settles": "native same-weight ExLlamaV3 baseline, draft-depth behavior and acceptance collapse with context"
-    },
-    {
-      "url": "https://github.com/r0b0tlab/exllamav3/tree/355c6ee10fbd25b79070316a81ea0708cc18155a",
-      "bearing": "intake-1564",
-      "settles": "exact packed GEMM/GEMV/reconstruction runtime used by CIRU"
-    },
-    {
-      "url": "https://github.com/satellitedown/fast-long-context/tree/b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849",
-      "bearing": "intake-1564",
-      "settles": "NVFP4 target KV verification and prefill patch provenance"
-    }
-  ],
-  "stage1_gate": {
-    "status": "selected-and-complete",
-    "recommended": [
-      "intake-1564",
-      "intake-1563",
-      "intake-1565",
-      "intake-1566"
-    ],
-    "handoff_writes": 0
-  },
-  "selected_for_dive": [
-    "intake-1564",
-    "intake-1563",
-    "intake-1565",
-    "intake-1566"
-  ],
-  "stage2_dives": {
-    "intake-1563": {
-      "verification": "dive-verified",
-      "claim_effects": [
-        "narrowed",
-        "unaffected",
-        "unaffected",
-        "unaffected",
-        "unaffected"
-      ],
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1563/REPORT.md"
-    },
-    "intake-1564": {
-      "verification": "dive-verified",
-      "claim_effects": [
-        "unaffected",
-        "unaffected",
-        "narrowed",
-        "unaffected",
-        "narrowed"
-      ],
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1564/REPORT.md"
-    },
-    "intake-1565": {
-      "verification": "dive-verified",
-      "claim_effects": [
-        "narrowed",
-        "narrowed",
-        "unaffected",
-        "unaffected"
-      ],
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1565/REPORT.md"
-    },
-    "intake-1566": {
-      "verification": "dive-verified",
-      "claim_effects": [
-        "unaffected",
-        "unaffected",
-        "reattributed",
-        "narrowed"
-      ],
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1566/REPORT.md"
-    }
-  },
-  "stage2_findings": [
-    "405.575949 tok/s is a verified median decode-only rate for one 2048-input plus 2048-output request; full-wall output rate is about 368.97 tok/s.",
-    "826.171840 tok/s is verified c8 aggregate output divided by full batch wall for 1024 input plus 512 output per request; same-cell NVIDIA NVFP4 is 1097.429121 tok/s.",
-    "The complete stack is packed EXL3 plus DFlash2 block 8, SGLang scheduling, decode graphs, target NVFP4 KV, draft FP8 KV and ReplaySSM; the benchmark is not a codec-only result.",
-    "Published launcher disables optional custom EXL3 paths, but measured c84 receipts do not bind its environment/image/source, so the measured kernel-path attribution is unproven.",
-    "The target supplies 573 valid mul1 packed quartets, while tensor_storage lists only 401 and omits vision/MTP; loader discovery must be safetensors-first.",
-    "The draft has 36 packed modules; fc is the DFlash input projection, not the selector. The acceptance-neutral wording lacks an equivalence test.",
-    "Synthetic c8 acceptance is near the block-8 ceiling, requiring realistic-content and fail-fast acceptance panels for any local throughput claim."
-  ],
-  "stage2_surfaced_sources": [
-    {
-      "url": "https://github.com/r0b0tlab/qwen38-exl3-dflash2",
-      "revision": "75d4ec5a4829d39d515fc442ee8ee4664246797c",
-      "bears_on": [
-        "intake-1565",
-        "intake-1566"
-      ],
-      "settles": "Raw native ExLlamaV3/DFlash2 protocol, acceptance and RTX 3090 package results.",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "url": "https://github.com/r0b0tlab/exllamav3",
-      "revision": "355c6ee10fbd25b79070316a81ea0708cc18155a",
-      "bears_on": [
-        "intake-1564",
-        "intake-1565",
-        "intake-1566"
-      ],
-      "settles": "Exact packed CUDA operators, reconstruction thresholds, mul1 decoding and Qwen/DFlash loader contracts.",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/issues/36010",
-      "bears_on": [
-        "intake-1564"
-      ],
-      "settles": "Why stock NVFP4 KV plus speculative verification was insufficient and which SGLang gaps the package patched.",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "url": "https://github.com/satellitedown/fast-long-context",
-      "revision": "b8095a5b3a14babcd7c8b1d66209b6f1cdb2c849",
-      "bears_on": [
-        "intake-1564"
-      ],
-      "settles": "NVFP4 target-KV verification and long-context prefill patch provenance.",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "url": "https://inco.ai/blog/dflash2/",
-      "bears_on": [
-        "intake-1566"
-      ],
-      "settles": "First-party DFlash2 mechanism, acceptance claims and intended serving contract.",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/issues/39087",
-      "bears_on": [
-        "intake-1564",
-        "intake-1566"
-      ],
-      "settles": "Quantized DFlash can load while accepting approximately zero tokens; defines a necessary fail-fast guard.",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "url": "https://github.com/xenodeve/Qwen-3.8-27B-Tuning/blob/main/docs/reports/29-DFLASH2-AND-THE-PROMPT-THAT-FLATTERED-NGRAM.md",
-      "bears_on": [
-        "intake-1563",
-        "intake-1564",
-        "intake-1566"
-      ],
-      "settles": "Independent content-sensitivity evidence where synthetic and real-code acceptance reverse throughput conclusions.",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "url": "https://github.com/it-dainb/dgx-spark-qwen38/blob/main/docs/BENCHMARKS.md",
-      "bears_on": [
-        "intake-1563",
-        "intake-1564",
-        "intake-1566"
-      ],
-      "settles": "Independent serving evidence for acceptance, content effects and recurrent-state rollback.",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "url": "https://github.com/r0b0tlab/buun-llama-qwen3.8-27b-exl3-4.00bpw",
-      "revision": "813766ddaeba18f47f61926d20d9784b9b977132",
-      "bears_on": [
-        "intake-1565"
-      ],
-      "settles": "Alternative native EXL3 runtime loadability and whether its unpinned artifact identity can be repaired.",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "url": "https://github.com/syv-ai/HyperQwen/issues/72",
-      "bears_on": [
-        "intake-1566"
-      ],
-      "settles": "Different-stack sm80 DFlash cumulative out-of-bounds failure mode.",
-      "recommendation": "decline unless broader cross-runtime stability evidence is desired",
-      "reason": "Different vLLM/sm80 stack and does not directly settle CPU or gfx90a design."
-    },
-    {
-      "url": "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
-      "bears_on": [
-        "intake-1563"
-      ],
-      "settles": "Additional Blackwell serving observations under a different model and configuration.",
-      "recommendation": "decline",
-      "reason": "Different model/configuration with weak bearing on the exact target."
-    },
-    {
-      "url": "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2",
-      "bears_on": [
-        "intake-1566"
-      ],
-      "settles": "Exact unquantized parent artifact metadata.",
-      "recommendation": "decline",
-      "reason": "Lineage is already established by the pinned draft and DFlash sources; intake-1265 already covers the first-party GGUF companion."
-    }
-  ],
-  "stage2_gate": {
-    "status": "operator-selection-received",
-    "recommended_ingest_and_dive": [
-      "https://github.com/r0b0tlab/qwen38-exl3-dflash2",
-      "https://github.com/r0b0tlab/exllamav3",
-      "https://github.com/sgl-project/sglang/issues/36010",
-      "https://github.com/satellitedown/fast-long-context",
-      "https://inco.ai/blog/dflash2/",
-      "https://github.com/sgl-project/sglang/issues/39087",
-      "https://github.com/xenodeve/Qwen-3.8-27B-Tuning/blob/main/docs/reports/29-DFLASH2-AND-THE-PROMPT-THAT-FLATTERED-NGRAM.md",
-      "https://github.com/it-dainb/dgx-spark-qwen38/blob/main/docs/BENCHMARKS.md",
-      "https://github.com/r0b0tlab/buun-llama-qwen3.8-27b-exl3-4.00bpw"
-    ],
-    "recommended_declines": [
-      "https://github.com/syv-ai/HyperQwen/issues/72",
-      "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
-      "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2"
-    ],
-    "handoff_writes": 0,
-    "selected_ingest_and_dive": [
-      "https://github.com/r0b0tlab/qwen38-exl3-dflash2",
-      "https://github.com/r0b0tlab/exllamav3",
-      "https://github.com/sgl-project/sglang/issues/36010",
-      "https://github.com/satellitedown/fast-long-context",
-      "https://inco.ai/blog/dflash2/",
-      "https://github.com/sgl-project/sglang/issues/39087",
-      "https://github.com/xenodeve/Qwen-3.8-27B-Tuning/blob/main/docs/reports/29-DFLASH2-AND-THE-PROMPT-THAT-FLATTERED-NGRAM.md",
-      "https://github.com/it-dainb/dgx-spark-qwen38/blob/main/docs/BENCHMARKS.md",
-      "https://github.com/r0b0tlab/buun-llama-qwen3.8-27b-exl3-4.00bpw"
-    ],
-    "accepted_declines": [
-      "https://github.com/syv-ai/HyperQwen/issues/72",
-      "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
-      "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2"
-    ]
-  },
-  "stage2b_dives": {
-    "intake-1567": {
-      "verification": "dive-verified",
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1567/REPORT.md"
-    },
-    "intake-1568": {
-      "verification": "dive-verified",
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1568/REPORT.md"
-    },
-    "intake-1569": {
-      "verification": "dive-verified",
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1569/REPORT.md"
-    },
-    "intake-1570": {
-      "verification": "dive-verified",
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1570/REPORT.md"
-    },
-    "intake-1571": {
-      "verification": "dive-verified",
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1571/REPORT.md"
-    },
-    "intake-1572": {
-      "verification": "dive-verified",
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1572/REPORT.md"
-    },
-    "intake-1573": {
-      "verification": "dive-verified",
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1573/REPORT.md"
-    },
-    "intake-1574": {
-      "verification": "dive-verified",
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1574/REPORT.md"
-    },
-    "intake-1575": {
-      "verification": "dive-verified",
-      "second_reader": "complete",
-      "report": "/mnt/raid0/llm/tmp/dive-1575/REPORT.md"
-    }
-  },
-  "stage2b_findings": [
-    "The RTX 3090 ExLlamaV3 package reaches 162.9 tok/s on its GSM8K setup, but its M32/M64 CUDA path cannot explain m8 decode and the result remains a complete target-plus-draft serving measurement.",
-    "The exact ExLlamaV3 fork accelerates dense CUDA rows m32-m192 by 1.35-1.92x while leaving m1/m8/m16 unchanged; its CPU executor is routed-MoE mul1-only and it has no working HIP/gfx90a executor.",
-    "The exact buun-llama.cpp engine pinned by the reproducible package contains dense and grouped CPU EXL3 K1-K8 for cb0/MCG/mul1 with scalar and AVX2/FMA paths; this is the strongest immediate CPU donor and correctness oracle.",
-    "Neither examined runtime supplies a full MI210 EXL3 backend. The buun engine explicitly declines its wave32 GPU path on HIP wave64, so gfx90a requires native wave64 GEMV/GEMM kernels.",
-    "SGLang NVFP4 speculative verification can fail with missing prefix metadata under graphs-on and graphs-off paths; candidate fixes keep the workspace device-resident, but all evidence is SM120 CUDA.",
-    "Quantized DFlash2 can load and serve while accepting only the bonus token. Later open fixes reattribute the failure from a selector hypothesis to silently skipped packed fc tensors and broader name/ignore resolution defects.",
-    "The fast-long-context package reports 239-341 tok/s generation-only across 8K-260K on one RTX 5090, but has no concurrency-above-one, EXL3, CPU or AMD evidence.",
-    "DFlash2 scores adjacent candidate pairs in parallel but still performs a sequential final path walk; its five-dataset Qwen3.8 mean acceptance is 4.80 versus MTP 4.28 and DSpark 3.62 at block size 8.",
-    "Independent tests show speculative gains depend strongly on prompt content. The xenodeve synthetic -9.2% result is inside its own 13.6% drift floor, while real-code DFlash2 is +34.7% versus ngram-mod.",
-    "The DGX Spark report narrates 135-148 tok/s at c8 and 258 at c32 without committed raw exact-cell rows; its rollback correction invalidates an older losslessness inference but does not prove rollback caused the prior deficit.",
-    "The throughput objective must qualify a complete serving path: packed EXL3 target and draft, acceptance, recurrent-state restore/commit, scheduler concurrency, KV/attention precision and launch strategy, with operator microbenchmarks reported separately."
-  ],
-  "reopened_declines": [
-    {
-      "url": "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2",
-      "originally_accepted_at": "stage2b-selection",
-      "reason": "The deeper source wave found that exact checkpoint configuration and tensor inventory could settle loader-contract claims; return to the operator gate rather than silently retaining the decline."
-    }
-  ],
-  "stage2b_surfaced_sources": [
-    {
-      "url": "https://github.com/mudler/vllm.cpp",
-      "recommendation": "ingest-and-dive",
-      "priority": "highest",
-      "settles": "Independent current CPU EXL3 implementation and serving path."
-    },
-    {
-      "url": "https://github.com/mudler/vllm.cpp/issues/2495",
-      "recommendation": "decline",
-      "settles": "Historical mul1 refusal appears superseded by current repository support."
-    },
-    {
-      "url": "https://github.com/r0b0tlab/glm53-flash-exl3-dflash2-sm121",
-      "recommendation": "ingest-and-dive",
-      "priority": "lower",
-      "settles": "Same-author Blackwell package and architecture scaling; no AMD support."
-    },
-    {
-      "url": "https://www.reddit.com/r/LocalLLaMA/comments/1wa1jkb/exllamav3_comfortably_beats_llamacpp_running/",
-      "recommendation": "decline",
-      "settles": "Uncontrolled CPU-offload anecdote."
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/pull/36038",
-      "recommendation": "ingest-and-dive",
-      "settles": "Native packed-FP4 routing repair with mixed-length XQA coverage."
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/pull/36045",
-      "recommendation": "ingest-and-dive",
-      "settles": "Device-resident Triton workspace and long-prefix cost data."
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/pull/36340",
-      "recommendation": "ingest-and-dive",
-      "settles": "Merged SM100/SM103 implementation bounds the architecture split."
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/issues/36001",
-      "recommendation": "decline",
-      "settles": "Withdrawn report without reliable independent evidence."
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/issues/31641",
-      "paired_with": "https://github.com/sgl-project/sglang/pull/31667",
-      "recommendation": "ingest-and-dive-as-pair",
-      "settles": "c1-correct SM120 XQA path silently corrupts under batching; directly informs c8 qualification."
-    },
-    {
-      "url": "https://huggingface.co/heswithme/Huihui-Qwen3.8-27B-Abliterated-Gittensor-Style-NVFP4-RTX5090",
-      "recommendation": "decline-unless-separate-artifact-audit",
-      "settles": "Adds weights while exact recipe pin is already captured."
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/pull/39254",
-      "recommendation": "ingest-and-dive",
-      "settles": "Direct packed-fc repair with before/after W4A16 evidence and loader tests."
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/pull/40884",
-      "recommendation": "ingest-and-dive",
-      "priority": "highest",
-      "settles": "Broader name/ignore and fail-closed loader fix with 200-example GPU comparison."
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/issues/36599",
-      "recommendation": "ingest-and-dive",
-      "settles": "Same quant-config loss class in NextN models."
-    },
-    {
-      "url": "https://github.com/sgl-project/sglang/issues/36118",
-      "recommendation": "decline",
-      "settles": "BF16 success is already represented and does not change the quantized-loader finding."
-    },
-    {
-      "url": "https://huggingface.co/incoai/Qwen3.8-27B-DFlash2",
-      "recommendation": "ingest-and-dive",
-      "priority": "high",
-      "settles": "Exact parent checkpoint configuration and tensor inventory for loader-contract claims. This reopens the prior decline."
-    },
-    {
-      "url": "https://forums.developer.nvidia.com/t/qwen3-8-27b-at-34-38-tok-s-on-dgx-spark-open-source-one-command-setup-sglang-nvfp4-dspark/380257",
-      "recommendation": "ingest-and-dive",
-      "settles": "Independent evolving GB10 serving discussion and reproductions."
-    },
-    {
-      "url": "https://github.com/thkempka/spark-arena-recipes",
-      "recommendation": "ingest-and-dive",
-      "settles": "Reproducible Spark arena recipe and workload evidence."
-    },
-    {
-      "url": "https://github.com/MiaAI-Lab/Qwen3.8-27B-SGLang-DGX-Spark",
-      "recommendation": "ingest-and-dive",
-      "settles": "Independent measured DFlash2/DSpark/MTP serving package and state sizing."
-    },
-    {
-      "url": "https://github.com/hasso5703/dgx-spark-qwen38/issues/2",
-      "recommendation": "ingest-and-dive-lower-priority",
-      "settles": "Long-context client/runtime behavior in the same community package family."
-    }
-  ],
-  "stage2b_gate": {
-    "status": "awaiting-operator-selection",
-    "handoff_writes": 0,
-    "instruction": "Stage 3 remains gated until every surfaced source is selected for intake/dive or explicitly declined."
-  },
-  "stage2b_expansion_count": 9
+  ]
 }

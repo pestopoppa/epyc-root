@@ -162,7 +162,7 @@ This handoff isolates the *single biggest empirical lever* in Trinity's ablation
 
 **Source**: EvoScientist (intake-108), AI Scientist Nature (intake-780)
 
-**Key finding**: EvoScientist's three-agent architecture (Researcher, Engineer, Evolution Manager) with persistent memory modules mirrors our tri-role coordinator architecture. The Nature-published AI Scientist provides validation that fully autonomous research pipelines are viable.
+**Corrected finding — 2026-09-25:** The Nature AI Scientist record demonstrates an integrated computational-ML paper-production pipeline, while human topic/template input, filtering, implementation checks, data preparation, and submission selection remained material. Its Automated Reviewer predicts venue accept/reject labels and is not a scientific-validity verifier (intake-780#record).
 
 **Mapping to EPYC tri-roles**:
 - EvoScientist Researcher → our Thinker role (analysis, planning, decomposition)
@@ -171,7 +171,7 @@ This handoff isolates the *single biggest empirical lever* in Trinity's ablation
 
 **Memory module patterns**: EvoScientist's persistent memory modules could inform our StrategyStore enrichment and episodic memory design. Particularly relevant for cross-session knowledge retention in the tri-role dispatch loop.
 
-**Action**: Cross-reference EvoScientist memory module patterns for our persistent memory work. Monitor AI Scientist for autonomous research pipeline validation.
+**Disposition:** retain EvoScientist's role/memory comparison. Do not use AI Scientist acceptance framing as validation of an unattended research loop or as a reason to reopen frozen TR-4/TR-5.
 
 - [x] **TR-ES-1** — cross-reference EvoScientist memory modules for StrategyStore enrichment ✅ 2026-07-29. EvoScientist's **Experimentation Memory** is the relevant analogue: ESE distills engineer trajectories and retrieves one strategy by embedding similarity. Map that narrowly to StrategyStore's derived strategy view, while retaining EPYC's stronger invariants: raw trajectory/event provenance remains append-only, reads are policy-gated, and write-side provenance validation rejects ungrounded non-operator strategies. Do **not** copy EvoScientist's LLM-summary-only source of truth or fixed `k=1`; its Ideation Memory belongs to the separate planner/idea layer, not StrategyStore. This is an architecture cross-reference only—no retrieval policy, store schema, or runtime behavior changes.
 - [x] **TR-ES-2** — evaluate EvoScientist's knowledge distillation separation for our Evolution Manager species ✅ 2026-07-29. Adopt only the separation-of-duties shape: an observer/distiller must remain separate from proposal generation and execution. EPYC already represents that boundary with its uninstantiated `KnowledgeDistiller`/Evolution Manager path; it has zero non-test callers. Do not wire it to write derived strategies or feed retrieval yet: first run it as shadow/observer-only and prove it beats AP-29's episodic-only retain-and-delete control arm. Keep raw events append-only and derived outputs provenance- and policy-gated. EvoScientist's LLM-only summaries, fixed cadence, and reported outcomes are paper observations, not EPYC performance evidence; no runtime, cadence, retrieval, or schema change follows from this evaluation.
