@@ -1,7 +1,8 @@
 # DeepSeek-V4.1-Flash Evaluation (deepseek41)
 
-**Status**: active — artifact download in progress (started 2026-09-22 09:51, about 13 h at
-~11 MB/s); official reference implementation and harness fetched. No port, build or inference yet.
+**Status**: active — the port is built and the AutoKernel CPU campaign runs on it: **run 10 live since
+2026-09-25 15:26Z** on anchor `00d118d44` (DS41 port + champion `90c12df42` fast loader), fresh store, dedicated
+research worktree (§C, DS41-C32/C33). The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
 target DeepSeek-V4.1-Flash instead (assuming they are applicable)")
 **Priority**: MEDIUM — novel-under-test model replacing the deleted GLM-5.3-Flash
@@ -412,7 +413,7 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   - `REVIEW_SCHEMA` rejects extra keys.
 
   Expect somewhat more transients and fewer silently repaired replies.
-  - [ ] DS41-C10a — **Fast-forward the shared research clone to ≥ `34373dd8` only after run 8 stops, before run
+  - [x] DS41-C10a — ✅ 2026-09-25 (closed on run 9c's first planner reply, see the end of this box) **Fast-forward the shared research clone to ≥ `34373dd8` only after run 8 stops, before run
     9.** Confirm run 8 is stopped (its `serial-run.pid` tree is dead) before any `git merge --ff-only`; never
     fast-forward mid-run. Acceptance: run 9's launch line names a research commit ≥ `34373dd8`, and its first
     planner reply is read against the semantics above.
@@ -436,6 +437,12 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     `34373dd8`. Run 9 produced no planner reply to read: its one call was stopped at 61 min and recorded as rc −15.
     **Still open on run 9b's first planner reply** (opencode 3284175, in flight since 04:09Z). Read it against the
     TD-21.29/30 semantics above, then tick.
+    **Closed 2026-09-25 on run 9c's reply, not 9b's.** Run 9b never produced one: a misused `STOP` killed its
+    planner call after ~18 min (DS41-C28). Run 9c (launched 07:15:54Z from the shared clone at `30631761`) returned
+    its first planner reply at 08:05Z: 36.8 min, 29 steps, 31 tool calls, 47.3k decoded, rc 0, schema-valid on the
+    metrics row, and a sealed `actor_call.v1` line (not `v1_refused`). Peak context was 111,116 tokens, above the
+    old 98,304 split-KV ceiling, so the reply was not truncated. No repair-invented field and no transient on that
+    call. Record: `state-run9c/targets/674cc00c…/workers/actor-replies/actor-calls.jsonl` lines 0-1.
   **Run 8 STOPPED 2026-09-24 ~15:32Z** on operator request, for the stack-configuration window (`state-run8/STOPPED.txt`).
   - Why: `run.py` held every CPU region lock through the full-target floor calibration, and that timed out the
     production frontdoor's `/chat` on :8070.
@@ -447,7 +454,7 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   - Result: iteration 0, 0 measurements. The half-screen floor stays cached.
   - The stop needed KILL: TERM during calibration only drains (DS41-C26).
   - Relaunch as run 9 through DS41-C25.
-- [ ] DS41-C25 — **Run 9 relaunch: do the prerequisites in this order.** Floors are bound to the anchor, so any
+- [x] DS41-C25 — ✅ 2026-09-25 (acceptance met by run 9c's first planner reply: 111,116-token peak, not truncated; see C10a) **Run 9 relaunch: do the prerequisites in this order.** Floors are bound to the anchor, so any
   anchor advance must land before run 9's first full-target calibration (~4 h per scope).
   1. OP-52 CPU window for the SW-9 spec-accept-probs fix. `experimental/mtp-spec-probs-fix-20260924` @ `2b57340bf`
      is the champion `ak/champion/llama-cpp-ffc1bac82eec` @ `8df1b5cf2` + 1. It needs build + tests + the MTP n_probs
@@ -538,7 +545,10 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   COR the same way the live preflight does and fails with the same refusal text. The failure should name the two
   remedies: the DS41-C13 fresh-store route, or rebinding the anchor. Test: a store whose COR differs from the
   resolved anchor makes the dry run exit non-zero with that reason; a matching store passes.
-- [ ] DS41-C28 — **Schedule batch 1's full-target calibration off-hours.** Run 9b reaches it after batch 0's
+  **Still open 2026-09-25.** Run 10's re-anchor on `00d118d44` took the fresh-store route again, by hand (the old
+  store is archived as `store-run9d-cor-5a60152ae/`). Nothing in the dry run checked the COR, so this is the second
+  anchor change that relied on a manual comparison.
+- [x] DS41-C28 — ✅ 2026-09-25 (closed as moot by operator ruling, not by building a scheduler) **Schedule batch 1's full-target calibration off-hours.** Run 9b reaches it after batch 0's
   proposal and measurement, likely mid-day on 2026-09-25. It holds every CPU region lock for ~4 h (48 launches
   × ~4.7 min, cores 0-95), which blocks the production frontdoor (:8070) and the CPU speech cores. Options:
   - let run 9b stop at the batch-0 → batch-1 boundary and relaunch in the evening (floors persist per anchor);
@@ -554,6 +564,80 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     or a bounded `--rounds N`. Decision: no daytime relaunch (the half-screen measurement uses cores 0-47, which
     overlap the speech cores and the frontdoor); relaunch in the evening as `state-run9c` on the same store, so
     batch 0 and batch 1's calibration run overnight.
+  - **Operator ruling 2026-09-25 07:15Z, which closes this box:** nothing else uses compute besides AutoKernel,
+    so there is no off-hours constraint on the CPU. The premise above (a daytime frontdoor impact to avoid) does
+    not hold, so the evening-relaunch decision was wrong, and no window mechanism will be built. A campaign is
+    never held or stopped for "off-hours". Cost of the wrong premise: the CPU sat idle 04:26Z → 07:15Z. Run 9c was
+    relaunched at 07:15:54Z. Lesson: `docs/guides/agent-workflows/agent-loop-design.md` → *Operating lessons from
+    runs 9c-10*.
+
+  **Runs 9c, 9d and 10 (2026-09-25 07:15Z → 15:26Z, main-ak-seat).**
+  - **Run 9c** launched 07:15:54Z (`serial_run` 3498589, `state-run9c/`, same store, half floor reused). Its first
+    proposal was the Q4_K/Q5_K activation block-scale hoist out of `mul_mat_qX_K_q8_2_X4_T`
+    (`iqk_gemm_kquants.cpp`), with falsifiers objdump + bit-identical MUL_MAT + a matched A/B above the floor. The
+    Codex critic accepted it twice over two author rounds, and then `gates.op_scope` dropped it before build, with
+    no disposition record (→ DS41-C29). Run 9c was stopped ~08:56Z on the operator's order, to free the host for
+    the INF-78 OAB-10/11 A/B. The captured pids were dead in 2 s, and `STOPPED.txt` was written.
+  - **Run 9d** launched ~10:53Z from research `300951de` (OAB-10/11 + C29 + C30), `serial_run` 348518, `--resume`
+    on, control listener `127.0.0.1:8471`. The resumed hoist build failed at 11:35Z with `lane_error
+    RatchetRefused` after 6.2 min, and the claim was consumed (→ DS41-C31). Batch 1 (the full-target calibration)
+    then ran. Its envelope is cores 0-95, not 0-47 as first assumed. A control-API pause was requested at 12:27Z
+    (observed `pausing`), but the calibration batch had not finished when the operator ordered the kill at
+    ~14:40Z: TERM drained, and KILL cleared `serial_run` 348518 and `run.py` 417443. The CPU locks were freed, and
+    the batch was discarded.
+  - **Each calibration launch cost ~3.5 min of single-threaded model load** (~60% of one core, RSS ramping to
+    492 GB) plus ~40 s of 48-thread measurement, so the host looked idle ~85% of the time. That led to the fast
+    loader (INC-20260925; INF-65 V6R-4) and the re-anchor in DS41-C32.
+- [x] DS41-C29 — ✅ 2026-09-25 **The op-scope gate dropped every Q4/Q5 dot-kernel candidate on the DS41 anchor.**
+  Root cause: `gates.py` `_iqk_q45_dot_hunks_confined` required `unpack_q4_scales*` markers that exist only in the
+  keeps-v10 tree. So `mul_mat_qX_K_q8_2_X4_T` (~30% of cycles) was unreachable on the DS41 anchor: 0 of ~15
+  attempts across runs 3-9c ever built. Fix, research `c7215eb5`:
+  - the gate admits trees without the keeps helpers;
+  - every abandoned candidate is recorded with its retained patch;
+  - disposals are logged.
+
+  Retained patches: `store/patches/akm-q4k-x4-actscale-hoist.lane0.{29713a2b,1ea64959}*.patch`; both pass op_scope
+  now. The operator's instruction behind it: "investigate why progress gets dropped by autokernel — this is not
+  ok". The survey ranked stops as the largest drop class, which is DS41-C30.
+- [x] DS41-C30 — ✅ 2026-09-25 **Resume checkpointed work on relaunch.** Research `1ef55655`: on relaunch,
+  critic-accepted-unbuilt patches are re-queued to build/gate/measure and interrupted authors to author. Each is
+  re-validated (apply, sha, anchor, gates) and resumed at most once, and a stop writes a checkpoint. `--resume` is
+  on by default. The backfill tool wrote row `eab36f3e` (gate_refused op_scope, build checkpoint, round-2 patch
+  `1ea64959`, sha `bf318caf`); a re-run reports it already present.
+- [x] DS41-C31 — ✅ 2026-09-25 **A harness fault must not eat a resumed candidate.** Run 9d's resumed build hit
+  `RatchetRefused`: `keep_the_diff` re-retained the patch, and the new sidecar `.json` differed from the immutable
+  stored one. Fix, research `71c46655`:
+  - reuse the retained patch;
+  - an infrastructure `lane_error` releases the claim with a retry count;
+  - a `resume reopen` CLI re-opens a consumed claim (`resume reopen eab36f3e…#0 --apply`, run from
+    `scripts/kernel_rnd` with `PYTHONPATH=.`).
+
+  Not exercised live: run 9d was killed before its next boundary, and run 10 started on a fresh store.
+- [x] DS41-C32 — ✅ 2026-09-25 **Re-anchor on the fast loader and launch run 10.**
+  - Anchor `00d118d44` (`experimental/fastload-ds41-20260925`, worktree
+    `/mnt/raid0/llm/llama.cpp-experimental-fastload-ds41-20260925`) = the DS41 port + champion `90c12df42` (fast
+    loader). It was rebuilt on the recipe (gcc-15, `build-cpu` version 10316), and `IDENTITY.json` was
+    regenerated.
+  - Fresh store, route (a) (the DS41-C13 precedent); the old store is archived as `store-run9d-cor-5a60152ae/`.
+    The new `store/inbox/` carries the seeded hypotheses and both retained hoist patches (`*.json` + `*.patch`).
+  - Inputs re-resolved as request r5 (`verified_resolution`).
+  - Code root: the dedicated research worktree `/mnt/raid0/llm/worktrees/research-ds41-run10` @ `67cac838`, not the
+    shared clone, which held a peer's uncommitted `actors.py` edits. `EPYC_ROOT_REPO` checkout at root `117370a8`.
+  - `serial_run` 2762645, `state-run10/`, launched 15:26Z. `--resume` on; control listener `127.0.0.1:8471`, token
+    `/mnt/raid0/llm/tmp/ak-ds41-control-token-run10`; `n_load_threads` auto.
+  - **The first calibration launches took 163 / 170 / 167 s, against ~282 s per launch before.**
+- [ ] DS41-C33 — **Read run 10's first results on anchor `00d118d44`.**
+  - The half-screen floor is written. Compare its interval and between-launch SD with `5a60152ae`'s 5.789%
+    (2.91-9.55%): the loader changed, the decode kernels did not.
+  - Record the mean launch time over the whole series and the calibration's total wall, against run 9's ~4 h.
+  - The hoist, now admitted by op_scope, is built and measured on this anchor, from the inbox patches or from a
+    fresh proposal. It would be the first measured candidate for `mul_mat_qX_K_q8_2_X4_T`.
+
+  Acceptance: the floor file path, the launch-time mean, and the hoist's measured disposition (keep, reject or
+  refused, with its reason) are recorded here.
+- [ ] DS41-C34 — **Delete the partial build dir left by the re-anchor, once the operator confirms.**
+  `/mnt/raid0/llm/llama.cpp-experimental-fastload-ds41-20260925/build-cpu-cc-partial-20260925` is not used by run
+  10 (its binary is `build-cpu/`). Deleting it needs an explicit operator confirmation.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,

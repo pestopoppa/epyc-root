@@ -696,6 +696,30 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
       `f1-paged-attn` @ `112022a0b` (iswa graph block-table wiring `ea50522a7`; opt-in, off-by-default,
       bit-exact on plain Qwen3.6-35B and SWA gemma-4-31B) but was never folded. It is build-10079-era
       against a 10241-class champion, so folding means a re-base and a re-measure at the current floor.
+- [x] **V6R-4 — parallel model load (repack + reader), lost in the v6 bundled revert.** ✅ 2026-09-25 (main-ak-seat)
+      The OpenMP repack parallelization (`52ddd3200`, 2025-12-21; upstream PR #18239 closed unmerged) left the
+      lineage when v6 Stage 1a `814e81782` was reverted as a whole (`358f0c748`); full record in
+      `docs/reference/agent-config/INCIDENT_LOG.md` → INC-20260925. Re-ported onto the v10-lineage champion as
+      `25132e042` (test restored and extended, 150/150 bit-exact) plus a parallel pread reader run as an OpenMP team,
+      `90c12df42` (`--load-threads` / `LLAMA_ARG_LOAD_THREADS`; the old loader thread was pinned to CPU 0 by libgomp
+      under `OMP_PROC_BIND=spread`). Bit-exact (tokens, KL on logits); 27B load 3.2x warm / 2.1x cold. Under
+      `GGML_IQK=1` the DS41 recipe touches no CPU_REPACK tensor, so the reader is the whole DS41 win.
+      **Champion advanced** `ak/champion/llama-cpp-ffc1bac82eec` `2b57340bf` → `90c12df42`, pushed to the fork
+      (workspace-8d notified). Gates (research `a5906f24`, `data/champion-advance-fastload-20260925/`): DS41 519 GB
+      load 254.0 / 277.7 s (anchor) → 98.2 s (fast loader), with a 262.6 s single-thread control on the same binary;
+      production-recipe decode A/B cut by the operator after one pair (frontdoor 42.23 vs 41.79 tok/s, 0.99,
+      identical output). Builds: `kernels/builds/cpu-20260925-90c12df42` (candidate) and
+      `cpu-20260925-2b57340bf` (base), ggml linkage PASS. The DS41 campaign re-anchored on it (INF-77 DS41-C32).
+  - [ ] **V6R-4a — carry the fast loader into production v11.** It rides the champion, so a v11 promotion from the
+        champion tip inherits it; the promotion checklist must still prove it. Acceptance, at the v11 candidate
+        gate: `25132e042` and `90c12df42` are ancestors of the candidate; `tests/test-repack-parallel` passes;
+        a CPU load with auto load threads is measured against v10 on one production model; and the decode A/B
+        that was cut at one pair here is run to the promotion protocol's full pair count.
+  - [ ] **V6R-4b — operator ratification of the forward-port rule** (OP-58 when the index row lands). Proposed
+        text for `CLAUDE.md` § *Experimental Kernel Workflow*: forward-port one feature per commit; before
+        reverting a bundled commit, split it and revert only the gated-out parts; a feature's test travels with it
+        through every consolidation. Origin: INC-20260925. The operator ratifies; no session edits `CLAUDE.md` for
+        this.
 
 #### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
 

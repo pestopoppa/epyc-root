@@ -2605,6 +2605,55 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   distinguish a review prompt from an automatic reversal. Exercise against a synthetic
   correction before enabling the live path.
 
+## VB-AK-BELIEF — generic belief-kernel reader for the AutoKernel planner (filed 2026-09-25, main-ak-seat)
+
+**Ownership (2026-09-25).** The operator directed a GENERIC belief-kernel reader for the AutoKernel planner, not a
+hypothesis-specific seed, and moved the KV-quant planner wiring to main-ak-seat (workspace-8d agreed). Codex owns
+AutoPilot and asked main-ak-seat to own the AutoKernel side: code stays in research; any change to shared
+`/workspace/scripts/vidya/*` is coordinated with Codex first; no grading rule and no promotion authority;
+orchestrator `scripts/autopilot/` is left alone. **Every task below that touches root `scripts/vidya/` needs
+Codex's sign-off before it lands** (shared files).
+
+- [ ] **VB-AK-BELIEF-1 — land the generic reader after Codex signs off the receipt.** Research
+  `lane/belief-reader-20260925` @ `56cb9493` (unmerged; on research main `0555cd2b`): `8b7b8bed` adds
+  `loop/belief_context.py` (reader, `epyc.vidya.planner_evidence_receipt.v1` receipts in
+  `belief-receipts.jsonl`, optional `relies_on_claims` in `HYPOTHESIS_SCHEMA`, reliance = declared ∩ presented),
+  `--actor-belief-context` (default on) and the post-sweep ingester `scripts/benchmark/kv_quant_27b_v10_ingest.py`;
+  `56cb9493` retires the KV-quant-specific block (`8ba5ca61`, on research main via `0555cd2b`), which printed a
+  section, including an "inapplicable" line, into every planner prompt. The receipt proposal is
+  `/mnt/raid0/llm/tmp/vidya-planner-receipt-proposal-20260925.md`, relayed to Codex via the operator. Merge only
+  between campaign runs, and not into run 10's frozen worktree. Also apply the proposal's §7 consumer-table row
+  to `scripts/vidya/adapters/README.md` (Codex coordination). Acceptance: Codex sign-off recorded, the lane
+  merged, and one planner call writes a receipt with `evidence_status` set.
+- [ ] **VB-KVQ-V10-DICT — BLOCKING: the producer writes stats dicts where the root adapter requires numbers.**
+  `kv_quant_27b_v10_sweep.summarize_cell` returns `prompt_tokens`, `kv_k_mib`, `kv_v_mib` as `{n, median, mad}`,
+  and `belief_capture_rows` copies them into `extra.arm.prefill_tokens_measured` and
+  `extra.kv_buffer_{k,v}_mib`. Root `scripts/vidya/adapters/kv_quant_27b_v10.py` `_check_row` requires plain
+  numbers there (~L81-84), so the first real complete sweep's sidecar would be refused wholesale and nothing would
+  reach the ledger. Both test suites miss it: root's fixture hand-builds scalars, and the producer's test asserts
+  the dict shape. Recommendation (proposal §4.6, option c): the root adapter accepts a stats dict with a finite
+  numeric `median` now, before anyone runs the sweep; the producer emits medians and `validate_row` enforces
+  numbers in its next revision, with the `PRODUCER_SHA256` bump. Replace root's fixture with the producer's real
+  `summarize_cell` output. The research test `test_the_producers_native_summary_shape_is_ingestable` is a strict
+  xfail that flips when this is fixed. Blocks VB-KVQ-V10-INGEST. Needs Codex coordination (root adapter).
+- [ ] **VB-APPLICABILITY — persist an applicability scope in the ledger.** `claim_tuple.to_frames()` drops
+  `ClaimTuple.extra`, where adapters keep model/quant/backend/device, so a reader cannot match a claim to a target
+  from the ledger alone. Add an optional `ClaimTuple.applicability` (`{model_file, quant, backend, device,
+  context_tokens, kernel}`), filled from native fields only and emitted as a CONDITIONAL key in the
+  `source_observed` assertion, so frames without it stay byte-identical. Add `run_id` + `run_expected_keys` on the
+  same key, so both planners apply one completeness rule. Until it lands, the AutoKernel reader matches through a
+  declared per-source scope table with a producer pin per entry. Needs Codex coordination (shared contract).
+- [ ] **VB-INGEST-IDEMPOTENT — make a repeated ingest a no-op.** `ingest_sources.ingest()` appends every projected
+  frame, and frame ids include `created_at`, so a second ingest duplicates evidence. The AutoKernel post-sweep
+  ingester guards this caller-side (deterministic `as_of` = the sidecar's `emitted_at`, a pre-check of the claim
+  ids, refusal of partial ledger state, a run-dir lock). Add an `--only-new` mode (skip frames whose claim id
+  already has live evidence) to root `ingest_sources`. Acceptance: ingesting the same sidecar twice leaves the
+  ledger's frame count unchanged. Needs Codex coordination (root file).
+- [ ] **VB-AK-RELIANCE-REVIEW — flag AutoKernel proposals whose relied-on claims are corrected or retracted.**
+  The AutoKernel analogue of VB-KVQ-V10-RECONSIDER: join a claim's correction or retraction to every experiments
+  row carrying it in `relies_on_claims`, and raise a review flag, never an automatic reversal. Depends on
+  VB-AK-BELIEF-1. Acceptance: a synthetic retraction flags exactly the rows that relied on it.
+
 ## VB-VRAM-1 — MI210 per-process VRAM decomposition (filed 2026-09-23)
 
 - [ ] **VB-VRAM-1 — author the read-side adapter for the VRAM headroom probe.** The producer already
@@ -2759,6 +2808,10 @@ row: `scripts/vidya/adapters/README.md`. Project, do not grade.
   `v1_refused` key) once the vendored contract module is current. Acceptance: `cli.py ingest ak-actor-seat
   --dry-run` over a fresh orchestrator campaign call shows `refused=0` and one projected
   `actor_call_wall_s` observation.
+  **Research side done 2026-09-25:** research `67cac838` makes the fixture contract-version aware (a v1 record
+  under root ≥ `fa8d0fa1`, `v1_refused` under an older root; tested against both). Campaign `EPYC_ROOT_REPO`
+  checkouts must be at ≥ `fa8d0fa1` (run 10's is at `117370a8`). Only the acceptance remains: the first real
+  `orch:` campaign call (INF-78 OAB-4) ingests with `refused=0`.
 - [ ] **VB-AK-METRICS-1 — make `epyc.autokernel.actor_call_metrics.v1` contract-grade, then project it** (filed
   2026-09-24, main-ak-seat, reduced-scope planner build). Producer: research `lane/ak-turns-20260924` `0bf2d7c2`,
   `loop/actor_metrics.py`, which writes a sibling line to `actor-calls.jsonl` just BEFORE each `actor_call.v1`

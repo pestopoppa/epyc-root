@@ -467,6 +467,47 @@ C22). The code is research main `21ca61b0`.
   `run.py` and `serial_run` ended everything, including opencode, and freed the CPU locks with no KILL. The first
   `actor-calls.jsonl` line was an `actor_call.v1` with rc −15. A stop *during calibration* still needs DS41-C26.
 
+### Operating lessons from runs 9c-10 (2026-09-25)
+
+From DS41 runs 9b-10 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C28 to C33). Research code:
+`c7215eb5`, `1ef55655`, `71c46655`, `67cac838`.
+
+- **Never idle the compute.** Nothing else on this host uses the CPU besides AutoKernel (operator, 2026-09-25).
+  - Never hold or stop a campaign for "off-hours". DS41-C28's daytime premise cost 04:26Z → 07:15Z of idle CPU.
+  - Run GPU-only experiments (A/Bs on :8083) concurrently with the loop, and alternate arms so both see the noise.
+  - Pausing IS allowed for planner/orchestrator A/Bs: pause cleanly, run the A/B, relaunch right after.
+  - Before relaying an approved sequence that idles compute, say what it idles and for how long.
+- **Stop between batches with the control plane, not `STOP`.** `STOP` forwards SIGTERM at once (above). Launch
+  every serial run with `--control-listen 127.0.0.1:PORT --control-origin http://HOST:8100` and
+  `AUTOKERNEL_CONTROL_TOKEN` from a mode-0600 file, as runs 9d and 10 do (`127.0.0.1:8471`, token
+  `/mnt/raid0/llm/tmp/ak-ds41-control-token-run<N>`). Then pause by posting an
+  `epyc.autokernel.serial_command.v1` built from the current `/snapshot`.
+  - **A pause lands only when the current batch ends.** A full-target calibration batch runs for hours: run 9d's
+    pause, requested at 12:27Z, was still `pausing` when the run was killed at ~14:40Z. For a prompt stop, TERM at
+    a forming stage (the DS41-C22 path); never mid-measurement.
+- **Run a campaign from a dedicated research worktree, never the shared clone.** `serial_run` spawns a fresh
+  `run.py` per batch from its code root, so the code root must not move for the life of the run. The shared clone
+  moves: it is fast-forwarded between runs, and on 2026-09-25 a peer's uncommitted `actors.py` edits blocked its
+  fast-forward altogether. Run 10 runs from `/mnt/raid0/llm/worktrees/research-ds41-run10`, a detached checkout
+  of research `origin/main` (`67cac838`). New loop code lands by relaunching on a fresh worktree, and the old one
+  is removed only after its run is dead. This retires the "never fast-forward the shared clone mid-run" hazard
+  above instead of managing it.
+- **A stop no longer loses the candidate.** `--resume` is on by default (`1ef55655`): a relaunch re-queues
+  critic-accepted-unbuilt patches to build and interrupted authors to author, re-validated and at most once. A
+  harness fault releases the claim with a retry count (`71c46655`), and `resume reopen <row>#<n> --apply` re-opens
+  a consumed claim. A resume needs the same store; a fresh store (a re-anchor) starts empty, so carry retained
+  patches into `store/inbox/` by hand.
+- **Read the disposition log when a gate refuses.** `gates.op_scope` keyed on markers that exist in one tree only
+  and dropped every Q4/Q5 dot-kernel candidate on the DS41 anchor: 0 of ~15 builds across runs 3-9c (DS41-C29).
+  Since `c7215eb5` every abandoned candidate is recorded with its retained patch.
+- **Model load can dominate a calibration launch.** On the 519 GB DS41 model each launch spent ~3.5 min in a
+  single-threaded load, and the host looked ~85% idle during calibration. The fast loader (champion `90c12df42`,
+  INC-20260925) cut the launch to 163-170 s from ~282 s. Check the loader's thread count before costing a
+  calibration.
+- **Thinking is on even when `tokens.reasoning` reads 0.** That field is an accounting artifact: the exports carry
+  `reasoning` parts. `--planner-effort high` (opencode `--variant high`) is inert on this server. The planner's
+  cost is decode (87%), dominated by long reasoning turns (INF-78 OAB-20 to OAB-23).
+
 ## Context as files, per-call metrics, tool-output caching (seat-side, 2026-09-24)
 
 The operator directed these three techniques to be built on the opencode seat as a reduced-scope precursor to the

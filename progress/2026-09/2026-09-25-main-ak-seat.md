@@ -139,3 +139,135 @@ The exports and bundle sections stay under `/mnt/raid0/llm/tmp/ak-ctx-ab/`.
   - A separate belief-kernel source for the A/B driver's `results.jsonl`: its columns are the
     `actor_call_metrics.v1` rows (VB-AK-METRICS-1) plus bundle reads (VB-AK-CTX-1).
   - Re-running the bounded arm now: that is DS41-C20d2, already filed. The A/B tested placement, not the seat.
+
+---
+
+# 2026-09-25 daytime — main-ak-seat (04:30Z → ~15:55Z: runs 9b-10, INF-78 build-out, fast loader, Vidya reader)
+
+Running plan: `/mnt/raid0/llm/tmp/stack-window-plan-20260924.md`, entries from "04:26Z WRAP-UP DONE" on. Owning
+handoffs: INF-77 (DS41 §C), INF-78, INF-65 (V6R-4), and the Vidya program (VB-AK-BELIEF).
+
+## DS41: run 9b killed by STOP, idle CPU, runs 9c and 9d, re-anchor, run 10
+
+- **04:26Z run 9b killed by a misused `STOP`.** `serial_run` forwards SIGTERM to `run.py` as soon as it sees
+  `STOP`; the batch-0 planner call died at ~18 min (`stopped_mid_formation`). Recorded in DS41-C28 (root
+  `8eb57a2c`).
+- **The CPU then sat idle 04:26Z → 07:15Z,** held for an "off-hours" relaunch. The operator's correction: nothing
+  else uses compute besides AutoKernel, so there is no off-hours constraint. DS41-C28 is closed as moot on that
+  ruling.
+- **Run 9c (07:15:54Z).** Its first planner reply (08:05Z: 36.8 min, 29 steps, 47.3k decoded, peak context 111,116,
+  schema-valid, rc 0) closes DS41-C10a and DS41-C25. The proposal, the Q4_K/Q5_K activation-scale hoist out of
+  `mul_mat_qX_K_q8_2_X4_T`, was accepted twice by the Codex critic and then silently dropped by `gates.op_scope`.
+  Run 9c was stopped ~08:56Z on the operator's order, for the OAB-10/11 A/B.
+- **Why the proposal was dropped (DS41-C29, research `c7215eb5`).** The gate required `unpack_q4_scales*` markers
+  that exist only in the keeps-v10 tree, so the ~30%-of-cycles kernel was unreachable on the DS41 anchor: 0 of ~15
+  attempts across runs 3-9c ever built. The fix admits both layouts and records every abandoned candidate with its
+  retained patch.
+- **Resume (DS41-C30, research `1ef55655`)** plus backfill row `eab36f3e`. Run 9d (~10:53Z, research `300951de`,
+  control listener `:8471`) resumed the hoist at build and failed on `RatchetRefused`, which consumed the claim.
+  Fixed by DS41-C31 (research `71c46655`): reuse the retained patch, an infrastructure `lane_error` releases the
+  claim, and a `resume reopen` CLI.
+- **Run 9d killed ~14:40Z on the operator's order** (TERM drained; KILL cleared `serial_run` 348518 and `run.py`
+  417443). A control-API pause requested at 12:27Z never landed, because the calibration batch was still running.
+- **Run 10 (15:26Z, DS41-C32).**
+  - Anchor `00d118d44` = the DS41 port + champion `90c12df42` (fast loader).
+  - Fresh store; the old one is archived as `store-run9d-cor-5a60152ae/`. The inbox carries both retained hoist
+    patches.
+  - Inputs r5; code root is the dedicated research worktree `/mnt/raid0/llm/worktrees/research-ds41-run10` @
+    `67cac838`; control listener `127.0.0.1:8471`; `serial_run` 2762645.
+  - **Calibration launches took 163 / 170 / 167 s, against ~282 s before.** Next: DS41-C33.
+
+## Fast loader: a lost feature re-ported, and the champion advanced
+
+- **We built parallel repack in December 2025** (`52ddd3200`; upstream PR #18239 closed unmerged). It was lost when
+  v6 Stage 1a `814e81782` was reverted as a whole. Incident: INC-20260925 in
+  `docs/reference/agent-config/INCIDENT_LOG.md` (root `fe63adbb`, verified on origin/main).
+- **Re-ported onto the champion.** `25132e042` is the repack re-port (test restored, 150/150 bit-exact). `90c12df42`
+  adds a parallel pread reader as an OpenMP team (`--load-threads`); the old loader thread had been pinned to CPU 0.
+  Both are bit-exact; the 27B loads 3.2x faster warm and 2.1x cold.
+- **Champion advanced** `ak/champion/llama-cpp-ffc1bac82eec` `2b57340bf` → `90c12df42`, pushed to the fork;
+  workspace-8d was notified.
+- **Gates:**
+  - DS41 load: 254 / 278 s → 98.2 s, with a 263 s single-thread control on the same binary.
+  - Decode A/B cut by the operator after one pair (0.99, identical output).
+  - Builds: `kernels/builds/cpu-20260925-{90c12df42,2b57340bf}`.
+- **Evidence committed in this wrap-up:** research `a5906f24` (`data/champion-advance-fastload-20260925/`). It was
+  untracked in the shared clone; those copies were moved aside, checksum-identical, to
+  `/mnt/raid0/llm/tmp/research-untracked-backup-20260925/` so they cannot block the clone's next fast-forward.
+- Filed: INF-65 V6R-4 `[x]`, V6R-4a (carry into v11), and V6R-4b (operator ratification of the one-feature-per-commit
+  rule, proposed OP-58).
+
+## INF-78: the orchestrator backend, built and deployed
+
+- **OAB-1 + OAB-3:** orchestrator `9124c7f1`, plus Fable review fixes `7f5d6870`. **OAB-2:** research `751ec730`
+  and CLI `e33eb1d3`. Orchestrator main `994529fd`; API reloaded 08:28:41Z; smoke PASS ×3; witness quiet.
+- **OAB-10/11** (research `bdd0a951`): fixed overhead 12,912 → 4,950 tokens per call. The trimmed call took 6
+  steps and 10 tools, with ctx_first 32.7k. The baseline arm was aborted at 54+ min (censored), and the A/B stopped
+  after one trimmed call.
+- **OAB-7 (context bundle as a REPL variable):** turn-1 root prompt −74%. **OAB-8:** scouts. Integration went
+  through a second Fable review (F1-F7 and F12-F14 fixed). The operator's scoped architect-REPL exception is
+  `7d0ce447`. Orchestrator main `b9e004e3`.
+- **API reloaded 14:40:38Z** (pid 2517073) after run 9d was killed; OAB-2 smoke PASS; witness quiet.
+- **Production-visible with that reload:**
+  - the `auto_wrap_final` one-line-print fix;
+  - the schema preamble reaching the model (with `final_schema_validation` on);
+  - the proactive stage no longer answering scoped or bundle requests before the REPL;
+  - REPL sandbox refusals of frame attributes, `attrgetter`/`methodcaller` and dunder-reaching `format`.
+- **The opencode store fault** that failed an author call was root-caused to the reaper's no-op VACUUM. Fixed in
+  root `9177edaa` and research `e57e93ea` (`snapshot: false`, `OpencodeStoreError`).
+- **Planner timeline audit:**
+  - decode is 87% of wall; one 30k-token reasoning turn was 68% of a call;
+  - `--variant high` is inert;
+  - thinking IS on through the template, and `tokens.reasoning = 0` is an accounting artifact;
+  - operator: reasoning stays on, no thinking A/B.
+
+  The giant final turns re-derive the Q4_K bit-unpack formulas. Recommended and filed: a concision rule plus an 8k
+  per-turn cap (OAB-22), and a separate per-call budget (OAB-23).
+- The live OAB-4 A/B is next.
+
+## Vidya: a generic belief-kernel reader
+
+- **The operator directed a generic reader, not a hypothesis seed,** and moved the KV-quant planner wiring to
+  main-ak-seat (workspace-8d agreed). Codex owns AutoPilot and asked us to own the AutoKernel side.
+- **Research `lane/belief-reader-20260925` @ `56cb9493`, unmerged:** the generic reader, receipts and reliance.
+  It also retires the KV-quant-specific block that reached research main via `0555cd2b`.
+- **The receipt proposal** (`/mnt/raid0/llm/tmp/vidya-planner-receipt-proposal-20260925.md`) awaits Codex
+  sign-off.
+- **Blocking defect:** the producer writes `summarize_cell` stats dicts where the root adapter requires scalars.
+- Root `fa8d0fa1`: VB-AK-SEAT accepts the orchestrator kind; research `67cac838` updated the fixture.
+- Filed in the Vidya program as VB-AK-BELIEF-1, VB-KVQ-V10-DICT, VB-APPLICABILITY, VB-INGEST-IDEMPOTENT and
+  VB-AK-RELIANCE-REVIEW. Every one that touches root `scripts/vidya/` is marked as needing Codex coordination.
+
+## Root documentation (this wrap-up)
+
+| File | Change |
+|---|---|
+| `handoffs/active/deepseek-v41-flash-evaluation.md` (INF-77) | `[x]` C10a, C25 (run 9c's reply), C28 (moot by operator ruling), C29-C32. Runs 9c/9d/10 block. C27 re-noted. New `[ ]` C33 (run 10 first results), C34 (delete the partial build dir once the operator confirms). Stale status line refreshed |
+| `handoffs/active/autokernel-orchestrator-actor-backend.md` (INF-78) | `[x]` OAB-1, 2, 3, 10, 11, 13, 14, 20. 2026-09-25 operator rulings section. OAB-4/7/8/9b/12 status. New `[ ]` OAB-15 (store decisions, proposed OP-59), 16 (scout tap record), 17 (review remainder), 18 (`PREFIX_STABLE_ORDER`), 19 (compaction target), 21 (reasoning accounting), 22 (concision + 8k cap), 23 (per-call budget) |
+| `handoffs/active/autokernel-champion-aggregate.md` (INF-65) | `[x]` V6R-4 (fast loader + champion advance). New `[ ]` V6R-4a (carry into v11), V6R-4b (rule ratification) |
+| `handoffs/active/vidya-belief-substrate-program.md` | VB-AK-SEAT-b1x research side done. New VB-AK-BELIEF section: 5 `[ ]` tasks, with Codex coordination marked |
+| `docs/guides/agent-workflows/agent-loop-design.md` | *Operating lessons from runs 9c-10*: never idle compute, pause through the control listener, dedicated research worktree, resume, disposition log, load cost, reasoning accounting |
+| `progress/2026-09/2026-09-25-main-ak-seat.md` | this section |
+
+Research, this wrap-up: `a5906f24` (the fast-loader gate evidence).
+
+## Checklist sync / derived actionables
+
+- **Flips: 16** (the gate's grep count). DS41: C10a, C25, C28, C29, C30, C31, C32 (7). INF-78: OAB-1, 2, 3, 10,
+  11, 13, 14, 20 (8). INF-65: V6R-4 (1). C29-C32, OAB-13, OAB-14, OAB-20 and V6R-4 are new `[x]` lines for work
+  finished this session.
+- **Filed open:** DS41-C33, C34; OAB-15, 16, 17, 18, 19, 21, 22, 23; V6R-4a, V6R-4b; VB-AK-BELIEF-1,
+  VB-KVQ-V10-DICT, VB-APPLICABILITY, VB-INGEST-IDEMPOTENT, VB-AK-RELIANCE-REVIEW (17).
+- **Kept open on purpose:**
+  - OAB-4/7/8: built, but their acceptance is the live OAB-4 A/B;
+  - OAB-12: the seat-side per-section bytes;
+  - VB-AK-SEAT-b1x: needs a real `orch:` campaign call;
+  - DS41-C27: the dry run still skips COR, and run 10 needed the manual route again.
+- **Declined: 4.**
+  - A task to make `--planner-effort` meaningful: the effort knob cannot bound reasoning on this server, and
+    OAB-22's rule plus cap is the lever. Folded there.
+  - A thinking on/off A/B: the operator ruled reasoning stays on.
+  - Finishing the cut decode A/B now: the operator cut it; the full pair count moves to the v11 promotion gate
+    (V6R-4a).
+  - A belief-kernel source for the fast-loader gate files: a one-off promotion-gate record, not a recurring
+    producer. Per-launch load time already lands in the loop's own calibration records.

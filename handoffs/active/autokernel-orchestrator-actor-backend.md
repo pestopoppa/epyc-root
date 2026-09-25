@@ -1,7 +1,8 @@
 # AutoKernel — the orchestrator as planner/author backend
 
 **Status**: ACTIVE — PLANNED 2026-09-24 (operator direction). Seat A/Bs done: plain beats bounded (DS41-C20c),
-and inline beats context-as-files (OAB-9, 2026-09-25). Next: OAB-1.
+and inline beats context-as-files (OAB-9, 2026-09-25). **2026-09-25: OAB-1/2/3/10/11 done; OAB-7 and OAB-8 built,
+merged and deployed** (orchestrator `b9e004e3`, API reloaded 14:40:38Z). Next: the live OAB-4 A/B.
 **Created**: 2026-09-24
 **Priority**: MEDIUM (long-term direction; the campaign keeps opencode + 27B meanwhile)
 **Categories**: agent_architecture, autonomous_research, hardware_optimization
@@ -37,6 +38,22 @@ techniques fed back into the orchestrator (§Techniques).
   check (`actors.py` `AgentCritic`, `independence = same_family|different_family` from
   `context["actor_provenance"]["planner"]`) is satisfied by `describe()` alone. Per-call model
   provenance from the orchestrator is a nice-to-have (R5).
+
+## Operator rulings recorded 2026-09-25 (do not re-open)
+
+- **Architect REPL: a scoped exception.** The 27B architect may run in REPL mode ONLY for task-scoped
+  (`task_root`) requests. Encoded in orchestrator `7d0ce447`: `roles.architect_repl_allowed()` is the single
+  predicate, `/chat` logs (does not refuse) unscoped architect REPL because the 2026-09-24 ruling is caller-side,
+  and seeding gains `architect_modes(task_scoped)`. Unscoped requests keep the 2026-09-24 ruling above.
+- **Scouts: `/slots` admission (reserve ≥ 1) is accepted for scoped calls** (OAB-8). Follow-up: OAB-16.
+- **Reasoning stays ON for the planner; no thinking on/off A/B.** Thinking is already on through the template
+  default, so the medium-reasoning request is effectively honoured; `tokens.reasoning = 0` is an accounting
+  artifact (OAB-21).
+- **Pausing AutoKernel is allowed for planner/orchestrator A/Bs** ("this work is important for orchestrator
+  development also, so it's not wasted"). Pause cleanly and relaunch right after; idling with nothing running is
+  not allowed.
+- **Context-as-variable lost only because of opencode** (pulls land in its append-only conversation). Revisit it
+  when it is wired into the orchestrator REPL/RLM (OAB-7 proper); OAB-9b carries this.
 
 ## Requirements on the orchestrator (what a backend must provide)
 
@@ -81,13 +98,24 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
 
 - [x] **OAB-0 — Do not start until DS41-C20 has recorded the seat A/B.** ✅ 2026-09-24 (DS41-C20c; §Baseline) The reference must exist
   before anything is built against it. Zero compute.
-- [ ] **OAB-1 — per-call worktree root + edit mode on `/chat`** (orchestrator). Add
+- [x] **OAB-1 — per-call worktree root + edit mode on `/chat`** (orchestrator). ✅ 2026-09-25 — orchestrator
+  `9124c7f1` + Fable review fixes `7f5d6870` (F1 shell writers `sort -o`/`sed -nf`/`git --output`, F2
+  `/chat/stream` refuses the scope fields, F3 write-check TOCTOU, F4 symlink-dereference escapes, F6 frozen
+  trees/kernels/models refused as `task_root`), merged in `994529fd`. The scope rides a ContextVar per request;
+  `edit_mode=direct` writes inside `task_root` only; `none` cannot write; the response echoes `task_scope`. R3:
+  scoped requests get a `max_turns` ceiling of 100 and bypass the long-context 8-turn override. Tests
+  `test_oab1_task_scope.py` (23). Add
   `ChatRequest.task_root: str | None` and `edit_mode: Literal["none","direct"]` (default `none`);
   `task_root.get_task_root()` honours the request over `ORCHESTRATOR_EDIT_ROOT`; `edit_mode=direct`
   lets `_file_write_safe` (`file_mutation.py:88`) write inside `task_root` without the approval queue,
   everything else refused. Acceptance: a test that a write outside `task_root` is refused and one
   inside lands; a `none` request cannot write at all. Zero inference.
-- [ ] **OAB-2 — `orchestrator` Backend kind** (research, `loop/actors.py`). `backend_for("orch:<role
+- [x] **OAB-2 — `orchestrator` Backend kind** (research, `loop/actors.py`). ✅ 2026-09-25 — research `751ec730`
+  (`actor_orchestrator.py`, `--planner-model orch:auto`) merged to research main (`4a507624`, then `82f48e11`);
+  orchestrator actor CLI `e33eb1d3` (`scripts/autokernel_actor_cli.py`, invoked by path under `-I`, because a lane
+  cwd has its own `scripts/`), merged in `994529fd`. Smoke PASS ×3 through the loop's own invocation
+  (`/mnt/raid0/llm/tmp/oab2-smoke/smoke.sh`: orch:auto → frontdoor REPL, 15.8 s, 2 turns), and again after the
+  14:40:38Z reload. VB-AK-SEAT accepts the kind (root `fa8d0fa1`, research test `67cac838`). `backend_for("orch:<role
   or auto>", effort)` → kind `orchestrator`; `argv` = `[ORCHESTRATOR_PYTHON, "-m",
   "scripts.autokernel_actor_cli", "--root", <wt>, "--read-only"?, "--schema", <tmp>]`, prompt on
   stdin, JSON on stdout, exit 0/1 — so `_run_agent`, salvage, `_persist_reply`, `_record_call` and
@@ -95,7 +123,11 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   server-side, TD-21.1/21.33). Decide R3's turn-cap path here and record it. Acceptance: the
   `{"ok":true}` smoke the DS41 launch used (DS41-C2c) passes through the loop's OWN invocation;
   `test_actors.py` covers the kind. Inference: one smoke call.
-- [ ] **OAB-3 — trailing-work witness (R2).** Add to the CLI a post-reply 60 s sampler of the
+- [x] **OAB-3 — trailing-work witness (R2).** ✅ 2026-09-25 — orchestrator `9124c7f1`:
+  `ChatRequest.quiescent_after` suppresses every fire-and-forget launch on `/chat` and holds the idle-scoring loop;
+  `src/runtime/trailing_work_witness.py` fails a window when an orchestrator-owned process accrues > 0.5 core-s.
+  The injected-prewarm acceptance test trips it (`test_oab3_quiescence_witness.py`, 10). Live witness, 60 s after
+  a real reply: rc 0, max ≤ 0.4 core-s per process (08:32Z, and again after the 14:40Z reload). Add to the CLI a post-reply 60 s sampler of the
   orchestrator-owned servers' `utime+stime` (reuse DS41-C2b-gate's reader) and fail the call if any
   accrues > 0.5 core-s after the reply. Acceptance: a deliberately injected prewarm trips it.
   Inference: one call.
@@ -104,6 +136,10 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   orchestrator's `x_force_role` / `force_role` if needed), one arm at a time, report steps / tool calls
   / decoded tokens / wall / compactions / schema-valid. Acceptance: three paired runs per arm (host
   drift ~3% over hours; alternate ABAB). GPU inference, campaign-idle window only.
+  **Status 2026-09-25: every prerequisite is deployed** (OAB-1/2/3, OAB-7, OAB-8, the architect scoped exception;
+  orchestrator `b9e004e3`, API pid 2517073 since 14:40:38Z). Arms: 27B plain seat vs 27B orchestrator REPL +
+  scouts + context variable. Pause run 10 through its control listener for it, or run it concurrently and
+  alternate arms; the CPU is never left idle (operator 2026-09-25).
 - [ ] **OAB-4a — pin and record :8083's KV mode in every OAB-4 arm** (filed 2026-09-24, RTG-57). Unified vs
   split KV changes outputs at the same seed, because float summation order changes. It also moves the per-request
   ceiling from 98,304 to 196,608 tokens once the `-kvu` package lands. An arm pair that straddles the :8083 reload
@@ -135,6 +171,18 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   - scouts that pull for the planner (OAB-8).
 
   It should not be built as "move the context out of the prompt" alone. See §Techniques learned → 4.
+  **Built 2026-09-25 (orchestrator side), with both missing pieces.** Orchestrator `88e22777` + `1d0ab2f5`,
+  research `79231b0f`, merged via the integration lanes (orchestrator `db36edca` → `b9e004e3`, research
+  `30ac7293`). `ChatRequest.context_bundle` becomes the REPL variable `context`. Pulls land in variables, and only
+  a per-turn print cap (default 4,096 B) and 80-char state previews reach the root prompt; `context_pulls` echoes
+  exact per-section pull accounting, and `context_pull_budget_bytes` caps pulls per call. On the DS41 run-8
+  control prompt the turn-1 root prompt fell 30,106 → 7,810 tokens (−74%), and a pulled sentinel never reaches any
+  prompt (test). Acceptance still waits on OAB-4's live `orch` arm.
+  Found and fixed on the way, and **production-visible after the reload**: `auto_wrap_final` turned a one-line
+  `print(...)` into `FINAL(None)`; the output-schema preamble and the schema-retry message never reached the model
+  (`1d0ab2f5`; only when `final_schema_validation` is on); the proactive stage answered COMPLEX prompts before the
+  REPL even for scoped or bundle requests; the REPL sandbox now refuses frame attributes, `cell_contents`,
+  `operator.attrgetter`/`methodcaller` and dunder-reaching `str.format` for every REPL execution (`86cdeaf3`).
 - [ ] **OAB-8 — fan-out is the orchestrator's decision, not the model's.** Offered an allowed `task` tool plus
   fan-out guidance, the 27B never delegated once in 69 bounded steps (DS41-C20c). Splitting is orchestration: for a
   proposal, the orchestrator (`repl_environment/parallel_dispatch.py`) runs one read-only scout per top profile
@@ -142,6 +190,11 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   request and never implements fan-out itself (operator, 2026-09-24: this is the orchestrator's job, not the
   harness's). Acceptance: OAB-4 `orch` arm shows ≥2 concurrent scout calls on :8083 per proposal and a planner
   context built from their summaries.
+  **Built 2026-09-25**: orchestrator `813e0135`, research `571160bc` (planner scout targets + scout provenance on
+  the metrics row), merged via `9dabd7be` / `9cd7c743`; composition test `c754c987` / `806e29d7`. Scouts are
+  direct-completion read-only loops, capped by live `/slots` (reserve ≥ 1), and they finish before the planner
+  turn. Governance note: they bypass the `LLMPrimitives` gates (contention, region lock, inference tap) → OAB-16.
+  Acceptance still waits on OAB-4's live `orch` arm.
 
 ## Future (recorded, NOT for now)
 
@@ -379,7 +432,16 @@ Not measured:
   records read counts only (`bundle.access`). Acceptance: a verdict per trigger with the same columns as → 4.
   GPU inference, campaign-idle window. Do not run it on an unchanged setup: 2/2 on every cost metric is not worth
   re-buying.
-- [ ] **OAB-10 — trim the lane `AGENTS.md` out of the planner's fixed overhead.** It is 8.9k chars (~2.5–3k tokens)
+  **Operator, 2026-09-25 07:40Z:** context-as-variable failed ONLY because of opencode: its pulls land in the
+  conversation. Revisit it once it is wired directly into the orchestrator REPL/RLM (OAB-7 proper, now built). The
+  first OAB-4 run with the context variable on is that revisit.
+- [x] **OAB-10 — trim the lane `AGENTS.md` out of the planner's fixed overhead.** ✅ 2026-09-25 — research
+  `bdd0a951` (`--actor-trim-instructions`, `--actor-trim-tools`; `run.py` defaults on), merged in `300951de`. Fixed
+  overhead per planner call fell 12,912 → 4,950 tokens (−62%); the skills catalog (3,383) was the largest piece,
+  `AGENTS.md` 2,009. The one trimmed call measured ctx_first 32.7k, against the predicted 32.9k. The baseline arm
+  was aborted at 54+ min (censored; earlier inline baselines on the same prompt and server took 37.6 / 28.7 min),
+  and the A/B stopped after one trimmed call, because the overhead cut and the lane fence are deterministic.
+  Author behaviour accrues on campaign metrics. It is 8.9k chars (~2.5–3k tokens)
   of llama.cpp contributor guidance in every planner call. Options:
   - a planner-specific instruction file;
   - an `instructions` override in the per-run config;
@@ -388,7 +450,9 @@ Not measured:
   The file must stay available to the author, who edits code. Acceptance: the first-step token count falls by the
   measured amount with no change in author behaviour. Orchestrator counterpart: never inherit a repo's agent file
   into a planner context (OAB-7).
-- [ ] **OAB-11 — the planner must read its OWN lane, not the anchor build tree, and must not build.** The plain
+- [x] **OAB-11 — the planner must read its OWN lane, not the anchor build tree, and must not build.** ✅ 2026-09-25 —
+  research `bdd0a951` (`--actor-lane-guard`: lane-as-source + builds denied through opencode permissions). The
+  trimmed call: 6 steps, 10 tool calls, 42.5k decoded, reads lane 4 / anchor 0, builds 0, schema-valid. The plain
   planner read `/mnt/raid0/llm/llama.cpp-experimental-deepseek41-*` (the target's build dir) instead of
   `workers/laneN`, and compiled `.o` files into `/tmp` despite "never build". Fix candidates:
   - point the target card's source path at the lane and label the build dir "binary only";
@@ -406,3 +470,71 @@ Not measured:
   `tool_output_chars`, but no per-section bytes. The seat exporter (`actor_call_metrics.v1`) carries only
   `bundle_tool_calls`. OAB-9's result makes this task the precondition for any retry of context-as-files (OAB-9b):
   the arm lost because nothing capped what it pulled.
+  **Orchestrator half built 2026-09-25 (OAB-7, `88e22777`):** `ChatResponse.context_pulls`
+  (`epyc.orchestrator.context_pulls.v1`) logs offered vs pulled bytes, unique coverage and per-turn records for
+  each section, and `context_pull_budget_bytes` is the per-call cap. Still open: the seat exporter's per-section
+  pull bytes.
+
+### Tasks filed 2026-09-25 (integration, opencode store, planner timeline)
+
+- [x] **OAB-13 — integrate OAB-2/7/8, review, deploy.** ✅ 2026-09-25 — integration lanes
+  `lane/inf78-integ-20260925` in both repos (OAB-2 → OAB-7 → OAB-8 + a composition test). A second Fable review
+  returned research MERGE (research main `82f48e11`) and orchestrator MERGE-WITH-FIXES: F1 scout grep regex DoS
+  (literal search now), F2 context closure escapes, F3 sync `/slots` read on the event loop, F4 uncapped exception
+  output, F5 restore dropped the bundle, F6 READ past EOF, F7 bounded post-stop wait, F12/F13 encoding and
+  recursion guards, F14 test (`86cdeaf3`, `b9e004e3`). The architect scoped exception is `7d0ce447`. Orchestrator
+  main `b9e004e3`; the first reload attempt was refused by `orchestrator_stack` while run 9d's calibration held
+  the bench. After run 9d was killed, the API reloaded at 14:40:38Z (pid 2517073, API only), the OAB-2 smoke
+  passed and the witness stayed quiet.
+- [x] **OAB-14 — the opencode store fault that failed an author call.** ✅ 2026-09-25 — root cause: the event
+  reaper's no-op VACUUM (freelist 0, a 34 s exclusive lock) started 07:59:17Z in the critic gap; the author started
+  07:59:35Z, and its project upsert hit `SQLITE_BUSY` past the 5,000 ms busy timeout (rc 1). Fixes:
+  - root `9177edaa`: the prune script skips VACUUM when the freelist is under 1,024 pages, and truncates the WAL
+    after a real one;
+  - research `e57e93ea` (merged in `300951de`): `snapshot: false` in every per-call opencode config, an
+    `opencode_store_error` class with its own 30/60/120/240 s backoff, metrics session scoping by
+    `created >= call start` (a failed author row had been attributed the planner's 29-step session), and a
+    reasonless `{"accepted": true}` critic reply counted as schema-valid.
+- [ ] **OAB-15 — operator decisions on the opencode store** (decision package; OP-59 when the index row lands).
+  (a) Global `snapshot: false` for every opencode use: per-call configs already carry it; making it global
+  would disable TUI undo. Recommendation: keep it per-call only. (b) A store retention policy: `opencode.db` is
+  10.8 GB of live data plus a 10.9 GB WAL, so VACUUM cannot shrink it; only retention can. Recommendation: age out
+  sessions older than N days for headless actor runs only. Blocks nothing else on this page.
+- [ ] **OAB-16 — give scouts an inference-tap record.** OAB-8 scouts are direct completions that bypass the
+  `LLMPrimitives` gates (contention, region lock, inference tap), so their tokens are missing from the tap's
+  accounting. Emit one tap record per scout call (role, slot, prompt/decoded tokens, wall), tagged with the parent
+  request id. Acceptance: an OAB-4 `orch`-arm call shows its scout calls in the tap next to the planner turn.
+- [ ] **OAB-17 — triage the unfixed second-review items F8-F11, F15, F16 and R2-R4.** F1-F7 and F12-F14 landed in
+  `86cdeaf3` / `b9e004e3`. The item text is in main-ak-seat's Fable review report (2026-09-25 ~12:50Z): copy each
+  item here, then fix it or decline it in writing. Acceptance: every item has a disposition.
+- [ ] **OAB-18 — turn on `PREFIX_STABLE_ORDER` for scoped REPL calls, or measure why not.** With the prod default
+  (off), each turn's state block precedes the task, so the whole task is re-prefilled every turn: measured on the
+  DS41 control prompt, 27,803 → 6,555 uncached tokens per turn with the bundle, and 122 → 1,201 with the flag on
+  (`88e22777`). On :8083 that is ~92 s of prefill per turn. Acceptance: a scoped OAB-4 call shows per-turn
+  uncached prefill near the flag-on number, with unchanged replies on the REPL suites.
+- [ ] **OAB-19 — the compaction worker summarizes text no prompt shows.** Compaction measures and summarizes
+  `TaskState.context`, which no turn prompt renders (the same root cause as the schema-preamble bug fixed in
+  `1d0ab2f5`). Point it at what the root prompt actually carries, or retire it for REPL turns. Acceptance: a test
+  where compaction fires changes the next root prompt.
+- [x] **OAB-20 — planner timeline audit (why a planner call takes 30-60 min).** ✅ 2026-09-25 — from the :8083 logs
+  of the trimmed call: decode 87% of wall, prefill 13%, gaps 0.3%. One 30k-token reasoning turn (step 6) was 68% of
+  the call. `--planner-effort high` maps to opencode `--variant high`, which is inert for this server and model.
+  Thinking is ON through the template default: the exports carry `reasoning` parts (82k chars in step 6), so
+  `tokens.reasoning = 0` in the metrics is an accounting bug (OAB-21). The giant turns are reasoning prose
+  re-deriving the Q4_K bit-unpack formulas ("wait" ×56, "hmm" ×46): 97% of the step comes before any JSON, the
+  final JSON is 4%, and visible answers also carry 1.2-1.9k chars of preamble. MTP acceptance is ~0.45-0.53 on
+  that prose vs 0.6-0.97 on terse turns, which compounds the cost. The author prompt shows the same pattern.
+- [ ] **OAB-21 — fix reasoning-token accounting in `actor_call_metrics`.** `tokens.reasoning` reads 0 while the
+  export carries `reasoning` parts. Count them (tokens from the server's usage when present, else chars with the
+  estimator flagged), and keep "decoded includes reasoning" explicit. Acceptance: the step-6 call re-exported shows
+  a non-zero reasoning count consistent with its 82k chars. Also feeds VB-AK-METRICS-1.
+- [ ] **OAB-22 — planner concision rule plus an 8k per-turn cap, together.** Add to `actors.py`
+  `_HYPOTHESIS_TASK` (~L1961-1965): derive a formula once, keep analysis under ~4k tokens, then emit JSON only; set
+  `max_tokens` 8000 per turn as a circuit breaker. The cap alone would have truncated 5 of the 6 giant turns, so it
+  ships only with the rule. Reasoning stays on (operator ruling). The author prompt gets the same rule. Acceptance:
+  a matched planner call shows no turn over 8k and a schema-valid reply, with its wall recorded against the 32.8
+  min trimmed call.
+- [ ] **OAB-23 — a total budget per planner call.** Separate from OAB-22: run 9 showed endless chains of small
+  turns (61 min without a reply), which a per-turn cap never stops. Add a per-call decoded-token or wall budget
+  that ends the call with a recorded `budget_exhausted` abstention, not a transient retry. Acceptance: a fake
+  backend that never finishes is cut at the budget and recorded once.
