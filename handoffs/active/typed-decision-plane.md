@@ -1,6 +1,6 @@
 # Typed Decision Plane — one-pass typed decisions over the local stack
 
-**Status**: in progress — **Owner: the research-intake lane** (operator-assigned 2026-09-17 to `intake-jev-sageattn`; that session is closed, and the lane owns this handoff from 2026-09-23). Implementation landed in `epyc-orchestrator` main from branch `intake/jev-typed-decisions-20260917` (merged; its worktree was retired 2026-09-23 — cut a fresh lane worktree from origin/main for new TD work).
+**Status**: in progress — **Owner: the research-intake lane** (operator-assigned 2026-09-17 to `intake-jev-sageattn`; that session is closed, and the lane owns this handoff from 2026-09-23). *Ownership note (operator-directed tidy 2026-09-26):* ownership is unchanged, but TD-21 and every TD-21.N row, plus the TD-1d.1/TD-1d.2/TD-1d.5 closures, were executed 2026-09-24 by a separate operator-dispatched main session with no roster lane (`workspace-8d`; `progress/2026-09/2026-09-24-td21.md`, `progress/2026-09/2026-09-24-main-ak-seat.md:123`), not by the research-intake lane. Implementation landed in `epyc-orchestrator` main from branch `intake/jev-typed-decisions-20260917` (merged; its worktree was retired 2026-09-23 — cut a fresh lane worktree from origin/main for new TD work).
 **Created**: 2026-09-17 (via research intake, operator-approved 2026-09-17)
 **Categories**: routing_intelligence, cost_aware_routing, inference_serving, tool_implementation, agent_architecture
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
@@ -139,9 +139,20 @@ episodic memory writing."
     ✅ 2026-09-24 — fixed in the champion (`2b57340bf`, SW-9): native mode works on the champion build (16/16
     decisions, ~11× faster than JSON). Production (v10) still lacks it — native stays out of reach in production
     until a v11 promotion carries the champion.
-  - [ ] **TD-1d.2 — concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`**
+    *Comparability caveat (operator-directed tidy 2026-09-26):* the ~11× (native `id_only` 7.1 s vs JSON 80.4 s
+    = 11.4×) is ONE run per arm on the **CPU frontdoor** — the candidate champion CPU build (10306) on spare
+    port 8199 with frontdoor args, through `LLMPrimitives` `/v1` (receipt
+    `/workspace/tmp/td1d5-20260924/bench-candidate-8199.json`, role `frontdoor`, 2026-09-24T17:51Z). It is NOT
+    comparable with the GPU figures above (11.98× n=1 and 9.60× n=4, MI210 worker, direct `/completion`): different
+    device, server build (MTP draft-accept path), transport and JSON baseline (JSON 2,368 generated tokens here vs ~1,356 on the GPU).
+    "16/16" = the 16 natively eligible of 24 questions (c01–c08 fail closed, the same 6.40×-style denominator
+    confound). Agreement with JSON: `id_only` 15/16, `full` 14/16 (14/16 across all three arms). It shows the
+    SW-9 fix unblocks the native readout; it is not evidence for the TD-1d 10× bar or for TD-1d.0.
+  - [ ] **TD-1d.2b — concurrent in-process `llm_call`s are serialized by the cross-process `inference_lock`**
     (probed: parallel wall == serial wall, max 1 slot busy). A constraint on every future fan-out design, not
     just this one; independently matches the 09-17 note's `heavy_model` lock observation.
+    *(Filed 2026-09-18 as "TD-1d.2"; renamed TD-1d.2b 2026-09-26 because the 2026-09-24 native re-bench row above
+    reused that id. Code comments and the 2026-09-24 progress logs that say "TD-1d.2" mean the re-bench row.)*
   - [ ] **TD-1d.3 — `qwen35moe` is hybrid-recurrent (SSM layers), so prefix reuse is checkpoint-quantized.**
     Back-to-back per-question reads on one slot reuse **0** tokens (~450 ms each) unless a prefix-only request
     first leaves a checkpoint at the prefix end (then `cache_n` 1105, ~128 ms/read); under 3-way concurrency they
@@ -175,6 +186,13 @@ episodic memory writing."
   - *Receipt note 2026-09-23 (intake-1521 write-side check):* the same receipt also carries ECE 0.2416, Brier 0.1514 and a
     label base rate of 0.89 against the incumbent label — the AUROC 0.758 is not calibration evidence.
 - [x] **TD-6 — Adopt `id_only` as the native default after review.** The cue sweep measured 11.98x at 15/16 agreement for `id_only` (vs 2.66x `full`); ✅ 2026-09-18 adopted: native default is now `id_only` (11.98x at 15/16 measured); `full`/`short` remain selectable, JSON arm unchanged.
+  - ⚠️ *Sequencing note (operator-directed tidy 2026-09-26):* this adoption (orch `0fd94a89`, 2026-09-18 12:39Z)
+    landed ~12 h after the TD-1d re-measurement (root `742b5753`, 00:28Z) filed **TD-1d.0**, which says "do not
+    adopt id_only as the native default on the n=1 number alone" — and it still cites that n=1 11.98x. The n=4
+    re-measure gives **9.60x** (1.46 s vs 14.02 s mean) and **6.40x per decision** (native decides 16/24), both
+    below the 10x bar (receipt `artifacts/typed_decisions/run_20260918/summary-td1d.json`). id_only is still the
+    fastest native arm under both measurements, so **the default stands pending TD-1d.0**; no code default was
+    changed by this note, and the orchestrator docstrings/`MEASURED_CONSTANTS` provenance now carry the same caveat.
 - [x] **TD-7 — TD-5 live replay on the recorded routing corpus.** Build a state adapter from the recorded routing decisions (reference: ~54,960 rows with 22-33% per-role failure in learned-routing-controller) and replay N=100-200 through the shadow path; report typed-vs-incumbent agreement and confidence-vs-outcome calibration. ✅ 2026-09-18 ran on the admissible frozen snapshot (`orchestration/repl_memory/sessions/episodic.db.backup-20260415`, sha256 12ca8b0b…, max(created_at) 2026-04-15 — pre-purge; live DB refused by design). N=200: **agreement vs incumbent 3.0% (6/200, Wilson 1.4-6.4%)**; **native 0/200** — every routing action label is multi-token (`frontdoor`=front+door), so all rows took the JSON fallback; the model shows a strong SELF bias (177/200 at ~0.975 confidence); **AUROC 0.50** vs the frozen success label and ECE 0.10, with the caveat that the frozen label describes the incumbent action, not the chosen one (flagged in-receipt). Diagnostic outcome: the harness works; candidate/token design is the blocker. Receipts under artifacts/typed_decisions/run_20260918/.
 
 **Declined (2026-09-17):** no new belief-kernel carrier for bench/cue-sweep reports — they are screening instruments, not protocol-grade measurements (the strict reader refuses them by design); revisit only if a `P-TDP` measurement protocol is ratified.
@@ -660,7 +678,7 @@ episodic memory writing."
 
 ## Wiring policy (2026-09-18, operator-directed)
 
-- **Fan-out decision rule (TD-8, implemented in `src/typed_decisions/fanout_policy.py`):** exactness-required + native-eligible -> native id-only per question (11.98x, isolated); stability-tolerant batches of >= 8 -> batched (2.2x at 87.5% measured agreement); otherwise sequential JSON. The 87.5% figure governs the choice per surface.
+- **Fan-out decision rule (TD-8, implemented in `src/typed_decisions/fanout_policy.py`):** exactness-required + native-eligible -> native id-only per question (11.98x n=1, contested: 9.60x at n=4 pending TD-1d.0; isolated); stability-tolerant batches of >= 8 -> batched (2.2x at 87.5% measured agreement); otherwise sequential JSON. The 87.5% figure governs the choice per surface.
 - **Tool arguments (item 1):** closed-set wiring landed in the orchestrator tool path (`src/repl_environment/context.py` `_dispatch_tool`) behind `typed_decisions_tool_args` (default off), fail-open to model-provided args.
 - **Deferred but tracked:** routing replay -> TD-7; judge redundancy -> CJ-13/CJ-14 in `canonical-judge-suite-revamp.md`; episodic pre-write gate -> M-19 in `episodic-memory-integrity.md`; harness items -> HS-TD-1..3 in `harness-selection-and-integration.md`.
 - [x] **TD-8 — Fan-out policy helper.** Implemented + 18 tests (`fanout_policy.py`, provenance-stamped constants). ✅ 2026-09-18

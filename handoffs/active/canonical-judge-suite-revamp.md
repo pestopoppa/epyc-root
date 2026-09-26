@@ -538,6 +538,15 @@ quoted here. See [[feedback_eval_saturation_masks_model_gap]],
 ## Research Intake Update — 2026-09-17 (independent judge evidence; intake-1475/1486/1490)
 
 - [ ] **CJ-13 — Two-cheap-readers redundancy arm (typed judge + local LLM judge).** Report pairwise agreement and human-disagreement cost per the intake-1475/1486 methodology; label "agreement is not accuracy"; no adoption decision (CJ-GATE remains the operator's).
+  - *Status check (operator-directed tidy 2026-09-26) — left OPEN, acceptance not met in substance.* The 2026-09-18
+    run below (`artifacts/typed_decisions/run_20260918/judge-redundancy-20260918.json`) carries the label and the
+    fields, but the second reader never read: the free-form LLM judge failed to parse on **63/72** criteria, so pairwise
+    agreement exists on only **9/72** (9/9 agreeing) and the projected human-adjudication rate (0.875) measures that
+    reader's parse failures, not reader disagreement — the receipt itself calls it "a projection from reader behaviour,
+    not a measured human cost". Missing to close: re-run with the LLM reader on a structured/repaired output path
+    (the TD-21 judge-site conversions, `typed-decision-plane.md` TD-21.9/21.10/21.15) so both readers resolve most
+    criteria; report agreement over the resolved pairs and an adjudication rate driven by disagreement, with the
+    per-reader cost (tokens, wall) beside it (intake-1475#record method). One short inference window.
 - [ ] **CJ-14 — Adopt the dinostomp measurement discipline for new judge instruments:** hashed manifests/run records, a blind probe as the lower bound, pre-registered per-item distributions (intake-1490).
 ## Research Intake Update — 2026-09-18 (judge redundancy measured; CJ-13/CJ-14)
 
