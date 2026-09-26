@@ -180296,8 +180296,13 @@
   reader_should_conclude: 'Verified package-level RTX 5090 result: preserve the exact request shapes and
     denominators when using 405.6 c1 decode and 826.2 c8 aggregate as engineering targets; do not attribute
     either rate to EXL3 kernels alone.'
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3 routes the complete serving envelope, pinned target/draft identity, and throughput-attribution requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -180496,8 +180501,13 @@
   reader_should_conclude: Verified implementation and raw package evidence for 405.6 c1 decode and 826.2
     c8 aggregate on RTX 5090; preserve their denominators, acceptance and full stack identity, and treat
     the measured optional-kernel state as unproven.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3 routes the complete serving envelope, pinned target/draft identity, and throughput-attribution requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -180687,8 +180697,13 @@
   reader_should_conclude: Use revision 3f1771b8 and its shard hashes as a real mul1 K4/K6 full-model fixture
     after standalone parity; derive packed coverage from safetensors because tensor_storage omits vision
     and MTP modules, and do not use the RTX 3090 package rates as CPU/MI210 thresholds.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3 routes the complete serving envelope, pinned target/draft identity, and throughput-attribution requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -180865,8 +180880,13 @@
   reader_should_conclude: Use revision 265b5240 as the packed mul1 DFlash2 fixture after standalone operator
     parity; treat fc as the DFlash input projection, preserve all raw-F16 companions, and do not read
     the reported acceptance means as an equivalence test or 162.9 as isolated decode throughput.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3 routes the complete serving envelope, pinned target/draft identity, and throughput-attribution requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -181073,8 +181093,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the pinned package as an NVIDIA complete-stack target and its raw acceptance rows
     as workload evidence; do not attribute 162.9 tok/s to EXL3 kernels alone or transplant sm86 settings to MI210.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3 routes the complete serving envelope, pinned target/draft identity, and throughput-attribution requirements into the listed durable owner(s).
   claim_corrections:
   - claim_index: 0
     effect: reattributed
@@ -181227,8 +181252,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the exact K1-K8/codebook mechanics and CPU mul1 fusion as donor components; do not
     cite the RTX 3090 operator timings as full-stack or MI210 evidence, and write native wave64 kernels for gfx90a.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P2 routes the CPU/reference donor, typed packed ABI, and native gfx90a implementation requirements into the listed durable owner(s).
   claim_corrections:
   - claim_index: 0
     effect: narrowed
@@ -181418,8 +181448,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: 'Treat #36010 as a verified SM120 state-interface failure and import its device-resident
     metadata, fail-closed guard and acceptance-gate patterns; do not treat it as NVFP4 or kernel evidence for CPU/MI210.'
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 1
     kind: line-range
@@ -181651,8 +181686,13 @@
   reader_should_conclude: Use this as a reproducible CUDA c1 long-context package and a portable fused-workspace
     validation pattern; keep its 239.2 tok/s at 260K tied to generation-only c1 and do not attribute it to EXL3
     or transfer it numerically to MI210.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -181909,8 +181949,13 @@
   reader_should_conclude: Adopt the selector and convolution contracts, but measure the sequential walk separately
     and require explicit recurrent-state rollback tests; treat 4.80 acceptance as CUDA-source context rather than
     a CPU/MI210 performance claim.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -182084,8 +182129,13 @@
   reader_should_conclude: Treat a quantized draft that boots with accept length near 1 as broken until proven otherwise;
     enforce complete tensor consumption and content-stratified acceptance/throughput canaries before CPU or MI210
     qualification.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -182298,8 +182348,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the content-stratified benchmark and noise-floor rule; the source proves acceptance
     and throughput are prompt-sensitive, while output identity and ROCm transfer remain untested.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -182431,8 +182486,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt fresh-prompt, rollback and content-stratified controls; retain 135–148 c8 and 258
     c32 only as narrative self-reports until raw rows permit recomputation.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -182595,8 +182655,13 @@
   reader_should_conclude: Adopt the exact engine CPU executor as the immediate K1-K8/all-codebook dense+grouped
     donor and oracle; treat the published RTX 3090 numbers as one-slot complete-package targets, and build native
     wave64 gfx90a kernels for MI210.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P2 routes the CPU/reference donor, typed packed ABI, and native gfx90a implementation requirements into the listed durable owner(s).
   claim_corrections:
   - claim_index: 0
     effect: unaffected
@@ -199562,8 +199627,12 @@
   reader_should_conclude: 'Use this repository immediately as a portable dense CPU oracle, loader/test donor and a correctness-first
     HIP starting point. Do not infer EPYC SIMD speed, all-codebook grouped execution, or MI210 readiness: those remain custom-kernel
     work.'
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P2 routes the CPU/reference donor, typed packed ABI, and native gfx90a implementation requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -199801,8 +199870,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: 'Use #36038 as a reviewed SM120 candidate design for native packed target verification and its fail-closed
     phase contracts. Do not cite it as merged support, a speed result, an EXL3 weight kernel, or CPU/MI210 evidence.'
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -200094,8 +200168,13 @@
   reader_should_conclude: 'Use #36045 as the concrete device-resident workspace alternative and as evidence that long-prefix
     dequant can become a material per-cycle tax. Carry its state, padding, stride, replay-test and capacity contracts into
     MI210 work; do not cite it as merged support or portable HIP code.'
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -200438,8 +200517,13 @@
   reader_should_conclude: 'Treat #36340 as strong evidence for explicit packed-data and scale-sidecar contracts and separate
     phase benchmarks. Treat its NVIDIA results as an architecture-specific reference. Do not infer SM120, CPU, ROCm, gfx90a
     or EXL3 support from the merge.'
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -200798,8 +200882,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Treat concurrency as a correctness dimension and enforce layout contracts before any custom CPU/HIP
     kernel call; do not port the XQA code itself.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -201107,8 +201196,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the packed-fc consumption and test pattern, but pair it with the broader fail-closed loader
     contract and do not treat this open PR as released CPU/ROCm support.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -201434,8 +201528,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the broader name-preserving and fail-closed manifest contract for CPU/HIP EXL3 loading; retain
     explicit ignores and independently validate MI210 runtime behavior.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -201815,8 +201914,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt revision 015e7956 as the official BF16 reference fixture and treat its H200 table as the target
     grid, while independently proving loader completeness, GDN rollback and CPU/MI210 throughput.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -202132,8 +202236,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the package identity, measurement controls and recurrent-state accounting patterns. Preserve
     the rates as NVIDIA NVFP4 package observations; they neither execute EXL3 nor establish CPU or MI210 performance.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -202385,8 +202494,13 @@
   reader_should_conclude: 'Adopt the reproducible recipe and manifest pattern. Do not cite this repository for Qwen throughput:
     it publishes configuration, not Qwen results. Treat its generic DFlash2 HIP branches as unvalidated source candidates,
     not ROCm execution evidence.'
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -202640,8 +202754,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Carry the alignment-safe byte cursor forward, but restore semantic typing before adapting this donor
     into project-owned CPU or gfx90a kernels. Treat the issue as an API hardening requirement, not a performance result.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P2 routes the CPU/reference donor, typed packed ABI, and native gfx90a implementation requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -202896,8 +203014,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the fail-closed layout contract and tests, while recording that FlashInfer did not merge this
     guard. The PR provides no EXL3 or AMD kernel and no throughput evidence.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -203171,8 +203294,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use only the interface decomposition and failure lessons. The branch is a closed, superseded CUDA
     prototype with self-reported SM120 results; it supplies neither a current SGLang implementation nor a CPU/MI210 path.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -203520,8 +203648,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the roadmap to discover NVIDIA FP4-KV components, then resolve their actual states. Port the
     payload/metadata lifecycle and fail-closed contracts to EXL3; do not infer CPU or gfx90a support from this tracker.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -203688,8 +203820,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt module-plus-dispatch sharing and fail-fast capability checks for EXL3. Treat the Ada accuracy
     run as candidate correctness evidence only; this open PR supplies no controlled throughput or MI210 proof.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -203888,8 +204025,13 @@
   reader_should_conclude: Adopt the merged DFlash2 architecture and its benchmark protocol as the strongest throughput target.
     Port and fuse the generic component boundaries for gfx90a, while separately closing packed target and quantized draft
     loader/dispatch gaps.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -204103,8 +204245,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use this URL only as a hash-verified mirror of intake-1583; never count its duplicated tables as
     independent evidence or infer CPU/MI210 performance.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P3/P5/P6 routes packed cache/workspace, loader completeness, recurrent-state, layout, and speculative-serving controls into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -204257,8 +204404,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the pinned BF16 checkpoint as a DSpark reference candidate, but reproduce it on one matched
     target and do not project its NVIDIA card tables onto CPU/MI210.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -204435,8 +204587,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Mine the EXL3 ABI/oracle/receipt and grouped-MoE design patterns, while treating every CUDA rate
     as GB10-specific and independently rebuilding the kernel schedule for gfx90a wave64.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -204669,8 +204826,13 @@
   reader_should_conclude: Use this as a full-stack NVIDIA target and measurement-control source. Keep its current c1 and historical
     concurrency cells separate, and reproduce the component stack on MI210 rather than treating NVFP4+DFlash2 speed as EXL3
     evidence.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -204914,8 +205076,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt this repository’s receipt and matched-A/B structure. It demonstrates that speculative throughput
     gains and optimal block size depend on concurrency, while remaining NVIDIA NVFP4 evidence rather than EXL3 or MI210 proof.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -205202,8 +205369,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the sidecar-lifecycle and fail-closed pattern in EXL3 design. Do not treat this open CPU-tested
     guard as GPU support, MI210 evidence, or an EXL3 kernel.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -205391,8 +205562,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Treat kernel fusion as a useful experiment pattern, not a validated serving result. The source gives
     no EXL3 or MI210 implementation and no end-to-end throughput target.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -205564,8 +205739,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the explicit byte layout, producer fusion, fail-closed dispatch and separate prefill/decode
     qualification patterns. Do not interpret this draft CUDA KV implementation as EXL3, CPU, or MI210 support.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -205810,8 +205989,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Retain the prefix-cache, calibration and architecture-specific quality test cases. Reject the stale
     branch as current implementation evidence and reject the claimed BF16-forward root cause as proven.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -206110,8 +206293,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the operator-dispatch, contiguity, padding, and capture-qualification contracts. Treat the
     CUDA code and PR-authored RTX rates as NVIDIA-specific evidence.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -206371,8 +206559,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: 'Keep the capability-dispatch lesson, but do not port this branch: both concrete defect sites are
     already superseded and the branch has no completed evidence.'
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -206660,8 +206853,13 @@
   reader_should_conclude: Adopt the explicit packed-format/scale contracts and fail-closed tests. Do not treat the conflicted
     branch as production code; separately resolve draft quant mapping and benchmark fused materialization against operator
     dispatch.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -207001,8 +207199,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the extension-point and subclass-topology regression pattern. Treat hardware throughput as
     contextual integration evidence only.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -207320,8 +207523,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the loader lessons and receipt requirements. Treat 196.9 tok/s as the sole compact committed
     run receipt and the later full/production values as self-reported until raw evidence is obtained.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P5/P6 routes draft architecture, packed-operator dispatch, loader mapping, and component-level qualification into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -207553,8 +207761,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use this as a strong workload and receipt design plus an operational GB10 comparison. Do not use
     it as a controlled proof that EXL3 is faster or higher quality than NVFP4.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -207858,8 +208071,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the headroom ladder, correction discipline and machine-readable receipt schema. Treat the
     numerical records as detailed same-author summaries until their referenced raw outputs are published.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -208192,8 +208410,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Treat W4A16 as a real alternative to EXL3 and adopt its raw throughput receipt shape. Do not treat
     the three-way headline as proof that W4A16 is intrinsically faster because rival denominators and configs differ.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -208571,8 +208794,13 @@
   reader_should_conclude: Use the mixed-format inventory and activation-calibration method as a draft-compression design input.
     Treat its throughput as a small author benchmark that still needs raw-receipt reproduction, and do not transfer the NVIDIA
     kernel result to CPU or MI210.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -208809,8 +209037,13 @@
   reader_should_conclude: Use the thread as evidence that the fast GB10 recipe is sensitive to image provenance, JIT state,
     autotuning, memory fraction, and concurrency. Do not accept the throughput cell as production-safe until the packed-head
     c8 correctness contradiction is resolved.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: json-pointer
@@ -209008,8 +209241,13 @@
   reader_should_conclude: Use this package to separate engine, target-kernel and speculative-decoding contributions and to
     copy its profile-aware harness. Treat DFlash2 and stock-nightly comparisons as summary-grade until their raw external
     receipts are incorporated.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -209284,8 +209522,13 @@
   reader_should_conclude: Adopt the packed ABI, fusion, gating, rollback, and measurement contracts. Rebuild the
     schedule for CPU vector units and gfx90a wave64/MFMA; retain the NVIDIA rates only as evidence that custom kernels
     can close a large part of the serving gap.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -209687,8 +209930,13 @@
     port. Preserve consumed-token alignment and test the current FP32-beta repair candidate directly. Do not interpret
     the early BF16 beta-alignment patch as the final repair, or this CUDA evidence as CPU/HIP/MI210/EXL3 performance
     support.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -210177,8 +210425,13 @@
   reader_should_conclude: Require concurrency-aware semantic correctness gates before adopting DFlash2 throughput.
     Treat FP32 state, fewer draft tokens, graph disable, beta alignment and dense lm_head as partial mitigations
     only. This source does not provide CPU, ROCm, MI210 or EXL3 execution evidence.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -210414,8 +210667,13 @@
   reader_should_conclude: Use this PR as a model for fixed-revision grid accounting and explicit failed memory cells.
     Treat its NVIDIA figures as self-reported four-request or spot-check results, and its DGX Spark verification
     as c1 boot-and-serve only. It supplies no EXL3, CPU, ROCm/gfx90a, MI210, or quality-safe throughput evidence.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -210680,8 +210938,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use this source as an NVFP4 operational comparator and as a template for fail-closed checkpoint
     admission and raw receipts. It supplies no codec-isolated comparison and no portable kernel implementation.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -211286,8 +211549,13 @@
   reader_should_conclude: Treat draft quant configuration and packed context-KV consumption as separate gates. The
     raw-access failure has a merged generic fallback, while draft packed-module mapping still requires an explicit,
     fail-visible fix. No CPU/MI210 performance follows from this GB10 bug report.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_corrections:
   - claim_index: 0
     effect: unaffected
@@ -211537,8 +211805,13 @@
   reader_should_conclude: The merged PR is a useful mixed-quant drafter component and a correctness reference for
     operator dispatch and exclusions. Its 4×GB200 acceptance statement is not a benchmark, and it supplies no CPU/MI210/EXL3
     performance.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_corrections:
   - claim_index: 0
     effect: unaffected
@@ -211860,8 +212133,13 @@
   reader_should_conclude: Use the config and Hub metadata as a loader/format oracle. Do not infer runtime memory,
     acceptance, throughput, or CPU/MI210 support from the card; its required draft-quant runtime change remains
     open and only one of the two known defects has merged elsewhere.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_corrections:
   - claim_index: 0
     effect: narrowed
@@ -212144,8 +212422,13 @@
   reader_should_conclude: Adopt this checkpoint as the authoritative K4/MCG artifact and golden-vector source. Its
     KLD work supports strong EXL3 fidelity, but the committed NVFP4 comparison remains a systems comparison until
     a matched codec-only experiment is run.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -212577,8 +212860,13 @@
   reader_should_conclude: Treat W4A16 as a serious alternative and comparator whose advantage depends on concurrency
     and workload. Retain EXL3 as the mid-concurrency winner in this matched NVIDIA grid, and require raw local receipts
     before transferring any percentage to CPU or MI210.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -212986,8 +213274,13 @@
   reader_should_conclude: Use this artifact to define the exact NVIDIA target, module boundary and concurrency-aware
     throughput envelope behind intake-1741. Treat 420 tok/s as a short bench-harness code cell, not the API target,
     and do not transfer Blackwell NVFP4 rates to CPU or MI210.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: json-pointer
@@ -213350,8 +213643,13 @@
   reader_should_conclude: Use this as the exact GLM DFlash2 draft architecture and hidden-state adapter contract.
     It is an all-BF16 component with no final checkpoint benchmark or MI210 evidence, so pair it with separately
     validated EXL3 target kernels and verifier tests rather than treating it as a throughput proof.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P3/P4/P5/P6 routes the EXL3/W4A16 evidence boundary, serving receipts, loader guards, quality controls, and speculative-serving requirements into the listed durable owner(s).
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -213564,8 +213862,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: This is the final wave’s highest-value kernel donor for ABI, scratch, fail-closed checks, and a
     second MCG oracle. It is not portable GPU code.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P2/P3/P4 routes the packed ABI, MCG oracle, real fixture, quality panel, and routing-distribution requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -213717,8 +214019,12 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt its loader, metadata, planning, and refusal contracts. Build independent CPU and HIP compute.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P2/P3/P4 routes the packed ABI, MCG oracle, real fixture, quality panel, and routing-distribution requirements into the listed durable owner(s).
   depends_on:
   - entry: intake-1756
     claim_index: 3
@@ -213958,8 +214264,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use for fixture identity, route-distribution hypotheses, and quality receipts. Prefer Apache/MIT
     code donors.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P2/P3/P4 routes the packed ABI, MCG oracle, real fixture, quality panel, and routing-distribution requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -214148,8 +214458,12 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: This closes the quality-oracle provenance gap. It does not delay operator implementation.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P1/P2/P3/P4 routes the packed ABI, MCG oracle, real fixture, quality panel, and routing-distribution requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -214373,8 +214687,12 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P5 routes proposition-specific exactness, FP32 recurrence, forced-reject, A/A, and fail-capable concurrency controls into the durable EXL3 owner.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -214489,8 +214807,12 @@
   verification: dive-overturned
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P5 routes proposition-specific exactness, FP32 recurrence, forced-reject, A/A, and fail-capable concurrency controls into the durable EXL3 owner.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -214630,8 +214952,12 @@
   verification: dive-overturned
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P5 routes proposition-specific exactness, FP32 recurrence, forced-reject, A/A, and fail-capable concurrency controls into the durable EXL3 owner.
   depends_on:
   - entry: intake-1763
     claim_index: 1
@@ -214794,8 +215120,12 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P5 routes proposition-specific exactness, FP32 recurrence, forced-reject, A/A, and fail-capable concurrency controls into the durable EXL3 owner.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -214919,8 +215249,12 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P5 routes proposition-specific exactness, FP32 recurrence, forced-reject, A/A, and fail-capable concurrency controls into the durable EXL3 owner.
   depends_on:
   - entry: intake-1763
     claim_index: 1
@@ -215076,8 +215410,13 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P5 routes proposition-specific exactness, FP32 recurrence, forced-reject, A/A, and fail-capable concurrency controls into the durable EXL3 owner.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -215292,8 +215631,13 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P5 routes proposition-specific exactness, FP32 recurrence, forced-reject, A/A, and fail-capable concurrency controls into the durable EXL3 owner.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -215411,8 +215755,13 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P5 routes proposition-specific exactness, FP32 recurrence, forced-reject, A/A, and fail-capable concurrency controls into the durable EXL3 owner.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -215595,8 +215944,13 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P6 routes state commit, GLM contraction/capture, and bounded drafter-allocation requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -215758,8 +216112,13 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P6 routes state commit, GLM contraction/capture, and bounded drafter-allocation requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -215959,8 +216318,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Add scale and reconstruction checks to EXL3-versus-W4A16 comparator admission. Do not treat this
     as an EXL3 defect.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P4 routes comparator-scale admission and defensive scheduler-boundary requirements into the durable EXL3 owner.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -216127,8 +216490,13 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P6 routes state commit, GLM contraction/capture, and bounded drafter-allocation requirements into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -216268,8 +216636,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Do not cite this as evidence against upstream Marlin or W4A16. Keep the scheduler boundary-test
     lesson.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P2/P4 routes comparator-scale admission and defensive scheduler-boundary requirements into the durable EXL3 owner.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -216473,6 +216845,9 @@
   reader_should_conclude: LiLiCorr is later serving optimization, outside the base CPU/gfx90a critical path.
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - Revisit only after the native EXL3 target is stable and ordinary DFlash/DSpark serving passes correctness and throughput qualification; no active task exists before that trigger fires.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -216578,6 +216953,9 @@
   reader_should_conclude: Use the bounded correctness pattern in full-stack integration; it does not change trellis reconstruction.
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - Revisit only after the native EXL3 target is stable and ordinary DFlash/DSpark serving passes correctness and throughput qualification; no active task exists before that trigger fires.
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -216910,8 +217288,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use it to define a current official NVFP4 comparator arm and its module allocation. It does not
     alter the native EXL3 CPU/gfx90a kernel design.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P3/P4/P6 routes exact comparator identities, serving contracts, absolute/differential gates, capacity accounting, and acceptance/throughput separation into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -217094,8 +217476,12 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Treat this as a separate expert-only NVFP4 comparator. It adds no new EXL3 kernel mechanism.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P3/P4/P6 routes exact comparator identities, serving contracts, absolute/differential gates, capacity accounting, and acceptance/throughput separation into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -217231,8 +217617,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt its reproducibility and boot-validation patterns. It does not change the CPU/gfx90a kernel
     architecture.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P3/P4/P6 routes exact comparator identities, serving contracts, absolute/differential gates, capacity accounting, and acceptance/throughput separation into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -217391,8 +217782,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Retain this as evidence that acceptance and throughput require separate gates. It is phase-two speculative
     integration material.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P3/P4/P6 routes exact comparator identities, serving contracts, absolute/differential gates, capacity accounting, and acceptance/throughput separation into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -217587,8 +217983,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use its evaluation and fail-closed serving patterns. Do not treat its NVIDIA kernels or rates as
     MI210 targets.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P3/P4/P6 routes exact comparator identities, serving contracts, absolute/differential gates, capacity accounting, and acceptance/throughput separation into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -217850,8 +218250,13 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Treat this as phase-two evidence that drafter precision, acceptance, verification cost, context
     capacity, and concurrency must be measured independently.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
+  - dflash2-block-drafter-experimental-build.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P3/P4/P6 routes exact comparator identities, serving contracts, absolute/differential gates, capacity accounting, and acceptance/throughput separation into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -218163,8 +218568,12 @@
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Keep QUASAR as a strong trained W4A4 comparator. It does not change the EXL3 kernel plan.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P3/P4/P6 routes exact comparator identities, serving contracts, absolute/differential gates, capacity accounting, and acceptance/throughput separation into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
@@ -218321,8 +218730,12 @@
   ingested_date: '2026-09-25'
   reader_should_conclude: Use this as the exact official Qwen NVFP4 comparator identity. It does not supply portable EXL3
     kernel code.
-  handoffs_updated: []
+  handoffs_updated:
+  - exl3-cpu-mi210-implementation.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Approved Stage-3 plan P3/P4/P6 routes exact comparator identities, serving contracts, absolute/differential gates, capacity accounting, and acceptance/throughput separation into the listed durable owner(s).
   depends_on: []
   claim_corrections:
   - claim_index: 0
