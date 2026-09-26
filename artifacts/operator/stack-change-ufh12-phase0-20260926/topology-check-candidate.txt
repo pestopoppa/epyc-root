@@ -1,0 +1,1 @@
+TOPOLOGY CHECK PASS: 5 roles, 7 instances, 8 shapes

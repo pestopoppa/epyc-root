@@ -5845,3 +5845,18 @@ premise. The in-loop serving-shape decomposition for DS41 is:
 
 **Confidence:** measured on one host, one day, not idle; repeat on an idle host before quoting it as the
 ceiling.
+
+## Compiled Update — 2026-09-26 (research-intake orch-prior-art): this host has no xGMI link
+
+**Correction (2026-09-26):** the "xGMI inter-socket ~64 GB/s" figures the 2026-08-03 sweep deliberately left alone do not describe this host at all — it is single-socket NPS4 (lscpu 2026-09-26), so there is no xGMI link. The sites that relied on it (numa-prefill-decode-disaggregation.md, sarathi-serve-cpu-evaluation.md) were re-scoped 2026-09-26; the disaggregation question here is GPU-prefill vs CPU-decode over PCIe Gen4 (H2D 28.89 GB/s).
+
+This corrects the "related trap" paragraph in the 2026-08-03 Compiled Update above: the xGMI strings were not a different link to keep, they were a link this box does not have.
+
+### Source References
+
+- [NUMA prefill/decode disaggregation](../handoffs/active/numa-prefill-decode-disaggregation.md) — the 2026-09-26 correction note and re-scoped objective.
+- [Sarathi-Serve CPU evaluation](../handoffs/active/sarathi-serve-cpu-evaluation.md) — the 2026-09-26 single-socket notes.
+- [GPU acceleration path](../handoffs/active/gpu-acceleration-path.md) — the H2D/D2H receipt (`epyc-inference-research/data/mi210-h2d-d2h/20260803T131500Z/`).
+- `/mnt/raid0/llm/tmp/dive-intake-1810/sources/host_lscpu_20260926.txt` — `Socket(s): 1`, `NUMA node(s): 4`.
+
+**Confidence:** verified (host topology read directly; the H2D figure is an observation-grade receipt).

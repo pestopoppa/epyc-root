@@ -25,6 +25,8 @@ Evaluate whether Sarathi-Serve's chunked-prefill + decode-piggybacking schedulin
 
 Sarathi-Serve eliminates the prefill/decode interference problem **without any KV migration**. On EPYC, where xGMI inter-socket bandwidth (~64 GB/s) is dramatically lower than NVLink (~900 GB/s), the KV-transfer tax of full disaggregation (CPU16) is proportionally worse than on the GPU systems where DistServe/Splitwise were validated. If chunked-prefill achieves 80%+ of the disagg benefit at zero migration cost, CPU16 should be closed.
 
+*Note 2026-09-26: this host is single-socket NPS4 — there is no xGMI link; CPU16 has been re-scoped to GPU-prefill / CPU-decode (numa-prefill-decode-disaggregation.md). The chunked-prefill case here stands on its own.*
+
 The Sarathi authors themselves note (intake-469) that disagg "could be challenging in the absence of high-bandwidth interconnects."
 
 ## Research Context
@@ -114,6 +116,8 @@ For multi-tenant scenarios (not our current deployment): the Sarathi trade-off M
 **Re-promote trigger**: workload shift to multi-tenant deployment (shared API serving multiple agents, prefill-heavy serving). Then revisit with per-shard `-ub` tuning (`-ub 256` for interactive-priority, `-ub 1024` for batch-priority) before considering full Sarathi-Serve TBT-SLO scheduler integration.
 
 **CPU16 (NUMA disagg) status**: per the original handoff, CPU17 was meant to falsify or obsolete CPU16. Since CPU17 itself produces minimal signal for current single-user regime, CPU16 inherits the same deprioritization. **NOT empirically closed**: the Phase 0 xGMI KV-transfer-BW measurement was never run; the analysis-based projection (xGMI ~64 GB/s vs NVLink ~900 GB/s) is suggestive but not measured. Re-promote on multi-tenant API shift.
+
+*Note 2026-09-26: this host is single-socket NPS4 — there is no xGMI link; CPU16 has been re-scoped to GPU-prefill / CPU-decode (numa-prefill-decode-disaggregation.md). The chunked-prefill case here stands on its own.*
 
 **Data**: `data/cpu_optimization/2026-04-26-cpu17/SUMMARY.md` and per-`-ub` raw bench logs.
 

@@ -8,7 +8,7 @@ Substrate facts verified 2026-07-03 against `/mnt/raid0/llm/llama.cpp @ a30214db
 
 The handoff (`tmp/epyc_mi210_hybrid_inference_handoff.md`) is a competent survey of the *offload* literature, and its "measure first" instinct is right. Five structural corrections:
 
-1. **It is model-centric; your problem is fleet-centric.** The unit of decision is not "a model that doesn't fit in HBM" but "seven roles, one 64 GB card, one 460 GB/s CPU pool shared with the evaluator." Ground truth (verified, findings docs stack-inventory): frontdoor Q8 37.8 GB *fits* (≈43 GB with KV); worker Q4 16.8 GB fits (and currently burns **86 GB of RAM in 5 private no-mmap copies**); ingest 80B Q4 48.4 GB fits; both vision models fit; only architect 122B (78.26 GB) does not. Family A (dense hybrid) targets a model class you do not deploy — every production text model is a sparse MoE. Family B has exactly one real instance (architect). Family C must now beat the *live* MTP self-speculation running on every role, not a no-spec baseline.
+1. **It is model-centric; your problem is fleet-centric.** The unit of decision is not "a model that doesn't fit in HBM" but "seven roles, one 64 GB card, one 460 GB/s CPU pool shared with the evaluator." *(2026-09-26: "460 GB/s" was the pre-2026-09-21 theoretical at 4800 MT/s; now 537.6 GB/s theoretical, 446.8/449.4 GB/s measured read-sum at t96 — cpu-decode-roofline-program.md:282-289.)* Ground truth (verified, findings docs stack-inventory): frontdoor Q8 37.8 GB *fits* (≈43 GB with KV); worker Q4 16.8 GB fits (and currently burns **86 GB of RAM in 5 private no-mmap copies**); ingest 80B Q4 48.4 GB fits; both vision models fit; only architect 122B (78.26 GB) does not. Family A (dense hybrid) targets a model class you do not deploy — every production text model is a sparse MoE. Family B has exactly one real instance (architect). Family C must now beat the *live* MTP self-speculation running on every role, not a no-spec baseline.
 2. **The discriminating axis it misses: instrument throughput.** Your dominant workload is the evaluator (window-1: ~77% of traffic is the harness). The eval tower's bottleneck role defaults to **frontdoor** (`eval_tower.py:458`) — so GPU frontdoor residency *is* GPU eval acceleration. The handoff never mentions the evaluator. Related second miss: **quiesce-window economics** — a GPU-hosted lane is insulated from the production CPU stack, so measurements stop competing with serving; the campaign's 28–31 h quiesce window and half the blocked portfolio are downstream of single-substrate serving (R14).
 3. **"Success ≠ beat full-HBM" is backwards for you.** For this stack, full-HBM residency of small-specialist roles is not the boring baseline to beat — it *is* the primary EV, because it simultaneously (i) accelerates the hottest interactive path, (ii) accelerates the evaluator, (iii) returns the vacated CPU bandwidth to the remaining roles, and (iv) creates the isolated measurement lane.
 4. **The integration-target question is already answered.** vLLM 0.10.1 (the only image that computes on gfx90a) predates the `gemma4`/`qwen35` architectures entirely; the MI300 image hard-refuses gfx90a; and at matched fp16 the fork's HIP build is within ~10% of vLLM batch-1 (62.45 vs ~69 t/s, Qwen3-8B). The fork is the substrate. KTransformers/HybriMoE/Fiddler simulators (handoff §4) are dead weight for now — the one family-B case (architect) is testable with `-ot/-ncmoe` flags that already exist.
@@ -123,6 +123,7 @@ cancelling the benefit.
    "may introduce noticeable accuracy loss; use with care" and the CLI **defaults to 2**. It is a
    tunable quality/speed tradeoff, not a quality-neutral one. The suite scores (Table 2) are
    single-run without CIs or seeds on ≤200-problem benchmarks — observation-grade by our own grammar.
+   *Note 2026-09-26:* HumanEval in Table 2 is t=0.3 over 10 sampling runs; the other suites are greedy; no CIs anywhere (intake-1808, second-reader flag).
 2. **"Not AMX-dependent" is correct, and the reason is stronger than assumed.** Deferral is
    ISA-agnostic Python on a shared base class (`kt-kernel/python/experts_base.py`); all five CPU
    backends inherit it, including `LLAMAFILE` (AVX2) and an AMD BLIS/AOCL path. More to the point:
@@ -208,6 +209,7 @@ in ~26 GiB.
   (`gpu-acceleration-path.md:16` "~64 GB/s H2D" is the bidirectional aggregate misapplied to one
   direction, `:306` says "PCIe 5.0", `heterogeneous-slot-fabric-residency.md:72` says "~26 GB/s").
   Measured link state this session: `0000:43:00.0` `LnkCap`/`LnkSta` = **16 GT/s x16 (Gen4)**.
+  *Note 2026-09-26 (research intake):* the "no measured H2D/D2H" clause is stale — H2D 28.89 / D2H 28.20 GB/s were measured 2026-08-03 with rocm-bandwidth-test 2.6.0 (receipt epyc-inference-research/data/mi210-h2d-d2h/20260803T131500Z/, commit 2aa14264; gpu-acceleration-path.md:313-330), and the fabric's "~26 GB/s" (now heterogeneous-slot-fabric-residency.md:77) was replaced by that measurement on 2026-09-26. That receipt's smallest transfer is 1 MB, so the per-crossing small-message latency this falsifier names is not in it; F1's per-split timing (t_d2h + t_h2d) measures it in situ.
 - **F4.** Quality at a deferral count that actually buys speed (≥3–4). Must clear our own eval tower,
   not the paper's single-run suites.
 - **F5 (the one that should scare us).** An async CPU backend regressing ordinary CPU-only serving.
@@ -221,6 +223,7 @@ issue [#1612](https://github.com/kvcache-ai/ktransformers/issues/1612) ("AMX onl
 unanswered since 2025-11-15. The non-Intel/non-CUDA corner is the least-exercised one, and it is ours.
 ROCm support is labelled Beta, developed on gfx1100 and gfx936; **no evidence of anyone running it on
 gfx90a**, and `torch==2.9.1` is an exact pin.
+*Note 2026-09-26:* #1612 is open but was answered the same day by a repo COLLABORATOR (KMSorSMS, 2025-11-15: "Yes, we can try AMD's CPU with AVX512 support right now"), intake-1809. On ROCm: gfx90a appears in kt-kernel source only as an arch-family macro (kt-kernel/cpu_backend/vendors/hip.h:160) — still no evidence of gfx90a testing or use; the torch==2.9.1 exact pin holds on x86_64 (a PyPI CUDA build; the cu130 index applies to aarch64 only). intake-1809#03.
 
 ### R-A8. Recommendation
 
@@ -229,9 +232,57 @@ decides the entire question before anything is built. F3 is a ~30-line `hipcc` m
 (`rocm-bandwidth-test` is **not** installed; `hipcc` is) and closes the largest measurement vacuum in
 this whole area regardless of OD-A's outcome. Both are small, and both produce evidence that is
 useful even if deferral is declined.
+*Note 2026-09-26:* F3 is done (2026-08-03; rocm-bandwidth-test WAS used, v2.6.0) — the recommendation reduces to F1.
+*Note 2026-09-26 (Stage-2b, intake-1818):* "not recommended: adopting KTransformers as a runtime" is reinforced — upstream SGLang is not an escape hatch from the CUDA-pinned sglang-kt fork on gfx90a: its KT wrapper is API-broken against every kt-kernel ≥ v0.5.1 (intake-1818#2), its documented ROCm build refuses gfx90a (intake-1818#3), and no SGLang artifact packages KT (intake-1818#4). F1 remains the first step.
 
 Explicitly **not** recommended: adopting KTransformers as a runtime. That means a forked SGLang
 running parallel to v8, against this document's own sound "the fork is the substrate" finding.
+
+### R-A10. OD-A decision package — corrected premises (2026-09-26, research intake `intake/orch-prior-art-20260926`)
+
+Three facts the decision turns on (all dive-verified):
+1. **The CPU half is source-portable to Zen 5.** At kvcache-ai/ktransformers@c40722bf, kt-kernel's BF16/FP8/RAWINT4 native
+   backends and LLAMAFILE (GGUF) exist in source and compile for an AVX-512 host without AMX (floor AVX512F+BW; BF16 and VBMI
+   emulated if absent; umbrella enabled when CPUINFER_CPU_INSTRUCT is NATIVE/FANCY/AVX512). The EPYC 9655 exposes
+   avx512_bf16/vbmi/vnni and no AMX. Built/run here: untested (F6). `intake-1809#01`. This overturns intake-923's
+   "no AVX-512-native MoE operator family" (`intake-923#record`) — the kernels sit under operators/amx/ behind AMX-named classes.
+2. **The paper's CPU prefill gain is AMX-dependent; its decode is not.** Its own AVX-512 kernel is worse than baseline in prefill
+   (§6.4); decode is AVX-512-led. Expect a Zen 5 CPU half to help decode and capacity, not long prefill (`intake-1808#01`). Expert
+   Deferral is decode-only and batch-1 (`intake-1808#04`); its async vehicle is host-callback submit/sync inside one graph
+   (`intake-1808#03`) — the capability our CPU backend lacks (R-A5).
+3. **The GPU half is CUDA-packaged; ROCm is an untested option.** sglang-kt pins cuda-python and kt-kernel==0.7.0.post4; kt-kernel has
+   a ROCm build option and a HIP shim, the AMD test is a placeholder, no gfx90a testing evidence (`intake-1809#03`).
+   Upstream-SGLang route: **none for gfx90a** (intake-1818, dive-verified at sgl-project/sglang@c73f7077). Its KT wrapper is
+   API-broken against every kt-kernel ≥ v0.5.1 (required `gpu_experts_mask` never passed; fix PR #20516 open) (`intake-1818#2`);
+   its documented ROCm build exits for any arch but gfx942/gfx950/gfx1250 (`intake-1818#3`); no SGLang artifact packages or
+   tests KT (`intake-1818#4`). #11425's "closed completed" is an inactivity-bot close; the Oct–Nov 2025 merge is real, and
+   upstream carries only that feature subset (`intake-1818#0`, `intake-1818#6`). Revival needs #20516 merged AND gfx90a admitted
+   upstream; F1 still gates. Porting SGLang to gfx90a is declined: a second serving substrate beside the frozen fork.
+The only third-party KT-on-EPYC numbers (intake-1810, KT Q4_K_M = the LLAMAFILE/GGUF path, non-AMX EPYC 9355) are cross-precision
+and cross-length against 1810's FP8 engine — not a like-for-like verdict (`intake-1810#05`). Implementation pin moved:
+R-A2 read a8062bfa (v0.6.4); current HEAD c40722bf.
+
+| Option | What | Cost | Risk |
+|---|---|---|---|
+| A | Decline KT as a runtime now; keep Expert Deferral as a technique gated on F1 (R-A8 unchanged) | none | leaves the Zen-5 CPU-half kernels unexamined; the decline must cite the corrected reasons (CUDA-packaged GPU half, parallel SGLang runtime), not AMX |
+| B | F6 build-only check now (no inference), then decide runtime-vs-technique after F1 and P3-OD-A-ROCm | one isolated build, pinned torch env (several GB), build CPU time; nothing touches production | small; a build proves portability, not speed |
+| C | Evaluate the KT runtime end to end on gfx90a | high: a forked SGLang beside the v10 fork | **no route exists** (fact 3): the fork is CUDA-packaged, and upstream SGLang refuses gfx90a and is API-broken against current kt-kernel; contradicts "the fork is the substrate" (§1.4) |
+
+**Recommendation: A** (revised 2026-09-26 after Stage-2b intake-1818). With no gfx90a route for the GPU half, the runtime question is answered for this host; F6 would only prove that the CPU half builds, and no pending decision consumes that fact. Keep Expert Deferral as a technique behind F1 (R-A8). Option B stays valid if the operator wants the Zen-5 build fact on record.
+**The decision:** decline KTransformers as a runtime now and keep only the Expert Deferral technique path behind F1 (A), or also authorize the build-only kt-kernel check F6 as evidence (B)?
+
+**OPERATOR DECISION — 2026-09-26, at the Stage-3 plan approval of `intake/orch-prior-art-20260926` (master queue OP-61; this, not the recommendation above, is the ruling):**
+**KTransformers runtime DECLINED for now; MI210 port investigation OPEN.** In the operator's words: "If it works on nvidia
+hardware there must be an easy way to get it working on the mi210". What that means for this rider:
+- The runtime decline stands for now (option A's half). Expert Deferral stays a technique behind F1 (R-A8, unchanged).
+- The port question is NOT closed. Fact 3's "none for gfx90a" is about upstream SGLang only (intake-1818#record). The two routes
+  it does not settle — kt-kernel's own ROCm/HIP path and a hipify / ROCm 6.2 port of the sglang-kt fork's GPU half
+  (intake-1809#record) — are investigated by **F7** (R-A9): a bounded, SOURCE-ONLY feasibility read plus an effort estimate.
+- F6 is re-scoped: it is no longer "only if OD-A = B". It follows F7, runs only if F7 names a build as the next step, and runs
+  only in an isolated experimental checkout, never on a production tree (CLAUDE.md production-kernel freeze).
+- The second MI210 (~Oct 2026) is the natural test bed for anything beyond a build.
+- Option C stays prose until F7 shows a route, F6 passes, and F1 clears its pre-registered rule.
+- Sources discussed here: intake-1808#record, intake-1809#record, intake-1818#record.
 
 ### R-A9 — Tasks
 
@@ -241,12 +292,33 @@ running parallel to v8, against this document's own sound "the fork is the subst
       **This gates everything else in this rider.** Needs the GPU lane (region `q3` lock, P2-1b).
 - [ ] **F3 — measure H2D/D2H PCIe bandwidth** (`hipcc` microbenchmark; `rocm-bandwidth-test` absent).
       Independently valuable; corrects three contradictory KB figures.
+      *Stale 2026-09-26: done 2026-08-03 — see the R-A7 note; owner to flip.*
+- [ ] **F7 — MI210 port feasibility for KTransformers: SOURCE-ONLY read + effort estimate** (filed 2026-09-26 on the OD-A
+      decision, R-A10; the first step of the open port investigation). Read-only: no build, no install, no inference, and
+      nothing on the frozen trees. Bounded to one session. Answer three questions from source, each with file:line and a class
+      in {works-as-is, flag/config, hipify-mechanical, needs-port, blocked}:
+      (1) **kt-kernel's own ROCm path.** The `KTRANSFORMERS_USE_ROCM` CMake option (`CPUINFER_USE_ROCM=1` build env) and the
+      HIP shim `kt-kernel/cpu_backend/vendors/hip.h`. gfx90a appears there only as an arch-family macro (:160), with no
+      evidence of testing. What does a gfx90a / ROCm 6.2 build need?
+      (2) **The GPU half on the sglang-kt fork path.** What would a hipify / ROCm 6.2 port take? Cover the `is_cuda()`-only
+      `gptq_marlin_repack` import in the fork's INT4 GPU-expert preparation, the cuda-python and torch-cu130 pins, and any
+      CUDA-only kernels with no HIP equivalent. Contrast upstream's WNA16 Triton HIP route (intake-1809#03, intake-1818#5).
+      (3) **Does the kvcache-ai sglang-kt fork build for gfx90a at all?** Check its ROCm Dockerfiles' arch lists, sgl-kernel's
+      `USE_ROCM` paths, and any arch refusal like upstream's (intake-1818#3).
+      Pin kvcache-ai/ktransformers@c40722bf and record the sglang-kt commit read; the intake-1809 dive checkouts under
+      `/mnt/raid0/llm/tmp/dive-intake-1809/` are the starting point. Deliverable: a dated note under R-A10 with the per-question
+      verdict, the blocker list, an effort estimate per route (engineer-days, low / likely / high), and the recommended next step
+      (F6 build, a port branch in an isolated experimental checkout, or close the port question).
+- [ ] **F6 — kt-kernel build-only check on this host** (after F7, and only if F7 names a build as the next step; re-scoped
+      2026-09-26 by the OD-A decision, no longer "only if OD-A = B"): isolated venv under /mnt/raid0/llm/tmp, pinned c40722bf;
+      CPU-only arm (CPUINFER_CPU_INSTRUCT=NATIVE) and ROCm arm (CPUINFER_USE_ROCM=1, PYTORCH_ROCM_ARCH=gfx90a); record
+      __cpu_variant__ / __fp8_kernel__ / __rawint4_kernel__; no inference, no production tree. Experimental checkout only:
+      never `/mnt/raid0/llm/llama.cpp`, `kernels/`, the kernel store, or a system/orchestrator/research venv; never inside
+      a bench region claim or overlapping mi210-big-model-and-acceleration-roadmap.md PF1.
 - [ ] **M2 `-ncmoe` sweep** (§5 `:60`) — designed, still unrun; bounds the synchronous baseline.
-- [ ] **OPERATOR DECISION — ingest-or-reaffirm KTransformers** (`intake_index.yaml:45670`). It has
-      never been ingested. Per the never-dismiss-without-asking rule this is not a self-authorized
-      call, and no intake row was created by this rider.
-      *Note 2026-09-26:* the ingest half is now under way — intake entries 1808 and 1809 exist on the unmerged
-      lane `intake/orch-prior-art-20260926` (owning session applies after its Stage 2); box left for that session.
+      *Stale 2026-09-26: M2 EXECUTED 2026-08-13 (§5 :60) — owner to flip.*
+- [x] **OPERATOR DECISION — ingest-or-reaffirm KTransformers** — resolved as INGEST: the operator selected cluster 4 for the 2026-09-26 Stage-2 round; intake-1808 (SOSP'25 paper), intake-1809 (repo @ c40722bf) and intake-1810 (KT measured on non-AMX EPYC) are dive-verified. The earlier rotted anchors intake_index.yaml:45670 / :45706 (:96, :245) meant intake-923 — cite intake-923#record. ✅ 2026-09-26
+- [x] **OPERATOR DECISION — OD-A runtime question (R-A10)** — master queue OP-61. DECIDED by the operator 2026-09-26 at the Stage-3 plan approval: KTransformers runtime DECLINED for now; MI210 port investigation OPEN ("If it works on nvidia hardware there must be an easy way to get it working on the mi210"). Follow-on work: F7, then F6 (above). ✅ 2026-09-26
 - [ ] **OPERATOR DECISION — instrument-era / gate amendment.** If F1 justifies proceeding, `:26`
       ("static-at-load") and `mi210-big-model-and-acceleration-roadmap.md:254` (skew gate) need
       amending to record that the skew verdict tested caching, not overlap.
@@ -256,6 +328,7 @@ running parallel to v8, against this document's own sound "the fork is the subst
       (`expert_count = 512`); the 122B row records `size_gb: 69` against 72.88 GiB actually on disk.
 - [ ] `gpu-acceleration-path.md:306` states PCIe 5.0; the link is measured Gen4 x16. `:16`'s
       "~64 GB/s H2D" is the bidirectional aggregate applied to one direction.
+      *Stale 2026-09-26: fixed 2026-08-03 (gpu-acceleration-path.md:331; no "PCIe 5" and no one-direction 64 GB/s remain) — owner to flip.*
 
 ## Progress checklist
 

@@ -2943,8 +2943,12 @@ No run exists yet, so the write side is filed **before** the first run. The row 
 - **VB-AK-OEE:** activate when a live evolutionary campaign uses QD diversity or open-endedness diagnostics to make a decision. Then bind the immutable event log, task/config, criterion/metric/descriptor, controls, sampling budget, horizon, raw/corrected archives, and finite-horizon/no-promotion scope. Only post-hook producer records project.
 - **VB-AISCI-1:** activate when EPYC begins proposal-to-execution scientific experiments that consume RA-14/RC-13 artifacts. Then bind system/task/scaffold versions, independent-study cluster, denominator unit, interventions, budgets, artifact states, grader/rubric identities, and terminal decisions. Pre-hook studies and prose summaries emit zero tuples.
 - **VB-FORMAL-1:** activate before a formal artifact is used for an EPYC claim, evaluator, policy, or promotion decision. Bind repository commit, toolchain, dependency lock, command transcript, source/output digests, build result, axiom report, `native_decide` boundary, runner, and timestamp; project build and axiom findings separately.
+- **VB-SPILL-TTFT:** activate when the fabric's spillover partial-offload arm (heterogeneous-slot-fabric-residency.md, under the GPU-as-placement-target task) is scheduled. Bind r grid, load points, served artifacts and store digests, P-GPU-1 device-state capture, per-request TTFT/TPOT/outcome class and completed-requests/min; the Dynamo PR ratios are never projected.
+- **VB-KT-BUILD:** activate when F6 (the kt-kernel build check, fable5-window2-findings-02-heterogeneous-gpu.md R-A9) runs. Per the operator OD-A decision of 2026-09-26 ("KTransformers runtime DECLINED for now; MI210 port investigation OPEN"), F6 now runs only after F7's source-only feasibility read names a build as the next step, and any build runs only on an experimental tree or the second MI210, never on a frozen production tree. Bind kt commit, host cpuinfo flags, toolchain versions, env, build-log digests, per-arm attribute readout and failure class; project as a verified finding that updates intake-1809#01, never as a performance claim.
+- **VB-KT-PORT:** activate when F7 (the OD-A MI210 port feasibility read, same rider) starts. Bind the kvcache-ai/ktransformers and sglang-kt commits read, the per-question finding class with file:line (ROCm flag and HIP shim; hipify / ROCm 6.2 port of the GPU half; gfx90a build of the fork), and the effort estimate with its basis; project as a verified source-level finding updating intake-1809#03, never as a performance claim.
+- **VB-NPD-1:** activate when numa-prefill-decode-disaggregation.md's reopen trigger fires (PF1 finds L* ≤ 32K). Bind the served artifact and store digests, argv, the concurrent-prefill schedule, per-token decode TPOT with and without the concurrent prefill, and the manifest's predeclared inflation bound.
 
-## VB-ROUTE-LAT / VB-UFH12-RETR / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26)
+## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26)
 
 Filed at design time, before any producer exists, per the CLAUDE.md belief-kernel rule. Source-table rows in
 `scripts/vidya/adapters/README.md`.
@@ -2956,6 +2960,34 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
 - [ ] **VB-UFH12-RETR — wire the write side of the UFH-12 retrieval eval** (`repl-embedding-retrieval.md`
   REPL-EMB-2.1/2.2/2.3) before its first run: per-arm recall@k, CPU-s, latency, with the pre-registered rule,
   corpus digest and embedding-model identity; the online `spill_pointer_follows` shadow is a separate instrument.
+- [ ] **VB-UFH12-PLACEMENT — wire the write side of the embedder placement gate** (`repl-embedding-retrieval.md`
+  REPL-EMB-0.2 / 1.4; `epyc-orchestrator` `scripts/server/embedder_placement_gate.py`) before the REPL-EMB-1.4 G1
+  re-measure: per-run self-hashed rows with gate, port, metric and unit, raw samples, the A/A floor, the embedder
+  cpuset/placement digest, llama-server binary/store digest, load shape (in-flight count) and method (warm-up
+  discarded or not). The 2026-09-26 Phase-0 files are retrospective and not backfilled. Then author the read-side
+  adapter. Locator = run × gate × port.
 - [ ] **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
   arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
 
+
+## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake)
+
+Filed at design time, before any producer exists, per the CLAUDE.md belief-kernel rule. Source-table rows in
+`scripts/vidya/adapters/README.md`; the three trigger-gated sources from the same intake (VB-SPILL-TTFT, VB-KT-BUILD,
+VB-NPD-1) are activation records in the durable-triggers list above.
+
+- [ ] **VB-V1-BACKPRESSURE — wire the write side of `/v1` backpressure receipts** (`harness-selection-and-integration.md` HS-OD-9) before the first live bounce: one receipt per bounce with the dispatch-ledger snapshot, estimator version, `retry_after_ms`, `retry_after_basis`, next-attempt time and admission, and turn outcome. Locator = request; never graded above observation until a codified protocol exists. Distinct from SC19 (`ChatResponse.contention_gate`, `/chat` only).
+- [ ] **VB-SEL-LOADAB — wire the write side of the selection load-sweep A/B (decision-aware-routing.md DAR-LAT-3)
+  before its first block.**
+  - Per-request rows carry: arm, ρ, block, manifest/prior-table/episodic-snapshot digests, TTFT budget, outcome class,
+    selection receipt, final role, grader verdict, and `instrument_class=serving`.
+  - Locator = block (arm × ρ × window). Floor pairs are their own locators.
+  - Project; do not grade. The grade comes from the protocol id: P-SERVE-SEL-1 was ratified 2026-09-26 (operator,
+    orchestrator-design session); the annex lands when the operator runs the ratify script, and the A/B grade follows
+    that protocol once it is applied (observation before that).
+- [ ] **VB-SWAP-C — wire the write side of the launch-phase receipts (heterogeneous-slot-fabric-residency.md HSF-1).**
+  - One launch = one locator, with GGUF/binary digests, argv hash, page-cache fraction, phase timings and outcome class.
+  - Cold/partial-cache launches project with their label and never merge into hot C.
+- [ ] **VB-PREFILL-XOVER — wire PF1 on the WRITE side before its first cell runs.** Emit one self-hashed ClaimTuple-shaped record per cell (artifact + binary digests, build line, protocol id or observation, n, date, VRAM-during-run witness, failure reason when failed) into the PF1 run dir; no read-side reconstruction.
+- [ ] **VB-GAP-DIST — wire the write side of the session inter-call gap measurement** (`heterogeneous-slot-fabric-residency.md` HSF-3) before its first extraction: one row per gap (session hash, role, client class, t_done, t_next, gap_s, source), with the log-manifest digest, extractor revision and window. Locator = window × class; W1 and W2 never pool. Observation-grade.
+- [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.

@@ -1,0 +1,13 @@
+{
+  "schema": "epyc.stack_change_scratch.v1",
+  "taken_at": "2026-09-26T17:05:00Z",
+  "scratch": "lane worktrees (git) + /mnt/raid0/llm/tmp/stack-change-ufh12-phase0-20260926",
+  "orchestrator_base": "228e0a2c (origin/main)",
+  "orchestrator_lane_head": "05048a66",
+  "research_base": "2a060a41 (origin/main)",
+  "research_lane_head": "7640269b",
+  "root_base": "5302d271 (origin/main)",
+  "live_reads_only": true,
+  "processes_signalled": 0,
+  "inference_requests_sent": 0
+}

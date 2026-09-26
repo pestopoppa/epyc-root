@@ -1,0 +1,40 @@
+{
+  "arm_role": "BASELINE",
+  "config_sha256": "e180a37d602f82b6f42e7d1a0f796c904075b9c532b1387657aebc80a17de4bf",
+  "counts": {
+    "attempts": 1,
+    "cached_prompt_tokens": 26366,
+    "input_tokens": 28819,
+    "passed_attempts": 1,
+    "tasks": 1,
+    "trials_per_task": 1
+  },
+  "finished_at": "2026-09-26T19:02:37Z",
+  "harness": {
+    "name": "opencode",
+    "pin": "350c726aa8b6b11eb9242040bc5eb7ae837fbf8a"
+  },
+  "harness_card_version": "HS-6@2026-07-29",
+  "plugin": {
+    "name": "@epyc/opencode-plugin",
+    "sha256": "d49194fcc50d66ff47afdc2aa12490b44579d25b316261843b949cb57edecfb1"
+  },
+  "records_file": "attempts.jsonl",
+  "request_keys": {
+    "x_memory": "off",
+    "x_tool_mode": "client"
+  },
+  "run_id": "hs4-p04-ses_f20e743b0ffee7s2prOKuL9Gp3",
+  "schema": "epyc.hs4.opencode_shell_run.v1",
+  "serving": {
+    "build_info": "b10303-ffc1bac82",
+    "enable_thinking": false,
+    "endpoint": "http://127.0.0.1:8000/v1",
+    "model_role": "frontdoor"
+  },
+  "started_at": "2026-09-26T19:02:14Z",
+  "task_suite": {
+    "fingerprint": "00bf12dee6889d988a292f0898d70f13530197bf22d65e35d73b3de56f3e159b",
+    "name": "hs4-p04-calc-fixture"
+  }
+}

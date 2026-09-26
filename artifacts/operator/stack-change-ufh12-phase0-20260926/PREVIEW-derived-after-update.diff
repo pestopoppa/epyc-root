@@ -1,0 +1,170 @@
+diff --git a/docs/generated/current_stack_summary.md b/docs/generated/current_stack_summary.md
+index 23e661de..4d643e52 100644
+--- a/docs/generated/current_stack_summary.md
++++ b/docs/generated/current_stack_summary.md
+@@ -9,9 +9,9 @@ uv run python scripts/registry/stack_change_pipeline.py update
+ Source: `orchestration/derived/stack_priors.yaml`
+ 
+ Source fingerprints:
+-- orchestration/derived/stack_priors.yaml: `173ff327fb992de22f1e49a2a3d90fc153a3001ca4c077e9c88dd4786f8de4c0`
+-- orchestration/model_registry.yaml: `13723bbfd4ce91d623d6d66cd474b7b678b066e330c15a17258cbf7bebc1b369`
+-- orchestration/model_descriptors.yaml: `d081eb41c63b46ab936fdc6ad70bd3a90e76065a0440d7ab6a946f43de961881`
++- orchestration/derived/stack_priors.yaml: `6d8576e0cebac6680dfd620e886ef87145505cc7b0f31daf8835be061ea69135`
++- orchestration/model_registry.yaml: `5daaef68edadaa7284024c8905dd02ced9f78ff39b9f68b158f4ba19e9fee4b5`
++- orchestration/model_descriptors.yaml: `43feb6f6a5eb9185d0fd89ceb3ab668d332fb7ebbd65f0fc9e9a591a3d2e84b9`
+ 
+ | Role | Port | Model | Tier | Acceleration | Requirements | Throughput | Description |
+ |---|---:|---|---|---|---|---:|---|
+diff --git a/orchestration/derived/stack_priors.yaml b/orchestration/derived/stack_priors.yaml
+index afc98810..d974796d 100644
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,47 +48,47 @@ contract:
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+-compiled_at: '2026-09-24T18:43:05Z'
++compiled_at: '2026-09-26T17:07:31Z'
+ status: compiled
+ coverage_scope: descriptor_role_bindings
+ precedence_spec: docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+     path: orchestration/model_registry.yaml
+-    sha256: 13723bbfd4ce91d623d6d66cd474b7b678b066e330c15a17258cbf7bebc1b369
+-    repo_commit: 8a0c0944
++    sha256: 5daaef68edadaa7284024c8905dd02ced9f78ff39b9f68b158f4ba19e9fee4b5
++    repo_commit: 228e0a2c
+   descriptors:
+     path: orchestration/model_descriptors.yaml
+-    sha256: d081eb41c63b46ab936fdc6ad70bd3a90e76065a0440d7ab6a946f43de961881
+-    repo_commit: 8a0c0944
++    sha256: 43feb6f6a5eb9185d0fd89ceb3ab668d332fb7ebbd65f0fc9e9a591a3d2e84b9
++    repo_commit: 228e0a2c
+   stack_manifest:
+     path: scripts/server/stack_manifest.py
+-    sha256: efa61d09c5d2fa3daa33ae78447a001fff47f193e41672fed65a1ad0050a6c30
+-    repo_commit: 8a0c0944
++    sha256: f57ab87bc91f1a21826d03109349f49b0c70ed1dd3b052c4597d5e893c94aef7
++    repo_commit: 228e0a2c
+   stack_numa:
+     path: scripts/server/stack_numa.py
+     sha256: 8a9e4eade957c71b9694160668f982deff31960d3ec5ad0f2d8fc50369b3c703
+-    repo_commit: 8a0c0944
++    repo_commit: 228e0a2c
+   launch_manifest:
+     path: orchestration/launch_manifest.yaml
+-    sha256: 84b83ff9872519ddf10d34470840678c2f14ba9b36332c1b3ef318a71f3e3f91
+-    repo_commit: 8a0c0944
++    sha256: 0d859839ffa6d165a3d4669ee3af78c28712f473ba701083fd41e59752f083cd
++    repo_commit: 228e0a2c
+   stack_topology:
+     path: orchestration/stack_topology.yaml
+-    sha256: f802ef5b1636bec903344f800ce6ecbb7e97af20018dec678080b3af538dfbea
+-    repo_commit: 8a0c0944
++    sha256: 73a9fa42fa2977ecead1a2e7edaf1d956be722ac0a3cae6a4d1b6643295b27c6
++    repo_commit: 228e0a2c
+   orchestrator_stack:
+     path: scripts/server/orchestrator_stack.py
+-    sha256: 439ae4dc1636bdbc3f872c0b658d07d36d3403c3b3df7fac45af8bfb94d83b47
+-    repo_commit: 8a0c0944
++    sha256: 3077f9d977bd20ba9f5868fd56ec7a32303bf7ecb1bd69102ea1bcf04f2d2e81
++    repo_commit: 228e0a2c
+   stack_paths:
+     path: scripts/server/stack_paths.py
+     sha256: 4a7ca842a87b6ffec022f4f6433d755751cac32b9102747d88f3f4f2e4cb24de
+-    repo_commit: 8a0c0944
++    repo_commit: 228e0a2c
+   stack_runtime:
+     path: scripts/server/stack_runtime.py
+     sha256: 984d27262e1f1d5a5332d0b4a3e6fb96fb8095fc890ddaa93da07bff52eb1c99
+-    repo_commit: 8a0c0944
++    repo_commit: 228e0a2c
+ roles:
+   architect_critic:
+     role: architect_critic
+diff --git a/orchestration/model_descriptors.yaml b/orchestration/model_descriptors.yaml
+index 9cebc37e..4a6a28c9 100644
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+-compiled_at: '2026-09-24T18:43:04Z'
++compiled_at: '2026-09-26T17:07:30Z'
+ status: compiled
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+     path: orchestration/model_registry.yaml
+-    repo_commit: 8a0c0944
+-    sha256: 13723bbfd4ce91d623d6d66cd474b7b678b066e330c15a17258cbf7bebc1b369
++    repo_commit: 228e0a2c
++    sha256: 5daaef68edadaa7284024c8905dd02ced9f78ff39b9f68b158f4ba19e9fee4b5
+   research:
+-    path: /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
+-    repo_commit: 21cf444c
+-    sha256: 42e2475249f642217fd673538623cac31b8a3f60f358918813204ef5bf4ae47c
++    path: /mnt/raid0/llm/worktrees/ufh11-phase0-research-20260926/orchestration/model_registry.yaml
++    repo_commit: 2a060a41
++    sha256: 1f68de64b594eb9bb7b1601b193f6ee3e65efa7cbf22e6a3c86c25cb8eff3989
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index ccfdecc4..dc996801 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -2,7 +2,7 @@
+ # AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW.
+ #
+ # This file is compiled at every `orchestrator_stack.py start` from the master
+-# registry at /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
++# registry at /mnt/raid0/llm/worktrees/ufh11-phase0-research-20260926/orchestration/model_registry.yaml
+ # by src/registry/registry_compiler.py.
+ #
+ # Runtime stack truth lives in the MASTER registry. The next start detects master
+@@ -10,8 +10,8 @@
+ # temporarily skip the compile (e.g. during a master schema change), set
+ # ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+ #
+-# Compiled at: 2026-09-24T18:43:04+00:00
+-# Cache key:   b37a1edc1112480c...
++# Compiled at: 2026-09-26T17:07:30+00:00
++# Cache key:   a29cd4186cd7e278...
+ # Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+ # =============================================================================
+ 
+@@ -2141,7 +2141,8 @@ roles:
+   architect_general:
+     tier: A
+     description: 'System architecture, invariants, acceptance tests - emits IR only. 2026-08-22: E-7 stamps at terse template 1443ea9ab4bb — math 85.0%, mmlu_pro 27.5%, gpqa_diamond 47.5%, cruxeval 22.5%,
+-      gpqa_diamond_cot 75.0% (45/60 @4096). 2026-07-31: Qwen3.6-27B dense Q8 MTP on MI210 (ROCm0); PRIMARY for the :8083 process, with coder_escalation aliased onto it.'
++      gpqa_diamond_cot 75.0% (45/60 @4096). 2026-07-31: dense 27B Q8 MTP on MI210 (ROCm0) — Qwen3.6-27B from 2026-07-31, Qwen3.8-27B-Q8_0 since 2026-08-20; PRIMARY for the :8083 process, with coder_escalation
++      and (since 2026-09-22) ingest_long_context aliased onto it.'
+     agent_file_compression_operating_point: none
+     model:
+       name: Qwen3.8-27B-Q8_0
+@@ -2326,7 +2327,8 @@ roles:
+       '
+   worker_general:
+     tier: C
+-    description: General worker — gemma4-26B-A4B Q4_K_M (MTP) — swapped 2026-05-08 from Meta-Llama-3-8B / Qwen3-Coder-30B-A3B lineage. Mirrors the live orchestrator worker_general target for benchmark correctness.
++    description: 'General worker — since the 2026-09-22 lineup change an ALIAS on frontdoor''s :8070 process (Qwen3.6-35B-A3B-MTP-Q8_0, halves :8080/:8180; binding server_mode.frontdoor.shared_with). gemma4-26B-A4B
++      Q4_K_M (MTP, 2026-05-08 .. 2026-09-22) is RETIRED; lineage before it: Meta-Llama-3-8B / Qwen3-Coder-30B-A3B. Mirrors the live orchestrator worker_general target for benchmark correctness.'
+     model:
+       name: Qwen3.6-35B-A3B-MTP-Q8_0
+       path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+@@ -2740,9 +2742,10 @@ roles:
+       '
+   qwen38_flash_next_ud_iq4xs_local:
+     tier: A
+-    description: 'Qwen3.8-Flash-Next UD-IQ4_XS exact local artifact (3 shards). 2026-09-22: PROMOTED from research-campaign artifact to the PRODUCTION model backing architect_critic (:8074, CPU) and its
+-      ingest_long_context alias. ⚠ THIS IS NOT THE ARTIFACT THE CAMPAIGN MEASURED — the codified recipe''s TRUNK_GGUF is the IQ4_XS-uniform SINGLE FILE (98,392,912,256 B, sha256 4bfb9849...f8957). Reconciling
+-      served-vs-anchor is PROD-3''s open job and the recipe module says so itself. Every performance figure attached to this model was taken on the uniform file.'
++    description: 'Qwen3.8-Flash-Next UD-IQ4_XS exact local artifact (3 shards). 2026-09-22: PROMOTED from research-campaign artifact to the PRODUCTION model backing architect_critic (:8074, CPU), single-role:
++      ingest_long_context is NOT aliased here — operator ruling C2 sent it to architect_general''s :8083 GPU Qwen3.8-27B (server_mode.ingest_long_context.alias_of, server_mode.architect_general.shared_with).
++      ⚠ THIS IS NOT THE ARTIFACT THE CAMPAIGN MEASURED — the codified recipe''s TRUNK_GGUF is the IQ4_XS-uniform SINGLE FILE (98,392,912,256 B, sha256 4bfb9849...f8957). Reconciling served-vs-anchor is
++      PROD-3''s open job and the recipe module says so itself. Every performance figure attached to this model was taken on the uniform file.'
+     model:
+       name: Qwen3.8-Flash-Next-UD-IQ4_XS
+       path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf

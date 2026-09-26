@@ -1,0 +1,11 @@
+{
+  "prepared_at": 1790449326.6725397,
+  "pinned_opencode": "1.18.31",
+  "mcp_enabled": false,
+  "orchestrator_commits": {
+    "P0.1/P0.2 client tool mode + typed keys": "ed554da2",
+    "P0.1/P0.2 review fixes": "b44ab3a8",
+    "P0-MCP session_id on MCP tools": "54b6439d"
+  },
+  "prompt": "Read calc.py. The add function is wrong: fix it with a minimal edit. Then run `bash test_calc.sh` and report its output."
+}

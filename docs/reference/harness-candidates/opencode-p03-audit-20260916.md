@@ -17,6 +17,8 @@
 | Clone | `/mnt/raid0/llm/harness/opencode` (blobless clone, not vendored into any repo) |
 | SDK local patch | `patches/@ai-sdk%2Fopenai-compatible@2.0.41.patch` changes only stream error propagation (`error.message` → `error`). It does not touch body construction. |
 
+*Correction 2026-09-26 (research intake): `350c726aa8b6` is a dev-branch commit whose packages report 1.18.31, not the release. Tag `v1.18.31` (what `npm install opencode-ai@1.18.31` installs) is `014614d35b39`. Both descend from `a97622c8` (pin +8 commits, tag +1 release commit); `git diff v1.18.31 350c726a` touches only `packages/console`, `packages/web` and `.github`, so `packages/{opencode,core,llm,server,plugin,tui}` and `bun.lock` are byte-identical and every anchor below holds at the released tag. The P0.4 pin freeze records `014614d3` as the served identity and `350c726a` as the audit anchor.*
+
 All `path:line` below are relative to `packages/opencode/src/` at `350c726aa` unless another package is named.
 
 ## 2. Lever and wire shape (why the plugin works)
@@ -230,3 +232,9 @@ The commands live at `cli/cmd/debug/config.ts`, `cli/cmd/debug/agent.ts` and `cl
 
 **Where these came from:** `handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C20 (and its C20c A/B), and
 HS-4 P7 in `handoffs/active/harness-selection-and-integration.md`, which carries the repo-wide stdin audit.
+
+## Addendum 2026-09-26: backpressure delivery and session headers (research intake)
+
+- **E2 correction.** The E2 cell's "503 from admission control … honours `retry-after`" holds only for a pre-stream HTTP 503. At orch `fb7871ea` a full admission queue answers 502 with no header (`inference.py:958-972` → `openai_compat.py:1427-1433`), and on `stream:true` every denial is an SSE event after a 200, whose text matches none of `retry.ts:33-41`. OpenCode reads `retry-after-ms` before `retry-after` (`retry.ts:51-56`). Fix: HS-OD-8/HS-OD-9.
+- **E7/E12 and session headers.** The `X-Session-Id`, `x-session-affinity` and `x-parent-session-id` headers (`session/llm/request.ts:187-201`, identical at tag and pin) become an identity fallback under HS-16. E12's v2 runner would then be keyed by identity, but still carries no `x_*` keys.
+- **MCP timeout.** Tool calls use the SDK's 60 s default, reset only by progress notifications (`mcp/catalog.ts:54-66`). The template sets no `mcp.orchestrator.timeout` — HS-17.

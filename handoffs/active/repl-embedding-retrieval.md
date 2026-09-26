@@ -1,6 +1,6 @@
 # REPL Embedding Retrieval — hybrid search that returns pointers
 
-**Status:** active — plan agreed with the operator 2026-09-26; Phase 0 package not yet prepared.
+**Status:** active — Phase 0 signed, applied and proven 2026-09-26 (embedder pool 0.95× → 4.96×); operator kept it with a G1 shortfall on `:8180` and asked for a Phase-1 in-flight cap (REPL-EMB-1.4).
 **Created:** 2026-09-26
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-12).
 **Depends on:** UFH-07 (tool-output-compression, TOC-SP-3 + trajectory artifact), INF-78 (OAB-8 scouts),
@@ -21,7 +21,8 @@ every phase:
 4. **An index belongs to ONE embedding model.** The scheduler chooses among *instances* of that model,
    never across models.
 
-The first dispatchable task is **REPL-EMB-0.1** (prepare the Phase-0 stack-change package).
+Phase 0 is done (below). The next dispatchable work is **REPL-EMB-1.1 + REPL-EMB-1.4**: the pooled client
+with the operator-requested in-flight cap, then the G1 re-measure (target ≥ 0.95).
 
 ## Operator decisions (2026-09-26)
 
@@ -33,6 +34,9 @@ The first dispatchable task is **REPL-EMB-0.1** (prepare the Phase-0 stack-chang
 - **D2 — REPL tool gate: WAIVED for retrieval, conditionally.** `repl-turn-efficiency.md:14` ("Do not add
   new REPL tools before S4") does not block this handoff, **provided Phase 2 passes its pre-registered
   kill criterion**. If Phase 2 fails the criterion, the waiver lapses and Phases 3-5 stop.
+- **D3 — Phase-0 G1 shortfall: KEEP + cap.** The applied placement is kept although `:8180` landed in the
+  pre-registered rollback band (0.86 < 0.90; rollback would restore 0.53). Phase 1 adds the in-flight cap
+  (REPL-EMB-1.4) and re-measures G1 against ≥ 0.95.
 
 ## Scheduling and ownership
 
@@ -49,11 +53,38 @@ Verified 2026-09-26 in `/proc`: all six BGE embedders `:8090`-`:8095` pin their 
 the **same** cores 0/96, 32/128, 48/144, 88/184 — inside frontdoor's 0-95 — so the pool delivers one
 server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defect (`wiki/kv-cache.md:93`).
 
-- [ ] **REPL-EMB-0.1 — prepare the placement package via the `stack-change` skill**: disjoint cores per
+- [x] **REPL-EMB-0.1 — prepare the placement package via the `stack-change` skill**: disjoint cores per
   embedder instance (off frontdoor's 0-95), per-slot ctx ≥ the chunk size, and the Granite-97M-R2
   instance plan from D1. Output one package for the operator's signature; do not apply it unsigned.
-- [ ] **REPL-EMB-0.2 — after signature: apply, bring up, and prove** distinct affinity per instance from
+  ✅ 2026-09-26 — package [`artifacts/operator/stack-change-ufh12-phase0-20260926/PACKAGE.md`](../../artifacts/operator/stack-change-ufh12-phase0-20260926/PACKAGE.md)
+  (root `b9c6ce5a`); signed 2026-09-26T17:46Z, receipt
+  `artifacts/operator/receipts/RATIFY-UFH12-PHASE0-EMBEDDER-PLACEMENT-20260926.json` (pins match the landed files).
+- [x] **REPL-EMB-0.2 — after signature: apply, bring up, and prove** distinct affinity per instance from
   `/proc/<pid>/task/*/status` and a parallel-throughput probe showing the pool scales past one server.
+  ✅ 2026-09-26 — applied ~18:11-18:35Z: orchestrator `5af57377` (merge) + `a439070e` (derived regen),
+  research `7640269b`. Evidence: `epyc-orchestrator/data/embedder_placement/{pre,post,g3-post,g3b-post}-20260926.json`.
+
+  | Gate (PACKAGE §4) | pre → post | Signed band | Result |
+  |---|---|---|---|
+  | G2 pool scaling (whole pool ÷ one port, texts/s) | 0.95× → **4.96×** (45.6 texts/s) | PASS ≥ 4.0 | PASS |
+  | G0 idle frontdoor decode (`:8070` Q median, tok/s) | 52.6 → 53.1 | within A/A floor | PASS |
+  | G1 saturated ÷ idle decode `:8070` | 0.34 → 0.91 (17.6 → 48.4 tok/s) | PASS ≥ 0.95; 0.90-0.95 needs-operator | needs-operator |
+  | G1 `:8080` | 0.50 → 0.91 | same | needs-operator |
+  | G1 `:8180` | 0.53 → 0.86 | < 0.90 = ROLLBACK | **rollback band — overridden by the operator** |
+  | G3 CPU speech, pool saturated | STT RTF ≤ 0.24, TTS first packet ≤ 0.12 s | RTF ≤ 0.40, ≤ 500 ms | PASS (re-run) |
+
+  G3's first run (`g3-post-20260926.json`) recorded verdict ROLLBACK from one cold first request (saturated
+  STT RTF 0.956; quiet TTS first packet 6.1 s); the re-run `g3b-post-20260926.json` discards a warm-up
+  request and passes on 5/5. The warm-up discard was not in the pre-registered method — treat G3 as a pass
+  under a post-hoc amendment, and pre-register the warm-up for every later G3 run.
+  Serving proofs P1-P8 (PACKAGE §10) pass: affinity tool rc=0, node-local memory 97.8-98.9%, P6 cosine 1.0,
+  P7 402-token input accepted (above the old 256-token per-slot context), 6/6 embedders
+  healthy, episodic index 0 stale.
+
+  **Operator decision on G1 (2026-09-26): KEEP**, overriding the pre-registered rollback band for `:8180`
+  (rolling back restores 0.53, which is worse than the 0.86 kept), and add the Phase-1 scheduler cap
+  (REPL-EMB-1.4). This is one of the three needs-operator options the package pre-registered
+  (keep / 4-instance pool / Phase-1 scheduler cap), taken as keep + cap.
 
 ### Phase 1 — pooled async client, chunker, per-request index (no inference needed for tests)
 
@@ -61,6 +92,15 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
   instances of ONE model, list-batched `/embedding`, ≤ 4 in flight per port, timeouts, LRU cache keyed by
   chunk sha256. Existing client for reference: `orchestration/repl_memory/parallel_embedder.py`
   (its Python-3.11 `asyncio.coroutine` bug is being fixed separately, 2026-09-26).
+- [ ] **REPL-EMB-1.4 — cap in-flight embeddings next to a busy frontdoor half, then re-measure G1**
+  (operator decision 2026-09-26, from the Phase-0 G1 result). In the REPL-EMB-1.1 scheduler, cap in-flight
+  embedding requests on instances whose NUMA node is shared with a frontdoor half that is currently decoding,
+  applying the agreed D1 rule: *idle instance anywhere → else the requesting model's own hardware → else
+  lexical now, index later.* The node fact comes from `stack_manifest.EMBEDDING_PLACEMENT[port].numa_node`
+  (landed in Phase 0). Re-run `scripts/server/embedder_placement_gate.py` G1 with the cap on
+  (`--label post-cap`); target S/Q ≥ 0.95 on `:8070`, `:8080` and `:8180`, and report G2 again so the cap's
+  throughput cost is visible. Pre-register the G3 warm-up discard if G3 is re-run. Before this run, wire the
+  gate driver's write side for the belief kernel (VB-UFH12-PLACEMENT in `vidya-belief-substrate-program.md`).
 - [ ] **REPL-EMB-1.2 — line-aware chunker** that preserves source line ranges for every chunk.
 - [ ] **REPL-EMB-1.3 — per-request flat numpy index** (cosine, top-k) plus lexical scorer and
   `rrf_fuse` hybrid; lexical-only path labelled. Tests use a fake embedder.

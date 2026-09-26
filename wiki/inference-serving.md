@@ -2407,3 +2407,16 @@ focused capability ladder, and a final `GO` / `WAIT` / `KILL` plus disk-retentio
 - [`progress/2026-08/2026-08-26.md`](../progress/2026-08/2026-08-26.md) — download completion, exact payload, integrity verification, and DeepSeek retirement record
 - [`progress/2026-08/2026-08-27-codex-root.md`](../progress/2026-08/2026-08-27-codex-root.md) — session closeout and durable next action
 - [`deepseek-v4-flash-0731-dspark.md`](../handoffs/completed/deepseek-v4-flash-0731-dspark.md) — historical retirement banner and deleted-artifact record
+
+## Compiled Update — 2026-09-26 (research-intake orch-prior-art): the NUMA disaggregation stub is re-scoped
+
+numa-prefill-decode-disaggregation.md was re-scoped 2026-09-26 to GPU-prefill / CPU-decode (intake-1810#02); its Phase 0 is the CPU-vs-MI210 prefill crossover (PF1).
+
+This supersedes the example above that keeps the stub "active only for the Phase 0 xGMI KV-transfer falsification gate": the host is single-socket NPS4 and has no xGMI link, so that gate cannot run.
+
+### Source References
+
+- [NUMA prefill/decode disaggregation](../handoffs/active/numa-prefill-decode-disaggregation.md) — correction note, re-scoped Phase 0, NPD-1 reopen trigger.
+- [MI210 big-model and acceleration roadmap](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — PF1, the 2026-09-26 research-intake section.
+
+**Confidence:** verified (documentation state of the owning handoffs).

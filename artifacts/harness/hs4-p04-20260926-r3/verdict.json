@@ -1,0 +1,81 @@
+{
+  "schema": "hs4-p04-acceptance/v1",
+  "pass": true,
+  "session_id": "ses_f20e743b0ffee7s2prOKuL9Gp3",
+  "window": [
+    1790449334.6069686,
+    1790449357.1511614
+  ],
+  "tap_events": "/mnt/raid0/llm/tmp/inference_tap_events.jsonl",
+  "checks": [
+    {
+      "check": "A1-read-edit-bash-loop",
+      "ok": true,
+      "detail": "completed tool order: ['read', 'edit', 'bash']"
+    },
+    {
+      "check": "A3-no-compaction-or-subtask",
+      "ok": true,
+      "detail": "compaction/subtask parts: none; task calls: 0"
+    },
+    {
+      "check": "A1-fixture-test-passes",
+      "ok": true,
+      "detail": "PASS"
+    },
+    {
+      "check": "A2-keys-at-top-level",
+      "ok": true,
+      "detail": "4 tap call(s) keyed to ses_f20e743b0ffee7s2prOKuL9Gp3; 0 with a wrong x_user_id or x_tool_mode"
+    },
+    {
+      "check": "A4-no-unkeyed-side-calls",
+      "ok": true,
+      "detail": "in window: 0 call(s) without request_keys (not attributable), 0 keyed to another session; unkeyed calls are advisory without --strict-window"
+    },
+    {
+      "check": "A5-session-tokens-match-tap",
+      "ok": true,
+      "detail": "session prompt/completion 28819/247 over 4 step(s); tap server_terminal 28819/247 over 4 call(s), 0 without a server prompt count"
+    },
+    {
+      "check": "run-no-error-events",
+      "ok": true,
+      "detail": "0 error event(s)"
+    },
+    {
+      "check": "run-exit-zero",
+      "ok": true,
+      "detail": "opencode run exited 0"
+    },
+    {
+      "check": "opencode-version-pinned",
+      "ok": true,
+      "detail": "1.18.31"
+    },
+    {
+      "check": "sc86-belief-capture",
+      "ok": true,
+      "detail": "written: /mnt/raid0/llm/tmp/hs4-p04-20260926-r3/evidence/opencode_shell_run.beliefs.jsonl"
+    }
+  ],
+  "token_counts": {
+    "session_prompt_tokens": 28819,
+    "session_completion_tokens": 247,
+    "cached_prompt_tokens": 26366,
+    "cached_prompt_tokens_source": "opencode_session",
+    "tap": {
+      "calls": 4,
+      "measured_calls": 4,
+      "prompt_tokens": 28819,
+      "completion_tokens": 247
+    },
+    "input_tokens": 28819,
+    "input_tokens_source": "tap_server_terminal"
+  },
+  "belief_capture": {
+    "status": "written",
+    "path": "/mnt/raid0/llm/tmp/hs4-p04-20260926-r3/evidence/opencode_shell_run.beliefs.jsonl"
+  },
+  "note": "The pass/fail verdict is an acceptance check. The SC86 belief rows are Judged/Located observations until SC86b codifies a shell-run protocol."
+}

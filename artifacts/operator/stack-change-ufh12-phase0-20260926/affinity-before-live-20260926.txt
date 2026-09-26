@@ -1,0 +1,37 @@
+:8090  136-139   node1 FAIL   pid=2022735 omp=['0,96', '32,128', '48,144', '88,184'] local=0.2881
+    - argv -c 512 != recipe 2048
+    - recipe asks for --no-mmap; argv lacks it
+    - 198 task(s) allowed outside 136-139, e.g. [0, 96]
+    - only 28.8% of resident pages on node 1 (want >= 95%)
+:8091  140-143   node1 FAIL   pid=2022949 omp=['0,96', '32,128', '48,144', '88,184'] local=0.2891
+    - argv -c 512 != recipe 2048
+    - recipe asks for --no-mmap; argv lacks it
+    - 198 task(s) allowed outside 140-143, e.g. [0, 96]
+    - 192 cpu(s) also allowed to :8090's tasks, e.g. [0, 1, 2, 3, 4, 5, 6, 7]
+    - only 28.9% of resident pages on node 1 (want >= 95%)
+:8092  144-147   node2 FAIL   pid=2023219 omp=['0,96', '32,128', '48,144', '88,184'] local=0.3078
+    - argv -c 512 != recipe 2048
+    - recipe asks for --no-mmap; argv lacks it
+    - 198 task(s) allowed outside 144-147, e.g. [0, 96]
+    - 192 cpu(s) also allowed to :8090's tasks, e.g. [0, 1, 2, 3, 4, 5, 6, 7]
+    - only 30.8% of resident pages on node 2 (want >= 95%)
+:8093  148-151   node2 FAIL   pid=2023456 omp=['0,96', '32,128', '48,144', '88,184'] local=0.3029
+    - argv -c 512 != recipe 2048
+    - recipe asks for --no-mmap; argv lacks it
+    - 198 task(s) allowed outside 148-151, e.g. [0, 96]
+    - 192 cpu(s) also allowed to :8090's tasks, e.g. [0, 1, 2, 3, 4, 5, 6, 7]
+    - only 30.3% of resident pages on node 2 (want >= 95%)
+:8094  176-179   node3 FAIL   pid=2023679 omp=['0,96', '32,128', '48,144', '88,184'] local=0.06
+    - argv -c 512 != recipe 2048
+    - recipe asks for --no-mmap; argv lacks it
+    - 198 task(s) allowed outside 176-179, e.g. [0, 96]
+    - 192 cpu(s) also allowed to :8090's tasks, e.g. [0, 1, 2, 3, 4, 5, 6, 7]
+    - only 6.0% of resident pages on node 3 (want >= 95%)
+:8095  180-183   node3 FAIL   pid=2023882 omp=['0,96', '32,128', '48,144', '88,184'] local=0.055
+    - argv -c 512 != recipe 2048
+    - recipe asks for --no-mmap; argv lacks it
+    - 198 task(s) allowed outside 180-183, e.g. [0, 96]
+    - 192 cpu(s) also allowed to :8090's tasks, e.g. [0, 1, 2, 3, 4, 5, 6, 7]
+    - only 5.5% of resident pages on node 3 (want >= 95%)
+:8096  152-167   node2 absent pid=- omp=- local=-
+rc=1
