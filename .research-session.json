@@ -1,9 +1,9 @@
 {
   "session_id": "intake-hipkittens-gemm-ladder-20260926",
   "started_at": "2026-09-26T18:05:00Z",
-  "last_checkpoint": "2026-09-26T23:59:00Z",
+  "last_checkpoint": "2026-09-27T00:10:00Z",
   "phase": 5,
-  "stage": "stage4-applied-pending-push",
+  "stage": "stage4-complete",
   "session_kind": "research-intake Stage 1 (single operator-submitted blog + 2 expansion entries), run by a subagent of the DS41/AutoKernel main session",
   "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-hipkittens-gemm-20260926, branch intake/hipkittens-gemm-20260926, rebuilt on origin/main 7e931704 after intake/orch-prior-art-20260926 landed with intake-1783..1821. This session's entries renumbered 1783/1784/1785 -> 1822/1823/1824 (pre-renumber commit 7e337804 kept as branch backup/intake-hipkittens-gemm-pre-renumber, delete at close-out).",
   "previous_session": "intake-orch-prior-art-20260926 (stage4-complete; preserved at /mnt/raid0/llm/tmp/dive-hipkittens-gemm/previous-research-session-orch-prior-art-stage4.json). Earlier: intake-exl3-sglang-throughput-20260925 (/mnt/raid0/llm/tmp/dive-hipkittens-gemm/previous-research-session-exl3-stage4.json)",
@@ -385,6 +385,18 @@
     "new_open_tasks": 13,
     "pre_ticked": 2,
     "validate_intake": "exit 0",
-    "index_state_check": "exit 0"
+    "index_state_check": "exit 0",
+    "promotion": {
+      "lane_pushed": "origin/intake/hipkittens-gemm-20260926",
+      "main_fast_forward": "c7d8d676..e43a7589",
+      "locks": "wrapup + push held as ak-ds41-main, released",
+      "git_cherry_origin_main": "empty"
+    },
+    "close_out": {
+      "lane_worktree": "removed after this commit lands",
+      "backup_branch": "backup/intake-hipkittens-gemm-pre-renumber deleted",
+      "other_intake_worktrees": "intake-exl3-sglang-20260925 and intake-orch-prior-art-20260926 are clean and fully in origin/main; left for operator-confirmed removal (memory rule: confirm deletes)",
+      "shared_clone": "/workspace research/intake_index.yaml + .research-session.json are dirty working copies (max intake-1707) on a local main 117 commits behind origin/main (HEAD max intake-1527): newer than local HEAD, older than origin/main; not reset (the reset-to-HEAD rule does not apply and the shared checkout's main is stale)"
+    }
   }
 }
