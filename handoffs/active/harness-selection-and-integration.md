@@ -169,7 +169,7 @@ never reused.
 
 ## Research Intake Update — 2026-09-18 (typed-decision leverage in the harness; operator-directed)
 
-The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on the worker, and closed-set tool arguments 18/18 exact vs free-form 6/18. Operator directed wiring these into the harness surface. All tasks flag-gated OFF by default; confidence is NOT calibrated, so logging only — no gating (evidence: typed-decision-plane.md, receipts under artifacts/typed_decisions/).
+The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on the worker (n=1; contested — 9.60x at n=4, pending `typed-decision-plane.md` TD-1d.0), and closed-set tool arguments 18/18 exact vs free-form 6/18. Operator directed wiring these into the harness surface. All tasks flag-gated OFF by default; confidence is NOT calibrated, so logging only — no gating (evidence: typed-decision-plane.md, receipts under artifacts/typed_decisions/).
 
 - [ ] **HS-TD-1 — Pre-dispatch classification (risk/intent over a closed set).** One typed decision call per turn classifying request risk/intent; log its answer + confidence beside the harness's permissive/restrictive decision; no gating. Acceptance: shadow log over a real session window with agreement + confidence reported.
 - [ ] **HS-TD-2 — Per-turn self-check (noul).** Ask whether the turn satisfied the task before handing back; log confidence, never gate. Acceptance: per-turn cost measured on the worker and a sample of disagreements reviewed.
