@@ -26,6 +26,13 @@
 #
 # Idempotent per file: re-running after a successful apply changes nothing for a file whose
 # marker is already present.
+#
+# MEASUREMENT.md section-5 receipt: both targets are inside the human-only boundary, so the apply
+# emits the consolidated receipt (exact state diff + block-coherence check + validation) to
+# artifacts/operator/ratify_html_artifacts_agent_wiring_20260823.receipt.json BEFORE anything is
+# staged. A REFUSED receipt restores both files and is kept beside it as
+# .refused-<stamp>.receipt.json; nothing is staged. Added 2026-09-26, before this script was ever
+# run (scripts/validate/check_ratification_receipts.py).
 set -euo pipefail
 
 REPO="${REPO:-/workspace}"
@@ -42,6 +49,19 @@ for arg in "$@"; do
 done
 
 MODIFIED_FILES=()
+BACKUPS=()
+PATCHES=()
+RECEIPT_TOOL="$REPO/scripts/operator/ratification_receipt.py"
+RECEIPT_REL="artifacts/operator/ratify_html_artifacts_agent_wiring_20260823.receipt.json"
+PRE="$(mktemp)"
+trap 'rm -f "$PRE" "${PATCHES[@]}"' EXIT
+if [ "$DRY_RUN" -eq 0 ]; then
+  [ -f "$RECEIPT_TOOL" ] || { echo "REFUSING: section-5 receipt tool missing at $RECEIPT_TOOL; nothing written." >&2; exit 66; }
+  [ -e "$REPO/$RECEIPT_REL" ] && { echo "REFUSING: $RECEIPT_REL already exists; resolve by hand." >&2; exit 65; }
+  python3 "$RECEIPT_TOOL" capture --repo-root "$REPO" \
+    --state CLAUDE.md --state agents/shared/OPERATING_CONSTRAINTS.md --out "$PRE" \
+    || { echo "REFUSING: could not snapshot the pre-amendment state; nothing written." >&2; exit 70; }
+fi
 
 CLAUDE_MD_SECTION=$(cat <<'EOF'
 ## HTML Artifacts
@@ -125,7 +145,9 @@ ratify_one() {
     return 0
   fi
 
-  cp "$target" "$target.bak-$(date +%Y%m%d%H%M%S)"
+  local backup="$target.bak-$(date +%Y%m%d%H%M%S)"
+  cp "$target" "$backup"
+  BACKUPS+=("$backup")
   cat "$tmp" > "$target"
   echo "APPLIED to $relpath (backup alongside it)."
 
@@ -136,14 +158,8 @@ ratify_one() {
   # insertion and applies cleanly against the index -- the anchor's surrounding context is
   # untouched by whatever else is pending elsewhere in the file.
   diff -u --label "a/$relpath" --label "b/$relpath" "$before" "$tmp" > "$patch" || true
-  if ! git -C "$REPO" apply --cached "$patch"; then
-    echo "REFUSING: could not stage the isolated hunk for $relpath (see error above)." >&2
-    echo "  Working tree WAS updated; index was not. Inspect and stage manually:" >&2
-    echo "    git -C $REPO diff -- $relpath" >&2
-    rm -f "$before" "$tmp" "$patch"
-    exit 71
-  fi
-  rm -f "$before" "$tmp" "$patch"
+  rm -f "$before" "$tmp"
+  PATCHES+=("$patch")
   MODIFIED_FILES+=("$relpath")
 }
 
@@ -161,6 +177,37 @@ if [ "${#MODIFIED_FILES[@]}" -eq 0 ]; then
   echo "Nothing to do -- both files already ratified."
   exit 0
 fi
+
+# MEASUREMENT.md section 5: the consolidated receipt the operator signs over, BEFORE staging.
+receipt_rc=0
+python3 "$RECEIPT_TOOL" emit --repo-root "$REPO" --pre "$PRE" \
+  --protocol-id HTML-ARTIFACTS-AGENT-WIRING --anchor "## HTML Artifacts" \
+  --anchor "Looking for or adding a standalone HTML artifact" \
+  --ratification-id html-artifacts-agent-wiring-20260823 \
+  --script "$REPO/scripts/operator/ratify_html_artifacts_agent_wiring_20260823.sh" \
+  --no-evidence-reason "agent-facing pointer to docs/reference/html-artifacts-index.md and the runbook; not a measured claim" \
+  --validation "python3 scripts/docs/check_html_artifact_index.py --check" \
+  --operator "${RATIFY_OPERATOR:-${USER:-unknown}}" \
+  --out "$REPO/$RECEIPT_REL" || receipt_rc=$?
+if [ "$receipt_rc" -ne 0 ]; then
+  refused="$REPO/${RECEIPT_REL%.receipt.json}.refused-$(date -u +%Y%m%dT%H%M%SZ).receipt.json"
+  [ -f "$REPO/$RECEIPT_REL" ] && mv "$REPO/$RECEIPT_REL" "$refused"
+  for i in "${!MODIFIED_FILES[@]}"; do cp "${BACKUPS[$i]}" "$REPO/${MODIFIED_FILES[$i]}"; done
+  echo "REFUSING: section-5 receipt returned $receipt_rc (1 REFUSED, 2 COULD-NOT-CHECK). ${MODIFIED_FILES[*]} restored; nothing staged; receipt kept at ${refused#"$REPO"/}." >&2
+  exit 70
+fi
+
+# Stage ONLY the hunks this script authored, plus the receipt.
+for i in "${!MODIFIED_FILES[@]}"; do
+  if ! git -C "$REPO" apply --cached "${PATCHES[$i]}"; then
+    echo "REFUSING: could not stage the isolated hunk for ${MODIFIED_FILES[$i]} (see error above)." >&2
+    echo "  Working tree WAS updated and receipted; index was not. Inspect and stage manually:" >&2
+    echo "    git -C $REPO diff -- ${MODIFIED_FILES[$i]}" >&2
+    exit 71
+  fi
+done
+git -C "$REPO" add -- "$RECEIPT_REL"
+MODIFIED_FILES+=("$RECEIPT_REL")
 
 if [ "$DO_COMMIT" -eq 1 ]; then
   staged=$(git -C "$REPO" diff --cached --name-only)

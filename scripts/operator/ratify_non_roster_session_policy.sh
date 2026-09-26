@@ -12,6 +12,12 @@
 #   bash scripts/operator/ratify_non_roster_session_policy.sh --apply --commit
 #
 # Idempotent: re-running after a successful apply exits 0 and changes nothing.
+#
+# MEASUREMENT.md section-5 receipt: CLAUDE.md is inside the human-only boundary, so the apply emits
+# the consolidated receipt (exact state diff + block-coherence check + validation) to
+# artifacts/operator/ratify_non_roster_session_policy.receipt.json. A REFUSED receipt rolls the
+# amendment back and is kept beside it as .refused-<stamp>.receipt.json. Added 2026-09-26, before
+# this script was ever run (scripts/validate/check_ratification_receipts.py).
 set -euo pipefail
 
 REPO="${REPO:-/workspace}"
@@ -113,13 +119,41 @@ if [ "$DRY_RUN" -eq 1 ]; then
   exit 0
 fi
 
-cp "$TARGET" "$TARGET.bak-$(date +%Y%m%d%H%M%S)"
+RECEIPT_TOOL="$REPO/scripts/operator/ratification_receipt.py"
+RECEIPT_REL="artifacts/operator/ratify_non_roster_session_policy.receipt.json"
+[ -f "$RECEIPT_TOOL" ] || { echo "REFUSING: section-5 receipt tool missing at $RECEIPT_TOOL; $TARGET untouched." >&2; exit 66; }
+[ -e "$REPO/$RECEIPT_REL" ] && { echo "REFUSING: $RECEIPT_REL already exists but the policy is absent; resolve by hand." >&2; exit 65; }
+PRE="$(mktemp)"
+BACKUP="$TARGET.bak-$(date +%Y%m%d%H%M%S)"
+trap 'rm -f "$TMP" "$PRE"' EXIT
+python3 "$RECEIPT_TOOL" capture --repo-root "$REPO" --state CLAUDE.md --out "$PRE" \
+  || { echo "REFUSING: could not snapshot the pre-amendment state; $TARGET untouched." >&2; exit 70; }
+
+cp "$TARGET" "$BACKUP"
 cat "$TMP" > "$TARGET"
 echo "APPLIED to $TARGET (backup alongside it)."
 
+# MEASUREMENT.md section 5: the consolidated receipt the operator signs over.
+receipt_rc=0
+python3 "$RECEIPT_TOOL" emit --repo-root "$REPO" --pre "$PRE" \
+  --protocol-id NON-ROSTER-SESSION-POLICY --anchor "$MARKER" \
+  --ratification-id non-roster-session-policy \
+  --script "$REPO/scripts/operator/ratify_non_roster_session_policy.sh" \
+  --no-evidence-reason "operating doctrine for non-roster sessions, not a measured claim" \
+  --validation "test \"\$(grep -cxF '$MARKER' CLAUDE.md)\" = 1" \
+  --operator "${RATIFY_OPERATOR:-${USER:-unknown}}" \
+  --out "$REPO/$RECEIPT_REL" || receipt_rc=$?
+if [ "$receipt_rc" -ne 0 ]; then
+  refused="$REPO/${RECEIPT_REL%.receipt.json}.refused-$(date -u +%Y%m%dT%H%M%SZ).receipt.json"
+  [ -f "$REPO/$RECEIPT_REL" ] && mv "$REPO/$RECEIPT_REL" "$refused"
+  cp "$BACKUP" "$TARGET"
+  echo "REFUSING: section-5 receipt returned $receipt_rc (1 REFUSED, 2 COULD-NOT-CHECK). $TARGET restored; receipt kept at ${refused#"$REPO"/}." >&2
+  exit 70
+fi
+
 if [ "$DO_COMMIT" -eq 1 ]; then
   git -C "$REPO" fetch --quiet || true
-  git -C "$REPO" add -- CLAUDE.md
+  git -C "$REPO" add -- CLAUDE.md "$RECEIPT_REL"
   git -C "$REPO" commit -m "CLAUDE.md: non-roster session policy (accept shared, gate hard)
 
 Operator-ratified. Non-roster sessions keep the shared clone and accept a harder
@@ -130,5 +164,5 @@ Pairs with scripts/hooks/check_commit_hygiene.py, which refuses the three shapes
 that are destructive in a shared tree for anyone."
   echo "committed."
 else
-  echo "NOT committed. Review, then:  git -C $REPO add -- CLAUDE.md && git -C $REPO commit"
+  echo "NOT committed. Review, then:  git -C $REPO add -- CLAUDE.md $RECEIPT_REL && git -C $REPO commit"
 fi
