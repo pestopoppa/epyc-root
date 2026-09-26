@@ -90,6 +90,12 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("exl3-measurement", "exl3", _files("*.measurement.json"),
+           natives="measurement_rows", project="project_measurement",
+           note="prospective self-hashed EXL3 measurement receipts", task="VB-EXL3-CPU-GFX90A"),
+    Source("exl3-verifier", "exl3", _files("*.verifier.json"),
+           natives="verifier_rows", project="project_verifier",
+           note="prospective exact-proposition EXL3 verifier receipts", task="VB-EXL3-CPU-GFX90A"),
     Source("research-screen", "research_screen", _files("*.research-screen.json", "**/*.research-screen.json"),
            note="producer-sealed shared screen receipts: selector_replay or typed_decision_shadow",
            task="VB-RI-SCREEN-1 / VB-DGM-1 / VB-TDP-EXT"),
