@@ -42,6 +42,14 @@ experimental-kernel workflow in the root `AGENTS.md`.
   {offload-lto default, `-fno-offload-lto`} × {default unroll, `--amdgpu-unroll-threshold-local=600`}, then an
   MI210 decode/prefill same-window ABA with correctness. Unpin only if a cell beats 6.2 on decode without
   losing prefill; expect a plain upgrade to regress. Method: `artifacts/gpu-aux-baselines/a10_iq2_vgpr_compiler_ab_20260915.md`.
+- [ ] **MFMA form changes with the compiler (LLVM #159493, intake-1826).** ROCm 7.2.x keeps AGPR selection unless
+  `-mllvm -amdgpu-mfma-vgpr-form=1`; TheRock 7.11/7.12 decide it by the inferred `amdgpu-agpr-alloc`; therock-7.13,
+  ROCm Core SDK 7.14.0 and 10.0.0 select VGPR form by default, with AGPR form recovered only post-RA by
+  AMDGPURewriteAGPRCopyMFMA (loop phis still TODO upstream). Add agpr_count / accum_offset, in-loop v_accvgpr
+  read/write, the arch-VGPR cap and spill columns for mul_mat_f, rocWMMA FA, MMA FA (256-thread) and MMQ to the static
+  audit, per compiler cell. Check that `amdgpu-agpr-alloc` is inferred, using IR from `-save-temps`: if it is not, the
+  default split caps arch VGPRs at 128. gfx90a support on those releases: ROCm 10.0.0 compatibility matrix lists MI210;
+  TheRock SUPPORTED_GPUS.md lists gfx90a as "Build Passing" only.
 
 ## Known failure signature
 

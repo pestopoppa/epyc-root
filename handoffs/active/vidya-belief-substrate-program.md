@@ -2349,6 +2349,10 @@ intake-1398). They gate the latent compile-control arm (autokernel-research-loop
 OBSERVATION grade: register counts, not throughput. Source row added to `scripts/vidya/adapters/README.md`.
 
 - [ ] **SC84 (VB-VGPR-STATIC) — wire static compile-sweep register reads on the WRITE side** before AK-QL-7/AK-QL-8 run: each read emits a ClaimTuple (source commit, toolchain id, flag/pragma set, kernel symbol, vgpr/spill/sgpr, OBSERVATION grade); no new grading rule.
+- [ ] **SC84a — widen the SC84 tuple for INF03-REGAUDIT-1 (intake-1823/1826).** Add agpr_count, accum_offset,
+  in-hot-loop spill reloads, in-loop v_accvgpr_read/write and the toolchain's MFMA-form regime (ROCm 6.2 rule vs
+  #159493 default) to the native record before INF03-REGAUDIT-1 or INF03-AGPR-1 produce governed reads. OBSERVATION
+  grade; no new grading rule.
 
 ## SC82 — VB-AK-MAXPERF: champion max-performance serving sweeps (filed 2026-09-16)
 

@@ -365,8 +365,17 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   admitted scope so the loop can port and A/B it.
 - [ ] DS41-C52 — **Dense Q8_0 `gemm4xN` follow-ups from the GEMM-ladder intake (stage1, dives running).** Inbox note
   `store/inbox/41-ds41-gemm-ladder-hypotheses-20260926.md`: GGML_IQK_Q8_0=1 runtime arm (operator: let the loop
-  propose it), spill check, offset-trick VNNI (bit-identical), B-scale hoist, zmm widening. Track what the loop tries;
-  re-grade after the Stage-2 dives of intake-1783/1784 land.
+  propose it), spill check, offset-trick VNNI (bit-identical), B-scale hoist, zmm widening. Track what the loop tries.
+  Stage-2 dives landed as intake-1822/1823 (renumbered from 1783/1784); the dives did not change the CPU set (not
+  ladder-derived; stands on its own merit); add a static spill check of the gemm4xN disassembly before timing any
+  register-raising variant (intake-1823#record).
+- [ ] DS41-C53 — **Correctness oracle must exercise non-constant per-block scales.** Verify the AK kernel-mutation
+  oracle's fixtures use varying Q8_0 `d` and Q4_K `d/dmin`/sub-scales. intake-1825 §5.3 reports a scale-layout bug on
+  gfx90a that constant-scale fixtures hid (intake-1825#record). Read-only check; fix the fixture if constant.
+- [ ] DS41-C54 — **Observation first: `attn_wo_a` grouped projection at nt=1.** From an existing DS41 profile, read
+  the `attn_wo_a` node share and path: a 3D batched Q8_0 `ggml_mul_mat` over groups with a permuted src1,
+  `src/models/deepseek41.cpp:1219-1224`. If material, admit a dedicated M=1 grouped-GEMV route to the AK scope. The GPU
+  analogue in intake-1825 §8.3 is self-reported; CPU transfer is unproven.
 - [x] DS41-C55 — **ak-check passed vacuously after a keep.** ✅ 2026-09-26 — research `a17284a2`. With the anchor build
   at `store/anchor-gen-001` (outside the source tree), `anchor_root_of()`'s `.git` walk returned the store, every changed
   TU read "no compile command", and ak-check returned NOTHING/exit 0: authors got no feedback and the best-of winner check
