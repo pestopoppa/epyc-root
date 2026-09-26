@@ -134,4 +134,83 @@ https://claude.ai/artifact/UnjtMaouUFYs9xz5umnwPd
 
 - REPL-EMB-1.1 + 1.4 (pooled client with the in-flight cap; G1 re-measure ≥ 0.95).
 - HS-4 P0.4b / P0.4c / P0-split.
-- The operator's P-SERVE-SEL-1 ratify run.
+- The operator's P-SERVE-SEL-1 ratify run. *(Done later the same evening — see the final section.)*
+
+## Final — late evening landings, lessons, and the derived-actionables sweep (workspace-8d)
+
+Written by the operator-invoked final `/wrap-up` (subagent, lane `lane/wrapup-w8d-final-20260926`). The earlier
+sections were checked and are present: Phase 0 and its gates, HS-4 P0.4 PASS 10/10, the `/v1` usage fix, the
+stale-code fixes, the dead-knob removal, AK-H-NRI-1, and the canvas. The prior-art intake ran all four stages:
+Stage 1 swept and deduplicated, Stage 2 dove six clusters (intake-1783..1814), Stage 2b dove intake-1815..1821,
+the Stage-3 plan was approved, and Stage 4 applied it (`0c8e227e`, merged `a3320a4b`).
+
+### Landed after the evening section
+
+| Item | Commits | Result |
+|---|---|---|
+| fable5 F3, M2, PCIe-5.0 fix boxes | root `89a54d85` | 3 boxes flipped at the operator's direction; the owner, mainA, was not live |
+| v8 prefill runner retired in place | research `3d3581e6` | See the note below the table |
+| Trust-boundary receipt checker fixed | root `e941e753`, `de75c211`, `7be1d1d2` | See the note below the table |
+| Operator bundle RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926 | root `2850fa8c` | Ratified and landed. The pinned exemption list (25 historical, 1 superseded, 3 false positives; no backfilled receipts) is now human-only |
+| P-SERVE-SEL-1 (OP-62) | root `3573028b`, `36cd736c` | See the note below the table |
+
+- **v8 prefill runner.** Marked by `scripts/benchmark/deprecated/RETIRED_IN_PLACE.md`. The runner could not be
+  moved, for two reasons: an executed waiver pins its sha256, and it resolves `bench_canonical.sh` relative to its own
+  path. New CPU prefill work (PF1) uses `canonical_recipe.py`.
+- **Receipt checker.** It had three defects:
+  - 18 boundary-writing scripts were never checked, because they write through variables.
+  - op60 and pcal were misread, because of quoting.
+  - The default repo root was `/workspace`.
+
+  It now reports 43 scripts: 14 receipted, 29 exempt, 0 failing (re-run at this wrap-up: `OK`). It is wired into CI,
+  with 33 tests.
+- **P-SERVE-SEL-1.** Ratified, then executed by this session at the operator's explicit instruction. The interactive
+  wrapper needs a real TTY, so its inner review, apply and verify steps were run directly. `--verify` passed. The
+  OP-62 row was retired and DAR-LAT-3a now cites the landed protocol.
+
+### Lessons
+
+- **Region-lock must not wrap API traffic.** The orchestrator claims regions itself, per call. An outer
+  `region-lock run` around an API client starves that placement and returns 503 `contention_denied` (HS-4 P0.4 r1).
+  The doctrine wording that led to it is filed below (HYG-5, OP-63).
+- **A pause message reaches a subagent only at its next tool round.** Before touching a shared tree, wait for the
+  subagent's running pytest PIDs to exit.
+- **The pre-push guard compares strings.** It reads one lock file, seen through `/workspace` and through
+  `/mnt/raid0/llm/epyc-root` (same inode), as "TWO serialization locks". Workaround: create worktrees through
+  `/workspace`, or export `EPYC_PUSH_LOCK_DIR=/mnt/raid0/llm/epyc-root/coordination/push-locks`. Filed as SSU-F9d.
+
+### Derived-actionables sweep: 9 filed, 5 declined
+
+| # | Item | Filed in / disposition |
+|---|---|---|
+| 1 | The `pre_push_serialization_guard.sh` legacy-lock check (~`:431`) compares path strings, not inodes | `model-stack-single-source-update-pipeline.md` **SSU-F9d**. The one-line `-ef` fix needs operator approval (the permission classifier refused it for a subagent), queued as **OP-65**; the guard was not edited |
+| 2 | `OPERATING_CONSTRAINTS.md:106` reads as if a region claim must cover API traffic | `non-inference-backlog.md` **HYG-5**, plus operator queue **OP-63**. `agents/shared/` is human-only |
+| 3 | `make gates` in the orchestrator checks almost nothing here: shellcheck, shfmt and markdownlint are not installed; NextPLAID `:8088` is down; `check-numerics` runs a script that has never existed in git history | `non-inference-backlog.md` **NIB2-80** |
+| 4 | The research `.venv` has no pytest, although `pyproject.toml` declares `pytest==9.1.1` in the `test` extra | `non-inference-backlog.md` **NIB2-81** |
+| 5 | The orchestrator GitNexus index is stale | `internal-kb-rag.md` re-index task. Corrected figure: the `main` branch index (2026-09-25, `b9e004e3`) is **24** commits behind. The ~783-commit figure is the legacy top-level `meta.json` (2026-07-22, another branch), which `gitnexus status` no longer reads |
+| 6 | Harness↔orchestrator interface discussion: OpenCode's `task` tool re-enabled as a control interface (T1/Q7); a hierarchy of shared REPLs (Q2); generalized scouting | None of the Stage-4 HS items (HS-16/17/18, HS-OD-8/9) covered it. Filed as `harness-selection-and-integration.md` **HS-19** plus operator queue **OP-64** |
+| 7 | GPU embedder instance (the other half of D1; the MI210 has 1.52 GiB free) | It was not in UFH-12, so it is filed as `repl-embedding-retrieval.md` **REPL-EMB-0.3**. REPL-EMB-1.1's stale "being fixed separately" note now points to orch `120b55b7` |
+| 8 | DAR-LAT-3g is blocked because live `:8074` runs `-t 96` against the recipe's 48 threads, and nothing tasked the fix | `decision-aware-routing.md` **DAR-LAT-3h**: prepare the stack-change package |
+| 9 | The PF1 runner choice | `mi210-big-model-and-acceleration-roadmap.md`: a completed record that the v8 runner is retired, so PF1 uses `canonical_recipe.py` |
+
+**Explicit declines.** The operator said these are back-of-mind, not tasks:
+
+- (a) GPU-served models getting REPL access.
+- (b) Revisiting the choice to keep the big models out of the REPL.
+- (c) Whether Qwen3.8-Flash-Next uses a smaller model for prefill.
+- (d) The canvas "possible future lineup" (DeepSeek v4.1 as architect_critic). This is the operator's scenario, plan
+  only; it is already recorded in memory as a plan.
+- (e) The canvas "Wire the critic" step. It is a draft and not agreed, and it is already filed as RI-21.
+
+The rest of the canvas is filed:
+
+- Q1's Retry-After lever: HS-OD-8/9.
+- Session headers: HS-16.
+- Q4's memory TODOs: RI-16..21 and M-20..22.
+- DAR-LAT-3: DAR-LAT-3a/3g.
+
+### Open (final)
+
+- REPL-EMB-1.1 + 1.4: the pooled client with the in-flight cap, then the G1 re-measure against ≥ 0.95.
+- HS-4 P0.4b, P0.4c and the P0-split.
+- The operator items: OP-63 (doctrine wording), OP-64 (the interface discussion), and OP-65 (approve the SSU-F9d guard fix).

@@ -423,3 +423,7 @@ op-offload arm at -ub 512 exceeds ~158 tok/s on this file. `intake-1810#01`.
       reproduced in a later-window reversed-order replicate. Results feed the fabric prefill rule and the
       numa-prefill-decode-disaggregation.md reopen trigger. Bench-class: this authorizes no serving change.
   Full rigor controls (frozen manifest, per-cell raw outputs, holdout, denominator, region claim, freeze constraints, VB-PREFILL-XOVER first): `docs/research-intake/orch-prior-art-stage3-plan-20260926.md` P3-3.
+  - [x] **PF1-pre — the v8 CPU prefill runner is retired, so the A0 arm cannot silently reuse it.** ✅ 2026-09-26 —
+        research `3d3581e6` (operator decision): `scripts/benchmark/cpu_prefill_v8_regression_runner.py` is retired IN
+        PLACE (`scripts/benchmark/deprecated/RETIRED_IN_PLACE.md`). It could not be moved, because an executed
+        waiver hash-pins it and it resolves `bench_canonical.sh` relative to itself. A0 uses `canonical_recipe.py`.

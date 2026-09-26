@@ -601,6 +601,38 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       in `882d97d4`), and the stateful, sandboxed REPL builtins cannot serve as stateless handlers.
       `tests/unit/test_tool_registry_handlers_resolve.py` gates every handler; against the old YAML it fails 6 tests.
 
+## 2026-09-26 supplement — surfaced by the orchestrator-design session (workspace-8d)
+
+Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-26-orch-design.md` § Final).
+
+- [x] **HYG-4** (HIGH, governance): **the MEASUREMENT.md §5 receipt checker could not see most boundary writes.**
+      ✅ 2026-09-26 — root `e941e753`, `de75c211`, `7be1d1d2`; operator bundle RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926
+      landed as `2850fa8c`. Defects: 18 boundary-writing scripts were never checked (they write through variables),
+      op60/pcal were misread (quoting), and the default repo root was `/workspace`. Now
+      `scripts/validate/check_ratification_receipts.py` reports 43 scripts: 14 receipted, 29 exempt, 0 failing. It is
+      wired into CI (`.github/workflows/tests.yml`) with 33 tests. The only escape hatch,
+      `scripts/validate/ratification_receipt_exemptions.json` (25 historical, 1 superseded, 3 false positives; each pinned
+      to its script's sha256; no backfilled receipts), is human-only.
+- [ ] **HYG-5** (MED, operator-only): **`agents/shared/OPERATING_CONSTRAINTS.md:106` reads as if API traffic needs a
+      held CPU-region claim.** It says "never launch inference/benchmark runs … without a held CPU-region claim", with no
+      carve-out. The HS-4 P0.4 r1 runner therefore wrapped its OpenCode→`/v1` client in `region-lock run`. That starved
+      the orchestrator's own per-call placement, and the run failed with 503 `contention_denied`. Amend the text to say:
+      region-lock is for inference processes you launch yourself (llama-server/bench/cli, eval drivers that spawn them);
+      traffic through the orchestrator API is claimed by the orchestrator per call and must NOT be wrapped. Human-only
+      path, so it needs an operator edit or ratify script; queued as OP-63. Filed 2026-09-26.
+- [ ] **NIB2-80** (MED): **`make gates` in epyc-orchestrator checks almost nothing on this host.** Found 2026-09-26:
+      `shellcheck`, `shfmt` and `markdownlint` are not installed; the `nextplaid-reindex` gate needs NextPLAID
+      `:8088`, which is down; and `make check-numerics` / `report-numerics` run
+      `scripts/validate/check_numeric_literals.py`, which has never existed in the orchestrator's git history
+      (`git log --all` on that path is empty). A "✅ All gates passed" here therefore certifies little. Fix it
+      either way: install the linters (devcontainer), make each gate fail loudly when its tool is missing rather than
+      skip, and implement or delete the numerics targets. Then decide whether `nextplaid-reindex` belongs in `gates`.
+- [ ] **NIB2-81** (LOW): **the research repo `.venv` has no pytest**, although `pyproject.toml` declares
+      `pytest==9.1.1` in the `test` extra (the venv was synced without it). On 2026-09-26 research tests had to run with
+      the orchestrator venv. Add the extra additively, `uv pip install --python .venv/bin/python pytest==9.1.1`
+      (not a bare `uv sync`, which would prune packages outside the requested extras), and extend `health_check.sh`'s
+      OBS-11 Tooling Interpreters check to assert that pytest imports in both venvs.
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):

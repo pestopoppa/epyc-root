@@ -601,6 +601,18 @@ supplies the value under test cannot fail on it.
   across lanes, exactly the 2026-09-01 incident that the push lease's git-common-dir derivation was
   introduced to fix. Different lease, same shape, still live. **Blocker: none.**
 
+- [ ] **SSU-F9d — the guard's legacy-lock check compares path STRINGS, so one lock seen through two paths
+  refuses as "TWO serialization locks".** `scripts/hooks/pre_push_serialization_guard.sh` (~`:431`) tests
+  `[[ "$LEGACY_LOCK_FILE" != "$LOCK_FILE" && -e "$LEGACY_LOCK_FILE" ]]`. From a worktree created via
+  `/mnt/raid0/llm/epyc-root`, `LOCK_FILE` is `/mnt/raid0/llm/epyc-root/coordination/push-locks/push-<key>.json`
+  while the legacy path is `/workspace/coordination/push-locks/push-<key>.json` — the SAME inode, so a correctly
+  held lock refuses its own push (hit live 2026-09-26, workspace-8d). Fix (one line): replace the string test with
+  `[[ ! "$LEGACY_LOCK_FILE" -ef "$LOCK_FILE" && -e "$LEGACY_LOCK_FILE" ]]`, plus a shell case that takes the lock
+  through one path and pushes through the other. Workaround until then: create worktrees via `/workspace`, or export
+  `EPYC_PUSH_LOCK_DIR=/mnt/raid0/llm/epyc-root/coordination/push-locks`. **Blocker: operator approval** — the
+  permission classifier refused the edit for a subagent (`scripts/hooks/**`, the SSU-F9a D9-ack precedent).
+  Filed 2026-09-26.
+
 - [ ] **SSU-F10 — every GPU role on this host is un-auditable for VRAM between reloads, by
   default.** The per-buffer breakdown (`load_tensors:`, `llama_kv_cache:`,
   `llama_memory_recurrent:`, `sched_reserve:`) is suppressed at the launcher's default log

@@ -86,12 +86,20 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
   (REPL-EMB-1.4). This is one of the three needs-operator options the package pre-registered
   (keep / 4-instance pool / Phase-1 scheduler cap), taken as keep + cap.
 
+- [ ] **REPL-EMB-0.3 — prepare the GPU embedder instance package (the other half of D1)** via the `stack-change`
+  skill. The package adds a small embedder on the MI210 as its own instance, of the same embedding model as the index
+  it serves (invariant 4). VRAM is the binding constraint: the MI210 had **1.52 GiB free** on 2026-09-26 (session
+  sample, not a protocol measurement). The package must re-sample free VRAM during serving, size the model + KV +
+  compute buffers against it, and show the residents' decode unchanged. It is a separate package from Phase 0,
+  which was CPU-only, and needs the operator's signature before any apply. The second MI210 (~Oct 2026) changes the
+  headroom, so state which card it targets. Filed 2026-09-26.
+
 ### Phase 1 — pooled async client, chunker, per-request index (no inference needed for tests)
 
 - [ ] **REPL-EMB-1.1 — pooled async embedding client**: one shared `httpx.AsyncClient`, round-robin over
   instances of ONE model, list-batched `/embedding`, ≤ 4 in flight per port, timeouts, LRU cache keyed by
   chunk sha256. Existing client for reference: `orchestration/repl_memory/parallel_embedder.py`
-  (its Python-3.11 `asyncio.coroutine` bug is being fixed separately, 2026-09-26).
+  (its Python-3.11 `asyncio.coroutine` bug was fixed separately in orch `120b55b7`, 2026-09-26).
 - [ ] **REPL-EMB-1.4 — cap in-flight embeddings next to a busy frontdoor half, then re-measure G1**
   (operator decision 2026-09-26, from the Phase-0 G1 result). In the REPL-EMB-1.1 scheduler, cap in-flight
   embedding requests on instances whose NUMA node is shared with a frontdoor half that is currently decoding,

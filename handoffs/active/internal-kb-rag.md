@@ -518,6 +518,13 @@ _Via /research-intake Stage-2 (intake-881 graph-engineering wiring assessment)._
 - [x] Re-run `scripts/gitnexus-analyze.sh` for **epyc-orchestrator** — its GitNexus index is corrupt (LadybugDB `lbug.wal` without `lbug.shadow` → CLI segfaults, signal 11, on every read). The `federation.py` tool degrades gracefully (skips that repo) but the orchestrator code-graph side is unavailable until re-indexed. ✅ 2026-07-22 (re-indexed 32.9s, 52,993 nodes; index reads clean, no more signal-11)
 - [x] Tidy `federation.py`'s hardcoded `onnxruntime` site-packages fallback path (env-overridable via `FEDERATION_ORT_SITE_PACKAGES`) — discover the encoder deps without the hardcoded `/mnt/raid0/llm/venv/...` path. ✅ 2026-07-22
 
+- [ ] Re-index **epyc-orchestrator** with `scripts/gitnexus-analyze.sh` (never bare `gitnexus analyze`) at a quiet CPU
+  window. `gitnexus status` there reads STALE (2026-09-26): the `main` branch index
+  (`.gitnexus/branches/main-0d6e4079`, 2026-09-25, `b9e004e3`) is 24 commits behind `30626243`. A separate legacy
+  top-level `.gitnexus/meta.json` (2026-07-22, branch `spec-dec-mtp-refresh-2026-06-22`) is 783 commits behind.
+  `status` no longer reads it; confirm whether the wrapper can retire it without touching `lbug`. The re-index takes
+  CPU, so it is not run inside a wrap-up. Filed 2026-09-26 (workspace-8d wrap-up).
+
 
 ## 2026-07-25 — intake Stage-2a dive corrections (intake-580, intake-890)
 

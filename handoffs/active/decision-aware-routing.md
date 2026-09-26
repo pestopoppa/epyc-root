@@ -8,6 +8,14 @@
 **Tracked in**: [routing-and-optimization-index.md](routing-and-optimization-index.md) P13
 **Cross-claim (2026-06-12)**: DAR-1 replay deliverable + the ≥5%/<5% fork are closed in [routing-truth-restoration.md](../completed/routing-truth-restoration.md) W8; this handoff retains the future learned-routing research items only if a later gate re-opens them.
 
+## Start here (2026-09-26)
+
+The live work is the **latency-term track** at the end of this file, in § *Research Intake Update — 2026-09-26*.
+Next is **DAR-LAT-1** (the `SlotCapacity` + `expected_wait_s` snapshot on the admission ledger), then DAR-LAT-2 at
+weight 0. DAR-LAT-3 is the decision-grade A/B under P-SERVE-SEL-1 (ratified and landed `3573028b`). Its gate 3g is
+blocked on the `:8074` thread/recipe reconciliation (DAR-LAT-3h). The sections between here and there are the
+April-July DAR-1..6 record. DAR-3/4/5 were rescoped on 2026-07-21 (§ *RESCOPE*) and stay gated.
+
 ## Problem / Context
 
 The difficulty signal shows **zero predictive spread**: escalation rates are flat at 62.2% / 60.7% / 62.2% across easy/medium/hard bands (Package B Phase 4, n=635, research-eval P0). The current Q-scorer cannot differentiate routing needs because the training objective is detached from the routing decision.
@@ -754,6 +762,12 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
         differs from the recipe's validated 8192. This is a production launch change, so it is reconciled only by a
         signed `stack-change` package (the lineup/recipe owner), never an ad-hoc relaunch; 3g stays blocked until then.
     - VB-SEL-LOADAB wired.
+  - [ ] **DAR-LAT-3h — Prepare the `:8074` recipe-reconciliation stack-change package that unblocks 3g.** Use the
+    `stack-change` skill (zero inference). Live `-t 96` vs recipe `threads: 48`, and `n_ctx` 262144 vs the validated
+    8192. Trace which surface emits 96 (the suspect is `stack_templates/default.yaml:155`). Present the options: align
+    serving to the recipe, or re-derive the recipe for the 96-thread serving shape (CPU co-tenancy with speech is a
+    known cost, CURRENT-CAMPAIGN.md:22). Give a recommendation and a before/after decode gate. One package for the
+    operator's signature; never an ad-hoc relaunch. Filed 2026-09-26 (workspace-8d wrap-up).
   - [ ] **DAR-LAT-3b — Run W1** (calibration, then the arm sweep plus the 24 A1/A1 floor pairs). Stop on any
     prerequisite that fails during a block; re-queue the block, never drop it. Per-request receipts + raw outputs.
   - [ ] **DAR-LAT-3c — Holdout W2 (≥24 h later, ρ=1.25, ABBA, fresh seeds) + verdict.** PAIRED-CI-1 within a window
