@@ -1,0 +1,932 @@
+From 845950b4509c5e6e43bc48121cc200c982d875de Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Sat, 26 Sep 2026 17:10:39 +0000
+Subject: [PATCH 1/2] UFH-12 Phase 0 (PROPOSED, unsigned): declared embedder
+ placement + -c 2048; stale lineup text
+
+STACK-CHANGE PACKAGE CONTENT, NOT APPLIED. Awaits the operator signature in
+epyc-root artifacts/operator/stack-change-ufh12-phase0-20260926/PACKAGE.md.
+
+A. Embedder placement (REPL-EMB-0.1, operator decision D1 2026-09-26)
+- launch_manifest embedding.placement: one cpuset per port on SMT siblings,
+  next to each serving model: 8090/8091 node1 136-143 (half A), 8092/8093
+  node2 144-151 (half B), 8094/8095 node3 176-183 (GPU host lane). Warm
+  8096 (Granite-97M-R2, NOT switched) gets 152-167.
+- pool_recipe: context_tokens 512 to 2048 (512 tokens/slot = BGE window),
+  no_mmap: true so the membind is real.
+- stack_manifest: EMBEDDING_PLACEMENT + import-time validator (every pool
+  port declared, one NPS4 node each, -t equals cpuset size, SMT-fold-disjoint
+  from each other, the speech cpusets and the GPU host lane).
+- orchestrator_stack: declared embedders spawn under
+  numactl --membind=<node> + taskset -c <cpuset>; the bench guard may
+  refuse, never re-pin. --no-mmap emitted when the recipe asks.
+- scripts/server/embedder_affinity_check.py: read-only serving proof from
+  /proc (per-task Cpus_allowed_list, OMP places, pool disjointness,
+  numa_maps locality, argv vs recipe).
+
+Root cause, read from /proc 2026-09-26: no placement plus OMP_PROC_BIND=spread
+OMP_PLACES=cores put all six servers' compute teams on the same places
+0/96 32/128 48/144 88/184.
+
+B. Stale comment text (no behaviour): launch_manifest port_map quarters to
+halves 8080/8180, Qwen3.6-27B to Qwen3.8-27B (since 2026-08-20), critic
+122B to Qwen3.8-Flash-Next UD-IQ4_XS (since 2026-09-22); stack_topology
+frontdoor and critic headers + W1 cutover note likewise.
+
+Tests: tests/unit/test_embedding_placement.py (new) + launch-parity file;
+302 passed on the affected suites. test_quarter_stack_smoke
+test_derived_chat_ports_drop_retired_ports_and_pick_up_live_ones fails
+identically on pristine origin/main (pre-existing, KeyError worker_general).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
+---
+ orchestration/launch_manifest.yaml            |  96 ++++++--
+ orchestration/stack_topology.yaml             |  25 ++-
+ .../graph_router/embed_soft_label_dataset.py  |   8 +-
+ scripts/server/embedder_affinity_check.py     | 207 ++++++++++++++++++
+ scripts/server/orchestrator_stack.py          |  55 ++++-
+ scripts/server/stack_manifest.py              | 110 ++++++++++
+ .../unit/test_build_server_command_helpers.py |   8 +-
+ tests/unit/test_embedding_placement.py        | 164 ++++++++++++++
+ 8 files changed, 643 insertions(+), 30 deletions(-)
+ create mode 100755 scripts/server/embedder_affinity_check.py
+ create mode 100644 tests/unit/test_embedding_placement.py
+
+diff --git a/orchestration/launch_manifest.yaml b/orchestration/launch_manifest.yaml
+index 4b2de727..d284a63b 100644
+--- a/orchestration/launch_manifest.yaml
++++ b/orchestration/launch_manifest.yaml
+@@ -49,7 +49,8 @@ schema_version: launch_manifest.v1
+ # =============================================================================
+ # Port assignments by role (primary ports — full-speed 1×96t instances)
+ # Pre-warm (2026-03-29): primary port is the full-speed instance.
+-# Quarter instances on offset ports (808x, 818x, 828x, 838x).
++# Sub-full instances on offset ports: since the 2026-07-30 half-fleet cutover
++# these are the two HALVES 8080/8180 (2x48t); the 8280/8380 quarters are retired.
+ # =============================================================================
+ # KEPT (phase 2, option b): master declares `server_mode.<role>.port` for 11 of
+ # the 28 rows below — every serving role and alias, but none of the embedder
+@@ -60,12 +61,12 @@ schema_version: launch_manifest.v1
+ # the half that IS doubly declared cannot drift.
+ port_map:
+   worker: 8070
+-  frontdoor: 8070          # Full-speed 1×96t (quarters: 8080, 8180, 8280, 8380)
++  frontdoor: 8070          # Full-speed 1×96t (halves: 8080, 8180 — quarters 8280/8380 retired 2026-07-30)
+   # 2026-08-01 W1 CUTOVER: coder_escalation LEFT frontdoor's :8070 35B process.
+   # It is now an alias on architect_general's :8083 MI210 27B dense Q8 — a
+   # DIFFERENT model on a DIFFERENT device, so the coder chain is a real
+   # escalation for the first time since the 2026-05-09 consolidation.
+-  coder_escalation: 8083   # Alias -> architect_general shared Qwen3.6-27B GPU server
++  coder_escalation: 8083   # Alias -> architect_general shared Qwen3.8-27B GPU server (Qwen3.6-27B until 2026-08-20)
+   worker_summarize: 8070   # Alias -> frontdoor shared Qwen3.6 server (its ONLY alias now)
+   worker_general: 8070     # Alias -> frontdoor shared Qwen3.6-35B-A3B server (gemma4 retired 2026-09-22; halves 8080/8180)
+   worker_explore: 8070     # Alias -> frontdoor (legacy name; pre-2026-03-19)
+@@ -78,8 +79,9 @@ port_map:
+   worker_fast: 8102        # Fast worker (1.5B, WARM, 4 slots) — DEPRECATED (worker_pool)
+   # Specialists (no pre-warm — already multi-instance or too large for quarters)
+   architect_general: 8083
+-  # 2026-08-01 W1 CUTOVER: architect_critic is the 122B UD-Q4_K_M that vacated
+-  # architect_general, on the SAME full CPU instance it was measured on.
++  # 2026-08-01 W1 CUTOVER: architect_critic took the full CPU instance the 122B
++  # UD-Q4_K_M vacated in architect_general. Since the 2026-09-22 lineup change the
++  # critic serves Qwen3.8-Flash-Next UD-IQ4_XS on that same instance (122B retired).
+   # Port 8074 is deliberate: 8084 and 8071 belonged to the removed
+   # architect_coding role and stack_change_guard.py L326/L346 reject them.
+   architect_critic: 8074
+@@ -188,7 +190,9 @@ serial_roles:
+ #
+ # Adding a new role now requires editing TWO places consistently:
+ #   a) Add the role's NUMA wiring in stack_topology.yaml numa_config (or set
+-#      `no_numa: true` here if the role doesn't need NUMA pinning, e.g. embedders).
++#      `no_numa: true` here if the role takes no numa_config wiring, e.g.
++#      worker_fast; the embedder pool is no_numa but pinned per port by
++#      `embedding.placement`).
+ #   b) Add a role_launch_meta entry with tier/mode/aliases.
+ # A consistency check (`_validate_role_classification()` in stack_manifest.py)
+ # catches common mismatches at module load time.
+@@ -227,14 +231,17 @@ role_launch_meta:
+   frontdoor:
+     tier: hot
+     mode: default
+-  # 2026-08-01 W1 CUTOVER: architect_general is Qwen3.6-27B dense Q8 on MI210
+-  # (ROCm0) and now HOSTS coder_escalation as an alias on its :8083 process.
++  # 2026-08-01 W1 CUTOVER: architect_general moved to a dense 27B Q8 on MI210
++  # (ROCm0) and HOSTS coder_escalation as an alias on its :8083 process. Model:
++  # Qwen3.6-27B from 2026-08-01, Qwen3.8-27B-Q8_0 since 2026-08-20. Since the
++  # 2026-09-22 lineup change it also hosts ingest_long_context.
+   architect_general:
+     tier: hot
+     mode: default
+-    # aliases DERIVED: server_mode.architect_general.shared_with -> [coder_escalation]
+-  # architect_critic — NEW 2026-08-01. The 122B UD-Q4_K_M on the full CPU
+-  # instance architect_general vacated, port 8074, tier hot per OPERATOR D1.
++    # aliases DERIVED: server_mode.architect_general.shared_with -> [coder_escalation, ingest_long_context]
++  # architect_critic — NEW 2026-08-01 on the full CPU instance architect_general
++  # vacated, port 8074, tier hot per OPERATOR D1. Model: the 122B UD-Q4_K_M until
++  # 2026-09-22, Qwen3.8-Flash-Next UD-IQ4_XS since.
+   architect_critic:
+     tier: hot
+     mode: default
+@@ -245,7 +252,10 @@ role_launch_meta:
+     mode: vision
+     vision_type: worker
+     # aliases DERIVED: server_mode.worker_vision.shared_with -> [vision_escalation]
+-  # Embedders — no NUMA pinning, fixed single port each
++  # Embedders — not in numa_config (no region locks, no contention-matrix
++  # cells), fixed single port each. `no_numa` means exactly that and no more:
++  # they ARE pinned, by the per-port `embedding.placement` cpusets below, not
++  # by stack_topology.yaml (UFH-12 Phase 0, 2026-09-26).
+   embedder:   {tier: hot, mode: embedding, no_numa: true, port: 8090}
+   embedder_1: {tier: hot, mode: embedding, no_numa: true, port: 8091}
+   embedder_2: {tier: hot, mode: embedding, no_numa: true, port: 8092}
+@@ -340,11 +350,71 @@ embedding:
+   pool_ports: [8090, 8091, 8092, 8093, 8094, 8095]
+   pool_recipe:
+     model_name: BGE-large-en-v1.5 (embeddings)
+-    context_tokens: 512
++    # 2026-09-26 UFH-12 Phase 0 (REPL-EMB-0.1): 512 -> 2048. With -np 4 the
++    # per-slot context was 512/4 = 256 tokens, half of BGE-large's 512-token
++    # training window, and every launch logged the n_ctx_seq WARN
++    # (wiki/kv-cache.md "Rollout candidates" #2). 2048/4 = 512 per slot = the
++    # model's window. BGE is an encoder with no KV cache, so an input that
++    # already fit is expected to embed identically (proof P6 in the package
++    # checks it); only 257-512-token inputs change, from a server error to an
++    # embedding.
++    context_tokens: 2048
+     threads: 4
+     slots: 4
+     pooling: cls
+     flash_attn: true
++    # 2026-09-26 UFH-12 Phase 0: private weights so the per-instance membind
++    # below is REAL. Under shared mmap the GGUF's pages sit wherever the first
++    # instance (or the page cache) put them and a membind is accepted and
++    # silently does nothing (stack_topology.yaml, the cross-role mmap note).
++    # Cost: 6 x 0.62 GiB = 3.7 GiB private RAM, inside capacity.host_os_reserve_gib.
++    no_mmap: true
++  # ── 2026-09-26 UFH-12 Phase 0 — DECLARED PLACEMENT (REPL-EMB-0.1) ─────────
++  # Until this block existed the pool had NO placement: `no_numa: true` plus an
++  # empty spawn prefix, and the canonical OMP env (OMP_PROC_BIND=spread,
++  # OMP_PLACES=cores) then bound all six servers' 4 compute threads to the SAME
++  # four core places, 0/96 32/128 48/144 88/184 (read from /proc/<pid>/task/*/
++  # status on 2026-09-26). Six servers delivered one server's compute, from
++  # inside frontdoor's 0-95.
++  #
++  # One cpuset per port, honoured EXACTLY: the launcher wraps the spawn in
++  # `numactl --membind=<node> -- taskset -c <cpuset>`, where <node> is the one
++  # NPS4 node the cpuset lies in (derived, never declared). The bench guard may
++  # REFUSE a declared cpuset; it may never re-pin it (same contract as the aux
++  # services' `cpuset`). stack_manifest asserts at import that every pool port
++  # is declared, the cpusets are pairwise disjoint, each lies in ONE NPS4 node,
++  # `threads` equals the cpuset size, and none SMT-folds onto the speech
++  # services' cpusets or the GPU host lane.
++  #
++  # WHY SMT SIBLINGS. No logical CPU on this host lacks a physical sibling in
++  # 0-95 (kernel-verified 2026-09-07), so "free cores" do not exist; the choice
++  # is only WHO pays. Siblings charge frontdoor/critic only while an embedder
++  # computes (KMP_BLOCKTIME=10 releases idle teams); carving physical cores out
++  # of 0-95 would charge every decode forever and re-shape NUMA_FULL. The cost
++  # is a MEASUREMENT GATE (G1 in the package), not an assumption.
++  #   96-119  siblings of whisper 0-23  -> excluded (speech hangs on
++  #   120-135 siblings of tts 24-39     -> excluded  unmeasured layouts)
++  #   184-191 GPU host lane             -> excluded
++  #
++  # NEXT TO EACH SERVING MODEL (operator D1, 2026-09-26). The node is what the
++  # scheduler's "instance sharing the requesting model's hardware" reads:
++  #   node 1 (136-143) -> half A :8080 (nodes 0,1)
++  #   node 2 (144-151) -> half B :8180 (nodes 2,3)
++  #   node 3 (176-183) -> the GPU host lane 184-191 (:8083 27B, :8086 VL), and half B
++  #   full :8070 / critic :8074 span all four nodes, so every instance is adjacent.
++  placement:
++    8090: {cpuset: "136-139"}   # node 1, siblings of 40-43
++    8091: {cpuset: "140-143"}   # node 1, siblings of 44-47
++    8092: {cpuset: "144-147"}   # node 2, siblings of 48-51
++    8093: {cpuset: "148-151"}   # node 2, siblings of 52-55
++    8094: {cpuset: "176-179"}   # node 3, siblings of 80-83
++    8095: {cpuset: "180-183"}   # node 3, siblings of 84-87
++    # Warm Phase-B candidate (UFH-12 D1 leading model). NOT a model switch:
++    # 8096 stays warm/default-off; this only stops it landing on 0-191 when the
++    # Phase-2 offline eval launches it. 16 logical cpus = its recipe's -t 16.
++    8096: {cpuset: "152-167"}   # node 2, siblings of 56-71
++    # 168-175 (node 3, siblings of 72-79) deliberately left unallocated.
++    # 8097 / 8098 (warm e5 / bge-m3) stay undeclared: default affinity, as today.
+   extra_recipes:
+     8096:
+       model_path: /mnt/raid0/llm/models/granite-embedding-97m-multilingual-r2-Q8_0.gguf
+diff --git a/orchestration/stack_topology.yaml b/orchestration/stack_topology.yaml
+index 5203fcba..208b2e19 100644
+--- a/orchestration/stack_topology.yaml
++++ b/orchestration/stack_topology.yaml
+@@ -104,10 +104,12 @@ realized_shape:
+ # current instances satisfy both.
+ # -----------------------------------------------------------------------------
+ numa_config:
+-  # Qwen3.5-35B-A3B Q4_K_M (19 GB) — pre-warm: 1×96t full-speed + 4×48t concurrent
+-  # Benchmark (2026-03-24): moe6 = 12.7 t/s at 48t. 96t TBD (expect higher per-request).
+-  # Pre-warm strategy (2026-03-29): 5 instances total, +19 GB (95 GB total for frontdoor).
+-  # Concurrency router: single session → full (96t), concurrent → quarter (48t) instances.
++  # LIVE (verified 2026-09-26): Qwen3.6-35B-A3B-MTP-Q8_0 (35.2 GB), 1 full (:8070)
++  # + 2 halves (:8080, :8180), --mlock --no-mmap. The four lines that stood here
++  # described the 2026-03 Qwen3.5-35B-A3B Q4_K_M (19 GB) five-instance pre-warm;
++  # both the model and the quarters are retired. Historical figures (2026-03-24,
++  # moe6 = 12.7 t/s at 48t) belong to that model and are NOT re-attributable.
++  # Concurrency router: single session → full (96t), concurrent → half (48t) instances.
+   frontdoor:
+     # 2026-07-30 HALF FLEET. Quarters retired; 1 full + 2 halves.
+     # Superseded the 2026-05-24 revert, whose justification (an April
+@@ -167,6 +169,10 @@ numa_config:
+   # If a separate coder server is ever rostered again on a different model,
+   # restore here with that model's tuned spec params.
+ 
++  # LIVE (verified 2026-09-26): Qwen3.8-Flash-Next UD-IQ4_XS (87.25 GiB, 3 shards)
++  # + its shared-Q8_0 MTP head via -md, since the 2026-09-22 lineup change. The
++  # placement below was measured on its predecessor, which the rest of this
++  # paragraph describes and whose figures are NOT re-attributable to it:
+   # Qwen3.5-122B-A10B Q4_K_M (69 GB) — 1×96t canonical (Probe B 2026-05-04)
+   # Switched 2026-05-04 from 2× cross-NUMA (4.3 t/s/instance, 8.6 t/s agg) to
+   # 1× full-machine canonical with numactl --interleave=all + GGML_NUMA_REPACK_INTERLEAVE=0
+@@ -189,7 +195,8 @@ numa_config:
+   # Its single full instance on 0-95 holds ALL FOUR region locks, so while it
+   # runs it serializes the entire CPU NUMA topology. That is INHERENT AND
+   # ACCEPTED for this role, not a defect: there is no sub-full shape to demote
+-  # to, and a 122B at Q4_K_M has nothing smaller to be. Do not "fix" it by
++  # to, and the critic model (the 122B at Q4_K_M when this was written,
++  # Qwen3.8-Flash-Next UD-IQ4_XS since 2026-09-22) has nothing smaller to be. Do not "fix" it by
+   # adding a placement_policy — the other roles' burst_prefer_* exists because
+   # they HAVE splits; this one does not.
+   #
+@@ -205,11 +212,15 @@ numa_config:
+   # scalar. Land that telemetry BEFORE exposing any routing knob for this role.
+   #
+   # ── 2026-08-01 W1 CUTOVER ────────────────────────────────────────────────
+-  # architect_general VACATED this full CPU instance. The role now serves
+-  # Qwen3.6-27B dense Q8 on MI210 (ROCm0) and takes the shared GPU host lane
++  # architect_general VACATED this full CPU instance. The role then served
++  # Qwen3.6-27B dense Q8 on MI210 (ROCm0) and took the shared GPU host lane
+   # below; the 122B UD-Q4_K_M that used to live here moved WHOLESALE to the new
+   # architect_critic role on :8074, keeping the identical placement it was
+   # measured under. Only the ROLE NAME on this instance changed.
++  # LATER (verified live 2026-09-26): architect_general serves Qwen3.8-27B-Q8_0
++  # on the MI210 (:8083) since 2026-08-20, and architect_critic serves
++  # Qwen3.8-Flash-Next UD-IQ4_XS on this instance (:8074) since 2026-09-22.
++  # The 122B is retired from the lineup.
+   architect_critic:
+     instances:
+       - {cpu_shape: NUMA_FULL, port: 8074}   # 1×96t physical cores, all 4 NUMA nodes
+diff --git a/scripts/graph_router/embed_soft_label_dataset.py b/scripts/graph_router/embed_soft_label_dataset.py
+index 9c84f38f..2a0f873e 100644
+--- a/scripts/graph_router/embed_soft_label_dataset.py
++++ b/scripts/graph_router/embed_soft_label_dataset.py
+@@ -82,9 +82,11 @@ VISION_SUITES = {"vl"}
+ 
+ # BGE-large max context is 512 tokens. The cap below was sized for embedder
+ # servers at -c 2048 -np 4 (=> 512 tokens/slot): ~1400 chars at worst-case ~2.7
+-# chars/token => ~512 tokens. The live pool (8090-8095) runs -c 512 -np 4, i.e.
+-# only 256 tokens/slot (verified 2026-09-26 via /props n_ctx=256), so a
+-# dense-tokenizing prompt (code, tables) near the cap can exceed its slot. The
++# chars/token => ~512 tokens. Until UFH-12 Phase 0 the live pool (8090-8095)
++# ran -c 512 -np 4, i.e. only 256 tokens/slot (verified 2026-09-26 via /props
++# n_ctx=256); the Phase-0 package restores -c 2048 (launch_manifest
++# embedding.pool_recipe). Check /props on the pool before relying on either:
++# under 256/slot a dense-tokenizing prompt (code, tables) near the cap exceeds its slot. The
+ # embed call falls back to per-item on batch failure, substituting a zero vector
+ # for any single prompt that still exceeds the limit. CLS uses the leading gist.
+ _MAX_PROMPT_CHARS = 1400
+diff --git a/scripts/server/embedder_affinity_check.py b/scripts/server/embedder_affinity_check.py
+new file mode 100755
+index 00000000..5d970a71
+--- /dev/null
++++ b/scripts/server/embedder_affinity_check.py
+@@ -0,0 +1,207 @@
++#!/usr/bin/env python3
++"""Serving proof for the embedder pool's DECLARED placement (UFH-12 Phase 0).
++
++Reads the truth from the kernel, never from the declaration. For every port in
++stack_manifest.EMBEDDING_PLACEMENT whose server is running, it checks:
++
++  1. exe      /proc/<pid>/exe resolves into the CPU kernel store
++               (/mnt/raid0/llm/kernels/production/cpu).
++  2. argv     -c / -np / -t match the recipe, and --no-mmap is present when the
++               recipe asks for it.
++  3. threads  EVERY task's Cpus_allowed_list is inside the declared cpuset (the
++               taskset prefix is inherited by all threads), and the tasks pinned
++               to a sub-mask -- the OMP compute team -- hold `threads`
++               DISJOINT places. The 2026-09-26 defect was invisible to a
++               main-thread-only check: /proc/<pid>/status read "0,96" for all six.
++  4. pool     no cpu is allowed to two different ports' tasks.
++  5. memory   >= --min-local of the process's resident pages are on the
++               declared cpuset's NPS4 node (from /proc/<pid>/numa_maps), so the
++               membind is real and not silently defeated by shared mmap.
++
++Read-only and PID-safe: a process is matched on the exact `--port <n>` token
++pair of its argv, never on a name pattern, and nothing is signalled. Exit 0 when
++every running declared port passes; 1 on any violation; 2 when a declared POOL
++port has no process (unless --allow-missing).
++
++    embedder_affinity_check.py
++    embedder_affinity_check.py --json
++    embedder_affinity_check.py --allow-missing     # e.g. 8096 is warm/down
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import os
++import sys
++from pathlib import Path
++
++_REPO = Path(__file__).resolve().parents[2]
++if str(_REPO) not in sys.path:
++    sys.path.insert(0, str(_REPO))
++
++from scripts.server.stack_manifest import (  # noqa: E402
++    EMBEDDER_PORTS,
++    EMBEDDING_PLACEMENT,
++    EMBEDDING_SERVER_RECIPES,
++)
++from scripts.server.stack_numa import _parse_cpus  # noqa: E402
++
++KERNEL_STORE_CPU = Path("/mnt/raid0/llm/kernels/production/cpu")
++PROC = Path("/proc")
++
++
++def _argv(pid: str) -> list[str]:
++    try:
++        raw = (PROC / pid / "cmdline").read_bytes()
++    except OSError:
++        return []
++    return [tok.decode(errors="replace") for tok in raw.split(b"\0") if tok]
++
++
++def _pid_for_port(port: int) -> str | None:
++    """The one llama-server whose argv carries the exact tokens `--port <port>`."""
++    hits = []
++    for entry in PROC.iterdir():
++        if not entry.name.isdigit():
++            continue
++        argv = _argv(entry.name)
++        if not argv or not argv[0].endswith("llama-server"):
++            continue
++        for i, tok in enumerate(argv[:-1]):
++            if tok == "--port" and argv[i + 1] == str(port):
++                hits.append(entry.name)
++                break
++    return hits[0] if len(hits) == 1 else (None if not hits else "AMBIGUOUS:" + ",".join(hits))
++
++
++def _flag(argv: list[str], flag: str) -> str | None:
++    return argv[argv.index(flag) + 1] if flag in argv and argv.index(flag) + 1 < len(argv) else None
++
++
++def _task_masks(pid: str) -> list[set[int]]:
++    masks = []
++    for task in (PROC / pid / "task").iterdir():
++        try:
++            for line in (task / "status").read_text().splitlines():
++                if line.startswith("Cpus_allowed_list:"):
++                    masks.append(_parse_cpus(line.split(":", 1)[1].strip()))
++        except OSError:
++            continue
++    return masks
++
++
++def _pages_by_node(pid: str) -> dict[int, int]:
++    out: dict[int, int] = {}
++    try:
++        text = (PROC / pid / "numa_maps").read_text()
++    except OSError:
++        return out
++    for line in text.splitlines():
++        for tok in line.split():
++            if tok.startswith("N") and "=" in tok and tok[1:].split("=", 1)[0].isdigit():
++                node, pages = tok[1:].split("=", 1)
++                out[int(node)] = out.get(int(node), 0) + int(pages)
++    return out
++
++
++def _fmt(cpus: set[int]) -> str:
++    return ",".join(str(c) for c in sorted(cpus))
++
++
++def check(min_local: float, allow_missing: bool) -> tuple[int, list[dict]]:
++    rows: list[dict] = []
++    rc = 0
++    owner: dict[int, int] = {}
++    store = os.path.realpath(KERNEL_STORE_CPU)
++    for port in sorted(EMBEDDING_PLACEMENT):
++        placement = EMBEDDING_PLACEMENT[port]
++        recipe = EMBEDDING_SERVER_RECIPES[port]
++        declared = _parse_cpus(placement.cpuset)
++        row: dict = {"port": port, "cpuset": placement.cpuset, "node": placement.numa_node, "problems": []}
++        pid = _pid_for_port(port)
++        if pid is None:
++            row["status"] = "absent"
++            if port in EMBEDDER_PORTS and not allow_missing:
++                row["problems"].append("declared pool port has no running llama-server")
++                rc = max(rc, 2)
++            rows.append(row)
++            continue
++        if pid.startswith("AMBIGUOUS"):
++            row["problems"].append(f"more than one process claims --port {port}: {pid}")
++            rows.append(row)
++            rc = max(rc, 1)
++            continue
++        row["pid"] = int(pid)
++        argv = _argv(pid)
++        exe = os.path.realpath(PROC / pid / "exe")
++        if not exe.startswith(store + os.sep):
++            row["problems"].append(f"exe {exe} is not under the kernel store {store}")
++        for flag, want in (("-c", recipe["context_tokens"]), ("-np", recipe["slots"]), ("-t", recipe["threads"])):
++            got = _flag(argv, flag)
++            if got != str(want):
++                row["problems"].append(f"argv {flag} {got} != recipe {want}")
++        if recipe.get("no_mmap") and "--no-mmap" not in argv:
++            row["problems"].append("recipe asks for --no-mmap; argv lacks it")
++        masks = _task_masks(pid)
++        outside = [sorted(m - declared) for m in masks if m - declared]
++        if outside:
++            row["problems"].append(f"{len(outside)} task(s) allowed outside {placement.cpuset}, e.g. {outside[0][:8]}")
++        # The OMP compute team is every task whose mask differs from the modal
++        # one (the modal mask is what the process was spawned with and what its
++        # idle/HTTP threads inherit). Its places must be `threads` DISJOINT sets.
++        modal = max(masks, key=lambda m: sum(1 for x in masks if x == m)) if masks else set()
++        team = [m for m in masks if m != modal]
++        row["tasks"] = len(masks)
++        row["omp_places"] = sorted(_fmt(m) for m in team)
++        disjoint = all(not (a & b) for i, a in enumerate(team) for b in team[i + 1:])
++        if len(team) != int(recipe["threads"]) or not disjoint:
++            row["problems"].append(
++                f"OMP team places {row['omp_places']} — want {recipe['threads']} disjoint places"
++            )
++        clashes: dict[int, set[int]] = {}
++        for cpu in set().union(*masks) if masks else set():
++            other = owner.setdefault(cpu, port)
++            if other != port:
++                clashes.setdefault(other, set()).add(cpu)
++        for other, cpus in sorted(clashes.items()):
++            row["problems"].append(
++                f"{len(cpus)} cpu(s) also allowed to :{other}'s tasks, e.g. {sorted(cpus)[:8]}"
++            )
++        pages = _pages_by_node(pid)
++        total = sum(pages.values()) or 1
++        local = pages.get(placement.numa_node, 0) / total
++        row["local_page_fraction"] = round(local, 4)
++        if local < min_local:
++            row["problems"].append(
++                f"only {local:.1%} of resident pages on node {placement.numa_node} (want >= {min_local:.0%})"
++            )
++        row["status"] = "ok" if not row["problems"] else "FAIL"
++        if row["problems"]:
++            rc = max(rc, 1)
++        rows.append(row)
++    return rc, rows
++
++
++def main(argv: list[str] | None = None) -> int:
++    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
++    ap.add_argument("--json", action="store_true")
++    ap.add_argument("--allow-missing", action="store_true")
++    ap.add_argument("--min-local", type=float, default=0.95)
++    args = ap.parse_args(argv)
++    rc, rows = check(args.min_local, args.allow_missing)
++    if args.json:
++        print(json.dumps({"rc": rc, "ports": rows}, indent=2))
++    else:
++        for r in rows:
++            head = f":{r['port']:<5} {r['cpuset']:<9} node{r['node']} {r.get('status', '?'):<6}"
++            extra = f" pid={r.get('pid', '-')} omp={r.get('omp_places', '-')} local={r.get('local_page_fraction', '-')}"
++            print(head + extra)
++            for p in r["problems"]:
++                print(f"    - {p}")
++        print(f"rc={rc}")
++    return rc
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/scripts/server/orchestrator_stack.py b/scripts/server/orchestrator_stack.py
+index 85077444..a752217c 100644
+--- a/scripts/server/orchestrator_stack.py
++++ b/scripts/server/orchestrator_stack.py
+@@ -100,6 +100,7 @@ from scripts.server.stack_manifest import (
+     DEFAULT_UBATCH_TOKENS,
+     EMBEDDER_PORTS,
+     EMBEDDING_MODEL_PATH,
++    EMBEDDING_PLACEMENT,
+     EMBEDDING_SERVER_RECIPES,
+     EXPLORE_DRAFT_MODEL,
+     GPU_SHADOW_LANE_DEVICE,
+@@ -960,6 +961,10 @@ def _build_embedding_command(port: int) -> list[str]:
+     ]
+     if recipe.get("flash_attn"):
+         cmd.extend(["--flash-attn", "on"])
++    # UFH-12 Phase 0: private weights, so the placement's membind is real
++    # (a membind over shared-mmap pages is accepted and does nothing).
++    if recipe.get("no_mmap"):
++        cmd.append("--no-mmap")
+     return cmd
+ 
+ 
+@@ -1737,12 +1742,20 @@ def start_server(
+     # all; a live bench's real core claim refuses overlapping placements or
+     # pins default-affinity spawns off the claim. `bench_force` mirrors
+     # --allow-during-bench.
+-    spawn_prefix = _bench_guarded_numa_prefix(
+-        roles[0] if roles else None,
+-        numa_instance,
+-        bench_force=bench_force,
+-        label=f"llama-server for {'/'.join(roles) or '?'}",
+-    )
++    declared_embedding = EMBEDDING_PLACEMENT.get(port) if embedding_mode else None
++    if declared_embedding is not None:
++        # UFH-12 Phase 0: an embedder with a DECLARED placement is pinned to
++        # exactly that cpuset (refuse-never-re-pin, like a declared aux cpuset).
++        spawn_prefix = _embedding_spawn_prefix(port, declared_embedding, bench_force=bench_force)
++        if spawn_prefix is None:
++            return None
++    else:
++        spawn_prefix = _bench_guarded_numa_prefix(
++            roles[0] if roles else None,
++            numa_instance,
++            bench_force=bench_force,
++            label=f"llama-server for {'/'.join(roles) or '?'}",
++        )
+ 
+     # P-BENCH-3/A7 warm eval-batch lane: dedicated frontdoor-model server
+     # used only when explicitly started and when EVAL_BATCH_SERVING routes
+@@ -2675,6 +2688,36 @@ def _aux_spawn_prefix(service: Any, *, bench_force: bool) -> list[str] | None:
+     return ["taskset", "-c", cpuset]
+ 
+ 
++def _embedding_spawn_prefix(
++    port: int, placement: Any, *, bench_force: bool
++) -> list[str] | None:
++    """Spawn prefix for an embedder with a declared placement; None = refuse.
++
++    `numactl --membind=<node> -- taskset -c <cpuset>`: the node is the single
++    NPS4 node stack_manifest derived from the cpuset. The bench guard may
++    REFUSE the declared cpuset (overlap with a live bench's claim;
++    `--allow-during-bench` bypasses) but may never RE-PIN it: a re-pinned
++    embedder would land back on cores other instances or the fleet own, which
++    is the defect the declaration exists to remove.
++    """
++    label = f"embedder :{port}"
++    pinned = enforce_placement(placement.cpuset, force=bench_force, label=label)
++    if pinned is not None and pinned != placement.cpuset:
++        print(
++            f"    [FAIL] {label}: bench guard wanted to re-pin the declared cpuset "
++            f"{placement.cpuset} to {pinned}; refusing (declared placements are not re-pinned)"
++        )
++        return None
++    return [
++        "numactl",
++        f"--membind={placement.numa_node}",
++        "--",
++        "taskset",
++        "-c",
++        placement.cpuset,
++    ]
++
++
+ def start_aux_service(name: str, bench_force: bool = False) -> ProcessInfo | None:
+     """Start one declared auxiliary service. Returns None on any failure."""
+     service = AUX_SERVICES.get(name)
+diff --git a/scripts/server/stack_manifest.py b/scripts/server/stack_manifest.py
+index 7497f97a..1a3392ed 100644
+--- a/scripts/server/stack_manifest.py
++++ b/scripts/server/stack_manifest.py
+@@ -24,6 +24,7 @@ correct and a local literal won anyway. Data does not invite that.
+ 
+ from __future__ import annotations
+ 
++import re
+ from pathlib import Path
+ from typing import Any, NamedTuple
+ 
+@@ -31,8 +32,11 @@ import yaml
+ 
+ from scripts.server.stack_numa import (
+     CPU_SHAPE_CLASSES,
++    GPU_HOST_LANE,
+     NUMA_CONFIG,
+     NUMA_INSTANCE_SHAPE_CLASSES,
++    _nodes_touched,
++    _parse_cpus,
+     instance_shape_class,
+ )
+ from scripts.server.stack_paths import LLAMA_MATH_TOOLS, _V2_ROLES, _PATHS
+@@ -519,6 +523,112 @@ EMBEDDING_SERVER_RECIPES.update(
+     {int(port): dict(recipe) for port, recipe in _EMBEDDING["extra_recipes"].items()}
+ )
+ 
++
++# ── Embedder placement (UFH-12 Phase 0, 2026-09-26) ─────────────────────────
++# Declared per port in launch_manifest.yaml `embedding.placement`. Until this
++# existed the pool had no placement at all and the canonical OMP env bound all
++# six servers' compute threads to the same four core places. The NUMA node is
++# DERIVED from the cpuset (never declared beside it), and every invariant below
++# is recomputed from the declarations, so none of them can drift from a copy.
++class EmbedderPlacement(NamedTuple):
++    cpuset: str
++    numa_node: int
++
++
++_EMBED_CPUSET_RE = re.compile(r"\d+(-\d+)?(,\d+(-\d+)?)*")
++_HOST_LOGICAL_CPUS = 192
++_HOST_PHYSICAL_CORES = 96
++
++
++def _smt_fold(cpus: set[int]) -> set[int]:
++    """Logical cpus -> the physical cores they run on (sibling of c is c +/- 96)."""
++    return {c % _HOST_PHYSICAL_CORES for c in cpus}
++
++
++def _load_embedding_placement(
++    declared: Any,
++    *,
++    recipes: dict[int, dict[str, Any]],
++    pool_ports: list[int],
++    aux_services: dict[str, "AuxService"],
++) -> dict[int, EmbedderPlacement]:
++    """Validate `embedding.placement` and return {port: EmbedderPlacement}.
++
++    Raises ValueError listing EVERY violation at once:
++      * every pool port is declared (an undeclared pool port is the old defect);
++      * a declared port has a recipe, and its cpuset is a cpu list on this host;
++      * the cpuset lies in exactly ONE NPS4 node (membind target is derived);
++      * the recipe's `threads` equals the cpuset's logical-cpu count;
++      * cpusets are pairwise disjoint AFTER SMT folding (two instances on the
++        two siblings of one core would contend exactly as the old layout did);
++      * no cpuset SMT-folds onto an aux service's declared cpuset (whisper.cpp
++        hangs on unmeasured layouts) or onto the GPU host lane.
++    """
++    if declared is None:
++        declared = {}
++    if not isinstance(declared, dict):
++        raise ValueError("launch_manifest: embedding.placement must be a mapping of port -> {cpuset}")
++    problems: list[str] = []
++    out: dict[int, EmbedderPlacement] = {}
++    folded_by_port: dict[int, set[int]] = {}
++    for raw_port, entry in declared.items():
++        port = int(raw_port)
++        if port not in recipes:
++            problems.append(f":{port} has a placement but no embedding recipe")
++            continue
++        if not isinstance(entry, dict) or set(entry) != {"cpuset"}:
++            problems.append(f":{port} placement must be exactly {{cpuset: <cpu list>}}, got {entry!r}")
++            continue
++        cpuset = str(entry["cpuset"]).strip()
++        if not _EMBED_CPUSET_RE.fullmatch(cpuset):
++            problems.append(f":{port} cpuset {cpuset!r} is not a cpu list")
++            continue
++        cpus = _parse_cpus(cpuset)
++        if max(cpus) >= _HOST_LOGICAL_CPUS:
++            problems.append(f":{port} cpuset {cpuset!r} names a cpu beyond 0-{_HOST_LOGICAL_CPUS - 1}")
++            continue
++        nodes = _nodes_touched(cpuset)
++        if len(nodes) != 1:
++            problems.append(f":{port} cpuset {cpuset!r} spans NPS4 nodes {nodes}; an embedder must sit in one")
++            continue
++        threads = int(recipes[port].get("threads", 0))
++        if threads != len(cpus):
++            problems.append(
++                f":{port} recipe -t {threads} but cpuset {cpuset!r} holds {len(cpus)} logical cpus"
++            )
++        folded_by_port[port] = _smt_fold(cpus)
++        out[port] = EmbedderPlacement(cpuset=cpuset, numa_node=nodes[0])
++    missing = sorted(set(pool_ports) - set(out) - {int(p) for p in declared})
++    if missing:
++        problems.append(f"pool ports without a declared placement: {missing}")
++    ports = sorted(folded_by_port)
++    for i, a in enumerate(ports):
++        for b in ports[i + 1:]:
++            shared = folded_by_port[a] & folded_by_port[b]
++            if shared:
++                problems.append(f":{a} and :{b} share physical cores {sorted(shared)} after SMT folding")
++    fenced = {"GPU host lane": GPU_HOST_LANE[0]}
++    fenced.update({f"aux {name}": svc.cpuset for name, svc in aux_services.items() if svc.cpuset})
++    for label, spec in fenced.items():
++        fence = _smt_fold(_parse_cpus(spec))
++        for port in ports:
++            shared = folded_by_port[port] & fence
++            if shared:
++                problems.append(f":{port} SMT-folds onto the {label} ({spec}) at cores {sorted(shared)}")
++    if problems:
++        raise ValueError(
++            "launch_manifest: embedding.placement is incoherent:\n  " + "\n  ".join(problems)
++        )
++    return out
++
++
++EMBEDDING_PLACEMENT: dict[int, EmbedderPlacement] = _load_embedding_placement(
++    _EMBEDDING.get("placement"),
++    recipes=EMBEDDING_SERVER_RECIPES,
++    pool_ports=EMBEDDER_PORTS,
++    aux_services=AUX_SERVICES,
++)
++
+ # Worker pool models (FIXED paths to existing files)
+ # NOTE: worker_coder uses the fast 1.5B worker backend on port 8102.
+ WORKER_POOL_MODELS = dict(_MODELS["worker_pool"])
+diff --git a/tests/unit/test_build_server_command_helpers.py b/tests/unit/test_build_server_command_helpers.py
+index af30b706..7dcb53fe 100644
+--- a/tests/unit/test_build_server_command_helpers.py
++++ b/tests/unit/test_build_server_command_helpers.py
+@@ -1550,8 +1550,12 @@ def test_start_server_embedding_candidate_reports_recipe_model_path(
+     monkeypatch.setattr(oss, "_write_llama_marker", lambda *a, **kw: None)
+     monkeypatch.setattr(oss, "wait_for_health", lambda *a, **kw: True)
+     monkeypatch.setattr(oss, "build_launch_env", lambda *a, **kw: {})
++    # UFH-12 Phase 0: :8096 now has a declared placement, so the spawn is
++    # `numactl --membind=2 -- taskset -c 152-167 llama-server ...`. The bench
++    # guard is stubbed so the test never reads a live bench claim from /proc.
+     with (
+         patch.object(oss, "_numa_prefix", return_value=[]),
++        patch.object(oss, "enforce_placement", return_value=None),
+         patch.object(oss.subprocess, "Popen", return_value=fake_proc) as popen,
+     ):
+         info = oss.start_server(
+@@ -1563,7 +1567,9 @@ def test_start_server_embedding_candidate_reports_recipe_model_path(
+ 
+     assert info is not None
+     assert info.model_path.endswith("granite-embedding-97m-multilingual-r2-Q8_0.gguf")
+-    assert popen.call_args.args[0][0].endswith("llama-server")
++    argv = popen.call_args.args[0]
++    assert argv[:6] == ["numactl", "--membind=2", "--", "taskset", "-c", "152-167"]
++    assert argv[6].endswith("llama-server")
+     _assert_detached_popen(popen)
+ 
+ 
+diff --git a/tests/unit/test_embedding_placement.py b/tests/unit/test_embedding_placement.py
+new file mode 100644
+index 00000000..68ea7f59
+--- /dev/null
++++ b/tests/unit/test_embedding_placement.py
+@@ -0,0 +1,164 @@
++"""UFH-12 Phase 0 (REPL-EMB-0.1): declared embedder placement.
++
++Origin: on 2026-09-26 /proc showed all six BGE embedders (:8090-:8095) binding
++their 4 OMP compute threads to the SAME core places 0/96 32/128 48/144 88/184,
++because the pool had no placement (`no_numa: true`, empty spawn prefix) and the
++canonical OMP env (spread + cores) then chose identical places in every process.
++These tests pin the declaration, its import-time invariants, and the launcher
++path that honours it.
++"""
++
++from __future__ import annotations
++
++from types import SimpleNamespace
++from unittest.mock import patch
++
++import pytest
++
++from scripts.server import orchestrator_stack as oss
++from scripts.server import stack_manifest as sm
++from scripts.server.stack_numa import GPU_HOST_LANE, _nodes_touched, _parse_cpus
++
++
++def _fold(spec: str) -> set[int]:
++    return {c % 96 for c in _parse_cpus(spec)}
++
++
++# ── the live declaration ────────────────────────────────────────────────────
++
++
++def test_every_pool_port_has_a_declared_placement() -> None:
++    assert set(sm.EMBEDDER_PORTS) <= set(sm.EMBEDDING_PLACEMENT)
++
++
++def test_declared_cpusets_are_disjoint_after_smt_folding() -> None:
++    ports = sorted(sm.EMBEDDING_PLACEMENT)
++    for i, a in enumerate(ports):
++        for b in ports[i + 1:]:
++            assert not (
++                _fold(sm.EMBEDDING_PLACEMENT[a].cpuset) & _fold(sm.EMBEDDING_PLACEMENT[b].cpuset)
++            ), (a, b)
++
++
++def test_each_placement_is_one_node_and_matches_recipe_threads() -> None:
++    for port, placement in sm.EMBEDDING_PLACEMENT.items():
++        assert _nodes_touched(placement.cpuset) == [placement.numa_node]
++        assert len(_parse_cpus(placement.cpuset)) == sm.EMBEDDING_SERVER_RECIPES[port]["threads"]
++
++
++def test_placement_stays_off_speech_cores_and_gpu_host_lane() -> None:
++    fenced = _fold(GPU_HOST_LANE[0])
++    for svc in sm.AUX_SERVICES.values():
++        if svc.cpuset:
++            fenced |= _fold(svc.cpuset)
++    for port, placement in sm.EMBEDDING_PLACEMENT.items():
++        assert not (_fold(placement.cpuset) & fenced), port
++
++
++def test_pool_recipe_gives_each_slot_the_full_bge_window() -> None:
++    for port in sm.EMBEDDER_PORTS:
++        recipe = sm.EMBEDDING_SERVER_RECIPES[port]
++        assert recipe["context_tokens"] // recipe["slots"] >= 512, port
++
++
++# ── the validator refuses each defect class ─────────────────────────────────
++
++
++def _recipes(**threads_by_port: int) -> dict[int, dict]:
++    return {int(p[1:]): {"threads": t} for p, t in threads_by_port.items()}
++
++
++def _load(declared, *, recipes, pool_ports, aux=None):
++    return sm._load_embedding_placement(
++        declared, recipes=recipes, pool_ports=pool_ports, aux_services=aux or {}
++    )
++
++
++def test_validator_accepts_a_clean_declaration() -> None:
++    out = _load(
++        {1: {"cpuset": "136-139"}, 2: {"cpuset": "144-147"}},
++        recipes=_recipes(p1=4, p2=4),
++        pool_ports=[1, 2],
++    )
++    assert out[1].numa_node == 1 and out[2].numa_node == 2
++
++
++@pytest.mark.parametrize(
++    ("declared", "threads", "needle"),
++    [
++        ({1: {"cpuset": "136-139"}}, {"p1": 4, "p2": 4}, "without a declared placement"),
++        (
++            {1: {"cpuset": "40-43"}, 2: {"cpuset": "136-139"}},
++            {"p1": 4, "p2": 4},
++            "share physical cores",
++        ),
++        ({1: {"cpuset": "44-51"}, 2: {"cpuset": "136-139"}}, {"p1": 8, "p2": 4}, "spans NPS4 nodes"),
++        ({1: {"cpuset": "136-139"}, 2: {"cpuset": "144-147"}}, {"p1": 8, "p2": 4}, "recipe -t 8"),
++        ({1: {"cpuset": "184-187"}, 2: {"cpuset": "144-147"}}, {"p1": 4, "p2": 4}, "GPU host lane"),
++        ({1: {"cpuset": "0-3,x"}, 2: {"cpuset": "144-147"}}, {"p1": 4, "p2": 4}, "not a cpu list"),
++    ],
++)
++def test_validator_refuses(declared, threads, needle) -> None:
++    with pytest.raises(ValueError, match=needle):
++        _load(declared, recipes=_recipes(**threads), pool_ports=[1, 2])
++
++
++def test_validator_refuses_a_speech_core_sibling() -> None:
++    aux = {"whisper": SimpleNamespace(cpuset="0-23")}
++    with pytest.raises(ValueError, match="aux whisper"):
++        _load({1: {"cpuset": "96-99"}}, recipes=_recipes(p1=4), pool_ports=[1], aux=aux)
++
++
++# ── the launcher honours it ─────────────────────────────────────────────────
++
++
++def test_pool_command_carries_the_new_context_and_no_mmap() -> None:
++    cmd = oss._build_embedding_command(port=8090)
++    assert cmd[cmd.index("-c") + 1] == "2048"
++    assert cmd[cmd.index("-np") + 1] == "4"
++    assert "--no-mmap" in cmd
++
++
++def test_warm_candidate_command_is_unchanged_by_the_pool_recipe() -> None:
++    cmd = oss._build_embedding_command(port=8096)
++    assert "--no-mmap" not in cmd
++    assert cmd[cmd.index("-c") + 1] == "32768"
++
++
++def test_embedding_spawn_prefix_is_membind_plus_exact_taskset() -> None:
++    placement = sm.EmbedderPlacement(cpuset="144-147", numa_node=2)
++    with patch.object(oss, "enforce_placement", return_value=None):
++        prefix = oss._embedding_spawn_prefix(8092, placement, bench_force=False)
++    assert prefix == ["numactl", "--membind=2", "--", "taskset", "-c", "144-147"]
++
++
++def test_embedding_spawn_prefix_refuses_a_re_pin() -> None:
++    placement = sm.EmbedderPlacement(cpuset="144-147", numa_node=2)
++    with patch.object(oss, "enforce_placement", return_value="100-103"):
++        assert oss._embedding_spawn_prefix(8092, placement, bench_force=False) is None
++
++
++def test_start_server_launches_a_pool_embedder_on_its_declared_cpuset(
++    tmp_path, monkeypatch
++) -> None:
++    fake_proc = SimpleNamespace(pid=4345)
++    monkeypatch.setattr(oss, "LOG_DIR", tmp_path)
++    monkeypatch.setattr(oss, "_write_llama_marker", lambda *a, **kw: None)
++    monkeypatch.setattr(oss, "wait_for_health", lambda *a, **kw: True)
++    monkeypatch.setattr(oss, "build_launch_env", lambda *a, **kw: {})
++    with (
++        patch.object(oss, "enforce_placement", return_value=None),
++        patch.object(oss, "_bench_guarded_numa_prefix") as generic,
++        patch.object(oss.subprocess, "Popen", return_value=fake_proc) as popen,
++    ):
++        info = oss.start_server(
++            port=8093,
++            roles=["embedder_3"],
++            registry=SimpleNamespace(),
++            embedding_mode=True,
++        )
++    assert info is not None
++    argv = popen.call_args.args[0]
++    assert argv[:6] == ["numactl", "--membind=2", "--", "taskset", "-c", "148-151"]
++    assert argv[6].endswith("llama-server")
++    generic.assert_not_called()
+-- 
+2.51.0
+

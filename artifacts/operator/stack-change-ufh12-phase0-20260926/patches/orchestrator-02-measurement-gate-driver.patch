@@ -1,0 +1,215 @@
+From 05048a667d00565dba9873d9b67e7d3f53a2027b Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Sat, 26 Sep 2026 17:12:29 +0000
+Subject: [PATCH 2/2] UFH-12 Phase 0 (PROPOSED): measurement-gate driver G1/G2
+ for the embedder placement
+
+scripts/server/embedder_placement_gate.py sends HTTP only: G1 = frontdoor
+decode tok/s (timings.predicted_per_second) ABA pool-idle vs pool-saturated per
+frontdoor port with the A/A floor in the same unit; G2 = embedding texts/s on
+one port vs the whole pool. Run pre-apply and post-reload under a region claim
+over 0-191; thresholds are pre-registered in the epyc-root package. Not run by
+this commit (prepare-only).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
+---
+ scripts/server/embedder_placement_gate.py | 186 ++++++++++++++++++++++
+ 1 file changed, 186 insertions(+)
+ create mode 100755 scripts/server/embedder_placement_gate.py
+
+diff --git a/scripts/server/embedder_placement_gate.py b/scripts/server/embedder_placement_gate.py
+new file mode 100755
+index 00000000..e829d78b
+--- /dev/null
++++ b/scripts/server/embedder_placement_gate.py
+@@ -0,0 +1,186 @@
++#!/usr/bin/env python3
++"""Measurement gates G1/G2 for the UFH-12 Phase-0 embedder placement change.
++
++Pre-registered in epyc-root artifacts/operator/stack-change-ufh12-phase0-20260926/
++PACKAGE.md section 4. Run it TWICE on the live stack -- once BEFORE the apply
++(`--label pre`, old placement) and once AFTER the embedder reload
++(`--label post`) -- under a region claim over every CPU:
++
++    scripts/region-lock run --cpu-list 0-191 -- \
++      .venv/bin/python scripts/server/embedder_placement_gate.py --label pre \
++        --out /mnt/raid0/llm/epyc-orchestrator/data/embedder_placement/pre.json
++
++G1  frontdoor decode cost. For each frontdoor port, ABA-alternating pairs of
++    (Q) pool idle and (S) pool saturated. One sample = one fixed-prompt
++    /completion, temperature 0, fixed seed, `timings.predicted_per_second`
++    (tok/s, higher = better). Reports median S/Q per port and the Q-vs-Q
++    A/A spread (the noise floor, same unit).
++G2  pool scaling. Embedding texts/s with 4 in flight on ONE port versus 4 in
++    flight on EVERY pool port, frontdoor idle. Reports the ratio.
++
++The same ~130-token text is used in both runs so it fits the OLD 256-token
++slot as well as the new 512 one; the arms differ only in placement.
++
++This script only sends HTTP requests. It starts, stops and signals nothing,
++and it refuses to run if a declared pool port is not answering /health.
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import statistics
++import threading
++import time
++import urllib.request
++from datetime import UTC, datetime
++from pathlib import Path
++
++POOL_PORTS = [8090, 8091, 8092, 8093, 8094, 8095]
++FD_PROMPT = (
++    "Write a detailed, step-by-step explanation of how a hash map handles collisions, "
++    "covering separate chaining and open addressing, with the trade-offs of each."
++)
++EMB_TEXT = (
++    "The orchestrator routes each request to a role, and every role is backed by a "
++    "llama-server process pinned to a declared set of cores. Retrieval inside the REPL "
++    "returns pointers into spill files and context bundles rather than summaries, so the "
++    "model reads the exact lines it needs through get and peek. Lexical and dense scores "
++    "are fused with reciprocal rank fusion, and when no embedder is available the search "
++    "degrades to lexical results that are labelled as such. An index belongs to exactly "
++    "one embedding model, and the scheduler only ever chooses among instances of it. "
++)
++
++
++def _post(url: str, body: dict, timeout: float = 600.0) -> dict:
++    req = urllib.request.Request(
++        url, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"}
++    )
++    with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310 — loopback only
++        return json.loads(resp.read())
++
++
++def _healthy(port: int) -> bool:
++    try:
++        with urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=5) as r:  # noqa: S310
++            return r.status == 200
++    except OSError:
++        return False
++
++
++def _decode_tps(port: int, n_predict: int) -> float:
++    out = _post(
++        f"http://127.0.0.1:{port}/completion",
++        {"prompt": FD_PROMPT, "n_predict": n_predict, "temperature": 0, "seed": 42,
++         "cache_prompt": False},
++    )
++    return float(out["timings"]["predicted_per_second"])
++
++
++class _Load:
++    """`per_port` embedding requests in flight on each port until stopped."""
++
++    def __init__(self, ports: list[int], per_port: int) -> None:
++        self.ports, self.per_port = ports, per_port
++        self.stop = threading.Event()
++        self.done = 0
++        self.errors = 0
++        self._lock = threading.Lock()
++        self._threads: list[threading.Thread] = []
++
++    def _worker(self, port: int) -> None:
++        while not self.stop.is_set():
++            try:
++                _post(f"http://127.0.0.1:{port}/v1/embeddings", {"input": [EMB_TEXT]}, timeout=120)
++                with self._lock:
++                    self.done += 1
++            except Exception:  # noqa: BLE001 — counted, reported, never swallowed silently
++                with self._lock:
++                    self.errors += 1
++
++    def __enter__(self) -> "_Load":
++        for port in self.ports:
++            for _ in range(self.per_port):
++                t = threading.Thread(target=self._worker, args=(port,), daemon=True)
++                t.start()
++                self._threads.append(t)
++        time.sleep(3.0)  # let every server reach steady state before sampling
++        with self._lock:
++            self.done = 0
++            self.errors = 0
++        self.t0 = time.monotonic()
++        return self
++
++    def __exit__(self, *exc: object) -> None:
++        self.elapsed = time.monotonic() - self.t0
++        self.stop.set()
++        for t in self._threads:
++            t.join(timeout=150)
++
++
++def g1(fd_ports: list[int], pairs: int, n_predict: int) -> dict:
++    out: dict = {}
++    for port in fd_ports:
++        q, s = [], []
++        for _ in range(pairs):
++            q.append(_decode_tps(port, n_predict))
++            with _Load(POOL_PORTS, 4) as load:
++                s.append(_decode_tps(port, n_predict))
++            if load.errors:
++                raise SystemExit(f"G1 :{port}: {load.errors} embedding errors under load; refuse")
++        q.append(_decode_tps(port, n_predict))  # closing A of the ABA
++        qq = [abs(b - a) / a for a, b in zip(q, q[1:])]
++        ratios = [si / ((qa + qb) / 2) for si, qa, qb in zip(s, q, q[1:])]
++        out[str(port)] = {
++            "unit": "decode tok/s (timings.predicted_per_second)",
++            "q_samples": q, "s_samples": s,
++            "s_over_q_median": statistics.median(ratios),
++            "s_over_q_all": ratios,
++            "aa_noise_floor_rel_median": statistics.median(qq),
++        }
++    return out
++
++
++def g2(window_s: float) -> dict:
++    res = {}
++    for name, ports in (("one_port", POOL_PORTS[:1]), ("whole_pool", POOL_PORTS)):
++        with _Load(ports, 4) as load:
++            time.sleep(window_s)
++        if load.errors:
++            raise SystemExit(f"G2 {name}: {load.errors} embedding errors; refuse")
++        res[name] = {"texts": load.done, "seconds": load.elapsed, "texts_per_s": load.done / load.elapsed}
++    res["scaling_ratio"] = res["whole_pool"]["texts_per_s"] / res["one_port"]["texts_per_s"]
++    return res
++
++
++def main() -> int:
++    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
++    ap.add_argument("--label", required=True, choices=("pre", "post"))
++    ap.add_argument("--out", required=True, type=Path)
++    ap.add_argument("--fd-ports", default="8070,8080,8180")
++    ap.add_argument("--pairs", type=int, default=6)
++    ap.add_argument("--n-predict", type=int, default=256)
++    ap.add_argument("--g2-window-s", type=float, default=60.0)
++    args = ap.parse_args()
++    fd_ports = [int(p) for p in args.fd_ports.split(",")]
++    down = [p for p in POOL_PORTS + fd_ports if not _healthy(p)]
++    if down:
++        raise SystemExit(f"refusing: ports not healthy: {down}")
++    record = {
++        "schema": "epyc.embedder_placement_gate.v1",
++        "label": args.label,
++        "started_at": datetime.now(UTC).isoformat(),
++        "g2_pool_scaling": g2(args.g2_window_s),
++        "g1_frontdoor_decode": g1(fd_ports, args.pairs, args.n_predict),
++        "finished_at": datetime.now(UTC).isoformat(),
++    }
++    args.out.parent.mkdir(parents=True, exist_ok=True)
++    args.out.write_text(json.dumps(record, indent=2) + "\n")
++    print(json.dumps({k: record[k] for k in ("label", "g2_pool_scaling")}, indent=2))
++    for port, row in record["g1_frontdoor_decode"].items():
++        print(f"G1 :{port} S/Q median {row['s_over_q_median']:.3f}  A/A floor {row['aa_noise_floor_rel_median']:.3%}")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+-- 
+2.51.0
+
