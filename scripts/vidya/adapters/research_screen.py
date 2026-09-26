@@ -569,6 +569,7 @@ def project(native: Mapping[str, Any]) -> ClaimTuple:
         unit=claim["unit"],
         attestation_path=native["path"],
         attestation_sha256=native["file_sha256"],
+        attestation_present=True,
         attestation_verified=True,
         attestation_locator=receipt["run_id"],
         source_kind=receipt["source"]["kind"],

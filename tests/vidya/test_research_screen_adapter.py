@@ -170,8 +170,26 @@ def test_profiles_round_trip_and_shared_grader(tmp_path: Path, kind: str) -> Non
     )
     assert claim.extra["counts"]["eligible"] == (5 if kind == "selector_replay" else 2)
     assert claim.reps == (5 if kind == "selector_replay" else 1)
+    assert claim.attestation_present is True
     assert claim.attestation_verified is True
     assert ct.grade(claim)[:2] == ("Judged", "Located")
+
+
+@pytest.mark.parametrize("kind", ["selector_replay", "typed_decision_shadow"])
+def test_protocol_receipt_attains_shared_attested_grade(
+    tmp_path: Path, kind: str
+) -> None:
+    payload = body(tmp_path, kind)
+    payload["claim"]["protocol_id"] = "measurement/protocols/research-screen-v1"
+    claim = screen.project(screen.native_rows(seal(tmp_path, payload))[0])
+
+    quality, traceability, reasons = ct.grade(claim)
+
+    assert claim.reps
+    assert claim.attestation_present is True
+    assert claim.attestation_verified is True
+    assert (quality, traceability) == ("Witnessed", "Attested")
+    assert not any("artifact is not on disk" in reason for reason in reasons)
 
 
 @pytest.mark.parametrize(
