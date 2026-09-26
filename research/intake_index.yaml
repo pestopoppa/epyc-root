@@ -227757,7 +227757,11 @@
     intake/orch-prior-art-20260926 session held intake-1783..1821; that session landed first, so this lane renumbered its
     three entries 1783/1784/1785 -> 1822/1823/1824 before pushing. Dive scratch moved to /mnt/raid0/llm/tmp/dive-intake-1822/
     and dive-intake-1823/ (the old dive-intake-1783/ directory holds only the other session''s gaie/, llamacpp/, llmd-router/,
-    sources/*@*).'
+    sources/*@*).
+
+    (9) STAGE-2 CLOSE-OUT 2026-09-26 (operator decision): DECLINED - chipsandcheese MI455X article, chipsandcheese ''Scrying
+    the AMD gfx1250 LLVM tea'', chipsandcheese CDNA5 interview, Boehm CUDA matmul worklog, ''AMD GPUs go brrr'' (already intake-966),
+    HipKittens issues/PRs #57-#86 and AIatAMD / Simran Arora X posts. None ingested.'
 - id: intake-1823
   arxiv_id: null
   url: https://rocm.blogs.amd.com/software-tools-optimization/gluon-gemm-tutorial/README.html
@@ -227998,7 +228002,11 @@
     (7) DIVE-SURFACED SOURCES: llvm PR #159493 (+#148079 bundled) recommend ingest-and-dive; arXiv 2609.15627 ''DeepSeek-V4-Flash
     on AMD gfx90a'' (search snippet only; bears on intake-961) recommend ingest-and-dive; llvm PR #216372, Triton Gluon AMD
     API docs, the tutorial''s gfx942_experiment branch and triton 44f9161a (companion artifacts), aiter #179, tokenspeed #1655:
-    decline. Operator selection pending at the Stage-2 close-out gate.'
+    decline. Operator selection pending at the Stage-2 close-out gate.
+
+    (8) STAGE-2 CLOSE-OUT 2026-09-26 (operator decision): INGESTED-AND-DIVED - LLVM PR #159493 (+#148079) as intake-1826 and
+    arXiv 2609.15627 as intake-1825. DECLINED - llvm PR #216372, Triton Gluon AMD API docs, the tutorial''s gfx942_experiment
+    branch, triton 44f9161a, ROCm/aiter #179, lightseekorg/tokenspeed PR #1655.'
 - id: intake-1824
   arxiv_id: null
   url: https://rocm.blogs.amd.com/software-tools-optimization/mi450-lds-optimization/README.html
@@ -228069,3 +228077,468 @@
   disposition_evidence:
   - gfx1250-specific mechanisms with no gfx90a counterpart; retained as method context for LDS attribution, flagged for operator
     review.
+- id: intake-1825
+  arxiv_id: '2609.15627'
+  url: https://arxiv.org/abs/2609.15627
+  source_type: paper
+  title: 'DeepSeek-V4-Flash on AMD gfx90a: Correctness Recovery and Inference Performance Engineering'
+  authors:
+  - Siming Huang (HKUST(GZ))
+  categories:
+  - moe_optimization
+  - hardware_optimization
+  - quantization
+  - inference_serving
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  discovered_via: expansion
+  expanded_from: intake-1823
+  verdict: adopt_patterns
+  key_claims:
+  - The ROCm serving path for DeepSeek-V4-Flash targeted only gfx942/gfx950; enabling gfx90a needed a build-target change,
+    FNUZ FP8, AOT HIP kernels and AIter FP4 CK MoE enablement (Section 4).
+  - 'The early FP4 route was numerically wrong: legacy CK FP4xFP4 stage-1 returned zeros and CKTile W2 showed ~0.24 cosine
+    from a 16-row block permutation, fixed by a one-time load-time inverse permutation with no decode hot-path cost (Section
+    5.2).'
+  - CDNA2 decode uses packed FP4 weights, per-32 INT8 activation quantization, v_dot4_i32_i8 accumulation and a peer-read
+    all-reduce; peer-read all-reduce is associated with the largest jump, ~25.54 -> 60.20 tok/s (Section 6.1).
+  - On 8 MI250 GCDs (TP8/EP1, SGLang) resident decode reaches 88.63 tok/s at C1, 1041.78 at C32 and 1327.10 at C64; C16 prefill
+    reaches 10413.87 / 10263.02 / 9966.84 input tok/s at ~8K/16K/32K (Abstract, Tables 2-3; self-reported).
+  - The author attributes the CDNA2 limit to FP4-format mismatch, small-M utilization and per-layer synchronization rather
+    than HBM bandwidth alone, and states no hardware-counter roofline is provided (Sections 3.1, 14).
+  techniques:
+  - FNUZ FP8 selection and AOT HIP kernels for gfx90a
+  - load-time inverse W2 row permutation
+  - E2M1 nibble LUT via v_perm_b32
+  - per-32 INT8 activation quantization with v_dot4_i32_i8
+  - peer-read all-reduce
+  - 64-row expert sorter block
+  - empty causal-tile skipping in the C4 logits launch
+  - dedicated M=1 GEMV for the grouped wo_a projection
+  - fixed-order Top-6 FP32 reduction with unique-slot stores
+  - fixed-token hash correctness oracle; ABBA service screens
+  reported_results:
+  - 'Table 2 (v2, remeasured 2026-09-18): TP8 resident decode C1 88.63, C32 1041.78, C64 1327.10 tok/s; Table 3 C16 prefill
+    10413.87/10263.02/9966.84 input tok/s at ~8K/16K/32K. Self-reported, single author, no public artifact.'
+  - 'Section 7.1 / Fig. 4: 64-row expert sorter, gate/up 7.26 -> 5.55 ms, down 6.01 -> 5.26 ms, ~18.5% combined kernel time.'
+  - 'Section 8.2: skipping empty C4 tiles, 8K-input C32 ABBA 3.599x resident output tok/s (component 6934 -> 837 us).'
+  - 'Section 8.3: dedicated C1 wo_a GEMV 30.75 -> 6.88 us, +10.32% service (mean candidate/control).'
+  - 'Table 5 negatives: offline FP4->INT8 expansion loses (doubled weight traffic costs more than online unpack); 32x32 INT8
+    MFMA gate at 165 VGPR + 32 KiB LDS collapses occupancy; split-K does not suit BS1 small-M MoE.'
+  referenced_arxiv_ids:
+  - '2211.15841'
+  - '2309.06180'
+  - '2312.07104'
+  - '2412.19437'
+  - '2606.19348'
+  - '2607.05147'
+  cross_references:
+    chapters: []
+    handoffs:
+    - deepseek-v41-flash-evaluation.md
+    - agentic-rocm-kernel-authoring.md
+    - autokernel-research-loop.md
+    - mi210-big-model-and-acceleration-roadmap.md
+    experiments: []
+    intake_entries:
+    - intake-961
+    - intake-1822
+    - intake-1823
+    - intake-737
+    - intake-738
+    - intake-759
+  contradicting_evidence:
+  - Self-reported by a single author with no public companion repo (Appendix C names one without a URL); no independent citation
+    or replication found (2026-09-26).
+  - 'v1 -> v2 errata-grade changes: prefill roughly doubled after a new accepted large-prefill configuration; a rank-0 head-sink
+    mapping defect was fixed in v2 without saying whether v1''s matrix ran it; Section 9.3 still cites v1''s 1044.32 C32 figure
+    against v2''s 1041.78; the abs-page abstract metadata describes an older TP4 result.'
+  novelty_justification: medium. First gfx90a DeepSeek-V4 serving report in the index. Its decode kernels are the same design
+    llama.cpp HIP already ships on gfx90a (nibble LUT via __builtin_amdgcn_perm, sdot4, q8_1 per-32 activations, INT8 MFMA
+    MMQ); new are the W2 permutation and E8M0 scale-layout traps, the empty-tile and grouped-projection findings, and a negative-results
+    table.
+  relevance_justification: 'medium. Same ISA as our MI210, but SGLang/AIter/CK on ROCm 7.14 across 8 GCDs vs llama.cpp on
+    ROCm 6.2 on one MI210. DS41 CPU transfer is indirect: a correctness-oracle lesson and an observation lead on the grouped
+    wo_a projection.'
+  verdict_justification: 'adopt_patterns: methodology (correctness hierarchy, fixed-token hash oracle, non-constant-scale
+    fixtures, ABBA screens) and negative results transfer; no component is adoptable (unpublished repo, different stack).
+    Narrows intake-961: modern ROCm Triton runs on gfx90a, but no speedup is credited to Triton.'
+  recommended_actions:
+  - '[review candidate] DS41: confirm the AutoKernel correctness oracle exercises non-constant per-block scales (constant-scale
+    fixtures hid a scale-layout bug here).'
+  - '[review candidate] DS41: read the attn_wo_a node share from an existing profile before proposing any grouped-projection
+    route (GPU analogue +10.32%; CPU transfer unproven).'
+  - '[review candidate] Record the Triton narrowing on intake-961 (runs on gfx90a with Triton 3.7.1/ROCm 7.14; not evidence
+    of a competitive Triton path).'
+  notes: 'Stage-2b ingest-and-dive on operator selection 2026-09-26 (surfaced by the intake-1823 dive as a search snippet;
+    ID and title resolved against arxiv.org abs and API before ingest). v1 submitted 2026-09-14, v2 2026-09-20; dived v2 via
+    the version-pinned HTML plus the TeX e-print for captions and tables. credibility_score 1: not peer reviewed 0 (PPoPP
+    template, not a claimed publication); <=12 months +1; no established track record found 0; commercial bias 0; no independent
+    corroboration 0. The source shows agent-assisted drafting (.agents/experiments/ paths, TeX comments). All six referenced
+    arXiv IDs resolved with matching titles. Code facts for transfer checked read-only: frozen tree /mnt/raid0/llm/llama.cpp
+    ggml-cuda/vecdotq.cuh:34-54 (__builtin_amdgcn_perm nibble LUT) and common.cuh:697 (__builtin_amdgcn_sdot4); DS41 port
+    /mnt/raid0/llm/llama.cpp-experimental-fastload-ds41-20260925 @ cafb59c3 src/models/deepseek41.cpp:1219-1224 (wo_a as a
+    3D batched ggml_mul_mat over groups with permuted src1). Model differs from DS41 (V4-Flash 43 layers/256 experts vs DS41
+    40 layers/384 experts, top-6 + 1 shared). Scratch: /mnt/raid0/llm/tmp/dive-intake-1825/.'
+  verification: dive-verified
+  reader_should_conclude: Dive-verified single-author self-report on MI250 (not MI210), SGLang on ROCm 7.14. Its gfx90a decode
+    design is convergent with what llama.cpp HIP already ships, so it is corroboration, not new kernel work. Cite it for the
+    correctness lessons (non-constant scale fixtures, fixed-order reductions) and the negative results; treat its throughput
+    numbers as self-reported and its Triton mention as 'runs', not 'competitive'.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §4 gfx90a enablement [A1]
+    quote: The initial ROCm implementation targeted gfx942 and gfx950.
+    quote_sha256: 98a2a9c7978f5f541ef6b16891b8ba47c3288aa720ed2b21b77ddad85f2a7357
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §4 gfx90a enablement [A2]
+    quote: add the gfx90a build target and select HIP_FP8_TYPE_FNUZ;
+    quote_sha256: 9ff691889ec30ce69fe551d99a1d6d91b50d291eef211f5a533ed16d408d4c61
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §5.2 W2 permutation [A3]
+    quote: The legacy CK FP4-by-FP4 stage-1 path produced zeros on gfx90a. After switching to CKTile BF16-by-FP4, stage 1
+      reached approximately 0.999996 cosine similarity to a direct oracle, but stage-2 W2 remained near 0.24.
+    quote_sha256: be5a8bb102ed5b1fc4dc031f2b892971b50e99ea163a32bf821db8dd445ea5ab
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §5.2 W2 permutation [A4]
+    quote: This is a one-time load transformation with no decode hot-path cost.
+    quote_sha256: 45ae3cbfe636b5232cdeefe8c7b9d420116a01e5b10d2dc3b4e5ca87d243f772
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §6.1 decode route list [A6]
+    quote: online BF16 activation quantization to INT8 per 32 elements;
+    quote_sha256: fff7bc4306ffbc98662e030e1d4837f97592f88bb0266d0828f0646b09c93b4a
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §6.1 decode route list [A7]
+    quote: CDNA2 v_dot4_i32_i8 / mixed-dot accumulation followed by activation and E8M0 scaling;
+    quote_sha256: 59b4dec819bfdc6b2c28f4096c7b07094738880643ff13d5b8a02d1e9c995d42
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §6.1 (after Fig.2) [A8]
+    quote: The ledger associates the largest jump in figure 2 with peer-read all-reduce, approximately 25.54 to 60.20 tok/s.
+    quote_sha256: 54eaee3ea356553520e7491546a99edd3f07a32e572cc158863873610f070900
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Abstract [A11]
+    quote: Single-request resident decode reaches 88.63 output tokens/s, while C32 and C64 reach 1041.78 and 1327.10.
+    quote_sha256: 058a77877db54482534f306cbec4cd2c4c007501022b07eda3073db74b0fc2f8
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Abstract [A12]
+    quote: Separate C16 prefill measurements reach 10413.87, 10263.02, and 9966.84 input tokens/s at approximately 8K, 16K,
+      and 32K input length.
+    quote_sha256: a2c2ee63384767dec2d53c3d4ee455ee7b15b81d2afe1738c89df6313fa545fa
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §3.1 CDNA2 note [A21]
+    quote: CDNA2 provides wave64 execution, 64 KiB LDS per CU, and INT8/BF16/FP16 matrix or dot instructions, but no native
+      FP4 matrix core comparable to newer accelerator generations.
+    quote_sha256: ff25164cd70fe8e7cb85cd0e17b795cdbabd41273a01d9e3741534c7976329c0
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §14 conclusion [A25]
+    quote: It does not provide a hardware-counter roofline proving a single universal bottleneck.
+    quote_sha256: 9290e4fcb27bfe39b7ffca3fcdaa3711f5b027c1c73d57b85ccedc2d2bcbd668
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED verbatim (Section 4).
+  - claim_index: 1
+    effect: unaffected
+    note: CONFIRMED verbatim (Section 5.2).
+  - claim_index: 2
+    effect: unaffected
+    note: CONFIRMED (Section 6.1); the 25.54 -> 60.20 figure is the author's ledger attribution, not an isolated ablation.
+  - claim_index: 3
+    effect: narrowed
+    note: CONFIRMED as self-reported v2 figures on MI250 (not MI250X, not MI210); v2 remeasured the matrix and changed prefill
+      substantially vs v1; no public artifact.
+  - claim_index: 4
+    effect: narrowed
+    note: 'PARTIAL: the bottleneck attribution is asserted; the paper itself states it provides no hardware-counter roofline.'
+  depends_on: []
+  dive_corrections: '2026-09-26 STAGE-2b DIVE (operator-selected at the intake-1822/1823 close-out gate). Promoted directly
+    to dive-verified.
+
+    (1) Stack: SGLang; kernels from shape-specific HIP, AIter, CK/CKTile and Triton with local changes; Triton 3.7.1+rocm7.14.0,
+    PyTorch 2.12.0a0, HIP compiler 7.15; 8 MI250 GCDs on dual EPYC 7763.
+
+    (2) Correctness recovery: legacy CK FP4xFP4 zeros; CKTile W2 16-row permutation [0,2,4,6,1,3,5,7] fixed at load; AIter
+    sampler invalid token IDs replaced by torch.argmax; E8M0 scale-shuffle mismatch in large-prefill BF16-CK hidden by constant-scale
+    fixtures; per-rank attention-sink mapping defect (new in v2); a gfx90a mHC selector lost in a rebase. FlashMLA / Triton-gating
+    fallbacks: NOT-FOUND-IN-SOURCE.
+
+    (3) Transfer to llama.cpp HIP on MI210: mostly already integrated (nibble LUT via __builtin_amdgcn_perm, sdot4, q8_1 per-32
+    activations, INT8 MFMA MMQ on gfx90a). Transferable negatives: offline 4-bit->INT8 expansion, split-K for BS1 small-M
+    MoE, 165-VGPR + 32 KiB LDS occupancy collapse (independent gfx90a register-pressure datapoint supporting the intake-1822/1823
+    static-register-audit candidate). AGPR, sched_group_barrier and MFMA opcode details: NOT-FOUND-IN-SOURCE.
+
+    (4) intake-961 (Triton open on gfx90a): NARROWED - a modern ROCm Triton runs on gfx90a inside SGLang, but no Triton kernel
+    is named or credited with a gain; our local Triton is 3.1.0 on ROCm 6.2.
+
+    (5) DS41: V4-Flash model facts differ from DS41. Two observation-level leads (oracle scale fixtures; attn_wo_a grouped
+    projection at nt=1, deepseek41.cpp:1219-1224). Empty-tile skipping looks structurally absent in llama.cpp (indexer view
+    sized by mask width in the frozen tree deepseek4.cpp:651-657; the DS41 port was not re-checked).
+
+    (6) DIVE-SURFACED SOURCES (Stage-2c candidates, operator selection pending): arXiv 2607.05147 DSpark (resolves intake-738''s
+    ''no arXiv id'' provenance note), arXiv 2606.19348 DeepSeek-V4 tech report (architecture source for CSA/HCA/mHC; referenced
+    inside intake-1257/1323 but no entry), arXiv 2609.19969 ''DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression''
+    (found by search, not cited by the paper; bears on DS41 attention/KV facts). All three IDs resolved against arxiv.org
+    with matching titles. Companion repo unpublished: watch, no entry.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Dive-verified 2026-09-26; DS41 observation leads and the intake-961 narrowing are drafted for the Stage-3 plan, none
+    filed. Trigger: operator approval of the Stage-3 plan.'
+- id: intake-1826
+  arxiv_id: null
+  url: https://github.com/llvm/llvm-project/pull/159493
+  source_type: repo
+  title: 'LLVM AMDGPU PR #159493 ''Select VGPR MFMAs by default'' (+ PR #148079 -amdgpu-mfma-vgpr-form knob)'
+  authors:
+  - 'Matt Arsenault (PR #159493)'
+  - 'Jeffrey Byrnes (PR #148079)'
+  categories:
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-1823
+  verdict: worth_investigating
+  key_claims:
+  - 'PR #159493 (merged 2026-01-22, 95687721) flips the -amdgpu-mfma-vgpr-form default from false to true, so instruction
+    selection always picks VGPR-form MFMA on GFX90AInsts targets (gfx90a, gfx942, gfx950); the PR calls AGPR form a last resort
+    beyond 256 VGPRs.'
+  - 'PR #148079 (merged 2025-07-18, 695660cd) introduced the hidden knob with default false, overriding the older MayNeedAGPRs
+    rule that chose VGPR form only when a function''s max VGPRs was at most 256 and no AGPR use was possible.'
+  - 'At the #159493 merge commit, AGPR-form selection requires !MFMAVGPRForm && MinNumAGPRs >= N (driven by the amdgpu-agpr-alloc
+    attribute); the waves-per-eu heuristic had already been deleted (commit 476a6ea9, PR #161996); gfx908 always uses AGPR
+    form.'
+  - After the flip, AGPR form is recovered only post-register-allocation by AMDGPURewriteAGPRCopyMFMA, which runs unconditionally
+    in GCNPassConfig::addPreRewrite and rewrites only when that removes cross-bank copies or spills.
+  - The upstream code owner states AGPR MFMA emission was essentially an edge case or bug; neither PR contains quantitative
+    performance data.
+  techniques:
+  - VGPR-by-default MFMA selection
+  - 'post-RA VGPR->AGPR MFMA rewrite and unspill (AMDGPURewriteAGPRCopyMFMA, PRs #145024/#154323)'
+  - amdgpu-agpr-alloc attribute inferred by AMDGPUAttributor
+  - waves_per_eu / amdgpu_num_vgpr register caps as the ROCm 6.2 lever
+  reported_results:
+  - 'No performance numbers in either PR. Only vendor qualitative statements in follow-ups #180751 and #205901 (scheduler
+    RewriteMFMAForm stage; off by default after revert #185604).'
+  - 'ROCm mapping (ROCm/llvm-project tag scan): rocm-6.2.0 .. 7.1.x and therock-7.9 lack the knob; rocm-7.2.x and therock-7.10
+    have it default-off with the old rule; therock-7.11/7.12 default-off with attribute-driven selection; therock-7.13, ROCm
+    Core SDK 7.14.0 (2026-07-16) and 10.0.0 (2026-08-26) default-on. Host ROCm is 6.2.0-66; strings show no amdgpu-mfma-vgpr-form
+    / amdgpu-agpr-alloc / rewrite-agpr-copy-mfma.'
+  - 'OUR BINARY natural experiment (production libggml-hip.so.0.16.0, ROCm 6.2, reusing the intake-1823 extraction): MMA-FA
+    256-thread kernels whose CDNA config sets occupancy 2 (DKQ<=128) are all VGPR form (0 AGPR, 0 copies) but sit at the 256
+    cap with spills in 49/60; occupancy-1 MMA-FA (DKQ 192-320) are AGPR form at 301-512 registers; every 512-thread variant
+    is VGPR form; mul_mat_f <=256 threads uses at most 164 total/144 arch registers; rocWMMA FA 28/30 kernels at <=256 total.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - autokernel-research-loop.md
+    experiments: []
+    intake_entries:
+    - intake-1823
+    - intake-1822
+    - intake-1415
+    - intake-1421
+  contradicting_evidence:
+  - 'The only quantitative figure found points the other way on a different target: forcing AGPR form on gfx950 at 1 wave/SIMD
+    raised MFMA efficiency 87.68% -> 96.00% (intake-1823, vendor). Third-party llvm issue #131954 (gfx942) reports AGPR/VGPR
+    moves degrading performance, qualitatively.'
+  - 'gfx90a support in ROCm releases carrying the flip: ROCm 10.0.0 compatibility matrix lists MI210 as supported (vendor
+    doc), TheRock SUPPORTED_GPUS.md lists gfx90a as ''Build Passing'' only.'
+  novelty_justification: medium. The mechanism was flagged in the intake-1823 dive; new here are the exact ROCm version mapping,
+    the post-RA rewrite pass, the earlier deletion of the waves-per-eu heuristic, and an in-binary natural experiment.
+  relevance_justification: high. It decides MFMA codegen form for three of our gfx90a kernel families (mul_mat_f, rocWMMA
+    FA, MMA FA) on any compiler upgrade, and an equivalent lever exists on ROCm 6.2 today (register caps via launch bounds).
+  verdict_justification: 'worth_investigating: the net performance effect of removing copies vs the 256-register cap and spills
+    is unmeasured on our kernels.'
+  recommended_actions:
+  - '[review candidate] NH-1 (gated): register-cap arm on <=256-thread mul_mat_f and rocWMMA-FA variants on ROCm 6.2 with
+    a static accept gate; exclude MMA-FA DKQ>=192.'
+  - '[review candidate] ROCm-upgrade runbook: MFMA-form row plus agpr/accum_offset, in-loop v_accvgpr copies, arch-VGPR cap
+    and spill columns per compiler cell.'
+  notes: 'Stage-2b ingest-and-dive on operator selection 2026-09-26, bundling PR #148079 as the operator directed. credibility_score
+    null: the PRs make no empirical performance claim; their claims are code behaviour verified at the merge SHAs. ROCm 6.2
+    mechanism verified from source (ROCm/llvm-project rocm-6.2.0): HIP __launch_bounds__(N,k) expands to amdgpu_waves_per_eu(k)
+    (/opt/rocm/include/hip/amd_detail/amd_hip_runtime.h:172-174); getMaxNumVGPRs(2) = 256 (AMDGPUBaseInfo.cpp:1139); SIMachineFunctionInfo.cpp:104-107
+    then sets MayNeedAGPRs=false for kernels. Companion PRs folded in as anchors/notes, not entries: #161996, #145024, #154323,
+    #150599, #170335/#180751/#185604/#205901 (monitor at upgrade). Scratch: /mnt/raid0/llm/tmp/dive-intake-1826/ (regen.sh
+    regenerates all raw and derived files).'
+  verification: dive-verified
+  reader_should_conclude: Code-verified compiler behaviour, no performance data. On ROCm 6.2 our <=256-thread MFMA kernels
+    pick AGPR form (and pay v_accvgpr copies) whenever their register ceiling exceeds 256; a register cap (launch-bounds min-blocks
+    2 or amdgpu_num_vgpr) flips them to VGPR form today, as the occupancy-2 MMA-FA kernels in our own binary already show.
+    ROCm 7.14/10.x flip the default for all. MMQ (512 threads) is unaffected either way. Any change must pass a static register
+    audit before timing.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'PR #159493 description [whitespace-collapsed match]'
+    quote: AGPRs are undesirable since they are only usable by a handful instructions like loads, stores and mfmas and everything
+      else requires copies to/from VGPRs. Using the AGPR form should be a measure of last resort if we must use more than
+      256 VGPRs.
+    quote_sha256: 839399b4051267a7230596ef35697025f2da90b5f8b97edc46d287f6f31b4ccf
+    source_revision: 'llvm/llvm-project PR #159493, merge commit 95687721874d2e32296cc377e819eee15dfb8ae7 (merged 2026-01-22;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: llvm-project@95687721 llvm/lib/Target/AMDGPU/SIMachineFunctionInfo.cpp [whitespace-collapsed match]
+    quote: cl::location(SIMachineFunctionInfo::MFMAVGPRForm), cl::init(true),
+    quote_sha256: aff614c045c33c2d3ec8abb14120ee31d1882222ef901e12036cd0a11a89cbda
+    source_revision: 'llvm/llvm-project PR #159493, merge commit 95687721874d2e32296cc377e819eee15dfb8ae7 (merged 2026-01-22;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'PR #148079 description [whitespace-collapsed match]'
+    quote: This gives an override to the user to force select VGPR form of MFMA. Eventually we will drop this in favor of
+      compiler making better decisions, but this provides a mechanism for users to address the cases where MayNeedAGPRs favors
+      the AGPR form and performance is degraded due to poor RA.
+    quote_sha256: c65b70a2b77f9fa53809ac7d5e0fe8d2a96e5c5b61c282043ecb376f5e4c236b
+    source_revision: 'llvm/llvm-project PR #148079, merge commit 695660cdfd1ca65cd6e02e6950d10c990dfa0036 (merged 2025-07-18;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: llvm-project@695660cd llvm/lib/Target/AMDGPU/SIMachineFunctionInfo.cpp [whitespace-collapsed match]
+    quote: MayNeedAGPRs = ST.hasMAIInsts() && !MFMAVGPRForm;
+    quote_sha256: 7a127f5fed524f8e089b12f946c004ca3d2ce87c3d24c012103101e8e803f36b
+    source_revision: 'llvm/llvm-project PR #148079, merge commit 695660cdfd1ca65cd6e02e6950d10c990dfa0036 (merged 2025-07-18;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: llvm-project@95687721 llvm/lib/Target/AMDGPU/SIMachineFunctionInfo.h [whitespace-collapsed match]
+    quote: return !MFMAVGPRForm && getMinNumAGPRs() >= NumRegs;
+    quote_sha256: 00d745cdfaac1b193c17d1787bca263e493b13932eca3e2586b3076ab42f28fb
+    source_revision: 'llvm/llvm-project PR #159493, merge commit 95687721874d2e32296cc377e819eee15dfb8ae7 (merged 2026-01-22;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: llvm-project@95687721 llvm/lib/Target/AMDGPU/VOP3PInstructions.td [whitespace-collapsed match]
+    quote: return !Subtarget->hasGFX90AInsts() ||
+    quote_sha256: 4aca7704bb2e272b194c70384b19ee42d10429ea06649539fae969f39e0ae4ec
+    source_revision: 'llvm/llvm-project PR #159493, merge commit 95687721874d2e32296cc377e819eee15dfb8ae7 (merged 2026-01-22;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'PR #159493 review (jrbyrnes, SIMachineFunctionInfo.cpp) [whitespace-collapsed match]'
+    quote: However, after https://github.com/llvm/llvm-project/commit/476a6ea9575f1a8498e080b4ace0700c3b91f9c1 the heuristic
+      was deleted.
+    quote_sha256: 8ada562da27a92e111b1786008b9421b5d7344e6a00d36a872287e861865ebd8
+    source_revision: 'llvm/llvm-project PR #159493, merge commit 95687721874d2e32296cc377e819eee15dfb8ae7 (merged 2026-01-22;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: llvm-project@95687721 llvm/lib/Target/AMDGPU/AMDGPURewriteAGPRCopyMFMA.cpp [whitespace-collapsed match]
+    quote: We expect MFMAs to be selected using VGPRs, and
+    quote_sha256: 55a0b96824750f5c607b4dd0a0ecd4d250fdfae80af0f36a90c5c2dfc6f3fa99
+    source_revision: 'llvm/llvm-project PR #159493, merge commit 95687721874d2e32296cc377e819eee15dfb8ae7 (merged 2026-01-22;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: llvm-project@95687721 llvm/lib/Target/AMDGPU/AMDGPUTargetMachine.cpp (GCNPassConfig::addPreRewrite) [whitespace-collapsed
+      match]
+    quote: addPass(&AMDGPURewriteAGPRCopyMFMALegacyID);
+    quote_sha256: a52f69749402b55237266d0f38c71a3bb4b96bc1b1c1a38f281df0b9f26897dd
+    source_revision: 'llvm/llvm-project PR #159493, merge commit 95687721874d2e32296cc377e819eee15dfb8ae7 (merged 2026-01-22;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: 'PR #159493 review (arsenm, SIMachineFunctionInfo.cpp) [whitespace-collapsed match]'
+    quote: But the system always was try to use the VGPR form. Any time we were emitting AGPR MFMAs was essentially an edge
+      case or bug
+    quote_sha256: 0e2bf3a157dfde5ab821b339468744b437ef7aba4b6a608b20048ab8fbe7c694
+    source_revision: 'llvm/llvm-project PR #159493, merge commit 95687721874d2e32296cc377e819eee15dfb8ae7 (merged 2026-01-22;
+      retrieved 2026-09-26)'
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CONFIRMED at merge commit 95687721 (one-line source change; 27 test files).
+  - claim_index: 1
+    effect: unaffected
+    note: 'CONFIRMED at 695660cd; follow-up #150599 made the knob a no-op on gfx908.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CONFIRMED at 95687721; heuristic deletion attributed via a #159493 review comment to commit 476a6ea9 (#161996).'
+  - claim_index: 3
+    effect: unaffected
+    note: CONFIRMED; loop-phi rewrites remain TODO upstream, so hot-loop accumulators may keep copies or spills after an upgrade.
+  - claim_index: 4
+    effect: unaffected
+    note: CONFIRMED as an author statement; absence of performance data verified in both PR bodies and review threads.
+  depends_on:
+  - entry: intake-1823
+    why: The reported_results natural experiment and the NH-1 support reuse the intake-1823 extraction of our production binary;
+      if that extraction were retracted those results would lose their data (the key claims about LLVM behaviour are independent).
+  dive_corrections: '2026-09-26 STAGE-2b DIVE (operator-selected, PR #148079 bundled). Promoted directly to dive-verified.
+
+    (1) Refines intake-1823: the ROCm 6.2 rule is MayNeedAGPRs=false only when GFX90AInsts, getMaxNumVGPRs(F) <= 256 and no
+    AGPR use (kernels only); our binary''s occupancy-2 MMA-FA kernels are VGPR form at the 256 cap (with spills), occupancy-1
+    ones AGPR form.
+
+    (2) Hypothesis impact: NH-1 SURVIVES, narrowed - keep for <=256-thread mul_mat_f (clean fit) and rocWMMA FA (28/30); drop
+    for MMA-FA DKQ>=192 (a 256 cap would trade copies for scratch spills); run an amdgpu_num_vgpr arm beside waves_per_eu
+    (waves_per_eu also raises the scheduler''s occupancy target). NH-2 refined with per-compiler-cell columns and an amdgpu-agpr-alloc
+    inference check. MMQ H5: a 256-thread occupancy-1 arm is AGPR form on 6.2 (512 budget, copies) and VGPR form on 7.14+
+    (AV allocation + rewrite pass); record the compiler with every cell.
+
+    (3) Upgrade risk: if the attributor cannot infer amdgpu-agpr-alloc, the default split limits arch VGPRs to 128 (GCNSubtarget.cpp:601-603
+    at 95687721).
+
+    (4) DIVE-SURFACED: #161996, #145024/#154323 folded in; #170335/#180751/#185604/#205901 monitor at upgrade time; issue
+    #131954 cite only; TheRock SUPPORTED_GPUS.md and the ROCm 10.0.0 compatibility matrix cited in the runbook draft. No new
+    intake recommended.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - Dive-verified 2026-09-26; NH-1 (gated by the 2026-09-08 consolidation directive) and the ROCm-upgrade runbook row are
+    drafted for the Stage-3 plan, none filed.
