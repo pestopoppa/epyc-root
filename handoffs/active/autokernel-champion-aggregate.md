@@ -263,6 +263,14 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   | Qwen3.8-27B-Q8_0 pp512 (production model) | **+0.50%** |
   | Qwen3.8-27B-Q8_0 tg128 | **−0.28%** |
 
+  **Correction, 2026-09-26 (research intake intake-1822#record; second reader CONFIRMED): the 27B-Q8_0 pp512 row
+  never exercised MMQ-MFMA.** On CDNA2, dense Q8_0 dispatches to MMQ only at ne11 <= 128 (`mmq.cu:296-312`), and
+  with `GGML_HIP_NO_MMQ_MFMA` the fall-through is `ne11 < MMQ_DP4A_MAX_BATCH_SIZE` (64). So both arms ran hipBLAS
+  for the dense matmuls. The flag also switches MFMA flash-attention selection and MFMA tile primitives, which is
+  where any residual +0.50% would come from. CH-6's decision stands (the flag buys nothing where the fleet runs pp512),
+  but the stated mechanism ("the regime where MFMA has least to offer") is wrong. An MMQ-MFMA question needs ubatch
+  <= 128 (`-ub 128`, pp64/pp128) or an MoE/Q4_0 surface.
+
   The +26.6% **replicates** where it was taken (+23.1% here) and **vanishes** on the production
   model — precisely what the recorded counter-argument predicted, since pp512 single-stream is the
   regime where MFMA has least to offer. **Do not adopt `MMQ_MFMA=OFF` into the champion's build

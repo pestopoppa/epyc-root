@@ -1,9 +1,9 @@
 {
   "session_id": "intake-hipkittens-gemm-ladder-20260926",
   "started_at": "2026-09-26T18:05:00Z",
-  "last_checkpoint": "2026-09-26T23:30:00Z",
+  "last_checkpoint": "2026-09-26T23:59:00Z",
   "phase": 5,
-  "stage": "stage3-plan-proposed",
+  "stage": "stage4-applied-pending-push",
   "session_kind": "research-intake Stage 1 (single operator-submitted blog + 2 expansion entries), run by a subagent of the DS41/AutoKernel main session",
   "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-hipkittens-gemm-20260926, branch intake/hipkittens-gemm-20260926, rebuilt on origin/main 7e931704 after intake/orch-prior-art-20260926 landed with intake-1783..1821. This session's entries renumbered 1783/1784/1785 -> 1822/1823/1824 (pre-renumber commit 7e337804 kept as branch backup/intake-hipkittens-gemm-pre-renumber, delete at close-out).",
   "previous_session": "intake-orch-prior-art-20260926 (stage4-complete; preserved at /mnt/raid0/llm/tmp/dive-hipkittens-gemm/previous-research-session-orch-prior-art-stage4.json). Earlier: intake-exl3-sglang-throughput-20260925 (/mnt/raid0/llm/tmp/dive-hipkittens-gemm/previous-research-session-exl3-stage4.json)",
@@ -71,6 +71,14 @@
       "verbatim": "Operator Stage-2 gate decision: - INGEST+DIVE: (1) LLVM PR #159493 (+#148079 bundled); (2) arXiv 2609.15627 \"DeepSeek-V4-Flash on AMD gfx90a\" \u2014 resolve the real ID/title first; if it doesn't resolve to a real paper, record that and don't fabricate. - DECLINE everything else surfaced (incl. the chipsandcheese gfx1250-LLVM and MI455X articles). Record the declines in the steering ledger. Continue the skill flow on your lane: Stage 2 for the two new sources, then prepare the Stage-3 plan (the six proposed handoff tasks, updated with whatever #159493 and the arXiv paper change), honoring the gating flag (items 2 and 3 are under the 2026-09-08 no-pure-kernel-research directive \u2014 present them as gated).",
       "disposition": "planned",
       "plan_ref": "stage2b: intake-1825 (arXiv 2609.15627), intake-1826 (LLVM PR #159493 + #148079); declines recorded in stage2_declines; Stage-3 plan items 2/3 marked GATED",
+      "relayed_by": "coordinator"
+    },
+    {
+      "seq": 4,
+      "stage": 3,
+      "verbatim": "Operator decisions: - OD-1: ACCEPT your recommendations (DSpark 2607.05147 = re-encounter on intake-738 + set its arxiv_id; decline DeepSeek-V4 tech report 2606.19348 and DeepSeek-V4.1-Flash 2609.19969 for this lane \u2014 they go to a DS41-focused intake later). Record in the steering ledger. - Stage 3: APPROVED AS PLANNED \u2014 apply P1\u2013P8 exactly as written (P2 + INF03-AGPR-1 carry the GATED marker). - DS41 inbox note 42: I hold it and place it at the next loop boundary \u2014 do not write the inbox.",
+      "disposition": "planned",
+      "plan_ref": "Stage 4 applies P1-P8; OD-1 closes the Stage-2 gate",
       "relayed_by": "coordinator"
     }
   ],
@@ -287,6 +295,16 @@
       "source": "ROCm/aiter #179; lightseekorg/tokenspeed PR #1655",
       "bears_on": "intake-1823",
       "reason": "operator declined"
+    },
+    {
+      "source": "arXiv:2606.19348 (DeepSeek-V4 tech report)",
+      "bears_on": "intake-1825",
+      "reason": "operator declined for this lane 2026-09-26; route to a DS41-focused intake"
+    },
+    {
+      "source": "arXiv:2609.19969 (DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression)",
+      "bears_on": "intake-1825",
+      "reason": "operator declined for this lane 2026-09-26; route to a DS41-focused intake"
     }
   ],
   "stage2b": {
@@ -351,5 +369,22 @@
     ]
   },
   "stage3_plan": "docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md",
-  "stage3_open_gate": "OD-1: operator decision on the three sources surfaced by the intake-1825 dive (arXiv 2607.05147, 2606.19348, 2609.19969)"
+  "stage3_open_gate": null,
+  "stage3_approved": "2026-09-26 (operator, via coordinator): approved as planned",
+  "stage4": {
+    "applied": [
+      "P1 agentic-rocm-kernel-authoring.md: INF03-REGAUDIT-1, INF03-AGPR-1 (GATED), INF03-GLUON-X (pre-ticked)",
+      "P2 autokernel-research-loop.md: AK-MMQ-H3/H7/H8/H10/H5/SK (GATED) + pre-ticked record",
+      "P3 docs/runbooks/rocm-upgrade-checklist.md: MFMA-form row",
+      "P4 autokernel-champion-aggregate.md: CH-6 correction note",
+      "P5 deepseek-v41-flash-evaluation.md: DS41-C52 edited, DS41-C53, DS41-C54",
+      "P6 vidya-belief-substrate-program.md: SC84a",
+      "P7 rocm-verify-profile-backend.md: RVP-ATT-1",
+      "P8 intake-1822/1823/1825/1826 integrated; intake-961 narrowed; intake-738 arxiv_id 2607.05147 + re-encounter"
+    ],
+    "new_open_tasks": 13,
+    "pre_ticked": 2,
+    "validate_intake": "exit 0",
+    "index_state_check": "exit 0"
+  }
 }

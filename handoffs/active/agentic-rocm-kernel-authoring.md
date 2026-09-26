@@ -1197,3 +1197,33 @@ expectation. No external benchmark was re-measured here.
 
 - **S3-INF03-DRQ-1:** add external and historical cross-play over contemporaries, a stratified archive, and frozen unseen shapes/operators/edge cases; emit the pairwise matrix, dominance graph, forgetting, regret/exploitability, cycles, internal champion, population mean, and external-panel result with repeated-seed/opponent intervals. Sources: intake-1600#record, intake-1612#record, intake-1613#record.
 - **S3-INF03-DRQ-2:** run matched random, neutral-mutation, non-LLM-mutation, static-opponent, score-only/no-archive, no-history, and archive-depth controls under equal evaluator, model-call, token, and wall budgets; retain every effective config and terminal summary in native receipts. Sources: intake-1600#record, intake-1611#record, intake-1616#record, intake-1617#record.
+
+## Research Intake Update — 2026-09-26 (GEMM ladders and MFMA form on gfx90a; intake-1822..1826)
+
+Dived: intake-1822 (HipKittens Helios GEMM ladder + code), intake-1823 (Gluon GEMM tutorial + repo, and a read-only
+extraction of our production libggml-hip.so), intake-1825 (arXiv 2609.15627, DS-V4-Flash on MI250/gfx90a),
+intake-1826 (LLVM #159493/#148079, MFMA VGPR/AGPR form). What transfers to gfx90a is lever ORDER and a short list of
+ROCm 6.2 builtins (sched_group_barrier, iglp_opt, s_setprio, dword raw.buffer.load.lds); TDM, split barriers, clusters,
+async b128 loads and WMMA do not exist here. MMQ at J=64 already spills at the 256-VGPR cap, so every register-affecting
+candidate must pass a static audit first. The AGPR copy tax on <=256-thread MFMA kernels is a ROCm 6.2 compiler default
+(intake-1826#record).
+
+- [ ] **INF03-REGAUDIT-1 — Standing zero-GPU static register/ISA audit for gfx90a HIP kernels.** Promote the
+  intake-1823 dive scripts (`/mnt/raid0/llm/tmp/dive-intake-1823/ourbuild/`: split_fatbin.py, analyze_kernels.py,
+  loop_analysis.py, agpr_rule_check.py) into the research repo with a README. Per kernel, emit: symbol, workgroup
+  size, agpr_count / accum_offset, total and arch VGPR, vgpr_spill_count, private bytes, in-hot-loop spill reloads,
+  in-loop v_accvgpr_read/write, s_waitcnt drains per iteration, and MFMA placement relative to s_barrier. Scope: MMQ,
+  MMA-FA, rocWMMA FA, mul_mat_f. It is the accept gate for any MMQ/FA register-affecting candidate: no timing
+  before it passes. Reads existing binaries only. Belief-kernel write side: SC84 amendment (P6).
+- [ ] **INF03-AGPR-1 — GATED (operator directive 2026-09-08). NH-1 MFMA-form arm on ROCm 6.2.** On an experimental
+  branch from the v10 tip, change the <=256-thread `__launch_bounds__(N,1)` of mul_mat_f (mmf.cuh) and rocWMMA FA
+  (fattn-wmma-f16.cu) to `(N,2)`, with a separate `amdgpu_num_vgpr(128)` arm (waves_per_eu also raises the scheduler's
+  occupancy target). Compile for gfx90a with ROCm 6.2. Accept only if INF03-REGAUDIT-1 shows agpr=0, zero in-loop
+  v_accvgpr copies and no new spills; then run a matched same-window ABA with correctness. Exclude MMA-FA DKQ>=192:
+  a 256 cap there would trade copies for scratch spills. Evidence: intake-1826#record, intake-1823#record.
+- [x] **INF03-GLUON-X — record, not work: Gluon and the tutorial's tools do not transfer to gfx90a.** Upstream Triton
+  rejects BufferLoadToLocal on CDNA2, and local Triton 3.1.0 predates Gluon. amdgcnas hard-codes gfx950 registers,
+  misses gfx90a `buffer_*` spills, and deletes in-loop s_nop wholesale. llirSched's cycle table is gfx950-only (gfx90a
+  16x16 MFMAs are 8-pass). Do not port. (intake-1823#record) ✅ 2026-09-26
+- Register-pressure datapoint (cross-reference only): intake-1825 Table 5 reports a 32x32 INT8 MFMA gate at 165 VGPR plus
+  32 KiB LDS collapsing occupancy on gfx90a. That is independent support for INF03-REGAUDIT-1.

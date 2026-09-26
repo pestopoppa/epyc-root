@@ -41146,7 +41146,7 @@
   verdict_justification: 'adopt_patterns rather than adopt_component: the training/eval recipe and the DSpark drafter architecture are worth mining, but the framework cannot deploy as-is on our CPU stack — it assumes 8 GPUs, has no GGUF/llama.cpp serving path, and the released checkpoints are for gemma-4-12B-it (not our gemma4-26B-A4B worker) inside a GPU spec-dec runtime. The MI210 landing ~July 2026 could host draft-head training, but 1x MI210 is far from the assumed 8-GPU node, so the value is the recipe, not a drop-in component.'
   notes: 'Fetched raw README (main) and the repo page — both agree: MIT, three algorithms (DSpark/DFlash/EAGLE-3), 8-GPU default, targets Qwen3 + gemma-4-12B-it. This is one of a tightly-coupled 3-URL cluster; siblings ingested in the same batch are the DSpark paper (https://github.com/deepseek-ai/DeepSpec/blob/main/DSpark_paper.pdf) and the model https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-DSpark (sibling intake ids unknown at write time). credibility_score=null per rubric (repo). CPU-viability caveat: the drafting is GPU-batching-oriented; benefit on our concurrency-1 bandwidth-bound CPU decode is unproven and must be measured. ADVERSARIAL ADDENDUM (verifier): Tier-2b search confirmed DeepSpec/DSpark is real (released 2026-06-27) and that the +26.7-30.9%-over-EAGLE-3 acceptance-length numbers reproduce across press, but ALL numbers trace to DeepSeek''s own measurement with no independent reproduction (added to contradicting_evidence). Flagged an authorship-framing caveat: DFlash (z-lab, intake-158) and EAGLE-3 (intake-070) are third-party algorithms re-implemented as baselines, not DeepSeek-original. credibility_score (null, repo) and verdict (adopt_patterns) UNCHANGED and correct; novelty medium / relevance high preserved (both defensible).'
 - id: intake-738
-  arxiv_id: null
+  arxiv_id: '2607.05147'
   url: https://github.com/deepseek-ai/DeepSpec/blob/main/DSpark_paper.pdf
   source_type: paper
   title: 'DSpark: Semi-Autoregressive Speculative Decoding with Adaptive Verification Depth (DeepSpec)'
@@ -41217,7 +41217,7 @@
   novelty_justification: The parallel-backbone + sequential-correction 'semi-autoregressive' drafter plus a confidence-gated adaptive-verification-depth controller is a distinct mechanism not covered in chapter 10 (which documents EAGLE-3, DFlash, tree speculation) or by our native MTP-1/NEXTN. grep of intake_index.yaml for DSpark returned 0 prior entries. High.
   relevance_justification: 'Bullseye on the active spec-dec-mtp-refresh focus. Two independently transferable ideas: (1) the semi-autoregressive draft head is a candidate alternative to our native MTP heads and directly comparable via the measure-alpha gate (feedback_measure_alpha memory; draft-vs-target-time-analysis.md); (2) the adaptive verification-depth idea generalizes SpecDec++-style adaptive-K work. Deploy caveat lowers only the model, not the method — hence relevance stays high.'
   verdict_justification: 'adopt_patterns: the drafter architecture and adaptive-K controller are worth mining, but as-published DSpark cannot deploy as-is on our stack — the hardware-aware scheduler is keyed on GPU utilization and the whole design targets high-concurrency GPU batching, whereas our CPU decode is bandwidth-bound and effectively concurrency-1, so the scheduler''s central benefit largely evaporates. The parallel-backbone drafting also implies batched matmuls that are GPU-favorable. The transferable core is the semi-autoregressive draft head, which would need training (DeepSpec pipeline) and a GGUF port to reach v6.'
-  notes: 'PROVENANCE DEGRADED: the raw PDF (https://raw.githubusercontent.com/deepseek-ai/DeepSpec/main/DSpark_paper.pdf, 705.9KB, application/octet-stream) is FlateDecode-compressed and could not be parsed by WebFetch. The DSpark method above is RECONSTRUCTED from the DeepSpec README + the DeepSeek-V4-Pro-DSpark model card + a targeted WebSearch (multiple press writeups: MarkTechPost, VentureBeat, AcingAI, TechTimes) that consistently report the same mechanism and numbers. arxiv_id=null: no arXiv id exists for DSpark; per task instruction arXiv 2606.21228 is NOT DSpark (it is Sakana ''Fugu'', intake-728) and was NOT used. credibility_score=2 (Med): non-peer-reviewed vendor PDF (+0 venue), <12 months (+1), major lab DeepSeek (+1), production-speedup framing is self-promotional/marketing-flavored (-1), press corroboration exists but all traces back to DeepSeek''s own release rather than independent measurement (+1). Sibling cluster URLs: the DeepSpec repo and the DeepSeek-V4-Pro-DSpark model card (sibling intake ids unknown at write time). ADVERSARIAL ADDENDUM (verifier): credibility_score kept at 2 but it sits at the TOP of the defensible band — the +1 corroboration is now grounded in a single independent DGX-Spark single-stream benchmark (~1.5x over MTP-1) rather than the press-echo the draft cited; that repro both undershoots the headline (low-concurrency end) and measures wall-clock, not the acceptance-length-over-EAGLE-3 metric, so if it is discounted the score drops to 1 (Low/Med boundary). Verdict adopt_patterns and novelty high / relevance high UNCHANGED. Added a provenance/attribution caveat: real title is ''DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation'' (alphaXiv 2026.dspark / HyperAI), possible PKU co-authorship — a fetchable clean source exists to upgrade provenance. Also flagged the acceptance-length != wall-clock and concurrency-band caveats, which sharpen (do not overturn) the CPU-inertness thesis: the drafter helps at batch-1 on GPU via idle compute we lack, so it is the SCHEDULER, not the drafter, that is high-concurrency-specific.'
+  notes: 'RE-ENCOUNTERED 2026-09-26 through intake-1825 (arXiv 2609.15627 cites it): the paper now has an arXiv id, 2607.05147, "DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation" (resolved against arxiv.org/abs 2026-09-26; title differs from the DeepSpec PDF title recorded above). arxiv_id set on this entry by operator decision OD-1 of the intake-1822..1826 Stage-3 plan; no new entry minted (skill Phase 1 step 2b). The PROVENANCE DEGRADED note below predates the arXiv posting. PROVENANCE DEGRADED: the raw PDF (https://raw.githubusercontent.com/deepseek-ai/DeepSpec/main/DSpark_paper.pdf, 705.9KB, application/octet-stream) is FlateDecode-compressed and could not be parsed by WebFetch. The DSpark method above is RECONSTRUCTED from the DeepSpec README + the DeepSeek-V4-Pro-DSpark model card + a targeted WebSearch (multiple press writeups: MarkTechPost, VentureBeat, AcingAI, TechTimes) that consistently report the same mechanism and numbers. arxiv_id=null: no arXiv id exists for DSpark; per task instruction arXiv 2606.21228 is NOT DSpark (it is Sakana ''Fugu'', intake-728) and was NOT used. credibility_score=2 (Med): non-peer-reviewed vendor PDF (+0 venue), <12 months (+1), major lab DeepSeek (+1), production-speedup framing is self-promotional/marketing-flavored (-1), press corroboration exists but all traces back to DeepSeek''s own release rather than independent measurement (+1). Sibling cluster URLs: the DeepSpec repo and the DeepSeek-V4-Pro-DSpark model card (sibling intake ids unknown at write time). ADVERSARIAL ADDENDUM (verifier): credibility_score kept at 2 but it sits at the TOP of the defensible band — the +1 corroboration is now grounded in a single independent DGX-Spark single-stream benchmark (~1.5x over MTP-1) rather than the press-echo the draft cited; that repro both undershoots the headline (low-concurrency end) and measures wall-clock, not the acceptance-length-over-EAGLE-3 metric, so if it is discounted the score drops to 1 (Low/Med boundary). Verdict adopt_patterns and novelty high / relevance high UNCHANGED. Added a provenance/attribution caveat: real title is ''DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation'' (alphaXiv 2026.dspark / HyperAI), possible PKU co-authorship — a fetchable clean source exists to upgrade provenance. Also flagged the acceptance-length != wall-clock and concurrency-band caveats, which sharpen (do not overturn) the CPU-inertness thesis: the drafter helps at batch-1 on GPU via idle compute we lack, so it is the SCHEDULER, not the drafter, that is high-concurrency-specific.'
 - id: intake-739
   arxiv_id: null
   url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-DSpark
@@ -60301,6 +60301,21 @@
   recommended_actions:
   - '[review candidate] READ PR #5018 and establish whether the scheduling support it added is arch-gated or reaches gfx90a.'
   notes: 'credibility_score null: a pull request with no empirical claims of its own. NOT FETCHED in this pass - registered from the HipKittens blog attribution. Flagged NOT-YET-READ so a future session knows the content is unverified even though the pointer is verified.'
+  dive_corrections: |-
+    2026-09-26 (intake-1825#record, intake-1823#record): the 'Triton is our CONFIRMED-OPEN school-4 path on gfx90a' premise is NARROWED.
+    A modern ROCm Triton (3.7.1+rocm7.14.0) runs on gfx90a inside SGLang's DeepSeek-V4-Flash path (arXiv 2609.15627v2 Section 3.1),
+    but that paper names no Triton kernel and credits no gain to Triton; upstream Gluon rejects BufferLoadToLocal on CDNA2
+    (intake-1823#record); our local Triton is 3.1.0 on ROCm 6.2. Read 'open' as compiles-and-runs, not as a competitive path.
+    PR #5018 itself remains NOT-YET-READ.
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: 'Narrowed 2026-09-26 by intake-1825 and intake-1823: Triton runs on gfx90a (Triton 3.7.1 on ROCm 7.14 in SGLang) but no
+      Triton kernel is credited with a gain, Gluon direct-to-LDS is rejected on CDNA2, and local Triton is 3.1.0. Open means
+      compiles-and-runs, not competitive.'
+  - claim_index: 0
+    effect: unaffected
+    note: The HipKittens attribution of its interleaved schedule to this PR is not disputed by the 2026-09-26 dives.
 - id: intake-962
   arxiv_id: null
   url: https://forum.modular.com/
@@ -227464,13 +227479,16 @@
     clusters, async b128 loads and WMMA do not exist on gfx90a. Any MMQ change must first pass a static VGPR/spill audit:
     Q8_0 J=64 already spills at the 256-VGPR cap.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/autokernel-champion-aggregate.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Dive-verified 2026-09-26; derived GPU MMQ hypotheses are drafted for the Stage-3 plan, not filed. Trigger: operator approval
-    of the Stage-3 plan; kernel hypothesis search additionally waits on the 2026-09-08 ''no pure kernel research until a fully
-    consolidated champion'' directive.'
+  - 'Stage-3 plan approved 2026-09-26 (docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md): INF03-REGAUDIT-1
+    and INF03-AGPR-1 (GATED) in agentic-rocm-kernel-authoring.md; GATED AK-MMQ seed set (H3/H7/H8/H10/H5/SK) in autokernel-research-loop.md;
+    CH-6 correction note in autokernel-champion-aggregate.md.'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -227863,12 +227881,18 @@
     the AGPR copy tax is a compiler default: on ROCm 6.2, <=256-thread MFMA kernels (mul_mat_f, rocWMMA FA) pay it and >=320-thread
     ones do not. Do not reuse amdgcnas or llirSched on gfx90a.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/rocm-verify-profile-backend.md
+  - handoffs/active/vidya-belief-substrate-program.md
+  - handoffs/active/deepseek-v41-flash-evaluation.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Dive-verified 2026-09-26; actionables drafted for the Stage-3 plan, none filed. Trigger: operator approval of the Stage-3
-    plan (and the 2026-09-08 consolidation directive for kernel search).'
+  - 'Stage-3 plan approved 2026-09-26 (docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md): INF03-REGAUDIT-1
+    and pre-ticked INF03-GLUON-X decline; spill falsifiers in the GATED AK-MMQ seeds; RVP-ATT-1 desk check; SC84a belief-kernel
+    amendment; DS41-C52 static spill check.'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -228361,14 +228385,20 @@
     ''no arXiv id'' provenance note), arXiv 2606.19348 DeepSeek-V4 tech report (architecture source for CSA/HCA/mHC; referenced
     inside intake-1257/1323 but no entry), arXiv 2609.19969 ''DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression''
     (found by search, not cited by the paper; bears on DS41 attention/KV facts). All three IDs resolved against arxiv.org
-    with matching titles. Companion repo unpublished: watch, no entry.'
+    with matching titles. Companion repo unpublished: watch, no entry.
+
+    (7) STAGE-2c GATE 2026-09-26 (operator OD-1): arXiv 2607.05147 recorded as a re-encounter on intake-738 (arxiv_id set);
+    arXiv 2606.19348 and 2609.19969 DECLINED for this lane, routed to a later DS41-focused intake.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/deepseek-v41-flash-evaluation.md
+  - handoffs/active/agentic-rocm-kernel-authoring.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Dive-verified 2026-09-26; DS41 observation leads and the intake-961 narrowing are drafted for the Stage-3 plan, none
-    filed. Trigger: operator approval of the Stage-3 plan.'
+  - 'Stage-3 plan approved 2026-09-26 (docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md): DS41-C53 (oracle
+    scale fixtures) and DS41-C54 (attn_wo_a observation) in deepseek-v41-flash-evaluation.md; register-pressure cross-reference
+    in agentic-rocm-kernel-authoring.md; intake-961 narrowed; DS41 inbox note 42 held by the coordinator.'
 - id: intake-1826
   arxiv_id: null
   url: https://github.com/llvm/llvm-project/pull/159493
@@ -228590,9 +228620,13 @@
     #131954 cite only; TheRock SUPPORTED_GPUS.md and the ROCm 10.0.0 compatibility matrix cited in the runbook draft. No new
     intake recommended.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/agentic-rocm-kernel-authoring.md
+  - handoffs/active/autokernel-research-loop.md
+  - handoffs/active/vidya-belief-substrate-program.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
-  - Dive-verified 2026-09-26; NH-1 (gated by the 2026-09-08 consolidation directive) and the ROCm-upgrade runbook row are
-    drafted for the Stage-3 plan, none filed.
+  - 'Stage-3 plan approved 2026-09-26 (docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md): INF03-AGPR-1
+    (GATED) in agentic-rocm-kernel-authoring.md; AK-MMQ-H5 compiler-cell recording in autokernel-research-loop.md; SC84a;
+    MFMA-form row in docs/runbooks/rocm-upgrade-checklist.md (runbook, not a handoff).'

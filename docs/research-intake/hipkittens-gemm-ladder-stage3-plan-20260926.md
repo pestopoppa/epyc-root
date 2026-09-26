@@ -1,6 +1,6 @@
 # Research-intake Stage-3 plan: HipKittens GEMM ladder, Gluon tutorial and LLVM MFMA form (intake-1822..1826), 2026-09-26
 
-**Status: PROPOSED. Awaiting operator approval. Nothing below has been applied.**
+**Status: APPROVED 2026-09-26 (operator, via coordinator; OD-1 accepted as recommended). Applied in Stage 4 on the same day.** P1–P8 were applied as written; P9 needed no rows. The one metadata addition beyond P8 is that intake-1823 also lists `deepseek-v41-flash-evaluation.md` in handoffs_updated, because the edited DS41-C52 line cites intake-1823.
 Lane: `intake/hipkittens-gemm-20260926` (worktree `/mnt/raid0/llm/worktrees/intake-hipkittens-gemm-20260926`, rebased on
 origin/main `c7d8d676`). Stage 4 applies exactly this plan, once approved, and nothing more.
 
@@ -278,7 +278,7 @@ lane regularity, partitioned LDS, and `ds_load_tr` (intake-1824). They would mat
 is in plan: the second card is also gfx90a.
 
 ## Stage-3 completeness gates
-- [ ] **Stage-2 close-out gate — OPEN until OD-1 is decided.** The 1822/1823 surfaced sources are closed (2 ingested
+- [x] **Stage-2 close-out gate — closed 2026-09-26 by OD-1 (recommendations accepted).** The 1822/1823 surfaced sources are closed (2 ingested
       as 1825/1826; the rest declined by the operator and recorded). The three sources surfaced by the 1825 dive need
       OD-1.
 - [x] Every Stage-1 preliminary actionable maps to a plan item or a decline. The GPU H1–H6 and CPU H1–H5 drafts: GPU

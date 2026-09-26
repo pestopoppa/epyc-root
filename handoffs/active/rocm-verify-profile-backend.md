@@ -1646,3 +1646,10 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       loads, fixed in 0.5.2 — and the report must say so in its first line or it will be closed as a
       duplicate of a retracted issue. Pin the revision inspected in the report body. Zero compute,
       no local install, and no AMD hardware needed to file it. [intake-1283#record]
+
+## Research Intake Update — 2026-09-26 (ATT MFMA-efficiency metric on gfx90a; intake-1823)
+
+- [ ] **RVP-ATT-1 — desk check (no GPU): is an ATT thread-trace MFMA-efficiency metric obtainable on gfx90a with
+  ROCm 6.2 rocprofv3?** If so, record the gfx90a MFMA cycle table it needs (16x16x16 = 8 passes, SISchedule.td:259 at
+  rocm-6.2.0). Metric definition: total MFMA cycles over the average hot-loop iteration, per SIMD (intake-1823). Its
+  only consumer is a future MMQ candidate.
