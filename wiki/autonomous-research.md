@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: inferred
-**Last compiled**: 2026-09-26 (selector replay implementation and historical evidence audit); previous: 2026-09-25 (System One and evolutionary-agents intake); earlier: 2026-09-25 (wrap-up compile, main-ak-seat: OAB-9 showed inline context beating file-backed context in both pairs while the file arm halved first-step context; run 9 exposed the real floor order and a champion-of-record preflight gap); earlier: 2026-09-24 (late-evening wrap-up compile, main-ak-seat: the reduced-scope planner build — context-as-files cuts the planner prompt 79–83% by the 27B tokenizer, a per-call metrics row reproduces the seat A/B exactly, a perf-output cache makes the bounded seat's "tool time" loss implausible; three planner defects; none A/B'd yet); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: DS41 run 9 ready on a new anchor; floors recalibrate off-hours); earlier: 2026-09-24 (evening wrap-up compile, main-ak-seat: DS41 run 8 lost its batch-0 planner reply to the 98,304-token split-KV slot — C20 refused the empty reply, the actor-seat call record captured it and ingests refused=0 (VB-AK-SEAT-b1v closed, b1w filed); the operator stopped run 8 at ~15:32Z because region locks held through full-target calibration blocked production /chat, and TERM during calibration only drains (DS41-C26); run 9's prerequisites are ordered (DS41-C25); the shared research clone's fast-forward is blocked by untracked copies git will not overwrite even when identical (DS41-C10a); OAB-4a pins :8083's KV mode per arm); earlier: 2026-09-24 (operator wrap-up compile #2, main-ak-seat: the seat A/B resolved — the plain seat wins on wall, 31.9 vs 44.3 min, and the bounded seat's loss is perf-tool time, not deliberation; offered subagents, the 27B never delegated; every arm compacted once because the conversation is append-only; research main 21ca61b0 and run 8); earlier: 2026-09-24 (operator wrap-up compile, main-ak-seat: run 7 lost a finished 27B proposal to two actor-seat defects, fixed on a research lane; a bounded opencode seat whose replaced system prompt made each step ~6x longer — the planner's context is filled by its own deliberation, not by tool output; a perf "no samples" that was a symbol-filter miss; SIGTERM is a drain that never reaps the in-flight actor; the orchestrator-as-backend program INF-78); earlier: 2026-09-24 (wrap-up compile: the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase; the planner seat moved to the production 27B on the MI210; all three in-tree profilers are wired into the loop and kept out of ranked A/Bs; a schema-constrained repair turn replaced 90-minute retries-from-zero; the v10 folded-lineage fix reached this campaign before its first recorded candidate); earlier: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
+**Last compiled**: 2026-09-26 (wrap-up, ak-ds41-main: the local-actor bring-up retrospective — 57.5 h to the first measurement, ~26 incidents mostly harness semantics and latent loop bugs; the first local keep +4.535% paired / +7.304% compounded; COR-continuation and resume carry-forward fixes); previous: 2026-09-26 (selector replay implementation and historical evidence audit); previous: 2026-09-25 (System One and evolutionary-agents intake); earlier: 2026-09-25 (wrap-up compile, main-ak-seat: OAB-9 showed inline context beating file-backed context in both pairs while the file arm halved first-step context; run 9 exposed the real floor order and a champion-of-record preflight gap); earlier: 2026-09-24 (late-evening wrap-up compile, main-ak-seat: the reduced-scope planner build — context-as-files cuts the planner prompt 79–83% by the 27B tokenizer, a per-call metrics row reproduces the seat A/B exactly, a perf-output cache makes the bounded seat's "tool time" loss implausible; three planner defects; none A/B'd yet); earlier: 2026-09-24 (wrap-up #4, main-ak-seat: DS41 run 9 ready on a new anchor; floors recalibrate off-hours); earlier: 2026-09-24 (evening wrap-up compile, main-ak-seat: DS41 run 8 lost its batch-0 planner reply to the 98,304-token split-KV slot — C20 refused the empty reply, the actor-seat call record captured it and ingests refused=0 (VB-AK-SEAT-b1v closed, b1w filed); the operator stopped run 8 at ~15:32Z because region locks held through full-target calibration blocked production /chat, and TERM during calibration only drains (DS41-C26); run 9's prerequisites are ordered (DS41-C25); the shared research clone's fast-forward is blocked by untracked copies git will not overwrite even when identical (DS41-C10a); OAB-4a pins :8083's KV mode per arm); earlier: 2026-09-24 (operator wrap-up compile #2, main-ak-seat: the seat A/B resolved — the plain seat wins on wall, 31.9 vs 44.3 min, and the bounded seat's loss is perf-tool time, not deliberation; offered subagents, the 27B never delegated; every arm compacted once because the conversation is append-only; research main 21ca61b0 and run 8); earlier: 2026-09-24 (operator wrap-up compile, main-ak-seat: run 7 lost a finished 27B proposal to two actor-seat defects, fixed on a research lane; a bounded opencode seat whose replaced system prompt made each step ~6x longer — the planner's context is filled by its own deliberation, not by tool output; a perf "no samples" that was a symbol-filter miss; SIGTERM is a drain that never reaps the in-flight actor; the orchestrator-as-backend program INF-78); earlier: 2026-09-24 (wrap-up compile: the AutoKernel planner's cost decomposes into a prefill-bound proposing phase and a decode-bound authoring phase; the planner seat moved to the production 27B on the MI210; all three in-tree profilers are wired into the loop and kept out of ranked A/Bs; a schema-constrained repair turn replaced 90-minute retries-from-zero; the v10 folded-lineage fix reached this campaign before its first recorded candidate); earlier: 2026-09-23 (evening wrap-up compile: the DS41 AutoKernel campaign launched on the roster-free --manifest/--registry-snapshot route (autokernel and the production roster are orthogonal, operator); a store carries a champion-of-record and the loop REFUSES to relabel a moving anchor as the old COR, so run 3 uses a fresh store; 48 matched A/A calibration launches are the entry fee and are not reducible without changing what is measured; AK-INST-2 found no second drift pin but surfaced the v10 folded-lineage defect); earlier: 2026-09-18 (GLM v28 operator-directed stop; earlier 2026-09-17 AutoKernel and AutoPilot updates retained below)
 **Sources**: 139+ documents (added 2026-09-25 wrap-up compile: autokernel-orchestrator-actor-backend OAB-7/OAB-9/OAB-12 and §Techniques learned; deepseek-v41-flash-evaluation DS41-C24/C25/C27/C28; agent-loop-design §Launching and stopping a DS41-style serial run and §Context as files; the new 2026-09-25 main-ak-seat progress log) (added 2026-09-24 late-evening wrap-up compile: autokernel-orchestrator-actor-backend §Techniques learned in the opencode seat / OAB-7s/4m/R4c/9–12, deepseek-v41-flash-evaluation DS41-C20d1/d2/C20e–h/C24 note, the 2026-09-24 main-ak-seat progress log §Reduced-scope planner build) (added 2026-09-24 wrap-up #4: see the top section\'s Source References) (added 2026-09-24 evening wrap-up compile: kv-unified-stack-rollout RTG-57 KVU-1/KVU-11a (new), deepseek-v41-flash-evaluation DS41-C10 run-8 stop/C10a/C25/C26, vidya VB-AK-SEAT-b1v/b1w, autokernel-orchestrator-actor-backend OAB-4a, the 2026-09-24 main-ak-seat progress log §Stack-configuration window) (added 2026-09-24 operator wrap-up compile #2: deepseek-v41-flash-evaluation DS41-C20/C20c/C20d/C22/C23/C24 and its completed-through-2026-09-24 sibling, autokernel-orchestrator-actor-backend §Baseline/OAB-7/OAB-8, vidya VB-AK-SEAT-a/b1/b2/b1v, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 operator wrap-up compile: deepseek-v41-flash-evaluation DS41-C10/C18/C20/C20a-c/C21/C22/C23, autokernel-orchestrator-actor-backend (INF-78), repl-turn-efficiency S4-T1/T2, harness-selection HS-4 P6/P7, vidya VB-AK-SEAT, the 2026-09-24 main-ak-seat progress log) (added 2026-09-24 wrap-up compile: deepseek-v41-flash-evaluation DS41-C12/C14/C15/C16/C17/C10/C18 and the 2026-09-24 main-dsv41 progress log) (added 2026-09-23 evening wrap-up compile: deepseek-v41-flash-evaluation DS41-C2b/C2e/C5/C10/C11/C13, autokernel-restart-and-strip AK-INST-2, the 2026-09-23 main-dsv41 progress log) (added 2026-09-17: AP-53/54/55, PromptForge MHS-3..5, W3e gate-frontier, OP-19 E8 retirement, stale-pool note; 10 sources incl. 5 sub-lane progress logs) (added 2026-09-17 later pass: the Dream-RSI intake batch record and the six handoffs it filed rows in, plus sub-gate-frontier/sub-ap55bc/sub-train follow-through) (added 2026-09-17 evening: sub-ap57, sub-ap57b, sub-df3-etr, autokernel-dream-rsi, sub-ak-integrity-promotion and the autopilot/eval-tower/autokernel handoff deltas)
 
 ## Compiled Update — 2026-09-25: context placement is not work reduction; live ordering and state invariants belong in launch preflight
@@ -3889,3 +3889,75 @@ Six AutoKernel lanes merged to research main `d643d794`, and run 10h went live o
 
 **Confidence:** verified for the merged code and the ratification; run 10h had 0 measurements when this
 was compiled (DS41-C39).
+
+## Compiled Update — 2026-09-26 (wrap-up, ak-ds41-main): the first local keep took 57.5 h, and the model was not the bottleneck
+
+**Confidence: verified** for the timeline, incident attribution, campaign-store counts, the keep's paired A/B and
+accumulate numbers, and the landed research commits. The keep itself is **unconfirmed at serving** (see
+[Benchmark Methodology](benchmark-methodology.md), same date).
+
+**No local model had ever driven the AutoKernel loop before DS41.** Every earlier actor was a cloud model (Fable
+via `claude`, GPT via `codex`, DeepSeek V4 Flash via opencode against an external API), and `Backend.kind` only
+ever encoded transport, not locality. The planner then moved twice in ~15 h: to the CPU frontdoor
+`qwen3.8-flash-next` on :8074 (2026-09-23 18:06Z; two proposals at 97 and 41 min), then to the MI210
+`qwen3.8-27b` on :8083 (run 7, 2026-09-24). The first real candidate measurement came at 2026-09-26 15:32Z,
+**~57.5 h after launch, across 11 run directories of which 10 scored nothing.** Before run 10i the campaign store
+held 45 records and 0 keeps: 22 abstained, 6 planner transients, 6 rejected patches, 4 stopped mid-formation.
+
+**Attribution of ~26 incidents (classes overlap):** ~11 were opencode harness semantics (pipe truncation at
+64-96 KiB, argv quoting near the 128 KiB limit, `prompt:` *replacing* the system prompt, a silent 32000
+`max_tokens` clamp, `chat_template_kwargs` dropped for providers not flagged reasoning-capable, a VACUUM lock on
+the 10.8 GB `opencode.db`, and a read-only session that an `ask`-class permission *ends* without `--auto`); ~12
+were **latent loop bugs the local model exposed rather than created**, because its calls are longer and more
+numerous than cloud calls (the stop/orphan-actor race, the op_scope gate that built 0 of ~15 candidates, resume
+`RatchetRefused`, comparability keyed on the actor roster, the discard-on-recoverable-failure family, exact-symbol
+route lookup, reference probes compiled in a PATH-less candidate env, a refused resume falling through to the
+planner); only ~3 were model capability (slow CPU prefill, a 74k-token deliberation with zero edits, zero use of
+the offered fan-out tool); ~4 were process mistakes (`touch STOP` used as a drain, an invented off-hours hold, a
+mid-calibration stop that blocked the frontdoor, a 519 GB `--verify-artifacts` re-hash for an actor-only change).
+A stale seeded "~220 GB/s" ceiling separately cost 13 batches of abstention (DS41-C36).
+
+**Most of it was findable for zero GPU time.** A scripted fake OpenAI-compatible server driving the exact actor
+invocation finds most of the harness class in seconds, and a stub end-to-end iteration (kill, stop, resume,
+continue past a keep) finds most of the loop class. Neither ran before going live; the fake-server technique was
+eventually used live and found the critic-permission bug (`b8d6a046`) in minutes. That lesson is now a ratified
+operating rule and a checklist — see [Agent Architecture](agent-architecture.md), same date.
+
+**The first locally-authored keep.** Run 10i kept `akm-ds41-gemm4xn-2x-unroll` (a 2x unroll of tinyBLAS
+`gemm4xN`) at **+4.535%** on the full-screen paired A/B (batch-000001, 204 min); its accumulate bench recorded
+**+7.304% compounded** against the champion of record, and the anchor advanced `00d118d44876` → anchor-gen-001
+`cafb59c3bf67`. Planner: local `qwen3.8-27b`; author: best-of-2 on the same model, won by the thinking-off member
+(11 steps, `ak-check` op-test PASS); critic: external `deepseek/deepseek-flash`. It landed only after four fixes in
+the preceding ~2 h: planner-written route symbols (`77f8bf58`), reference probes in the toolchain env
+(`7037165f`), a critic that can never reach an `ask` (`b8d6a046`), and a refused resume yielding to the next queued
+checkpoint (`2a060a41`).
+
+**A keep broke continuation, twice over, and both are now fixed on research main.**
+- *COR continuation* (DS41-C45, `eae75696`): experimental continuations recorded `cor_anchor: null`, a leftover of
+  the era with no experimental champion of record, so the batch after the keep refused with "restored champion of
+  record differs from current anchor" — every experimental campaign would halt at every keep. Continuations now
+  carry the COR; a legacy null chain recovers it from the chain's build dirs only when `verify_exact_anchor` proves
+  it is the bundle's COR commit (never the tip); the COR is restored before the floor lookup so its matched floor is
+  reused instead of a 48-launch recalibration per keep; COR refusals now publish a pre-claim marker.
+- *Resume carry-forward* (`36ebe3a7`, `846bef21`; operator rule 2026-09-26): resume bound on an epoch that folds the
+  anchor in, so the keep silently orphaned two accepted hypotheses as "checkpoints in other epochs". A checkpoint
+  whose anchor is an ancestor of the current one, in the same measurement and target family, is now re-bound:
+  author/critic-1 checkpoints carry as-is; a critic-2/build checkpoint whose patch still applies resumes at critic-2
+  with a fresh build; one whose patch no longer applies is demoted to an author checkpoint with the old patch as
+  feedback. A carry spends no authoring attempt and adds one resume-depth hop, so every existing budget still bounds
+  it. **Comparability is untouched:** nothing measured is carried, and resumed work is measured afresh in the new
+  epoch (P-AK-SEARCH-1-A3.1).
+
+The OP-60 epoch clause (planner history and do-not-repeat keyed on the measurement identity, not the actor roster)
+was compiled in the previous section; its code switch is DS41-C44. Still open: the stub iteration that exercises
+continuation (OAB-30), serving-gate confirmation of the keep (DS41-C47), gcc `-j64` anchor-build reproducibility
+(DS41-C46), and an inbox evidence-freshness gate (DS41-C48).
+
+### Source References
+
+- [AutoKernel local-actor bring-up retrospective](../docs/design/autokernel-local-actor-bringup-retro-20260926.md) — timeline, failure-class table, store counts, attribution, prevention map.
+- [INC-20260926-local-actor-bringup](../docs/reference/agent-config/INCIDENT_LOG.md#inc-20260926-local-actor-bringup) — the incident record and the rules it fed.
+- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C39 (first keep), DS41-C45..C48.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-29..OAB-32 filed from the retrospective.
+- [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — the keep and the post-keep findings.
+- epyc-inference-research commits `eae75696` (COR continuation), `36ebe3a7` and `846bef21` (resume carry-forward), `77f8bf58`, `7037165f`, `b8d6a046`, `2a060a41`.
