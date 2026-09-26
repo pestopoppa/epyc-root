@@ -1,0 +1,46 @@
+{
+  "schema": "epyc.operator_receipt.v1",
+  "token": "RATIFY-UFH12-PHASE0-EMBEDDER-PLACEMENT-20260926",
+  "status": "ratified",
+  "human_attestation": "RATIFY-UFH12-PHASE0-EMBEDDER-PLACEMENT-20260926",
+  "signed_at": "2026-09-26T17:46:29.025283+00:00",
+  "signed_by_uid": 1000,
+  "package": "artifacts/operator/stack-change-ufh12-phase0-20260926/PACKAGE.md",
+  "pinned_sha256": {
+    "PACKAGE.md": "f35b90905d2ba610241ab2d09e3575eb4449213a4b5653bca25734419ec9c73c",
+    "patches/orchestrator-01-embedder-placement-ctx2048-stale-text.patch": "4b3f81f32eb3561c9ef28defe145f8e6b34b62c0c0f5c795345c8f95319d7860",
+    "patches/orchestrator-02-measurement-gate-driver.patch": "5eca1899153f7813f143fe9272ffd1513c9c47f15dbddbfd1dc2c2a72c8efa04",
+    "patches/research-01-stale-role-descriptions.patch": "d5f0b07c64854b584bc49772aa526c26f3e81d756b6446a08fd9de81e72b2839"
+  },
+  "lane_branch": "lane/ufh11-phase0-20260926",
+  "lane_commits": {
+    "epyc-orchestrator": [
+      "845950b4",
+      "05048a66"
+    ],
+    "epyc-inference-research": [
+      "7640269b"
+    ]
+  },
+  "signed_gates": {
+    "G0_idle_cost": "post Q within the larger A/A floor of pre/post, per port",
+    "G1_frontdoor_decode_s_over_q": {
+      "pass": 0.95,
+      "rollback_below": 0.9,
+      "also": "not below pre S/Q by more than the A/A floor"
+    },
+    "G2_pool_scaling": {
+      "pass": 4.0,
+      "rollback_below": 2.0
+    },
+    "G3_speech": {
+      "stt_rtf_max": 0.4,
+      "tts_first_packet_ms_max": 500
+    }
+  },
+  "scope_excluded": [
+    "GPU embedder (separate package, PACKAGE.md N-4)",
+    "D1 scheduler code (REPL-EMB-1.1)"
+  ],
+  "applies_nothing": true
+}
