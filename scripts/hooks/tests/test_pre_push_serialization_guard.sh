@@ -747,6 +747,83 @@ else
 fi
 
 # ─────────────────────────────────────────────────────────────────────────────
+# CASE 21 — ONE lock reached by TWO PATHS is one lock (OP-65, 2026-09-26).
+#          The legacy-location check compared lock paths as STRINGS, so the same
+#          file seen via /workspace/... and via /mnt/raid0/llm/epyc-root/... (a
+#          bind mount: same device+inode, different realpath) was refused as
+#          "TWO serialization locks". A hard link reproduces that property
+#          exactly — two spellings, realpath does not collapse them, one inode —
+#          and a symlinked directory covers the alias shape. Both directions:
+#          same-inode ALLOWS and lands; a genuinely different second file
+#          REFUSES; a legacy-only lock is still honoured (`-ef` is false when a
+#          path is missing, which must not turn into "no lock").
+# ─────────────────────────────────────────────────────────────────────────────
+C21_ENVS_BASE="-u EPYC_PUSH_LOCK_DIR -u SERIALIZED_PUSH_LOCK_DIR -u EPYC_PUSH_LOCK_FILE AGENT_ID=mainA"
+
+for shape in hardlink symlinked-dir; do
+  new_sandbox
+  CANON_LOCK="$SANDBOX/work/coordination/push-locks/push-$(stat -c '%d-%i' "$SANDBOX/work/.git").json"
+  mkdir -p "$(dirname "$CANON_LOCK")"
+  printf '{"holder": "mainA"}\n' > "$CANON_LOCK"
+  case "$shape" in
+    hardlink)
+      mkdir -p "$SANDBOX/legacy"
+      ln "$CANON_LOCK" "$SANDBOX/legacy/$(basename "$CANON_LOCK")"
+      LEGACY_DIR="$SANDBOX/legacy" ;;
+    symlinked-dir)
+      ln -s "$(dirname "$CANON_LOCK")" "$SANDBOX/legacy-alias"
+      LEGACY_DIR="$SANDBOX/legacy-alias" ;;
+  esac
+  if [[ "$LEGACY_DIR/$(basename "$CANON_LOCK")" != "$CANON_LOCK" \
+        && "$(stat -c '%d-%i' "$LEGACY_DIR/$(basename "$CANON_LOCK")")" == "$(stat -c '%d-%i' "$CANON_LOCK")" ]]; then
+    pass "one lock two paths ($shape): fixture really is two spellings of one inode"
+  else
+    fail "one lock two paths ($shape): fixture" "paths are string-equal or not the same inode"
+  fi
+  ENVS="$C21_ENVS_BASE EPYC_SERIALIZED_PUSH=$SANDBOX/no-writer.py EPYC_PUSH_LEGACY_LOCK_DIR=$LEGACY_DIR"
+  run_push "$ENVS" origin main
+  if [[ "$RC" -eq 0 ]] && ! err_has "TWO serialization locks" \
+     && [[ "$(origin_sha refs/heads/main)" == "$(work_sha refs/heads/main)" ]]; then
+    pass "one lock two paths ($shape): push allowed and landed — one inode is one lock"
+  else
+    fail "one lock two paths ($shape)" "exit $RC — the same lock file reached by two paths was treated as two locks"
+  fi
+done
+
+# genuinely different second file → still REFUSED, nothing published
+new_sandbox
+CANON_LOCK="$SANDBOX/work/coordination/push-locks/push-$(stat -c '%d-%i' "$SANDBOX/work/.git").json"
+mkdir -p "$(dirname "$CANON_LOCK")" "$SANDBOX/legacy"
+printf '{"holder": "mainA"}\n' > "$CANON_LOCK"
+printf '{"holder": "mainA"}\n' > "$SANDBOX/legacy/$(basename "$CANON_LOCK")"
+ENVS="$C21_ENVS_BASE EPYC_SERIALIZED_PUSH=$SANDBOX/no-writer.py EPYC_PUSH_LEGACY_LOCK_DIR=$SANDBOX/legacy"
+run_push "$ENVS" origin main
+if refused_with "TWO serialization locks"; then
+  pass "two different lock files: push refused naming TWO serialization locks (identical content does not make them one)"
+else
+  fail "two different lock files" "exit $RC — two distinct lock files were not refused"
+fi
+if ! origin_has refs/heads/main; then
+  pass "two different lock files: nothing published"
+else
+  fail "two different lock files: origin" "refs/heads/main exists in origin despite refusal"
+fi
+
+# legacy-only → honoured (the missing canonical path must not make -ef mean "no lock")
+new_sandbox
+CANON_LOCK="$SANDBOX/work/coordination/push-locks/push-$(stat -c '%d-%i' "$SANDBOX/work/.git").json"
+mkdir -p "$SANDBOX/legacy"
+printf '{"holder": "mainA"}\n' > "$SANDBOX/legacy/$(basename "$CANON_LOCK")"
+ENVS="$C21_ENVS_BASE EPYC_SERIALIZED_PUSH=$SANDBOX/no-writer.py EPYC_PUSH_LEGACY_LOCK_DIR=$SANDBOX/legacy"
+run_push "$ENVS" origin main
+if [[ "$RC" -eq 0 ]] && err_has "honouring the pre-SSU-F9 lock" \
+   && [[ "$(origin_sha refs/heads/main)" == "$(work_sha refs/heads/main)" ]]; then
+  pass "legacy-only lock: honoured and the push landed"
+else
+  fail "legacy-only lock" "exit $RC — a lock at the legacy location alone was not honoured"
+fi
+
+# ─────────────────────────────────────────────────────────────────────────────
 
 printf '\n----------------------------------------\n'
 printf 'PASS: %d   FAIL: %d   TOTAL: %d\n' "$PASSES" "$FAILURES" "$((PASSES + FAILURES))"
