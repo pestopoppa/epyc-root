@@ -4,33 +4,27 @@
     "handoff-active": 174,
     "handoff-blocked": 2,
     "handoff-completed": 198,
-    "progress": 497,
+    "progress": 498,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-26T05:30:14Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 6,
+      "added": 0,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-09-26T06:21:37Z",
+    "at": "2026-09-26T10:20:39Z",
     "scope_paths": [
-      "handoffs/active/autopilot-continuous-optimization.md",
-      "handoffs/active/autopilot-sequential-allocation.md",
-      "handoffs/active/canonical-judge-suite-revamp.md",
-      "handoffs/active/eval-tower-verification.md",
-      "handoffs/active/harness-selection-and-integration.md",
-      "handoffs/active/vidya-belief-substrate-program.md",
-      "progress/2026-09/2026-09-26.md"
+      "progress/2026-09/2026-09-26-inference.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-09-26T06:21:37Z",
+  "scan_time": "2026-09-26T10:20:39Z",
   "schema_version": 1,
-  "source_set_hash": "465a6c7e989a177ffbba0b715c6344eb4fad46c8ae447cc397b2f71cf5f9aa24",
+  "source_set_hash": "121c14417ce53fd6ec32a93ba093ce9582c6252ecd58776759d17488b361ba36",
   "sources": [
     {
       "content_hash": "8595f5d9339b0046d8720c31a58567e781bd250c32406bdc381c523e28197e7d",
@@ -505,10 +499,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b3237d044f6571758a620258b631cbc221838efd68996dc602269392cc1c7b69",
-      "modified": "2026-09-26T05:16:33Z",
+      "content_hash": "b722e6afa3575fa3f47a92622d5b8a32474dfbfc0423c9dd87c4abd5a7fad262",
+      "modified": "2026-09-26T10:15:52Z",
       "path": "handoffs/active/exl3-cpu-mi210-implementation.md",
-      "size": 21568,
+      "size": 24388,
       "title": "EXL3 CPU and MI210 Implementation",
       "type": "handoff-active"
     },
@@ -1377,10 +1371,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b8bd9cb2d9d6cd3afa576d354a3653adb9623869a5db4508de7f6f13e31e2816",
-      "modified": "2026-09-26T05:38:46Z",
+      "content_hash": "34c285f4c5076fccbba201ad48ef34546c5b0062885f6328dd8ac4cadbbfd751",
+      "modified": "2026-09-26T10:15:52Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 270687,
+      "size": 271308,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -8105,10 +8099,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "3054daa2d220e378724fc7755934b53fb4b43797fad1941ee71fda33b075b2fc",
-      "modified": "2026-09-26T05:29:41Z",
+      "content_hash": "787d6281f379d12acd4b966f71e53995363f4dfaf16346b71f4bb6d9c4df4c66",
+      "modified": "2026-09-26T10:15:52Z",
+      "path": "progress/2026-09/2026-09-26-exl3-implementation.md",
+      "size": 4567,
+      "title": "2026-09-26 \u2014 EXL3 standalone CPU and gfx90a implementation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "85a693b0c2ae512f765f0ba53e1fcdaa6a740a4775bdba30272d7dbcb54b9748",
+      "modified": "2026-09-26T10:20:32Z",
       "path": "progress/2026-09/2026-09-26-inference.md",
-      "size": 4071,
+      "size": 6036,
       "title": "2026-09-26 \u2014 EXL3 throughput research closure and Stage 4 integration",
       "type": "progress"
     },
@@ -9001,7 +9003,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1121,
+  "total_new": 1122,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

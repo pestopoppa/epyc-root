@@ -30,3 +30,19 @@ Research and integration commits before this wrap-up sync: `24d5547c`, `689b7b8c
 ## Next action
 
 Execute `INF-80` task `EXL3-1`: freeze the content-addressed packed artifact and metadata contract, implement independent scalar MCG/MUL1 reconstruction, pin the real and synthetic fixtures, and land the prospective measurement/verifier writers before the first correctness or performance run. CPU and gfx90a implementation then fork from that shared oracle.
+
+## Implementation session closure
+
+The approved non-inference work is now implemented and promoted. `EXL3-1`, `EXL3-2`, and `VB-EXL3-CPU-GFX90A` are complete. The research repository contains the portable artifact/oracle, standalone EPYC operators, gfx90a decode and MFMA paths, mixed-K MoE dispatch, owner-run authority checks, and source-bound exact-target build evidence. The root repository contains the registered Vidya projections and the updated handoff/index state. Production kernels and serving paths were not modified.
+
+| Qualification surface | Result |
+|---|---|
+| Portable contract | 17 tests passed |
+| EPYC normal and sanitizer suites | 719,096 checks passed in each run |
+| Vidya adapter/dispatcher | 44 tests passed; 78 native rows projected to 234 frames with zero refusals or declines |
+| gfx90a host/static | 5,579 assertions passed across 5,120 dispatch cells; three real fixtures reproduced 384 canonical outputs each |
+| Exact-target code object | SHA-256 `7dc947dcbaa055fbac49a19f606038229289ab99f721db0e76936136be676a71` |
+
+The only remaining gates in this implementation wave are `G3`, `G4`, and `G5`: MI210 device correctness, MFMA regime measurements, and mixed-K routing/capacity measurements. They require a safe device window because the owner launcher correctly refuses foreign KFD occupancy; the review census observed about 67.16 GB allocated. No GPU execution or full-model inference was claimed. At the next safe drain boundary, run the owner-authorized correctness pass, followed by the separate MFMA and routing microbench observations.
+
+The operator-invoked wrap-up found zero handoff prune candidates and no EXL3 compaction need: the active handoff's first screen still states the current objective and open device gates. README freshness checks emitted no warnings. Four changed EXL3 sources were compiled into `wiki/quantization.md`, and the wiki source watermark was advanced only after lint and manifest-policy checks.
