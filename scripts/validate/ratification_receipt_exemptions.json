@@ -1,0 +1,238 @@
+{
+  "schema": "epyc.ratification_receipt_exemptions.v1",
+  "about": "Scripts that write a trust-boundary path WITHOUT emitting the MEASUREMENT.md section-5 consolidated receipt, and why each is excused. Read and verified by scripts/validate/check_ratification_receipts.py at every run: an entry lapses the moment its script's sha256 changes, and a historical entry lapses unless applied_in is in history, touches the boundary path the script writes, and contains the script. No receipt is backfilled for any entry: section 5 has no backfill clause, and the operator signed what they signed. Compiled 2026-09-26 (lane/fix-ratify-checker-20260926).",
+  "exemptions": [
+    {
+      "script": "artifacts/operator/autokernel-policy-draft/apply_annex_s.sh",
+      "kind": "historical",
+      "applied_in": "88148c42",
+      "script_sha256": "08ea81f4c2f14fb0e4632488df298f151476784a35255ea7e7f33fba0a567fe3",
+      "evidence": "commit diff: MEASUREMENT.md, protocols/kernel-research.md, protocols/speech.md (new)",
+      "reason": "Annex S (STT/TTS protocols) applied 2026-08-04; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify-loop-owned-fleet-20260816.sh",
+      "kind": "historical",
+      "applied_in": "b6fdc986",
+      "script_sha256": "02c66453d3dd20daf56a3e6b3bfb1ffbd6a5785983191cd3368151e9c73515ad",
+      "evidence": "agents/shared/INVARIANTS.md created from artifacts/operator/staged/INVARIANTS.md; package loop-owned-fleet-operator-package-20260816.md",
+      "reason": "Loop-Owned Fleet gates signed 2026-08-16; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_20260812.sh",
+      "kind": "historical",
+      "applied_in": "5fad27d5",
+      "script_sha256": "aa1460375a7f644051f4832da09b9382f597650e4156d60e0a1653d7234d7582",
+      "evidence": "human_only_paths.yaml/.sha256 + gpu-cross-device.md; RATIFICATION-PACKAGE-20260812.md, RESOLUTION-LEDGER-20260812.md",
+      "reason": "AUD-15 + P-GPU-1 field 3 applied 2026-08-12; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_annexg_v9_currency_20260811.sh",
+      "kind": "historical",
+      "applied_in": "cd58ba75",
+      "script_sha256": "477c4d6f0c62de64f200ab2b90641d7be0a626957f61e88a92e8bd180ba86c1a",
+      "evidence": "ratify_annexg_v9_currency_20260811.json; receipts/RATIFY-ANNEXG-V9-CURRENCY-20260811.json",
+      "reason": "Annex G v9-currency, token-attested 2026-08-11 with its own receipt JSON, not the section-5 tool; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_annexk_narrowing_xref_20260803.sh",
+      "kind": "historical",
+      "applied_in": "2a7bf42e",
+      "script_sha256": "6624e63bbb5b8637916b164061be8146f0a2155c3db3414fccfbee0b3d60419f",
+      "evidence": "commit diff: protocols/kernel-research.md +2",
+      "reason": "Annex K narrowing xref applied 2026-08-03; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_inference_gate_amendment_20260727.sh",
+      "kind": "historical",
+      "applied_in": "bc2feb10",
+      "script_sha256": "84724d0ba152dea4e465c5d9dba578875965c4cd9a46e3542f7d50774117913e",
+      "evidence": "proposed_inference_gate_amendment_20260727.md; OPERATING_CONSTRAINTS.md +4/-2",
+      "reason": "held-region-claim inference gate, 2026-07-27, predates the section-5 receipt tool (2026-08-02); executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_measurement_dp2_dp6_20260803.sh",
+      "kind": "historical",
+      "applied_in": "e109271e",
+      "script_sha256": "ad1ababf2bf4f03bc9a1740ce53766f86e9d4e1ae151a26a1a89d3c1e199eec4",
+      "evidence": "measurement-decision-packages-20260803.md; MEASUREMENT.md +98, kernel-research.md +23",
+      "reason": "DP-2..DP-6 ratified 2026-08-03; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_mi210_substrate_constants_20260803.sh",
+      "kind": "historical",
+      "applied_in": "0e41c9e7",
+      "script_sha256": "45b5268a522a9d3fd7f49a514a5f1e7f8fa9c539cceb76af348809a5ab6bb3bb",
+      "evidence": "MEASUREMENT.md +26 (MI210-SUBSTRATE-CONSTANTS-1)",
+      "reason": "MI210-SUBSTRATE-CONSTANTS-1 ratified 2026-08-03; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_p_bench_placement_1.sh",
+      "kind": "superseded",
+      "superseded_by": "artifacts/operator/ratify_p_bench_placement_1_v2.sh",
+      "script_sha256": "d0e89259c93fe25285f65ecf1a740519c037c2ac1fb09dc30bb9364ccd4a15c1",
+      "evidence": "its own header declares it superseded by _v2; its exemplar text never appeared in MEASUREMENT.md",
+      "reason": "never run; replaced by v2 before execution"
+    },
+    {
+      "script": "artifacts/operator/ratify_p_bench_placement_1_v2.sh",
+      "kind": "historical",
+      "applied_in": "07b7dcab",
+      "script_sha256": "18aa1d75add11659c9571dced617cda30f072decce2c15a075d4f27f6171ea15",
+      "evidence": "MEASUREMENT.md + protocols/bench-cpu.md; exemplar text at MEASUREMENT.md P-BENCH-PLACEMENT-1 row",
+      "reason": "P-BENCH-PLACEMENT-1 ratified 2026-07-30, predates the section-5 receipt tool; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_pbench4_fg4b_affinity_witness_20260729.sh",
+      "kind": "historical",
+      "applied_in": "e6b84496",
+      "script_sha256": "3b84407990adc7ea3dac1d838ed370626f871041e3053e10bd2ad60f8e16374d",
+      "evidence": "ratify_pbench4_fg4b_affinity_witness_20260729T105911Z.json; receipts/RATIFY-P-BENCH-4-FG4B-AFFINITY-20260729.json",
+      "reason": "P-BENCH-4 affinity witness, token-attested 2026-07-29, predates the section-5 receipt tool; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_pbench4_fg4b_server_native_20260728.sh",
+      "kind": "historical",
+      "applied_in": "4b023edf",
+      "script_sha256": "a0cec952d6584c0c6f3e16e4b070b32fdda03b0a8997b3e9492caef58f618b8e",
+      "evidence": "ratify_pbench4_fg4b_server_native_20260729T055435Z.json",
+      "reason": "P-BENCH-4 server-native, token-attested 2026-07-29, predates the section-5 receipt tool; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_pgpu1_duty_cycle_20260814.sh",
+      "kind": "historical",
+      "applied_in": "c700318e",
+      "script_sha256": "ddbd70ae55359177c6ac08d6065c70eb3261a6fad612aec6e481e0d42f86bc5f",
+      "evidence": "ratify_pgpu1_duty_cycle_20260814.json; receipts/RATIFY-PGPU1-DUTY-CYCLE-20260814.json",
+      "reason": "P-GPU-1 duty_cycle amendment 2026-08-14; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/ratify_speech_kernel_freeze_20260731.sh",
+      "kind": "historical",
+      "applied_in": "eae9651e",
+      "script_sha256": "4cba6ea8b3c16c85bb09409c092e08d7afd853dfd57608e3b16dff79c2d4dc85",
+      "evidence": "ratify_speech_kernel_freeze_20260731.json (cited from CLAUDE.md)",
+      "reason": "speech-kernel freeze CLAUDE.md rows, 2026-07-31, predates the section-5 receipt tool; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/repair_measurement_torn_bullet_20260731.sh",
+      "kind": "historical",
+      "applied_in": "13383c49",
+      "script_sha256": "2c44b68e43bba0495d4e2f8aada9b7fb3ed710b2d415611e48bd6e351dced90a",
+      "evidence": "one-line move in MEASUREMENT.md section 3; audit orchestration-wiring-audit-20260731.md",
+      "reason": "operator-run repair of the 2026-07-31 torn bullet, the incident the receipt tool was built for; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/staged/apply_p1_doctrine.sh",
+      "kind": "historical",
+      "applied_in": "a07584b6",
+      "script_sha256": "dd119f77d88caf3ad86c3853f42170525bfa041a54302752c55b462f2e4dc17a",
+      "evidence": "blob hashes of CLAUDE.md, AGENT_INSTRUCTIONS.md, OPERATING_CONSTRAINTS.md, SESSION_LIFECYCLE.md at a07584b6 match the script's WANT pins",
+      "reason": "P1-2/3/4 doctrine collapse applied by the operator; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "artifacts/operator/waive_q8_cpu_prefill_v8_20260725.sh",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "bf6d18223bcde8f3515c956108d07e6c55d551b3618735a93cd7b4a521672e7f",
+      "evidence": "reviewed 2026-09-26",
+      "reason": "hashes MEASUREMENT.md and CHANGELOG.md as drift guards and refuses if they moved; writes only its own waiver JSON"
+    },
+    {
+      "script": "scripts/operator/ratify_20260827_session.sh",
+      "kind": "historical",
+      "applied_in": "a8359d68",
+      "script_sha256": "26fa0281b7e400f350e1fb9e78f150c21db3f5d093460fd10ca8a08b778c986c",
+      "evidence": "ratify_20260827_session.json",
+      "reason": "2026-08-27 measurement-instrument and restart hazards (OPERATING_CONSTRAINTS.md); executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "scripts/operator/ratify_actor_seat_wire_test_20260926.sh",
+      "kind": "historical",
+      "applied_in": "b3e1bb00",
+      "script_sha256": "df42d3291c17ca2cd584cef4c934eaafb566e777a10d4cd43edb8bb072294822",
+      "evidence": "ratify_actor_seat_wire_test_20260926.json; receipts/RATIFY-ACTOR-SEAT-WIRE-TEST-20260926.json",
+      "reason": "OPERATING_CONSTRAINTS.md doctrine, 2026-09-26; the script declined the section-5 receipt because the tool checked --anchor in MEASUREMENT.md only (fixed 2026-09-26: anchors now resolve in any amended file); executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "scripts/operator/ratify_ak_search_1_a3_20260828.sh",
+      "kind": "historical",
+      "applied_in": "4e42e8db",
+      "script_committed_in": "7936acd1",
+      "script_sha256": "ba5eb136ce6cc3044f59cc986e5316dd1a935dfc236ebd68147e0ea22377d396",
+      "evidence": "kernel-research.md P-AK-SEARCH-1-A3 section; its patch artifacts/operator/ak-search-1-a3-20260828.patch was never committed, so the script cannot be re-run",
+      "reason": "P-AK-SEARCH-1-A3 landed 2026-08-28 (flipped to RATIFIED 2026-08-31 at c5ddc4fc); script committed on a parallel lane; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "scripts/operator/ratify_eq1_answer_parse_exclusion_20260924.sh",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "df20959ed1d9a23db87e553e3fe89492bf58aac2559c2271e22e16ba9926b7fc",
+      "evidence": "reviewed 2026-09-26",
+      "reason": "names agents/shared/OPERATING_CONSTRAINTS.md only in an echo (reload ownership); every write targets epyc-orchestrator files"
+    },
+    {
+      "script": "scripts/operator/ratify_measurement_annex_d_20260823.sh",
+      "kind": "historical",
+      "applied_in": "e1b256fd",
+      "script_sha256": "3cdb5703ba7916428bb865c391afc0ede0013ea6d2277ee8c2e908210ab337ec",
+      "evidence": "ratify_measurement_annex_d_20260823.json",
+      "reason": "Annex D created 2026-08-23 with its own receipt JSON, not the section-5 tool; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "scripts/operator/ratify_measurement_bench_vs_serving_20260908.sh",
+      "kind": "historical",
+      "applied_in": "b05c4433",
+      "script_sha256": "f88bb0648c0f05474d0e4a6601cf3a3aa70ada0c13a07d07b331fa7945594488",
+      "evidence": "measurement-bench-vs-serving-20260908.patch",
+      "reason": "INSTRUMENT-CLASS-1 / FLOOR-UNIT-1 / BOUNDED-NULL-1, 2026-09-08; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "scripts/operator/ratify_op32_uniform_iq4xs_20260901.sh",
+      "kind": "historical",
+      "applied_in": "c2bc13a6",
+      "script_sha256": "cf498dade0954a6abf8c52dc1766a30eac273ee02fc244fa5b4441ecab46bc49",
+      "evidence": "op32-uniform-baseline-rule-20260901.patch; ratify_op32_uniform_iq4xs_20260901.json (choice B)",
+      "reason": "OP-32 uniform IQ4_XS rule in MEASUREMENT_POLICY.md, 2026-09-01; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "scripts/operator/ratify_operating_constraints_destructive_ops_20260828.sh",
+      "kind": "historical",
+      "applied_in": "f7432560",
+      "script_sha256": "4c8f6697fd3a6c2ce8f152a276b56bdb27fcbcc2c6c7e23434c8f1f9b91e968d",
+      "evidence": "operating-constraints-destructive-ops-20260828.patch; OPERATING_CONSTRAINTS.merged-20260828.md (sha-gated install)",
+      "reason": "destructive-ops doctrine recovered 2026-08-29; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "scripts/operator/ratify_prove2me_doctrine_20260907.sh",
+      "kind": "historical",
+      "applied_in": "fb755192",
+      "script_committed_in": "f87ccc36",
+      "script_sha256": "2c61d37c201c151648afb47aa61429c9e98e77b3572fc2e0b36660eea07fbf8c",
+      "evidence": "prove2me-doctrine-20260907.patch; script committed 7 min after the amendment as its reproducibility record",
+      "reason": "Prove2Me doctrine (MEASUREMENT_POLICY.md, OPERATING_CONSTRAINTS.md), 2026-09-07; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "scripts/operator/ratify_rtg09_duration_reward_20260924.sh",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "d97c1f81e019001e00f71678ef9c8614b921a3c72482a736a82e4537ceed4e44",
+      "evidence": "reviewed 2026-09-26",
+      "reason": "names agents/shared/OPERATING_CONSTRAINTS.md only in an echo (reload ownership); every write targets epyc-orchestrator files"
+    },
+    {
+      "script": "scripts/operator/ratify_trust_boundary_and_etr1_20260923.sh",
+      "kind": "historical",
+      "applied_in": "c6657ab0",
+      "script_sha256": "928623c18a51450a329d431386882853739d074ffd2f40d3d0a869f762b29d10",
+      "evidence": "measurement-trust-boundary-etr1-20260923.patch; ETR-1 clause in MEASUREMENT.md section 5",
+      "reason": "NIB2-59 + ETR-1, 2026-09-23; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    },
+    {
+      "script": "scripts/operator/ratify_v10_final_freeze_20260922.sh",
+      "kind": "historical",
+      "applied_in": "5a977761",
+      "script_committed_in": "09ebc06c",
+      "script_sha256": "eb558892c6ff8f6896a0c33b83c174ce16c166dd51fcee48edda892fc30a3fe3",
+      "evidence": "ratify_v10_final_freeze_20260922.json (digest matches CLAUDE.md); lanes merged at cdaa4dc0",
+      "reason": "v10 production freeze CLAUDE.md paragraph, 2026-09-22; script committed on a parallel lane; executed before section-5 receipts were enforced on it; no receipt was emitted at apply time and none is backfilled"
+    }
+  ]
+}
