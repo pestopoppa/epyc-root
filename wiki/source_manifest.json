@@ -9,10 +9,22 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-26T16:51:07Z",
-  "mode": "touch",
-  "scan_time": "2026-09-26T16:51:07Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-09-26T16:53:16Z",
+    "scope_paths": [
+      "handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-26T16:53:16Z",
   "schema_version": 1,
-  "source_set_hash": "cda234e0e862772351dd0389027ac1adbdf593e1553a3caed9e1c24b5ea3addf",
+  "source_set_hash": "91067f13ac6e9a227992ceed018f2b4b0e2e41d3f998ca00c8e747fe85d4c049",
   "sources": [
     {
       "content_hash": "8595f5d9339b0046d8720c31a58567e781bd250c32406bdc381c523e28197e7d",
@@ -503,10 +515,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "82bce1b8976019a47c7503a46fe4accf298a9ac221bbfd78594377d17d9767f3",
-      "modified": "2026-09-26T16:34:36Z",
+      "content_hash": "f875b4ec8cd11865329d1fcf4b9736c380aa159fc8d0cdbf504a5adfc4586c48",
+      "modified": "2026-09-26T16:52:53Z",
       "path": "handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md",
-      "size": 34945,
+      "size": 35428,
       "title": "Window-2 findings 02 \u2014 Post-bandwidth-wall heterogeneous CPU+GPU serving (\u00a74B)",
       "type": "handoff-active"
     },
