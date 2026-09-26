@@ -588,6 +588,8 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       request. Then re-evaluate the backend against maintained Kuzu forks, since upstream is archived.
       *2026-09-23 (intake-1496):* if revived, add HelixDB (Apache-2.0, Rust graph+vector on a slatedb LSM) to the backend
       candidate list beside maintained Kuzu forks; it is server-mode, not embedded, which works against the Kuzu locality rationale.
+      *2026-09-26 (audit):* re-verified — `apply_failure_veto` (`chat_pipeline/routing_decision.py:334-390`) is a no-op because
+      `state.failure_graph` is never set without kuzu (`services/memrl.py:477-536`); this is the NIB2-78b ruling working as decided, not a bug.
 - [x] **NIB2-79** (LOW) ✅ 2026-09-17 (orchestrator `0c03e658`): **four `archive_*` tool-registry entries point at handlers that do not exist.** Every API start
       logs `Could not load handler for tool 'archive_open' / 'archive_extract' / 'archive_file' / 'archive_search':
       module 'src.services.archive_extractor' has no attribute …`. `orchestration/tool_registry.yaml:715+` names

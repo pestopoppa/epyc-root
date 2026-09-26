@@ -11,7 +11,7 @@
 
 ## Executor Start Here
 
-Do not add new REPL tools before S4. The current risk is whether the shipped efficiency features reduce turns and token cost without accuracy loss. Treat the historical frecency, combined operation, dspy.RLM, and ColGREP implementation details as completed unless a regression is found.
+Do not add new REPL tools before S4. **Exception (operator D2, 2026-09-26):** embedding-backed retrieval (`repl-embedding-retrieval.md`, UFH-12) is waived from this gate, conditional on its Phase 2 passing the pre-registered kill criterion; if it fails, the waiver lapses. The current risk is whether the shipped efficiency features reduce turns and token cost without accuracy loss. Treat the historical frecency, combined operation, dspy.RLM, and ColGREP implementation details as completed unless a regression is found.
 
 ## Outstanding Tasks
 
