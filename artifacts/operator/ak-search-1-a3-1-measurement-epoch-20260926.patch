@@ -1,0 +1,134 @@
+--- a/MEASUREMENT.md
++++ b/MEASUREMENT.md
+@@ -284,6 +284,17 @@
+ 
+ ## CHANGELOG
+ 
++- **2026-09-26 (v2.x)** — CLARIFICATION (Annex K, `P-AK-SEARCH-1-A3.1`): the epoch in A3 Clause 1 is
++  the **measurement epoch**: anchor commit, build recipe and declared host state, EXCLUDING actor
++  configuration (planner/author/critic models, efforts, thinking, limits, prompt knobs, and the
++  manifest's actor roster). Planner-history comparability and the do-not-repeat gate key on it, so an
++  actor change no longer hides same-anchor results or re-admits already-measured mechanisms. Legacy
++  records with no measurement identity fail closed to the full epoch. The full epoch stays the
++  provenance key. A3's text never named actor configuration, but the implementation had folded it into
++  host state through `enrolled_manifest_digest`; both readings are recorded in the annex. Implementation:
++  epyc-inference-research `d643d794` (`ResolvedCampaign.measurement_digest`). Operator decision OP-60,
++  2026-09-26.
++
+ - **2026-09-23 (v2.x)** — AMENDMENT (NIB2-59): §5's trust boundary now names the agent digest
+   `agents/shared/MEASUREMENT_POLICY.md` explicitly. The digest already declared itself human-amendment-
+   only (its *Trust boundary* section) and every past edit to it was a ratified commit, but §5's list
+--- a/measurement/protocols/kernel-research.md
++++ b/measurement/protocols/kernel-research.md
+@@ -45,6 +45,8 @@
+ 
+ **NARROWED 2026-08-28 by `P-AK-SEARCH-1-A3`** (this annex, below): within a fixed epoch — anchor commit, build recipe and declared host state — a campaign may read prior campaigns' records to rank its own next attempt. A cross-epoch record remains readable as evidence that a mechanism was tried, never as a comparable magnitude, and is carried with an explicit staleness marker. Denial 4's comparability concern becomes a weight rather than a ban; banking, composition, readiness and promotion are untouched.
+ 
++**CLARIFIED 2026-09-26 by `P-AK-SEARCH-1-A3.1`** (this annex, below; operator decision OP-60): A3's epoch is the **measurement epoch**: anchor commit, build recipe and declared host state, where host state is the state of what is measured and never the actor configuration (which models plan, author and critique a patch, and how they are configured). Planner-history comparability and the do-not-repeat gate both key on it, so an actor change no longer hides same-anchor records or re-admits mechanisms already measured. A record whose measurement identity is unknown stays on the full-epoch comparison. Nothing else in A3 changes.
++
+ **Purpose.** This protocol permits an automated kernel-research controller to **rank, retain,
+ abandon, branch, and compose candidates inside experimental worktrees**, on the basis of measurements
+ taken on those experimental candidates. It is the narrow lift of the consumption prohibition at
+@@ -600,6 +602,10 @@
+ attempt. An epoch is the SHA-256 of the anchor commit, the build recipe, and the declared host
+ state, taken together.
+ 
++*Clarified 2026-09-26 by `P-AK-SEARCH-1-A3.1` (below):* "declared host state" means the state of
++what is measured and never the actor configuration. The epoch named in this clause and in Clause 2
++is the **measurement epoch**.
++
+ This grants ranking and nothing else. It does **not** authorise banking, composition, contribution
+ to readiness, promotion, or retro-certification; every denial in *"What this protocol does NOT
+ authorize"* stands verbatim, and a search record still can never become a claim.
+@@ -634,3 +640,91 @@
+ - The campaign calibration block. A campaign still derives its own thresholds; this clause governs
+   what it may READ, never what it may skip.
+ - The release boundary. Promotion remains solely under the owning Annex B, Q, G or S protocol.
++
++
++## P-AK-SEARCH-1-A3.1 — the A3 epoch is the measurement epoch (RATIFIED 2026-09-26)
++
++Appended to Annex K as a clarification of `P-AK-SEARCH-1-A3` Clause 1. It supersedes nothing in
++A3's text. It fixes what "declared host state" includes, and leaves every other part of A3, of
++`P-AK-SEARCH-1`, and of the owning release protocols untouched. Operator decision OP-60,
++2026-09-26.
++
++### What Clause 1 said, and what the implementation did
++
++Clause 1 defines an epoch as the SHA-256 of "the anchor commit, the build recipe, and the declared
++host state, taken together". It does not name actor configuration. The implementation folded the
++campaign's actor roster into host state anyway: `host_state` carried `enrolled_manifest_digest`, the
++digest of the whole resolved campaign manifest, and that manifest includes the `actors` and
++`fallbacks` blocks. So every change to who plans, authors or critiques moved the epoch.
++
++Both readings are recorded here, because they decide whether this is an amendment or a
++clarification:
++
++- **The text.** "Anchor commit, build recipe, declared host state" names three measured inputs.
++  Actor configuration is not one of them. On this reading the implementation over-reached and this
++  section is a **clarification**.
++- **The implementation.** Actor configuration lived inside `host_state` from the day A3 shipped,
++  and every A3 epoch recorded so far includes it. On this reading this section **changes** the
++  epoch that A3 records carry.
++
++The operator's ruling takes the first reading. This section is written as a clarification, and it
++states the change in recorded epochs so that nothing depends on the choice of label.
++
++### Clause 1a — the epoch is the measurement epoch
++
++The epoch in A3 Clauses 1 and 2 is the **measurement epoch**: the SHA-256 of
++
++- the anchor commit;
++- the build recipe;
++- the declared host state, which is every input that decides what is built, run and measured: the
++  CPU and GPU execution digests, the frozen request set, the enrolled target, the campaign
++  manifest's measured content (the manifest minus its actor roster), the CPU screen scope and the
++  serving instrument.
++
++It **excludes** actor configuration:
++
++- the planner, author and critic models and backends;
++- their reasoning efforts, thinking settings, context and output limits, and prompt knobs;
++- the manifest's `actors` and `fallbacks` blocks, and any digest that folds them in.
++
++The reference implementation is `ResolvedCampaign.measurement_digest` and `measurement_epoch` in
++`epyc-inference-research` (`scripts/kernel_rnd/autokernel/loop/campaign.py` and `loop/run.py`,
++research main `d643d794`). It replaces `enrolled_manifest_digest` with the manifest's
++`measurement_digest` and hashes the same anchor, recipe and remaining host state.
++
++### Clause 1b — what keys on it
++
++- **Planner-history comparability.** Records that share a measurement epoch MAY be ranked against
++  each other under Clause 1, whichever actors produced them. A record from a different measurement
++  epoch falls under Clause 2: it is evidence of attempt, never of magnitude.
++- **The do-not-repeat gate.** A mechanism already measured under the current measurement epoch
++  counts as measured, whichever actor authored the patch. An actor change does not re-admit it.
++  Narrower hypotheses and governed re-entry remain legal exactly as before.
++
++### Clause 1c — legacy rows fail closed
++
++A record that does not carry its measurement identity (rows written before the measurement epoch
++existed) MUST NOT be presumed to share one. It is compared on the full epoch only. If its full
++epoch differs, it is cross-epoch under Clause 2. It is never promoted to "same epoch" by inference.
++
++### Why
++
++A measured speed or correctness result does not depend on which actor authored the patch. The
++patch is the measured object, and it is identified per record rather than by the epoch. Under the
++full epoch, every actor change hid prior same-anchor results from the planner and re-admitted
++mechanisms that had already been measured. There were four actor changes in the week
++ending 2026-09-26. One critic swap moved the full epoch from `e0aefe6a` to `e384c2ad`, with the anchor,
++target, recipe, instrument, requests and floor all unchanged. Resume checkpoints already bind on
++the measurement epoch for the same reason (research lane `ak-author-medium`, `3cbdccea`). This
++section gives comparability and the do-not-repeat gate the same identity.
++
++### What this does not change
++
++- The full epoch is still recorded. It remains the provenance key for archive rows, history and
++  status. This section changes which identity comparison uses, not what is recorded.
++- A change to any measured input still moves the measurement epoch. That includes the anchor, the
++  recipe, an execution digest, the request set, the target, the screen scope and the instrument.
++- If an actor setting ever changes what is built or measured, and not only who proposes, it is a
++  measured input and belongs in the measurement epoch.
++- Every denial in *"What this protocol does NOT authorize"*, every precondition, the campaign
++  calibration block and the release boundary stand exactly as A3 left them.
