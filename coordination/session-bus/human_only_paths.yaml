@@ -41,6 +41,9 @@ paths:
   - repo: epyc-root
     glob: "measurement/protocols/*.md"
     why: "MEASUREMENT v2 protocol annexes — same trust boundary as the core constitution"
+  - repo: epyc-root
+    glob: "scripts/validate/ratification_receipt_exemptions.json"
+    why: "the only way a script that writes this boundary may skip the MEASUREMENT.md §5 consolidated receipt (scripts/validate/check_ratification_receipts.py); an entry excuses an unreceipted amendment, so adding one is an operator act"
   - repo: epyc-orchestrator
     glob: "orchestration/instrument_eras.yaml"
     why: "era registry rows — historical numbers are era-labelled, never edited"

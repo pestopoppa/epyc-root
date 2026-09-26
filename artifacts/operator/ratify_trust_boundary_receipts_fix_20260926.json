@@ -1,0 +1,39 @@
+{
+  "schema": "epyc.trust_boundary.amendment.v1",
+  "gate_id": "RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926",
+  "decision": "SECTION-5-RECEIPT-EXEMPTIONS-HUMAN-ONLY",
+  "operator_directive": "2026-09-26: fix the measurement trust-boundary ratification tooling; everything needing the operator in ONE package",
+  "ratified_at": "2026-09-26T19:48:41Z",
+  "operator": "node",
+  "status": "ratified",
+  "signed": {
+    "exemption_list": {
+      "path": "scripts/validate/ratification_receipt_exemptions.json",
+      "sha256": "6be4c31be3ca90f68488b3a34b521d8a000163367a8fb93e44dd0ef6e49ab2ad",
+      "entries": 29,
+      "by_kind": {
+        "historical": 25,
+        "not-a-boundary-write": 3,
+        "superseded": 1
+      }
+    },
+    "boundary_amendment": {
+      "path": "coordination/session-bus/human_only_paths.yaml",
+      "sha256_before": "db36527c289634b86d5298f4b9686043f74d7bc1e7c53c764ea9fa9bfcc3f0c3",
+      "sha256_after": "1a7b576f6b7d4dff291079e9418b0f07d24d3eab9fdd586b5a76d4b91362ef69",
+      "adds_glob": "scripts/validate/ratification_receipt_exemptions.json",
+      "pin_rewritten": true
+    },
+    "enforcer": {
+      "path": "scripts/validate/check_ratification_receipts.py",
+      "sha256": "a9ee2d501c0f31870273b3e1a954d0152c57b727a4b7ea4666116e4e81c91f31"
+    }
+  },
+  "not_granted": "no protocol, constitution, annex or doctrine text changes; no exempted ratification is re-run or re-certified; no receipt is backfilled",
+  "patch": {
+    "path": "artifacts/operator/trust-boundary-receipt-exemptions-20260926.patch",
+    "sha256": "dd840e1b82e0efb109984ee2b7d813d62908760def2ddbeb2b3af5b1fb8273cb"
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_trust_boundary_receipts_fix_20260926.receipt.json",
+  "applied_by": "scripts/operator/ratify_trust_boundary_receipts_fix_20260926.sh"
+}

@@ -1,0 +1,144 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-09-26T19:48:42Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "70d0c1724b21086dac29fd29150cd1a42236f8ee8ec35da64aab80a630c332eb"
+  },
+  "git_head_at_emit": "7be1d1d21971a00bd7e66c06defa4b0050fd2761",
+  "git_head_before": "7be1d1d21971a00bd7e66c06defa4b0050fd2761",
+  "operator": "node",
+  "protocol_id": "TRUST-BOUNDARY-RECEIPT-EXEMPTIONS",
+  "ratification_id": "RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926",
+  "ratify_script": {
+    "exists": true,
+    "path": "scripts/operator/ratify_trust_boundary_receipts_fix_20260926.sh",
+    "sha256": "06ef54d13d1bccf1313fa7f86eb92b26c3cea506bdf5c5ca6662549effaeaf8a"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/worktrees/ratify-tb-fix-20260926",
+  "sections": {
+    "coherence": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: governance amendment to the human-only list, not a measured claim; every exemption it protects cites its own commit, which scripts/validate/check_ratification_receipts.py re-verifies at each run"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id TRUST-BOUNDARY-RECEIPT-EXEMPTIONS is a clause reference, not a registered protocol name; verified via 1 anchor(s) instead",
+        "anchor present in coordination/session-bus/human_only_paths.yaml:     glob: \"scripts/validate/ratification_receipt_exemptions.json\""
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 1,
+      "lines_after": 2,
+      "lines_before": 2,
+      "lines_removed": 1,
+      "path": "coordination/session-bus/human_only_paths.sha256",
+      "sha256_after": "b14ada9a9ab562aa5ce92f73542c0c7658deccdb377aff00ac877094fa1865df",
+      "sha256_before": "6e19b224b1424e649e1835f3058f58e4e41917bd53fafdee76acc9a9eda450c2",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/coordination/session-bus/human_only_paths.sha256",
+        "+++ b/coordination/session-bus/human_only_paths.sha256",
+        "@@ -1,2 +1,2 @@",
+        "-db36527c289634b86d5298f4b9686043f74d7bc1e7c53c764ea9fa9bfcc3f0c3",
+        "+1a7b576f6b7d4dff291079e9418b0f07d24d3eab9fdd586b5a76d4b91362ef69",
+        " "
+      ]
+    },
+    {
+      "lines_added": 3,
+      "lines_after": 75,
+      "lines_before": 72,
+      "lines_removed": 0,
+      "path": "coordination/session-bus/human_only_paths.yaml",
+      "sha256_after": "1a7b576f6b7d4dff291079e9418b0f07d24d3eab9fdd586b5a76d4b91362ef69",
+      "sha256_before": "db36527c289634b86d5298f4b9686043f74d7bc1e7c53c764ea9fa9bfcc3f0c3",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/coordination/session-bus/human_only_paths.yaml",
+        "+++ b/coordination/session-bus/human_only_paths.yaml",
+        "@@ -41,6 +41,9 @@",
+        "   - repo: epyc-root",
+        "     glob: \"measurement/protocols/*.md\"",
+        "     why: \"MEASUREMENT v2 protocol annexes \u2014 same trust boundary as the core constitution\"",
+        "+  - repo: epyc-root",
+        "+    glob: \"scripts/validate/ratification_receipt_exemptions.json\"",
+        "+    why: \"the only way a script that writes this boundary may skip the MEASUREMENT.md \u00a75 consolidated receipt (scripts/validate/check_ratification_receipts.py); an entry excuses an unreceipted amendment, so adding one is an operator act\"",
+        "   - repo: epyc-orchestrator",
+        "     glob: \"orchestration/instrument_eras.yaml\"",
+        "     why: \"era registry rows \u2014 historical numbers are era-labelled, never edited\""
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "python3 scripts/validate/check_ratification_receipts.py --repo-root .",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "  [             PASS] scripts/operator/ratify_op60_measurement_epoch_20260926.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via patch+text)",
+        "  [           EXEMPT] scripts/operator/ratify_operating_constraints_destructive_ops_20260828.sh  -> agents/shared/*.md  (via text)  [historical: applied in f7432560]",
+        "  [             PASS] scripts/operator/ratify_p_serve_sel_1_20260926.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via patch+text)",
+        "  [             PASS] scripts/operator/ratify_pcal_specdec_contamination_20260916.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via patch+text)",
+        "  [           EXEMPT] scripts/operator/ratify_prove2me_doctrine_20260907.sh  -> agents/shared/*.md, agents/shared/MEASUREMENT_POLICY.md  (via patch+text)  [historical: applied in fb755192]",
+        "  [           EXEMPT] scripts/operator/ratify_rtg09_duration_reward_20260924.sh  -> agents/shared/*.md  (via text)  [not-a-boundary-write: reviewed: mentions, does not write]",
+        "  [           EXEMPT] scripts/operator/ratify_trust_boundary_and_etr1_20260923.sh  -> MEASUREMENT.md  (via patch+text)  [historical: applied in c6657ab0]",
+        "  [             PASS] scripts/operator/ratify_trust_boundary_receipts_fix_20260926.sh  -> coordination/session-bus/human_only_paths.sha256, coordination/session-bus/human_only_paths.yaml, scripts/validate/ratification_receipt_exemptions.json  (via patch+text)",
+        "  [           EXEMPT] scripts/operator/ratify_v10_final_freeze_20260922.sh  -> CLAUDE.md  (via text)  [historical: applied in 5a977761]",
+        "  [             PASS] scripts/operator/run_p_serve_sel_1_ratify_20260926.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [delegates to scripts/operator/ratify_p_serve_sel_1_20260926.sh]",
+        "  [             PASS] scripts/operator/run_pcal_ratify_20260916.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [delegates to scripts/operator/ratify_pcal_specdec_contamination_20260916.sh]",
+        "  receipt RATIFIED   RATIFY-CKPT-PROMPT-LEAK-20260916 (P-QUAL-T1)",
+        "  receipt RATIFIED   RATIFY-OP60-MEASUREMENT-EPOCH-20260926 (P-AK-SEARCH-1)",
+        "  receipt RATIFIED   RATIFY-P-CAL-SPECDEC-20260916 (P-CAL)",
+        "  receipt RATIFIED   RATIFY-V10-EPISODIC-REPIN-20260917 (P-QUAL-T1)",
+        "  receipt RATIFIED   autokernel-discovery-first-20260813 (P-AK-SEARCH-1)",
+        "  receipt REFUSED    autokernel-discovery-first-20260813 (P-AK-SEARCH-1)  [preserved refusal: superseded by a later RATIFIED receipt]",
+        "",
+        "43 boundary-amending script(s): 14 receipted, 29 exempt, 0 failing.",
+        "OK"
+      ]
+    },
+    {
+      "command": "test \"$(sha256sum coordination/session-bus/human_only_paths.yaml | cut -d' ' -f1)\" = \"$(tr -d '[:space:]' < coordination/session-bus/human_only_paths.sha256)\"",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    },
+    {
+      "command": "test \"$(sha256sum scripts/validate/ratification_receipt_exemptions.json | cut -d' ' -f1)\" = 6be4c31be3ca90f68488b3a34b521d8a000163367a8fb93e44dd0ef6e49ab2ad",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}
