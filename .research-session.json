@@ -3,7 +3,7 @@
   "started_at": "2026-09-26T16:30:00Z",
   "last_checkpoint": "2026-09-26T19:30:00Z",
   "phase": 5,
-  "stage": "stage2-closeout-pending",
+  "stage": "stage3-plan-drafting",
   "session_kind": "research-intake Stage-1 focused prior-art sweep (harness <-> capacity-aware multi-model stack; CPU+RAM leverage)",
   "previous_session": "intake-exl3-sglang-throughput-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-orch-prior-art-20260926/previous-research-session-stage4.json)",
   "lane": {
@@ -13,7 +13,7 @@
   },
   "mandate": "Stage 1 only. Five operator topics: capacity/KV-aware multi-model serving; harness<->multi-model interfaces; one endpoint many models; shared workspaces/RLM; hybrid CPU+RAM/GPU MoE serving. Operator caps Stage 2 at ONE deep-dive round, selected by the operator from the ranked recommendations.",
   "max_existing_intake_id_at_start": 1782,
-  "next_intake_id": 1815,
+  "next_intake_id": 1822,
   "entries_processed": [
     "intake-1783",
     "intake-1784",
@@ -114,6 +114,14 @@
       "disposition": "context-only",
       "plan_ref": null,
       "note": "Relayed by the coordinator (paraphrase of operator design context); design framing for the dives; must be carried into the Stage-3 plan."
+    },
+    {
+      "seq": 5,
+      "stage": 2,
+      "verbatim": "Operator decision (2026-09-26): approve ONE Stage-2b pass on the 7 RECOMMENDED dive-surfaced sources ONLY: RouterWise 2604.10907, ThunderAgent 2602.13692, Dynamo PR #7977, the SGLang KTransformers integration (kt_ep_wrapper.py @c73f7077, issue #11425), Talaria 2607.17181, Proxifield 2609.20889 and EvoHarnessBench 2609.04280. [...] Record the 19 declines [...] Then proceed DIRECTLY to Stage 3 without asking. [...] The plan must include: (a) the operator-agreed adoptions: slot-derived Retry-After on the chat door; publishing the three GAIE gauges internally; accepting OpenCode's X-Session-Id / x-parent-session-id as a session fallback; no x_* rename to Dynamo nvext; a static per-role latency prior plus a saturation guard for routing. (b) our own load-sweep A/B for a single-instance saturating tier under a TTFT-bound workload, USING Qwen3.8-Flash-Next (operator-chosen). This is inference work, so it needs a quiet CPU window and a region claim. (c) cleanup of the stale facts the dives found in other handoffs [...] (d) routing each item to the right owning handoff. UFH-12 [...] and UFH-01 [...] exist on main now.",
+      "disposition": "planned",
+      "plan_ref": "Stage-3 plan items for (a)-(d); Stage-2b executed",
+      "note": "Relayed by the coordinator; scope approval for Stage-2b and plan CONTENT, not approval of filing (Stage 4 still needs plan approval)."
     }
   ],
   "stage2_selection": {
@@ -386,7 +394,7 @@
         "reason": "Adoption and restatement, not an evaluation."
       }
     ],
-    "dive_surfaced_status": "PRESENTED to operator for selection; NO Stage-2b ingest unless operator asks (coordinator relay 2026-09-26). Declines to be recorded in bearing entries' dive_corrections once operator decides.",
+    "dive_surfaced_status": "CLOSED 2026-09-26: operator selected the 7 recommended for Stage-2b; 19 declines recorded in bearing entries' dive_corrections.",
     "derived_actionables": [
       {
         "id": "C1-A1",
@@ -741,5 +749,144 @@
         "text": "Add a flat, equal-rank RLM-worker arm with a verified shared-notes layer (DeLM+RLM) to the REPL scaffold A/Bs."
       }
     ]
+  },
+  "stage2b": {
+    "entries": [
+      "intake-1815",
+      "intake-1816",
+      "intake-1817",
+      "intake-1818",
+      "intake-1819",
+      "intake-1820",
+      "intake-1821"
+    ],
+    "results_dir": "/mnt/raid0/llm/tmp/intake-orch-prior-art-20260926/stage2b/",
+    "second_reader": [
+      "second_reader_2b_a.yaml",
+      "second_reader_2b_b.yaml"
+    ],
+    "surfaced_sources_not_ingested": [
+      {
+        "from": "intake-1815",
+        "source": "MuxServe: flexible spatial-temporal multiplexing for multiple LLM serving (Duan et al., ICML 2024; cited as the co-location premise)",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Whether fractional co-location of multiple LLMs on shared accelerators yields throughput gains that are independent of the routing layer, and at what re-plan cadence"
+      },
+      {
+        "from": "intake-1815",
+        "source": "Hetis: serving LLMs in heterogeneous GPU clusters with fine-grained and dynamic parallelism (Mo et al., SC 2025; cited in RouterWise \u00a71)",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Whether dynamic re-parallelization across heterogeneous devices beats static placement, and at what timescale; the nearest cited work to the heterogeneous-device question RouterWise leaves untested"
+      },
+      {
+        "from": "intake-1815",
+        "source": "RouterBench: a benchmark for multi-LLM routing system (Hu et al., Agentic Markets Workshop ICML 2024)",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Whether the quality labels under both RouterWise studies (and many routing papers) are robust enough for 0.01-0.03 score differences to mean anything"
+      },
+      {
+        "from": "intake-1816",
+        "source": "https://arxiv.org/abs/2511.02230",
+        "dive_recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Continuum, the TTL-pinning alternative contract (predict tool duration, pin KV for it). It would settle whether ThunderAgent's claimed 1.17-3.31x over Continuum survives Continuum's own evaluation, and whether TTL pinning is the better fit for EPYC's low-concurrency regime, where pinning costs little."
+      },
+      {
+        "from": "intake-1816",
+        "source": "https://arxiv.org/abs/2502.13965",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Autellix program-level (PLAS) scheduling as an earlier program-abstraction precedent."
+      },
+      {
+        "from": "intake-1816",
+        "source": "https://github.com/ai-dynamo/dynamo/issues/9208",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Whether Dynamo 2.0 commits to program-level agent scheduling as a first-class contract."
+      },
+      {
+        "from": "intake-1817",
+        "source": "https://github.com/vllm-project/vllm/pull/47871",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "How vLLM makes a CPU_ATTN decode worker accept NIXL KV from a GPU/XPU prefiller, including the layout/dtype conversion."
+      },
+      {
+        "from": "intake-1817",
+        "source": "https://github.com/vllm-project/vllm/issues/43563",
+        "dive_recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Intel Xeon-only P/D disaggregation (socket-split prefill and decode, KV via tmpfs). This is the closest analogue to numa-prefill-decode-disaggregation.md."
+      },
+      {
+        "from": "intake-1818",
+        "source": "https://github.com/sgl-project/sglang/pull/20516",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Whether upstream SGLang regains kt_kernel >= v0.5.1 compatibility (gpu_experts_mask + GPU-local expert remap)."
+      },
+      {
+        "from": "intake-1818",
+        "source": "https://github.com/sgl-project/sglang/pull/17082",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Whether a working gfx90a SGLang recipe exists (Triton conv, vLLM-dependency removal, setup_rocm.py arch add), and why upstream did not merge it."
+      },
+      {
+        "from": "intake-1818",
+        "source": "https://github.com/kvcache-ai/ktransformers/issues/2115",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Field status of ROCm + sglang-kt + kt-kernel v0.6.4 on an AMD GPU."
+      },
+      {
+        "from": "intake-1819",
+        "source": "arXiv:2511.02230 (Continuum: Efficient and Robust Multi-Turn LLM Agent Scheduling with KV Cache Time-to-Live)",
+        "dive_recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Directly addresses the rule Talaria leaves open, namely how long to keep a session's KV resident across a tool call (a KV time-to-live) versus evicting it. That is the keep-vs-evict/save decision for EPYC's long-gap harness sessions and llama-server slots."
+      },
+      {
+        "from": "intake-1819",
+        "source": "arXiv:2502.13965 (Autellix: An Efficient Serving Engine for LLM Agents as General Programs)",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Program-level (session/DAG-aware) scheduling priorities for agent calls, relevant to ordering RLM REPL-hierarchy calls on shared slots."
+      },
+      {
+        "from": "intake-1819",
+        "source": "arXiv:2407.00023 (Preble: Efficient Distributed Prompt Scheduling for LLM Serving)",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "KV/prefix-aware routing across instances."
+      },
+      {
+        "from": "intake-1820",
+        "source": "https://arxiv.org/abs/2505.11556",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "Whether shared-board fact pooling beats discussion on hidden-profile tasks in general, i.e. whether the one regime where shared context won (#4) is robust (HiddenBench origin paper)."
+      },
+      {
+        "from": "intake-1820",
+        "source": "https://arxiv.org/abs/2603.28990",
+        "dive_recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Whether self-organising agents beat designed hierarchies/roles as base models improve. That bears directly on the consultant/grunt role split."
+      },
+      {
+        "from": "intake-1820",
+        "source": "https://arxiv.org/abs/2603.12229",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "A distributed-systems framing of LM teams (coordination cost, failure), relevant to scheduler-side coordination of concurrent workers."
+      },
+      {
+        "from": "intake-1821",
+        "source": "https://arxiv.org/abs/2510.04851",
+        "dive_recommendation": "ingest-and-dive",
+        "what_it_would_settle": "LEGOMem: whether shared vs per-worker procedural memory in orchestrator-worker MAS is worth its cost, which bears directly on a notes layer shared across REPL workers."
+      },
+      {
+        "from": "intake-1821",
+        "source": "https://arxiv.org/abs/2603.13594",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "EnterpriseOps-Gym task structure (stateful sequential workflows), i.e. whether decomposition MAS losing to single loops is a property of the workload."
+      },
+      {
+        "from": "intake-1821",
+        "source": "https://arxiv.org/abs/2506.07398",
+        "dive_recommendation": "decline",
+        "what_it_would_settle": "G-Memory hierarchical MAS memory, the best MAS on the agents axis (18.2)."
+      }
+    ],
+    "status": "complete; surfaced sources recorded as not ingested (operator: one Stage-2b pass only); 4 flagged as future-intake candidates in the Stage-3 plan"
   }
 }
