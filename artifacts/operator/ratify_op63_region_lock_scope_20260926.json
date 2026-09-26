@@ -1,0 +1,31 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "decision": "REGION-LOCK-COVERS-SELF-RUN-INFERENCE-NOT-API-TRAFFIC",
+  "gate_id": "RATIFY-OP63-REGION-LOCK-SCOPE-20260926",
+  "operator_decision": "OP-63, approved 2026-09-26 (session workspace-8d)",
+  "ratified_at": "2026-09-26T23:29:28Z",
+  "operator": "pestopoppa (executed by Claude session workspace-8d at the operator's explicit instruction, 2026-09-26)",
+  "status": "ratified",
+  "target": "agents/shared/OPERATING_CONSTRAINTS.md",
+  "section": "Inference and Benchmarks",
+  "rule": "region-lock is for processes that run inference themselves (benches, llama-bench/cli, self-launched servers); traffic sent through the orchestrator API (:8000) is placed and region-claimed by the orchestrator per call, so an outer region-lock over the same regions must not wrap it; quiet windows for API traffic are coordinated with the session that owns the measurement",
+  "origin": "HS-4 P0.4 run 1, 2026-09-26: outer region-lock over q0-q3 around an OpenCode->/v1 client; every frontdoor call failed 'placement timeout role=frontdoor reason=race_lost holders=[] after 60.0s' (503 contention_denied)",
+  "evidence": "handoffs/active/harness-selection-and-integration.md P0.4 (r1 run dir not preserved)",
+  "not_changed": "no code, no measurement rule, no other file; section heading unchanged",
+  "patch": {
+    "path": "artifacts/operator/op63-region-lock-scope-20260926.patch",
+    "sha256": "8f5cabb06bf811a584ab1fb14893c885541d5c924764c5c3df5cbd7292d6cf38"
+  },
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "c66ff747a7e235d442fcd72e8dceca23190335624b9237ef339d928acf7359ab",
+      "sha256_after": "8bfaa03228aac79d6ac34c9f635a0f3529d75e57ffc759fb283be5837518eab8"
+    }
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_op63_region_lock_scope_20260926.receipt.json",
+  "tracking": {
+    "operator_queue": "handoffs/active/master-handoff-index.md OP-63",
+    "handoff_task": "handoffs/active/non-inference-backlog.md HYG-5"
+  },
+  "applied_by": "scripts/operator/ratify_op63_region_lock_scope_20260926.sh"
+}
