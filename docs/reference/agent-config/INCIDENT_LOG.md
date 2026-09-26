@@ -310,3 +310,53 @@ bit-exact vs the champion, ~3.2x warm / ~2.1x cold on a 27B load. Rule fed (prop
 ratify into CLAUDE.md § Experimental Kernel Workflow): forward-port one feature per commit; before
 reverting a bundled commit, split it and revert only the gated-out parts; a feature's test travels
 with it through every consolidation.
+
+## INC-20260926-local-actor-bringup
+The DS41 AutoKernel campaign moved its planner from cloud actors to local weights with no prior
+local run of the loop to learn from. It went first to the CPU frontdoor `qwen3.8-flash-next` on
+:8074 (2026-09-23 18:06Z), then to the GPU `qwen3.8-27b` on :8083 (run 7, 2026-09-24).
+
+The first real candidate measurement came **~57.5 h** later, at 2026-09-26 15:32Z. That spanned 11
+run directories, 10 of which scored nothing. The campaign store held 45 records and 0 keeps before
+run 10i; 22 of those records were abstentions.
+
+About 26 incidents fell into four root-cause classes (the classes overlap a little):
+- **~11 opencode harness semantics.** Examples: pipe truncation; argv quoting; `prompt:` replacing
+  the system prompt; a silent 32000 `max_tokens` clamp; `chat_template_kwargs` dropped for local
+  providers; a VACUUM lock on `opencode.db`; and a read-only session that an `ask`-class permission
+  ENDS without `--auto`, where a `deny` fails only that one call (`b8d6a046`).
+- **~12 latent loop or harness bugs** that the local model's long, numerous calls exposed rather than
+  created. Examples: TERM not reaching the actor (DS41-C22); an op_scope gate that built 0 of ~15
+  candidates (C29); a resume `RatchetRefused` (C31); comparability keyed on the actor roster (OP-60,
+  `P-AK-SEARCH-1-A3.1`); discard-on-recoverable-failure (5 commits); exact-symbol route lookup
+  (`77f8bf58`); reference probes compiled in the candidate's PATH-less env (`7037165f`); and a refused
+  resume falling through to the planner (`2a060a41`).
+
+  Two were still live afterwards. First, an experimental CPU campaign cannot continue past its first
+  keep, because continuations never carry `cor_anchor` (17:51Z, DS41-C45). Second, keep anchor builds
+  run at `-j1`, inherited from the HIP fix R23-40: ~1 h per keep, and gcc `-j64` reproducibility was
+  never checked (DS41-C46).
+- **~3 model capability.** Slow CPU prefill, a 74k-token deliberation with zero edits, and no use of
+  the fan-out tool.
+- **~4 process mistakes.** `touch STOP` used as a drain, an invented "off-hours" hold, a
+  mid-calibration stop that blocked the frontdoor, and a 519 GB `--verify-artifacts` re-hash for an
+  actor-only change.
+
+A stale seeded "~220 GB/s" ceiling that predated a BIOS change also cost 13 batches (DS41-C36).
+
+A fake model server finds most of the harness class in seconds, and a stub end-to-end iteration finds
+most of the loop class. Neither was run before going live. The scripted-fake-server technique was
+eventually used, live, to find the critic-permission bug.
+
+The first keep followed at run 10i: `akm-ds41-gemm4xn-2x-unroll`, +4.535% paired, +7.304%
+compounded. It is unconfirmed at serving, because the anchor-guard A/A read +19.443% on identical
+code digests (DS41-C47).
+
+Full record: [AutoKernel local-actor bring-up retrospective](../../design/autokernel-local-actor-bringup-retro-20260926.md).
+Rules fed:
+- the new-actor checklist, `docs/guides/agent-workflows/agent-loop-design.md` → *Bringing up a new
+  actor model or backend*;
+- the gates `handoffs/active/autokernel-orchestrator-actor-backend.md` OAB-29..OAB-32;
+- proposed for operator ratification: a wire test before any new actor seat runs live
+  (`scripts/operator/ratify_actor_seat_wire_test_20260926.sh`, into
+  `agents/shared/OPERATING_CONSTRAINTS.md`).

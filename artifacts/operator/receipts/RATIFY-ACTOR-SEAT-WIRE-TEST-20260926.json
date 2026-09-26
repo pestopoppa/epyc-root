@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-ACTOR-SEAT-WIRE-TEST-20260926",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_actor_seat_wire_test_20260926.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

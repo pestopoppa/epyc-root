@@ -174,6 +174,32 @@ DFlash2 + iqk + speculative) sat one branch over; runs 18–20 optimised the wro
 dashboard showed two "champions". Operator: "inference research should always own ONE SINGLE
 CHAMPION aggregating all improvement work done BETWEEN production promotions", refined
 2026-08-31: "one single champion for EACH production kernel tree".)
+
+## New actor seats — wire-test before any live call
+
+**Ratified 2026-09-26 (operator).** A new actor seat must not take a live call until two stub checks have
+passed on its EXACT invocation. A new seat is any of these, in AutoKernel or any other autonomous loop:
+- a new model or backend kind;
+- a new harness or CLI;
+- a changed seat config: permissions, prompt transport, or output or context limits.
+
+The two checks:
+1. **A fake-model wire test.** Drive the exact invocation against a scripted OpenAI-compatible stub
+   server, and check each of these:
+   - the full reply survives capture at full length;
+   - both exit-code paths are handled;
+   - the timeout covers a slow reply;
+   - requested limits reach the wire;
+   - permissions hold: a read-only seat can never reach an `ask`-class prompt.
+2. **One stub end-to-end dry iteration.** It exercises stop, resume, and continuation past a keep.
+
+Until the gate exists in code (INF-78 OAB-29/OAB-30), the session bringing the seat up runs both by hand
+and records the result in the owning handoff. Checklist: `docs/guides/agent-workflows/agent-loop-design.md`
+→ *Bringing up a new actor model or backend*.
+
+(origin: INC-20260926-local-actor-bringup — 57.5 h passed from the first local-planner launch to the first
+measurement. ~11 of ~26 incidents were harness semantics that a fake server finds in seconds.)
+
 ## Retry Policy
 
 - Maximum 3 retries for the same failing command.

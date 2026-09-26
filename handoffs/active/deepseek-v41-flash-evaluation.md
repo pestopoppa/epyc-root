@@ -2,10 +2,16 @@
 
 **Status**: active. The port is built and the AutoKernel CPU campaign runs on it on anchor `00d118d44` (DS41 port
 + champion `90c12df42` fast loader).
-- **Run 10h has been live since 2026-09-26 ~10:57Z** on research `d643d794`, after six AK lanes were merged (§C,
+- Run 10h launched 2026-09-26 ~10:57Z on research `d643d794`, after six AK lanes were merged (§C,
   DS41-C35..C37).
+- Run 10i took over after the 13:37Z-15:03Z fixes (`77f8bf58`, `7037165f`, `b8d6a046`, `2a060a41`). Its first keep
+  moved the anchor from `00d118d44` to anchor-gen-001.
 - The planner's ~220 GB/s abstention premise was refuted by a full-screen readbw run (DS41-C36).
-- 0 measurements so far (DS41-C39). The epoch clause is ratified as P-AK-SEARCH-1-A3.1 (DS41-C40); the code switch is DS41-C44.
+- **First keep 2026-09-26 on run 10i** (DS41-C39): `akm-ds41-gemm4xn-2x-unroll`, +4.535% paired and +7.304%
+  compounded. The anchor is now anchor-gen-001, `cafb59c3bf67`. The keep is unconfirmed at serving (DS41-C47).
+- The campaign cannot continue past a keep until DS41-C45 lands.
+- The epoch clause is ratified as P-AK-SEARCH-1-A3.1 (DS41-C40); the code switch is DS41-C44.
+- Bring-up retrospective: `docs/design/autokernel-local-actor-bringup-retro-20260926.md`.
 - The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
 target DeepSeek-V4.1-Flash instead (assuming they are applicable)")
@@ -688,12 +694,30 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     - `deepseek_v41_flash_recipe.py:180` `KERNEL_SOURCE_ROOT` → `llama.cpp-experimental-deepseek41-20260923`;
     - `autokernel/loop/production.py:93` `BASELINE_TREE` → `tmp/v9v-base-tree`;
     - `dflash2_followups.py:31`.
-- [ ] DS41-C39 — **First real candidate measurement on run 10h.**
+- [x] DS41-C39 — **First real candidate measurement on run 10h.** ✅ 2026-09-26 — **met on run 10i, which
+  succeeded 10h. The candidate was KEPT.**
   - Starting point: at 11:00:30Z run 10h was authoring `akm-q4k-x4t-avx512` with 0 measurements.
   - Acceptance: the first candidate reaches build → gate → measure, and its disposition (keep, reject or refused,
     with its reason) is recorded here.
   - If the planner abstains again with the scope-widening note in its inbox, record the abstention reason
     verbatim. This also carries DS41-C33's hoist acceptance.
+  - **Result:** `akm-ds41-gemm4xn-2x-unroll`, a 2x unroll of tinyBLAS `gemm4xN`.
+    - It passed critic 2 and every gate at 15:31Z. It was measured in a full-screen paired A/B from 15:32Z.
+    - **KEPT at +4.535%** (batch-000001, 204 min).
+    - The keep's accumulate bench recorded **+7.304% compounded** against the champion of record.
+    - The anchor advanced from `00d118d44876` to anchor-gen-001, `cafb59c3bf67`.
+  - **The campaign's first locally-authored AutoKernel keep.**
+    - Planner: `qwen-gpu/qwen3.8-27b`, local.
+    - Author: best-of-2 on the same local model. The winner was `a0-off` (thinking off): 11 steps, and
+      `ak-check` op-test PASS.
+    - Critic: external `deepseek/deepseek-flash`.
+    - It landed ~57.5 h after the first local planner launched (INC-20260926-local-actor-bringup).
+  - **Caveat: serving-measurement variance.** The keep's anchor-guard A/A measured **+19.443%** between two builds
+    with IDENTICAL code digests. The loop logged this as an "R21-10 instrument excursion". The serving gate
+    (13.81% compounded, or every 4 keeps) is the real confirmation → DS41-C47.
+  - DS41-C33's hoist acceptance is **not** met by this keep: the hoist is a different candidate. It stays open
+    under C33.
+  - Continuing after this keep hit a latent bug → DS41-C45.
 - [x] DS41-C40 ✅ 2026-09-26 — Option A (switch both) chosen by the operator and ratified as `P-AK-SEARCH-1-A3.1` (ratify commit 1680efbb, run by the main session on the operator's explicit authorization; receipt `artifacts/operator/ratify_op60_measurement_epoch_20260926.json`). — **Operator decision: move planner-history comparability and the do-not-repeat gate from the full
   epoch to the measurement epoch.**
   - The two epochs:
@@ -728,6 +752,46 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   - Keep the operator's gate and target (30 / 45-50 t/s). Only re-derive the BW → t/s rows.
   - Repeat the reading on an idle host before quoting it as the ceiling.
 - [ ] DS41-C44 — **Switch planner-history `recall()` comparability and the do-not-repeat gate to the measurement epoch** (A3.1 clause 1b). Records with no measurement identity fall back to the full epoch (clause 1c). Tests: an actor swap keeps same-anchor measured results visible and blocks re-proposal; an anchor/recipe/host change still separates; legacy rows fail closed. In progress 2026-09-26 on research lane `lane/op60-measurement-epoch-20260926`.
+- [ ] DS41-C45 — **An experimental CPU campaign must continue past its first keep.**
+  - Measured at 2026-09-26 17:51Z: after the DS41-C39 keep, the next batch refused with "restored champion of
+    record differs from current anchor".
+  - Cause: experimental continuations never carry `cor_anchor`. So after the anchor advanced to anchor-gen-001
+    `cafb59c3bf67`, the next batch's restore check cannot match the champion of record against it.
+  - Effect: every experimental campaign halts at every keep.
+  - Fix in progress on research lane `lane/ak-cor-continue-20260926`.
+  - Acceptance:
+    - a keep followed by the next batch runs on the advanced anchor, with no refusal, in the INF-78 OAB-30 stub
+      iteration;
+    - the DS41 campaign relaunches from anchor-gen-001 and completes at least one post-keep batch.
+- [ ] DS41-C46 — **CPU keep anchor builds at `-j1`: check gcc `-j64` reproducibility.**
+  - R23-40 (`f4f13116`, 2026-09-04) moved `build_champion` to `-j1` because hipcc gfx90a `libggml-hip.so` is not
+    reproducible at `-j64`. The rule applies to CPU/gcc campaigns too, where it costs ~1 h per keep with 95 cores
+    idle.
+  - R23-40's own probe found the CPU `llama-bench` executable byte-identical across `-j64` builds. It did not
+    check the library the CPU anchor guard hashes.
+  - Test: build the current champion's CPU tree twice at `-j64` in clean, separate build dirs, and compare the
+    anchor guard's code digest (the same `anchor_integrity.build_digest` input the CPU guard uses).
+  - If A = B, and it holds on a repeat under concurrent lane-build load, allow parallel anchor builds for CPU
+    campaigns only. HIP stays at `-j1` until R23-41 (hipcc determinism flags).
+  - If the digests differ, record which object differs and keep `-j1`.
+  - The build takes CPU cores, so schedule it under a region claim that does not overlap a live measurement.
+- [ ] DS41-C47 — **Confirm the first keep at the serving gate.**
+  - `akm-ds41-gemm4xn-2x-unroll` measured +4.535% on the paired A/B and +7.304% compounded (DS41-C39).
+  - But its anchor-guard A/A read **+19.443% between two builds with identical code digests** (the "R21-10
+    instrument excursion"). That is four times the keep's own delta, on the same code.
+  - Until the serving gate fires (13.81% compounded, or every 4 keeps), quote the keep as "+4.535% paired A/B,
+    unconfirmed at serving".
+  - Acceptance:
+    - the serving gate's verdict on the chain containing this keep is recorded here;
+    - the A/A excursion is explained (host drift, launch variance, or instrument) or bounded by a repeat A/A.
+- [ ] DS41-C48 — **A freshness gate on seeded numeric evidence in the campaign inbox.**
+  - A stale "~220 GB/s" read ceiling, which predated the 2026-09-21 BIOS/config change, drove 13 batches of
+    planner abstention (DS41-C36). The real figure was 399.6-449.4 GB/s full-screen.
+  - Fix: every hard numeric ceiling seeded into `store/inbox/` carries its measurement timestamp and the host-config
+    identity it was taken under. When a planner abstention cites a ceiling older than the last host-config change,
+    re-measure it before a second abstention on the same ground.
+  - Acceptance: a stub campaign seeded with a pre-change ceiling triggers the re-measure path instead of a
+    repeated abstention.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,

@@ -617,8 +617,132 @@ What to build instead:
 Long term, the loop calls the orchestrator as a single `Backend`, and the orchestrator owns model choice
 (`handoffs/active/autokernel-orchestrator-actor-backend.md`, INF-78).
 
+## Bringing up a new actor model or backend
+
+**Run this checklist before a new actor model, backend kind, harness or seat config takes a live call.**
+That covers a local model replacing a cloud one, a new CLI, or a critic moved to another provider.
+
+The DS41 local-planner bring-up took **57.5 h from launch to the first measurement**, and 10 of its 11 runs
+scored nothing. Most of the ~26 incidents were harness semantics or latent loop bugs, not the model. A fake
+server or a stub finds each of them in seconds; live inference found them one multi-hour run at a time.
+Full record: the
+[AutoKernel local-actor bring-up retrospective](../../design/autokernel-local-actor-bringup-retro-20260926.md)
+(`INC-20260926-local-actor-bringup`).
+
+1. **Wire-test the exact invocation against a fake model first.** Script an OpenAI-compatible stub server and
+   drive the **exact** actor command line through it: same CLI, flags, config, env and prompt transport. Assert
+   each of these:
+   - the full reply survives to a file at full length. A pipe truncated opencode replies at 64-96 KiB, and argv
+     prompts hit the 128 KiB limit;
+   - both exit-code paths are handled. opencode exits 1 after a *recovered* tool error, with good stdout;
+   - a compaction or template echo does not parse as an answer;
+   - the timeout covers a deliberately slow reply;
+   - a config key does what you think. `prompt:` **replaced** opencode's system prompt, and `instructions`
+     appends;
+   - requested limits reach the wire. opencode silently clamps `max_tokens` to 32000, and drops
+     `chat_template_kwargs` for providers it does not flag as reasoning-capable;
+   - **permission semantics hold.** Without `--auto`, an `ask`-class permission is auto-rejected **and ends the
+     whole session with no final text**, while a configured `deny` fails only that one call. A read-only seat
+     must never be able to reach an `ask` (`b8d6a046`).
+2. **Run one end-to-end dry iteration against a fast stub** before a real campaign. Stub the actors, build and
+   bench, and exercise:
+   - a kill mid-formation;
+   - a kill mid-calibration;
+   - `touch STOP`;
+   - a resume after a mid-build kill;
+   - a refused resume, which must yield to the next queued checkpoint;
+   - **a keep followed by the next batch.** An experimental campaign that cannot continue past its first keep
+     (DS41-C45) is invisible until something is kept.
+3. **Never silently discard produced work.** Every accepted hypothesis, authored patch or completed reply that
+   is dropped writes a disposition record: what, why, and where the retained artifact is. Enforce this with a
+   test that walks every non-fatal failure path, not by convention. Before `c7215eb5`, op_scope silently
+   dropped ~15 candidates across seven runs, and none of them ever built.
+4. **Key comparability on the measurement identity, not the actor roster.** Resume, planner history and
+   do-not-repeat must survive an actor swap (`P-AK-SEARCH-1-A3.1`). Swapping who proposes never invalidates what
+   was measured.
+5. **Give free compute an explicit budget.** Every backend and every role needs a per-call decoded-token cap and
+   a wall budget that end the call as a recorded abstention, not a transient retry. With a cloud actor the API
+   bill was the budget; a local model has none. One planner call ran for 61 min without replying.
+6. **Check seeded numeric evidence for freshness.** Any hard numeric ceiling in the campaign inbox carries its
+   measurement date and host config. Re-measure it after a BIOS or config change, before it can drive
+   autonomous abstention. A stale "~220 GB/s" (the real figure was 399-449) cost 13 batches.
+7. **Run the harness's own reference probes in the candidate's env, and test that they work there.** The
+   independent CPU quant/GDN oracles were compiled under the candidate's allowlisted launch env, which had no
+   PATH, so they reported `oracle_unavailable` ("cannot execute cc1plus"; `7037165f`).
+8. **Resolve routes from what the actor actually writes.** A route lookup that needs exact symbols refuses a
+   planner-written `Class<...>::method (template body...)` as `unresolved` (`77f8bf58`). Test the lookup with
+   real planner output.
+9. **Size the per-keep costs you inherited.** Keep anchor builds run at `-j1`, a fix for HIP non-reproducibility
+   (R23-40). On a CPU/gcc campaign that costs ~1 h per keep with 95 cores idle, and whether gcc is reproducible
+   at `-j64` was never checked (DS41-C46).
+10. **Pick the verification scope for the change type.** An actor-only change never needs
+    `campaign_cli --verify-artifacts`, which re-hashes the 519 GB model and takes ~2.7 h.
+
+The standing tasks that turn items 1-3 and 5 into gates are INF-78 OAB-29..OAB-32.
+
+## Scratch disk is the flow's job: one registry (operator directive, 2026-09-26)
+
+**All AutoKernel scratch goes through `ScratchRegistry` (`scripts/kernel_rnd/autokernel/loop/scratch.py`).**
+This covers temp dirs, per-call configs, context bundles, detached worktrees, non-evidence build dirs and actor
+TMPDIRs. No feature allocates disk scratch any other way, and none writes its own cleanup.
+
+Why:
+- **Cleanup written per feature leaks.** Each feature cleans up on its own happy path, and a stop, an exception
+  or a SIGKILL leaves its disk behind. The actor-context bundles and the per-call opencode configs both
+  accumulated this way.
+- **Deleting by pattern destroys work.** `git worktree prune` destroyed five live lanes on 2026-08-12, because a
+  worktree that is briefly missing looks exactly like one that is gone for good.
+- **Shared per-role files race.** The old `actor-opencode-<role>.json` beside the lanes was rewritten by every
+  lane, so one lane's call could start with another lane's permission fence.
+
+The shape:
+- **Scopes.** `run` → `batch` → `iteration` → `call`. `run.py` opens the run scope in the store and installs it.
+  `pipeline.run_pool` opens the batch scope and one iteration scope per draw, on the lane's own thread. Every
+  actor call and every actor process attempt is a call scope.
+- **Release on exit.** A scope releases everything allocated in it when it exits, innermost first. This holds
+  for a normal exit, an exception, KeyboardInterrupt, and the SIGTERM stop path, which unwinds through the same
+  blocks.
+- **Allocators.** `scope.dir(kind, name)`, `scope.file(kind, name)`, `scope.worktree(repo, base, name)` and
+  `scope.tmp_env()`.
+  - `iterate()` receives `iteration_scope`. Injected callables find the same scope with
+    `scratch.current("iteration")`.
+  - Each allocation writes an ownership marker and a journal line (`<store>/scratch/scratch-journal.jsonl`).
+- **Sweep.** Runs at the start of every run, batch and iteration. It collects only **marked** resources whose
+  owner is provably gone: a dead pid (start time checked against pid reuse), or an earlier run in the same
+  process. Retained scratch is collected once `--scratch-keep` is `none`. An unmarked path is never touched.
+- **Worktrees.** Removed with `git worktree remove --force`, and only when the worktree is marked. If the
+  directory has already vanished, the registry removes only that tree's admin entry, and only after checking
+  that the entry's `gitdir` points at the registered path. **Never `prune`, never `gc`:** the git wrapper
+  refuses both, and a test scans the package for them.
+- **Disk guard.** `registry.ensure_free(bytes)` checks against `--scratch-min-free-gb` (default 50). A `False`
+  means the caller **degrades** (best-of N→1, ak-check op-test→compile-only). It never means fail.
+- **Retention.** `--scratch-keep {none,failed,all}` keeps a failed iteration's scratch for debugging. It stays
+  marked, and the next sweep under `none` collects it.
+
+**Enforced, not advisory.** `test_scratch.py::ScratchInventory` scans the loop package's AST for every call that
+creates a file or directory:
+- mkdtemp, mkstemp and TemporaryDirectory/File;
+- mkdir and makedirs;
+- copytree;
+- write_text and write_bytes;
+- `open(..., w|a|x)` and `os.open(O_CREAT)`;
+- `git worktree add`.
+
+Each call must be in `scratch.py` or on a reviewed allowlist, where every entry states in one line why it is
+**evidence** (kept on purpose) and not scratch. A new creating call, including one added to an allowlisted
+function, fails the test. That test is what stops the next feature from forgetting.
+
+**Evidence is not scratch.** The following stay out of the registry because a record binds them by digest:
+- the actor-replies (raw replies, call and metrics logs);
+- opencode session exports, bound on `actor_call_metrics`;
+- the orchestrator's `*.provenance.json` sidecar;
+- LOO omission trees, retained with `deletion_authorized: false`.
+
+The persistent pool lanes are also outside the registry, because they are reused across runs by design.
+
 ## Related
 
 - [`handoffs/active/autokernel-rebuild-program.md`](../../../handoffs/active/autokernel-rebuild-program.md) — the program this convention came out of, with the five verified causes.
+- [AutoKernel local-actor bring-up retrospective (2026-09-26)](../../design/autokernel-local-actor-bringup-retro-20260926.md) — the 57.5 h bring-up behind the new-actor checklist above.
 - [`docs/reference/kernel-freeze-runbook.md`](../../reference/kernel-freeze-runbook.md) — where the custody belongs: the promotion boundary, seven steps, and it shipped v7, v8 and v9.
 - `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out* — the other place this project writes down a working shape rather than describing it.
