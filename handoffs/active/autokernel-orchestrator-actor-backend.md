@@ -554,7 +554,10 @@ Not measured:
   ships only with the rule. Reasoning stays on (operator ruling). The author prompt gets the same rule. Acceptance:
   a matched planner call shows no turn over 8k and a schema-valid reply, with its wall recorded against the 32.8
   min trimmed call.
-- [ ] **OAB-23 — a total budget per planner call.** Separate from OAB-22: run 9 showed endless chains of small
+  - Status 2026-09-26: the rule landed in `eeab67ba` (`CONCISE_RULE`, planner+author); the per-turn cap is now the
+    operator-set 16384 planner output (not 8000). Only the live acceptance is open: read `actor_call_metrics.v1` for
+    the first run-10h planner call (max turn decoded, schema-valid reply, wall) and tick.
+- [x] **OAB-23 — a total budget per planner call.** ✅ 2026-09-26 — landed research `eeab67ba`, live in `d643d794`; acceptance met by `test_actor_budgets.py` (30 passed on d643d794): `test_an_incomplete_reply_raises_budget_exhausted`, `test_the_planner_is_never_relaunched_after_its_budget`, `test_backoff_never_retries_a_spent_budget`. Separate from OAB-22: run 9 showed endless chains of small
   turns (61 min without a reply), which a per-turn cap never stops. Add a per-call decoded-token or wall budget
   that ends the call with a recorded `budget_exhausted` abstention, not a transient retry. Acceptance: a fake
   backend that never finishes is cut at the budget and recorded once.
