@@ -2886,6 +2886,8 @@ Owner: RTG-57 (`kv-unified-stack-rollout.md`).
     whose depth-4 figure is a truncation **projection**: if a script produces it, its rows must mark the
     projection as a model (`estimate_kind: projection`), never as a measured arm, and carry the log window and
     the organic/probe split.
+- [ ] **VB-READBW-DS41 — route ad-hoc `bench_readbw` runs into the INF-70 corpus.** Point `readbw_gap.sh` (and future AK readbw probes) at `/mnt/raid0/llm/tmp/inf70/results-<tag>-<UTC>/c0-readbw.txt` and emit `OMP stack ON` in banners when the stack is set; then ingest the 2026-09-26T10:55:35Z run (raw bytes unchanged; the directory stamp equals the file header) via `cli.py ingest inf70 --as-of <ts>`. Acceptance: 24 readbw claims, `omp_stack=ON`, source sha matches the raw file. No new adapter or ladder.
+
 - [ ] **VB-SPEECH-CPU-1 — write side for `speech_cpu_bench.py`, before any CPU speech re-measurement** (KVU-11 B/C).
   - Add a schema version, row hash, whisper/qwentts binary digests, the exact core list and thread count, and
     `SHIM_NPROCS`. Also capture the co-tenant state: frontdoor `-t`/cores and whether it was generating, sampled
