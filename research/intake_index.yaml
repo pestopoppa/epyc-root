@@ -13772,7 +13772,7 @@
     - context-folding-progressive.md
   notes: 'DSPy''s official RLM implementation. Key architectural detail: uses WASM sandbox (Pyodide + Deno) for code execution, not Docker. This is lighter weight than Docker-based approaches (agentnetes intake-318) and potentially deployable in our environment. The programmatic context exploration pattern (LLM writes code to examine data) is exactly our REPL tool use approach. Worth evaluating as a cleaner RLM implementation for our orchestrator. DEEP-DIVE 2026-04-12: Full API: dspy.RLM(signature, max_iterations=20, max_llm_calls=50, max_output_chars=10000, tools=None, sub_lm=None, interpreter=None). Execution model: (1) LLM receives context METADATA (type, length, preview) — NOT full content, (2) LLM writes Python exploration code, (3) Code runs in Deno+Pyodide WASM sandbox, (4) LLM can invoke llm_query() for semantic analysis via sub_lm, (5) LLM calls SUBMIT() to terminate. Sandbox tools: llm_query(prompt), llm_query_batched(prompts) with asyncio.gather(), print(), SUBMIT(), plus standard library. The sub_lm pattern is key: expensive explorer + cheap semantic analyzer. Our stack maps naturally: coder model (30B-A3B) as main LM writing exploration code, frontdoor model as cheap sub_lm for semantic queries. Custom tool injection: we could add query_registry(), run_benchmark(), check_health(), get_model_stats() into the sandbox. Supports async: await rlm.aforward(). Trajectory inspection via result.trajectory. CRITICAL FINDING: works with any OpenAI-compatible API — our llama-server /v1/ endpoint qualifies. The metadata-first pattern (LM sees type/length/preview, writes code to explore) directly addresses our context window limitation. LIMITATIONS: Deno dependency (users report cache issues), not thread-safe with custom interpreter, experimental API. IMMEDIATE opportunity: set up dspy.RLM with our llama-server as backend, test with benchmark result analysis as first use case. UPGRADE relevance → very high.
 
-    '
+    RE-ENCOUNTER 2026-09-26 (research-intake Stage-1 prior-art sweep, topic t4; not re-minted): the URL now redirects to https://dspy.ai/current/api/modules/RLM/ (page sha256 first-12 5d320bfb475c; release list via GitHub API, sha first-12 b5797321c817). Summariser-reported, stage1-unverified: RLM landed in DSPy 3.1.1/3.1.2 (2026-01-19); 3.3.0 (2026-08-03) BREAKING rename max_iterations -> max_iters, tools routed through dspy.Tool, interpreter_factory= added; 3.3.1 (2026-08-21) deprecates CodeAct and ProgramOfThought in favour of RLM (removal planned 3.5); 3.4.0 (2026-09-25) makes interpreter_factory= keyword-only (BREAKING) and adds dspy.LocalInterpreter (persistent CPython subprocess, no Deno). The docs page still marks RLM experimental. Bears on AP-26 in autopilot-continuous-optimization.md (open live-test checkbox): any setup written against max_iterations or a positional interpreter will break.'
   handoffs_updated:
   - 'handoffs/active/autopilot-continuous-optimization.md'
   - 'handoffs/completed/repl-turn-efficiency-completed-through-2026-05-28.md'
@@ -218828,3 +218828,2555 @@
     quote_sha256: 012fa3218faca65bfdaeb95055fb8f109bbb4e0b2e93ea1b43523d4857d21772
     source_revision: nvidia/Qwen3.8-27B-NVFP4@482ca0f3832238542f8f5295dde86b5f22711d80 (retrieved 2026-09-25)
     verified_by: research-intake/stage2g-second-reader-stage3-readiness
+- id: intake-1783
+  arxiv_id: null
+  url: https://github.com/kubernetes-sigs/gateway-api-inference-extension
+  source_type: repo
+  title: Gateway API Inference Extension
+  authors:
+  - Kubernetes SIG Network / wg-serving contributors
+  - et al.
+  categories:
+  - inference_serving
+  - routing_intelligence
+  - kv_cache
+  - cost_aware_routing
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: null
+  key_claims:
+  - An Inference Gateway is an ext-proc-capable L7 proxy (Envoy etc.) coupled to an Endpoint Picker (EPP). The EPP intercepts
+    each request and picks the model-server replica using 'Metrics and Capabilities' the model servers publish.
+  - 'The Model Server Protocol (proposal 003, ''partially implemented'') defines what a server must provide: OpenAI Completions
+    + Chat APIs and a Prometheus endpoint with TotalQueuedRequests, TotalRunningRequests and KVCacheUtilization gauges. BlockSize
+    and NumGPUBlocks are optional. The doc maps each to vLLM, TRT-LLM, trtllm-serve and SGLang metric names.'
+  - Dynamic LoRA servers must also expose a lora_requests_info gauge with max_lora / running_lora_adapters / waiting_lora_adapters
+    labels so the EPP can do adapter affinity.
+  - The EPP, the InferenceObjective / InferenceModelRewrite APIs and Body Based Router have MOVED to llm-d repos (llm-d/llm-d-router,
+    llm-d/llm-d-inference-payload-processor). This repo keeps the InferencePool API, a lightweight reference EPP and the conformance
+    tests.
+  - The roadmap explicitly lists 'Heterogeneous accelerators - serve workloads on multiple types of accelerator using latency
+    and request cost-aware load balancing' as future work, so it is not yet delivered.
+  techniques:
+  - endpoint-picker via Envoy ext-proc
+  - Prometheus capacity-metrics contract
+  - prefix-cache-aware scoring
+  - LoRA-affinity routing
+  - InferencePool abstraction
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - dynamic-stack-concurrency.md
+    - heterogeneous-slot-fabric-residency.md
+    - gpu-serving-tie-in-program.md
+    - typed-decision-plane.md
+    experiments: []
+    intake_entries:
+    - intake-461
+    - intake-1324
+  recommended_actions:
+  - '[unverified] Diff the proposal-003 metric set against our slot telemetry and record which EPYC capacity signals (NUMA
+    placement, CPU contention, residency) have no slot in the standard.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t1-capacity-aware-serving; harness<->capacity-aware multi-model stack
+    question). Published: living repo (GA); HEAD retrieved 2026-09-26. Source revision: repo HEAD f1fc2d5aaccda129d3b2c11d7c49bb474de82c81;
+    README + docs/proposals/003-model-server-protocol/README.md retrieved raw 2026-09-26. Artifact sha256 (first 12): 3a25e0b42ed8
+    (README); 768f3fb9abbf (proposal 003 model-server protocol). Relevance to operator question: This is the closest thing
+    to an industry-standard INTERFACE between an OpenAI-compatible front and a capacity-aware picker. The harness sees only
+    /v1, and the picker consumes a small, fixed set of per-server gauges. That maps directly onto EPYC''s ''harness stays
+    thin, orchestrator behind /v1 + x_*'' decision. The standard assumes one model pool of homogeneous accelerators, and CPU
+    slots are absent. Dive question: Could EPYC''s slot fabric publish the proposal-003 gauges (queued, running, KV utilization,
+    block size) per llama.cpp slot, including CPU/NUMA slots? And would that let an off-the-shelf EPP/gateway replace or front
+    our router without losing NUMA/contention signals the protocol cannot express? (dive_value high). Caveats: Only the README
+    and proposal 003 were read. llama.cpp is not in the protocol''s metric-mapping table. The repo split (EPP moved to llm-d-router)
+    is recent; the llm-d-inference-scheduler URL 301-redirects to llm-d/llm-d-router. Envoy ext-proc requires FULL_DUPLEX_STREAMED
+    body mode per the llm-d-router README.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1784
+  arxiv_id: null
+  url: https://github.com/llm-d/llm-d-router
+  source_type: repo
+  title: llm-d Router (formerly llm-d Inference Scheduler) — Endpoint Picker
+  authors:
+  - llm-d project (CNCF sandbox; founded by Red Hat, Google Cloud, IBM Research, CoreWeave, NVIDIA)
+  - et al.
+  categories:
+  - inference_serving
+  - routing_intelligence
+  - kv_cache
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1783
+  verdict: adopt_patterns
+  credibility_score: null
+  key_claims:
+  - The EPP evaluates each request against the InferencePool's current state (KV-cache locality, current load, priority) with
+    pluggable filters and scorers. It integrates with L7 proxies over ext-proc and runs in Standalone mode (self-managed Envoy
+    sidecar or service) or Gateway mode.
+  - InferenceObjective sets per-request scheduling goals (priority levels, performance targets). InferenceModelRewrite rewrites
+    model names for A/B and canary rollouts.
+  - A disaggregation sidecar next to the decode worker orchestrates P/D and E/P/D lifecycles, including KV and embedding transfer.
+  - The llm-d umbrella README lists prefix-cache + load-aware routing, experimental predicted-latency scheduling, tiered KV
+    offload to CPU/disk, flow control for multi-tenant serving and SLO-aware autoscaling.
+  techniques:
+  - scorer/filter plugin pipeline
+  - prefix-cache scorer
+  - load scorer
+  - predicted-latency scheduling
+  - priority/flow control
+  - P/D disaggregation sidecar
+  reported_results:
+  - 'AUTHOR-REPORTED: 3x higher output throughput and 2x faster TTFT with prefix-cache-aware routing vs round-robin, Llama
+    3.1 70B on 4x AMD MI300X (Tesla/Red Hat blog, cited in llm-d README).'
+  - 'AUTHOR-REPORTED: 40% reduction in TTFT and ITL with predicted-latency scheduling vs heuristics on NVIDIA GPUs (Google
+    blog, cited in llm-d README).'
+  - 'AUTHOR-REPORTED: 13.9x throughput improvement with hierarchical KV offloading at 250 concurrent users vs GPU-only, 4x
+    H100.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - learned-routing-controller.md
+    - decision-aware-routing.md
+    - numa-prefill-decode-disaggregation.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-472
+    - intake-459
+  recommended_actions:
+  - '[unverified] Read docs/architecture.md scorer list and the predicted-latency blog; map each scorer to an existing EPYC
+    routing feature or a gap.'
+  contradicting_evidence:
+  - 'Search-snippet level only (not fetched): an Anyscale blog (''Moving Beyond KV Cache Reuse to Token-Load Awareness'')
+    and CacheRoute (arXiv 2608.19677) describe cache-affinity herding and load skew, where hot-prefix replicas attract traffic
+    until the router must spill and forfeit locality.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t1-capacity-aware-serving; harness<->capacity-aware multi-model stack
+    question). Published: living repo; HEAD retrieved 2026-09-26 (llm-d v0.7 released 2026-05 per llm-d README). Source revision:
+    repo HEAD 8124c02cfe2b00f9340c6cbf72a4c08743b9e349 README retrieved 2026-09-26; umbrella llm-d/llm-d HEAD af1283133d86c5610652df97142132238fdbdac1
+    README also read. Artifact sha256 (first 12): dc68cf27282d (llm-d-router README); 769ada2e96ca (llm-d umbrella README).
+    Relevance to operator question: This is the reference scorer-pipeline design for a live-capacity picker. Its multi-objective
+    scoring (prefix hit + queue + KV util + predicted latency) is structurally what EPYC''s learned routing controller does
+    per role. It schedules replicas of ONE model per InferencePool, not across different models or CPU+GPU. Dive question:
+    What inputs and loss does the predicted-latency scorer use, and is it a drop-in pattern for our MLP routing controller''s
+    capacity features? (dive_value medium). Caveats: The performance figures come from partner blogs cited in the llm-d README;
+    none were fetched or verified here. The MI300X data point is AMD (ROCm) evidence, but not gfx90a.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1785
+  arxiv_id: null
+  url: https://github.com/ai-dynamo/dynamo
+  source_type: repo
+  title: NVIDIA Dynamo — open-source datacenter-scale inference stack
+  authors:
+  - NVIDIA
+  - 160+ community contributors
+  categories:
+  - inference_serving
+  - routing_intelligence
+  - kv_cache
+  - cost_aware_routing
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - 'Dynamo is an orchestration layer ABOVE engines (SGLang, TRT-LLM, vLLM): disaggregated P/D, KV-aware routing, a KV Block
+    Manager that offloads GPU->CPU->SSD->remote, an SLA-driven Planner, and fault-tolerant request migration.'
+  - The router's worker cost is prefill_load_scale*max(0, active_prefill_blocks + incoming_prompt_blocks - overlap_credit_blocks)
+    + (active_decode_blocks + incoming_active_blocks) + decode_active_request_weight*active_requests. Optional router_temperature
+    does softmax sampling over normalized cost logits. Workers publish KV-block create/remove events to the indexer.
+  - Dynamo 1.0 'agentic inference' adds per-request hints (priority, expected output length, speculative prefill) plus session
+    metadata, and SGLang subagent KV isolation.
+  - The Planner scales prefill/decode replica counts from Prometheus traffic metrics, per-worker forward-pass metrics and
+    TTFT/ITL SLA targets. Per the fetched docs it is per-deployment (one perf model per model+hardware) and does not describe
+    heterogeneous devices.
+  - There are two ingress topologies. Dynamo-native Frontend+Router, or the GAIE gateway calling a Dynamo EPP plugin, so the
+    same KV-aware routing plugs into the Kubernetes standard.
+  techniques:
+  - KV-overlap cost function
+  - worker KV event stream
+  - softmax-temperature worker sampling
+  - SLA planner autoscaling
+  - multi-tier KV offload (KVBM)
+  - per-request agentic hints
+  reported_results:
+  - 'AUTHOR-REPORTED: 2x faster TTFT from KV-aware routing, Qwen3-Coder 480B (Baseten benchmark, cited in README).'
+  - 'AUTHOR-REPORTED: 80% fewer SLA breaches from Planner autoscaling at 5% lower TCO (Alibaba APSARA 2025 talk, cited in
+    README).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - heterogeneous-slot-fabric-residency.md
+    - learned-routing-controller.md
+    - delegation-context-preassembly.md
+    - repl-session-memory-maturity.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-472
+    - intake-459
+    - intake-1324
+  recommended_actions:
+  - '[unverified] Compare Dynamo''s agentic request-hint schema with our x_* keys and draft a compatibility shim spec.'
+  contradicting_evidence:
+  - 'Search-snippet level (not fetched): cache-affinity routing can herd requests onto replicas holding a shared prefix and
+    create load skew (Anyscale token-load-aware routing blog; CacheRoute arXiv 2608.19677; kvroute issue #35 ''where cache-aware
+    routing actually stops paying''). Dynamo''s cost function includes load terms that partially address this.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t1-capacity-aware-serving; harness<->capacity-aware multi-model stack
+    question). Published: living repo; 1.x line (runtime containers 1.5.0 in README); HEAD retrieved 2026-09-26. Source revision:
+    repo HEAD 8bf599362d34486e7bd805b73244f3df00b120f8 README retrieved 2026-09-26; docs pages ''Routing Concepts'' (router
+    cost model) and ''Planner guide'' via WebFetch 2026-09-26. Artifact sha256 (first 12): a3a6774529df (README); a2e340d83969
+    (routing-concepts docs HTML). Relevance to operator question: Dynamo''s per-request agentic hints (priority, expected
+    output length, session id) are the clearest precedent for EPYC''s x_* override keys: a harness passes workload hints through
+    an OpenAI-compatible surface to a capacity-aware router. The cost function is simple enough to port to llama.cpp slots,
+    provided llama-server exposes KV occupancy/prefix state. Dynamo is GPU-cluster-centric: CPU appears only as a KV offload
+    tier, never as a compute slot. Dive question: What exactly are the Dynamo 1.0 per-request agentic hint fields and their
+    wire format (nvext or similar)? Could EPYC''s x_* keys adopt the same names so off-the-shelf harnesses and SDKs (LangChain,
+    NeMo Agent Toolkit) that already emit them would work unchanged? (dive_value high). Caveats: Commercial vendor project;
+    the headline results are self-reported or partner-reported and were not verified. The formula comes from the docs ''Routing
+    Concepts'' page (WebFetch summary, raw HTML hashed) and should be re-read raw in a dive. The Planner''s single-model scope
+    comes from a WebFetch summary of the planner guide (''no mention of heterogeneous device handling'') and is a provisional
+    negative.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1786
+  arxiv_id: null
+  url: https://github.com/smg-project/smg
+  source_type: repo
+  title: Shepherd Model Gateway (SMG) — engine-agnostic model-routing gateway (successor of SGLang Router / sgl-model-gateway)
+  authors:
+  - Simo Lin
+  - Chang Su
+  - LightSeek Foundation
+  - et al.
+  categories:
+  - inference_serving
+  - routing_intelligence
+  - kv_cache
+  - tool_implementation
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - A Rust gateway fronting many models and engines behind one endpoint. Self-hosted backends are vLLM, SGLang, TokenSpeed,
+    TRT-LLM, MLX and 'any OpenAI-compatible server (e.g. Ollama)'. Cloud providers can be mixed in.
+  - The in-tree sgl-model-gateway exposes a multi-model Inference Gateway mode (--enable-igw) with per-model policies. Its
+    worker registry entries carry model_id, priority, cost, worker_type, is_healthy and load. A load monitor feeds cache_aware
+    and power_of_two policies.
+  - Cache-aware routing keeps a per-worker radix tree of prompts and balances against load thresholds. The blog says event-driven
+    KV routing streams backend cache state via a SubscribeKvEvents RPC.
+  - Conversation/Responses state, chat history and MCP tool loops live at the gateway tier, so 'the same history can drive
+    different models or MCP loops'.
+  - 'Blog thesis: move all CPU-bound serving work (tokenization, detokenization, reasoning/tool parsing, MCP orchestration,
+    multimodal preprocessing, history) out of the GPU engine process into a Rust gateway talking gRPC (smg-grpc-proto). The
+    blog says vLLM (PR #36169) and TRT-LLM adopted the proto upstream.'
+  techniques:
+  - multi-model IGW routing
+  - radix-tree cache-aware policy
+  - power-of-two load balancing
+  - gateway-side tokenization cache
+  - gRPC tokens-in/tokens-out engine contract
+  - gateway-resident conversation state
+  - MCP in gateway
+  - priority admission with preemption
+  reported_results:
+  - 'AUTHOR-REPORTED (blog): cache-aware routing on 8 Llama replicas lowered average TTFT 23% and p99 TTFT 28%.'
+  - 'AUTHOR-REPORTED (blog): gRPC vs HTTP about 8% more throughput at concurrency 256 across 1,082 matched points on H100
+    (8 models, SGLang+vLLM). Up to 3.5x output throughput for Llama-3.3-70B-FP8 at 7800-token inputs.'
+  - 'AUTHOR-REPORTED (blog): rewritten cache-aware tree 10-12x faster (216,000 insertions/s), per-node memory 180 KB -> 1.4
+    KB.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - user-facing-harness-index.md
+    - dynamic-stack-concurrency.md
+    - repl-session-memory-maturity.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries:
+    - intake-461
+    - intake-1207
+    - intake-1182
+  recommended_actions:
+  - '[unverified] Evaluate SMG as a candidate thin gateway between OpenCode and llama.cpp slots, or as a pattern source for
+    the orchestrator''s /v1 front (Responses/Messages APIs, gateway-side history).'
+  contradicting_evidence:
+  - Same cache-affinity herding/load-skew critique as the Dynamo entry (search-snippet level).
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t1-capacity-aware-serving; harness<->capacity-aware multi-model stack
+    question). Published: repo living; PyTorch blog ''SMG: The Case for Disaggregating CPU from GPU in LLM Serving'' published
+    2026-04-30 (updated 2026-06-02). Source revision: repo HEAD 96f8bd0eb6901160f7d5d97c6f0db8ecc6679fb4 README retrieved
+    2026-09-26 (github.com/lightseekorg/smg 301-redirects to smg-project/smg); in-tree predecessor sgl-project/sglang@cdbea5dccf0a8085200abad617910c9688e932fe
+    sgl-model-gateway/README.md; PyTorch blog retrieved 2026-09-26. Artifact sha256 (first 12): 392842694d01 (smg README);
+    48089f7369c2 (sglang sgl-model-gateway README); c2cc98fc1122 (pytorch.org blog HTML). Relevance to operator question:
+    Most direct precedent for EPYC''s shape: one OpenAI/Anthropic-compatible front, many different models behind it, per-model
+    policies, gateway-resident sessions and MCP. SMG explicitly states CPU work should be disaggregated from accelerator work,
+    which partially supports the operator''s CPU+RAM thesis. But its CPU is only a serving-overhead tier, not an inference
+    tier, and llama-server would ride the generic OpenAI-compatible path without KV events. Dive question: In IGW multi-model
+    mode, what capacity signals does the router actually use per worker (load counter, KV events, priority/cost fields)? And
+    can a generic OpenAI-compatible backend like llama-server supply enough of them for cache_aware to beat power_of_two?
+    (dive_value high). Caveats: DISTINCT from intake-461: the router is a separately released component and now also a separate
+    repo. The intake-461 notes only mention a ''cache-aware load balancer''. I first reached smg via a guessed lightseekorg/smg
+    URL, but search results this run independently listed github.com/lightseekorg/smg and the smg-project org, and curl showed
+    the 301 to smg-project/smg. Production-adoption claims (GCP, OCI, Alibaba, TogetherAI) come only from the blog. Benchmarks
+    are self-reported, on H100 only.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1787
+  arxiv_id: '2605.19593'
+  url: https://arxiv.org/abs/2605.19593
+  source_type: paper
+  title: 'Towards Multi-Model LLM Schedulers: Empirical Insights into Offloading and Preemption'
+  authors:
+  - Mert Yildiz
+  - Pietro Spadaccino
+  - Alexey Rolich
+  - Francesca Cuomo
+  - Andrea Baiocchi
+  categories:
+  - inference_serving
+  - hardware_optimization
+  - local_inference
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 3
+  key_claims:
+  - Existing serving systems mostly assume one model owns the GPU. Multi-model scheduling on shared, heterogeneous hardware
+    with partial CPU-GPU offloading and preemption is under-studied.
+  - Decode throughput vs fraction of layers on GPU is non-linear and model-dependent. Smaller models lose sharply under partial
+    offloading, while larger models degrade closer to linearly. The relative penalty depends on the CPU/GPU performance gap
+    (the weaker GPU paid a smaller normalized penalty).
+  - In a full preempt-resume cycle, model state reload dominates (over 99% on RTX 5000 Ada, over 98.5% on RTX A6000). KV transfer
+    is under 1.5% but is the only term that grows with sequence length. Overhead is roughly constant regardless of the preemption
+    point.
+  - 'Features a multi-model scheduler must model: (i) non-linear offloading sensitivity, (ii) model architecture/scale, (iii)
+    sequence length and decode dynamics, (iv) preemption overhead decomposition, (v) data-movement constraints. Swap cost
+    is treated as a known constant per (model, hardware) pair.'
+  techniques:
+  - offload-ratio sweep via Ollama layer placement
+  - preempt-resume cycle decomposition
+  - per-model/per-hardware cost tables
+  reported_results:
+  - 'AUTHOR-REPORTED: preemption overhead about 3 s (Qwen2.5-3B), about 5.1 s (Qwen3-8B), about 7.3 s (Qwen2.5-14B) on RTX
+    5000 Ada. About 2.6 / 4.1 / 5.7 s on RTX A6000. FP16 via HF Transformers, weights reloaded from disk.'
+  - 'AUTHOR-REPORTED: offloading sweep of 774 inference calls per server (3 Q4 models x 13-15 placements x 6 output lengths
+    x 3 repeats) on a Threadripper PRO 5995WX host.'
+  referenced_arxiv_ids:
+  - '2404.02015'
+  - '2505.04021'
+  cross_references:
+    chapters: []
+    handoffs:
+    - heterogeneous-slot-fabric-residency.md
+    - within-role-placement-state-machine.md
+    - contention-model-device-and-load-axes-rider.md
+    - dynamic-stack-concurrency.md
+    - gpu-serving-tie-in-program.md
+    experiments: []
+    intake_entries:
+    - intake-459
+    - intake-460
+  recommended_actions:
+  - '[unverified] Use its five-feature list as a checklist against the slot-fabric residency cost model, and add per-(model,
+    device) swap-cost constants if missing.'
+  contradicting_evidence:
+  - 'Self-declared limits: single-request execution only (no continuous batching), one preemption per job, reload from disk
+    (not a host-RAM cache). The cost magnitudes therefore may not transfer to a RAM-rich host where weights stay page-cached.'
+  - Aegaeon (SOSP'25, entry below) reports in its own evaluation that engine-side component reuse and explicit memory management
+    cut model-switch overhead by most of its unoptimized value. So 'reload dominates' describes an unoptimized path, not a
+    floor.
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t1-capacity-aware-serving; harness<->capacity-aware multi-model stack
+    question). Published: 2026-05-19. Source revision: arXiv:2605.19593v1 via html (only version); abs title verified 2026-09-26.
+    Artifact sha256 (first 12): fa5702a52970. Relevance to operator question: The only fetched source that directly frames
+    a scheduler across DIFFERENT models with hybrid CPU-GPU execution, and it uses llama.cpp-family tooling (Ollama layer
+    offload). Its feature list is close to a spec for EPYC''s residency/placement cost model. It also says the CPU/GPU gap,
+    not absolute GPU speed, sets the offload penalty, which is relevant to the EPYC 9655 + MI210 ratio. Dive question: Do
+    its non-linear offload curves and ''reload dominates preemption'' result hold on EPYC, where weights sit in ~1.1 TiB page-cached
+    RAM and the CPU/GPU throughput gap is much narrower than Threadripper+A6000? (dive_value medium). Caveats: Venue is from
+    the paper''s IEEE copyright line: 2026 Mediterranean Artificial Intelligence and Networking Conference (MAIN 2026), so
+    it is scored as peer-reviewed. Small workshop-scale study from Sapienza. NVIDIA consumer/workstation GPUs only, no ROCm.
+    Its references [26] MuxServe and [28] Prism were verified on arXiv abs; Aegaeon [27] has no arXiv id.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1788
+  arxiv_id: '2504.03648'
+  url: https://arxiv.org/abs/2504.03648
+  source_type: paper
+  title: 'AIBrix: Towards Scalable, Cost-Effective Large Language Model Inference Infrastructure'
+  authors:
+  - The AIBrix Team
+  - Jiaxin Shan
+  - Varun Gupta
+  - Le Xu
+  - et al.
+  categories:
+  - inference_serving
+  - routing_intelligence
+  - kv_cache
+  - cost_aware_routing
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: 1
+  key_claims:
+  - 'A vLLM-co-designed control plane: an Envoy-based LLM gateway with routing policies random, throughput, least-request,
+    least-kv-cache, least-latency (queueing + serving) and prefix-cache-aware (hit above a threshold).'
+  - A distributed DRAM-based KV cache pool enables cross-engine KV reuse, with scan-resistant eviction and shared-memory exchange
+    between the cache and a co-located engine.
+  - An SLO-driven GPU optimizer (Load Monitor + GPU Optimizer + Pod Autoscaler) picks GPU-type mixes per workload for heterogeneous
+    GPU serving. It assumes distinct model deployments use distinct GPUs.
+  - A Cold Start Manager tracks model artifacts across DRAM, local storage and cloud storage to place loads on the fastest
+    node. An AI Runtime sidecar abstracts engine interactions.
+  techniques:
+  - policy-selectable LLM gateway
+  - least-kv-cache routing
+  - distributed KV pool in DRAM
+  - heterogeneous-GPU optimizer
+  - LLM-specific autoscaling
+  - LoRA-dense serving
+  reported_results:
+  - 'AUTHOR-REPORTED: routing strategies reduce mean latency 19.2% and P99 latency 79%.'
+  - 'AUTHOR-REPORTED: distributed KV cache + prefix caching vs vLLM prefix caching improves throughput about 51.6%, average/P99
+    TTFT down about 65%/77% (Bird-SQL, 4x A10).'
+  - 'AUTHOR-REPORTED: autoscaler reduces latency 11.5% and increases token throughput 11.4% vs native HPA.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - kv-unified-stack-rollout.md
+    - heterogeneous-slot-fabric-residency.md
+    - gpu-serving-tie-in-program.md
+    experiments: []
+    intake_entries:
+    - intake-1324
+    - intake-472
+  recommended_actions:
+  - '[unverified] Harvest only the routing-policy taxonomy and the DRAM KV-pool eviction idea; do not pursue the Kubernetes/Ray
+    stack.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t1-capacity-aware-serving; harness<->capacity-aware multi-model stack
+    question). Published: 2025-02-22. Source revision: arXiv:2504.03648v1 via html (only version on abs page); abs title verified
+    2026-09-26; companion repo vllm-project/aibrix HEAD cdf406527b7c7709877f945b9b680c333c0a3b4b README read. Artifact sha256
+    (first 12): c8ece686c6f7 (html v1); f4461ddf152a (aibrix README). Relevance to operator question: Shows a production stack
+    using host DRAM as a first-class KV tier and model-artifact cache, a partial answer to ''CPU+RAM under-leveraged'', though
+    only as storage, not compute. Its heterogeneous serving is GPU-type selection per model, not cross-model scheduling on
+    shared devices. Dive question: Does the AIBrix gateway''s least-kv-cache / least-latency policy set add anything beyond
+    llm-d''s scorer pipeline for a single-host multi-model stack? (dive_value low). Caveats: Tech report, not peer-reviewed.
+    Vendor (ByteDance) self-reported numbers with no independent corroboration seen. The paper says the AIBrix team was working
+    with the gateway-api-inference-extension project for future adoption. vLLM production-stack (HEAD 691dffa71119df711aa297cfc452e5b6a9e98e97,
+    README sha abe310d3993b) was considered and dropped as less load-bearing, since its KV layer LMCache is already intake-1324.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-1 explicit dive decline: Harvest routing-policy taxonomy only; Kubernetes/Ray control plane and GPU-type selection
+    do not transfer to a single host; KV layer already intake-1324.'
+- id: intake-1789
+  arxiv_id: null
+  url: https://doi.org/10.1145/3731569.3764815
+  source_type: paper
+  title: 'Aegaeon: Effective GPU Pooling for Concurrent LLM Serving on the Market'
+  authors:
+  - Yuxing Xiang
+  - Xue Li
+  - Kun Qian
+  - Yufan Yang
+  - Diwen Zhu
+  - Wenyuan Yu
+  - Ennan Zhai
+  - Xuanzhe Liu
+  - Xin Jin
+  - Jingren Zhou
+  categories:
+  - inference_serving
+  - routing_intelligence
+  - kv_cache
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1787
+  verdict: worth_investigating
+  credibility_score: 4
+  key_claims:
+  - 'Request-granularity auto-scaling (ServerlessLLM-style) is bounded by the number of ACTIVE models. Long LLM request times
+    keep many models active (the paper''s example: 46.55 of 100 models active at 3.7 req/s). That causes head-of-line blocking
+    and caps pooling below about 3 models per GPU.'
+  - Aegaeon scales models at TOKEN granularity. For each GPU instance it picks the next prefill or single-decode-step batch
+    and may preemptively swap the active model when that batch needs a different one.
+  - It disaggregates the pool into prefill and decode instances. Prefill uses grouped scheduling that joins requests for the
+    same model and otherwise picks the least-loaded instance. Decode uses batched round-robin quanta sized against the TBT
+    SLO.
+  - Switch overhead is attacked by reusing engine components across models (only weights and KV are model-specific), explicit
+    GPU/host memory management with a pre-allocated host KV pool (avoiding page-pinning cost), and fine-grained KV synchronization.
+    Weights are served from a host-DRAM model cache.
+  - Unoptimized, a 13B-model scale-down/up takes up to 26.9 s. Loading LLaMA-13B (TP=2) over PCIe 4.0 took about 4.6 s at
+    2.83 GB/s effective in their microbenchmark.
+  techniques:
+  - token-level preemptive auto-scaling
+  - prefill/decode pool disaggregation across models
+  - grouped prefill scheduling
+  - SLO-sized decode quanta
+  - engine component reuse
+  - host-DRAM model cache
+  - pre-allocated host KV pool
+  reported_results:
+  - 'AUTHOR-REPORTED: 97% reduction in auto-scaling overhead.'
+  - 'AUTHOR-REPORTED: 2-2.5x higher sustainable arrival rate or 1.5-9x more goodput vs existing solutions. Up to seven models
+    per GPU.'
+  - 'AUTHOR-REPORTED: beta deployment serving tens of models reduced GPUs from 1,192 to 213 (82%).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - heterogeneous-slot-fabric-residency.md
+    - within-role-placement-state-machine.md
+    - dynamic-stack-concurrency.md
+    - numa-prefill-decode-disaggregation.md
+    - gpu-serving-tie-in-program.md
+    experiments: []
+    intake_entries:
+    - intake-459
+    - intake-472
+  recommended_actions:
+  - '[unverified] Measure llama-server GPU load-from-page-cache latency per role model and compare with the slot fabric''s
+    residency-swap N-dwell assumptions.'
+  contradicting_evidence:
+  - Contradiction search (2 queries) found only secondary coverage (Medium, trade press) restating the paper, and no independent
+    replication. The negative is provisional.
+  - 2605.19593 (entry above) reports in its own setup that reload dominates preemption. That is consistent with Aegaeon's
+    diagnosis, but Aegaeon's gains depend on engine-internal reuse that stock servers (and llama-server) do not provide.
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t1-capacity-aware-serving; harness<->capacity-aware multi-model stack
+    question). Published: 2025-10 (SOSP ''25, Seoul). Source revision: author-hosted PDF https://ennanzhai.github.io/pub/sosp25-aegaeon.pdf
+    (16 pages, text extracted with pypdf) retrieved 2026-09-26; no arXiv version found. Artifact sha256 (first 12): 3be2ea58830a.
+    Relevance to operator question: The strongest primary source for a scheduler that multiplexes MANY DIFFERENT models on
+    shared accelerators using live SLO state, and it leans on host DRAM as the model/KV staging tier. That aligns with a RAM-rich
+    EPYC host feeding one or two MI210s. It conflicts with EPYC''s ''no mid-decode preemption'' fabric invariant, which a
+    dive should weigh explicitly. Dive question: On a 1.1 TiB-RAM EPYC with one MI210 (64 GB), what is the measured llama.cpp
+    model-swap cost from page-cached weights, and is it low enough that token- or step-level model multiplexing on the GPU
+    beats static residency for EPYC''s role mix? (dive_value high). Caveats: Canonical URL is the ACM DOI (seen in search
+    and in the PDF). Text came from the author-hosted PDF, since the ACM DL was not fetched. Deployment numbers are Alibaba
+    self-reported. Reached by reference-chasing 2605.19593 (its ref [27]). Unfetched leads seen in search this run, not proposed
+    (over budget), worth a later sweep: arXiv 2603.12831 ''Serving Hybrid LLM Loads with SLO Guarantees Using CPU-GPU Attention
+    Piggybacking'' (CPU-as-compute, operator thesis); arXiv 2605.16637 HexAGenT (workflow- and heterogeneity-aware agentic
+    serving); arXiv 2609.03335 (latency-aware multi-agent orchestration on heterogeneous GPUs); arXiv 2505.04021 Prism (GPU
+    memory ballooning, previously declined in intake-1452); arXiv 2404.02015 MuxServe. The last two had their titles verified
+    on abs.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1790
+  arxiv_id: null
+  url: https://github.com/agentclientprotocol/agent-client-protocol
+  source_type: repo
+  title: Agent Client Protocol (ACP) — spec repo, incl. RFDs 'Configurable LLM Providers', 'Model Config Option Category',
+    'Session Usage' and 'Agent Extensions via ACP Proxies'
+  authors:
+  - agentclientprotocol maintainers
+  - anna239 & xtmq (providers RFD)
+  - nikomatsakis (proxy-chains RFD)
+  - et al.
+  categories:
+  - agent_architecture
+  - inference_serving
+  - cost_aware_routing
+  - tool_implementation
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: null
+  key_claims:
+  - Draft RFD 'Configurable LLM Providers' adds providers/list, providers/set and providers/disable. A client can discover
+    where an agent sends LLM traffic and redirect it to its own proxy, gateway or self-hosted server (vLLM/Ollama are named)
+    without agent-specific env vars. Support is advertised via agentCapabilities.providers.
+  - 'Stabilized session/update ''usage_update'' notification: the agent reports context tokens used and window size (both
+    required) plus optional cumulative session cost {amount, currency}. The RFD history shows an earlier ''remaining'' field
+    was dropped.'
+  - 'Stabilized ''model_config'' category for session configOptions: agents expose model-adjacent knobs (context size, a ''fast
+    mode'' boolean, speed/quality tiers) next to the ''model'' selector. thought_level is kept for backward compatibility.'
+  - 'Draft RFD ''proxy chains'': a conductor mediates a chain of ACP proxies between client and agent (method proxy/successor).
+    Proxies can inject or transform prompts and responses and coordinate multiple agents. The RFD argues this is something
+    MCP, which sits ''behind'' the agent, cannot do.'
+  techniques:
+  - client-managed LLM provider routing
+  - session usage/cost reporting
+  - typed session config options
+  - conductor-mediated proxy chains
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - user-facing-harness-index.md
+    - dynamic-stack-concurrency.md
+    - heterogeneous-slot-fabric-residency.md
+    experiments: []
+    intake_entries:
+    - intake-263
+    - intake-783
+  recommended_actions:
+  - '[unverified] Re-check the HS-2/HS-3 dormancy clause against the providers RFD. Consider emitting ACP-shaped usage_update
+    (context + cost) from the Orch as an x_orchestrator_metadata analogue.'
+  contradicting_evidence:
+  - 'Cheap search hit: the ai-sdk.dev ACP community-provider page reportedly says you cannot select a specific model through
+    that provider. Seen in a search summary only, not fetched. Provisional.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t2-harness-multimodel-interfaces; harness<->capacity-aware multi-model
+    stack question). Published: rolling; providers RFD last revised 2026-04-19 (Draft); usage_update stabilized 2026-06-05;
+    model_config stabilized 2026-06-24. Source revision: repo HEAD b44babba0bbcd398fa36ee0545a6de9c147c67c0 (2026-09-26),
+    shallow clone; read docs/rfds/custom-llm-endpoint.mdx, model-config-category.mdx, session-usage.mdx, proxy-chains.mdx,
+    protocol/v1/prompt-turn.mdx, docs.json; retrieved 2026-09-26. zed-industries/agent-client-protocol 301-redirects here..
+    Artifact sha256 (first 12): 9e89f741bbee (custom-llm-endpoint.mdx); ea0c0e28a31d (proxy-chains.mdx); 20b74332283b (session-usage.mdx);
+    5d98099cc4a1 (README.md). Relevance to operator question: ACP now carries harness-to-backend plumbing: the client can
+    point the agent''s LLM traffic at a gateway (the Orch) and the agent can report context and cost back. It still has NO
+    capacity, queue or slot signal. The only backend-state channel is usage_update (tokens and cost), and nothing flows the
+    other way to tell the harness about backend load. Dive question: Does providers/set (still Draft) count as the ''inference-routing
+    semantics'' that re-triggers HS-3, and does the pinned OpenCode (1.18.31, which has an ACP mode) implement providers/*
+    or usage_update? (dive_value high). Caveats: Statuses come from docs.json groups: proxy-chains and custom-llm-endpoint
+    are under ''Draft''; session-config-options, session-usage and model-config-category are under ''Completed''. I did not
+    verify which clients or agents implement the providers RFD. The v2 protocol draft (docs/protocol/v2) was not read.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1791
+  arxiv_id: null
+  url: https://modelcontextprotocol.io/specification/2026-07-28/client/sampling
+  source_type: blog
+  title: 'MCP Specification 2026-07-28 — Sampling (deprecated by SEP-2577: Deprecate Roots, Sampling, and Logging)'
+  authors:
+  - Model Context Protocol maintainers
+  - Kurtis Van Gent (SEP-2577)
+  categories:
+  - agent_architecture
+  - cost_aware_routing
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: null
+  key_claims:
+  - Sampling (a server asking the client's LLM for a completion via sampling/createMessage) is DEPRECATED as of protocol 2026-07-28.
+    It stays at least 12 months and becomes removable in the first revision on or after 2027-07-28. New implementations SHOULD
+    NOT adopt it; the migration is to integrate directly with LLM provider APIs.
+  - 'SEP-2577''s rationale: sampling is complex to implement (human-in-the-loop approval, model-selection logic, security,
+    and a tool loop since SEP-1577), and few clients support it despite being in the spec since Nov 2024.'
+  - modelPreferences gives abstract priorities (costPriority, speedPriority, intelligencePriority) plus ordered, non-binding
+    name hints. Clients MAY map hints to equivalent models from other providers, so the final model choice stays with the
+    client.
+  - 'Server-initiated requests (sampling, elicitation, roots) move to the Multi Round-Trip Requests pattern (SEP-2322): servers
+    return InputRequiredResult and clients retry with inputResponses.'
+  techniques:
+  - abstract model-preference priorities
+  - client-owned model selection
+  - feature lifecycle deprecation
+  - multi-round-trip requests
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - user-facing-harness-index.md
+    - routing-intelligence.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-609
+  recommended_actions:
+  - '[unverified] Record the sampling deprecation in the P0-MCP notes so no Orch feature depends on it. Prototype an x_model_preferences
+    key that mirrors the MCP priority fields.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t2-harness-multimodel-interfaces; harness<->capacity-aware multi-model
+    stack question). Published: 2026-07-28. Source revision: modelcontextprotocol/modelcontextprotocol HEAD ab3a39c13bd23be691c2760e1c6c5c15a64582e1
+    (2026-09-24); read docs/specification/2026-07-28/client/sampling.mdx, changelog.mdx, deprecated.mdx, seps/2577-deprecate-roots-sampling-and-logging.md
+    (Status: Final). specification/latest redirects (307) to 2026-07-28.. Artifact sha256 (first 12): 32fe2bb69f5a (sampling.mdx);
+    ff22b7a6f476 (SEP-2577 md). Relevance to operator question: Closes the ''the MCP server asks the harness''s model'' route.
+    That route is deprecated, and OpenCode never implemented it (audit E14). The capacity-aware backend must stay the caller
+    of models, not borrow the harness''s. The cost/speed/intelligence priority vector is a ready-made, provider-neutral hint
+    vocabulary the harness could send the Orch (e.g. as x_* keys), leaving model choice to the capacity-aware scheduler. Dive
+    question: Is a cost/speed/intelligence priority triple, sent as typed x_* keys, a better harness-to-Orch contract than
+    role or model names for a scheduler that knows live capacity? (dive_value medium). Caveats: Normative spec text, so there
+    are no empirical claims (credibility null). The client-support matrix cited by SEP-2577 was not fetched. Source type is
+    ''blog'' only because the schema has no ''spec'' type.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1792
+  arxiv_id: null
+  url: https://github.com/modelcontextprotocol/ext-tasks
+  source_type: repo
+  title: MCP Tasks Extension (io.modelcontextprotocol/tasks), based on SEP-2663
+  authors:
+  - Luca Chang
+  - Caitie McCaffrey (SEP-2663, on behalf of the Agents Working Group)
+  - et al.
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1791
+  verdict: adopt_patterns
+  credibility_score: null
+  key_claims:
+  - The receiver decides per request whether to return a durable task handle (taskId, status, ttlMs, pollIntervalMs) instead
+    of blocking. No per-request opt-in is needed beyond the extension capability.
+  - Clients SHOULD respect pollIntervalMs, which MAY change over a task's lifetime. Servers MAY rate-limit clients that poll
+    faster than that interval. ttlMs may also change, and servers MAY fail tasks after TTL expiry.
+  - The status set is working, input_required, completed, failed and cancelled. Mid-flight input goes through tasks/update.
+    The 2026-07-28 redesign replaced blocking tasks/result with tasks/get polling and removed tasks/list.
+  - 'Stated use cases include external job systems and queued work: return a task when the job is created and resolve it when
+    the job completes.'
+  techniques:
+  - durable task handles
+  - server-directed poll interval
+  - TTL backstop
+  - mid-flight input
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - harness-selection-and-integration.md
+    - heterogeneous-slot-fabric-residency.md
+    experiments: []
+    intake_entries:
+    - intake-609
+  recommended_actions:
+  - '[unverified] Evaluate Tasks-extension support in FastMCP and the OpenCode MCP client as the capacity/backpressure channel
+    for long orchestrator_* calls.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t2-harness-multimodel-interfaces; harness<->capacity-aware multi-model
+    stack question). Published: 2026-07-28 (schema Stable); SEP-2663 created 2026-04-27, Status Final. Source revision: ext-tasks
+    HEAD 6c0997fbc040e6145c5cbd1e757aef9debb94303, README retrieved 2026-09-26; SEP text read from modelcontextprotocol repo
+    seps/2663-tasks-extension.md @ ab3a39c1; docs/extensions/tasks/overview.mdx. Artifact sha256 (first 12): 69eeb67205d3
+    (ext-tasks README); 812183984b61 (tasks overview.mdx). Relevance to operator question: This is the only standard harness-facing
+    primitive seen this run where the BACKEND can pace the client: pollIntervalMs is mutable and server-set. That lets a capacity-aware
+    Orch expose queue pressure over MCP without a new protocol, by returning a task when no slot is free and stretching the
+    poll interval under load. Dive question: Does OpenCode''s MCP client (or the Orch''s FastMCP) support the Tasks extension,
+    and could orchestrator_chat return a task handle when the scheduler has no free slot? (dive_value medium). Caveats: Found
+    by reading the 2026-07-28 changelog (item 6). Framing pollIntervalMs as a capacity signal is my inference; the spec describes
+    it as polling guidance plus rate-limiting permission. Client support was not checked.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1793
+  arxiv_id: null
+  url: https://learn.chatgpt.com/docs/agent-configuration/subagents
+  source_type: blog
+  title: Subagents (Codex agent configuration docs)
+  authors:
+  - OpenAI
+  categories:
+  - agent_architecture
+  - cost_aware_routing
+  - routing_intelligence
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: null
+  key_claims:
+  - 'Subagent model and reasoning effort resolve by precedence: explicit spawn value, then the [agents] default (default_subagent_model
+    / default_subagent_reasoning_effort), then the parent''s value. A custom agent TOML''s model/model_reasoning_effort overrides
+    all of these. If a model is chosen without an effort, that model''s default effort is used.'
+  - Custom agents are standalone TOML files (~/.codex/agents/ or .codex/agents/) with required name, description and developer_instructions.
+    They may set any config.toml key (model, sandbox_mode, mcp_servers, skills.config). Unset keys inherit from the parent.
+  - Fan-out is capped by a STATIC client-side setting, agents.max_concurrent_threads_per_session (legacy alias agents.max_threads).
+    If unset, Codex chooses the default.
+  - Built-in agent roles are default, worker and explorer. Subagents inherit the parent's sandbox policy and permission mode.
+  techniques:
+  - per-agent model/effort resolution chain
+  - TOML agent definitions
+  - static concurrency cap
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - delegation-context-preassembly.md
+    - dynamic-stack-concurrency.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries:
+    - intake-849
+    - intake-1121
+  recommended_actions:
+  - '[unverified] Use Codex''s precedence chain as the reference shape for the Orch''s own delegation defaults, and document
+    the static-cap contrast in the harness doctrine.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t2-harness-multimodel-interfaces; harness<->capacity-aware multi-model
+    stack question). Published: undated doc page; retrieved 2026-09-26. Source revision: developers.openai.com/codex/subagents
+    200-redirects to learn.chatgpt.com/docs/agent-configuration/subagents; markdown variant (.md) fetched 2026-09-26. openai/codex
+    repo HEAD b334d5b3f2d9441b95286a8c2af8c2152737d977 recorded, but the repo itself was not read.. Artifact sha256 (first
+    12): 966d32437448 (subagents.md). Relevance to operator question: A mainstream harness hardcodes model choice (per-agent
+    config) and fan-out width (a static per-session thread cap) on the client, with no channel for backend capacity. This
+    is the gap a capacity-aware Orch would fill: the harness should defer both the model and the concurrency cap to the backend.
+    Dive question: Can Codex''s model/effort and max_concurrent_threads values be driven by the Orch (e.g. an OpenAI-compatible
+    provider plus x_* hints), or are they fixed at session start? (dive_value medium). Caveats: Vendor doc page with no empirical
+    claims. It names GPT-6-era models, which I did not verify further. Also examined but NOT proposed (seed budget): Roo Code
+    docs (Orchestrator/''Boomerang'' mode delegates via new_task and returns only a summary; ''sticky models'' remember a
+    model per mode). The GitHub API reports RooCodeInc/Roo-Code as archived=true, last pushed 2026-05-15; Apache-2.0.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1794
+  arxiv_id: null
+  url: https://aider.chat/2024/09/26/architect.html
+  source_type: blog
+  title: Separating code reasoning and editing
+  authors:
+  - Paul Gauthier (aider)
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - cost_aware_routing
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: 0
+  key_claims:
+  - 'Splits one coding turn into two inference steps: an Architect model describes the solution freely, then an Editor model
+    turns it into well-formed file-edit instructions. The two may be different LLMs.'
+  - 'Motivation: strong reasoning models (o1) were good at solving but poor at emitting the required edit formats. The split
+    lets the Editor be picked for cost, speed and edit skill.'
+  - Pairing a model with itself as Architect and Editor raised scores for several models (Sonnet, GPT-4o, GPT-4o-mini) over
+    their solo baselines.
+  - The authors note the top-scoring configurations used the slow 'whole' edit format and were probably not practical for
+    interactive use.
+  techniques:
+  - architect/editor model split
+  - per-role model assignment
+  - edit-format offload
+  reported_results:
+  - 'AUTHOR-REPORTED: o1-preview Architect + o1-mini or deepseek Editor, whole format: 85.0% on aider''s code editing benchmark
+    (SOTA at the time); o1-preview solo diff baseline 79.7%.'
+  - 'AUTHOR-REPORTED: claude-3.5-sonnet self-paired 80.5% vs 77.4% solo; gpt-4o self-paired 75.2% vs 71.4% solo; o1-mini +
+    deepseek (whole) 71.4% vs 61.1% solo; gpt-4o-mini self-paired 60.2% vs 55.6% solo.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tri-role-coordinator-architecture.md
+    - delegation-context-preassembly.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries:
+    - intake-1154
+  recommended_actions:
+  - '[unverified] Test the architect→editor split as a placement recipe (reasoning on GPU, edit formatting on a CPU slot)
+    rather than as a harness feature.'
+  contradicting_evidence:
+  - 'Aider issue #5058 (open, 2026-04-21): ''Architect mode can turn README prompt injection into committed backdoored code''
+    — architect output flows to the editor unfiltered.'
+  - 'Aider issue #3157 (open, 2025-02-06): users cannot set separate rules for the architect and editor models.'
+  - Secondary blogs (search summaries only, not fetched) note two calls cost more and add latency for trivial edits, and weak
+    editors break niche-language syntax.
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t2-harness-multimodel-interfaces; harness<->capacity-aware multi-model
+    stack question). Published: 2024-09-26. Source revision: HTML page retrieved 2026-09-26 via curl; Aider-AI/aider HEAD
+    5dc9490bb35f9729ef2c95d00a19ccd30c26339c recorded (repo not read). Artifact sha256 (first 12): 3a429eeb3150. Relevance
+    to operator question: Earliest widely cited harness-level evidence that a cheap ''editor'' model can carry the format-conformance
+    half of a turn. That half could run on CPU+RAM slots while a stronger model does the reasoning — a concrete way to use
+    under-leveraged CPU capacity behind a two-model harness pattern. Dive question: On EPYC''s stack, does an architect(GPU)
+    → editor(CPU) split beat single-model turns in end-to-end latency and pass rate at production prompt lengths? (dive_value
+    medium). Caveats: Credibility: known contributor +1; age ~24 months (boundary) counted -1; no peer review; no independent
+    numeric corroboration verified, so 0. Benchmark numbers are from 2024 with 2024 models.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1795
+  arxiv_id: null
+  url: https://github.com/beehiveinnovations/pal-mcp-server
+  source_type: repo
+  title: 'PAL MCP: Many Workflows. One Context. (formerly Zen MCP)'
+  authors:
+  - BeehiveInnovations
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - routing_intelligence
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: null
+  key_claims:
+  - An MCP server that lets one harness (Claude Code, Codex CLI, Gemini CLI, Qwen Code, Cursor) consult other models. Tools
+    cover review, debugging, planning and multi-model 'consensus', with conversation threading so later models see earlier
+    models' outputs.
+  - '''clink'' starts other CLI agents as isolated subagents from inside the current CLI (e.g. Claude Code spawning Codex)
+    and returns only the final result to the parent context.'
+  - Auto mode lets the calling model pick a model per subtask. Ordering is driven by a static, human-rated 'intelligence_score'
+    (1-20) in model metadata, next to context window and capability flags (thinking, JSON mode, function calling, images).
+    Local OpenAI-compatible endpoints (Ollama/vLLM) are registered as a 'Custom' provider.
+  - Claims to work around MCP's 25K token limit for large prompts and responses.
+  techniques:
+  - consult-style MCP server
+  - cross-model conversation threading
+  - CLI-to-CLI subagents
+  - static capability metadata for model ranking
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - user-facing-harness-index.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries:
+    - intake-712
+    - intake-705
+    - intake-700
+  recommended_actions:
+  - '[unverified] Use as a contrast case in the harness doctrine. The Orch MCP should expose tasks, not model names, and keep
+    model choice server-side.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t2-harness-multimodel-interfaces; harness<->capacity-aware multi-model
+    stack question). Published: created 2025-06-08; last push 2025-12-15. Source revision: repo HEAD 7afc7c1cc96e23992c8f105f960132c657883bb1;
+    README.md, docs/advanced-usage.md and conf/custom_models.json (raw main) retrieved 2026-09-26. BeehiveInnovations/zen-mcp-server
+    301-redirects here.. Artifact sha256 (first 12): b5b8c602a79d (README.md); 5d05f60f2298 (docs/advanced-usage.md). Relevance
+    to operator question: The canonical harness-consults-other-models pattern. Model selection is driven by the harness LLM
+    plus a static human intelligence score, with no live capacity, cost or queue input. That is exactly what a capacity-aware
+    Orch MCP server (orchestrator_chat) would replace with scheduler-owned choice. Dive question: Does anything in PAL''s
+    provider layer consult runtime state (rate limits, availability), or is model ranking purely static metadata? (dive_value
+    low). Caveats: 12k stars per the GitHub API. The license field reads NOASSERTION (not checked further). No push since
+    2025-12-15, so maintenance is uncertain. README claims are qualitative. Provider source code was not read, so the claim
+    that model choice is static rests on README + custom_models.json only.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-1 explicit dive decline: Contrast case only (static human-rated model ranking, no runtime state); unmaintained
+    since 2025-12.'
+- id: intake-1796
+  arxiv_id: '2606.17949'
+  url: https://arxiv.org/abs/2606.17949
+  source_type: paper
+  title: 'RouteBalance: Fused Model Routing and Load Balancing for Heterogeneous LLM Serving'
+  authors:
+  - Wei Da
+  - Evangelia Kalyvianaki
+  categories:
+  - routing_intelligence
+  - inference_serving
+  - cost_aware_routing
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 4
+  key_claims:
+  - Treats routing as online assignment of requests to concrete model INSTANCES, not model names. Each batch is scored on
+    a weighted quality/latency/cost simplex, and the weight vector gives named operating points.
+  - 'Prompt-dependent estimates are amortised per batch: one CPU-resident sentence embedding feeds a KNN head that returns
+    per-model quality and expected output length. Per-tier gradient-boosted latency heads and a greedy LPT pass over dead-reckoned
+    instance state avoid herding on stale load signals.'
+  - 'Four-arm isolation: the gain comes from putting a latency term into model selection (a cross-tier mix shift). Within
+    a tier, reactive queue depth is enough. A static per-tier prior (nominal TPOT x predicted length, zero telemetry) reproduces
+    the full objective, so the learned predictors are calibration and SLO headroom, not what moves the headline result.'
+  - Quality-only routers deployed as published (one serial scoring call per request) collapse under load. vLLM Semantic Router,
+    run as an external CPU classifier service, degrades the same way from lambda=18.
+  techniques:
+  - instance-level online assignment
+  - quality-latency-cost simplex weights
+  - KNN quality and length head
+  - gradient-boosted latency heads
+  - dead-reckoned instance state
+  - LPT greedy ordering
+  - max_tokens clamp plus streaming early-stop
+  reported_results:
+  - 'AUTHOR-REPORTED: joint decision about 32 ms on the hot path at 12 req/s; 13 instances, 28 GPUs, four Qwen2.5 sizes (3B
+    to 72B); 442 configurations, about 1.5M requests'
+  - 'AUTHOR-REPORTED: best routing-decision quality DeepEval 0.419, +0.013 over the strongest baseline (95% CI +0.005 to +0.022);
+    the cost-priority corner ties the cheapest baseline on per-request cost'
+  - 'AUTHOR-REPORTED: the balanced preset serves at 2.8 s at 30 req/s, 2.6-4.1x ahead of an engineering-equalised BEST-Route.
+    As-published serial routers collapse 23x under load'
+  - 'AUTHOR-REPORTED: a quality-only router drives mean E2E latency from 2.3 s to over 60 s as arrival rises to 30 req/s.
+    A load-only balancer gives up 0.04-0.05 DeepEval quality at equal latency'
+  - 'AUTHOR-REPORTED: pricing latency in the model score is 26-31% faster than decoupled-predictive routing, moving 72B-tier
+    share from 14% to 1% (quality 0.369 vs 0.385)'
+  referenced_arxiv_ids:
+  - '2406.18665'
+  cross_references:
+    chapters: []
+    handoffs:
+    - heterogeneous-slot-fabric-residency.md
+    - learned-routing-controller.md
+    - decision-aware-routing.md
+    - dynamic-stack-concurrency.md
+    - contention-model-device-and-load-axes-rider.md
+    - within-role-placement-state-machine.md
+    experiments: []
+    intake_entries:
+    - intake-057
+    - intake-021
+    - intake-459
+    - intake-1393
+  recommended_actions:
+  - '[unverified] Add a static per-role latency prior (nominal TPOT x predicted length) as a term in the routing score, and
+    A/B it against the current quality-only selection under a load sweep.'
+  contradicting_evidence:
+  - Contradiction pass found no refutation, only corroboration (HW-Router 2608.14575, latency-aware routing 2607.18253). A
+    related paper, RouterWise (arXiv 2604.10907, 'Joint Resource Allocation and Routing for Latency-Aware Multi-Model LLM
+    Serving', title verified on abs), argues that per-model latency depends jointly on placement and routing. That means routing
+    alone, with fixed placement, as RouteBalance does, may be incomplete. Not proposed (budget, not seed-referenced).
+  - 'Own caveat: single model family (Qwen2.5), synthetic arrivals, judge-scored quality; a Llama/Gemma port and production
+    traces are listed as open.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t3-one-endpoint-many-models; harness<->capacity-aware multi-model stack
+    question). Published: 2026-06-16. Source revision: arXiv:2606.17949v1 via arxiv.org/html (only version on the abs page),
+    retrieved 2026-09-26. Artifact sha256 (first 12): 1f8cf5b1c9a8. Relevance to operator question: The most direct answer
+    to the operator''s question. It measures what goes wrong when the quality router in front of the endpoint ignores the
+    scheduler''s live capacity. It also shows that a cheap static per-tier latency prior captures most of the gain, which
+    argues for the orchestrator owning selection behind /v1 rather than the harness. The router''s CPU-resident embedding
+    plus KNN is a CPU-side hot-path component. Dive question: Does the four-arm result hold when you replace instances with
+    EPYC slots (CPU NUMA vs MI210 GPU residency)? Specifically, would a static per-role TPOT x predicted-length prior added
+    to our routing score reproduce the gain without live telemetry? (dive_value high). Caveats: Code URL github.com/AKafakA/route-balance
+    is given in the abstract, but `git ls-remote` returned ''Repository not found'' on 2026-09-26 (private or unpublished),
+    so the artifact is unverified. Not peer-reviewed (abs comments: ''12 pages, 5 figures''). Credibility: recent +1, established
+    systems group +1, two independent corroborations +2.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1797
+  arxiv_id: '2608.14575'
+  url: https://arxiv.org/abs/2608.14575
+  source_type: paper
+  title: 'HW-Router: Hardware-Aware Routing for Scalable Multi-LLM Serving'
+  authors:
+  - Ahasan Kabir
+  - Jiaqi Xue
+  - Mengxin Zheng
+  - Qian Lou
+  categories:
+  - routing_intelligence
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: 3
+  key_claims:
+  - 'Existing routers (RouteLLM, IRT-Router, CARROT) use static cost proxies such as size or FLOPs. Under load this concentrates
+    traffic on the ''cheap'' model: CARROT''s allocation does not change with arrival rate while Qwen2.5-3B''s queue wait
+    grows.'
+  - A hardware monitor polls each model-GPU server every 200-300 ms (running and waiting request counts, KV-cache usage, recent
+    TTFT/TPOT averages) and caches the values, so the router reads them off the request path.
+  - A lightweight latency predictor combines model features (architecture, size, input length) with live hardware signals
+    to estimate per-model-per-GPU serving time. Quality prediction stays hardware-independent (CARROT-style, MiniLM embeddings).
+  - Selection uses S=(1-lambda)Q - lambda*C with a latency-derived cost, plus SLO-aware routing.
+  techniques:
+  - live serving-metric polling (Prometheus/vLLM)
+  - per-model-per-GPU latency prediction
+  - SLO-aware quality-cost scoring
+  - load balancing across model pool
+  reported_results:
+  - 'AUTHOR-REPORTED: vs CARROT and IRT-Router, 3.4-3.9x lower E2E latency, 46-48 pp higher SLO attainment, 6-8x lower GPU
+    load skew, 3.1-3.4x lower waiting-queue fraction, with no loss in output quality'
+  - 'AUTHOR-REPORTED: about 200 microseconds of added routing overhead over CARROT'
+  - 'AUTHOR-REPORTED: testbed of five models (Phi-3-mini, Qwen2.5-3B, Mistral-7B, Llama-3.1-8B, Qwen2.5-14B) on two H100s,
+    vLLM one process per GPU, sustained-overload arrival pattern'
+  referenced_arxiv_ids:
+  - '2406.18665'
+  cross_references:
+    chapters: []
+    handoffs:
+    - heterogeneous-slot-fabric-residency.md
+    - contention-model-device-and-load-axes-rider.md
+    - learned-routing-controller.md
+    - gpu-serving-tie-in-program.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-057
+    - intake-021
+  recommended_actions:
+  - '[unverified] Map HW-Router''s signal table onto llama-server /metrics and /slots fields and our contention gate, and
+    check which are already polled.'
+  contradicting_evidence:
+  - 'No direct refutation found. Caveat (own reading): the baselines are load-blind by construction and the evaluation uses
+    sustained overload on a 2-GPU pool, so the headline multipliers largely measure load-blindness rather than predictor quality.
+    RouteBalance''s four-arm result (a static prior suffices) suggests the learned hardware-signal predictor may not be load-bearing.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t3-one-endpoint-many-models; harness<->capacity-aware multi-model stack
+    question). Published: 2026-06-10. Source revision: arXiv:2608.14575v1 via arxiv.org/html, retrieved 2026-09-26 (abs comments:
+    ''Preprint''). Artifact sha256 (first 12): 9f8a5e2bc42b. Relevance to operator question: A concrete signal set (queue
+    lengths, KV usage, recent TTFT/TPOT), polled out of band, that a quality router needs from the serving layer. llama-server
+    /slots and /metrics expose close analogues, which makes this a template for what the orchestrator should expose to, or
+    keep hidden from, a harness. Dive question: Which of HW-Router''s live signals carry the gain once a static per-model
+    latency prior is present, and do llama-server''s /metrics and /slots expose equivalents for CPU and GPU slots? (dive_value
+    medium). Caveats: arXiv id prefix 2608 conflicts with the abs dateline ''Submitted on 10 Jun 2026''; recorded as observed,
+    discrepancy unexplained. Repo https://github.com/UCF-ML-Research/HW-Router HEAD 8f61358696e29cbdac664d27b74d5bc9320bd40f
+    (README not fetched). Also names RouterArena as the source of its ''top-2 open-source routers'' baseline choice (not fetched).
+    Credibility: recent +1, corroboration +2, not peer-reviewed.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1798
+  arxiv_id: '2607.18253'
+  url: https://arxiv.org/abs/2607.18253
+  source_type: paper
+  title: 'Beyond Accuracy and Cost: Latency-Aware LLM Query Routing for Dynamic Workloads'
+  authors:
+  - Shivam Patel
+  - Akaash R. Parthasarathy
+  - Ankur Mallick
+  - Gauri Joshi
+  categories:
+  - routing_intelligence
+  - inference_serving
+  - cost_aware_routing
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 4
+  key_claims:
+  - Current query routers are latency-agnostic. Latency is left to load balancers (round-robin, join-shortest-queue) that
+    ignore accuracy and cost.
+  - Proposes a Serving Framework Simulation (SFS) estimator. It simulates the serving engine's own chunked-prefill and decode
+    batching over the instance's resident workload, up to the new query's first token, to predict TTFT, then routes on joint
+    accuracy, cost and TTFT.
+  - Accuracy and output-length predictors are LightGBM over hashed prompt-token features (no embedding model). The router
+    reads only completed workload snapshots to avoid torn reads. The queueing-delay derivation uses a limited-processor-sharing
+    abstraction.
+  - 'Robustness is tested under bursty MMPP-2 arrivals. Listed as open: joint routing plus model placement, and interaction
+    between independent routers sharing instances.'
+  techniques:
+  - serving-engine batching simulation for TTFT
+  - LightGBM accuracy and length predictors
+  - limited processor sharing queue model
+  - MMPP-2 burst evaluation
+  - snapshot consistency protocol
+  reported_results:
+  - 'AUTHOR-REPORTED: up to 40% higher accuracy-cost utility than Shortest-Queue at comparable latency (Poisson 8 qps)'
+  - 'AUTHOR-REPORTED: SFS estimator overhead about 1e-4 s per estimate'
+  - 'AUTHOR-REPORTED: testbed Qwen3-0.6B and Qwen3-8B on one H100 each, Qwen3-32B on two H100s (TP), vLLM, Gemini 3.1 Pro
+    Preview as judge'
+  referenced_arxiv_ids:
+  - '2406.18665'
+  cross_references:
+    chapters: []
+    handoffs:
+    - heterogeneous-slot-fabric-residency.md
+    - contention-model-device-and-load-axes-rider.md
+    - numa-prefill-decode-disaggregation.md
+    - sarathi-serve-cpu-evaluation.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-057
+    - intake-495
+    - intake-1393
+  recommended_actions:
+  - '[unverified] Prototype a TTFT simulator over live /slots state for CPU-vs-GPU role selection, and compare against queue-depth-only
+    selection.'
+  contradicting_evidence:
+  - No refutation found. RouteBalance (2606.17949) finds that within-tier prediction adds nothing over reactive queue depth
+    and that a static prior suffices cross-tier. That is in tension with the value of the detailed SFS simulation, although
+    the two measure different latency targets (TTFT vs E2E).
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t3-one-endpoint-many-models; harness<->capacity-aware multi-model stack
+    question). Published: 2026-05-13. Source revision: arXiv:2607.18253v1 via arxiv.org/html, retrieved 2026-09-26. Artifact
+    sha256 (first 12): 2f2d76555ff6. Relevance to operator question: Replaces learned telemetry with an engine-faithful simulation
+    that a scheduler which already knows slot occupancy could run cheaply on CPU. It fits an orchestrator that owns llama.cpp''s
+    batching parameters. It also flags multi-router interference, which is what happens if both the harness and the orchestrator
+    route. Dive question: Can we build an SFS-style TTFT estimator from llama-server''s slot state and chunked-prefill parameters,
+    and does it beat a static per-role prior on our CPU/GPU mix? (dive_value high). Caveats: abs dateline ''Submitted on 13
+    May 2026'' vs id prefix 2607; discrepancy unexplained, recorded as observed. No code URL found in the text. Not peer-reviewed.
+    Credibility: recent +1, CMU/Microsoft known group +1, corroboration +2.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1799
+  arxiv_id: '2502.00674'
+  url: https://arxiv.org/abs/2502.00674
+  source_type: paper
+  title: 'Rethinking Mixture-of-Agents: Is Mixing Different Large Language Models Beneficial?'
+  authors:
+  - Wenzhe Li
+  - Yong Lin
+  - Mengzhou Xia
+  - Chi Jin
+  categories:
+  - swarm_techniques
+  - agent_architecture
+  - routing_intelligence
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - Self-MoA aggregates several samples from the single best model and outperforms Mixed-MoA over heterogeneous models in
+    many settings.
+  - Across 200+ experiments (diversity measured with Vendi Score, quality as mean proposer performance), MoA output correlates
+    with both, but is much more sensitive to proposer QUALITY. Mixing in weaker models lowers average quality.
+  - Self-MoA-Seq aggregates with a sliding window over rounds, lifting the aggregator's context-length limit, and matches
+    one-shot Self-MoA.
+  - The authors could not reproduce the original MoA paper's single-proposer result and attribute this to proposer choice.
+  techniques:
+  - Self-MoA (in-model diversity)
+  - Self-MoA-Seq sliding-window aggregation
+  - quality-diversity regression analysis
+  reported_results:
+  - 'AUTHOR-REPORTED: +6.6 points over Mixed-MoA on AlpacaEval 2.0 (six WizardLM-2-8x22B samples, Qwen1.5-110B-Chat aggregator
+    vs the six-model MoA mix)'
+  - 'AUTHOR-REPORTED: +3.8% average over MMLU, CRUX and MATH in the specialised three-model setting'
+  - 'AUTHOR-REPORTED: applied to a top AlpacaEval 2.0 model, reaches a new state of the art on that leaderboard (abstract-level)'
+  referenced_arxiv_ids:
+  - '2406.04692'
+  cross_references:
+    chapters: []
+    handoffs:
+    - x-mas-text-routing.md
+    - tri-role-coordinator-architecture.md
+    - routing-intelligence.md
+    experiments: []
+    intake_entries:
+    - intake-747
+    - intake-601
+    - intake-712
+    - intake-714
+    - intake-557
+  recommended_actions:
+  - '[unverified] If any MoA/Fusion mode is exposed via x_* keys, default it to same-model multi-sample aggregation and gate
+    cross-model mixing on measured proposer quality.'
+  contradicting_evidence:
+  - 'Contradiction pass: secondary summaries (emergentmind, zylos) repeat the quality-over-diversity finding. A claim that
+    one deceptive agent drops a 3-layer MoA from 49.2% to 37.9% LC win rate was seen only in a search-engine summary with
+    no primary source identified, so it is unverified and excluded from the claims.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t3-one-endpoint-many-models; harness<->capacity-aware multi-model stack
+    question). Published: 2025-02-02. Source revision: arXiv:2502.00674v1 via arxiv.org/html (only version shown on abs),
+    retrieved 2026-09-26. Artifact sha256 (first 12): 95c59e3a21cb. Relevance to operator question: Fan-out behind one endpoint
+    pays off more as N samples from the best RESIDENT model than as a cross-model mix. For a capacity-constrained single host,
+    that argues for parallel sampling on one warm slot (cheap with prefix/KV sharing) over waking several role models. Dive
+    question: On our role lineup, does Self-MoA on the strongest resident model beat X-MAS-style heterogeneous mixing at equal
+    slot-seconds? (dive_value medium). Caveats: Venue not verified (abs page shows no journal reference), so no peer-review
+    credit. Credibility: 19 months old (0), Princeton authors +1, corroboration +1 from intake-747''s self-aggregation result.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1800
+  arxiv_id: null
+  url: https://github.com/berriai/litellm
+  source_type: repo
+  title: LiteLLM Router - Load Balancing (docs.litellm.ai/docs/routing)
+  authors:
+  - BerriAI
+  categories:
+  - routing_intelligence
+  - inference_serving
+  - tool_implementation
+  novelty: low
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: null
+  key_claims:
+  - 'Load balancing works WITHIN a model group (deployments sharing one model_name alias). Strategies: simple-shuffle weighted
+    or RPM/TPM pick (default, ''recommended for production''), usage-based-routing-v2 (rate-limit aware), latency-based-routing
+    (lowest cached response time, with a lowest_latency_buffer to avoid piling onto one deployment), least-busy (fewest ongoing
+    calls), cost-based-routing, and custom strategies.'
+  - Per-group routing strategies (routing_groups) and a session-affinity pre-call check that pins a conversation to its first
+    deployment and falls through on cooldown.
+  - 'Capacity guards: per-deployment max_parallel_requests (derived from rpm/tpm if unset). Current behaviour REJECTS over-cap
+    requests immediately with 429 and has no wait queue; earlier versions queued silently. Cooldowns on 429 or high failure
+    rate, ordered fallback tiers, weighted failover, and pre-call checks for context window and region.'
+  - Quality or complexity model selection (Auto Router, beta Adaptive Router, Fusion) sits on separate doc pages from load
+    balancing. That is the decoupled router-then-balancer split RouteBalance measures.
+  techniques:
+  - model-group aliasing
+  - weighted/RPM/TPM shuffle
+  - least-busy
+  - latency-based routing with buffer
+  - cooldowns
+  - ordered fallbacks
+  - session affinity
+  - max_parallel_requests fast-fail
+  - Redis-shared usage state
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - user-facing-harness-index.md
+    - dynamic-stack-concurrency.md
+    - heterogeneous-slot-fabric-residency.md
+    experiments: []
+    intake_entries:
+    - intake-601
+  recommended_actions:
+  - '[unverified] Write a ''LiteLLM-in-front-of-/v1'' config profile: pass-through alias, disable cooldown-driven rerouting,
+    forward x_* keys via extra body or headers.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t3-one-endpoint-many-models; harness<->capacity-aware multi-model stack
+    question). Published: living docs, retrieved 2026-09-26. Source revision: repo HEAD 14f4c34c61586fe72d18f3bc95406b9698e76e8f;
+    docs page https://docs.litellm.ai/docs/routing retrieved 2026-09-26 (raw.githubusercontent docs/my-website/docs/routing.md
+    returned 404). Artifact sha256 (first 12): 9964fb8793ca. Relevance to operator question: The de facto gateway that OpenCode
+    and similar harnesses talk to. Its capacity awareness is client-side counters (in-flight, RPM/TPM, observed latency),
+    not the backend''s live slot state, and its quality routing is separate from its balancing. If a harness puts LiteLLM
+    in front of our /v1, it should pass one model alias straight through and let the orchestrator''s scheduler decide. A second
+    balancing layer would fight ours. Dive question: If OpenCode goes through a LiteLLM gateway, which settings (single alias,
+    no fallbacks, no least-busy, 429 passthrough, session affinity) keep the orchestrator the only capacity-aware router,
+    and does the 429 fast-fail interact badly with our admission gate? (dive_value medium). Caveats: Docs-level only; no benchmark
+    claims. Page content changes continuously (it referenced ''gpt-5.6-*'' example names at retrieval). Canonical URL is the
+    repo; the claims come from the docs page (hash is of the docs HTML). Redirect check on github.com/BerriAI/litellm returned
+    200, and the url is lowercased per the brief''s dedup rule.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1801
+  arxiv_id: null
+  url: https://github.com/vllm-project/semantic-router
+  source_type: repo
+  title: vLLM Semantic Router
+  authors:
+  - vLLM Semantic Router Team
+  categories:
+  - routing_intelligence
+  - inference_serving
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1796
+  verdict: worth_investigating
+  credibility_score: null
+  key_claims:
+  - 'README: ''a programmable routing layer for building Mixture-of-Models systems across heterogeneous LLM infrastructure''.
+    It selects or composes a model path per request from request signals, user preferences and policies, across quality, cost,
+    latency, privacy and safety.'
+  - 'Roadmap per the README news list: v0.3 ''Themis: From Signals to Stateful Production Routing'' (2026-06), a Fusion API
+    (2026-06), Micro-Agent collaboration inside a model API (2026-06), a ''Workload-Router-Pool Architecture'' vision paper
+    (2026-03), and a signal-decision architecture (2025-11).'
+  - AMD sponsors it with GPU resources and ROCm for training router models.
+  - RouteBalance (2606.17949) ran it untouched as a baseline. Its content classifier runs as a separate CPU service, and throughput
+    collapses from lambda=18 req/s like serial-scoring routers (third-party measurement, not from this repo).
+  techniques:
+  - signal-decision routing
+  - BERT/LoRA classifiers
+  - semantic caching
+  - prompt guard
+  - Envoy external processor
+  - model composition/fusion
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2510.08731'
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - routing-intelligence.md
+    - learned-routing-controller.md
+    - x-mas-text-routing.md
+    experiments: []
+    intake_entries:
+    - intake-712
+    - intake-714
+    - intake-601
+  recommended_actions:
+  - '[unverified] Read the v0.3 Themis release and the WRP vision paper to see if they define a backend-capacity signal contract
+    we could mirror in x_* / MCP.'
+  contradicting_evidence:
+  - 'RouteBalance Table 6 / section 6.3: vLLM-SR degrades under load (from lambda=18) like as-published serial-scoring routers.
+    The router classifier''s CPU cost becomes the bottleneck.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t3-one-endpoint-many-models; harness<->capacity-aware multi-model stack
+    question). Published: project since 2025-09; README retrieved 2026-09-26. Source revision: repo HEAD b57c85bda987086e4d65706ee161058d867d2728;
+    README raw https://raw.githubusercontent.com/vllm-project/semantic-router/main/README.md retrieved 2026-09-26. Artifact
+    sha256 (first 12): 2c884ec0e694. Relevance to operator question: The canonical open ''one endpoint, many models'' router,
+    ROCm/AMD-backed. It is evidence that a CPU-hosted classifier in front of the fleet is a throughput bottleneck unless it
+    is batched and off the hot path, which is relevant to where our MLP routing controller runs. Dive question: Does vLLM-SR
+    v0.3 ''stateful production routing'' consume live backend load or capacity signals, or is it still content-only? And is
+    its Workload-Router-Pool architecture compatible with an orchestrator that already owns scheduling? (dive_value medium).
+    Caveats: README-level only; the docs site, blogs and papers were not fetched. The README contains public read-only playground
+    credentials, which are data and ignored. 2510.08731 (''When to Reason: Semantic Router for vLLM'') is title-verified on
+    abs; it is also the reference RouteBalance cites. 2510.26835 (category-aware semantic caching) appears in the README but
+    was not title-verified, so it is excluded. Neither id is in the digest.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1802
+  arxiv_id: '2406.04692'
+  url: https://arxiv.org/abs/2406.04692
+  source_type: paper
+  title: Mixture-of-Agents Enhances Large Language Model Capabilities
+  authors:
+  - Junlin Wang
+  - Jue Wang
+  - Ben Athiwaratkun
+  - Ce Zhang
+  - et al.
+  categories:
+  - swarm_techniques
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1799
+  verdict: superseded
+  credibility_score: 0
+  key_claims:
+  - 'Layered MoA: each layer''s agents take all of the previous layer''s outputs as auxiliary input, and a final aggregator
+    synthesises the answer.'
+  - 'Claims a ''collaborativeness'' effect: models produce better responses when shown other models'' outputs, even weaker
+    ones.'
+  - 'Own limitation: iterative aggregation means no first token until the last layer, so TTFT is high. Suggested mitigation:
+    fewer layers. Latency is proxied by TFLOPs, not measured on a serving system.'
+  techniques:
+  - layered proposer/aggregator MoA
+  - cross-model aggregation
+  reported_results:
+  - 'AUTHOR-REPORTED: open-source-only MoA scores 65.1% on AlpacaEval 2.0 vs 57.5% for GPT-4 Omni; SOTA claims also on MT-Bench
+    and FLASK'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - x-mas-text-routing.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries:
+    - intake-601
+    - intake-712
+    - intake-714
+    - intake-747
+    - intake-557
+  recommended_actions:
+  - '[unverified] Index for provenance only. Mark superseded by Self-MoA for design decisions.'
+  contradicting_evidence:
+  - 'Self-MoA (2502.00674): the cross-model diversity premise does not hold in many settings (a same-model mix beats Mixed-MoA
+    by 6.6 points on AlpacaEval 2.0), and the single-proposer result did not reproduce.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t3-one-endpoint-many-models; harness<->capacity-aware multi-model stack
+    question). Published: 2024-06-07. Source revision: arXiv:2406.04692v1 via arxiv.org/html (only version shown on abs),
+    retrieved 2026-09-26. Artifact sha256 (first 12): 2327dd31b7c4. Relevance to operator question: The canonical fan-out-behind-one-endpoint
+    pattern. Its own TTFT limitation and TFLOP-proxy latency show it ignores serving capacity entirely. It is the baseline
+    the operator question needs to move past. Dive question: None beyond Self-MoA. Only useful as the reference implementation
+    (togethercomputer/moa) for a fan-out mode. (dive_value low). Caveats: Code URL github.com/togethercomputer/moa is from
+    the paper text (not ls-remote''d). Venue not verified on the abs page. Credibility: >24 months -1, Together AI +1, commercial
+    bias (inference vendor) -1, corroboration of the aggregation benefit via intake-747 +1 = 0; rounded up to 1 because the
+    aggregation benefit is independently replicated, though the diversity claim is contested. Already cited as a referenced
+    id by intake-601 and intake-747 but never ingested as its own entry, so not a duplicate.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-1 explicit dive decline: Lineage anchor only; the design question is carried by Self-MoA (same sweep) and hosted
+    MoA is already intake-712/714.'
+- id: intake-1803
+  arxiv_id: '2606.10662'
+  url: https://arxiv.org/abs/2606.10662
+  source_type: paper
+  title: Decentralized Multi-Agent Systems with Shared Context
+  authors:
+  - Yuzhen Mao
+  - '...'
+  - Azalia Mirhoseini
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - context_management
+  - kv_cache
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - 'DeLM replaces central scatter-gather orchestration with three parts: parallel agents, a shared VERIFIED context, and
+    a task queue. Agents claim tasks asynchronously, read the accumulated state and write back compact updates that are verified
+    at admission.'
+  - 'The shared context is layered by abstraction: agents reason over compact gists and unfold detailed summaries or raw evidence
+    on demand.'
+  - The shared context is stable, append-mostly and always placed first in the prompt, so it acts as a persistent prefix that
+    amortises KV-cache work across the many calls that differ only in their task suffix.
+  - DeLM complements RLM. On OOLONG, DeLM alone scores below RLM because the task needs row-level aggregation, but DeLM+RLM
+    gives the best accuracy at the lowest cost.
+  - 'Stated limits: verification at admission adds overhead; results depend on decomposition quality; prompts do not transfer
+    across model families.'
+  techniques:
+  - shared verified context
+  - asynchronous task-queue claiming
+  - admission-time verification
+  - hierarchical gist/summary/raw unfolding
+  - stable shared prefix for KV reuse
+  - DeLM+RLM hybrid
+  reported_results:
+  - 'AUTHOR-REPORTED: SWE-bench Verified with Gemini 3 Flash: DeLM 65.7% Avg@1, 72.9% Pass@2, 77.4% Pass@4 at $0.12/task,
+    vs AOrchestra-Parallel 56.4/63.2/71.8 at $0.25 and mini-SWE-agent 54.7/65.6/75.1 at $0.26'
+  - 'AUTHOR-REPORTED: SWE-bench Verified with Claude Opus 4.6: DeLM 78.0/80.7/82.5 at $0.63, vs mini-SWE-agent 76.9/79.8/81.7
+    at $0.61. The gain is small here.'
+  - 'AUTHOR-REPORTED: LongBench-v2 Multi-Doc QA: up to +5.7 pp over the strongest baseline across four model families'
+  - 'AUTHOR-REPORTED: GPT-5 (RLM using GPT-5-mini sub-calls, recursion depth 1): OOLONG RLM 56.0% $0.43, DeLM 53.3% $0.47,
+    DeLM+RLM 64.0% $0.40. LongBench-v2 RLM 55.8%, DeLM 57.9%, DeLM+RLM 60.3% $0.24.'
+  referenced_arxiv_ids:
+  - '2512.24601'
+  - '2507.01701'
+  - '2510.01285'
+  cross_references:
+    chapters: []
+    handoffs:
+    - repl-session-memory-maturity.md
+    - delegation-context-preassembly.md
+    - tri-role-coordinator-architecture.md
+    - kv-unified-stack-rollout.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-153
+    - intake-715
+    - intake-1114
+    - intake-544
+  recommended_actions:
+  - '[unverified] Prototype a DeLM-style verified shared context plus task queue as a REPL-session mode in which idle CPU/GPU
+    slots claim subtasks. Measure prefix-cache hit rate.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t4-shared-workspaces-rlm; harness<->capacity-aware multi-model stack question).
+    Published: 2026-06. Source revision: arXiv:2606.10662v1 via html (only version); code repo github.com/yuzhenmao/DeLM HEAD
+    2d0ea48e9940327c0526fd95f8fbb202874d4698 (not read, only ls-remote). Artifact sha256 (first 12): 3ccd480eaf9f. Relevance
+    to operator question: The most load-bearing find. It moves coordination from a controller that routes prompts to a shared
+    state that workers pull from a queue. That maps directly onto a capacity-aware scheduler: free slots claim tasks, so the
+    scheduler needs no model of what each worker knows. The stable shared prefix is a KV-reuse lever that suits a large-RAM
+    CPU host with unified KV and many concurrent slots. Dive question: Does DeLM''s queue-claim plus shared-prefix design
+    keep its gains when workers are heterogeneous local models on llama.cpp slots, and how large is the prefix-reuse saving
+    under kv-unified? (dive_value high). Caveats: Read in full through arXiv HTML v1. The per-model LongBench table was not
+    extracted beyond the headline. Footnote: the Claude Code baseline cost with Gemini 3 Flash is about $1/task without cache
+    reuse, so that row has no cost figure. The KV-reuse claim is argued qualitatively in the paper; I saw no measurement of
+    it. No peer-review venue was seen.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1804
+  arxiv_id: '2510.01285'
+  url: https://arxiv.org/abs/2510.01285
+  source_type: paper
+  title: LLM-Based Multi-Agent Blackboard System for Information Discovery in Data Science
+  authors:
+  - Alireza Salemi
+  - Mihir Parmar
+  - Palash Goyal
+  - Yiwen Song
+  - Jinsung Yoon
+  - et al.
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - search_retrieval
+  - routing_intelligence
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: 3
+  key_claims:
+  - A central agent posts requests to a shared blackboard instead of assigning tasks. Subordinate agents, each owning a partition
+    of the data lake or doing web retrieval, decide for themselves whether to answer.
+  - This removes the need for the coordinator to model each sub-agent's capabilities or knowledge, which the authors argue
+    does not scale in master-slave MAS.
+  - Sub-agents handle a posted request in parallel. Wall-clock time was similar to the RAG and master-slave baselines, but
+    cost per question was higher because more tokens were used.
+  - The relative gain over master-slave grows with the size of the data lake.
+  techniques:
+  - request-posting blackboard
+  - capability self-selection (volunteer response)
+  - data-lake partition agents
+  - LLM-based filename clustering
+  reported_results:
+  - 'AUTHOR-REPORTED: 13%-57% relative improvement in end-to-end success over the best baseline, and up to 9% relative gain
+    in data-discovery F1 (KramaBench, modified DSBench, DA-Code)'
+  - 'AUTHOR-REPORTED: runtime on 50 KramaBench questions is 132.0-145.2 s for all three systems; blackboard is +54.1% over
+    RAG and +18.8% over master-slave at higher $ cost'
+  - 'AUTHOR-REPORTED: largest relative gains of 70% on DA-Code (145 files) and 211% on KramaBench-Astronomy (1556 files)'
+  - 'AUTHOR-REPORTED: backbones Gemini-2.5-Pro/Flash, Claude-4-Opus and Qwen3-Coder-30B-A3B (served with vLLM on 2xA100)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - routing-intelligence.md
+    - decision-aware-routing.md
+    - delegation-context-preassembly.md
+    - heterogeneous-slot-fabric-residency.md
+    experiments: []
+    intake_entries:
+    - intake-839
+    - intake-1114
+  recommended_actions:
+  - '[unverified] Evaluate a post-and-volunteer dispatch mode next to the learned routing controller for fan-out retrieval
+    tasks.'
+  contradicting_evidence:
+  - 'arXiv:2609.19759 ''Rethinking Multi-Agent Collaboration: When More Is Less'' (abstract-level, via WebFetch summary):
+    MAS returns diminish as single agents get stronger while context overhead grows; adding agents or recursion depth does
+    not reliably help; any MAS advantage depends on task structure (long-horizon, sparse dependencies). Provisional.'
+  - 'Self-reported in the paper: blackboard costs more per question than RAG and master-slave.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t4-shared-workspaces-rlm; harness<->capacity-aware multi-model stack question).
+    Published: 2025-09 (v2 2026-01-31). Source revision: arXiv:2510.01285v2 via html. Artifact sha256 (first 12): 862ffc80af16.
+    Relevance to operator question: The pull/volunteer pattern is the inverse of capability-aware routing. The harness posts
+    a need and whatever slot or role is free and able answers, so routing can rest on live capacity rather than a static capability
+    model. One of its baselines is Qwen3-Coder-30B-A3B, a model class the stack serves. Dive question: Does volunteer self-selection
+    keep its edge over routed dispatch when agents are a small fixed set of role models rather than many data-partition owners?
+    (dive_value medium). Caveats: The exact cost multipliers were lost when math markup was stripped, so only the direction
+    is reported. OpenReview id egTQgf89Lm exists but I could not load it (browser check), so the venue and decision are unverified
+    and no peer-review credit was given. Terrarium (arXiv:2510.14312v1, html sha 5522814668cd abs / ccc4b6a34cf4 html; repo
+    umass-aisec/Terrarium HEAD aeec335d108a) was checked: it is NOT in the index and was not proposed because of the budget.
+    It is a safety/privacy/security testbed that uses an MCP-served blackboard for instruction-augmented DCOP scenarios with
+    four attack types, and its own limitations section says it is not meant for deployment. Low relevance except as a threat-model
+    reference for a shared-state design.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1805
+  arxiv_id: '2507.01701'
+  url: https://arxiv.org/abs/2507.01701
+  source_type: paper
+  title: Exploring Advanced LLM Multi-Agent Systems Based on Blackboard Architecture
+  authors:
+  - Bochen Han
+  - Songmao Zhang
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - context_management
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: 1
+  key_claims:
+  - 'bMAS has three parts: an LLM control unit, a blackboard with a public space and private spaces for debate or reflection,
+    and a group of agents. Each round the control unit picks agents based on what is on the board, and the picked agents read
+    the whole board and write back.'
+  - The blackboard replaces per-agent memory modules; agents communicate only through it.
+  - Fixed roles (planner, decider, critic, cleaner, conflict-resolver) sit alongside generated query-specific experts. The
+    cleaner deletes redundant messages.
+  - 'Ablation: without the control unit, accuracy is about the same but tokens rise 3-4x. Marking redundant messages instead
+    of deleting them lowers accuracy.'
+  techniques:
+  - control-unit agent selection
+  - public/private blackboard spaces
+  - cleaner/conflict-resolver agents
+  - consensus stop
+  reported_results:
+  - 'AUTHOR-REPORTED: beats CoT by an average 4.33% and static MAS by 5.02% (MMLU, GPQA, MATH and others; Llama-3.1-70B and
+    Qwen-2.5-72B assigned at random)'
+  - 'AUTHOR-REPORTED: tokens full vs no control unit: MMLU 5.07M vs 18.83M, GPQA 2.98M vs 13.33M, MATH 4.72M vs 13.86M, with
+    near-equal accuracy'
+  - 'AUTHOR-REPORTED: average rounds 2.88/3.05/3.29 (MMLU/GPQA/MATH); max rounds set to 4'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tri-role-coordinator-architecture.md
+    - repl-session-memory-maturity.md
+    experiments: []
+    intake_entries:
+    - intake-839
+    - intake-1110
+  recommended_actions:
+  - '[unverified] Borrow the cleaner/pruning role for shared REPL session state compaction.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t4-shared-workspaces-rlm; harness<->capacity-aware multi-model stack question).
+    Published: 2025-07. Source revision: arXiv:2507.01701v1 via html; repo github.com/bc200/LbMAS HEAD 7e914f6c4938 (not read).
+    Artifact sha256 (first 12): a77264bd17c6. Relevance to operator question: Its control-unit ablation shows that a selector
+    which decides who acts next cuts tokens 3-4x at equal quality. That is an argument for putting a scheduler in the loop
+    rather than letting every agent read and respond, and a scheduler with live capacity is a natural home for it. It was
+    run with open 70B-class models. Dive question: Does the control-unit token saving survive once whole-board prompts are
+    prefix-cached (DeLM-style), or is it mostly an artefact of re-reading the board? (dive_value low). Caveats: Academic (CAS)
+    preprint, v1 only, no venue. DeLM (seed) and Salemi et al. (seed) cite it as Han and Zhang (2025). Results are reasoning
+    and math only, with no agentic or tool tasks.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-1 explicit dive decline: Pattern source only (control-unit selector ablation); reasoning/math benchmarks with open
+    70B models, no agentic or capacity dimension.'
+- id: intake-1806
+  arxiv_id: '2606.13643'
+  url: https://arxiv.org/abs/2606.13643
+  source_type: paper
+  title: Recursive Agent Harnesses
+  authors:
+  - Elias Lumer
+  - Sahil Sen
+  - Kevin Paul
+  - Vamse Kumar Subbiah
+  - et al.
+  categories:
+  - agent_architecture
+  - context_extension
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 1
+  key_claims:
+  - 'It names ''harness recursion'': the recursive unit is a full agent harness (filesystem, code execution, planning) rather
+    than the tool-less model call used in RLM.'
+  - The parent agent writes and runs a script that spawns subagent harnesses in parallel, and uses JSON tool calls for small
+    fan-outs of 1-5 entries. Subagents inherit the ability to spawn, up to a configurable depth limit.
+  - The authors frame it as the research counterpart of Anthropic's 'dynamic workflows', and say the contribution is naming
+    and evaluating the pattern, not new primitives.
+  - The main recurring cost is each subagent re-reading the shared document. The authors propose prompt caching of the common
+    prefix but did not instrument token or latency costs.
+  techniques:
+  - code-driven subagent spawning
+  - depth-bounded harness recursion
+  - hybrid code/JSON spawning
+  - shared-prefix caching (proposed)
+  reported_results:
+  - 'AUTHOR-REPORTED: Oolong-Synthetic, 199 samples across 13 buckets up to 4M tokens, GPT-5: RAH 81.36% vs Codex agent 71.75%,
+    RLM 64.38%, full-context 59.22%'
+  - 'AUTHOR-REPORTED: 89.77% with Claude Sonnet 4.5 as backbone'
+  referenced_arxiv_ids:
+  - '2512.24601'
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - user-facing-harness-index.md
+    - dynamic-stack-concurrency.md
+    - delegation-context-preassembly.md
+    experiments: []
+    intake_entries:
+    - intake-153
+    - intake-550
+    - intake-1326
+    - intake-1009
+  recommended_actions:
+  - '[unverified] Expose a slot-capacity hint through x_* or MCP so harness-generated spawn scripts can size their concurrency.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t4-shared-workspaces-rlm; harness<->capacity-aware multi-model stack question).
+    Published: 2026-06. Source revision: arXiv:2606.13643v1 via html (only version). Artifact sha256 (first 12): 054433d2796b.
+    Relevance to operator question: This is the pattern an off-the-shelf harness such as OpenCode would use if it recursed
+    into itself. The fan-out width is set by the parent''s generated script and knows nothing about capacity, which is exactly
+    the gap a capacity-aware /v1 backend could fill by bounding or queueing spawns. The shared-prefix reuse also favours a
+    KV store in large RAM. Dive question: Would bounding RAH-style script-spawned fan-out by live slot capacity (queueing
+    spawns rather than failing them) keep the accuracy gain at local-model scale? (dive_value medium). Caveats: The baselines
+    (Codex, RLM, full-context) are quoted from Cao et al. rather than re-run. Some bucket numbers rest on 14-16 instances
+    with wide CIs. There were no ablations of depth or entries per subagent. No code repo was seen.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1807
+  arxiv_id: '2605.20563'
+  url: https://arxiv.org/abs/2605.20563
+  source_type: paper
+  title: Multi-agent Collaboration with State Management
+  authors:
+  - Mengyang Liu
+  - Taozhi Chen
+  - Zhenhua Xu
+  - Xue Jiang
+  - Yihong Dong
+  - et al.
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 1
+  key_claims:
+  - STORM puts all agents in ONE shared workspace instead of one git worktree per agent. It mediates every file read and write.
+  - 'Local state consistency: a write is accepted only if the target file and every file the agent read for context are unchanged
+    since it read them. Otherwise the write is rejected and the agent gets fresh content to retry.'
+  - 'Intent annotations: agents leave structured comments in the code that expose why a change was made to other agents reading
+    the same file, without explicit messaging.'
+  - The authors call it architecture-agnostic and pluggable into any MAS.
+  techniques:
+  - write-time optimistic concurrency on read-sets
+  - intent annotations
+  - shared-workspace mediation
+  reported_results:
+  - 'AUTHOR-REPORTED: Commit0-Lite with Sonnet 4.6: 82.5% macro / 46.2% weighted pass, vs single-agent 66.4/20.7 and GitWorktree
+    63.8/24.6'
+  - 'AUTHOR-REPORTED: PaperBench 74.1 vs GitWorktree 72.7 and single-agent 68.7; best combined scores 87.6 and 78.2'
+  - 'AUTHOR-REPORTED: similar gains with DeepSeek and Qwen models (not quantified in the part I read)'
+  referenced_arxiv_ids:
+  - '2510.18893'
+  cross_references:
+    chapters: []
+    handoffs:
+    - harness-selection-and-integration.md
+    - agent-collab-rnd-harness.md
+    experiments: []
+    intake_entries:
+    - intake-1114
+  recommended_actions:
+  - '[unverified] Consider read-set-validated writes as an MCP file-tool policy for parallel subagents in one tree.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t4-shared-workspaces-rlm; harness<->capacity-aware multi-model stack question).
+    Published: 2026-05. Source revision: arXiv:2605.20563v1 via html; repo github.com/dreamyang-liu/STORM HEAD 4914a44de2d4
+    (not read). Artifact sha256 (first 12): 61a7d51d51f1. Relevance to operator question: A shared-workspace concurrency primitive
+    for parallel harness agents. It is orthogonal to capacity-aware scheduling but relevant to fanning out N harness workers
+    on one host without worktree-merge failures, a failure mode this project''s own memory notes record for its shared clone.
+    Dive question: Does read-set-validated write rejection beat CRDT convergence (CodeCRDT, intake-1114) on retry cost for
+    local models? (dive_value low). Caveats: Only the abstract, intro and design sections were read. It cites CodeCRDT (2510.18893
+    = intake-1114; verified by the digest, not by an abs fetch this run, so that reference is weaker). Also seen in search
+    but NOT proposed: 2603.10062 ''Multi-Agent Memory from a Computer Architecture Perspective'' (abs title verified, sha
+    b054c9dd8cb4; position paper) and 2609.19759 (used above as contradicting evidence). Neither is in the index.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-1 explicit dive decline: Orthogonal to the capacity question (shared-tree write concurrency); cheap to revisit
+    if parallel-harness file conflicts become a target.'
+- id: intake-1808
+  arxiv_id: null
+  url: https://dl.acm.org/doi/10.1145/3731569.3764843
+  source_type: paper
+  title: 'KTransformers: Unleashing the Full Potential of CPU/GPU Hybrid Inference for MoE Models'
+  authors:
+  - Hongtao Chen
+  - Weiyu Xie
+  - Boxin Zhang
+  - Jingqi Tang
+  - et al.
+  - Yongwei Wu
+  - Mingxing Zhang
+  categories:
+  - moe_optimization
+  - hardware_optimization
+  - inference_serving
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 5
+  key_claims:
+  - Routed experts run on the CPU; attention and shared experts run on the GPU. The existing hybrid systems (Fiddler, llama.cpp)
+    are limited by CPU compute and by CPU-GPU synchronization. Fiddler issues more than 7,000 CUDA kernel launches per decode
+    pass.
+  - 'CPU MoE kernels switch by arithmetic intensity: AMX tiles for prefill, and a lighter AVX-512 kernel for low-intensity
+    decode, where AVX-512 beats AMX.'
+  - 'NUMA-aware tensor parallelism: every expert matrix is sliced across sockets and the partial results are reduce-scattered,
+    instead of expert parallelism. Fiddler, which ignores NUMA, gains only 16% going from one socket to two (6.9 ms to 5.8
+    ms per DS-3 MoE layer).'
+  - Async CPU task submission lets the whole decode path for a token fit in one CUDA Graph, cutting GPU-launch overhead from
+    over 20% to near zero (up to 1.23x decode).
+  - 'Expert Deferral: the lowest-scoring routed experts finish one layer late, which lets CPU and GPU overlap. CPU utilization
+    rises from under 75% to nearly 100%, for up to 1.45x more throughput at an average accuracy drop of at most 0.5%.'
+  techniques:
+  - AMX/AVX-512 ARI-switched MoE kernels
+  - NUMA-sliced expert tensor parallelism
+  - CUDA-Graph-captured hybrid decode
+  - Expert Deferral
+  reported_results:
+  - 'AUTHOR-REPORTED: 4.62-19.74x prefill and 1.25-4.09x decode speedups over existing systems (abstract).'
+  - 'AUTHOR-REPORTED: without Expert Deferral, full-precision decode is 2.42-4.09x faster than Fiddler and 1.25-1.76x faster
+    than llama.cpp; quantized decode is 1.77-1.93x faster than llama.cpp (section 6.2).'
+  - 'AUTHOR-REPORTED: the CPU MoE kernel reaches 21.3 TFLOPS on DS-3, 3.98x PyTorch; NUMA-aware TP gives up to 1.63x decode
+    on dual socket.'
+  - 'AUTHOR-REPORTED: testbed is 2x Xeon Platinum 8452Y (36 cores each), 1 TB DDR5 per socket, 220 GB/s intra-socket and 125
+    GB/s cross-socket (Intel MLC), an A100-40GB or RTX 4080-16GB on PCIe 4.0, batch size 1 only. llama.cpp was patched by
+    the authors to do Fiddler-style expert offload.'
+  referenced_arxiv_ids:
+  - '2402.07033'
+  cross_references:
+    chapters: []
+    handoffs:
+    - large-moe-expert-parallelism.md
+    - heterogeneous-slot-fabric-residency.md
+    - gpu-serving-tie-in-program.md
+    - numa-prefill-decode-disaggregation.md
+    - moe-routing-tap-and-locality-measurement.md
+    experiments: []
+    intake_entries:
+    - intake-923
+    - intake-1318
+    - intake-310
+    - intake-1191
+  recommended_actions:
+  - '[unverified] Record it as a formal intake, which settles half of the OD-A ingest-or-reaffirm checkbox. Then run R-A7
+    F1/F3 as already specified before any runtime work.'
+  contradicting_evidence:
+  - '2606.10493 (OSDI''26), measured on dual EPYC 9355: KTransformers'' TPOT rises up to 2.45x when prefill and decode coexist.
+    Its per-request decode falls from 22.7 to 13.6 tok/s (-40%) at batch 2. It infers KTransformers'' effective decode bandwidth
+    at about 221 GB/s, roughly 50% of nominal.'
+  - '2607.10183 (ATSInfer): KTransformers v0.5.2 prefill is weak on consumer CPUs without AMX.'
+  - 'intake-1318 (FreeToken): KTransformers loses 31% of decode by W2 and has a 946 s worst-case TTFT. That comparison does
+    not specify KTransformers'' build or flags.'
+  - 'kvcache-ai/ktransformers issue #1612 (''AMX only?'') has been open since 2025-11 (recorded in intake-923; its current
+    state not re-checked this run).'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t5-hybrid-cpu-gpu-moe; harness<->capacity-aware multi-model stack question).
+    Published: 2025-10. Source revision: SOSP''25 camera-ready PDF (16 pp) via madsys.cs.tsinghua.edu.cn/.../SOSP25-chen.pdf,
+    retrieved 2026-09-26. No arXiv version found. The ACM DL DOI URL comes from the paper''s own footer.. Artifact sha256
+    (first 12): d3c5af7a9e11. Relevance to operator question: This is the peer-reviewed reference design for the operator''s
+    thesis that DRAM-resident experts computed by the CPU are the main lever. Its NUMA-sliced expert TP and graph-capturable
+    async CPU submission map directly onto our ''slot fabric'' and on the gap R-A5 found in llama.cpp. It is batch-1 only
+    and says nothing about multi-model capacity scheduling. Dive question: On a Zen 5 host without AMX, which of the paper''s
+    gains remain (NUMA-sliced TP, graph capture, Expert Deferral), and how large is each against our llama.cpp v10 decode
+    floor at batch 1 and 2? (dive_value high). Caveats: Co-authored by Approaching.AI (commercial; -1 applied). The 1.45x
+    deferral figure is decode-only at batch 1. The 0.5% accuracy figure is at aggressive deferral, per the intake-923 dive.
+    None of the paper''s figures were re-measured here.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1809
+  arxiv_id: null
+  url: https://github.com/kvcache-ai/ktransformers
+  source_type: repo
+  title: kvcache-ai/ktransformers — A Flexible Framework for Experiencing Cutting-edge LLM Inference/Fine-tune Optimizations
+  authors:
+  - MADSys Lab @ Tsinghua
+  - Approaching.AI
+  - 9#AISoft
+  - community
+  categories:
+  - moe_optimization
+  - inference_serving
+  - local_inference
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - Serving now goes through kt-kernel inside an SGLang fork (sglang-kt), with an OpenAI-compatible /v1 server. The original
+    monolithic framework has been moved to archive/.
+  - The kt-kernel README lists CPU backends AMXINT4/INT8, RAWINT4, FP8, FP8_PERCHANNEL, BF16 and LLAMAFILE (GGUF). It says
+    the BF16/FP8 'Native Precision' backends need only AVX512 (+BF16/VBMI) and names AMD Zen 4+ / EPYC 9355 as supported.
+    There is also an AMD BLIS backend and, since 2026-03, an AVX2-only path.
+  - 'Since 2026-01 there is CPU-GPU expert scheduling: --kt-num-gpu-experts or --kt-gpu-experts-ratio, with placement strategies
+    uniform/frequency/front-loading/random, plus --kt-enable-dynamic-expert-update triggered by a prefill-token threshold.'
+  - The tutorial states a minimum of an AVX512 x86 CPU (Sapphire Rapids or AMD EPYC), a 24 GB GPU and 256 GB RAM. CUDA 12
+    is the GPU stack. doc/en/ROCm.md exists but dates from the archived framework era.
+  techniques:
+  - hot-expert GPU placement by activation frequency
+  - dynamic expert re-placement
+  - layerwise GPU prefill above a token threshold
+  - GGUF llamafile CPU backend
+  reported_results:
+  - 'AUTHOR-REPORTED: Qwen3-Next-80B-A3B-FP8 on 4x RTX 4090 + Xeon Gold 6454S, TP4, ShareGPT: 53 tok/s with 0% GPU experts,
+    58.6 (frequency) or 70.2 (dynamic) at 10%, about 113 at 100% (experts-sched tutorial).'
+  - 'AUTHOR-REPORTED: DeepSeek-R1-0528 FP8 on 8x L20 + Xeon Gold 6454S: 227.85 tok/s total and 87.58 tok/s output at 8-way
+    concurrency (README).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - heterogeneous-slot-fabric-residency.md
+    - large-moe-expert-parallelism.md
+    - moe-routing-tap-and-locality-measurement.md
+    - gpu-serving-tie-in-program.md
+    experiments: []
+    intake_entries:
+    - intake-923
+    - intake-1318
+  recommended_actions:
+  - '[unverified] Re-baseline the intake-923 ''AMX-bound / no AVX-512 family'' discount against HEAD before the OD-A decision
+    is taken.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t5-hybrid-cpu-gpu-moe; harness<->capacity-aware multi-model stack question).
+    Published: 2024-07 (created 2024-07-26; last push 2026-09-23; latest tag v0.7.1). Source revision: repo HEAD c40722bf04c494f2492b7eb9e86ef01a4ede45b3;
+    README raw https://raw.githubusercontent.com/kvcache-ai/ktransformers/c40722bf04c494f2492b7eb9e86ef01a4ede45b3/README.md,
+    plus kt-kernel/README.md (sha 94c78a1a841b) and doc/en/kt-kernel/experts-sched-Tutorial.md (sha f7714175e6d3), retrieved
+    2026-09-26. Apache-2.0, 19,539 stars.. Artifact sha256 (first 12): 61831dccf4c3. Relevance to operator question: This
+    is a shipping serving stack that exposes the GPU/CPU expert split as a launch-time knob plus a dynamic re-placement flag.
+    That is a concrete example of placement driven by capacity and activation statistics, and it is now claimed to run on
+    AVX-512 EPYC without AMX. Dive question: Do the AVX512 ''native precision'' and LLAMAFILE backends at c40722bf actually
+    build and run on Zen 5 with a ROCm GPU, or is the GPU half still CUDA-only through sglang-kt? (dive_value high). Caveats:
+    This repo is the companion to the SOSP paper entry, a distinct source. The AVX512-backend claim is README-level only;
+    source files were listed but not read. The experts-sched throughput table has no reps or variance. Where ROCm support
+    stands for the kt-kernel/sglang-kt path was not verified.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1810
+  arxiv_id: '2606.10493'
+  url: https://arxiv.org/abs/2606.10493
+  source_type: paper
+  title: Achieving Cloud-Grade SLOs for Local Mixture-of-Experts Inference through CPU-GPU Hybrid Design
+  authors:
+  - Wenxin Wang
+  - Yule Hou
+  - Yu Ji
+  - Peng Qu
+  - Youhui Zhang
+  categories:
+  - moe_optimization
+  - inference_serving
+  - hardware_optimization
+  - local_inference
+  - kv_cache
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: null
+  verdict: new_opportunity
+  credibility_score: 4
+  key_claims:
+  - Testbed is 2x AMD EPYC 9355 (24 channels DDR5-6400, 1.15 TB, 1228 GB/s theoretical) with 2x RTX 5090 on PCIe 5.0. This
+    is the published platform closest to our host.
+  - 'Stream-loading prefill (SLP): above about 4K tokens, expert weights are streamed from DRAM into a VRAM ring buffer by
+    a 3-thread/3-stream loader-model-unloader pipeline at sub-layer granularity, so prefill is GPU-bound rather than CPU-bound.
+    Below 4K, CPU AVX prefill is used.'
+  - 'Intra-node prefill/decode disaggregation shares one DRAM-resident weight copy (zero-copy ring buffer). Policy: chunked
+    prefill for requests under 2K; long prefill goes to 2-GPU DSLP if no decode is active, otherwise to disaggregated SLP.
+    Decode is batched up to a target size (e.g. 6).'
+  - Dual-batch attention-MoE overlap interleaves two decode microbatches, attention on GPU and MoE on CPU (about 350 us attention
+    vs 450 us MoE per layer).
+  - An AVX-512 FP8 GEMV computing in BF16 with post-scaling reaches 947 GB/s. The authors expect decode to scale roughly linearly
+    with DRAM bandwidth, since CPU MoE is about 60% of decode time.
+  techniques:
+  - stream-loading prefill
+  - SmallEP distributed prefill
+  - intra-node PD disaggregation with shared weights
+  - dual-batch attention/MoE overlap
+  - AVX-512 FP8 GEMV
+  reported_results:
+  - 'AUTHOR-REPORTED: SLP prefill up to 1,200 tok/s (32K prompt within 30 s); DSLP up to 1,800 tok/s (45K within 30 s) on
+    2x RTX 5090.'
+  - 'AUTHOR-REPORTED: DeepSeek-R1 FP8 decode at 21.5 tok/s single-stream, still 20 tok/s at 32K. Dual-stream totals 33.6 tok/s,
+    31.1 at 32K.'
+  - 'AUTHOR-REPORTED: Q4_K_M DeepSeek-R1 at 1K-8K: 28 tok/s vs ik_llama.cpp 14 vs KTransformers 22. At 128K, KTransformers
+    is about 15 tok/s vs ours 19.'
+  - 'AUTHOR-REPORTED: under mixed load, KTransformers'' TPOT grows up to 2.45x vs at most 1.54x for this system; worst-case
+    total latency 2.53x vs 1.67x.'
+  referenced_arxiv_ids:
+  - '2402.07033'
+  - '2410.22134'
+  - '2411.01433'
+  cross_references:
+    chapters: []
+    handoffs:
+    - numa-prefill-decode-disaggregation.md
+    - heterogeneous-slot-fabric-residency.md
+    - dynamic-stack-concurrency.md
+    - large-moe-expert-parallelism.md
+    - gpu-serving-tie-in-program.md
+    - contention-model-device-and-load-axes-rider.md
+    - kv-unified-stack-rollout.md
+    experiments: []
+    intake_entries:
+    - intake-923
+    - intake-1318
+    - intake-1193
+    - intake-1200
+  recommended_actions:
+  - '[unverified] Feed its ''prefill to GPU streaming, decode to CPU, shared weights'' policy into numa-prefill-decode-disaggregation.md
+    as a design prior. Its >4K crossover depends on PCIe 5.0 and must be re-derived for our Gen4 link.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t5-hybrid-cpu-gpu-moe; harness<->capacity-aware multi-model stack question).
+    Published: 2026-06-09. Source revision: arXiv:2606.10493v1 via html (v1 is current per abs). Comments: accepted to OSDI''26..
+    Artifact sha256 (first 12): 0bd8ba49bc89. Relevance to operator question: This is the strongest direct evidence for the
+    CPU+RAM thesis on EPYC-class hardware. The scheduler-level policy here (route long prefills to a GPU streaming path, keep
+    decode on the CPU, share one weight copy, batch decode to a target) is the kind of capacity-aware placement our scheduler
+    would have to own. Dive question: Can SLP-style streaming of experts into a VRAM ring buffer work over the MI210''s measured
+    PCIe Gen4 x16, and what TTFT crossover length would that give for our large MoE roles? (dive_value high). Caveats: No
+    code release was found in the paper. The contradiction pass (1 query) found nothing. Caveat: the KTransformers AMX prefill
+    figures are cited from KTransformers'' own platform, and bars above 8K are extrapolated (''estimated''). The FP8 results
+    use unquantized DeepSeek-R1/Kimi-K2, while the KTransformers comparisons use INT4.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1811
+  arxiv_id: '2402.07033'
+  url: https://arxiv.org/abs/2402.07033
+  source_type: paper
+  title: 'Fiddler: CPU-GPU Orchestration for Fast Inference of Mixture-of-Experts Models'
+  authors:
+  - Keisuke Kamahori
+  - Tian Tang
+  - Yile Gu
+  - Kan Zhu
+  - Baris Kasikci
+  categories:
+  - moe_optimization
+  - local_inference
+  - inference_serving
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: null
+  verdict: superseded
+  credibility_score: 4
+  key_claims:
+  - 'Main idea: for small batches, running a missing expert on the CPU (shipping activations) beats copying its weights over
+    PCIe.'
+  - A per-expert runtime rule, fitted at initialization, chooses among GPU-resident execution, copy-then-GPU and CPU execution.
+    It models GPU latency as constant and CPU latency as linear in the input token count.
+  - Popular experts are placed on the GPU statically, from offline calibration profiling. A custom AVX512_BF16 CPU expert
+    kernel is used.
+  - The repo README calls it a research prototype supporting only 16-bit Mixtral-8x7B, and says it is slow on CPUs without
+    AVX512.
+  techniques:
+  - CPU execution of missing experts
+  - latency-model execution choice
+  - popularity-based static GPU placement
+  reported_results:
+  - 'AUTHOR-REPORTED: on 16-bit Mixtral-8x7B, 1.26x single-batch, 1.30x long-prefill and 11.57x beam-search speedups over
+    the best baseline (llama.cpp b2956, DeepSpeed-MII, Mixtral-Offloading).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - large-moe-expert-parallelism.md
+    - heterogeneous-slot-fabric-residency.md
+    experiments: []
+    intake_entries:
+    - intake-1200
+    - intake-1318
+    - intake-923
+  recommended_actions:
+  - '[unverified] Ingest as a lineage anchor only, mark superseded by KTransformers (SOSP''25), and cite it from the wiki
+    inoculation paragraph.'
+  contradicting_evidence:
+  - 'The KTransformers SOSP''25 paper reports KTransformers 2.42-4.09x faster than Fiddler at full-precision decode. It also
+    finds Fiddler NUMA-oblivious: only 16% gain from one socket to two.'
+  - 'Fiddler''s own v3 paper (Fig. 10, Phi-3.5-MoE) and its README concede limited generality: Mixtral-only prototype, needs
+    AVX512.'
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t5-hybrid-cpu-gpu-moe; harness<->capacity-aware multi-model stack question).
+    Published: 2024-02-10. Source revision: arXiv:2402.07033v3 via html (ICLR 2025 per abs comments); companion repo efeslab/fiddler
+    HEAD 227715bfd6e8c731b29548eab01d9919c4fe9564, README sha 45b01cb0b4e2. Artifact sha256 (first 12): c5d8473caca7. Relevance
+    to operator question: This is the founding statement that the CPU should compute cold experts instead of paging them.
+    It is useful as lineage only; its static popularity placement assumes routing skew that our GLM measurement found absent.
+    Dive question: Is there any Fiddler mechanism not subsumed by KTransformers or already inoculated by the T*(q*) identity
+    in wiki/moe-optimization.md? (dive_value low). Caveats: Superseded by KTransformers for the runtime role. The wiki already
+    argues that the split itself carries no latency benefit. Credibility: +2 peer-reviewed, -1 for being over 24 months old,
+    +1 known group, +2 for corroboration as a baseline in KTransformers and HOBBIT.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-1 explicit dive decline: Lineage anchor only; superseded for the runtime role by the KTransformers SOSP''25 paper
+    (same sweep) and pre-inoculated by wiki/moe-optimization.md T*(q*) identity.'
+- id: intake-1812
+  arxiv_id: '2411.11217'
+  url: https://arxiv.org/abs/2411.11217
+  source_type: paper
+  title: 'MoE-Lightning: High-Throughput MoE Inference on Memory-constrained GPUs'
+  authors:
+  - Shiyi Cao
+  - Shu Liu
+  - Tyler Griggs
+  - Peter Schafhalter
+  - et al.
+  - Joseph E. Gonzalez
+  - Matei Zaharia
+  - Ion Stoica
+  categories:
+  - moe_optimization
+  - inference_serving
+  - benchmark_methodology
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: null
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - It targets offline batch throughput (evaluation, synthetic data, data wrangling), not latency.
+  - CGOPipe is a fine-grained decode schedule overlapping GPU compute, CPU compute and I/O. It runs attention on the CPU (its
+    HRM analysis puts decode attention intensity below the CPU-GPU transfer roof) and pages weights over PCIe.
+  - The Hierarchical Roofline Model (HRM) adds cross-level memory-bandwidth roofs and per-device compute roofs to the roofline,
+    and is used for near-zero-overhead policy search instead of FlexGen-style fitting.
+  - It claims to reach the GPU-memory-bound throughput ceiling with 2-3x less CPU memory than prior systems.
+  techniques:
+  - CPU attention in decode
+  - CPU-GPU-I/O pipelining with weight paging
+  - hierarchical roofline performance model
+  reported_results:
+  - 'AUTHOR-REPORTED: up to 10.3x higher throughput than FlexGen for Mixtral 8x7B on one T4 (16 GB); padded variant 3.5x /
+    5x / 6.7x over FlexGen / FlexGen(c) / DeepSpeed on a single GPU.'
+  - 'AUTHOR-REPORTED: Mixtral 8x22B shows 2.77-3.38x more throughput on 4xT4 than on 2xT4 (super-linear).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - contention-model-device-and-load-axes-rider.md
+    - heterogeneous-slot-fabric-residency.md
+    experiments: []
+    intake_entries:
+    - intake-1318
+  recommended_actions:
+  - '[unverified] Evaluate HRM as the analytic core of the contention-model device axis, for batch-throughput lanes only.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t5-hybrid-cpu-gpu-moe; harness<->capacity-aware multi-model stack question).
+    Published: 2024-11-18. Source revision: arXiv:2411.11217v1 via html (v1 is current per abs; no venue stated on abs). Artifact
+    sha256 (first 12): a077cd019dc1. Relevance to operator question: It shows that for throughput and batch work, CPU+RAM
+    can take attention and KV as well as experts, and HRM is a cheap analytic model that a capacity-aware scheduler could
+    use to choose placement per workload class. Dive question: Does an HRM-style multi-roof model, fed our measured DRAM,
+    PCIe and MI210 numbers, predict the right device placement for our batch/eval workloads better than the current contention
+    model? (dive_value medium). Caveats: Hardware is T4/L4-class GPUs with modest CPUs, a long way from our regime. Venue
+    not verified, so no peer-review credit. The contradiction pass was skipped (credibility under 3). CoX-MoE (arXiv:2605.17889,
+    DAC''26, title verified) reports 2.4x over MoE-Lightning, but it is AMX-dependent and was not proposed.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+- id: intake-1813
+  arxiv_id: '2504.05897'
+  url: https://arxiv.org/abs/2504.05897
+  source_type: paper
+  title: 'HybriMoE: Hybrid CPU-GPU Scheduling and Cache Management for Efficient MoE Inference'
+  authors:
+  - Shuzhang Zhong
+  - Yanfan Sun
+  - Ling Liang
+  - Runsheng Wang
+  - Ru Huang
+  - Meng Li
+  categories:
+  - moe_optimization
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1809
+  verdict: superseded
+  credibility_score: 3
+  key_claims:
+  - Built on top of the KTransformers framework and compared against it. That makes it a first-party extension of the KTransformers
+    codebase, which is why it is filed as an expansion.
+  - Argues that expert activations are unstable and weakly skewed, so fixed, frequency-based CPU/GPU maps (Fiddler, KTransformers)
+    are inefficient.
+  - 'Three mechanisms: dynamic intra-layer CPU/GPU workload balancing, impact-driven inter-layer prefetch, and score-based
+    cross-layer expert caching.'
+  - llama.cpp's static layer-wise split does poorly in prefill but is relatively strong in decode.
+  techniques:
+  - dynamic intra-layer CPU/GPU split
+  - impact-driven prefetch
+  - score-based expert cache
+  reported_results:
+  - 'AUTHOR-REPORTED: on average 1.33x prefill and 1.70x decode vs KTransformers. Measured on an RTX A6000 + Xeon Gold 5220R
+    restricted to 10 cores to simulate edge devices.'
+  referenced_arxiv_ids:
+  - '2402.07033'
+  - '2401.14361'
+  cross_references:
+    chapters: []
+    handoffs:
+    - moe-routing-tap-and-locality-measurement.md
+    experiments: []
+    intake_entries:
+    - intake-1318
+    - intake-1328
+  recommended_actions:
+  - '[unverified] Ingest as a lineage row only, noting that the wiki inoculation already covers it.'
+  contradicting_evidence:
+  - wiki/moe-optimization.md:163-167 (T*(q*)=mS/B_H) argues that any closed-form CPU/GPU miss-split is worth zero latency
+    by construction, and names HybriMoE explicitly.
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t5-hybrid-cpu-gpu-moe; harness<->capacity-aware multi-model stack question).
+    Published: 2025-04-08. Source revision: arXiv:2504.05897v1 via html (v1 current; abs comments: accepted by DAC''25); code
+    link github.com/PKU-SEC-Lab/HybriMoE (not fetched). Artifact sha256 (first 12): c3abc86bb6e0. Relevance to operator question:
+    Its premise that routing is too unstable for static maps agrees with our near-uniform GLM-5.2 skew result. Its 10-core
+    edge testbed tells us little about a 96-core, 1.1 TiB host. Dive question: Does HybriMoE''s gain survive with a full-socket
+    CPU, or is it an artifact of starving the CPU to 10 cores? (dive_value low). Caveats: Credibility: +2 DAC''25, 0 age (17
+    months), +1 group. The contradiction pass relied on the internal wiki identity plus 0 web queries. The 10-core CPU restriction
+    is the paper''s own choice.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-1 explicit dive decline: Lineage anchor only; 10-core edge testbed and KTransformers-derived; wiki/moe-optimization.md
+    T*(q*) identity already names it.'
+- id: intake-1814
+  arxiv_id: '2607.10183'
+  url: https://arxiv.org/abs/2607.10183
+  source_type: paper
+  title: Automated Tensor Scheduling for Hybrid CPU-GPU LLM Inference on Consumer Devices
+  authors:
+  - Yangyijian Liu
+  - Hongyi Ye
+  - Mingyang Li
+  - Wu-Jun Li
+  categories:
+  - inference_serving
+  - local_inference
+  - hardware_optimization
+  - moe_optimization
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1808
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - 'ATSInfer extends llama.cpp with about 15,000 lines of C++. It adds an asynchronous CPU-GPU coordination substrate: GPU-resident
+    region, pinned CPU storage, and lifetime-shared GPU temp buffers. This addresses the serialized ggml CPU/GPU path that
+    R-A5 identified.'
+  - It places work at tensor granularity rather than layer or expert granularity, using offline per-tensor CPU, GPU and transfer
+    profiles.
+  - 'Load-aware re-scheduling: before each prefill and decode step it re-estimates CPU speed, GPU speed and PCIe cost from
+    recent measurements. It rebuilds the plan only if deviation exceeds 15% and at least 5 TPOTs have passed (graph rebuild
+    about 7 ms, DP about 9 ms, against a 40 ms TPOT).'
+  - It is explicitly motivated by co-running load on the device (background apps, thermal walls), not a dedicated server.
+  techniques:
+  - tensor-granular static placement
+  - load-aware dynamic weight promotion
+  - async CPU-GPU pipeline in ggml
+  - deviation-triggered re-planning
+  reported_results:
+  - 'AUTHOR-REPORTED: up to 1.94x prefill and 3.29x decode over llama.cpp. Max decode 3.15x over KTransformers v0.5.2 on the
+    laptop platform (RTX 3060 6GB / i7-11800H; desktop RTX 4090 / 64 GB DDR4).'
+  - 'AUTHOR-REPORTED: the load-aware policy cuts the TPOT increase by 13% under 60% external CPU load and by 38% under 60%
+    external GPU+PCIe load, compared with a static policy.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - contention-model-device-and-load-axes-rider.md
+    - heterogeneous-slot-fabric-residency.md
+    - within-role-placement-state-machine.md
+    - dynamic-stack-concurrency.md
+    - gpu-serving-tie-in-program.md
+    experiments: []
+    intake_entries:
+    - intake-1191
+    - intake-310
+    - intake-923
+  recommended_actions:
+  - '[unverified] Treat it as the candidate design for the R-A5 ''async CPU backend'' prerequisite, and for feeding the contention
+    model''s live device/PCIe load axis into placement.'
+  contradicting_evidence: null
+  notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t5-hybrid-cpu-gpu-moe; harness<->capacity-aware multi-model stack question).
+    Published: 2026-07-11. Source revision: arXiv:2607.10183v2 via html (v2 current per abs). Artifact sha256 (first 12):
+    350ec1512607. Relevance to operator question: This is the closest match to the operator''s question at the kernel level.
+    It is a llama.cpp-derived runtime that re-plans CPU/GPU placement from live measured contention, i.e. placement driven
+    by a capacity signal, where our scheduler currently only observes. Dive question: Is the ATSInfer code published, and
+    would its async ggml CPU-GPU coordination layer port to ggml-hip on gfx90a without touching the CPU-only serving path
+    (R-A7 F5)? (dive_value high). Caveats: Filed as an expansion because it cites and benchmarks against the KTransformers
+    paper (Chen et al., 2025). No code link was seen in the paper. Consumer hardware only (6-24 GB GPU, 32-64 GB DDR4), so
+    transfer to a 1.1 TiB NUMA server is unproven. Credibility: not peer-reviewed, +1 for being recent, +1 for the group.'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
+    in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
+  ingested_date: '2026-09-26'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
