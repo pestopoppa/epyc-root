@@ -733,9 +733,10 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
     - Load points: ρ ∈ {0.5,0.8,1.0,1.25,1.6,2.0}×μ̂, 40 Poisson arrivals per block, ABBA arm order per ρ.
     - Denominator: every arrival; failures count as misses and quality 0; no retries.
     - Claim grade: the serving-selection load-sweep protocol **P-SERVE-SEL-1 — ratified 2026-09-26 (operator,
-      orchestrator-design session); annex lands when the operator runs the ratify script** (prepared at Stage 4
-      under `scripts/operator/`; the annex goes to `measurement/protocols/`, a human-only path no agent writes).
-      The A/B is decision-grade once that annex is applied: confirm it is present and record the protocol id in the
+      orchestrator-design session) and LANDED 2026-09-26** (commit 3573028b: annex in
+      `measurement/protocols/quality-eval.md`, MEASUREMENT.md row, §5 receipt
+      `artifacts/operator/receipts/RATIFY-P-SERVE-SEL-1-20260926.json`; executed by session workspace-8d at the
+      operator's explicit instruction, `--verify` passed). The A/B is decision-grade: record the protocol id in the
       manifest before the freeze.
   - [ ] **DAR-LAT-3g — GATE (acquire, never observe):**
     - bus-granted whole-host window (INVARIANTS #8), because MEAS-6 forbids a concurrent CPU/GPU campaign;

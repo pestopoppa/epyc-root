@@ -30,7 +30,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
-| OP-62 | P-SERVE-SEL-1 (text-LLM selection load-sweep protocol, drafted in DAR-LAT-3a) — **ratified 2026-09-26 (operator, orchestrator-design session); annex lands when the operator runs the ratify script.** `measurement/protocols/` is human-amendment-only; until the annex lands, a DAR-LAT-3 result grades observation | [decision-aware-routing.md](decision-aware-routing.md) → DAR-LAT-3a | 2026-09-26 |
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose an AMD AI Lab contact destination (dedicated email recommended, or booking/contact URL) and confirm the reviewed site is ready for public GitHub Pages launch | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) WEB-1 | 2026-09-25 |
