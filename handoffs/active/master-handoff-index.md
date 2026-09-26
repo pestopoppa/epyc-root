@@ -30,9 +30,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
-| OP-63 | Amend `agents/shared/OPERATING_CONSTRAINTS.md:106` (human-only): region-lock covers inference processes a session launches itself. API traffic is claimed by the orchestrator per call and must not be wrapped in an outer `region-lock` (HS-4 P0.4 r1: 503 `contention_denied`) | [non-inference-backlog.md](non-inference-backlog.md) → HYG-5 | 2026-09-26 |
 | OP-64 | Harness↔orchestrator interface discussion (operator-requested): OpenCode `task` tool as a control door (T1/Q7), a hierarchy of shared REPLs (Q2), generalized scouting. Package prepared under HS-19 | [harness-selection-and-integration.md](harness-selection-and-integration.md) → HS-19 | 2026-09-26 |
-| OP-65 | Approve the one-line `-ef` fix to `scripts/hooks/pre_push_serialization_guard.sh` (~`:431`): its legacy-lock check compares path strings, so one lock seen through `/workspace` and `/mnt/raid0/llm/epyc-root` refuses as "TWO serialization locks". The classifier refused the edit for a subagent | [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md) → SSU-F9d | 2026-09-26 |
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose an AMD AI Lab contact destination (dedicated email recommended, or booking/contact URL) and confirm the reviewed site is ready for public GitHub Pages launch | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) WEB-1 | 2026-09-25 |
@@ -93,7 +91,7 @@ nobody is moving.
 | pipeline-integration | 5 | 72 | 1 | 2026-08-11 |
 | research-evaluation | 43 | 466 | 12 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 50 | 530 | 17 | 2026-07-29 |
+| routing-and-optimization | 50 | 529 | 17 | 2026-07-29 |
 | user-facing-harness | 10 | 88 | 2 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

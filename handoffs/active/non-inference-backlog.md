@@ -613,13 +613,14 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
       wired into CI (`.github/workflows/tests.yml`) with 33 tests. The only escape hatch,
       `scripts/validate/ratification_receipt_exemptions.json` (25 historical, 1 superseded, 3 false positives; each pinned
       to its script's sha256; no backfilled receipts), is human-only.
-- [ ] **HYG-5** (MED, operator-only): **`agents/shared/OPERATING_CONSTRAINTS.md:106` reads as if API traffic needs a
+- [x] **HYG-5** (MED, operator-only): **`agents/shared/OPERATING_CONSTRAINTS.md:106` reads as if API traffic needs a
       held CPU-region claim.** It says "never launch inference/benchmark runs … without a held CPU-region claim", with no
       carve-out. The HS-4 P0.4 r1 runner therefore wrapped its OpenCode→`/v1` client in `region-lock run`. That starved
       the orchestrator's own per-call placement, and the run failed with 503 `contention_denied`. Amend the text to say:
       region-lock is for inference processes you launch yourself (llama-server/bench/cli, eval drivers that spawn them);
       traffic through the orchestrator API is claimed by the orchestrator per call and must NOT be wrapped. Human-only
       path, so it needs an operator edit or ratify script; queued as OP-63. Filed 2026-09-26.
+  ✅ 2026-09-26 — RATIFIED (RATIFY-OP63-REGION-LOCK-SCOPE-20260926): region-lock now scoped to self-launched inference; API traffic is claimed by the orchestrator per call. Operator-approved, executed by session workspace-8d at the operator's instruction; §5 receipt emitted, checker clean.
 - [ ] **NIB2-80** (MED): **`make gates` in epyc-orchestrator checks almost nothing on this host.** Found 2026-09-26:
       `shellcheck`, `shfmt` and `markdownlint` are not installed; the `nextplaid-reindex` gate needs NextPLAID
       `:8088`, which is down; and `make check-numerics` / `report-numerics` run

@@ -601,7 +601,7 @@ supplies the value under test cannot fail on it.
   across lanes, exactly the 2026-09-01 incident that the push lease's git-common-dir derivation was
   introduced to fix. Different lease, same shape, still live. **Blocker: none.**
 
-- [ ] **SSU-F9d — the guard's legacy-lock check compares path STRINGS, so one lock seen through two paths
+- [x] **SSU-F9d — the guard's legacy-lock check compares path STRINGS, so one lock seen through two paths
   refuses as "TWO serialization locks".** `scripts/hooks/pre_push_serialization_guard.sh` (~`:431`) tests
   `[[ "$LEGACY_LOCK_FILE" != "$LOCK_FILE" && -e "$LEGACY_LOCK_FILE" ]]`. From a worktree created via
   `/mnt/raid0/llm/epyc-root`, `LOCK_FILE` is `/mnt/raid0/llm/epyc-root/coordination/push-locks/push-<key>.json`
@@ -612,6 +612,8 @@ supplies the value under test cannot fail on it.
   `EPYC_PUSH_LOCK_DIR=/mnt/raid0/llm/epyc-root/coordination/push-locks`. **Blocker: operator approval** — the
   permission classifier refused the edit for a subagent (`scripts/hooks/**`, the SSU-F9a D9-ack precedent).
   Filed 2026-09-26.
+  ✅ 2026-09-26 — fixed (operator-approved OP-65, root 7f4cbb42): `-ef` identity compare; tests 68/68 (the suite also stopped hard-coding /workspace's guard, 42715837). NOTE: the LIVE pre-push hook runs /workspace/scripts/hooks/pre_push_serialization_guard.sh, the shared clone's working-tree copy, so the fix takes effect only once the shared clone /workspace is updated to origin/main; until then the EPYC_PUSH_LOCK_DIR workaround still applies.
+- [ ] **SSU-F9e — deploy the OP-65 guard fix to the LIVE hook.** `/workspace/.git/hooks/pre-push` runs `/workspace/scripts/hooks/pre_push_serialization_guard.sh` from the shared clone's working tree, which is on a stale `main` and carries other sessions' uncommitted files. Update the shared clone to origin/main at a coordinated moment (inspect `git -C /workspace status` first; the redundant Vidya KV-quant copies there are workspace-8d's and safe to discard; `.research-session.json` and `research/intake_index.yaml` belong to other sessions), then run `bash scripts/hooks/tests/test_pre_push_serialization_guard.sh` from /workspace and expect 68/68.
 
 - [ ] **SSU-F10 — every GPU role on this host is un-auditable for VRAM between reloads, by
   default.** The per-buffer breakdown (`load_tensors:`, `llama_kv_cache:`,
