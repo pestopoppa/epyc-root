@@ -9,8 +9,8 @@
 - The planner's ~220 GB/s abstention premise was refuted by a full-screen readbw run (DS41-C36).
 - **First keep 2026-09-26 on run 10i** (DS41-C39): `akm-ds41-gemm4xn-2x-unroll`, +4.535% paired and +7.304%
   compounded. The anchor is now anchor-gen-001, `cafb59c3bf67`. The keep is unconfirmed at serving (DS41-C47).
-- The campaign cannot continue past a keep until DS41-C45 lands.
-- The epoch clause is ratified as P-AK-SEARCH-1-A3.1 (DS41-C40); the code switch is DS41-C44.
+- DS41-C45 (continue past a keep) and DS41-C49 (carry-forward) landed; run 10j relaunched ~19:10Z on research `846bef21`.
+- The epoch clause is ratified as P-AK-SEARCH-1-A3.1 (DS41-C40); the code switch (DS41-C44) landed in `136ad3d0`.
 - Bring-up retrospective: `docs/design/autokernel-local-actor-bringup-retro-20260926.md`.
 - The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
@@ -751,8 +751,8 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   - On the full screen, today's gemv-2560 is 377.5 GB/s at 48 threads and 475.9 at 96.
   - Keep the operator's gate and target (30 / 45-50 t/s). Only re-derive the BW → t/s rows.
   - Repeat the reading on an idle host before quoting it as the ceiling.
-- [ ] DS41-C44 — **Switch planner-history `recall()` comparability and the do-not-repeat gate to the measurement epoch** (A3.1 clause 1b). Records with no measurement identity fall back to the full epoch (clause 1c). Tests: an actor swap keeps same-anchor measured results visible and blocks re-proposal; an anchor/recipe/host change still separates; legacy rows fail closed. In progress 2026-09-26 on research lane `lane/op60-measurement-epoch-20260926`.
-- [ ] DS41-C45 — **An experimental CPU campaign must continue past its first keep.**
+- [x] DS41-C44 — **Switch planner-history `recall()` comparability and the do-not-repeat gate to the measurement epoch** ✅ 2026-09-26 — landed research `136ad3d0` (epoch_aliases backfill applied to the DS41 store: 4 aliases, 37 rows resolvable, 0 unresolved); live since run 10i. Also fixed: the do-not-repeat gate had never matched a real row (recall rows lacked the epoch keys). (A3.1 clause 1b). Records with no measurement identity fall back to the full epoch (clause 1c). Tests: an actor swap keeps same-anchor measured results visible and blocks re-proposal; an anchor/recipe/host change still separates; legacy rows fail closed. In progress 2026-09-26 on research lane `lane/op60-measurement-epoch-20260926`.
+- [x] DS41-C45 — **An experimental CPU campaign must continue past its first keep.** ✅ 2026-09-26 — landed research `eae75696`: experimental continuations record `cor_anchor`; a legacy null chain recovers the COR from the `--resume-run` chain only when exact verification proves it (the tip is never a candidate); the COR check now passes `experimental=`; refusals publish the pre-claim marker; the dry run applies the same COR check. The verified 5.525% floor is reused (no 48-launch recalibration). Hit before in runs 2 and 9 (worked around by moving the store aside). Run 10j relaunched 2026-09-26 ~19:10Z from batch-000001's continuation.
   - Measured at 2026-09-26 17:51Z: after the DS41-C39 keep, the next batch refused with "restored champion of
     record differs from current anchor".
   - Cause: experimental continuations never carry `cor_anchor`. So after the anchor advanced to anchor-gen-001
@@ -792,6 +792,24 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     re-measure it before a second abstention on the same ground.
   - Acceptance: a stub campaign seeded with a pre-change ceiling triggers the re-measure path instead of a
     repeated abstention.
+- [x] DS41-C49 — **A keep must not orphan pending accepted work (carry-forward).** ✅ 2026-09-26 — research
+  `36ebe3a7` + `846bef21`. Unmeasured author/critic1 checkpoints on an ancestor anchor carry forward; patch checkpoints
+  rebase to critic2 when the patch applies, else demote to author with the old diff as feedback; another lineage stays
+  refused; carries spend no author attempt but add a resume-depth hop. Live on run 10j: Q4_K X4_T carried at author,
+  the prefetch patch demoted (its `sgemm.cpp:1535` hunk no longer applies after the unroll keep).
+- [ ] DS41-C50 — **An in-run keep still recalibrates 48 launches for the new anchor.** `ensure_source_floor` after an
+  in-run keep does not reuse the COR arm's verified matched floor, unlike the startup path (4598cb87). Harmless at
+  `--batch-iterations 1` (each batch restarts), a real cost at >1. Fix: reuse the COR frame's floor in-run, as at startup.
+- [ ] DS41-C51 — **AK-H-NRI-1 falsifier (NUMA interleave of CPU_REPACK).** Operator hypothesis in
+  `store/inbox/50-numa-repack-interleave-reassess-20260926.md`. The DS41 recipe already runs under `numactl
+  --interleave=all`, which should interleave the repack allocation process-wide. A read-only `numa_maps` probe of the
+  loop's own champion llama-server is armed (`/mnt/raid0/llm/tmp/ds41-scope-20260926/numa_maps_probe.py`, log beside
+  it). Append the per-node page split to the inbox note; if skewed (>25%±10pp off), add a repack-alloc route to the
+  admitted scope so the loop can port and A/B it.
+- [ ] DS41-C52 — **Dense Q8_0 `gemm4xN` follow-ups from the GEMM-ladder intake (stage1, dives running).** Inbox note
+  `store/inbox/41-ds41-gemm-ladder-hypotheses-20260926.md`: GGML_IQK_Q8_0=1 runtime arm (operator: let the loop
+  propose it), spill check, offset-trick VNNI (bit-identical), B-scale hoist, zmm widening. Track what the loop tries;
+  re-grade after the Stage-2 dives of intake-1783/1784 land.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
