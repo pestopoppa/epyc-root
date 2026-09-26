@@ -179,7 +179,7 @@ the Stage-3 plan was approved, and Stage 4 applied it (`0c8e227e`, merged `a3320
   `/mnt/raid0/llm/epyc-root` (same inode), as "TWO serialization locks". Workaround: create worktrees through
   `/workspace`, or export `EPYC_PUSH_LOCK_DIR=/mnt/raid0/llm/epyc-root/coordination/push-locks`. Filed as SSU-F9d.
 
-### Derived-actionables sweep: 9 filed, 5 declined
+### Derived-actionables sweep: 9 filed, 1 index fix, 5 declined
 
 | # | Item | Filed in / disposition |
 |---|---|---|
@@ -192,6 +192,7 @@ the Stage-3 plan was approved, and Stage 4 applied it (`0c8e227e`, merged `a3320
 | 7 | GPU embedder instance (the other half of D1; the MI210 has 1.52 GiB free) | It was not in UFH-12, so it is filed as `repl-embedding-retrieval.md` **REPL-EMB-0.3**. REPL-EMB-1.1's stale "being fixed separately" note now points to orch `120b55b7` |
 | 8 | DAR-LAT-3g is blocked because live `:8074` runs `-t 96` against the recipe's 48 threads, and nothing tasked the fix | `decision-aware-routing.md` **DAR-LAT-3h**: prepare the stack-change package |
 | 9 | The PF1 runner choice | `mi210-big-model-and-acceleration-roadmap.md`: a completed record that the v8 runner is retired, so PF1 uses `canonical_recipe.py` |
+| 10 | Found by the Stage-3 plan cross-check (about 115 plan items checked, 114 filed or declined on record): the plan's R3 table (line ~2250) re-points INF-23's `Next action` to HSF-3, but Stage 4 never applied it | Applied at this wrap-up: `inference-research-index.md` INF-23 → HSF-3 (the task was already filed at `heterogeneous-slot-fabric-residency.md` HSF-3) |
 
 **Explicit declines.** The operator said these are back-of-mind, not tasks:
 
