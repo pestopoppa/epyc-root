@@ -290,9 +290,14 @@ hardware there must be an easy way to get it working on the mi210". What that me
 - [ ] **F1 — per-split GPU/CPU timing under static `-cmoe`** on one MoE model; report
       `min(t_gpu,t_cpu)/(t_gpu+t_cpu)` per layer. Decision rule to pre-register before running.
       **This gates everything else in this rider.** Needs the GPU lane (region `q3` lock, P2-1b).
-- [ ] **F3 — measure H2D/D2H PCIe bandwidth** (`hipcc` microbenchmark; `rocm-bandwidth-test` absent).
+- [x] **F3 — measure H2D/D2H PCIe bandwidth** (`hipcc` microbenchmark; `rocm-bandwidth-test` absent).
       Independently valuable; corrects three contradictory KB figures.
       *Stale 2026-09-26: done 2026-08-03 — see the R-A7 note; owner to flip.*
+      ✅ 2026-08-03 (flipped 2026-09-26, operator-directed; owner mainA not live): H2D 28.89 / D2H 28.20 GB/s,
+      rocm-bandwidth-test 2.6.0 (available by then), receipt `epyc-inference-research/data/mi210-h2d-d2h/20260803T131500Z/`
+      (research `2aa14264`). All three KB figures are corrected: `gpu-acceleration-path.md` `:16` now says PCIe4 and
+      `:312-318` retires the ~64 GB/s figure; the "PCIe 5.0" claim is gone; `heterogeneous-slot-fabric-residency.md:77`
+      carries the measurement. The per-crossing small-message latency (R-A7 F3) is not in this receipt; F1 measures it.
 - [ ] **F7 — MI210 port feasibility for KTransformers: SOURCE-ONLY read + effort estimate** (filed 2026-09-26 on the OD-A
       decision, R-A10; the first step of the open port investigation). Read-only: no build, no install, no inference, and
       nothing on the frozen trees. Bounded to one session. Answer three questions from source, each with file:line and a class
@@ -315,8 +320,11 @@ hardware there must be an easy way to get it working on the mi210". What that me
       __cpu_variant__ / __fp8_kernel__ / __rawint4_kernel__; no inference, no production tree. Experimental checkout only:
       never `/mnt/raid0/llm/llama.cpp`, `kernels/`, the kernel store, or a system/orchestrator/research venv; never inside
       a bench region claim or overlapping mi210-big-model-and-acceleration-roadmap.md PF1.
-- [ ] **M2 `-ncmoe` sweep** (§5 `:60`) — designed, still unrun; bounds the synchronous baseline.
+- [x] **M2 `-ncmoe` sweep** (§5 `:60`) — designed, still unrun; bounds the synchronous baseline.
       *Stale 2026-09-26: M2 EXECUTED 2026-08-13 (§5 :60) — owner to flip.*
+      ✅ 2026-08-13 (flipped 2026-09-26, operator-directed; owner mainA not live): §5 `:60` records N ∈ {8,16,24,32} on the
+      122B Q4_K_M, best `N=8` decode 35.63 t/s / prefill 555.43 t/s, HIP-clean — that bounds the synchronous baseline.
+      Caveats carried from §5: observation-grade (no P-GPU-1 protocol), and `N=32` decode was not captured.
 - [x] **OPERATOR DECISION — ingest-or-reaffirm KTransformers** — resolved as INGEST: the operator selected cluster 4 for the 2026-09-26 Stage-2 round; intake-1808 (SOSP'25 paper), intake-1809 (repo @ c40722bf) and intake-1810 (KT measured on non-AMX EPYC) are dive-verified. The earlier rotted anchors intake_index.yaml:45670 / :45706 (:96, :245) meant intake-923 — cite intake-923#record. ✅ 2026-09-26
 - [x] **OPERATOR DECISION — OD-A runtime question (R-A10)** — master queue OP-61. DECIDED by the operator 2026-09-26 at the Stage-3 plan approval: KTransformers runtime DECLINED for now; MI210 port investigation OPEN ("If it works on nvidia hardware there must be an easy way to get it working on the mi210"). Follow-on work: F7, then F6 (above). ✅ 2026-09-26
 - [ ] **OPERATOR DECISION — instrument-era / gate amendment.** If F1 justifies proceeding, `:26`
@@ -326,9 +334,12 @@ hardware there must be an easy way to get it working on the mi210". What that me
       `epyc-inference-research/orchestration/model_registry.yaml:1520` records
       `baseline_experts: 8` for `qwen3next`, but the GGUF says `expert_used_count = 10`
       (`expert_count = 512`); the 122B row records `size_gb: 69` against 72.88 GiB actually on disk.
-- [ ] `gpu-acceleration-path.md:306` states PCIe 5.0; the link is measured Gen4 x16. `:16`'s
+- [x] `gpu-acceleration-path.md:306` states PCIe 5.0; the link is measured Gen4 x16. `:16`'s
       "~64 GB/s H2D" is the bidirectional aggregate applied to one direction.
       *Stale 2026-09-26: fixed 2026-08-03 (gpu-acceleration-path.md:331; no "PCIe 5" and no one-direction 64 GB/s remain) — owner to flip.*
+      ✅ 2026-08-03 (flipped 2026-09-26, operator-directed; owner mainA not live): re-verified 2026-09-26 — no "PCIe 5"/"Gen5"
+      claim remains in `gpu-acceleration-path.md` (the one "Gen5" hit, `:316`, is the retirement note), `:16` says PCIe4, and
+      ~64 GB/s appears only as the retired figure (`:316`, `:330-331`).
 
 ## Progress checklist
 
