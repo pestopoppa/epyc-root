@@ -2887,6 +2887,9 @@ Owner: RTG-57 (`kv-unified-stack-rollout.md`).
     projection as a model (`estimate_kind: projection`), never as a measured arm, and carry the log window and
     the organic/probe split.
 - [ ] **VB-READBW-DS41 — route ad-hoc `bench_readbw` runs into the INF-70 corpus.** Point `readbw_gap.sh` (and future AK readbw probes) at `/mnt/raid0/llm/tmp/inf70/results-<tag>-<UTC>/c0-readbw.txt` and emit `OMP stack ON` in banners when the stack is set; then ingest the 2026-09-26T10:55:35Z run (raw bytes unchanged; the directory stamp equals the file header) via `cli.py ingest inf70 --as-of <ts>`. Acceptance: 24 readbw claims, `omp_stack=ON`, source sha matches the raw file. No new adapter or ladder.
+  - [x] Producer fixed ✅ 2026-09-26: `readbw_gap.sh` now writes `/mnt/raid0/llm/tmp/inf70/results-ds41scope-<UTC>/c0-readbw.txt` and banners carry `OMP stack ON`.
+  - [x] 2026-09-26T10:55:35Z run ingested ✅ 2026-09-26 (operator-authorized): 24 readbw claims, 72 frames, via an isolated root `/mnt/raid0/llm/tmp/inf70-ingest-ds41scope` (symlink to the corpus run; the ingest does not dedupe, so the full corpus was not re-walked). `omp_stack` projects `unstated` because the raw banners predate the fix — raw bytes kept unchanged rather than rewritten.
+  - [ ] `omp_stack=ON` acceptance: met by the next `readbw_gap.sh` run (needs the CPU region; the live AK loop holds it).
 
 - [ ] **VB-SPEECH-CPU-1 — write side for `speech_cpu_bench.py`, before any CPU speech re-measurement** (KVU-11 B/C).
   - Add a schema version, row hash, whisper/qwentts binary digests, the exact core list and thread count, and
