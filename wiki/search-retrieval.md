@@ -2,7 +2,7 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-09-17 (incremental: H2 query-length instrument landed (unmeasured), PREFIX-1 verified on both consumers with live qd-v1 index at 29,611 chunks, C7 attribution fix, trace FTS recency-vs-bm25 fix, lexical memory-eval arms); earlier: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
+**Last compiled**: 2026-09-26 (UFH-12 Phase 0 applied: pool 0.95× → 4.96×; G1 0.86–0.91 short of 0.95; operator KEEP + in-flight cap REPL-EMB-1.4); previous: 2026-09-17 (incremental: H2 query-length instrument landed (unmeasured), PREFIX-1 verified on both consumers with live qd-v1 index at 29,611 chunks, C7 attribution fix, trace FTS recency-vs-bm25 fix, lexical memory-eval arms); earlier: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
 (measured 25× more perturbing than INT8 quantization, 62.5% top-1 agreement, OP-24 decision), the (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
 **Sources**: see per-section source lists (added 2026-09-17: internal-kb-rag H2/C7, colbert-reranker PREFIX-1 verification, trace-bm25 and tooling logs, CME retrieval arms)
 
@@ -1286,3 +1286,25 @@ Two measured facts motivate it:
 
 **Confidence:** verified for the placement and code facts; retrieval quality and cost are unmeasured
 until Phase 2.
+
+
+## Compiled Update — 2026-09-26: UFH-12 Phase 0 Is Live — The Embedder Pool Scales 5×, but Frontdoor Decode Under Load Misses Its Bar
+
+**Confidence: verified** by the gate evidence (`epyc-orchestrator/data/embedder_placement/{pre,post,g3b-post}-20260926.json`) and the signed receipt.
+
+The embedder placement package was signed at 17:46Z and applied from ~18:11 to 18:35Z. Each BGE embedder instance now runs on disjoint cores. Pre-registered gates, before → after:
+
+| Gate | Result |
+|---|---|
+| G2 pool scaling (whole pool ÷ one port) | 0.95× → **4.96×** (45.6 texts/s): PASS |
+| G0 idle frontdoor decode `:8070` | 52.6 → 53.1 tok/s: PASS |
+| G1 saturated ÷ idle decode | `:8070` 0.34 → 0.91, `:8080` 0.50 → 0.91, `:8180` 0.53 → 0.86: below the 0.95 PASS line; `:8180` in the rollback band (< 0.90) |
+| G3 CPU speech with the pool saturated | STT RTF ≤ 0.24, TTS first packet ≤ 0.12 s: PASS on the re-run |
+
+- **G3 passed only under a post-hoc amendment.** The first run read ROLLBACK because of one cold first request. The re-run discarded a warm-up request, which the pre-registered method did not include, so the warm-up discard is now pre-registered for every later G3 run.
+- **The serving proofs passed.** Node-local memory is 97.8–98.9%, cosine parity is 1.0, and a 402-token input is accepted, which is above the old 256-token per-slot context.
+- **The operator chose KEEP plus a cap, overriding the rollback band on `:8180`.** Rolling back would restore 0.53, which is worse than the 0.86 kept. REPL-EMB-1.4 caps in-flight embeddings on instances that share a NUMA node with a frontdoor half that is decoding, using the D1 rule: idle instance anywhere, else the requesting model's own hardware, else lexical now and index later. It then re-measures G1 against ≥ 0.95. The gate driver's belief-kernel write side (VB-UFH12-PLACEMENT) must be wired before that re-measure.
+
+### Source References
+- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-0.1/0.2 results table, D3, REPL-EMB-1.4.
+- [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the application and gate narrative.
