@@ -1024,3 +1024,24 @@ for any budget-driven context assembly that assumes relevance implies benefit.
 - `research/intake_index.yaml` intake-1148#record (oh-my-pi) — the parent harness whose compaction pipeline this serves
 - [Optical context compression](../handoffs/completed/optical-context-compression.md) — OCC-1, the decisive measurement on a reader we serve
 - [`progress/2026-08/2026-08-18-research-intake.md`](../progress/2026-08/2026-08-18-research-intake.md) — session record
+
+## Compiled Update — 2026-09-25: Direct Context Variables Satisfy the Retest Trigger
+
+The failed file-backed context experiment established that moving bytes out of the initial prompt is not
+enough when a model reads them back into an append-only conversation. The orchestrator implementation now
+changes that precondition: the context bundle lives in a REPL variable, pulls are counted and capped, and
+only bounded previews reach the root prompt. On the DS41 control prompt, first-turn context fell from
+30,106 to 7,810 tokens, and a sentinel proved that pulled material did not leak into subsequent prompts.
+
+This satisfies the recorded trigger for a new comparison, but it does not establish superiority. The next
+OAB-4 arm must compare end-to-end wall time, decoded tokens, steps, tool calls, compactions, schema validity,
+and scout cost against the plain seat under the same server generation and KV mode.
+
+### Source References
+
+- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-7 implementation and measurement.
+- [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41 comparison boundary.
+- [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — context and campaign lifecycle guidance.
+- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day chronology.
+
+**Confidence:** verified for prompt-size and non-leakage checks; end-to-end benefit remains prospective.

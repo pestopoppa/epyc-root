@@ -1210,3 +1210,23 @@ went looking.
 - `/mnt/raid0/llm/tmp/opencode-prune-20260907/prune.py` — the batch pruner (whole-aggregate deletes,
   `secure_delete=OFF`, per-batch checkpoint, dry-run default)
 - [`non-inference-backlog.md`](../handoffs/active/non-inference-backlog.md) — NI-IO and the disk-reclaim lineage
+
+## Compiled Update — 2026-09-25: Maintenance Work Must Prove It Has Work
+
+An opencode event-reaper VACUUM ran with a zero-page freelist, held an exclusive SQLite lock for 34 seconds,
+and caused a concurrent author call to fail after the 5-second busy timeout. The repair skips VACUUM below a
+1,024-page freelist, truncates WAL after real work, classifies store failures separately, and applies bounded
+backoff. Per-call metrics now ignore sessions created before the call, preventing a failed author row from
+inheriting an earlier planner session.
+
+The general rule matches the project's other maintenance gates: a disruptive maintenance operation must
+first prove that useful work exists, and telemetry attribution must be bounded by the operation's actual
+window.
+
+### Source References
+
+- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-14 root cause and fixes.
+- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — incident chronology.
+- [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — campaign and actor observability rules.
+
+**Confidence:** verified from the failure timeline and landed fixes.

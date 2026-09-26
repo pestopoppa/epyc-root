@@ -1,6 +1,6 @@
 ---
 name: research-intake
-description: Process research URLs (papers, blogs, repos) through a four-stage intake pipeline. Stage 1 (auto) sweeps, dedups, expands literature, persists entries as stage1-unverified, and recommends which intakes to deep dive. Stage 2 (auto) deep-dives the operator-selected intakes, verifies their claims against primary source, and closes out by presenting dive-surfaced new sources for an operator-selected Stage-2b ingest-and-dive round. Stage 3 (plan mode) audits every insight and constructs the action plan — handoffs to amend/create, index rows, explicit declines — iterating until the operator approves. Stage 4 (auto) implements the approved plan. Use when ingesting new research material into the EPYC compendium.
+description: Process research URLs (papers, blogs, repos) through a four-stage intake pipeline. Stage 1 (auto) sweeps, dedups, expands literature, persists entries as stage1-unverified, and recommends which intakes to deep dive. Stage 2 (auto) deep-dives the operator-selected intakes, verifies their claims against primary source, and closes out by presenting dive-surfaced new sources for an operator-selected Stage-2b ingest-and-dive round. Stage 3 (plan mode) audits every insight and distills verified actionables into high-ROI primitives, minimum-rigor probes, trigger-gated follow-ons, handoff edits, index rows, and explicit declines, iterating until the operator approves. Stage 4 (auto) implements the approved plan. Use when ingesting new research material into the EPYC compendium.
 ---
 
 # Research Intake
@@ -30,7 +30,7 @@ deep-dive the *newly submitted* sources before planning around them, and (c) per
 |---|---|---|---|
 | **1** | auto | All intakes processed (incl. expanded literature), each persisted as `stage1-unverified`; **preliminary dive recommendations, ranked**; initial thoughts on likely actionables | `research/intake_index.yaml`, `.research-session.json` |
 | **2** | auto | Deep dives on the intakes the **operator selects**; each dive verifies claims against primary source and ends with a derived-actionables ledger **and a dive-surfaced sources list**. Close-out: present that list, then run the operator-selected items as a **Stage-2b** combined Stage-1+Stage-2 pass | dive findings onto intake entries (`verification`, `dive_corrections`); new Stage-2b entries in `research/intake_index.yaml` |
-| **3** | **plan mode** | Audited action plan naming every handoff to amend/create, index rows, and explicit declines. Iterate with the operator until approved. **Does not begin until the Stage-2 close-out gate closes** | the plan file only |
+| **3** | **plan mode** | Audited, high-ROI action plan: reusable primitives, minimum-rigor probes, trigger-gated follow-ons, handoff edits, index rows, and explicit declines. Iterate with the operator until approved. **Does not begin until the Stage-2 close-out gate closes** | the plan file only |
 | **4** | auto | Implement exactly the approved plan | everything the plan names |
 
 **The load-bearing rule.** Operator comments, critiques and suggestions made during stages 1–3 are
@@ -463,22 +463,61 @@ results arriving after `stage: stage4-complete` and feeling "already authorized.
 
 Begins only once the Stage-2 close-out gate has closed — every dive-surfaced source ingested-and-dived
 or declined. Call **EnterPlanMode**. Read every dive result (Stage 2 and Stage 2b) and the steering
-ledger, then build ONE plan covering:
+ledger.
 
-1. **Handoff edits** — per target file, the exact section and verbatim task lines to append, including
+## Stage 3 actionable distillation — required before handoff drafting
+
+Do not translate every verified suggestion directly into a reproduction task. First reduce the complete
+actionable ledger to the smallest set of project actions that can change an EPYC decision or leave a
+reusable capability:
+
+1. Name the current project decision, bottleneck, risk, or missing capability the action could change.
+2. Prefer a reusable primitive that keeps its value if the technique loses: a contract, receipt, fixture,
+   replay adapter, evaluator preflight, shadow runner, cache, or parser.
+3. Give each primitive one primary owner and identify every direct, evidence, policy, and prospective
+   consumer. Search both documentation and implementation surfaces. A consumer gets its own task only
+   when it has distinct integration, schema, or acceptance work.
+4. Prefer existing journals, fixtures, cached candidates, manifests, and shadow traffic over new
+   training, infrastructure, or broad benchmark recreation.
+5. Apply the six-control minimum-rigor floor to every immediate empirical experiment or replay. For
+   deterministic infrastructure, name the corresponding conformance and provenance checks and explain
+   each inapplicable control.
+6. Assign exactly one posture: `primitive-now`, `cheap-screen-now`, `full-reproduction-now` with an
+   already-fired trigger, `monitor` with an observable trigger, `knowledge-only`, or `decline`.
+7. Keep an unfired broader-work trigger as durable prose, with no active checkbox or index next action.
+
+**Stage 3 MUST NOT default to paper-faithful reproduction.** Full training recipes, large seed grids,
+paper-wide benchmark recreations, and paper-specific infrastructure beyond the reusable primitive enter
+the immediate plan only when a named escalation trigger has already fired and no cheaper probe can answer
+the project question.
+
+The detailed postures, six controls, consumer-discovery procedure, trigger rules, and plan template are
+in [`references/stage3-action-distillation.md`](references/stage3-action-distillation.md).
+
+After distillation, build ONE plan covering:
+
+1. **Action architecture** — cluster overlapping ledger rows into a short immediate program. Target
+   three to five work packets when the ledger contains that many independent units; if compression leaves
+   fewer, present fewer and state why. Never split work only to meet the target. For every packet name the project decision, covered sources and ledger
+   rows, primary owner, consumers, reusable primitive, smallest deliverable, minimum-rigor controls,
+   stop/promotion rule, broader-reproduction trigger, terminal disposition, dependencies, and safe
+   concurrency. Enabling primitives precede only the evaluations that depend on them; unrelated lanes
+   need not be serialized.
+2. **Handoff edits** — per target file, the exact section and verbatim task lines to append, including
    `- [x] … ✅ YYYY-MM-DD` for anything a dive already settled.
-2. **New stubs** — full stub content (template below), so the operator reviews the actual text.
-3. **Index rows** — **exactly one** domain-index row per handoff, in the thin-row schema
+3. **New stubs** — full stub content (template below), so the operator reviews the actual text.
+4. **Index rows** — **exactly one** domain-index row per handoff, in the thin-row schema
    `| ID | Track | Handoff | Next action | Deps |` (contract:
    `docs/guides/agent-workflows/handoff-index-authoring.md`). A task buried at line 1400 of a long
    handoff is filed, not discoverable — but a *second* row in another domain is a defect, not extra
    discoverability; cross-domain relevance is a `Deps` edge.
-   - **Every new stub from item 2 needs a row**, or it lands orphaned and invisible to dispatch.
+   - **Every new stub from item 3 needs a row**, or it lands orphaned and invisible to dispatch.
    - `Next action` is one imperative line, ≤140 chars — never the dive's findings or rationale.
    - The **master index takes no backlog rows**. It takes a row only when the item is a genuine
      *operator decision*, which goes in its operator queue with an `Open since` date.
-4. **Explicit declines** — every ledger item not being filed, with its reason.
-5. **Intake-entry updates** — which entries get `handoffs_updated`/`handoffs_created` filled, and
+5. **Terminal dispositions** — every ledger item maps to an immediate packet, durable trigger record,
+   knowledge-only disposition, or explicit decline with rationale.
+6. **Intake-entry updates** — which entries get `handoffs_updated`/`handoffs_created` filled, and
    what `dive_corrections` land.
    - Fill handoffs_updated / handoffs_created **and integration_disposition + disposition_evidence**
      (enum and rules: references/intake-schema.md; enforced by validate_intake.py) on every affected
@@ -487,15 +526,30 @@ ledger, then build ONE plan covering:
 
 **Plan-completeness gates — the plan may not be presented until all pass:**
 
-- Every **Stage-1 preliminary actionable** is either promoted to a plan item or explicitly declined.
+- Every **Stage-1 preliminary actionable** maps to an immediate packet, durable trigger record,
+  knowledge-only disposition, or explicit decline.
   Non-dived intakes' actionables are just as real as dived ones.
-- Every **dive-ledger row** appears as a filed item or an explicit decline.
-- Every **steering-ledger row** appears as a filed item or an explicit decline.
+- Every **dive-ledger row** has one of those four terminal mappings.
+- Every **steering-ledger row** has one of those four terminal mappings.
 - **No plan text quotes a number, metric, or mechanism that is still `stage1-unverified`.**
 - Every **dive-surfaced source** is either ingested-and-dived via Stage 2b, or explicitly declined by
   the operator and recorded in the bearing entry's `dive_corrections`.
 - Every proposed target handoff is checked for **frozen/pointer status** before it is named as an
   owner — some handoffs are compatibility pointers that explicitly forbid new task checkboxes.
+- Every immediate action names the project decision it can change.
+- Every immediate empirical experiment or replay names all six minimum-rigor controls, or gives a
+  concrete reason why a control is inapplicable and names the replacement conformance/provenance check.
+- An empirical screen missing an applicable control cannot enter the immediate program. Repair its
+  design in the plan, or assign `monitor` or `decline` with a reason.
+- Every reusable primitive has one primary owner and a consumer map backed by searches of both
+  documentation and implementation surfaces.
+- Consumers do not receive duplicate tasks merely for visibility; separate tasks represent distinct
+  adoption work.
+- Every immediate full reproduction names its already-fired trigger; otherwise it is durable `monitor`
+  prose with no active checkbox or index next action.
+- Every technique-specific evaluation follows the shared primitive it depends on. Independent packets
+  identify safe concurrency; when every packet is dependency ordered, the plan says no safe parallel
+  lane exists rather than manufacturing one.
 
 Iterate with the operator until they approve via **ExitPlanMode**. **No handoff, stub, or
 domain/master-index write happens before approval.**
@@ -658,9 +712,9 @@ persisted `dive-verified`/`dive-overturned`, every declined item named in `dive_
 verification fields promoted; fabrications corrected in-index immediately; `git status handoffs/`
 still clean.
 
-**Stage 3** — Stage-2 close-out gate closed before entry; presented via plan mode; all five gates
-pass (Stage-1 actionables, dive ledger, steering ledger, no-unverified-quotes, dive-surfaced sources);
-every named owning handoff checked for frozen/pointer status.
+**Stage 3** — Stage-2 close-out gate closed before entry; presented via plan mode; every coverage,
+verification, ROI-distillation, consumer-mapping, minimum-rigor, trigger, ordering, and
+owner-suitability gate passes.
 
 **Stage 4** — diff matches the approved plan; `validate_intake.sh` exit 0;
 **`python3 scripts/handoffs/index_state.py --check` exit 0** (every new stub owned by exactly one index
@@ -685,3 +739,8 @@ row, no orphans, no duplicates, generated block fresh); checkbox counts reported
 | "I'll skip the deep dive — the Stage-1 read was thorough" | Stage 1 reads abstracts and READMEs; dives read source. On 2026-07-25 every one of 11 re-reads either overturned or materially corrected its entry. |
 | "I'll write the report from memory" | Read back from `intake_index.yaml` after writing. |
 | "The validation script will catch any issues" | The validator catches schema violations, not semantic errors. Be precise at write time. |
+| "The paper is important, so we should reproduce it completely" | Importance establishes review priority, not experiment scope. Start with the smallest probe that can change an EPYC decision and name the trigger for broader reproduction. |
+| "More rigor means recreating the entire paper" | Rigor means controlled, inspectable evidence appropriate to the decision. Apply the six-control floor to the cheap screen; reproduce more only after its trigger fires. |
+| "Every consumer needs its own task" | Enumerate every consumer, but keep one implementation owner. Create consumer tasks only for distinct adoption work; otherwise record the supported contract or dependency. |
+| "We may need this later, so leave an unchecked task" | An unfired condition is trigger prose or `monitor`, not live backlog. Materialize a task when the trigger becomes true. |
+| "The technique may fail, so the work has little value" | Prefer a reusable primitive whose contract, fixtures, receipts, or evaluator remain useful regardless of the technique's result. |

@@ -10,14 +10,15 @@ Process research material (papers, blog posts, repos) through the intake pipelin
 
 ## What It Does
 
-1. Fetches and extracts claims/techniques from each URL
-2. Deduplicates against the persistent intake index (`research/intake_index.yaml`)
-3. Cross-references against chapters, handoffs, and experiments
-4. Scores novelty and relevance
-5. Expands literature (reference chasing, related work search, implementation discovery)
-6. Updates matched active handoffs with new research context
-7. Proposes handoff stubs for high-relevance new opportunities
-8. Produces a structured report and appends to the index
+1. **Stage 1:** fetches, deduplicates, cross-references, expands, and persists provisional entries as
+   `stage1-unverified`.
+2. **Stage 2:** deep-dives operator-selected sources against primary evidence and closes the
+   dive-surfaced-source gate.
+3. **Stage 3:** reconciles every actionable, distills them into reusable primitives and cheap decision
+   probes, maps consumers, applies the six-control rigor floor, and records trigger-based escalation
+   paths. Only the reviewed plan file is written.
+4. **Stage 4:** after operator approval, applies exactly the handoff, index, and intake-entry changes
+   named by the plan.
 
 ## Examples
 

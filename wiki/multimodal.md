@@ -1231,3 +1231,20 @@ Parent-model provenance remains a dependency for license, tokenizer, image proce
 - [Session research-intake progress](../progress/2026-09/2026-09-25.md)
 
 **Confidence:** verified against the cited LensVLM intake handoff; no local MI210 reproduction has yet promoted the external claims to measured evidence.
+
+## Compiled Update — 2026-09-25: LensVLM Is Triggered by a Measured Need
+
+The official BF16 reproduction is no longer immediate backlog. It activates only when visual-token
+processing is a measured latency, memory, or quality bottleneck on an EPYC workload, or when a named
+deployment requires LensVLM. At that point provenance resolution comes first, followed by the isolated
+official demo and a small prepared sample with the prospective `VB-LENS-1` receipt. Until the trigger fires,
+LensVLM remains a monitor record and carries no active checkbox or index action.
+
+### Source References
+
+- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — MM-LENS trigger and staged execution.
+- [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — minimum research-screen controls.
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective Lens receipt trigger.
+- [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — action-distillation disposition.
+
+**Confidence:** verified as repository execution posture; external LensVLM performance remains unmeasured locally.

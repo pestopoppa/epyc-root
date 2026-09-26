@@ -3778,3 +3778,55 @@ Autonomous-science claims need separate grades for execution success, artifact c
 - [Reviewer calibration accounting](../handoffs/active/reviewer-calibration-accounting.md)
 
 **Confidence:** verified against the cited intake handoffs and repository measurement rules; implementation tasks remain prospective until their own receipts exist.
+
+## Compiled Update — 2026-09-25: Trigger-Gated Escalation for Evolutionary Research
+
+The immediate autonomous-research task is a selector-policy replay over existing EPYC journals, not a
+paper-wide DGM, ShinkaEvolve, or ALE reproduction. One shared run compares the current policy, a score-only
+control, a Shinka-style policy, DGM/HGM-style selectors, and simple random or uniform controls on frozen
+candidate graphs. It retains eligibility, parent choices, paired continuation outcomes, failures, costs,
+and a held-out or later-time slice. Stop when policies agree on at least 95% of eligible choices, when no
+held-out improvement remains, or when the holdout reverses the development result. Only a stable holdout
+gain can justify one bounded live pair; it grants no policy authority by itself.
+
+Broader work is stored as trigger records. A full DGM reproduction activates after selector replay shows a
+held-out gain; ShinkaEvolve or ALE activates when iterative search beats matched simple controls; Digital
+Red Queen activates when an adversarial workload exhibits cycling, forgetting, or nontransitivity;
+LensVLM activates when visual-token processing becomes a measured bottleneck; formal rebuilds activate
+when an artifact will support a claim or evaluator; autonomous-science controls activate when EPYC begins
+proposal-to-execution scientific experiments. An unfired trigger is neither blocked work nor an active
+checkbox, and historical runs are not retrofitted into evidence their producers did not record.
+
+### Source References
+
+- [Autopilot continuous optimization](../handoffs/active/autopilot-continuous-optimization.md) — selector replay provenance and policy arms.
+- [Autopilot sequential allocation](../handoffs/active/autopilot-sequential-allocation.md) — shared Shinka/DGM selector comparison.
+- [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md) — prospective replay receipt and trigger profiles.
+- [Reviewer calibration accounting](../handoffs/active/reviewer-calibration-accounting.md) — autonomous-science activation boundary.
+- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — LensVLM bottleneck trigger.
+
+**Confidence:** verified as repository task structure; every algorithmic gain remains prospective until the shared replay emits a governed receipt.
+
+## Compiled Update — 2026-09-25: Candidate Recovery and Planner Cost Are Loop State
+
+The current AutoKernel campaign exposed a silent candidate-class loss: a tree-specific `gates.op_scope`
+marker prevented every Q4/Q5 dot-kernel proposal from reaching build across runs 3–9c, roughly 15 attempted
+candidates. Long-running campaigns now need dedicated immutable worktrees, default recovery of interrupted
+accepted work from a validated checkpoint, and a disposition log that retains refused and abandoned patches.
+Infrastructure failures release the candidate claim; they do not consume the idea as a negative result.
+
+Planner economics also need direct measurement. Removing inherited agent material reduced fixed prompt
+overhead from 12,912 to 4,950 tokens, but the comparison ended after one trimmed call and a censored
+baseline. A timeline audit attributed 87% of wall time to decoded reasoning, with one 30K-token reasoning
+turn consuming 68% of its call. `--planner-effort high` was inert, and `tokens.reasoning=0` was an accounting
+artifact. These observations justify better accounting and bounded controls, not an outcome claim for the
+new backend.
+
+### Source References
+
+- [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — dedicated worktrees, recovery, disposition retention, and gate-loss record.
+- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — prompt-overhead and planner-timeline measurements.
+- [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — campaign resume and re-anchor state.
+- [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day chronology and censored comparison.
+
+**Confidence:** verified for the gate loss and accounting observations; backend quality remains unmeasured.

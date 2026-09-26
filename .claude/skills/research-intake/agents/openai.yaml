@@ -1,4 +1,4 @@
 name: research-intake
 display_name: Research Intake
-short_description: Process research URLs into indexed, cross-referenced intake entries.
-default_prompt: Process the provided research URLs through the intake pipeline.
+short_description: Verify research and turn it into high-ROI, trigger-gated project work.
+default_prompt: Process the provided research URLs through the four-stage intake pipeline, distilling verified actionables into reusable primitives and minimum-rigor decision probes before proposing broader reproduction.

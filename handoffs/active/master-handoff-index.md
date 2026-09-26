@@ -83,11 +83,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 60 | 859 | 33 | 2026-07-29 |
+| inference-research | 60 | 847 | 33 | 2026-07-29 |
 | pipeline-integration | 5 | 71 | 1 | 2026-08-11 |
-| research-evaluation | 44 | 474 | 12 | 2026-07-29 |
-| reviewer-control-plane | 6 | 34 | 12 | 2026-07-29 |
-| routing-and-optimization | 50 | 518 | 17 | 2026-07-29 |
+| research-evaluation | 43 | 460 | 12 | 2026-07-29 |
+| reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
+| routing-and-optimization | 50 | 507 | 17 | 2026-07-29 |
 | user-facing-harness | 9 | 62 | 2 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

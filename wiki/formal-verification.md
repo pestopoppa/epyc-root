@@ -493,13 +493,13 @@ verification-failure-catalogue.md`), which is what makes the two records one the
 
 ## Compiled Update — 2026-09-25: Reproducible Formal Artifacts
 
-The formal-artifact track now has an explicit owner and evidence boundary. A reproducibility run must pin the repository revision, Lean and Lake toolchain, dependency lock state, platform, commands, and full logs. The baseline checks are a clean `lake build`, theorem inventory, and `#print axioms` or equivalent trust inspection for the claims under review. Native or kernel-backed decision procedures must be reported as part of the trusted computing boundary rather than collapsed into “Lean verified.”
+The formal-artifact track now has an explicit trigger record and evidence boundary. When an artifact is about to support an EPYC claim, evaluator, policy, or promotion decision, the trigger materializes a new active owner. That reproducibility run must pin the repository revision, Lean and Lake toolchain, dependency lock state, platform, commands, and full logs. The baseline checks are a clean `lake build`, theorem inventory, and `#print axioms` or equivalent trust inspection for the claims under review. Native or kernel-backed decision procedures must be reported as part of the trusted computing boundary rather than collapsed into “Lean verified.”
 
 Three conclusions must remain separate. Build success shows that the artifact compiles in the pinned environment. Theorem inspection shows the formal statement and its assumptions. Benchmark performance shows how the implementation behaves on a dataset. None implies either of the other two. Where executable-search systems produce candidate proofs or programs, the evaluator must also preserve timeouts, rejected outputs, and the exact checker invocation.
 
 ### Source References
 
-- [Formal artifact reproducibility](../handoffs/active/formal-artifact-reproducibility.md)
+- [Formal artifact reproducibility trigger record](../handoffs/archived/formal-artifact-reproducibility.md)
 - [Eval Tower verification](../handoffs/active/eval-tower-verification.md)
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
 - [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)

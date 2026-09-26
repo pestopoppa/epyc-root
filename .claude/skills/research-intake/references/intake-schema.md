@@ -195,6 +195,19 @@ A wiki citation is discovery evidence, not implementation evidence. It may suppo
 `knowledge_only`, `monitor`, or `awaiting_dive`; it must not be used alone to infer
 `integrated`.
 
+### Stage-3 ROI mapping
+
+An entry may support an immediate reusable primitive or cheap screen while its paper-faithful
+reproduction remains trigger-gated. In that case:
+
+- mark the entry `integrated` when the immediate primitive or cheap screen is routed into a durable
+  handoff;
+- record the broader reproduction trigger and owning handoff in `disposition_evidence`; and
+- do not create a second open task until a reviewed session confirms that the trigger fired.
+
+Use `monitor` when no immediate task remains and only a named future trigger exists. An unfired trigger
+is dormant, not blocked. It does not justify an active checkbox or index next action.
+
 ## Cross-References Object
 
 ```yaml
