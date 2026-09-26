@@ -228099,15 +228099,17 @@
   key_claims:
   - The ROCm serving path for DeepSeek-V4-Flash targeted only gfx942/gfx950; enabling gfx90a needed a build-target change,
     FNUZ FP8, AOT HIP kernels and AIter FP4 CK MoE enablement (Section 4).
-  - 'The early FP4 route was numerically wrong: legacy CK FP4xFP4 stage-1 returned zeros and CKTile W2 showed ~0.24 cosine
-    from a 16-row block permutation, fixed by a one-time load-time inverse permutation with no decode hot-path cost (Section
-    5.2).'
-  - CDNA2 decode uses packed FP4 weights, per-32 INT8 activation quantization, v_dot4_i32_i8 accumulation and a peer-read
-    all-reduce; peer-read all-reduce is associated with the largest jump, ~25.54 -> 60.20 tok/s (Section 6.1).
+  - 'The early ~60 tok/s FP4 route was not correctness-valid: legacy CK FP4xFP4 stage-1 returned zeros and CKTile stage-2
+    W2 stayed near 0.24 (cosine-style agreement) because of a 16-row block mapping inside each 128-wide N tile, fixed by a
+    one-time load transformation with no decode hot-path cost (Section 5.2).'
+  - The historical TP4/EP1 CDNA2 decode route used packed FP4 weights, per-32 INT8 activation quantization, v_dot4_i32_i8
+    accumulation and a peer-read all-reduce; the author's ledger associates the largest jump in its (non-controlled) checkpoint
+    series with peer-read all-reduce, approximately 25.54 -> 60.20 tok/s (Section 6.1, Fig. 2).
   - On 8 MI250 GCDs (TP8/EP1, SGLang) resident decode reaches 88.63 tok/s at C1, 1041.78 at C32 and 1327.10 at C64; C16 prefill
     reaches 10413.87 / 10263.02 / 9966.84 input tok/s at ~8K/16K/32K (Abstract, Tables 2-3; self-reported).
-  - The author attributes the CDNA2 limit to FP4-format mismatch, small-M utilization and per-layer synchronization rather
-    than HBM bandwidth alone, and states no hardware-counter roofline is provided (Sections 3.1, 14).
+  - The author attributes the critical gfx90a cost to small-M utilization, online FP4 unpacking, scale handling, activation
+    quantization, expert sorting and layer-level synchronization rather than raw HBM bandwidth alone, and states no hardware-counter
+    roofline is provided (Sections 3.1, 14).
   techniques:
   - FNUZ FP8 selection and AOT HIP kernels for gfx90a
   - load-time inverse W2 row permutation
@@ -228268,16 +228270,62 @@
     quote_sha256: 9290e4fcb27bfe39b7ffca3fcdaa3711f5b027c1c73d57b85ccedc2d2bcbd668
     source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
     verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 4 gfx90a enablement [v2.txt:303, second-reader add]
+    quote: build AOT HIP kernels and enable AIter FP4 CK MoE execution on gfx90a;
+    quote_sha256: afcce0cd70795d3f2679a2d5cce90ed18b77716de59f4df1e5a2f02c7aef3c8b
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 5.2 [v2.txt:329, second-reader add]
+    quote: The early approximately 60 tok/s AIter FP4 route was not correctness-valid.
+    quote_sha256: 92ad96d885877ce595ba11633d4c094cd526a841d20abbbd3df1b96a3a66680a
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 5.2 [v2.txt:331, second-reader add]
+    quote: 'Output-column fingerprinting identified the following 16-row block mapping within each 128-wide N tile:'
+    quote_sha256: a420dc35d6b87f0cb8d60f07c88d92892a260b89f180ce44fa09c903c97d576d
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 3.1 hardware [v2.txt:179, second-reader add]
+    quote: Eight MI250 GCDs (gfx90a), approximately 64 GiB HBM per GCD; four dual-GCD accelerators, not eight MI250 boards
+    quote_sha256: 66c930263f929ea04368c6400f18631bebebf45ba8d3f9dd674f558e65395899
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 3.1 configuration [v2.txt:219, second-reader add]
+    quote: One TP8/EP1 instance, no routed-expert A2A; native decode graph tiers 1/2/4/8/16/32/64
+    quote_sha256: a6b995b59f90b1fc66bc3990f622dbfacdece4d865188c2a11f6548f8988fdd3
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Section 3.1 CDNA2 note [v2.txt:279, second-reader add]
+    quote: 'Consequently, the critical gfx90a cost is not raw HBM bandwidth alone: it is the combination of small-M utilization,
+      online FP4 unpacking, scale handling, activation quantization, expert sorting, and layer-level synchronization.'
+    quote_sha256: 41a39095d33261dcde805dcf10fa695da14eb8da84a79be6faf5bf90ed8b189d
+    source_revision: arXiv:2609.15627v2 via https://arxiv.org/html/2609.15627v2 (retrieved 2026-09-26, page sha256 4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b)
+    verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
   claim_corrections:
   - claim_index: 0
     effect: unaffected
     note: CONFIRMED verbatim (Section 4).
   - claim_index: 1
-    effect: unaffected
-    note: CONFIRMED verbatim (Section 5.2).
+    effect: narrowed
+    note: 'CONFIRMED; second reader narrowed wording: ''near 0.24'' (cosine is implied, not stated) and ''no decode hot-path
+      cost'' for a one-time load transformation (not ''zero cost'').'
   - claim_index: 2
-    effect: unaffected
-    note: CONFIRMED (Section 6.1); the 25.54 -> 60.20 figure is the author's ledger attribution, not an isolated ablation.
+    effect: narrowed
+    note: CONFIRMED as the historical TP4/EP1 route; the 25.54 -> 60.20 attribution is the author's ledger over a non-controlled
+      checkpoint series (Fig. 2 caption), not an isolated ablation. The 60.20 point is distinct from the invalidated early
+      ~60 tok/s route.
   - claim_index: 3
     effect: narrowed
     note: CONFIRMED as self-reported v2 figures on MI250 (not MI250X, not MI210); v2 remeasured the matrix and changed prefill
@@ -228340,15 +228388,17 @@
   verdict: worth_investigating
   key_claims:
   - 'PR #159493 (merged 2026-01-22, 95687721) flips the -amdgpu-mfma-vgpr-form default from false to true, so instruction
-    selection always picks VGPR-form MFMA on GFX90AInsts targets (gfx90a, gfx942, gfx950); the PR calls AGPR form a last resort
-    beyond 256 VGPRs.'
+    selection picks VGPR-form MFMA by default on GFX90AInsts targets (gfx90a, gfx942, gfx950); the PR calls AGPR form a last
+    resort beyond 256 VGPRs.'
   - 'PR #148079 (merged 2025-07-18, 695660cd) introduced the hidden knob with default false, overriding the older MayNeedAGPRs
     rule that chose VGPR form only when a function''s max VGPRs was at most 256 and no AGPR use was possible.'
   - 'At the #159493 merge commit, AGPR-form selection requires !MFMAVGPRForm && MinNumAGPRs >= N (driven by the amdgpu-agpr-alloc
     attribute); the waves-per-eu heuristic had already been deleted (commit 476a6ea9, PR #161996); gfx908 always uses AGPR
     form.'
-  - After the flip, AGPR form is recovered only post-register-allocation by AMDGPURewriteAGPRCopyMFMA, which runs unconditionally
-    in GCNPassConfig::addPreRewrite and rewrites only when that removes cross-bank copies or spills.
+  - In the default configuration after the flip, AGPR form is recovered only after VGPR assignment (before VirtRegRewriter)
+    by AMDGPURewriteAGPRCopyMFMA, added in GCNPassConfig::addPreRewrite on the optimized register-allocation path (not -O0),
+    exiting unless the target has GFX90AInsts and AGPRs were allocated, and rewriting only when that removes cross-bank copies
+    or spills.
   - The upstream code owner states AGPR MFMA emission was essentially an edge case or bug; neither PR contains quantitative
     performance data.
   techniques:
@@ -228499,8 +228549,9 @@
     verified_by: research-intake/stage2b (dive agent) + second-reader re-find 2026-09-26
   claim_corrections:
   - claim_index: 0
-    effect: unaffected
-    note: CONFIRMED at merge commit 95687721 (one-line source change; 27 test files).
+    effect: narrowed
+    note: 'CONFIRMED at merge commit 95687721 (one-line source change; 27 test files). ''By default'': -amdgpu-mfma-vgpr-form=false
+      plus amdgpu-agpr-alloc >= N restores AGPR selection at ISel.'
   - claim_index: 1
     effect: unaffected
     note: 'CONFIRMED at 695660cd; follow-up #150599 made the knob a no-op on gfx908.'
@@ -228508,11 +228559,14 @@
     effect: unaffected
     note: 'CONFIRMED at 95687721; heuristic deletion attributed via a #159493 review comment to commit 476a6ea9 (#161996).'
   - claim_index: 3
-    effect: unaffected
-    note: CONFIRMED; loop-phi rewrites remain TODO upstream, so hot-loop accumulators may keep copies or spills after an upgrade.
+    effect: narrowed
+    note: 'CONFIRMED with second-reader precision: addPreRewrite is reached only from addRegAssignAndRewriteOptimized (not
+      -O0), the pass exits unless GFX90AInsts and AGPR0 allocated (AMDGPURewriteAGPRCopyMFMA.cpp:561-567), and loop-phi rewrites
+      remain TODO upstream.'
   - claim_index: 4
     effect: unaffected
-    note: CONFIRMED as an author statement; absence of performance data verified in both PR bodies and review threads.
+    note: 'CONFIRMED as an author statement (Matt Arsenault; code-owner status not separately verified); no quantitative data
+      in the #159493 body and 13 comments or the #148079 body and 7 comments (#148079 review bodies not saved).'
   depends_on:
   - entry: intake-1823
     why: The reported_results natural experiment and the NH-1 support reuse the intake-1823 extraction of our production binary;

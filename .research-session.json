@@ -1,9 +1,9 @@
 {
   "session_id": "intake-hipkittens-gemm-ladder-20260926",
   "started_at": "2026-09-26T18:05:00Z",
-  "last_checkpoint": "2026-09-26T22:30:00Z",
+  "last_checkpoint": "2026-09-26T23:30:00Z",
   "phase": 5,
-  "stage": "stage2b-complete-second-reader-pending",
+  "stage": "stage3-plan-proposed",
   "session_kind": "research-intake Stage 1 (single operator-submitted blog + 2 expansion entries), run by a subagent of the DS41/AutoKernel main session",
   "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-hipkittens-gemm-20260926, branch intake/hipkittens-gemm-20260926, rebuilt on origin/main 7e931704 after intake/orch-prior-art-20260926 landed with intake-1783..1821. This session's entries renumbered 1783/1784/1785 -> 1822/1823/1824 (pre-renumber commit 7e337804 kept as branch backup/intake-hipkittens-gemm-pre-renumber, delete at close-out).",
   "previous_session": "intake-orch-prior-art-20260926 (stage4-complete; preserved at /mnt/raid0/llm/tmp/dive-hipkittens-gemm/previous-research-session-orch-prior-art-stage4.json). Earlier: intake-exl3-sglang-throughput-20260925 (/mnt/raid0/llm/tmp/dive-hipkittens-gemm/previous-research-session-exl3-stage4.json)",
@@ -341,5 +341,15 @@
       "bears_on": "intake-1826",
       "recommendation": "decline (cite in runbook row)"
     }
-  ]
+  ],
+  "second_reader_2b": {
+    "intake-1825": "26/26 re-found, hashes match, page hash match; 6 anchors added for unanchored wording; claims 1 and 2 reworded (near 0.24, no decode hot-path cost, historical TP4/EP1, hedged ledger attribution)",
+    "intake-1826": "18/18 re-found, hashes match; merge dates/SHAs confirmed; therock-7.14 true / rocm-7.2.0 false re-fetched byte-identical; claim 0 'by default', claim 3 optimized-RA-path precision",
+    "files": [
+      "/mnt/raid0/llm/tmp/dive-intake-1825/second-reader/",
+      "/mnt/raid0/llm/tmp/dive-intake-1826/second-reader/"
+    ]
+  },
+  "stage3_plan": "docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md",
+  "stage3_open_gate": "OD-1: operator decision on the three sources surfaced by the intake-1825 dive (arXiv 2607.05147, 2606.19348, 2609.19969)"
 }
