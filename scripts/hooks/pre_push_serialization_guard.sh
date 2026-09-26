@@ -427,9 +427,21 @@ if [[ -z "$LOCK_FILE" ]]; then
   # ANOTHER session is holding right now. So a legacy lock is honoured when the
   # canonical path has none, and two disagreeing locks refuse. Skipped entirely
   # when the lock location was overridden explicitly.
+  #
+  # OP-65, 2026-09-26 — "two locks" means two FILES, not two SPELLINGS. The
+  # comparison was a string compare, so one lock file reached as
+  # /workspace/coordination/push-locks/... and as
+  # /mnt/raid0/llm/epyc-root/coordination/push-locks/... (the bind mount above;
+  # same device+inode, verified with `stat -c %i`) was refused as "TWO
+  # serialization locks", and every push from a worktree created via
+  # /mnt/raid0/llm/epyc-root failed. `-ef` compares device+inode — the same key
+  # the lock itself is named by — and is false when either path is missing, so
+  # the legacy-only case still falls through to "honour it". Two genuinely
+  # different files still refuse. EPYC_PUSH_LEGACY_LOCK_DIR relocates the legacy
+  # directory for the regression tests only.
   if [[ -z "${EPYC_PUSH_LOCK_DIR:-}" && -z "${SERIALIZED_PUSH_LOCK_DIR:-}" ]]; then
-    LEGACY_LOCK_FILE="/workspace/coordination/push-locks/push-${REPO_KEY}.json"
-    if [[ "$LEGACY_LOCK_FILE" != "$LOCK_FILE" && -e "$LEGACY_LOCK_FILE" ]]; then
+    LEGACY_LOCK_FILE="${EPYC_PUSH_LEGACY_LOCK_DIR:-/workspace/coordination/push-locks}/push-${REPO_KEY}.json"
+    if [[ -e "$LEGACY_LOCK_FILE" && ! "$LEGACY_LOCK_FILE" -ef "$LOCK_FILE" ]]; then
       if [[ -e "$LOCK_FILE" ]]; then
         refuse "TWO serialization locks exist for this repo (key ${REPO_KEY})" \
                "canonical: ${LOCK_FILE}" \
