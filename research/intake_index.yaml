@@ -224679,16 +224679,17 @@
     - intake-1797
     - intake-1798
   recommended_actions:
-  - Key the static per-role latency prior (C1-A1's T_hat) by (role, placement) rather than by role alone. Record the topology_hash
-    / device (CPU region set or MI210) it was measured under. Make the selection path refuse or flag a prior whose topology_hash
-    differs from the live stack, so that a stack change or a Layer-2 residency swap cannot silently leave a CPU-era prior
-    pricing a GPU-resident role, or the reverse.
-  - In the Layer-2 residency and stack-change decision inputs, report each role's routed traffic share from the orchestrator
-    dispatch ledger next to its allocated compute (device, NUMA instance count). Flag a role whose share and allocation diverge
-    under sustained load, as the whole-device isolation case does. Use this as a regime-change trigger input. Do NOT use it
-    as a per-request placement signal.
-  - 'Amend intake-1796 contradicting_evidence: replace "RouterWise (arXiv 2604.10907, not dived) argues latency depends jointly
-    on placement and routing" with the dived characterization and a pointer to the new RouterWise entry.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Key the static per-role latency prior (C1-A1''s T_hat)
+    by (role, placement) rather than by role alone. Record the topology_hash / device (CPU region set or MI210) it was measured
+    under. Make the selection path refuse or flag a prior whose topology_hash differs from the live stack, so that a stack
+    change or a Layer-2 residency swap cannot silently leave a CPU-era prior pricing a GPU-resident role, or the reverse.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): In the Layer-2 residency and stack-change decision inputs,
+    report each role''s routed traffic share from the orchestrator dispatch ledger next to its allocated compute (device,
+    NUMA instance count). Flag a role whose share and allocation diverge under sustained load, as the whole-device isolation
+    case does. Use this as a regime-change trigger input. Do NOT use it as a per-request placement signal.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Amend intake-1796 contradicting_evidence: replace "RouterWise
+    (arXiv 2604.10907, not dived) argues latency depends jointly on placement and routing" with the dived characterization
+    and a pointer to the new RouterWise entry.'
   contradicting_evidence:
   - 'Own-figure contradiction: the §5.2 text says all three fixed-rule baselines fall short in all settings, but Figure 6
     shows a baseline coinciding with the searched setup in 5 of 8 panels (extraction under /mnt/raid0/llm/tmp/dive-2b-routerwise/fig6_extract/).'
@@ -225038,20 +225039,21 @@
     - intake-1196
     - intake-868
   recommended_actions:
-  - 'Before any program-level scheduler work, extend the (G) multi-turn replay row to N concurrent sessions with injected
-    tool gaps of realistic length on the frontdoor/kv-unified server. Record per turn cache_n versus prompt_n keyed by x_session_id.
-    Split forced re-prefill into three causes: hybrid-checkpoint (#25592 class), prefix rewrite (tools-block tail), and cross-session
-    eviction during the gap. Only the third is what ThunderAgent-style admission fixes.'
-  - Design note, gated on A1 showing non-trivial cross-session eviction. Add a session-keyed program table to the orchestrator
-    admission path for shared-pool servers (--kv-unified). Key it on x_session_id (/v1) or session_id (MCP). Program state
-    is REASONING while a request is in flight and ACTING from response completion, with acting_since and token_total taken
-    from usage. Capacity is the unified KV pool plus --cache-ram. Under pressure, hold the next turn of the smallest idle
-    (ACTING) programs at admission, never mid-decode. Resume shortest-first with hysteresis and a forced-resume timeout. Optionally,
-    back "pause" with slot save to RAM instead of dropping KV.
-  - 'Close the program-lifecycle gap in the OpenCode plugin. At the pin, check whether the plugin `event` hook delivers a
-    session idle, end, or delete event. If it does, send one end-of-session signal to the orchestrator: an x_session_final-style
-    key on a minimal /v1 request, or an MCP call. In every case, give per-session orchestrator state an idle-retention TTL
-    as the fallback.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Before any program-level scheduler work, extend the (G)
+    multi-turn replay row to N concurrent sessions with injected tool gaps of realistic length on the frontdoor/kv-unified
+    server. Record per turn cache_n versus prompt_n keyed by x_session_id. Split forced re-prefill into three causes: hybrid-checkpoint
+    (#25592 class), prefix rewrite (tools-block tail), and cross-session eviction during the gap. Only the third is what ThunderAgent-style
+    admission fixes.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Design note, gated on A1 showing non-trivial cross-session
+    eviction. Add a session-keyed program table to the orchestrator admission path for shared-pool servers (--kv-unified).
+    Key it on x_session_id (/v1) or session_id (MCP). Program state is REASONING while a request is in flight and ACTING from
+    response completion, with acting_since and token_total taken from usage. Capacity is the unified KV pool plus --cache-ram.
+    Under pressure, hold the next turn of the smallest idle (ACTING) programs at admission, never mid-decode. Resume shortest-first
+    with hysteresis and a forced-resume timeout. Optionally, back "pause" with slot save to RAM instead of dropping KV.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Close the program-lifecycle gap in the OpenCode plugin.
+    At the pin, check whether the plugin `event` hook delivers a session idle, end, or delete event. If it does, send one
+    end-of-session signal to the orchestrator: an x_session_final-style key on a minimal /v1 request, or an MCP call. In every
+    case, give per-session orchestrator state an idle-retention TTL as the fallback.'
   contradicting_evidence:
   - 'No independent replication or critique found (adversarial web search 2026-09-26). together.ai/blog/thunderagent is RESTATEMENT
     (authors thank Together AI for making the work possible). Dynamo''s port is ADOPTION, not a measurement: the Dynamo docs
@@ -225383,12 +225385,14 @@
     - intake-460
     - intake-1347
   recommended_actions:
-  - 'Add a prior-art line to the fabric design. Dynamo (at 81a9871a) has no worker device class: a CPU decode worker is an
-    untyped decode worker, CPU bias is possible only through hand-set taints, and the Planner budgets GPUs. Keep the fabric''s
-    device_class and measured-t/s slot fields (c3-A2) as EPYC-specific rather than waiting for an upstream contract.'
-  - 'When the fabric spillover path is measured, include a partial-offload arm. Under deep GPU queueing on the frontdoor,
-    send a fraction r of NEW sessions to a CPU instance: whole-request spillover, not a KV handoff. Report TTFT, TPOT and
-    completed-requests/min against GPU-only at matched load, with P-GPU-1 device-state capture and the codified CPU recipe.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Add a prior-art line to the fabric design. Dynamo (at
+    81a9871a) has no worker device class: a CPU decode worker is an untyped decode worker, CPU bias is possible only through
+    hand-set taints, and the Planner budgets GPUs. Keep the fabric''s device_class and measured-t/s slot fields (c3-A2) as
+    EPYC-specific rather than waiting for an upstream contract.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): When the fabric spillover path is measured, include a
+    partial-offload arm. Under deep GPU queueing on the frontdoor, send a fraction r of NEW sessions to a CPU instance: whole-request
+    spillover, not a KV handoff. Report TTFT, TPOT and completed-requests/min against GPU-only at matched load, with P-GPU-1
+    device-state capture and the codified CPU recipe.'
   contradicting_evidence:
   - The v1.5.0 release note (dynamo-v1-5-0.mdx:241) credits the PR with "a router variant with GPU-direct KV transfer". The
     diff shows only two added `--disaggregation-mode decode` lines in the pre-existing disagg_router_xpu_gdr.sh.
@@ -225702,14 +225706,15 @@
     - intake-923
     - intake-461
   recommended_actions:
-  - 'Append a dated note to fable5-window2-findings-02-heterogeneous-gpu.md rider R-A7/R-A8. The upstream-SGLang KT path is
-    not a gfx90a escape hatch from the CUDA-pinned sglang-kt fork. Name the three blockers: API break vs kt-kernel >= v0.5.1;
-    setup_rocm.py refuses gfx90a; KT not packaged. This reinforces R-A8''s ''not recommended: adopting KTransformers as a
-    runtime''. Cite by intake id, not index line.'
-  - Stage-3 claim_corrections. On intake-1809 claim 3, narrow the last sentence ('upstream ... possible but untested ROCm
-    route') to 'broken vs kt-kernel >= v0.5.1 on an SGLang build that refuses gfx90a'. On intake-923 dive_corrections, narrow
-    'SGLang adopting KTransformers (#11425) - third-party production adoption is real corroboration' to 'merged Oct-Nov 2025,
-    unmaintained upstream since; issue closed by inactivity bot'.
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Append a dated note to fable5-window2-findings-02-heterogeneous-gpu.md
+    rider R-A7/R-A8. The upstream-SGLang KT path is not a gfx90a escape hatch from the CUDA-pinned sglang-kt fork. Name the
+    three blockers: API break vs kt-kernel >= v0.5.1; setup_rocm.py refuses gfx90a; KT not packaged. This reinforces R-A8''s
+    ''not recommended: adopting KTransformers as a runtime''. Cite by intake id, not index line.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Stage-3 claim_corrections. On intake-1809 claim 3, narrow
+    the last sentence (''upstream ... possible but untested ROCm route'') to ''broken vs kt-kernel >= v0.5.1 on an SGLang
+    build that refuses gfx90a''. On intake-923 dive_corrections, narrow ''SGLang adopting KTransformers (#11425) - third-party
+    production adoption is real corroboration'' to ''merged Oct-Nov 2025, unmaintained upstream since; issue closed by inactivity
+    bot''.'
   contradicting_evidence:
   - 'Against "upstream SGLang is a ROCm route for KT": PR #20516 (third party, open) states the upstream KT path "is not compatible
     with the current kt_kernel API, which breaks SGLang on the heterogeneous CPU+GPU MoE path"; PR #18441 (another third party)
@@ -226095,21 +226100,22 @@
     intake_entries:
     - intake-1789
   recommended_actions:
-  - Measure EPYC's per-session inter-call gap distribution (model response complete -> next enqueue for the same session,
-    per role, harness vs autopilot), taken from orchestrator session logs, and publish p50/p90/p99. It is the input for any
-    return-lease or keep-KV timeout. No inference needed; it reads existing logs.
-  - 'Amend the Layer-2 swap protocol (step 2, "drain at turn boundaries"). A model A may be reclaimed only at SESSION quiescence:
-    no tracked A session has completed a call within the last tau (tau from A1). When the swap cannot wait (kill-switch/regime
-    change), first run /slots/{id}?action=save for every idle A slot holding a tracked session, so its return pays restore
-    rather than re-prefill. Do not rely on --cache-ram for this, because that host prompt cache is in-process and dies with
-    the evicted server.'
-  - When a tracked session returns and its GPU home is draining or evicted, have the placement cost for its next call add
-    an explicit KV-recovery term, choosing among 0 (slot still warm), file restore (same GGUF/quant only) and full re-prefill
-    on the CPU fallback. This avoids treating the CPU fallback as free because it has spare slots. Fold it into the tracked-session
-    index (heterogeneous-slot-fabric-residency.md:97, :151).
-  - Amend intake-1789 contradicting_evidence line 2 to say that the next-slot-wait cost is MEASURED on an Aegaeon-like internal
-    round scheduler (no-SP p50 SCT 623 s vs 189 s, arXiv 2607.17181 section 5.2) but not on Aegaeon itself, and cite the new
-    Talaria entry instead of the bare arXiv id.
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Measure EPYC''s per-session inter-call gap distribution
+    (model response complete -> next enqueue for the same session, per role, harness vs autopilot), taken from orchestrator
+    session logs, and publish p50/p90/p99. It is the input for any return-lease or keep-KV timeout. No inference needed; it
+    reads existing logs.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Amend the Layer-2 swap protocol (step 2, "drain at turn
+    boundaries"). A model A may be reclaimed only at SESSION quiescence: no tracked A session has completed a call within
+    the last tau (tau from A1). When the swap cannot wait (kill-switch/regime change), first run /slots/{id}?action=save for
+    every idle A slot holding a tracked session, so its return pays restore rather than re-prefill. Do not rely on --cache-ram
+    for this, because that host prompt cache is in-process and dies with the evicted server.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): When a tracked session returns and its GPU home is draining
+    or evicted, have the placement cost for its next call add an explicit KV-recovery term, choosing among 0 (slot still warm),
+    file restore (same GGUF/quant only) and full re-prefill on the CPU fallback. This avoids treating the CPU fallback as
+    free because it has spare slots. Fold it into the tracked-session index (heterogeneous-slot-fabric-residency.md:97, :151).'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Amend intake-1789 contradicting_evidence line 2 to say
+    that the next-slot-wait cost is MEASURED on an Aegaeon-like internal round scheduler (no-SP p50 SCT 623 s vs 189 s, arXiv
+    2607.17181 section 5.2) but not on Aegaeon itself, and cite the new Talaria entry instead of the bare arXiv id.'
   contradicting_evidence:
   - No independent replication, reproduction or critique found (2 web queries, 2026-09-26). awesomepapers.io and pith.science
     pages are RESTATEMENT of the abstract. No code release is referenced in the paper.
@@ -226527,11 +226533,11 @@
     intake_entries:
     - intake-1803
   recommended_actions:
-  - Add a cost constraint to the D-d shared/pinned-notes admission gate (Stage-2 c6 6-A2). Writes are event-triggered (on
-    a subtask result or a new grounded fact), not every step. Admission is a deterministic verbatim-anchor check against the
-    writer's own tool/REPL output, costing 0 LLM calls. The r->S->G compression and LLM faithfulness stages stay off unless
-    a measured A/B on a fact-pooling workload shows they pay. The budget is at most 1 extra model call per admitted note,
-    against Proxifield's 3 bookkeeping calls per agent-step.
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Add a cost constraint to the D-d shared/pinned-notes admission
+    gate (Stage-2 c6 6-A2). Writes are event-triggered (on a subtask result or a new grounded fact), not every step. Admission
+    is a deterministic verbatim-anchor check against the writer''s own tool/REPL output, costing 0 LLM calls. The r->S->G
+    compression and LLM faithfulness stages stay off unless a measured A/B on a fact-pooling workload shows they pay. The
+    budget is at most 1 extra model call per admitted note, against Proxifield''s 3 bookkeeping calls per agent-step.'
   contradicting_evidence:
   - 'Self-inconsistency: the N=25 / 397B / k=1 / q=0 condition gives Shared Context 11.5+/-1.7 in the scaling table and 6.0+/-0.8
     in the failure table. That reverses its ordering against No-Comm (8.1 vs 10.8). Any claim that shared context scales worse
@@ -226877,11 +226883,12 @@
     intake_entries:
     - intake-1803
   recommended_actions:
-  - When the MCP tool catalog exposed through OpenCode/the orchestrator grows, log per-task tokens and re-run a fixed set
-    of previously passing tasks before and after the change. This is a retention check, since catalog growth can raise accuracy
-    while nearly tripling tokens, and pool growth can break previously working delegation.
-  - Prioritise post-delegation execution/coordination quality over specialist-selection precision in the learned routing controller
-    evaluation.
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): When the MCP tool catalog exposed through OpenCode/the
+    orchestrator grows, log per-task tokens and re-run a fixed set of previously passing tasks before and after the change.
+    This is a retention check, since catalog growth can raise accuracy while nearly tripling tokens, and pool growth can break
+    previously working delegation.'
+  - 'Operator-review candidate (Stage-2b dive; not an instruction): Prioritise post-delegation execution/coordination quality
+    over specialist-selection precision in the learned routing controller evaluation.'
   contradicting_evidence:
   - 'Internal: Fig. 1 reports harness-induced forgetting of 12.1/13.8/46.4% while Table 8 reports -5.3/-4.0/-34.7%. The basis
     for Fig. 1 is not stated.'

@@ -1,9 +1,9 @@
 {
   "session_id": "intake-orch-prior-art-20260926",
   "started_at": "2026-09-26T16:30:00Z",
-  "last_checkpoint": "2026-09-26T19:30:00Z",
+  "last_checkpoint": "2026-09-26T23:00:00Z",
   "phase": 5,
-  "stage": "stage3-plan-drafting",
+  "stage": "stage3-plan-presented",
   "session_kind": "research-intake Stage-1 focused prior-art sweep (harness <-> capacity-aware multi-model stack; CPU+RAM leverage)",
   "previous_session": "intake-exl3-sglang-throughput-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-orch-prior-art-20260926/previous-research-session-stage4.json)",
   "lane": {
@@ -888,5 +888,14 @@
       }
     ],
     "status": "complete; surfaced sources recorded as not ingested (operator: one Stage-2b pass only); 4 flagged as future-intake candidates in the Stage-3 plan"
+  },
+  "stage3": {
+    "plan_file": "docs/research-intake/orch-prior-art-stage3-plan-20260926.md",
+    "sections_scratch": "/mnt/raid0/llm/tmp/intake-orch-prior-art-20260926/stage3/",
+    "status": "PROPOSED; awaiting operator approval; no Stage-4 writes",
+    "operator_decisions": [
+      "OD-A (OP-61): recommendation A (decline KTransformers runtime; keep Expert Deferral behind F1)",
+      "P-SERVE-SEL-1 (OP-62): recommendation ratify"
+    ]
   }
 }
