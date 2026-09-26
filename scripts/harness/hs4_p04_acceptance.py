@@ -20,10 +20,17 @@ Acceptance (docs/design/hs4-shell-and-orchestrator-features-20260916.md §4, P0.
       side calls are disabled by the template, so none should lack them).
       Calls with no request_keys cannot be attributed to this run; they are
       counted and reported, and fail A4 only with --strict-window.
+  A5  token parity: the exported session's prompt and completion totals equal
+      the tap's server_terminal totals for this session's calls. The tap is
+      the orchestrator's own measurement; the session is what the client
+      recorded from /v1 `usage`. A client that lost or zeroed usage fails here.
 
 `verify` is also the SC86 write-side hook (HS-4 P0.5): it writes
 opencode_shell_run.json and attempts.jsonl, then calls
 scripts/vidya/adapters/opencode_shell_run_capture.write_belief_measurements.
+counts.input_tokens comes from the tap's server_terminal prompt_tokens when the
+tap measured every call of the session (authoritative), else from the session;
+the source is recorded in attempts.jsonl and verdict.json.
 """
 
 from __future__ import annotations
@@ -357,11 +364,17 @@ def cmd_verify(args: argparse.Namespace) -> int:
     checks = check_session(session)
     checks.append(check_fixture(repo))
     tap = Path(args.tap_events)
+    tap_tokens: dict[str, Any] | None = None
     if tap.is_file():
-        checks += check_tap(_jsonl(tap), session_id, args.user_id, start, end + args.slack_s,
+        tap_events = _jsonl(tap)
+        checks += check_tap(tap_events, session_id, args.user_id, start, end + args.slack_s,
                             args.strict_window)
+        tap_tokens = tap_token_counts(tap_events, session_id, start, end + args.slack_s)
+        checks.append(check_token_parity(session, tap_tokens))
     else:
         checks.append(_check(False, "A2-keys-at-top-level", f"tap events file missing: {tap}"))
+        checks.append(_check(False, "A5-session-tokens-match-tap",
+                             f"tap events file missing: {tap}"))
     errors = [e for e in _jsonl(evid / "events.jsonl") if e.get("type") == "error"] \
         if (evid / "events.jsonl").is_file() else []
     checks.append(_check(not errors, "run-no-error-events", f"{len(errors)} error event(s)"))
@@ -374,7 +387,8 @@ def cmd_verify(args: argparse.Namespace) -> int:
         v = version.read_text().strip()
         checks.append(_check(v == PINNED_VERSION, "opencode-version-pinned", v))
     fixture_ok = _by_name(checks, "A1-fixture-test-passes")["ok"]
-    capture = capture_beliefs(args, evid, session, session_id, start, end, fixture_ok)
+    tokens = resolve_token_counts(session, tap_tokens)
+    capture = capture_beliefs(args, evid, session, session_id, start, end, fixture_ok, tokens)
     checks.append(_check(capture["status"] in {"written", "skipped"}, "sc86-belief-capture",
                          f"{capture['status']}: {capture.get('path') or capture.get('reason')}"))
     verdict = {
@@ -384,6 +398,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
         "window": [start, end],
         "tap_events": str(tap),
         "checks": checks,
+        "token_counts": tokens,
         "belief_capture": capture,
         "note": "The pass/fail verdict is an acceptance check. The SC86 belief rows are "
                 "Judged/Located observations until SC86b codifies a shell-run protocol.",
@@ -444,8 +459,105 @@ def step_token_counts(session: dict[str, Any]) -> tuple[int, int]:
     return prompt, cached
 
 
+def step_completion_tokens(session: dict[str, Any]) -> int:
+    """Completion tokens summed over step-finish parts.
+
+    At the pin, OpenCode splits the server's completion_tokens into
+    output (text) + reasoning (session/session.ts:373-374).
+    """
+    total = 0
+    for m in session.get("messages", []):
+        for part in m.get("parts", []):
+            if part.get("type") == "step-finish":
+                t = part.get("tokens") or {}
+                total += int(t.get("output", 0)) + int(t.get("reasoning", 0))
+    return total
+
+
+def _step_count(session: dict[str, Any]) -> int:
+    return sum(1 for m in session.get("messages", []) for part in m.get("parts", [])
+               if part.get("type") == "step-finish")
+
+
+def tap_token_counts(events: list[dict[str, Any]], session_id: str, start: float,
+                     end: float) -> dict[str, Any]:
+    """The orchestrator's own token counts for this session's calls.
+
+    One `timings` event per model call (keyed by request_id), attributed by
+    request_keys.x_session_id. prompt_tokens counts only when its source is
+    server_terminal (the server's own number); a call without one is counted
+    as unmeasured, never estimated. `tokens` is the server's completion count.
+    """
+    calls: dict[str, dict[str, Any]] = {}
+    for e in events:
+        if e.get("event") != "timings":
+            continue
+        if not start <= float(e.get("ts_epoch") or 0) <= end:
+            continue
+        keys = e.get("request_keys")
+        if not isinstance(keys, dict) or keys.get("x_session_id") != session_id:
+            continue
+        rid = str(e.get("request_id") or "")
+        if rid:
+            calls[rid] = e
+    measured = [
+        e for e in calls.values()
+        if e.get("prompt_tokens_source") == "server_terminal"
+        and isinstance(e.get("prompt_tokens"), int) and not isinstance(e.get("prompt_tokens"), bool)
+    ]
+    return {
+        "calls": len(calls),
+        "measured_calls": len(measured),
+        "prompt_tokens": sum(int(e["prompt_tokens"]) for e in measured),
+        "completion_tokens": sum(int(e.get("tokens") or 0) for e in calls.values()),
+    }
+
+
+def check_token_parity(session: dict[str, Any], tap: dict[str, Any]) -> dict[str, Any]:
+    """A5: what the client recorded equals what the orchestrator measured."""
+    s_prompt, _ = step_token_counts(session)
+    s_completion = step_completion_tokens(session)
+    ok = (
+        tap["calls"] >= 1
+        and tap["measured_calls"] == tap["calls"]
+        and s_prompt == tap["prompt_tokens"]
+        and s_completion == tap["completion_tokens"]
+    )
+    return _check(ok, "A5-session-tokens-match-tap",
+                  f"session prompt/completion {s_prompt}/{s_completion} over "
+                  f"{_step_count(session)} step(s); tap server_terminal "
+                  f"{tap['prompt_tokens']}/{tap['completion_tokens']} over {tap['calls']} "
+                  f"call(s), {tap['calls'] - tap['measured_calls']} without a server prompt count")
+
+
+def resolve_token_counts(session: dict[str, Any],
+                         tap: dict[str, Any] | None) -> dict[str, Any]:
+    """The prompt-token count the belief capture records, with its source.
+
+    The tap's server_terminal sum is authoritative when it measured every call
+    of the session; otherwise the session's own count is used and labelled so.
+    Cache reuse is not in the tap, so cached_prompt_tokens stays the session's.
+    """
+    s_prompt, s_cached = step_token_counts(session)
+    out: dict[str, Any] = {
+        "session_prompt_tokens": s_prompt,
+        "session_completion_tokens": step_completion_tokens(session),
+        "cached_prompt_tokens": s_cached,
+        "cached_prompt_tokens_source": "opencode_session",
+        "tap": tap,
+    }
+    if tap and tap["calls"] >= 1 and tap["measured_calls"] == tap["calls"]:
+        out["input_tokens"] = tap["prompt_tokens"]
+        out["input_tokens_source"] = "tap_server_terminal"
+    else:
+        out["input_tokens"] = s_prompt
+        out["input_tokens_source"] = "opencode_session"
+    return out
+
+
 def capture_beliefs(args, evid: Path, session: dict[str, Any], session_id: str,
-                    start: float, end: float, passed: bool) -> dict[str, Any]:
+                    start: float, end: float, passed: bool,
+                    tokens: dict[str, Any] | None = None) -> dict[str, Any]:
     """SC86 hook: write the run sidecar and call the belief writer (P0.5).
 
     One task, one trial. The attempt passes when the fixture test passes.
@@ -463,11 +575,16 @@ def capture_beliefs(args, evid: Path, session: dict[str, Any], session_id: str,
     sys.path.insert(0, str(ROOT / "scripts" / "vidya" / "adapters"))
     import opencode_shell_run_capture as cap  # noqa: E402
 
-    prompt_tokens, cached_tokens = step_token_counts(session)
+    if tokens is None:
+        tokens = resolve_token_counts(session, None)
+    prompt_tokens = tokens["input_tokens"]
+    cached_tokens = tokens["cached_prompt_tokens"]
     records = evid / "attempts.jsonl"
     records.write_text(json.dumps({
         "task": "calc-add-fix", "trial": 0, "session_id": session_id,
         "passed": passed, "input_tokens": prompt_tokens, "cached_prompt_tokens": cached_tokens,
+        "input_tokens_source": tokens["input_tokens_source"],
+        "cached_prompt_tokens_source": tokens["cached_prompt_tokens_source"],
     }, sort_keys=True) + "\n")
     run = {
         "schema": cap.RUN_SCHEMA,
