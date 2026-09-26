@@ -589,3 +589,48 @@ Not measured:
   - It is a real race once best-of runs with more than one worker.
   - Fix: register each member's fence in the owning lane's fence set.
   - Acceptance: a two-worker best-of test in which both lanes' members hold disjoint, scheduler-visible fences.
+
+### Tasks filed 2026-09-26 (local-actor bring-up retrospective, `INC-20260926-local-actor-bringup`)
+
+These come from the 57.5 h DS41 local-planner bring-up: [retrospective](../../docs/design/autokernel-local-actor-bringup-retro-20260926.md),
+checklist in `docs/guides/agent-workflows/agent-loop-design.md` → *Bringing up a new actor model or backend*.
+Each one turns a practice that was missing on 2026-09-23 into a standing gate.
+
+- [ ] **OAB-29 — a fake-model wire test as the standard gate for any new actor seat.** Add a scripted
+  OpenAI-compatible stub server, with a test harness that drives the EXACT actor invocation: CLI, flags, per-call
+  config, env and stdin prompt. Build on the fake server used to root-cause `b8d6a046`.
+  - Assertions:
+    - a reply longer than 128 KiB survives to the capture file byte-exact;
+    - rc=1 with a complete reply is salvaged, and a signal death is a transient;
+    - a compaction or template echo is not parsed as an answer;
+    - a slow reply is covered by `--actor-timeout-s`;
+    - the requested `max_tokens` and `chat_template_kwargs` appear on the wire, not clamped to 32000 or dropped;
+    - a read-only seat can never reach an `ask`-class permission, so a permission probe fails one call and the
+      session still returns final text.
+  - One parametrised case per backend kind (`opencode`, `claude`, `codex`) and per role config.
+  - Acceptance: the suite runs in CI in seconds with no GPU. `run.py` or `campaign_cli` refuses a manifest whose
+    actor seat config digest has no passing wire-test record, with an explicit override that is recorded in the
+    manifest.
+- [ ] **OAB-30 — a stub end-to-end dry iteration, including continuation after a keep.** Add a fast campaign
+  fixture with stub actors, a stub build and a stub bench. It must exercise:
+  - a kill mid-formation, a kill mid-calibration, and `touch STOP`;
+  - a resume after a mid-build kill;
+  - a refused resume, which must yield to the next queued checkpoint (the `2a060a41` path);
+  - **a keep followed by the next batch on an experimental CPU campaign.** This is the DS41-C45 path: the next
+    batch must restore the champion of record without refusing.
+  - Acceptance: each path ends in its intended disposition with no orphan process, no lost claim and no
+    discarded retained patch. The keep→continuation case fails on research main before the DS41-C45 fix and passes
+    after it.
+- [ ] **OAB-31 — a discard-invariant test with mandatory disposition records.** For every non-fatal failure
+  path in `iterate()`/`pipeline`, cover each produced artifact: accepted hypothesis, authored patch, and
+  completed actor reply. The test asserts that the artifact is either carried forward (resume, reinstatement,
+  or the hypothesis pool) or dropped with a disposition record naming the reason and the retained artifact path.
+  - Family this closes: `c7215eb5`, `7b076f8d`, `1848ba08`, `2a66c211`, `71c46655`.
+  - Acceptance: a new drop site added without a disposition record fails the test, in the style of the
+    `ScratchInventory` AST scan.
+- [ ] **OAB-32 — default per-call budgets on every backend and every role.** OAB-23 bounded the opencode
+  planner only. Give critic, author and planner calls on every backend kind a default per-call decoded-token cap
+  and a wall budget. On exhaustion, record a `budget_exhausted` abstention, never a transient retry. A local
+  backend with no configured budget refuses to start instead of running unbounded.
+  - Acceptance: a fake backend that never finishes is cut at the default budget, and recorded once, for each
+    role × kind.
