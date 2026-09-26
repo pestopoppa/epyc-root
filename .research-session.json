@@ -1,9 +1,9 @@
 {
   "session_id": "intake-orch-prior-art-20260926",
   "started_at": "2026-09-26T16:30:00Z",
-  "last_checkpoint": "2026-09-26T17:10:00Z",
+  "last_checkpoint": "2026-09-26T19:30:00Z",
   "phase": 5,
-  "stage": "stage1-complete",
+  "stage": "stage2-closeout-pending",
   "session_kind": "research-intake Stage-1 focused prior-art sweep (harness <-> capacity-aware multi-model stack; CPU+RAM leverage)",
   "previous_session": "intake-exl3-sglang-throughput-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-orch-prior-art-20260926/previous-research-session-stage4.json)",
   "lane": {
@@ -98,6 +98,648 @@
       "disposition": "context-only",
       "plan_ref": null,
       "note": "Relayed via the dispatching session's prompt; framing for dive ranking; carried to Stage 3."
+    },
+    {
+      "seq": 3,
+      "stage": 2,
+      "verbatim": "The operator selected the single Stage-2 round: ALL FIVE ranked clusters PLUS DeLM 1803. [...] This is the ONLY Stage-2 round. At close-out, present the dive-surfaced new sources as a list for the operator; do NOT ingest a Stage-2b round unless asked.",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Relayed by the coordinator session; selection executed as Stage 2 scope, not a filing authorization."
+    },
+    {
+      "seq": 4,
+      "stage": 2,
+      "verbatim": "The operator's context: one scheduler with two front doors (a chat endpoint that looks like one model, and a control interface a harness dispatches through). It also covers a hierarchy of shared REPLs, capacity-aware scheduling on one heterogeneous EPYC+MI210 host, and the principle that the strongest (slow) model is a consultant while smaller models do the grunt work.",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "note": "Relayed by the coordinator (paraphrase of operator design context); design framing for the dives; must be carried into the Stage-3 plan."
     }
-  ]
+  ],
+  "stage2_selection": {
+    "clusters": {
+      "1": [
+        "intake-1796",
+        "intake-1797",
+        "intake-1798"
+      ],
+      "2": [
+        "intake-1790",
+        "intake-1792",
+        "intake-1791"
+      ],
+      "3": [
+        "intake-1783",
+        "intake-1785"
+      ],
+      "4": [
+        "intake-1810",
+        "intake-1808",
+        "intake-1809"
+      ],
+      "5": [
+        "intake-1789",
+        "intake-1787"
+      ],
+      "6": [
+        "intake-1803"
+      ]
+    },
+    "round_cap": "single Stage-2 round (operator); Stage-2b only if asked",
+    "dive_brief": "/mnt/raid0/llm/tmp/intake-orch-prior-art-20260926/DIVE_BRIEF.md"
+  },
+  "stage2": {
+    "dived": [
+      "intake-1783",
+      "intake-1785",
+      "intake-1787",
+      "intake-1789",
+      "intake-1790",
+      "intake-1791",
+      "intake-1792",
+      "intake-1796",
+      "intake-1797",
+      "intake-1798",
+      "intake-1803",
+      "intake-1808",
+      "intake-1809",
+      "intake-1810"
+    ],
+    "results_dir": "/mnt/raid0/llm/tmp/intake-orch-prior-art-20260926/stage2/",
+    "second_reader": {
+      "files": [
+        "second_reader_c1-3.yaml",
+        "second_reader_c4.yaml",
+        "second_reader_c5-6.yaml"
+      ],
+      "curated_flags": "second_reader_flags.yaml",
+      "anchors_checked": 279,
+      "not_refound": 0
+    },
+    "dive_surfaced_sources": [
+      {
+        "cluster": "c1",
+        "source": "arXiv:2604.10907 (RouterWise: Joint Resource Allocation and Routing for Latency-Aware Multi-Model LLM Serving)",
+        "bears_on": "intake-1796",
+        "recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Whether latency-aware routing gains depend on co-deciding placement. RouteBalance and SFS both take placement as fixed and list joint placement as open. It bears on our fabric-residency (CPU vs MI210) decisions.",
+        "reason": "It is the only source found that addresses the open item common to all three papers. Not in the index (checked index_digest.tsv and the lane index)."
+      },
+      {
+        "cluster": "c1",
+        "source": "https://openreview.net/forum?id=pZFJLsIY2m (Lakha, Yu, Shahout 2025, \"Faster, Cheaper, Just as Good: Cost- and Latency-Constrained Routing for LLMs\", SCORE, ICLR 2025 SLLM workshop)",
+        "bears_on": "intake-1798",
+        "recommendation": "decline",
+        "what_it_would_settle": "SFS names it as the closest prior work. It uses an output-length-based (static) latency estimator, i.e. the static-prior design itself.",
+        "reason": "A static-prior router with no live comparison adds nothing beyond RouteBalance arm 4 on the static-vs-live question. A workshop paper. Not in the index."
+      },
+      {
+        "cluster": "c1",
+        "source": "arXiv:2508.03611 (Da and Kalyvianaki 2025, Block: balancing load in LLM serving with context, knowledge and predictive scheduling)",
+        "bears_on": "intake-1796",
+        "recommendation": "decline",
+        "what_it_would_settle": "The RouteBalance authors' earlier predictive within-replica load balancer.",
+        "reason": "It concerns within-tier balancing across replicas. RouteBalance itself finds that prediction adds nothing there, and our roles are single-instance. Not in the index."
+      },
+      {
+        "cluster": "c1",
+        "source": "https://github.com/akaashrp/sfs @ 536af1526a2c2b0c7cfbc582acd437ca9c0eaa35",
+        "bears_on": "intake-1798",
+        "recommendation": "decline",
+        "what_it_would_settle": "The implementation behind intake-1798, including the unreported static and average-case routing arms.",
+        "reason": "A companion artifact already read in this dive (see intake-1798 source_revision and key_claims[4],[6]). Fold it into the intake-1798 record rather than create a new entry."
+      },
+      {
+        "cluster": "c2",
+        "source": "https://github.com/anomalyco/opencode/issues/28567",
+        "bears_on": "intake-1792",
+        "recommendation": "decline",
+        "what_it_would_settle": "Whether and when OpenCode enables the MCP tasks client capability (the re-evaluation trigger for c2-A4)",
+        "reason": "An issue thread, not research. Track it as a watch trigger in the HS handoff instead of ingesting it."
+      },
+      {
+        "cluster": "c2",
+        "source": "https://github.com/anomalyco/opencode/issues/11948",
+        "bears_on": "intake-1791",
+        "recommendation": "decline",
+        "what_it_would_settle": "OpenCode's stated position on MCP sampling",
+        "reason": "Moot because sampling is deprecated and the orchestrator is OpenCode's only provider."
+      },
+      {
+        "cluster": "c2",
+        "source": "https://modelcontextprotocol.io/specification/2026-07-28/basic/patterns/progress (+ cancellation)",
+        "bears_on": "intake-1792",
+        "recommendation": "decline",
+        "what_it_would_settle": "The normative basis for the progress-as-keepalive lever in c2-A2",
+        "reason": "Already read and saved under dive-intake-1792/sources at @ab3a39c1. It is core spec, so it can be cited directly without a separate intake entry."
+      },
+      {
+        "cluster": "c2",
+        "source": "mcp-go PR #987; strands-agents/harness-sdk PR #4125; logiscape/mcp-sdk-php docs/tasks.md (SEP-2663 implementations)",
+        "bears_on": "intake-1792",
+        "recommendation": "decline",
+        "what_it_would_settle": "The breadth of independent Tasks-extension adoption",
+        "reason": "Seen only in search results, not verified. None is our harness or server stack, so they do not change the conclusion."
+      },
+      {
+        "cluster": "c2",
+        "source": "https://github.com/agentclientprotocol/rust-sdk (sacp-conductor)",
+        "bears_on": "intake-1790",
+        "recommendation": "decline",
+        "what_it_would_settle": "The maturity of the reference ACP conductor",
+        "reason": "The conductor role is declined on architectural grounds (c2-A7), so implementation maturity is irrelevant."
+      },
+      {
+        "cluster": "c3",
+        "source": "https://arxiv.org/abs/2602.13692",
+        "bears_on": "intake-1785",
+        "recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Whether program-level scheduling keyed by session_id, pausing and resuming at tool boundaries (ThunderAgent, ported into Dynamo as an experimental frontend plugin), measurably beats per-request KV-aware routing for agent loops. This bears on the REPL-hierarchy and tool-pause scheduling in the orchestrator.",
+        "reason": "Not in the index; it is the one agent-scheduling mechanism in Dynamo that is published as research rather than vendor docs."
+      },
+      {
+        "cluster": "c3",
+        "source": "https://github.com/ai-dynamo/dynamo/pull/7977",
+        "bears_on": "intake-1785",
+        "recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Whether Dynamo's XPU-prefill/CPU-decode example routes and scales CPU decode workers as first-class peers (router cost, Planner), or is only launch scripts. This is the nearest upstream precedent for the operator's CPU-as-compute thesis.",
+        "reason": "Release-note level only in this dive; the implementation depth decides whether it is precedent or a demo."
+      },
+      {
+        "cluster": "c3",
+        "source": "https://github.com/langchain-ai/langchain-nvidia/blob/4b255123cd7e9815b8dca268f97169eb7d8d987e/libs/ai-endpoints/langchain_nvidia_ai_endpoints/chat_models_dynamo.py",
+        "bears_on": "intake-1785",
+        "recommendation": "decline",
+        "what_it_would_settle": "Which hint keys the LangChain SDK emits.",
+        "reason": "Already settled in this dive by reading the source (intake-1785#5); it needs no separate entry."
+      },
+      {
+        "cluster": "c3",
+        "source": "https://github.com/NVIDIA/NeMo-Agent-Toolkit/tree/develop/examples/dynamo_integration",
+        "bears_on": "intake-1785",
+        "recommendation": "decline",
+        "what_it_would_settle": "The NAT Thompson-sampling agentic router and its self-reported 4x p50 TTFT.",
+        "reason": "Emitter side settled here. The router result is a self-reported NVIDIA-internal comparison on GPU clusters and does not bear on a single-host CPU+GPU design."
+      },
+      {
+        "cluster": "c3",
+        "source": "https://docs.google.com/document/d/1SpSp1E6moa4HSrJnS4x3NpLuj88sMXr2tbofKlzTZpk",
+        "bears_on": "intake-1783",
+        "recommendation": "decline",
+        "what_it_would_settle": "The upstream 'model server metrics standardization' effort proposal 003 aligns with (whether llama.cpp or device-class metrics were ever considered).",
+        "reason": "Google Doc, not a pinnable revision; proposal 003 and llm-d-router's plugin-metric-protocol already fix the contract that is actually consumed."
+      },
+      {
+        "cluster": "c4",
+        "source": "https://github.com/sgl-project/sglang/blob/c73f7077eb051ceeaadfa8819b20ed6d4912e8de/python/sglang/srt/layers/moe/kt_ep_wrapper.py (upstream KT integration; issue sgl-project/sglang#11425 closed 'completed' 2026-02-08)",
+        "bears_on": "intake-1809",
+        "recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Whether a kt-kernel GPU half can ride upstream SGLang's ROCm build instead of the CUDA-pinned sglang-kt fork. That is the open half of OD-A.",
+        "reason": "It is not in the index, and intake-923 cites #11425 as 'SGLang adopting KTransformers' although #11425 is an issue, not a merged PR. The upstream wrapper is 393 lines using torch.cuda stream handles with no CUDA-only guards, so it is the most plausible ROCm route and is unverified."
+      },
+      {
+        "cluster": "c4",
+        "source": "https://www.usenix.org/conference/osdi26/presentation/wang-wenxin",
+        "bears_on": "intake-1810",
+        "recommendation": "decline",
+        "what_it_would_settle": "Acceptance and pages of 1810, which are already settled.",
+        "reason": "This is the companion program page of the same paper and adds no technical content. It is cited in 1810's source_revision instead."
+      },
+      {
+        "cluster": "c4",
+        "source": "https://www.phoronix.com/news/KTransformers-0.7",
+        "bears_on": "intake-1809",
+        "recommendation": "decline",
+        "what_it_would_settle": "Nothing; it restates vendor release notes about AVX-512 SFT/LoRA.",
+        "reason": "It is RESTATEMENT, about fine-tuning rather than inference."
+      },
+      {
+        "cluster": "c5",
+        "source": "arXiv:2607.17181 (Talaria: Session-Aware Serverless Serving of Hundred-Billion-Parameter LLMs)",
+        "bears_on": "intake-1789",
+        "recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Whether time-sliced multi-model residency breaks agent sessions with tool gaps (the model window closes while KV is still resident). It proposes session-scoped routing with soft reservation and mid-slot admission. This is the closest external analogue to the fabric's tracked-session promotion (heterogeneous-slot-fabric-residency.md:97) and the RLM REPL hierarchy.",
+        "reason": "Independent critique of intake-1789's scheduler on an agentic workload shaped like EPYC's; not in the index (0 hits in index_digest.tsv or the lane index)."
+      },
+      {
+        "cluster": "c5",
+        "source": "https://doi.org/10.5281/zenodo.16673199 (Aegaeon AE artifact; mirror github.com/Zyyeric/Aegaeon@ca8caccf)",
+        "bears_on": "intake-1789",
+        "recommendation": "decline",
+        "what_it_would_settle": "Code-level confirmation of Aegaeon's engine internals (vllm==0.5.1 pin, CUDA runtime via ctypes, IPC events) and its hardware requirements (2x8 H100/H800, ~512 GB CPU memory).",
+        "reason": "This is the artifact of intake-1789, not a new source. Already read in this dive; record it as a source_revision addendum rather than a separate entry."
+      },
+      {
+        "cluster": "c5",
+        "source": "arXiv:2606.24506 (CrossPool: multi-LLM serving for cold MoE models via KV-cache and weight disaggregation)",
+        "bears_on": "intake-1789",
+        "recommendation": "decline",
+        "what_it_would_settle": "A follow-on that reuses Aegaeon's temporal-multiplexing prefill and disaggregates decode KV and weight pools for cold MoE models. It might inform a large-MoE GPU-residency variant.",
+        "reason": "A datacenter multi-GPU pool design that builds on Aegaeon rather than testing it. Only the Aegaeon mentions were read, and it does not bear on the static-vs-multiplex decision for one MI210."
+      },
+      {
+        "cluster": "c5",
+        "source": "arXiv:2607.18957 (InstantInfer: fast LLM cold start with communicating finite automata)",
+        "bears_on": "intake-1787",
+        "recommendation": "decline",
+        "what_it_would_settle": "Whether engine startup/loading/switching dependencies can be restructured to cut the fixed framework term in swap cost C.",
+        "reason": "Only its related-work mention of Aegaeon was read. It targets engine internals that would require llama.cpp kernel work (frozen). Revisit if C5-A1 shows the fixed term dominates C."
+      },
+      {
+        "cluster": "c6",
+        "source": "https://arxiv.org/abs/2609.20889",
+        "bears_on": "intake-1803",
+        "recommendation": "ingest-and-dive",
+        "what_it_would_settle": "Whether a DeLM-style verified shared context (r->S->G plus admission) scales and pays for itself as agent count grows. It independently reports it as the most expensive setup and the worst at scaling.",
+        "reason": "The only independent re-implementation of DeLM's shared-context mechanism with scaling and cost curves. Directly adverse to adopting a blackboard as the sole coordination channel."
+      },
+      {
+        "cluster": "c6",
+        "source": "https://arxiv.org/abs/2609.04280",
+        "bears_on": "intake-1803",
+        "recommendation": "ingest-and-dive",
+        "what_it_would_settle": "How DeLM (shared task pool, 3 workers) performs as an independent baseline. It ranks last overall on EvoHarnessBench, with the most time and tokens.",
+        "reason": "An independent adverse datapoint that includes the queue. Only Table 2 and a few lines were read here, so it needs a dive to check the fidelity of its DeLM adaptation."
+      },
+      {
+        "cluster": "c6",
+        "source": "https://arxiv.org/abs/2609.19759",
+        "bears_on": "intake-1803",
+        "recommendation": "decline",
+        "what_it_would_settle": "The general question of when MAS beats a single agent (dense versus sparse dependencies; agent-count scaling).",
+        "reason": "It does not cite or test DeLM. It uses one model and within-task decomposition. Already referenced as contradicting evidence in the lane index notes. Its bearing is indirect."
+      },
+      {
+        "cluster": "c6",
+        "source": "https://github.com/yuzhenmao/DeLM/pull/2",
+        "bears_on": "intake-1803",
+        "recommendation": "decline",
+        "what_it_would_settle": "Real per-task cost and cache behaviour of released DeLM on Gemini 3 Flash.",
+        "reason": "A 12-task, one-seed third-party run, already used here as a datapoint (saved as sources/gh_aadcha_DeLM_step_refresh_RESULTS.md). Too small to ingest as its own entry."
+      },
+      {
+        "cluster": "c6",
+        "source": "https://arxiv.org/abs/2609.26781",
+        "bears_on": "intake-1803",
+        "recommendation": "decline",
+        "what_it_would_settle": "Nothing about DeLM's validity. It adopts DeLM's shared context.",
+        "reason": "Adoption and restatement, not an evaluation."
+      }
+    ],
+    "dive_surfaced_status": "PRESENTED to operator for selection; NO Stage-2b ingest unless operator asks (coordinator relay 2026-09-26). Declines to be recorded in bearing entries' dive_corrections once operator decides.",
+    "derived_actionables": [
+      {
+        "id": "C1-A1",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/decision-aware-routing.md",
+        "rests_on": [
+          "intake-1796#2",
+          "intake-1796#6"
+        ],
+        "text": "Add a static per-role latency term to model selection: T_hat(role) = nominal per-role TPOT x predicted output length, reusing the existing baseline_tps_by_role config, which is currently only reward-side. Expose it as a weight on the selection score. A/B it against current selection in a load sweep that includes saturating the latency-preferred role, measuring E2E, TTFT and realized quality. Wire the run's write side into the belief kernel as a claim tuple (scripts/vidya/adapters/README.md)."
+      },
+      {
+        "id": "C1-A2",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/contention-model-device-and-load-axes-rider.md",
+        "rests_on": [
+          "intake-1796#1",
+          "intake-1798#2",
+          "intake-1798#5",
+          "intake-1797#0"
+        ],
+        "text": "Add a saturation guard to selection: when a role's slots are all busy (orchestrator dispatch ledger / admission gate; cross-check llamacpp:requests_deferred > 0), add the expected wait to that role's T_hat, using dead reckoning from in-flight dispatches plus predicted lengths. Do NOT add a second telemetry poller or occupancy model."
+      },
+      {
+        "id": "C1-A3",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/harness-selection-and-integration.md",
+        "rests_on": [
+          "intake-1796#2",
+          "intake-1798#3"
+        ],
+        "text": "Keep model selection inside the orchestrator behind /v1. The harness sends role/intent hints only (x_force_role, x_orchestrator_role) and gets no per-model capacity or latency surface to route on."
+      },
+      {
+        "id": "C1-A4",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/learned-routing-controller.md",
+        "rests_on": [
+          "intake-1797#4",
+          "intake-1798#4",
+          "intake-1798#6"
+        ],
+        "text": "Build an HW-Router-style learned live latency predictor, or an SFS engine-snapshot simulator, for role selection."
+      },
+      {
+        "id": "C1-A5",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/contention-model-device-and-load-axes-rider.md",
+        "rests_on": [
+          "intake-1797#1",
+          "intake-1796#1",
+          "intake-1798#2"
+        ],
+        "text": "Record the llama-server signal map in the contention rider. HW-Router's running and waiting counts map to llamacpp:requests_processing and requests_deferred (/metrics, which needs --metrics). KV-cache usage has NO analogue: KV is preallocated per slot at launch; the nearest is per-slot fullness from /slots n_prompt_tokens + n_decoded vs n_ctx. TTFT/TPOT averages have to come from counter deltas (prompt_seconds_total/prompt_tokens_total excludes queue wait); the prompt_tokens_seconds and predicted_tokens_seconds gauges are effectively lifetime averages in v10, because metrics_reset_bucket is never set true. RouteBalance's pending decode tokens d_i are not exposed (n_remain is -1 without n_predict). SFS's resident prefill is partly exposed: v10 /slots emits n_prompt_tokens, n_prompt_tokens_processed and n_prompt_tokens_cache, while deferred-request lengths are not exposed."
+      },
+      {
+        "id": "C1-A6",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/learned-routing-controller.md",
+        "rests_on": [
+          "intake-1796#4"
+        ],
+        "text": "Make sure any per-request routing classifier on the /v1 hot path is amortised or batched, and never a serial per-request forward that saturates under concurrent fan-out."
+      },
+      {
+        "id": "c2-A1",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/dynamic-stack-concurrency.md",
+        "rests_on": [
+          "intake-1790#1",
+          "intake-1792#1"
+        ],
+        "text": "Derive the chat-door 503 Retry-After from live slot/queue state (contention gate + admission queue) instead of the constants 5/10/30 s (src/api/__init__.py:388-407, :418; src/api/routes/chat.py:319-321). Also emit retry-after-ms, which pinned OpenCode reads first (session/retry.ts:51-56). Budget for RETRY_MAX_RETRIES=5: after 5 failures the turn fails, so a long queue should hold the request rather than bounce it."
+      },
+      {
+        "id": "c2-A2",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/harness-selection-and-integration.md",
+        "rests_on": [
+          "intake-1792#4"
+        ],
+        "text": "On the MCP control door, while orchestrator_chat waits for a slot, send notifications/progress (monotone progress plus a message such as \"queued: position N, est. S s\") to keep the call alive. Set an explicit OpenCode mcp timeout or experimental.mcp_timeout, since the SDK default is 60000 ms and OpenCode resets it only on progress. Note that OpenCode discards the progress message, so this is a keep-alive and not a visible signal. Any user-visible capacity text must go in the tool result."
+      },
+      {
+        "id": "c2-A3",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/harness-selection-and-integration.md",
+        "rests_on": [
+          "intake-1790#0",
+          "intake-1790#4"
+        ],
+        "text": "In the HS-3 row, record that ACP providers/set (Draft, unstable_llm_providers) does NOT meet the \"ACP gains inference-routing semantics\" trigger: it is process-scoped endpoint redirection that duplicates the opencode.jsonc baseURL. Also record that pinned OpenCode does not implement it. Keep HS-3 not-triggered, with no checkbox change."
+      },
+      {
+        "id": "c2-A4",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/harness-selection-and-integration.md",
+        "rests_on": [
+          "intake-1792#1",
+          "intake-1792#4"
+        ],
+        "text": "Adopt the MCP Tasks extension for orchestrator_* tools (FastMCP 4.x + fastmcp-tasks), returning a task handle when no slot is free."
+      },
+      {
+        "id": "c2-A5",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/harness-selection-and-integration.md",
+        "rests_on": [
+          "intake-1790#1",
+          "intake-1790#4"
+        ],
+        "text": "Emit an ACP-shaped usage_update analogue (context + cost) from the Orch in x_orchestrator_metadata (the Stage-1 recommended action)."
+      },
+      {
+        "id": "c2-A6",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/learned-routing-controller.md",
+        "rests_on": [
+          "intake-1791#2"
+        ],
+        "text": "If a harness->Orch priority hint is ever added to the chat door, name its typed x_* fields after MCP's costPriority/speedPriority/intelligencePriority (0-1, advisory, Orch makes the final choice). Cite them as borrowed vocabulary, not as a live MCP standard."
+      },
+      {
+        "id": "c2-A7",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/harness-selection-and-integration.md",
+        "rests_on": [
+          "intake-1790#3"
+        ],
+        "text": "Run the orchestrator as an ACP proxy/conductor between an editor and OpenCode."
+      },
+      {
+        "id": "c3-A1",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/harness-selection-and-integration.md",
+        "rests_on": [
+          "intake-1785#6",
+          "intake-1785#2"
+        ],
+        "text": "/v1 front door: accept session identity from headers as a fallback when the x_session_id body key is absent. Order: body x_session_id, then x-dynamo-session-id, then OpenCode X-Session-Id. Also record parent_session_id from x-dynamo-parent-session-id or x-parent-session-id. Make the v1_client_session_guard check the header before returning 422. Unit-test the precedence and a child `task` request that carries x-parent-session-id."
+      },
+      {
+        "id": "c3-A2",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "rests_on": [
+          "intake-1783#1",
+          "intake-1783#7"
+        ],
+        "text": "Slot record: name three per-slot capacity fields in proposal-003 semantics. queued comes from llamacpp:requests_deferred, running from llamacpp:requests_processing, and kv_occupancy is derived from GET /slots (sum of n_prompt_tokens+n_decoded over processing slots / sum of n_ctx). Flag kv_occupancy as not meaningful for O(1)-KV GDN-hybrid residents. Carry EPYC-only fields beside them: device_class (cpu|gpu), numa_node/cpuset, residency state including UNKNOWN, co-tenant/contention count, and measured prompt/predicted tokens-per-second."
+      },
+      {
+        "id": "c3-A3",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/dynamic-stack-concurrency.md",
+        "rests_on": [
+          "intake-1783#4",
+          "intake-1783#5",
+          "intake-1783#6",
+          "intake-1783#7"
+        ],
+        "text": "Front the orchestrator with a GAIE/llm-d Endpoint Picker (ext-proc) consuming proposal-003 gauges from llama-server slots."
+      },
+      {
+        "id": "c3-A4",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/harness-selection-and-integration.md",
+        "rests_on": [
+          "intake-1785#2",
+          "intake-1785#5",
+          "intake-1785#6"
+        ],
+        "text": "Rename or alias the orchestrator's x_* override keys to Dynamo's nvext.agent_hints names so SDKs that emit them work unchanged."
+      },
+      {
+        "id": "c3-A5",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/within-role-placement-state-machine.md",
+        "rests_on": [
+          "intake-1785#1",
+          "intake-1783#7"
+        ],
+        "text": "Within-role replica choice: record Dynamo's cost shape as the reference load term. It is scaled uncached-prefill blocks + active decode blocks + optional per-active-request weight, with softmax temperature for spread. Note that the prefix-overlap term needs per-slot prefix state, and llama-server offers only post-hoc n_prompt_tokens_cache rather than KV events."
+      },
+      {
+        "id": "C4-A1",
+        "disposition": "propose",
+        "owner_handoff": "numa-prefill-decode-disaggregation.md",
+        "rests_on": [
+          "intake-1810#2"
+        ],
+        "text": "Record intake-1810's intra-node GPU-prefill / CPU-decode disaggregation (one shared DRAM weight copy; <2K chunked, long -> GPU streaming, decode batched to a target) as the design prior in numa-prefill-decode-disaggregation.md. In the same edit, correct the handoff's topology premise at :14 and :34: the host is 1 socket / NPS4 per lscpu, so there is no xGMI inter-socket KV path."
+      },
+      {
+        "id": "C4-A2",
+        "disposition": "propose",
+        "owner_handoff": "heterogeneous-slot-fabric-residency.md",
+        "rests_on": [
+          "intake-1810#1"
+        ],
+        "text": "Add a prefill-length routing rule candidate to heterogeneous-slot-fabric-residency.md. For an over-HBM MoE whose weights are DRAM-resident, route a prefill to a GPU streaming path only when predicted CPU prefill time exceeds streamed_bytes / 28.9 GB/s (34.6 ms per GB, our measured H2D). Replace the '~26 GB/s' at :77 with the measured 28.89 GB/s receipt."
+      },
+      {
+        "id": "C4-A3",
+        "disposition": "propose",
+        "owner_handoff": "mi210-big-model-and-acceleration-roadmap.md",
+        "rests_on": [
+          "intake-1810#1"
+        ],
+        "text": "Measure CPU prefill tok/s vs prompt length (1K-32K) for the largest over-HBM MoE on the production recipe. In the same window, measure llama.cpp's -cmoe op-offload prefill (which already streams CPU-resident experts to the MI210 for ubatch>=32) so the SLP-style crossover for our host becomes a measured number."
+      },
+      {
+        "id": "C4-A4",
+        "disposition": "propose",
+        "owner_handoff": "fable5-window2-findings-02-heterogeneous-gpu.md",
+        "rests_on": [
+          "intake-1809#1",
+          "intake-1809#3"
+        ],
+        "text": "In the fable5 OD-A rider: tick F3 (:242) citing the 2026-08-03 H2D/D2H receipt (gpu-acceleration-path.md:330); correct :220-221 (#1612 was answered by a collaborator on 2025-11-15); and add that at c40722bf the AVX-512 native backends exist in source, overturning intake-923's 'no AVX-512-native MoE operator family' (research/intake_index.yaml:54822)."
+      },
+      {
+        "id": "C4-A5",
+        "disposition": "propose",
+        "owner_handoff": "fable5-window2-findings-02-heterogeneous-gpu.md",
+        "rests_on": [
+          "intake-1809#1",
+          "intake-1809#3",
+          "intake-1808#1",
+          "intake-1808#4"
+        ],
+        "text": "OD-A decision package framing: the kt-kernel CPU half is source-portable to Zen 5 (BF16/FP8/RAWINT4/LLAMAFILE without AMX), its prefill benefit is AMX-dependent in the paper, and the GPU half is CUDA-packaged with an untested ROCm option. Keep R-A7 F1 (per-split overlap ceiling under static -cmoe) as the gate before any runtime or kernel work."
+      },
+      {
+        "id": "C4-A6",
+        "disposition": "propose",
+        "owner_handoff": "fable5-window2-findings-02-heterogeneous-gpu.md",
+        "rests_on": [
+          "intake-1809#1",
+          "intake-1809#3"
+        ],
+        "text": "Optional OD-A evidence: a build-only check of kt-kernel on the host (CPUINFER_CPU_INSTRUCT=NATIVE, CPUINFER_USE_ROCM=1, in an isolated venv under /mnt/raid0/llm/tmp) that records __cpu_variant__ / __fp8_kernel__ / __rawint4_kernel__. No inference."
+      },
+      {
+        "id": "C4-A7",
+        "disposition": "propose",
+        "owner_handoff": "cpu-decode-roofline-program.md",
+        "rests_on": [
+          "intake-1810#4"
+        ],
+        "text": "Supersede the pre-BIOS DRAM bandwidth rows (cpu-decode-roofline-program.md:147-150, and wiki/hardware-optimization.md:99 '220 GB/s ceiling') with the post-2026-09-21 artifacts (read-sum t=96 446.8 / 449.4 GB/s; 83% of 537.6 theoretical)."
+      },
+      {
+        "id": "C4-A8",
+        "disposition": "decline",
+        "owner_handoff": "gpu-serving-tie-in-program.md",
+        "rests_on": [
+          "intake-1810#1",
+          "intake-1810#2"
+        ],
+        "text": "Adopt or port 1810's SLP/DSLP implementation."
+      },
+      {
+        "id": "C5-A1",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "rests_on": [
+          "intake-1787#2",
+          "intake-1787#3",
+          "intake-1789#4"
+        ],
+        "text": "Fill the N-dwell swap cost C per (model, MI210) from a hot-page-cache load on the PRODUCTION kernel store (v10). Use a decomposed timer: process start -> 'load_model' -> 'model loaded' -> first token, read from llama-server stderr and emitted with the effective config. Fit C = a + size/b per the fixed-penalty form, and write it into the model capability record. Cold/post-reboot C stays gated on the operator protocol per mi210-big-model-and-acceleration-roadmap.md:296."
+      },
+      {
+        "id": "C5-A2",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "rests_on": [
+          "intake-1789#1",
+          "intake-1789#3",
+          "intake-1789#7"
+        ],
+        "text": "Record an explicit DECLINE of token/step-level GPU model multiplexing (Aegaeon-style) for the llama-server fabric. Reason: it is mid-decode preemption (axiom 4). It needs engine internals llama-server lacks: in-process component reuse, host KV pool, IPC-event KV sync, and in-flight slot KV save (server-context.cpp:2593-2596 defers while processing). Prefetch-hiding needs VRAM for two models' weights beyond the 58 GB 2-resident set. Revisit only if an experimental-branch llama-server gains cooperative decode preemption (within-role-placement-state-machine.md:31)."
+      },
+      {
+        "id": "C5-A3",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "rests_on": [
+          "intake-1789#2",
+          "intake-1787#3"
+        ],
+        "text": "Add a Layer-3 residency policy prior: when a swap to model B is fired, admit queued and tracked B-eligible sessions as a group, bounded like Aegaeon's MAX_GPSIZE, before any swap back. This amortizes C over a group, and all of it happens at turn boundaries under the existing drain protocol."
+      },
+      {
+        "id": "C5-A4",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "rests_on": [
+          "intake-1787#1",
+          "intake-1787#3"
+        ],
+        "text": "Add 'swap cost C (hot page cache)' and 'partial-offload (-ngl < all) throughput curve' as fields of the per-model capability card."
+      },
+      {
+        "id": "C5-A5",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "rests_on": [
+          "intake-1787#2",
+          "intake-1787#4"
+        ],
+        "text": "Do not import 2605.19593's absolute reload seconds (2.6-7.3 s) or its '~2% overhead' into any EPYC cost model or dwell calculation."
+      },
+      {
+        "id": "6-A1",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/dynamic-stack-concurrency.md",
+        "rests_on": [
+          "intake-1803#2"
+        ],
+        "text": "Extend the \"(Z) Guard the prefix-stability assumption\" row so it also covers any shared-notes or blackboard block injected into delegated or REPL-worker prompts. The block must be rendered append-only and byte-identical across viewers, and placed before any per-worker, per-step or tools content. Measure reuse with llama-server /slots cache_n, alongside the existing repl-turn-efficiency.md:159 measurement. DeLM's own released prompts break all three conditions, which is the failure mode to guard against."
+      },
+      {
+        "id": "6-A2",
+        "disposition": "propose",
+        "owner_handoff": "handoffs/active/repl-session-memory-maturity.md",
+        "rests_on": [
+          "intake-1803#4",
+          "intake-1803#6"
+        ],
+        "text": "When the D-d curation layer (annotate/pin) is designed, specify an admission gate for shared or pinned notes. Use a deterministic grounding check first: the cited span must appear verbatim, and a PATCH-type note must reference a run that actually happened. Only then add an optional cheap-model (worker-tier) semantic check. Never route admission to the architect."
+      },
+      {
+        "id": "6-A3",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "rests_on": [
+          "intake-1803#0",
+          "intake-1803#6",
+          "intake-1803#7"
+        ],
+        "text": "Stage-1 recommended action: prototype a DeLM-style verified shared context plus a task queue as a REPL-session mode in which idle CPU/GPU slots claim subtasks."
+      },
+      {
+        "id": "6-A4",
+        "disposition": "decline",
+        "owner_handoff": "handoffs/active/repl-turn-efficiency.md",
+        "rests_on": [
+          "intake-1803#3"
+        ],
+        "text": "Add a flat, equal-rank RLM-worker arm with a verified shared-notes layer (DeLM+RLM) to the REPL scaffold A/Bs."
+      }
+    ]
+  }
 }
