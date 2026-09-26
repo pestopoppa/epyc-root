@@ -78,6 +78,7 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-TTS-REL-1 | qwentts_tts release decision rule | verdict — **not a claim** | ✅ 2026-08-03 | S |
 | P-PARITY-1 | Greedy-output parity between two decode configurations (spec-dec type/depth, KV type, kernel route, drafter, batching mode) | per-prompt PASS/FAIL + first-differing generation-token index — **not a claim** below n=5 prompts, and **never** an aggregate pass rate | 📋 staged 2026-08-23 | D |
 | P-NONDET-1 | Run-to-run non-determinism detector (N >= 10 identical calls in ONE process) | bit-identical / not; max abs Δ across repeats (↓) | 📋 staged 2026-08-23 | D |
+| P-SERVE-SEL-1 | Text-LLM serving-selection load-sweep A/B: selection-policy arms on a single-instance saturating tier, TTFT-bound, orchestrator in the loop (`instrument_class=serving`) | TTFT-SLO attainment per block (↑); realized quality non-inferior (per-suite quantum) | ✅ 2026-09-26 | Q |
 
 ## 3. Claim grammar & examples
 
@@ -283,6 +284,16 @@ confers no authority beyond its own enumeration.
 4. **New measurements** — cite a protocol from §2. No protocol → observation, not claim.
 
 ## CHANGELOG
+
+- **2026-09-26 (v2.x)** — AMENDMENT (Annex Q, new protocol `P-SERVE-SEL-1`): text-LLM
+  serving-selection load-sweep A/B. It covers selection-policy arms on a single-instance tier that
+  saturates under load, TTFT-bound, orchestrator in the loop, `instrument_class=serving`. Primary
+  metric: TTFT-SLO attainment per block. The floor comes from 24 A/A block pairs at unit = arm. A
+  candidate must beat its comparator by more than the floor at ≥2 saturating load points in W1 and
+  reproduce at ρ=1.25 in a holdout window W2 ≥24 h later. Quality must be non-inferior. PAIRED-CI-1
+  applies within a window only, and W1/W2 are never pooled. A null is a BOUNDED-NULL-1 statement.
+  Specialises P-AB-1 for load. First consumer: decision-aware-routing.md DAR-LAT-3. Operator
+  decision OP-62, ratified 2026-09-26 (orchestrator-design session).
 
 - **2026-09-26 (v2.x)** — CLARIFICATION (Annex K, `P-AK-SEARCH-1-A3.1`): the epoch in A3 Clause 1 is
   the **measurement epoch**: anchor commit, build recipe and declared host state, EXCLUDING actor

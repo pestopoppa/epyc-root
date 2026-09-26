@@ -1,0 +1,66 @@
+{
+  "schema": "epyc.measurement.protocol_amendment.v1",
+  "decision": "CREATE-PROTOCOL-P-SERVE-SEL-1",
+  "gate_id": "RATIFY-P-SERVE-SEL-1-20260926",
+  "operator_decision": "OP-62: ratify P-SERVE-SEL-1 (text-LLM serving-selection load-sweep protocol) before DAR-LAT-3 W1, so the A/B is decision-grade",
+  "ratification": {
+    "date": "2026-09-26",
+    "by": "operator",
+    "where": "orchestrator-design session",
+    "note": "the decision was given in session on 2026-09-26; this receipt records its application across the human-only boundary"
+  },
+  "ratified_at": "2026-09-26T19:49:16Z",
+  "applied_at": "2026-09-26T19:49:16Z",
+  "operator": "pestopoppa (executed by Claude session workspace-8d at the operator's explicit instruction, 2026-09-26)",
+  "status": "ratified",
+  "protocol_id": "P-SERVE-SEL-1",
+  "annex": "Q",
+  "annex_path": "measurement/protocols/quality-eval.md",
+  "amendment_class": "new protocol (append to the owning annex; no new annex)",
+  "registry_status": "✅ 2026-09-26",
+  "protocol_summary": {
+    "scope": "selection-policy A/B on a single-instance tier that saturates under offered load, TTFT-bound, orchestrator in the loop; instrument_class=serving; specialises P-AB-1 for load",
+    "primary_metric": "S = TTFT-SLO attainment per block (higher-better); budget = 2 x unloaded p50 TTFT per prompt-length bucket",
+    "arms": "A0 incumbent category=OPTIMUM; candidates category=CANDIDATE; switched per block in one experiment API process, unit = arm",
+    "load_points": "rho in {0.5, 0.8, 1.0, 1.25, 1.6, 2.0} x mu_hat; saturating rho >= 1.0; 40 open-loop seeded Poisson arrivals per block; ABBA",
+    "floor": "95% upper bound of |dS| over 24 A/A block pairs of the reference candidate arm at rho=1.25, unit = arm, n and interval recorded (FLOOR-UNIT-1)",
+    "decision_rule": "gap > F at >=2 saturating rho in W1, same sign and gap > F at rho=1.25 in W2 (>=24 h later, fresh seeds), quality non-inferior (>= -1 per-suite quantum), no rho<1 point worse by more than F; else BOUNDED-NULL-1",
+    "intervals": "PAIRED-CI-1 with small-K correction, within a window only; W1 and W2 never pooled"
+  },
+  "first_consumer": "handoffs/active/decision-aware-routing.md DAR-LAT-3",
+  "provenance": "research-intake 2026-09-26 orchestration prior art, Stage-3 plan item DAR-LAT-3/DAR-LAT-3a (docs/research-intake/orch-prior-art-stage3-plan-20260926.md); bundle prepared by Stage-4 agent S4-F",
+  "not_granted": "no measurement, compute window or routing-weight flip; the default-weight flip needs its own operator-signed instrument-era row",
+  "patch": {
+    "path": "artifacts/operator/p-serve-sel-1-20260926.patch",
+    "sha256": "f11f8ea20638199a65079de35f9734fd35009e5aff754a6cf335a360370b0b48"
+  },
+  "staged_text": {
+    "annex": {
+      "path": "artifacts/operator/staged/p-serve-sel-1-20260926.md",
+      "sha256": "034a9265ed7c1f0e8b63bd26dc874cd37d6a6d533de4811fabd20a536c50a8f6"
+    },
+    "measurement_md_snippets": {
+      "path": "artifacts/operator/staged/p-serve-sel-1-20260926.measurement-md.md",
+      "sha256": "f6c690ef3df5c851dd4388f8ffa9bd7757c28d9363a1777197e235aacfc8b0eb"
+    }
+  },
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "abfd4f2c8a7dc70a6586a0090b1d233e1b87f18bc62bf5cf0d043abfa859409a",
+      "sha256_after": "73f09cacca8c1dcb8eaed5c57cebec860b0f35a757e3e9efc32827f20fd3cbc4"
+    },
+    "measurement/protocols/quality-eval.md": {
+      "sha256_before": "ec25a3ea2a483341bcac05ad956030148ebf5aa4567e64963388e4082dd1a644",
+      "sha256_after": "1d901b4bca7e4de4d5efd10bd029984ca1efec6c7c0781ed2560d08ee11bf934"
+    }
+  },
+  "tracking": {
+    "operator_queue": "handoffs/active/master-handoff-index.md OP-62",
+    "handoff_task": "handoffs/active/decision-aware-routing.md DAR-LAT-3a"
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_p_serve_sel_1_20260926.receipt.json",
+  "applied_by": {
+    "path": "scripts/operator/ratify_p_serve_sel_1_20260926.sh",
+    "sha256": "8f76482b7df4b8dc007189a353122fb256f9d57cd6f68b3271dec9b9a749eda3"
+  }
+}

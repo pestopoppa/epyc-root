@@ -148,3 +148,140 @@ after auditing the cited implementation.*
   "indistinguishable" (the ~0.2pp delta is inside the noise band). Ledger row:
   EV-11-math-rebaseline (2026-07-23). Tests: `tests/unit/test_paired_stats.py`,
   `tests/unit/test_eval_tower_paired_significance.py`.
+
+## P-SERVE-SEL-1 — Text-LLM serving-selection load-sweep A/B (RATIFIED 2026-09-26)
+
+*Ratified by the operator on 2026-09-26 in the orchestrator-design session (operator queue OP-62) and
+applied through `scripts/operator/ratify_p_serve_sel_1_20260926.sh`. Prospective only: it governs
+windows opened after this block landed, and no earlier run may be retro-certified under it. First
+consumer: `handoffs/active/decision-aware-routing.md` DAR-LAT-3.*
+
+**Scope.** Decision-gating claims that a change to the orchestrator's **selection policy** (a latency
+or load term, a saturation guard, a live queue or progress term, or the weight of any of them)
+improves, or does not degrade, TTFT-bound service on a text-LLM tier with the orchestrator in the
+loop. The regime is a **single-instance tier** (the registered `-np`, unchanged) that saturates under
+offered load and has a registered divert target. Not for: kernel or throughput claims (P-BENCH-\*,
+P-GPU-1), speech (Annex S), a routing A/B with no load axis (P-AB-1), or displacement of batched work
+across devices (P-SHED-1). This protocol specialises P-AB-1 for load: P-AB-1's failure-by-reason
+classification and flag-state attestation apply unchanged, and its N ≥ 100/arm rule is replaced by
+the block design below, because the decision unit here is the block.
+
+**Instrument class.** `instrument_class=serving` is required: production servers on their registered
+recipes, the orchestrator's streaming `/v1/chat/completions` in the loop. A `bench`-class number
+cannot enter a P-SERVE-SEL-1 row (INSTRUMENT-CLASS-1).
+
+**Metric.** Primary: **S = TTFT-SLO attainment per block**, the fraction of scheduled arrivals whose
+first byte arrives within that item's TTFT budget (higher-better). Secondary, reported beside S and
+never substituted for it: realized quality per suite (higher-better; a failed request scores 0, the
+E17 rule), TTFT p50/p95 per block (lower-better), completions per minute (higher-better).
+
+**Arms.**
+- **A0** is the production incumbent, `category=OPTIMUM` (§3). Candidate arms (A1, A2, …) are
+  `category=CANDIDATE`.
+- Every candidate weight is predeclared on the scale of the existing selection cost term and is never
+  tuned on the evaluation half.
+- Arms switch per block inside ONE experiment API process (own port, captured PID, no relaunch), so
+  every arm-to-arm comparison and the floor below have **unit = arm** (FLOOR-UNIT-1). A design that
+  relaunches between arms has unit = process launch and must calibrate its own floor at that unit.
+- The candidate set of each request is predeclared and restricted to {tier under test, its
+  registered divert target}.
+
+### Six rigor controls
+
+1. **Frozen input manifest.** Frozen in `FROZEN-AT-LAUNCH.sha256` before the first arm block:
+   - prompt items (seeded sample of an existing graded item set, item ids + sha256), a predeclared
+     `max_tokens` cap and the live reasoning setting, so the workload is TTFT-bound;
+   - the candidate pair, and a dry route-explain filter (no generation) that keeps only items the
+     incumbent AND the candidate at zero load both route to the tier under test; the kept fraction is
+     reported;
+   - every frozen selection input with its digest: prior tables (keyed by role, device and
+     topology_hash, with the live topology_hash at freeze), a read-only episodic snapshot, and any
+     online learning (Q-updates) OFF for the window;
+   - the live argv and environment of every server in the candidate set, the `kv_unified =` log line,
+     and the kernel-store digests;
+   - **TTFT budget per item** = 2 × the unloaded p50 TTFT of the tier under test for that item's
+     prompt-length bucket, measured on the calibration half. The factor 2 is part of the instrument;
+   - **load points** ρ ∈ {0.5, 0.8, 1.0, 1.25, 1.6, 2.0} × μ̂, where μ̂ is the tier's measured
+     unloaded service rate on the calibration half. Saturating points are ρ ≥ 1.0;
+   - open-loop, seeded Poisson arrivals; **one block = 40 arrivals**; ABBA arm order per ρ.
+2. **Incumbent baseline.** A0 runs at every load point, in the same window as the candidates.
+3. **Per-item raw outputs.** One durable directory per run (§5 durability: a `SHA256SUMS` and a
+   README) holding `manifest.json`, `requests.jsonl`, `blocks.jsonl`, `summary.json` and `env/`
+   (argv, environment, kernel digests, host health, region-claim witness). Every `requests.jsonl`
+   row carries arm, block, ρ, arrival/send/first-byte/done timestamps, HTTP status and error class,
+   the per-decision selection receipt, the admission snapshot, the live-state snapshot where an arm
+   reads one, selection-time and final role, output text and hash, token counts and grader verdict.
+4. **Holdout.** Items split 50/50 by seeded hash. The calibration half is used only for μ̂, the TTFT
+   budgets and a sanity check on the frozen priors; every arm block runs on the evaluation half.
+   **Time holdout:** a later window **W2, ≥ 24 h after W1**, repeats ρ = 1.25 with all arms in ABBA
+   order and fresh arrival seeds.
+5. **Complete denominator.** Every scheduled arrival counts. A late completion, a 503 (contention
+   denial), a 429, an admission-queue-full error, a 413 or context overflow, the client hard deadline
+   (predeclared as max(10 × budget, 600 s)) and a connection error are all TTFT-SLO misses, reported
+   by class. The driver never retries.
+6. **Predeclared decision rule** (below), frozen with the manifest.
+
+### Floor
+
+**F** = the 95% upper bound of |ΔS| over **24 A/A block pairs of the reference candidate arm at
+ρ = 1.25**, run in the same window, with **unit = arm**, recorded with n and an interval
+(FLOOR-UNIT-1). n = 24 is a minimum and is never reduced to fit a window.
+
+### Decision rule
+
+Candidate X beats comparator Y (a candidate over the reference candidate, or a candidate over A0)
+only if ALL of the following hold:
+- mean(S_X − S_Y) > F at **≥ 2 saturating ρ** in W1;
+- the same sign and a gap > F at ρ = 1.25 in W2;
+- realized quality is non-inferior: X ≥ Y − one per-suite quantum (§4);
+- no ρ < 1 point degrades by more than F.
+
+Otherwise Y is kept, and the result is written as a **BOUNDED-NULL-1** statement: the power bound
+(which gaps the design excludes, at what number of blocks) plus the positive controls below.
+
+**Intervals.** PAIRED-CI-1 with the small-K correction, computed **within a window only**. W1 and W2
+are never pooled; W2 is a replication, not extra sample.
+
+### Positive controls (BOUNDED-NULL-1, both directions)
+
+- Per-request selection receipts show exactly-zero candidate terms in A0 and non-zero terms in every
+  candidate arm that declares them.
+- Every diversion carries an admission snapshot with `in_flight ≥ limit`, and no non-saturated
+  snapshot diverts.
+- An arm that declares a live-state term carries a fresh live-state timestamp on every request; every
+  other arm carries null.
+
+A run whose controls do not fire in both directions is recorded as `untested`, not as a negative.
+
+### Preconditions (decision-grade requires ALL)
+
+- A compute window granted through the session bus covering every device the candidate set touches;
+  a CPU region claim **acquired** by wrapping the driver in `region-lock run`, plus a GPU lease when a
+  GPU server is in the candidate set.
+- AutoPilot quiesced by its owning session. The experiment session owns every API action in the
+  window; the production API is not reloaded.
+- Host-health preflight and the quiet-window preconditions of P-BENCH-1. Zombie checks use
+  region-lock holders and captured PIDs, never process-name patterns.
+- All other production servers show zero in-flight, **sampled during** each block.
+- The live argv and environment of every server in the candidate set match the registered recipe,
+  including the OMP environment stack.
+- The write-side belief-kernel wiring for the run's records is in place before the first block.
+
+Missing any precondition makes the run observation-grade. A precondition that fails during a block
+stops the run; that block is re-queued, never dropped.
+
+**Sizing and stop rules.** After calibration the session computes the projected window length. If it
+exceeds the granted window, load points are dropped in the predeclared order 1.6 → 0.8 → 2.0. The
+floor's n = 24 is never reduced.
+
+**Scope limits.** Couplings that exist in the production topology (for example a GPU lane's host
+threads sharing physical cores with the CPU region) are in scope and recorded, not removed. Traffic
+from clients other than the orchestrator is out of scope and is stated as a limit. Raising `-np` is a
+different experiment.
+
+**Grammar.** `ΔS <X>−<Y> = <value> (<interval>) at ρ=<ρ>, W<n>, category=CANDIDATE,
+instrument_class=serving [P-SERVE-SEL-1, blocks=<n>, YYYY-MM-DD, attest <run directory>]`.
+
+**Provenance.** Designed in the 2026-09-26 orchestration prior-art research intake (Stage-3 plan,
+item DAR-LAT-3), for the single-instance, TTFT-bound, saturated-tier regime that the static-prior
+versus live-estimate literature leaves open.

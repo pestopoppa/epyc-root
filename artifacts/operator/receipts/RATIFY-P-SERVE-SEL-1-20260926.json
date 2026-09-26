@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-P-SERVE-SEL-1-20260926",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_p_serve_sel_1_20260926.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
