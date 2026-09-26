@@ -2,7 +2,7 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-09-26 (UFH-12 Phase 0 applied: pool 0.95× → 4.96×; G1 0.86–0.91 short of 0.95; operator KEEP + in-flight cap REPL-EMB-1.4); previous: 2026-09-17 (incremental: H2 query-length instrument landed (unmeasured), PREFIX-1 verified on both consumers with live qd-v1 index at 29,611 chunks, C7 attribution fix, trace FTS recency-vs-bm25 fix, lexical memory-eval arms); earlier: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
+**Last compiled**: 2026-09-26 late (REPL-EMB-0.3: the GPU half of D1 is its own package, bounded by 1.52 GiB free VRAM; the parallel embedder client fixed in orch `120b55b7`); previous: 2026-09-26 (UFH-12 Phase 0 applied: pool 0.95× → 4.96×; G1 0.86–0.91 short of 0.95; operator KEEP + in-flight cap REPL-EMB-1.4); previous: 2026-09-17 (incremental: H2 query-length instrument landed (unmeasured), PREFIX-1 verified on both consumers with live qd-v1 index at 29,611 chunks, C7 attribution fix, trace FTS recency-vs-bm25 fix, lexical memory-eval arms); earlier: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
 (measured 25× more perturbing than INT8 quantization, 62.5% top-1 agreement, OP-24 decision), the (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
 **Sources**: see per-section source lists (added 2026-09-17: internal-kb-rag H2/C7, colbert-reranker PREFIX-1 verification, trace-bm25 and tooling logs, CME retrieval arms)
 
@@ -1308,3 +1308,23 @@ The embedder placement package was signed at 17:46Z and applied from ~18:11 to 1
 ### Source References
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-0.1/0.2 results table, D3, REPL-EMB-1.4.
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the application and gate narrative.
+
+## Compiled Update — 2026-09-26 (late): the GPU half of the embedder placement is a separate package
+
+**Confidence: inferred** (the VRAM figure is a one-off session sample, not a protocol measurement).
+
+- **D1 has two halves, and only the CPU half has shipped.** Phase 0 moved the six CPU embedders onto their own cores.
+  The other half, a small embedder instance on the MI210, was never tasked. It is now REPL-EMB-0.3: its own
+  `stack-change` package for the operator's signature. VRAM binds it: about **1.52 GiB free** on 2026-09-26. The
+  package must sample free VRAM while the card is serving, size weights + KV + compute buffers against it, and show
+  the resident models' decode unchanged. The embedding model must match the index it serves, because an index belongs
+  to one model. The second MI210 (~Oct 2026) changes the headroom.
+- **The reference client works on Python 3.11 again.** `ParallelEmbedderClient` now defines its async context
+  manager natively instead of using `asyncio.coroutine`, which was removed (orch `120b55b7`). REPL-EMB-1.1's pooled
+  client can start from it.
+
+### Source References
+
+- [repl-embedding-retrieval.md](../handoffs/active/repl-embedding-retrieval.md) — D1, REPL-EMB-0.3, REPL-EMB-1.1.
+- [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final, derived-actionables row 7.
+- epyc-orchestrator commit `120b55b7` (`fix(repl_memory): define ParallelEmbedderClient async context manager natively`).
