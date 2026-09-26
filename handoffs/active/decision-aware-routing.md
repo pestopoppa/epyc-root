@@ -679,3 +679,99 @@ Richer orchestration **REGRESSED** quality on all three smaller models, concentr
 orchestration-heavy capabilities (Qwen 3.6 MCP .65 → .50), and sub-agent delegation scored 0.42–0.45
 on the fast tier. Directional and vendor-internal, so it **cannot gate a decision** — but it suggests
 routing on **feature demand** rather than prompt difficulty. Zero compute.
+
+## Research Intake Update — 2026-09-26 (orchestration prior art: static latency prior + saturation guard; intake-1796/1797/1798/1815)
+
+Selection has no latency or load term today. The only cost is historical elapsed from memory
+(orch @fb7871ea `retriever.py:46-57`, fed by :113-142), and `baseline_tps_by_role` is reward-side only
+(`q_reward.py:223`). The dive puts the gain on a latency term and found a static per-tier prior as good as a
+learned live estimate (intake-1796#02). The regime left open is ours: single-instance, TTFT-bound, preferred tier
+saturated (intake-1798#05; intake-1797#04). The terms land at weight 0 like DAR-4b: they do not reopen the
+DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 decides.
+
+- [ ] **DAR-LAT-1 — Build the shared `SlotCapacity` snapshot and `expected_wait_s(role)` on the ONE admission ledger.**
+  Role-keyed over the role's backend URLs:
+  - `queued` = `AdmissionController` waiting_*, `running` = in_flight, `limit` = np (orch `src/api/admission.py:229-245`).
+  - `kv_occupancy` comes from the existing `/slots` reader (`context_limits.py:433-452`); extend `parse_slots` with
+    `n_decoded`.
+  - Every field carries a source label.
+  - Record dispatch start time + predicted length at `acquire`/`release` and dead-reckon the expected wait (0 when
+    a slot is free).
+  - No new poller and no `/metrics` dependency (Axiom 1, heterogeneous-slot-fabric-residency.md:201).
+  - Direct consumers: DAR-LAT-2 and harness-selection-and-integration.md HS-OD-9 (c2-A1). Interface:
+    `expected_wait_s(role, priority="interactive")` returns seconds or None with `basis` and `source`; each consumer
+    applies its own fallback.
+  - Tests: ledger/`/slots` agreement, free-slot W=0, fail-open when the ledger is absent. intake-1796#01, intake-1798#02.
+- [ ] **DAR-LAT-2 — Add the static per-role latency prior + saturation guard to `HybridRouter._apply_priors`
+  (`hybrid_router.py:308-327`), landed at λ_lat=0 (byte-identical, test-pinned).**
+  - `score −= λ_lat·(T̂+W)/T_ref`, with `T̂ = L̂(role)/baseline_tps_by_role[role]` (provenance-labelled,
+    `q_scorer.py:386-402`).
+  - `L̂` = per-role p50 `tokens_generated` from `logs/progress` under an analysis id.
+  - `W` = DAR-LAT-1; missing inputs give term 0 plus a penalty flag (rider §7 Q1: soft cost fails open).
+  - Emit a per-decision selection receipt: components, admission snapshot, and the selection-time role vs the final
+    role after X-MAS (`routing.py:318`) and the failure veto (:344).
+  - Env-gated AB mode: per-request arm id, declared candidate restriction, read-only episodic snapshot, Q-updates
+    off, arm-A2 live term from `/slots` (busy flags + `n_decoded`). intake-1796#02, intake-1798#04.
+    - Key every prior row by (role, device, topology_hash), never by role alone: record the device (CPU region set or MI210) and the `ContentionGate._live_topology_hash()` value (orch `src/scheduling/contention_gate.py:141`) the TPOT/L̂ inputs were derived under. A row whose topology_hash differs from the live stack contributes term 0 plus a `prior_stale` flag (the same fail-open path as a missing prior), so a stack change or a Layer-2 residency swap cannot leave a CPU-era prior pricing a GPU-resident role. Re-derive the table on every stack change. RouterWise's latency model is per (model, setup) and its own router is a static prior with no live arm (intake-1815#0, intake-1815#6).
+- [ ] **DAR-LAT-3 — Load-sweep A/B on the single-instance saturating tier under a TTFT-bound workload:
+  Qwen3.8-Flash-Next (`architect_critic` :8074, `-np 1`) with divert target `architect_general` (:8083, MI210).**
+  - Arms: A0 incumbent (λ_lat=0), A1 static prior + guard, A2 A1 + live `/slots` term.
+  - Results go to `epyc-inference-research/data/sel-loadsweep-ab-<UTC>/`.
+  - Decision rule (predeclared, frozen in FROZEN-AT-LAUNCH.sha256):
+    - Adopt A2 only if S = TTFT-SLO attainment beats A1 by more than floor F (24 A1/A1 block pairs at ρ=1.25,
+      unit=arm) at ≥2 saturating ρ, AND reproduces at ρ=1.25 in holdout window W2, AND quality is non-inferior (≥ −1
+      per-suite quantum), AND no ρ<1 point degrades by more than F.
+    - Otherwise write a BOUNDED-NULL-1 statement and keep static + guard.
+    - The same structure clears A1 against A0.
+  - Settles the c1 open residual. intake-1796#02, intake-1797#04, intake-1798#05.
+  - [ ] **DAR-LAT-3a — Freeze the pre-registration.**
+    - Manifest: seeded MMLU-Pro/GPQA items (the frozen-v10 sets, amd-ai-lab-website-publication.md:18), `max_tokens`
+      cap, candidate pair, dry-route-explain filter (architect_critic chosen under A0 and A1 at zero load), frozen
+      prior table (keyed by role/device/topology_hash, with the live topology_hash at freeze) and episodic snapshot
+      digests.
+    - Calibration on the 50% calibration half: μ̂ and TTFT budget = 2 × unloaded p50 per length bucket.
+    - Load points: ρ ∈ {0.5,0.8,1.0,1.25,1.6,2.0}×μ̂, 40 Poisson arrivals per block, ABBA arm order per ρ.
+    - Denominator: every arrival; failures count as misses and quality 0; no retries.
+    - Claim grade: the serving-selection load-sweep protocol **P-SERVE-SEL-1 — ratified 2026-09-26 (operator,
+      orchestrator-design session); annex lands when the operator runs the ratify script** (prepared at Stage 4
+      under `scripts/operator/`; the annex goes to `measurement/protocols/`, a human-only path no agent writes).
+      The A/B is decision-grade once that annex is applied: confirm it is present and record the protocol id in the
+      manifest before the freeze.
+  - [ ] **DAR-LAT-3g — GATE (acquire, never observe):**
+    - bus-granted whole-host window (INVARIANTS #8), because MEAS-6 forbids a concurrent CPU/GPU campaign;
+    - `region-lock run --cpu-list 0-95 -- <driver>` (OPERATING_CONSTRAINTS.md:106) + MI210 lease;
+    - AutoPilot quiesced by its owner; experiment API on its own port with a captured PID (production API untouched,
+      :125);
+    - host-health preflight (:110);
+    - quiet-window preconditions (bench-cpu.md:59), checked via region holders and captured PIDs, never name patterns;
+    - other servers sampled idle DURING each block;
+    - live :8074 argv/env = the registered recipe incl. the OMP stack (bench-cpu.md:116);
+      - **Fails as of 2026-09-26 (blocks this gate):** live `:8074` runs `-t 96` (ps, 2026-09-26), while the registry
+        recipe says `threads: 48` (orch `model_registry.yaml:1899-1904`) and the codified recipe says
+        `THREADS = 48  # NOT 96: the served decode optimum` (`qwen38_flash_next_recipe.py:690`); the likely source is
+        the stack template's `threads: 96` (`stack_templates/default.yaml:155`). Production `n_ctx` 262144 also
+        differs from the recipe's validated 8192. This is a production launch change, so it is reconciled only by a
+        signed `stack-change` package (the lineup/recipe owner), never an ad-hoc relaunch; 3g stays blocked until then.
+    - VB-SEL-LOADAB wired.
+  - [ ] **DAR-LAT-3b — Run W1** (calibration, then the arm sweep plus the 24 A1/A1 floor pairs). Stop on any
+    prerequisite that fails during a block; re-queue the block, never drop it. Per-request receipts + raw outputs.
+  - [ ] **DAR-LAT-3c — Holdout W2 (≥24 h later, ρ=1.25, ABBA, fresh seeds) + verdict.** PAIRED-CI-1 within a window
+    only; W1 and W2 are never pooled (MEASUREMENT.md:434-438). Record the verdict and, on A2 loss, the BOUNDED-NULL-1
+    power bound + positive-control readback.
+
+**Default-weight flip (trigger prose, no checkbox).**
+- Fires only when DAR-LAT-3c clears A1 (or A2) against A0.
+- The flip is a routing-policy change. It needs an operator-signed instrument-era row (cf. E18) through consolidated
+  ratification (MEASUREMENT.md:181), bundled with the P-SERVE-SEL-1 ratify script if the operator has not yet run it.
+- If A2 wins, the learned/live-predictor question declined in learned-routing-controller.md (C1-A4) reopens. An
+  SFS-style engine simulator stays excluded by the frozen kernel (intake-1798#06).
+
+**Mixture-of-agents trigger (prose, no checkbox).**
+- Fires if DAR-6 swarm-fanout or any cross-model aggregation mode is re-authorized on the x_* surface.
+- Before choosing cross-model mixing vs same-model multi-sample aggregation, dive intake-1799#record and
+  intake-1802#record (both stage1-unverified; do not cite their numbers until dived).
+
+**Code pointers as of orch @fb7871ea (dated note; the Key Files table above is historical).**
+- Selection score: `_scalarized_selection_score` at `retriever.py:46-57`, called at :286-297 and :786-810.
+- Prior blend: `hybrid_router.py:308-327`.
+- Initial route: `routing_decision.py:259-314`.

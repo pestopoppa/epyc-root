@@ -1248,3 +1248,15 @@ LensVLM remains a monitor record and carries no active checkbox or index action.
 - [Research-intake Stage 3 progress](../progress/2026-09/2026-09-25.md) — action-distillation disposition.
 
 **Confidence:** verified as repository execution posture; external LensVLM performance remains unmeasured locally.
+
+## Compiled Update — 2026-09-26 (research-intake orch-prior-art): the 150–220 GB/s CPU bandwidth figure is pre-BIOS
+
+*Correction 2026-09-26:* the "Decode-usable CPU bandwidth is about 150–220 GB/s, not 460" line in *Corrections to the operator draft* (Speech-native interlocutor program, above) is pre-BIOS. Since 2026-09-21 a full-screen read-sum measures 446.8 GB/s at t96 and 449.4 under load. A ~250 GB/s decoder is no longer excluded by the ceiling alone; whether it fits beside a -t 96 LLM is the contention question (CPU speech collapses next to a `-t 96` CPU LLM).
+
+### Source References
+
+- [Conversation stack](../handoffs/active/conversation-stack.md) — the same correction, dated 2026-09-26, under *Facts that constrain the design*.
+- [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — C8 and the post-BIOS supersession note (`epyc-inference-research/data/bios-postreboot-20260921/`).
+- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C36, the 449.4 GB/s re-read.
+
+**Confidence:** measured (read-sum microbench, one host; the 449.4 re-read was not on an idle host).

@@ -172,6 +172,8 @@ per-quadrant sharding), then the 4800→5600 MT/s BIOS change. Axis B's bytes le
 Axis E multiplies whatever is left. The DGX-Spark comparison stays withdrawn: this box currently *reads*
 at 153 GB/s in the configuration that serves.
 
+> **Post-BIOS supersession — appended 2026-09-26 (research intake; rows above are pre-BIOS and are not edited).** On 2026-09-21 the operator applied memory interleave ON + DDR5 5600 MT/s (C8, :282-289). Current host facts: theoretical **537.6 GB/s**; C0 read-sum **446.8 GB/s at t96** (410.4 at t48; gemv-2560 478.9) — epyc-inference-research/data/bios-postreboot-20260921/; re-read 2026-09-26 under load average 17–21: **449.4 GB/s** at t96. The ~170 GB/s global cap in :149 is gone. Superseded as current-host facts: :146 "460.8 today", :147, :149, :150–151, and the "153 GB/s of a 460.8 GB/s machine" above. Recomputed roofline at the same 4.16 GB/token: **9.3 ms (107 t/s)** at 446.8 GB/s, **7.7 ms (129 t/s)** at 537.6 — computed, not measured. The D0/B1 split at :152 and the "~70 ms dispatch floor" do not survive: the post-BIOS C5 re-anchor shed 39 ms/token (98.6 → 59.5 ms, tg128 t48, build 10151, uniform IQ4_XS research artifact), more than the row's entire 27 ms bandwidth budget (progress/2026-09/2026-09-21.md:91-138); re-deriving :152 post-BIOS is INF-70 work.
+
 ## Axis C — measurement (FIRST; cheap, and it makes every other axis legible)
 
 - [x] **C0 — measure the roofline denominator: read-only DRAM bandwidth under the decode recipe.** ✅ 2026-09-02

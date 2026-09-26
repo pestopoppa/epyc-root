@@ -234,7 +234,7 @@ Reasoning:
   - **A:**
     - write the `chat.params` plugin (it must use custom-provider mode);
     - pin `4bffbb6` or a re-audited successor, re-running the HS-1g check on any bump;
-      *(Superseded 2026-09-16: P0.3 re-audited and pinned `350c726aa8b6` (v1.18.31), see [`opencode-p03-audit-20260916.md`](../reference/harness-candidates/opencode-p03-audit-20260916.md) §1. The §2 matrix above was written against `4bffbb6` and is left as recorded.)*
+      *(Superseded 2026-09-16: P0.3 re-audited and pinned `350c726aa8b6` (v1.18.31), see [`opencode-p03-audit-20260916.md`](../reference/harness-candidates/opencode-p03-audit-20260916.md) §1. The §2 matrix above was written against `4bffbb6` and is left as recorded.)* *(Correction 2026-09-26: `350c726aa8b6` is the audit anchor, not the `v1.18.31` tag `014614d3`; source-identical for `packages/opencode` — see `opencode-p03-audit-20260916.md` §1.)*
     - set `compaction.auto:false`;
     - decide keep-or-deny for `task`;
     - make a container/worktree jail;

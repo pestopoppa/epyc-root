@@ -3,8 +3,7 @@
 **Purpose.** Decide whether a client (a user-facing harness, an SDK script, an IDE plugin) can
 drive, and defer to, the orchestrator's `/v1/chat/completions` + `x_*` override contract.
 **Owner of live use:** [`harness-selection-and-integration.md`](../../../handoffs/active/harness-selection-and-integration.md).
-HS-4 P0.3 re-ran this instrument on OpenCode at its current tip (2026-09-16, pin `350c726a`
-v1.18.31): [`opencode-p03-audit-20260916.md`](opencode-p03-audit-20260916.md) §3.
+HS-4 P0.3 re-ran this instrument on OpenCode at its current tip (2026-09-16, pin `350c726a`, source-identical to release tag `v1.18.31` = `014614d3`): [`opencode-p03-audit-20260916.md`](opencode-p03-audit-20260916.md) §3.
 **Origin:** first written in the Hermes handoff on 2026-07-04 (items N/O), extended on 2026-07-17
 (HS-1b, deference surface) and 2026-09-16 (HS-1g, call-verb check). That handoff closed on
 2026-09-16 and is now [`handoffs/completed/hermes-outer-shell.md`](../../../handoffs/completed/hermes-outer-shell.md).
@@ -27,10 +26,10 @@ The Hermes-specific results are in [`hermes-evaluation-20260916.md`](hermes-eval
 - The orchestrator contract is **body-based**. `OpenAIChatRequest`
   (`epyc-orchestrator/src/api/models/openai.py`) takes the standard `model`, `messages`,
   `temperature`, `max_tokens`, `stream`, `tools` and `tool_choice` fields, plus the extension fields
-  `x_orchestrator_role`, `x_max_escalation`, `x_force_model`, `x_disable_repl` and `x_show_routing`.
+  `x_orchestrator_role`, `x_max_escalation`, `x_force_role` (deprecated alias `x_force_model`), `x_disable_repl` and `x_show_routing`.
   HS-4 P0.2 adds `x_session_id`, `x_user_id`, `x_memory` and `x_tool_mode`. Re-read the model before
   every audit; do not trust this list.
-- The only HTTP header the API reads is the `x-task-id` observability tag. There is **no header path
+- The API reads two request headers: the `x-task-id` observability tag and `User-Agent` (the HS-4 P0.2 session guard). HS-16 adds session-id headers as an identity fallback, not as overrides. There is **no header path
   to an override**. A client that can only add headers (for example OpenHands `LLM.extra_headers`, or
   OpenCode's `chat.headers` hook) needs a new orchestrator-side header reader. Body injection works
   today.
@@ -41,6 +40,7 @@ The Hermes-specific results are in [`hermes-evaluation-20260916.md`](hermes-eval
   model", "don't escalate") travels as a typed `x_*` field, never as prompt prose. A present field
   bypasses frontdoor classification; an absent field leaves normal routing in force. When a
   client-side profile or memory note contradicts an explicit `x_*` field, the explicit field wins.
+  *Naming note (2026-09-26, dormant):* if a harness→orchestrator priority hint is ever added, name its typed `x_*` keys after MCP's `costPriority` / `speedPriority` / `intelligencePriority` (0–1, advisory; the orchestrator makes the final choice) and cite them as borrowed vocabulary. `ModelPreferences` is a deprecated MCP type (SEP-2577), not a live contract. The plugin injects static body keys, which limits per-turn use. [intake-1791#2]
 
 ## 2. Procedure
 

@@ -21,3 +21,7 @@ Rows removed from the operator decision queue at the operator-invoked wrap-up of
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
 | OP-20 | One ruling on `task_failed` scoring applied to BOTH producers (`eval_tower:1339` excludes it; the seeding path scores it WRONG) — until it lands, quality numbers are not comparable across producers. Auditor recommends: non-infra → WRONG in both, infra → EXCLUDED in both | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | 2026-08-12 |
+
+## Resolved 2026-09-26
+
+- **OP-61** — DECIDED 2026-09-26 at the research-intake Stage-3 plan approval (intake/orch-prior-art-20260926): KTransformers runtime DECLINED for now; MI210 port investigation OPEN. Implementation: [`fable5-window2-findings-02-heterogeneous-gpu.md`](../active/fable5-window2-findings-02-heterogeneous-gpu.md) R-A10 → F7, F6. (OP-61 never reached the queue, so there is no verbatim row to preserve.)
