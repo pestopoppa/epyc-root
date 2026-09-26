@@ -1,9 +1,9 @@
 {
   "session_id": "intake-exl3-sglang-throughput-20260925",
   "started_at": "2026-09-25T13:40:00Z",
-  "last_checkpoint": "2026-09-25T21:10:18Z",
-  "phase": 5,
-  "stage": "stage2f-complete-awaiting-surfaced-source-selection",
+  "last_checkpoint": "2026-09-26T05:21:32Z",
+  "phase": 6,
+  "stage": "stage4-complete",
   "session_kind": "research-intake (CIRU EXL3/SGLang serving package and throughput path)",
   "previous_session": "intake-exl3-mi210-20260925 (stage4-complete; preserved at /mnt/raid0/llm/tmp/intake-exl3-sglang-20260925/previous-research-session-stage4.json)",
   "mandate": "Ingest the CIRU Qwen3.8-27B EXL3/SGLang package and establish what the published throughput requires so the CPU and MI210 program targets the complete serving path.",
@@ -12,7 +12,7 @@
     "operator_goal": "We MUST be able to get to these throughput speeds also"
   },
   "max_existing_intake_id_at_start": 1562,
-  "next_intake_id": 1756,
+  "next_intake_id": 1783,
   "entries_processed": [
     "intake-1563",
     "intake-1564",
@@ -74,7 +74,34 @@
     "intake-1752",
     "intake-1753",
     "intake-1754",
-    "intake-1755"
+    "intake-1755",
+    "intake-1756",
+    "intake-1757",
+    "intake-1758",
+    "intake-1759",
+    "intake-1760",
+    "intake-1761",
+    "intake-1762",
+    "intake-1763",
+    "intake-1764",
+    "intake-1765",
+    "intake-1766",
+    "intake-1767",
+    "intake-1768",
+    "intake-1769",
+    "intake-1770",
+    "intake-1771",
+    "intake-1772",
+    "intake-1773",
+    "intake-1774",
+    "intake-1775",
+    "intake-1776",
+    "intake-1777",
+    "intake-1778",
+    "intake-1779",
+    "intake-1780",
+    "intake-1781",
+    "intake-1782"
   ],
   "entries_remaining": [],
   "expansion_cap": 10,
@@ -149,6 +176,14 @@
       "verbatim": "Proceed as recommended",
       "disposition": "planned",
       "plan_ref": "stage2f-twelve-selected-ingests-seventeen-declines"
+    },
+    {
+      "seq": 9,
+      "stage": "2g",
+      "ts": "2026-09-25T21:30:00Z",
+      "verbatim": "Question: are these successive ways picking up any crucially relevant context for the actionable tasks or have we entered a diminishing returns region? If so, we should proceed to stage 3 after this wave",
+      "disposition": "planned",
+      "plan_ref": "stage2g-final-wave-then-stage3"
     }
   ],
   "source_fetches": {
@@ -3155,7 +3190,7 @@
     "pending_candidate_collisions": []
   },
   "stage2f_gate": {
-    "status": "awaiting-operator-selection",
+    "status": "closed-operator-selected-final-wave",
     "selected_entries": [
       "intake-1744",
       "intake-1745",
@@ -3227,7 +3262,2120 @@
       "https://github.com/vllm-project/vllm/pull/53906",
       "https://github.com/gittensor-ai-lab/sparkinfer/issues/983"
     ],
-    "pending_count": 37,
-    "handoff_writes": 0
+    "pending_count": 0,
+    "handoff_writes": 0,
+    "operator_selection": "All 27 recommended ingests selected; all 10 recommended declines accepted; after this wave proceed to Stage 3.",
+    "selected_stage2g_entries": [
+      "intake-1756",
+      "intake-1757",
+      "intake-1758",
+      "intake-1759",
+      "intake-1760",
+      "intake-1761",
+      "intake-1762",
+      "intake-1763",
+      "intake-1764",
+      "intake-1765",
+      "intake-1766",
+      "intake-1767",
+      "intake-1768",
+      "intake-1769",
+      "intake-1770",
+      "intake-1771",
+      "intake-1772",
+      "intake-1773",
+      "intake-1774",
+      "intake-1775",
+      "intake-1776",
+      "intake-1777",
+      "intake-1778",
+      "intake-1779",
+      "intake-1780",
+      "intake-1781",
+      "intake-1782"
+    ],
+    "accepted_declines": [
+      "https://github.com/sgl-project/sglang/issues/40362",
+      "https://github.com/sgl-project/sglang/issues/34297",
+      "https://github.com/sgl-project/sglang/pull/35539",
+      "https://github.com/sgl-project/sglang/issues/36048",
+      "https://github.com/sgl-project/sglang/issues/36889",
+      "https://github.com/sgl-project/sglang/issues/36941",
+      "https://github.com/tonyd2wild/GLM-5.3-Flash-NVFP4-DFlash2-2x-DGX-Spark/issues/23",
+      "https://github.com/vllm-project/vllm/pull/46995",
+      "https://github.com/vllm-project/vllm/pull/53906",
+      "https://github.com/gittensor-ai-lab/sparkinfer/issues/983"
+    ],
+    "next_stage": "stage3"
+  },
+  "stage2g_id_map": {
+    "https://github.com/local-inference-lab/b12x/pull/49": "intake-1756",
+    "https://github.com/local-inference-lab/vllm/pull/139": "intake-1757",
+    "https://github.com/brandonmmusic-max/glm-5.3-flash-exl3-4bpw": "intake-1758",
+    "https://huggingface.co/datasets/brandonmusic/GLM-5.3-Flash-BF16-Teacher-Logits": "intake-1759",
+    "https://github.com/sgl-project/sglang/issues/34899": "intake-1760",
+    "https://github.com/sgl-project/sglang/pull/35541": "intake-1761",
+    "https://github.com/sgl-project/sglang/pull/36014": "intake-1762",
+    "https://github.com/sgl-project/sglang/issues/38975": "intake-1763",
+    "https://github.com/sgl-project/sglang/pull/38977": "intake-1764",
+    "https://github.com/sgl-project/sglang/issues/38009": "intake-1765",
+    "https://github.com/z-lab/dflash/issues/159": "intake-1766",
+    "https://github.com/sgl-project/sglang/issues/36291": "intake-1767",
+    "https://github.com/sgl-project/sglang/pull/35725": "intake-1768",
+    "https://github.com/sgl-project/sglang/pull/36708": "intake-1769",
+    "https://github.com/vllm-project/vllm/issues/54150": "intake-1770",
+    "https://github.com/vllm-project/vllm/issues/55800": "intake-1771",
+    "https://github.com/vllm-project/vllm/issues/56064": "intake-1772",
+    "https://arxiv.org/abs/2608.20530": "intake-1773",
+    "https://github.com/sgl-project/sglang/pull/37462": "intake-1774",
+    "https://huggingface.co/nvidia/GLM-5.3-Flash-NVFP4": "intake-1775",
+    "https://huggingface.co/RedHatAI/GLM-5.3-Flash-NVFP4": "intake-1776",
+    "https://github.com/canada-quant/vllm-glm53-flash-sm121": "intake-1777",
+    "https://huggingface.co/canada-quant/GLM-5.3-Flash-DFlash2-G": "intake-1778",
+    "https://github.com/gittensor-ai-lab/sparkinfer": "intake-1779",
+    "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-DSpark-NVFP4": "intake-1780",
+    "https://huggingface.co/QUASAR-QAT/Qwen3.8-27B-QUASAR-NVFP4": "intake-1781",
+    "https://huggingface.co/nvidia/Qwen3.8-27B-NVFP4": "intake-1782"
+  },
+  "stage2g_dives": {
+    "intake-1756": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1756/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1757": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1757/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1758": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1758/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1759": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1759/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1760": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1760/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-wave-value-audit"
+      ]
+    },
+    "intake-1761": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1761/REPORT.md",
+      "verification": "dive-overturned",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-wave-value-audit"
+      ]
+    },
+    "intake-1762": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1762/REPORT.md",
+      "verification": "dive-overturned",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-wave-value-audit"
+      ]
+    },
+    "intake-1763": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1763/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-wave-value-audit"
+      ]
+    },
+    "intake-1764": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1764/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-wave-value-audit"
+      ]
+    },
+    "intake-1765": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1765/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-wave-value-audit"
+      ]
+    },
+    "intake-1766": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1766/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-wave-value-audit"
+      ]
+    },
+    "intake-1767": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1767/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-wave-value-audit"
+      ]
+    },
+    "intake-1768": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1768/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1769": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1769/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1770": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1770/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1771": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1771/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1772": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1772/REPORT.md",
+      "verification": "dive-overturned",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1773": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1773/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1774": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1774/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-source-triage"
+      ]
+    },
+    "intake-1775": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1775/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-stage3-readiness"
+      ]
+    },
+    "intake-1776": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1776/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-stage3-readiness"
+      ]
+    },
+    "intake-1777": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1777/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-stage3-readiness"
+      ]
+    },
+    "intake-1778": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1778/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-stage3-readiness"
+      ]
+    },
+    "intake-1779": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1779/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-stage3-readiness"
+      ]
+    },
+    "intake-1780": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1780/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-stage3-readiness"
+      ]
+    },
+    "intake-1781": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1781/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-stage3-readiness"
+      ]
+    },
+    "intake-1782": {
+      "report": "/mnt/raid0/llm/tmp/dive-intake-1782/REPORT.md",
+      "verification": "dive-verified",
+      "second_reader": [
+        "research-intake/stage2g-second-reader-stage3-readiness"
+      ]
+    }
+  },
+  "stage2g_source_revisions": {
+    "intake-1756": [
+      "local-inference-lab/b12x PR #49 head 669a12ddc7cf3021e91a25f398b1a883b703fd12 (closed, unmerged; retrieved 2026-09-25)"
+    ],
+    "intake-1757": [
+      "local-inference-lab/vllm PR #139 head 00787eeabebc11cee12cff12a823011b4e1a5ebc (closed, unmerged; retrieved 2026-09-25)"
+    ],
+    "intake-1758": [
+      "brandonmmusic-max/glm-5.3-flash-exl3-4bpw@24784d718cb7bbb99feaee2050eaddcfbc913386 (retrieved 2026-09-25)"
+    ],
+    "intake-1759": [
+      "brandonmusic/GLM-5.3-Flash-BF16-Teacher-Logits dataset@95f4fdd94bf29989db2e0d1054e4931f55edb6aa (retrieved 2026-09-25)"
+    ],
+    "intake-1760": [
+      "sgl-project/sglang/issues/34899 open updated 2026-08-20T13:53:40Z (retrieved 2026-09-25)"
+    ],
+    "intake-1761": [
+      "sgl-project/sglang/pull/35541 open head e6cef4d2c67b1d4355ba6056fa4fc9f1ca69866d updated 2026-08-25T08:23:19Z (retrieved 2026-09-25)"
+    ],
+    "intake-1762": [
+      "sgl-project/sglang/pull/36014 open head ede09194053a691252bb7f45a4390d26cd9ac56f updated 2026-09-12T05:41:35Z (retrieved 2026-09-25)"
+    ],
+    "intake-1763": [
+      "sgl-project/sglang/issues/38975 open updated 2026-09-11T01:46:15Z (retrieved 2026-09-25)"
+    ],
+    "intake-1764": [
+      "sgl-project/sglang/pull/38977 open head 301780e843493a9cabcab32a5de727c7715143c2 updated 2026-09-19T16:24:44Z (retrieved 2026-09-25)"
+    ],
+    "intake-1765": [
+      "sgl-project/sglang/issues/38009 open updated 2026-09-10T05:59:17Z (retrieved 2026-09-25)"
+    ],
+    "intake-1766": [
+      "z-lab/dflash/issues/159 open updated 2026-08-19T09:45:28Z (retrieved 2026-09-25)"
+    ],
+    "intake-1767": [
+      "sgl-project/sglang/issues/36291 open updated 2026-08-25T07:58:26Z (retrieved 2026-09-25)"
+    ],
+    "intake-1768": [
+      "sgl-project/sglang/pull/35725 open head 30c1bccdc44b674a7599ebf777e51ccb2cdb330b updated 2026-08-24T09:18:41Z (retrieved 2026-09-25)"
+    ],
+    "intake-1769": [
+      "sgl-project/sglang/pull/36708 closed head 2d4b6acea720f5eb5a2b2c269f1cc9dcbc8b10c0 merged c4d5d45e506dcd978a65661a503eda1a272c39a4 updated 2026-08-27T18:23:30Z (retrieved 2026-09-25)"
+    ],
+    "intake-1770": [
+      "vllm-project/vllm issue #54150 open (updated 2026-09-02; retrieved 2026-09-25)"
+    ],
+    "intake-1771": [
+      "vllm-project/vllm/issues/55800 open updated 2026-09-08T03:05:47Z (retrieved 2026-09-25)"
+    ],
+    "intake-1772": [
+      "vllm-project/vllm issue #56064 open (updated 2026-09-10T03:58:01Z; retrieved 2026-09-25)"
+    ],
+    "intake-1773": [
+      "arXiv:2608.20530v2 (2026-09-22; retrieved 2026-09-25)"
+    ],
+    "intake-1774": [
+      "sgl-project/sglang/pull/37462 open head 33a23c0f0f0b3f5f5a86ff46e89cd5b019b98dfa updated 2026-09-22T18:40:53Z (retrieved 2026-09-25)"
+    ],
+    "intake-1775": [
+      "nvidia/GLM-5.3-Flash-NVFP4@09b04e5e74bca08ca8549fc736d4cdd8624bfde3 (retrieved 2026-09-25)"
+    ],
+    "intake-1776": [
+      "RedHatAI/GLM-5.3-Flash-NVFP4@18d55bfd5a2194887738da73753975c9d3842f46 (retrieved 2026-09-25)"
+    ],
+    "intake-1777": [
+      "canada-quant/vllm-glm53-flash-sm121@f1d328302e9611fe4df1092a40be1924ec577ff5 (retrieved 2026-09-25)"
+    ],
+    "intake-1778": [
+      "canada-quant/GLM-5.3-Flash-DFlash2-G@3d920ba2e98547e6ef704f3d8e589e0b3e083b50 (retrieved 2026-09-25)"
+    ],
+    "intake-1779": [
+      "gittensor-ai-lab/sparkinfer@aebe0a090f0c1a4204a038c0d444cd4eb982b01c (retrieved 2026-09-25)"
+    ],
+    "intake-1780": [
+      "gittensor-model-hub/Qwen3.8-27B-DSpark-NVFP4@eba1ac5a66c74902eaa95a4000a7c5eda96d8e95 (retrieved 2026-09-25)"
+    ],
+    "intake-1781": [
+      "QUASAR-QAT/Qwen3.8-27B-QUASAR-NVFP4@15d2e47bffe5d8ad23928879f8f7d2f74909e259 (retrieved 2026-09-25)"
+    ],
+    "intake-1782": [
+      "nvidia/Qwen3.8-27B-NVFP4@482ca0f3832238542f8f5295dde86b5f22711d80 (retrieved 2026-09-25)"
+    ]
+  },
+  "stage2g_findings": [
+    "The final wave is in diminishing-returns territory: no source provides CPU, HIP, ROCm, gfx90a, or MI210 EXL3 compute code or measurements.",
+    "B12X PR49 and vLLM PR139 add high-value portable contracts: native packed per-logical-matrix binding, plan/bind/run lifecycle, caller-owned persistent scratch, fail-closed capacity/codebook checks, and a second scalar MCG/lane-map oracle.",
+    "The Brandon K4 MCG artifact and its receipts provide a strong first real fixture, but its source-available license bars code reuse absent review and raw decoded parity failed in the TP2 quality receipt.",
+    "The teacher dataset supplies a sealed quality oracle: 843.3 GB of published final/nonfinal logits within a 1.318 TB dataset; it does not replace a reconstruction oracle.",
+    "Full-stack Qwen correctness requires separate GDN state and speculative controls: independent FP32 recurrence, forced-reject controls, target-only A/A, and fail-capable c1/c8/c16 probes.",
+    "ModelOpt NVFP4 fused gate/up scale corruption creates a comparator-admission check; affected artifacts cannot serve as clean controls without scale and reconstruction verification.",
+    "NVIDIA throughput is whole-stack, hardware-specific context. Local CPU/MI210 gates must measure decode concurrency, prefill, capacity, quality, and serving overhead independently.",
+    "LiLiCorr, DFlash/DSpark integration, and drafter training remain later serving work after codec-only EXL3 correctness and throughput are established."
+  ],
+  "stage2g_derived_actionables": [
+    {
+      "item": "G1",
+      "action": "Adopt a backend-neutral native-packed EXL3 ABI with per-logical-matrix metadata, plan/bind/run lifecycle, persistent caller-owned scratch, and fail-closed capacities.",
+      "owner": "exl3-cpu-mi210-implementation.md",
+      "disposition": "plan"
+    },
+    {
+      "item": "G2",
+      "action": "Add a project-derived scalar MCG/lane-map oracle and pin the K4 MCG real fixture subject to license boundaries.",
+      "owner": "exl3-cpu-mi210-implementation.md",
+      "disposition": "plan"
+    },
+    {
+      "item": "G3",
+      "action": "Use nonfinal teacher logits for harness work and preserve the final panel for one frozen quality qualification.",
+      "owner": "exl3-cpu-mi210-implementation.md",
+      "disposition": "plan"
+    },
+    {
+      "item": "G4",
+      "action": "Measure concentrated, spread, and randomized routing distributions and c1/c8/c16 plus prefill envelopes on EPYC and MI210.",
+      "owner": "exl3-cpu-mi210-implementation.md",
+      "disposition": "plan"
+    },
+    {
+      "item": "G5",
+      "action": "Add independent packed-decode/GDN recurrence, target-only A/A, forced-reject, and fail-capable concurrency controls before speculative integration.",
+      "owner": "exl3-cpu-mi210-implementation.md",
+      "disposition": "plan"
+    },
+    {
+      "item": "G6",
+      "action": "Add scale-allocation, matrix reconstruction, and multilingual byte-token checks before admitting W4A16/NVFP4 comparator artifacts.",
+      "owner": "exl3-cpu-mi210-implementation.md",
+      "disposition": "plan"
+    },
+    {
+      "item": "G7",
+      "action": "After codec-only gates, integrate DFlash/DSpark with direct GDN commit, paired sliding-window allocation, and acceptance-versus-throughput accounting.",
+      "owner": "dflash2-block-drafter-experimental-build.md",
+      "disposition": "plan"
+    },
+    {
+      "item": "G8",
+      "action": "Keep LiLiCorr behind a trigger: native EXL3 target stable and ordinary speculative serving validated.",
+      "owner": "dflash2-block-drafter-experimental-build.md",
+      "disposition": "monitor"
+    },
+    {
+      "item": "G9",
+      "action": "Treat additional NVIDIA artifacts, training lineages, generic runtime roots, and superseded drafters as knowledge-only or declined after saturation.",
+      "owner": null,
+      "disposition": "decline"
+    }
+  ],
+  "stage2g_surfaced_sources": [
+    {
+      "url": "https://huggingface.co/zai-org/GLM-5.3-Flash-BF16",
+      "bearing": [
+        "intake-1759",
+        "intake-1775"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/29792",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/33417",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34043",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34159",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34168",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34169",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34184",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34356",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34405",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34607",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34653",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35058",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35161",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35293",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/tree/main/.claude/skills/kl-consistency-test",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34734",
+      "bearing": [
+        "intake-1761",
+        "intake-1762"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34597",
+      "bearing": [
+        "intake-1761"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34821",
+      "bearing": [
+        "intake-1761"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/33291",
+      "bearing": [
+        "intake-1761"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/36596",
+      "bearing": [
+        "intake-1763"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/20627",
+      "bearing": [
+        "intake-1763"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/flagos-ai/vllm-plugin-FL/issues/385",
+      "bearing": [
+        "intake-1763"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/53877",
+      "bearing": [
+        "intake-1763",
+        "intake-1764"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834739/dflash_thinking.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834740/baseline_no_thinking.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834741/baseline_thinking_a.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834742/summary.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834743/baseline_thinking_b.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834744/dflash_no_thinking.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/z-lab/dflash/issues/57",
+      "bearing": [
+        "intake-1766"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/ml-explore/mlx-lm/issues/1470",
+      "bearing": [
+        "intake-1766"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/z-lab/omlx-fork/releases/tag/0.6.2-dflash2",
+      "bearing": [
+        "intake-1766"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/bstnxbt/dflash-mlx",
+      "bearing": [
+        "intake-1766"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/28695",
+      "bearing": [
+        "intake-1768"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35586",
+      "bearing": [
+        "intake-1768"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/36507",
+      "bearing": [
+        "intake-1769"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/LibertAIDAI/GLM-5.3-Flash-NVFP4",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/dealignai/GLM-5.3-Flash-UNCENSORED-NVFP4",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/RedHatAI/GLM-5.3-Flash-NVFP4",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/52540",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/53963",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36596",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/50169",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/39734",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/54348",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/53130",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/52520",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/49926",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/50934",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/52225",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/50925",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/49546",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/54666",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/31085",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://digby.ai",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://research.nvidia.com/labs/nemotron/lilicorr/",
+      "bearing": [
+        "intake-1773",
+        "intake-1774"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://arxiv.org/abs/2605.29707",
+      "bearing": [
+        "intake-1773",
+        "intake-1774"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/NVIDIA/Model-Optimizer/pull/2342",
+      "bearing": [
+        "intake-1774"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/39966",
+      "bearing": [
+        "intake-1774"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/zai-org/GLM-5.3-Flash",
+      "bearing": [
+        "intake-1775",
+        "intake-1776",
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/NVIDIA/Model-Optimizer",
+      "bearing": [
+        "intake-1775",
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/datasets/abisee/cnn_dailymail",
+      "bearing": [
+        "intake-1775"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/datasets/nvidia/Nemotron-Post-Training-Dataset-v2",
+      "bearing": [
+        "intake-1775"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm",
+      "bearing": [
+        "intake-1775",
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang",
+      "bearing": [
+        "intake-1775",
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/llm-compressor",
+      "bearing": [
+        "intake-1776"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/neuralmagic/lm-evaluation-harness",
+      "bearing": [
+        "intake-1776"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/neuralmagic/lighteval",
+      "bearing": [
+        "intake-1776"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/canada-quant/GLM-5.3-Flash-DFlash2-F",
+      "bearing": [
+        "intake-1777",
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/canada-quant/GLM-5.3-Flash-DFlash2-E",
+      "bearing": [
+        "intake-1777",
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/canada-quant/dgx-spark-sm121",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/Tencent/AngelSpec",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/unsloth/Qwen3.8-27B-NVFP4",
+      "bearing": [
+        "intake-1779",
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+      "bearing": [
+        "intake-1779"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.8-27B/discussions/192",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/QUASAR-QAT/Qwen3.5-4B-QUASAR-NVFP4",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/QUASAR-QAT/Qwen3.5-4B-QUASAR-NVFP4-W4A4",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/QUASAR-QAT/Qwen3.5-4B-QUASAR-Q4_0-GGUF",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://arxiv.org/abs/2608.13966",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+      "bearing": [
+        "intake-1781",
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/Inferact/Qwen3.8-27B-NVFP4",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/collections/nvidia/nemotron-post-training-v3",
+      "bearing": [
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://nvidia.github.io/Model-Optimizer/reference/generated/modelopt.torch.quantization.config.html#modelopt.torch.quantization.config.LocalHessianCalibConfig",
+      "bearing": [
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://nvidia.github.io/Model-Optimizer/announcements/local-hessian.html",
+      "bearing": [
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://docs.sglang.io/cookbook/autoregressive/Qwen/Qwen3.8-27B",
+      "bearing": [
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/NVIDIA/Model-Optimizer/blob/4956213d670c382385d9bc43e17379b9fc064e50/modelopt_recipes/models/zai-org/GLM-5.3-Flash/ptq/nvfp4_experts_dense_mlp-kv_fp8_cast.yaml",
+      "bearing": [
+        "intake-1775"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/canada-quant/glm-5.3-w4a16-mtp",
+      "bearing": [
+        "intake-1777",
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/canada-quant/GLM-5.3-Flash-DFlash2-G",
+      "bearing": [
+        "intake-1777"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/incoai/GLM-5.3-Flash-DFlash2",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://github.com/canada-quant/vllm-glm53-flash-sm121",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/52816",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://github.com/z-lab/dflash",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://arxiv.org/abs/2602.06036",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://inco.ai/blog/dflash2/",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-DSpark-NVFP4",
+      "bearing": [
+        "intake-1779"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-NVFP4-RTX5090",
+      "bearing": [
+        "intake-1779",
+        "intake-1780"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF",
+      "bearing": [
+        "intake-1779"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://gittensor-ai-lab.github.io/sparkinfer/dashboard/",
+      "bearing": [
+        "intake-1779"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    }
+  ],
+  "stage2g_declines": [
+    {
+      "url": "https://huggingface.co/zai-org/GLM-5.3-Flash-BF16",
+      "bearing": [
+        "intake-1759",
+        "intake-1775"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/29792",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/33417",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34043",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34159",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34168",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34169",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34184",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34356",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34405",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34607",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34653",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35058",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35161",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35293",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/tree/main/.claude/skills/kl-consistency-test",
+      "bearing": [
+        "intake-1760"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34734",
+      "bearing": [
+        "intake-1761",
+        "intake-1762"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34597",
+      "bearing": [
+        "intake-1761"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/34821",
+      "bearing": [
+        "intake-1761"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/33291",
+      "bearing": [
+        "intake-1761"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/36596",
+      "bearing": [
+        "intake-1763"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/20627",
+      "bearing": [
+        "intake-1763"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/flagos-ai/vllm-plugin-FL/issues/385",
+      "bearing": [
+        "intake-1763"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/53877",
+      "bearing": [
+        "intake-1763",
+        "intake-1764"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834739/dflash_thinking.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834740/baseline_no_thinking.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834741/baseline_thinking_a.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834742/summary.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834743/baseline_thinking_b.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/user-attachments/files/31834744/dflash_no_thinking.json",
+      "bearing": [
+        "intake-1765"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/z-lab/dflash/issues/57",
+      "bearing": [
+        "intake-1766"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/ml-explore/mlx-lm/issues/1470",
+      "bearing": [
+        "intake-1766"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/z-lab/omlx-fork/releases/tag/0.6.2-dflash2",
+      "bearing": [
+        "intake-1766"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/bstnxbt/dflash-mlx",
+      "bearing": [
+        "intake-1766"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/28695",
+      "bearing": [
+        "intake-1768"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/35586",
+      "bearing": [
+        "intake-1768"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/36507",
+      "bearing": [
+        "intake-1769"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/LibertAIDAI/GLM-5.3-Flash-NVFP4",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/dealignai/GLM-5.3-Flash-UNCENSORED-NVFP4",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/RedHatAI/GLM-5.3-Flash-NVFP4",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/52540",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/53963",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/issues/36596",
+      "bearing": [
+        "intake-1770"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/50169",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/39734",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/54348",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/53130",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/52520",
+      "bearing": [
+        "intake-1771"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/49926",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/50934",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/52225",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/50925",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/49546",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/54666",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/issues/31085",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://digby.ai",
+      "bearing": [
+        "intake-1772"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://research.nvidia.com/labs/nemotron/lilicorr/",
+      "bearing": [
+        "intake-1773",
+        "intake-1774"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://arxiv.org/abs/2605.29707",
+      "bearing": [
+        "intake-1773",
+        "intake-1774"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/NVIDIA/Model-Optimizer/pull/2342",
+      "bearing": [
+        "intake-1774"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang/pull/39966",
+      "bearing": [
+        "intake-1774"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/zai-org/GLM-5.3-Flash",
+      "bearing": [
+        "intake-1775",
+        "intake-1776",
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/NVIDIA/Model-Optimizer",
+      "bearing": [
+        "intake-1775",
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/datasets/abisee/cnn_dailymail",
+      "bearing": [
+        "intake-1775"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/datasets/nvidia/Nemotron-Post-Training-Dataset-v2",
+      "bearing": [
+        "intake-1775"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm",
+      "bearing": [
+        "intake-1775",
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/sgl-project/sglang",
+      "bearing": [
+        "intake-1775",
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/vllm-project/llm-compressor",
+      "bearing": [
+        "intake-1776"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/neuralmagic/lm-evaluation-harness",
+      "bearing": [
+        "intake-1776"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/neuralmagic/lighteval",
+      "bearing": [
+        "intake-1776"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/canada-quant/GLM-5.3-Flash-DFlash2-F",
+      "bearing": [
+        "intake-1777",
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/canada-quant/GLM-5.3-Flash-DFlash2-E",
+      "bearing": [
+        "intake-1777",
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/canada-quant/dgx-spark-sm121",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://github.com/Tencent/AngelSpec",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/unsloth/Qwen3.8-27B-NVFP4",
+      "bearing": [
+        "intake-1779",
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+      "bearing": [
+        "intake-1779"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.8-27B/discussions/192",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/QUASAR-QAT/Qwen3.5-4B-QUASAR-NVFP4",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/QUASAR-QAT/Qwen3.5-4B-QUASAR-NVFP4-W4A4",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/QUASAR-QAT/Qwen3.5-4B-QUASAR-Q4_0-GGUF",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://arxiv.org/abs/2608.13966",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+      "bearing": [
+        "intake-1781",
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/Inferact/Qwen3.8-27B-NVFP4",
+      "bearing": [
+        "intake-1781"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://huggingface.co/collections/nvidia/nemotron-post-training-v3",
+      "bearing": [
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://nvidia.github.io/Model-Optimizer/reference/generated/modelopt.torch.quantization.config.html#modelopt.torch.quantization.config.LocalHessianCalibConfig",
+      "bearing": [
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://nvidia.github.io/Model-Optimizer/announcements/local-hessian.html",
+      "bearing": [
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    },
+    {
+      "url": "https://docs.sglang.io/cookbook/autoregressive/Qwen/Qwen3.8-27B",
+      "bearing": [
+        "intake-1782"
+      ],
+      "disposition": "decline",
+      "reason": "No exceptional CPU/gfx90a EXL3 code, ABI change, invalidating correctness result, or matched raw evidence; research graph saturated."
+    }
+  ],
+  "stage2g_dedup": [
+    {
+      "url": "https://github.com/NVIDIA/Model-Optimizer/blob/4956213d670c382385d9bc43e17379b9fc064e50/modelopt_recipes/models/zai-org/GLM-5.3-Flash/ptq/nvfp4_experts_dense_mlp-kv_fp8_cast.yaml",
+      "bearing": [
+        "intake-1775"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/canada-quant/glm-5.3-w4a16-mtp",
+      "bearing": [
+        "intake-1777",
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/canada-quant/GLM-5.3-Flash-DFlash2-G",
+      "bearing": [
+        "intake-1777"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/incoai/GLM-5.3-Flash-DFlash2",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://github.com/canada-quant/vllm-glm53-flash-sm121",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://github.com/vllm-project/vllm/pull/52816",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://github.com/z-lab/dflash",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://arxiv.org/abs/2602.06036",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://inco.ai/blog/dflash2/",
+      "bearing": [
+        "intake-1778"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-DSpark-NVFP4",
+      "bearing": [
+        "intake-1779"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/gittensor-model-hub/Qwen3.8-27B-NVFP4-RTX5090",
+      "bearing": [
+        "intake-1779",
+        "intake-1780"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF",
+      "bearing": [
+        "intake-1779"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    },
+    {
+      "url": "https://gittensor-ai-lab.github.io/sparkinfer/dashboard/",
+      "bearing": [
+        "intake-1779"
+      ],
+      "disposition": "deduplicate",
+      "reason": "Already covered by an accepted current or prior intake."
+    }
+  ],
+  "stage2g_stopping_rule": {
+    "decision": "Stop recursive expansion after this wave because marginal sources are corroboration, adjacent serving work, or NVIDIA-only variants.",
+    "exceptions": [
+      "Actual CPU or gfx90a EXL3 implementation",
+      "ABI or reconstruction change",
+      "Evidence invalidating the correctness path",
+      "Matched raw evidence that changes a promotion gate"
+    ],
+    "operator_basis": "User directed proceeding to Stage 3 after this wave if diminishing returns had been reached."
+  },
+  "stage2g_gate": {
+    "status": "closed",
+    "selected_entries": [
+      "intake-1756",
+      "intake-1757",
+      "intake-1758",
+      "intake-1759",
+      "intake-1760",
+      "intake-1761",
+      "intake-1762",
+      "intake-1763",
+      "intake-1764",
+      "intake-1765",
+      "intake-1766",
+      "intake-1767",
+      "intake-1768",
+      "intake-1769",
+      "intake-1770",
+      "intake-1771",
+      "intake-1772",
+      "intake-1773",
+      "intake-1774",
+      "intake-1775",
+      "intake-1776",
+      "intake-1777",
+      "intake-1778",
+      "intake-1779",
+      "intake-1780",
+      "intake-1781",
+      "intake-1782"
+    ],
+    "resolved_verifications": {
+      "intake-1756": "dive-verified",
+      "intake-1757": "dive-verified",
+      "intake-1758": "dive-verified",
+      "intake-1759": "dive-verified",
+      "intake-1760": "dive-verified",
+      "intake-1761": "dive-overturned",
+      "intake-1762": "dive-overturned",
+      "intake-1763": "dive-verified",
+      "intake-1764": "dive-verified",
+      "intake-1765": "dive-verified",
+      "intake-1766": "dive-verified",
+      "intake-1767": "dive-verified",
+      "intake-1768": "dive-verified",
+      "intake-1769": "dive-verified",
+      "intake-1770": "dive-verified",
+      "intake-1771": "dive-verified",
+      "intake-1772": "dive-overturned",
+      "intake-1773": "dive-verified",
+      "intake-1774": "dive-verified",
+      "intake-1775": "dive-verified",
+      "intake-1776": "dive-verified",
+      "intake-1777": "dive-verified",
+      "intake-1778": "dive-verified",
+      "intake-1779": "dive-verified",
+      "intake-1780": "dive-verified",
+      "intake-1781": "dive-verified",
+      "intake-1782": "dive-verified"
+    },
+    "all_selected_entries_resolved": true,
+    "per_claim_second_reader_complete": true,
+    "reports_artifact_audit_clean": true,
+    "surfaced_sources_resolved": true,
+    "declined_unique_count": 86,
+    "deduplicated_unique_count": 13,
+    "handoff_writes": 0,
+    "next_stage": "stage3"
   }
 }
