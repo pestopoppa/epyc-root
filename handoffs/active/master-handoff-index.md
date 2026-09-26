@@ -85,10 +85,10 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 60 | 851 | 33 | 2026-07-29 |
 | pipeline-integration | 5 | 71 | 1 | 2026-08-11 |
-| research-evaluation | 43 | 453 | 12 | 2026-07-29 |
+| research-evaluation | 43 | 460 | 12 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 50 | 507 | 17 | 2026-07-29 |
-| user-facing-harness | 10 | 77 | 2 | 2026-07-29 |
+| routing-and-optimization | 50 | 516 | 17 | 2026-07-29 |
+| user-facing-harness | 10 | 78 | 2 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

@@ -103,12 +103,16 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
 ## Context — orchestrator-vs-baseline evaluation (operator direction 2026-09-26)
 
 No active handoff owns an "orchestrator vs single-model baseline" comparison; recorded here until one
-does. The **first standing baseline** is the benchmark *quality* of the strongest model on the stack;
+does. The **first standing baseline** is the benchmark *quality* of the strongest model on the stack — the operator named **Qwen3.8-Flash-Next**, the public-benchmark leader of the stack (2026-09-26);
 speed comparison is deferred. The later **speed baseline** is a large MoE hybrid across CPU+RAM and both
 MI210s (Qwen3.8-Flash-Next or DeepSeek v4.1), compared on concurrency × tasks/hr × aggregate tok/s.
 
-- [ ] **REPL-EMB-B.1 — define the quality baseline run**: strongest stack model alone, same suites the
+- [ ] **REPL-EMB-B.1 — define the quality baseline run**: Qwen3.8-Flash-Next (strongest stack model) alone, same suites the
   orchestrator is scored on, as the standing comparison row for orchestrator evaluations.
+- [ ] **REPL-EMB-B.2 — speed baseline (after B.1; the operator deferred speed comparison)**: large MoE hybrid
+  across CPU+RAM and both MI210s (Qwen3.8-Flash-Next or DeepSeek v4.1), measured on concurrency × tasks/hr ×
+  aggregate tok/s. Related scoped baselines: `reviewer-latency-and-sampling-budget.md` LB-7 (review plane),
+  INF-78 OAB-4 (27B plain seat vs orchestrator REPL).
 
 ## Key files (epyc-orchestrator)
 

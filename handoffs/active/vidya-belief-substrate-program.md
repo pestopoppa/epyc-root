@@ -2943,3 +2943,19 @@ No run exists yet, so the write side is filed **before** the first run. The row 
 - **VB-AK-OEE:** activate when a live evolutionary campaign uses QD diversity or open-endedness diagnostics to make a decision. Then bind the immutable event log, task/config, criterion/metric/descriptor, controls, sampling budget, horizon, raw/corrected archives, and finite-horizon/no-promotion scope. Only post-hook producer records project.
 - **VB-AISCI-1:** activate when EPYC begins proposal-to-execution scientific experiments that consume RA-14/RC-13 artifacts. Then bind system/task/scaffold versions, independent-study cluster, denominator unit, interventions, budgets, artifact states, grader/rubric identities, and terminal decisions. Pre-hook studies and prose summaries emit zero tuples.
 - **VB-FORMAL-1:** activate before a formal artifact is used for an EPYC claim, evaluator, policy, or promotion decision. Bind repository commit, toolchain, dependency lock, command transcript, source/output digests, build result, axiom report, `native_decide` boundary, runner, and timestamp; project build and axiom findings separately.
+
+## VB-ROUTE-LAT / VB-UFH12-RETR / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26)
+
+Filed at design time, before any producer exists, per the CLAUDE.md belief-kernel rule. Source-table rows in
+`scripts/vidya/adapters/README.md`.
+
+- [ ] **VB-ROUTE-LAT — wire the write side of routing-decision latency telemetry** (`routing-intelligence.md`
+  RI-16). The producer emits per-request, per-stage timings (role priors, route, mode, review gate) with backend
+  and index size; then author the read-side adapter. Locator = request x stage aggregated to a run window;
+  never project the unmeasured "<1 ms / 10-50 ms" doc figures.
+- [ ] **VB-UFH12-RETR — wire the write side of the UFH-12 retrieval eval** (`repl-embedding-retrieval.md`
+  REPL-EMB-2.1/2.2/2.3) before its first run: per-arm recall@k, CPU-s, latency, with the pre-registered rule,
+  corpus digest and embedding-model identity; the online `spill_pointer_follows` shadow is a separate instrument.
+- [ ] **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
+  arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
+

@@ -453,7 +453,7 @@ Order tasks by cost: P4.1 is cheapest (audit only), P4.4 is most expensive (over
   **Phase A audit findings (analytical, no code):**
 
   1. **Current pool method confirmed as CLS** (not mean-pool). Per `epyc-orchestrator/scripts/server/orchestrator_stack.py:862`: BGE-large-en-v1.5 launches with `--pooling cls`. Comment in source: "BGE uses CLS token pooling (standard BERT)". This is the BGE-trained pool method (BGE was distilled with [CLS] as the pooled output) — switching to mean-pool or last-layer would diverge from the training distribution.
-  2. **Data-scale finding: handoff text says 174K labels, actual on-disk state is ~8K memories.** Production episodic.db at `/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db` has 8,115 rows (135 MB file size is bloat from prior larger state + FTS). The 174K figure was aspirational from a previous epoch; current routing-classifier training would draw from 8K, not 174K. With 8K labels, binomial 95% CI half-width on per-arm val-acc is ~3-4 pp depending on val split — borderline for the ≥1 pp decision-gate.
+  2. **Data-scale finding: handoff text says 174K labels, actual on-disk state is ~8K memories.** Production episodic.db at `/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db` has 8,115 rows *(historical audit snapshot; 64,396 routing rows live on 2026-09-26)* (135 MB file size is bloat from prior larger state + FTS). The 174K figure was aspirational from a previous epoch; current routing-classifier training would draw from 8K, not 174K. With 8K labels, binomial 95% CI half-width on per-arm val-acc is ~3-4 pp depending on val split — borderline for the ≥1 pp decision-gate.
   3. **FAISS index is currently RESET.** `embeddings.faiss` is 385 KB (current) vs `.bak` 32 MB (Apr 28 snapshot). The live FAISS holds essentially no embeddings. Backup `.bak` files contain ~9.2K embeddings consistent with the DB row count.
   4. **Implication for Phase B**: a real ablation requires (i) rebuilding FAISS from DB (≈40s of BGE inference), (ii) running BGE again for each alternative pool (`--pooling mean`, `--pooling last`) to produce 2 more 8K × 1024-dim matrices. Total inference: 3 × ~40s + 3 × startup ≈ 5 min wall-clock. Plus 3 head retrains (seconds, CPU-bound). The full ablation is cheap, but does require crossing the inference threshold.
   5. **Trinity transfer caveat (re-emphasised)**: Trinity's penultimate-vs-final-token result is decoder-specific. BGE is a bidirectional encoder — its pool methods have different theoretical implications. Trinity's 10-point swing should NOT be expected here. The decision gate of ≥1 pp is appropriate (smaller expected effect size on encoder).
@@ -543,7 +543,7 @@ Sequencing note: P5 is gated on having an IRT scorer (built in P5.1), NOT on Pha
 
 This *replaces the per-class confidence threshold* (currently the per-class calibrated threshold from P1.4, e.g., frontdoor 0.447, architect_coding 0.560) with a *learned* gate trained on the actual correctness label.
 
-**Training data exists** (per P1 normalization table): 10,528 positive failure examples (escalation memories = MLP routed wrong) + 56,457 negative examples (no escalation = MLP routed right) = ~67K labels in the canonical 174K snapshot. Live episodic.db is at 8K rows per [P4.1 Phase A audit](#phase-4-trinity-derived-methodology-audits-new-2026-04-26) — would need rebuild from episodic memory before training.
+**Training data exists** (per P1 normalization table): 10,528 positive failure examples (escalation memories = MLP routed wrong) + 56,457 negative examples (no escalation = MLP routed right) = ~67K labels in the canonical 174K snapshot. Live episodic.db was at 8K rows *(historical; 64,396 routing rows on 2026-09-26)* per [P4.1 Phase A audit](#phase-4-trinity-derived-methodology-audits-new-2026-04-26) — would need rebuild from episodic memory before training.
 
 **Decision gates**:
 - The scoping subtasks (P6.1, P6.2, P6.3) each end in a binary decision before the next escalates.
@@ -1604,7 +1604,7 @@ Zero-shot / in-context tabular foundation models are a candidate backbone for th
 - **[intake-734/745] TabPFN** (arXiv 2207.01848, Nature 2025) + **[intake-743] TabPFN-3** (arXiv 2605.13986) — small-data in-context prediction; GPU-recommended (CPU only ≲1k rows); TabPFN-3 is non-commercial-licensed and its no-GPU path (tabpfn-client) is SaaS → exclude. Documented **weakest under concept/distribution shift = exactly the cold-start regime** → any spike must validate under shift + test feature-order sensitivity.
 - **[intake-735] Google TabFM** — the only **open-weight + CPU-runnable-in-principle** option (`google/tabfm-1.0.0-pytorch`); hard caps ≤10 classes / ≤500 features / ≤100k rows; the BigQuery `AI.PREDICT` path is SaaS → exclude. Open weights govern deploy; the API path does not.
 
-**Double-gate before any build**: (1) fable5 routing-freeze exit AND (2) MI210/ROCm viability (all are CUDA/PyTorch; our numpy MLP is µs-CPU, these are batch-oriented). Do **not** inherit the stale "174K" label figure (live `episodic.db` ≈ 8k rows; 275,960-row `training_data.npz`). Per this file's own directive, do **not** file this under `decision-aware-routing.md` / `retrain-routing-models.md` (both expansion-FROZEN).
+**Double-gate before any build**: (1) fable5 routing-freeze exit AND (2) MI210/ROCm viability (all are CUDA/PyTorch; our numpy MLP is µs-CPU, these are batch-oriented). Do **not** inherit the stale "174K" label figure (live `episodic.db` held 64,396 routing rows on 2026-09-26 — the earlier "≈ 8k" reading is stale; 275,960-row `training_data.npz`). Per this file's own directive, do **not** file this under `decision-aware-routing.md` / `retrain-routing-models.md` (both expansion-FROZEN).
 
 ---
 
@@ -1744,3 +1744,14 @@ See the fuller root-cause writeup in [decision-aware-routing.md](decision-aware-
 ## Research Intake Update — 2026-09-17 (candidate-scoring arm; intake-1462/1487)
 
 - [ ] **LRC-TD-1 — Candidate-scoring arm for the learned controller.** Compare the per-call label-set pattern (option-as-query head intake-1462 or native token logits intake-1487) against the current classifier on the recorded routing corpus; treat as unadopted until TD-2 reports calibration. (Owner stub `typed-decision-plane.md`, RTG-56.)
+
+## 2026-09-26 audit follow-ups (code + live-process audit)
+
+- [ ] **LRC-1 — distill autopilot-generated data into episodic memory as MLP training data** (operator
+  direction 2026-09-26). Define the projection from autopilot trial records to routing memories (task, chosen
+  role, outcome), keep it separate from live write-back (see `episodic-memory-integrity.md` M-21), and
+  measure whether a retrain with it beats the current 81.0% retrain on the held-out split.
+- [ ] **LRC-2 — resolve the inert `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`.** It is set live, but the
+  verifier (`src/api/services/routing_models.py:131-149`) only runs in the classifier path, which is off
+  (`routing_classifier`, `src/features.py:123`). Either unset it so the environment matches behaviour, or tie
+  it to the classifier rollout decision above; do not leave a live flag that does nothing.
