@@ -1,0 +1,63 @@
+numa_mode: ok
+  detail: evaluated numa_mode: both (source: explicit:--numa-mode)
+shared_with_derivations: ok
+  detail: port_map, role_launch_meta, numa_config, roles.<alias>.model and _LEGACY_SERVER_URL_FALLBACKS all recompute from server_mode.*.shared_with
+lean_registry: stale
+  error: lean registry content is stale against the master registry projection (local cache key: <none> != a29cd4186cd7)
+  error: everything below is compiled FROM lean, so a stale lean makes descriptors/stack_priors green over the wrong input
+  error: run: uv run python scripts/registry/stack_change_pipeline.py update
+descriptors: stale
+  detail: descriptor top-level drift: source_registries.research.path, source_registries.research.sha256
+  detail: operator decision required: review descriptor drift details, then run uv run python scripts/registry/stack_change_pipeline.py update
+  error: descriptor artifact is stale or missing: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/model_descriptors.yaml
+  error: run: uv run python scripts/registry/stack_change_pipeline.py update
+stack_priors: stale
+  error: stack-prior artifact is stale or missing: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/derived/stack_priors.yaml
+  error: run: uv run python scripts/registry/stack_change_pipeline.py update
+procedure_enums: ok
+  detail: checked: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/procedures/add_model_to_registry.yaml, /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/procedure.schema.json
+operator_summary: ok
+  detail: fresh: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/docs/generated/current_stack_summary.md
+guard: failed
+  error: source_artifacts.launch_manifest hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/launch_manifest.yaml expected 84b83ff9872519ddf10d34470840678c2f14ba9b36332c1b3ef318a71f3e3f91, got 0d859839ffa6d165a3d4669ee3af78c28712f473ba701083fd41e59752f083cd
+  error: source_artifacts.orchestrator_stack hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/scripts/server/orchestrator_stack.py expected 439ae4dc1636bdbc3f872c0b658d07d36d3403c3b3df7fac45af8bfb94d83b47, got 3077f9d977bd20ba9f5868fd56ec7a32303bf7ecb1bd69102ea1bcf04f2d2e81
+  error: source_artifacts.stack_manifest hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/scripts/server/stack_manifest.py expected efa61d09c5d2fa3daa33ae78447a001fff47f193e41672fed65a1ad0050a6c30, got f57ab87bc91f1a21826d03109349f49b0c70ed1dd3b052c4597d5e893c94aef7
+  error: source_artifacts.stack_topology hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/stack_topology.yaml expected f802ef5b1636bec903344f800ce6ecbb7e97af20018dec678080b3af538dfbea, got 73a9fa42fa2977ecead1a2e7edaf1d956be722ac0a3cae6a4d1b6643295b27c6
+guard_all_surfaces: failed
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:143: # (qwen35_122b_q4km / glm_52_ud_iq2m) unresolved to exercise that path. [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:62: reviewer_agent, architect_coding) that Role._missing_ resolves. If this [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:74: "architect_coding", [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:307: scoring_config={"timeout": 5, "judge_role": "thinking_reasoning"}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:309: assert calls[0]["json"]["force_role"] == "thinking_reasoning" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_fleet_layer_fallback.py:48: "architect_critic": {"port": 8074, "model_role": "qwen35_122b_q4km"}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:133: assert "thinking_reasoning" not in WORKING_VALUES  # Role with no server [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:272: "thinking_reasoning",  # a Role member with no server (retired) [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_pipeline_routing.py:32: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_q_reward_role_key.py:106: for role in ("architect_coding", "mock"): [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: iterates the legacy "architect_coding" key to prove q-reward role-key handling stays stable for historical replay data. Migrating would drop legacy-key regression coverage.]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_registry_loader.py:18: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/chapters/10-escalation-and-routing.md:429: signals.thinking_requested = True  # Route to thinking_reasoning model [remediation: generate current stack tables or label snapshot as historical]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/diagrams/orchestration_topology.md:34: THR[thinking_reasoning] [remediation: generate current stack tables or label snapshot as historical]
+  error: source_artifacts.launch_manifest hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/launch_manifest.yaml expected 84b83ff9872519ddf10d34470840678c2f14ba9b36332c1b3ef318a71f3e3f91, got 0d859839ffa6d165a3d4669ee3af78c28712f473ba701083fd41e59752f083cd
+  error: source_artifacts.orchestrator_stack hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/scripts/server/orchestrator_stack.py expected 439ae4dc1636bdbc3f872c0b658d07d36d3403c3b3df7fac45af8bfb94d83b47, got 3077f9d977bd20ba9f5868fd56ec7a32303bf7ecb1bd69102ea1bcf04f2d2e81
+  error: source_artifacts.stack_manifest hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/scripts/server/stack_manifest.py expected efa61d09c5d2fa3daa33ae78447a001fff47f193e41672fed65a1ad0050a6c30, got f57ab87bc91f1a21826d03109349f49b0c70ed1dd3b052c4597d5e893c94aef7
+  error: source_artifacts.stack_topology hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/stack_topology.yaml expected f802ef5b1636bec903344f800ce6ecbb7e97af20018dec678080b3af538dfbea, got 73a9fa42fa2977ecead1a2e7edaf1d956be722ac0a3cae6a4d1b6643295b27c6
+guard_strict: failed
+  error: source_artifacts.launch_manifest hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/launch_manifest.yaml expected 84b83ff9872519ddf10d34470840678c2f14ba9b36332c1b3ef318a71f3e3f91, got 0d859839ffa6d165a3d4669ee3af78c28712f473ba701083fd41e59752f083cd
+  error: source_artifacts.orchestrator_stack hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/scripts/server/orchestrator_stack.py expected 439ae4dc1636bdbc3f872c0b658d07d36d3403c3b3df7fac45af8bfb94d83b47, got 3077f9d977bd20ba9f5868fd56ec7a32303bf7ecb1bd69102ea1bcf04f2d2e81
+  error: source_artifacts.stack_manifest hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/scripts/server/stack_manifest.py expected efa61d09c5d2fa3daa33ae78447a001fff47f193e41672fed65a1ad0050a6c30, got f57ab87bc91f1a21826d03109349f49b0c70ed1dd3b052c4597d5e893c94aef7
+  error: source_artifacts.stack_topology hash mismatch: /mnt/raid0/llm/worktrees/ufh11-phase0-orch-20260926/orchestration/stack_topology.yaml expected f802ef5b1636bec903344f800ce6ecbb7e97af20018dec678080b3af538dfbea, got 73a9fa42fa2977ecead1a2e7edaf1d956be722ac0a3cae6a4d1b6643295b27c6
+reasoning_effort_certifications: ok
+  detail: declared prompt-effort levels match their certified model/quant/kernel era
+stack_manifest_registry: skipped
+  warn: skipped because earlier stack-change checks failed
+q_scorer_priors: skipped
+  warn: skipped because earlier stack-change checks failed
+runtime_attestation: skipped
+  warn: skipped because earlier stack-change checks failed
+simulated_fixtures: reference
+  detail: data-only stack-change fixture target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py
+promotion_gate: reference
+  detail: no-inference promotion target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py tests/unit/test_build_server_command_helpers.py tests/unit/test_seeding_infra.py tests/unit/test_seeding_infra_additional.py tests/unit/test_seeding_infra_branching.py tests/unit/test_seed_specialist_routing_main_and_retry.py
+summary: failed
+acceptance: blocked
+promotion_gate: fix 19 error(s) before promotion
