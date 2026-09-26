@@ -2948,7 +2948,7 @@ No run exists yet, so the write side is filed **before** the first run. The row 
 - **VB-KT-PORT:** activate when F7 (the OD-A MI210 port feasibility read, same rider) starts. Bind the kvcache-ai/ktransformers and sglang-kt commits read, the per-question finding class with file:line (ROCm flag and HIP shim; hipify / ROCm 6.2 port of the GPU half; gfx90a build of the fork), and the effort estimate with its basis; project as a verified source-level finding updating intake-1809#03, never as a performance claim.
 - **VB-NPD-1:** activate when numa-prefill-decode-disaggregation.md's reopen trigger fires (PF1 finds L* ≤ 32K). Bind the served artifact and store digests, argv, the concurrent-prefill schedule, per-token decode TPOT with and without the concurrent prefill, and the manifest's predeclared inflation bound.
 
-## VB-ROUTE-LAT / VB-UFH12-RETR / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26)
+## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26)
 
 Filed at design time, before any producer exists, per the CLAUDE.md belief-kernel rule. Source-table rows in
 `scripts/vidya/adapters/README.md`.
@@ -2960,6 +2960,12 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
 - [ ] **VB-UFH12-RETR — wire the write side of the UFH-12 retrieval eval** (`repl-embedding-retrieval.md`
   REPL-EMB-2.1/2.2/2.3) before its first run: per-arm recall@k, CPU-s, latency, with the pre-registered rule,
   corpus digest and embedding-model identity; the online `spill_pointer_follows` shadow is a separate instrument.
+- [ ] **VB-UFH12-PLACEMENT — wire the write side of the embedder placement gate** (`repl-embedding-retrieval.md`
+  REPL-EMB-0.2 / 1.4; `epyc-orchestrator` `scripts/server/embedder_placement_gate.py`) before the REPL-EMB-1.4 G1
+  re-measure: per-run self-hashed rows with gate, port, metric and unit, raw samples, the A/A floor, the embedder
+  cpuset/placement digest, llama-server binary/store digest, load shape (in-flight count) and method (warm-up
+  discarded or not). The 2026-09-26 Phase-0 files are retrospective and not backfilled. Then author the read-side
+  adapter. Locator = run × gate × port.
 - [ ] **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
   arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
 

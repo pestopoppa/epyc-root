@@ -68,3 +68,70 @@ Canvas: https://claude.ai/artifact/UnjtMaouUFYs9xz5umnwPd. Filed as **UFH-12**
 
 - **REPL-EMB-0.1:** prepare the embedder-placement stack-change package. Once prepared, it needs the
   operator's signature.
+
+## Evening — Phase 0 applied, HS-4 P0.4 PASS, prior-art intake landed (workspace-8d)
+
+This session is **workspace-8d** — the same session that ran TD-21 earlier, before a `/clear`. Design canvas:
+https://claude.ai/artifact/UnjtMaouUFYs9xz5umnwPd
+
+### UFH-12 Phase 0 — embedder placement applied (operator-signed)
+
+- Signed 2026-09-26T17:46Z (receipt `artifacts/operator/receipts/RATIFY-UFH12-PHASE0-EMBEDDER-PLACEMENT-20260926.json`,
+  now committed; its pins match the package as landed). Applied ~18:11-18:35Z: orchestrator `5af57377` (merge) and
+  `a439070e` (derived regen), research `7640269b`.
+- Gates (evidence `epyc-orchestrator/data/embedder_placement/{pre,post,g3b-post}-20260926.json`):
+  - **G2 pool scaling:** 0.95× → **4.96×** (45.6 texts/s). PASS.
+  - **G0 idle frontdoor decode:** 52.6 → 53.1 tok/s, unchanged. PASS.
+  - **G1 saturated ÷ idle frontdoor decode:** `:8070` 0.34 → 0.91 (17.6 → 48.4 tok/s); `:8080` 0.50 → 0.91;
+    `:8180` 0.53 → 0.86 — below the 0.95 PASS line on all three, and `:8180` in the pre-registered rollback band.
+  - **G3 CPU speech with the pool saturated:** STT RTF ≤ 0.24, TTS first packet ≤ 0.12 s. PASS on the re-run. The
+    first run (`g3-post-20260926.json`) read ROLLBACK from one cold first request; the re-run discarded a warm-up
+    request, which the pre-registered method did not include, so the warm-up is now pre-registered for later runs.
+- Serving proofs P1-P8 pass: affinity tool rc=0, node-local memory 97.8-98.9%, P6 cosine 1.0, P7 402-token input
+  accepted, 6/6 healthy, episodic index 0 stale.
+- **Operator decision on G1: KEEP** (overriding the rollback band on `:8180`; rolling back would restore 0.53) and add
+  a Phase-1 cap — the scheduler caps in-flight embeddings on instances that share a busy frontdoor half's node,
+  under the D1 rule "idle instance anywhere → else the requesting model's own hardware → else lexical now, index
+  later". Filed as REPL-EMB-1.4 with a G1 re-measure against ≥ 0.95. Belief-kernel source VB-UFH12-PLACEMENT filed
+  (row + task).
+
+### HS-4 P0.4 — OpenCode live acceptance PASS
+
+- r3 at ~19:05Z: `verdict.json` pass=true, 10/10 checks, including the new **A5** token parity (session 28819/247
+  tokens == tap `server_terminal` over 4 calls; root lane `0ce7e111`). SC86 belief rows written. Durable copy:
+  `artifacts/harness/hs4-p04-20260926-r3/`.
+- **r1 lesson: never wrap API traffic in an outer region-lock.** r1 failed because the runner held an outer CPU
+  region-lock, which starved the orchestrator's own placement (503 `contention_denied`). That was a method error by
+  the runner, not a product bug — the API does its own admission.
+- **/v1 usage fix.** r2 failed only SC86 capture because `/v1` client tool mode returned no `usage`. Fixed in orch
+  `5697828c` (backend-reported prompt/completion/cached counts; `stream_options.include_usage` final chunk) and
+  deployed by an API-only reload at 19:01:51Z.
+- Next: P0.4b Harness Card republish (HS-7), P0.4c pin freeze at the **tag** `v1.18.31` = `014614d3` (Stage 4 found
+  the audit pin `350c726a` is a dev commit), then the P0-split.
+
+### Orchestrator hygiene
+
+- **Stale-code fixes:** orch `cdd05543` — the shapekeyed smoke's default anchor/probe roles named aliases with no NUMA
+  instances since `860b0b2d`, so the default seam plan checked nothing; defaults are now derived from the live
+  lineup. With `30626243` also in, the unit suite went from 9 failures to 0.
+- **Dead-knob removal:** orch `30626243` removes `GGML_NUMA_REPACK_INTERLEAVE` from `stack_env` (operator-approved) —
+  not compiled into v10 or the AutoKernel champion (`strings libggml-cpu.so`: 0 hits), so launch behaviour is unchanged.
+- **AK-H-NRI-1** — the question whether to re-port the NUMA repack-interleave work — was injected into the AutoKernel
+  DS41 inbox as a hypothesis.
+
+### Orchestration prior-art intake (Stages 2b / 3 / 4)
+
+- Stage 2b ingested and dove 7 operator-selected sources (intake-1815..1821); the Stage-3 plan was approved and Stage 4
+  applied it (handoffs, index rows, intake dispositions, belief-kernel rows). Landed on root main from
+  `intake/orch-prior-art-20260926` @ `0c8e227e`.
+- **OD-A:** the KTransformers runtime is DECLINED for now; the MI210 port investigation is OPEN (F7 source-only
+  feasibility read; F6 build check follows F7).
+- **P-SERVE-SEL-1** (OP-62) ratified by the operator — pending the operator's run of
+  `scripts/operator/run_p_serve_sel_1_ratify_20260926.sh --operator <name>` (the protocol text crosses the
+  human-only measurement boundary, so no agent writes it).
+
+### Open
+
+- REPL-EMB-1.1 + 1.4 (pooled client with the in-flight cap; G1 re-measure ≥ 0.95).
+- HS-4 P0.4b / P0.4c / P0-split.
+- The operator's P-SERVE-SEL-1 ratify run.
