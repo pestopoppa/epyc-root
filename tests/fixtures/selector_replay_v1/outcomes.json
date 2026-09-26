@@ -1,0 +1,129 @@
+{
+  "d1": {
+    "a": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-a",
+      "lineage_value": 1,
+      "observed_at": "2026-09-01T00:01:01Z",
+      "seed": 1,
+      "status": "scored",
+      "task_id": "task-1",
+      "value": 1
+    },
+    "b": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-b",
+      "lineage_value": 1.4,
+      "observed_at": "2026-09-01T00:01:01Z",
+      "seed": 1,
+      "status": "scored",
+      "task_id": "task-1",
+      "value": 1.4
+    },
+    "c": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-c",
+      "lineage_value": 0,
+      "observed_at": "2026-09-01T00:01:01Z",
+      "seed": 1,
+      "status": "scored",
+      "task_id": "task-1",
+      "value": 0
+    }
+  },
+  "d2": {
+    "a": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-a",
+      "lineage_value": 1,
+      "observed_at": "2026-09-01T00:01:02Z",
+      "seed": 2,
+      "status": "scored",
+      "task_id": "task-2",
+      "value": 1
+    },
+    "b": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-b",
+      "lineage_value": 1.4,
+      "observed_at": "2026-09-01T00:01:02Z",
+      "seed": 2,
+      "status": "scored",
+      "task_id": "task-2",
+      "value": 1.4
+    },
+    "c": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-c",
+      "observed_at": "2026-09-01T00:01:02Z",
+      "reason": "synthetic evaluator failure",
+      "seed": 2,
+      "status": "failure",
+      "task_id": "task-2"
+    }
+  },
+  "d3": {
+    "a": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-a",
+      "lineage_value": 1,
+      "observed_at": "2026-09-01T00:01:03Z",
+      "seed": 3,
+      "status": "scored",
+      "task_id": "task-3",
+      "value": 1
+    },
+    "b": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-b",
+      "lineage_value": 2,
+      "observed_at": "2026-09-01T00:01:03Z",
+      "seed": 3,
+      "status": "scored",
+      "task_id": "task-3",
+      "value": 2
+    },
+    "c": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-c",
+      "lineage_value": 0,
+      "observed_at": "2026-09-01T00:01:03Z",
+      "seed": 3,
+      "status": "scored",
+      "task_id": "task-3",
+      "value": 0
+    }
+  },
+  "d4": {
+    "a": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-a",
+      "lineage_value": 1,
+      "observed_at": "2026-09-01T00:01:04Z",
+      "seed": 4,
+      "status": "scored",
+      "task_id": "task-4",
+      "value": 1
+    },
+    "b": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-b",
+      "lineage_value": 0,
+      "observed_at": "2026-09-01T00:01:04Z",
+      "seed": 4,
+      "status": "scored",
+      "task_id": "task-4",
+      "value": 0
+    },
+    "c": {
+      "evaluator_id": "fixture-evaluator-v1",
+      "lineage_id": "lineage-c",
+      "lineage_value": 2,
+      "observed_at": "2026-09-01T00:01:04Z",
+      "seed": 4,
+      "status": "scored",
+      "task_id": "task-4",
+      "value": 2
+    }
+  }
+}
