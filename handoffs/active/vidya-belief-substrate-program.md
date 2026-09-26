@@ -2525,7 +2525,7 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
 
 ## VB-EXL3-CPU-GFX90A — prospective EXL3 CPU/MI210 evidence (filed 2026-09-25)
 
-- [ ] **VB-EXL3-CPU-GFX90A — wire EXL3 experimental receipts on the WRITE side before the first measured run.**
+- [x] **VB-EXL3-CPU-GFX90A — wire EXL3 experimental receipts on the WRITE side before the first measured run.** ✅ 2026-09-26
   Before the first correctness, performance, or quality-producing run, add producer-authored native schemas
   `epyc.exl3.measurement.v1` and `epyc.exl3.verifier.v1`, plus strict projections for both source kinds. Measurement
   rows use the locator run × arm × backend × operator × shape × metric; verifier rows use run × fixture × backend/path
@@ -2536,6 +2536,8 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   checker identity/hash, fixture and read-set digests, exact `decided_proposition`, and verdict. Strict adapters accept
   only post-hook rows, project eligible native records into `ClaimTuple`, and delegate grading to `claim_tuple.grade()`.
   Historical runs are pre-hook and emit zero tuples; no new grading rule or production authority.
+
+  Completed by research commit `bc9ac47b` and root commit `6b8f9e85`. The producer supplies both closed schemas with writer SHA-256 `8caeb33dbb12986fadc385afe25d22bd791b036253c736f9527e67a55f85e268`; the strict adapter and registered `exl3-measurement` / `exl3-verifier` CLI sources project only producer-authored values through the existing grading path. Independent main review passed all 44 adapter and dispatcher tests, including actual directory discovery and projection of 78 native rows into 234 claim frames with zero refusals or declines. No new grading ladder or production authority was added.
 
 ## VB-TD-21-CENSUS — structured-output consumer audit capture (filed 2026-09-24)
 
