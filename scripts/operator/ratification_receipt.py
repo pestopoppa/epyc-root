@@ -296,6 +296,11 @@ def load_durability_checker(section: Section):
 def evidence_records(
     citations: list[str], section: Section, evidence_repo: Path
 ) -> list[dict]:
+    if not citations:
+        # Nothing to classify. The no-evidence case is judged by the caller (a
+        # declared --no-evidence-reason or a FAIL); an absent durability validator
+        # must not turn "no evidence, reason given" into COULD-NOT-CHECK.
+        return []
     checker = load_durability_checker(section)
     records: list[dict] = []
     for raw in citations:
@@ -588,9 +593,20 @@ def cmd_emit(args: argparse.Namespace) -> int:
                 "--protocol-new if this amendment introduces it, or --anchor if the id "
                 "is a clause reference"
             )
+        # An anchor may land in ANY file this amendment changed, not only in the
+        # constitution: a doctrine amendment (agents/shared/*.md, CLAUDE.md) is
+        # inside the human-only boundary and owes this receipt too, but its text
+        # never appears in MEASUREMENT.md.
+        amended_text = {"MEASUREMENT.md": text}
+        for rel in sorted((snapshot.get("states") or {})):
+            try:
+                amended_text[rel] = (root / rel).read_text(encoding="utf-8")
+            except OSError:
+                continue
         for anchor in anchors:
-            if anchor in text:
-                protocol_section.detail.append(f"anchor present: {anchor[:70]}")
+            where = [rel for rel, body in amended_text.items() if anchor in body]
+            if where:
+                protocol_section.detail.append(f"anchor present in {', '.join(where)}: {anchor[:70]}")
             else:
                 protocol_section.fail(f"anchor NOT present after the amendment: {anchor[:90]}")
 
@@ -710,7 +726,8 @@ def main(argv: list[str] | None = None) -> int:
         "--anchor",
         action="append",
         default=[],
-        help="literal text that must be present in MEASUREMENT.md after the amendment; "
+        help="literal text that must be present after the amendment, in MEASUREMENT.md or "
+        "in any file captured with --state (a doctrine amendment anchors in its own target); "
         "a FLOOR alongside the coherence and state-diff sections, never the verification",
     )
     emit.add_argument("--ratification-id", required=True)

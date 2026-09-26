@@ -59,6 +59,16 @@ jobs:
         # commit lands, and now does so on a push as well.
         run: python3 scripts/handoffs/index_state.py --check
 
+      - name: Trust-boundary ratification receipts
+        # Every script that writes a human-only path (MEASUREMENT.md, its annexes,
+        # agents/shared/*.md, CLAUDE.md, the boundary list itself) must emit the
+        # MEASUREMENT.md section-5 consolidated receipt, or be a pinned historical
+        # exemption. The checker landed at W7 (2026-08-02) and was never wired to
+        # anything, so non-compliant ratifiers accumulated unseen until 2026-09-26.
+        run: |
+          python -m pytest -q tests/validate/test_check_ratification_receipts.py
+          python3 scripts/validate/check_ratification_receipts.py
+
       - name: Report what was NOT run
         # Named, not hidden. A suite excluded without saying so reads as coverage.
         if: always()
