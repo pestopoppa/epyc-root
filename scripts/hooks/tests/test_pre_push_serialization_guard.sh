@@ -41,7 +41,17 @@ set -uo pipefail
 # for mutation testing: break a property in a copy, confirm the corresponding
 # case FAILS and that the failure reaches the exit code, restore, confirm pass.
 
-GUARD="${EPYC_PUSH_GUARD_UNDER_TEST:-/workspace/scripts/hooks/pre_push_serialization_guard.sh}"
+# The default is the guard in THIS checkout (the file beside tests/), never a
+# fixed /workspace path. Until 2026-09-26 the default was
+# /workspace/scripts/hooks/pre_push_serialization_guard.sh, so running this suite
+# from a lane worktree tested the SHARED CLONE's guard, not the guard the lane
+# changed: a fix passed only when EPYC_PUSH_GUARD_UNDER_TEST was set, and the
+# same suite run plainly reported the lane's new cases as failing (OP-65).
+# The writer (serialized_push.py) is resolved from the same checkout, for the
+# same reason.
+TEST_REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+GUARD="${EPYC_PUSH_GUARD_UNDER_TEST:-${TEST_REPO_ROOT}/scripts/hooks/pre_push_serialization_guard.sh}"
+WRITER="${TEST_REPO_ROOT}/scripts/coordination/serialized_push.py"
 
 if [[ ! -r "$GUARD" ]]; then
   printf 'FATAL: guard under test not readable: %s\n' "$GUARD" >&2
@@ -721,11 +731,11 @@ fi
 #     it and land on the same file.
 new_sandbox
 mkdir -p "$SANDBOX/work/scripts/coordination"
-ln -sf /workspace/scripts/coordination/serialized_push.py \
+ln -sf "$WRITER" \
        "$SANDBOX/work/scripts/coordination/serialized_push.py"
 DEFAULT_LOCKFILE="$SANDBOX/work/coordination/push-locks/push-$(stat -c '%d-%i' "$SANDBOX/work/.git").json"
 mkdir -p "$(dirname "$DEFAULT_LOCKFILE")"
-WRITER_SAYS="$(cd "$SANDBOX/work" && python3 /workspace/scripts/coordination/serialized_push.py \
+WRITER_SAYS="$(cd "$SANDBOX/work" && python3 "$WRITER" \
                  --agent probe --repo "$SANDBOX/work" --print-lock-file 2>/dev/null)"
 if [[ "$WRITER_SAYS" == "$DEFAULT_LOCKFILE" ]]; then
   pass "default location: the writer's --print-lock-file is the path the suite derived independently"
