@@ -137,7 +137,19 @@ def _step(inp, read, write=0):
                                               "cache": {"read": read, "write": write}}}
 
 
-def _simulate_run(tmp_path, fixed=True):
+def _timings(rid, ts, prompt, completion, keys=OURS, source="server_terminal"):
+    e = {"event": "timings", "ts_epoch": ts, "request_id": rid, "request_keys": keys,
+         "tokens": completion, "prompt_tokens": prompt}
+    if source is not None:
+        e["prompt_tokens_source"] = source
+    return e
+
+
+# The three simulated steps below, as the orchestrator tap measured them.
+STEP_PROMPTS = (100 + 20, 30 + 120, 10 + 150)
+
+
+def _simulate_run(tmp_path, fixed=True, session_steps=None):
     out = tmp_path / "p04"
     assert m.main(["prepare", "--out", str(out)]) == 0
     repo, evid = out / "repo", out / "evidence"
@@ -151,12 +163,14 @@ def _simulate_run(tmp_path, fixed=True):
     (evid / "opencode-version.txt").write_text(m.PINNED_VERSION + "\n")
     (evid / "opencode-exit.txt").write_text("0\n")
     (evid / "events.jsonl").write_text(json.dumps({"type": "tool_use", "sessionID": SID}) + "\n")
+    steps = session_steps or (_step(100, 0, 20), _step(30, 120), _step(10, 150))
     (evid / "session.json").write_text(json.dumps(_session(
-        _tool("read"), _step(100, 0, 20), _tool("edit"), _step(30, 120), _tool("bash"),
-        _step(10, 150),
+        _tool("read"), steps[0], _tool("edit"), steps[1], _tool("bash"), steps[2],
     )))
     tap = tmp_path / "tap.jsonl"
-    tap.write_text(json.dumps(_tap("r1", now - 30, OURS)) + "\n")
+    rows = [_tap("r1", now - 30, OURS)]
+    rows += [_timings(f"r{i}", now - 30 + i, p, 5) for i, p in enumerate(STEP_PROMPTS, 1)]
+    tap.write_text("".join(json.dumps(r) + "\n" for r in rows))
     return out, evid, tap
 
 
@@ -195,6 +209,10 @@ def test_verify_passes_and_writes_sc86_beliefs(tmp_path):
     assert run["counts"]["input_tokens"] == 100 + 20 + 30 + 120 + 10 + 150
     assert run["counts"]["cached_prompt_tokens"] == 270
     assert run["counts"]["passed_attempts"] == 1
+    assert _by(verdict["checks"], "A5-session-tokens-match-tap")["ok"]
+    assert verdict["token_counts"]["input_tokens_source"] == "tap_server_terminal"
+    record = json.loads((evid / "attempts.jsonl").read_text())
+    assert record["input_tokens_source"] == "tap_server_terminal"
     assert run["harness"]["pin"] == m.AUDITED_TIP
     assert run["config_sha256"] == cap.file_sha256(evid / "opencode.jsonc")
     rows = [json.loads(x) for x in (evid / cap.SIDECAR_NAME).read_text().splitlines()]
@@ -245,3 +263,74 @@ def test_preflight_flags_an_unpinned_opencode(tmp_path):
     check = _by(m.preflight(str(fake)), "opencode-version-pinned")
     assert not check["ok"]
     assert f"opencode-ai@{m.PINNED_VERSION}" in check["detail"]
+
+
+# ── A5: session token totals equal the tap's server_terminal totals ─────────
+
+
+def test_tap_token_counts_attribute_by_session_window_and_source():
+    other = {**OURS, "x_session_id": "ses_other"}
+    events = [
+        _timings("r1", 10, 7000, 20),
+        _timings("r1", 10, 7000, 20),  # a duplicate row for one call counts once
+        _timings("r2", 11, 300, 4),
+        _timings("r3", 12, 999, 9, keys=other),  # another session
+        _timings("r4", 500, 999, 9),  # outside the window
+        _tap("r5", 12, OURS, event="end"),  # not a timings row
+    ]
+    counts = m.tap_token_counts(events, SID, 0, 100)
+    assert counts == {"calls": 2, "measured_calls": 2, "prompt_tokens": 7300,
+                      "completion_tokens": 24}
+
+
+def test_a5_passes_when_client_recorded_what_the_server_measured():
+    session = _session(_step(100, 0, 20), _step(30, 120))
+    tap = m.tap_token_counts([_timings("r1", 1, 120, 5), _timings("r2", 2, 150, 5)], SID, 0, 9)
+    assert m.check_token_parity(session, tap)["ok"]
+
+
+def test_a5_fails_when_the_client_recorded_zero_usage():
+    """The 2026-09-26 run-2 shape: tap measured 7386, the session recorded 0."""
+    session = _session(_step(0, 0), _step(0, 0))
+    tap = m.tap_token_counts([_timings("r1", 1, 6865, 110), _timings("r2", 2, 7386, 19)],
+                             SID, 0, 9)
+    check = m.check_token_parity(session, tap)
+    assert not check["ok"]
+    assert "prompt/completion 0/10" in check["detail"] and "14251/129" in check["detail"]
+
+
+def test_a5_fails_without_a_server_prompt_count_or_any_call():
+    session = _session(_step(100, 20))
+    unmeasured = m.tap_token_counts([_timings("r1", 1, 120, 5, source=None)], SID, 0, 9)
+    assert not m.check_token_parity(session, unmeasured)["ok"]
+    assert not m.check_token_parity(session, m.tap_token_counts([], SID, 0, 9))["ok"]
+
+
+def test_resolve_prefers_the_tap_and_labels_the_fallback():
+    session = _session(_step(0, 0))
+    tap = m.tap_token_counts([_timings("r1", 1, 7386, 19)], SID, 0, 9)
+    assert m.resolve_token_counts(session, tap)["input_tokens"] == 7386
+    assert m.resolve_token_counts(session, tap)["input_tokens_source"] == "tap_server_terminal"
+    partial = m.tap_token_counts([_timings("r1", 1, 7386, 19, source=None)], SID, 0, 9)
+    for fallback in (m.resolve_token_counts(session, partial), m.resolve_token_counts(session, None)):
+        assert fallback["input_tokens"] == 0
+        assert fallback["input_tokens_source"] == "opencode_session"
+
+
+def test_verify_with_zeroed_session_usage_fails_a5_but_records_tap_counts(tmp_path):
+    zero = (_step(0, 0), _step(0, 0), _step(0, 0))
+    _, evid, tap = _simulate_run(tmp_path, session_steps=zero)
+    rc, verdict = _verify(evid, tap, *IDENTITY)
+    assert rc == 1
+    assert not _by(verdict["checks"], "A5-session-tokens-match-tap")["ok"]
+    # The authoritative count survives the client's accounting failure.
+    assert verdict["belief_capture"]["status"] == "written"
+    run = json.loads((evid / "opencode_shell_run.json").read_text())
+    assert run["counts"]["input_tokens"] == sum(STEP_PROMPTS)
+
+
+def test_verify_without_tap_file_fails_a5(tmp_path):
+    _, evid, _ = _simulate_run(tmp_path)
+    rc, verdict = _verify(evid, tmp_path / "missing.jsonl", "--no-belief-capture")
+    assert rc == 1
+    assert not _by(verdict["checks"], "A5-session-tokens-match-tap")["ok"]
