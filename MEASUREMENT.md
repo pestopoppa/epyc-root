@@ -284,6 +284,17 @@ confers no authority beyond its own enumeration.
 
 ## CHANGELOG
 
+- **2026-09-26 (v2.x)** — CLARIFICATION (Annex K, `P-AK-SEARCH-1-A3.1`): the epoch in A3 Clause 1 is
+  the **measurement epoch**: anchor commit, build recipe and declared host state, EXCLUDING actor
+  configuration (planner/author/critic models, efforts, thinking, limits, prompt knobs, and the
+  manifest's actor roster). Planner-history comparability and the do-not-repeat gate key on it, so an
+  actor change no longer hides same-anchor results or re-admits already-measured mechanisms. Legacy
+  records with no measurement identity fail closed to the full epoch. The full epoch stays the
+  provenance key. A3's text never named actor configuration, but the implementation had folded it into
+  host state through `enrolled_manifest_digest`; both readings are recorded in the annex. Implementation:
+  epyc-inference-research `d643d794` (`ResolvedCampaign.measurement_digest`). Operator decision OP-60,
+  2026-09-26.
+
 - **2026-09-23 (v2.x)** — AMENDMENT (NIB2-59): §5's trust boundary now names the agent digest
   `agents/shared/MEASUREMENT_POLICY.md` explicitly. The digest already declared itself human-amendment-
   only (its *Trust boundary* section) and every past edit to it was a ratified commit, but §5's list

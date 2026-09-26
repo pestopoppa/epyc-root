@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-OP60-MEASUREMENT-EPOCH-20260926",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_op60_measurement_epoch_20260926.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "epyc.measurement.protocol_amendment.v1",
+  "decision": "AK-SEARCH-1-A3-EPOCH-IS-MEASUREMENT-EPOCH",
+  "gate_id": "RATIFY-OP60-MEASUREMENT-EPOCH-20260926",
+  "operator_decision": "OP-60 (2026-09-26, given in session): switch planner-history comparability and the do-not-repeat gate from the full epoch to the measurement epoch",
+  "ratified_at": "2026-09-26T13:06:18Z",
+  "operator": "node",
+  "status": "ratified",
+  "protocol_id": "P-AK-SEARCH-1",
+  "clause": "P-AK-SEARCH-1-A3 Clause 1 (epoch definition), clarified by new section P-AK-SEARCH-1-A3.1",
+  "annex": "K",
+  "amendment_class": "clarification",
+  "readings": {
+    "text": "A3 Clause 1 defines the epoch as anchor commit + build recipe + declared host state and never names actor configuration; on this reading the implementation over-reached and A3.1 is a clarification (the operator's ruling).",
+    "implementation": "research folded the actor roster into host_state via enrolled_manifest_digest (manifest incl. actors/fallbacks) from the day A3 shipped, so every recorded A3 epoch includes it; on this reading A3.1 changes the recorded epoch."
+  },
+  "measurement_epoch": {
+    "includes": [
+      "anchor commit",
+      "build recipe",
+      "declared host state: CPU/GPU execution digests, frozen request set, enrolled target, manifest measured content (manifest minus actors/fallbacks), CPU screen scope, serving instrument"
+    ],
+    "excludes": [
+      "planner/author/critic models and backends",
+      "reasoning efforts",
+      "thinking settings",
+      "context and output limits",
+      "prompt knobs",
+      "manifest actors/fallbacks roster and any digest that folds it in (enrolled_manifest_digest, manifest_digest)"
+    ],
+    "keyed_uses": [
+      "planner-history comparability (A3 Clause 1 ranking; Clause 2 cross-epoch boundary)",
+      "do-not-repeat gate (already-measured-in-epoch)"
+    ],
+    "legacy_rows": "records without a measurement identity fail closed to the full-epoch comparison; never presumed same-epoch",
+    "full_epoch": "still recorded; remains the provenance key for archive rows, history and status"
+  },
+  "implementation": {
+    "repo": "epyc-inference-research",
+    "commits": {
+      "d643d794": "ResolvedCampaign.measurement_digest / measurement_epoch (loop/campaign.py, loop/run.py)",
+      "3cbdccea": "resume and pending views bind on the measurement epoch (lane ak-author-medium)"
+    }
+  },
+  "rationale": "a measured speed/correctness result does not depend on which actor authored the patch; under the full epoch every actor change (four in the week ending 2026-09-26) hid prior same-anchor results from the planner and re-admitted already-measured mechanisms; one critic swap moved the full epoch e0aefe6a -> e384c2ad with anchor, target, recipe, instrument, requests and floor unchanged",
+  "not_granted": "no banking, composition, readiness contribution, promotion or retro-certification; every P-AK-SEARCH-1 denial and precondition stands",
+  "patch": {
+    "path": "artifacts/operator/ak-search-1-a3-1-measurement-epoch-20260926.patch",
+    "sha256": "0282cf4e747893d3561ffe0fa748305350b138faad72feac347b03b4389a588e"
+  },
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "62a4e72e3e8508fecbf917d938d3577f0c6abe3da4c1fd47b50d31828093dd60",
+      "sha256_after": "abfd4f2c8a7dc70a6586a0090b1d233e1b87f18bc62bf5cf0d043abfa859409a"
+    },
+    "measurement/protocols/kernel-research.md": {
+      "sha256_before": "be876a76e9b0f6edb1ef81ac489083e172270429cf7e986b933171ea54e39316",
+      "sha256_after": "6d3ecd9451578c7dab1af07dd0e192e2cb69eb3ed7a971abad4cdb0ec0d36a54"
+    }
+  },
+  "tracking": {
+    "operator_queue": "handoffs/active/master-handoff-index.md OP-60",
+    "handoff_task": "handoffs/active/deepseek-v41-flash-evaluation.md DS41-C40"
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_op60_measurement_epoch_20260926.receipt.json",
+  "applied_by": "scripts/operator/ratify_op60_measurement_epoch_20260926.sh"
+}
