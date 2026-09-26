@@ -571,7 +571,7 @@ Not measured:
     every larger requested budget was inert. The per-call environment now sets it.
   - Also: an action rule and a GitNexus line in the prompts.
   - Also: the `measurement_epoch` resume split. Checkpoints bind on the epoch inputs minus actor/backend config, so
-    an actor swap no longer orphans them. The comparability half of this is operator decision DS41-C40.
+    an actor swap no longer orphans them. The comparability half was ratified 2026-09-26 as P-AK-SEARCH-1-A3.1 (DS41-C40); code switch DS41-C44.
 - [x] **OAB-25 — `ak-check` sandbox for authors.** ✅ 2026-09-26 — lane `ak-sandbox`.
   - A compile check takes ~0.7-6.5 s.
   - `--op-test` takes ~9-15 s, via `test-backend-ops` against the CPU reference.

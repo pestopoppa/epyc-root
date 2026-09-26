@@ -5,7 +5,7 @@
 - **Run 10h has been live since 2026-09-26 ~10:57Z** on research `d643d794`, after six AK lanes were merged (§C,
   DS41-C35..C37).
 - The planner's ~220 GB/s abstention premise was refuted by a full-screen readbw run (DS41-C36).
-- 0 measurements so far (DS41-C39). The operator decision on the epoch clause is open (DS41-C40).
+- 0 measurements so far (DS41-C39). The epoch clause is ratified as P-AK-SEARCH-1-A3.1 (DS41-C40); the code switch is DS41-C44.
 - The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
 target DeepSeek-V4.1-Flash instead (assuming they are applicable)")
@@ -694,7 +694,7 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
     with its reason) is recorded here.
   - If the planner abstains again with the scope-widening note in its inbox, record the abstention reason
     verbatim. This also carries DS41-C33's hoist acceptance.
-- [ ] DS41-C40 — **Operator decision: move planner-history comparability and the do-not-repeat gate from the full
+- [x] DS41-C40 ✅ 2026-09-26 — Option A (switch both) chosen by the operator and ratified as `P-AK-SEARCH-1-A3.1` (ratify commit 1680efbb, run by the main session on the operator's explicit authorization; receipt `artifacts/operator/ratify_op60_measurement_epoch_20260926.json`). — **Operator decision: move planner-history comparability and the do-not-repeat gate from the full
   epoch to the measurement epoch.**
   - The two epochs:
     - the full epoch folds the actor roster in (`enrolled_manifest_digest` inside `host_state`), so a critic swap
@@ -727,6 +727,7 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   - On the full screen, today's gemv-2560 is 377.5 GB/s at 48 threads and 475.9 at 96.
   - Keep the operator's gate and target (30 / 45-50 t/s). Only re-derive the BW → t/s rows.
   - Repeat the reading on an idle host before quoting it as the ceiling.
+- [ ] DS41-C44 — **Switch planner-history `recall()` comparability and the do-not-repeat gate to the measurement epoch** (A3.1 clause 1b). Records with no measurement identity fall back to the full epoch (clause 1c). Tests: an actor swap keeps same-anchor measured results visible and blocks re-proposal; an anchor/recipe/host change still separates; legacy rows fail closed. In progress 2026-09-26 on research lane `lane/op60-measurement-epoch-20260926`.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
