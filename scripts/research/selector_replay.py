@@ -264,7 +264,119 @@ def verify_audit(path: Path) -> dict[str, Any]:
         raise ReplayRefusal(
             "historical summary or missing-field inventory differs from frozen bytes"
         )
+    receipt_path = path.parent / "research-screen.json"
+    if receipt_path.exists():
+        receipt = research_screen.native_rows(receipt_path)[0]["receipt"]
+        if (
+            receipt["profile"]["kind"] != "deterministic_primitive"
+            or receipt["profile"]["conformance_artifact"]["sha256"]
+            != digest(path.read_bytes())
+            or artifact is None
+            or receipt["input_manifest"]["sha256"] != artifact["sha256"]
+            or receipt["profile"]["provenance_artifact"]["sha256"] != artifact["sha256"]
+            or receipt["counts"]["eligible"] != len(report["missing_fields"])
+            or receipt["counts"]["invalid"] != len(report["missing_fields"])
+        ):
+            raise ReplayRefusal("historical research-screen receipt differs from audit")
+        rows = rows_file(path.parent / "missing-fields.jsonl")
+        if [row.get("item_id") for row in rows] != report["missing_fields"]:
+            raise ReplayRefusal("historical raw missing-field rows differ from audit")
     return report
+
+
+def seal_historical_audit_receipt(audit_path: Path) -> Path:
+    """Prospectively record the deterministic refusal after the audit is sealed."""
+    report = verify_audit(audit_path)
+    artifact = report.get("inventory")
+    if artifact is None:
+        raise ReplayRefusal("historical receipt requires pinned inventory artifact")
+    inventory_path = Path(artifact["path"])
+    if inventory_path.resolve().parent != audit_path.resolve().parent:
+        raise ReplayRefusal(
+            "historical receipt inventory must be frozen in audit package"
+        )
+    missing = report["missing_fields"]
+    if report["disposition"] != "not_evaluable" or not missing:
+        raise ReplayRefusal(
+            "historical receipt requires a non-evaluable missing-field audit"
+        )
+    raw_rows = [
+        {
+            "item_id": field,
+            "status": "invalid",
+            "field": field,
+            "reason": "required historical selector replay evidence absent",
+        }
+        for field in missing
+    ]
+    raw_spec = _emit_jsonl(audit_path.parent / "missing-fields.jsonl", raw_rows)
+    receipt_path = audit_path.parent / "research-screen.json"
+    timestamp = (
+        json_file(receipt_path)["timestamp"]
+        if receipt_path.exists()
+        else datetime.now(timezone.utc).isoformat()
+    )
+    receipt_body = {
+        "schema": research_screen.SCHEMA,
+        "receipt_id": f"selector-audit-{report['audit_sha256'][:16]}",
+        "run_id": f"historical-audit-{report['audit_sha256'][:16]}",
+        "timestamp": timestamp,
+        "source": {
+            "kind": "historical_selector_audit",
+            "revision": report["audit_sha256"],
+        },
+        "producer": {
+            "name": "epyc-selector-replay-audit",
+            "revision": digest(Path(__file__).read_bytes()),
+        },
+        "input_manifest": _spec(inventory_path),
+        "baseline": {
+            "id": "recorded_parent_edges_unreconstructed",
+            "revision": report["capture_commit_reference"] or "historical-journal-only",
+        },
+        "raw_outputs": raw_spec,
+        "window": {
+            "kind": "inapplicable",
+            "id": f"inventory-{artifact['sha256'][:16]}",
+            "reason": "deterministic conformance and provenance audit of pinned historical journal bytes",
+        },
+        "counts": {
+            "eligible": len(missing),
+            "scored": 0,
+            "failure": 0,
+            "invalid": len(missing),
+            "abstention": 0,
+        },
+        "rule": {
+            "id": "selector-replay-evidence-gate",
+            "revision": "1",
+            "statement": "Refuse historical effect replay when any required observed field is absent.",
+        },
+        "disposition": {
+            "decision": "not_evaluable",
+            "reason": "historical replay evidence incomplete; no promotion authority",
+        },
+        "claim": {
+            "class": "mechanism_feasibility",
+            "metric": "replay_evidence_completeness",
+            "value": 0,
+            "unit": "fraction",
+            "direction": "higher_better",
+            "category": "CANDIDATE",
+            "protocol_id": "selector-replay-audit-v1",
+            "text": "Pinned historical journals lack required selector replay evidence; no promotion authority",
+            "reps_basis": f"{len(missing)} required evidence fields absent in deterministic audit",
+        },
+        "profile": {
+            "kind": "deterministic_primitive",
+            "primitive_id": "selector-replay-historical-evidence-audit-v1",
+            "conformance_artifact": _spec(audit_path),
+            "provenance_artifact": _spec(inventory_path),
+        },
+    }
+    research_screen.write_receipt(receipt_path, receipt_body)
+    verify_audit(audit_path)
+    return receipt_path
 
 
 def _validate_source(
@@ -1075,7 +1187,18 @@ def main() -> int:
             )
             write_once(args.output, canonical(report) + b"\n")
             verify_audit(args.output)
-            print(json.dumps(report, indent=2))
+            receipt_path = seal_historical_audit_receipt(args.output)
+            print(
+                json.dumps(
+                    {
+                        "audit": str(args.output),
+                        "receipt": str(receipt_path),
+                        "disposition": report["disposition"],
+                        "missing_fields": report["missing_fields"],
+                    },
+                    indent=2,
+                )
+            )
             return 2
         if args.command == "verify-audit":
             print(json.dumps(verify_audit(args.audit), indent=2))

@@ -216,6 +216,113 @@ def test_historical_inventory_rejects_byte_mismatch(tmp_path: Path) -> None:
     assert not (tmp_path / "frozen" / "journal-0.jsonl").exists()
 
 
+def test_historical_audit_emits_deterministic_research_screen_receipt(
+    tmp_path: Path,
+) -> None:
+    journal = tmp_path / "journal.jsonl"
+    journal.write_text('{"trial_id":1,"seq":{"candidate":"c"},"git_tag":"trial-1"}\n')
+    package = tmp_path / "audit-package"
+    package.mkdir()
+    inventory = {
+        "sources": [
+            {
+                "path": str(journal),
+                "bytes": len(journal.read_bytes()),
+                "lines": 1,
+                "sha256": replay.digest(journal.read_bytes()),
+            }
+        ],
+        "capture_commit_reference": "fixture-commit",
+    }
+    inventory_path = package / "inventory.json"
+    inventory_path.write_bytes(replay.canonical(inventory) + b"\n")
+    report = replay.audit_historical(
+        [journal],
+        package,
+        inventory,
+        {
+            "path": str(inventory_path),
+            "sha256": replay.digest(inventory_path.read_bytes()),
+        },
+    )
+    audit_path = package / "audit.json"
+    audit_path.write_bytes(replay.canonical(report) + b"\n")
+    frozen_audit = audit_path.read_bytes()
+    receipt_path = replay.seal_historical_audit_receipt(audit_path)
+    assert replay.seal_historical_audit_receipt(audit_path) == receipt_path
+    assert audit_path.read_bytes() == frozen_audit
+    assert b"research-screen.json" not in frozen_audit
+    receipt = replay.research_screen.native_rows(receipt_path)[0]["receipt"]
+    projected = replay.research_screen.project(
+        replay.research_screen.native_rows(receipt_path)[0]
+    )
+    assert projected.extra["claim_class"] == "mechanism_feasibility"
+    assert projected.extra["disposition"]["decision"] == "not_evaluable"
+    assert receipt["profile"]["kind"] == "deterministic_primitive"
+    assert receipt["input_manifest"]["sha256"] == replay.digest(
+        inventory_path.read_bytes()
+    )
+    assert receipt["profile"]["conformance_artifact"]["sha256"] == replay.digest(
+        frozen_audit
+    )
+    assert receipt["profile"]["provenance_artifact"]["sha256"] == replay.digest(
+        inventory_path.read_bytes()
+    )
+    assert receipt["claim"]["class"] == "mechanism_feasibility"
+    assert receipt["claim"]["metric"] == "replay_evidence_completeness"
+    assert receipt["claim"]["value"] == 0
+    assert receipt["disposition"]["decision"] == "not_evaluable"
+    assert receipt["window"]["kind"] == "inapplicable"
+    assert receipt["counts"] == {
+        "eligible": len(report["missing_fields"]),
+        "scored": 0,
+        "failure": 0,
+        "invalid": len(report["missing_fields"]),
+        "abstention": 0,
+    }
+    rows = replay.rows_file(package / "missing-fields.jsonl")
+    assert [row["item_id"] for row in rows] == report["missing_fields"]
+    assert all(row["status"] == "invalid" for row in rows)
+    assert replay.verify_audit(audit_path) == report
+
+
+def test_historical_receipt_tamper_refused(tmp_path: Path) -> None:
+    journal = tmp_path / "journal.jsonl"
+    journal.write_text('{"seq":{"candidate":"c"}}\n')
+    package = tmp_path / "package"
+    package.mkdir()
+    inventory = {
+        "sources": [
+            {
+                "path": str(journal),
+                "bytes": len(journal.read_bytes()),
+                "lines": 1,
+                "sha256": replay.digest(journal.read_bytes()),
+            }
+        ]
+    }
+    inventory_path = package / "inventory.json"
+    inventory_path.write_bytes(replay.canonical(inventory) + b"\n")
+    report = replay.audit_historical(
+        [journal],
+        package,
+        inventory,
+        {
+            "path": str(inventory_path),
+            "sha256": replay.digest(inventory_path.read_bytes()),
+        },
+    )
+    audit_path = package / "audit.json"
+    audit_path.write_bytes(replay.canonical(report) + b"\n")
+    replay.seal_historical_audit_receipt(audit_path)
+    raw = package / "missing-fields.jsonl"
+    raw.write_bytes(raw.read_bytes() + b" ")
+    with pytest.raises(
+        replay.research_screen.ProjectionError, match="raw_outputs bytes"
+    ):
+        replay.verify_audit(audit_path)
+
+
 def test_formula_config_and_cluster_provenance_are_required(tmp_path: Path) -> None:
     source = source_copy(tmp_path)
     spec = json.loads(source.read_text())

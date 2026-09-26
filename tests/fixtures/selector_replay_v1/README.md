@@ -35,17 +35,36 @@ establish paper fidelity or real selector gain. A future feature timestamp,
 missing candidate menu, missing paired outcome, or insufficient holdout
 clusters causes refusal.
 
-Historical EPYC journal shards can be frozen and audited with
-`audit-historical` after passing both journal paths, `--expected-inventory
-tests/fixtures/selector_replay_v1/historical_inventory.json`, `--package PATH`,
-and `--output PATH/audit.json`. The report self-hash binds the pinned inventory,
-both full byte copies, summary, and missing fields. `verify-audit PATH/audit.json`
-rechecks the sealed report against the frozen copies. The inventory
+Historical EPYC journal shards can be frozen and audited with:
+
+```bash
+python3 scripts/research/selector_replay.py audit-historical \
+  /workspace/repos/epyc-orchestrator/orchestration/autopilot_journal.jsonl \
+  /workspace/repos/epyc-orchestrator/orchestration/autopilot_journal_1.jsonl \
+  --expected-inventory tests/fixtures/selector_replay_v1/historical_inventory.json \
+  --package /tmp/selector-historical-audit \
+  --output /tmp/selector-historical-audit/audit.json
+python3 scripts/research/selector_replay.py verify-audit \
+  /tmp/selector-historical-audit/audit.json
+```
+
+`audit-historical` exits 2 for the expected `not_evaluable` disposition. It
+writes `audit.json` first, then `missing-fields.jsonl` and a producer-sealed
+`research-screen.json` in the same package. Each absent field has one `invalid`
+row, with all rows in the denominator. The receipt uses the pinned inventory
+as its input manifest and provenance artifact, the immutable audit JSON as its
+conformance artifact, a deterministic holdout-inapplicable rationale, and a
+`mechanism_feasibility` claim of `replay_evidence_completeness=0`. It grants no
+promotion authority. The receipt is deliberately outside the audit self-hash.
+
+The audit self-hash binds the pinned inventory, both full byte copies, summary,
+and missing fields. `verify-audit` rechecks the audit and, when present, the
+receipt and raw missing-field rows. The inventory
 pins the 18,257,825 and 19,801,823 raw bytes and their SHA-256 digests. The
 audit checks the 393 sequential rows, 141 candidates, 22 parent pointers that
 leave the sequential subset but resolve in the full journals, and the 30,240
 question outcomes with 3,514 distinct qids. Their recorded trial outcomes
 do not provide an eligible parent menu or paired unchosen-parent continuation,
 and model/decoding identities are absent, so the audit emits `not_evaluable`
-and refuses to emit a historical effect receipt. Derived menus, edges, or
+and refuses to emit a historical **selector effect** receipt. Derived menus, edges, or
 holdouts are never represented as observed evidence.
