@@ -305,3 +305,30 @@ judgement over measured values and is the one restated constant in the artifact.
       `swe_verified_preliminary_20260724` 72 KB) and are already pushed. They predate the ruling and
       conflict with it; MEASUREMENT.md §5 requires a durable citation, so the question is what form
       that citation takes — a wiki reference to a local path, or a committed bundle. Operator call.
+
+## Research Intake Update — 2026-09-26 — llama-server capacity-signal map (C1-A5) + monitor triggers
+
+**Signal map, from production v10 source (server-context.cpp@ffc1bac8:698-722, 903-908, 4720-4760, per the intake-1797 dive).**
+- HW-Router's running/waiting counts map to `llamacpp:requests_processing` / `requests_deferred`. These exist only
+  with `--metrics`, which CPU launches do NOT pass today (orch `orchestrator_stack.py:1267` @fb7871ea, `:1272` at
+  `a439070e`, is GPU-only; live :8074 argv read 2026-09-26).
+- KV-cache % has NO analogue: KV is preallocated per slot at launch (:193). The nearest signal is per-slot fill from
+  `/slots` n_prompt_tokens + n_decoded vs n_ctx.
+- TTFT/TPOT averages must come from counter deltas. `prompt_seconds_total/prompt_tokens_total` excludes queue wait.
+  The `prompt_tokens_seconds` / `predicted_tokens_seconds` gauges are lifetime averages in v10, because
+  `metrics_reset_bucket` is never set.
+- Pending decode tokens are not exposed: `n_remain` is -1 without `n_predict`.
+- v10 `/slots` does emit n_prompt_tokens, n_prompt_tokens_processed and n_prompt_tokens_cache. Deferred-request
+  lengths are not exposed.
+- Never wire a vLLM-shaped KV% or a lifetime gauge into routing (intake-1797#01, intake-1796#01, intake-1798#02).
+
+**Where the soft load cost lives.** The per-request saturation guard is an instance of §7 Q1 ("soft cost, fail OPEN
+with a penalty"). It is owned by decision-aware-routing.md DAR-LAT-1/2 and reads the orchestrator's own admission
+ledger, not a second poller. No task here.
+
+**Triggers (prose, no checkbox; both entries are stage1-unverified, so no figure from them may be cited until dived):**
+- When Artifact 3 (interference cost) is parameterised with a batch-throughput lane in scope, dive intake-1812#record
+  first, as a candidate analytic prior for that lane.
+- If fable5-window2-findings-02-heterogeneous-gpu.md F1 (:239) shows the overlap is worth pursuing, dive
+  intake-1814#record before designing R-A5's async CPU backend. Any live device/PCIe load axis must reuse existing
+  readers (Axiom 1).

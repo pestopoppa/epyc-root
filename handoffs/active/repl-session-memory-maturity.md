@@ -1,10 +1,10 @@
 # REPL Session Memory — Maturity Deltas
 
-**Status**: active — D-a/D-a2/D-a3/D-a4/D-a6, D-b, D-c1, D-d, D-e all landed 2026-07-27 (no
+**Status**: active — D-a/D-a2/D-a3/D-a4/D-a6, D-b, D-c1, D-e all landed 2026-07-27 (no
 inference, no instrument-era surface). **An adversarial review broke the first pickle boundary the
 same day; fixed in orchestrator `9d30bb60` — see *Security review — round 2*.** Remaining: D-c/D-c2
 (decide on real-workload numbers), D-a5 (columnar codec, only if a workload needs DataFrames),
-D-e1 (caps default, folded into D-c1).
+D-e1 (caps default, folded into D-c1), D-d (curation layer; acceptance extended 2026-09-26).
 **Created**: 2026-07-27 (via research intake, operator-approved 2026-07-27)
 **Priority**: MEDIUM
 **Categories**: agent_architecture, context_management, memory_augmented
@@ -153,6 +153,10 @@ non-executable format.
         negligible.
 - [ ] D-d — **Curation layer.** An agent-facing annotate/pin call layered over the existing auto-save,
       plus comment-to-variable binding. Lowest priority — we already have `variable_lineage`.
+  - **D-d acceptance (added 2026-09-26, research intake).**
+    - *Admission gate for shared or pinned notes.* A deterministic grounding check comes first: a note's cited span must appear verbatim in its source, and a note that claims a result must reference an execution present in the session record. Only after that, an optional worker-tier semantic check. Admission is never routed to the architect. The one ablated DeLM component is admission verification (LongBench-v2, GPT-5.4, a single model; 60.1 → 55.2 without it) [intake-1803#6]; its cheapest form is a verbatim reference check [intake-1803#4]. Cost bound (intake-1820#1, intake-1820#3, intake-1820#4): writes are event-triggered (a subtask result or a new grounded fact), never every step; the verbatim-anchor check runs against the writer's own tool/REPL output at 0 LLM calls; summary/gist compression and any LLM faithfulness stage stay OFF unless an A/B on a fact-pooling workload shows they pay; budget ≤1 extra model call per admitted note. The only independent cost curve for a DeLM-style board (synchronous, every agent writes every step, 5N calls per round) runs 10.8–12.6× no-communication at every N, and its one win is fact pooling.
+    - *Any notes block injected into delegated or REPL-worker prompts is a prefix by construction:* rendered append-only, byte-identical across viewers, and placed before any per-worker, per-step or tools content. Acceptance is a static check that the rendered block is a prefix-stable function of the note log, plus a reuse reading from `/slots` `n_prompt_tokens_cache` / `timings.cache_n` (`wiki/benchmark-methodology.md:1870`). DeLM's released prompts break all three conditions — the dive overturned the paper's own prefix-placement claim [intake-1803#record]; that is the failure mode this guards against. The migration-side analogue is `dynamic-stack-concurrency.md` "(Z) Guard the prefix-stability assumption"; do not fork it.
+    - *Belief kernel (rigor, 2026-09-26):* When D-d is built, file a VB row for the `/slots` reuse reading before its first run (the repl-turn-efficiency.md :159 measurement has none today).
 - [x] D-e — **Truncation caps.** ✅ 2026-07-27 (justified, not raised). Extracted to named
       `MAX_RESUME_VARIABLES` / `MAX_RESUME_SKIPPED` constants and made them per-call overridable on
       `format_for_injection()`; `0` means no limit. **Defaults deliberately left at 12/8** — raising

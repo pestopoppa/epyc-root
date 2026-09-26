@@ -96,6 +96,7 @@ The interlocutor and the orchestrator split the work like this.
   | Qwen3-Omni with a Q8 Thinker | ≈ 36+ GB, which does **not** fit beside a Q8 35B-A3B |
 
 - **CPU decode bandwidth.** Decode-usable bandwidth is about **150–220 GB/s**, not the 460.8 GB/s theoretical figure (`wiki/hardware-optimization.md:75-78,119,223`).
+  - *Correction 2026-09-26:* 150–220 GB/s is pre-BIOS. Since 2026-09-21 a full-screen read-sum measures 446.8 GB/s at t96 (cpu-decode-roofline-program.md:282-289) and 449.4 under load (deepseek-v41-flash-evaluation.md:668-674, DS41-C36). A ~250 GB/s decoder is no longer excluded by the ceiling alone; whether it fits beside a -t 96 LLM is the contention question in the next bullet.
   - CPU speech **collapses on both sides** while a `-t 96` CPU LLM generates: STT RTF ≥ 58, TTS first packet 13.4–13.6 s, and the LLM falls to 0.59–1.05 tok/s (contention doc §4).
   - Partitioning the LLMs to `-t 56` on cores 40-95 restores STT, leaves TTS marginal, and costs the LLM 22–26%. **The frontdoor under that partition was never measured.**
 - **No free physical core.** Even correctly pinned GPU host threads degraded the CPU A/A floor from 0.80% to 7.22%.

@@ -1755,3 +1755,22 @@ See the fuller root-cause writeup in [decision-aware-routing.md](decision-aware-
   verifier (`src/api/services/routing_models.py:131-149`) only runs in the classifier path, which is off
   (`routing_classifier`, `src/features.py:123`). Either unset it so the environment matches behaviour, or tie
   it to the classifier rollout decision above; do not leave a live flag that does nothing.
+
+## Research Intake Update — 2026-09-26 (orchestration prior art: declines + a rollout precondition)
+
+**DECLINED — an HW-Router-style learned live latency predictor or an SFS engine-snapshot simulator for role
+selection (C1-A4).**
+- Neither was compared against a static latency prior. HW-Router's baselines are priced in money and it has no
+  live-signal ablation (intake-1797#04); SFS has no static arm (intake-1798#04).
+- SFS needs per-iteration engine snapshots from a forked server, which the frozen kernel forbids (intake-1798#06).
+- Reopen only if decision-aware-routing.md DAR-LAT-3 adopts its live arm (A2).
+
+**Already satisfied (C1-A6).** The routing classifier is one ~70K-param MLP forward at <1 ms (:583), not a serial
+generative scorer. RouteBalance's deployment ladder (intake-1796#04) is a caution only if a generative scorer is ever
+put on the /v1 hot path; then it must be batched or amortised.
+
+**Rollout precondition (prose).** The MLP fast path (orch `hybrid_router.py:405-490`) returns before the selection
+score. If `routing_classifier` is ever enabled (LRC-2), first apply the DAR-LAT-2 saturation guard as a post-check on
+the fast-path result (around :411). Otherwise saturated roles bypass the guard.
+
+**Evaluation caution (2026-09-26, intake-1821#7).** In EvoHarnessBench's delegation study, specialist-selection precision stays around 90%, yet 78–86% of trials that reach every required specialist still fail their verifier: a metric that scores only role choice misses the dominant failure. GPT-5-only and enterprise-workflow-only, so a hypothesis for our traces. If LRC-2 is evaluated for rollout, report realized task outcome beside role agreement; decision-aware-routing.md DAR-LAT-3 already grades realized quality per request.

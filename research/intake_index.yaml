@@ -54785,41 +54785,135 @@
   - '[unverified] Annotate intake-889: its dive concluded ''no E2B needed'' assuming E2B-compatible sandboxing meant a cloud dependency. An MIT self-hostable E2B-API-compatible server now exists, so that reasoning should be annotated rather than left standing. Do NOT reopen the GPU/weight-space half.'
   - '[unverified] OPERATOR DECISION, higher value than this entry: kvcache-ai KTransformers has NEVER been ingested despite being the closest public match to this hardware profile, and was killed in fable5-window2-findings-02-heterogeneous-gpu.md on a simulators-are-dead-weight argument that did not evaluate the runtime. Per the never-dismiss-without-asking rule this is an ingest-or-reaffirm decision, not a self-authorized rejection. NOTE the Tier-2b check found the index''s ''KTransformers publishes NO benchmarks'' claim is NO LONGER TRUE - doc/en/DeepseekR1_V3_tutorial.md publishes 671B-MoE-on-one-GPU throughput with an explicit llama.cpp head-to-head, and a peer-reviewed SOSP''25 paper exists.'
   notes: 'ORG-HALO GUARD: AgentENV shares the ORG with KTransformers/Mooncake but NOT the domain - it contains no heterogeneous CPU+GPU inference, no expert offload, no AMX, no KV-cache work whatsoever (verified against a full recursive 838-entry file listing: no hits for vllm, sglang, ktransform, openai). Its relationship to that lineage is organizational and reputational only and must NOT be scored as inheriting their inference relevance. Fully decoupled from LLM serving: it hosts the agent PROCESS, not the model. An agent inside a microVM could reach our llama.cpp endpoint over HTTP like any client, but AgentENV supplies none of that plumbing and makes no claim about it. Prereqs: Linux 6.8+ (host is 6.14, nominally OK), /dev/kvm, ublk driver, privileged container if run via Docker. README explicitly warns AgentENV has NO authorization and must not be exposed to a public network. It supplies NO verifiable rewards and NO trajectories - it is the substrate UNDER a harness; the harness Moonshot runs on top for Kimi K3 was NOT open-sourced. Standing prior decisions against this class: completed/rlm-orchestrator-roadmap.md marked ''isolation modes (Docker/Modal/E2B)'' Not pursued/Deferred, and the Vercel Open Agents deep dive discarded E2B-style microVM hibernate as ''heavy infra''. Whether those foreclose the SELF-HOSTED case was not read in full and predates this artifact.'
-  dive_corrections: '2026-07-29 Stage-2 dive (fresh tree at HEAD a7233324, 2026-07-28; host prereqs checked read-only). Verdict and refusal of adopt_component both UPHELD and strengthened; TWO factual corrections, one weakening the entry''s own primary hook.
+  dive_corrections: '2026-07-29 Stage-2 dive (fresh tree at HEAD a7233324, 2026-07-28; host prereqs checked read-only). Verdict
+    and refusal of adopt_component both UPHELD and strengthened; TWO factual corrections, one weakening the entry''s own primary
+    hook.
 
-    PRIMARY HOOK IS PARTLY FALSE. The "OPEN, UNSTARTED checkbox" in scoring-infra-standardization.md does not exist as a checkbox. It is trailing prose inside item 2a-ii, which is marked DONE ("- [x] **2a-ii. Wire it to the suites.** ✅ 2026-07-24" at :63, isolation text at :68-69 "still open, carried in 2b-agentic prep"). No `- [ ]` line in that handoff carries the isolation work, so per the project checkbox-discipline rule it is INVISIBLE to the dashboard progress metric. Relevance `medium` is if anything generous.
+    PRIMARY HOOK IS PARTLY FALSE. The "OPEN, UNSTARTED checkbox" in scoring-infra-standardization.md does not exist as a checkbox.
+    It is trailing prose inside item 2a-ii, which is marked DONE ("- [x] **2a-ii. Wire it to the suites.** ✅ 2026-07-24" at
+    :63, isolation text at :68-69 "still open, carried in 2b-agentic prep"). No `- [ ]` line in that handoff carries the isolation
+    work, so per the project checkbox-discipline rule it is INVISIBLE to the dashboard progress metric. Relevance `medium` is
+    if anything generous.
 
-    ORG-HALO FRAMING UPHELD on an independent re-verification: recursive tree = 838 paths / 674 blobs (matching Stage 1), zero path hits for vllm/sglang/ktransform/openai/kvcache/amx/offload/expert/moe/gguf/llama/cuda/torch/rocm/inference; content-level grep returns 0 for reward/trajectory/episode/verifier/rubric/gym/policy_gradient.
+    ORG-HALO FRAMING UPHELD on an independent re-verification: recursive tree = 838 paths / 674 blobs (matching Stage 1), zero
+    path hits for vllm/sglang/ktransform/openai/kvcache/amx/offload/expert/moe/gguf/llama/cuda/torch/rocm/inference; content-level
+    grep returns 0 for reward/trajectory/episode/verifier/rubric/gym/policy_gradient.
 
-    CLAIM 1 PARTIAL — DECISIVE METHODOLOGY DEFECT: the four latency figures appear in exactly TWO places (README.md:20-21 and docs/.../overview.md:9-10, the same text duplicated) with no hardware, image, memory size or n. The in-tree Criterion benches DO fix a methodology (FULL_SAMPLE_SIZE=10, 3s warmup, 20s measurement, CONCURRENCY=50, HEAVY_DATA_SIZE_MIB=1024) but publish NO figures — and they bench a 128 MiB / 1 vCPU guest (snapshot_benchmark.rs:117, :142-143) versus the 1024 MiB / 2 vCPU product default. So the published numbers are not merely unmethodologised; the only in-repo methodology that exists measures a DIFFERENT configuration. benchmark.yml is workflow_dispatch-only, never runs on push, and every bench fails OPEN ("Skipping {name}: sandbox setup failed"), so a green run does not imply execution.
+    CLAIM 1 PARTIAL — DECISIVE METHODOLOGY DEFECT: the four latency figures appear in exactly TWO places (README.md:20-21 and
+    docs/.../overview.md:9-10, the same text duplicated) with no hardware, image, memory size or n. The in-tree Criterion benches
+    DO fix a methodology (FULL_SAMPLE_SIZE=10, 3s warmup, 20s measurement, CONCURRENCY=50, HEAVY_DATA_SIZE_MIB=1024) but publish
+    NO figures — and they bench a 128 MiB / 1 vCPU guest (snapshot_benchmark.rs:117, :142-143) versus the 1024 MiB / 2 vCPU
+    product default. So the published numbers are not merely unmethodologised; the only in-repo methodology that exists measures
+    a DIFFERENT configuration. benchmark.yml is workflow_dispatch-only, never runs on push, and every bench fails OPEN ("Skipping
+    {name}: sandbox setup failed"), so a green run does not imply execution.
 
-    CLAIM 2 CONFIRMED — the number Stage 1 lacked: docs/src/configuration/reference.md:230-237 and config/default.toml:109-111 give mem_size_mib=1024, vcpu_count=2 per sandbox. Ballooning is really implemented (instance.rs:387-404, virtio-balloon with free-page reporting) but has NO user-facing config knob, and guest reclaim runs DAMON with `skip_anon=Y` (default.toml:19) so an agent''s ANONYMOUS HEAP IS NEVER RECLAIMED — 1 GiB is a floor per live sandbox, not a ceiling. CONTENTION IMPLICATION: 2 vCPU x 4 sandboxes = 8 vCPU = the ENTIRE sanctioned evaluator quadrant (swebench_cpuset_adapter.py CANONICAL_CPUSET "112-119", enforced fail-closed and attested post-create). Firecracker vCPUs are host threads and there is NO cpuset/affinity knob anywhere in the config surface; AgentENV additionally runs a long-lived ublk daemon and PRE-SPAWNS Firecracker processes toward a 64-deep pool watermark. Adopting it would DELETE the only enforced isolation guarantee we currently have between evaluation and inference — a net REGRESSION in contention safety.
+    CLAIM 2 CONFIRMED — the number Stage 1 lacked: docs/src/configuration/reference.md:230-237 and config/default.toml:109-111
+    give mem_size_mib=1024, vcpu_count=2 per sandbox. Ballooning is really implemented (instance.rs:387-404, virtio-balloon
+    with free-page reporting) but has NO user-facing config knob, and guest reclaim runs DAMON with `skip_anon=Y` (default.toml:19)
+    so an agent''s ANONYMOUS HEAP IS NEVER RECLAIMED — 1 GiB is a floor per live sandbox, not a ceiling. CONTENTION IMPLICATION:
+    2 vCPU x 4 sandboxes = 8 vCPU = the ENTIRE sanctioned evaluator quadrant (swebench_cpuset_adapter.py CANONICAL_CPUSET "112-119",
+    enforced fail-closed and attested post-create). Firecracker vCPUs are host threads and there is NO cpuset/affinity knob
+    anywhere in the config surface; AgentENV additionally runs a long-lived ublk daemon and PRE-SPAWNS Firecracker processes
+    toward a 64-deep pool watermark. Adopting it would DELETE the only enforced isolation guarantee we currently have between
+    evaluation and inference — a net REGRESSION in contention safety.
 
-    CLAIM 3 CONFIRMED and WORSE than absence: README.md:44-48 carries the warning, and src/api/impls/auth.rs:20-21 carries "// TODO: Validate configured authentication credentials instead of only checking that they are present" — the implementation accepts ANY non-empty X-API-Key, X-Team-ID or X-Admin-Token. An auth-SHAPED surface that admits any token, including admin, is the failure mode most likely to be mistaken for security.
+    CLAIM 3 CONFIRMED and WORSE than absence: README.md:44-48 carries the warning, and src/api/impls/auth.rs:20-21 carries "//
+    TODO: Validate configured authentication credentials instead of only checking that they are present" — the implementation
+    accepts ANY non-empty X-API-Key, X-Team-ID or X-Admin-Token. An auth-SHAPED surface that admits any token, including admin,
+    is the failure mode most likely to be mistaken for security.
 
-    CLAIM 4 CONFIRMED (re-verified at newer HEAD, 20 commits in 7 days, no change): zero hits for reward/trajectory/episode/task_def/verifier/grading/rubric/scorer. API is lifecycle-only.
+    CLAIM 4 CONFIRMED (re-verified at newer HEAD, 20 commits in 7 days, no change): zero hits for reward/trajectory/episode/task_def/verifier/grading/rubric/scorer.
+    API is lifecycle-only.
 
-    CLAIM 5 CONFIRMED with precision: README lists only TWO prereqs (kernel 6.8+ / Ubuntu 24.04 for the installer; /dev/kvm). ublk and privilege are documented elsewhere — docker-setup.sh:22-31 loads ublk_drv; docs require CAP_NET_ADMIN + CAP_SYS_ADMIN "in effective, permitted, and inheritable sets"; k8s runtime pods run privileged. Note benchmark.yml pins ubuntu-22.04 because "Ubuntu 24.04''s Linux 6.17 kernel can crash in ublk ADD_DEV", with a matching open issue — the storage path is kernel-version-fragile.
+    CLAIM 5 CONFIRMED with precision: README lists only TWO prereqs (kernel 6.8+ / Ubuntu 24.04 for the installer; /dev/kvm).
+    ublk and privilege are documented elsewhere — docker-setup.sh:22-31 loads ublk_drv; docs require CAP_NET_ADMIN + CAP_SYS_ADMIN
+    "in effective, permitted, and inheritable sets"; k8s runtime pods run privileged. Note benchmark.yml pins ubuntu-22.04 because
+    "Ubuntu 24.04''s Linux 6.17 kernel can crash in ublk ADD_DEV", with a matching open issue — the storage path is kernel-version-fragile.
 
-    CLAIM 6 NOT-FOUND: tree-wide grep for kimi|k3|moonshot returns exactly ONE substantive hit, README.md:13. Every other "k3" is Kubernetes k3s. Zero configs, traces, scripts or RL integration code. Press restates the README sentence.
+    CLAIM 6 NOT-FOUND: tree-wide grep for kimi|k3|moonshot returns exactly ONE substantive hit, README.md:13. Every other "k3"
+    is Kubernetes k3s. Zero configs, traces, scripts or RL integration code. Press restates the README sentence.
 
-    CLAIM 7 CONFIRMED on every sub-claim (created 2026-07-23, 1555 stars / 138 forks / 37 open issues at 2026-07-29; prototype language in three docs; CLAUDE.md admits in-memory ephemeral scheduler state). THE REAL MATURITY SIGNAL is the open-issue list, several correctness-class: "LSMT mapped reads silently zero-fill truncated backing data" (SILENT DATA CORRUPTION in the custom image format), "Recoverable pause failures can leave sandboxes frozen while reported as Running", "Fork does not reseed guest entropy — forked children are not cryptographically independent", "Add multi-tenant support" (open = none). A silent zero-fill bug is disqualifying for an evidence-producing instrument.
+    CLAIM 7 CONFIRMED on every sub-claim (created 2026-07-23, 1555 stars / 138 forks / 37 open issues at 2026-07-29; prototype
+    language in three docs; CLAUDE.md admits in-memory ephemeral scheduler state). THE REAL MATURITY SIGNAL is the open-issue
+    list, several correctness-class: "LSMT mapped reads silently zero-fill truncated backing data" (SILENT DATA CORRUPTION in
+    the custom image format), "Recoverable pause failures can leave sandboxes frozen while reported as Running", "Fork does
+    not reseed guest entropy — forked children are not cryptographically independent", "Add multi-tenant support" (open = none).
+    A silent zero-fill bug is disqualifying for an evidence-producing instrument.
 
-    HOST PREREQ CHECK: kernel 6.14.0-37-generic satisfies 6.8+. /dev/kvm PRESENT but NOT accessible to this identity (crw-rw---- root:993; our uid is in group 992, not 993). ublk NOT loaded and availability UNDETERMINABLE from inside the devcontainer (/lib/modules and modinfo absent) — an honest negative, not a verified absence. Verdict: not runnable as things stand, and clearing it means granting CAP_SYS_ADMIN + CAP_NET_ADMIN + host-iptables mutation to a six-day-old codebase with an accept-any-token auth stub.
+    HOST PREREQ CHECK: kernel 6.14.0-37-generic satisfies 6.8+. /dev/kvm PRESENT but NOT accessible to this identity (crw-rw----
+    root:993; our uid is in group 992, not 993). ublk NOT loaded and availability UNDETERMINABLE from inside the devcontainer
+    (/lib/modules and modinfo absent) — an honest negative, not a verified absence. Verdict: not runnable as things stand, and
+    clearing it means granting CAP_SYS_ADMIN + CAP_NET_ADMIN + host-iptables mutation to a six-day-old codebase with an accept-any-token
+    auth stub.
 
-    INCIDENTAL AND HIGHER-PRIORITY THAN AGENTENV — LIVE BUG IN OUR CODE: code_exec_scorer.py advertises RLIMIT_NPROC at :9-10 (and the handoff repeats it at :61) but `_limits` (:41-47) sets only RLIMIT_CPU, RLIMIT_AS and RLIMIT_CORE. RLIMIT_NPROC IS NEVER SET. On a 192-thread host whose scarce resource is inference-reserved cores, process/thread creation from scored code is currently unbounded (the file''s own comment at :68 notes numpy sizes its pool to nproc = 192 here). Two-line fix; buys more real safety than any sandbox platform.
+    INCIDENTAL AND HIGHER-PRIORITY THAN AGENTENV — LIVE BUG IN OUR CODE: code_exec_scorer.py advertises RLIMIT_NPROC at :9-10
+    (and the handoff repeats it at :61) but `_limits` (:41-47) sets only RLIMIT_CPU, RLIMIT_AS and RLIMIT_CORE. RLIMIT_NPROC
+    IS NEVER SET. On a 192-thread host whose scarce resource is inference-reserved cores, process/thread creation from scored
+    code is currently unbounded (the file''s own comment at :68 notes numpy sizes its pool to nproc = 192 here). Two-line fix;
+    buys more real safety than any sandbox platform.
 
-    SNAPSHOT-FORK — PREMISE CORRECTED: agentic_swe_harness.py does NOT pay per-instance container setup. It creates no containers at all (no docker run / containers.create / commit / checkpoint in 1026 lines); it ATTACHES to operator-supplied containers via --container/--container-map and reaches in with `docker exec -w /testbed`. The create/destroy cost is paid by the official SWE-bench harness patched by swebench_cpuset_adapter.py. Also the MEMORY half of fork buys us nothing — our agent turns are stateless HTTP calls to llama-server; the expensive prepared state is the built /testbed, i.e. pure filesystem, which overlay2 already gives free. Cheapest win needs no snapshot: keep ONE container alive per instance and reset with `git checkout -- . && git clean -fdx`. That is PREREQUISITE work anyway — run_instance performs NO state reset between trials and the clean-at-base assumption is still unverified, so repeated-trial sweeps risk silent cross-trial contamination. CRIU declined (not installed; docker checkpoint needs experimental mode, off; our own Vercel deep dive judged it too fragile for processes holding sockets).
+    SNAPSHOT-FORK — PREMISE CORRECTED: agentic_swe_harness.py does NOT pay per-instance container setup. It creates no containers
+    at all (no docker run / containers.create / commit / checkpoint in 1026 lines); it ATTACHES to operator-supplied containers
+    via --container/--container-map and reaches in with `docker exec -w /testbed`. The create/destroy cost is paid by the official
+    SWE-bench harness patched by swebench_cpuset_adapter.py. Also the MEMORY half of fork buys us nothing — our agent turns
+    are stateless HTTP calls to llama-server; the expensive prepared state is the built /testbed, i.e. pure filesystem, which
+    overlay2 already gives free. Cheapest win needs no snapshot: keep ONE container alive per instance and reset with `git checkout
+    -- . && git clean -fdx`. That is PREREQUISITE work anyway — run_instance performs NO state reset between trials and the
+    clean-at-base assumption is still unverified, so repeated-trial sweeps risk silent cross-trial contamination. CRIU declined
+    (not installed; docker checkpoint needs experimental mode, off; our own Vercel deep dive judged it too fragile for processes
+    holding sockets).
 
-    PROPORTIONALITY: the threat here is CONTENTION, not escape. Everything scored today is trusted algorithmic benchmark code plus our own models'' output. cgroup v2 (pids.max, cpuset.cpus, memory.max) FIRST, jail second, hypervisor never. unshare is already installed with unprivileged userns enabled; bubblewrap is one apt package and is the best fit (read-only bind, tmpfs /, --unshare-net, no daemon, no root). arXiv 2606.08433 does find engine classes separate cleanly on architectural axes — but also finds downstream patch lag of 0 to 471+ days, which is exactly the risk of owning a vendored Firecracker+ublk stack.
+    PROPORTIONALITY: the threat here is CONTENTION, not escape. Everything scored today is trusted algorithmic benchmark code
+    plus our own models'' output. cgroup v2 (pids.max, cpuset.cpus, memory.max) FIRST, jail second, hypervisor never. unshare
+    is already installed with unprivileged userns enabled; bubblewrap is one apt package and is the best fit (read-only bind,
+    tmpfs /, --unshare-net, no daemon, no root). arXiv 2606.08433 does find engine classes separate cleanly on architectural
+    axes — but also finds downstream patch lag of 0 to 471+ days, which is exactly the risk of owning a vendored Firecracker+ublk
+    stack.
 
-    PRIOR DECISIONS DO NOT FORECLOSE THE SELF-HOSTED CASE (resolves the entry''s hedge): rlm-orchestrator-roadmap.md D6 is a bare two-line priority deferral with NO technique reasoning, and Docker sits in the same parenthetical as Modal and E2B — so it cannot be read as a cloud rejection. The Vercel deep dive WAS about self-hosted Firecracker+jailer, but was rendered against the HIBERNATE/RESUME use case for durable workflow resume, not isolation-for-untrusted-code, and predates AgentENV. Decline on the fresh merits, not on precedent that does not say what it was thought to say.
+    PRIOR DECISIONS DO NOT FORECLOSE THE SELF-HOSTED CASE (resolves the entry''s hedge): rlm-orchestrator-roadmap.md D6 is a
+    bare two-line priority deferral with NO technique reasoning, and Docker sits in the same parenthetical as Modal and E2B
+    — so it cannot be read as a cloud rejection. The Vercel deep dive WAS about self-hosted Firecracker+jailer, but was rendered
+    against the HIBERNATE/RESUME use case for durable workflow resume, not isolation-for-untrusted-code, and predates AgentENV.
+    Decline on the fresh merits, not on precedent that does not say what it was thought to say.
 
-    KTRANSFORMERS EVIDENCE PACKAGE (operator decision OD-A). WHAT WAS ACTUALLY KILLED: SIMULATORS AND REPRODUCTION WORKSTREAMS, not the runtime. fable5-window2-findings-02-heterogeneous-gpu.md:14 "**KTransformers/HybriMoE/Fiddler simulators (handoff §4) are dead weight for now**" — head noun is "simulators"; :69 demotes "HybriMoE/Fiddler/KTransformers reproduction" beside "the MoE cache-policy simulator suite". The `(handoff §4)` pointer resolves to Workstream B, whose only matching item is "Implement in `simulator/moe_cache_policy.py`". The RUNTIME was described in a DIFFERENT section (§2.3 of the source handoff, as "prior art for heterogeneous runtime design / possible integration substrate") and that section was never addressed. The doc never argues KTransformers is slow, unportable, AMX-bound or unbenchmarked. The kill is sound for simulators and simply does not reach the runtime.
+    KTRANSFORMERS EVIDENCE PACKAGE (operator decision OD-A). WHAT WAS ACTUALLY KILLED: SIMULATORS AND REPRODUCTION WORKSTREAMS,
+    not the runtime. fable5-window2-findings-02-heterogeneous-gpu.md:14 "**KTransformers/HybriMoE/Fiddler simulators (handoff
+    §4) are dead weight for now**" — head noun is "simulators"; :69 demotes "HybriMoE/Fiddler/KTransformers reproduction" beside
+    "the MoE cache-policy simulator suite". The `(handoff §4)` pointer resolves to Workstream B, whose only matching item is
+    "Implement in `simulator/moe_cache_policy.py`". The RUNTIME was described in a DIFFERENT section (§2.3 of the source handoff,
+    as "prior art for heterogeneous runtime design / possible integration substrate") and that section was never addressed.
+    The doc never argues KTransformers is slow, unportable, AMX-bound or unbenchmarked. The kill is sound for simulators and
+    simply does not reach the runtime.
 
-    BENCHMARK FIGURES CORRECTED: 54.21/8.73 and 65.14/10.303 are BOTH SINGLE-socket (8-expert and 6-expert). The real V0.2 table is dual-socket 6exp 97.32 prefill / 13.69 decode; dual 8exp 82.94/12.208; single 6exp 65.14/10.303; single 8exp 54.21/8.73; llama.cpp baseline 10.31/4.51. Hardware confirmed: Xeon Gold 6454S, 1T DRAM, 2 NUMA nodes, ONE 4090D 24G, DeepSeek-V3/R1 671B q4km, 382GB DRAM + 14GB VRAM. Method: "We test after enough warm up" — no n, no reps, no seed. SOSP''25 paper CONFIRMED peer-reviewed (DOI 10.1145/3731569.3764843), claiming 4.62-19.74x prefill / 1.25-4.09x decode plus an Expert Deferral mechanism. Repo: Apache-2.0, 19,091 stars, created 2024-07-26 — a two-year-old heavily-used project.
+    BENCHMARK FIGURES CORRECTED: 54.21/8.73 and 65.14/10.303 are BOTH SINGLE-socket (8-expert and 6-expert). The real V0.2 table
+    is dual-socket 6exp 97.32 prefill / 13.69 decode; dual 8exp 82.94/12.208; single 6exp 65.14/10.303; single 8exp 54.21/8.73;
+    llama.cpp baseline 10.31/4.51. Hardware confirmed: Xeon Gold 6454S, 1T DRAM, 2 NUMA nodes, ONE 4090D 24G, DeepSeek-V3/R1
+    671B q4km, 382GB DRAM + 14GB VRAM. Method: "We test after enough warm up" — no n, no reps, no seed. SOSP''25 paper CONFIRMED
+    peer-reviewed (DOI 10.1145/3731569.3764843), claiming 4.62-19.74x prefill / 1.25-4.09x decode plus an Expert Deferral mechanism.
+    Repo: Apache-2.0, 19,091 stars, created 2024-07-26 — a two-year-old heavily-used project.
 
-    WORTH AGAINST OUR v8 KERNEL — OBSERVATION-GRADE, AND THE HEADLINE LARGELY WILL NOT TRANSFER. (1) AMX IS THE ENGINE AND WE DO NOT HAVE IT: the SOSP paper credits "AMX-specialized kernels"; AMX is Intel-only and EPYC 9655 is Zen 5. The tree confirms the tiering — kt-kernel/operators/ has an `amx/` family (~45 files) and an `avx2/` fallback (~13), with NO AVX-512-native MoE operator family. (2) The llama.cpp baseline is unspecified (no version, flags, thread count or NUMA policy) against our taskset 0-95 -t 96 -fa 1 + mandatory OMP stack on a kernel with iqk AVX-512 GEMM. (3) The GPU half is CUDA/4090D; ROCm support is headed "(Beta)" and was developed on gfx1100, not our gfx90a. (4) KTransformers VENDORS llamafile''s iqk kernels (iqk_mul_mat_amd_zen4.cpp), the same family our v8 carries — so on CPU GEMM we are peers, not behind. GENUINELY NOTABLE and independent of all four discounts: the SOSP''25 peer review, and SGLang adopting KTransformers as a CPU-kernel backend (sgl-project/sglang#11425) — third-party production adoption is real corroboration in a way the tutorial numbers are not. The realistic transferable delta is the Expert-Deferral scheduling idea, evaluable as a technique without adopting the runtime.'
+    WORTH AGAINST OUR v8 KERNEL — OBSERVATION-GRADE, AND THE HEADLINE LARGELY WILL NOT TRANSFER. (1) AMX IS THE ENGINE AND WE
+    DO NOT HAVE IT: the SOSP paper credits "AMX-specialized kernels"; AMX is Intel-only and EPYC 9655 is Zen 5. The tree confirms
+    the tiering — kt-kernel/operators/ has an `amx/` family (~45 files) and an `avx2/` fallback (~13), with NO AVX-512-native
+    MoE operator family. (2) The llama.cpp baseline is unspecified (no version, flags, thread count or NUMA policy) against
+    our taskset 0-95 -t 96 -fa 1 + mandatory OMP stack on a kernel with iqk AVX-512 GEMM. (3) The GPU half is CUDA/4090D; ROCm
+    support is headed "(Beta)" and was developed on gfx1100, not our gfx90a. (4) KTransformers VENDORS llamafile''s iqk kernels
+    (iqk_mul_mat_amd_zen4.cpp), the same family our v8 carries — so on CPU GEMM we are peers, not behind. GENUINELY NOTABLE
+    and independent of all four discounts: the SOSP''25 peer review, and SGLang adopting KTransformers as a CPU-kernel backend
+    (sgl-project/sglang#11425) — third-party production adoption is real corroboration in a way the tutorial numbers are not.
+    The realistic transferable delta is the Expert-Deferral scheduling idea, evaluable as a technique without adopting the runtime.
+    2026-09-26 correction (intake/orch-prior-art-20260926 Stage 2; intake-1809#01, intake-1809#03): the KTransformers package
+    above is corrected on two points. (1) OVERTURNED - "NO AVX-512-native MoE operator family": at kvcache-ai/ktransformers@c40722bf
+    the BF16/FP8/RAWINT4 AVX-512 backends and LLAMAFILE exist in source and compile without AMX (floor AVX512F+BW); they live
+    under operators/amx/ behind AMX-named classes, which a path-level census cannot see. Built/run on Zen 5: untested. (2) NARROWED
+    - the GPU half: kt-kernel carries a ROCm build option and a HIP shim, the AMD test is a placeholder, no evidence of gfx90a
+    testing or use; the serving package (sglang-kt) is CUDA-packaged. The AMX discount stands NARROWED for prefill only (intake-1808#01).
+    (3) NARROWED - "SGLang adopting KTransformers as a CPU-kernel backend (sgl-project/sglang#11425) - third-party production
+    adoption is real corroboration": the integration WAS merged upstream (five PRs, 2025-10-21..2025-11-26), but #11425''s "closed
+    completed" is a github-actions inactivity close, upstream carries only the Nov-2025 feature subset, and its wrapper is API-broken
+    against every kt-kernel >= v0.5.1; it corroborates that maintainers accepted the merge, not maintained production use (intake-1818#0,
+    intake-1818#2, intake-1818#6). Operator OD-A decision 2026-09-26: KTransformers runtime declined for now; MI210 port investigation
+    open (fable5-window2-findings-02-heterogeneous-gpu.md).'
   claim_anchors:
   - claim_index: 1
     kind: page-and-quote
@@ -218917,12 +219011,16 @@
     an off-the-shelf GAIE/llm-d EPP can front llama.cpp without custom engineConfigs. Do NOT cite GAIE as delivering heterogeneous-accelerator
     or CPU-slot routing (intake-1783#4). Do NOT cite this repo's LWEPP as a capacity-aware picker (intake-1783#5).
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - heterogeneous-slot-fabric-residency.md
+  - dynamic-stack-concurrency.md
+  - within-role-placement-state-machine.md
+  - decision-aware-routing.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'Proposal-003 gauges adopted as internal slot-record fields (schema + DAR-LAT-1 runtime); EPP fronting declined (Stage
+    4, 2026-09-26). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: all four source claims confirmed at f1fc2d5a. The roadmap claim was narrowed
     (stale roadmap block). Added: LWEPP is round-robin, llm-d-router''s built-in engine list excludes llama.cpp but has CustomMetrics,
     and a verified llama-server mapping against upstream 2145525a and production v10 ffc1bac8 (no KV-util gauge in either).
@@ -218957,7 +219055,9 @@
     note: 'New claim from the dive: LWEPP is round-robin; a metric-driven EPP exists only in llm-d-router.'
   - claim_index: 6
     effect: uncertain
-    note: New claim; bears on intake-1784 and is cited here only for the protocol question.
+    note: 'New claim; bears on intake-1784 and is cited here only for the protocol question. 2026-09-26 second reader (accepted
+      by operator at plan approval): OVERSTATED - built-in engineConfigs also carry LoRASpec and CacheInfoSpec (factories.go:48-64,
+      97-98), so ''only engineConfigs/CustomMetrics carry signals beyond the three gauges'' is too strong.'
   - claim_index: 7
     effect: uncertain
     note: New dive-derived mapping; the semantic fit of requests_deferred to waiting requests was read from source (queue_tasks_deferred_size),
@@ -219157,11 +219257,12 @@
   reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
     in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - within-role-placement-state-machine.md
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'Trigger: a replica load term is designed (within-role note, 2026-09-26); dive then. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1785
   arxiv_id: null
   url: https://github.com/ai-dynamo/dynamo
@@ -219239,6 +219340,8 @@
     - intake-472
     - intake-459
     - intake-1324
+    - intake-1816
+    - intake-1817
   recommended_actions:
   - '[unverified] Compare Dynamo''s agentic request-hint schema with our x_* keys and draft a compatibility shim spec.'
   contradicting_evidence:
@@ -219270,12 +219373,14 @@
     NOT cite the Planner as single-model (intake-1785#3). Do NOT cite Dynamo as treating CPU only as a KV tier (intake-1785#7).
     Do NOT carry the README 2x/80% figures as independent evidence.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-selection-and-integration.md
+  - within-role-placement-state-machine.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'HS-16 (header-precedence session identity plus parent link) filed; HS-18 records the operator-agreed nvext rename decline;
+    c3-A5 replica load-cost reference recorded (Stage 4, 2026-09-26). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: the cost formula was re-read raw (docs source plus Rust scorer at 81a9871a)
     and confirmed with tiered-credit and taint-multiplier detail. The hint schema was pinned to extensions.rs and session
     identity moved to headers. The Planner single-model negative is overturned (GlobalPlanner). The ''CPU only as KV tier''
@@ -219310,22 +219415,31 @@
       strict_priority and header forms are post-1.0 (v1.3). The SGLang subagent-KV-isolation clause was dropped as unverified
       beyond README restatement.
   - claim_index: 3
-    effect: overturned
-    note: The single-model reading is overturned (GlobalPlanner spans DGDs/models under a shared budget). The heterogeneous-device
-      negative stands for the Planner.
+    effect: narrowed
+    note: 'Effect relabelled 2026-09-26 by the owning session: the key_claim at this index is the dive-corrected text and
+      stands; ''overturned'' described the Stage-1 framing it replaced, which is not this claim. Original note: The single-model
+      reading is overturned (GlobalPlanner spans DGDs/models under a shared budget). The heterogeneous-device negative stands
+      for the Planner.'
   - claim_index: 4
     effect: narrowed
-    note: Three request-path rows, not two (vanilla vLLM onramp); EPP now native Rust since 1.5.
+    note: 'Three request-path rows, not two (vanilla vLLM onramp); EPP now native Rust since 1.5. 2026-09-26 second reader
+      (accepted by operator at plan approval): the source text says ''two'' ingress topologies; the claim lists three rows
+      of one table.'
   - claim_index: 5
     effect: uncertain
-    note: New. Incompatibility is by source reading of deny_unknown_fields plus the test parse_nvext_rejects_unknown_fields_in_llm_layer;
-      not executed, per the no-inference rule.
+    note: 'New. Incompatibility is by source reading of deny_unknown_fields plus the test parse_nvext_rejects_unknown_fields_in_llm_layer;
+      not executed, per the no-inference rule. 2026-09-26 second reader (accepted by operator at plan approval): the NAT docstring
+      spells the field ''nvnext.cache_control''.'
   - claim_index: 6
     effect: uncertain
     note: New; directly answers design question (b).
   - claim_index: 7
-    effect: overturned
-    note: New. Overturns the Stage-1 notes line 'CPU appears only as a KV offload tier, never as a compute slot'.
+    effect: narrowed
+    note: 'Effect relabelled 2026-09-26 by the owning session: the key_claim at this index is the dive-corrected text and
+      stands; ''overturned'' described the Stage-1 framing it replaced, which is not this claim. Original note: New. Overturns
+      the Stage-1 notes line ''CPU appears only as a KV offload tier, never as a compute slot''. 2026-09-26 Stage-2b (intake-1817):
+      the v1.5.0 CPU-decode addition is examples-only launch scripts; the router sees a CPU decode worker as an untyped decode
+      worker and the Planner budgets GPUs (intake-1817#0, intake-1817#2, intake-1817#3).'
   depends_on: []
   claim_anchors:
   - claim_index: 0
@@ -219641,9 +219755,10 @@
   ingested_date: '2026-09-26'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: declined
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'A gateway in front of /v1 would be a second router, contrary to HS-4 ''one router''; history already planned in-orchestrator
+    (HS-4 P1-P3). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1787
   arxiv_id: '2605.19593'
   url: https://arxiv.org/abs/2605.19593
@@ -219748,12 +219863,13 @@
     is a 147-417 s, 7,000-token single-request job (#4). Cite #1 as qualitative only: three models, no numeric curves in the
     text.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - heterogeneous-slot-fabric-residency.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'Cost-model form adopted as HSF-1 swap-cost receipts + capability-card fields; absolute seconds declined (C5-A5). Plan:
+    docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: read arXiv 2605.19593v1 HTML in full. Table II/III values confirmed verbatim.
     Venue confirmed on the MAIN 2026 program (Technical Session 1, 1 July 2026; IEEE ComSoc technical co-sponsorship). Narrowed
     claims 1 and 2: offload results are qualitative only; the preemption test is single-request/one-preemption FP16 HF Transformers;
@@ -219788,9 +219904,10 @@
     effect: unaffected
     note: Confirmed verbatim.
   - claim_index: 4
-    effect: unaffected
+    effect: narrowed
     note: 'New claim: the internal lightweight/not-lightweight tension and the unmeasured scope (frequency, batching, short
-      jobs). Prevents citing ''~2% overhead'' as general.'
+      jobs). Prevents citing ''~2% overhead'' as general. 2026-09-26 second reader (accepted by operator at plan approval):
+      ''short jobs'' is not among the paper''s stated future work (continuous batching, repeated preemption, preemption frequency).'
   - claim_index: 5
     effect: unaffected
     note: 'New claim: venue confirmed against the conference program, not just the copyright line.'
@@ -220028,8 +220145,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-1 explicit dive decline: Harvest routing-policy taxonomy only; Kubernetes/Ray control plane and GPU-type selection
-    do not transfer to a single host; KV layer already intake-1324.'
+  - 'Taxonomy subsumed by the dived 1796/1783 records; the DRAM KV pool needs engine internals llama-server lacks. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1789
   arxiv_id: null
   url: https://doi.org/10.1145/3731569.3764815
@@ -220121,6 +220237,7 @@
     intake_entries:
     - intake-459
     - intake-472
+    - intake-1819
   recommended_actions:
   - '[unverified] Measure llama-server GPU load-from-page-cache latency per role model and compare with the slot fabric''s
     residency-swap N-dwell assumptions.'
@@ -220128,10 +220245,12 @@
   - No independent replication found (3 queries, 2026-09-26). DCD, Tom's Hardware, Medium and Spheron coverage is RESTATEMENT.
     An AE artifact exists (Zenodo 10.5281/zenodo.16673199); the GitHub mirror Zyyeric/Aegaeon@ca8caccf (one commit, 2026-03-06)
     carries no reproduction results.
-  - Talaria (arXiv 2607.17181v1, independent, section 2.3) critiques round-based token-level schedulers 'such as Aegaeon'
-    for agent sessions. When a tool returns, the session's KV may still be in HBM but its model window may have closed, so
-    it waits up to one round. This is an analytic critique, not a measured refutation of Aegaeon, and bears directly on RLM/agent
-    workloads.
+  - 'Talaria (intake-1819, dive-verified; arXiv 2607.17181, independent, section 2.3) critiques round-based token-level schedulers
+    ''such as Aegaeon'' for agent sessions: when a tool returns, the session''s KV may still be in HBM but its model window
+    may have closed, so it waits up to one round. Talaria MEASURES this failure mode on its own Aegaeon-like round-scheduler
+    ablation in SGLang (disabling session-prefill: p50 session completion time 623 s vs 189 s, intake-1819#10), not on Aegaeon
+    itself, so it is still not a measured refutation of Aegaeon. Talaria also keeps static residency for stable traffic (hot
+    instances never switch, intake-1819#3). Bears directly on RLM/agent workloads.'
   - 'Self-conceded: at 0.2x SLO Aegaeon no longer beats MuxServe, and static multiplexing is preferred for extremely latency-sensitive
     serving (section 7.2).'
   - The 'seven models per GPU' headline excludes the 6 prefill GPUs (section 7.2 setup).
@@ -220163,12 +220282,13 @@
     with fabric axiom 4 (heterogeneous-slot-fabric-residency.md:10-11). Its prefetch-based hiding needs VRAM for two models''
     weights. Do NOT carry 97% or 82% as expected EPYC gains; both are self-reported for a different regime.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - heterogeneous-slot-fabric-residency.md
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'Token-level multiplexing declined (fabric axiom 4); only the group-by-model admission prior is kept, as a gated Layer-3
+    spec. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: read the full 16-page author PDF (sha256 3be2ea58830a) and the AE artifact code
     (Zyyeric mirror @ca8caccf). ''Up to 7 models/GPU'' is narrowed to decode GPUs only (70 models on 10 decode + 6 prefill
     GPUs). The 26.9 s figure is reattributed to unoptimized initialization, not scale-down+up. 97% is ''up to''. 46.55 is
@@ -220567,12 +220687,13 @@
     propose the Orch as an ACP proxy/conductor for scheduling, because proxies sit north of the harness and cannot touch model
     parameters.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-selection-and-integration.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'HS-3 note records that ACP providers/set does not fire the ACP routing trigger; HS-OD-8/9 rest on claim 1 (no load signal
+    in ACP). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: pinned ACP @b44babba and verified RFD statuses from docs.json (providers and
     proxy-chains Draft; session-usage and model-config Completed; end-turn-token-usage Draft). Found that providers/* is gated
     behind unstable_llm_providers and that proxy/successor is in no schema. Verified the exact usage_update schema and that
@@ -220795,12 +220916,13 @@
     x_* keys. Do NOT describe modelPreferences as a live MCP contract, since its types are deprecated. Do not claim MRTR restores
     sampling.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-selection-and-integration.md
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'Sole-caller-of-models rule recorded in the harness handoff; modelPreferences kept only as a dormant naming note in client-surface-audit
+    section 1. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: pinned MCP spec @ab3a39c1. Confirmed the deprecation text, the removal timeline
     (from deprecated.mdx) and the SEP rationale. Found that the ModelPreferences and ModelHint types are themselves deprecated
     (narrowing claim 2). Added a source-verified OpenCode non-support claim and the loop-back argument. The Stage-1 "OpenCode
@@ -220997,12 +221119,13 @@
     -> 4.x upgrade. The standard levers that DO work with pinned OpenCode are elsewhere: HTTP 429/503 + Retry-After / retry-after-ms
     on the chat door, and core-MCP notifications/progress as a keep-alive on the control door.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-selection-and-integration.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'HS-OD-8/9 (HTTP backpressure on the chat door) and HS-17 (progress keep-alive plus MCP timeout) filed; Tasks extension
+    declined until OpenCode issue 28567 lands. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: overturned the Stage-1 "pollIntervalMs as capacity signal" framing (verification
     set to dive-overturned for that load-bearing inference; the normative claims survive). Verified OpenCode non-support at
     both the tag and the pin, and FastMCP HEAD support (fastmcp-tasks, fixed per-tool poll interval). Reattributed the job-system
@@ -221198,11 +221321,12 @@
   reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
     in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-selection-and-integration.md
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'Pointer for HS-4 P4 delegation defaults; stage1-unverified, dive before citing. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1794
   arxiv_id: null
   url: https://aider.chat/2024/09/26/architect.html
@@ -221270,11 +221394,13 @@
   reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
     in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-selection-and-integration.md
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'Trigger: live runs show malformed tool calls from a reasoning role; no current evidence of edit-format failure. Plan:
+    docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1795
   arxiv_id: null
   url: https://github.com/beehiveinnovations/pal-mcp-server
@@ -221343,8 +221469,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-1 explicit dive decline: Contrast case only (static human-rated model ranking, no runtime state); unmaintained
-    since 2025-12.'
+  - 'Contrast case; model choice already server-side by operator decision HS-OD-3. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1796
   arxiv_id: '2606.17949'
   url: https://arxiv.org/abs/2606.17949
@@ -221436,6 +221561,7 @@
     - intake-021
     - intake-459
     - intake-1393
+    - intake-1815
   recommended_actions:
   - '[unverified] Add a static per-role latency prior (nominal TPOT x predicted length) as a term in the routing score, and
     A/B it against the current quality-only selection under a load sweep.'
@@ -221451,8 +221577,13 @@
   - HW-Router (intake-1797) and SFS (intake-1798) corroborate only the weaker claim, that a latency term in selection beats
     latency-blind routing. Neither tests a static latency prior, so they neither corroborate nor refute arm 4.
   - The code release is unverifiable (404 on 2026-09-26).
-  - RouterWise (arXiv 2604.10907, not dived) argues latency depends jointly on placement and routing. RouteBalance takes placement
-    as fixed.
+  - 'RouterWise (intake-1815, dive-verified; arXiv 2604.10907) shows a latency prior must be conditioned on the deployed placement
+    - its latency model is per (model, setup) and its own runtime router is a static profiled prior with no live arm (intake-1815#0,
+    intake-1815#6). Its only placement-isolating arm (Study 1) does NOT show material gain from searching placement over a
+    sensible fixed rule in most cells; material gaps appear only at G=4, lambda 50-60 (+0.018/+0.028 predicted score over
+    Equal-Split, +0.064 over whole-GPU Isolated), and the "87%" headline is a worst-to-best spread (intake-1815#3, intake-1815#4).
+    All scores are predicted from profiled curves on homogeneous A100s. Scope condition for claim 2: key the static prior
+    by (role, placement), not role alone.'
   notes: 'Stage-1 prior-art sweep 2026-09-26 (topic t3-one-endpoint-many-models; harness<->capacity-aware multi-model stack
     question). Published: 2026-06-16. Source revision: arXiv:2606.17949v1 via arxiv.org/html (only version on the abs page),
     retrieved 2026-09-26. Artifact sha256 (first 12): 1f8cf5b1c9a8. Relevance to operator question: The most direct answer
@@ -221474,12 +221605,16 @@
     cluster, and it has not been tested for single-instance tiers or TTFT targets. Do NOT cite the 23x collapse as evidence
     that quality-only selection fails under load; the paper attributes it to serial scoring. Do NOT cite the code as released.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - decision-aware-routing.md
+  - learned-routing-controller.md
+  - contention-model-device-and-load-axes-rider.md
+  - harness-selection-and-integration.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'Static per-tier prior + dead-reckoned guard adopted as DAR-LAT-1/2 (weight 0) with the DAR-LAT-3 load-sweep A/B (Stage
+    4, 2026-09-26). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: the four-arm isolation and the static-prior claim were verified at section 6.3
     and Table 7, but arm 4 is two text-only points with a prior distilled from the learned traces, so the claim is narrowed.
     The 23x collapse is reattributed to serial router scoring, per the paper''s own ladder and Table 5, and an intro-vs-Table-5
@@ -221751,12 +221886,15 @@
     as "vs CARROT and IRT" (the body supports them vs CARROT only). Do NOT cite it as peer-reviewed until the DAC claim is
     verified. On llama-server, its KV-cache-usage signal has no analogue, because KV is preallocated per slot at launch.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - contention-model-device-and-load-axes-rider.md
+  - learned-routing-controller.md
+  - decision-aware-routing.md
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'Signal map recorded in the contention rider; the live-predictor build is declined (C1-A4) with a DAR-LAT-3 reopen trigger.
+    Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: Stage-1''s own caveat (load-blind baselines) is confirmed and strengthened.
     The baselines are latency-blind, pricing by money, and there is no live-signal ablation, so the headline cannot be attributed
     to live signals. Code was read at 8f613586: poll defaults are 5 s (library) and 0.2/0.3 s (eval); the predictor has two
@@ -221784,9 +221922,11 @@
     effect: unaffected
     note: Confirmed.
   - claim_index: 4
-    effect: overturned
-    note: 'New claim. It overturns the Stage-1 framing that HW-Router shows live signals matter: the design cannot separate
-      latency-vs-price from live-vs-static.'
+    effect: unaffected
+    note: 'Effect relabelled 2026-09-26 by the owning session: the key_claim at this index is the dive-corrected text and
+      stands; ''overturned'' described the Stage-1 framing it replaced, which is not this claim. Original note: New claim.
+      It overturns the Stage-1 framing that HW-Router shows live signals matter: the design cannot separate latency-vs-price
+      from live-vs-static.'
   - claim_index: 5
     effect: narrowed
     note: New claim. The headline multipliers hold against CARROT, not IRT, in the body text.
@@ -222021,12 +222161,16 @@
     latency. Any SFS port to llama-server needs engine-side per-iteration snapshots, which the frozen production kernel forbids.
     Router-side dead reckoning from the orchestrator''s own dispatches is the permissible approximation.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - decision-aware-routing.md
+  - learned-routing-controller.md
+  - contention-model-device-and-load-axes-rider.md
+  - harness-selection-and-integration.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'Its single-instance, TTFT-bound regime defines the DAR-LAT-3 experiment; the SFS simulator is declined (frozen kernel).
+    Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: the SFS mechanism and the reported figures are verified. LPS is reattributed
     to the separate no-live-information estimator. Found that the paper has no static or average-case routing arm, even though
     the companion repo (akaashrp/sfs@536af152, not linked from the paper; Stage-1 recorded "no code") implements them and
@@ -222247,11 +222391,12 @@
   reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
     in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - decision-aware-routing.md
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'Trigger: any cross-model aggregation mode is re-authorized (DAR-6); dive before building it. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1800
   arxiv_id: null
   url: https://github.com/berriai/litellm
@@ -222326,9 +222471,9 @@
   ingested_date: '2026-09-26'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: declined
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'A LiteLLM front is a second router; OpenCode reaches /v1 directly. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1801
   arxiv_id: null
   url: https://github.com/vllm-project/semantic-router
@@ -222402,9 +222547,9 @@
   ingested_date: '2026-09-26'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'Its capacity-contract question was answered by the c3 dive (GAIE proposal-003 is the only standard); no dive. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1802
   arxiv_id: '2406.04692'
   url: https://arxiv.org/abs/2406.04692
@@ -222470,12 +222615,12 @@
   reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
     in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - decision-aware-routing.md
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-1 explicit dive decline: Lineage anchor only; the design question is carried by Self-MoA (same sweep) and hosted
-    MoA is already intake-712/714.'
+  - 'Superseded by Self-MoA; named as reading in the DAR mixture-of-agents trigger. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1803
   arxiv_id: '2606.10662'
   url: https://arxiv.org/abs/2606.10662
@@ -222595,20 +222740,24 @@
     - intake-715
     - intake-1114
     - intake-544
+    - intake-1820
+    - intake-1821
   recommended_actions:
   - '[unverified] Prototype a DeLM-style verified shared context plus task queue as a REPL-session mode in which idle CPU/GPU
     slots claim subtasks. Measure prefix-cache hit rate.'
   contradicting_evidence:
-  - 'Proxifield (arXiv:2609.20889) independently implements a DeLM-style shared context (r->S->G, verified admission, atomic
-    append, no async queue). It is independent and adverse. Quotes: "Shared Context consistently underperforms both protocols"
-    (cite_2609.20889.txt:94); "Shared Context is consistently the most expensive protocol because maintaining and updating
-    the shared-context window requires additional LLM calls at every step" (:733); it "scales at a worse rate to the no communication
-    baseline" (:342). In its favour: it leads at the 35B setting on HiddenBench (0.77 vs 0.63, :328). Different domains (DroneSwarm,
-    HiddenBench), Qwen-3.5 models.'
-  - 'EvoHarnessBench (arXiv:2609.04280) runs DeLM (shared task pool, up to 3 workers; :2162) as a GPT-5 MAS baseline. Table
-    2: DeLM scores EOG 20.3±1.8 pass, 97.7 h, 179.1M tokens, and 18.7 overall. That is the lowest overall of the listed systems
-    and the most time and tokens. AutoGen scores 30.8 EOG and 28.6 overall. Also: "memory can even hurt DeLM" (:419). This
-    is independent and adverse, from a different benchmark (tool evolution).'
+  - 'Proxifield (intake-1820, dive-verified; arXiv:2609.20889) implements a DeLM-INSPIRED shared context - synchronous rounds,
+    no task queue, every agent writes every step, bounded board, checks on each agent''s own model, 5N calls per round (intake-1820#1).
+    Independent and adverse on cost: the most expensive protocol in every experiment, 10.8-12.6x no-communication at every
+    N (intake-1820#3). "Consistently underperforms" holds against Star and Proxifield on DroneSwarm only: it beats no-communication
+    at N=5 and N=25 and trails within SEM at N=50 (intake-1820#2), and on HiddenBench fact pooling it is the best protocol
+    at 35B-A3B (intake-1820#4). The same N=25 condition gives 11.5 in one table and 6.0 in another (intake-1820#6).'
+  - 'EvoHarnessBench (intake-1821, dive-verified; arXiv:2609.04280) runs a re-implemented DeLM (shared task pool, up to 3
+    workers, plus a benchmark-added per-agent raw memory DeLM lacks - intake-1821#3). Table 2: DeLM is last (EOG 20.3+/-1.8,
+    overall 18.7, most time and tokens), but the comparator AutoGen is effectively a single solver loop on this axis, so the
+    result is about parallel decomposition on stateful workflows, not the shared verified context; run count behind +/- unstated
+    (intake-1821#4). On the agents axis DeLM is mid-pack (intake-1821#6). "Memory can even hurt DeLM" concerns the bolted-on
+    cross-task memory, not DeLM''s shared context (intake-1821#5).'
   - 'Third-party fork (github.com/yuzhenmao/DeLM/pull/2, aadcha). 12 SWE-bench Verified tasks, 4 threads, gemini-3-flash-preview,
     1 seed. The repo-default arm gets 24/48 threads and 8/12 pass@4 at $0.620 per task, with about 985k prompt tokens per
     task and "no cached tokens". It is not a replication (its own caveat: "This is 12 tasks and one seed"). It still puts
@@ -222646,12 +222795,13 @@
     (+3.4 pp sample-weighted); or any claim that DeLM supports heterogeneous worker models (#7: role-level only, untested).
     Any design for idle slots claiming subtasks must justify itself on our own scheduler and contention evidence, not on DeLM.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - repl-session-memory-maturity.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'D-d acceptance extended with a deterministic admission gate and a prefix-stable notes block; queue/pull-claiming and
+    the DeLM+RLM arm declined. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: read the arXiv v1 HTML in full, plus the whole released repo @2d0ea48e. What
     changed: (1) The headline SWE-bench system has no task queue. It runs N fixed threads, each with its own planner, joined
     by a blackboard. The only queue is an unused FIFO. Stage-1 claim 0 is narrowed. (2) The KV-reuse claim is overturned as
@@ -222688,16 +222838,20 @@
     effect: unaffected
     note: Confirmed in the paper. Only templates and data structures are released, not the driver.
   - claim_index: 2
-    effect: overturned
-    note: Stage-1 carried "always placed first" as a mechanism. It is only argued (A.4), nothing is measured, and the released
-      SWE-bench prompts place the shared block after thread-specific content in a per-viewer, windowed, non-byte-stable render.
+    effect: narrowed
+    note: 'Effect relabelled 2026-09-26 by the owning session: the key_claim at this index is the dive-corrected text and
+      stands; ''overturned'' described the Stage-1 framing it replaced, which is not this claim. Original note: Stage-1 carried
+      "always placed first" as a mechanism. It is only argued (A.4), nothing is measured, and the released SWE-bench prompts
+      place the shared block after thread-specific content in a per-viewer, windowed, non-byte-stable render.'
   - claim_index: 3
     effect: narrowed
     note: Numbers confirmed. Hybrid code is unreleased, Table 3 has no variance, and the hybrid removes the hierarchy entirely.
   - claim_index: 4
     effect: reattributed
-    note: New claim. The paper's "LLM verifier" for trajectory updates is, in released code, a deterministic hygiene filter
-      by default. The strong model never verifies.
+    note: 'New claim. The paper''s "LLM verifier" for trajectory updates is, in released code, a deterministic hygiene filter
+      by default. The strong model never verifies. 2026-09-26 second reader (accepted by operator at plan approval): the optional
+      LLM verifier uses the worker''s own model, which in the shipped preset is the same gemini-3-flash as the planner, so
+      ''the strongest model is never the verifier'' holds for the default deterministic mode only.'
   - claim_index: 5
     effect: unaffected
     note: Moved from old index 4, verbatim in Sec. 7.
@@ -222709,8 +222863,10 @@
     note: New claim. Heterogeneity is role-level only, and worker heterogeneity is untested.
   - claim_index: 8
     effect: narrowed
-    note: New claim. The headline Avg@1 and LongBench gains shrink under per-sample weighting or independent-attempt accounting.
-      The abstract's 10.5 pp is mislabelled.
+    note: 'New claim. The headline Avg@1 and LongBench gains shrink under per-sample weighting or independent-attempt accounting.
+      The abstract''s 10.5 pp is mislabelled. 2026-09-26 second reader (accepted by operator at plan approval): strategy prefixes
+      apply only on attempt 1 with >1 thread (planner_agent.py:210); with n_solvers=2 only minimal-repro-first and code-first
+      are active, not all four.'
   depends_on: []
   claim_anchors:
   - claim_index: 0
@@ -223011,9 +223167,9 @@
   ingested_date: '2026-09-26'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'Pull-claiming dispatch must be argued from slot-fabric evidence (6-A3 ruling); no action. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1805
   arxiv_id: '2507.01701'
   url: https://arxiv.org/abs/2507.01701
@@ -223082,8 +223238,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-1 explicit dive decline: Pattern source only (control-unit selector ablation); reasoning/math benchmarks with open
-    70B models, no agentic or capacity dimension.'
+  - 'REPL state bounding owned by D-e/D-h/D-i; the pruning-role idea stays unverified. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1806
   arxiv_id: '2606.13643'
   url: https://arxiv.org/abs/2606.13643
@@ -223154,11 +223309,13 @@
   reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
     in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-selection-and-integration.md
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'Trigger: shell subagents re-enabled (permission.task / subagent_depth or HS-4 P4); the signal is then HS-OD-9 Retry-After
+    plus the HS-16 parent link. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1807
   arxiv_id: '2605.20563'
   url: https://arxiv.org/abs/2605.20563
@@ -223228,8 +223385,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-1 explicit dive decline: Orthogonal to the capacity question (shared-tree write concurrency); cheap to revisit
-    if parallel-harness file conflicts become a target.'
+  - 'No MCP write tools and no parallel shell agents in one tree today. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1808
   arxiv_id: null
   url: https://dl.acm.org/doi/10.1145/3731569.3764843
@@ -223345,12 +223501,13 @@
     since the paper''s own AVX-512 kernel loses to baseline in prefill; (c) the 1.63x to our single-socket NPS4 host; (d)
     any figure beyond batch 1.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - fable5-window2-findings-02-heterogeneous-gpu.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'AMX-dependent prefill / AVX-512 decode split, deferral scope and host-callback graph mechanism carried into the OD-A
+    package R-A10; operator 2026-09-26: runtime declined for now, Expert Deferral kept behind F1. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive (camera-ready PDF re-extracted with pypdf, page-marked). All five mechanisms
     confirmed. Narrowed: the CPU prefill advantage is AMX-only per 6.4, where the AVX-512 kernel is worse than baseline in
     prefill; ATSInfer corroborates this. Narrowed: the 0.5% is the quantized DS-3 (2+6) LiveBench average in relative terms,
@@ -223363,7 +223520,8 @@
     Stage 3): 1 yes / 18 partial / 1 no across anchors; ''partial'' is mostly compound-claim granularity. Substantive flags:
     claim 4 CORRECTION: ''(single runs, no CI)'' is wrong for HumanEval, which used t=0.3 with 10 sampling runs (sec 6.1);
     other suites greedy; ''no CI'' holds | claim 5 anchor ''2.42-4.09x over Fiddler'' rated NO for the scope/testbed claim
-    (mis-targeted; the llama.cpp-extension clause is covered by another anchor).'
+    (mis-targeted; the llama.cpp-extension clause is covered by another anchor). 2026-09-26 Stage 4 (second-reader finding
+    accepted by the operator at plan approval): removed the claim-5 anchor at ''2.42'', which did not support that claim.'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
@@ -223382,8 +223540,10 @@
     note: Confirmed. The 'over 20% -> near zero' launch-overhead phrasing is in 6.2; the anchor uses the 6.4 1.23x statement.
   - claim_index: 4
     effect: narrowed
-    note: 0.5% = quantized DS-3, 6 deferred of top-8, LiveBench average, relative. Per-benchmark swings are up to 2 points
-      (Table 2). All suites are single-run. The 1.45x is a best case; the DS-3 BF16 showcase is +33%.
+    note: '0.5% = quantized DS-3, 6 deferred of top-8, LiveBench average, relative. Per-benchmark swings are up to 2 points
+      (Table 2). All suites are single-run. The 1.45x is a best case; the DS-3 BF16 showcase is +33%. 2026-09-26 second reader
+      (accepted by operator at plan approval): ''(single runs, no CI)'' is wrong for HumanEval, which used t=0.3 with 10 sampling
+      runs (sec 6.1); other suites greedy; ''no CI'' holds.'
   - claim_index: 5
     effect: unaffected
     note: NEW scope claim, carried over from Stage-1 reported_results and confirmed verbatim.
@@ -223539,14 +223699,6 @@
     source_revision: SOSP'25 camera-ready PDF (16 pp, sha256 d3c5af7a9e11) via madsys.cs.tsinghua.edu.cn, text extracted with
       pypdf
     verified_by: research-intake/stage2
-  - claim_index: 5
-    kind: page-and-quote
-    locator: '6.2'
-    quote: from 2.42× to 4.09× over Fiddler and 1.25× to 1.76× over Llama.cpp
-    quote_sha256: dafb32ffcbf90b8450313c397d999510892618af6a6eaf4170df583fafdd20e6
-    source_revision: SOSP'25 camera-ready PDF (16 pp, sha256 d3c5af7a9e11) via madsys.cs.tsinghua.edu.cn, text extracted with
-      pypdf
-    verified_by: research-intake/stage2
   - claim_index: 1
     kind: page-and-quote
     locator: ATSInfer 2607.10183v2 sec 5 (independent corroboration of the AMX-prefill dependence, KT v0.5.2)
@@ -223595,7 +223747,9 @@
     doc/en/ROCm.md run steps target the archived framework (developed on EPYC 9274F + Radeon 7900xtx) plus a Hygon DCU gfx936
     kt-kernel build note added 2026-07-06; and the fork''s INT4 GPU-expert preparation imports gptq_marlin_repack only under
     is_cuda(). There is no evidence of gfx90a use. Upstream SGLang@c73f7077 carries a small (393-line) generic KT wrapper
-    built on torch.cuda stream handles, a possible but untested ROCm route.'
+    built on torch.cuda stream handles, but it is NOT a gfx90a route: it is API-broken against every kt-kernel >= v0.5.1 (required
+    gpu_experts_mask never passed; fix PR #20516 open) and upstream SGLang''s documented ROCm build refuses gfx90a (intake-1818#2,
+    intake-1818#3).'
   - 'Tutorial minimum: an x86 CPU with AVX512 (Sapphire Rapids or AMD EPYC), an NVIDIA GPU with 24 GB, and 256 GB RAM. The
     recommended config lists 2x AMD EPYC 9355.'
   techniques:
@@ -223623,6 +223777,7 @@
     intake_entries:
     - intake-923
     - intake-1318
+    - intake-1818
   recommended_actions:
   - '[unverified] Re-baseline the intake-923 ''AMX-bound / no AVX-512 family'' discount against HEAD before the OD-A decision
     is taken.'
@@ -223657,12 +223812,13 @@
     our hardware (4x RTX 4090 + Xeon, no reps). The paper''s CPU prefill advantage is AMX-dependent (intake-1808#1), so expect
     the Zen 5 CPU half to help decode and capacity, not long prefill.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - fable5-window2-findings-02-heterogeneous-gpu.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'Source-level Zen-5 portability of the kt-kernel CPU half and the ROCm-flag/HIP-shim GPU half carried into R-A10; operator
+    2026-09-26 OD-A: runtime declined for now, MI210 port investigation open (source-only feasibility read first). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive (shallow fetch of c40722bf, HEAD unchanged; sglang-kt submodule 541ddc37; upstream
     SGLang c73f7077). Claim 1 moved from README to SOURCE: bindings, compile guards, AVX fallbacks, the setup.py umbrella
     and emulation shims were read. This overturns intake-923''s ''no AVX-512-native MoE operator family''. Claim 3 narrowed
@@ -223688,7 +223844,9 @@
   - claim_index: 0
     effect: narrowed
     note: '''/v1 OpenAI-compatible'' is not stated in the READMEs read. The docs show sglang.launch_server; OpenAI compatibility
-      would be an upstream SGLang property that was not verified here.'
+      would be an upstream SGLang property that was not verified here. 2026-09-26 second reader (accepted by operator at plan
+      approval): the saved experts-sched tutorial (lines 156-170) does document /v1/chat/completions, so the OpenAI-/v1 detail
+      is source-supported.'
   - claim_index: 1
     effect: narrowed
     note: 'Upgraded from README-level to SOURCE-level and made precise. BF16/FP8/RAWINT4 compile under the AVX512 umbrella
@@ -223696,20 +223854,32 @@
       floor is AVX512F+BW. Native AVX512_BF16/VBMI/VNNI are used when compiled in, and all three are present on our host.
       This OVERTURNS intake-923 dive_corrections (''NO AVX-512-native MoE operator family'', research/intake_index.yaml:54822):
       the amx/ directory holds the AVX-512 kernels behind AMX-named classes. Built/ran on Zen 5: NOT tested (no builds or
-      runs in this dive).'
+      runs in this dive). 2026-09-26 second reader (accepted by operator at plan approval): the AVX512 umbrella in setup.py
+      enables only when CPUINFER_CPU_INSTRUCT is NATIVE (default), FANCY or AVX512; the advertised RAWINT4 kernel is also
+      gated on AVX512_BF16 (present on the 9655); the ''>='' trigger for --kt-gpu-prefill-token-threshold is unconfirmed.'
   - claim_index: 2
     effect: unaffected
     note: Confirmed; the Expert Deferral API knob was added.
   - claim_index: 3
     effect: narrowed
-    note: The ROCm story is 'untested option', not 'absent'. kt-kernel has the ROCm build flag and HIP shim. The AMD test
-      is a placeholder, ROCm.md run steps are archived-era (a Hygon gfx936 build note was added 2026-07-06), the sglang-kt
-      package is CUDA-pinned, and the fork's INT4 GPU-expert prep path has a CUDA-only import. The upstream SGLang KT wrapper
-      (393 lines, torch.cuda stream handles) is a candidate ROCm route that has not been verified.
+    note: 'The ROCm story is ''untested option'', not ''absent''. kt-kernel has the ROCm build flag and HIP shim; the AMD
+      test is a placeholder, ROCm.md run steps are archived-era (a Hygon gfx936 build note was added 2026-07-06), the sglang-kt
+      package is CUDA-pinned, and the fork''s INT4 GPU-expert prep path has a CUDA-only import. 2026-09-26 Stage-2b (intake-1818):
+      the upstream SGLang KT wrapper is NOT a live ROCm route - API-broken vs kt-kernel >= v0.5.1 and on an SGLang build that
+      refuses gfx90a. 2026-09-26 second reader (accepted by operator at plan approval): the torch-cu130 index applies only
+      to aarch64 (x86_64 torch==2.9.1 from PyPI, still a CUDA build); docs say CUDA 12.0+ recommended, not required; gfx90a
+      DOES appear in source (kt-kernel/cpu_backend/vendors/hip.h:160, an arch-family macro) - read as ''no evidence of gfx90a
+      testing or use''.'
   - claim_index: 4
     effect: unaffected
     note: Confirmed; the recommended 2x EPYC 9355 config was added.
-  depends_on: []
+  depends_on:
+  - entry: intake-1818
+    claim_index: 2
+    why: claim 3's upstream-route sentence rests on the API break
+  - entry: intake-1818
+    claim_index: 3
+    why: claim 3's upstream-route sentence rests on the gfx90a build refusal
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -224027,12 +224197,15 @@
     (INT4 vs FP8, 4K vs 24K); (d) any implementation dependency, since no code is released; (e) disaggregated SLP as available
     to a one-GPU host, since it dedicates a GPU to prefill.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - numa-prefill-decode-disaggregation.md
+  - heterogeneous-slot-fabric-residency.md
+  - mi210-big-model-and-acceleration-roadmap.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2 dive complete 2026-09-26 (operator-selected single round); routing into handoffs awaits the Stage-3 plan, so no
-    task exists yet. Re-set to integrated/declined when Stage 4 lands.
+  - 'Policy pattern (GPU-prefill/CPU-decode over one DRAM copy) routed to the numa re-scope, the fabric prefill rule and PF1;
+    SLP/DSLP port declined (no code released). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2 dive: OSDI''26 acceptance confirmed on the USENIX program page (pages 1089-1106);
     no code or artifact found. Stage-1''s ''above about 4K ... GPU-bound'' is corrected: 4K is a policy threshold, at 4K SLP
     is transfer-dominated, and compute dominates only past ~50K. The paper gives no PCIe bandwidth, and the promised section-6
@@ -224047,7 +224220,9 @@
     0 anchor ''USENIX BibTeX'' rated NO: it shows only OSDI''26 acceptance, not the testbed/PCIe claim (provenance-only anchor).
     Stage-2 close-out 2026-09-26: operator approved a Stage-2b pass on the 7 recommended dive-surfaced sources ONLY and declined
     separate intake for: https://www.usenix.org/conference/osdi26/presentation/wang-wenxin (This is the companion program
-    page of the same paper and adds no technical content. It is cited in 1810''s source_revision instead.).'
+    page of the same paper and adds no technical content. It is cited in 1810''s source_revision instead.). 2026-09-26 Stage
+    4 (second-reader finding accepted by the operator at plan approval): removed the claim-0 anchor at ''USENIX program page'',
+    which did not support that claim.'
   claim_corrections:
   - claim_index: 0
     effect: narrowed
@@ -224277,13 +224452,6 @@
     quote_sha256: 5071021c54c76644262025787ade8a109a3e59d342b3e5a956db70207775352d
     source_revision: arXiv:2606.10493v1 via html (v1 current per abs, fetched 2026-09-26)
     verified_by: research-intake/stage2
-  - claim_index: 0
-    kind: line-range
-    locator: USENIX program page (acceptance)
-    quote: booktitle = {20th USENIX Symposium on Operating Systems Design and Implementation (OSDI 26)},
-    quote_sha256: ee6879eed28fe6b8bcb688eaaf59657bd889a21c49b6940de603133737cfd933
-    source_revision: usenix.org/conference/osdi26/presentation/wang-wenxin, fetched 2026-09-26
-    verified_by: research-intake/stage2
 - id: intake-1811
   arxiv_id: '2402.07033'
   url: https://arxiv.org/abs/2402.07033
@@ -224357,8 +224525,8 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-1 explicit dive decline: Lineage anchor only; superseded for the runtime role by the KTransformers SOSP''25 paper
-    (same sweep) and pre-inoculated by wiki/moe-optimization.md T*(q*) identity.'
+  - 'Lineage anchor only; superseded for the runtime role by KTransformers (intake-1808); named in the wiki T*(q*) inoculation
+    as intake-1811#record (moe-optimization.md, 2026-09-26). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1812
   arxiv_id: '2411.11217'
   url: https://arxiv.org/abs/2411.11217
@@ -224425,11 +224593,12 @@
   reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
     in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - contention-model-device-and-load-axes-rider.md
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'Trigger: Artifact 3 is parameterised with a batch-throughput lane in scope; dive then. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1813
   arxiv_id: '2504.05897'
   url: https://arxiv.org/abs/2504.05897
@@ -224498,8 +224667,8 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-1 explicit dive decline: Lineage anchor only; 10-core edge testbed and KTransformers-derived; wiki/moe-optimization.md
-    T*(q*) identity already names it.'
+  - 'Lineage anchor only; already covered by the wiki T*(q*) inoculation, now cited as intake-1813#record (moe-optimization.md,
+    2026-09-26). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1814
   arxiv_id: '2607.10183'
   url: https://arxiv.org/abs/2607.10183
@@ -224572,11 +224741,12 @@
   reader_should_conclude: 'Stage-1 unverified summariser read. Do not quote any number, metric or mechanism from this entry
     in a plan or handoff until a Stage-2 dive promotes it; cite as #record only.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - contention-model-device-and-load-axes-rider.md
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage-1 ranked dive candidate; operator selects the single Stage-2 round (2026-09-26 sweep).
+  - 'Trigger: fable5 findings-02 F1 justifies the R-A5 async-CPU-backend design; dive then. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
 - id: intake-1815
   arxiv_id: '2604.10907'
   url: https://arxiv.org/abs/2604.10907
@@ -224618,7 +224788,7 @@
     per-panel minima are 0.348-0.527 and maxima reach 0.585. The largest within-panel spread is about 63% (G=4, lambda=60).'
   - 'Placement-only arm (Study 1; routing held at RouterWise''s optimum). The text says the three fixed-rule allocations "fall
     short of the setup selected by RouterWise in all settings we evaluate". The paper''s own Figure 6 contradicts this. The
-    best fixed rule equals the searched setup, or comes within 0.0004 score, in 5 of 8 panels: G=4 lambda 70/80, and G=8 lambda
+    best fixed rule equals the searched setup, or comes within 0.0004 score, in 6 of 8 panels: G=4 lambda 70/80, and G=8 lambda
     50/60/70/80, where 8g-lambda50 matches Isolated, 8g-lambda60/70 match Size-Proportional, and 8g-lambda80 matches Equal-Split
     and Size-Proportional. Material gaps occur only at G=4. At lambda=50 the gap is +0.018 over Equal-Split, but the searched
     setup plots at 805 ms, above tau=800. At lambda=60 it is +0.028 over Equal-Split and +0.064 over Isolated. The searched
@@ -224735,12 +224905,14 @@
     load. Nothing here transfers the MPS fractional-compute mechanism to EPYC. The frozen llama.cpp stack fixes a role''s
     GPU footprint at launch, and the paper has no CPU or heterogeneous-device evidence.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - decision-aware-routing.md
+  - heterogeneous-slot-fabric-residency.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2b dive complete 2026-09-26; routing into handoffs awaits the Stage-3 plan approval. Re-set to integrated/declined
-    when Stage 4 lands.
+  - 'DAR-LAT-2''s static prior keyed by (role, device, topology_hash); traffic share vs allocation added as a Layer-3 regime-change
+    input; joint optimizer declined (Stage 4, 2026-09-26). Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2b combined ingest+dive. A Stage-1-style reading of the abstract ("achievable routing
     quality varies by up to 87% across deployment configurations ... routing and deployment cannot be optimized independently")
     would have filed this as strong evidence that fixed-placement routers (RouteBalance, SFS, our static-prior design) leave
@@ -224796,7 +224968,11 @@
     becomes a live choice.); RouterBench: a benchmark for multi-LLM routing system (Hu et al., Agentic Markets Workshop ICML
     2024) (dive recommended decline: It bears on RouterWise internals only. The EPYC decision already rests on the lane own
     quality scorer, not RouterBench labels.).'
-  claim_corrections: []
+  claim_corrections:
+  - claim_index: 4
+    effect: narrowed
+    note: '2026-09-26 second reader: the enumerated panels (G=4 lambda 70/80; G=8 lambda 50/60/70/80) are six, not five; the
+      count understated the contradiction. Gaps and above-tau points re-checked and unchanged.'
   depends_on: []
   claim_anchors:
   - claim_index: 0
@@ -225087,12 +225263,15 @@
     (A.6); Dynamo has since moved to a header-only contract. #5 (offload and PD hurt) is an HBM/PCIe GPU finding and does
     not transfer to CPU-resident KV.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - dynamic-stack-concurrency.md
+  - kv-unified-stack-rollout.md
+  - harness-selection-and-integration.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2b dive complete 2026-09-26; routing into handoffs awaits the Stage-3 plan approval. Re-set to integrated/declined
-    when Stage 4 lands.
+  - 'G5 N-session tool-gap replay gates KVU-14 (session-keyed admission hold); HS-16 gains the end-of-session signal plus
+    idle TTL; tool-event forwarding and component deployment declined. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2b combined ingest+dive: the title matches arXiv v3 exactly. The dive read the code
     paths as well as the paper. The paper''s "program ID is not a session ID" and "tool execution tagged with program_id"
     framing does not match the code, which uses X-Session-ID as the program id and infers the tool phase from response completion.
@@ -225133,7 +225312,9 @@
     GPU scheduling by accumulated service time, with no tool-gap residency policy. ThunderAgent already positions against
     it, and it adds nothing the EPYC admission question needs.); https://github.com/ai-dynamo/dynamo/issues/9208 (dive recommended
     decline: Read in this dive (sources/issue9208.md:38). It is a vision issue that names ThunderAgent as aligned, with no
-    contract detail beyond what the port already shows.).'
+    contract detail beyond what the port already shows.). 2026-09-26 Stage 4 (second-reader finding accepted by the operator
+    at plan approval): removed the claim-6 anchor at ''thunderagent-program-scheduler.md:96'', which did not support that
+    claim.'
   claim_corrections: []
   depends_on: []
   claim_anchors:
@@ -225284,13 +225465,6 @@
     verified_by: research-intake/stage2b
   - claim_index: 6
     kind: line-range
-    locator: thunderagent-program-scheduler.md:96
-    quote: 'make many short LLM calls separated by non-GPU work: `docker exec`, `pytest`, `curl`, waiting on a subagent.'
-    quote_sha256: 0b185e14fb9e53132aa18cf819c19d32958a984fd2e665cc130ace3acf992d8c
-    source_revision: ai-dynamo/dynamo@81a9871a
-    verified_by: research-intake/stage2b
-  - claim_index: 6
-    kind: line-range
     locator: lib/router-plugins/builtin/src/thunderagent/request_classifier/scheduler.rs:1037-1040
     quote: program.status = ProgramStatus::Acting;
     quote_sha256: a94d9cff261a97aae0fa352f5ba1479f3b242572898a6bbbc9b360dea966ec13
@@ -225425,12 +225599,14 @@
     note''s "router variant with GPU-direct KV transfer" as PR content. Do NOT treat this as support for the operator''s CPU+RAM
     thesis beyond "CPU decode is usable as overflow", which the PR author''s own TPOT line limits.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - heterogeneous-slot-fabric-residency.md
+  - numa-prefill-decode-disaggregation.md
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage-2b dive complete 2026-09-26; routing into handoffs awaits the Stage-3 plan approval. Re-set to integrated/declined
-    when Stage 4 lands.
+  - 'No upstream device class: EPYC slot fields kept; spillover partial-offload arm specced on the gated fabric task; XPU/CPU
+    example port declined. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2b combined ingest+dive: a reading from the release note alone ("heterogeneous XPU CPU
     disaggregation", "router variant") would suggest a CPU-aware routing feature. The diff is +85 lines of bash across 3 files.
     The router and Planner were read at 81a9871a and carry no device class. The perf table has no stated setup and no r-control,
@@ -225763,12 +225939,13 @@
     here and not as tasks: #20516 merges AND upstream admits gfx90a to setup_rocm.py. Even then F1 (fable5 rider R-A9) still
     gates any KT work.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - fable5-window2-findings-02-heterogeneous-gpu.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2b dive complete 2026-09-26; routing into handoffs awaits the Stage-3 plan approval. Re-set to integrated/declined
-    when Stage 4 lands.
+  - 'R-A10 fact 3: upstream SGLang is not a gfx90a route (API break, gfx90a refused, unpackaged); operator 2026-09-26: runtime
+    declined for now, MI210 port investigation of the kvcache-ai fork/kt-kernel HIP path open. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2b combined ingest+dive: read sgl-project/sglang@c73f7077 (full blobless checkout),
     issue #11425 with all comments and timeline, the KT landing and fix PRs, the compat-fix PRs, and kt-kernel tags v0.4.1
     to v0.7.1 plus HEAD c40722bf. Stage-1-style framing would have got three things wrong. (1) ''Closed completed'' reads
@@ -226154,12 +226331,13 @@
     roles: SP, bump HBM and D2D staging are SGLang/VMM engine internals llama-server lacks, and time-sliced cold-pool decodes
     are mid-generation parking, which fabric axiom 4 forbids.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - heterogeneous-slot-fabric-residency.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2b dive complete 2026-09-26; routing into handoffs awaits the Stage-3 plan approval. Re-set to integrated/declined
-    when Stage 4 lands.
+  - 'HSF-3 gap-distribution measurement filed; swap protocol amended to session quiescence plus save-before-forced-swap; KV-recovery
+    term specced; cold-pool port declined. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2b combined ingest+dive: read arXiv 2607.17181v1 HTML in full, including appendices
     A-E. A Stage-1 framing (and the c5 dive''s one-line summary, "independent critique of Aegaeon") would have got three things
     wrong. (1) Talaria never runs Aegaeon; its 5.3x is against its own all-off round scheduler, which lacks the host-KV parking
@@ -226214,7 +226392,11 @@
     this round.); arXiv:2407.00023 (Preble: Efficient Distributed Prompt Scheduling for LLM Serving) (dive recommended decline:
     Title verified. This is a multi-instance prefix-locality router for a single model. EPYC''s single-GPU plus CPU-fallback
     placement already has the relevant session-affinity machinery, and it does not bear on residency swapping.).'
-  claim_corrections: []
+  claim_corrections:
+  - claim_index: 11
+    effect: narrowed
+    note: 'Second reader: the section-5.3 paragraph''s headline is the MEDIUM-load SCT gain, which the claim omits; the high/low-load
+      statements stand. The claim understates the router''s measured benefit.'
   depends_on: []
   claim_anchors:
   - claim_index: 0
@@ -226569,12 +226751,13 @@
     agent''s own model (#1). Do NOT carry the "53%/59.5% advantage over Star" as a ratio to Star (#7). Proxifield''s own router
     is untested at N<5 and ties a central orchestrator at N=5.'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - repl-session-memory-maturity.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2b dive complete 2026-09-26; routing into handoffs awaits the Stage-3 plan approval. Re-set to integrated/declined
-    when Stage 4 lands.
+  - 'D-d admission gate gains a cost bound (event-triggered writes, 0-LLM anchor check, at most 1 call per note); P2P messaging
+    declined. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2b combined ingest+dive: read arXiv v1 HTML in full, including Appendices A-F with every
     prompt. Read the four results tables, which exist only as images, from the saved PNGs. What a Stage-1-style reading, and
     intake-1803''s quotation, would have got wrong: (1) "consistently underperforms" is scoped to Star and Proxifield on DroneSwarm.
@@ -226917,12 +227100,13 @@
     treat the +/- values as multi-seed confidence: the run count is unstated. Do NOT cite this benchmark for or against a
     consultant/grunt model split. It never mixes model strengths (#9).'
   ingested_date: '2026-09-26'
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-selection-and-integration.md
+  - learned-routing-controller.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage-2b dive complete 2026-09-26; routing into handoffs awaits the Stage-3 plan approval. Re-set to integrated/declined
-    when Stage 4 lands.
+  - 'HS-4 P6 catalog-growth retention check filed; LRC evaluation caution recorded; hosted eval service declined. Plan: docs/research-intake/orch-prior-art-stage3-plan-20260926.md.'
   dive_corrections: '2026-09-26 Stage-2b combined ingest+dive: read arXiv v2 HTML in full (main text, Appendices C-J). v1
     was also saved; the diff shows the v2 intro and related work were rewritten. The dive established five things. (1) The
     Table 2 DeLM row is in the memory-based self-evolving adaptation group and includes a benchmark-added raw memory. (2)

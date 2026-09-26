@@ -402,3 +402,24 @@ Re-verified independently against the frozen tree 2026-08-23 (intake-1290#record
       attention OUTPUT to bf16 as well as the state.** That widens the blast radius of the existing
       `B3` row above, whose 512-token coherence gate was already judged structurally incapable of
       catching a long-prefill precision defect.
+
+## Research Intake Update — 2026-09-26 (intake-1810 / 1808 / 1809: CPU-vs-MI210 prefill crossover)
+
+Row ids are wave-local (`PF` = prefill) and do not continue earlier sections; classes Z/G/B as at :315-316.
+
+**Computed prior (Z — not a measurement).** llama.cpp op-offload re-sends offloaded weights every ubatch (hypothesis). The served
+Qwen3.8-Flash-Next UD-IQ4_XS is 93.68 GB (3 shards, 87.25 GiB); at the measured 28.89 GB/s H2D that is a 3.24 s transfer floor per ubatch,
+i.e. ≤ ~158 tok/s at -ub 512, ≤ ~632 at -ub 2048, ≤ ~1263 at -ub 4096. The CPU reference is pp512 t48 203.30 t/s (post-BIOS, uniform
+research artifact, build 10151 — 2026-09-21.md:111). So -ub decides whether a crossover can exist at all. The prior is falsified if an
+op-offload arm at -ub 512 exceeds ~158 tok/s on this file. `intake-1810#01`.
+
+- [ ] **PF1 (G) — measure the CPU-vs-MI210 prefill crossover for the served over-HBM MoE.** Artifact = the served
+      Qwen3.8-Flash-Next UD-IQ4_XS (sha256 of all 3 shards in the manifest). Production v10 binaries from the kernel store,
+      no build. Arms: A0 CPU incumbent (`kernels/production/cpu`, canonical_recipe.py); A1 GPU op-offload `-ngl 0`
+      (default threshold 32); A2 `-ngl 99 -cmoe`; plus one A1-with-offload-disabled control
+      (GGML_OP_OFFLOAD_MIN_BATCH=2147483647) to separate the binary from the offload. L ∈ {1K, 2K, 4K, 8K, 16K, 32K},
+      GPU -ub ∈ {512, 2048, 4096}, -n 0, r=5; the A0 L=2048 cell at P-BENCH-PREFILL-1 (r=10).
+      Rule: L* = smallest L where the best GPU arm's median ≥ 1.10× A0 at that L with non-overlapping 95% CIs,
+      reproduced in a later-window reversed-order replicate. Results feed the fabric prefill rule and the
+      numa-prefill-decode-disaggregation.md reopen trigger. Bench-class: this authorizes no serving change.
+  Full rigor controls (frozen manifest, per-cell raw outputs, holdout, denominator, region claim, freeze constraints, VB-PREFILL-XOVER first): `docs/research-intake/orch-prior-art-stage3-plan-20260926.md` P3-3.

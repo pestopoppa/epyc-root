@@ -29,7 +29,7 @@
 
 These are the HS-1g clones. Orchestrator paths below are relative to the repo root. Shell paths are relative to each clone.
 
-*Superseded pin (2026-09-16): P0.3 re-audited OpenCode at tip and pinned `350c726aa8b6` (v1.18.31, 700 commits past `4bffbb655`), see [`opencode-p03-audit-20260916.md`](../reference/harness-candidates/opencode-p03-audit-20260916.md) §1. The §1 analysis below was written against `4bffbb655` and is left as recorded; the P0.3 audit confirms its verdict holds at the new pin.*
+*Superseded pin (2026-09-16): P0.3 re-audited OpenCode at tip and pinned `350c726aa8b6` (v1.18.31, 700 commits past `4bffbb655`), see [`opencode-p03-audit-20260916.md`](../reference/harness-candidates/opencode-p03-audit-20260916.md) §1. The §1 analysis below was written against `4bffbb655` and is left as recorded; the P0.3 audit confirms its verdict holds at the new pin.* *(Correction 2026-09-26: `350c726aa8b6` is the audit anchor, not the `v1.18.31` tag `014614d3`; source-identical for `packages/opencode` — see `opencode-p03-audit-20260916.md` §1.)*
 
 ---
 

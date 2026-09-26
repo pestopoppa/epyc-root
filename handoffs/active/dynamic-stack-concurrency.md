@@ -235,7 +235,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       on an HTTP 200, and `:682` then **erases the source slot**. `n_restored` proves the file loaded,
       not that a single token will be reused. A zero-reuse migration would advance to VERIFIED, destroy
       the source, and record success. The reuse count is already available — `n_prompt_tokens_cache`
-      via `GET /slots`, or `timings.cache_n` on the first completion — and `wiki/benchmark-methodology.md:257`
+      via `GET /slots`, or `timings.cache_n` on the first completion — and `wiki/benchmark-methodology.md:1870` *(re-pointed 2026-09-26 from the rotted `:257`)*
       already documents it as the true KV-reuse instrument. **Independent of the measurement above: the
       state is mislabelled either way.** Gate the source erase on a reuse assertion, or rename it.
 - [ ] **(Z) Guard the prefix-stability assumption.** Full reuse after migration depends on the next
@@ -255,6 +255,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       **Do not conflate** with the adjacent checkpoint cluster (#24055, #25472 merged, #25592 open,
       #26004): that cluster is entirely **performance** — full re-prefill, lost reuse — and produces
       no wrong output. This row is about reuse rate, not correctness.
+  - [ ] **G5 (G) — extend this replay to N concurrent sessions with tool gaps, before any program-level scheduler work** (2026-09-26, intake-1816#1, intake-1816#7). Same instrument (dedicated `-lv 4` instance on the served artifact and production recipe, never a production server), on the kv-unified shape (`--kv-unified --cache-ram`, kv-unified-stack-rollout.md) and on the frontdoor. N ∈ {1, np, 2·np}; gap lengths = HSF-3's harness-class p50/p90 (heterogeneous-slot-fabric-residency.md). Per turn, keyed by `x_session_id`: `cache_n` vs `prompt_n`, with each forced re-prefill attributed to one cause — (a) hybrid checkpoint (`forcing full prompt re-processing`, the #25592 class above), (b) prefix rewrite (request bytes differ at or before the cached prefix), (c) cross-session eviction during the gap (neither a nor b). Only (c) is what session-keyed admission (kv-unified-stack-rollout.md KVU-14) fixes; ThunderAgent matched vLLM within noise when the working set fit (intake-1816#7). Decision rule: KVU-14 opens only if cause-(c) re-prefilled tokens are ≥10% of all prompt tokens at some N ≤ 2·np in BOTH windows; otherwise BOUNDED-NULL-1 with the N and gap range covered. Belief kernel: VB-MT-REPLAY.
 
 ## Research Intake Update — 2026-08-23 (Stage-2b, intake-1292 — slot save/restore)
 
@@ -340,3 +341,15 @@ the completions route, or any non-OpenAI ingress.
       regressions on **GPU and CPU**, deploy as a **new** production version with the full candidate
       benched as a whole. **Never a patch to frozen v9, and never reconciled by cherry-pick at
       promotion time.** [intake-1292#record]
+
+## Research Intake Update — 2026-09-26 (orchestration prior art; intake-1783, intake-1816)
+
+**DECLINED 2026-09-26 — fronting the orchestrator with a GAIE/llm-d Endpoint Picker (c3-A3; intake-1783#04–#07).**
+- It is a Kubernetes/Envoy ext-proc stack for replicas of one model per InferencePool.
+- llama.cpp is in neither the proposal-003 mapping nor llm-d-router's built-in engines, and there is no KV-util gauge.
+- The reference LWEPP is round-robin, and heterogeneous accelerators are unbuilt.
+- NUMA, residency and device class could only ride as untyped CustomMetrics.
+- The orchestrator already sees more than the protocol can carry. The three gauges are adopted as internal
+  slot-record fields instead (heterogeneous-slot-fabric-residency.md, 2026-09-26).
+
+**DECLINED 2026-09-26 — deploying upstream ThunderAgent or Dynamo's thunderagent plugin in front of llama-server (2b-thunderagent-A5; intake-1816#6).** Upstream supports only vLLM/SGLang backends; Dynamo's plugin reads published GPU KV-block capacity and runs only inside dynamo.frontend. The orchestrator is already the single scheduler; the pattern transfers as kv-unified-stack-rollout.md KVU-14, the component does not.
