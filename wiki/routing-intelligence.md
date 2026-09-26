@@ -1208,3 +1208,42 @@ published 510 rows and absent live latency cannot serve as EPYC's baseline.
 - [Eval Tower verification](../handoffs/active/eval-tower-verification.md) — minimum execution controls and promotion grammar.
 
 **Confidence:** verified as the current execution plan; model quality and economics remain unmeasured locally.
+
+## Compiled Update — 2026-09-26: What the Live Routing Path Actually Does
+
+A code and live-process audit (orchestrator main `744cf697`) found that the live `/chat` path differs from
+several standing descriptions:
+
+- **Episodic memory is queried on every routed request, and only for routing.** A routed request makes about
+  three to four embed+KNN lookups: role priors (`ClassificationRetriever`), the route (`HybridRouter.route`),
+  the mode (`route_with_mode`), and a post-answer review gate (`_should_review`, KNN over the *answer* text).
+  None is timed, so the "<1 ms MLP / 10-50 ms KNN" figures are claims. Memory has never been A/B-tested
+  against a memory-off arm.
+- **The learned MLP is off.** `routing_classifier` defaults off; the current retrain is 81.0% val acc and
+  STAGED. `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1` is set live but inert, because the verifier runs only in
+  the classifier path.
+- **Several branches are dead in practice.** The store holds 0 `classification` memories, so the
+  classification retriever always falls back to keywords. The failure-graph veto is a no-op without kuzu
+  (NIB2-78b ruled not to install it). `recall()` reads only 728 seed exploration rows, and nothing writes
+  new ones. Write-back is dominated by smoke prompts ("What is 17 * 3?": 8,641 updates).
+- **Prompt and graph gaps.** The `## Routing Intelligence` prompt section is added only on turn 0 of the
+  streaming paths, never on the graph path. The escalation map ends at `architect_critic`, which the graph
+  cannot reach, because it is missing from `_ROLE_TO_NODE`.
+- **Typed routing is to be tried as advice, not as an enforcer.** As an enforcer it measured about 1pp
+  worse (TD-10). The operator's direction is an A/B of a hint versus no hint, measuring the override rate and
+  whether overrides help. The typed-decision speed figure is now marked contested: 11.98x at n=1, 9.60x at
+  n=4, below the 10x bar (TD-1d.0).
+
+The follow-ups are filed as RI-16..RI-21 (RI-16, per-stage routing latency, is the priority), M-12k and
+M-20..M-22, LRC-1/LRC-2, and TD-28.
+
+### Source References
+
+- [Routing intelligence handoff](../handoffs/active/routing-intelligence.md) — RI-16..RI-21.
+- [Episodic memory integrity](../handoffs/active/episodic-memory-integrity.md) — M-12k, M-20..M-22.
+- [Learned routing controller](../handoffs/active/learned-routing-controller.md) — LRC-1, LRC-2; 64,396 live routing rows.
+- [Typed decision plane](../handoffs/active/typed-decision-plane.md) — TD-10, TD-1d.0, TD-28.
+- [Non-inference backlog](../handoffs/active/non-inference-backlog.md) — NIB2-78c (veto no-op re-verified).
+
+**Confidence:** verified against code at `744cf697` and live process state on 2026-09-26; the latency and
+quality effects are unmeasured.
