@@ -7,6 +7,13 @@
 
 ---
 
+> **2026-09-26 ~19:40Z — DS41 posture (ak-ds41-main wrap-up). Supersedes the DS41 lines in the 2026-09-24 blocks below.**
+> - The DS41 AutoKernel CPU campaign (INF-77) is **live as run 10j** (relaunched 19:10Z, research `846bef21`,
+>   `state-run10j/launcher.pid`) on anchor-gen-001 `cafb59c3bf67`, after its first keep `akm-ds41-gemm4xn-2x-unroll`
+>   (+4.535% paired A/B, unconfirmed at serving: DS41-C47).
+> - AutoKernel is never held for off-hours (operator, 2026-09-25); planner/orchestrator A/Bs may pause it cleanly
+>   and relaunch right after. Verify live state (`ps -p` on the recorded pid) before relying on this line.
+
 > **2026-09-24 ~19:55Z — posture update (main-ak-seat wrap-up #4). Supersedes the 18:00Z block below.**
 > - **OP-54 applied** (orch `0a564a1f`, research `75ee1b8e`): :8083 serves `-np 4 -c 196608 --kv-unified`, MTP
 >   depth 4, `-ub 2048`, `--cache-ram 65536`; STT :9000 on CPU 0-23, TTS :9002 on CPU 24-39 (0 VRAM); CPU roles

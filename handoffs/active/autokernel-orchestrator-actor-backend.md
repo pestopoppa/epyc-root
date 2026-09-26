@@ -1,10 +1,11 @@
 # AutoKernel — the orchestrator as planner/author backend
 
 **Status**: ACTIVE — PLANNED 2026-09-24 (operator direction). Seat A/Bs done: plain beats bounded (DS41-C20c),
-and inline beats context-as-files (OAB-9, 2026-09-25). **2026-09-25: OAB-1/2/3/10/11 done; OAB-7 and OAB-8 built,
-merged and deployed** (orchestrator `b9e004e3`, API reloaded 14:40:38Z). **2026-09-26: OAB-24..27 merged to
-research main `d643d794`** (author budgets and the opencode 32000 output-cap fix, ak-check sandbox, best-of-2,
-GitNexus anchor scoping). Next: the live OAB-4 A/B.
+and inline beats context-as-files (OAB-9, 2026-09-25). OAB-1/2/3/10/11/13 done; OAB-7 and OAB-8 built and
+deployed (orchestrator `b9e004e3`); OAB-22..27 merged to research main `d643d794`.
+**Next (start here)**: OAB-29 fake-model wire-test gate and OAB-30 stub e2e (incl. keep→continuation, the
+DS41-C45 path); then the live OAB-4 A/B (pin :8083's KV mode per OAB-4a) and the OAB-5 promotion rule;
+OAB-28 before best-of runs with more than one worker.
 **Created**: 2026-09-24
 **Priority**: MEDIUM (long-term direction; the campaign keeps opencode + 27B meanwhile)
 **Categories**: agent_architecture, autonomous_research, hardware_optimization
@@ -548,7 +549,7 @@ Not measured:
   export carries `reasoning` parts. Count them (tokens from the server's usage when present, else chars with the
   estimator flagged), and keep "decoded includes reasoning" explicit. Acceptance: the step-6 call re-exported shows
   a non-zero reasoning count consistent with its 82k chars. Also feeds VB-AK-METRICS-1.
-- [ ] **OAB-22 — planner concision rule plus an 8k per-turn cap, together.** Add to `actors.py`
+- [x] **OAB-22 — planner concision rule plus an 8k per-turn cap, together.** ✅ 2026-09-26 — first run-10h planner call: 15 steps, max turn 9,801 decoded (cap 16384, 0 capped steps), schema-valid, 31.4 min vs 32.8. Note: step 1 at 9.8k exceeds the rule's ~4k analysis aim (below the cap that replaced 8k). Add to `actors.py`
   `_HYPOTHESIS_TASK` (~L1961-1965): derive a formula once, keep analysis under ~4k tokens, then emit JSON only; set
   `max_tokens` 8000 per turn as a circuit breaker. The cap alone would have truncated 5 of the 6 giant turns, so it
   ships only with the rule. Reasoning stays on (operator ruling). The author prompt gets the same rule. Acceptance:
