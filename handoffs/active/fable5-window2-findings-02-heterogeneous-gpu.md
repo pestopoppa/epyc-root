@@ -96,7 +96,7 @@ This document makes **no** claim that KTransformers is slow, unportable, AMX-bou
 The AMX argument that is often attached to it post-dates this document by 26 days
 (`research/intake_index.yaml:45706`, 2026-07-29) and is the *rebuttal* package, not the basis.
 
-**KTransformers has never been ingested** — zero entries across 937 in `research/intake_index.yaml`.
+**KTransformers has never been ingested** — zero entries across 937 in `research/intake_index.yaml`. *Note 2026-09-26: stale — KTransformers now has intake entries 1808 (the SOSP'25 paper) and 1809 (the repo) on lane `intake/orch-prior-art-20260926`, pending that session's Stage 2 and merge; line anchors into `intake_index.yaml` rot, so cite the ids.*
 
 ### R-A2. The technique, from primary source
 
@@ -245,6 +245,8 @@ running parallel to v8, against this document's own sound "the fork is the subst
 - [ ] **OPERATOR DECISION — ingest-or-reaffirm KTransformers** (`intake_index.yaml:45670`). It has
       never been ingested. Per the never-dismiss-without-asking rule this is not a self-authorized
       call, and no intake row was created by this rider.
+      *Note 2026-09-26:* the ingest half is now under way — intake entries 1808 and 1809 exist on the unmerged
+      lane `intake/orch-prior-art-20260926` (owning session applies after its Stage 2); box left for that session.
 - [ ] **OPERATOR DECISION — instrument-era / gate amendment.** If F1 justifies proceeding, `:26`
       ("static-at-load") and `mi210-big-model-and-acceleration-roadmap.md:254` (skew gate) need
       amending to record that the skew verdict tested caching, not overlap.

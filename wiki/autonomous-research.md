@@ -3860,3 +3860,32 @@ changes production selection policy by itself.
 - [2026-09-26 progress](../progress/2026-09/2026-09-26.md) — frozen-journal counts, validation, and disposition.
 
 **Confidence:** verified for implementation, frozen-byte counts, and missing-field audit; selector gains remain unmeasured.
+
+## Compiled Update — 2026-09-26: Actor Budgets, a Silent Output Cap, and the Measurement Epoch
+
+Six AutoKernel lanes merged to research main `d643d794`, and run 10h went live on them. The durable lessons:
+
+- **opencode silently capped `max_tokens` at 32000.** It does this unless
+  `OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX` is set, so every larger requested author budget was inert. The
+  per-call environment now sets it. Budgets are now 40960 author output and 16384 planner/critic output at
+  180224 context, with author thinking at medium.
+- **Each planner call has a total budget** (OAB-23). This stops the endless chains of small calls that run 9
+  showed.
+- **Best-of-2 with mixed authors** (thinking off vs medium) engaged live. It requires `--workers 1` until
+  each member's `ak-check` fence joins the lane fence set (OAB-28).
+- **`ak-check` gives authors a sandbox:** a compile check takes ~0.7-6.5 s, and `--op-test` takes ~9-15 s.
+- **GitNexus is scoped by absolute anchor path.** The bare name `llama.cpp` is ambiguous with the frozen
+  production tree.
+- **Comparability keys on the measurement epoch.** The operator ratified P-AK-SEARCH-1-A3.1: planner history
+  and do-not-repeat key on the measurement epoch (anchor, recipe, host) rather than the full epoch. As a
+  result, swapping an actor no longer blanks history or lets retired ideas be proposed again. The code
+  switch is DS41-C44.
+
+### Source References
+
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-23..OAB-28.
+- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C35..C44.
+- [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md).
+
+**Confidence:** verified for the merged code and the ratification; run 10h had 0 measurements when this
+was compiled (DS41-C39).

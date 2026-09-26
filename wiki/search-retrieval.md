@@ -1257,3 +1257,32 @@ blocker was `do_lower_case`, unhandled and silent, also closed in `4e5e84c0`.
 - [intake-1293](https://huggingface.co/lightonai/answerai-colbert-small-v1-onnx) answerai-colbert-small-v1-onnx mirror + `pylate-onnx-export` -- the ONNX export-and-contract layer. `onnx_config.json` is the format's mandatory config (the NextPlaid Rust reader bails without it) while `config_sentence_transformers.json` was the only file our loader read; the two-entry `added_tokens` diff behind the silent prefix-corruption case; the root-vs-`onnx/`-vs-`vespa_colbert.onnx` file-selection footgun (11 files / 10 distinct blobs upstream); static INT8 graph parity that is NOT numerical equality.
 - [intake-1294#record](https://arxiv.org/abs/2604.09982) Reproduction Beyond Benchmarks: ConstBERT and ColBERT-v2 Across Backends and Query Distributions -- SIGIR '26 Reproducibility Track. Its "MaxSim architectural ceiling at 20 words" is a `query_maxlen = 32` truncation artefact (authors' own results file bit-identical to 17 significant figures across the 40/60/80/100/121-word conditions; 622/622 ToT queries identical past 40 words; median query retains 12.5% of its tokens). Sound and reusable: MS-MARCO reproduction, ConstBERT/PLAID centroid-coverage root cause, BEIR asymmetry.
 - [`epyc-orchestrator` `4e5e84c0`](/mnt/raid0/llm/epyc-orchestrator) ColBERT encoder fix (2026-08-23) -- encode-round-trip prefix guard replacing the base-vocab `token_to_id` predicate, graph-declared ONNX inputs, `onnx_config.json` preference, `do_lower_case`, debug→warning on encode failure, and the `embedding_dim` index stamp that now refuses a mismatched encoder.
+
+## Compiled Update — 2026-09-26: REPL Retrieval Should Return Pointers, Not Summaries
+
+The operator agreed a plan (UFH-12) for embedding-backed hybrid retrieval in the orchestrator REPL. It
+fuses lexical and dense scores with the existing `rrf_fuse`. Search returns pointers (source, line range,
+score, one-line snippet), and reads still go through `get`/`peek` so pull accounting and print caps hold.
+There is no hash-vector fallback: with no embedder, the result is lexical and labelled as such. An index
+belongs to one embedding model, and the scheduler picks among instances of that model. Granite-97M-R2 is
+the leading candidate (8K context, ~107 texts/s on a single server). An offline eval decides the method
+from data against a pre-registered kill criterion versus lexical.
+
+Two measured facts motivate it:
+
+- **The six BGE embedders deliver one server's compute.** All six (`:8090`-`:8095`) pin their four OMP
+  threads to the same cores (0/96, 32/128, 48/144, 88/184), inside the frontdoor's 0-95. Their per-slot
+  context is 256 tokens (`-c 512 -np 4`).
+- **The spill summary is synchronous.** `_spill_output` makes a 512-token worker call on every large
+  output, costing about 12 s at the CPU frontdoor's ~42 tok/s (estimated). The plan replaces it with a
+  pointer, verbatim head and tail, top-k task-relevant chunks, and `search()`.
+
+### Source References
+
+- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — UFH-12 plan, D1/D2, phases 0-5.
+- [Tool output compression](../handoffs/active/tool-output-compression.md) — TOC-SP-3 and the `spill_pointer_follows` trajectory field.
+- [REPL turn efficiency](../handoffs/active/repl-turn-efficiency.md) — the S4 tool gate and its D2 waiver for retrieval.
+- [KV cache](kv-cache.md) — the embedder 256-token slot defect.
+
+**Confidence:** verified for the placement and code facts; retrieval quality and cost are unmeasured
+until Phase 2.

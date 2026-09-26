@@ -99,7 +99,7 @@ failure caught in amber.
         baseline was mean **0.5505**, 0/12 above 0.9; the required full sample now exceeds the
         `>0.95` gate at **1.0000000496705372**. No rollback was required.
 - [x] M-11 — **SkillBank is retrievable.** ✅ 2026-07-27. The consumer was never missing:
-      `state.hybrid_router` is replaced by `SkillAugmentedRouter` (`services/memrl.py:481`) whenever
+      `state.hybrid_router` is replaced by `SkillAugmentedRouter` (`services/memrl.py:645`, inside `ensure_memrl_initialized`; was :481) whenever
       the `skillbank` flag is on, and it is. Only the search key was absent —
       `SkillBank.store(skill, embedding=None)` takes the embedding as OPTIONAL and only assigns
       `embedding_idx` when supplied, and the distillation pipeline never supplied one, so no
@@ -275,7 +275,7 @@ failure caught in amber.
 
         **`use_fallback` defaults to `True`** in both `EmbeddingConfig` (`embedder.py:48`) and
         `EmbedderPoolConfig` (`parallel_embedder.py:53`), and **every live site builds a bare
-        `TaskEmbedder()`** — `memrl.py:388`, `routing.py:162`, `strategy_store.py:308`,
+        `TaskEmbedder()`** — `memrl.py:573` (was :388), `routing.py:162`, `strategy_store.py:308`,
         `seed_loader.py:412`, `classification_retriever.py:306`, `procedure_registry.py:135`,
         `tools/llm.py:22,33`. The only site that sets `use_fallback=False` is the reseed script
         Codex hardened. So a BGE outage does **not** fail a write — it silently stores a SHA-256
@@ -549,6 +549,21 @@ failure caught in amber.
         `pandas`/`pyarrow` even though `epyc-inference-research/pyproject.toml` pins both, so
         `score_tulving_run.py` cannot run out of the repo venv as checked out
         (`epyc-inference-research/pyproject.toml`) (found 2026-09-14, noninf sweep).
+  - [ ] **M-12k — frontdoor answer-quality arm (filed 2026-09-26).** Beside the Tulving/BEAM instruments, run
+        memory-on vs memory-off on the live frontdoor path over a frozen answer-quality suite (same prompts,
+        same seeds; memory-off = routing without episodic lookups), reporting accuracy, latency and cost per
+        arm. The 2026-09-26 audit found memory is used for routing only and has never been A/B-tested.
+- [ ] **M-20 — telemetry and evaluation for the model-initiated `recall()` / `route_advice()` REPL tools**
+      (`src/repl_environment/routing.py:81` `_recall`, `:319` `_route_advice`). Zero observed calls in
+      1.7 GB of progress JSONL, and only 6 rows carry `repl_steps`. Log each call (query, hits, whether the
+      answer used them), then decide from data: keep, re-prompt, or remove. (filed 2026-09-26)
+- [ ] **M-21 — filter smoke/probe traffic out of episodic write-back.** Live write-back is dominated by smoke
+      prompts (`"What is 17 * 3?"` alone: 8,641 Q updates). Tag probe/smoke/health traffic at the API and skip
+      its write-back; add a test and a one-off count of affected rows. (filed 2026-09-26)
+- [ ] **M-22 — give `recall()` a live exploration write path, or say it is seed-only.** `recall()` reads only
+      the 728 seed `exploration` rows (0 updates); nothing writes exploration rows from live traffic. Either
+      write exploration memories from real REPL sessions (with M-21's filter) or document recall as a static
+      seed lookup and scope M-20 accordingly. (filed 2026-09-26)
 
 ## Why the reseed is necessary (and what it will NOT fix)
 
@@ -614,4 +629,4 @@ M-15, and M-16; do not reopen the reseed unless a new evidence-backed integrity 
 
 ## Research Intake Update — 2026-09-17 (typed memory writes; intake-1472/1473/1474)
 
-- [ ] **M-19 — Typed decision records + confidence gate design (blocked on TD-2).** Specify a memory-write record carrying per-question probabilities and a caller-computed confidence statistic; the gate threshold must come from TD-2 calibration (owner stub `typed-decision-plane.md`, RTG-56), never from candidate softmax (intake-1474 measured 65% of 7B wrong fields above 0.90 confidence).
+- [ ] **M-19 — Typed decision records + confidence gate design (record spec unblocked; gate threshold needs its own calibration record).** *Corrected 2026-09-26 (operator-directed tidy): was "blocked on TD-2". TD-2 landed 2026-09-17 and was never the unlock — `fuzzy-workflow-authoring-gui.md` FW-1 §4 D-1: calibration lifts per (model pin, question catalogue) on an operator-ratified record, never globally, and TD-5 forbids enforcement without operator approval. The record spec is zero-inference and dispatchable now; only a live gate waits on a calibration record for the memory-write catalogue on its model pin.* Specify a memory-write record carrying per-question probabilities and a caller-computed confidence statistic; the gate threshold must come from a calibration record for that catalogue and model pin (TD-2 is the method; owner `typed-decision-plane.md`, RTG-56), never from candidate softmax (intake-1474 measured 65% of 7B wrong fields above 0.90 confidence).

@@ -5816,3 +5816,32 @@ throughput remains a separate estimand.
 - [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — feature-isolation and campaign lifecycle rule.
 
 **Confidence:** verified from same-host measurements and the committed champion record.
+
+## Compiled Update — 2026-09-26: The 220 GB/s Read Ceiling Was a Half-Screen Figure
+
+The 2026-09-23 "220 GB/s host read ceiling" above does not hold for the full core screen. A `bench_readbw`
+run on 2026-09-26 (`interleave=all`, reps=5) gave these read-sums:
+
+- **Full screen (cores 0-95):** 399.6 GB/s at 48 threads, 449.4 GB/s at 96 threads.
+- **Half screen (cores 0-47):** 212.4 GB/s at 24 threads, 275.3 GB/s at 48 threads.
+
+So 220 GB/s is roughly the half screen at 24 threads. The run started at load average 17-21, so this is
+not an idle-host reading. On the full screen, gemv-2560 read 377.5 GB/s at 48 threads and 475.9 GB/s at 96.
+This supersedes the 153-167 GB/s gemv-pattern ceiling from before the 2026-09-21 BIOS change (DS41-C43
+re-bases it).
+
+The AutoKernel planner had been abstaining on every batch, citing the 220 figure; this refuted that
+premise. The in-loop serving-shape decomposition for DS41 is:
+
+- dense Q8_0 tinyBLAS: 40% of the cycle at ~52% of peak;
+- `MUL_MAT_ID` Q4_K: 32% at 82-94%;
+- barrier/straggler wall: about 21%.
+
+### Source References
+
+- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C36, DS41-C43, DS41-C7a.
+- [2026-09-26 ak-ds41-main progress](../progress/2026-09/2026-09-26-ak-ds41-main.md) — the run 10g/10h narrative.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — the planner/author context.
+
+**Confidence:** measured on one host, one day, not idle; repeat on an idle host before quoting it as the
+ceiling.
