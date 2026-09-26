@@ -2,7 +2,9 @@
 
 **Status**: ACTIVE — PLANNED 2026-09-24 (operator direction). Seat A/Bs done: plain beats bounded (DS41-C20c),
 and inline beats context-as-files (OAB-9, 2026-09-25). **2026-09-25: OAB-1/2/3/10/11 done; OAB-7 and OAB-8 built,
-merged and deployed** (orchestrator `b9e004e3`, API reloaded 14:40:38Z). Next: the live OAB-4 A/B.
+merged and deployed** (orchestrator `b9e004e3`, API reloaded 14:40:38Z). **2026-09-26: OAB-24..27 merged to
+research main `d643d794`** (author budgets and the opencode 32000 output-cap fix, ak-check sandbox, best-of-2,
+GitNexus anchor scoping). Next: the live OAB-4 A/B.
 **Created**: 2026-09-24
 **Priority**: MEDIUM (long-term direction; the campaign keeps opencode + 27B meanwhile)
 **Categories**: agent_architecture, autonomous_research, hardware_optimization
@@ -556,3 +558,31 @@ Not measured:
   turns (61 min without a reply), which a per-turn cap never stops. Add a per-call decoded-token or wall budget
   that ends the call with a recorded `budget_exhausted` abstention, not a transient retry. Acceptance: a fake
   backend that never finishes is cut at the budget and recorded once.
+
+### Tasks filed 2026-09-26 (DS41 six-lane integration, research main `d643d794`)
+
+- [x] **OAB-24 — author budgets and the opencode output cap.** ✅ 2026-09-26 — lane `ak-author-medium`.
+  - Author thinking is set to medium.
+  - ctx 180224; author output 40960; planner+critic output 16384.
+  - **opencode silently capped `max_tokens` at 32000** unless `OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX` is set, so
+    every larger requested budget was inert. The per-call environment now sets it.
+  - Also: an action rule and a GitNexus line in the prompts.
+  - Also: the `measurement_epoch` resume split. Checkpoints bind on the epoch inputs minus actor/backend config, so
+    an actor swap no longer orphans them. The comparability half of this is operator decision DS41-C40.
+- [x] **OAB-25 — `ak-check` sandbox for authors.** ✅ 2026-09-26 — lane `ak-sandbox`.
+  - A compile check takes ~0.7-6.5 s.
+  - `--op-test` takes ~9-15 s, via `test-backend-ops` against the CPU reference.
+  - Fence locks.
+- [x] **OAB-26 — best-of-2 with mixed authors.** ✅ 2026-09-26 — lane `ak-bestof`.
+  - Two authors (thinking off and medium) at 90112 ctx each; requires `--workers 1`.
+  - Engaged live on run 10h at 11:00:30Z (two concurrent opencode authors on `akm-q4k-x4t-avx512`).
+- [x] **OAB-27 — scope GitNexus to the lane's anchor.** ✅ 2026-09-26 — research `a1c5812b`.
+  - The tool now runs `gitnexus --repo <absolute anchor path>`. The bare name `llama.cpp` is ambiguous with the
+    frozen production tree.
+  - Every actor role is denied the gitnexus index writers.
+- [ ] **OAB-28 — best-of member `ak-check` fence sits outside the lane fence set.** The fence is created beside
+  the member tree, not in the set the lane scheduler locks.
+  - It is harmless under `--workers 1`, which best-of currently requires.
+  - It is a real race once best-of runs with more than one worker.
+  - Fix: register each member's fence in the owning lane's fence set.
+  - Acceptance: a two-worker best-of test in which both lanes' members hold disjoint, scheduler-visible fences.

@@ -1,8 +1,12 @@
 # DeepSeek-V4.1-Flash Evaluation (deepseek41)
 
-**Status**: active — the port is built and the AutoKernel CPU campaign runs on it: **run 10 live since
-2026-09-25 15:26Z** on anchor `00d118d44` (DS41 port + champion `90c12df42` fast loader), fresh store, dedicated
-research worktree (§C, DS41-C32/C33). The 2026-09-22 status line ("download in progress, no port yet") is history.
+**Status**: active. The port is built and the AutoKernel CPU campaign runs on it on anchor `00d118d44` (DS41 port
++ champion `90c12df42` fast loader).
+- **Run 10h has been live since 2026-09-26 ~10:57Z** on research `d643d794`, after six AK lanes were merged (§C,
+  DS41-C35..C37).
+- The planner's ~220 GB/s abstention premise was refuted by a full-screen readbw run (DS41-C36).
+- 0 measurements so far (DS41-C39). The operator decision on the epoch clause is open (DS41-C40).
+- The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
 target DeepSeek-V4.1-Flash instead (assuming they are applicable)")
 **Priority**: MEDIUM — novel-under-test model replacing the deleted GLM-5.3-Flash
@@ -638,6 +642,91 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
 - [ ] DS41-C34 — **Delete the partial build dir left by the re-anchor, once the operator confirms.**
   `/mnt/raid0/llm/llama.cpp-experimental-fastload-ds41-20260925/build-cpu-cc-partial-20260925` is not used by run
   10 (its binary is `build-cpu/`). Deleting it needs an explicit operator confirmation.
+- [x] DS41-C35 — ✅ 2026-09-26 **Six AK lanes merged to research main `d643d794`.** Author-side lanes
+  (`ak-author-medium`, `ak-sandbox`, `ak-bestof`) are recorded in INF-78 OAB-24..OAB-26. The loop-side lanes:
+  - [x] DS41-C35a — `ak-scratch`: loop `ScratchRegistry` with iteration and call scopes, a sweep, and an inventory
+    guard (later extended to ak-check and the best-of panel). ✅ 2026-09-26
+  - [x] DS41-C35b — `ak-keephyp`: `patch_rounds_exhausted` / `scope_blocked` / `hypothesis_retired` outcomes,
+    `--hypothesis-author-attempts 3`, resume reinstates; binds the measurement epoch (`3cbdccea`). ✅ 2026-09-26
+  - [x] DS41-C35c — `ds41-scope`: `CPU_SOURCE_ROUTES` for `dense_q8_tinyblas`, `iqk_mmid_dispatch`,
+    `iqk_dense_dispatch` and `cpu_graph_sync`, plus a gdb witness. ✅ 2026-09-26
+  - [x] DS41-C35d — integration fix-ups:
+    - `c1fe7750`;
+    - `2945b8ef`: one registry, and `--actor-authors-min-free-gb` removed;
+    - `3cbdccea`;
+    - `a1c5812b`;
+    - `4dbab2ce`;
+    - `d643d794`.
+
+    `loop/` has 3898 passing, and the failure set is identical to `origin/main`'s. ✅ 2026-09-26
+- [x] DS41-C36 — ✅ 2026-09-26 **Planner abstention premise refuted.** Run 10g's planner abstained on every batch,
+  citing a ~220 GB/s read ceiling. The measurement: `bench_readbw` 2026-09-26T10:55Z (raw
+  `/mnt/raid0/llm/tmp/ds41-scope-20260926/readbw-20260926T105535Z.txt`; `interleave=all`, reps=5; the load average
+  at start was 17-21, so this is not an idle-host reading).
+  - Full screen, cores 0-95: read-sum 399.6 GB/s at 48 threads and 449.4 at 96.
+  - Half screen, cores 0-47: 212.4 at 24 threads and 275.3 at 48.
+  - The 220 figure is roughly the half screen at 24 threads, which is wrong for the full screen.
+
+  Serving-shape decomposition (scope agent, in-loop node profile):
+  - dense Q8_0 tinyBLAS: 40% of the cycle at ~52% of peak;
+  - `MUL_MAT_ID` Q4_K: 32% at 82-94%;
+  - barrier/straggler wall: ~21%.
+
+  The inbox note `store/inbox/40-ds41-scope-widening-20260926.md` (with addendum) now drives the planner.
+- [x] DS41-C37 — ✅ 2026-09-26 **Run 10g stopped, run 10h launched.**
+  - 10g stopped at ~10:5xZ after 13 batches with 0 measurements.
+  - 10h launched ~10:57Z on `d643d794` with `--retention-trigger-free-gb 350`, because the disk had 398 GiB free,
+    below the default 400 trigger, with nothing reclaimable (→ DS41-C42).
+  - The common args gained `--workers 1` (backup `inputs/bak-20260926-workers1/`), which best-of needs.
+  - `akm-q4k-x4t-avx512` was reinstated: row `de5eeef007c7…`, at the author stage, with 1 of 3 attempts used, on
+    measurement epoch `5225426c…`.
+  - At 11:00:30Z it was being authored by two concurrent opencode authors, so best-of-2 is engaged.
+- [x] DS41-C38 — ✅ 2026-09-26 **Worktree cleanup.**
+  - Inventory: `/mnt/raid0/llm/tmp/worktree-inventory-20260926.md`. The operator approved removing the clean ones.
+  - **133 removed without `--force`** (log `/mnt/raid0/llm/tmp/worktree-removal-20260926.log`), 0 refused.
+  - 3 moved from SAFE to KEEP because live code references them:
+    - `deepseek_v41_flash_recipe.py:180` `KERNEL_SOURCE_ROOT` → `llama.cpp-experimental-deepseek41-20260923`;
+    - `autokernel/loop/production.py:93` `BASELINE_TREE` → `tmp/v9v-base-tree`;
+    - `dflash2_followups.py:31`.
+- [ ] DS41-C39 — **First real candidate measurement on run 10h.**
+  - Starting point: at 11:00:30Z run 10h was authoring `akm-q4k-x4t-avx512` with 0 measurements.
+  - Acceptance: the first candidate reaches build → gate → measure, and its disposition (keep, reject or refused,
+    with its reason) is recorded here.
+  - If the planner abstains again with the scope-widening note in its inbox, record the abstention reason
+    verbatim. This also carries DS41-C33's hoist acceptance.
+- [ ] DS41-C40 — **Operator decision: move planner-history comparability and the do-not-repeat gate from the full
+  epoch to the measurement epoch.**
+  - The two epochs:
+    - the full epoch folds the actor roster in (`enrolled_manifest_digest` inside `host_state`), so a critic swap
+      moved it `e0aefe6a` → `e384c2ad`;
+    - the measurement epoch is the same inputs minus actor/backend config, and resume already binds on it
+      (`ak-author-medium`, `3cbdccea`).
+  - Option A, switch: planner history and do-not-repeat survive actor swaps. Cost: this touches the ratified
+    P-AK-SEARCH-1-A3 clause 1 (`measurement/protocols/kernel-research.md`, human-amendment-only), so it needs an
+    operator-run ratify script.
+  - Option B, keep the full epoch: every actor-config change blanks the planner's history and lets it re-propose
+    retired ideas.
+  - **Recommendation: A.** A3's text defines an epoch as "anchor commit, build recipe, and declared host state".
+    Whether actor config belongs in "host state" is the operator's reading, and that decides whether this is an
+    amendment or a clarification.
+- [ ] DS41-C41 — **25 dirty REVIEW worktrees from the 2026-09-26 inventory need an operator look.**
+  - They are listed in `/mnt/raid0/llm/tmp/worktree-inventory-20260926.md` (REVIEW class).
+  - Per worktree: keep, commit and push, or remove.
+  - Never `--force`, and never `git worktree prune`.
+- [ ] DS41-C42 — **Retention trigger default vs actual disk.**
+  - The default `--retention-trigger-free-gb 400` can no longer be satisfied: 398 GiB was free with nothing
+    reclaimable, so run 10h needed a manual 350 override.
+  - Options:
+    - (a) lower the default below the steady-state free space;
+    - (b) make the trigger relative to what retention can actually reclaim, with no refusal when reclaimable = 0;
+    - (c) keep 400 and reclaim disk.
+  - Recommendation: (b), because it cannot go stale as the disk fills.
+  - Acceptance: a relaunch with no override passes on today's disk.
+- [ ] DS41-C43 — **Re-base the C6 ladder arithmetic on the 2026-09-26 readbw.** C6's "~165 GB/s gemv-pattern
+  ceiling" comes from INF-70 C0 (2026-09-02). That predates the 2026-09-21 BIOS change.
+  - On the full screen, today's gemv-2560 is 377.5 GB/s at 48 threads and 475.9 at 96.
+  - Keep the operator's gate and target (30 / 45-50 t/s). Only re-derive the BW → t/s rows.
+  - Repeat the reading on an idle host before quoting it as the ceiling.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
@@ -869,6 +958,13 @@ CPU"*, with *"I DO NOT CARE ABOUT BASELINE, ONLY MAX PERFORMANCE"* and **spec de
   DS41-C8) reports bytes and GB/s per weight path. If the dense projections stream near 165 while
   the expert gather sits at 60, those are different problems with different fixes — and today we
   cannot tell them apart. Run this first; it decides where the campaign aims.
+  - [x] DS41-C7a — first per-op-class decomposition from the in-loop node profile (DS41-C36):
+    - dense Q8_0 tinyBLAS: 40% of the cycle at ~52% of peak;
+    - `MUL_MAT_ID` Q4_K: 32% at 82-94%;
+    - barrier/straggler wall: ~21%.
+
+    ✅ 2026-09-26. C7 stays open: record absolute GB/s per weight path and state the peak basis. That peak basis
+    moved with DS41-C43.
 - [x] DS41-C8 — **The per-node profiler is compiled in at last.** INF-70 built it and there was
   never a CMake option, so it has never been in a binary we shipped: `strings libggml-cpu.so |
   grep -c GGML_CPU_PROF` returned **0**. Now `-DGGML_CPU_PROF=ON` in a separate `build-prof/`
